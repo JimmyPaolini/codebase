@@ -41,12 +41,9 @@ jobs:
         id: changes
         run: |
           allowed_paths=(
-            README.md
-            AGENTS.md
-            documentation
-            .github/skills
-            ':(glob)**/README.md'
-            ':(glob)**/AGENTS.md'
+            'openwiki/**'
+            'AGENTS.md'
+            '.github/workflows/refresh-documentation.yml'
           )
 
           tracked_changes=$(git diff --name-only --diff-filter=ACMDRTUXB -- "${allowed_paths[@]}")
