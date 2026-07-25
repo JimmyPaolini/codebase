@@ -9,7 +9,7 @@
 [![Jupyter](https://img.shields.io/badge/Jupyter-1.1-F37626?logo=jupyter&logoColor=white)](https://jupyter.org/)
 
 <!-- CODE_STATISTICS_START -->
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-126343-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-126307-22c55e?style=flat-square)
 ![Repo Size](https://img.shields.io/badge/Repo_Size-149.9_MiB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-455-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-776-3178c6?style=flat-square)
@@ -22,7 +22,7 @@
 ![Interfaces](https://img.shields.io/badge/Interfaces-261-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-28-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-8085-dc2626?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-8081-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-3899-0284c7?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-668-db2777?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-874-ea580c?style=flat-square)
