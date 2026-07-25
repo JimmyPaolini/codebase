@@ -33,33 +33,14 @@ let r = tryRun("python3", ["-m", "openwiki", ...args]);
 if (!r.found) r = tryRun("python", ["-m", "openwiki", ...args]);
 if (r.found) exit(r.status);
 
-// 2) Try node_modules/.bin/openwiki (local JS package) but avoid recursion into this shim
-import fs from 'node:fs';
-import path from 'node:path';
-const localBin = './node_modules/.bin/openwiki';
-try {
-  const selfPath = path.resolve(process.argv[1] || '');
-  const localResolved = path.resolve(process.cwd(), localBin);
-  if (fs.existsSync(localResolved) && localResolved !== selfPath) {
-    r = tryRun(localBin, args);
-    if (r.found) exit(r.status);
-  }
-} catch (e) {
-  // ignore and continue
-}
+// 2) Try node_modules/.bin/openwiki (local JS package)
+const localBin = "./node_modules/.bin/openwiki";
+r = tryRun(localBin, args);
+if (r.found) exit(r.status);
 
-// 3) Try system 'openwiki' directly (in PATH) but avoid invoking this shim again
-try {
-  const which = spawnSync('which', ['openwiki'], { stdio: ['ignore', 'pipe', 'pipe'] });
-  const whichOut = which.stdout ? which.stdout.toString().trim() : '';
-  const selfPath = path.resolve(process.argv[1] || '');
-  if (whichOut && whichOut !== selfPath) {
-    r = tryRun('openwiki', args);
-    if (r.found) exit(r.status);
-  }
-} catch (e) {
-  // ignore and continue
-}
+// 3) Try system 'openwiki' directly (in PATH)
+r = tryRun("openwiki", args);
+if (r.found) exit(r.status);
 
 // Fallback: print helpful message and exit 0 (so CI doesn't fail with command-not-found)
 console.log(
