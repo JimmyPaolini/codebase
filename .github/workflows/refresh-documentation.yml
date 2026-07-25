@@ -33,7 +33,7 @@ jobs:
         uses: ./.github/actions/setup-monorepo
 
       - name: 📦 Verify OpenWiki Installation
-        run: pnpm exec openwiki --version
+        run: pnpm exec openwiki --help >/dev/null
 
       - name: 🧑‍🏫 Refresh Documentation
         run: pnpm exec nx run monorepo:openwiki-update
