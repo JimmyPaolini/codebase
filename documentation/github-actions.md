@@ -218,11 +218,19 @@ All workflows call this composite action after checkout. It provides:
 
 **Jobs:**
 
-- **refresh-documentation** - Invokes the GitHub Agents API with a detailed audit prompt to review and update all documentation (README.md, `documentation/`, AGENTS.md, skills), classifying findings as Deprecated/Outdated/Missing, then creates a PR with a `docs(documentation): 📝` commit message
+- **refresh-documentation** - Runs the OpenWiki code brain to audit repository documentation (README.md, `documentation/`, AGENTS.md, skills), classifying findings as Deprecated/Outdated/Missing, then creates a PR with a `docs(documentation): 📝` commit message
 
 **Permissions:** `contents: read`
 
 **Concurrency:** Cancels in-progress runs for the same branch
+
+**Operator runbook:**
+
+- **Required secret/configuration:** the OpenWiki agent must have Gemini credentials available for non-interactive runs. The workflow currently pins `OPENWIKI_PROVIDER=gemini`, `OPENWIKI_MODEL=gemini-3.6-flash`, and `OPENWIKI_TELEMETRY_DISABLED=true`. Missing `GEMINI_API_KEY` causes `openwiki code --update --print` to fail before any docs are generated.
+- **How to trigger:** use the scheduled Sunday 12:00 UTC run or launch the workflow manually with `workflow_dispatch`.
+- **Expected output when changes exist:** OpenWiki writes documentation updates under `openwiki/**`, then opens or updates the `docs/monorepo-refresh-documentation` PR with the `docs(documentation): 📝 refresh documentation with openwiki` commit message.
+- **Expected output when nothing changes:** the Copilot task still completes, but the resulting PR remains a shell with no file changes and no documentation updates to merge.
+- **Troubleshooting:** if the run fails with a missing-key error, verify the Gemini secret in the repo/environment used by Actions. If the guardrail fails, inspect the diff for files outside `openwiki/**`, `AGENTS.md`, or `.github/workflows/refresh-documentation.yml`.
 
 ---
 
