@@ -103,7 +103,7 @@
     "cursor-global": false,
     "cursor-workspace": false,
     "windsurf": false
-  },
+},
   "chat.mcp.gallery.enabled": true,
   "chat.notifyWindowOnConfirmation": "always",
   "chat.notifyWindowOnResponseReceived": "always",
@@ -585,20 +585,12 @@
   "githubPullRequests.pushBranch": "prompt",
   "githubPullRequests.queries": [
     {
-      "label": "Local Pull Request Branches",
-      "query": "default"
-    },
-    {
       "label": "📑 Open",
       "query": "repo:${owner}/${repository} is:open"
     },
     {
       "label": "🚪 Closed",
       "query": "repo:${owner}/${repository} -is:open"
-    },
-    {
-      "label": "All Open",
-      "query": "default"
     }
   ],
   "gitlens.ai.model": "vscode",
