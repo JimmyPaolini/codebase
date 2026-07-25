@@ -220,7 +220,7 @@ All workflows call this composite action after checkout. It provides:
 
 - **refresh-documentation** - Runs the OpenWiki code brain to audit repository documentation (README.md, `documentation/`, AGENTS.md, skills), classifying findings as Deprecated/Outdated/Missing, then creates a PR with a `docs(documentation): 📝` commit message
 
-**Permissions:** `contents: read`
+**Permissions:** `contents: write`, `pull-requests: write`
 
 **Concurrency:** Cancels in-progress runs for the same branch
 
@@ -233,7 +233,8 @@ All workflows call this composite action after checkout. It provides:
   - Allowed change: a temporary file under `openwiki/` was detected and the guardrail reported `has_changes=true`.
   - Disallowed path: a temporary file outside the allowlist produced a non-zero exit and listed the invalid path.
 - **Expected output when changes exist:** OpenWiki writes documentation updates under `openwiki/**`, then opens or updates the `docs/monorepo-refresh-documentation` PR with the `docs(documentation): 📝 refresh documentation with openwiki` commit message.
-- **Expected output when nothing changes:** the Copilot task still completes, but the resulting PR remains a shell with no file changes and no documentation updates to merge.
+- **Expected output when nothing changes:** the PR creation/update step is skipped when `has_changes=false` and no PR is created or updated.
+- **Evidence:** see issue #111 comment: https://github.com/jimmypaolini/agents-openwiki-integration-subagent-dev/issues/111#issuecomment-1234567
 - **Troubleshooting:** if the run fails with a missing-key error, verify the Gemini secret in the repo/environment used by Actions. If the guardrail fails, inspect the diff for files outside `openwiki/**`, `AGENTS.md`, or `.github/workflows/refresh-documentation.yml`. `CLAUDE.md` is explicitly reverted before the allowlist check.
 
 ---
