@@ -446,7 +446,7 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "openwiki code --update --print",
-        "cwd": "{workspaceRoot}/openwiki"
+        "cwd": "{workspaceRoot}"
       }
     },
     "orchestrate-agents": {
