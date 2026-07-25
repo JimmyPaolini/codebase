@@ -68,3 +68,6 @@ data/**
 
 # project-structure plugin cache
 projectStructure.cache.json
+
+# Ignore superpowers SDD reports
+.superpowers/sdd/
