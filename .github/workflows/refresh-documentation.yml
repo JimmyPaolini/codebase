@@ -16,6 +16,10 @@ jobs:
   refresh-documentation:
     name: 🧑‍🏫 Refresh Documentation
     runs-on: ubuntu-latest
+    env:
+      OPENWIKI_PROVIDER: gemini
+      OPENWIKI_MODEL: gemini-3.6-flash
+      OPENWIKI_TELEMETRY_DISABLED: "true"
 
     steps:
       - name: 🤖 Prompt Agent
