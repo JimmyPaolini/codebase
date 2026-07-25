@@ -40,7 +40,16 @@ jobs:
       - name: 🔍 Detect Documentation Changes
         id: changes
         run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
+          allowed_paths=(
+            README.md
+            AGENTS.md
+            documentation
+            .github/skills
+            ':(glob)**/README.md'
+            ':(glob)**/AGENTS.md'
+          )
+
+          if [[ -n "$(git diff --name-only --diff-filter=ACMRTUXB -- "${allowed_paths[@]}")" ]]; then
             echo "has_changes=true" >> "$GITHUB_OUTPUT"
           else
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
