@@ -1,8 +1,5 @@
 {
   "author": "Jimmy Paolini",
-  "bin": {
-    "openwiki": "./scripts/openwiki.js"
-  },
   "dependencies": {
     "pino-pretty": "catalog:"
   },
