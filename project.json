@@ -19,8 +19,6 @@
             "nx run {projectName}:sync-vscode-extensions:check",
             "nx run {projectName}:type-coverage",
             "nx run {projectName}:typecheck",
-            "nx run {projectName}:fallow-dead-code",
-            "nx run {projectName}:fallow-duplicates",
             "nx run {projectName}:fallow-health",
             "nx run {projectName}:fallow-audit"
           ],
@@ -41,8 +39,6 @@
             "nx run {projectName}:lint:write",
             "nx run {projectName}:markdown-lint:write",
             "nx run {projectName}:format:write",
-            "nx run {projectName}:fallow-dead-code",
-            "nx run {projectName}:fallow-duplicates",
             "nx run {projectName}:fallow-health",
             "nx run {projectName}:fallow-audit"
           ],
@@ -95,6 +91,7 @@
           "commands": [
             "nx run {projectName}:knip:check",
             "nx run {projectName}:fallow-dead-code",
+            "nx run {projectName}:fallow-duplicates",
             "nx run {projectName}:vulture:check"
           ],
           "parallel": true
@@ -103,6 +100,7 @@
           "commands": [
             "nx run {projectName}:knip:write",
             "nx run {projectName}:fallow-dead-code",
+            "nx run {projectName}:fallow-duplicates",
             "nx run {projectName}:vulture:write"
           ],
           "parallel": false

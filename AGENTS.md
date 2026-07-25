@@ -77,15 +77,10 @@ Specialized domain knowledge for working on specific systems or patterns:
 ## Agents
 
 <!-- custom-agents-table-of-contents start -->
-- **[change-plan](.github/agents/change-plan.agent.md)**: Revise an existing implementation plan to incorporate scope changes, new requirements, or corrected assumptions. Use when asked to modify plan tasks, constraints, phases, or implementation approach.
-- **[create-plan](.github/agents/create-plan.agent.md)**: Create an implementation plan file for new features, fixes, or refactors. Use when asked to plan work, design implementation phases, define requirements, or produce a machine-executable plan document.
-- **[execute-plan](.github/agents/execute-plan.agent.md)**: Execute an implementation plan by running pending tasks in focused sequence, updating task completion, and verifying outcomes. Use when asked to carry out plan tasks phase by phase.
 - **[explore-codebase](.github/agents/explore-codebase.agent.md)**: Explore codebase files, patterns, and structure for a given topic. USE WHEN gathering implementation context before planning or executing tasks, when asked to research the codebase, or when a planning agent needs a Sub-Agent A (Codebase Research). Returns a Codebase Research Summary with relevant files, existing patterns, affected Nx projects, reusable code, related plans, constraints, and open questions.
 - **[explore-internet](.github/agents/explore-internet.agent.md)**: Gather external documentation, changelogs, and release notes for libraries, frameworks, and APIs. USE WHEN a plan involves external dependencies, package upgrades, migrations, new frameworks, or technologies requiring documentation lookup. Skip for purely internal refactoring. Returns an External Research Summary with breaking changes, migration guidance, known issues, and documentation links.
-- **[question-me](.github/agents/question-me.agent.md)**: Interview the user about a request, feature, issue, or design until there is a shared understanding. Use when you need to clarify requirements, walk a decision tree one branch at a time, ask one question at a time, propose a recommended answer with each question, or avoid acting until the user confirms the scope and intent.
 - **[triage-deployment](.github/agents/triage-deployment.agent.md)**: Diagnose and fix failing GitHub Actions CI workflows in this monorepo. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: analyze-code (typecheck, lint, format, spell-check, knip, markdown-lint, yaml-lint), test-coverage, validate-conventions (branch name, PR title/body, config sync), audit-security (gitleaks, bandit, scan-dependencies, trivy), and make-devcontainer (VSCode extensions sync, Docker build, devcontainer test).
 - **[triage-submission](.github/agents/triage-submission.agent.md)**: Triage and fix git submission failures for both commits and pushes. Use when a git commit or push is rejected, when lint-staged errors occur, when pre-commit or pre-push hooks fail, when a branch name is invalid on push, or when you see errors from husky, commitlint, validate-branch-name, ESLint, oxfmt, prettier, typecheck, knip, cspell, markdownlint, or yamllint during a commit or push attempt. Reads the error output, identifies the failing hook and checks, reads the relevant configuration, and applies targeted fixes.
-- **[update-plan](.github/agents/update-plan.agent.md)**: Read an existing implementation plan, assess actual codebase progress, and update the plan to reflect reality. Use when asked to audit completion, reconcile drift, or refresh task status.
 <!-- custom-agents-table-of-contents end -->
 
 ## Projects
@@ -232,6 +227,8 @@ See [Testing Strategy](documentation/code-quality/testing-strategy.md) for patte
 ### Git Workflow
 
 **Never bypass git hooks** with `--no-verify` — fix the underlying issue instead.
+
+**Do not run signing-check scripts manually in normal commit/push flows.** Husky already runs `scripts/git/check-commit-signing-configuration.sh` in pre-commit and `scripts/git/check-push-commit-signatures.sh` in pre-push.
 
 **Never suppress lint or type errors** with disable comments (`eslint-disable`, `@ts-ignore`, `@ts-expect-error`, `nocheck`) or by loosening configuration — triage and fix the code instead. Suppression is only permitted when the user explicitly requests it.
 

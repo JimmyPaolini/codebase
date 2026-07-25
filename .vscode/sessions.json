@@ -9,20 +9,24 @@
       {
         "color": "terminal.ansiBlue",
         "commands": [],
-        "cwd": "monorepo",
+        "cwd": "codebase",
         "icon": "repo",
-        "name": "monorepo"
+        "name": "codebase"
       },
       {
         "color": "terminal.ansiBrightYellow",
-        "commands": ["source .venv/bin/activate"],
+        "commands": [
+          "source .venv/bin/activate"
+        ],
         "cwd": "applications/affirmations",
         "icon": "compass",
         "name": "affirmations"
       },
       {
         "color": "terminal.ansiBrightYellow",
-        "commands": ["source .venv/bin/activate"],
+        "commands": [
+          "source .venv/bin/activate"
+        ],
         "cwd": "applications/affirmations",
         "icon": "compass",
         "name": "affirmations"
@@ -32,9 +36,9 @@
       {
         "color": "terminal.ansiBlue",
         "commands": [],
-        "cwd": "monorepo",
+        "cwd": "codebase",
         "icon": "repo",
-        "name": "monorepo"
+        "name": "codebase"
       },
       {
         "color": "terminal.ansiCyan",
@@ -55,32 +59,32 @@
       {
         "color": "terminal.ansiBlue",
         "commands": [],
-        "cwd": "monorepo",
+        "cwd": "codebase",
         "icon": "repo",
-        "name": "monorepo"
+        "name": "codebase"
       },
       {
         "color": "terminal.ansiBlue",
         "commands": [],
-        "cwd": "monorepo",
+        "cwd": "codebase",
         "icon": "repo",
-        "name": "monorepo"
+        "name": "codebase"
       },
       {
         "color": "terminal.ansiBlue",
         "commands": [],
-        "cwd": "monorepo",
+        "cwd": "codebase",
         "icon": "repo",
-        "name": "monorepo"
+        "name": "codebase"
       }
     ],
     "lexico": [
       {
         "color": "terminal.ansiBlue",
         "commands": [],
-        "cwd": "monorepo",
+        "cwd": "codebase",
         "icon": "repo",
-        "name": "monorepo"
+        "name": "codebase"
       },
       {
         "color": "terminal.ansiBrightGreen",

@@ -771,6 +771,8 @@ importers:
         specifier: 'catalog:'
         version: 4.4.3
 
+  applications/JimmyPaolini: {}
+
   applications/affirmations: {}
 
   applications/caelundas:
