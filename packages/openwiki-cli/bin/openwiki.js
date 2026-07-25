@@ -41,16 +41,8 @@ try {
   const selfPath = path.resolve(process.argv[1] || '');
   const localResolved = path.resolve(process.cwd(), localBin);
   if (fs.existsSync(localResolved) && localResolved !== selfPath) {
-    try {
-      const content = fs.readFileSync(localResolved, 'utf8');
-      if (!content.includes('This repository expects an OpenWiki CLI to be installed')) {
-        r = tryRun(localBin, args);
-        if (r.found) exit(r.status);
-      }
-    } catch (e) {
-      r = tryRun(localBin, args);
-      if (r.found) exit(r.status);
-    }
+    r = tryRun(localBin, args);
+    if (r.found) exit(r.status);
   }
 } catch (e) {
   // ignore and continue
