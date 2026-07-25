@@ -61,6 +61,7 @@
     "lodash": "catalog:",
     "markdownlint-cli2": "catalog:",
     "nx": "catalog:",
+    "openwiki": "catalog:",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "prettier": "catalog:",
