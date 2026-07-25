@@ -43,9 +43,28 @@ try {
   if (fs.existsSync(localResolved) && localResolved !== selfPath) {
     try {
       const content = fs.readFileSync(localResolved, 'utf8');
-      if (!content.includes('This repository expects an OpenWiki CLI to be installed')) {
-        r = tryRun(localBin, args);
-        if (r.found) exit(r.status);
+      console.log('[openwiki-shim] local bin content length', content.length);
+      const m = content.match(/cmd-shim-target=(.*)$/m);
+      if (m && m[1]) {
+        const target = m[1].trim();
+        try {
+          const targetContent = fs.readFileSync(target, 'utf8');
+          if (targetContent.includes('This repository expects an OpenWiki CLI to be installed')) {
+            // target is shim
+          } else {
+            r = tryRun('node', [target, ...args]);
+            if (r.found) exit(r.status);
+          }
+        } catch (e) {
+          // fallback to running wrapper
+          r = tryRun(localBin, args);
+          if (r.found) exit(r.status);
+        }
+      } else {
+        if (!content.includes('This repository expects an OpenWiki CLI to be installed')) {
+          r = tryRun(localBin, args);
+          if (r.found) exit(r.status);
+        }
       }
     } catch (e) {
       r = tryRun(localBin, args);
