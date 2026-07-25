@@ -226,7 +226,7 @@ All workflows call this composite action after checkout. It provides:
 
 **Operator runbook:**
 
-- **Required secret/configuration:** the OpenWiki agent must have Gemini credentials available for non-interactive runs. The workflow currently pins `OPENWIKI_PROVIDER=gemini`, `OPENWIKI_MODEL=gemini-3.6-flash`, `OPENWIKI_GEMINI_API_KEY`, and `OPENWIKI_TELEMETRY_DISABLED=true`.
+- **Required secret/configuration:** the OpenWiki agent must have Gemini credentials available for non-interactive runs. The workflow currently pins `OPENWIKI_PROVIDER=gemini`, `OPENWIKI_MODEL=gemini-3.6-flash`, `GEMINI_API_KEY` (mapped from `secrets.OPENWIKI_GEMINI_API_KEY`), and `OPENWIKI_TELEMETRY_DISABLED=true`.
 - **How to trigger:** use the scheduled Sunday 12:00 UTC run or launch the workflow manually with `workflow_dispatch`. Manual validation must be done on a pushed branch revision with GitHub Actions credentials available; local runs cannot exercise the hosted dispatch path end to end.
 - **Validated locally from current workflow logic:** the guardrail step was reproduced against the checked-out repository state.
   - Clean repo: no changed paths remained and the guardrail reported `has_changes=false`.
@@ -235,7 +235,7 @@ All workflows call this composite action after checkout. It provides:
 - **Expected output when changes exist:** OpenWiki writes documentation updates under `openwiki/**` and may also update `AGENTS.md` or `.github/workflows/refresh-documentation.yml`, then opens or updates the `docs/monorepo-refresh-documentation` PR with the `docs(documentation): 📝 refresh documentation with openwiki` commit message.
 - **Expected output when nothing changes:** the PR creation/update step is skipped when `has_changes=false` and no PR is created or updated.
 - **Evidence:** see issue #111 comment: https://github.com/JimmyPaolini/codebase/issues/111#issuecomment-5080422933
-- **Troubleshooting:** if the run fails with a missing-key error, verify the `OPENWIKI_GEMINI_API_KEY` secret in the repo/environment used by Actions. If the guardrail fails, inspect the diff for files outside `openwiki/**`, `AGENTS.md`, or `.github/workflows/refresh-documentation.yml`. `CLAUDE.md` is explicitly reverted before the allowlist check.
+- **Troubleshooting:** if the run fails with a missing-key error, verify the `OPENWIKI_GEMINI_API_KEY` secret is present and correctly mapped to `GEMINI_API_KEY` in the workflow environment. If the guardrail fails, inspect the diff for files outside `openwiki/**`, `AGENTS.md`, or `.github/workflows/refresh-documentation.yml`. `CLAUDE.md` is explicitly reverted before the allowlist check.
 
 ---
 
