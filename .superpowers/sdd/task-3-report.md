@@ -28,3 +28,4 @@ Addendum: committed refresh-documentation workflow update — commit 5429692a (2
 ## Follow-up
 - Updated `.github/workflows/refresh-documentation.yml` to check only allowed documentation pathspecs before opening the PR.
 - Re-ran validation: `pnpm exec nx affected --target=analyze-code --configuration=check --base=main` ✅
+- 2026-07-25T19:58:08Z Include deletions in diff-filter for refresh workflow
