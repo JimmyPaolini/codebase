@@ -440,6 +440,15 @@
       },
       "outputs": ["{workspaceRoot}/README.md"]
     },
+    "openwiki-update": {
+      "cache": false,
+      "description": "Update OpenWiki content from code using the OpenWiki CLI (prints changes).",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "openwiki code --update --print",
+        "cwd": "{workspaceRoot}/openwiki"
+      }
+    },
     "orchestrate-agents": {
       "cache": false,
       "description": "Run the multi-agent prompt orchestration script",

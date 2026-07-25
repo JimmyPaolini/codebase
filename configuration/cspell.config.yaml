@@ -137,3 +137,5 @@ overrides:
       - notebook-outputs
   - filename: "**/lexico-ingestion/data/**"
     enabled: false
+words:
+  - openwiki
