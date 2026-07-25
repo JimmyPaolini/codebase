@@ -20,6 +20,7 @@ jobs:
     env:
       OPENWIKI_PROVIDER: gemini
       OPENWIKI_MODEL: gemini-3.6-flash
+      OPENWIKI_GEMINI_API_KEY: ${{ secrets.OPENWIKI_GEMINI_API_KEY }}
       OPENWIKI_TELEMETRY_DISABLED: "true"
 
     steps:
