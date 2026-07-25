@@ -95,6 +95,7 @@
           "commands": [
             "nx run {projectName}:knip:check",
             "nx run {projectName}:fallow-dead-code",
+            "nx run {projectName}:jscpd:check",
             "nx run {projectName}:vulture:check"
           ],
           "parallel": true
@@ -103,6 +104,7 @@
           "commands": [
             "nx run {projectName}:knip:write",
             "nx run {projectName}:fallow-dead-code",
+            "nx run {projectName}:jscpd:check",
             "nx run {projectName}:vulture:write"
           ],
           "parallel": false
@@ -335,6 +337,30 @@
       "options": {
         "command": "gitleaks git --staged --verbose --redact --config configuration/gitleaks.toml --gitleaks-ignore-path configuration",
         "cwd": "{projectRoot}"
+      }
+    },
+    "jscpd": {
+      "cache": true,
+      "configurations": {
+        "check": {
+          "command": "jscpd --config configuration/jscpd.config.json --no-tips --reporters console,threshold applications packages tools scripts configuration infrastructure || true"
+        }
+      },
+      "defaultConfiguration": "check",
+      "description": "Run jscpd duplicate-code reporting and threshold status in advisory mode (never fails CI).",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{workspaceRoot}/applications/**/*",
+        "{workspaceRoot}/configuration/**/*",
+        "{workspaceRoot}/configuration/jscpd.config.json",
+        "{workspaceRoot}/infrastructure/**/*",
+        "{workspaceRoot}/packages/**/*",
+        "{workspaceRoot}/scripts/**/*",
+        "{workspaceRoot}/tools/**/*",
+        "shared-globals"
+      ],
+      "options": {
+        "cwd": "{workspaceRoot}"
       }
     },
     "knip": {

@@ -7,16 +7,20 @@
  *
  * Invoked by Husky's pre-commit hook via `npx lint-staged`.
  */
-import { relative } from "node:path";
+import path from "node:path";
 
+import { CONFORMANCE_PATTERNS } from "../tools/conformance/src/constants";
 import { SYNC_AGENT_SKILLS_FILES } from "../tools/synchronization/src/modules/agent-skills/agent-skills.constants";
 import { SYNC_CONFORMANCE_GENERATORS_FILES } from "../tools/synchronization/src/modules/conformance-generators/conformance-generators.constants";
 import { SYNC_CONVENTIONAL_CONFIG_FILES } from "../tools/synchronization/src/modules/conventional-config/conventional-config.constants";
 import { SYNC_PULL_REQUEST_TEMPLATE_FILES } from "../tools/synchronization/src/modules/pull-request-template/pull-request-template.constants";
-import { CONFORMANCE_PATTERNS } from "../tools/conformance/src/constants";
 
+/**
+ * Convert absolute staged paths into workspace-relative comma-separated paths
+ * for `nx affected --files`.
+ */
 function getPaths(files: string[]): string {
-  return files.map((file) => relative(process.cwd(), file)).join(",");
+  return files.map((file) => path.relative(process.cwd(), file)).join(",");
 }
 
 const config = {
@@ -77,7 +81,7 @@ const config = {
 
   // 📝 TypeScript / JavaScript source files
   // Runs format (oxfmt + prettier), lint (eslint + oxlint), typecheck, spell-check,
-  // and clean (Knip for JS/TS unused files, dependencies, and exports) on affected projects.
+  // and clean (Knip + jscpd advisory checks) on affected projects.
   // nx affected includes monorepo when root-level files change.
   "*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}": (files: string[]): string[] => {
     return [
