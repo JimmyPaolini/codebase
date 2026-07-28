@@ -440,6 +440,25 @@
       },
       "outputs": ["{workspaceRoot}/README.md"]
     },
+    "openwiki": {
+      "cache": false,
+      "configurations": {
+        "write": {
+          "commands": [
+            "source .env",
+            "pnpm exec openwiki code --update --print",
+            "rm -f CLAUDE.md"
+          ],
+          "parallel": false
+        }
+      },
+      "defaultConfiguration": "write",
+      "description": "Update OpenWiki content from code using the OpenWiki CLI (prints changes).",
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "openwiki-update": {
       "cache": false,
       "description": "Update OpenWiki content from code using the OpenWiki CLI (prints changes).",
