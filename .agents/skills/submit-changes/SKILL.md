@@ -78,36 +78,28 @@ Branch name format: `<type>/<scope>-<description>` (kebab-case, 2–4 keyword de
 
 2. Compose commit message: `<type>(<scope>): <gitmoji> <subject>` — single line, max 128 chars, no body/footer
 
-3. Validate signing configuration:
-
-   ```bash
-   bash scripts/git/check-commit-signing-configuration.sh
-   ```
-
-4. Commit with signing enabled:
+3. Commit with signing enabled:
 
    ```bash
    export GPG_TTY="$(tty)"
    git commit -S -m "<type>(<scope>): <gitmoji> <subject>"
    ```
 
-5. Verify the new commit signature:
+4. Verify the new commit signature:
 
    ```bash
    git verify-commit HEAD
    ```
+
+> ✅ **Best practice:** Let Husky run signing checks automatically. The pre-commit hook runs `check-commit-signing-configuration.sh`, and the pre-push hook runs `check-push-commit-signatures.sh`.
+
+> ⚠️ **Warning:** Do not invoke `scripts/git/check-push-commit-signatures.sh` directly during normal submits. It is designed for hook stdin input and can block or fail when run without ref-update data.
 
 ### If pre-commit hooks fail
 
 **Stop immediately.** Report the hook output so the user can see what failed. Do **NOT** apply fixes or proceed to push.
 
 ### If commit succeeds
-
-Re-check signatures before push:
-
-```bash
-bash scripts/git/check-push-commit-signatures.sh
-```
 
 Push to remote:
 
@@ -157,5 +149,5 @@ After completing all phases, print a summary table:
 - [rename-branch skill](../rename-branch/SKILL.md) — Rename non-conforming branches before commit/push
 - [commit-code skill](../commit-code/SKILL.md) — Commit message format, types, scopes, gitmoji
 - [create-pull-request skill](../create-pull-request/SKILL.md) — PR conventions and description template
-- [check-commit-signing-configuration.sh](../../../scripts/git/check-commit-signing-configuration.sh) — Validates signing prerequisites before commit
-- [check-push-commit-signatures.sh](../../../scripts/git/check-push-commit-signatures.sh) — Validates pushed commits are signed
+- [check-commit-signing-configuration.sh](../../../scripts/git/check-commit-signing-configuration.sh) — Pre-commit hook signing prerequisite check
+- [check-push-commit-signatures.sh](../../../scripts/git/check-push-commit-signatures.sh) — Pre-push hook commit signature validation

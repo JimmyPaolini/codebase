@@ -15,8 +15,22 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
+      actions: read
+      artifact-metadata: read
+      attestations: read
+      checks: read
+      code-quality: read
       contents: read
+      deployments: read
+      discussions: read
+      issues: write
+      models: read
+      packages: read
+      pages: read
       pull-requests: write
+      repository-projects: read
+      security-events: read
+      statuses: read
 
     steps:
       - name: 📥 Checkout Repository

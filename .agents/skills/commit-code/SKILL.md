@@ -219,13 +219,16 @@ Since footer sections are forbidden, commits should not include footers. Body mu
 Commits must also be GPG-signed and verified:
 
 ```bash
-bash scripts/git/check-commit-signing-configuration.sh
 export GPG_TTY="$(tty)"
 git commit -S -m "feat(monorepo): ✨ add new feature"
 git verify-commit HEAD
 ```
 
-Use the signing configuration check script first, then use `-S`, and fail immediately if `git verify-commit HEAD` does not succeed.
+Use `-S` and fail immediately if `git verify-commit HEAD` does not succeed.
+
+> ✅ **Best practice:** Let Husky run signing checks automatically in normal workflows. The pre-commit hook runs `check-commit-signing-configuration.sh` and the pre-push hook runs `check-push-commit-signatures.sh`.
+
+> ⚠️ **Warning:** Avoid manually running `scripts/git/check-push-commit-signatures.sh` in routine command-line flows. It is intended for pre-push hook stdin data and may fail or appear to hang when called directly.
 
 ### Common Pitfalls
 
@@ -266,11 +269,12 @@ All rules defined in [../commitlint.config.ts](../../../configuration/commitlint
 
 ## Validation
 
-Commit messages are validated by:
+Commit and signing policies are validated by:
 
-1. **Husky pre-commit hook** — Runs commitlint locally before commit
-2. **Husky pre-push hook** — Rejects unsigned or unverifiable commits before push
-3. **GitHub Actions CI** — Validates all commits in PRs
+1. **Husky pre-commit hook** — Validates signing configuration and staged-file checks before commit
+2. **Husky commit-msg hook** — Runs commitlint locally for commit message format
+3. **Husky pre-push hook** — Validates branch naming and rejects unsigned or unverifiable commits
+4. **GitHub Actions CI** — Validates commits and branch/PR conventions in pull requests
 
 Configuration files:
 
