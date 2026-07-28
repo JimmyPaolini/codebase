@@ -371,7 +371,12 @@ Guidelines for creating custom instruction files, skills, agents, and prompts fo
 
 ### Skills
 
-Specialized domain knowledge for working on specific systems or patterns:
+Specialized domain knowledge for working on specific systems or patterns. Install all skills
+with the [skills.sh](https://skills.sh) CLI:
+
+```bash
+npx skills add JimmyPaolini/codebase
+```
 
 <!-- agent-skills-table-of-contents start -->
 - **[backup-code](.agents/skills/backup-code/SKILL.md)**: "Create a safety backup before potentially destructive actions. Use when running risky git commands (reset, rebase, clean, restore, checkout with overwrite, force push), applying large sweeping edits, mass refactors, broad search-and-replace, generator rewrites, or any operation that may be hard to undo. Produces a recoverable snapshot via backup branch, stash, or both, and verifies recovery commands."
