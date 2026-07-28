@@ -29,6 +29,7 @@ const config: KnipConfig = {
     "diff", // Used by root scripts and shell checks
     "squawk",
     "gh", // GitHub CLI, used by scripts/orchestrate-agents.ts to run Copilot sessions
+    "openwiki",
   ],
 
   // devDependencies used via npx, CLI, or ESLint config (not directly imported)

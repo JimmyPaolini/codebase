@@ -6,6 +6,7 @@ allowBuilds:
   "@apollo/protobufjs": set this to true or false
   "@nestjs/core": true
   "@swc/core": true
+  better-sqlite3: true
   cpu-features: true
   esbuild: true
   nx: true
@@ -193,3 +194,4 @@ catalog:
   vitest: ^4.1.7
   yaml: ^2.9.0
   zod: ^4.4.3
+  openwiki: ^0.2.3

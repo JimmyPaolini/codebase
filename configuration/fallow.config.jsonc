@@ -103,6 +103,7 @@
     "license-checker",
     "lodash",
     "markdownlint-cli2",
+    "openwiki",
     "pg",
     "pino-pretty",
     "pluralize",
@@ -157,6 +158,7 @@
   "ignorePatterns": [
     "**/*.min.js",
     "**/.agents/skills/**/scripts/**",
+    "**/.agents/skills/**/scripts/**",
     "**/.claude/skills/**/scripts/**",
     "**/.github/skills/**/scripts/**",
     "**/.nx/**",
@@ -173,7 +175,6 @@
     "**/data/wikipedia/**",
     "**/data/wiktionary/**",
     "**/dist/**",
-    "**/.agents/skills/**/scripts/**",
     "**/helm/**/templates/**",
     "**/library.json",
     "**/node_modules/**",

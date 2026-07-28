@@ -103,7 +103,7 @@
     "cursor-global": false,
     "cursor-workspace": false,
     "windsurf": false
-},
+  },
   "chat.mcp.gallery.enabled": true,
   "chat.notifyWindowOnConfirmation": "always",
   "chat.notifyWindowOnResponseReceived": "always",
@@ -813,6 +813,7 @@
   "prettier.configPath": "configuration/prettier.config.ts",
   "python.analysis.referencesCodeLens": true,
   "python.analysis.typeCheckingMode": "standard",
+  "python.terminal.activateEnvironment": false,
   "python.testing.pytestArgs": ["."],
   "python.testing.pytestEnabled": true,
   "python.testing.unittestEnabled": true,
