@@ -18,14 +18,14 @@ This skill guides a systematic review and refresh of all documentation across th
 
 Documentation to review and update:
 
-| Path | Description |
-| ---- | ----------- |
-| `README.md` | Root monorepo README |
-| `documentation/**/*.md` | Core documentation files |
-| `AGENTS.md` | Workspace-level Copilot instructions — skill table must stay in sync |
-| `*/AGENTS.md` | Per-project Copilot instructions |
-| `*/README.md` | Project README files |
-| `.github/skills/**/SKILL.md` | Skill files (mirrored to `documentation/skills/`) |
+| Path                         | Description                                                          |
+| ---------------------------- | -------------------------------------------------------------------- |
+| `README.md`                  | Root monorepo README                                                 |
+| `documentation/**/*.md`      | Core documentation files                                             |
+| `AGENTS.md`                  | Workspace-level Copilot instructions — skill table must stay in sync |
+| `*/AGENTS.md`                | Per-project Copilot instructions                                     |
+| `*/README.md`                | Project README files                                                 |
+| `.github/skills/**/SKILL.md` | Skill files (mirrored to `documentation/skills/`)                    |
 
 ## Step-by-Step Workflow
 
@@ -33,11 +33,11 @@ Documentation to review and update:
 
 For each path in scope, read the documentation and cross-check it against the actual codebase. Classify every finding into one of three categories:
 
-| Category | Criteria | Action |
-| -------- | -------- | ------ |
-| **Deprecated** | Documents a feature, command, file, or API that no longer exists | **Remove** the section or file |
-| **Outdated** | Content exists but is inaccurate — wrong path, outdated command, incorrect description | **Update** to match current reality |
-| **Missing** | A feature, project, convention, or workflow exists in the codebase but is undocumented | **Create** new documentation |
+| Category       | Criteria                                                                               | Action                              |
+| -------------- | -------------------------------------------------------------------------------------- | ----------------------------------- |
+| **Deprecated** | Documents a feature, command, file, or API that no longer exists                       | **Remove** the section or file      |
+| **Outdated**   | Content exists but is inaccurate — wrong path, outdated command, incorrect description | **Update** to match current reality |
+| **Missing**    | A feature, project, convention, or workflow exists in the codebase but is undocumented | **Create** new documentation        |
 
 ### Phase 2 — Act
 
@@ -54,12 +54,7 @@ For each path in scope, read the documentation and cross-check it against the ac
    - New conventions, tools, or workflows not yet documented
    - Features documented in code comments but absent from markdown docs
 
-### Phase 3 — Submit
-
-If any changes were made, use the `submit-changes` skill to create a branch, commit, and open a PR with a `docs(documentation): 📝` commit message.
-
 ## References
 
 - [AGENTS.md](../../../AGENTS.md) — Workspace-level instructions
 - [documentation/](../../../documentation/) — Core documentation directory
-- [submit-changes](../submit-changes/SKILL.md) — Branch, commit, and PR workflow

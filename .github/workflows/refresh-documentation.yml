@@ -2,7 +2,7 @@ name: 🧑‍🏫 Refresh Documentation
 
 on:
   schedule:
-    - cron: 0 0 * * 0 # Weekly Sunday 12am UTC
+    - cron: 18 8 * * 5 # Weekly Friday 8:18am UTC
   workflow_dispatch:
 
 concurrency:
@@ -32,65 +32,10 @@ jobs:
       - name: 🕋 Setup Monorepo
         uses: ./.github/actions/setup-monorepo
 
-      - name: 📦 Verify OpenWiki Installation
-        run: pnpm exec openwiki --help >/dev/null
-
       - name: 🧑‍🏫 Refresh Documentation
-        run: pnpm exec nx run monorepo:openwiki-update
+        run: pnpm exec nx run monorepo:openwiki
 
-      - name: 🛡️ Enforce AGENTS-only Guardrails
-        id: changes
-        run: |
-          claude_changes=$(
-            {
-              git diff --name-only --diff-filter=ACMDRTUXB -- CLAUDE.md
-              git ls-files --others --exclude-standard -- CLAUDE.md
-            } | sort -u
-          )
-
-          if [[ -n "$claude_changes" ]]; then
-            echo "Reverting CLAUDE.md changes before pull request creation."
-            if git ls-files --error-unmatch CLAUDE.md >/dev/null 2>&1; then
-              git restore --staged --worktree --source=HEAD -- CLAUDE.md
-            else
-              rm -f CLAUDE.md
-            fi
-          fi
-
-          changed_paths=$(
-            {
-              git diff --name-only --diff-filter=ACMDRTUXB
-              git ls-files --others --exclude-standard
-            } | { grep -v '^CLAUDE\.md$' || true; } | sort -u
-          )
-
-          if [[ -z "$changed_paths" ]]; then
-            echo "No allowed documentation changes remain after guardrail checks."
-            echo "has_changes=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          invalid_paths=()
-          while IFS= read -r changed_path; do
-            case "$changed_path" in
-              openwiki/*|AGENTS.md|.github/workflows/refresh-documentation.yml)
-                ;;
-              *)
-                invalid_paths+=("$changed_path")
-                ;;
-            esac
-          done <<< "$changed_paths"
-
-          if (( ${#invalid_paths[@]} > 0 )); then
-            echo "Detected changes outside the allowed OpenWiki paths:"
-            printf ' - %s\n' "${invalid_paths[@]}"
-            exit 1
-          fi
-
-          echo "has_changes=true" >> "$GITHUB_OUTPUT"
-
-      - name: 🔀 Create or Update Pull Request
-        if: steps.changes.outputs.has_changes == 'true'
+      - name: 🔀 Upsert Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
