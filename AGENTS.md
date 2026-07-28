@@ -1,6 +1,4 @@
-## Monorepo Quick Reference
-
-**Nx monorepo (pnpm)** with strict TypeScript, React 19, and multiple applications.
+# Codebase Guidance
 
 ## Essential Commands
 
@@ -19,6 +17,27 @@ docker build --platform linux/amd64 -t myapp .
 kubectl get pods
 helm upgrade --install myrelease ./chart
 ```
+
+## Agent Workflow
+
+Use the [obra/superpowers](https://github.com/obra/superpowers) workflow for non-trivial features, refactors, and
+bugfixes so the work is clarified, planned, tracked, and implemented in a
+consistent way.
+
+1. Start with [using-superpowers](.agents/skills/using-superpowers/SKILL.md)
+   and move into [brainstorming](.agents/skills/brainstorming/SKILL.md)
+   when the request needs clarification.
+2. Turn the clarified request into a spec or implementation plan, then
+   create the issue graph when the work spans multiple tasks.
+3. Execute the plan with
+   [subagent-driven-development](.agents/skills/subagent-driven-development/SKILL.md)
+   or [executing-plans](.agents/skills/executing-plans/SKILL.md),
+   depending on whether subagents are available.
+4. Follow [test-driven-development](.agents/skills/test-driven-development/SKILL.md)
+   and finish with [validate-code](.agents/skills/validate-code/SKILL.md).
+
+Use the reference document for the full workflow, anti-patterns, and skill
+selection guidance.
 
 ## Projects
 
@@ -339,7 +358,9 @@ nx affected --target=test         # Only changed projects
 
 See [Testing Strategy](documentation/code-quality/testing-strategy.md) for patterns.
 
-## Instructions
+## Agent Context
+
+### Instructions
 
 Guidelines for creating custom instruction files, skills, agents, and prompts for GitHub Copilot. See [`.github/instructions/`](.github/instructions) for actual implementations:
 
@@ -348,7 +369,7 @@ Guidelines for creating custom instruction files, skills, agents, and prompts fo
 - `instructions.instructions.md`: Writing context-specific guidance
 - `prompt.instructions.md`: Designing reusable prompt templates
 
-## Skills
+### Skills
 
 Specialized domain knowledge for working on specific systems or patterns:
 
@@ -407,7 +428,7 @@ Specialized domain knowledge for working on specific systems or patterns:
 - **[writing-skills](.agents/skills/writing-skills/SKILL.md)**: Use when creating new skills, editing existing skills, or verifying skills work before deployment
 <!-- agent-skills-table-of-contents end -->
 
-## Agents
+### Agents
 
 <!-- custom-agents-table-of-contents start -->
 - **[ci-monitor-subagent](.github/agents/ci-monitor-subagent.agent.md)**: CI helper for /monitor-ci. Fetches CI status, retrieves fix details, or updates self-healing fixes. Executes one MCP tool call and returns the result.
