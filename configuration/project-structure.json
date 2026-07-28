@@ -461,6 +461,9 @@
         "name": "scripts"
       },
       {
+        "name": "skills.sh.json"
+      },
+      {
         "children": [
           {
             "ruleId": "monorepo-project"
