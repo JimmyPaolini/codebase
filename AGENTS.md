@@ -20,12 +20,9 @@ helm upgrade --install myrelease ./chart
 
 ## Agent Workflow
 
-Use the superpowers workflow for non-trivial features, refactors, and
+Use the [obra/superpowers](https://github.com/obra/superpowers) workflow for non-trivial features, refactors, and
 bugfixes so the work is clarified, planned, tracked, and implemented in a
 consistent way.
-
-Keep the high-level sequence short in this file and follow the detailed
-reference in [documentation/development/agent-workflows.md](documentation/development/agent-workflows.md):
 
 1. Start with [using-superpowers](.agents/skills/using-superpowers/SKILL.md)
    and move into [brainstorming](.agents/skills/brainstorming/SKILL.md)
