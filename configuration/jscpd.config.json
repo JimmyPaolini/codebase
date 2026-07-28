@@ -8,7 +8,8 @@
     "**/node_modules/**",
     "**/output/**",
     "**/pnpm-lock.yaml",
-    "**/tmp/**"
+    "**/tmp/**",
+    "tools/conformance/src/modules/*/templates/**"
   ],
   "minLines": 12,
   "minTokens": 24,
