@@ -92,6 +92,7 @@
             "nx run {projectName}:knip:check",
             "nx run {projectName}:fallow-dead-code",
             "nx run {projectName}:fallow-duplicates",
+            "nx run {projectName}:jscpd:check",
             "nx run {projectName}:vulture:check"
           ],
           "parallel": true
@@ -101,6 +102,7 @@
             "nx run {projectName}:knip:write",
             "nx run {projectName}:fallow-dead-code",
             "nx run {projectName}:fallow-duplicates",
+            "nx run {projectName}:jscpd:check",
             "nx run {projectName}:vulture:write"
           ],
           "parallel": false
@@ -335,6 +337,30 @@
         "cwd": "{projectRoot}"
       }
     },
+    "jscpd": {
+      "cache": true,
+      "configurations": {
+        "check": {
+          "command": "jscpd --config configuration/jscpd.config.json --no-tips --reporters console,threshold applications packages tools scripts configuration infrastructure || true"
+        }
+      },
+      "defaultConfiguration": "check",
+      "description": "Run jscpd duplicate-code reporting and threshold status in advisory mode (never fails CI).",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{workspaceRoot}/applications/**/*",
+        "{workspaceRoot}/configuration/**/*",
+        "{workspaceRoot}/configuration/jscpd.config.json",
+        "{workspaceRoot}/infrastructure/**/*",
+        "{workspaceRoot}/packages/**/*",
+        "{workspaceRoot}/scripts/**/*",
+        "{workspaceRoot}/tools/**/*",
+        "shared-globals"
+      ],
+      "options": {
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "knip": {
       "cache": true,
       "configurations": {
@@ -439,6 +465,34 @@
         "cwd": "{workspaceRoot}"
       },
       "outputs": ["{workspaceRoot}/README.md"]
+    },
+    "openwiki": {
+      "cache": false,
+      "configurations": {
+        "write": {
+          "commands": [
+            "source .env",
+            "pnpm exec openwiki code --update --print",
+            "rm -f CLAUDE.md"
+          ],
+          "parallel": false
+        }
+      },
+      "defaultConfiguration": "write",
+      "description": "Update OpenWiki content from code using the OpenWiki CLI (prints changes).",
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "openwiki-update": {
+      "cache": false,
+      "description": "Update OpenWiki content from code using the OpenWiki CLI (prints changes).",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "openwiki code --update --print",
+        "cwd": "{workspaceRoot}"
+      }
     },
     "orchestrate-agents": {
       "cache": false,
