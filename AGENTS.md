@@ -1,3 +1,5 @@
+# Monorepo Guidance
+
 ## Monorepo Quick Reference
 
 **Nx monorepo (pnpm)** with strict TypeScript, React 19, and multiple applications.
@@ -22,9 +24,33 @@ helm upgrade --install myrelease ./chart
 
 See [Tool Execution Model](documentation/development/tool-execution-model.md) for when to use Nx vs. direct tools.
 
+## Required Workflow for Feature Work
+
+Use the superpowers workflow for non-trivial features, refactors, and
+bugfixes so the work is clarified, planned, tracked, and implemented in a
+consistent way.
+
+Keep the high-level sequence short in this file and follow the detailed
+reference in [documentation/development/agent-workflows.md](documentation/development/agent-workflows.md):
+
+1. Start with [using-superpowers](.agents/skills/using-superpowers/SKILL.md)
+   and move into [brainstorming](.agents/skills/brainstorming/SKILL.md)
+   when the request needs clarification.
+2. Turn the clarified request into a spec or implementation plan, then
+   create the issue graph when the work spans multiple tasks.
+3. Execute the plan with
+   [subagent-driven-development](.agents/skills/subagent-driven-development/SKILL.md)
+   or [executing-plans](.agents/skills/executing-plans/SKILL.md),
+   depending on whether subagents are available.
+4. Follow [test-driven-development](.agents/skills/test-driven-development/SKILL.md)
+   and finish with [validate-code](.agents/skills/validate-code/SKILL.md).
+
+Use the reference document for the full workflow, anti-patterns, and skill
+selection guidance.
+
 ## Skills
 
-Specialized domain knowledge for working on specific systems or patterns:
+Use these skills as part of the workflow above when they fit the task:
 
 <!-- agent-skills-table-of-contents start -->
 - **[backup-code](.agents/skills/backup-code/SKILL.md)**: "Create a safety backup before potentially destructive actions. Use when running risky git commands (reset, rebase, clean, restore, checkout with overwrite, force push), applying large sweeping edits, mass refactors, broad search-and-replace, generator rewrites, or any operation that may be hard to undo. Produces a recoverable snapshot via backup branch, stash, or both, and verifies recovery commands."
