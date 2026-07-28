@@ -45,6 +45,7 @@ const config: KnipConfig = {
     "commitlint-plugin-gitmoji", // commitlint plugin, referenced as string in plugins array
     "commitlint-plugin-tense", // commitlint plugin, referenced as string in plugins array
     "markdownlint-cli2", // Markdown linter CLI, invoked via nx:run-commands in project.json
+    "jscpd", // Duplicate-code detection CLI, invoked via nx:run-commands in project.json
     "pino-pretty", // Referenced as string transport target in LoggerService — knip can't trace string references
     "stylelint-config-standard", // stylelint preset, referenced as string in extends array
     "stylelint-config-tailwindcss", // stylelint preset, referenced as string in extends array
