@@ -29,25 +29,22 @@ npx skills add JimmyPaolini/codebase
 
 ### Directory Consolidation
 
-**Problem**: Skills currently exist in two identical directories:
+**Current state (already correct):**
 
-- `.github/skills/` — canonical GitHub Copilot path (per `agent-skills.instructions.md`)
-- `.agents/skills/` — skills.sh mapping for GitHub Copilot
-
-**Solution**: Keep `.github/skills/` as the physical directory (canonical source). Replace
-`.agents/skills/` with a symlink pointing to `../.github/skills`.
+- `.agents/skills/` — physical directory, git-tracked, canonical source of truth
+- `.github/skills/` — symlink to `../.agents/skills`, not tracked in git
 
 ```
-.github/skills/         ← physical directory (canonical source of truth)
+.agents/skills/         ← physical directory (canonical source of truth, git-tracked)
   brainstorming/SKILL.md
   commit-code/SKILL.md
   ...
 
-.agents/skills          → symlink to ../.github/skills
+.github/skills          → symlink to ../.agents/skills (for GitHub Copilot compatibility)
 ```
 
-Git natively commits symlinks. The skills.sh CLI follows symlinks when discovering SKILL.md
-files. GitHub Copilot reads `.github/skills/` directly.
+The symlink is already committed in git (`git ls-files .github/skills` returns `.github/skills`).
+No directory changes needed — the structure is already correct.
 
 ### `skills.sh.json` Registry Configuration
 
@@ -76,8 +73,15 @@ section of `AGENTS.md` and the root `.github/copilot-instructions.md`.
 
 ### Missing Skills Fix
 
-Two skills were not discovered in a `--list` run (50 of 52 found). Investigate and fix their
-SKILL.md frontmatter (`name` + `description` required).
+Two skills are not discovered by the skills.sh CLI because their `description` frontmatter
+values contain `: ` (colon-space), which YAML interprets as a nested mapping without quotes.
+
+**Affected skills:**
+
+- `.agents/skills/handle-errors/SKILL.md` — description contains `patterns: Zod`
+- `.agents/skills/testing-strategy/SKILL.md` — description contains `conventions: unit`
+
+**Fix**: Wrap both description values in double quotes.
 
 ## Files Changed
 
