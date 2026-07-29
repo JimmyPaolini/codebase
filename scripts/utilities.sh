@@ -1,9 +1,15 @@
 #!/bin/bash
 
-echo "🫜 Validating monorepo root directory..."
-if [ "$(basename "$(pwd)")" != "monorepo" ] || [ ! -f "package.json" ] || ! grep -q '"name": "monorepo"' package.json 2>/dev/null; then
-  echo "❌ Error: This script must be run from the monorepo root directory"
-  echo "📁 Current directory: $(pwd)"
+echo "🫜 Validating workspace root directory..."
+current_directory="$(pwd)"
+workspace_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+
+if [ -z "$workspace_root" ] || [ "$current_directory" != "$workspace_root" ] || [ ! -f "package.json" ] || [ ! -f "./scripts/utilities.sh" ]; then
+  echo "❌ Error: This script must be run from the workspace/worktree root directory"
+  echo "📁 Current directory: $current_directory"
+  if [ -n "$workspace_root" ]; then
+    echo "📁 Detected git root: $workspace_root"
+  fi
   exit 1
 fi
 
@@ -19,7 +25,7 @@ else
   echo "⚠️  .env file not found (will be created by environment.sh)"
 fi
 
-echo "👟 Making all monorepo scripts executable..."
+echo "👟 Making all workspace scripts executable..."
 find . -type f -name '*.sh' -print0 | xargs -0 chmod +x || true
 
 get_git_commit_hash() {
