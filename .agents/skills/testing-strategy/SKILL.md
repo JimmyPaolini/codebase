@@ -1,6 +1,6 @@
 ---
 name: testing-strategy
-description: Use monorepo testing conventions: unit, integration, end-to-end test naming and Nx commands. Use when adding tests or recommending test coverage.
+description: "Use monorepo testing conventions: unit, integration, end-to-end test naming and Nx commands. Use when adding tests or recommending test coverage."
 license: MIT
 ---
 

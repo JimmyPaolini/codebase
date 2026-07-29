@@ -54,6 +54,7 @@ const config: KnipConfig = {
     "tslib", // TypeScript helper library, implicit runtime dependency for compiled TS
     "unplugin-swc", // Vite plugin for SWC transformation with emitDecoratorMetadata support (caelundas/vitest.config.ts)
     "squawk-cli",
+    "skills", // skills.sh CLI, invoked via pnpm exec skills for skill management
   ],
 
   // Allow exports that are only used in the same file (common for barrel re-exports)
@@ -128,9 +129,8 @@ const config: KnipConfig = {
 
     // lexico-components: Shared React component library (shadcn/ui)
     "packages/lexico-components": {
-      entry: ["src/index.ts", "src/components/**/*.tsx", "vite.config.mts"],
-      ignoreDependencies: ["tailwindcss-animate"],
-      project: ["src/**/*.ts", "src/**/*.tsx", "vite.config.mts"],
+      entry: ["src/components/**/*.tsx"],
+      project: ["src/**/*.ts", "src/**/*.tsx"],
     },
 
     // lexico-entities: Shared TypeORM entities

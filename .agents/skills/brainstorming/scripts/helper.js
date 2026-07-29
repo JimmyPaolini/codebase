@@ -9,15 +9,15 @@
   }
   if (typeof module !== "undefined" && module.exports) {
     module.exports = {
-      MAX_RECONNECT_MS,
-      MIN_RECONNECT_MS,
       nextReconnectDelay,
+      MIN_RECONNECT_MS,
+      MAX_RECONNECT_MS,
       TOMBSTONE_AFTER_MS,
     };
   }
 
   // Everything below is browser-only; bail out when loaded in Node (tests).
-  if (globalThis.window === undefined) return;
+  if (typeof window === "undefined") return;
 
   let ws = null;
   let eventQueue = [];
@@ -30,24 +30,28 @@
   function sessionKey() {
     try {
       return (
-        globalThis.sessionStorage &&
-        globalThis.sessionStorage.getItem("brainstorm-session-key")
+        window.sessionStorage &&
+        window.sessionStorage.getItem("brainstorm-session-key")
       );
-    } catch {}
+    } catch (e) {}
     return null;
   }
 
   function websocketUrl() {
     const key = sessionKey();
-    return `ws://${globalThis.location.host}${key ? `/?key=${encodeURIComponent(key)}` : ""}`;
+    return (
+      "ws://" +
+      window.location.host +
+      (key ? "/?key=" + encodeURIComponent(key) : "")
+    );
   }
 
   function reloadAfterRecovery() {
     const key = sessionKey();
     if (key) {
-      globalThis.location.replace(`/?key=${encodeURIComponent(key)}`);
+      window.location.replace("/?key=" + encodeURIComponent(key));
     } else {
-      globalThis.location.reload();
+      window.location.reload();
     }
   }
 
@@ -56,10 +60,10 @@
     const el = document.querySelector(".status");
     if (!el) return;
     const map = {
-      connected: ["Connected", "var(--success)"],
       connecting: ["Connecting…", "var(--text-tertiary)"],
-      disconnected: ["Disconnected", "var(--error)"],
+      connected: ["Connected", "var(--success)"],
       reconnecting: ["Reconnecting…", "var(--warning)"],
+      disconnected: ["Disconnected", "var(--error)"],
     };
     const [text, color] = map[state] || map.disconnected;
     el.textContent = text;
@@ -81,7 +85,7 @@
       '<h2 style="margin:0 0 .5rem;font-weight:600">Companion paused</h2>' +
       '<p style="margin:0;opacity:.85">This brainstorm companion has stopped. ' +
       "Ask your coding agent to bring it back — this page reconnects automatically.</p></div>";
-    if (document.body) document.body.append(el);
+    if (document.body) document.body.appendChild(el);
   }
 
   function connect() {
@@ -92,7 +96,7 @@
     setStatus(everConnected ? "reconnecting" : "connecting");
     ws = new WebSocket(websocketUrl());
 
-    ws.addEventListener("open", () => {
+    ws.onopen = () => {
       const recovered = tombstoneShown;
       everConnected = true;
       disconnectedSince = null;
@@ -105,19 +109,19 @@
       // port) — reload through the keyed bootstrap when possible so the cookie is
       // refreshed before the visible URL returns to bare /.
       if (recovered) reloadAfterRecovery();
-    });
+    };
 
     ws.onmessage = (msg) => {
       let data;
       try {
         data = JSON.parse(msg.data);
-      } catch {
+      } catch (e) {
         return;
       }
-      if (data.type === "reload") globalThis.location.reload();
+      if (data.type === "reload") window.location.reload();
     };
 
-    ws.addEventListener("close", () => {
+    ws.onclose = () => {
       ws = null;
       if (disconnectedSince === null) disconnectedSince = Date.now();
       if (Date.now() - disconnectedSince >= TOMBSTONE_AFTER_MS) {
@@ -128,13 +132,13 @@
       }
       reconnectTimer = setTimeout(connect, reconnectDelay);
       reconnectDelay = nextReconnectDelay(reconnectDelay, MAX_RECONNECT_MS);
-    });
+    };
 
     // Let onclose own reconnection so we don't schedule it twice.
     ws.onerror = () => {
       try {
         ws.close();
-      } catch {}
+      } catch (e) {}
     };
   }
 
@@ -153,17 +157,17 @@
     if (!target) return;
 
     sendEvent({
+      type: "click",
+      text: target.textContent.trim(),
       choice: target.dataset.choice,
       id: target.id || null,
-      text: target.textContent.trim(),
-      type: "click",
     });
   });
 
   // Frame UI: selection tracking
-  globalThis.selectedChoice = null;
+  window.selectedChoice = null;
 
-  globalThis.toggleSelect = function (el) {
+  window.toggleSelect = function (el) {
     const container = el.closest(".options") || el.closest(".cards");
     const multi = container && container.dataset.multiselect !== undefined;
     if (container && !multi) {
@@ -176,14 +180,14 @@
     } else {
       el.classList.add("selected");
     }
-    globalThis.selectedChoice = el.dataset.choice;
+    window.selectedChoice = el.dataset.choice;
   };
 
   // Expose API for explicit use
-  globalThis.brainstorm = {
+  window.brainstorm = {
+    send: sendEvent,
     choice: (value, metadata = {}) =>
       sendEvent({ type: "choice", value, ...metadata }),
-    send: sendEvent,
   };
 
   connect();

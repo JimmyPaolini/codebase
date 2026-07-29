@@ -1,16 +1,40 @@
-const crypto = require('node:crypto');
-const fs = require('node:fs');
-const http = require('node:http');
-const path = require('node:path');
+const crypto = require('crypto');
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
 // ========== WebSocket Protocol (RFC 6455) ==========
 
-const OPCODES = { CLOSE: 0x08, PING: 0x09, PONG: 0x0A, TEXT: 0x01 };
+const OPCODES = { TEXT: 0x01, CLOSE: 0x08, PING: 0x09, PONG: 0x0A };
 const WS_MAGIC = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 const MAX_FRAME_PAYLOAD_BYTES = 10 * 1024 * 1024;
 
 function computeAcceptKey(clientKey) {
   return crypto.createHash('sha1').update(clientKey + WS_MAGIC).digest('base64');
+}
+
+function encodeFrame(opcode, payload) {
+  const fin = 0x80;
+  const len = payload.length;
+  let header;
+
+  if (len < 126) {
+    header = Buffer.alloc(2);
+    header[0] = fin | opcode;
+    header[1] = len;
+  } else if (len < 65536) {
+    header = Buffer.alloc(4);
+    header[0] = fin | opcode;
+    header[1] = 126;
+    header.writeUInt16BE(len, 2);
+  } else {
+    header = Buffer.alloc(10);
+    header[0] = fin | opcode;
+    header[1] = 127;
+    header.writeBigUInt64BE(BigInt(len), 2);
+  }
+
+  return Buffer.concat([header, payload]);
 }
 
 function decodeFrame(buffer) {
@@ -53,31 +77,7 @@ function decodeFrame(buffer) {
     data[i] = buffer[dataOffset + i] ^ mask[i % 4];
   }
 
-  return { bytesConsumed: totalLen, opcode, payload: data };
-}
-
-function encodeFrame(opcode, payload) {
-  const fin = 0x80;
-  const len = payload.length;
-  let header;
-
-  if (len < 126) {
-    header = Buffer.alloc(2);
-    header[0] = fin | opcode;
-    header[1] = len;
-  } else if (len < 65536) {
-    header = Buffer.alloc(4);
-    header[0] = fin | opcode;
-    header[1] = 126;
-    header.writeUInt16BE(len, 2);
-  } else {
-    header = Buffer.alloc(10);
-    header[0] = fin | opcode;
-    header[1] = 127;
-    header.writeBigUInt64BE(BigInt(len), 2);
-  }
-
-  return Buffer.concat([header, payload]);
+  return { opcode, payload: data, bytesConsumed: totalLen };
 }
 
 // ========== Configuration ==========
@@ -90,9 +90,9 @@ function preferredPort() {
   if (process.env.BRAINSTORM_PORT) return Number(process.env.BRAINSTORM_PORT);
   if (PORT_FILE) {
     try {
-      const p = Number(fs.readFileSync(PORT_FILE, 'utf8').trim());
+      const p = Number(fs.readFileSync(PORT_FILE, 'utf-8').trim());
       if (Number.isInteger(p) && p > 1023 && p < 65536) return p;
-    } catch { /* no prior port recorded */ }
+    } catch (e) { /* no prior port recorded */ }
   }
   return randomPort();
 }
@@ -121,39 +121,39 @@ let ownerPid = process.env.BRAINSTORM_OWNER_PID ? Number(process.env.BRAINSTORM_
 // Persisted alongside the port (BRAINSTORM_TOKEN_FILE) so a restart keeps the
 // same key and an already-open tab's cookie still validates.
 const TOKEN_FILE = process.env.BRAINSTORM_TOKEN_FILE || null;
-function chmodOwnerOnly(file) {
-  try { fs.chmodSync(file, 0o600); } catch { /* best effort */ }
-}
-
 function generateToken() {
   return crypto.randomBytes(32).toString('hex');
 }
 
+function chmodOwnerOnly(file) {
+  try { fs.chmodSync(file, 0o600); } catch (e) { /* best effort */ }
+}
+
 function initialToken() {
   if (process.env.BRAINSTORM_TOKEN) {
-    return { source: 'env', value: process.env.BRAINSTORM_TOKEN };
+    return { value: process.env.BRAINSTORM_TOKEN, source: 'env' };
   }
   if (TOKEN_FILE) {
     try {
-      const t = fs.readFileSync(TOKEN_FILE, 'utf8').trim();
+      const t = fs.readFileSync(TOKEN_FILE, 'utf-8').trim();
       if (/^[0-9a-f]{32,}$/i.test(t)) {
         chmodOwnerOnly(TOKEN_FILE);
-        return { source: 'file', value: t };
+        return { value: t, source: 'file' };
       }
-    } catch { /* no prior token recorded */ }
+    } catch (e) { /* no prior token recorded */ }
   }
-  return { source: 'generated', value: generateToken() };
+  return { value: generateToken(), source: 'generated' };
 }
 
 const tokenInfo = initialToken();
 let TOKEN = tokenInfo.value;
 let tokenSource = tokenInfo.source;
-let COOKIE_NAME = `brainstorm-key-${  PORT}`; // refined to the actual bound port in onListen
+let COOKIE_NAME = 'brainstorm-key-' + PORT; // refined to the actual bound port in onListen
 
 const MIME_TYPES = {
-  '.css': 'text/css', '.gif': 'image/gif', '.html': 'text/html',
-  '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg', '.js': 'application/javascript',
-  '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml'
+  '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript',
+  '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.svg': 'image/svg+xml'
 };
 
 // ========== Templates and Constants ==========
@@ -199,48 +199,69 @@ location.replace('/');
 </html>`;
 }
 
-const frameTemplate = fs.readFileSync(path.join(__dirname, 'frame-template.html'), 'utf8');
-const helperScript = fs.readFileSync(path.join(__dirname, 'helper.js'), 'utf8');
-const helperInjection = `<script>\n${  helperScript  }\n</script>`;
+const frameTemplate = fs.readFileSync(path.join(__dirname, 'frame-template.html'), 'utf-8');
+const helperScript = fs.readFileSync(path.join(__dirname, 'helper.js'), 'utf-8');
+const helperInjection = '<script>\n' + helperScript + '\n</script>';
 
 // ========== Helper Functions ==========
 
-function brandMarkup() {
-  const version = escapeHtmlText(SUPERPOWERS_VERSION);
-  const text = SUPERPOWERS_TELEMETRY_DISABLED
-    ? `Prime Radiant Superpowers v${  version}`
-    : `Superpowers v${  version}`;
-  const logo = SUPERPOWERS_TELEMETRY_DISABLED
-    ? ''
-    : `<img class="brand-logo" src="${  SUPERPOWERS_BRAND_IMAGE_URL  }?v=${  encodeURIComponent(SUPERPOWERS_VERSION)  }" alt="Prime Radiant" referrerpolicy="no-referrer" decoding="async">`;
+function readSuperpowersVersion() {
+  const root = path.join(__dirname, '../../..');
+  const manifests = [
+    path.join(root, 'package.json'),
+    path.join(root, '.codex-plugin/plugin.json')
+  ];
 
-  return `<div class="brand"><a href="https://github.com/obra/superpowers">${  logo  }<span class="brand-copy">${  text  }</span></a></div>`;
-}
-
-function browserLauncherForPlatform(url, {
-  env = process.env,
-  osRelease = require('node:os').release(),
-  platform = process.platform
-} = {}) {
-  const isWSL = platform === 'linux' && /microsoft/i.test(osRelease);
-  if (platform === 'darwin') return { args: [url], bin: 'open' };
-  if (platform === 'win32' || isWSL) {
-    return { args: ['url.dll,FileProtocolHandler', url], bin: 'rundll32.exe' };
+  for (const manifest of manifests) {
+    try {
+      const data = JSON.parse(fs.readFileSync(manifest, 'utf-8'));
+      if (data.version) return String(data.version);
+    } catch (e) {
+      // Packaged Codex plugins omit package.json; try the next manifest.
+    }
   }
-  if (env.DISPLAY || env.WAYLAND_DISPLAY) return { args: [url], bin: 'xdg-open' };
-  return null;
+
+  return 'unknown';
 }
 
-function companionUrl() {
-  return `http://${  urlHostForHttp(URL_HOST)  }:${  PORT  }/?key=${  TOKEN}`;
+function isTruthyEnv(value) {
+  if (!value) return false;
+  const normalized = String(value).trim().toLowerCase();
+  if (!normalized) return false;
+  return !['0', 'false', 'no', 'off'].includes(normalized);
 }
 
 function escapeHtmlText(value) {
   return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function brandMarkup() {
+  const version = escapeHtmlText(SUPERPOWERS_VERSION);
+  const text = SUPERPOWERS_TELEMETRY_DISABLED
+    ? 'Prime Radiant Superpowers v' + version
+    : 'Superpowers v' + version;
+  const logo = SUPERPOWERS_TELEMETRY_DISABLED
+    ? ''
+    : '<img class="brand-logo" src="' + SUPERPOWERS_BRAND_IMAGE_URL + '?v=' + encodeURIComponent(SUPERPOWERS_VERSION) + '" alt="Prime Radiant" referrerpolicy="no-referrer" decoding="async">';
+
+  return '<div class="brand"><a href="https://github.com/obra/superpowers">' + logo + '<span class="brand-copy">' + text + '</span></a></div>';
+}
+
+function renderBranding(html) {
+  return html.split('<!-- BRANDING -->').join(brandMarkup());
+}
+
+function isFullDocument(html) {
+  const trimmed = html.trimStart().toLowerCase();
+  return trimmed.startsWith('<!doctype') || trimmed.startsWith('<html');
+}
+
+function wrapInFrame(content) {
+  return renderBranding(frameTemplate).replace('<!-- CONTENT -->', content);
 }
 
 function getNewestScreen() {
@@ -249,12 +270,119 @@ function getNewestScreen() {
     .map(f => {
       const fp = path.join(CONTENT_DIR, f);
       if (!isRegularFileInsideContentDir(fp)) return null;
-      return { mtime: fs.statSync(fp).mtime.getTime(), path: fp };
+      return { path: fp, mtime: fs.statSync(fp).mtime.getTime() };
     })
     .filter(Boolean)
     .sort((a, b) => b.mtime - a.mtime);
   return files.length > 0 ? files[0].path : null;
 }
+
+function urlHostForHttp(host) {
+  const h = String(host);
+  if (h.startsWith('[') && h.endsWith(']')) return h;
+  return h.includes(':') ? '[' + h + ']' : h;
+}
+
+function companionUrl() {
+  return 'http://' + urlHostForHttp(URL_HOST) + ':' + PORT + '/?key=' + TOKEN;
+}
+
+function browserLauncherForPlatform(url, {
+  platform = process.platform,
+  osRelease = require('os').release(),
+  env = process.env
+} = {}) {
+  const isWSL = platform === 'linux' && /microsoft/i.test(osRelease);
+  if (platform === 'darwin') return { bin: 'open', args: [url] };
+  if (platform === 'win32' || isWSL) {
+    return { bin: 'rundll32.exe', args: ['url.dll,FileProtocolHandler', url] };
+  }
+  if (env.DISPLAY || env.WAYLAND_DISPLAY) return { bin: 'xdg-open', args: [url] };
+  return null;
+}
+
+function isRegularFileInsideContentDir(filePath) {
+  let stat, realContentDir, realFilePath;
+  try {
+    stat = fs.lstatSync(filePath);
+    if (stat.isSymbolicLink()) return false;
+    if (!stat.isFile()) return false;
+    if (stat.nlink !== 1) return false;
+    realContentDir = fs.realpathSync(CONTENT_DIR);
+    realFilePath = fs.realpathSync(filePath);
+  } catch (e) {
+    return false;
+  }
+  return realFilePath.startsWith(realContentDir + path.sep);
+}
+
+// ========== Authentication ==========
+
+function timingSafeEqualStr(a, b) {
+  const ab = Buffer.from(String(a));
+  const bb = Buffer.from(String(b));
+  if (ab.length !== bb.length) return false;
+  return crypto.timingSafeEqual(ab, bb);
+}
+
+function parseCookies(header) {
+  const out = {};
+  if (!header) return out;
+  for (const part of header.split(';')) {
+    const eq = part.indexOf('=');
+    if (eq < 0) continue;
+    out[part.slice(0, eq).trim()] = part.slice(eq + 1).trim();
+  }
+  return out;
+}
+
+// A request is authorized if it carries the session key as ?key= or as the
+// session cookie. Both are compared in constant time.
+function isAuthorized(req) {
+  const q = req.url.indexOf('?');
+  if (q >= 0) {
+    const params = new URLSearchParams(req.url.slice(q + 1));
+    if (params.has('key')) {
+      const key = params.get('key');
+      return Boolean(key && timingSafeEqualStr(key, TOKEN));
+    }
+  }
+  const cookie = parseCookies(req.headers['cookie'])[COOKIE_NAME];
+  if (cookie && timingSafeEqualStr(cookie, TOKEN)) return true;
+  return false;
+}
+
+function pathnameOf(url) {
+  const q = url.indexOf('?');
+  return q >= 0 ? url.slice(0, q) : url;
+}
+
+function queryKey(url) {
+  const q = url.indexOf('?');
+  if (q < 0) return null;
+  return new URLSearchParams(url.slice(q + 1)).get('key');
+}
+
+function securityHeaders(headers = {}) {
+  return {
+    'Referrer-Policy': 'no-referrer',
+    'Cache-Control': 'no-store',
+    'X-Frame-Options': 'DENY',
+    'Content-Security-Policy': "frame-ancestors 'none'",
+    'Cross-Origin-Resource-Policy': 'same-origin',
+    ...headers
+  };
+}
+
+function isAllowedWebSocketOrigin(req) {
+  const origin = req.headers.origin;
+  if (!origin) return true;
+  const host = req.headers.host;
+  if (!host) return false;
+  return origin === 'http://' + host;
+}
+
+// ========== HTTP Request Handler ==========
 
 function handleRequest(req, res) {
   if (!isAuthorized(req)) {
@@ -268,7 +396,7 @@ function handleRequest(req, res) {
   // authenticate after bootstrap. HttpOnly keeps it away from page scripts; the
   // WebSocket Origin check below is what blocks cross-origin localhost injection.
   res.setHeader('Set-Cookie',
-    `${COOKIE_NAME  }=${  TOKEN  }; HttpOnly; SameSite=Strict; Path=/`);
+    COOKIE_NAME + '=' + TOKEN + '; HttpOnly; SameSite=Strict; Path=/');
 
   const pathname = pathnameOf(req.url);
   const keyFromQuery = queryKey(req.url);
@@ -278,11 +406,11 @@ function handleRequest(req, res) {
   } else if (req.method === 'GET' && pathname === '/') {
     const screenFile = getNewestScreen();
     let html = screenFile
-      ? (raw => isFullDocument(raw) ? raw : wrapInFrame(raw))(fs.readFileSync(screenFile, 'utf8'))
+      ? (raw => isFullDocument(raw) ? raw : wrapInFrame(raw))(fs.readFileSync(screenFile, 'utf-8'))
       : waitingPage();
 
     if (html.includes('</body>')) {
-      html = html.replace('</body>', `${helperInjection  }\n</body>`);
+      html = html.replace('</body>', helperInjection + '\n</body>');
     } else {
       html += helperInjection;
     }
@@ -309,160 +437,9 @@ function handleRequest(req, res) {
   }
 }
 
-function isAllowedWebSocketOrigin(req) {
-  const origin = req.headers.origin;
-  if (!origin) return true;
-  const host = req.headers.host;
-  if (!host) return false;
-  return origin === `http://${  host}`;
-}
-
-// A request is authorized if it carries the session key as ?key= or as the
-// session cookie. Both are compared in constant time.
-function isAuthorized(req) {
-  const q = req.url.indexOf('?');
-  if (q !== -1) {
-    const params = new URLSearchParams(req.url.slice(q + 1));
-    if (params.has('key')) {
-      const key = params.get('key');
-      return Boolean(key && timingSafeEqualStr(key, TOKEN));
-    }
-  }
-  const cookie = parseCookies(req.headers['cookie'])[COOKIE_NAME];
-  if (cookie && timingSafeEqualStr(cookie, TOKEN)) return true;
-  return false;
-}
-
-function isFullDocument(html) {
-  const trimmed = html.trimStart().toLowerCase();
-  return trimmed.startsWith('<!doctype') || trimmed.startsWith('<html');
-}
-
-function isRegularFileInsideContentDir(filePath) {
-  let realContentDir, realFilePath, stat;
-  try {
-    stat = fs.lstatSync(filePath);
-    if (stat.isSymbolicLink()) return false;
-    if (!stat.isFile()) return false;
-    if (stat.nlink !== 1) return false;
-    realContentDir = fs.realpathSync(CONTENT_DIR);
-    realFilePath = fs.realpathSync(filePath);
-  } catch {
-    return false;
-  }
-  return realFilePath.startsWith(realContentDir + path.sep);
-}
-
-function isTruthyEnv(value) {
-  if (!value) return false;
-  const normalized = String(value).trim().toLowerCase();
-  if (!normalized) return false;
-  return !['0', 'false', 'no', 'off'].includes(normalized);
-}
-
-function parseCookies(header) {
-  const out = {};
-  if (!header) return out;
-  for (const part of header.split(';')) {
-    const eq = part.indexOf('=');
-    if (eq === -1) continue;
-    out[part.slice(0, eq).trim()] = part.slice(eq + 1).trim();
-  }
-  return out;
-}
-
-// ========== Authentication ==========
-
-function pathnameOf(url) {
-  const q = url.indexOf('?');
-  return q === -1 ? url : url.slice(0, q);
-}
-
-function queryKey(url) {
-  const q = url.indexOf('?');
-  if (q === -1) return null;
-  return new URLSearchParams(url.slice(q + 1)).get('key');
-}
-
-function readSuperpowersVersion() {
-  const root = path.join(__dirname, '../../..');
-  const manifests = [
-    path.join(root, 'package.json'),
-    path.join(root, '.codex-plugin/plugin.json')
-  ];
-
-  for (const manifest of manifests) {
-    try {
-      const data = JSON.parse(fs.readFileSync(manifest, 'utf8'));
-      if (data.version) return String(data.version);
-    } catch {
-      // Packaged Codex plugins omit package.json; try the next manifest.
-    }
-  }
-
-  return 'unknown';
-}
-
-function renderBranding(html) {
-  return html.split('<!-- BRANDING -->').join(brandMarkup());
-}
-
-function securityHeaders(headers = {}) {
-  return {
-    'Cache-Control': 'no-store',
-    'Content-Security-Policy': "frame-ancestors 'none'",
-    'Cross-Origin-Resource-Policy': 'same-origin',
-    'Referrer-Policy': 'no-referrer',
-    'X-Frame-Options': 'DENY',
-    ...headers
-  };
-}
-
-function timingSafeEqualStr(a, b) {
-  const ab = Buffer.from(String(a));
-  const bb = Buffer.from(String(b));
-  if (ab.length !== bb.length) return false;
-  return crypto.timingSafeEqual(ab, bb);
-}
-
-function urlHostForHttp(host) {
-  const h = String(host);
-  if (h.startsWith('[') && h.endsWith(']')) return h;
-  return h.includes(':') ? `[${  h  }]` : h;
-}
-
-// ========== HTTP Request Handler ==========
-
-function wrapInFrame(content) {
-  return renderBranding(frameTemplate).replace('<!-- CONTENT -->', content);
-}
-
 // ========== WebSocket Connection Handling ==========
 
 const clients = new Set();
-
-function broadcast(msg) {
-  const frame = encodeFrame(OPCODES.TEXT, Buffer.from(JSON.stringify(msg)));
-  for (const socket of clients) {
-    try { socket.write(frame); } catch { clients.delete(socket); }
-  }
-}
-
-function handleMessage(text) {
-  let event;
-  try {
-    event = JSON.parse(text);
-  } catch (error) {
-    console.error('Failed to parse WebSocket message:', error.message);
-    return;
-  }
-  touchActivity();
-  console.log(JSON.stringify({ source: 'user-event', ...event }));
-  if (event && event.choice) {
-    const eventsFile = path.join(STATE_DIR, 'events');
-    fs.appendFileSync(eventsFile, `${JSON.stringify(event)  }\n`);
-  }
-}
 
 function handleUpgrade(req, socket) {
   if (!isAuthorized(req) || !isAllowedWebSocketOrigin(req)) { socket.destroy(); return; }
@@ -472,10 +449,10 @@ function handleUpgrade(req, socket) {
 
   const accept = computeAcceptKey(key);
   socket.write(
-    `HTTP/1.1 101 Switching Protocols\r\n` +
-    `Upgrade: websocket\r\n` +
-    `Connection: Upgrade\r\n` +
-    `Sec-WebSocket-Accept: ${  accept  }\r\n\r\n`
+    'HTTP/1.1 101 Switching Protocols\r\n' +
+    'Upgrade: websocket\r\n' +
+    'Connection: Upgrade\r\n' +
+    'Sec-WebSocket-Accept: ' + accept + '\r\n\r\n'
   );
 
   let buffer = Buffer.alloc(0);
@@ -487,7 +464,7 @@ function handleUpgrade(req, socket) {
       let result;
       try {
         result = decodeFrame(buffer);
-      } catch {
+      } catch (e) {
         socket.end(encodeFrame(OPCODES.CLOSE, Buffer.alloc(0)));
         clients.delete(socket);
         return;
@@ -496,22 +473,18 @@ function handleUpgrade(req, socket) {
       buffer = buffer.slice(result.bytesConsumed);
 
       switch (result.opcode) {
-        case OPCODES.CLOSE: {
+        case OPCODES.TEXT:
+          handleMessage(result.payload.toString());
+          break;
+        case OPCODES.CLOSE:
           socket.end(encodeFrame(OPCODES.CLOSE, Buffer.alloc(0)));
           clients.delete(socket);
           return;
-        }
-        case OPCODES.PING: {
+        case OPCODES.PING:
           socket.write(encodeFrame(OPCODES.PONG, result.payload));
           break;
-        }
-        case OPCODES.PONG: {
+        case OPCODES.PONG:
           break;
-        }
-        case OPCODES.TEXT: {
-          handleMessage(result.payload.toString());
-          break;
-        }
         default: {
           const closeBuf = Buffer.alloc(2);
           closeBuf.writeUInt16BE(1003);
@@ -527,6 +500,29 @@ function handleUpgrade(req, socket) {
   socket.on('error', () => clients.delete(socket));
 }
 
+function handleMessage(text) {
+  let event;
+  try {
+    event = JSON.parse(text);
+  } catch (e) {
+    console.error('Failed to parse WebSocket message:', e.message);
+    return;
+  }
+  touchActivity();
+  console.log(JSON.stringify({ source: 'user-event', ...event }));
+  if (event && event.choice) {
+    const eventsFile = path.join(STATE_DIR, 'events');
+    fs.appendFileSync(eventsFile, JSON.stringify(event) + '\n');
+  }
+}
+
+function broadcast(msg) {
+  const frame = encodeFrame(OPCODES.TEXT, Buffer.from(JSON.stringify(msg)));
+  for (const socket of clients) {
+    try { socket.write(frame); } catch (e) { clients.delete(socket); }
+  }
+}
+
 // Best-effort: open the user's browser the first time a screen is actually ready
 // to show. Skips when disabled, on a non-loopback (remote) bind, or when a
 // browser is already connected. Override the launcher with BRAINSTORM_OPEN_CMD.
@@ -538,17 +534,17 @@ function maybeOpenBrowser() {
   if (HOST !== '127.0.0.1' && HOST !== 'localhost') return;
   if (clients.size > 0) return; // the user already opened it
   const url = companionUrl(); // must carry the key or the gate 403s it
-  const cp = require('node:child_process');
+  const cp = require('child_process');
   // Operator-provided launcher: run as given (this env var is trusted operator input).
   if (process.env.BRAINSTORM_OPEN_CMD) {
-    try { cp.exec(`${process.env.BRAINSTORM_OPEN_CMD  } ${  JSON.stringify(url)}`, () => {}); } catch { /* best effort */ }
+    try { cp.exec(process.env.BRAINSTORM_OPEN_CMD + ' ' + JSON.stringify(url), () => {}); } catch (e) { /* best effort */ }
     return;
   }
   // Platform launchers: pass the URL as an argv element via execFile (no shell),
   // so a url-host containing shell metacharacters can't inject a command.
   const launcher = browserLauncherForPlatform(url);
   if (!launcher) return; // headless: nothing to open
-  try { cp.execFile(launcher.bin, launcher.args, () => {}); } catch { /* best effort */ }
+  try { cp.execFile(launcher.bin, launcher.args, () => {}); } catch (e) { /* best effort */ }
 }
 
 // ========== Activity Tracking ==========
@@ -602,14 +598,14 @@ function startServer() {
       if (!fs.existsSync(filePath)) return; // file was deleted
       touchActivity();
 
-      if (knownFiles.has(filename)) {
-        console.log(JSON.stringify({ file: filePath, type: 'screen-updated' }));
-      } else {
+      if (!knownFiles.has(filename)) {
         knownFiles.add(filename);
         const eventsFile = path.join(STATE_DIR, 'events');
         if (fs.existsSync(eventsFile)) fs.unlinkSync(eventsFile);
-        console.log(JSON.stringify({ file: filePath, type: 'screen-added' }));
+        console.log(JSON.stringify({ type: 'screen-added', file: filePath }));
         maybeOpenBrowser();
+      } else {
+        console.log(JSON.stringify({ type: 'screen-updated', file: filePath }));
       }
 
       broadcast({ type: 'reload' });
@@ -618,26 +614,26 @@ function startServer() {
   watcher.on('error', (err) => console.error('fs.watch error:', err.message));
 
   function shutdown(reason) {
-    console.log(JSON.stringify({ reason, type: 'server-stopped' }));
+    console.log(JSON.stringify({ type: 'server-stopped', reason }));
     const infoFile = path.join(STATE_DIR, 'server-info');
     if (fs.existsSync(infoFile)) fs.unlinkSync(infoFile);
     fs.writeFileSync(
       path.join(STATE_DIR, 'server-stopped'),
-      `${JSON.stringify({ reason, timestamp: Date.now() })  }\n`
+      JSON.stringify({ reason, timestamp: Date.now() }) + '\n'
     );
     watcher.close();
     clearInterval(lifecycleCheck);
     // Close any upgraded WebSocket sockets so server.close() can complete and
     // the process actually exits instead of lingering on an open connection.
     for (const socket of clients) {
-      try { socket.destroy(); } catch { /* already gone */ }
+      try { socket.destroy(); } catch (e) { /* already gone */ }
     }
     server.close(() => process.exit(0));
   }
 
   function ownerAlive() {
     if (!ownerPid) return true;
-    try { process.kill(ownerPid, 0); return true; } catch (error) { return error.code === 'EPERM'; }
+    try { process.kill(ownerPid, 0); return true; } catch (e) { return e.code === 'EPERM'; }
   }
 
   // Periodically exit if the owner process died or we've been idle too long.
@@ -652,9 +648,9 @@ function startServer() {
   // Disable monitoring and rely on the idle timeout instead.
   if (ownerPid) {
     try { process.kill(ownerPid, 0); }
-    catch (error) {
-      if (error.code !== 'EPERM') {
-        console.log(JSON.stringify({ pid: ownerPid, reason: 'dead at startup', type: 'owner-pid-invalid' }));
+    catch (e) {
+      if (e.code !== 'EPERM') {
+        console.log(JSON.stringify({ type: 'owner-pid-invalid', pid: ownerPid, reason: 'dead at startup' }));
         ownerPid = null;
       }
     }
@@ -668,28 +664,28 @@ function startServer() {
     // Cookie name keys on the ACTUAL bound port (may differ from the preferred
     // one after an EADDRINUSE fallback) so it can't collide with another server's
     // cookie in the shared localhost jar.
-    COOKIE_NAME = `brainstorm-key-${  PORT}`;
+    COOKIE_NAME = 'brainstorm-key-' + PORT;
     // Record the bound port AND token so the next restart of this session reuses
     // them — but ONLY when we got our preferred port. On a fallback we bound a
     // *different* port because someone else holds the preferred one; persisting
     // would overwrite the shared files and strand that other session's open tab.
     if (PORT_FILE && !triedFallback) {
-      try { fs.writeFileSync(PORT_FILE, String(PORT)); } catch { /* best effort */ }
+      try { fs.writeFileSync(PORT_FILE, String(PORT)); } catch (e) { /* best effort */ }
       if (TOKEN_FILE) {
         try {
           fs.writeFileSync(TOKEN_FILE, TOKEN, { mode: 0o600 });
           chmodOwnerOnly(TOKEN_FILE);
-        } catch { /* best effort */ }
+        } catch (e) { /* best effort */ }
       }
     }
     const info = JSON.stringify({
-      host: HOST, idle_timeout_ms: IDLE_TIMEOUT_MS, port: Number(PORT),
-      screen_dir: CONTENT_DIR, state_dir: STATE_DIR,
-      type: 'server-started', url: companionUrl(), url_host: URL_HOST
+      type: 'server-started', port: Number(PORT), host: HOST,
+      url_host: URL_HOST, url: companionUrl(),
+      screen_dir: CONTENT_DIR, state_dir: STATE_DIR, idle_timeout_ms: IDLE_TIMEOUT_MS
     });
     console.log(info);
     // server-info embeds the key — keep it owner-only.
-    fs.writeFileSync(path.join(STATE_DIR, 'server-info'), `${info  }\n`, { mode: 0o600 });
+    fs.writeFileSync(path.join(STATE_DIR, 'server-info'), info + '\n', { mode: 0o600 });
   }
 
   server.on('error', (err) => {
@@ -718,10 +714,10 @@ if (require.main === module) {
 }
 
 module.exports = {
-  browserLauncherForPlatform,
   computeAcceptKey,
-  decodeFrame,
   encodeFrame,
-  MAX_FRAME_PAYLOAD_BYTES,
-  OPCODES
+  decodeFrame,
+  browserLauncherForPlatform,
+  OPCODES,
+  MAX_FRAME_PAYLOAD_BYTES
 };

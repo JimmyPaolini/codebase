@@ -13,31 +13,9 @@
  * Requires: graphviz (dot) installed on system
  */
 
-const { execSync } = require("node:child_process");
-const fs = require("node:fs");
-const path = require("node:path");
-
-function combineGraphs(blocks, skillName) {
-  const bodies = blocks.map((block, i) => {
-    const body = extractGraphBody(block.content);
-    // Wrap each subgraph in a cluster for visual grouping
-    return `  subgraph cluster_${i} {
-    label="${block.name}";
-    ${body
-      .split("\n")
-      .map((line) => `  ${line}`)
-      .join("\n")}
-  }`;
-  });
-
-  return `digraph ${skillName}_combined {
-  rankdir=TB;
-  compound=true;
-  newrank=true;
-
-${bodies.join("\n\n")}
-}`;
-}
+const fs = require("fs");
+const path = require("path");
+const { execSync } = require("child_process");
 
 function extractDotBlocks(markdown) {
   const blocks = [];
@@ -51,7 +29,7 @@ function extractDotBlocks(markdown) {
     const nameMatch = content.match(/digraph\s+(\w+)/);
     const name = nameMatch ? nameMatch[1] : `graph_${blocks.length + 1}`;
 
-    blocks.push({ content, name });
+    blocks.push({ name, content });
   }
 
   return blocks;
@@ -65,9 +43,45 @@ function extractGraphBody(dotContent) {
   let body = match[1];
 
   // Remove rankdir (we'll set it once at the top level)
-  body = body.replaceAll(/^\s*rankdir\s*=\s*\w+\s*;?\s*$/gm, "");
+  body = body.replace(/^\s*rankdir\s*=\s*\w+\s*;?\s*$/gm, "");
 
   return body.trim();
+}
+
+function combineGraphs(blocks, skillName) {
+  const bodies = blocks.map((block, i) => {
+    const body = extractGraphBody(block.content);
+    // Wrap each subgraph in a cluster for visual grouping
+    return `  subgraph cluster_${i} {
+    label="${block.name}";
+    ${body
+      .split("\n")
+      .map((line) => "  " + line)
+      .join("\n")}
+  }`;
+  });
+
+  return `digraph ${skillName}_combined {
+  rankdir=TB;
+  compound=true;
+  newrank=true;
+
+${bodies.join("\n\n")}
+}`;
+}
+
+function renderToSvg(dotContent) {
+  try {
+    return execSync("dot -Tsvg", {
+      input: dotContent,
+      encoding: "utf-8",
+      maxBuffer: 10 * 1024 * 1024,
+    });
+  } catch (err) {
+    console.error("Error running dot:", err.message);
+    if (err.stderr) console.error(err.stderr.toString());
+    return null;
+  }
 }
 
 function main() {
@@ -91,7 +105,7 @@ function main() {
 
   const skillDir = path.resolve(skillDirArg);
   const skillFile = path.join(skillDir, "SKILL.md");
-  const skillName = path.basename(skillDir).replaceAll("-", "_");
+  const skillName = path.basename(skillDir).replace(/-/g, "_");
 
   if (!fs.existsSync(skillFile)) {
     console.error(`Error: ${skillFile} not found`);
@@ -108,7 +122,7 @@ function main() {
     process.exit(1);
   }
 
-  const markdown = fs.readFileSync(skillFile, "utf8");
+  const markdown = fs.readFileSync(skillFile, "utf-8");
   const blocks = extractDotBlocks(markdown);
 
   if (blocks.length === 0) {
@@ -156,20 +170,6 @@ function main() {
   }
 
   console.log(`\nOutput: ${outputDir}/`);
-}
-
-function renderToSvg(dotContent) {
-  try {
-    return execSync("dot -Tsvg", {
-      encoding: "utf-8",
-      input: dotContent,
-      maxBuffer: 10 * 1024 * 1024,
-    });
-  } catch (error) {
-    console.error("Error running dot:", error.message);
-    if (error.stderr) console.error(error.stderr.toString());
-    return null;
-  }
 }
 
 main();
