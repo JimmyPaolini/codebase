@@ -56,6 +56,9 @@ jobs:
           uv lock --upgrade
           uv lock --upgrade --project applications/affirmations
 
+      - name: 🤹 Update Skills
+        run: pnpm exec skills update --yes
+
       - name: 🔍 Detect Upgrades
         id: check
         run: |
@@ -109,6 +112,7 @@ jobs:
             - Update pnpm lockfile
             - Update Python to latest stable 3.x
             - Update Python dependencies across all projects
+            - Update vendored skills from their upstream sources
 
             ## 🧪 Testing
 

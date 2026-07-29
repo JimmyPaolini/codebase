@@ -195,3 +195,4 @@ catalog:
   yaml: ^2.9.0
   zod: ^4.4.3
   openwiki: ^0.2.3
+  skills: ^1.5.20

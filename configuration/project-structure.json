@@ -461,6 +461,9 @@
         "name": "scripts"
       },
       {
+        "name": "skills-lock.json"
+      },
+      {
         "children": [
           {
             "ruleId": "monorepo-project"
