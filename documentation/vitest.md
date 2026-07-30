@@ -1,6 +1,6 @@
 # Vitest Configuration
 
-This monorepo uses a shared base Vitest configuration to maintain consistency across projects and ensure code quality standards.
+This codebase uses a shared base Vitest configuration to maintain consistency across projects and ensure code quality standards.
 
 ## Overview
 
@@ -90,7 +90,7 @@ nx affected -t test
 # Run tests with coverage reports
 nx affected -t test --coverage
 
-# Test all projects in the monorepo
+# Test all projects in the codebase
 nx run-many -t test --all
 
 # Test with parallelization (default: 3 projects at once)
@@ -208,7 +208,7 @@ Common patterns to exclude from coverage:
 ### Minimal Setup
 
 1. Create `vitest.config.ts` in project root
-2. Add dependency (if not present in monorepo root `package.json`):
+2. Add dependency (if not present in codebase root `package.json`):
 
    ```bash
    pnpm add -D vitest @vitest/coverage-v8

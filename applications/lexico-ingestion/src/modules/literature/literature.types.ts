@@ -1,6 +1,6 @@
 // 🏷️ Types
 
-import type { Author, Text } from "@monorepo/lexico-entities";
+import type { Author, Text } from "@codebase/lexico-entities";
 import type { PhrasingContent } from "mdast";
 
 /**

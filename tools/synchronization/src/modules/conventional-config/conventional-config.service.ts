@@ -74,7 +74,7 @@ export class ConventionalConfigService {
     ) as ReleaseConfig;
   }
 
-  /** Resolves the monorepo root from this file location. */
+  /** Resolves the codebase root from this file location. */
   private resolveWorkspaceRoot(): string {
     const currentFilePath = fileURLToPath(import.meta.url);
     const currentFileDirectory = path.dirname(currentFilePath);

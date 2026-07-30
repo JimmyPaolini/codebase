@@ -19,8 +19,8 @@ All projects use strict TypeScript with comprehensive automated quality checks:
 nx run-many --target=analyze-code --all
 
 # Check for unused code (review before using :write)
-nx run monorepo:knip
-nx run monorepo:knip:write  # auto-removes unused code — use with caution
+nx run codebase:knip
+nx run codebase:knip:write  # auto-removes unused code — use with caution
 
 # Run affected projects only
 nx affected --target=analyze-code

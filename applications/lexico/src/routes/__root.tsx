@@ -24,8 +24,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
   useSidebar,
-} from "@monorepo/lexico-components";
-import applicationCss from "@monorepo/lexico-components/styles/globals.css?url";
+} from "@codebase/lexico-components";
+import applicationCss from "@codebase/lexico-components/styles/globals.css?url";
 
 import { Logo } from "../components/layout";
 

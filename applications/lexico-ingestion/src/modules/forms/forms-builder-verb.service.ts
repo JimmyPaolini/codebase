@@ -7,7 +7,7 @@ import {
   type formPersonValues,
   type Lexeme,
   ParticipleForm,
-} from "@monorepo/lexico-entities";
+} from "@codebase/lexico-entities";
 
 import { FormsBuilderGuardsService } from "./forms-builder-guards.service";
 import { FormsTransientWordsService } from "./forms-transient-words.service";

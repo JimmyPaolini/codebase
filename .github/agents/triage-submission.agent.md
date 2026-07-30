@@ -24,7 +24,7 @@ user-invocable: true
 
 # Triage Submission Failures
 
-Diagnose and fix failures from the Husky pre-commit, commit-msg, and pre-push hooks in this monorepo.
+Diagnose and fix failures from the Husky pre-commit, commit-msg, and pre-push hooks in this codebase.
 
 ## When to Use
 
@@ -43,7 +43,7 @@ Diagnose and fix failures from the Husky pre-commit, commit-msg, and pre-push ho
 File: [configuration/.husky/pre-commit](../../../configuration/.husky/pre-commit)
 
 ```sh
-nx run monorepo:lint-staged
+nx run codebase:lint-staged
 # resolves to:
 NODE_OPTIONS='--import=tsx' lint-staged --config configuration/lint-staged.config.ts --continue-on-error
 ```
@@ -61,7 +61,7 @@ nx affected --target=<targets> --configuration=check --files=<comma-separated-st
 File: [configuration/.husky/commit-msg](../../../configuration/.husky/commit-msg)
 
 ```sh
-nx run monorepo:commitlint --edit=$1
+nx run codebase:commitlint --edit=$1
 # resolves to:
 NODE_OPTIONS='--import=tsx' commitlint --config configuration/commitlint.config.ts --edit <msg-file>
 ```
@@ -71,7 +71,7 @@ NODE_OPTIONS='--import=tsx' commitlint --config configuration/commitlint.config.
 File: [configuration/.husky/pre-push](../../../configuration/.husky/pre-push)
 
 ```sh
-nx run monorepo:validate-branch-name
+nx run codebase:validate-branch-name
 # resolves to:
 validate-branch-name
 # reads config from: validate-branch-name.config.cjs
@@ -92,8 +92,8 @@ Config: [validate-branch-name.config.cjs](../../../validate-branch-name.config.c
 | `*.yml, *.yaml` (not pnpm-lock)                                                  | `format,yaml-lint,spell-check`                                         |
 | `**/package.json`                                                                | `./scripts/check-lockfile.sh` (direct script, not Nx)                  |
 | `pnpm-workspace.yaml`                                                            | `./scripts/check-lockfile.sh`                                          |
-| `configuration/knip.config.ts`                                                   | `nx run monorepo:clean:check`                                          |
-| `.vscode/extensions.json`, `.devcontainer/local/devcontainer.json`               | `nx run monorepo:sync-vscode-extensions:check`                         |
+| `configuration/knip.config.ts`                                                   | `nx run codebase:clean:check`                                          |
+| `.vscode/extensions.json`, `.devcontainer/local/devcontainer.json`               | `nx run codebase:sync-vscode-extensions:check`                         |
 | `.devcontainer/cloud/devcontainer.json`, `.devcontainer/local/devcontainer.json` | `nx run synchronization:start:devcontainer-configuration-check`        |
 | Conventional config files (see lint-staged.config.ts)                            | `nx run synchronization:start:conventional-config-check`               |
 | PR template files                                                                | `nx run synchronization:start:pull-request-template-check`             |
@@ -122,7 +122,7 @@ This file is written automatically after every commit attempt (git-ignored, work
 Identify from the output:
 
 - Which **Nx target** failed (e.g., `format`, `lint`, `typecheck`, `spell-check`)
-- Which **project(s)** failed (e.g., `lexico`, `caelundas`, `monorepo`)
+- Which **project(s)** failed (e.g., `lexico`, `caelundas`, `codebase`)
 - The **specific error messages** from the underlying tool
 
 ### Step 3: Locate Relevant Configuration
@@ -258,7 +258,7 @@ pnpm exec nx affected --target=clean --configuration=write --files=<staged-files
 pnpm exec nx run synchronization:start:agent-skills-write
 pnpm exec nx run synchronization:start:conventional-config-write
 pnpm exec nx run synchronization:start:pull-request-template-write
-pnpm exec nx run monorepo:sync-vscode-extensions:write
+pnpm exec nx run codebase:sync-vscode-extensions:write
 pnpm exec nx run synchronization:start:devcontainer-configuration-write
 ```
 
@@ -283,7 +283,7 @@ pnpm exec nx affected --target=clean --configuration=check --files=<staged-files
 pnpm exec nx run synchronization:start:agent-skills-check
 pnpm exec nx run synchronization:start:conventional-config-check
 pnpm exec nx run synchronization:start:pull-request-template-check
-pnpm exec nx run monorepo:sync-vscode-extensions:check
+pnpm exec nx run codebase:sync-vscode-extensions:check
 pnpm exec nx run synchronization:start:devcontainer-configuration-check
 ```
 
@@ -376,7 +376,7 @@ Read `configuration/commitlint.config.ts` for the full rule set before amending.
 | `lexico-components` | Shared React/shadcn component library |
 | `lexico-entities` | Shared TypeORM entities and GraphQL types |
 | `lexico-ingestion` | Data ingestion scripts for Lexico |
-| `monorepo` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
+| `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
 | `no-release` | Escape hatch: suppress semantic-release for any commit type |
 | `packages` | Changes spanning multiple shared packages in packages/ |
 | `release` | Version bumps and release commits generated by semantic-release |
@@ -443,9 +443,9 @@ Remaining Actions
 
 ### Hooks
 
-- [configuration/.husky/pre-commit](../../../configuration/.husky/pre-commit) — runs `nx run monorepo:lint-staged`
-- [configuration/.husky/commit-msg](../../../configuration/.husky/commit-msg) — runs `nx run monorepo:commitlint`
-- [configuration/.husky/pre-push](../../../configuration/.husky/pre-push) — runs `nx run monorepo:validate-branch-name`
+- [configuration/.husky/pre-commit](../../../configuration/.husky/pre-commit) — runs `nx run codebase:lint-staged`
+- [configuration/.husky/commit-msg](../../../configuration/.husky/commit-msg) — runs `nx run codebase:commitlint`
+- [configuration/.husky/pre-push](../../../configuration/.husky/pre-push) — runs `nx run codebase:validate-branch-name`
 - [configuration/lint-staged.config.ts](../../../configuration/lint-staged.config.ts) — file-pattern → Nx target mapping
 - [validate-branch-name.config.cjs](../../../validate-branch-name.config.cjs) — branch name regex, error message, exempt patterns
 - [project.json](../../../project.json) — `lint-staged`, `commitlint`, and `validate-branch-name` target definitions

@@ -1,15 +1,15 @@
 services:
   devcontainer:
     image: mcr.microsoft.com/devcontainers/typescript-node:22-bookworm
-    container_name: monorepo-devcontainer
+    container_name: codebase-devcontainer
     privileged: true
     volumes:
-      - ../..:/workspaces/monorepo:cached
-      - monorepo-node-modules:/workspaces/monorepo/node_modules
-      - monorepo-pnpm:/root/.local/share/pnpm
-      - monorepo-docker:/var/lib/docker
+      - ../..:/workspaces/codebase:cached
+      - codebase-node-modules:/workspaces/codebase/node_modules
+      - codebase-pnpm:/root/.local/share/pnpm
+      - codebase-docker:/var/lib/docker
     env_file:
-      # The monorepo root level .env file (copied from .env.default in CI)
+      # The codebase root level .env file (copied from .env.default in CI)
       - ../../.env
     deploy:
       resources:
@@ -18,9 +18,9 @@ services:
     command: sleep infinity
 
 volumes:
-  monorepo-node-modules:
-    name: monorepo-node-modules
-  monorepo-pnpm:
-    name: monorepo-pnpm
-  monorepo-docker:
-    name: monorepo-docker
+  codebase-node-modules:
+    name: codebase-node-modules
+  codebase-pnpm:
+    name: codebase-pnpm
+  codebase-docker:
+    name: codebase-docker

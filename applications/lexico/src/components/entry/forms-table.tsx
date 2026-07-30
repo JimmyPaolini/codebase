@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { cn } from "@monorepo/lexico-components";
+import { cn } from "@codebase/lexico-components";
 
 import { FormCell } from "./form-cell";
 

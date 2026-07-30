@@ -1,6 +1,6 @@
 /**
  * Stylelint Configuration
- * Purpose: CSS linting with Tailwind CSS v3 support for all projects in the monorepo
+ * Purpose: CSS linting with Tailwind CSS v3 support for all projects in the codebase
  * Usage (Check): nx run <project>:stylelint
  * Usage (Fix): nx run <project>:stylelint --configuration=write
  * CI Workflow: .github/workflows/analyze-code.yml

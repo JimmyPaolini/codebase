@@ -21,5 +21,5 @@ export const DEVCONTAINER_CLOUD_ONLY_KEYS = new Set(["mounts"]);
 
 /** Keys within remoteEnv that are environment-specific and preserved from cloud config. */
 export const DEVCONTAINER_REMOTE_ENVIRONMENT_PRESERVED_KEYS = new Set([
-  "MONOREPO_ENVIRONMENT",
+  "CODEBASE_ENVIRONMENT",
 ]);

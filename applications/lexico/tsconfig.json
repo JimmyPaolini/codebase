@@ -10,13 +10,13 @@
     "outDir": "../../dist/out-tsc",
     "paths": {
       "@/*": ["../../packages/lexico-components/src/*"],
-      "@monorepo/lexico-components": [
+      "@codebase/lexico-components": [
         "../../packages/lexico-components/src/index.ts"
       ],
+      "codebase/configuration/*": ["../../configuration/*"],
       "eslint-plugin-better-max-params": [
         "../../configuration/types/eslint-plugin-better-max-params/index.d.ts"
       ],
-      "monorepo/configuration/*": ["../../configuration/*"],
       "~/*": ["./src/*"]
     },
     "strict": true,

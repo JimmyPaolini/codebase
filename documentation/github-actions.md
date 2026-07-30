@@ -1,14 +1,14 @@
 # GitHub Actions CI/CD
 
-This document describes the CI/CD pipeline architecture for the monorepo.
+This document describes the CI/CD pipeline architecture for the codebase.
 
 ## Overview
 
-The monorepo uses 11 GitHub Actions workflows and 1 composite action, all located in `.github/`. Every workflow uses the shared [`setup-monorepo`](#composite-action-setup-monorepo) composite action for consistent environment setup and Nx caching.
+The codebase uses 11 GitHub Actions workflows and 1 composite action, all located in `.github/`. Every workflow uses the shared [`setup-codebase`](#composite-action-setup-codebase) composite action for consistent environment setup and Nx caching.
 
-## Composite Action: setup-monorepo
+## Composite Action: setup-codebase
 
-**Location:** `.github/actions/setup-monorepo/action.yml`
+**Location:** `.github/actions/setup-codebase/action.yml`
 
 All workflows call this composite action after checkout. It provides:
 
@@ -33,8 +33,8 @@ All workflows call this composite action after checkout. It provides:
   with:
     fetch-depth: 0
 
-- name: 🕋 Setup Monorepo
-  uses: ./.github/actions/setup-monorepo
+- name: 🕋 Setup Codebase
+  uses: ./.github/actions/setup-codebase
 ```
 
 ---
@@ -98,7 +98,7 @@ All workflows call this composite action after checkout. It provides:
 
 |Check|Command / Tool|
 |---|---|
-|🔍 Gitleaks|`pnpm exec nx run monorepo:gitleaks --configuration=ci`|
+|🔍 Gitleaks|`pnpm exec nx run codebase:gitleaks --configuration=ci`|
 |🐍 Bandit (Python)|`pnpm exec nx affected --target=bandit --parallel=3`|
 |📦 Dependency Audit|`pnpm exec nx affected --target=scan-dependencies --parallel=3`|
 |🏗 Trivy (Infrastructure)|`aquasecurity/trivy-action@v0.36.0` on `infrastructure/terraform/` (severity: `CRITICAL,HIGH`; runs on schedule or when Terraform files changed)|
@@ -164,7 +164,7 @@ All workflows call this composite action after checkout. It provides:
 
 **Jobs:**
 
-- **make-devcontainer** - Validates VSCode extensions sync, builds the dev container image using `devcontainers/ci@v0.3`, pushes to GHCR (`ghcr.io/jimmypaolini/monorepo-devcontainer`) only on push to `main`, then runs `.devcontainer/scripts/test-devcontainer.sh` inside the container
+- **make-devcontainer** - Validates VSCode extensions sync, builds the dev container image using `devcontainers/ci@v0.3`, pushes to GHCR (`ghcr.io/jimmypaolini/codebase-devcontainer`) only on push to `main`, then runs `.devcontainer/scripts/test-devcontainer.sh` inside the container
 
 **Permissions:** `contents: read`, `packages: write`
 
@@ -180,7 +180,7 @@ All workflows call this composite action after checkout. It provides:
 
 **Jobs:**
 
-- **copilot-setup-steps** - Runs `setup-monorepo`, imports the repository GPG signing key, enables commit signing, and authenticates the GitHub CLI (`gh auth login`) for use by Copilot agents
+- **copilot-setup-steps** - Runs `setup-codebase`, imports the repository GPG signing key, enables commit signing, and authenticates the GitHub CLI (`gh auth login`) for use by Copilot agents
 
 **Required secrets for Copilot cloud agents:**
 
@@ -202,7 +202,7 @@ All workflows call this composite action after checkout. It provides:
 
 **Jobs:**
 
-- **remove-deprecations** - Closes any existing `chore/monorepo-remove-deprecations` PR, runs `pnpm exec nx run monorepo:clean:write` (knip) to remove unused code/exports/dependencies, then opens a new GPG-signed PR on the `chore/monorepo-remove-deprecations` branch with labels `automated` assigned to `JimmyPaolini`
+- **remove-deprecations** - Closes any existing `chore/codebase-remove-deprecations` PR, runs `pnpm exec nx run codebase:clean:write` (knip) to remove unused code/exports/dependencies, then opens a new GPG-signed PR on the `chore/codebase-remove-deprecations` branch with labels `automated` assigned to `JimmyPaolini`
 
 **Permissions:** `contents: write`, `pull-requests: write`
 
@@ -232,7 +232,7 @@ All workflows call this composite action after checkout. It provides:
   - Clean repo: no changed paths remained and the guardrail reported `has_changes=false`.
   - Allowed change: a temporary file under `openwiki/` was detected and the guardrail reported `has_changes=true`.
   - Disallowed path: a temporary file outside the allowlist produced a non-zero exit and listed the invalid path.
-- **Expected output when changes exist:** OpenWiki writes documentation updates under `openwiki/**` and may also update `AGENTS.md` or `.github/workflows/refresh-documentation.yml`, then opens or updates the `docs/monorepo-refresh-documentation` PR with the `docs(documentation): 📝 refresh documentation with openwiki` commit message.
+- **Expected output when changes exist:** OpenWiki writes documentation updates under `openwiki/**` and may also update `AGENTS.md` or `.github/workflows/refresh-documentation.yml`, then opens or updates the `docs/codebase-refresh-documentation` PR with the `docs(documentation): 📝 refresh documentation with openwiki` commit message.
 - **Expected output when nothing changes:** the PR creation/update step is skipped when `has_changes=false` and no PR is created or updated.
 - **Evidence:** see issue #111 comment: https://github.com/JimmyPaolini/codebase/issues/111#issuecomment-5080422933
 - **Troubleshooting:** if the run fails with a missing-key error, verify the `OPENWIKI_GEMINI_API_KEY` secret is present and correctly mapped to `GEMINI_API_KEY` in the workflow environment. If the guardrail fails, inspect the diff for files outside `openwiki/**`, `AGENTS.md`, or `.github/workflows/refresh-documentation.yml`. `CLAUDE.md` is explicitly reverted before the allowlist check.
@@ -247,7 +247,7 @@ All workflows call this composite action after checkout. It provides:
 
 **Jobs:**
 
-- **upgrade-dependencies** - Upgrades pnpm (self-update), Node.js (via nvm LTS, writes `.nvmrc`), Python (via uv), all Node.js dependencies (`nx run monorepo:upgrade-dependencies:write`), and Python dependencies (`uv lock --upgrade`). If any changes are detected, closes the existing `chore/dependencies-upgrade` PR and opens a new GPG-signed one with labels `dependencies`, `automated` assigned to `JimmyPaolini`
+- **upgrade-dependencies** - Upgrades pnpm (self-update), Node.js (via nvm LTS, writes `.nvmrc`), Python (via uv), all Node.js dependencies (`nx run codebase:upgrade-dependencies:write`), and Python dependencies (`uv lock --upgrade`). If any changes are detected, closes the existing `chore/dependencies-upgrade` PR and opens a new GPG-signed one with labels `dependencies`, `automated` assigned to `JimmyPaolini`
 
 **Permissions:** `contents: write`, `pull-requests: write`
 
@@ -263,7 +263,7 @@ All workflows use concurrency groups keyed by `${{ github.workflow }}-${{ github
 
 ### Affected Commands
 
-Most workflows use `nx affected -t <target>` which only runs tasks on projects changed since the base branch. The `nrwl/nx-set-shas` action in `setup-monorepo` automatically determines the correct base SHA (`NX_BASE`) and head SHA (`NX_HEAD`) for comparison.
+Most workflows use `nx affected -t <target>` which only runs tasks on projects changed since the base branch. The `nrwl/nx-set-shas` action in `setup-codebase` automatically determines the correct base SHA (`NX_BASE`) and head SHA (`NX_HEAD`) for comparison.
 
 ### Caching
 
@@ -298,9 +298,9 @@ Most workflows use `nx affected -t <target>` which only runs tasks on projects c
          - uses: actions/checkout@v4
            with:
              fetch-depth: 0
-         - uses: ./.github/actions/setup-monorepo
+         - uses: ./.github/actions/setup-codebase
          - run: npx nx affected -t <target> --parallel=3
    ```
 
 3. Follow the emoji naming convention used by existing workflows
-4. Use `nx affected` for project-specific tasks and `nx run monorepo:<target>` for workspace-level tasks
+4. Use `nx affected` for project-specific tasks and `nx run codebase:<target>` for workspace-level tasks

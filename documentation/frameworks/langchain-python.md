@@ -223,9 +223,9 @@ Models have a finite context window measured in tokens. When designing conversat
 - Document data retention and add an API to erase user data on request.
 - Limit stored PII and encrypt sensitive fields at rest.
 
-## Monorepo Tooling Configuration
+## Codebase Tooling Configuration
 
-Reference configurations for LangChain projects in this monorepo. These go in the project's `pyproject.toml` alongside the shared base config inherited from the root `pyproject.toml`.
+Reference configurations for LangChain projects in this codebase. These go in the project's `pyproject.toml` alongside the shared base config inherited from the root `pyproject.toml`.
 
 ### `[tool.ty]` — type checking for LangChain stubs
 

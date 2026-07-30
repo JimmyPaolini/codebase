@@ -2,7 +2,7 @@
 
 **Shared React component library built on shadcn/ui and Radix UI primitives.**
 
-A collection of accessible, customizable UI components for the monorepo, providing a consistent design system across applications. Built with Tailwind CSS, TypeScript, and shadcn/ui (New York style).
+A collection of accessible, customizable UI components for the codebase, providing a consistent design system across applications. Built with Tailwind CSS, TypeScript, and shadcn/ui (New York style).
 
 ## Features
 
@@ -17,12 +17,12 @@ A collection of accessible, customizable UI components for the monorepo, providi
 
 ### Installation
 
-This package is already available in the monorepo via workspace protocol. Import from consuming applications:
+This package is already available in the codebase via workspace protocol. Import from consuming applications:
 
 ```tsx
 // In applications/lexico/src/routes/example.tsx
-import { Button, Card, Input } from "@monorepo/lexico-components";
-import "@monorepo/lexico-components/styles/globals.css"; // Import once in root layout
+import { Button, Card, Input } from "@codebase/lexico-components";
+import "@codebase/lexico-components/styles/globals.css"; // Import once in root layout
 
 function ExamplePage() {
   return (
@@ -45,7 +45,7 @@ Add global CSS import to your root layout:
 
 ```tsx
 // applications/lexico/src/routes/__root.tsx
-import "@monorepo/lexico-components/styles/globals.css";
+import "@codebase/lexico-components/styles/globals.css";
 ```
 
 ## Component Categories
@@ -251,7 +251,7 @@ nx run lexico-components:bundlesize
 ### Form with Validation
 
 ```tsx
-import { Input, Label, Button } from "@monorepo/lexico-components";
+import { Input, Label, Button } from "@codebase/lexico-components";
 
 function LoginForm() {
   return (
@@ -287,7 +287,7 @@ import {
   DialogTitle,
   DialogTrigger,
   Button,
-} from "@monorepo/lexico-components";
+} from "@codebase/lexico-components";
 
 function ConfirmDialog() {
   return (
@@ -316,7 +316,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   Button,
-} from "@monorepo/lexico-components";
+} from "@codebase/lexico-components";
 
 function UserMenu() {
   return (
@@ -383,7 +383,7 @@ Built on Radix UI primitives which handle complex accessibility patterns automat
 Import global CSS in your root layout:
 
 ```tsx
-import "@monorepo/lexico-components/styles/globals.css";
+import "@codebase/lexico-components/styles/globals.css";
 ```
 
 ### Import Errors
@@ -394,7 +394,7 @@ Verify TypeScript path mapping in `tsconfig.json`:
 {
   "compilerOptions": {
     "paths": {
-      "@monorepo/lexico-components": [
+      "@codebase/lexico-components": [
         "../../packages/lexico-components/src/index.ts"
       ]
     }
@@ -411,7 +411,7 @@ Set `data-theme` attribute on `<html>` or use ThemeProvider.
 For detailed architecture, component patterns, and development workflows:
 
 - **[AGENTS.md](AGENTS.md)**: Complete architectural documentation
-- **[Main AGENTS.md](../../AGENTS.md)**: Monorepo architecture and Nx workflows
+- **[Main AGENTS.md](../../AGENTS.md)**: Codebase architecture and Nx workflows
 
 External resources:
 

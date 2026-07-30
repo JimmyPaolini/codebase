@@ -3,7 +3,7 @@ import { CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider } from "@lexic
 import * as cheerio from "cheerio";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { Author, type Text } from "@monorepo/lexico-entities";
+import { Author, type Text } from "@codebase/lexico-entities";
 
 import type { LoggerService } from "../../logger/logger.service";
 

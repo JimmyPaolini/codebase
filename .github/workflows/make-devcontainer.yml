@@ -31,11 +31,11 @@ jobs:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 🕋 Setup Monorepo
-        uses: ./.github/actions/setup-monorepo
+      - name: 🕋 Setup Codebase
+        uses: ./.github/actions/setup-codebase
 
       - name: 🧩 Check VSCode Extensions
-        run: npx nx run monorepo:sync-vscode-extensions:check
+        run: npx nx run codebase:sync-vscode-extensions:check
 
       - name: 🗂️ Setup Environment File
         run: |
@@ -56,10 +56,10 @@ jobs:
         uses: devcontainers/ci@v0.3
         with:
           configFile: .devcontainer/cloud/devcontainer.json
-          imageName: ghcr.io/jimmypaolini/monorepo-devcontainer
+          imageName: ghcr.io/jimmypaolini/codebase-devcontainer
           cacheFrom: |
             type=gha,scope=devcontainer
-            ghcr.io/jimmypaolini/monorepo-devcontainer
+            ghcr.io/jimmypaolini/codebase-devcontainer
           push: filter
           eventFilterForPush: |
             push:
@@ -74,10 +74,10 @@ jobs:
         uses: devcontainers/ci@v0.3
         with:
           configFile: .devcontainer/cloud/devcontainer.json
-          imageName: ghcr.io/jimmypaolini/monorepo-devcontainer
+          imageName: ghcr.io/jimmypaolini/codebase-devcontainer
           cacheFrom: |
             type=gha,scope=devcontainer
-            ghcr.io/jimmypaolini/monorepo-devcontainer
+            ghcr.io/jimmypaolini/codebase-devcontainer
           push: never
           env: |
             CI=true

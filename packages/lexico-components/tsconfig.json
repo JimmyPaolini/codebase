@@ -8,10 +8,10 @@
     "outDir": "../../dist/out-tsc",
     "paths": {
       "@/*": ["./src/*"],
+      "codebase/configuration/*": ["../../configuration/*"],
       "eslint-plugin-better-max-params": [
         "../../configuration/types/eslint-plugin-better-max-params/index.d.ts"
-      ],
-      "monorepo/configuration/*": ["../../configuration/*"]
+      ]
     },
     "types": ["node", "vite/client"]
   },

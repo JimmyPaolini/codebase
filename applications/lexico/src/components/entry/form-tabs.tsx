@@ -6,7 +6,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@monorepo/lexico-components";
+} from "@codebase/lexico-components";
 
 import { Identifier } from "./identifier";
 

@@ -91,7 +91,7 @@ materialui
 mcp
 metatype
 middlewares
-monorepo
+codebase
 multiset
 multivalued
 musescore

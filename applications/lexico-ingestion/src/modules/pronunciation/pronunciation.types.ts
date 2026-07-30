@@ -1,4 +1,4 @@
-import type { Pronunciation } from "@monorepo/lexico-entities";
+import type { Pronunciation } from "@codebase/lexico-entities";
 import type * as cheerio from "cheerio";
 import type { AnyNode } from "domhandler";
 

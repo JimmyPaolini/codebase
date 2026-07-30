@@ -10,7 +10,7 @@ import {
   CardHeader,
   cn,
   Separator,
-} from "@monorepo/lexico-components";
+} from "@codebase/lexico-components";
 
 import { AdjectiveFormsTable } from "./adjective-forms-table";
 import { NounFormsTable } from "./noun-forms-table";

@@ -1,5 +1,5 @@
 #!/bin/bash
-# software.sh — Install and configure all developer tools required to work in this monorepo.
+# software.sh — Install and configure all developer tools required to work in this codebase.
 #
 # This is the orchestrator. Each concern is split into a focused module under
 # scripts/local/software/. All modules are sourced (not executed) so that

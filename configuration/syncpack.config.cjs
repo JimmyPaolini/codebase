@@ -16,12 +16,12 @@ module.exports = {
     "tools/*/package.json",
   ],
 
-  // Version groups: enforce workspace protocol for internal @monorepo/* packages
+  // Version groups: enforce workspace protocol for internal @codebase/* packages
   versionGroups: [
     {
       label: "Use workspace protocol for internal packages",
       packages: ["**"],
-      dependencies: ["@monorepo/*"],
+      dependencies: ["@codebase/*"],
       dependencyTypes: ["dev", "prod"],
       pinVersion: "workspace:*",
     },
@@ -31,7 +31,7 @@ module.exports = {
   semverGroups: [
     {
       isIgnored: true,
-      dependencies: ["**", "!@monorepo/*"],
+      dependencies: ["**", "!@codebase/*"],
       packages: ["**"],
     },
     {

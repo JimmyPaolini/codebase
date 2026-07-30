@@ -5,7 +5,7 @@ import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 import prompts from "prompts";
 
-import { Lexeme, Translation } from "@monorepo/lexico-entities";
+import { Lexeme, Translation } from "@codebase/lexico-entities";
 
 import { LexemesService } from "../lexemes/lexemes.service";
 import { LoggerService } from "../logger/logger.service";

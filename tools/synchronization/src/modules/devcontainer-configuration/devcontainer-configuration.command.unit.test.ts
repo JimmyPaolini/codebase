@@ -148,7 +148,7 @@ describe(DevcontainerConfigurationCommand, () => {
       },
       remoteEnv: {
         APP_ENVIRONMENT: "local",
-        MONOREPO_ENVIRONMENT: "local",
+        CODEBASE_ENVIRONMENT: "local",
       },
     };
     const cloudConfig = {
@@ -159,7 +159,7 @@ describe(DevcontainerConfigurationCommand, () => {
       mounts: ["source=/cache,target=/cache,type=volume"],
       remoteEnv: {
         APP_ENVIRONMENT: "cloud",
-        MONOREPO_ENVIRONMENT: "cloud",
+        CODEBASE_ENVIRONMENT: "cloud",
       },
     };
 
@@ -178,7 +178,7 @@ describe(DevcontainerConfigurationCommand, () => {
     );
     expect(writeFileSync).toHaveBeenCalledWith(
       cloudConfigFile,
-      expect.stringContaining('"MONOREPO_ENVIRONMENT": "cloud"'),
+      expect.stringContaining('"CODEBASE_ENVIRONMENT": "cloud"'),
       "utf8",
     );
     expect(logger.log).toHaveBeenCalledWith(

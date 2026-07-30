@@ -9,7 +9,7 @@ import {
   CardTitle,
   Label,
   Separator,
-} from "@monorepo/lexico-components";
+} from "@codebase/lexico-components";
 
 import type { ReactNode } from "react";
 

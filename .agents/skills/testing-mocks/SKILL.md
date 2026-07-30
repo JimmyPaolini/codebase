@@ -6,7 +6,7 @@ license: MIT
 
 # Testing Mocks
 
-This skill describes mocking patterns and best practices for creating maintainable, type-safe mocks in this monorepo.
+This skill describes mocking patterns and best practices for creating maintainable, type-safe mocks in this codebase.
 
 ## When to Use This Skill
 

@@ -2,10 +2,10 @@
   "compilerOptions": {
     "noEmit": true,
     "paths": {
+      "codebase/configuration/*": ["./configuration/*"],
       "eslint-plugin-better-max-params": [
         "./configuration/types/eslint-plugin-better-max-params/index.d.ts"
-      ],
-      "monorepo/configuration/*": ["./configuration/*"]
+      ]
     },
     "skipLibCheck": true
   },

@@ -13,7 +13,7 @@ import {
   NominalForm,
   type PartOfSpeech,
   SupineForm,
-} from "@monorepo/lexico-entities";
+} from "@codebase/lexico-entities";
 
 import { FormsBuilderGuardsService } from "./forms-builder-guards.service";
 import { FormsBuilderVerbService } from "./forms-builder-verb.service";

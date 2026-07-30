@@ -38,7 +38,7 @@ export default defineConfig({
   },
   // 🌐 Environments
   // Declares which global variables are available (prevents no-undef errors).
-  // Matches the ESLint env settings for this monorepo's runtime targets.
+  // Matches the ESLint env settings for this codebase's runtime targets.
   env: {
     // Browser globals for lexico (web app) and lexico-components
     browser: true,
@@ -520,7 +520,7 @@ export default defineConfig({
     },
     // 🔒 [6] Strict project rules — imports, type-safety, code quality
     // Maps to: the custom strict rules block in eslint.config.ts
-    // These are the monorepo's opinionated rules beyond "recommended":
+    // These are the codebase's opinionated rules beyond "recommended":
     //   - Explicit return types required (allowExpressions, allowHOF)
     //   - Type imports enforced (consistent-type-imports with inline style)
     //   - No duplicate imports (use single import statement per module)

@@ -1,6 +1,6 @@
 # Conformance Generators
 
-The [`conformance`](../../tools/conformance) tool both generates and validates code conformance to monorepo conventions. Nx generators scaffold new projects, directories, and files with consistent structure, naming, and formatting; generator unit tests then validate that each generated instance still conforms to the template used to generate it.
+The [`conformance`](../../tools/conformance) tool both generates and validates code conformance to codebase conventions. Nx generators scaffold new projects, directories, and files with consistent structure, naming, and formatting; generator unit tests then validate that each generated instance still conforms to the template used to generate it.
 
 ## Available generators
 

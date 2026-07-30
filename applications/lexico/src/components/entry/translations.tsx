@@ -4,7 +4,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-import { cn } from "@monorepo/lexico-components";
+import { cn } from "@codebase/lexico-components";
 
 import type { ReactElement } from "react";
 

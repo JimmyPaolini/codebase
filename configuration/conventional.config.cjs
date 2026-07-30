@@ -165,7 +165,7 @@ const scopes = [
   {
     description:
       "Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration)",
-    name: "monorepo",
+    name: "codebase",
   },
   {
     description: "Escape hatch: suppress semantic-release for any commit type",

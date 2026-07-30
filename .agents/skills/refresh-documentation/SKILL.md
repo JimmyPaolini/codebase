@@ -1,12 +1,12 @@
 ---
 name: refresh-documentation
-description: Review and update all project documentation to keep it accurate and current. Use this skill when asked to refresh, update, or audit documentation, README files, AGENTS.md files, skill descriptions, or any markdown docs across the monorepo.
+description: Review and update all project documentation to keep it accurate and current. Use this skill when asked to refresh, update, or audit documentation, README files, AGENTS.md files, skill descriptions, or any markdown docs across the codebase.
 license: MIT
 ---
 
 # Refresh Documentation
 
-This skill guides a systematic review and refresh of all documentation across the monorepo. It is also invoked automatically each week by the `refresh-documentation` GitHub Actions workflow, which creates a GitHub issue assigned to Copilot.
+This skill guides a systematic review and refresh of all documentation across the codebase. It is also invoked automatically each week by the `refresh-documentation` GitHub Actions workflow, which creates a GitHub issue assigned to Copilot.
 
 ## When to Use This Skill
 
@@ -20,7 +20,7 @@ Documentation to review and update:
 
 | Path                         | Description                                                          |
 | ---------------------------- | -------------------------------------------------------------------- |
-| `README.md`                  | Root monorepo README                                                 |
+| `README.md`                  | Root codebase README                                                 |
 | `documentation/**/*.md`      | Core documentation files                                             |
 | `AGENTS.md`                  | Workspace-level Copilot instructions — skill table must stay in sync |
 | `*/AGENTS.md`                | Per-project Copilot instructions                                     |

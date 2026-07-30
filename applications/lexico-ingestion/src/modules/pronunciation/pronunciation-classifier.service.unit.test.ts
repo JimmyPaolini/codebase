@@ -2,7 +2,7 @@ import { Test } from "@nestjs/testing";
 import * as cheerio from "cheerio";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { Pronunciation } from "@monorepo/lexico-entities";
+import { Pronunciation } from "@codebase/lexico-entities";
 
 import { PronunciationClassicalService } from "./pronunciation-classical.service";
 import { PronunciationClassifierService } from "./pronunciation-classifier.service";

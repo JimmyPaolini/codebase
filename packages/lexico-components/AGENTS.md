@@ -4,7 +4,7 @@
 
 **Type**: Shared UI component library (shadcn/ui + Radix UI)
 
-**Purpose**: Single source of UI primitives and shared components for the monorepo
+**Purpose**: Single source of UI primitives and shared components for the codebase
 
 ### Add a shadcn Component
 
@@ -37,7 +37,7 @@ See [React Conventions](../../documentation/conventions/react.md) for theming pa
 ## Usage in Apps
 
 ```tsx
-import { Button, Card, Input } from "@monorepo/lexico-components";
+import { Button, Card, Input } from "@codebase/lexico-components";
 ```
 
 Never duplicate UI code in apps. Always import from this package.

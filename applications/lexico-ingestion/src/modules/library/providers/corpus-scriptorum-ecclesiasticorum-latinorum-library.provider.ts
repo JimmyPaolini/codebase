@@ -6,7 +6,7 @@ import * as cheerio from "cheerio";
 import _ from "lodash";
 import YAML from "yaml";
 
-import { Author, Text } from "@monorepo/lexico-entities";
+import { Author, Text } from "@codebase/lexico-entities";
 
 import { LoggerService } from "../../logger/logger.service";
 import { formatLineNumber, hasValidTextContent } from "../library.utilities";

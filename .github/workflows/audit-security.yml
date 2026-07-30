@@ -26,11 +26,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 🕋 Setup monorepo
-        uses: ./.github/actions/setup-monorepo
+      - name: 🕋 Setup codebase
+        uses: ./.github/actions/setup-codebase
 
       - name: 🚰 Gitleaks Check
-        run: pnpm exec nx run monorepo:gitleaks --configuration=ci
+        run: pnpm exec nx run codebase:gitleaks --configuration=ci
 
       - name: 🥷 Bandit Security Scan
         run: pnpm exec nx affected --target=bandit --base=$NX_BASE --head=$NX_HEAD --parallel=3

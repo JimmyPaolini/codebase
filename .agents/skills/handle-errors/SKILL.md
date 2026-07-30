@@ -1,12 +1,12 @@
 ---
 name: handle-errors
-description: "Apply monorepo error handling patterns: Zod validation at boundaries, typed errors, early returns, and retry/backoff. Use when implementing error handling or input validation."
+description: "Apply codebase error handling patterns: Zod validation at boundaries, typed errors, early returns, and retry/backoff. Use when implementing error handling or input validation."
 license: MIT
 ---
 
 # Error Handling Patterns
 
-This skill consolidates error handling conventions across the monorepo.
+This skill consolidates error handling conventions across the codebase.
 
 ## When to Use This Skill
 

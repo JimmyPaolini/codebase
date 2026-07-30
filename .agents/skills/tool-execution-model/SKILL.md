@@ -1,6 +1,6 @@
 ---
 name: tool-execution-model
-description: Decide when to use Nx tasks versus direct tooling in this monorepo. Use when asked about build, lint, test, typecheck, formatting, Docker, kubectl, Helm, Supabase CLI, Git, or pnpm commands.
+description: Decide when to use Nx tasks versus direct tooling in this codebase. Use when asked about build, lint, test, typecheck, formatting, Docker, kubectl, Helm, Supabase CLI, Git, or pnpm commands.
 license: MIT
 ---
 

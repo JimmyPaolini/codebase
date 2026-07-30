@@ -8,7 +8,7 @@ import {
   Text,
   Token,
   Word,
-} from "@monorepo/lexico-entities";
+} from "@codebase/lexico-entities";
 
 import { LoggerModule } from "../logger/logger.module";
 import { NumeralsModule } from "../numerals/numerals.module";

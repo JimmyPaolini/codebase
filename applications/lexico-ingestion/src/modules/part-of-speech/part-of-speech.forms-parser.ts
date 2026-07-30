@@ -3,7 +3,7 @@ import cheerioTableParser from "cheerio-tableparser";
 
 import { sumEsseFui } from "./part-of-speech.constants";
 
-import type { Lexeme } from "@monorepo/lexico-entities";
+import type { Lexeme } from "@codebase/lexico-entities";
 import type { AnyNode } from "domhandler";
 
 /**
