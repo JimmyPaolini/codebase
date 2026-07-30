@@ -27,7 +27,8 @@ jobs:
 
       - name: 🎁 Upgrade pnpm
         run: |
-          jq --arg v "pnpm@$(pnpm view pnpm version)" '.packageManager = $v' package.json > package.json.tmp && mv package.json.tmp package.json
+          LATEST_PNPM=$(node -e "fetch('https://registry.npmjs.org/pnpm/latest').then((response) => response.json()).then((manifest) => process.stdout.write(manifest.version));")
+          jq --arg v "pnpm@${LATEST_PNPM}" '.packageManager = $v' package.json > package.json.tmp && mv package.json.tmp package.json
 
       - name: 🟢 Upgrade node
         run: |
