@@ -1,0 +1,11 @@
+// 🏷️ Types
+
+/**
+ * Validated delete command options and required environment values.
+ */
+export interface DeleteLogsOptions {
+  readonly deleteEnd: string;
+  readonly deleteStart?: string;
+  readonly githubRepository: string;
+  readonly githubToken: string;
+}

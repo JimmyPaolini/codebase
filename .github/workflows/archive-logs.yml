@@ -1,0 +1,176 @@
+name: 🗃️ Archive Logs Runs
+
+on:
+  # schedule:
+  #   - cron: "0 10 * * 0"
+  workflow_dispatch:
+    inputs:
+      archiveStart:
+        description: RFC3339 start datetime for archive operation (timezone required, whole seconds only).
+        required: false
+        type: string
+      archiveEnd:
+        description: RFC3339 end datetime for archive operation (timezone required, whole seconds only).
+        required: false
+        type: string
+      deleteStart:
+        description: RFC3339 start datetime for delete operation (optional). When omitted, delete all runs before deleteEnd.
+        required: false
+        type: string
+      deleteEnd:
+        description: RFC3339 end datetime for delete operation (timezone required, whole seconds only).
+        required: false
+        type: string
+
+permissions:
+  actions: write
+  contents: write
+
+concurrency:
+  group: archive-logs
+  cancel-in-progress: false
+
+jobs:
+  archive-logs:
+    name: 🗃️ Archive Logs Runs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🕰️ Resolve Archive Window
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_ARCHIVE_START: ${{ inputs.archiveStart || '' }}
+          INPUT_ARCHIVE_END: ${{ inputs.archiveEnd || '' }}
+          INPUT_DELETE_START: ${{ inputs.deleteStart || '' }}
+          INPUT_DELETE_END: ${{ inputs.deleteEnd || '' }}
+        run: |
+          set -euo pipefail
+
+          validate_required_rfc3339() {
+            local variable_name="$1"
+            local variable_value="$2"
+            local rfc3339_with_timezone_pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}([Zz]|[+-][0-9]{2}:[0-9]{2})$'
+
+            if [[ "$variable_value" == *.* ]] || [[ "$variable_value" == *,* ]]; then
+              echo "${variable_name} must use whole-second precision without fractional seconds: $variable_value" >&2
+              exit 1
+            fi
+
+            if [[ ! "$variable_value" =~ $rfc3339_with_timezone_pattern ]]; then
+              echo "${variable_name} must be RFC3339 with timezone: $variable_value" >&2
+              exit 1
+            fi
+          }
+
+          normalize_rfc3339() {
+            local variable_name="$1"
+            local variable_value="$2"
+            local variable_seconds
+            if ! variable_seconds=$(date -u -d "$variable_value" +%s 2>/dev/null); then
+              echo "${variable_name} is not a valid datetime: $variable_value" >&2
+              exit 1
+            fi
+
+            date -u -d "@$variable_seconds" +"%Y-%m-%dT%H:%M:%SZ"
+          }
+
+          if [[ "$EVENT_NAME" == "schedule" ]]; then
+            archive_end=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+            archive_start=$(date -u -d "$archive_end - 7 days" +"%Y-%m-%dT%H:%M:%SZ")
+            delete_start=$(date -u -d "$archive_end - 56 days" +"%Y-%m-%dT%H:%M:%SZ")
+            delete_end=$(date -u -d "$archive_end - 49 days" +"%Y-%m-%dT%H:%M:%SZ")
+            run_archive=true
+            run_delete=true
+          else
+            archive_start="$INPUT_ARCHIVE_START"
+            archive_end="$INPUT_ARCHIVE_END"
+            delete_start="$INPUT_DELETE_START"
+            delete_end="$INPUT_DELETE_END"
+            run_archive=false
+            run_delete=false
+          fi
+
+          if [[ "$EVENT_NAME" != "schedule" ]]; then
+            if [[ -n "$archive_start" || -n "$archive_end" ]]; then
+              if [[ -z "$archive_start" || -z "$archive_end" ]]; then
+                echo "ARCHIVE_START and ARCHIVE_END must be provided together" >&2
+                exit 1
+              fi
+              run_archive=true
+            fi
+
+            if [[ -n "$delete_start" && -z "$delete_end" ]]; then
+              echo "DELETE_END is required when DELETE_START is provided" >&2
+              exit 1
+            fi
+
+            if [[ -n "$delete_end" ]]; then
+              run_delete=true
+            fi
+
+            if [[ "$run_archive" == false && "$run_delete" == false ]]; then
+              echo "Provide archiveStart/archiveEnd and/or deleteEnd (optionally deleteStart)" >&2
+              exit 1
+            fi
+          fi
+
+          if [[ "$run_archive" == true ]]; then
+            validate_required_rfc3339 "ARCHIVE_START" "$archive_start"
+            validate_required_rfc3339 "ARCHIVE_END" "$archive_end"
+            archive_start=$(normalize_rfc3339 "ARCHIVE_START" "$archive_start")
+            archive_end=$(normalize_rfc3339 "ARCHIVE_END" "$archive_end")
+            if [[ "$archive_start" > "$archive_end" || "$archive_start" == "$archive_end" ]]; then
+              echo 'ARCHIVE_START must be before ARCHIVE_END' >&2
+              exit 1
+            fi
+          fi
+
+          if [[ "$run_delete" == true ]]; then
+            validate_required_rfc3339 "DELETE_END" "$delete_end"
+            delete_end=$(normalize_rfc3339 "DELETE_END" "$delete_end")
+            if [[ -n "$delete_start" ]]; then
+              validate_required_rfc3339 "DELETE_START" "$delete_start"
+              delete_start=$(normalize_rfc3339 "DELETE_START" "$delete_start")
+              if [[ "$delete_start" > "$delete_end" || "$delete_start" == "$delete_end" ]]; then
+                echo 'DELETE_START must be before DELETE_END' >&2
+                exit 1
+              fi
+            fi
+          fi
+
+          {
+            echo "ARCHIVE_START=$archive_start"
+            echo "ARCHIVE_END=$archive_end"
+            echo "DELETE_START=$delete_start"
+            echo "DELETE_END=$delete_end"
+            echo "RUN_ARCHIVE=$run_archive"
+            echo "RUN_DELETE=$run_delete"
+          } >> "$GITHUB_ENV"
+
+      - name: 🕋 Setup Monorepo
+        uses: ./.github/actions/setup-monorepo
+
+      - name: 🗃️ Run Selected Workflow Action
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ "${RUN_ARCHIVE}" == "true" ]]; then
+            pnpm exec nx run archive-logs:start:archive -- \
+              --start "${ARCHIVE_START}" \
+              --end "${ARCHIVE_END}"
+          fi
+
+          if [[ "${RUN_DELETE}" == "true" ]]; then
+            delete_arguments=(--end "${DELETE_END}")
+            if [[ -n "${DELETE_START}" ]]; then
+              delete_arguments+=(--start "${DELETE_START}")
+            fi
+            pnpm exec nx run archive-logs:start:delete -- "${delete_arguments[@]}"
+          fi

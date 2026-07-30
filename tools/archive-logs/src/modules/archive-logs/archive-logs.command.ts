@@ -1,0 +1,199 @@
+import { Injectable } from "@nestjs/common";
+import { Command, CommandRunner, Option } from "nest-commander";
+
+import { LoggerService } from "../logger/logger.service";
+import { PublishLogsService } from "../publish-logs/publish-logs.service";
+
+import { ArchiveLogsService } from "./archive-logs.service";
+
+import type { ArchiveLogsOptions } from "./archive-logs.types";
+
+/**
+ * CLI command that archives GitHub Actions runs for a given window.
+ */
+@Command({
+  description: "Run the archive-logs command",
+  name: "archive-logs",
+})
+@Injectable()
+export class ArchiveLogsCommand extends CommandRunner {
+  // 🏗 Dependency Injection
+
+  constructor(
+    private readonly logger: LoggerService,
+    private readonly archiveService: ArchiveLogsService,
+    private readonly publishLogsService: PublishLogsService,
+  ) {
+    super();
+    this.logger.setContext(ArchiveLogsCommand.name);
+  }
+
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
+  /**
+   * Execute the archive and publish steps for the resolved window.
+   */
+  private executeArchive(resolvedOptions: ArchiveLogsOptions): void {
+    const archiveContext = this.archiveService.buildContext(
+      resolvedOptions.archiveStart,
+      resolvedOptions.archiveEnd,
+    );
+
+    if (
+      this.archiveService.archiveAlreadyExists(
+        resolvedOptions.githubRepository,
+        archiveContext,
+      )
+    ) {
+      this.logger.log(
+        `Archive already exists for window: ${archiveContext.archiveName}. Skipping.`,
+      );
+      return;
+    }
+
+    this.archiveService.collectAndZip(
+      resolvedOptions.githubRepository,
+      archiveContext,
+    );
+
+    if (process.env["GITHUB_ACTIONS"] === "true") {
+      this.publishLogsService.publishToBranch(
+        resolvedOptions.githubToken,
+        resolvedOptions.githubRepository,
+        archiveContext,
+      );
+    }
+
+    this.logger.log(
+      `✅ Archived window ${resolvedOptions.archiveStart} → ${resolvedOptions.archiveEnd}`,
+    );
+  }
+
+  /**
+   * Validate and normalize the date range from raw options.
+   */
+  private normalizeRfc3339ToUtc(value: string): string {
+    const rfc3339Pattern =
+      /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}([Zz]|[+-][0-9]{2}:[0-9]{2})$/;
+
+    if (!rfc3339Pattern.test(value)) {
+      throw new TypeError(`invalid RFC3339 datetime: ${value}`);
+    }
+
+    const normalizedValue = value.replace("Z", "+00:00").replace("z", "+00:00");
+    const parsedDateTime = new Date(normalizedValue);
+    if (Number.isNaN(parsedDateTime.getTime())) {
+      throw new TypeError(`invalid RFC3339 datetime: ${value}`);
+    }
+
+    return parsedDateTime.toISOString().replace(".000Z", "Z");
+  }
+
+  /**
+   * Validate and normalize the date range from raw options.
+   */
+  private resolveDateRange(options: Record<string, unknown>): {
+    archiveEnd: string;
+    archiveStart: string;
+  } {
+    const rawStart =
+      typeof options["start"] === "string" ? options["start"] : undefined;
+    const rawEnd =
+      typeof options["end"] === "string" ? options["end"] : undefined;
+    if (!rawStart) {
+      throw new Error("--start is required");
+    }
+    if (!rawEnd) {
+      throw new Error("--end is required");
+    }
+
+    const archiveStart = this.normalizeRfc3339ToUtc(rawStart);
+    const archiveEnd = this.normalizeRfc3339ToUtc(rawEnd);
+    if (archiveStart >= archiveEnd) {
+      throw new Error("--start must be before --end");
+    }
+
+    return { archiveEnd, archiveStart };
+  }
+
+  /**
+   * Validate environment variables and return repository and token.
+   */
+  private resolveEnvironment(): {
+    githubRepository: string;
+    githubToken: string;
+  } {
+    const githubRepository = process.env["GITHUB_REPOSITORY"];
+    const githubToken = process.env["GH_TOKEN"];
+    if (!githubRepository) {
+      throw new Error("GITHUB_REPOSITORY environment variable is required");
+    }
+    if (!githubToken) {
+      throw new Error("GH_TOKEN environment variable is required");
+    }
+
+    return { githubRepository, githubToken };
+  }
+
+  /**
+   * Parse and validate resolved options before executing.
+   */
+  private resolveOptions(options: Record<string, unknown>): ArchiveLogsOptions {
+    const { githubRepository, githubToken } = this.resolveEnvironment();
+    const { archiveEnd, archiveStart } = this.resolveDateRange(options);
+
+    return {
+      archiveEnd,
+      archiveStart,
+      githubRepository,
+      githubToken,
+    };
+  }
+
+  // 🌎 Public Methods
+
+  /**
+   * Parses the --end datetime option value.
+   */
+  @Option({
+    description: "RFC3339 end datetime (timezone required)",
+    flags: "-e, --end <end>",
+  })
+  parseEnd(value: string): string {
+    return value;
+  }
+
+  /**
+   * Parses the --start datetime option value.
+   */
+  @Option({
+    description: "RFC3339 start datetime (timezone required)",
+    flags: "-s, --start <start>",
+  })
+  parseStart(value: string): string {
+    return value;
+  }
+
+  /**
+   * Archive workflow runs in the specified window and optionally publish.
+   */
+  async run(
+    _passedParameters: string[],
+    options?: Record<string, unknown>,
+  ): Promise<void> {
+    await Promise.resolve();
+
+    try {
+      this.executeArchive(this.resolveOptions(options ?? {}));
+    } catch (error) {
+      this.logger.error(
+        `❌ Archive failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      process.exit(1);
+    }
+  }
+}

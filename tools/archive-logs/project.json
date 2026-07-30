@@ -1,0 +1,45 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "tools/archive-logs",
+  "tags": [
+    "framework:nest-commander",
+    "framework:nestjs",
+    "generator:nestjs-command-application",
+    "language:typescript"
+  ],
+  "targets": {
+    "analyze-code": {},
+    "clean": {},
+    "dependency-cruiser": {},
+    "format": {},
+    "knip": {},
+    "lint": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "oxlint": {},
+    "prettier": {},
+    "spell-check": {},
+    "start": {
+      "cache": false,
+      "configurations": {
+        "archive": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/archive-logs/src/main.ts archive-logs"
+        },
+        "delete": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/archive-logs/src/main.ts delete-logs"
+        }
+      },
+      "defaultConfiguration": "archive",
+      "description": "Run archive-logs command variants",
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "test": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}
