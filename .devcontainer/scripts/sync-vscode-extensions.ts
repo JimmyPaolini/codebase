@@ -123,7 +123,7 @@ function checkSync(
       console.log("");
     }
     console.log(
-      "💡 Run 'nx run monorepo:sync-vscode-extensions:write' to sync both devcontainer configs",
+      "💡 Run 'nx run codebase:sync-vscode-extensions:write' to sync both devcontainer configs",
     );
     return false;
   }

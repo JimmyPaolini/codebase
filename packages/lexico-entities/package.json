@@ -31,7 +31,7 @@
     }
   },
   "main": "./src/index.ts",
-  "name": "@monorepo/lexico-entities",
+  "name": "@codebase/lexico-entities",
   "private": true,
   "type": "module",
   "typeCoverage": {

@@ -30,8 +30,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 🕋 Setup Monorepo
-        uses: ./.github/actions/setup-monorepo
+      - name: 🕋 Setup Codebase
+        uses: ./.github/actions/setup-codebase
 
       - name: 🧑‍💻 Analyze Code
         env:

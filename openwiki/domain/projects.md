@@ -1,13 +1,13 @@
 ---
 type: Domain
-title: Monorepo Projects and Workflows
+title: Codebase Projects and Workflows
 description: Detailed overview of applications, shared packages, tooling, and operational workflows.
 tags: [domain, projects, workflows, nx]
 ---
 
-# Monorepo Projects and Workflows
+# Codebase Projects and Workflows
 
-This document outlines the core applications and packages managed within the monorepo workspace.
+This document outlines the core applications and packages managed within the codebase workspace.
 
 ## Applications
 
@@ -20,8 +20,8 @@ This document outlines the core applications and packages managed within the mon
 
 - **lexico-components**: Shared React UI component library built on shadcn/ui and Tailwind CSS.
 - **lexico-entities**: TypeORM entities and GraphQL schema definitions shared across backend services.
-- **synchronization**: Synchronization tooling ensuring monorepo configuration consistency across packages.
+- **synchronization**: Synchronization tooling ensuring codebase configuration consistency across packages.
 
 Related documentation:
 - Review the [Architecture Overview](/openwiki/architecture/overview.md) for system dependency graphs.
-- Back to [Monorepo Quickstart](/openwiki/quickstart.md).
+- Back to [Codebase Quickstart](/openwiki/quickstart.md).

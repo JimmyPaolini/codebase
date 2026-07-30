@@ -34,7 +34,7 @@ module.exports = {
   <type>/<scope>-<description>
 
   Example: feat/lexico-user-auth
-           fix/monorepo-build-script
+           fix/codebase-build-script
 
 Special branches: ${specialBranches.join(", ")}
 Automated prefixes: ${automatedPrefixes.map((p) => `${p}/*`).join(", ")}

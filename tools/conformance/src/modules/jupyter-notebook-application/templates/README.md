@@ -1,6 +1,6 @@
 # {{namePascalCase}}
 
-A Python + Jupyter notebook application scaffold in this monorepo.
+A Python + Jupyter notebook application scaffold in this codebase.
 
 ## Requirements
 

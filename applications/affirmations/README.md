@@ -1,6 +1,6 @@
 # Affirmations
 
-A Python + Jupyter notebook application scaffold in this monorepo.
+A Python + Jupyter notebook application scaffold in this codebase.
 
 Python application that generates structured affirmations for spiritual practices using LangChain, LangGraph, and a locally-hosted Qwen 3.5 LLM via Ollama. A LangGraph ReAct agent researches spiritual topics using SearxNG metasearch (aggregating Wikipedia, DuckDuckGo, Google Scholar, and more) with Trafilatura-powered content extraction, then generates Pydantic-validated affirmations saved as structured JSON.
 

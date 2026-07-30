@@ -19,7 +19,7 @@ Lexico is a server-side rendered web application built with TanStack Start and S
 ### Prerequisites
 
 - **Docker**: Required for local Supabase environment
-- **pnpm**: Package manager for monorepo
+- **pnpm**: Package manager for codebase
 - **Supabase CLI**: Install with `brew install supabase/tap/supabase` (macOS)
 
 ### Local Development
@@ -181,7 +181,7 @@ nx run lexico:supabase:generate-types
 
 - **Frontend**: React 19, TanStack Router (file-based routing), Tailwind CSS
 - **Backend**: TanStack Start (SSR), Supabase (PostgreSQL + Auth + Storage)
-- **UI Components**: [@monorepo/lexico-components](../../packages/lexico-components) (shadcn/ui)
+- **UI Components**: [@codebase/lexico-components](../../packages/lexico-components) (shadcn/ui)
 - **Type Safety**: TypeScript 5.9 with strict mode, auto-generated Supabase types
 - **Build**: Vite 7, Nitro bundler for SSR
 
@@ -302,7 +302,7 @@ For in-depth architecture, development patterns, and troubleshooting:
 
 - **[AGENTS.md](AGENTS.md)**: Complete architectural documentation
 - **[lexico-components](../../packages/lexico-components)**: Shared UI components
-- **[Main AGENTS.md](../../AGENTS.md)**: Monorepo architecture and Nx workflows
+- **[Main AGENTS.md](../../AGENTS.md)**: Codebase architecture and Nx workflows
 
 External resources:
 

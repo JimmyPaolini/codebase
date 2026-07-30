@@ -1,10 +1,10 @@
-# Contributing to Monorepo
+# Contributing to Codebase
 
 Thank you for contributing! This guide covers the development workflow, code standards, and release process.
 
 ## Table of Contents
 
-- [Contributing to Monorepo](#contributing-to-monorepo)
+- [Contributing to Codebase](#contributing-to-codebase)
   - [Table of Contents](#table-of-contents)
   - [Getting Started](#getting-started)
     - [Option 1: Local Setup (macOS, Recommended)](#option-1-local-setup-macos-recommended)
@@ -42,8 +42,8 @@ The fastest way to get started on macOS is using the setup script, which install
 **Setup:**
 
 ```bash
-git clone https://github.com/JimmyPaolini/monorepo.git
-cd monorepo
+git clone https://github.com/JimmyPaolini/codebase.git
+cd codebase
 ./scripts/local/setup.sh
 ```
 
@@ -66,12 +66,12 @@ Alternatively, use the included dev container for a fully configured environment
 
 **Setup:**
 
-1. Clone the repository: `git clone https://github.com/JimmyPaolini/monorepo.git`
+1. Clone the repository: `git clone https://github.com/JimmyPaolini/codebase.git`
 2. Open the folder in VS Code
 3. Open the command palette (`Ctrl/Cmd+Shift+P`) → **Dev Containers: Reopen in Container**
 4. Select a configuration when prompted:
-   - **Monorepo Devcontainer (Local)** — local machine (Docker-outside-of-Docker, recommended)
-   - **Monorepo Devcontainer (Cloud)** — GitHub Codespaces or when full Docker isolation is needed (Docker-in-Docker)
+   - **Codebase Devcontainer (Local)** — local machine (Docker-outside-of-Docker, recommended)
+   - **Codebase Devcontainer (Cloud)** — GitHub Codespaces or when full Docker isolation is needed (Docker-in-Docker)
 5. Wait for container build (~2-3 minutes first time)
 6. Start developing!
 
@@ -103,7 +103,7 @@ See [.devcontainer/README.md](.devcontainer/README.md) for detailed configuratio
 ### Workspace Structure
 
 ```text
-monorepo/
+codebase/
 ├── applications/           # Deployable applications
 │   ├── affirmations/      # Python LangChain + Ollama affirmation generator
 │   ├── caelundas/         # CLI ephemeris calendar generator
@@ -150,7 +150,7 @@ nx affected --target=test
 - **TypeScript**: Explicit return types, no `any`, type imports (`import { type T }`), strict null checks
 - **Imports**: Auto-sorted (Node built-ins → external → workspace → relative → types)
 - **Naming**: PascalCase (types/classes), camelCase (variables/functions), UPPER_CASE (constants), kebab-case (files)
-- **React**: React 19, TanStack Router, shadcn/ui via `@monorepo/lexico-components`, Tailwind CSS
+- **React**: React 19, TanStack Router, shadcn/ui via `@codebase/lexico-components`, Tailwind CSS
 - **Documentation**: TSDoc for public APIs, update docs with code changes
 
 See [eslint.config.ts](configuration/eslint.config.ts) for complete rules.
@@ -171,7 +171,7 @@ If a hook fails, the git operation is blocked until you fix the error. See the c
 
 **Required format:** `<type>/<scope>-<description>` (lowercase, kebab-case)
 
-**Examples**: `feat/lexico-user-auth`, `fix/monorepo-routing`, `docs/caelundas-api`
+**Examples**: `feat/lexico-user-auth`, `fix/codebase-routing`, `docs/caelundas-api`
 
 Validated by Husky pre-push hook and GitHub Actions. See [checkout-branch skill](.github/skills/checkout-branch/SKILL.md) for details.
 
@@ -181,7 +181,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/): `<type>(<scope
 
 **Types**: `feat` (minor release), `fix`/`perf`/`refactor`/`build` (patch), `docs`/`test`/`ci`/`chore` (no release)
 
-**Scopes**: `monorepo`, `caelundas`, `lexico`, `lexico-components`, `JimmyPaolini`, `documentation`, `dependencies`, `infrastructure`, `ci`
+**Scopes**: `codebase`, `caelundas`, `lexico`, `lexico-components`, `JimmyPaolini`, `documentation`, `dependencies`, `infrastructure`, `ci`
 
 **Breaking changes**: Add `!` after type or `BREAKING CHANGE:` in footer (triggers major release)
 
@@ -231,7 +231,7 @@ Each project uses `.env.default` files as templates for required environment var
 
 | Variable                                     | Purpose                                                             |
 | -------------------------------------------- | ------------------------------------------------------------------- |
-| `MONOREPO_ENVIRONMENT`                       | Environment: `local`, `devcontainer-local`, or `devcontainer-cloud` |
+| `CODEBASE_ENVIRONMENT`                       | Environment: `local`, `devcontainer-local`, or `devcontainer-cloud` |
 | `OLLAMA_HOST`                                | Ollama server URL (default: `http://localhost:11434`)               |
 | `SEARXNG_HOST`                               | SearxNG server URL (default: `http://localhost:8889`)               |
 | `TF_VAR_linode_token`                        | Linode API token for Terraform provisioning                         |
@@ -271,8 +271,8 @@ pnpm update    # Update within semver ranges
 
 ## Getting Help
 
-- **Issues:** [GitHub Issues](https://github.com/JimmyPaolini/monorepo/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/JimmyPaolini/monorepo/discussions)
+- **Issues:** [GitHub Issues](https://github.com/JimmyPaolini/codebase/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/JimmyPaolini/codebase/discussions)
 - **Owner:** [@JimmyPaolini](https://github.com/JimmyPaolini)
 
 ## License

@@ -10,7 +10,7 @@ import type {
   PronunciationEcclesiasticalCharacterContext,
   PronunciationUpdateVariantContext,
 } from "./pronunciation.types";
-import type { Pronunciation } from "@monorepo/lexico-entities";
+import type { Pronunciation } from "@codebase/lexico-entities";
 import type { AnyNode } from "domhandler";
 
 /**

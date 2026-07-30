@@ -1,12 +1,12 @@
 ---
 name: github-actions
-description: Build and test GitHub Actions workflows in this monorepo. Covers the composite action pattern and workflow templates. Use this skill when creating, modifying, or testing GitHub Actions workflows.
+description: Build and test GitHub Actions workflows in this codebase. Covers the composite action pattern and workflow templates. Use this skill when creating, modifying, or testing GitHub Actions workflows.
 license: MIT
 ---
 
 # GitHub Actions Workflows
 
-Complete guide for building and testing GitHub Actions workflows in this Nx monorepo.
+Complete guide for building and testing GitHub Actions workflows in this Nx codebase.
 
 ## Table of Contents
 
@@ -22,11 +22,11 @@ Complete guide for building and testing GitHub Actions workflows in this Nx mono
 All task workflows in this repository use a composite action for consistent setup, reducing workflow file sizes by ~65% (from ~60 lines to ~21 lines):
 
 - **Checkout step**: Each workflow checks out the repository with full git history
-- **[.github/actions/setup-monorepo](/.github/actions/setup-monorepo)**: Handles pnpm/node setup, Nx cache management, dependency installation, and prepares the workspace for task execution
+- **[.github/actions/setup-codebase](/.github/actions/setup-codebase)**: Handles pnpm/node setup, Nx cache management, dependency installation, and prepares the workspace for task execution
 
-### The setup-monorepo Composite Action
+### The setup-codebase Composite Action
 
-The [.github/actions/setup-monorepo/action.yml](/.github/actions/setup-monorepo/action.yml) composite action handles common setup steps (requires repository checkout first):
+The [.github/actions/setup-codebase/action.yml](/.github/actions/setup-codebase/action.yml) composite action handles common setup steps (requires repository checkout first):
 
 1. Setup pnpm (version: 10.20.0)
 2. Setup Node.js (version: 22.20.0) with pnpm caching
@@ -44,13 +44,13 @@ The [.github/actions/setup-monorepo/action.yml](/.github/actions/setup-monorepo/
   with:
     fetch-depth: 0
 
-- name: 🕋 Setup Monorepo
-  uses: ./.github/actions/setup-monorepo
+- name: 🕋 Setup Codebase
+  uses: ./.github/actions/setup-codebase
 ```
 
 **No Additional Inputs Required:** The composite action automatically generates cache keys based on `pnpm-lock.yaml` hash and commit SHA, with restore-keys for cache fallback.
 
-**Centralized Version Management:** To upgrade pnpm or Node.js across all workflows, update version numbers in [.github/actions/setup-monorepo/action.yml](/.github/actions/setup-monorepo/action.yml) - all workflows will automatically use the new versions.
+**Centralized Version Management:** To upgrade pnpm or Node.js across all workflows, update version numbers in [.github/actions/setup-codebase/action.yml](/.github/actions/setup-codebase/action.yml) - all workflows will automatically use the new versions.
 
 ## Creating Workflows
 
@@ -82,8 +82,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 🕋 Setup Monorepo
-        uses: ./.github/actions/setup-monorepo
+      - name: 🕋 Setup Codebase
+        uses: ./.github/actions/setup-codebase
 
       - name: 🎯 Run Task
         run: npx nx affected -t task-name --parallel=3 --verbose
@@ -187,7 +187,7 @@ If workflows install dependencies every time:
 ## Best Practices
 
 1. **Test locally before pushing** - Run `nx affected` locally to catch errors early
-2. **Use composite action** - Leverage [.github/actions/setup-monorepo](/.github/actions/setup-monorepo) for consistency
+2. **Use composite action** - Leverage [.github/actions/setup-codebase](/.github/actions/setup-codebase) for consistency
 3. **Keep versions centralized** - Update pnpm/node versions in composite action only
 4. **Monitor cache usage** - Review workflow run times to ensure caching is effective
 5. **Use meaningful job names** - Include emojis and clear descriptions for better visibility

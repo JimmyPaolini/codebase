@@ -11,7 +11,7 @@ import {
   Token,
   Translation,
   Word,
-} from "@monorepo/lexico-entities";
+} from "@codebase/lexico-entities";
 
 import { resetCommandTestHarness } from "../../../testing/command-harness";
 import {

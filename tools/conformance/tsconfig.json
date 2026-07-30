@@ -8,15 +8,15 @@
     "moduleResolution": "bundler",
     "noEmit": true,
     "paths": {
+      "@codebase/conformance/*": ["../conformance/*"],
       "@conformance/*": ["./*"],
       "@golevelup/ts-vitest": [
         "./node_modules/@golevelup/ts-vitest/lib/index.d.ts"
       ],
-      "@monorepo/conformance/*": ["../conformance/*"],
+      "codebase/configuration/*": ["../../configuration/*"],
       "eslint-plugin-better-max-params": [
         "../../configuration/types/eslint-plugin-better-max-params/index.d.ts"
-      ],
-      "monorepo/configuration/*": ["../../configuration/*"]
+      ]
     },
     "target": "esnext",
     "types": ["node", "vitest/globals"]

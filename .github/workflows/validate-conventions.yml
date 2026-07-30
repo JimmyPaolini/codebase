@@ -23,8 +23,8 @@ jobs:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 🕋 Setup Monorepo
-        uses: ./.github/actions/setup-monorepo
+      - name: 🕋 Setup Codebase
+        uses: ./.github/actions/setup-codebase
 
       - name: 🎋 Validate Branch Name
         if: github.event_name == 'pull_request'
@@ -93,4 +93,4 @@ jobs:
         run: npx nx run conformance:start:validator
 
       - name: 📊 Validate Code Statistics
-        run: npx nx run monorepo:measure-code:check
+        run: npx nx run codebase:measure-code:check

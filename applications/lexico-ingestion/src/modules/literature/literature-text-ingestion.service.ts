@@ -5,7 +5,7 @@ import { Injectable } from "@nestjs/common";
 import { LoggerService } from "../logger/logger.service";
 
 import type { IngestTextArguments, LibraryEntry } from "./literature.types";
-import type { Text } from "@monorepo/lexico-entities";
+import type { Text } from "@codebase/lexico-entities";
 
 /** Ingest a single text entry and emit consistent progress/error logs. */
 @Injectable()

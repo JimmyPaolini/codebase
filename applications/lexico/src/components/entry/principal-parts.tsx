@@ -6,7 +6,7 @@ import {
   CardDescription,
   CardTitle,
   cn,
-} from "@monorepo/lexico-components";
+} from "@codebase/lexico-components";
 
 import { Identifier } from "./identifier";
 

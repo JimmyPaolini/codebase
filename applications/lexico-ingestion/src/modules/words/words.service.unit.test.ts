@@ -9,7 +9,7 @@ import {
   Word,
   WordForm,
   WordLexeme,
-} from "@monorepo/lexico-entities";
+} from "@codebase/lexico-entities";
 
 import { createRepositoryMock } from "../../../testing/mocks";
 import { LEXICO_INGESTION_BY_ID } from "../lexico-ingestion/lexico-ingestion.constants";

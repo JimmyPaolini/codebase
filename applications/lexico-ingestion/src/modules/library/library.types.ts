@@ -1,4 +1,4 @@
-import type { Author } from "@monorepo/lexico-entities";
+import type { Author } from "@codebase/lexico-entities";
 
 // 🏷️ Types
 

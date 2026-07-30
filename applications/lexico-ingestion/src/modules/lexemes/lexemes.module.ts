@@ -2,7 +2,7 @@ import { WordsModule } from "@lexico-ingestion/src/modules/words/words.module";
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
-import { Lexeme } from "@monorepo/lexico-entities";
+import { Lexeme } from "@codebase/lexico-entities";
 
 import { EtymologyModule } from "../etymology/etymology.module";
 import { FormsModule } from "../forms/forms.module";

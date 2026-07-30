@@ -1,5 +1,5 @@
 /**
- * Prettier configuration for the monorepo
+ * Prettier configuration for the codebase
  * @see https://prettier.io/docs/configuration
  */
 import type { Config } from "prettier";

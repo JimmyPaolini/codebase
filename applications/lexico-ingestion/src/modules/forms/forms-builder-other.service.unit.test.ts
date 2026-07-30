@@ -8,7 +8,7 @@ import {
   Lexeme,
   type NominalForm,
   type PartOfSpeech,
-} from "@monorepo/lexico-entities";
+} from "@codebase/lexico-entities";
 
 import { FormsBuilderGuardsService } from "./forms-builder-guards.service";
 import { FormsBuilderOtherService } from "./forms-builder-other.service";

@@ -5,7 +5,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@monorepo/lexico-components";
+} from "@codebase/lexico-components";
 
 import type { ReactNode } from "react";
 

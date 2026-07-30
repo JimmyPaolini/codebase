@@ -1,5 +1,5 @@
 {
-  // Base TypeScript configuration inherited by all projects in the monorepo.
+  // Base TypeScript configuration inherited by all projects in the codebase.
   // Projects extend this via their own tsconfig.json → { "extends": "../../configuration/tsconfig.json" }
   "compileOnSave": false,
   "compilerOptions": {
@@ -29,17 +29,17 @@
     "noUncheckedSideEffectImports": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    // 🗺️ Monorepo Path Aliases
-    // Enables `import { Button } from "@monorepo/lexico-components"` across projects
+    // 🗺️ Codebase Path Aliases
+    // Enables `import { Button } from "@codebase/lexico-components"` across projects
     "paths": {
-      "@monorepo/conformance/*": ["../tools/conformance/*"],
-      "@monorepo/lexico-components": [
+      "@codebase/conformance/*": ["../tools/conformance/*"],
+      "@codebase/lexico-components": [
         "../packages/lexico-components/src/index.ts"
       ],
       "eslint-plugin-better-max-params": [
         "./types/eslint-plugin-better-max-params/index.d.ts"
       ],
-      "monorepo/configuration/*": ["./*"]
+      "codebase/configuration/*": ["./*"]
     },
     "resolveJsonModule": true,
     "rootDir": "..",

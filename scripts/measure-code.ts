@@ -434,7 +434,7 @@ if (CHECK_MODE) {
     const difference = calculateDifference(BLOCK, actualContent);
     console.error(
       `❌ README code stats are stale.\n` +
-        `   Run \`nx run monorepo:measure-code:write\` locally and commit the result.\n\n${
+        `   Run \`nx run codebase:measure-code:write\` locally and commit the result.\n\n${
           difference
         }`,
     );

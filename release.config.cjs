@@ -6,7 +6,7 @@
  *
  * Branch strategy: Only `main` triggers releases.
  * NPM publishing: Disabled — packages are not published to any registry.
- * Versioning: Fixed (entire monorepo shares one version).
+ * Versioning: Fixed (entire codebase shares one version).
  * Auto-committed files: CHANGELOG.md, package.json, pnpm-lock.yaml
  *
  * Usage:
@@ -17,7 +17,7 @@
  * which analyzes commits since the last release, bumps the version,
  * updates CHANGELOG.md, and creates a GitHub release with tag.
  *
- * Per-project releases: Install `semantic-release-monorepo` and configure
+ * Per-project releases: Install `semantic-release-codebase` and configure
  * per-project release.config.cjs files if independent versioning is needed.
  *
  * Version Bump Rules:

@@ -100,7 +100,7 @@ wheels = [
 ]
 
 [[package]]
-name = "monorepo"
+name = "codebase"
 version = "0.0.0"
 source = { virtual = "." }
 

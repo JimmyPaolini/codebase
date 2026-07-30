@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/nx/schemas/project-schema.json",
-  "name": "monorepo",
+  "name": "codebase",
   "projectType": "application",
   "targets": {
     "analyze-code": {
@@ -299,17 +299,17 @@
       "configurations": {
         "check": {
           "commands": [
-            "# nx run monorepo:prettier:check",
-            "nx run monorepo:oxfmt:check",
-            "nx run monorepo:sqlfluff-format:check"
+            "# nx run codebase:prettier:check",
+            "nx run codebase:oxfmt:check",
+            "nx run codebase:sqlfluff-format:check"
           ],
           "parallel": true
         },
         "write": {
           "commands": [
-            "# nx run monorepo:prettier:write",
-            "nx run monorepo:oxfmt:write",
-            "nx run monorepo:sqlfluff-format:write"
+            "# nx run codebase:prettier:write",
+            "nx run codebase:oxfmt:write",
+            "nx run codebase:sqlfluff-format:write"
           ],
           "parallel": false
         }
@@ -396,17 +396,17 @@
       "configurations": {
         "check": {
           "commands": [
-            "nx run monorepo:eslint:check",
-            "nx run monorepo:oxlint:check",
-            "nx run monorepo:sqlfluff-lint:check"
+            "nx run codebase:eslint:check",
+            "nx run codebase:oxlint:check",
+            "nx run codebase:sqlfluff-lint:check"
           ],
           "parallel": true
         },
         "write": {
           "commands": [
-            "nx run monorepo:eslint:write",
-            "nx run monorepo:oxlint:write",
-            "nx run monorepo:sqlfluff-lint:write"
+            "nx run codebase:eslint:write",
+            "nx run codebase:oxlint:write",
+            "nx run codebase:sqlfluff-lint:write"
           ],
           "parallel": false
         }
@@ -701,11 +701,11 @@
           "command": "pnpm dlx sherif@1.10.0 -p applications/JimmyPaolini"
         },
         "write": {
-          "command": "pnpm dlx sherif@1.10.0 -p applications/JimmyPaolini --fix && nx run monorepo:format:write"
+          "command": "pnpm dlx sherif@1.10.0 -p applications/JimmyPaolini --fix && nx run codebase:format:write"
         }
       },
       "defaultConfiguration": "check",
-      "description": "Lint monorepo for consistent package.json conventions",
+      "description": "Lint codebase for consistent package.json conventions",
       "executor": "nx:run-commands",
       "inputs": ["{workspaceRoot}/**/package.json"],
       "options": {
@@ -781,7 +781,7 @@
           "command": "tsx .devcontainer/scripts/sync-vscode-extensions.ts check"
         },
         "write": {
-          "command": "tsx .devcontainer/scripts/sync-vscode-extensions.ts write && nx run monorepo:format:write"
+          "command": "tsx .devcontainer/scripts/sync-vscode-extensions.ts write && nx run codebase:format:write"
         }
       },
       "defaultConfiguration": "write",
@@ -821,7 +821,7 @@
           "command": "pnpm exec syncpack lint --config configuration/syncpack.config.cjs"
         },
         "write": {
-          "command": "pnpm exec syncpack fix --config configuration/syncpack.config.cjs && nx run monorepo:format:write"
+          "command": "pnpm exec syncpack fix --config configuration/syncpack.config.cjs && nx run codebase:format:write"
         }
       },
       "defaultConfiguration": "check",

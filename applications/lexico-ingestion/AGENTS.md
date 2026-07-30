@@ -21,7 +21,7 @@ nx run lexico-ingestion:develop
 
 - **Framework**: NestJS (modules, dependency injection, providers)
 - **CLI runner**: `nest-commander` (`CommandRunner` + `@Command()` decorator)
-- **Database**: PostgreSQL via TypeORM (`@monorepo/lexico-entities`)
+- **Database**: PostgreSQL via TypeORM (`@codebase/lexico-entities`)
 - **Env validation**: `@nestjs/config` + `zod` (`environmentSchema` in `.constants.ts`)
 - **Logging**: `pino`-backed `LoggerService` (`Scope.TRANSIENT`)
 - **Language**: Strict TypeScript
@@ -136,7 +136,7 @@ nx run lexico-ingestion:build          # Compile for production
 
 ### Testing
 
-Follow the monorepo's strict three-tier testing strategy. Co-locate test files with the source they test.
+Follow the codebase's strict three-tier testing strategy. Co-locate test files with the source they test.
 
 ```bash
 nx run lexico-ingestion:test:unit          # Fast (<100ms) — pure logic, mocked DI

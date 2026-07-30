@@ -1,6 +1,6 @@
 # Dev Container Configuration
 
-This directory contains the development container configuration for the monorepo. The dev container provides a fully configured, reproducible development environment with all required tools pre-installed.
+This directory contains the development container configuration for the codebase. The dev container provides a fully configured, reproducible development environment with all required tools pre-installed.
 
 ## Purpose
 
@@ -18,11 +18,11 @@ The dev container eliminates "works on my machine" issues by standardizing:
 ## Quick Start
 
 1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) and [VS Code Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
-2. Open the monorepo folder in VS Code
+2. Open the codebase folder in VS Code
 3. Open the command palette (`Ctrl/Cmd+Shift+P`) → **Dev Containers: Reopen in Container**
 4. When prompted to select a configuration, choose:
-   - **Monorepo Devcontainer (Local)** — for local development (Docker outside of Docker)
-   - **Monorepo Devcontainer (Cloud)** — for GitHub Codespaces or if you want isolated Docker (Docker in Docker)
+   - **Codebase Devcontainer (Local)** — for local development (Docker outside of Docker)
+   - **Codebase Devcontainer (Cloud)** — for GitHub Codespaces or if you want isolated Docker (Docker in Docker)
 5. Wait for container build (~2-3 minutes first time, cached after)
 6. Terminal opens with all tools ready
 
@@ -34,8 +34,8 @@ Two named configurations are provided. Select the appropriate one when opening i
 
 | Configuration                   | File                      | Docker mode                     | Use when                                             |
 | ------------------------------- | ------------------------- | ------------------------------- | ---------------------------------------------------- |
-| `Monorepo Devcontainer (Cloud)` | `cloud/devcontainer.json` | Docker-in-Docker (DinD)         | GitHub Codespaces, CI, or when isolation is required |
-| `Monorepo Devcontainer (Local)` | `local/devcontainer.json` | Docker-outside-of-Docker (DooD) | Local machine with Docker Desktop running            |
+| `Codebase Devcontainer (Cloud)` | `cloud/devcontainer.json` | Docker-in-Docker (DinD)         | GitHub Codespaces, CI, or when isolation is required |
+| `Codebase Devcontainer (Local)` | `local/devcontainer.json` | Docker-outside-of-Docker (DooD) | Local machine with Docker Desktop running            |
 
 **DooD advantages on a local machine:**
 
@@ -76,7 +76,7 @@ To make changes:
 1. Edit `local/devcontainer.json` for common settings (extensions, ports, env, feature versions, etc.) and run:
 
    ```bash
-   nx run monorepo:sync-devcontainer-configuration:write
+   nx run codebase:sync-devcontainer-configuration:write
    ```
 
 2. Edit `cloud/devcontainer.json` or `local/devcontainer.json` directly for environment-specific settings — no sync needed
@@ -112,7 +112,7 @@ The container auto-installs **66 extensions** organized by category. The full li
 | ------------------- | -------------------------------------------------------------------------- |
 | **Code Quality**    | ESLint, Prettier, Prettier-ESLint, Ruff                                    |
 | **Web Development** | Tailwind CSS, HTML-CSS, GraphQL, Template String Converter                 |
-| **Monorepo/Build**  | Nx Console, Version Lens, NPM Intellisense                                 |
+| **Codebase/Build**  | Nx Console, Version Lens, NPM Intellisense                                 |
 | **Database**        | Database Client, SQL Formatter, Prettier SQL                               |
 | **Git/GitHub**      | Git History, GitHub Actions, GitHub PRs, Conventional Commits, Codeowners  |
 | **Testing**         | Jest Runner                                                                |
@@ -347,7 +347,7 @@ The local configuration (`local/devcontainer.json`) **mounts the host Docker soc
 - **No memory overhead**: No second daemon; host OS manages all container memory directly
 - **Prerequisite**: Docker Desktop must be running on the host machine
 
-### Why a single monorepo container?
+### Why a single codebase container?
 
 Instead of per-project devcontainers (lexico, caelundas, etc.):
 

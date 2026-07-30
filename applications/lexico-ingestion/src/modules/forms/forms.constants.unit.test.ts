@@ -29,11 +29,11 @@ const createLexicoEntitiesModuleMock = (
 describe("forms.constants normalization guards", () => {
   afterEach(() => {
     vi.resetModules();
-    vi.doUnmock("@monorepo/lexico-entities");
+    vi.doUnmock("@codebase/lexico-entities");
   });
 
   it("returns empty lists when form enums are not arrays", async () => {
-    vi.doMock("@monorepo/lexico-entities", () =>
+    vi.doMock("@codebase/lexico-entities", () =>
       createLexicoEntitiesModuleMock({}),
     );
 
@@ -43,7 +43,7 @@ describe("forms.constants normalization guards", () => {
   });
 
   it("filters non-string values from mixed form enums", async () => {
-    vi.doMock("@monorepo/lexico-entities", () =>
+    vi.doMock("@codebase/lexico-entities", () =>
       createLexicoEntitiesModuleMock(["nominative", 1, "genitive"]),
     );
 

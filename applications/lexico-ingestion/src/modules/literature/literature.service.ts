@@ -11,7 +11,7 @@ import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import YAML from "yaml";
 
-import { Author, Line, Text, Token, Word } from "@monorepo/lexico-entities";
+import { Author, Line, Text, Token, Word } from "@codebase/lexico-entities";
 
 import { LoggerService } from "../logger/logger.service";
 import { NumeralsService } from "../numerals/numerals.service";

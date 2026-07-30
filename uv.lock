@@ -3,7 +3,7 @@ revision = 3
 requires-python = ">=3.11"
 
 [[package]]
-name = "monorepo"
+name = "codebase"
 version = "0.0.0"
 source = { virtual = "." }
 

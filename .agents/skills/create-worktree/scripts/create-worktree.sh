@@ -17,7 +17,7 @@ Arguments:
 Examples:
   create-worktree.sh feat/lexico-user-auth
   create-worktree.sh fix/conformance-generator-path main
-  create-worktree.sh docs/monorepo-worktree-skill main ../sandbox/docs-worktree
+  create-worktree.sh docs/codebase-worktree-skill main ../sandbox/docs-worktree
 EOF
 }
 

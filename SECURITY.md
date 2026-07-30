@@ -15,14 +15,14 @@ If you discover a security vulnerability, please report it responsibly.
 
 **Do not open a public issue.** Instead, use one of these methods:
 
-1. **GitHub Security Advisories** (preferred): [Report a vulnerability](https://github.com/JimmyPaolini/monorepo/security/advisories/new) through GitHub's private reporting feature.
+1. **GitHub Security Advisories** (preferred): [Report a vulnerability](https://github.com/JimmyPaolini/codebase/security/advisories/new) through GitHub's private reporting feature.
 2. **Email**: Contact the maintainer directly at the email address listed in the repository profile.
 
 ### What to Include
 
 - A description of the vulnerability and its potential impact
 - Steps to reproduce or a proof of concept
-- The affected project(s) within the monorepo (caelundas, lexico, lexico-components, infrastructure)
+- The affected project(s) within the codebase (caelundas, lexico, lexico-components, infrastructure)
 - Any suggested fixes, if available
 
 ### Response Timeline

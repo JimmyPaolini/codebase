@@ -29,10 +29,10 @@
           "command": "curl -s ${OLLAMA_HOST:-http://localhost:11434}/api/pull -d '{\"name\":\"gemma4:e2b\"}'"
         },
         "start": {
-          "command": "if [ \"$MONOREPO_ENVIRONMENT\" = \"local\" ]; then brew services start ollama; else echo 'Start Ollama on your host machine: ollama serve (or: brew services start ollama)'; fi"
+          "command": "if [ \"$CODEBASE_ENVIRONMENT\" = \"local\" ]; then brew services start ollama; else echo 'Start Ollama on your host machine: ollama serve (or: brew services start ollama)'; fi"
         },
         "stop": {
-          "command": "if [ \"$MONOREPO_ENVIRONMENT\" = \"local\" ]; then brew services stop ollama; else echo 'Stop Ollama on your host machine: pkill ollama (or: brew services stop ollama)'; fi"
+          "command": "if [ \"$CODEBASE_ENVIRONMENT\" = \"local\" ]; then brew services stop ollama; else echo 'Stop Ollama on your host machine: pkill ollama (or: brew services stop ollama)'; fi"
         }
       },
       "defaultConfiguration": "start",

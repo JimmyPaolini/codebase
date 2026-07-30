@@ -19,7 +19,7 @@ import {
   UninflectedInflection,
   verbConjugationValues,
   VerbInflection,
-} from "@monorepo/lexico-entities";
+} from "@codebase/lexico-entities";
 
 import {
   adjectiveDeclensionRegex,

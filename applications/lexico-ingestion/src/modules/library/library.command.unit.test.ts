@@ -17,7 +17,7 @@ import { LibraryCommand } from "./library.command";
 import { LIBRARY_PROVIDERS_TOKEN } from "./library.constants";
 
 import type { LibrarySourceProvider } from "./library.types";
-import type { Author } from "@monorepo/lexico-entities";
+import type { Author } from "@codebase/lexico-entities";
 
 const { appendFileMock, mkdirMock, readdirMock } = vi.hoisted(() => ({
   appendFileMock: vi.fn<() => Promise<void>>(),

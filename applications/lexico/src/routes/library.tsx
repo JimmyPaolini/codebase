@@ -18,7 +18,7 @@ import {
   Input,
   Label,
   Textarea,
-} from "@monorepo/lexico-components";
+} from "@codebase/lexico-components";
 
 import { useLibraryPage } from "./hooks/useLibraryPage";
 

@@ -1,6 +1,6 @@
 ---
 name: write-python
-description: Python project conventions for this monorepo. Use when creating a new Python project, configuring Python tools (ruff, pyright, ty, pytest, bandit, vulture), writing or reviewing pyproject.toml, setting up Nx targets for Python, or asked about Python tooling setup, uv, or the language:python tag. Covers the project.json pattern, pyproject.toml structure, targetDefaults, tool execution via uv run, and ty pre-1.0 configuration rules.
+description: Python project conventions for this codebase. Use when creating a new Python project, configuring Python tools (ruff, pyright, ty, pytest, bandit, vulture), writing or reviewing pyproject.toml, setting up Nx targets for Python, or asked about Python tooling setup, uv, or the language:python tag. Covers the project.json pattern, pyproject.toml structure, targetDefaults, tool execution via uv run, and ty pre-1.0 configuration rules.
 license: MIT
 ---
 
@@ -10,7 +10,7 @@ All Python projects inherit configuration from the workspace root `pyproject.tom
 
 ## Tool Targets
 
-Seven Python tool targets are defined as monorepo-wide `targetDefaults` in `nx.json`:
+Seven Python tool targets are defined as codebase-wide `targetDefaults` in `nx.json`:
 
 | Target | Tool | Purpose |
 | ------ | ---- | ------- |
@@ -79,7 +79,7 @@ Declare every sub-target as `{}` so Nx applies the `targetDefaults`. Override co
 }
 ```
 
-> Each sub-target declared as `{}` tells Nx "this project has this target — use the monorepo default."
+> Each sub-target declared as `{}` tells Nx "this project has this target — use the codebase default."
 
 ## pyproject.toml Pattern
 

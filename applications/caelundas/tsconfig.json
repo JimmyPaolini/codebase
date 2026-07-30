@@ -12,10 +12,10 @@
       "@golevelup/ts-vitest": [
         "./node_modules/@golevelup/ts-vitest/lib/index.d.ts"
       ],
+      "codebase/configuration/*": ["../../configuration/*"],
       "eslint-plugin-better-max-params": [
         "../../configuration/types/eslint-plugin-better-max-params/index.d.ts"
-      ],
-      "monorepo/configuration/*": ["../../configuration/*"]
+      ]
     },
     "target": "esnext",
     "types": ["node", "vitest/globals"]

@@ -1,6 +1,6 @@
 # Infrastructure
 
-**Kubernetes deployment tools and cloud infrastructure configuration for the monorepo.**
+**Kubernetes deployment tools and cloud infrastructure configuration for the codebase.**
 
 > For detailed architecture, deployment patterns, Helm chart configuration, and troubleshooting, see [AGENTS.md](AGENTS.md).
 
@@ -57,4 +57,4 @@ Code → Docker Build → Push to GHCR → Helm Upgrade → K8s Job → Retrieve
 
 - **[AGENTS.md](AGENTS.md)**: Complete infrastructure architecture, Helm chart config, Terraform setup, troubleshooting
 - **[caelundas AGENTS.md](../applications/caelundas/AGENTS.md)**: Application deployment example
-- **[Main AGENTS.md](../AGENTS.md)**: Monorepo architecture and Nx workflows
+- **[Main AGENTS.md](../AGENTS.md)**: Codebase architecture and Nx workflows

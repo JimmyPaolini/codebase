@@ -87,7 +87,7 @@ nx run {{nameKebabCase}}:build          # Compile for production
 
 ### Testing
 
-Follow the monorepo's strict three-tier testing strategy. Co-locate test files with the source they test.
+Follow the codebase's strict three-tier testing strategy. Co-locate test files with the source they test.
 
 ```bash
 nx run {{nameKebabCase}}:test:unit          # Fast (<100ms) — pure logic, mocked DI

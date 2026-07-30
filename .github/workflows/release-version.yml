@@ -27,8 +27,8 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: 🕋 Setup Monorepo
-        uses: ./.github/actions/setup-monorepo
+      - name: 🕋 Setup Codebase
+        uses: ./.github/actions/setup-codebase
 
       - name: 🔐 Import GPG Key
         uses: crazy-max/ghaction-import-gpg@v6

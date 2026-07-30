@@ -1,6 +1,6 @@
 # Strict Typing
 
-All TypeScript projects in this monorepo inherit strict settings from [configuration/tsconfig.base.json](../../../../configuration/tsconfig.base.json).
+All TypeScript projects in this codebase inherit strict settings from [configuration/tsconfig.base.json](../../../../configuration/tsconfig.base.json).
 
 ## Strict Mode Flags
 

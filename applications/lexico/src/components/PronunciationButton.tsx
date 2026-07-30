@@ -1,7 +1,7 @@
 import { Loader2, Volume2 } from "lucide-react";
 import { type ReactElement, useCallback, useState } from "react";
 
-import { Button } from "@monorepo/lexico-components";
+import { Button } from "@codebase/lexico-components";
 
 import { getPronunciation } from "../lib/pronunciation";
 

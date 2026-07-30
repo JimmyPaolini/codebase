@@ -3,7 +3,7 @@
  *
  * Each key is a glob pattern matching staged files, and its handler returns
  * an array of commands to run. Uses `nx affected` to scope checks to the
- * projects that own the changed files, plus monorepo-level checks.
+ * projects that own the changed files, plus codebase-level checks.
  *
  * Invoked by Husky's pre-commit hook via `npx lint-staged`.
  */
@@ -28,29 +28,29 @@ const config = {
   // When package.json or workspace config changes, verify the lockfile is in sync
   "**/package.json": (): string[] => [
     "./scripts/check-lockfile.sh",
-    "pnpm exec nx run monorepo:syncpack:check --outputStyle=static",
+    "pnpm exec nx run codebase:syncpack:check --outputStyle=static",
   ],
   "pnpm-workspace.yaml": (): string[] => ["./scripts/check-lockfile.sh"],
 
   // 🧹 Unused-code analysis configuration
   // Re-run the abstract clean target when the Knip config changes
   "configuration/knip.config.ts": (): string[] => [
-    "pnpm exec nx run monorepo:clean:check --outputStyle=static",
+    "pnpm exec nx run codebase:clean:check --outputStyle=static",
   ],
 
   // Run full advisory fallow suite when fallow config changes
   "configuration/fallow.config.jsonc": (): string[] => [
-    "pnpm exec nx run monorepo:fallow-dead-code --outputStyle=static",
-    "pnpm exec nx run monorepo:fallow-duplicates --outputStyle=static",
-    "pnpm exec nx run monorepo:fallow-health --outputStyle=static",
-    "pnpm exec nx run monorepo:fallow-audit --outputStyle=static",
+    "pnpm exec nx run codebase:fallow-dead-code --outputStyle=static",
+    "pnpm exec nx run codebase:fallow-duplicates --outputStyle=static",
+    "pnpm exec nx run codebase:fallow-health --outputStyle=static",
+    "pnpm exec nx run codebase:fallow-audit --outputStyle=static",
   ],
 
   // 🔄 Config synchronization
   // Keep VS Code extensions list in sync between .vscode and local devcontainer config
   "{.vscode/extensions.json,.devcontainer/local/devcontainer.json}":
     (): string[] => [
-      "pnpm exec nx run monorepo:sync-vscode-extensions:check --outputStyle=static",
+      "pnpm exec nx run codebase:sync-vscode-extensions:check --outputStyle=static",
     ],
 
   // Keep cloud devcontainer config in sync with local config for common fields
@@ -82,11 +82,11 @@ const config = {
   // 📝 TypeScript / JavaScript source files
   // Runs format (oxfmt + prettier), lint (eslint + oxlint), typecheck, spell-check,
   // and clean (Knip + jscpd advisory checks) on affected projects.
-  // nx affected includes monorepo when root-level files change.
+  // nx affected includes codebase when root-level files change.
   "*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}": (files: string[]): string[] => {
     return [
       `pnpm exec nx affected --target=clean,format,lint,typecheck,spell-check,fallow-dead-code --configuration=check --outputStyle=static --files=${getPaths(files)}`,
-      "pnpm exec nx run monorepo:fallow-duplicates --outputStyle=static",
+      "pnpm exec nx run codebase:fallow-duplicates --outputStyle=static",
     ];
   },
 

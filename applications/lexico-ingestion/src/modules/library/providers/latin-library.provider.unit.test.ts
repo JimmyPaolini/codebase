@@ -2,7 +2,7 @@ import { createMock, type DeepMocked } from "@golevelup/ts-vitest";
 import * as cheerio from "cheerio";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { Author, Text } from "@monorepo/lexico-entities";
+import { Author, Text } from "@codebase/lexico-entities";
 
 import { LatinLibraryProvider } from "./latin-library.provider";
 

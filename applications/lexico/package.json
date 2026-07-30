@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@monorepo/lexico-components": "workspace:*",
+    "@codebase/lexico-components": "workspace:*",
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-router-devtools": "catalog:",
     "@tanstack/react-start": "catalog:",
