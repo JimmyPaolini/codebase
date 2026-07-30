@@ -2,7 +2,7 @@ name: 🧑‍🚒 Upgrade Dependencies
 
 on:
   schedule:
-    - cron: 0 10 * * 0
+    - cron: 18 8 * * 5
   workflow_dispatch:
 
 concurrency:
@@ -25,13 +25,11 @@ jobs:
       - name: 🕋 Setup Codebase
         uses: ./.github/actions/setup-codebase
 
-      - name: ⬆️ Upgrade pnpm
+      - name: 🎁 Upgrade pnpm
         run: |
-          pnpm self-update
-          LATEST_PNPM=$(pnpm --version)
-          jq --arg v "pnpm@${LATEST_PNPM}" '.packageManager = $v' package.json > package.json.tmp && mv package.json.tmp package.json
+          jq --arg v "pnpm@$(pnpm view pnpm version)" '.packageManager = $v' package.json > package.json.tmp && mv package.json.tmp package.json
 
-      - name: ⬆️ Upgrade node
+      - name: 🟢 Upgrade node
         run: |
           source ~/.nvm/nvm.sh
           LATEST_NODE=$(nvm version-remote lts/* | sed 's/v//')
@@ -40,7 +38,7 @@ jobs:
 
       - name: 🐍 Upgrade Python
         run: |
-          uv python install 3
+          uv python install 3 --upgrade
           LATEST_PYTHON=$(uv run --python 3 python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
           PYTHON_VER=$(echo "$LATEST_PYTHON" | tr -d '.')
           sed -i "s/requires-python = \">=3\.[0-9][0-9]*/requires-python = \">=${LATEST_PYTHON}/" configuration/pyproject.toml
@@ -48,15 +46,15 @@ jobs:
           sed -i "s/pythonVersion = \"3\.[0-9][0-9]*/pythonVersion = \"${LATEST_PYTHON}/" configuration/pyproject.toml
           sed -i "s/requires-python = \">=3\.[0-9][0-9]*/requires-python = \">=${LATEST_PYTHON}/" applications/affirmations/pyproject.toml
 
-      - name: ⬆️ Upgrade Dependencies
+      - name: 📦 Upgrade Dependencies
         run: pnpm exec nx run codebase:upgrade-dependencies:write
 
-      - name: 🐍 Upgrade Python Dependencies
+      - name: 📦 Upgrade Python Dependencies
         run: |
           uv lock --upgrade
           uv lock --upgrade --project applications/affirmations
 
-      - name: 🤹 Update Skills
+      - name: 🤹 Upgrade Skills
         run: pnpm exec skills update --yes
 
       - name: 🔍 Detect Upgrades
@@ -67,19 +65,6 @@ jobs:
           else
             echo "has_dependency_updates=true" >> $GITHUB_OUTPUT
           fi
-
-      - name: ⛔ Close Pull Requests
-        if: steps.check.outputs.has_dependency_updates == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr list --head chore/dependencies-upgrade \
-            --state open --json number --jq '.[].number' | \
-            while read -r pr_number; do
-              echo "Closing stale PR #$pr_number"
-              gh pr close "$pr_number" \
-                --comment "Closing in favor of new automated chore/dependencies-upgrade PR."
-            done
 
       - name: 🔐 Import GPG Key
         if: steps.check.outputs.has_dependency_updates == 'true'

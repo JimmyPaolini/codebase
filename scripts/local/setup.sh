@@ -1,10 +1,10 @@
 #!/bin/bash
 # setup.sh — Entry point for local developer machine setup.
 #
-# Run this once after cloning the codebase to install all required tools,
+# Run this once after cloning the codebase repository to install all required tools,
 # configure your shell, and install project dependencies.
 #
-# Usage: bash scripts/local/setup.sh   (from the codebase root)
+# Usage: bash scripts/local/setup.sh   (from the workspace/worktree root)
 #
 # Execution order:
 #   1. utilities.sh    — validates cwd, loads .env, enables set -e

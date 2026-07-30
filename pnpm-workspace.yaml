@@ -14,6 +14,7 @@ allowBuilds:
   ssh2: true
   sweph: true
   unrs-resolver: true
+minimumReleaseAge: 1440
 catalogMode: strict
 cleanupUnusedCatalogs: true
 catalog:

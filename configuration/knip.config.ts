@@ -55,6 +55,7 @@ const config: KnipConfig = {
     "unplugin-swc", // Vite plugin for SWC transformation with emitDecoratorMetadata support (caelundas/vitest.config.ts)
     "squawk-cli",
     "skills", // skills.sh CLI, invoked via pnpm exec skills for skill management
+    "view", // pnpm sub-command used as `pnpm view pnpm version` in upgrade-dependencies workflow
   ],
 
   // Allow exports that are only used in the same file (common for barrel re-exports)
@@ -96,6 +97,9 @@ const config: KnipConfig = {
         // Skill scripts are invoked by the skill framework, not imported in code
         "**/.agents/skills/**",
         "**/.github/skills/**",
+      ],
+      ignoreBinaries: [
+        "view", // pnpm sub-command: `pnpm view pnpm version` in upgrade-dependencies workflow
       ],
       project: "**/*.{js,ts,mjs,cjs}",
     },
