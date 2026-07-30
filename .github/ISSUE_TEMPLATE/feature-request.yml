@@ -16,6 +16,7 @@ body:
       description: Which area of the codebase does this apply to?
       options:
         - affirmations
+        - archive-logs
         - applications
         - caelundas
         - configuration
@@ -38,6 +39,7 @@ body:
         - testing
         - tools
         - synchronization
+
 
 
     validations:

@@ -17,6 +17,7 @@ body:
       description: Which area of the codebase is affected?
       options:
         - affirmations
+        - archive-logs
         - applications
         - caelundas
         - configuration
@@ -39,6 +40,7 @@ body:
         - testing
         - tools
         - synchronization
+
 
 
     validations:

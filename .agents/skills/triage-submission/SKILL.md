@@ -344,6 +344,7 @@ Read `configuration/commitlint.config.ts` for the full rule set before amending.
 | Scope | Description |
 | ----- | ----------- |
 | `affirmations` | Python Jupyter notebook application for LangGraph affirmation generation |
+| `archive-logs` | Archive historical logs and records like GitHub Actions artifacts |
 | `applications` | Changes spanning multiple applications in applications/ (e.g. lexico, caelundas, etc.) |
 | `caelundas` | Node.js CLI for astronomical calendar generation (NASA JPL ephemeris) |
 | `configuration` | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.) |

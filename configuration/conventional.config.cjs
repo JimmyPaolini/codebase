@@ -101,6 +101,11 @@ const scopes = [
   },
   {
     description:
+      "Archive historical logs and records like GitHub Actions artifacts",
+    name: "archive-logs",
+  },
+  {
+    description:
       "Changes spanning multiple applications in applications/ (e.g. lexico, caelundas, etc.)",
     name: "applications",
   },
