@@ -4,7 +4,7 @@ import type {
   FormTense,
   formVoiceValues,
   Lexeme,
-} from "@monorepo/lexico-entities";
+} from "@codebase/lexico-entities";
 
 // 🏷️ Types
 

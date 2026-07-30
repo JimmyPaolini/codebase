@@ -12,7 +12,7 @@ import {
   Token,
   Translation,
   Word,
-} from "@monorepo/lexico-entities";
+} from "@codebase/lexico-entities";
 
 import { LoggerService } from "../logger/logger.service";
 

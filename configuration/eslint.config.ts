@@ -415,7 +415,7 @@ export default [
             "type",
           ],
           ignoreCase: true,
-          internalPattern: ["^@monorepo/.+"],
+          internalPattern: ["^@codebase/.+"],
           newlinesBetween: 1,
           order: "asc",
           type: "natural",

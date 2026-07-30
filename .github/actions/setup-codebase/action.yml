@@ -1,6 +1,6 @@
-name: 🕋 Setup Monorepo
+name: 🕋 Setup Codebase
 description: |
-  Nx monorepo setup with pnpm, node, and cache management
+  Nx codebase setup with pnpm, node, and cache management
   (requires checkout first)
 
 runs:

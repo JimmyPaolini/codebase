@@ -869,7 +869,7 @@ importers:
 
   applications/lexico:
     dependencies:
-      '@monorepo/lexico-components':
+      '@codebase/lexico-components':
         specifier: workspace:*
         version: link:../../packages/lexico-components
       '@tanstack/react-router':
@@ -951,12 +951,12 @@ importers:
 
   applications/lexico-ingestion:
     dependencies:
+      '@codebase/lexico-entities':
+        specifier: workspace:*
+        version: link:../../packages/lexico-entities
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
-      '@monorepo/lexico-entities':
-        specifier: workspace:*
-        version: link:../../packages/lexico-entities
       '@nestjs/common':
         specifier: 'catalog:'
         version: 11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2)

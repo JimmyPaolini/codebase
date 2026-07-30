@@ -29,18 +29,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 🕋 Setup Monorepo
-        uses: ./.github/actions/setup-monorepo
+      - name: 🕋 Setup Codebase
+        uses: ./.github/actions/setup-codebase
 
       - name: 🧑‍🏫 Refresh Documentation
-        run: pnpm exec nx run monorepo:openwiki
+        run: pnpm exec nx run codebase:openwiki
 
       - name: 🔀 Upsert Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           base: main
-          branch: docs/monorepo-refresh-documentation
+          branch: docs/codebase-refresh-documentation
           delete-branch: true
           commit-message: "docs(documentation): 📝 refresh documentation with openwiki"
           title: "docs(documentation): 📝 refresh documentation with OpenWiki"
@@ -54,7 +54,7 @@ jobs:
             - Install and run OpenWiki in repository code mode
             - Update documentation under `openwiki/`
             - Reuse the existing scheduled + manual workflow entrypoint
-            - Publish changes on `docs/monorepo-refresh-documentation`
+            - Publish changes on `docs/codebase-refresh-documentation`
 
             ## 🧪 Testing
 

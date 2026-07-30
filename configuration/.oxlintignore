@@ -34,7 +34,7 @@ lint-staged.config.ts
 **/applications/lexico-ingestion/src/modules/library/library.constants.ts
 **/library.json
 
-# Vendored skill content (framework-managed, not monorepo-authored source)
+# Vendored skill content (framework-managed, not codebase-authored source)
 **/.agents/skills/**
 **/.github/skills/**
 **/documentation/skills/**

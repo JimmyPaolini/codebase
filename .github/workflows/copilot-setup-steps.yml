@@ -36,8 +36,8 @@ jobs:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 🕋 Setup Monorepo
-        uses: ./.github/actions/setup-monorepo
+      - name: 🕋 Setup Codebase
+        uses: ./.github/actions/setup-codebase
 
       - name: 🔐 Import GPG Key
         uses: crazy-max/ghaction-import-gpg@v6

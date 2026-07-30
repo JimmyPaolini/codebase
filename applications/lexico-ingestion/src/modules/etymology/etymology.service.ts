@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
-import { Lexeme, Translation } from "@monorepo/lexico-entities";
+import { Lexeme, Translation } from "@codebase/lexico-entities";
 
 import type * as cheerio from "cheerio";
 import type { AnyNode } from "domhandler";

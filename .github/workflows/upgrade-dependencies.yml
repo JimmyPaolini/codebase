@@ -22,8 +22,8 @@ jobs:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 🕋 Setup Monorepo
-        uses: ./.github/actions/setup-monorepo
+      - name: 🕋 Setup Codebase
+        uses: ./.github/actions/setup-codebase
 
       - name: ⬆️ Upgrade pnpm
         run: |
@@ -49,7 +49,7 @@ jobs:
           sed -i "s/requires-python = \">=3\.[0-9][0-9]*/requires-python = \">=${LATEST_PYTHON}/" applications/affirmations/pyproject.toml
 
       - name: ⬆️ Upgrade Dependencies
-        run: pnpm exec nx run monorepo:upgrade-dependencies:write
+        run: pnpm exec nx run codebase:upgrade-dependencies:write
 
       - name: 🐍 Upgrade Python Dependencies
         run: |

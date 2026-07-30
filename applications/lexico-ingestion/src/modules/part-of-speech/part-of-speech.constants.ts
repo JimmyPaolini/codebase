@@ -8,7 +8,7 @@ import {
   type PartOfSpeech,
   prepositionCases,
   verbConjugationValues,
-} from "@monorepo/lexico-entities";
+} from "@codebase/lexico-entities";
 
 const isCompactStringArray = (
   values: readonly (number | string)[] | Readonly<Record<string, never>>,

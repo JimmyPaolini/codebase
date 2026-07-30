@@ -169,7 +169,7 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
 
-    // synchronization: NestJS CLI tool for monorepo config synchronization commands
+    // synchronization: NestJS CLI tool for codebase config synchronization commands
     "tools/synchronization": {
       entry: ["src/main.ts", "src/files.ts"], // Main CLI entry + public file-list constant exports
       ignore: [

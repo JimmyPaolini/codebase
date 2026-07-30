@@ -93,9 +93,9 @@
   },
   "keywords": [],
   "license": "MIT",
-  "name": "monorepo",
+  "name": "codebase",
   "packageManager": "pnpm@11.2.2",
-  "repository": "JimmyPaolini/monorepo.git",
+  "repository": "JimmyPaolini/codebase.git",
   "scripts": {
     "prepare": "husky configuration/.husky",
     "semantic-release": "semantic-release",

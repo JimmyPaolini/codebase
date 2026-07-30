@@ -14,7 +14,7 @@ context:
 metadata:
   domain: planning
   lifecycle-stage: research
-  owner: monorepo
+  owner: codebase
 license: MIT
 ---
 

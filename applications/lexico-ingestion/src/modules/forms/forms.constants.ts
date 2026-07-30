@@ -12,7 +12,7 @@ import {
   formVoiceValues,
   type PartOfSpeech,
   partOfSpeechEnumValues,
-} from "@monorepo/lexico-entities";
+} from "@codebase/lexico-entities";
 
 const isNormalizableStringArray = (
   values: readonly (number | string)[] | Readonly<Record<string, never>>,

@@ -17,7 +17,7 @@ Use this skill when you need to:
 
 ## Prerequisites
 
-- The local PostgreSQL container must be running. Use `nx run monorepo:postgres-container:up` if needed.
+- The local PostgreSQL container must be running. Use `nx run codebase:postgres-container:up` if needed.
 - `psql` (PostgreSQL client) must be installed locally.
 - The `.env` file at the workspace root must contain the default PostgreSQL connection variables (`POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_USER`, `POSTGRES_DB`, `POSTGRES_PASSWORD`).
 

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo "🫜 Validating monorepo root directory..."
-if [ "$(basename "$(pwd)")" != "monorepo" ] || [ ! -f "package.json" ] || ! grep -q '"name": "monorepo"' package.json 2>/dev/null; then
-  echo "❌ Error: This script must be run from the monorepo root directory"
+echo "🫜 Validating codebase root directory..."
+if [ "$(basename "$(pwd)")" != "codebase" ] || [ ! -f "package.json" ] || ! grep -q '"name": "codebase"' package.json 2>/dev/null; then
+  echo "❌ Error: This script must be run from the codebase root directory"
   echo "📁 Current directory: $(pwd)"
   exit 1
 fi
@@ -19,7 +19,7 @@ else
   echo "⚠️  .env file not found (will be created by environment.sh)"
 fi
 
-echo "👟 Making all monorepo scripts executable..."
+echo "👟 Making all codebase scripts executable..."
 find . -type f -name '*.sh' -print0 | xargs -0 chmod +x || true
 
 get_git_commit_hash() {

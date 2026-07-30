@@ -6,7 +6,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@monorepo/lexico-components";
+} from "@codebase/lexico-components";
 
 import type { ReactElement } from "react";
 

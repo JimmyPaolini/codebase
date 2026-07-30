@@ -1,12 +1,12 @@
 ---
 name: validate-code
-description: Run the full code quality validation suite for this monorepo. Use this skill when you have finished implementing code changes and want to verify they are clean before committing, when told to "validate", "check quality", or "run linting", or before invoking the submit-changes skill. Runs analyze-code (format, lint, typecheck, knip, spell-check) using the write configuration to auto-fix what it can, then checks that nothing remains.
+description: Run the full code quality validation suite for this codebase. Use this skill when you have finished implementing code changes and want to verify they are clean before committing, when told to "validate", "check quality", or "run linting", or before invoking the submit-changes skill. Runs analyze-code (format, lint, typecheck, knip, spell-check) using the write configuration to auto-fix what it can, then checks that nothing remains.
 license: MIT
 ---
 
 # Validate Code
 
-Run the monorepo's full automated quality suite against your changes **before committing**. This prevents pre-commit hook failures, failed CI jobs, and wasted triage cycles.
+Run the codebase's full automated quality suite against your changes **before committing**. This prevents pre-commit hook failures, failed CI jobs, and wasted triage cycles.
 
 ## When to Use This Skill
 

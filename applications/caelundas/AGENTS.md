@@ -143,7 +143,7 @@ nx run caelundas:build          # Compile for production
 
 ### Testing
 
-Follow the monorepo's strict three-tier testing strategy. Co-locate test files with the source they test.
+Follow the codebase's strict three-tier testing strategy. Co-locate test files with the source they test.
 
 ```bash
 nx run caelundas:test:unit          # Fast (<100ms) — pure logic, mocked DI
@@ -252,7 +252,7 @@ Single-stage build:
 
 - Base: Node.js 20 Alpine
 - Native deps: python3, make, g++ (for sqlite3 compilation)
-- Workspace: Full monorepo copied (needed for path resolution)
+- Workspace: Full codebase copied (needed for path resolution)
 - Entry: `pnpm start` (runs TypeScript directly via tsx)
 
 ## Performance

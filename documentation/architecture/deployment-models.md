@@ -241,7 +241,7 @@ helm uninstall caelundas-20260226-143000
 
 ### kubernetes-job Chart
 
-The monorepo's [infrastructure/helm/kubernetes-job](../../infrastructure/helm/kubernetes-job) chart provides a reusable template for Jobs with PVCs:
+The codebase's [infrastructure/helm/kubernetes-job](../../infrastructure/helm/kubernetes-job) chart provides a reusable template for Jobs with PVCs:
 
 **Key Features**:
 

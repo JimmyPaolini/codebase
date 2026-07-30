@@ -4,7 +4,7 @@
 # Python projects extend this via [tool.ruff] extend = "../../configuration/pyproject.toml"
 
 [project]
-name = "monorepo"
+name = "codebase"
 version = "0.0.0"
 requires-python = ">=3.14"
 dependencies = []

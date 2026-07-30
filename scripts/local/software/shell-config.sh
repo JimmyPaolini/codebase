@@ -30,37 +30,37 @@ configure_shell_rc() {
   local rc_file="$1"
   local nvm_prefix
   nvm_prefix="$(brew --prefix nvm)"
-  local monorepo_dir
-  monorepo_dir="$(pwd)"
+  local codebase_dir
+  codebase_dir="$(pwd)"
 
   echo "🐚 Configuring shell in $rc_file..."
 
   # ── nvm ──
   append_shell_block "$rc_file" \
-    "# monorepo: nvm configuration" \
+    "# codebase: nvm configuration" \
     "export NVM_DIR=\"\$HOME/.nvm\"
 [ -s \"$nvm_prefix/nvm.sh\" ] && . \"$nvm_prefix/nvm.sh\"
 [ -s \"$nvm_prefix/etc/bash_completion.d/nvm\" ] && . \"$nvm_prefix/etc/bash_completion.d/nvm\""
 
   # ── pnpm global bin PATH ──
   append_shell_block "$rc_file" \
-    "# monorepo: pnpm global bin" \
+    "# codebase: pnpm global bin" \
     "export PNPM_HOME=\"\$HOME/.local/share/pnpm\"
 case \":\$PATH:\" in *\":\$PNPM_HOME/bin:\"*) ;; *) export PATH=\"\$PNPM_HOME/bin:\$PNPM_HOME:\$PATH\" ;; esac"
 
   # ── GPG TTY (for git commit signing) ──
   # gpg-agent needs a terminal reference to show the pinentry passphrase dialog.
   append_shell_block "$rc_file" \
-    "# monorepo: GPG TTY for commit signing" \
+    "# codebase: GPG TTY for commit signing" \
     "export GPG_TTY=\$(tty)"
 
   # ── Node.js memory limit (parity with devcontainer) ──
   append_shell_block "$rc_file" \
-    "# monorepo: Node.js memory limit" \
+    "# codebase: Node.js memory limit" \
     "export NODE_OPTIONS=\"--max-old-space-size=2048\""
 
   # ── Shell completions ──
-  local completions_marker="# monorepo: shell completions"
+  local completions_marker="# codebase: shell completions"
   if ! ([ -f "$rc_file" ] && grep -q "$completions_marker" "$rc_file"); then
     local shell_name
     shell_name="$(basename "$rc_file")"
@@ -98,15 +98,15 @@ eval \"\$(gh completion -s $completion_type)\""
   # ── terraform completions (uses its own installer) ──
   if command -v terraform &>/dev/null; then
     append_shell_block "$rc_file" \
-      "# monorepo: terraform completion" \
+      "# codebase: terraform completion" \
       "autoload -U +X bashcompinit && bashcompinit 2>/dev/null
 complete -o nospace -C $(command -v terraform) terraform"
   fi
 
   # ── Shell utility functions ──
   append_shell_block "$rc_file" \
-    "# monorepo: shell utility functions" \
-    "[ -f \"$monorepo_dir/scripts/shell/processes.sh\" ] && . \"$monorepo_dir/scripts/shell/processes.sh\""
+    "# codebase: shell utility functions" \
+    "[ -f \"$codebase_dir/scripts/shell/processes.sh\" ] && . \"$codebase_dir/scripts/shell/processes.sh\""
 
   echo "✅ Shell configuration updated in $rc_file"
 }

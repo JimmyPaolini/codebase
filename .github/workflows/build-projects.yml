@@ -28,8 +28,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 🕋 Setup Monorepo
-        uses: ./.github/actions/setup-monorepo
+      - name: 🕋 Setup Codebase
+        uses: ./.github/actions/setup-codebase
 
       - name: 👷 Build Projects
         run: npx nx run-many --all --target=build --parallel=3

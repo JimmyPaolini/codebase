@@ -2,7 +2,7 @@ import { createMock, type DeepMocked } from "@golevelup/ts-vitest";
 import * as cheerio from "cheerio";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { Author } from "@monorepo/lexico-entities";
+import { Author } from "@codebase/lexico-entities";
 
 import { PerseusLibraryProvider } from "./perseus-library.provider";
 

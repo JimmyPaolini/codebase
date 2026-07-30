@@ -150,7 +150,7 @@ nx run caelundas:build --skip-nx-cache
 
 **Why**: Bypasses Nx caching and dependency checks.
 
-**Solution**: Always use Nx for monorepo tasks:
+**Solution**: Always use Nx for codebase tasks:
 
 ```bash
 # ❌ WRONG: No cache
@@ -232,9 +232,9 @@ There are three hooks:
 
 | Hook | What it runs |
 | ---- | ------------ |
-| `pre-commit` | `nx run monorepo:lint-staged` — runs format, lint, typecheck, etc. on staged files |
-| `commit-msg` | `nx run monorepo:commitlint` — validates commit message format |
-| `pre-push` | `nx run monorepo:validate-branch-name` — validates branch name pattern |
+| `pre-commit` | `nx run codebase:lint-staged` — runs format, lint, typecheck, etc. on staged files |
+| `commit-msg` | `nx run codebase:commitlint` — validates commit message format |
+| `pre-push` | `nx run codebase:validate-branch-name` — validates branch name pattern |
 
 **Reading the last pre-commit failure**: Output is always written to `last-lint-staged-output.log` at the workspace root. Read it without re-running the hook:
 
@@ -339,7 +339,7 @@ nx run lexico:develop
 1. **Check for circular deps**:
 
 ```bash
-nx run monorepo:dependency-cruiser
+nx run codebase:dependency-cruiser
 ```
 
 ### Slow Test Execution
@@ -364,7 +364,7 @@ nx run caelundas:test:unit
 
 ## Common Error Messages
 
-### "Cannot find module '@monorepo/lexico-components'"
+### "Cannot find module '@codebase/lexico-components'"
 
 **Cause**: TypeScript path mappings not configured or stale node_modules.
 

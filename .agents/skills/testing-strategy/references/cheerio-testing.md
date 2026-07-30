@@ -1,6 +1,6 @@
 # Cheerio Testing Reference
 
-Use this reference when writing or refactoring tests that parse HTML or XML with Cheerio in this monorepo.
+Use this reference when writing or refactoring tests that parse HTML or XML with Cheerio in this codebase.
 
 ## Goals
 

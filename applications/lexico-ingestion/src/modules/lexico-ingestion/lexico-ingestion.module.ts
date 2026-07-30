@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 
-import { DatabaseModule } from "@monorepo/lexico-entities";
+import { DatabaseModule } from "@codebase/lexico-entities";
 
 import { ClearModule } from "../clear/clear.module";
 import { CorpusScriptorumEcclesiasticorumLatinorumModule } from "../corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.module";

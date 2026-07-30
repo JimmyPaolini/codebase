@@ -9,11 +9,11 @@ import {
   PrepositionInflection,
   UninflectedInflection,
   VerbInflection,
-} from "@monorepo/lexico-entities";
+} from "@codebase/lexico-entities";
 
 import { PartOfSpeechService } from "./part-of-speech.service";
 
-import type { Lexeme, PrincipalPart } from "@monorepo/lexico-entities";
+import type { Lexeme, PrincipalPart } from "@codebase/lexico-entities";
 import type { AnyNode } from "domhandler";
 
 describe(PartOfSpeechService, () => {
@@ -46,8 +46,8 @@ describe(PartOfSpeechService, () => {
     });
 
     it("handles non-array enum exports during module initialization", async () => {
-      vi.doMock("@monorepo/lexico-entities", async () => {
-        const actualModule = await vi.importActual("@monorepo/lexico-entities");
+      vi.doMock("@codebase/lexico-entities", async () => {
+        const actualModule = await vi.importActual("@codebase/lexico-entities");
 
         return {
           ...actualModule,
@@ -63,8 +63,8 @@ describe(PartOfSpeechService, () => {
     });
 
     it("filters non-string enum values during module initialization", async () => {
-      vi.doMock("@monorepo/lexico-entities", async () => {
-        const actualModule = await vi.importActual("@monorepo/lexico-entities");
+      vi.doMock("@codebase/lexico-entities", async () => {
+        const actualModule = await vi.importActual("@codebase/lexico-entities");
 
         return {
           ...actualModule,

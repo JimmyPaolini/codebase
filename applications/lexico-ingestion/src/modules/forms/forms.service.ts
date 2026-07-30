@@ -6,7 +6,7 @@ import {
   Form,
   type Lexeme,
   type PartOfSpeech,
-} from "@monorepo/lexico-entities";
+} from "@codebase/lexico-entities";
 
 import { WordsService } from "../words/words.service";
 

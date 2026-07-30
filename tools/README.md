@@ -1,12 +1,12 @@
 # Tools - Nx Workspace Utilities
 
-This directory contains Nx plugins and generators for the monorepo.
+This directory contains Nx plugins and generators for the codebase.
 
 ## Available Generators
 
 ### Conformance (`conformance`)
 
-**Purpose:** Generate React components with test files following monorepo conventions
+**Purpose:** Generate React components with test files following codebase conventions
 
 **Quick Start:**
 
@@ -21,7 +21,7 @@ nx generate conformance:react-component --name=Button
 - Vitest test file
 - Barrel exports (optional)
 - Auto-formatted code
-- Monorepo conventions
+- Codebase conventions
 
 **Documentation:**
 
@@ -137,7 +137,7 @@ tools/my-generator/
 3. **Type your generators** - Use TypeScript interfaces
 4. **Include tests** - Generate valid, tested code
 5. **Document thoroughly** - README + AGENTS.md
-6. **Follow monorepo conventions** - See [AGENTS.md](../AGENTS.md)
+6. **Follow codebase conventions** - See [AGENTS.md](../AGENTS.md)
 
 ## Troubleshooting
 

@@ -1,12 +1,12 @@
 ---
 name: spell-check
-description: Run and triage cspell in this monorepo. Use when spell-check fails in lint-staged, nx affected, or nx run-many, when cspell reports Unknown word entries, or when adding domain vocabulary to the correct dictionary under configuration/.cspell. Covers full-workspace checks, project-targeted checks, and dictionary update validation.
+description: Run and triage cspell in this codebase. Use when spell-check fails in lint-staged, nx affected, or nx run-many, when cspell reports Unknown word entries, or when adding domain vocabulary to the correct dictionary under configuration/.cspell. Covers full-workspace checks, project-targeted checks, and dictionary update validation.
 license: MIT
 ---
 
 # Spell Check
 
-Use this skill to run cspell consistently in this monorepo and fix failures by updating the correct dictionary files.
+Use this skill to run cspell consistently in this codebase and fix failures by updating the correct dictionary files.
 
 ## When to Use This Skill
 

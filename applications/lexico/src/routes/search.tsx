@@ -14,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
   Input,
-} from "@monorepo/lexico-components";
+} from "@codebase/lexico-components";
 
 import { EntryCard } from "../components/entry/entry-card";
 import { transformForms } from "../lib/forms";

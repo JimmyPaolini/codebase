@@ -4,7 +4,7 @@
   "bail": false,
   "cacheDirectory": ".nx/cache",
   "defaultBase": "main",
-  "defaultProject": "monorepo",
+  "defaultProject": "codebase",
   "excludedGlobs": ["**/tools/conformance/src/modules/*/templates/**"],
   "generators": {
     "@nx/react": {
@@ -84,7 +84,7 @@
     "caelundas": {
       "tags": ["domain:caelundas", "language:typescript", "type:application"]
     },
-    "monorepo": {
+    "codebase": {
       "tags": ["language:typescript", "type:tool"]
     }
   },

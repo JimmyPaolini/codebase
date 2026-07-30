@@ -1,6 +1,6 @@
-# monorepo
+# codebase
 
-[![Nx](https://img.shields.io/badge/Nx-Monorepo-143055?logo=nx)](https://nx.dev)
+[![Nx](https://img.shields.io/badge/Nx-Codebase-143055?logo=nx)](https://nx.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![pnpm](https://img.shields.io/badge/pnpm-Workspace-F69220?logo=pnpm)](https://pnpm.io/)
 [![Node.js](https://img.shields.io/badge/Node.js-24-5FA04E?logo=nodedotjs)](https://nodejs.org/)
@@ -59,15 +59,15 @@
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-K8s-326CE5?logo=kubernetes)](https://kubernetes.io/)
 [![Terraform](https://img.shields.io/badge/Terraform-IaC-844FBA?logo=terraform)](https://www.terraform.io/)
 
-[![Analyze Code](https://github.com/JimmyPaolini/monorepo/actions/workflows/analyze-code.yml/badge.svg)](https://github.com/JimmyPaolini/monorepo/actions/workflows/analyze-code.yml)
-[![Test Coverage](https://github.com/JimmyPaolini/monorepo/actions/workflows/test-coverage.yml/badge.svg)](https://github.com/JimmyPaolini/monorepo/actions/workflows/test-coverage.yml)
-[![Security Audit](https://github.com/JimmyPaolini/monorepo/actions/workflows/audit-security.yml/badge.svg)](https://github.com/JimmyPaolini/monorepo/actions/workflows/audit-security.yml)
-[![Validate Conventions](https://github.com/JimmyPaolini/monorepo/actions/workflows/validate-conventions.yml/badge.svg?branch=main)](https://github.com/JimmyPaolini/monorepo/actions/workflows/validate-conventions.yml)
-[![Build Projects](https://github.com/JimmyPaolini/monorepo/actions/workflows/build-projects.yml/badge.svg)](https://github.com/JimmyPaolini/monorepo/actions/workflows/build-projects.yml)
-[![Make Devcontainer](https://github.com/JimmyPaolini/monorepo/actions/workflows/make-devcontainer.yml/badge.svg)](https://github.com/JimmyPaolini/monorepo/actions/workflows/make-devcontainer.yml)
-[![Release Version](https://github.com/JimmyPaolini/monorepo/actions/workflows/release-version.yml/badge.svg)](https://github.com/JimmyPaolini/monorepo/actions/workflows/release-version.yml)
+[![Analyze Code](https://github.com/JimmyPaolini/codebase/actions/workflows/analyze-code.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/analyze-code.yml)
+[![Test Coverage](https://github.com/JimmyPaolini/codebase/actions/workflows/test-coverage.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/test-coverage.yml)
+[![Security Audit](https://github.com/JimmyPaolini/codebase/actions/workflows/audit-security.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/audit-security.yml)
+[![Validate Conventions](https://github.com/JimmyPaolini/codebase/actions/workflows/validate-conventions.yml/badge.svg?branch=main)](https://github.com/JimmyPaolini/codebase/actions/workflows/validate-conventions.yml)
+[![Build Projects](https://github.com/JimmyPaolini/codebase/actions/workflows/build-projects.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/build-projects.yml)
+[![Make Devcontainer](https://github.com/JimmyPaolini/codebase/actions/workflows/make-devcontainer.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/make-devcontainer.yml)
+[![Release Version](https://github.com/JimmyPaolini/codebase/actions/workflows/release-version.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/release-version.yml)
 
-A modern TypeScript monorepo with Nx, featuring automated releases, comprehensive code quality tools, and strict type safety.
+A modern TypeScript codebase with Nx, featuring automated releases, comprehensive code quality tools, and strict type safety.
 
 ## 🚀 Quick Start
 
@@ -92,7 +92,7 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
 - **[lexico-components](packages/lexico-components)** - Shared React component library using shadcn/ui
 - **[lexico-entities](packages/lexico-entities)** - Shared TypeORM entities and GraphQL types package
 - **[lexico-ingestion](applications/lexico-ingestion)** - NestJS CLI app for Latin dictionary data ingestion
-- **[synchronization](tools/synchronization)** - NestJS CLI app for synchronizing monorepo configuration and documentation artifacts
+- **[synchronization](tools/synchronization)** - NestJS CLI app for synchronizing codebase configuration and documentation artifacts
 
 ## 📖 Documentation
 

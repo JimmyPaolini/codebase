@@ -1,8 +1,8 @@
 ---
 type: Architecture
-title: Monorepo Architecture Overview
-description: High-level architectural design of the Nx monorepo, packages, services, and tooling integration.
-tags: [architecture, monorepo, nx, TypeScript, Python]
+title: Codebase Architecture Overview
+description: High-level architectural design of the Nx codebase, packages, services, and tooling integration.
+tags: [architecture, codebase, nx, TypeScript, Python]
 ---
 
 # Architecture Overview
@@ -35,12 +35,12 @@ flowchart TD
 
 ## System Structure
 
-The monorepo uses `pnpm` workspaces and `Nx` to coordinate builds, tests, and linting across TypeScript and Python workloads.
+The codebase uses `pnpm` workspaces and `Nx` to coordinate builds, tests, and linting across TypeScript and Python workloads.
 
 - **Frontend & Web**: [`lexico`](applications/lexico) depends on shared packages like [`lexico-components`](packages/lexico-components) and [`lexico-entities`](packages/lexico-entities).
 - **Backend & Data**: [`lexico-ingestion`](applications/lexico-ingestion) manages data persistence using TypeORM and PostgreSQL.
 - **Python Workloads**: [`affirmations`](applications/affirmations) integrates LangChain, Ollama, and LangGraph.
 
 Related documentation:
-- See [Monorepo Projects & Workflows](/openwiki/domain/projects.md) for detailed task execution and tool integrations.
-- Return to [Monorepo Quickstart](/openwiki/quickstart.md) for the main navigation hub.
+- See [Codebase Projects & Workflows](/openwiki/domain/projects.md) for detailed task execution and tool integrations.
+- Return to [Codebase Quickstart](/openwiki/quickstart.md) for the main navigation hub.

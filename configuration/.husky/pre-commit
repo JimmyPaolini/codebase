@@ -19,7 +19,7 @@ git restore --staged notepads/notepad.ts || true
 EXIT_CODE=0
 
 # 📏 Measure code
-nx run monorepo:measure-code:write || EXIT_CODE=$?
+nx run codebase:measure-code:write || EXIT_CODE=$?
 git add README.md
 
 # 🧹 Check staged files

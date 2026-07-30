@@ -3,7 +3,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { Lexeme, ParticipleForm } from "@monorepo/lexico-entities";
+import { Lexeme, ParticipleForm } from "@codebase/lexico-entities";
 
 import { FormsBuilderGuardsService } from "./forms-builder-guards.service";
 import { FormsBuilderVerbService } from "./forms-builder-verb.service";

@@ -78,7 +78,7 @@ backup_branch="backup/${current_branch}/${iso_timestamp}"
 
 git switch -c "$backup_branch"
 git add -A
-git commit -m "chore(monorepo): 🔧 create safety backup before risky changes"
+git commit -m "chore(codebase): 🔧 create safety backup before risky changes"
 git switch "$current_branch"
 ```
 

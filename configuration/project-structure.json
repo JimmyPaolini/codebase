@@ -28,7 +28,7 @@
       ],
       "name": "^(?!(dir|err|req|res|utils|ctx|app)$)[a-z0-9-]+$"
     },
-    "monorepo-project": {
+    "codebase-project": {
       "children": [
         {
           "children": [
@@ -365,7 +365,7 @@
             "name": "JimmyPaolini"
           },
           {
-            "ruleId": "monorepo-project"
+            "ruleId": "codebase-project"
           },
           {
             "ruleId": "any-file"
@@ -426,7 +426,7 @@
       {
         "children": [
           {
-            "ruleId": "monorepo-project"
+            "ruleId": "codebase-project"
           },
           {
             "ruleId": "any-file"
@@ -466,7 +466,7 @@
       {
         "children": [
           {
-            "ruleId": "monorepo-project"
+            "ruleId": "codebase-project"
           },
           {
             "ruleId": "any-file"

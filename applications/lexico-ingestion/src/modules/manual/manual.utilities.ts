@@ -9,7 +9,7 @@ import {
   PrincipalPart,
   Translation,
   UninflectedInflection,
-} from "@monorepo/lexico-entities";
+} from "@codebase/lexico-entities";
 
 /**
  * Builds adjectival forms for manual lexeme ingestion.

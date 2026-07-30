@@ -1,12 +1,12 @@
 ---
 name: triage-deployment
-description: "Diagnose and fix failing GitHub Actions CI workflows in this monorepo. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: analyze-code (typecheck, lint, format, spell-check, knip, markdown-lint, yaml-lint), test-coverage, validate-conventions (branch name, PR title/body, config sync), audit-security (gitleaks, bandit, scan-dependencies, trivy), and make-devcontainer (VSCode extensions sync, Docker build, devcontainer test)."
+description: "Diagnose and fix failing GitHub Actions CI workflows in this codebase. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: analyze-code (typecheck, lint, format, spell-check, knip, markdown-lint, yaml-lint), test-coverage, validate-conventions (branch name, PR title/body, config sync), audit-security (gitleaks, bandit, scan-dependencies, trivy), and make-devcontainer (VSCode extensions sync, Docker build, devcontainer test)."
 argument-hint: "Optional: paste failure logs, or specify a workflow name / run URL to fetch"
 ---
 
 # Triage CI Failures
 
-Diagnose failing GitHub Actions workflows in this monorepo, map errors to their root causes, read the relevant configuration, apply targeted fixes, and verify locally.
+Diagnose failing GitHub Actions workflows in this codebase, map errors to their root causes, read the relevant configuration, apply targeted fixes, and verify locally.
 
 ## When to Use
 
@@ -22,7 +22,7 @@ Diagnose failing GitHub Actions workflows in this monorepo, map errors to their 
 If the user has pasted log output or given a specific run URL in `$ARGUMENTS`, fetch only that run and skip to [Step 2](#step-2-identify-the-workflow-and-failing-job):
 
 ```bash
-# e.g. https://github.com/JimmyPaolini/monorepo/actions/runs/12345678
+# e.g. https://github.com/JimmyPaolini/codebase/actions/runs/12345678
 gh run view 12345678 --log-failed
 ```
 
@@ -183,7 +183,7 @@ Fix: Run `npx nx run synchronization:start:agent-skills-write` and commit.
 
 Each step runs independently:
 
-#### 🚰 Gitleaks Check — `nx run monorepo:gitleaks --configuration=ci`
+#### 🚰 Gitleaks Check — `nx run codebase:gitleaks --configuration=ci`
 
 Config: [configuration/gitleaks.toml](../../../configuration/gitleaks.toml)
 
@@ -215,19 +215,19 @@ Fix: Address the CRITICAL/HIGH finding in the Terraform config, or add a scoped 
 
 Triggered only when `.devcontainer/**` files change (or on manual dispatch). Each step is independent:
 
-#### 🧩 Check VSCode Extensions — `nx run monorepo:sync-vscode-extensions:check`
+#### 🧩 Check VSCode Extensions — `nx run codebase:sync-vscode-extensions:check`
 
 Config: [scripts/sync-vscode-extensions.ts](../../../scripts/sync-vscode-extensions.ts)
 
 Source: [.vscode/extensions.json](../../../.vscode/extensions.json), [.devcontainer/local/devcontainer.json](../../../.devcontainer/local/devcontainer.json)
 
-Fix: Run `npx nx run monorepo:sync-vscode-extensions` and commit the generated changes.
+Fix: Run `npx nx run codebase:sync-vscode-extensions` and commit the generated changes.
 
 #### 🔧 Docker Build — `devcontainers/ci@v0.3` (Make Devcontainer step)
 
 Config: [.devcontainer/cloud/devcontainer.json](../../../.devcontainer/cloud/devcontainer.json)
 
-Image: `ghcr.io/jimmypaolini/monorepo-devcontainer` (pushed to GHCR on `main` only)
+Image: `ghcr.io/jimmypaolini/codebase-devcontainer` (pushed to GHCR on `main` only)
 
 Common failures:
 
@@ -268,7 +268,7 @@ npx nx run synchronization:start:pull-request-template-check
 npx nx run synchronization:start:agent-skills-check
 
 # Security
-pnpm exec nx run monorepo:gitleaks
+pnpm exec nx run codebase:gitleaks
 pnpm exec nx affected -t scan-dependencies
 ```
 

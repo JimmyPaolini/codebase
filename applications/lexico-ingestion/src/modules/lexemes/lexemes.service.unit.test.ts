@@ -10,7 +10,7 @@ import {
   type PrincipalPart,
   type Pronunciation,
   Translation,
-} from "@monorepo/lexico-entities";
+} from "@codebase/lexico-entities";
 
 import { createRepositoryMock } from "../../../testing/mocks";
 import { EtymologyService } from "../etymology/etymology.service";

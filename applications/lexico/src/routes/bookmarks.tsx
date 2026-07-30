@@ -9,7 +9,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@monorepo/lexico-components";
+} from "@codebase/lexico-components";
 
 import { EntryCard } from "../components/entry/entry-card";
 import { getBookmarks, removeBookmark } from "../lib/bookmarks";

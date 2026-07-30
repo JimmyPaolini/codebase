@@ -1,12 +1,12 @@
 # Scripts
 
-Utility scripts for monorepo setup, maintenance, and development workflows.
+Utility scripts for codebase setup, maintenance, and development workflows.
 
 ## Overview
 
 This directory contains shell scripts for:
 
-- **Local setup** - macOS-specific initial monorepo configuration (in `local/`)
+- **Local setup** - macOS-specific initial codebase configuration (in `local/`)
 - **Shell utilities** - Common terminal operations
 
 ## Quick Start
@@ -34,7 +34,7 @@ The devcontainer handles equivalent setup automatically.
 
 ### setup.sh
 
-**Purpose:** Complete monorepo setup in one command
+**Purpose:** Complete codebase setup in one command
 
 **Usage:**
 
@@ -44,7 +44,7 @@ The devcontainer handles equivalent setup automatically.
 
 **What it does:**
 
-- Validates monorepo root directory
+- Validates codebase root directory
 - Sources utilities for common functions
 - Installs required software (Homebrew, nvm, Node.js, pnpm, uv, Python, Ollama, etc.)
 - Configures environment from `.env`
@@ -52,7 +52,7 @@ The devcontainer handles equivalent setup automatically.
 
 **Prerequisites:**
 
-- Must be run from monorepo root directory
+- Must be run from codebase root directory
 - Requires `.env` file with environment variables
 
 ### software.sh
@@ -100,7 +100,7 @@ The devcontainer handles equivalent setup automatically.
 
 **What it does:**
 
-- Runs `pnpm install` in monorepo root
+- Runs `pnpm install` in codebase root
 - Installs dependencies for all workspace packages
 - Runs `uv sync` in `applications/affirmations/` for Python dependencies
 - Respects lockfiles for reproducible builds
@@ -157,8 +157,8 @@ The devcontainer handles equivalent setup automatically.
 
 ```bash
 # Via Nx (recommended)
-nx run monorepo:sync-vscode-extensions:check    # Validate both configs are in sync (default)
-nx run monorepo:sync-vscode-extensions:write    # Update both devcontainer.json files
+nx run codebase:sync-vscode-extensions:check    # Validate both configs are in sync (default)
+nx run codebase:sync-vscode-extensions:write    # Update both devcontainer.json files
 
 # Direct
 tsx .devcontainer/scripts/sync-vscode-extensions.ts [check|write]
@@ -192,8 +192,8 @@ tsx .devcontainer/scripts/sync-vscode-extensions.ts [check|write]
 
 ```bash
 # Via Nx (recommended)
-nx run monorepo:sync-devcontainer-configuration:check    # Validate cloud config is in sync (default)
-nx run monorepo:sync-devcontainer-configuration:write    # Propagate common fields from local into cloud
+nx run codebase:sync-devcontainer-configuration:check    # Validate cloud config is in sync (default)
+nx run codebase:sync-devcontainer-configuration:write    # Propagate common fields from local into cloud
 
 # Direct
 tsx scripts/sync-devcontainer-configuration.ts [check|write]
@@ -243,7 +243,7 @@ echo "Timestamp: $timestamp"
 
 **Automatic behaviors:**
 
-- Validates monorepo root directory
+- Validates codebase root directory
 - Exits immediately on error (`set -e`)
 - Sources `.env` environment variables
 - Makes all `.sh` files executable
@@ -395,11 +395,11 @@ See file for specific SQL queries and documentation.
 
 ### Script Execution
 
-**Always run from monorepo root:**
+**Always run from codebase root:**
 
 ```bash
 # ✅ Correct
-cd ~/Personal/monorepo
+cd ~/Personal/codebase
 ./scripts/local/setup.sh
 
 # ❌ Wrong
@@ -463,12 +463,12 @@ set +a
 
 ### Fresh Install
 
-Complete monorepo setup from scratch:
+Complete codebase setup from scratch:
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/JimmyPaolini/monorepo.git
-cd monorepo
+git clone https://github.com/JimmyPaolini/codebase.git
+cd codebase
 
 # 2. Create .env file
 cp .env.example .env
@@ -565,19 +565,19 @@ Or source utilities which does this automatically:
 source ./scripts/utilities.sh
 ```
 
-### "Must be run from monorepo root" error
+### "Must be run from codebase root" error
 
-Change to monorepo root directory:
+Change to codebase root directory:
 
 ```bash
-cd ~/Personal/monorepo
+cd ~/Personal/codebase
 ```
 
 Verify you're in the right place:
 
 ```bash
 pwd
-# Should output: .../Personal/monorepo
+# Should output: .../Personal/codebase
 
 ls package.json
 # Should exist
@@ -660,7 +660,7 @@ Verify sync:
 5. Test thoroughly:
 
    ```bash
-   # Test from monorepo root
+   # Test from codebase root
    ./scripts/your-script.sh
 
    # Test with various inputs
@@ -688,7 +688,7 @@ Verify sync:
 
 - Test happy path
 - Test error conditions
-- Test from monorepo root
+- Test from codebase root
 - Test with missing dependencies
 
 ## Related Documentation

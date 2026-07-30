@@ -1,12 +1,12 @@
 ---
 name: testing-strategy
-description: "Use monorepo testing conventions: unit, integration, end-to-end test naming and Nx commands. Use when adding tests or recommending test coverage."
+description: "Use codebase testing conventions: unit, integration, end-to-end test naming and Nx commands. Use when adding tests or recommending test coverage."
 license: MIT
 ---
 
 # Testing Strategy
 
-This skill describes the monorepo testing model and naming conventions.
+This skill describes the codebase testing model and naming conventions.
 
 ## When to Use This Skill
 

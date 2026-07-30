@@ -2,7 +2,7 @@ import { Test } from "@nestjs/testing";
 import * as cheerio from "cheerio";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { Lexeme, Translation } from "@monorepo/lexico-entities";
+import { Lexeme, Translation } from "@codebase/lexico-entities";
 
 import { EtymologyService } from "./etymology.service";
 

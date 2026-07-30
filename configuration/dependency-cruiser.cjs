@@ -2,7 +2,7 @@
  * Dependency Cruiser Configuration
  *
  * Validates architectural boundaries and prevents problematic dependency patterns
- * across the monorepo. Rules enforce circular dependency prevention, orphan detection,
+ * across the codebase. Rules enforce circular dependency prevention, orphan detection,
  * test isolation, production/dev dependency separation, and module system consistency.
  *
  * Each rule's `comment` field documents its purpose.

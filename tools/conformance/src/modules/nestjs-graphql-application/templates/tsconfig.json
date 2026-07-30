@@ -15,7 +15,7 @@
       "eslint-plugin-better-max-params": [
         "../../configuration/types/eslint-plugin-better-max-params/index.d.ts"
       ],
-      "monorepo/configuration/*": ["../../configuration/*"]
+      "codebase/configuration/*": ["../../configuration/*"]
     },
     "target": "esnext",
     "types": ["node", "vitest/globals"]
