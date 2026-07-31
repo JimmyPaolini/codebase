@@ -9,15 +9,15 @@
 [![Jupyter](https://img.shields.io/badge/Jupyter-1.1-F37626?logo=jupyter&logoColor=white)](https://jupyter.org/)
 
 <!-- CODE_STATISTICS_START -->
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-130018-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-130032-22c55e?style=flat-square)
 ![Repo Size](https://img.shields.io/badge/Repo_Size-150.2_MiB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-480-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-815-3178c6?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-197-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-132-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-298-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-6806-16a34a?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-5642-4ade80?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-6807-16a34a?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-5643-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-1044-059669?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-271-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-28-0369a1?style=flat-square)

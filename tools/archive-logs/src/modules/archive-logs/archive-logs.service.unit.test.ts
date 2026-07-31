@@ -10,6 +10,13 @@ import {
 import { ArchiveLogsService } from "./archive-logs.service";
 import { buildWorkflowRunsUrl } from "./workflow-runs.utilities.js";
 
+type ArchiveLogsShellServiceTestDouble = Omit<
+  ArchiveLogsShellService,
+  "runGithubApiJson"
+> & {
+  runGithubApiJson: ArchiveLogsShellService["runGithubApiJson"] | undefined;
+};
+
 describe(ArchiveLogsService, () => {
   let service: ArchiveLogsService;
   let archiveLogsSupportService: ArchiveLogsShellService;
@@ -32,6 +39,9 @@ describe(ArchiveLogsService, () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     vi.clearAllMocks();
+    (
+      archiveLogsSupportService as ArchiveLogsShellServiceTestDouble
+    ).runGithubApiJson = undefined;
     vi.mocked(archiveLogsSupportService.buildArchiveName).mockReturnValue(
       "archive-2025-01-01T00-00-00Z__2025-01-08T00-00-00Z",
     );
@@ -167,9 +177,9 @@ describe(ArchiveLogsService, () => {
           ],
         })
         .mockReturnValueOnce({ workflow_runs: [] });
-      Object.assign(archiveLogsSupportService, {
-        runGithubApiJson: runGithubApiJsonSpy,
-      });
+      (
+        archiveLogsSupportService as ArchiveLogsShellServiceTestDouble
+      ).runGithubApiJson = runGithubApiJsonSpy;
 
       const context = service.buildContext(
         "2025-01-01T00:00:00Z",
@@ -226,9 +236,9 @@ describe(ArchiveLogsService, () => {
         .mockReturnValueOnce({
           workflow_runs: [{ created_at: "2024-12-31T23:00:00Z", id: 3 }],
         });
-      Object.assign(archiveLogsSupportService, {
-        runGithubApiJson: runGithubApiJsonSpy,
-      });
+      (
+        archiveLogsSupportService as ArchiveLogsShellServiceTestDouble
+      ).runGithubApiJson = runGithubApiJsonSpy;
 
       const filters = {
         actor: "robot",
@@ -250,6 +260,10 @@ describe(ArchiveLogsService, () => {
         2,
         buildWorkflowRunsUrl("owner/repo", 2, filters),
       );
+    });
+
+    it("resets the workflow-runs api stub between tests", () => {
+      expect(archiveLogsSupportService.runGithubApiJson).toBeUndefined();
     });
   });
 });
