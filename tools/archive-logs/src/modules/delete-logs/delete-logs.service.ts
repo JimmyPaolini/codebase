@@ -3,10 +3,12 @@ import { spawnSync } from "node:child_process";
 import { Injectable } from "@nestjs/common";
 
 import { workflowRunsResponseSchema } from "../archive-logs/archive-logs.constants";
+import { buildWorkflowRunsUrl } from "../archive-logs/workflow-runs.utilities.js";
 
 import type {
   CommandResult,
   WorkflowRun,
+  WorkflowRunFilters,
   WorkflowRunsResponse,
 } from "../archive-logs/archive-logs.types";
 
@@ -45,10 +47,11 @@ export class DeleteLogsService {
   private loadWorkflowRunsPage(
     githubRepository: string,
     pageNumber: number,
+    filters: WorkflowRunFilters = {},
   ): WorkflowRun[] {
     const response = this.parseWorkflowRunsResponse(
       this.runGithubApiJson(
-        `repos/${githubRepository}/actions/runs?per_page=100&page=${pageNumber}`,
+        buildWorkflowRunsUrl(githubRepository, pageNumber, filters),
       ),
     );
     return response.workflow_runs;
@@ -161,11 +164,19 @@ export class DeleteLogsService {
   /**
    * Delete all runs older than the requested end date, using pagination.
    */
-  deleteRunsBeforeEnd(githubRepository: string, deleteEnd: string): void {
+  deleteRunsBeforeEnd(
+    githubRepository: string,
+    deleteEnd: string,
+    filters: WorkflowRunFilters = {},
+  ): void {
     let pageNumber = 1;
 
     for (;;) {
-      const pageRuns = this.loadWorkflowRunsPage(githubRepository, pageNumber);
+      const pageRuns = this.loadWorkflowRunsPage(
+        githubRepository,
+        pageNumber,
+        filters,
+      );
       if (pageRuns.length === 0) {
         break;
       }
@@ -189,27 +200,34 @@ export class DeleteLogsService {
    */
   deleteRunsInWindow(
     githubRepository: string,
-    archiveStart: string,
-    archiveEnd: string,
+    deleteWindow: {
+      readonly deleteEnd: string;
+      readonly deleteStart: string;
+    },
+    filters: WorkflowRunFilters = {},
   ): void {
     let pageNumber = 1;
 
     for (;;) {
-      const pageRuns = this.loadWorkflowRunsPage(githubRepository, pageNumber);
+      const pageRuns = this.loadWorkflowRunsPage(
+        githubRepository,
+        pageNumber,
+        filters,
+      );
       if (pageRuns.length === 0) {
         break;
       }
 
       for (const runSummary of pageRuns) {
         if (
-          runSummary.created_at >= archiveStart &&
-          runSummary.created_at < archiveEnd
+          runSummary.created_at >= deleteWindow.deleteStart &&
+          runSummary.created_at < deleteWindow.deleteEnd
         ) {
           this.deleteRun(githubRepository, runSummary.id.toString());
         }
       }
 
-      if (this.shouldStopPagination(pageRuns, archiveStart)) {
+      if (this.shouldStopPagination(pageRuns, deleteWindow.deleteStart)) {
         break;
       }
 

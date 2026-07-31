@@ -4,11 +4,17 @@ import { Command, CommandRunner, Option } from "nest-commander";
 import { LoggerService } from "../logger/logger.service";
 
 import {
+  DELETE_ACTOR_OPTION_DESCRIPTION,
+  DELETE_BRANCH_OPTION_DESCRIPTION,
   DELETE_END_OPTION_DESCRIPTION,
+  DELETE_EVENT_OPTION_DESCRIPTION,
+  DELETE_NAME_OPTION_DESCRIPTION,
   DELETE_START_OPTION_DESCRIPTION,
+  DELETE_STATUS_OPTION_DESCRIPTION,
 } from "./delete-logs.constants";
 import { DeleteLogsService } from "./delete-logs.service";
 
+import type { WorkflowRunFilters } from "../archive-logs/archive-logs.types";
 import type { DeleteLogsOptions } from "./delete-logs.types";
 
 /**
@@ -104,6 +110,23 @@ export class DeleteLogsCommand extends CommandRunner {
   }
 
   /**
+   * Parse optional workflow-run filters from raw options.
+   */
+  private resolveFilters(options: Record<string, unknown>): WorkflowRunFilters {
+    const filterEntries = Object.entries({
+      actor: options["actor"],
+      branch: options["branch"],
+      event: options["event"],
+      name: options["name"],
+      status: options["status"],
+    }).filter((entry): entry is [keyof WorkflowRunFilters, string] => {
+      return typeof entry[1] === "string";
+    });
+
+    return Object.fromEntries(filterEntries);
+  }
+
+  /**
    * Parse and validate resolved options before executing.
    */
   private resolveOptions(options: Record<string, unknown>): DeleteLogsOptions {
@@ -113,6 +136,7 @@ export class DeleteLogsCommand extends CommandRunner {
     if (!deleteStart) {
       return {
         deleteEnd,
+        filters: this.resolveFilters(options),
         githubRepository,
         githubToken,
       };
@@ -121,12 +145,35 @@ export class DeleteLogsCommand extends CommandRunner {
     return {
       deleteEnd,
       deleteStart,
+      filters: this.resolveFilters(options),
       githubRepository,
       githubToken,
     };
   }
 
   // 🌎 Public Methods
+
+  /**
+   * Parses the optional workflow run actor filter.
+   */
+  @Option({
+    description: DELETE_ACTOR_OPTION_DESCRIPTION,
+    flags: "--actor <actor>",
+  })
+  parseActor(value: string): string {
+    return value;
+  }
+
+  /**
+   * Parses the optional workflow run branch filter.
+   */
+  @Option({
+    description: DELETE_BRANCH_OPTION_DESCRIPTION,
+    flags: "--branch <branch>",
+  })
+  parseBranch(value: string): string {
+    return value;
+  }
 
   /**
    * Parses the --end datetime option value.
@@ -140,6 +187,28 @@ export class DeleteLogsCommand extends CommandRunner {
   }
 
   /**
+   * Parses the optional workflow run event filter.
+   */
+  @Option({
+    description: DELETE_EVENT_OPTION_DESCRIPTION,
+    flags: "--event <event>",
+  })
+  parseEvent(value: string): string {
+    return value;
+  }
+
+  /**
+   * Parses the optional workflow file name or workflow ID filter.
+   */
+  @Option({
+    description: DELETE_NAME_OPTION_DESCRIPTION,
+    flags: "--name <name>",
+  })
+  parseName(value: string): string {
+    return value;
+  }
+
+  /**
    * Parses the --start datetime option value.
    */
   @Option({
@@ -147,6 +216,17 @@ export class DeleteLogsCommand extends CommandRunner {
     flags: "-s, --start <start>",
   })
   parseStart(value: string): string {
+    return value;
+  }
+
+  /**
+   * Parses the optional workflow run status filter.
+   */
+  @Option({
+    description: DELETE_STATUS_OPTION_DESCRIPTION,
+    flags: "--status <status>",
+  })
+  parseStatus(value: string): string {
     return value;
   }
 
@@ -164,8 +244,11 @@ export class DeleteLogsCommand extends CommandRunner {
       if (resolvedOptions.deleteStart) {
         this.deleteService.deleteRunsInWindow(
           resolvedOptions.githubRepository,
-          resolvedOptions.deleteStart,
-          resolvedOptions.deleteEnd,
+          {
+            deleteEnd: resolvedOptions.deleteEnd,
+            deleteStart: resolvedOptions.deleteStart,
+          },
+          resolvedOptions.filters,
         );
         this.logger.log(
           `🗑️ Deleted window ${resolvedOptions.deleteStart} → ${resolvedOptions.deleteEnd}`,
@@ -174,6 +257,7 @@ export class DeleteLogsCommand extends CommandRunner {
         this.deleteService.deleteRunsBeforeEnd(
           resolvedOptions.githubRepository,
           resolvedOptions.deleteEnd,
+          resolvedOptions.filters,
         );
         this.logger.log(`🗑️ Deleted runs before ${resolvedOptions.deleteEnd}`);
       }

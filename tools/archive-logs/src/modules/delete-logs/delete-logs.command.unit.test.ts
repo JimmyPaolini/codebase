@@ -77,8 +77,11 @@ describe(DeleteLogsCommand, () => {
 
     expect(deleteService.deleteRunsInWindow).toHaveBeenCalledWith(
       "owner/repo",
-      "2025-01-01T00:00:00Z",
-      "2025-01-08T00:00:00Z",
+      {
+        deleteEnd: "2025-01-08T00:00:00Z",
+        deleteStart: "2025-01-01T00:00:00Z",
+      },
+      {},
     );
     expect(logger.log).toHaveBeenCalledWith(expect.stringContaining("🗑️"));
   });
@@ -91,8 +94,32 @@ describe(DeleteLogsCommand, () => {
     expect(deleteService.deleteRunsBeforeEnd).toHaveBeenCalledWith(
       "owner/repo",
       "2025-01-08T00:00:00Z",
+      {},
     );
     expect(deleteService.deleteRunsInWindow).not.toHaveBeenCalled();
+  });
+
+  it("passes workflow filters into the resolved delete options", async () => {
+    await command.run([], {
+      actor: "robot",
+      branch: "main",
+      end: "2025-01-08T00:00:00Z",
+      event: "push",
+      name: "nightly.yml",
+      status: "completed",
+    });
+
+    expect(deleteService.deleteRunsBeforeEnd).toHaveBeenCalledWith(
+      "owner/repo",
+      "2025-01-08T00:00:00Z",
+      {
+        actor: "robot",
+        branch: "main",
+        event: "push",
+        name: "nightly.yml",
+        status: "completed",
+      },
+    );
   });
 
   it("exits with error when --end is missing", async () => {

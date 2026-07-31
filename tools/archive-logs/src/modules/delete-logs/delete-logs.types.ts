@@ -1,3 +1,5 @@
+import type { WorkflowRunFilters } from "../archive-logs/archive-logs.types.js";
+
 // 🏷️ Types
 
 /**
@@ -6,6 +8,7 @@
 export interface DeleteLogsOptions {
   readonly deleteEnd: string;
   readonly deleteStart?: string;
+  readonly filters: WorkflowRunFilters;
   readonly githubRepository: string;
   readonly githubToken: string;
 }
