@@ -1,14 +1,16 @@
-import type { WorkflowRunFilters } from "../archive-logs/archive-logs.types.js";
-
 // 🏷️ Types
 
 /**
  * Validated delete command options and required environment values.
  */
 export interface DeleteLogsOptions {
+  readonly actor?: string;
+  readonly branch?: string;
   readonly deleteEnd: string;
   readonly deleteStart?: string;
-  readonly filters: WorkflowRunFilters;
+  readonly event?: string;
   readonly githubRepository: string;
   readonly githubToken: string;
+  readonly name?: string;
+  readonly status?: string;
 }

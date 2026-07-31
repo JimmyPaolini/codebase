@@ -14,7 +14,6 @@ import {
 } from "./delete-logs.constants";
 import { DeleteLogsService } from "./delete-logs.service";
 
-import type { WorkflowRunFilters } from "../archive-logs/archive-logs.types";
 import type { DeleteLogsOptions } from "./delete-logs.types";
 
 /**
@@ -110,42 +109,41 @@ export class DeleteLogsCommand extends CommandRunner {
   }
 
   /**
-   * Parse optional workflow-run filters from raw options.
-   */
-  private resolveFilters(options: Record<string, unknown>): WorkflowRunFilters {
-    const filterEntries = Object.entries({
-      actor: options["actor"],
-      branch: options["branch"],
-      event: options["event"],
-      name: options["name"],
-      status: options["status"],
-    }).filter((entry): entry is [keyof WorkflowRunFilters, string] => {
-      return typeof entry[1] === "string";
-    });
-
-    return Object.fromEntries(filterEntries);
-  }
-
-  /**
    * Parse and validate resolved options before executing.
    */
   private resolveOptions(options: Record<string, unknown>): DeleteLogsOptions {
     const { githubRepository, githubToken } = this.resolveEnvironment();
     const { deleteEnd, deleteStart } = this.resolveDateRange(options);
 
+    const filterFields = {
+      ...(typeof options["actor"] === "string"
+        ? { actor: options["actor"] }
+        : {}),
+      ...(typeof options["branch"] === "string"
+        ? { branch: options["branch"] }
+        : {}),
+      ...(typeof options["event"] === "string"
+        ? { event: options["event"] }
+        : {}),
+      ...(typeof options["name"] === "string" ? { name: options["name"] } : {}),
+      ...(typeof options["status"] === "string"
+        ? { status: options["status"] }
+        : {}),
+    };
+
     if (!deleteStart) {
       return {
+        ...filterFields,
         deleteEnd,
-        filters: this.resolveFilters(options),
         githubRepository,
         githubToken,
       };
     }
 
     return {
+      ...filterFields,
       deleteEnd,
       deleteStart,
-      filters: this.resolveFilters(options),
       githubRepository,
       githubToken,
     };
@@ -241,6 +239,23 @@ export class DeleteLogsCommand extends CommandRunner {
 
     try {
       const resolvedOptions = this.resolveOptions(options ?? {});
+      const filters = {
+        ...(resolvedOptions.actor === undefined
+          ? {}
+          : { actor: resolvedOptions.actor }),
+        ...(resolvedOptions.branch === undefined
+          ? {}
+          : { branch: resolvedOptions.branch }),
+        ...(resolvedOptions.event === undefined
+          ? {}
+          : { event: resolvedOptions.event }),
+        ...(resolvedOptions.name === undefined
+          ? {}
+          : { name: resolvedOptions.name }),
+        ...(resolvedOptions.status === undefined
+          ? {}
+          : { status: resolvedOptions.status }),
+      };
       if (resolvedOptions.deleteStart) {
         this.deleteService.deleteRunsInWindow(
           resolvedOptions.githubRepository,
@@ -248,7 +263,7 @@ export class DeleteLogsCommand extends CommandRunner {
             deleteEnd: resolvedOptions.deleteEnd,
             deleteStart: resolvedOptions.deleteStart,
           },
-          resolvedOptions.filters,
+          filters,
         );
         this.logger.log(
           `🗑️ Deleted window ${resolvedOptions.deleteStart} → ${resolvedOptions.deleteEnd}`,
@@ -257,7 +272,7 @@ export class DeleteLogsCommand extends CommandRunner {
         this.deleteService.deleteRunsBeforeEnd(
           resolvedOptions.githubRepository,
           resolvedOptions.deleteEnd,
-          resolvedOptions.filters,
+          filters,
         );
         this.logger.log(`🗑️ Deleted runs before ${resolvedOptions.deleteEnd}`);
       }

@@ -6,10 +6,7 @@ import { PublishLogsService } from "../publish-logs/publish-logs.service";
 
 import { ArchiveLogsService } from "./archive-logs.service";
 
-import type {
-  ArchiveLogsOptions,
-  WorkflowRunFilters,
-} from "./archive-logs.types";
+import type { ArchiveLogsOptions } from "./archive-logs.types";
 
 /**
  * CLI command that archives GitHub Actions runs for a given window.
@@ -61,7 +58,23 @@ export class ArchiveLogsCommand extends CommandRunner {
     this.archiveService.collectAndZip(
       resolvedOptions.githubRepository,
       archiveContext,
-      resolvedOptions.filters,
+      {
+        ...(resolvedOptions.actor === undefined
+          ? {}
+          : { actor: resolvedOptions.actor }),
+        ...(resolvedOptions.branch === undefined
+          ? {}
+          : { branch: resolvedOptions.branch }),
+        ...(resolvedOptions.event === undefined
+          ? {}
+          : { event: resolvedOptions.event }),
+        ...(resolvedOptions.name === undefined
+          ? {}
+          : { name: resolvedOptions.name }),
+        ...(resolvedOptions.status === undefined
+          ? {}
+          : { status: resolvedOptions.status }),
+      },
     );
 
     if (process.env["GITHUB_ACTIONS"] === "true") {
@@ -144,23 +157,6 @@ export class ArchiveLogsCommand extends CommandRunner {
   }
 
   /**
-   * Parse optional workflow-run filters from raw options.
-   */
-  private resolveFilters(options: Record<string, unknown>): WorkflowRunFilters {
-    const filterEntries = Object.entries({
-      actor: options["actor"],
-      branch: options["branch"],
-      event: options["event"],
-      name: options["name"],
-      status: options["status"],
-    }).filter((entry): entry is [keyof WorkflowRunFilters, string] => {
-      return typeof entry[1] === "string";
-    });
-
-    return Object.fromEntries(filterEntries);
-  }
-
-  /**
    * Parse and validate resolved options before executing.
    */
   private resolveOptions(options: Record<string, unknown>): ArchiveLogsOptions {
@@ -168,11 +164,23 @@ export class ArchiveLogsCommand extends CommandRunner {
     const { archiveEnd, archiveStart } = this.resolveDateRange(options);
 
     return {
+      ...(typeof options["actor"] === "string"
+        ? { actor: options["actor"] }
+        : {}),
       archiveEnd,
       archiveStart,
-      filters: this.resolveFilters(options),
+      ...(typeof options["branch"] === "string"
+        ? { branch: options["branch"] }
+        : {}),
+      ...(typeof options["event"] === "string"
+        ? { event: options["event"] }
+        : {}),
       githubRepository,
       githubToken,
+      ...(typeof options["name"] === "string" ? { name: options["name"] } : {}),
+      ...(typeof options["status"] === "string"
+        ? { status: options["status"] }
+        : {}),
     };
   }
 
