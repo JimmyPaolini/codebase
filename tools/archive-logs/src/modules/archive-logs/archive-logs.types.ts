@@ -23,13 +23,13 @@ export interface ArchiveContext {
  */
 export interface ArchiveLogsOptions {
   readonly actor?: string;
-  readonly archiveEnd: string;
-  readonly archiveStart: string;
   readonly branch?: string;
+  readonly end: string;
   readonly event?: string;
   readonly githubRepository: string;
   readonly githubToken: string;
   readonly name?: string;
+  readonly start: string;
   readonly status?: string;
 }
 

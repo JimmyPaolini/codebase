@@ -39,8 +39,8 @@ export class ArchiveLogsCommand extends CommandRunner {
    */
   private executeArchive(resolvedOptions: ArchiveLogsOptions): void {
     const archiveContext = this.archiveService.buildContext(
-      resolvedOptions.archiveStart,
-      resolvedOptions.archiveEnd,
+      resolvedOptions.start,
+      resolvedOptions.end,
     );
 
     if (
@@ -86,7 +86,7 @@ export class ArchiveLogsCommand extends CommandRunner {
     }
 
     this.logger.log(
-      `✅ Archived window ${resolvedOptions.archiveStart} → ${resolvedOptions.archiveEnd}`,
+      `✅ Archived window ${resolvedOptions.start} → ${resolvedOptions.end}`,
     );
   }
 
@@ -114,8 +114,8 @@ export class ArchiveLogsCommand extends CommandRunner {
    * Validate and normalize the date range from raw options.
    */
   private resolveDateRange(options: Record<string, unknown>): {
-    archiveEnd: string;
-    archiveStart: string;
+    end: string;
+    start: string;
   } {
     const rawStart =
       typeof options["start"] === "string" ? options["start"] : undefined;
@@ -128,13 +128,13 @@ export class ArchiveLogsCommand extends CommandRunner {
       throw new Error("--end is required");
     }
 
-    const archiveStart = this.normalizeRfc3339ToUtc(rawStart);
-    const archiveEnd = this.normalizeRfc3339ToUtc(rawEnd);
-    if (archiveStart >= archiveEnd) {
+    const start = this.normalizeRfc3339ToUtc(rawStart);
+    const end = this.normalizeRfc3339ToUtc(rawEnd);
+    if (start >= end) {
       throw new Error("--start must be before --end");
     }
 
-    return { archiveEnd, archiveStart };
+    return { end, start };
   }
 
   /**
@@ -161,14 +161,14 @@ export class ArchiveLogsCommand extends CommandRunner {
    */
   private resolveOptions(options: Record<string, unknown>): ArchiveLogsOptions {
     const { githubRepository, githubToken } = this.resolveEnvironment();
-    const { archiveEnd, archiveStart } = this.resolveDateRange(options);
+    const { end, start } = this.resolveDateRange(options);
 
     return {
       ...(typeof options["actor"] === "string"
         ? { actor: options["actor"] }
         : {}),
-      archiveEnd,
-      archiveStart,
+      end,
+      start,
       ...(typeof options["branch"] === "string"
         ? { branch: options["branch"] }
         : {}),

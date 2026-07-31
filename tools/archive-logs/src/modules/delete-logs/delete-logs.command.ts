@@ -65,8 +65,8 @@ export class DeleteLogsCommand extends CommandRunner {
    * Validate and normalize the date range from raw options.
    */
   private resolveDateRange(options: Record<string, unknown>): {
-    deleteEnd: string;
-    deleteStart?: string;
+    end: string;
+    start?: string;
   } {
     const rawStart =
       typeof options["start"] === "string" ? options["start"] : undefined;
@@ -76,17 +76,17 @@ export class DeleteLogsCommand extends CommandRunner {
       throw new Error("--end is required");
     }
 
-    const deleteEnd = this.normalizeRfc3339ToUtc(rawEnd);
+    const end = this.normalizeRfc3339ToUtc(rawEnd);
     if (!rawStart) {
-      return { deleteEnd };
+      return { end };
     }
 
-    const deleteStart = this.normalizeRfc3339ToUtc(rawStart);
-    if (deleteStart >= deleteEnd) {
+    const start = this.normalizeRfc3339ToUtc(rawStart);
+    if (start >= end) {
       throw new Error("--start must be before --end");
     }
 
-    return { deleteEnd, deleteStart };
+    return { end, start };
   }
 
   /**
@@ -113,7 +113,7 @@ export class DeleteLogsCommand extends CommandRunner {
    */
   private resolveOptions(options: Record<string, unknown>): DeleteLogsOptions {
     const { githubRepository, githubToken } = this.resolveEnvironment();
-    const { deleteEnd, deleteStart } = this.resolveDateRange(options);
+    const { end, start } = this.resolveDateRange(options);
 
     const filterFields = {
       ...(typeof options["actor"] === "string"
@@ -131,10 +131,10 @@ export class DeleteLogsCommand extends CommandRunner {
         : {}),
     };
 
-    if (!deleteStart) {
+    if (!start) {
       return {
         ...filterFields,
-        deleteEnd,
+        end,
         githubRepository,
         githubToken,
       };
@@ -142,10 +142,10 @@ export class DeleteLogsCommand extends CommandRunner {
 
     return {
       ...filterFields,
-      deleteEnd,
-      deleteStart,
+      end,
       githubRepository,
       githubToken,
+      start,
     };
   }
 
@@ -256,25 +256,25 @@ export class DeleteLogsCommand extends CommandRunner {
           ? {}
           : { status: resolvedOptions.status }),
       };
-      if (resolvedOptions.deleteStart) {
+      if (resolvedOptions.start) {
         this.deleteService.deleteRunsInWindow(
           resolvedOptions.githubRepository,
           {
-            deleteEnd: resolvedOptions.deleteEnd,
-            deleteStart: resolvedOptions.deleteStart,
+            deleteEnd: resolvedOptions.end,
+            deleteStart: resolvedOptions.start,
           },
           filters,
         );
         this.logger.log(
-          `🗑️ Deleted window ${resolvedOptions.deleteStart} → ${resolvedOptions.deleteEnd}`,
+          `🗑️ Deleted window ${resolvedOptions.start} → ${resolvedOptions.end}`,
         );
       } else {
         this.deleteService.deleteRunsBeforeEnd(
           resolvedOptions.githubRepository,
-          resolvedOptions.deleteEnd,
+          resolvedOptions.end,
           filters,
         );
-        this.logger.log(`🗑️ Deleted runs before ${resolvedOptions.deleteEnd}`);
+        this.logger.log(`🗑️ Deleted runs before ${resolvedOptions.end}`);
       }
     } catch (error) {
       this.logger.error(
