@@ -34,6 +34,7 @@ Owns:
 - filesystem/runtime abstraction interfaces (paths, globs, file IO)
 
 Must not import `@nx/devkit` and must not perform Nx project metadata filtering.
+This package is a command application.
 
 ### `@jimmypaolini/conformetry-nx`
 
@@ -44,6 +45,11 @@ Owns:
 - Nx project metadata resolution and filtering (tags/types/project selectors)
 - loading repo config (`configuration/conformetry.config.ts`) for workspace usage
 - Nx-focused path resolution and project constraints
+This package is a command application.
+
+### `@jimmypaolini/conformetry-typescript` and sibling validator packages
+
+These are publishable NestJS service applications, not command applications. They expose injectable validation modules and can be installed selectively by consumers that only need a subset of language/content validators.
 
 ### Validation plugin packages
 
@@ -126,7 +132,7 @@ Nx will consume package exports directly:
    - `conformetry-json`
    - `conformetry-text`
 2. Create a new `nestjs-service-application` generator by cloning the existing command-application generator shape and removing `nest-commander` usage.
-3. Scaffold conformetry packages using `nx g conformance:nestjs-service-application --type=packages --name=<package-name>`.
+3. Scaffold conformetry packages using `nx g conformance:nestjs-service-application --type=packages --name=<package-name>`, then keep `conformetry-core` and `conformetry-nx` as command applications and the validator packages as publishable service applications.
 4. Move and normalize shared generator logic into `conformetry-core`.
 5. Implement declarative generator registry + loader against `configuration/conformetry.config.ts`, including pre/post generation hooks.
 6. Move templates to `configuration/conformetry-templates/` and update path references.

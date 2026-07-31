@@ -108,6 +108,8 @@ git commit -m "feat(conformance): ✨ add nestjs service application generator"
 **Interfaces:**
 - Consumes: the new `nestjs-service-application` generator from Task 1.
 - Produces:
+  - `conformetry-core` and `conformetry-nx` as command applications
+  - validator packages as publishable service applications
   - package entrypoints:
     - `@jimmypaolini/conformetry-core`
     - `@jimmypaolini/conformetry-nx`
