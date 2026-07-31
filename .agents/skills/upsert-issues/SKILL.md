@@ -1,5 +1,5 @@
 ---
-name: upsert-issue
+name: upsert-issues
 description: Use when converting implementation plans into many linked GitHub issues, or when creating/updating issue hierarchies with parent-sub-issue and dependency relationships plus consistent metadata.
 license: MIT
 ---
@@ -26,6 +26,9 @@ This skill is designed for interoperability first: deterministic inputs, determi
 - Upserting an existing issue set while preserving relationships
 - Linking parent/sub-issue and dependency relationships from plan phases
 - Applying repository metadata rules (labels, assignees, milestone, type, fields)
+- Converting `brainstorming` specs + `writing-plans` plans into a parent spec issue and linked child execution issues
+
+> ⚠️ **Explicit-request gate:** Do not perform any spec/plan-to-issue conversion automatically. Use this skill for superpowers handoff conversion only when the user explicitly asks to create/update GitHub issues, milestones, projects, or issue relationships.
 
 ## Interoperability Contract
 
@@ -134,12 +137,30 @@ PlanItem {
 
 ## Recommended Labels for Plan Conversion
 
-Use a small, predictable label set to maximize downstream automation:
+Use labels that align with your conventional commit taxonomy and workflow metadata:
 
-- `type:task` or `type:epic`
+- exactly one conventional type label (for example `type:feat`, `type:fix`, `type:build`, `type:refactor`, `type:chore`, `type:docs`, `type:ci`)
+- one or more scope labels (for example `scope:conformetry`, `scope:configuration`)
 - `status:todo` / `status:in-progress` / `status:blocked`
 - `source:plan`
-- area label (for example `area:lexico`)
+- `source:agent` (required on all issues created/updated by this skill)
+- `source:superpowers` (also apply when inputs came from superpowers specs/plans)
+
+When scope labels already encode the domain, avoid redundant `area:*` labels.
+
+## Superpowers Conversion Reference
+
+For `brainstorming` + `writing-plans` handoff workflows, use the dedicated reference:
+
+- [`references/superpowers-spec-plan-conversion.md`](references/superpowers-spec-plan-conversion.md)
+
+It defines:
+
+- parent issue behavior (full spec body, stable key markers)
+- task extraction from `### Task N` plan sections
+- dependency extraction from `Consumes` lines
+- conventional `type:*` + `scope:*` label strategy
+- milestone + project integration and validation checklist
 
 ## Plan Mapping Output Format
 
@@ -198,19 +219,22 @@ Return this Markdown table after upsert. Other skills can parse it reliably.
 
 Use `gh api` when dependency links must be explicit.
 
+> ⚠️ The dependency API requires an **integer** issue ID (from `.id`, not `.number`), passed as JSON. Using `-f` passes strings and causes a type error.
+
 ```bash
-# Mark issue 123 as blocked by issue id 456789
+# Fetch the integer ID of the blocking issue
+BLOCKER_ID=$(gh api repos/<owner>/<repo>/issues/<blocker-number> --jq '.id')
+
+# Mark issue 123 as blocked by that issue
 gh api \
   -X POST \
   repos/<owner>/<repo>/issues/123/dependencies/blocked_by \
-  -f blocked_by_issue_id=456789
-
-# Mark issue 123 as blocking issue id 456790
-gh api \
-  -X POST \
-  repos/<owner>/<repo>/issues/123/dependencies/blocking \
-  -f blocking_issue_id=456790
+  --input - <<EOF
+{"issue_id": $BLOCKER_ID}
+EOF
 ```
+
+Verify with the returned `issue_dependencies_summary.blocked_by` count.
 
 ### Optional custom field metadata
 
@@ -229,7 +253,7 @@ gh api \
 
 ## Metadata Guidance
 
-- Labels: keep focused; use workflow + area labels first.
+- Labels: keep focused; use one conventional `type:*` label, relevant `scope:*` labels, and workflow labels first.
 - Assignees: use explicit usernames (`@me` only in CLI contexts).
 - Milestone: set only if it affects delivery tracking.
 - Issue type: set when repository uses issue types.
@@ -259,3 +283,4 @@ If a caller cannot provide stable task ids, this skill should generate determini
 - GitHub CLI manual: https://cli.github.com/manual/gh_issue_edit
 - GitHub REST Issues API: https://docs.github.com/rest/issues/issues
 - GitHub REST Issue dependencies API: https://docs.github.com/rest/issues/issue-dependencies
+- Superpowers conversion reference: [`references/superpowers-spec-plan-conversion.md`](references/superpowers-spec-plan-conversion.md)
