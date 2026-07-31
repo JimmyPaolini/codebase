@@ -22,15 +22,11 @@ export interface ArchiveContext {
  * Validated command options and required environment values.
  */
 export interface ArchiveLogsOptions {
-  readonly actor?: string;
   readonly archiveEnd: string;
   readonly archiveStart: string;
-  readonly branch?: string;
-  readonly event?: string;
+  readonly filters: WorkflowRunFilters;
   readonly githubRepository: string;
   readonly githubToken: string;
-  readonly name?: string;
-  readonly status?: string;
 }
 
 /**

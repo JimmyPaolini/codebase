@@ -10,6 +10,7 @@ import {
   INDEX_FILE_RELATIVE_PATH,
   workflowRunsResponseSchema,
 } from "./archive-logs.constants";
+import { buildWorkflowRunsUrl } from "./workflow-runs.utilities.js";
 
 import type {
   ArchiveContext,
@@ -17,6 +18,7 @@ import type {
   Manifest,
   RunCollectionResult,
   WorkflowRun,
+  WorkflowRunFilters,
   WorkflowRunsResponse,
 } from "./archive-logs.types";
 
@@ -283,10 +285,11 @@ export class ArchiveLogsService {
   private loadWorkflowRunsPage(
     githubRepository: string,
     pageNumber: number,
+    filters: WorkflowRunFilters,
   ): WorkflowRun[] {
     const response = this.parseWorkflowRunsResponse(
       this.archiveLogsSupportService.runGithubApiJson(
-        `repos/${githubRepository}/actions/runs?per_page=100&page=${pageNumber}`,
+        buildWorkflowRunsUrl(githubRepository, pageNumber, filters),
       ),
     );
     return response.workflow_runs;
@@ -381,6 +384,7 @@ export class ArchiveLogsService {
   collectAndZip(
     githubRepository: string,
     archiveContext: ArchiveContext,
+    filters: WorkflowRunFilters,
   ): RunCollectionResult {
     this.initializeWorkspace(archiveContext);
 
@@ -394,7 +398,11 @@ export class ArchiveLogsService {
     let pageNumber = 1;
 
     for (;;) {
-      const pageRuns = this.loadWorkflowRunsPage(githubRepository, pageNumber);
+      const pageRuns = this.loadWorkflowRunsPage(
+        githubRepository,
+        pageNumber,
+        filters,
+      );
       if (pageRuns.length === 0) {
         break;
       }

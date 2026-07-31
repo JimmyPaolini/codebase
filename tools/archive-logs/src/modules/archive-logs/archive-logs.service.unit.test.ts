@@ -8,6 +8,7 @@ import {
   INDEX_FILE_RELATIVE_PATH,
 } from "./archive-logs.constants";
 import { ArchiveLogsService } from "./archive-logs.service";
+import { buildWorkflowRunsUrl } from "./workflow-runs.utilities.js";
 
 describe(ArchiveLogsService, () => {
   let service: ArchiveLogsService;
@@ -29,6 +30,7 @@ describe(ArchiveLogsService, () => {
   });
 
   beforeEach(() => {
+    vi.restoreAllMocks();
     vi.clearAllMocks();
     vi.mocked(archiveLogsSupportService.buildArchiveName).mockReturnValue(
       "archive-2025-01-01T00-00-00Z__2025-01-08T00-00-00Z",
@@ -120,9 +122,134 @@ describe(ArchiveLogsService, () => {
         "2025-01-01T00:00:00Z",
         "2025-01-08T00:00:00Z",
       );
-      const result = service.collectAndZip("owner/repo", context);
+      const result = service.collectAndZip("owner/repo", context, {});
 
       expect(result).toStrictEqual({ includedRunIds: [], skippedRunIds: [] });
+    });
+
+    it("loads filtered runs from the workflow-specific endpoint when name is set", () => {
+      vi.spyOn(
+        // type-coverage:ignore-next-line
+        service as unknown as {
+          initializeWorkspace: (archiveContext: unknown) => void;
+        },
+        "initializeWorkspace",
+      ).mockReturnValue(undefined);
+      vi.spyOn(
+        // type-coverage:ignore-next-line
+        service as unknown as {
+          loadArchivedRunIdentifierSet: (
+            githubRepository: string,
+            archiveContext: unknown,
+          ) => Set<string>;
+        },
+        "loadArchivedRunIdentifierSet",
+      ).mockReturnValue(new Set<string>());
+      vi.spyOn(
+        // type-coverage:ignore-next-line
+        service as unknown as {
+          collectRunsFromPage: (options: unknown) => void;
+        },
+        "collectRunsFromPage",
+      ).mockReturnValue(undefined);
+      vi.spyOn(
+        // type-coverage:ignore-next-line
+        service as unknown as {
+          finalizeArchive: (options: unknown) => void;
+        },
+        "finalizeArchive",
+      ).mockReturnValue(undefined);
+      const runGithubApiJsonSpy = vi
+        .fn<ArchiveLogsShellService["runGithubApiJson"]>()
+        .mockReturnValueOnce({
+          workflow_runs: [
+            { created_at: "2025-01-07T00:00:00Z", id: 1, name: "nightly.yml" },
+          ],
+        })
+        .mockReturnValueOnce({ workflow_runs: [] });
+      Object.assign(archiveLogsSupportService, {
+        runGithubApiJson: runGithubApiJsonSpy,
+      });
+
+      const context = service.buildContext(
+        "2025-01-01T00:00:00Z",
+        "2025-01-08T00:00:00Z",
+      );
+      service.collectAndZip("owner/repo", context, { name: "nightly.yml" });
+
+      expect(runGithubApiJsonSpy).toHaveBeenNthCalledWith(
+        1,
+        buildWorkflowRunsUrl("owner/repo", 1, { name: "nightly.yml" }),
+      );
+    });
+
+    it("keeps date-window pagination working with filters applied", () => {
+      vi.spyOn(
+        // type-coverage:ignore-next-line
+        service as unknown as {
+          initializeWorkspace: (archiveContext: unknown) => void;
+        },
+        "initializeWorkspace",
+      ).mockReturnValue(undefined);
+      vi.spyOn(
+        // type-coverage:ignore-next-line
+        service as unknown as {
+          loadArchivedRunIdentifierSet: (
+            githubRepository: string,
+            archiveContext: unknown,
+          ) => Set<string>;
+        },
+        "loadArchivedRunIdentifierSet",
+      ).mockReturnValue(new Set<string>());
+      vi.spyOn(
+        // type-coverage:ignore-next-line
+        service as unknown as {
+          collectRunsFromPage: (options: unknown) => void;
+        },
+        "collectRunsFromPage",
+      ).mockReturnValue(undefined);
+      vi.spyOn(
+        // type-coverage:ignore-next-line
+        service as unknown as {
+          finalizeArchive: (options: unknown) => void;
+        },
+        "finalizeArchive",
+      ).mockReturnValue(undefined);
+      const runGithubApiJsonSpy = vi
+        .fn<ArchiveLogsShellService["runGithubApiJson"]>()
+        .mockReturnValueOnce({
+          workflow_runs: [
+            { created_at: "2025-01-07T00:00:00Z", id: 1 },
+            { created_at: "2025-01-05T00:00:00Z", id: 2 },
+          ],
+        })
+        .mockReturnValueOnce({
+          workflow_runs: [{ created_at: "2024-12-31T23:00:00Z", id: 3 }],
+        });
+      Object.assign(archiveLogsSupportService, {
+        runGithubApiJson: runGithubApiJsonSpy,
+      });
+
+      const filters = {
+        actor: "robot",
+        branch: "main",
+        event: "push",
+        status: "completed",
+      };
+      const context = service.buildContext(
+        "2025-01-01T00:00:00Z",
+        "2025-01-08T00:00:00Z",
+      );
+      service.collectAndZip("owner/repo", context, filters);
+
+      expect(runGithubApiJsonSpy).toHaveBeenNthCalledWith(
+        1,
+        buildWorkflowRunsUrl("owner/repo", 1, filters),
+      );
+      expect(runGithubApiJsonSpy).toHaveBeenNthCalledWith(
+        2,
+        buildWorkflowRunsUrl("owner/repo", 2, filters),
+      );
     });
   });
 });

@@ -118,6 +118,31 @@ describe(ArchiveLogsCommand, () => {
       expect(archiveService.collectAndZip).toHaveBeenCalledWith(
         "owner/repo",
         mockArchiveContext,
+        {},
+      );
+    });
+
+    it("passes workflow filters into the resolved archive options", async () => {
+      await command.run([], {
+        actor: "robot",
+        branch: "main",
+        end: "2025-01-08T00:00:00Z",
+        event: "push",
+        name: "nightly.yml",
+        start: "2025-01-01T00:00:00Z",
+        status: "completed",
+      });
+
+      expect(archiveService.collectAndZip).toHaveBeenCalledWith(
+        "owner/repo",
+        mockArchiveContext,
+        {
+          actor: "robot",
+          branch: "main",
+          event: "push",
+          name: "nightly.yml",
+          status: "completed",
+        },
       );
     });
 
@@ -255,6 +280,36 @@ describe(ArchiveLogsCommand, () => {
       expect(command.parseEnd("2025-01-08T00:00:00Z")).toBe(
         "2025-01-08T00:00:00Z",
       );
+    });
+  });
+
+  describe("parseName", () => {
+    it("returns the raw string", () => {
+      expect(command.parseName("nightly.yml")).toBe("nightly.yml");
+    });
+  });
+
+  describe("parseStatus", () => {
+    it("returns the raw string", () => {
+      expect(command.parseStatus("completed")).toBe("completed");
+    });
+  });
+
+  describe("parseEvent", () => {
+    it("returns the raw string", () => {
+      expect(command.parseEvent("push")).toBe("push");
+    });
+  });
+
+  describe("parseBranch", () => {
+    it("returns the raw string", () => {
+      expect(command.parseBranch("main")).toBe("main");
+    });
+  });
+
+  describe("parseActor", () => {
+    it("returns the raw string", () => {
+      expect(command.parseActor("robot")).toBe("robot");
     });
   });
 });

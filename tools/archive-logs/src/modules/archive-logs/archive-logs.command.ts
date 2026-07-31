@@ -6,7 +6,10 @@ import { PublishLogsService } from "../publish-logs/publish-logs.service";
 
 import { ArchiveLogsService } from "./archive-logs.service";
 
-import type { ArchiveLogsOptions } from "./archive-logs.types";
+import type {
+  ArchiveLogsOptions,
+  WorkflowRunFilters,
+} from "./archive-logs.types";
 
 /**
  * CLI command that archives GitHub Actions runs for a given window.
@@ -58,6 +61,7 @@ export class ArchiveLogsCommand extends CommandRunner {
     this.archiveService.collectAndZip(
       resolvedOptions.githubRepository,
       archiveContext,
+      resolvedOptions.filters,
     );
 
     if (process.env["GITHUB_ACTIONS"] === "true") {
@@ -140,6 +144,23 @@ export class ArchiveLogsCommand extends CommandRunner {
   }
 
   /**
+   * Parse optional workflow-run filters from raw options.
+   */
+  private resolveFilters(options: Record<string, unknown>): WorkflowRunFilters {
+    const filterEntries = Object.entries({
+      actor: options["actor"],
+      branch: options["branch"],
+      event: options["event"],
+      name: options["name"],
+      status: options["status"],
+    }).filter((entry): entry is [keyof WorkflowRunFilters, string] => {
+      return typeof entry[1] === "string";
+    });
+
+    return Object.fromEntries(filterEntries);
+  }
+
+  /**
    * Parse and validate resolved options before executing.
    */
   private resolveOptions(options: Record<string, unknown>): ArchiveLogsOptions {
@@ -149,12 +170,35 @@ export class ArchiveLogsCommand extends CommandRunner {
     return {
       archiveEnd,
       archiveStart,
+      filters: this.resolveFilters(options),
       githubRepository,
       githubToken,
     };
   }
 
   // 🌎 Public Methods
+
+  /**
+   * Parses the optional workflow run actor filter.
+   */
+  @Option({
+    description: "Workflow run actor login",
+    flags: "--actor <actor>",
+  })
+  parseActor(value: string): string {
+    return value;
+  }
+
+  /**
+   * Parses the optional workflow run branch filter.
+   */
+  @Option({
+    description: "Workflow run branch name",
+    flags: "--branch <branch>",
+  })
+  parseBranch(value: string): string {
+    return value;
+  }
 
   /**
    * Parses the --end datetime option value.
@@ -168,6 +212,28 @@ export class ArchiveLogsCommand extends CommandRunner {
   }
 
   /**
+   * Parses the optional workflow run event filter.
+   */
+  @Option({
+    description: "Workflow run event name",
+    flags: "--event <event>",
+  })
+  parseEvent(value: string): string {
+    return value;
+  }
+
+  /**
+   * Parses the optional workflow file name or workflow ID filter.
+   */
+  @Option({
+    description: "Workflow file name or workflow ID",
+    flags: "--name <name>",
+  })
+  parseName(value: string): string {
+    return value;
+  }
+
+  /**
    * Parses the --start datetime option value.
    */
   @Option({
@@ -175,6 +241,17 @@ export class ArchiveLogsCommand extends CommandRunner {
     flags: "-s, --start <start>",
   })
   parseStart(value: string): string {
+    return value;
+  }
+
+  /**
+   * Parses the optional workflow run status filter.
+   */
+  @Option({
+    description: "Workflow run status value",
+    flags: "--status <status>",
+  })
+  parseStatus(value: string): string {
     return value;
   }
 
