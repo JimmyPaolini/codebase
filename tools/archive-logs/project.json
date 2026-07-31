@@ -24,10 +24,10 @@
       "cache": false,
       "configurations": {
         "archive": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/archive-logs/src/main.ts archive-logs"
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/archive-logs/src/main.ts archive-logs {args}"
         },
         "delete": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/archive-logs/src/main.ts delete-logs"
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/archive-logs/src/main.ts delete-logs {args}"
         }
       },
       "defaultConfiguration": "archive",
