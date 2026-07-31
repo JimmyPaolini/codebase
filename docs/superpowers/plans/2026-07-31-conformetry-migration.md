@@ -50,11 +50,14 @@
 
 ```ts
 test("scaffolds a NestJS service application without nest-commander bootstrapping", async () => {
-  await generateNestjsServiceApplication(createTree(), {
+  const tree = createWorkspaceTree();
+  await generateNestjsServiceApplication(tree, {
     name: "conformetry-core",
     type: "packages",
   });
-  expect(readFile("packages/conformetry-core/src/main.ts")).toContain("NestFactory.create");
+  expect(tree.read("packages/conformetry-core/src/main.ts", "utf8")).toContain(
+    "NestFactory.create",
+  );
 });
 ```
 
@@ -171,6 +174,8 @@ git commit -m "feat(packages): ✨ scaffold conformetry package projects"
 **Files:**
 - Create: `packages/conformetry-core/src/modules/generator/generator.types.ts`
 - Create: `packages/conformetry-core/src/modules/generator/generator.service.ts`
+- Create: `packages/conformetry-core/src/modules/generator/generator-hook.types.ts`
+- Create: `packages/conformetry-core/src/modules/generator/generator-test-runtime.ts`
 - Create: `packages/conformetry-core/src/modules/runtime/file-system-adapter.types.ts`
 - Create: `packages/conformetry-core/src/modules/runtime/path-matcher.types.ts`
 - Create: `packages/conformetry-core/src/modules/runtime/formatter-adapter.types.ts`
@@ -208,7 +213,7 @@ test("runs pre and post generation hooks", async () => {
       templateDirectoryPath: "configuration/conformetry-templates/react-component/templates",
     },
     options: { name: "user-card" },
-    runtime: testRuntime,
+    runtime: createGeneratorTestRuntime(),
   });
   expect(preGenerationHook).toHaveBeenCalledTimes(1);
   expect(postGenerationHook).toHaveBeenCalledTimes(1);
@@ -238,6 +243,8 @@ export interface GeneratorDefinition {
   templateDirectoryPath: string;
   targetPathStrategy: (context: GeneratorContext) => string;
 }
+
+export type GeneratorHook = (context: GeneratorHookContext) => Promise<void> | void;
 
 export async function runGenerator(
   arguments_: RunGeneratorArguments,
@@ -274,6 +281,7 @@ git commit -m "feat(packages): ✨ add conformetry core generator runtime"
 - Produces:
   - `export const conformetryConfiguration: ConformetryConfiguration`
   - generator definitions keyed by generator name with aliases/schema/template/path strategy/hooks
+  - `formatGeneratedFilesWithNx` hook exported from `@jimmypaolini/conformetry-nx`
 
 - [ ] **Step 1: Write failing config loading test**
 
@@ -299,9 +307,7 @@ export const conformetryConfiguration = {
     "nestjs-service-module": {
       aliases: ["nsm"],
       description: "Generate a NestJS service module...",
-      hooks: {
-        postGenerate: [formatGeneratedFilesWithNx],
-      },
+      hooks: { postGenerate: [formatGeneratedFilesWithNx] },
       schemaPath: "configuration/conformetry-templates/nestjs-service-module/schema.json",
       templateDirectoryPath: "configuration/conformetry-templates/nestjs-service-module/templates",
     },
@@ -329,11 +335,14 @@ git commit -m "feat(configuration): ✨ add declarative conformetry generator co
 **Files:**
 - Create: `packages/conformetry-nx/src/modules/nx-generator/nx-generator-adapter.service.ts`
 - Create: `packages/conformetry-nx/src/modules/nx-project/nx-project-metadata-adapter.service.ts`
+- Create: `packages/conformetry-nx/src/modules/nx-project/nx-project.types.ts`
 - Create: `packages/conformetry-nx/src/modules/config/conformetry-config-loader.service.ts`
 - Create: `packages/conformetry-nx/src/modules/nx-generator/generator-factory.service.ts`
+- Create: `packages/conformetry-nx/src/modules/formatting/format-generated-files-with-nx.hook.ts`
 - Create: `packages/conformetry-nx/generators.json`
 - Create: `packages/conformetry-nx/src/index.ts` exports
 - Create: `packages/conformetry-nx/src/modules/nx-generator/generator-factory.service.unit.test.ts`
+- Create: `packages/conformetry-nx/src/modules/formatting/format-generated-files-with-nx.hook.unit.test.ts`
 
 **Interfaces:**
 - Consumes: `runGenerator` from `@jimmypaolini/conformetry-core`, repo config from Task 4.
@@ -341,6 +350,7 @@ git commit -m "feat(configuration): ✨ add declarative conformetry generator co
   - `createNxGeneratorFactory(generatorName: string): (tree: Tree, options?: Record<string, unknown>) => Promise<GeneratorCallback>`
   - `resolveNxProjectMetadata(tree: Tree): NxWorkspaceProjectMetadata[]`
   - `filterProjectsForGenerator(metadata: NxWorkspaceProjectMetadata[], selector: GeneratorProjectSelector): NxWorkspaceProjectMetadata[]`
+  - `formatGeneratedFilesWithNx(context: GeneratorHookContext): Promise<void>`
 
 - [ ] **Step 1: Write failing nx factory unit test**
 
@@ -455,6 +465,11 @@ git commit -m "feat(packages): ✨ add conformetry core validator plugin runtime
 - Create/Modify: `packages/conformetry-json/src/**`
 - Create/Modify: `packages/conformetry-text/src/**`
 - Source migration references: `tools/conformance/src/modules/validator/**`
+- Create: `packages/conformetry-typescript/src/modules/validator/validator.service.unit.test.ts`
+- Create: `packages/conformetry-python/src/modules/validator/validator.service.unit.test.ts`
+- Create: `packages/conformetry-markdown/src/modules/validator/validator.service.unit.test.ts`
+- Create: `packages/conformetry-json/src/modules/validator/validator.service.unit.test.ts`
+- Create: `packages/conformetry-text/src/modules/validator/validator.service.unit.test.ts`
 
 **Interfaces:**
 - Consumes: `ConformetryValidatorPlugin` from Task 6.
@@ -470,7 +485,15 @@ git commit -m "feat(packages): ✨ add conformetry core validator plugin runtime
 ```ts
 test("typescript plugin reports conformance violations for missing structural nodes", async () => {
   const plugin = createTypeScriptValidatorPlugin();
-  const results = await plugin.run(projectFixture);
+  const results = await plugin.run({
+    candidateFilePaths: ["packages/example/src/modules/example/example.service.ts"],
+    fileSystemAdapter: {
+      exists: () => true,
+      list: () => [],
+      readFile: () => "",
+      writeFile: () => undefined,
+    },
+  });
   expect(results).toHaveLength(1);
 });
 ```
