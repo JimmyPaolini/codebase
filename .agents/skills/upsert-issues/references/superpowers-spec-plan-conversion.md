@@ -226,6 +226,8 @@ Prefer conventional commit-compatible labels over generic issue-type labels.
 - **Workflow labels:**
   - `status:todo` / `status:in-progress` / `status:blocked`
   - `source:plan`
+  - `source:agent` (required on all upserted issues)
+  - `source:superpowers` (required for superpowers-derived spec/plan conversions)
 
 Avoid `area:*` labels when `scope:*` labels already carry the domain semantics. Avoid `type:task` / `type:epic` — use conventional type labels instead.
 
@@ -234,7 +236,7 @@ Avoid `area:*` labels when `scope:*` labels already carry the domain semantics. 
 ```bash
 for label in "type:feat" "type:fix" "type:build" "type:refactor" "type:chore" \
              "type:docs" "type:ci" "status:todo" "status:in-progress" \
-             "status:blocked" "source:plan"; do
+             "status:blocked" "source:plan" "source:agent" "source:superpowers"; do
   gh label create "$label" --repo <owner>/<repo> --color "<hex>" 2>/dev/null || true
 done
 ```

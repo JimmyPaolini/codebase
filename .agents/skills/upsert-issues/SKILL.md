@@ -143,6 +143,8 @@ Use labels that align with your conventional commit taxonomy and workflow metada
 - one or more scope labels (for example `scope:conformetry`, `scope:configuration`)
 - `status:todo` / `status:in-progress` / `status:blocked`
 - `source:plan`
+- `source:agent` (required on all issues created/updated by this skill)
+- `source:superpowers` (also apply when inputs came from superpowers specs/plans)
 
 When scope labels already encode the domain, avoid redundant `area:*` labels.
 
