@@ -67,7 +67,10 @@ data/**
 .fallow
 
 # Superpowers planning artifacts 📋
-docs/
+docs/*
+!docs/superpowers/
+!docs/superpowers/specs/
+!docs/superpowers/specs/**
 
 # project-structure plugin cache
 projectStructure.cache.json
