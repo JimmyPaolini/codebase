@@ -22,10 +22,15 @@ export interface ArchiveContext {
  * Validated command options and required environment values.
  */
 export interface ArchiveLogsOptions {
+  readonly actor?: string;
   readonly archiveEnd: string;
   readonly archiveStart: string;
+  readonly branch?: string;
+  readonly event?: string;
   readonly githubRepository: string;
   readonly githubToken: string;
+  readonly name?: string;
+  readonly status?: string;
 }
 
 /**
@@ -71,6 +76,18 @@ export interface RunCollectionResult {
 export interface WorkflowRun {
   readonly created_at: string;
   readonly id: number;
+  readonly name?: string | undefined;
+}
+
+/**
+ * Shared filters for GitHub Actions workflow run list requests.
+ */
+export interface WorkflowRunFilters {
+  readonly actor?: string;
+  readonly branch?: string;
+  readonly event?: string;
+  readonly name?: string;
+  readonly status?: string;
 }
 
 /**

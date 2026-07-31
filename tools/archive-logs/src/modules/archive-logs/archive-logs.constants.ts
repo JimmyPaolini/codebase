@@ -14,6 +14,7 @@ export const INDEX_FILE_RELATIVE_PATH = "index/archived-run-ids.jsonl";
 export const workflowRunSchema = z.object({
   created_at: z.string(),
   id: z.number(),
+  name: z.string().optional(),
 });
 
 /** Zod schema for the workflow-runs list API response. */
