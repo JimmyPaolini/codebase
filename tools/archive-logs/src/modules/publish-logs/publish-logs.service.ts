@@ -283,9 +283,9 @@ export class PublishLogsService {
     archiveContext: ArchiveContext,
   ): void {
     this.configureGit(githubToken, githubRepository);
+    this.checkoutArchiveBranch(archiveContext.archiveBranch);
     this.writeArchiveFiles(archiveContext);
     this.updateIndexFile(archiveContext);
-    this.checkoutArchiveBranch(archiveContext.archiveBranch);
     this.commitAndPush(archiveContext);
 
     this.logger.log(

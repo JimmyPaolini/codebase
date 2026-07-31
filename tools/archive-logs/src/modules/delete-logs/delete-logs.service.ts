@@ -28,6 +28,44 @@ export class DeleteLogsService {
   // 🔏 Private Methods
 
   /**
+   * Collect matching run IDs across paginated workflow-run results.
+   */
+  private collectMatchingRunIdentifiers(options: {
+    readonly filters?: WorkflowRunFilters;
+    readonly githubRepository: string;
+    readonly shouldDeleteRun: (runSummary: WorkflowRun) => boolean;
+    readonly shouldStopCollecting?: (pageRuns: WorkflowRun[]) => boolean;
+  }): string[] {
+    const runIdentifiers: string[] = [];
+    let pageNumber = 1;
+
+    for (;;) {
+      const pageRuns = this.loadWorkflowRunsPage(
+        options.githubRepository,
+        pageNumber,
+        options.filters,
+      );
+      if (pageRuns.length === 0) {
+        break;
+      }
+
+      for (const runSummary of pageRuns) {
+        if (options.shouldDeleteRun(runSummary)) {
+          runIdentifiers.push(runSummary.id.toString());
+        }
+      }
+
+      if (options.shouldStopCollecting?.(pageRuns) ?? false) {
+        break;
+      }
+
+      pageNumber += 1;
+    }
+
+    return runIdentifiers;
+  }
+
+  /**
    * Extract a human-readable failure message from a command result.
    */
   private extractFailureMessage(
@@ -169,29 +207,15 @@ export class DeleteLogsService {
     deleteEnd: string,
     filters: WorkflowRunFilters = {},
   ): void {
-    let pageNumber = 1;
+    const runIdentifiers = this.collectMatchingRunIdentifiers({
+      filters,
+      githubRepository,
+      shouldDeleteRun: (runSummary): boolean =>
+        runSummary.created_at < deleteEnd,
+    });
 
-    for (;;) {
-      const pageRuns = this.loadWorkflowRunsPage(
-        githubRepository,
-        pageNumber,
-        filters,
-      );
-      if (pageRuns.length === 0) {
-        break;
-      }
-
-      for (const runSummary of pageRuns) {
-        if (runSummary.created_at < deleteEnd) {
-          this.deleteRun(githubRepository, runSummary.id.toString());
-        }
-      }
-
-      if (this.shouldStopPagination(pageRuns, deleteEnd)) {
-        break;
-      }
-
-      pageNumber += 1;
+    for (const runIdentifier of runIdentifiers) {
+      this.deleteRun(githubRepository, runIdentifier);
     }
   }
 
@@ -206,32 +230,18 @@ export class DeleteLogsService {
     },
     filters: WorkflowRunFilters = {},
   ): void {
-    let pageNumber = 1;
+    const runIdentifiers = this.collectMatchingRunIdentifiers({
+      filters,
+      githubRepository,
+      shouldDeleteRun: (runSummary): boolean =>
+        runSummary.created_at >= deleteWindow.deleteStart &&
+        runSummary.created_at < deleteWindow.deleteEnd,
+      shouldStopCollecting: (pageRuns): boolean =>
+        this.shouldStopPagination(pageRuns, deleteWindow.deleteStart),
+    });
 
-    for (;;) {
-      const pageRuns = this.loadWorkflowRunsPage(
-        githubRepository,
-        pageNumber,
-        filters,
-      );
-      if (pageRuns.length === 0) {
-        break;
-      }
-
-      for (const runSummary of pageRuns) {
-        if (
-          runSummary.created_at >= deleteWindow.deleteStart &&
-          runSummary.created_at < deleteWindow.deleteEnd
-        ) {
-          this.deleteRun(githubRepository, runSummary.id.toString());
-        }
-      }
-
-      if (this.shouldStopPagination(pageRuns, deleteWindow.deleteStart)) {
-        break;
-      }
-
-      pageNumber += 1;
+    for (const runIdentifier of runIdentifiers) {
+      this.deleteRun(githubRepository, runIdentifier);
     }
   }
 }
