@@ -12,7 +12,8 @@ Migrate `tools/conformance` into publishable packages under `packages/`, rename 
    - `configuration/conformetry.config.ts`
    - `configuration/conformetry-templates/`
 4. Generator architecture is config-driven: adding a generator only requires schema + templates + config metadata.
-5. Validation is split into dedicated publishable plugins:
+5. The package scaffolding baseline is a new `nestjs-service-application` generator that is nearly identical to `nestjs-command-application` but uses regular NestJS bootstrapping instead of `nest-commander`.
+6. Validation is split into dedicated publishable plugins:
    - `@jimmypaolini/conformetry-typescript`
    - `@jimmypaolini/conformetry-python`
    - `@jimmypaolini/conformetry-markdown`
@@ -30,18 +31,19 @@ Owns:
 - template rendering and substitution logic
 - validation orchestration contracts
 - plugin registration and execution
-- filesystem/runtime abstraction interfaces
+- filesystem/runtime abstraction interfaces (paths, globs, file IO)
 
-Must not import `@nx/devkit`.
+Must not import `@nx/devkit` and must not perform Nx project metadata filtering.
 
 ### `@jimmypaolini/conformetry-nx`
 
 Owns:
 
 - Nx generator factory exports
-- mapping Nx `Tree` and project metadata into core runtime abstractions
+- mapping Nx `Tree` into core runtime abstractions
+- Nx project metadata resolution and filtering (tags/types/project selectors)
 - loading repo config (`configuration/conformetry.config.ts`) for workspace usage
-- Nx-focused path resolution and project/tag constraints
+- Nx-focused path resolution and project constraints
 
 ### Validation plugin packages
 
@@ -66,7 +68,9 @@ Each package exposes plugin descriptors consumed by core.
 - `templateDirectoryPath`
 - `targetPathStrategy`
 - `projectSelector` constraints (tags/types/runtime selectors)
-- optional hooks (for pre/post behavior where required)
+- optional hooks for generation lifecycle:
+  - `preGenerate`
+  - `postGenerate` (for example formatting generated files)
 
 No per-generator command module is required.
 
@@ -82,10 +86,12 @@ Template roots move from `tools/conformance/src/modules/*/templates` to `configu
 
 Core exposes a validator runtime that:
 
-- resolves selected projects/targets
+- resolves candidate file paths by glob
 - runs configured validator plugins
-- aggregates structured per-project/per-rule results
+- aggregates structured result sets
 - emits stable JSON result contracts for CI
+
+Nx-specific project selection and metadata filtering happen in `@jimmypaolini/conformetry-nx` before invoking core.
 
 Existing validator behavior from current conformance implementation is preserved but redistributed into dedicated plugin packages.
 
@@ -94,7 +100,7 @@ Existing validator behavior from current conformance implementation is preserved
 Core abstractions:
 
 - `FileSystemAdapter` (read/write/list/exists/path ops)
-- `ProjectMetadataAdapter` (project names, root paths, tags, source roots, lookup)
+- `PathMatcher` (glob matching and candidate-path expansion)
 - `TemplateRenderer` abstraction (mustache-based default implementation)
 - `FormatterAdapter` for post-generation formatting hooks
 
@@ -105,7 +111,7 @@ Non-Nx consumers can implement adapters without pulling Nx.
 
 Nx will consume package exports directly:
 
-- generator registration points to `@codebase/conformetry-nx`
+- generator registration points to `@jimmypaolini/conformetry-nx`
 - no local `tools/conformance` compatibility layer retained
 - target names and references updated from `conformance` to `conformetry`
 
@@ -119,15 +125,17 @@ Nx will consume package exports directly:
    - `conformetry-markdown`
    - `conformetry-json`
    - `conformetry-text`
-2. Move and normalize shared generator logic into `conformetry-core`.
-3. Implement declarative generator registry + loader against `configuration/conformetry.config.ts`.
-4. Move templates to `configuration/conformetry-templates/` and update path references.
-5. Move existing validator logic into plugin packages and wire plugin composition in core.
-6. Implement `conformetry-nx` generator exports and workspace adapter.
-7. Rewire workspace Nx configuration to conformetry package exports.
-8. Remove/replace old `tools/conformance` project and rename references.
-9. Update docs and command examples across AGENTS/documentation.
-10. Run targeted validation (tests + typecheck + type-coverage + analyze-code) on all touched projects.
+2. Create a new `nestjs-service-application` generator by cloning the existing command-application generator shape and removing `nest-commander` usage.
+3. Scaffold conformetry packages using `nx g conformance:nestjs-service-application --type=packages --name=<package-name>`.
+4. Move and normalize shared generator logic into `conformetry-core`.
+5. Implement declarative generator registry + loader against `configuration/conformetry.config.ts`, including pre/post generation hooks.
+6. Move templates to `configuration/conformetry-templates/` and update path references.
+7. Move existing validator logic into plugin packages and wire plugin composition in core.
+8. Implement `conformetry-nx` generator exports and workspace adapter.
+9. Rewire workspace Nx configuration to conformetry package exports.
+10. Remove/replace old `tools/conformance` project and rename references.
+11. Update docs and command examples across AGENTS/documentation.
+12. Run targeted validation (tests + typecheck + type-coverage + analyze-code) on all touched projects.
 
 ## Publishing Configuration
 
@@ -194,6 +202,7 @@ All failures must surface through Nx task output and JSON validator results.
 
 1. All existing generators run through conformetry package exports and preserve expected output behavior.
 2. Creating a new generator requires only schema + templates + config entry (no new module/class).
-3. Core package can be used without Nx dependencies.
-4. Validator functionality is distributed across dedicated plugin packages and composed by core.
-5. Workspace references, docs, and commands use `conformetry` naming consistently.
+3. The new `nestjs-service-application` generator can scaffold conformetry packages without `nest-commander`.
+4. Core package can be used without Nx dependencies.
+5. Validator functionality is distributed across dedicated plugin packages and composed by core.
+6. Workspace references, docs, and commands use `conformetry` naming consistently.
