@@ -65,7 +65,7 @@ describe(ArchiveLogsCommand, () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env["GH_TOKEN"] = "gh-token";
+    process.env["GITHUB_TOKEN"] = "github-token";
     process.env["GITHUB_ACTIONS"] = "false";
 
     vi.mocked(archiveService.buildContext).mockReturnValue(mockArchiveContext);
@@ -77,7 +77,7 @@ describe(ArchiveLogsCommand, () => {
   });
 
   afterEach(() => {
-    delete process.env["GH_TOKEN"];
+    delete process.env["GITHUB_TOKEN"];
     delete process.env["GITHUB_ACTIONS"];
   });
 
@@ -176,7 +176,7 @@ describe(ArchiveLogsCommand, () => {
       });
 
       expect(publishLogsService.publishToBranch).toHaveBeenCalledWith(
-        "gh-token",
+        "github-token",
         "JimmyPaolini/codebase",
         mockArchiveContext,
       );
@@ -193,8 +193,25 @@ describe(ArchiveLogsCommand, () => {
   });
 
   describe("run - error handling", () => {
-    it("exits with error when GH_TOKEN is missing", async () => {
-      delete process.env["GH_TOKEN"];
+    it("exits with error when GITHUB_TOKEN is missing", async () => {
+      delete process.env["GITHUB_TOKEN"];
+      const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
+        throw new Error("process.exit called");
+      });
+
+      await expect(
+        command.run([], {
+          end: "2025-01-08T00:00:00Z",
+          start: "2025-01-01T00:00:00Z",
+        }),
+      ).rejects.toThrow("process.exit called");
+
+      exitSpy.mockRestore();
+    });
+
+    it("exits with error when only GH_TOKEN is set", async () => {
+      process.env["GH_TOKEN"] = "legacy-gh-token";
+      delete process.env["GITHUB_TOKEN"];
       const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
         throw new Error("process.exit called");
       });

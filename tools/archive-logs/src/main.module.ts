@@ -13,7 +13,7 @@ import { LoggerModule } from "./modules/logger/logger.module";
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ".env",
+      envFilePath: ["tools/archive-logs/.env", ".env"],
       isGlobal: true,
       validate: (config: Record<string, unknown>) =>
         environmentSchema.parse(config),

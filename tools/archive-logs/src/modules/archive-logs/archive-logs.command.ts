@@ -146,9 +146,9 @@ export class ArchiveLogsCommand extends CommandRunner {
     githubToken: string;
   } {
     const githubRepository = DEFAULT_GITHUB_REPOSITORY;
-    const githubToken = process.env["GH_TOKEN"];
+    const githubToken = process.env["GITHUB_TOKEN"];
     if (!githubToken) {
-      throw new Error("GH_TOKEN environment variable is required");
+      throw new Error("GITHUB_TOKEN environment variable is required");
     }
 
     return { githubRepository, githubToken };

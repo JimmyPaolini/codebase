@@ -39,11 +39,11 @@ describe(DeleteLogsCommand, () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env["GH_TOKEN"] = "gh-token";
+    process.env["GITHUB_TOKEN"] = "github-token";
   });
 
   afterEach(() => {
-    delete process.env["GH_TOKEN"];
+    delete process.env["GITHUB_TOKEN"];
   });
 
   it("is defined", () => {
@@ -127,6 +127,22 @@ describe(DeleteLogsCommand, () => {
 
     await expect(
       command.run([], { start: "2025-01-01T00:00:00Z" }),
+    ).rejects.toThrow("process.exit called");
+
+    exitSpy.mockRestore();
+  });
+
+  it("exits with error when only GH_TOKEN is set", async () => {
+    process.env["GH_TOKEN"] = "legacy-gh-token";
+    delete process.env["GITHUB_TOKEN"];
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
+      throw new Error("process.exit called");
+    });
+
+    await expect(
+      command.run([], {
+        end: "2025-01-08T00:00:00Z",
+      }),
     ).rejects.toThrow("process.exit called");
 
     exitSpy.mockRestore();

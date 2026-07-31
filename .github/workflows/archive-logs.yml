@@ -179,7 +179,7 @@ jobs:
       - name: 🗃️ Run Selected Workflow Action
         shell: bash
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INPUT_ACTOR: ${{ inputs.actor || '' }}
           INPUT_BRANCH: ${{ inputs.branch || '' }}
           INPUT_EVENT: ${{ inputs.event || '' }}
