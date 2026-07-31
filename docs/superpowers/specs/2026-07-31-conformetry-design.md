@@ -13,15 +13,15 @@ Migrate `tools/conformance` into publishable packages under `packages/`, rename 
    - `configuration/conformetry-templates/`
 4. Generator architecture is config-driven: adding a generator only requires schema + templates + config metadata.
 5. Validation is split into dedicated publishable plugins:
-   - `@codebase/conformetry-typescript`
-   - `@codebase/conformetry-python`
-   - `@codebase/conformetry-markdown`
-   - `@codebase/conformetry-json`
-   - `@codebase/conformetry-text`
+   - `@jimmypaolini/conformetry-typescript`
+   - `@jimmypaolini/conformetry-python`
+   - `@jimmypaolini/conformetry-markdown`
+   - `@jimmypaolini/conformetry-json`
+   - `@jimmypaolini/conformetry-text`
 
 ## Package Topology
 
-### `@codebase/conformetry-core`
+### `@jimmypaolini/conformetry-core`
 
 Owns:
 
@@ -34,7 +34,7 @@ Owns:
 
 Must not import `@nx/devkit`.
 
-### `@codebase/conformetry-nx`
+### `@jimmypaolini/conformetry-nx`
 
 Owns:
 
@@ -45,11 +45,11 @@ Owns:
 
 ### Validation plugin packages
 
-- `@codebase/conformetry-typescript`
-- `@codebase/conformetry-python`
-- `@codebase/conformetry-markdown`
-- `@codebase/conformetry-json`
-- `@codebase/conformetry-text`
+- `@jimmypaolini/conformetry-typescript`
+- `@jimmypaolini/conformetry-python`
+- `@jimmypaolini/conformetry-markdown`
+- `@jimmypaolini/conformetry-json`
+- `@jimmypaolini/conformetry-text`
 
 Each package exposes plugin descriptors consumed by core.
 
@@ -128,6 +128,24 @@ Nx will consume package exports directly:
 8. Remove/replace old `tools/conformance` project and rename references.
 9. Update docs and command examples across AGENTS/documentation.
 10. Run targeted validation (tests + typecheck + type-coverage + analyze-code) on all touched projects.
+
+## Publishing Configuration
+
+Publishing setup is in scope for this implementation and will be configured for npm under `@jimmypaolini/*`.
+
+Required publishing work:
+
+1. add package metadata for publishability across all conformetry packages (`name`, `version`, `exports`, `files`, `license`, `repository`, `publishConfig`)
+2. configure release automation (existing semantic-release workflow or scoped equivalent) to publish `@jimmypaolini/conformetry-*`
+3. configure npm auth/provenance-compatible CI publish flow
+4. add explicit release targets/checks so package publish steps run only when package changes are present
+5. document local dry-run and release verification commands
+
+Acceptance criteria additions:
+
+- every conformetry package has valid npm publish metadata
+- CI can perform publish dry-run for changed conformetry packages
+- release workflow documents required npm scope ownership/token requirements for `@jimmypaolini`
 
 ## Error Handling
 
