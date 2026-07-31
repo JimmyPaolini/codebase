@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
+import { DEFAULT_GITHUB_REPOSITORY } from "../archive-logs/archive-logs.constants";
 import { LoggerService } from "../logger/logger.service";
 
 import {
@@ -96,11 +97,8 @@ export class DeleteLogsCommand extends CommandRunner {
     githubRepository: string;
     githubToken: string;
   } {
-    const githubRepository = process.env["GITHUB_REPOSITORY"];
+    const githubRepository = DEFAULT_GITHUB_REPOSITORY;
     const githubToken = process.env["GH_TOKEN"];
-    if (!githubRepository) {
-      throw new Error("GITHUB_REPOSITORY environment variable is required");
-    }
     if (!githubToken) {
       throw new Error("GH_TOKEN environment variable is required");
     }

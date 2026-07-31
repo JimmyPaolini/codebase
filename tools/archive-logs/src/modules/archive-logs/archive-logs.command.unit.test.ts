@@ -65,7 +65,6 @@ describe(ArchiveLogsCommand, () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env["GITHUB_REPOSITORY"] = "owner/repo";
     process.env["GH_TOKEN"] = "gh-token";
     process.env["GITHUB_ACTIONS"] = "false";
 
@@ -78,7 +77,6 @@ describe(ArchiveLogsCommand, () => {
   });
 
   afterEach(() => {
-    delete process.env["GITHUB_REPOSITORY"];
     delete process.env["GH_TOKEN"];
     delete process.env["GITHUB_ACTIONS"];
   });
@@ -116,7 +114,7 @@ describe(ArchiveLogsCommand, () => {
       });
 
       expect(archiveService.collectAndZip).toHaveBeenCalledWith(
-        "owner/repo",
+        "JimmyPaolini/codebase",
         mockArchiveContext,
         {},
       );
@@ -134,7 +132,7 @@ describe(ArchiveLogsCommand, () => {
       });
 
       expect(archiveService.collectAndZip).toHaveBeenCalledWith(
-        "owner/repo",
+        "JimmyPaolini/codebase",
         mockArchiveContext,
         {
           actor: "robot",
@@ -179,7 +177,7 @@ describe(ArchiveLogsCommand, () => {
 
       expect(publishLogsService.publishToBranch).toHaveBeenCalledWith(
         "gh-token",
-        "owner/repo",
+        "JimmyPaolini/codebase",
         mockArchiveContext,
       );
     });
@@ -195,22 +193,6 @@ describe(ArchiveLogsCommand, () => {
   });
 
   describe("run - error handling", () => {
-    it("exits with error when GITHUB_REPOSITORY is missing", async () => {
-      delete process.env["GITHUB_REPOSITORY"];
-      const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
-        throw new Error("process.exit called");
-      });
-
-      await expect(
-        command.run([], {
-          end: "2025-01-08T00:00:00Z",
-          start: "2025-01-01T00:00:00Z",
-        }),
-      ).rejects.toThrow("process.exit called");
-
-      exitSpy.mockRestore();
-    });
-
     it("exits with error when GH_TOKEN is missing", async () => {
       delete process.env["GH_TOKEN"];
       const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {

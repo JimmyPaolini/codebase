@@ -39,12 +39,10 @@ describe(DeleteLogsCommand, () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env["GITHUB_REPOSITORY"] = "owner/repo";
     process.env["GH_TOKEN"] = "gh-token";
   });
 
   afterEach(() => {
-    delete process.env["GITHUB_REPOSITORY"];
     delete process.env["GH_TOKEN"];
   });
 
@@ -76,7 +74,7 @@ describe(DeleteLogsCommand, () => {
     });
 
     expect(deleteService.deleteRunsInWindow).toHaveBeenCalledWith(
-      "owner/repo",
+      "JimmyPaolini/codebase",
       {
         deleteEnd: "2025-01-08T00:00:00Z",
         deleteStart: "2025-01-01T00:00:00Z",
@@ -92,7 +90,7 @@ describe(DeleteLogsCommand, () => {
     });
 
     expect(deleteService.deleteRunsBeforeEnd).toHaveBeenCalledWith(
-      "owner/repo",
+      "JimmyPaolini/codebase",
       "2025-01-08T00:00:00Z",
       {},
     );
@@ -110,7 +108,7 @@ describe(DeleteLogsCommand, () => {
     });
 
     expect(deleteService.deleteRunsBeforeEnd).toHaveBeenCalledWith(
-      "owner/repo",
+      "JimmyPaolini/codebase",
       "2025-01-08T00:00:00Z",
       {
         actor: "robot",

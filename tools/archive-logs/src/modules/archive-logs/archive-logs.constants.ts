@@ -5,6 +5,9 @@ import { z } from "zod";
 /** Branch where archives are stored. */
 export const ARCHIVE_BRANCH = "chore/deployments-archive-logs";
 
+/** Repository slug this tool operates on. */
+export const DEFAULT_GITHUB_REPOSITORY = "JimmyPaolini/codebase";
+
 /** Path within the archive branch for the run ID index. */
 export const INDEX_FILE_RELATIVE_PATH = "index/archived-run-ids.jsonl";
 

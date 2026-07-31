@@ -4,6 +4,7 @@ import { Command, CommandRunner, Option } from "nest-commander";
 import { LoggerService } from "../logger/logger.service";
 import { PublishLogsService } from "../publish-logs/publish-logs.service";
 
+import { DEFAULT_GITHUB_REPOSITORY } from "./archive-logs.constants";
 import { ArchiveLogsService } from "./archive-logs.service";
 
 import type { ArchiveLogsOptions } from "./archive-logs.types";
@@ -144,11 +145,8 @@ export class ArchiveLogsCommand extends CommandRunner {
     githubRepository: string;
     githubToken: string;
   } {
-    const githubRepository = process.env["GITHUB_REPOSITORY"];
+    const githubRepository = DEFAULT_GITHUB_REPOSITORY;
     const githubToken = process.env["GH_TOKEN"];
-    if (!githubRepository) {
-      throw new Error("GITHUB_REPOSITORY environment variable is required");
-    }
     if (!githubToken) {
       throw new Error("GH_TOKEN environment variable is required");
     }
