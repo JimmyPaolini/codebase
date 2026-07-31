@@ -21,6 +21,26 @@ on:
         description: RFC3339 end datetime for delete operation (timezone required, whole seconds only).
         required: false
         type: string
+      name:
+        description: Optional workflow file name or workflow ID filter for both archive and delete operations.
+        required: false
+        type: string
+      status:
+        description: Optional workflow run status filter for both archive and delete operations.
+        required: false
+        type: string
+      event:
+        description: Optional workflow run event filter for both archive and delete operations.
+        required: false
+        type: string
+      branch:
+        description: Optional workflow run branch filter for both archive and delete operations.
+        required: false
+        type: string
+      actor:
+        description: Optional workflow run actor filter for both archive and delete operations.
+        required: false
+        type: string
 
 permissions:
   actions: write
@@ -160,11 +180,34 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_ACTOR: ${{ inputs.actor || '' }}
+          INPUT_BRANCH: ${{ inputs.branch || '' }}
+          INPUT_EVENT: ${{ inputs.event || '' }}
+          INPUT_NAME: ${{ inputs.name || '' }}
+          INPUT_STATUS: ${{ inputs.status || '' }}
         run: |
+          common_filter_arguments=()
+          if [[ -n "${INPUT_ACTOR}" ]]; then
+            common_filter_arguments+=(--actor "${INPUT_ACTOR}")
+          fi
+          if [[ -n "${INPUT_BRANCH}" ]]; then
+            common_filter_arguments+=(--branch "${INPUT_BRANCH}")
+          fi
+          if [[ -n "${INPUT_EVENT}" ]]; then
+            common_filter_arguments+=(--event "${INPUT_EVENT}")
+          fi
+          if [[ -n "${INPUT_NAME}" ]]; then
+            common_filter_arguments+=(--name "${INPUT_NAME}")
+          fi
+          if [[ -n "${INPUT_STATUS}" ]]; then
+            common_filter_arguments+=(--status "${INPUT_STATUS}")
+          fi
+
           if [[ "${RUN_ARCHIVE}" == "true" ]]; then
             pnpm exec nx run archive-logs:start:archive -- \
               --start "${ARCHIVE_START}" \
-              --end "${ARCHIVE_END}"
+              --end "${ARCHIVE_END}" \
+              "${common_filter_arguments[@]}"
           fi
 
           if [[ "${RUN_DELETE}" == "true" ]]; then
@@ -172,5 +215,6 @@ jobs:
             if [[ -n "${DELETE_START}" ]]; then
               delete_arguments+=(--start "${DELETE_START}")
             fi
+            delete_arguments+=("${common_filter_arguments[@]}")
             pnpm exec nx run archive-logs:start:delete -- "${delete_arguments[@]}"
           fi
