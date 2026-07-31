@@ -551,6 +551,14 @@
   "github.copilot.selectedCompletionModel": "Auto (copilot)",
   "githubIssues.queries": [
     {
+      "label": "🧑 Human",
+      "query": "repo:${owner}/${repository} is:open -label:source:agent"
+    },
+    {
+      "label": "🤖 Agent",
+      "query": "repo:${owner}/${repository} is:open label:source:agent"
+    }
+    {
       "label": "📑 Open",
       "query": "repo:${owner}/${repository} is:open"
     },
@@ -585,20 +593,12 @@
   "githubPullRequests.pushBranch": "prompt",
   "githubPullRequests.queries": [
     {
-      "label": "Local Pull Request Branches",
-      "query": "default"
-    },
-    {
       "label": "📑 Open",
       "query": "repo:${owner}/${repository} is:open"
     },
     {
       "label": "🚪 Closed",
       "query": "repo:${owner}/${repository} -is:open"
-    },
-    {
-      "label": "All Open",
-      "query": "default"
     }
   ],
   "gitlens.ai.model": "vscode",
