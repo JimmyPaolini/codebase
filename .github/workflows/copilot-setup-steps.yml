@@ -48,5 +48,24 @@ jobs:
           git_commit_gpgsign: true
 
       - name: 🔑 Authenticate GitHub CLI
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          authentication_token="${GH_TOKEN:-${GITHUB_TOKEN:-}}"
+          if [[ -z "${authentication_token}" ]]; then
+            echo "GH_TOKEN and GITHUB_TOKEN are both unavailable."
+            exit 1
+          fi
+
+          echo "::add-mask::${authentication_token}"
+          mkdir -p "${HOME}/.config/gh"
+          rm -f "${HOME}/.config/gh/hosts.yml"
+
+          printf '%s' "${authentication_token}" | gh auth login --hostname github.com --with-token
+          gh auth setup-git
+          gh auth status
+          gh project list --owner "${GITHUB_REPOSITORY_OWNER}" --limit 1 >/dev/null
         shell: bash
