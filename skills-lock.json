@@ -25,6 +25,12 @@
       "skillPath": "skills/finishing-a-development-branch/SKILL.md",
       "computedHash": "a2afe045ea677114a89854f296ae57f8d34eb84864daa7b08ea9434acded724d"
     },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/impeccable/SKILL.md",
+      "computedHash": "ee3199350aff70ed9dec8d852a6ec5402e69d8924d89915e2cdcfd8f2ef6a9ba"
+    },
     "receiving-code-review": {
       "source": "obra/superpowers",
       "sourceType": "github",

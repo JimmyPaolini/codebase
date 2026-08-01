@@ -180,7 +180,7 @@ All workflows call this composite action after checkout. It provides:
 
 **Jobs:**
 
-- **copilot-setup-steps** - Runs `setup-codebase`, imports the repository GPG signing key, enables commit signing, and authenticates the GitHub CLI (`gh auth login`) for use by Copilot agents
+- **copilot-setup-steps** - Runs `setup-codebase`, imports the repository GPG signing key, validates signing and branch requirements via the same session-hook scripts (`scripts/git/validate-session-commit-signing.sh`, `scripts/git/validate-session-branch-name.sh`), and executes `scripts/git/check-gh-authentication.sh` for idempotent GitHub CLI bootstrap (`GH_TOKEN` sourced from `${{ github.token }}`, stale `~/.config/gh/hosts.yml` cleanup, non-interactive `gh auth login`, `gh auth setup-git`, and auth verification via `gh auth status` + `gh project list`)
 
 **Required secrets for Copilot cloud agents:**
 
@@ -188,7 +188,13 @@ All workflows call this composite action after checkout. It provides:
 - `GPG_PASSPHRASE` - Passphrase for the private key, stored as a secret in the repository's `copilot` environment
 - The matching public key must be added to the GitHub account that should show verified signatures under **Settings → SSH and GPG keys**
 
-**Permissions:** `contents: read`, `pull-requests: write`
+**Required token access for `${{ github.token }}` used by GitHub CLI bootstrap:**
+
+- repository access (`repo` for classic PAT, or equivalent fine-grained repository permissions)
+- `read:org` when organization membership lookups are required
+- Projects access (`project` scope for classic PATs, or Projects read/write permissions for fine-grained tokens)
+
+**Permissions:** includes `repository-projects: read` (for `gh project list`) plus repository read/write scopes required by Copilot setup and PR workflows
 
 ---
 
