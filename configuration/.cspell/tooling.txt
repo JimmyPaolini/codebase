@@ -129,6 +129,7 @@ peaceiris
 pinentry
 pipx
 pkill
+pbakaus
 pnpm
 pnpmfile
 polymorphic

@@ -18,7 +18,7 @@ while read -r local_ref local_sha remote_ref remote_sha; do
   if [[ "$remote_sha" == "$zero_sha" ]]; then
     commit_range="$(git rev-list "$local_sha" --not --remotes)"
   else
-    commit_range="$(git rev-list "$remote_sha..$local_sha")"
+    commit_range="$(git rev-list "$remote_sha..$local_sha" --not --remotes)"
   fi
 
   if [[ -z "$commit_range" ]]; then
