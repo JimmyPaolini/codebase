@@ -23,9 +23,9 @@ export const VALIDATOR_RULE_NAMES: ValidatorRuleName[] = [
   "nestjs-graphql-application",
   "nestjs-graphql-module",
   "nestjs-service-application",
-  "react-component",
   "nestjs-service-file",
   "nestjs-service-module",
+  "react-component",
 ];
 
 /** Type guard for validation rule names. */
