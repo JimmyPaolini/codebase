@@ -557,7 +557,7 @@
     {
       "label": "🤖 Agent",
       "query": "repo:${owner}/${repository} is:open label:source:agent"
-    }
+    },
     {
       "label": "📑 Open",
       "query": "repo:${owner}/${repository} is:open"
@@ -592,6 +592,14 @@
   "githubPullRequests.pullPullRequestBranchBeforeCheckout": "pull",
   "githubPullRequests.pushBranch": "prompt",
   "githubPullRequests.queries": [
+    {
+      "label": "🧑 Human",
+      "query": "repo:${owner}/${repository} is:open -(author:copilot OR author:dependabot[bot])"
+    },
+    {
+      "label": "🤖 Agent",
+      "query": "repo:${owner}/${repository} is:open (author:copilot OR author:dependabot[bot])"
+    },
     {
       "label": "📑 Open",
       "query": "repo:${owner}/${repository} is:open"

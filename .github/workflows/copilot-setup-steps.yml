@@ -39,6 +39,21 @@ jobs:
       - name: 🕋 Setup Codebase
         uses: ./.github/actions/setup-codebase
 
+      - name: 🌿 Verify Branch Name
+        run: |
+          validation_output="$(bash scripts/git/validate-session-branch-name.sh)"
+          if [[ -n "${validation_output}" ]]; then
+            echo "${validation_output}"
+            exit 1
+          fi
+        shell: bash
+
+      - name: 🔑 Authenticate GitHub CLI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/git/check-gh-authentication.sh
+        shell: bash
+
       - name: 🔐 Import GPG Key
         uses: crazy-max/ghaction-import-gpg@v6
         with:
@@ -47,25 +62,11 @@ jobs:
           git_user_signingkey: true
           git_commit_gpgsign: true
 
-      - name: 🔑 Authenticate GitHub CLI
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          GITHUB_TOKEN: ${{ github.token }}
+      - name: 🔎 Verify Commit Signing Configuration
         run: |
-          set -euo pipefail
-
-          authentication_token="${GH_TOKEN:-${GITHUB_TOKEN:-}}"
-          if [[ -z "${authentication_token}" ]]; then
-            echo "GH_TOKEN and GITHUB_TOKEN are both unavailable."
+          validation_output="$(bash scripts/git/validate-session-commit-signing.sh)"
+          if [[ -n "${validation_output}" ]]; then
+            echo "${validation_output}"
             exit 1
           fi
-
-          echo "::add-mask::${authentication_token}"
-          mkdir -p "${HOME}/.config/gh"
-          rm -f "${HOME}/.config/gh/hosts.yml"
-
-          printf '%s' "${authentication_token}" | gh auth login --hostname github.com --with-token
-          gh auth setup-git
-          gh auth status
-          gh project list --owner "${GITHUB_REPOSITORY_OWNER}" --limit 1 >/dev/null
         shell: bash

@@ -180,16 +180,15 @@ All workflows call this composite action after checkout. It provides:
 
 **Jobs:**
 
-- **copilot-setup-steps** - Runs `setup-codebase`, imports the repository GPG signing key, enables commit signing, and performs an idempotent GitHub CLI bootstrap (`GH_TOKEN` preferred with `GITHUB_TOKEN` fallback, stale `~/.config/gh/hosts.yml` cleanup, non-interactive `gh auth login`, `gh auth setup-git`, and auth verification via `gh auth status` + `gh project list`)
+- **copilot-setup-steps** - Runs `setup-codebase`, imports the repository GPG signing key, validates signing and branch requirements via the same session-hook scripts (`scripts/git/validate-session-commit-signing.sh`, `scripts/git/validate-session-branch-name.sh`), and executes `scripts/git/check-gh-authentication.sh` for idempotent GitHub CLI bootstrap (`GH_TOKEN` sourced from `${{ github.token }}`, stale `~/.config/gh/hosts.yml` cleanup, non-interactive `gh auth login`, `gh auth setup-git`, and auth verification via `gh auth status` + `gh project list`)
 
 **Required secrets for Copilot cloud agents:**
 
 - `GPG_PRIVATE_KEY` - ASCII-armored private key exported with `gpg --armor --export-secret-keys <email>` and stored as a secret in the repository's `copilot` environment
 - `GPG_PASSPHRASE` - Passphrase for the private key, stored as a secret in the repository's `copilot` environment
-- `GH_TOKEN` _(recommended)_ - PAT for GitHub CLI bootstrap in Copilot sessions; if omitted, the workflow falls back to `${{ github.token }}`
 - The matching public key must be added to the GitHub account that should show verified signatures under **Settings → SSH and GPG keys**
 
-**Required token access for `GH_TOKEN` (or equivalent permissions on fallback token):**
+**Required token access for `${{ github.token }}` used by GitHub CLI bootstrap:**
 
 - repository access (`repo` for classic PAT, or equivalent fine-grained repository permissions)
 - `read:org` when organization membership lookups are required
