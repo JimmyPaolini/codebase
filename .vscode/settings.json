@@ -594,7 +594,7 @@
   "githubPullRequests.queries": [
     {
       "label": "🧑 Human",
-      "query": "repo:${owner}/${repository} is:open -(author:copilot OR author:dependabot[bot])"
+      "query": "repo:${owner}/${repository} is:open (-author:copilot AND -author:dependabot[bot])"
     },
     {
       "label": "🤖 Agent",
