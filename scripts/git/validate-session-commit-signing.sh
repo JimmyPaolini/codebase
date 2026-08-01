@@ -9,13 +9,17 @@
 
 # ✅ Validation
 
-ERROR=$(bash scripts/git/check-commit-signing-configuration.sh 2>&1 || true)
+if [[ -n "${GITHUB_ACTIONS:-}" || -n "${CI:-}" ]]; then
+	ERROR=$(SKIP_GPG_SIGNING_SMOKE_TEST=true bash scripts/git/check-commit-signing-configuration.sh 2>&1 || true)
+else
+	ERROR=$(bash scripts/git/check-commit-signing-configuration.sh 2>&1 || true)
+fi
 [ -z "$ERROR" ] && exit 0
 
 # 📋 Context
 
 CONTEXT="$ERROR
-🚨 Git commit signing is required in this repository.Y
+🚨 Git commit signing is required in this repository.
 
 Action required:
 1. Stop and do not create commits until signing is configured.
