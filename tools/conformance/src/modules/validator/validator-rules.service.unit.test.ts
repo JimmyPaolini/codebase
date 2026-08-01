@@ -40,13 +40,15 @@ const NESTJS_COMMAND_APPLICATION_GENERATOR_TAG =
   "generator:nestjs-command-application";
 const NESTJS_GRAPHQL_APPLICATION_GENERATOR_TAG =
   "generator:nestjs-graphql-application";
+const NESTJS_SERVICE_APPLICATION_GENERATOR_TAG =
+  "generator:nestjs-service-application";
 const NESTJS_PROJECT_TAG = "framework:nestjs";
 const NESTJS_COMMAND_PROJECT_TAG = "framework:nest-commander";
 const REACT_PROJECT_TAG = "framework:react";
 
 describe(ValidatorRulesService, () => {
   interface ValidateInstanceFileArgument {
-    data: { type?: string };
+    data: { npmScopePrefix?: string; type?: string };
     instanceFilePath: string;
     templateFilePath: string;
   }
@@ -472,17 +474,22 @@ describe(ValidatorRulesService, () => {
     const firstCallArgument = getFirstValidateInstanceFileCallArgument();
 
     expect(firstCallArgument?.data.type).toBe("applications");
+    expect(firstCallArgument?.data.npmScopePrefix).toBe("");
 
     relativeSpy.mockRestore();
     splitSpy.mockRestore();
   });
 
   it("runs the GraphQL application rule for tagged projects", () => {
-    const projectRootPath = "/workspace/applications/example";
+    const projectRootPath = fs.mkdtempSync(
+      path.join(os.tmpdir(), "conformance-validator-rules-graphql-app-"),
+    );
+    temporaryDirectories.push(projectRootPath);
 
-    mockValidateInstanceDirectory.mockReturnValue({
-      directoryName: "example",
-      results: [],
+    mockValidateInstanceFile.mockReturnValue({
+      errors: [],
+      instanceFilePath: "instance-file",
+      templateFilePath: "template-file",
     });
 
     const result = service.runRule({
@@ -493,11 +500,116 @@ describe(ValidatorRulesService, () => {
       },
     });
 
-    expect(result).toHaveLength(1);
-    expect(mockValidateInstanceDirectory).toHaveBeenCalledTimes(1);
-    expect(mockValidateInstanceDirectory.mock.calls[0]?.[0]).toMatchObject({
-      instanceDirectoryPath: projectRootPath,
+    expect(result).toBeDefined();
+    expect(result?.[0]?.results.length).toBeGreaterThan(0);
+    expect(mockValidateInstanceFile).toHaveBeenCalledWith(expect.any(Object));
+
+    const firstCallArgument = getFirstValidateInstanceFileCallArgument();
+
+    expect(firstCallArgument?.data).toBeDefined();
+    expect(firstCallArgument?.instanceFilePath).toBeTypeOf("string");
+    expect(firstCallArgument?.templateFilePath).toBeTypeOf("string");
+  });
+
+  it("includes type in graphql application data substitutions", () => {
+    const relativeSpy = vi
+      .spyOn(path, "relative")
+      .mockReturnValue("applications/my-app");
+
+    mockValidateInstanceFile.mockReturnValue({
+      errors: [],
+      instanceFilePath: "instance-file",
+      templateFilePath: "template-file",
     });
+
+    service.runRule({
+      ruleName: "nestjs-graphql-application",
+      workspaceProject: {
+        rootPath: "/workspace/applications/my-app",
+        tags: [NESTJS_GRAPHQL_APPLICATION_GENERATOR_TAG],
+      },
+    });
+
+    expect(mockValidateInstanceFile).toHaveBeenCalledWith(expect.any(Object));
+
+    const firstCallArgument = getFirstValidateInstanceFileCallArgument();
+
+    expect(firstCallArgument?.data.type).toBe("applications");
+    expect(firstCallArgument?.data.npmScopePrefix).toBe("");
+
+    relativeSpy.mockRestore();
+  });
+
+  it("returns undefined for nestjs-service-application when tag is missing", () => {
+    const result = service.runRule({
+      ruleName: "nestjs-service-application",
+      workspaceProject: {
+        rootPath: "/workspace/project",
+        tags: [],
+      },
+    });
+
+    expect(result).toBeUndefined();
+  });
+
+  it("runs the service application rule for tagged projects", () => {
+    const projectRootPath = fs.mkdtempSync(
+      path.join(os.tmpdir(), "conformance-validator-rules-service-app-"),
+    );
+    temporaryDirectories.push(projectRootPath);
+
+    mockValidateInstanceFile.mockReturnValue({
+      errors: [],
+      instanceFilePath: "instance-file",
+      templateFilePath: "template-file",
+    });
+
+    const result = service.runRule({
+      ruleName: "nestjs-service-application",
+      workspaceProject: {
+        rootPath: projectRootPath,
+        tags: [NESTJS_SERVICE_APPLICATION_GENERATOR_TAG],
+      },
+    });
+
+    expect(result).toBeDefined();
+    expect(result?.[0]?.results.length).toBeGreaterThan(0);
+    expect(mockValidateInstanceFile).toHaveBeenCalledWith(expect.any(Object));
+
+    const firstCallArgument = getFirstValidateInstanceFileCallArgument();
+
+    expect(firstCallArgument?.data).toBeDefined();
+    expect(firstCallArgument?.instanceFilePath).toBeTypeOf("string");
+    expect(firstCallArgument?.templateFilePath).toBeTypeOf("string");
+  });
+
+  it("includes type in service application data substitutions", () => {
+    const relativeSpy = vi
+      .spyOn(path, "relative")
+      .mockReturnValue("packages/my-service");
+
+    mockValidateInstanceFile.mockReturnValue({
+      errors: [],
+      instanceFilePath: "instance-file",
+      templateFilePath: "template-file",
+    });
+
+    service.runRule({
+      ruleName: "nestjs-service-application",
+      workspaceProject: {
+        rootPath: "/workspace/packages/my-service",
+        tags: [NESTJS_SERVICE_APPLICATION_GENERATOR_TAG],
+      },
+    });
+
+    expect(mockValidateInstanceFile).toHaveBeenCalledWith(expect.any(Object));
+
+    const firstCallArgument = getFirstValidateInstanceFileCallArgument();
+
+    expect(firstCallArgument?.data.type).toBe("packages");
+    expect(firstCallArgument?.data.npmScopePrefix).toBe("@jimmypaolini/");
+
+    relativeSpy.mockRestore();
   });
 
   it("filters logger modules and only validates command modules", () => {

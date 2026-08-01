@@ -391,6 +391,7 @@ export class ValidatorRulesService {
         instanceDirectoryPath,
       );
       const type = relativeInstanceDirectoryPath.split(path.sep)[0];
+      const resolvedType = type === undefined ? "applications" : type;
       const nameSubstitutions =
         this.generatorService.buildNameSubstitutions(directoryName);
       const substitutions = {
@@ -398,7 +399,8 @@ export class ValidatorRulesService {
         nameKebabCase: nameSubstitutions.nameKebabCase,
         namePascalCase: nameSubstitutions.namePascalCase,
         nameSnakeCase: nameSubstitutions.nameSnakeCase,
-        type: type === undefined ? "applications" : type,
+        npmScopePrefix: resolvedType === "packages" ? "@jimmypaolini/" : "",
+        type: resolvedType,
       };
 
       const results = templateFilenames.map((templateFilename) => {

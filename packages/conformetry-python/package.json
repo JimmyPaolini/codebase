@@ -17,7 +17,7 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "name": "conformetry-python",
+  "name": "@jimmypaolini/conformetry-python",
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,

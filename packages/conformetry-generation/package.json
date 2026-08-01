@@ -17,7 +17,7 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "name": "conformetry-generation",
+  "name": "@jimmypaolini/conformetry-generation",
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,

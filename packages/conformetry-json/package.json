@@ -17,7 +17,7 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "name": "conformetry-json",
+  "name": "@jimmypaolini/conformetry-json",
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,

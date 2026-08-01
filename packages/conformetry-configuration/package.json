@@ -17,7 +17,7 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "name": "conformetry-configuration",
+  "name": "@jimmypaolini/conformetry-configuration",
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,

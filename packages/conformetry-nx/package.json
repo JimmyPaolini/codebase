@@ -17,7 +17,7 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "name": "conformetry-nx",
+  "name": "@jimmypaolini/conformetry-nx",
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,

@@ -114,8 +114,10 @@ export class NestjsServiceApplicationCommand extends CommandRunner {
       );
     }
 
+    const npmScopePrefix = type === "packages" ? "@jimmypaolini/" : "";
     const substitutions: NestjsServiceApplicationSubstitutions = {
       ...this.generatorService.buildNameSubstitutions(name),
+      npmScopePrefix,
       type,
     };
 

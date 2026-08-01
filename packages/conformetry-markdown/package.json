@@ -17,7 +17,7 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "name": "conformetry-markdown",
+  "name": "@jimmypaolini/conformetry-markdown",
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,

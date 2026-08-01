@@ -14,5 +14,6 @@ export interface NestjsServiceApplicationOptions {
  * Template substitutions used by this module's templates.
  */
 export interface NestjsServiceApplicationSubstitutions extends NameSubstitutions {
+  npmScopePrefix: string;
   type: string;
 }
