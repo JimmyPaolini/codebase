@@ -7,6 +7,7 @@
     "nest-commander": "catalog:",
     "pino": "catalog:",
     "reflect-metadata": "catalog:",
+    "tslib": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -18,11 +19,17 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
+  "main": "src/main.js",
   "name": "@jimmypaolini/conformetry",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,
     "strict": true
   },
+  "types": "src/main.d.ts",
   "version": "0.0.1"
 }

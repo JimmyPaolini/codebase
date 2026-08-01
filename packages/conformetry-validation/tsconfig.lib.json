@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "allowImportingTsExtensions": false,
+    "declaration": true,
+    "declarationMap": true,
+    "noEmit": false,
+    "outDir": "../../dist/packages/conformetry-validation",
+    "rootDir": ".",
+    "sourceMap": true
+  },
+  "exclude": [
+    "**/*.end-to-end.test.ts",
+    "**/*.integration.test.ts",
+    "**/*.unit.test.ts",
+    "eslint.config.ts",
+    "scripts/**",
+    "testing/**",
+    "vitest.config.ts"
+  ],
+  "extends": "./tsconfig.json"
+}

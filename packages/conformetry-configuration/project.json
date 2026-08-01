@@ -10,6 +10,16 @@
   ],
   "targets": {
     "analyze-code": {},
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "assets": [],
+        "main": "packages/conformetry-configuration/src/main.ts",
+        "outputPath": "dist/packages/conformetry-configuration",
+        "tsConfig": "packages/conformetry-configuration/tsconfig.lib.json"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
     "clean": {},
     "dependency-cruiser": {},
     "format": {},
