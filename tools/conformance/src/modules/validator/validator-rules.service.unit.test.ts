@@ -12,6 +12,7 @@ import { NestjsCommandModuleCommand } from "../nestjs-command-module/nestjs-comm
 import { NestjsDataloaderModuleCommand } from "../nestjs-dataloader-module/nestjs-dataloader-module.command";
 import { NestjsGraphqlApplicationCommand } from "../nestjs-graphql-application/nestjs-graphql-application.command";
 import { NestjsGraphqlModuleCommand } from "../nestjs-graphql-module/nestjs-graphql-module.command";
+import { NestjsServiceApplicationCommand } from "../nestjs-service-application/nestjs-service-application.command";
 import { NestjsServiceFileCommand } from "../nestjs-service-file/nestjs-service-file.command";
 import { NestjsServiceModuleCommand } from "../nestjs-service-module/nestjs-service-module.command";
 import { ReactComponentCommand } from "../react-component/react-component.command";
@@ -149,6 +150,13 @@ describe(ValidatorRulesService, () => {
             tag: NESTJS_PROJECT_TAG,
             templateDirectoryPath:
               "tools/conformance/src/modules/nestjs-graphql-module/templates",
+          },
+        },
+        {
+          provide: NestjsServiceApplicationCommand,
+          useValue: {
+            templateDirectoryPath:
+              "tools/conformance/src/modules/nestjs-service-application/templates",
           },
         },
         {

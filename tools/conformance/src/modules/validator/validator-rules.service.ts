@@ -11,6 +11,7 @@ import { NestjsCommandModuleCommand } from "../nestjs-command-module/nestjs-comm
 import { NestjsDataloaderModuleCommand } from "../nestjs-dataloader-module/nestjs-dataloader-module.command";
 import { NestjsGraphqlApplicationCommand } from "../nestjs-graphql-application/nestjs-graphql-application.command";
 import { NestjsGraphqlModuleCommand } from "../nestjs-graphql-module/nestjs-graphql-module.command";
+import { NestjsServiceApplicationCommand } from "../nestjs-service-application/nestjs-service-application.command";
 import { NestjsServiceFileCommand } from "../nestjs-service-file/nestjs-service-file.command";
 import { NestjsServiceModuleCommand } from "../nestjs-service-module/nestjs-service-module.command";
 import { ReactComponentCommand } from "../react-component/react-component.command";
@@ -19,6 +20,7 @@ import { ValidatorFilesService } from "./validator-files.service";
 
 import type {
   InstanceDirectoryValidationResult,
+  RuleFunction,
   WorkspaceProject,
 } from "./validator.types";
 
@@ -36,6 +38,7 @@ export class ValidatorRulesService {
     private readonly nestjsDataloaderModuleCommand: NestjsDataloaderModuleCommand,
     private readonly nestjsGraphqlApplicationCommand: NestjsGraphqlApplicationCommand,
     private readonly nestjsGraphqlModuleCommand: NestjsGraphqlModuleCommand,
+    private readonly nestjsServiceApplicationCommand: NestjsServiceApplicationCommand,
     private readonly nestjsServiceFileCommand: NestjsServiceFileCommand,
     private readonly nestjsServiceModuleCommand: NestjsServiceModuleCommand,
     private readonly reactComponentCommand: ReactComponentCommand,
@@ -178,20 +181,11 @@ export class ValidatorRulesService {
   private runNestjsGraphqlApplicationRule(
     workspaceProject: WorkspaceProject,
   ): InstanceDirectoryValidationResult[] | undefined {
-    if (
-      !workspaceProject.tags.includes("generator:nestjs-graphql-application")
-    ) {
-      return undefined;
-    }
-
-    return [
-      this.validatorFilesService.validateInstanceDirectory({
-        instanceDirectoryPath: workspaceProject.rootPath,
-        templateDirectoryPath: this.resolveTemplateDirectoryPath(
-          this.nestjsGraphqlApplicationCommand.templateDirectoryPath,
-        ),
-      }),
-    ];
+    return this.runRootDirectoryApplicationRule(
+      workspaceProject,
+      "generator:nestjs-graphql-application",
+      this.nestjsGraphqlApplicationCommand.templateDirectoryPath,
+    );
   }
   /** Runs the nestjs-graphql-module rule. */
   private runNestjsGraphqlModuleRule(
@@ -219,6 +213,16 @@ export class ValidatorRulesService {
       }),
     );
   }
+  /** Runs the nestjs-service-application rule. */
+  private runNestjsServiceApplicationRule(
+    workspaceProject: WorkspaceProject,
+  ): InstanceDirectoryValidationResult[] | undefined {
+    return this.runRootDirectoryApplicationRule(
+      workspaceProject,
+      "generator:nestjs-service-application",
+      this.nestjsServiceApplicationCommand.templateDirectoryPath,
+    );
+  }
   /** Runs the nestjs-service-file rule. */
   private runNestjsServiceFileRule(
     workspaceProject: WorkspaceProject,
@@ -244,11 +248,11 @@ export class ValidatorRulesService {
       .toSorted();
 
     return serviceImplementationFilePaths.map((serviceFilePath) =>
-      this.validateServiceFilesForPath({
+      this.validateServiceFilesForPath(
         serviceFilePath,
         templateDirectoryPath,
         templateFilenames,
-      }),
+      ),
     );
   }
   /** Runs the nestjs-service-module rule. */
@@ -354,6 +358,23 @@ export class ValidatorRulesService {
       };
     });
   }
+  /** Validates a project's root directory against a generator template. */
+  private runRootDirectoryApplicationRule(
+    workspaceProject: WorkspaceProject,
+    generatorTag: string,
+    templatePath: string,
+  ): InstanceDirectoryValidationResult[] | undefined {
+    if (!workspaceProject.tags.includes(generatorTag)) {
+      return undefined;
+    }
+
+    return [
+      this.validatorFilesService.validateInstanceDirectory({
+        instanceDirectoryPath: workspaceProject.rootPath,
+        templateDirectoryPath: this.resolveTemplateDirectoryPath(templatePath),
+      }),
+    ];
+  }
   /** Validates command-application template files for instance directories. */
   private validateCommandApplicationDirectories(args: {
     instanceDirectoryPaths: string[];
@@ -410,12 +431,11 @@ export class ValidatorRulesService {
     });
   }
   /** Validates service-file templates for a discovered service file path. */
-  private validateServiceFilesForPath(args: {
-    serviceFilePath: string;
-    templateDirectoryPath: string;
-    templateFilenames: string[];
-  }): InstanceDirectoryValidationResult {
-    const { serviceFilePath, templateDirectoryPath, templateFilenames } = args;
+  private validateServiceFilesForPath(
+    serviceFilePath: string,
+    templateDirectoryPath: string,
+    templateFilenames: string[],
+  ): InstanceDirectoryValidationResult {
     const serviceName = path
       .basename(serviceFilePath)
       .replace(".service.ts", "");
@@ -465,12 +485,7 @@ export class ValidatorRulesService {
   }): InstanceDirectoryValidationResult[] | undefined {
     const { ruleName, workspaceProject } = args;
 
-    const ruleByName: Record<
-      string,
-      (
-        project: WorkspaceProject,
-      ) => InstanceDirectoryValidationResult[] | undefined
-    > = {
+    const ruleByName: Record<string, RuleFunction> = {
       "jupyter-notebook-application": (project) =>
         this.runJupyterNotebookApplicationRule(project),
       "nestjs-command-application": (project) =>
@@ -483,18 +498,14 @@ export class ValidatorRulesService {
         this.runNestjsGraphqlApplicationRule(project),
       "nestjs-graphql-module": (project) =>
         this.runNestjsGraphqlModuleRule(project),
+      "nestjs-service-application": (project) =>
+        this.runNestjsServiceApplicationRule(project),
       "nestjs-service-file": (project) =>
         this.runNestjsServiceFileRule(project),
       "nestjs-service-module": (project) =>
         this.runNestjsServiceModuleRule(project),
       "react-component": (project) => this.runReactComponentRule(project),
     };
-    const runRule = ruleByName[ruleName];
-
-    if (runRule === undefined) {
-      return undefined;
-    }
-
-    return runRule(workspaceProject);
+    return ruleByName[ruleName]?.(workspaceProject);
   }
 }

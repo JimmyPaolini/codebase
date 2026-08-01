@@ -104,6 +104,11 @@ export interface ResolvedErrorLocation {
   templateLine: number;
 }
 
+/** A function that runs a validation rule against a workspace project. */
+export type RuleFunction = (
+  project: WorkspaceProject,
+) => InstanceDirectoryValidationResult[] | undefined;
+
 /** CLI option payload parsed by nest-commander. */
 export interface ValidatorCommandOptions {
   projects?: string[];
@@ -142,6 +147,7 @@ export type ValidatorRuleName =
   | "nestjs-dataloader-module"
   | "nestjs-graphql-application"
   | "nestjs-graphql-module"
+  | "nestjs-service-application"
   | "nestjs-service-file"
   | "nestjs-service-module"
   | "react-component";

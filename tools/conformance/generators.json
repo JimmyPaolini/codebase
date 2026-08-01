@@ -37,6 +37,12 @@
       "factory": "./src/main#generateNestjsGraphqlModule",
       "schema": "./src/modules/nestjs-graphql-module/schema.json"
     },
+    "nestjs-service-application": {
+      "aliases": ["nsa"],
+      "description": "Generate a NestJS service application using standard NestJS bootstrap",
+      "factory": "./src/main#generateNestjsServiceApplication",
+      "schema": "./src/modules/nestjs-service-application/schema.json"
+    },
     "nestjs-service-file": {
       "aliases": ["nsf"],
       "description": "Generate NestJS service and unit test files",

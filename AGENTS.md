@@ -93,6 +93,7 @@ Keep the marker comments unchanged so synchronization commands can update it aut
 | `nestjs-dataloader-module` | `ndm` | Generate a NestJS DataLoader module with dataloader, types, and unit test files |
 | `nestjs-graphql-application` | `nga` | Generate a NestJS GraphQL API application |
 | `nestjs-graphql-module` | `ngm` | Generate a NestJS GraphQL module with resolver, entities, inputs, args, factories, service, types, constants, and unit test files |
+| `nestjs-service-application` | `nsa` | Generate a NestJS service application using standard NestJS bootstrap |
 | `nestjs-service-file` | `nsf` | Generate NestJS service and unit test files |
 | `nestjs-service-module` | `nsm` | Generate a NestJS service module with module, service, types, constants, and unit test files |
 | `react-component` | `c` | Generate a React component with test file |
