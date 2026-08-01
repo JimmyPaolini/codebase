@@ -13,7 +13,13 @@
     "build": {
       "executor": "@nx/js:tsc",
       "options": {
-        "assets": [],
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "packages/conformetry-text",
+            "output": "."
+          }
+        ],
         "main": "packages/conformetry-text/src/main.ts",
         "outputPath": "dist/packages/conformetry-text",
         "tsConfig": "packages/conformetry-text/tsconfig.lib.json"

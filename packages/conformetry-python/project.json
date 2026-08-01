@@ -13,7 +13,13 @@
     "build": {
       "executor": "@nx/js:tsc",
       "options": {
-        "assets": [],
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "packages/conformetry-python",
+            "output": "."
+          }
+        ],
         "main": "packages/conformetry-python/src/main.ts",
         "outputPath": "dist/packages/conformetry-python",
         "tsConfig": "packages/conformetry-python/tsconfig.lib.json"
