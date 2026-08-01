@@ -188,6 +188,118 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
 
+    // conformetry packages: NestJS service/command application scaffolds
+    "packages/conformetry": {
+      entry: ["src/main.ts", "src/repl.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [
+        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
+        "@nestjs/testing", // Used by logger unit tests; tests are excluded from knip project scope
+        "pino-pretty", // Referenced as string transport target in LoggerService — knip can't trace string references
+        "vitest", // Knip misses vitest usage because tests are ignored
+      ],
+      project: "src/**/*.ts",
+    },
+    "packages/conformetry-configuration": {
+      entry: ["src/main.ts", "src/repl.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [
+        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
+        "@nestjs/testing",
+        "pino-pretty",
+        "vitest",
+      ],
+      project: "src/**/*.ts",
+    },
+    "packages/conformetry-generation": {
+      entry: ["src/main.ts", "src/repl.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [
+        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
+        "@nestjs/testing",
+        "pino-pretty",
+        "vitest",
+      ],
+      project: "src/**/*.ts",
+    },
+    "packages/conformetry-validation": {
+      entry: ["src/main.ts", "src/repl.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [
+        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
+        "@nestjs/testing",
+        "pino-pretty",
+        "vitest",
+      ],
+      project: "src/**/*.ts",
+    },
+    "packages/conformetry-nx": {
+      entry: ["src/main.ts", "src/repl.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [
+        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
+        "@nestjs/testing",
+        "pino-pretty",
+        "vitest",
+      ],
+      project: "src/**/*.ts",
+    },
+    "packages/conformetry-typescript": {
+      entry: ["src/main.ts", "src/repl.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [
+        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
+        "@nestjs/testing",
+        "pino-pretty",
+        "vitest",
+      ],
+      project: "src/**/*.ts",
+    },
+    "packages/conformetry-python": {
+      entry: ["src/main.ts", "src/repl.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [
+        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
+        "@nestjs/testing",
+        "pino-pretty",
+        "vitest",
+      ],
+      project: "src/**/*.ts",
+    },
+    "packages/conformetry-markdown": {
+      entry: ["src/main.ts", "src/repl.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [
+        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
+        "@nestjs/testing",
+        "pino-pretty",
+        "vitest",
+      ],
+      project: "src/**/*.ts",
+    },
+    "packages/conformetry-json": {
+      entry: ["src/main.ts", "src/repl.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [
+        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
+        "@nestjs/testing",
+        "pino-pretty",
+        "vitest",
+      ],
+      project: "src/**/*.ts",
+    },
+    "packages/conformetry-text": {
+      entry: ["src/main.ts", "src/repl.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [
+        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
+        "@nestjs/testing",
+        "pino-pretty",
+        "vitest",
+      ],
+      project: "src/**/*.ts",
+    },
+
     // conformance: Nx generator plugin for scaffolding React components
     "tools/conformance": {
       entry: [

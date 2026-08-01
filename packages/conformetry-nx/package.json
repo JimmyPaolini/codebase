@@ -1,0 +1,30 @@
+{
+  "dependencies": {
+    "@golevelup/ts-vitest": "catalog:",
+    "@nestjs/common": "catalog:",
+    "@nestjs/config": "catalog:",
+    "@nestjs/core": "catalog:",
+    "pino": "catalog:",
+    "reflect-metadata": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "catalog:",
+    "@nx/eslint-plugin": "catalog:",
+    "@swc/helpers": "catalog:",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "name": "conformetry-nx",
+  "type": "module",
+  "typeCoverage": {
+    "atLeast": 100,
+    "ignoreFiles": [
+      "src/main.ts"
+    ],
+    "strict": true
+  },
+  "version": "0.0.1"
+}

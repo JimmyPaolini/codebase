@@ -219,3 +219,5 @@ windsurfrules
 workspaces
 worktree
 worktrees
+conformetry
+Conformetry

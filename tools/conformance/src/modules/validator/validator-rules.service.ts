@@ -181,11 +181,18 @@ export class ValidatorRulesService {
   private runNestjsGraphqlApplicationRule(
     workspaceProject: WorkspaceProject,
   ): InstanceDirectoryValidationResult[] | undefined {
-    return this.runRootDirectoryApplicationRule(
-      workspaceProject,
-      "generator:nestjs-graphql-application",
-      this.nestjsGraphqlApplicationCommand.templateDirectoryPath,
-    );
+    if (
+      !workspaceProject.tags.includes("generator:nestjs-graphql-application")
+    ) {
+      return undefined;
+    }
+
+    return this.validateCommandApplicationDirectories({
+      instanceDirectoryPaths: [workspaceProject.rootPath],
+      templateDirectoryPath: this.resolveTemplateDirectoryPath(
+        this.nestjsGraphqlApplicationCommand.templateDirectoryPath,
+      ),
+    });
   }
   /** Runs the nestjs-graphql-module rule. */
   private runNestjsGraphqlModuleRule(
@@ -217,11 +224,18 @@ export class ValidatorRulesService {
   private runNestjsServiceApplicationRule(
     workspaceProject: WorkspaceProject,
   ): InstanceDirectoryValidationResult[] | undefined {
-    return this.runRootDirectoryApplicationRule(
-      workspaceProject,
-      "generator:nestjs-service-application",
-      this.nestjsServiceApplicationCommand.templateDirectoryPath,
-    );
+    if (
+      !workspaceProject.tags.includes("generator:nestjs-service-application")
+    ) {
+      return undefined;
+    }
+
+    return this.validateCommandApplicationDirectories({
+      instanceDirectoryPaths: [workspaceProject.rootPath],
+      templateDirectoryPath: this.resolveTemplateDirectoryPath(
+        this.nestjsServiceApplicationCommand.templateDirectoryPath,
+      ),
+    });
   }
   /** Runs the nestjs-service-file rule. */
   private runNestjsServiceFileRule(
@@ -357,23 +371,6 @@ export class ValidatorRulesService {
         results,
       };
     });
-  }
-  /** Validates a project's root directory against a generator template. */
-  private runRootDirectoryApplicationRule(
-    workspaceProject: WorkspaceProject,
-    generatorTag: string,
-    templatePath: string,
-  ): InstanceDirectoryValidationResult[] | undefined {
-    if (!workspaceProject.tags.includes(generatorTag)) {
-      return undefined;
-    }
-
-    return [
-      this.validatorFilesService.validateInstanceDirectory({
-        instanceDirectoryPath: workspaceProject.rootPath,
-        templateDirectoryPath: this.resolveTemplateDirectoryPath(templatePath),
-      }),
-    ];
   }
   /** Validates command-application template files for instance directories. */
   private validateCommandApplicationDirectories(args: {
