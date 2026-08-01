@@ -8,6 +8,13 @@ export interface GenerateCommandOptions {
 }
 
 /**
+ * Describes a JSON schema fragment for generator input definitions.
+ */
+export interface JsonSchemaDefinition {
+  properties?: Record<string, unknown>;
+}
+
+/**
  * Describes the CLI options accepted by the validate command.
  */
 export interface ValidateCommandOptions {

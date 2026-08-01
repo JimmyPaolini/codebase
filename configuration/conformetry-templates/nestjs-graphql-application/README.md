@@ -1,6 +1,6 @@
 # {{namePascalCase}}
 
-NestJS GraphQL API scaffold generated with `conformance:nestjs-graphql-application`.
+NestJS GraphQL API scaffold generated with `conformetry:nestjs-graphql-application`.
 
 ## Start
 

@@ -28,6 +28,11 @@ export interface ConformetryGeneratorHookDefinition {
   name: string;
 }
 
+export const CONFORMETRY_PATTERNS = [
+  "configuration/conformetry.config.ts",
+  "configuration/conformetry-templates/**",
+] as const;
+
 const conformetryConfiguration: ConformetryConfiguration = {
   generators: {
     "jupyter-notebook-application": {

@@ -1,3 +1,6 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
 import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
 import {
   DefaultTemplateRenderer,
@@ -8,7 +11,12 @@ import {
 import { ConsoleLogger, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
-import type { GenerateCommandOptions } from "./command.types.js";
+import { collectGeneratorInputsFromArguments } from "./generate.command.helpers.js";
+
+import type {
+  GenerateCommandOptions,
+  JsonSchemaDefinition,
+} from "./command.types.js";
 
 /**
  * Executes a conformetry generator from a configuration file.
@@ -83,6 +91,19 @@ export class GenerateCommand extends CommandRunner {
 
     const targetDirectoryPath =
       options.targetDirectoryPath ?? `generated/${generatorDefinition.name}`;
+    const schemaPath = path.resolve(
+      process.cwd(),
+      generatorDefinition.schemaPath,
+    );
+    const schemaFileContent = await readFile(schemaPath, "utf8");
+    const schema = JSON.parse(schemaFileContent) as JsonSchemaDefinition;
+    const rawArguments = process.env["CONFORMETRY_GENERATOR_OPTIONS"]
+      ? (JSON.parse(process.env["CONFORMETRY_GENERATOR_OPTIONS"]) as string[])
+      : process.argv.slice(2);
+    const generatorInputs = collectGeneratorInputsFromArguments(
+      rawArguments,
+      schema,
+    );
 
     const runtime = new GenerationRuntimeService();
     const result = await runtime.runGenerator({
@@ -102,7 +123,7 @@ export class GenerateCommand extends CommandRunner {
       formatter: new NoopFormatterAdapter(),
       inputs: {
         name: generatorDefinition.name,
-        targetDirectoryPath,
+        ...generatorInputs,
       },
       targetDirectoryPath,
       templateRenderer: new DefaultTemplateRenderer(),

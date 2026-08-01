@@ -301,26 +301,6 @@ const config: KnipConfig = {
       ],
       project: "src/**/*.ts",
     },
-
-    // conformance: Nx generator plugin for scaffolding React components
-    "tools/conformance": {
-      entry: [
-        "src/main.ts", // Shared Nx generator export surface + CLI bootstrap
-      ],
-      ignore: [
-        "src/**/templates/**", // Template files (EJS syntax, not valid TS)
-        "src/**/*.test.ts",
-      ],
-      ignoreBinaries: [
-        "python3", // Used by ValidatorPythonBridgeService to execute python validator bridge
-      ],
-      ignoreDependencies: [
-        "@nestjs/common", // Peer dependency — consumed by generated NestJS modules, not the generator itself
-        "@nestjs/config", // Peer dependency — consumed by generated NestJS modules, not the generator itself
-        "react", // Peer dependency — consumed by generated components, not the generator itself
-      ],
-      project: "src/**/*.ts",
-    },
   },
 };
 

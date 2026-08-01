@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { createMock } from "@golevelup/ts-vitest";
@@ -12,6 +12,28 @@ import { SynchronizationService } from "../synchronization/synchronization.servi
 import { ConformanceGeneratorsCommand } from "./conformance-generators.command";
 
 const fileContents = new Map<string, string>();
+interface ConformetryTestConfiguration {
+  generators: Record<string, { aliases?: string[]; description?: string }>;
+}
+
+let currentConformetryConfiguration: ConformetryTestConfiguration = {
+  generators: {},
+};
+let loadConformetryConfigurationError: Error | undefined;
+
+vi.mock("@jimmypaolini/conformetry-configuration", () => {
+  return {
+    ConfigurationService: class {
+      async loadConformetryConfiguration(): Promise<ConformetryTestConfiguration> {
+        await Promise.resolve();
+        if (loadConformetryConfigurationError !== undefined) {
+          throw loadConformetryConfigurationError;
+        }
+        return currentConformetryConfiguration;
+      }
+    },
+  };
+});
 
 vi.mock("node:fs", () => {
   return {
@@ -36,10 +58,6 @@ describe(ConformanceGeneratorsCommand, () => {
 
   const workspaceRoot = process.cwd();
   const agentsFile = path.join(workspaceRoot, "AGENTS.md");
-  const generatorsFile = path.join(
-    workspaceRoot,
-    "tools/conformance/generators.json",
-  );
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -60,6 +78,8 @@ describe(ConformanceGeneratorsCommand, () => {
   beforeEach(() => {
     fileContents.clear();
     vi.clearAllMocks();
+    currentConformetryConfiguration = { generators: {} };
+    loadConformetryConfigurationError = undefined;
   });
 
   it("is defined", () => {
@@ -89,12 +109,12 @@ describe(ConformanceGeneratorsCommand, () => {
     {
       agentsContent: [
         "# Header",
-        "<!-- conformance-generators-table start -->",
+        "<!-- conformetry-generators-table start -->",
         "| Generator | Alias | Description |",
         "| --------- | ----- | ----------- |",
         "| `alpha` | `a` | first |",
         "| `beta` | `b` | second |",
-        "<!-- conformance-generators-table end -->",
+        "<!-- conformetry-generators-table end -->",
       ].join("\n"),
       expectedLogMessage:
         "✅ Conformance generators table is in sync (2 generators)",
@@ -102,14 +122,10 @@ describe(ConformanceGeneratorsCommand, () => {
         alpha: {
           aliases: ["a"],
           description: "first",
-          factory: "",
-          schema: "",
         },
         beta: {
           aliases: ["b"],
           description: "second",
-          factory: "",
-          schema: "",
         },
       },
       modeArguments: ["check"],
@@ -119,16 +135,16 @@ describe(ConformanceGeneratorsCommand, () => {
     {
       agentsContent: [
         "# Header",
-        "<!-- conformance-generators-table start -->",
+        "<!-- conformetry-generators-table start -->",
         "| Generator | Alias | Description |",
         "| --------- | ----- | ----------- |",
         "| `alpha` |  | first |",
-        "<!-- conformance-generators-table end -->",
+        "<!-- conformetry-generators-table end -->",
       ].join("\n"),
       expectedLogMessage:
         "✅ Conformance generators table is in sync (1 generators)",
       generators: {
-        alpha: { description: "first", factory: "", schema: "" },
+        alpha: { description: "first" },
       },
       modeArguments: [],
       scenarioName: "defaults to check mode when no mode is provided",
@@ -141,7 +157,7 @@ describe(ConformanceGeneratorsCommand, () => {
       generators,
       modeArguments,
     }) => {
-      fileContents.set(generatorsFile, JSON.stringify({ generators }));
+      currentConformetryConfiguration = { generators };
       fileContents.set(agentsFile, agentsContent);
 
       await command.run(modeArguments);
@@ -152,26 +168,21 @@ describe(ConformanceGeneratorsCommand, () => {
   );
 
   it("writes generated table to AGENTS in write mode", async () => {
-    fileContents.set(
-      generatorsFile,
-      JSON.stringify({
-        generators: {
-          alpha: {
-            aliases: ["a"],
-            description: "first",
-            factory: "",
-            schema: "",
-          },
+    currentConformetryConfiguration = {
+      generators: {
+        alpha: {
+          aliases: ["a"],
+          description: "first",
         },
-      }),
-    );
+      },
+    };
     fileContents.set(
       agentsFile,
       [
         "# Header",
-        "<!-- conformance-generators-table start -->",
+        "<!-- conformetry-generators-table start -->",
         "stale",
-        "<!-- conformance-generators-table end -->",
+        "<!-- conformetry-generators-table end -->",
       ].join("\n"),
     );
 
@@ -189,14 +200,13 @@ describe(ConformanceGeneratorsCommand, () => {
   });
 
   it("exits on invalid mode", async () => {
-    fileContents.set(generatorsFile, JSON.stringify({ generators: {} }));
     fileContents.set(
       agentsFile,
       [
         "# Header",
-        "<!-- conformance-generators-table start -->",
+        "<!-- conformetry-generators-table start -->",
         "",
-        "<!-- conformance-generators-table end -->",
+        "<!-- conformetry-generators-table end -->",
       ].join("\n"),
     );
 
@@ -216,7 +226,6 @@ describe(ConformanceGeneratorsCommand, () => {
       modeArguments: ["check"],
       scenarioName: "exits when AGENTS markers are missing",
       setup: (): void => {
-        fileContents.set(generatorsFile, JSON.stringify({ generators: {} }));
         fileContents.set(agentsFile, "# Header without markers");
       },
     },
@@ -233,28 +242,23 @@ describe(ConformanceGeneratorsCommand, () => {
       scenarioName:
         "reports drift when generated table differs from AGENTS content",
       setup: (): void => {
-        fileContents.set(
-          generatorsFile,
-          JSON.stringify({
-            generators: {
-              alpha: {
-                aliases: ["a"],
-                description: "first",
-                factory: "",
-                schema: "",
-              },
+        currentConformetryConfiguration = {
+          generators: {
+            alpha: {
+              aliases: ["a"],
+              description: "first",
             },
-          }),
-        );
+          },
+        };
         fileContents.set(
           agentsFile,
           [
             "# Header",
-            "<!-- conformance-generators-table start -->",
+            "<!-- conformetry-generators-table start -->",
             "| Generator | Alias | Description |",
             "| --------- | ----- | ----------- |",
             "| `stale` | `x` | mismatch |",
-            "<!-- conformance-generators-table end -->",
+            "<!-- conformetry-generators-table end -->",
           ].join("\n"),
         );
       },
@@ -268,14 +272,7 @@ describe(ConformanceGeneratorsCommand, () => {
       modeArguments: ["check"],
       scenarioName: "handles non-Error throw values in run catch block",
       setup: (): void => {
-        const nonErrorLike: Error = {
-          message: "boom",
-          name: "NonErrorLike",
-        };
-
-        vi.mocked(readFileSync).mockImplementationOnce(() => {
-          throw nonErrorLike;
-        });
+        loadConformetryConfigurationError = new Error("[object Object]");
       },
     },
   ])("$scenarioName", async ({ assertLogs, modeArguments, setup }) => {

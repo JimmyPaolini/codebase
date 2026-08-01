@@ -32,9 +32,8 @@ export class ValidateCommand extends CommandRunner {
   @Option({
     description: "Path to the conformetry configuration file",
     flags: "--config [path]",
-    required: true,
   })
-  parseConfig(value: string): string {
+  parseConfig(value: string | undefined): string | undefined {
     return value;
   }
 
@@ -81,12 +80,11 @@ export class ValidateCommand extends CommandRunner {
     _passedParameters: string[],
     options: ValidateCommandOptions,
   ): Promise<void> {
-    if (options.config === undefined) {
-      throw new Error("--config is required");
-    }
+    const configurationPath =
+      options.config ?? "configuration/conformetry.config.ts";
 
     const configurationService = new ConfigurationService();
-    await configurationService.loadConformetryConfiguration(options.config);
+    await configurationService.loadConformetryConfiguration(configurationPath);
     const plugins = [
       createTypeScriptValidatorPlugin(),
       createPythonValidatorPlugin(),

@@ -5,7 +5,7 @@
   "cacheDirectory": ".nx/cache",
   "defaultBase": "main",
   "defaultProject": "codebase",
-  "excludedGlobs": ["**/tools/conformance/src/modules/*/templates/**"],
+  "excludedGlobs": ["**/configuration/conformetry-templates/**"],
   "generators": {
     "@nx/react": {
       "application": {
@@ -54,7 +54,7 @@
   "parallel": 3,
   "plugins": [
     {
-      "exclude": ["**/tools/conformance/src/modules/*/templates/**"],
+      "exclude": ["**/configuration/conformetry-templates/**"],
       "options": {
         "buildDepsTargetName": false,
         "buildTargetName": "build",
@@ -69,14 +69,14 @@
       "plugin": "@nx/vite/plugin"
     },
     {
-      "exclude": ["**/tools/conformance/src/modules/*/templates/**"],
+      "exclude": ["**/configuration/conformetry-templates/**"],
       "options": {
         "targetName": "eslint"
       },
       "plugin": "@nx/eslint/plugin"
     },
     {
-      "exclude": ["**/tools/conformance/src/modules/*/templates/**"],
+      "exclude": ["**/configuration/conformetry-templates/**"],
       "plugin": "@nx/vitest"
     },
     {

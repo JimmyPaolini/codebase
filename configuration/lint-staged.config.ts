@@ -9,7 +9,7 @@
  */
 import path from "node:path";
 
-import { CONFORMANCE_PATTERNS } from "../tools/conformance/src/constants";
+import { CONFORMETRY_PATTERNS } from "./conformetry.config";
 import { SYNC_AGENT_SKILLS_FILES } from "../tools/synchronization/src/modules/agent-skills/agent-skills.constants";
 import { SYNC_CONFORMANCE_GENERATORS_FILES } from "../tools/synchronization/src/modules/conformance-generators/conformance-generators.constants";
 import { SYNC_CONVENTIONAL_CONFIG_FILES } from "../tools/synchronization/src/modules/conventional-config/conventional-config.constants";
@@ -141,12 +141,12 @@ const config = {
     ];
   },
 
-  // ✅ Conformance validation
-  // Run conformance validation when generator templates or generated instances change
+  // ✅ Conformetry validation
+  // Run conformetry validation when generator templates or generated instances change
   // to ensure generated code instances conform to their template definitions.
-  // Patterns are derived from generator configuration files (see tools/conformance/src/constants.ts)
-  [`{${CONFORMANCE_PATTERNS.join(",")}}`]: (): string[] => [
-    "pnpm exec nx run conformance:start:validator --outputStyle=static",
+  // Patterns are derived from generator configuration files in configuration/conformetry.config.ts.
+  [`{${CONFORMETRY_PATTERNS.join(",")}}`]: (): string[] => [
+    "pnpm exec nx run codebase:conformetry-validate --outputStyle=static",
   ],
 
   // 🗄️ SQL files

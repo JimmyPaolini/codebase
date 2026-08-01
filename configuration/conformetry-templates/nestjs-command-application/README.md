@@ -1,6 +1,6 @@
 # {{namePascalCase}}
 
-NestJS command-line application scaffold generated with `conformance:nestjs-command-application`.
+NestJS command-line application scaffold generated with `conformetry:nestjs-command-application`.
 
 ## Start
 

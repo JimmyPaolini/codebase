@@ -83,7 +83,7 @@ testing/                              # Shared test utilities
 Use the generator to scaffold new GraphQL modules, then implement the resolver and service:
 
 ```bash
-nx g conformance:nestjs-graphql-module --name=<domain>
+nx g conformetry:nestjs-graphql-module --name=<domain>
 ```
 
 This creates 13 files in `src/modules/<domain>/`. After generation:
