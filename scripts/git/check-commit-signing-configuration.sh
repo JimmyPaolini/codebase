@@ -24,6 +24,16 @@ if ! gpg --list-secret-keys --keyid-format=long "$signing_key" | grep -q '^sec';
   exit 1
 fi
 
+if [[ "${SKIP_GPG_SIGNING_SMOKE_TEST:-}" == "true" ]]; then
+  exit 0
+fi
+
+# The smoke test can trigger interactive pinentry prompts. Keep it enabled for
+# local sessions, but skip it in CI/headless execution contexts.
+if [[ -n "${CI:-}" || -n "${GITHUB_ACTIONS:-}" ]]; then
+  exit 0
+fi
+
 tree_hash="$(git write-tree)"
 test_commit_message='commit-signing-smoke-test'
 
