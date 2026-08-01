@@ -12,7 +12,6 @@ import { NestjsCommandModuleCommand } from "../nestjs-command-module/nestjs-comm
 import { NestjsDataloaderModuleCommand } from "../nestjs-dataloader-module/nestjs-dataloader-module.command";
 import { NestjsGraphqlApplicationCommand } from "../nestjs-graphql-application/nestjs-graphql-application.command";
 import { NestjsGraphqlModuleCommand } from "../nestjs-graphql-module/nestjs-graphql-module.command";
-import { NestjsServiceApplicationCommand } from "../nestjs-service-application/nestjs-service-application.command";
 import { NestjsServiceFileCommand } from "../nestjs-service-file/nestjs-service-file.command";
 import { NestjsServiceModuleCommand } from "../nestjs-service-module/nestjs-service-module.command";
 import { ReactComponentCommand } from "../react-component/react-component.command";
@@ -40,8 +39,6 @@ const NESTJS_COMMAND_APPLICATION_GENERATOR_TAG =
   "generator:nestjs-command-application";
 const NESTJS_GRAPHQL_APPLICATION_GENERATOR_TAG =
   "generator:nestjs-graphql-application";
-const NESTJS_SERVICE_APPLICATION_GENERATOR_TAG =
-  "generator:nestjs-service-application";
 const NESTJS_PROJECT_TAG = "framework:nestjs";
 const NESTJS_COMMAND_PROJECT_TAG = "framework:nest-commander";
 const REACT_PROJECT_TAG = "framework:react";
@@ -152,13 +149,6 @@ describe(ValidatorRulesService, () => {
             tag: NESTJS_PROJECT_TAG,
             templateDirectoryPath:
               "tools/conformance/src/modules/nestjs-graphql-module/templates",
-          },
-        },
-        {
-          provide: NestjsServiceApplicationCommand,
-          useValue: {
-            templateDirectoryPath:
-              "tools/conformance/src/modules/nestjs-service-application/templates",
           },
         },
         {
@@ -536,78 +526,6 @@ describe(ValidatorRulesService, () => {
 
     expect(firstCallArgument?.data.type).toBe("applications");
     expect(firstCallArgument?.data.npmScopePrefix).toBe("");
-
-    relativeSpy.mockRestore();
-  });
-
-  it("returns undefined for nestjs-service-application when tag is missing", () => {
-    const result = service.runRule({
-      ruleName: "nestjs-service-application",
-      workspaceProject: {
-        rootPath: "/workspace/project",
-        tags: [],
-      },
-    });
-
-    expect(result).toBeUndefined();
-  });
-
-  it("runs the service application rule for tagged projects", () => {
-    const projectRootPath = fs.mkdtempSync(
-      path.join(os.tmpdir(), "conformance-validator-rules-service-app-"),
-    );
-    temporaryDirectories.push(projectRootPath);
-
-    mockValidateInstanceFile.mockReturnValue({
-      errors: [],
-      instanceFilePath: "instance-file",
-      templateFilePath: "template-file",
-    });
-
-    const result = service.runRule({
-      ruleName: "nestjs-service-application",
-      workspaceProject: {
-        rootPath: projectRootPath,
-        tags: [NESTJS_SERVICE_APPLICATION_GENERATOR_TAG],
-      },
-    });
-
-    expect(result).toBeDefined();
-    expect(result?.[0]?.results.length).toBeGreaterThan(0);
-    expect(mockValidateInstanceFile).toHaveBeenCalledWith(expect.any(Object));
-
-    const firstCallArgument = getFirstValidateInstanceFileCallArgument();
-
-    expect(firstCallArgument?.data).toBeDefined();
-    expect(firstCallArgument?.instanceFilePath).toBeTypeOf("string");
-    expect(firstCallArgument?.templateFilePath).toBeTypeOf("string");
-  });
-
-  it("includes type in service application data substitutions", () => {
-    const relativeSpy = vi
-      .spyOn(path, "relative")
-      .mockReturnValue("packages/my-service");
-
-    mockValidateInstanceFile.mockReturnValue({
-      errors: [],
-      instanceFilePath: "instance-file",
-      templateFilePath: "template-file",
-    });
-
-    service.runRule({
-      ruleName: "nestjs-service-application",
-      workspaceProject: {
-        rootPath: "/workspace/packages/my-service",
-        tags: [NESTJS_SERVICE_APPLICATION_GENERATOR_TAG],
-      },
-    });
-
-    expect(mockValidateInstanceFile).toHaveBeenCalledWith(expect.any(Object));
-
-    const firstCallArgument = getFirstValidateInstanceFileCallArgument();
-
-    expect(firstCallArgument?.data.type).toBe("packages");
-    expect(firstCallArgument?.data.npmScopePrefix).toBe("@jimmypaolini/");
 
     relativeSpy.mockRestore();
   });

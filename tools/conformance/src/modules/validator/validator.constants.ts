@@ -22,7 +22,6 @@ export const VALIDATOR_RULE_NAMES: ValidatorRuleName[] = [
   "nestjs-dataloader-module",
   "nestjs-graphql-application",
   "nestjs-graphql-module",
-  "nestjs-service-application",
   "nestjs-service-file",
   "nestjs-service-module",
   "react-component",

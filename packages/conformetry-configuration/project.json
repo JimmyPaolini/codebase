@@ -1,12 +1,13 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "name": "conformetry-configuration",
-  "projectType": "application",
+  "projectType": "library",
   "sourceRoot": "packages/conformetry-configuration",
   "tags": [
     "framework:nestjs",
     "generator:nestjs-service-application",
-    "language:typescript"
+    "language:typescript",
+    "type:package"
   ],
   "targets": {
     "analyze-code": {},

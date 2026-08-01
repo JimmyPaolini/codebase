@@ -1,6 +1,14 @@
 {
   "dependencies": {
     "@golevelup/ts-vitest": "catalog:",
+    "@jimmypaolini/conformetry-configuration": "workspace:*",
+    "@jimmypaolini/conformetry-generation": "workspace:*",
+    "@jimmypaolini/conformetry-json": "workspace:*",
+    "@jimmypaolini/conformetry-markdown": "workspace:*",
+    "@jimmypaolini/conformetry-python": "workspace:*",
+    "@jimmypaolini/conformetry-text": "workspace:*",
+    "@jimmypaolini/conformetry-typescript": "workspace:*",
+    "@jimmypaolini/conformetry-validation": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
@@ -19,8 +27,12 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "main": "src/main.js",
+  "generators": "../conformetry-nx/generators.json",
+  "main": "src/index.js",
   "name": "@jimmypaolini/conformetry",
+  "nx": {
+    "generators": "../conformetry-nx/generators.json"
+  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
@@ -30,6 +42,6 @@
     "atLeast": 100,
     "strict": true
   },
-  "types": "src/main.d.ts",
+  "types": "src/index.ts",
   "version": "0.0.1"
 }

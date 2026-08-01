@@ -1,6 +1,10 @@
 import baseConfig from "../../configuration/eslint.config.ts";
 
 export default [
+  {
+    ignores: ["src/index.d.ts"],
+  },
+
   // 🛠️ Base Config
   ...baseConfig,
 

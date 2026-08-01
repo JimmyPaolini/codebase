@@ -147,7 +147,6 @@ export type ValidatorRuleName =
   | "nestjs-dataloader-module"
   | "nestjs-graphql-application"
   | "nestjs-graphql-module"
-  | "nestjs-service-application"
   | "nestjs-service-file"
   | "nestjs-service-module"
   | "react-component";

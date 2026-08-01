@@ -30,6 +30,7 @@ const config: KnipConfig = {
     "squawk",
     "gh", // GitHub CLI, used by scripts/orchestrate-agents.ts to run Copilot sessions
     "openwiki",
+    "@jimmypaolini/conformetry-nx", // Referenced in nx.json plugin configuration
   ],
 
   // devDependencies used via npx, CLI, or ESLint config (not directly imported)
@@ -94,6 +95,7 @@ const config: KnipConfig = {
         "**/coverage/**",
         "applications/JimmyPaolini/**",
         "pnpm-workspace.yaml", // Catalog dependencies are shared across workspace; knip would flag all as unused in root
+        "configuration/conformetry-templates/**", // Generator templates are placeholder files, not executable workspace code
         // Skill scripts are invoked by the skill framework, not imported in code
         "**/.agents/skills/**",
         "**/.github/skills/**",
@@ -234,8 +236,8 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
     "packages/conformetry-nx": {
-      entry: ["src/main.ts", "src/repl.ts"],
-      ignore: ["src/**/*.test.ts", "testing/**"],
+      entry: ["src/index.ts", "src/main.ts", "src/repl.ts"],
+      ignore: ["src/**/*.test.ts", "src/**/templates/**", "testing/**"],
       ignoreDependencies: [
         "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
         "@nestjs/testing",

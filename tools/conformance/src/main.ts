@@ -11,7 +11,6 @@ import { NestjsCommandModuleCommand } from "./modules/nestjs-command-module/nest
 import { NestjsDataloaderModuleCommand } from "./modules/nestjs-dataloader-module/nestjs-dataloader-module.command";
 import { NestjsGraphqlApplicationCommand } from "./modules/nestjs-graphql-application/nestjs-graphql-application.command";
 import { NestjsGraphqlModuleCommand } from "./modules/nestjs-graphql-module/nestjs-graphql-module.command";
-import { NestjsServiceApplicationCommand } from "./modules/nestjs-service-application/nestjs-service-application.command";
 import { NestjsServiceFileCommand } from "./modules/nestjs-service-file/nestjs-service-file.command";
 import { NestjsServiceModuleCommand } from "./modules/nestjs-service-module/nestjs-service-module.command";
 import { ReactComponentCommand } from "./modules/react-component/react-component.command";
@@ -23,7 +22,6 @@ import type { NestjsCommandModuleOptions } from "./modules/nestjs-command-module
 import type { NestjsDataloaderModuleOptions } from "./modules/nestjs-dataloader-module/nestjs-dataloader-module.types";
 import type { NestjsGraphqlApplicationOptions } from "./modules/nestjs-graphql-application/nestjs-graphql-application.types";
 import type { NestjsGraphqlModuleOptions } from "./modules/nestjs-graphql-module/nestjs-graphql-module.types";
-import type { NestjsServiceApplicationOptions } from "./modules/nestjs-service-application/nestjs-service-application.types";
 import type { NestjsServiceFileOptions } from "./modules/nestjs-service-file/nestjs-service-file.types";
 import type { NestjsServiceModuleOptions } from "./modules/nestjs-service-module/nestjs-service-module.types";
 import type { ReactComponentOptions } from "./modules/react-component/react-component.types";
@@ -172,31 +170,6 @@ export async function generateNestjsGraphqlModule(
     );
 
     await nestjsGraphqlModuleCommand.run([], options);
-  } finally {
-    await application.close();
-  }
-
-  return async (): Promise<void> => {};
-}
-
-/**
- * Generates an instance of the NestJS service application template.
- */
-export async function generateNestjsServiceApplication(
-  _tree: Tree,
-  options: NestjsServiceApplicationOptions = {},
-): Promise<GeneratorCallback> {
-  const application = await CommandFactory.createWithoutRunning(
-    MainModule,
-    buildCommandFactoryRunOptions(),
-  );
-
-  try {
-    const nestjsServiceApplicationCommand = application.get(
-      NestjsServiceApplicationCommand,
-    );
-
-    await nestjsServiceApplicationCommand.run([], options);
   } finally {
     await application.close();
   }

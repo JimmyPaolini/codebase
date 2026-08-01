@@ -2,8 +2,9 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { DiscoveryModule } from "@nestjs/core";
 
-import { environmentSchema } from "./constants";
-import { LoggerModule } from "./modules/logger/logger.module";
+import { environmentSchema } from "./constants.js";
+import { CommandsModule } from "./modules/commands/commands.module.js";
+import { LoggerModule } from "./modules/logger/logger.module.js";
 
 /**
  * Root NestJS application module.
@@ -18,6 +19,7 @@ import { LoggerModule } from "./modules/logger/logger.module";
     }),
     DiscoveryModule,
     LoggerModule,
+    CommandsModule,
   ],
 })
 export class MainModule {}

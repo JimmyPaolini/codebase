@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "description": "Options for the conformetry init generator",
+  "properties": {
+    "name": {
+      "default": "conformetry",
+      "description": "The generated project name",
+      "type": "string"
+    },
+    "targetDirectoryPath": {
+      "description": "The directory that should receive the generated configuration file",
+      "type": "string"
+    }
+  },
+  "title": "Conformetry init generator options",
+  "type": "object"
+}

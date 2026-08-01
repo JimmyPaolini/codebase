@@ -1,0 +1,71 @@
+[project]
+name = "{{nameKebabCase}}"
+version = "0.1.0"
+description = "TODO: add project description"
+requires-python = ">=3.14"
+dependencies = [
+  "pydantic>=2.0",
+  "jupyter>=1.1",
+  "ipykernel>=6.29",
+  "tornado>=6.5.7",
+]
+
+[dependency-groups]
+dev = [
+  "bandit[toml]>=1.9.4",
+  "nbstripout>=0.8",
+  "pyright>=1.1",
+  "pytest>=9.0.3",
+  "pytest-cov>=6.0",
+  "ruff>=0.9",
+  "ty>=0.0.28",
+  "types-requests>=2.32",
+  "vulture>=2.14",
+]
+
+[tool.ruff]
+# Extend base config from root pyproject.toml (mirrors tsconfig.base.json pattern)
+extend = "../../configuration/pyproject.toml"
+exclude = ["notebooks/**", ".vulture_whitelist.py"]
+extend-include = ["*.ipynb"]
+
+[tool.ruff.lint.flake8-type-checking]
+# Pydantic BaseModel subclasses evaluate annotations at class creation time via model_rebuild()
+# so imports used as field types must remain as runtime imports (not moved to TYPE_CHECKING)
+runtime-evaluated-base-classes = ["pydantic.BaseModel"]
+
+[tool.ruff.lint.per-file-ignores]
+# Jupyter notebooks have intentional per-cell re-imports for independent cell execution
+"*.ipynb" = ["F811", "TC002"]
+
+[tool.pyright]
+# Venv settings are project-specific; base config (pythonVersion, typeCheckingMode)
+# is in root pyproject.toml
+venvPath = "."
+venv = ".venv"
+
+[tool.pytest.ini_options]
+testpaths = ["testing"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+  "unit: fast unit tests with mocked I/O",
+  "integration: integration tests requiring real services",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+reproducible = true
+
+[tool.ty.environment]
+python-version = "3.14"
+root = ["./src"]
+
+[tool.bandit]
+exclude_dirs = ["testing", "output", "notebooks"]
+skips = ["B101"]

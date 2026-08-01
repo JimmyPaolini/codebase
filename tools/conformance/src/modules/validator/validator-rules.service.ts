@@ -11,7 +11,6 @@ import { NestjsCommandModuleCommand } from "../nestjs-command-module/nestjs-comm
 import { NestjsDataloaderModuleCommand } from "../nestjs-dataloader-module/nestjs-dataloader-module.command";
 import { NestjsGraphqlApplicationCommand } from "../nestjs-graphql-application/nestjs-graphql-application.command";
 import { NestjsGraphqlModuleCommand } from "../nestjs-graphql-module/nestjs-graphql-module.command";
-import { NestjsServiceApplicationCommand } from "../nestjs-service-application/nestjs-service-application.command";
 import { NestjsServiceFileCommand } from "../nestjs-service-file/nestjs-service-file.command";
 import { NestjsServiceModuleCommand } from "../nestjs-service-module/nestjs-service-module.command";
 import { ReactComponentCommand } from "../react-component/react-component.command";
@@ -38,7 +37,6 @@ export class ValidatorRulesService {
     private readonly nestjsDataloaderModuleCommand: NestjsDataloaderModuleCommand,
     private readonly nestjsGraphqlApplicationCommand: NestjsGraphqlApplicationCommand,
     private readonly nestjsGraphqlModuleCommand: NestjsGraphqlModuleCommand,
-    private readonly nestjsServiceApplicationCommand: NestjsServiceApplicationCommand,
     private readonly nestjsServiceFileCommand: NestjsServiceFileCommand,
     private readonly nestjsServiceModuleCommand: NestjsServiceModuleCommand,
     private readonly reactComponentCommand: ReactComponentCommand,
@@ -220,27 +218,19 @@ export class ValidatorRulesService {
       }),
     );
   }
-  /** Runs the nestjs-service-application rule. */
-  private runNestjsServiceApplicationRule(
-    workspaceProject: WorkspaceProject,
-  ): InstanceDirectoryValidationResult[] | undefined {
-    if (
-      !workspaceProject.tags.includes("generator:nestjs-service-application")
-    ) {
-      return undefined;
-    }
-
-    return this.validateCommandApplicationDirectories({
-      instanceDirectoryPaths: [workspaceProject.rootPath],
-      templateDirectoryPath: this.resolveTemplateDirectoryPath(
-        this.nestjsServiceApplicationCommand.templateDirectoryPath,
-      ),
-    });
-  }
   /** Runs the nestjs-service-file rule. */
   private runNestjsServiceFileRule(
     workspaceProject: WorkspaceProject,
   ): InstanceDirectoryValidationResult[] | undefined {
+    if (workspaceProject.tags.includes("scope:conformetry")) {
+      return undefined;
+    }
+    if (
+      workspaceProject.tags.includes("generator:nestjs-service-application")
+    ) {
+      return undefined;
+    }
+
     if (!workspaceProject.tags.includes(this.nestjsServiceFileCommand.tag)) {
       return undefined;
     }
@@ -497,8 +487,6 @@ export class ValidatorRulesService {
         this.runNestjsGraphqlApplicationRule(project),
       "nestjs-graphql-module": (project) =>
         this.runNestjsGraphqlModuleRule(project),
-      "nestjs-service-application": (project) =>
-        this.runNestjsServiceApplicationRule(project),
       "nestjs-service-file": (project) =>
         this.runNestjsServiceFileRule(project),
       "nestjs-service-module": (project) =>

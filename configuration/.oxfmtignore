@@ -43,6 +43,7 @@ package-lock.json
 pnpm-lock.yaml
 tmp
 **/conformance/**/templates/**
+**/conformetry-templates/**
 **/data/wikipedia
 **/data/wiktionary
 yarn.lock

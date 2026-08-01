@@ -4,6 +4,7 @@
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
+    "@nx/devkit": "catalog:",
     "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:",
@@ -18,8 +19,12 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "main": "src/main.js",
+  "generators": "./generators.json",
+  "main": "src/index.ts",
   "name": "@jimmypaolini/conformetry-nx",
+  "nx": {
+    "generators": "./generators.json"
+  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
@@ -32,6 +37,6 @@
     ],
     "strict": true
   },
-  "types": "src/main.d.ts",
+  "types": "src/index.ts",
   "version": "0.0.1"
 }

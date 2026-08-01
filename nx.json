@@ -78,6 +78,9 @@
     {
       "exclude": ["**/tools/conformance/src/modules/*/templates/**"],
       "plugin": "@nx/vitest"
+    },
+    {
+      "plugin": "@jimmypaolini/conformetry-nx"
     }
   ],
   "projects": {

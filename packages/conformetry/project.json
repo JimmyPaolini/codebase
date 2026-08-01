@@ -7,7 +7,8 @@
     "framework:nest-commander",
     "framework:nestjs",
     "generator:nestjs-command-application",
-    "language:typescript"
+    "language:typescript",
+    "type:package"
   ],
   "targets": {
     "analyze-code": {},
@@ -37,6 +38,13 @@
     "oxlint": {},
     "prettier": {},
     "spell-check": {},
+    "start": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsx --tsconfig packages/conformetry/tsconfig.json packages/conformetry/src/main.ts",
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "test": {},
     "type-coverage": {},
     "typecheck": {},

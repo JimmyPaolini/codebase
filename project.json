@@ -131,6 +131,22 @@
         "cwd": "{projectRoot}"
       }
     },
+    "conformetry-generate": {
+      "description": "Run the conformetry generate command from the workspace root",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec nx run conformetry:start -- generate {args}",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "conformetry-validate": {
+      "description": "Run the conformetry validate command from the workspace root",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec nx run conformetry:start -- validate {args}",
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "eslint": {
       "cache": true,
       "configurations": {

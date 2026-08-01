@@ -4,6 +4,8 @@
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
+    "jiti": "catalog:",
+    "jsonc-parser": "catalog:",
     "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:",
@@ -18,7 +20,7 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "main": "src/main.js",
+  "main": "src/index.js",
   "name": "@jimmypaolini/conformetry-configuration",
   "publishConfig": {
     "access": "public",
@@ -32,6 +34,6 @@
     ],
     "strict": true
   },
-  "types": "src/main.d.ts",
+  "types": "src/index.ts",
   "version": "0.0.1"
 }

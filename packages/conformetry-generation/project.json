@@ -1,12 +1,13 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "name": "conformetry-generation",
-  "projectType": "application",
+  "projectType": "library",
   "sourceRoot": "packages/conformetry-generation",
   "tags": [
     "framework:nestjs",
     "generator:nestjs-service-application",
-    "language:typescript"
+    "language:typescript",
+    "type:package"
   ],
   "targets": {
     "analyze-code": {},
@@ -20,7 +21,7 @@
             "output": "."
           }
         ],
-        "main": "packages/conformetry-generation/src/main.ts",
+        "main": "packages/conformetry-generation/src/index.ts",
         "outputPath": "dist/packages/conformetry-generation",
         "tsConfig": "packages/conformetry-generation/tsconfig.lib.json"
       },

@@ -8,7 +8,6 @@ import { NestjsCommandModuleModule } from "../nestjs-command-module/nestjs-comma
 import { NestjsDataloaderModuleModule } from "../nestjs-dataloader-module/nestjs-dataloader-module.module";
 import { NestjsGraphqlApplicationModule } from "../nestjs-graphql-application/nestjs-graphql-application.module";
 import { NestjsGraphqlModuleModule } from "../nestjs-graphql-module/nestjs-graphql-module.module";
-import { NestjsServiceApplicationModule } from "../nestjs-service-application/nestjs-service-application.module";
 import { NestjsServiceFileModule } from "../nestjs-service-file/nestjs-service-file.module";
 import { NestjsServiceModuleModule } from "../nestjs-service-module/nestjs-service-module.module";
 import { ReactComponentModule } from "../react-component/react-component.module";
@@ -58,7 +57,6 @@ import { ValidatorService } from "./validator.service";
     NestjsDataloaderModuleModule,
     NestjsGraphqlApplicationModule,
     NestjsGraphqlModuleModule,
-    NestjsServiceApplicationModule,
     NestjsServiceFileModule,
     NestjsServiceModuleModule,
     ReactComponentModule,

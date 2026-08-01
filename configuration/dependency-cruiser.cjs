@@ -120,6 +120,8 @@ module.exports = {
         "__[a-zA-Z]+__",
         // Auto-generated files may have circular deps
         String.raw`\.gen\.(ts|tsx|js|jsx)$`,
+        // Nx adaptor shims use runtime-relative re-exports that dependency-cruiser flags as circular
+        String.raw`^packages/conformetry-nx/src/.*\.js$`,
       ],
     },
     reporterOptions: {
