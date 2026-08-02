@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 import { DiscoveryModule } from "@nestjs/core";
 
 import { environmentSchema } from "./constants";
+import { FileDiscoveryModule } from "./modules/file-discovery/file-discovery.module";
 import { LoggerModule } from "./modules/logger/logger.module";
 
 /**
@@ -17,6 +18,7 @@ import { LoggerModule } from "./modules/logger/logger.module";
         environmentSchema.parse(config),
     }),
     DiscoveryModule,
+    FileDiscoveryModule,
     LoggerModule,
   ],
 })
