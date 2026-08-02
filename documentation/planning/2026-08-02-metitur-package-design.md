@@ -191,18 +191,19 @@ The CLI entry point. Uses `nest-commander` `@Command` decorator.
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `--check` | `false` | Compare-only mode; exit 1 if README is stale |
-| `--working-directory <path>` | `process.cwd()` | Target codebase root |
-| `--readme-path <path>` | `README.md` | README file path (relative to working directory) |
+| `--check` | `false` | Compare-only mode; exit 1 if README is stale. Ignored when `--readme` is not provided. |
+| `--directory <path>` | `process.cwd()` | Target codebase root |
+| `--readme <path>` | *(none)* | README file path (relative to `--directory`). When omitted, statistics are printed to stdout and no file is written. |
 
 **Run flow:**
 
-1. Resolve `workingDirectory` and `readmePath`
-2. Call `FileDiscoveryService.discoverFiles(workingDirectory)`
+1. Resolve `directory` and optional `readme`
+2. Call `FileDiscoveryService.discoverFiles(directory)`
 3. Call `TypescriptAnalysisService.analyze(files)`
-4. Call `PythonAnalysisService.analyze(workingDirectory)`
+4. Call `PythonAnalysisService.analyze(directory)`
 5. Call `StatisticsService.compute({ trackedFiles, typescript, python })`
-6. Call `ReadmeBadgesService.write(readmePath, statistics)` or `.check(...)` depending on `--check`
+6. If `--readme` is provided: call `ReadmeBadgesService.write(readmePath, statistics)` or `.check(...)` depending on `--check`
+7. If `--readme` is omitted: print the `CodeStatistics` object to stdout (JSON or human-readable table) and exit 0
 
 ---
 
@@ -211,8 +212,8 @@ The CLI entry point. Uses `nest-commander` `@Command` decorator.
 After `metitur` is complete:
 
 1. Update the `measure-code` target in the root `project.json`:
-   - `write`: `pnpm exec nx run metitur:start -- measure --working-directory={workspaceRoot}`
-   - `check`: `pnpm exec nx run metitur:start -- measure --check --working-directory={workspaceRoot}`
+   - `write`: `pnpm exec nx run metitur:start -- measure --directory={workspaceRoot} --readme=README.md`
+   - `check`: `pnpm exec nx run metitur:start -- measure --check --directory={workspaceRoot} --readme=README.md`
 2. Delete `scripts/measure-code.ts` and `scripts/measure-code.py`
 3. CI call `nx run codebase:measure-code:check` continues to work unchanged
 
