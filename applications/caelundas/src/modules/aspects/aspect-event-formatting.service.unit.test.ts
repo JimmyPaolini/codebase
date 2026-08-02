@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { AspectEventFormattingService } from "./aspect-event-formatting.service.js";
+import { AspectEventFormattingService } from "./aspect-event-formatting.service";
 
 describe(AspectEventFormattingService, () => {
   let service: AspectEventFormattingService;

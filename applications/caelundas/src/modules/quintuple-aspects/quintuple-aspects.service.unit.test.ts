@@ -8,7 +8,7 @@ import _ from "lodash";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { QuintupleAspectsService } from "./quintuple-aspects.service.js";
+import { QuintupleAspectsService } from "./quintuple-aspects.service";
 
 import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";

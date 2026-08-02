@@ -4,10 +4,10 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { ValidatorFilesService } from "./validator-files.service.js";
-import { ValidatorRulesService } from "./validator-rules.service.js";
-import { ValidatorWorkspaceService } from "./validator-workspace.service.js";
-import { ValidatorService } from "./validator.service.js";
+import { ValidatorFilesService } from "./validator-files.service";
+import { ValidatorRulesService } from "./validator-rules.service";
+import { ValidatorWorkspaceService } from "./validator-workspace.service";
+import { ValidatorService } from "./validator.service";
 
 describe(ValidatorService, () => {
   let service: ValidatorService;

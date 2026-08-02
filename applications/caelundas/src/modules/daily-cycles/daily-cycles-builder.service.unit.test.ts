@@ -6,7 +6,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { DailyCyclesBuilderService } from "./daily-cycles-builder.service.js";
+import { DailyCyclesBuilderService } from "./daily-cycles-builder.service";
 
 describe(DailyCyclesBuilderService, () => {
   let service: DailyCyclesBuilderService;

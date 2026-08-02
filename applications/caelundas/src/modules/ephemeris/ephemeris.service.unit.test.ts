@@ -3,13 +3,13 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { EphemerisAggregationService } from "./ephemeris-aggregation.service.js";
-import { EphemerisConstantsService } from "./ephemeris-constants.service.js";
-import { EphemerisCoordinateService } from "./ephemeris-coordinate.service.js";
-import { EphemerisHorizonService } from "./ephemeris-horizon.service.js";
-import { EphemerisPhenomenaService } from "./ephemeris-phenomena.service.js";
-import { EphemerisTimeService } from "./ephemeris-time.service.js";
-import { EphemerisService } from "./ephemeris.service.js";
+import { EphemerisAggregationService } from "./ephemeris-aggregation.service";
+import { EphemerisConstantsService } from "./ephemeris-constants.service";
+import { EphemerisCoordinateService } from "./ephemeris-coordinate.service";
+import { EphemerisHorizonService } from "./ephemeris-horizon.service";
+import { EphemerisPhenomenaService } from "./ephemeris-phenomena.service";
+import { EphemerisTimeService } from "./ephemeris-time.service";
+import { EphemerisService } from "./ephemeris.service";
 
 import type * as EphemerisConstantsModule from "./ephemeris.constants";
 import type {

@@ -10,10 +10,10 @@ import {
   type PartOfSpeech,
 } from "@codebase/lexico-entities";
 
-import { FormsBuilderGuardsService } from "./forms-builder-guards.service.js";
-import { FormsBuilderOtherService } from "./forms-builder-other.service.js";
-import { FormsBuilderVerbService } from "./forms-builder-verb.service.js";
-import { FormsTransientWordsService } from "./forms-transient-words.service.js";
+import { FormsBuilderGuardsService } from "./forms-builder-guards.service";
+import { FormsBuilderOtherService } from "./forms-builder-other.service";
+import { FormsBuilderVerbService } from "./forms-builder-verb.service";
+import { FormsTransientWordsService } from "./forms-transient-words.service";
 
 describe(FormsBuilderOtherService, () => {
   let service: FormsBuilderOtherService;

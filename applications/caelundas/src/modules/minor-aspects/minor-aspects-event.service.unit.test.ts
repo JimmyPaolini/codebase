@@ -7,7 +7,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { MinorAspectsEventService } from "./minor-aspects-event.service.js";
+import { MinorAspectsEventService } from "./minor-aspects-event.service";
 
 describe(MinorAspectsEventService, () => {
   let service: MinorAspectsEventService;

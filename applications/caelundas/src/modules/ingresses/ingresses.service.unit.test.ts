@@ -11,8 +11,8 @@ import _ from "lodash";
 import moment from "moment";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { IngressesComposerService } from "./ingresses-composer.service.js";
-import { IngressesService } from "./ingresses.service.js";
+import { IngressesComposerService } from "./ingresses-composer.service";
+import { IngressesService } from "./ingresses.service";
 
 import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
 import type { CoordinateEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";

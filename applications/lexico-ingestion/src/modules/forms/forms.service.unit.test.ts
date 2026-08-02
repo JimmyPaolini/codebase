@@ -8,9 +8,9 @@ import { Form, Lexeme, NominalForm, WordForm } from "@codebase/lexico-entities";
 import { createRepositoryMock } from "../../../testing/mocks";
 import { WordsService } from "../words/words.service";
 
-import { FormsBuilderOtherService } from "./forms-builder-other.service.js";
-import { FormsTransientWordsService } from "./forms-transient-words.service.js";
-import { FormsService } from "./forms.service.js";
+import { FormsBuilderOtherService } from "./forms-builder-other.service";
+import { FormsTransientWordsService } from "./forms-transient-words.service";
+import { FormsService } from "./forms.service";
 
 import type { Repository } from "typeorm";
 import type { Mocked } from "vitest";

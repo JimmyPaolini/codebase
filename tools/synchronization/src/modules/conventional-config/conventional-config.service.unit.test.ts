@@ -9,13 +9,13 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { mockProcessExit } from "../../../testing/mocks";
 import { LoggerService } from "../logger/logger.service";
 
-import { ConventionalConfigIoService } from "./conventional-config-io.service.js";
-import { ConventionalConfigValidatorsService } from "./conventional-config-validators.service.js";
+import { ConventionalConfigIoService } from "./conventional-config-io.service";
+import { ConventionalConfigValidatorsService } from "./conventional-config-validators.service";
 import {
   SYNC_CONVENTIONAL_CONFIG_ISSUE_TEMPLATE_FILES,
   SYNC_CONVENTIONAL_CONFIG_SKILL_FILES,
 } from "./conventional-config.constants";
-import { ConventionalConfigService } from "./conventional-config.service.js";
+import { ConventionalConfigService } from "./conventional-config.service";
 
 import type {
   ConventionalConfig,

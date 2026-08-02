@@ -3,7 +3,7 @@ import _ from "lodash";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { ProgressiveAspectService } from "./progressive-aspect.service.js";
+import { ProgressiveAspectService } from "./progressive-aspect.service";
 
 describe(ProgressiveAspectService, () => {
   let service: ProgressiveAspectService;

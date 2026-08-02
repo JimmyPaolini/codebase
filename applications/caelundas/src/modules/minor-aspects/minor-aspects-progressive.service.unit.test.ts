@@ -6,7 +6,7 @@ import _ from "lodash";
 import moment from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { MinorAspectsProgressiveService } from "./minor-aspects-progressive.service.js";
+import { MinorAspectsProgressiveService } from "./minor-aspects-progressive.service";
 
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 

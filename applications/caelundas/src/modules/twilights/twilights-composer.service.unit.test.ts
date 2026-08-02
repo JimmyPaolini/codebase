@@ -5,8 +5,8 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { TwilightsBuilderService } from "./twilights-builder.service.js";
-import { TwilightsComposerService } from "./twilights-composer.service.js";
+import { TwilightsBuilderService } from "./twilights-builder.service";
+import { TwilightsComposerService } from "./twilights-composer.service";
 
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 

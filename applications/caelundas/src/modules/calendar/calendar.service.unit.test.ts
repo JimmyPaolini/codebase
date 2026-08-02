@@ -7,7 +7,7 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { CalendarService } from "./calendar.service.js";
+import { CalendarService } from "./calendar.service";
 
 import type { Event } from "./calendar.types";
 

@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { FormsBuilderGuardsService } from "./forms-builder-guards.service.js";
+import { FormsBuilderGuardsService } from "./forms-builder-guards.service";
 
 describe(FormsBuilderGuardsService, () => {
   let service: FormsBuilderGuardsService;

@@ -7,10 +7,10 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { EclipseCalculationService } from "./eclipse-calculation.service.js";
-import { EclipseEventService } from "./eclipse-event.service.js";
-import { EclipseGeometryService } from "./eclipse-geometry.service.js";
-import { EclipseTopocentricService } from "./eclipse-topocentric.service.js";
+import { EclipseCalculationService } from "./eclipse-calculation.service";
+import { EclipseEventService } from "./eclipse-event.service";
+import { EclipseGeometryService } from "./eclipse-geometry.service";
+import { EclipseTopocentricService } from "./eclipse-topocentric.service";
 
 import type { NeighborValues } from "../math/math.types";
 import type { EclipseCoordinates, EclipseFrame } from "./eclipses.types";

@@ -7,8 +7,8 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { MartianPhaseService } from "./martian-phase.service.js";
-import { PhaseCalculationService } from "./phase-calculation.service.js";
+import { MartianPhaseService } from "./martian-phase.service";
+import { PhaseCalculationService } from "./phase-calculation.service";
 import {
   MARS_EVENING_VISIBILITY_DESCRIPTION,
   MARS_MORNING_VISIBILITY_DESCRIPTION,

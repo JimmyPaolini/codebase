@@ -24,7 +24,7 @@ vi.mock("node:child_process", () => ({
   spawnSync: mockSpawnSync,
 }));
 
-import { ValidatorPythonService } from "./validator-python.service.js";
+import { ValidatorPythonService } from "./validator-python.service";
 
 describe(ValidatorPythonService, () => {
   let service: ValidatorPythonService;

@@ -9,7 +9,7 @@ import { Lexeme, PrincipalPart } from "@codebase/lexico-entities";
 import { createRepositoryMock } from "../../../testing/mocks";
 import { LoggerService } from "../logger/logger.service";
 
-import { PrincipalPartsService } from "./principal-parts.service.js";
+import { PrincipalPartsService } from "./principal-parts.service";
 
 import type { AnyNode } from "domhandler";
 import type { Repository } from "typeorm";

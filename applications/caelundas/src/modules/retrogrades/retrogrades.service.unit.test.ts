@@ -7,7 +7,7 @@ import { Test } from "@nestjs/testing";
 import moment, { type Moment } from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { RetrogradesService } from "./retrogrades.service.js";
+import { RetrogradesService } from "./retrogrades.service";
 
 import type { RetrogradeBody } from "@caelundas/src/modules/caelundas/caelundas.types";
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";

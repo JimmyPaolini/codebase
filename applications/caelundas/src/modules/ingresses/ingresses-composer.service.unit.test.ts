@@ -5,7 +5,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { IngressesComposerService } from "./ingresses-composer.service.js";
+import { IngressesComposerService } from "./ingresses-composer.service";
 
 describe(IngressesComposerService, () => {
   let service: IngressesComposerService;

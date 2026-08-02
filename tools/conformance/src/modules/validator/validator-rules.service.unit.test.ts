@@ -30,8 +30,8 @@ vi.mock("./validator-files.service", () => ({
   },
 }));
 
-import { ValidatorFilesService } from "./validator-files.service.js";
-import { ValidatorRulesService } from "./validator-rules.service.js";
+import { ValidatorFilesService } from "./validator-files.service";
+import { ValidatorRulesService } from "./validator-rules.service";
 
 const JUPYTER_NOTEBOOK_APPLICATION_GENERATOR_TAG =
   "generator:jupyter-notebook-application";

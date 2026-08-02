@@ -10,7 +10,7 @@ import { NumeralsService } from "../numerals/numerals.service";
 import { WordsService } from "../words/words.service";
 
 import { MANUAL_LEXEMES_TO_DELETE } from "./manual.constants";
-import { ManualService } from "./manual.service.js";
+import { ManualService } from "./manual.service";
 import * as manualUtilities from "./manual.utilities";
 
 import type { ManualDeletionLexeme } from "./manual.types";

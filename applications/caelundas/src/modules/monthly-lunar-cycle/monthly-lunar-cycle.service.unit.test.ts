@@ -10,7 +10,7 @@ import _ from "lodash";
 import moment, { type Moment } from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { MonthlyLunarCycleService } from "./monthly-lunar-cycle.service.js";
+import { MonthlyLunarCycleService } from "./monthly-lunar-cycle.service";
 
 import type { LunarPhase } from "@caelundas/src/modules/caelundas/caelundas.types";
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";

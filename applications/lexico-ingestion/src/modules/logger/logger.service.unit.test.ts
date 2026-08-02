@@ -11,7 +11,7 @@ import {
   vi,
 } from "vitest";
 
-import { LoggerService } from "./logger.service.js";
+import { LoggerService } from "./logger.service";
 
 const { existsSyncMock, mkdirSyncMock } = vi.hoisted(() => ({
   existsSyncMock: vi.fn<(path: string) => boolean>(),

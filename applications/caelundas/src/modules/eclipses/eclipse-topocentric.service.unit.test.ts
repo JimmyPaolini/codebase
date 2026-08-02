@@ -6,9 +6,9 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { EclipseEventService } from "./eclipse-event.service.js";
-import { EclipseGeometryService } from "./eclipse-geometry.service.js";
-import { EclipseTopocentricService } from "./eclipse-topocentric.service.js";
+import { EclipseEventService } from "./eclipse-event.service";
+import { EclipseGeometryService } from "./eclipse-geometry.service";
+import { EclipseTopocentricService } from "./eclipse-topocentric.service";
 
 import type { EclipseCoordinates } from "./eclipses.types";
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";

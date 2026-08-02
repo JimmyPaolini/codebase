@@ -8,7 +8,7 @@ import { Author, Text } from "@codebase/lexico-entities";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { LiteratureTextIngestionService } from "./literature-text-ingestion.service.js";
+import { LiteratureTextIngestionService } from "./literature-text-ingestion.service";
 
 import type { IngestTextArguments, LibraryEntry } from "./literature.types";
 

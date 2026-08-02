@@ -7,7 +7,7 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { QuintupleAspectsComposerService } from "./quintuple-aspects-composer.service.js";
+import { QuintupleAspectsComposerService } from "./quintuple-aspects-composer.service";
 
 import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
 

@@ -11,8 +11,8 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ProgressiveUtilitiesService } from "./progressive-utilities.service.js";
-import { ProgressiveService } from "./progressive.service.js";
+import { ProgressiveUtilitiesService } from "./progressive-utilities.service";
+import { ProgressiveService } from "./progressive.service";
 
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 

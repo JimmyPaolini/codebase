@@ -1,8 +1,8 @@
 import "reflect-metadata";
 import { CommandFactory } from "nest-commander";
 
-import { MainModule } from "./main.module.js";
-import { LoggerService } from "./modules/logger/logger.service.js";
+import { MainModule } from "./main.module";
+import { LoggerService } from "./modules/logger/logger.service";
 
 /**
  * Bootstraps the metitur CLI command application.

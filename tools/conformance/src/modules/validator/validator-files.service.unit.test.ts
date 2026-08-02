@@ -9,12 +9,12 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { GeneratorService } from "../generator/generator.service";
 
-import { ValidatorFilesService } from "./validator-files.service.js";
-import { ValidatorJsonService } from "./validator-json.service.js";
-import { ValidatorMarkdownService } from "./validator-markdown.service.js";
-import { ValidatorPythonService } from "./validator-python.service.js";
-import { ValidatorTextService } from "./validator-text.service.js";
-import { ValidatorTypescriptService } from "./validator-typescript.service.js";
+import { ValidatorFilesService } from "./validator-files.service";
+import { ValidatorJsonService } from "./validator-json.service";
+import { ValidatorMarkdownService } from "./validator-markdown.service";
+import { ValidatorPythonService } from "./validator-python.service";
+import { ValidatorTextService } from "./validator-text.service";
+import { ValidatorTypescriptService } from "./validator-typescript.service";
 
 import type { DeepMocked } from "@golevelup/ts-vitest";
 

@@ -2,7 +2,7 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { SynchronizationService } from "./synchronization.service.js";
+import { SynchronizationService } from "./synchronization.service";
 
 import type { LoggerService } from "../logger/logger.service";
 

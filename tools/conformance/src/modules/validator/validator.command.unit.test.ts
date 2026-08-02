@@ -5,7 +5,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { LoggerService } from "../logger/logger.service";
 
 import { ValidatorCommand } from "./validator.command";
-import { ValidatorService } from "./validator.service.js";
+import { ValidatorService } from "./validator.service";
 
 describe(ValidatorCommand, () => {
   let command: ValidatorCommand;

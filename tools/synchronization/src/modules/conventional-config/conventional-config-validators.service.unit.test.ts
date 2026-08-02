@@ -6,8 +6,8 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { ConventionalConfigIoService } from "./conventional-config-io.service.js";
-import { ConventionalConfigValidatorsService } from "./conventional-config-validators.service.js";
+import { ConventionalConfigIoService } from "./conventional-config-io.service";
+import { ConventionalConfigValidatorsService } from "./conventional-config-validators.service";
 
 import type { ConventionalConfig } from "./conventional-config.types";
 

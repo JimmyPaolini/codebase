@@ -6,8 +6,8 @@ import { Test } from "@nestjs/testing";
 import moment, { type Moment } from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { DailyCyclesBuilderService } from "./daily-cycles-builder.service.js";
-import { DailyCyclesService } from "./daily-cycles.service.js";
+import { DailyCyclesBuilderService } from "./daily-cycles-builder.service";
+import { DailyCyclesService } from "./daily-cycles.service";
 
 import type { AzimuthElevationEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
 

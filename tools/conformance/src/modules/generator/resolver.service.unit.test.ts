@@ -31,7 +31,7 @@ vi.mock("prompts", () => ({
   default: promptsMock,
 }));
 
-import { ResolverService } from "./resolver.service.js";
+import { ResolverService } from "./resolver.service";
 
 interface ModulePromptRequest {
   validate: (

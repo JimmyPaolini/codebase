@@ -13,7 +13,7 @@ import { Test } from "@nestjs/testing";
 import moment, { type Moment } from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { MinorAspectsService } from "./minor-aspects.service.js";
+import { MinorAspectsService } from "./minor-aspects.service";
 
 import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";

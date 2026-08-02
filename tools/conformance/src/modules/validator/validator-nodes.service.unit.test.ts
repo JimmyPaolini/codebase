@@ -9,7 +9,7 @@ import {
 } from "typescript";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { ValidatorNodesService } from "./validator-nodes.service.js";
+import { ValidatorNodesService } from "./validator-nodes.service";
 
 describe(ValidatorNodesService, () => {
   let service: ValidatorNodesService;

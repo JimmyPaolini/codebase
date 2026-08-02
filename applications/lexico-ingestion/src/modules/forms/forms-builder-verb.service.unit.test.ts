@@ -5,9 +5,9 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { Lexeme, ParticipleForm } from "@codebase/lexico-entities";
 
-import { FormsBuilderGuardsService } from "./forms-builder-guards.service.js";
-import { FormsBuilderVerbService } from "./forms-builder-verb.service.js";
-import { FormsTransientWordsService } from "./forms-transient-words.service.js";
+import { FormsBuilderGuardsService } from "./forms-builder-guards.service";
+import { FormsBuilderVerbService } from "./forms-builder-verb.service";
+import { FormsTransientWordsService } from "./forms-transient-words.service";
 
 describe(FormsBuilderVerbService, () => {
   let service: FormsBuilderVerbService;

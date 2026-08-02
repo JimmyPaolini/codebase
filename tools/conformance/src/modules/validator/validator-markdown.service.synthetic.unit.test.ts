@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ValidatorTemplateService } from "./validator-template.service.js";
+import { ValidatorTemplateService } from "./validator-template.service";
 
 import type { MdastNode } from "./validator-markdown.types";
 

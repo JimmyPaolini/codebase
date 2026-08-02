@@ -6,10 +6,10 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { TwilightsBuilderService } from "./twilights-builder.service.js";
-import { TwilightsComposerService } from "./twilights-composer.service.js";
-import { TwilightsDetectorService } from "./twilights-detector.service.js";
-import { TwilightsService } from "./twilights.service.js";
+import { TwilightsBuilderService } from "./twilights-builder.service";
+import { TwilightsComposerService } from "./twilights-composer.service";
+import { TwilightsDetectorService } from "./twilights-detector.service";
+import { TwilightsService } from "./twilights.service";
 
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 import type { AzimuthElevationEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";

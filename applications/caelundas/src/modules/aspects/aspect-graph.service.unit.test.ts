@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { AspectGraphService } from "./aspect-graph.service.js";
+import { AspectGraphService } from "./aspect-graph.service";
 
 describe(AspectGraphService, () => {
   let service: AspectGraphService;

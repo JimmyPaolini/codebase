@@ -5,9 +5,9 @@ import moment from "moment-timezone";
 import { calc, nod_aps_ut } from "sweph";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { EphemerisConstantsService } from "./ephemeris-constants.service.js";
-import { EphemerisCoordinateService } from "./ephemeris-coordinate.service.js";
-import { EphemerisTimeService } from "./ephemeris-time.service.js";
+import { EphemerisConstantsService } from "./ephemeris-constants.service";
+import { EphemerisCoordinateService } from "./ephemeris-coordinate.service";
+import { EphemerisTimeService } from "./ephemeris-time.service";
 
 import type * as Sweph from "sweph";
 

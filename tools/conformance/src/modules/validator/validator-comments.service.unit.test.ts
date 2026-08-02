@@ -2,7 +2,7 @@ import { Test } from "@nestjs/testing";
 import { createSourceFile, ScriptKind, ScriptTarget } from "typescript";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { ValidatorCommentsService } from "./validator-comments.service.js";
+import { ValidatorCommentsService } from "./validator-comments.service";
 
 describe(ValidatorCommentsService, () => {
   let service: ValidatorCommentsService;

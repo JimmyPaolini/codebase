@@ -7,7 +7,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { EclipseGeometryService } from "./eclipse-geometry.service.js";
+import { EclipseGeometryService } from "./eclipse-geometry.service";
 
 describe(EclipseGeometryService, () => {
   let service: EclipseGeometryService;

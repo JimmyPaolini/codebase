@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { Lexeme, Translation } from "@codebase/lexico-entities";
 
-import { EtymologyService } from "./etymology.service.js";
+import { EtymologyService } from "./etymology.service";
 
 import type { AnyNode } from "domhandler";
 

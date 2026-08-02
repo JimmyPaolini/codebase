@@ -7,7 +7,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { SpecialtyAspectsComposerService } from "./specialty-aspects-composer.service.js";
+import { SpecialtyAspectsComposerService } from "./specialty-aspects-composer.service";
 
 import type { DeepMocked } from "@golevelup/ts-vitest";
 

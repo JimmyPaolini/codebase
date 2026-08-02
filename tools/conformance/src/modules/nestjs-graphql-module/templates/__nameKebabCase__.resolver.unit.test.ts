@@ -2,7 +2,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { {{namePascalCase}}Resolver } from "./{{nameKebabCase}}.resolver";
-import { {{namePascalCase}}Service } from "./{{nameKebabCase}}.service.js";
+import { {{namePascalCase}}Service } from "./{{nameKebabCase}}.service";
 
 describe({{namePascalCase}}Resolver, () => {
   let resolver: {{namePascalCase}}Resolver;

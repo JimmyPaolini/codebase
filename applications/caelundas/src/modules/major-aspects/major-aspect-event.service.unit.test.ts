@@ -5,7 +5,7 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { MajorAspectEventService } from "./major-aspect-event.service.js";
+import { MajorAspectEventService } from "./major-aspect-event.service";
 
 vi.mock("fs", () => ({
   default: {

@@ -9,9 +9,9 @@ import { createRepositoryMock } from "../../../testing/mocks";
 import { LoggerService } from "../logger/logger.service";
 import { NumeralsService } from "../numerals/numerals.service";
 
-import { LiteratureLibraryScanService } from "./literature-library-scan.service.js";
-import { LiteratureTextIngestionService } from "./literature-text-ingestion.service.js";
-import { LiteratureService } from "./literature.service.js";
+import { LiteratureLibraryScanService } from "./literature-library-scan.service";
+import { LiteratureTextIngestionService } from "./literature-text-ingestion.service";
+import { LiteratureService } from "./literature.service";
 
 import type { IngestTextArguments, LibraryEntry } from "./literature.types";
 import type { InsertResult, Repository } from "typeorm";

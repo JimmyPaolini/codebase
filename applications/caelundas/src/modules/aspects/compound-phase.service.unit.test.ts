@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { CompoundPhaseService } from "./compound-phase.service.js";
+import { CompoundPhaseService } from "./compound-phase.service";
 
 describe(CompoundPhaseService, () => {
   let service: CompoundPhaseService;

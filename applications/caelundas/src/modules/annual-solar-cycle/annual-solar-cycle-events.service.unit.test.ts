@@ -3,7 +3,7 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { AnnualSolarCycleEventsService } from "./annual-solar-cycle-events.service.js";
+import { AnnualSolarCycleEventsService } from "./annual-solar-cycle-events.service";
 
 vi.mock("fs", () => ({
   default: {

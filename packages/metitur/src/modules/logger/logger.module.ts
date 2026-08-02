@@ -1,6 +1,6 @@
 import { Global, Module } from "@nestjs/common";
 
-import { LoggerService } from "./logger.service.js";
+import { LoggerService } from "./logger.service";
 
 /**
  * Global logger module — import once in the root module and

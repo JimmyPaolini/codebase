@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { LoggerService } from "./logger.service.js";
+import { LoggerService } from "./logger.service";
 
 type LoggerServiceConstructor = new () => {
   debug: (message: unknown, context?: string) => void;
