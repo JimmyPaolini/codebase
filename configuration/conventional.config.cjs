@@ -164,6 +164,11 @@ const scopes = [
   },
   {
     description:
+      "NestJS command-line application for metitur metric collection and reporting",
+    name: "metitur",
+  },
+  {
+    description:
       "Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration)",
     name: "codebase",
   },

@@ -15,7 +15,12 @@ const config: KnipConfig = {
   ],
 
   // Blank constants/types files are conformance placeholders; keep them out of unused-file checks only.
-  ignoreFiles: ["**/src/**/*.constants.ts", "**/src/**/*.types.ts"],
+  // testing/mocks.ts files are conformance placeholders for project-level test utilities (used by future tests).
+  ignoreFiles: [
+    "**/src/**/*.constants.ts",
+    "**/src/**/*.types.ts",
+    "**/testing/mocks.ts",
+  ],
 
   // Binaries invoked via project.json targets or scripts, not imported in code
   ignoreBinaries: [
@@ -35,6 +40,7 @@ const config: KnipConfig = {
   // devDependencies used via npx, CLI, or ESLint config (not directly imported)
   ignoreDependencies: [
     "@commitlint/config-conventional", // commitlint preset, referenced as string in extends array
+    "@golevelup/ts-vitest", // Conformance-scaffolded test mock utility — imported in testing/mocks.ts which is in ignoreFiles
     "@nx/eslint-plugin", // Loaded dynamically by Nx ESLint integration
     "@nx/js", // Nx JavaScript/TypeScript plugin (auto-detected by Nx)
     "@nx/web", // Nx web plugin (auto-detected by Nx)

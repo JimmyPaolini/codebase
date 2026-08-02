@@ -30,6 +30,7 @@ body:
         - lexico-components
         - lexico-entities
         - lexico-ingestion
+        - metitur
         - codebase
         - no-release
         - packages
@@ -38,6 +39,7 @@ body:
         - testing
         - tools
         - synchronization
+
 
 
     validations:
