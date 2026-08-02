@@ -1,15 +1,15 @@
-# Metitur
+# Codometer
 
 NestJS command-line application scaffold generated with `conformance:nestjs-command-application`.
 
 ## Start
 
 ```bash
-nx run metitur:start
+nx run codometer:start
 ```
 
 ## Test
 
 ```bash
-nx run metitur:test
+nx run codometer:test
 ```

@@ -1,4 +1,4 @@
-# Metitur: NestJS Command-Line Application
+# Codometer: NestJS Command-Line Application
 
 ## Quick Start
 
@@ -10,7 +10,7 @@
 
 ```bash
 cp .env.default .env  # Fill in required environment variables
-nx run metitur:develop
+nx run codometer:develop
 ```
 
 ## Architecture Overview
@@ -78,11 +78,11 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run metitur:develop        # Run CLI (tsx, watch mode)
-nx run metitur:lint           # ESLint
-nx run metitur:typecheck      # tsc --noEmit
-nx run metitur:format         # oxfmt formatting
-nx run metitur:build          # Compile for production
+nx run codometer:develop        # Run CLI (tsx, watch mode)
+nx run codometer:lint           # ESLint
+nx run codometer:typecheck      # tsc --noEmit
+nx run codometer:format         # oxfmt formatting
+nx run codometer:build          # Compile for production
 ```
 
 ### Testing
@@ -90,9 +90,9 @@ nx run metitur:build          # Compile for production
 Follow the codebase's strict three-tier testing strategy. Co-locate test files with the source they test.
 
 ```bash
-nx run metitur:test:unit          # Fast (<100ms) — pure logic, mocked DI
-nx run metitur:test:integration   # Moderate (1-2s) — real DB/API I/O
-nx run metitur:test:end-to-end    # Slow (30-60s) — full CLI execution
+nx run codometer:test:unit          # Fast (<100ms) — pure logic, mocked DI
+nx run codometer:test:integration   # Moderate (1-2s) — real DB/API I/O
+nx run codometer:test:end-to-end    # Slow (30-60s) — full CLI execution
 ```
 
 | Tier        | File pattern            | What to test                                     |

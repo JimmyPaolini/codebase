@@ -91,6 +91,7 @@ maplibre
 materialui
 mcp
 metatype
+codometer
 metitur
 middlewares
 codebase

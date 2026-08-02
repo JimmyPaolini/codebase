@@ -7,7 +7,6 @@
     "nest-commander": "catalog:",
     "pino": "catalog:",
     "reflect-metadata": "catalog:",
-    "typescript": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -19,7 +18,7 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "name": "metitur",
+  "name": "codometer",
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,

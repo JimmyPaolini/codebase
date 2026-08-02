@@ -1,7 +1,7 @@
 // 🏷️ Types
 
 /** Categorized lists of file paths (relative to the working directory) discovered in a git repository. */
-export interface FileDiscoveryResult {
+export interface DiscoverFilesResult {
   jsFiles: string[];
   pyFiles: string[];
   sourceFiles: string[];

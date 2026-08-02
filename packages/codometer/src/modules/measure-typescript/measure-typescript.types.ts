@@ -1,13 +1,13 @@
 // 🏷️ Types
 
 /** Input to the TypeScript/JavaScript AST analysis step. */
-export interface TypescriptAnalysisInput {
+export interface MeasureTypescriptInput {
   sourceFiles: string[];
   workingDirectory: string;
 }
 
 /** Aggregated metrics collected from walking TypeScript and JavaScript ASTs. */
-export interface TypescriptAnalysisResult {
+export interface MeasureTypescriptResult {
   asyncFunctions: number;
   classes: number;
   constants: number;

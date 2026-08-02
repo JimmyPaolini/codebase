@@ -4,19 +4,19 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 import tsCompiler from "typescript";
 
-import { JS_EXTENSIONS, TODO_REGEX } from "./typescript-analysis.constants";
+import { JS_EXTENSIONS, TODO_REGEX } from "./measure-typescript.constants";
 
 import type {
-  TypescriptAnalysisInput,
-  TypescriptAnalysisResult,
-} from "./typescript-analysis.types";
+  MeasureTypescriptInput,
+  MeasureTypescriptResult,
+} from "./measure-typescript.types";
 
 /** Walks TypeScript and JavaScript ASTs to collect code metrics. */
 @Injectable()
-export class TypescriptAnalysisService {
+export class MeasureTypescriptService {
   // 🏗 Dependency Injection
 
-  /** Creates the TypescriptAnalysisService. */
+  /** Creates the MeasureTypescriptService. */
   constructor() {}
 
   // 🔐 Private Fields
@@ -26,7 +26,7 @@ export class TypescriptAnalysisService {
       number,
       (
         node: tsCompiler.Node,
-        stats: TypescriptAnalysisResult,
+        stats: MeasureTypescriptResult,
         insideClass: boolean,
       ) => void
     >
@@ -63,7 +63,7 @@ export class TypescriptAnalysisService {
   /** Dispatches non-class AST nodes to the appropriate metric-collection handler. */
   private dispatchNode(
     node: tsCompiler.Node,
-    stats: TypescriptAnalysisResult,
+    stats: MeasureTypescriptResult,
     insideClass: boolean,
   ): void {
     this.kindDispatch[node.kind]?.(node, stats, insideClass);
@@ -72,7 +72,7 @@ export class TypescriptAnalysisService {
   /** Increments class, exported, and generic counts for a class node. */
   private handleClass(
     node: tsCompiler.Node,
-    stats: TypescriptAnalysisResult,
+    stats: MeasureTypescriptResult,
   ): void {
     stats.classes++;
     if (this.hasExportKeyword(node)) stats.exported++;
@@ -82,7 +82,7 @@ export class TypescriptAnalysisService {
   /** Increments enum and exported counts for an enum declaration node. */
   private handleEnum(
     node: tsCompiler.Node,
-    stats: TypescriptAnalysisResult,
+    stats: MeasureTypescriptResult,
   ): void {
     stats.enums++;
     if (this.hasExportKeyword(node)) stats.exported++;
@@ -91,7 +91,7 @@ export class TypescriptAnalysisService {
   /** Increments function, method, async, sync, exported, and generic counts for a function node. */
   private handleFunction(
     node: tsCompiler.Node,
-    stats: TypescriptAnalysisResult,
+    stats: MeasureTypescriptResult,
     insideClass: boolean,
   ): void {
     if (insideClass) {
@@ -111,7 +111,7 @@ export class TypescriptAnalysisService {
   /** Increments import count and tracks the external package name if applicable. */
   private handleImport(
     node: tsCompiler.Node,
-    stats: TypescriptAnalysisResult,
+    stats: MeasureTypescriptResult,
   ): void {
     stats.imports++;
     if (!tsCompiler.isImportDeclaration(node)) return;
@@ -128,7 +128,7 @@ export class TypescriptAnalysisService {
   /** Increments interface, exported, and generic counts for an interface declaration node. */
   private handleInterface(
     node: tsCompiler.Node,
-    stats: TypescriptAnalysisResult,
+    stats: MeasureTypescriptResult,
   ): void {
     stats.interfaces++;
     if (this.hasExportKeyword(node)) stats.exported++;
@@ -138,7 +138,7 @@ export class TypescriptAnalysisService {
   /** Increments method and async or sync counts for a method or accessor node. */
   private handleMethodOrAccessor(
     node: tsCompiler.Node,
-    stats: TypescriptAnalysisResult,
+    stats: MeasureTypescriptResult,
   ): void {
     stats.methods++;
     if (this.hasAsyncKeyword(node)) {
@@ -151,7 +151,7 @@ export class TypescriptAnalysisService {
   /** Increments exported and generic counts for a type alias declaration node. */
   private handleTypeAlias(
     node: tsCompiler.Node,
-    stats: TypescriptAnalysisResult,
+    stats: MeasureTypescriptResult,
   ): void {
     if (this.hasExportKeyword(node)) stats.exported++;
     if (this.hasTypeParameters(node)) stats.genericDeclarations++;
@@ -160,7 +160,7 @@ export class TypescriptAnalysisService {
   /** Increments constant and exported counts for a const variable statement. */
   private handleVariable(
     node: tsCompiler.Node,
-    stats: TypescriptAnalysisResult,
+    stats: MeasureTypescriptResult,
   ): void {
     if (!tsCompiler.isVariableStatement(node)) return;
     const isConst =
@@ -211,7 +211,7 @@ export class TypescriptAnalysisService {
   /** Recursively visits each AST node and dispatches to the appropriate handler. */
   private walkNode(
     node: tsCompiler.Node,
-    stats: TypescriptAnalysisResult,
+    stats: MeasureTypescriptResult,
     insideClass: boolean,
   ): void {
     if (
@@ -233,10 +233,10 @@ export class TypescriptAnalysisService {
   // 🌎 Public Methods
 
   /** Analyzes TypeScript and JavaScript source files and returns aggregated AST metrics. */
-  analyze(input: TypescriptAnalysisInput): TypescriptAnalysisResult {
+  analyze(input: MeasureTypescriptInput): MeasureTypescriptResult {
     const { sourceFiles, workingDirectory } = input;
 
-    const stats: TypescriptAnalysisResult = {
+    const stats: MeasureTypescriptResult = {
       asyncFunctions: 0,
       classes: 0,
       constants: 0,

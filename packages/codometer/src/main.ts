@@ -5,7 +5,7 @@ import { MainModule } from "./main.module";
 import { LoggerService } from "./modules/logger/logger.service";
 
 /**
- * Bootstraps the metitur CLI command application.
+ * Bootstraps the codometer CLI command application.
  */
 async function main(): Promise<void> {
   const logger = new LoggerService();

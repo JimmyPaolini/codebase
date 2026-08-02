@@ -1,4 +1,4 @@
-# scripts/analyze_py.py
+# packages/codometer/src/modules/python-analysis/analyze.py
 import ast
 import json
 from pathlib import Path
@@ -43,14 +43,14 @@ for path in Path(".").rglob("*.py"):
             if isinstance(node, ast.ClassDef):
                 stats["classes"] += 1
                 stats["decorators"] += len(node.decorator_list)
-                if any(getattr(b, "id", "") == "Protocol" for b in node.bases):
+                if any(getattr(base, "id", "") == "Protocol" for base in node.bases):
                     stats["protocols"] += 1
             elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 stats["functions"] += 1
                 stats["decorators"] += len(node.decorator_list)
             elif isinstance(node, ast.Assign):
-                for t in node.targets:
-                    if isinstance(t, ast.Name) and t.id.isupper():
+                for target in node.targets:
+                    if isinstance(target, ast.Name) and target.id.isupper():
                         stats["constants"] += 1
             elif isinstance(node, (ast.Import, ast.ImportFrom)):
                 stats["imports"] += 1

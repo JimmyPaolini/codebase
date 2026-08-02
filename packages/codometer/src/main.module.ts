@@ -3,9 +3,12 @@ import { ConfigModule } from "@nestjs/config";
 import { DiscoveryModule } from "@nestjs/core";
 
 import { environmentSchema } from "./constants";
-import { FileDiscoveryModule } from "./modules/file-discovery/file-discovery.module";
+import { CodometerModule } from "./modules/codometer/codometer.module";
+import { DiscoverFilesModule } from "./modules/discover-files/discover-files.module";
 import { LoggerModule } from "./modules/logger/logger.module";
-import { TypescriptAnalysisModule } from "./modules/typescript-analysis/typescript-analysis.module";
+import { MeasurePythonModule } from "./modules/measure-python/measure-python.module";
+import { MeasureTypescriptModule } from "./modules/measure-typescript/measure-typescript.module";
+import { WriteReadmeModule } from "./modules/write-readme/write-readme.module";
 
 /**
  * Root NestJS application module.
@@ -19,9 +22,12 @@ import { TypescriptAnalysisModule } from "./modules/typescript-analysis/typescri
         environmentSchema.parse(config),
     }),
     DiscoveryModule,
-    FileDiscoveryModule,
     LoggerModule,
-    TypescriptAnalysisModule,
+    CodometerModule,
+    DiscoverFilesModule,
+    MeasurePythonModule,
+    MeasureTypescriptModule,
+    WriteReadmeModule,
   ],
 })
 export class MainModule {}

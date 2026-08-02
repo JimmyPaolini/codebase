@@ -4,7 +4,7 @@ import { repl } from "@nestjs/core";
 import { MainModule } from "./main.module";
 
 /**
- * Starts the NestJS REPL for the metitur application.
+ * Starts the NestJS REPL for the codometer application.
  */
 async function bootstrap(): Promise<void> {
   await repl(MainModule);

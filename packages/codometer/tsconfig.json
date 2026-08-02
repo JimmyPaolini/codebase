@@ -8,10 +8,10 @@
     "moduleResolution": "bundler",
     "noEmit": true,
     "paths": {
+      "@codometer/*": ["./*"],
       "@golevelup/ts-vitest": [
         "./node_modules/@golevelup/ts-vitest/lib/index.d.ts"
       ],
-      "@metitur/*": ["./*"],
       "codebase/configuration/*": ["../../configuration/*"],
       "eslint-plugin-better-max-params": [
         "../../configuration/types/eslint-plugin-better-max-params/index.d.ts"

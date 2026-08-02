@@ -9,13 +9,13 @@ import {
   JS_EXTENSIONS,
   TEST_FILE_REGEX,
   TS_EXTENSIONS,
-} from "./file-discovery.constants";
+} from "./discover-files.constants";
 
-import type { FileDiscoveryResult } from "./file-discovery.types";
+import type { DiscoverFilesResult } from "./discover-files.types";
 
 /** Discovers and categorizes git-tracked files within a codebase directory. */
 @Injectable()
-export class FileDiscoveryService {
+export class DiscoverFilesService {
   // 🏗 Dependency Injection
 
   constructor() {}
@@ -23,7 +23,7 @@ export class FileDiscoveryService {
   // 🌎 Public Methods
 
   /** Returns categorized file path lists for the given codebase root. */
-  discoverFiles(workingDirectory: string): FileDiscoveryResult {
+  discoverFiles(workingDirectory: string): DiscoverFilesResult {
     const allExtensions = new Set([...TS_EXTENSIONS, ...JS_EXTENSIONS]);
 
     const trackedFiles = execSync("git ls-files", { cwd: workingDirectory })
