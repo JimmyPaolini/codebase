@@ -1,3 +1,7 @@
+import { mkdtemp } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
+
 import { describe, expect, it, vi } from "vitest";
 
 import { GenerationRuntimeService } from "./runtime.service.js";
@@ -183,5 +187,68 @@ describe(GenerationRuntimeService, () => {
       "/output/README.md",
       "/output/alpha-module/index.ts",
     ]);
+  });
+
+  it("normalizes inputs by excluding undefined values", () => {
+    const service = new GenerationRuntimeService() as unknown as {
+      normalizeInputs(
+        inputs: Record<string, string | undefined>,
+      ): Record<string, string>;
+    };
+
+    const normalizedInputs = service.normalizeInputs({
+      alpha: "one",
+      beta: undefined,
+      gamma: "three",
+    });
+
+    expect(normalizedInputs).toStrictEqual({
+      alpha: "one",
+      gamma: "three",
+    });
+  });
+
+  it("replaces placeholders and keeps unresolved placeholders unchanged", () => {
+    const service = new GenerationRuntimeService() as unknown as {
+      renderTemplateValue(
+        value: string,
+        substitutions: Record<string, string>,
+      ): string;
+    };
+
+    const renderedValue = service.renderTemplateValue(
+      "__nameKebabCase__-__unknown__",
+      { nameKebabCase: "demo-project" },
+    );
+
+    expect(renderedValue).toBe("demo-project-__unknown__");
+  });
+
+  it("falls back to default adapters and definition name when inputs are omitted", async () => {
+    const service = new GenerationRuntimeService();
+    const templateDirectoryPath = await mkdtemp(
+      path.join(tmpdir(), "conformetry-generation-default-runtime-"),
+    );
+    const definition: GeneratorDefinition = {
+      name: "fallback-name",
+      schemaPath: "schema.json",
+      templateDirectoryPath,
+    };
+
+    const result = await service.runGenerator({
+      definition,
+      targetDirectoryPath: "/output",
+    });
+
+    expect(result).toStrictEqual({
+      generatedFilePaths: [],
+      outputDirectoryPath: "/output",
+    });
+    expect(service.buildNameSubstitutions(definition.name)).toStrictEqual({
+      nameCamelCase: "fallbackName",
+      nameKebabCase: "fallback-name",
+      namePascalCase: "FallbackName",
+      nameSnakeCase: "fallback_name",
+    });
   });
 });

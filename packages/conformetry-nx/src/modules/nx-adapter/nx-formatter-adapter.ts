@@ -1,4 +1,4 @@
-import type { FormatterAdapter } from "./nx-generation-runtime.ts";
+import type { FormatterAdapter } from "./nx-generation-runtime";
 
 /**
  * Provides a formatter adapter stub for Nx tree generation.

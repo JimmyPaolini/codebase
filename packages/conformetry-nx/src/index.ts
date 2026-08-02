@@ -2,9 +2,9 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 import type { CreateNodes, GeneratorCallback, Tree } from "@nx/devkit";
+import { createConformetryGeneratorFactory } from "./modules/nx-adapter/nx-generator-factory";
 
-export * from "./generators/init/generator.ts";
-import { createConformetryGeneratorFactory } from "./modules/nx-adapter/nx-generator-factory.ts";
+export * from "./generators/init/generator";
 
 /**
  * Minimal conformetry configuration shape required by the Nx adapter.

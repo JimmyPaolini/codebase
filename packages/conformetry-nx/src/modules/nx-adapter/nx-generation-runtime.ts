@@ -3,7 +3,7 @@ import path from "node:path";
 import {
   NxTemplateRenderer,
   type TemplateRenderer,
-} from "./nx-template-renderer.ts";
+} from "./nx-template-renderer";
 
 /**
  * A directory entry read from the source template tree.

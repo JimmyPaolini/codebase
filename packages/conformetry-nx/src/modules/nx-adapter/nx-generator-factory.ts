@@ -2,13 +2,13 @@ import path from "node:path";
 
 import { type GeneratorCallback, getProjects, type Tree } from "@nx/devkit";
 
-import { NxFileSystemAdapter } from "./nx-file-system-adapter.ts";
-import { NxFormatterAdapter } from "./nx-formatter-adapter.ts";
+import { NxFileSystemAdapter } from "./nx-file-system-adapter";
+import { NxFormatterAdapter } from "./nx-formatter-adapter";
 import {
   GenerationRuntimeService,
   type GeneratorDefinition,
-} from "./nx-generation-runtime.ts";
-import { NxPathMatcher } from "./nx-path-matcher.ts";
+} from "./nx-generation-runtime";
+import { NxPathMatcher } from "./nx-path-matcher";
 
 /**
  * A generator callback compatible with Nx generator factories.

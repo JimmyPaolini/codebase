@@ -3,7 +3,7 @@ import path from "node:path";
 import type {
   DirectoryEntry,
   FileSystemAdapter,
-} from "./nx-generation-runtime.ts";
+} from "./nx-generation-runtime";
 import type { Tree } from "@nx/devkit";
 
 /**

@@ -1,4 +1,4 @@
-import type { PathMatcher } from "./nx-generation-runtime.ts";
+import type { PathMatcher } from "./nx-generation-runtime";
 
 /**
  * Implements a minimal path matcher for Nx-backed generation.

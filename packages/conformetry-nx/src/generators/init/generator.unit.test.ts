@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { conformetryInitGenerator } from "./generator.js";
+import { conformetryInitGenerator } from "./generator";
 
 import type { FileChange, Tree } from "@nx/devkit";
 
@@ -130,6 +130,22 @@ describe(conformetryInitGenerator, () => {
 
     expect(tree.read("generated/conformetry.config.ts")?.toString()).toBe(
       'export const conformetryProjectName = "demo-project";\n',
+    );
+  });
+
+  it("uses the default generated directory when targetDirectoryPath is omitted", async () => {
+    const tree = new InMemoryTree();
+    tree.write(
+      "packages/conformetry-nx/src/generators/init/templates/conformetry.config.ts",
+      'export const conformetryProjectName = "{{name}}";\n',
+    );
+
+    await conformetryInitGenerator(tree, {
+      name: "default-project",
+    });
+
+    expect(tree.read("generated/conformetry.config.ts")?.toString()).toBe(
+      'export const conformetryProjectName = "default-project";\n',
     );
   });
 });

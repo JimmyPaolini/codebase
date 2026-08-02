@@ -1,4 +1,4 @@
-import { createConformetryGeneratorFactory } from "../../modules/nx-adapter/nx-generator-factory.ts";
+import { createConformetryGeneratorFactory } from "../../modules/nx-adapter/nx-generator-factory";
 
 /**
  * Creates a minimal conformetry init generator for the current Nx workspace.
