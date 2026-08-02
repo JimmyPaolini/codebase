@@ -1,25 +1,86 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+interface PinoLoggerDouble {
+  child: ReturnType<
+    typeof vi.fn<(bindings: { context: string }) => PinoLoggerDouble>
+  >;
+  debug: ReturnType<
+    typeof vi.fn<(bindings: { context?: string }, message: string) => void>
+  >;
+  error: ReturnType<
+    typeof vi.fn<
+      (bindings: { context?: string; stack?: string }, message: string) => void
+    >
+  >;
+  info: ReturnType<
+    typeof vi.fn<(bindings: { context?: string }, message: string) => void>
+  >;
+  trace: ReturnType<
+    typeof vi.fn<(bindings: { context?: string }, message: string) => void>
+  >;
+  warn: ReturnType<
+    typeof vi.fn<(bindings: { context?: string }, message: string) => void>
+  >;
+}
+
+const { mockPino, rootLogger, scopedLogger } = vi.hoisted(() => {
+  function createLoggerDouble(): PinoLoggerDouble {
+    const loggerDouble: PinoLoggerDouble = {
+      child: vi.fn<(bindings: { context: string }) => PinoLoggerDouble>(),
+      debug: vi.fn<(bindings: { context?: string }, message: string) => void>(),
+      error:
+        vi.fn<
+          (
+            bindings: { context?: string; stack?: string },
+            message: string,
+          ) => void
+        >(),
+      info: vi.fn<(bindings: { context?: string }, message: string) => void>(),
+      trace: vi.fn<(bindings: { context?: string }, message: string) => void>(),
+      warn: vi.fn<(bindings: { context?: string }, message: string) => void>(),
+    };
+
+    return loggerDouble;
+  }
+
+  const scoped = createLoggerDouble();
+  const root = createLoggerDouble();
+  root.child.mockReturnValue(scoped);
+  scoped.child.mockReturnValue(scoped);
+
+  return {
+    mockPino: vi.fn(() => {
+      return root;
+    }),
+    rootLogger: root,
+    scopedLogger: scoped,
+  };
+});
+
+vi.mock("pino", () => {
+  return {
+    default: mockPino,
+  };
+});
 
 import { LoggerService } from "./logger.service";
 
 describe(LoggerService, () => {
-  interface LoggerChild {
-    debug: ReturnType<typeof vi.fn>;
-    error: ReturnType<typeof vi.fn>;
-    info: ReturnType<typeof vi.fn>;
-    trace: ReturnType<typeof vi.fn>;
-    warn: ReturnType<typeof vi.fn>;
-  }
+  beforeEach(() => {
+    rootLogger.child.mockClear();
+    rootLogger.debug.mockClear();
+    rootLogger.error.mockClear();
+    rootLogger.info.mockClear();
+    rootLogger.trace.mockClear();
+    rootLogger.warn.mockClear();
 
-  function createLoggerChild(): LoggerChild {
-    return {
-      debug: vi.fn(),
-      error: vi.fn(),
-      info: vi.fn(),
-      trace: vi.fn(),
-      warn: vi.fn(),
-    };
-  }
+    scopedLogger.child.mockClear();
+    scopedLogger.debug.mockClear();
+    scopedLogger.error.mockClear();
+    scopedLogger.info.mockClear();
+    scopedLogger.trace.mockClear();
+    scopedLogger.warn.mockClear();
+  });
 
   it("is defined", () => {
     const service = new LoggerService();
@@ -29,37 +90,31 @@ describe(LoggerService, () => {
 
   it("logs through all severity methods and stringifies non-string values", () => {
     const service = new LoggerService();
-    const child = createLoggerChild();
-    const loggerService = service as unknown as {
-      child: LoggerChild;
-      context?: string;
-    };
-    loggerService.child = child;
-    loggerService.context = "ServiceContext";
 
+    service.setContext("ServiceContext");
     service.debug({ message: "debug" });
     service.log(123, "ExplicitContext");
     service.warn("warning");
     service.verbose("verbose");
     service.error(new Error("boom"), "stack trace");
 
-    expect(child.debug).toHaveBeenCalledWith(
+    expect(scopedLogger.debug).toHaveBeenCalledWith(
       { context: "ServiceContext" },
       "[object Object]",
     );
-    expect(child.info).toHaveBeenCalledWith(
+    expect(scopedLogger.info).toHaveBeenCalledWith(
       { context: "ExplicitContext" },
       "123",
     );
-    expect(child.warn).toHaveBeenCalledWith(
+    expect(scopedLogger.warn).toHaveBeenCalledWith(
       { context: "ServiceContext" },
       "warning",
     );
-    expect(child.trace).toHaveBeenCalledWith(
+    expect(scopedLogger.trace).toHaveBeenCalledWith(
       { context: "ServiceContext" },
       "verbose",
     );
-    expect(child.error).toHaveBeenCalledWith(
+    expect(scopedLogger.error).toHaveBeenCalledWith(
       { context: "ServiceContext", stack: "stack trace" },
       "Error: boom",
     );
@@ -67,25 +122,16 @@ describe(LoggerService, () => {
 
   it("updates child logger when context changes", () => {
     const service = new LoggerService();
-    const nextChild = createLoggerChild();
-    const rootChild = vi.fn().mockReturnValue(nextChild);
-    const loggerClass = LoggerService as unknown as {
-      root: { child: (bindings: { context: string }) => LoggerChild };
-    };
-    const originalRoot = loggerClass.root;
-    loggerClass.root = { child: rootChild };
 
-    try {
-      service.setContext("UpdatedContext");
-      service.log("message");
+    service.setContext("UpdatedContext");
+    service.log("message");
 
-      expect(rootChild).toHaveBeenCalledWith({ context: "UpdatedContext" });
-      expect(nextChild.info).toHaveBeenCalledWith(
-        { context: "UpdatedContext" },
-        "message",
-      );
-    } finally {
-      loggerClass.root = originalRoot;
-    }
+    expect(rootLogger.child).toHaveBeenCalledWith({
+      context: "UpdatedContext",
+    });
+    expect(scopedLogger.info).toHaveBeenCalledWith(
+      { context: "UpdatedContext" },
+      "message",
+    );
   });
 });

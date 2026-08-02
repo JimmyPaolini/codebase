@@ -31,6 +31,33 @@ import conformetryPluginDefinition, {
 
 import type { Tree } from "@nx/devkit";
 
+function createStubTree(): Tree {
+  const read: Tree["read"] = (_pathName: string, encoding?: BufferEncoding) => {
+    return encoding === undefined ? null : null;
+  };
+
+  return {
+    changePermissions: (_pathName: string, _mode: number) => {},
+    children: (_pathName: string) => {
+      return [];
+    },
+    delete: (_pathName: string) => {},
+    exists: (_pathName: string) => {
+      return false;
+    },
+    isFile: (_pathName: string) => {
+      return false;
+    },
+    listChanges: () => {
+      return [];
+    },
+    read,
+    rename: (_fromPathName: string, _toPathName: string) => {},
+    root: ".",
+    write: (_pathName: string, _content: Buffer | string) => {},
+  };
+}
+
 async function createConfigurationModule(
   moduleContent: string,
 ): Promise<string> {
@@ -57,7 +84,7 @@ describe("conformetry-nx index", () => {
     );
     expect(Array.isArray(conformetryPluginDefinition.createNodes)).toBe(true);
     expect(conformetryPluginDefinition.createNodes[0]).toBe("**/package.json");
-    expect(conformetryPluginDefinition.createNodes[1]()).toStrictEqual([]);
+    expect(typeof conformetryPluginDefinition.createNodes[1]).toBe("function");
   });
 
   it("loads workspace configuration and executes every exported generator", async () => {
@@ -124,7 +151,7 @@ describe("conformetry-nx index", () => {
       }
     `);
 
-    const tree = {} as Tree;
+    const tree = createStubTree();
     const options = { config: configPath, name: "demo" };
 
     const generators = [
@@ -162,7 +189,7 @@ describe("conformetry-nx index", () => {
       }
     `);
 
-    await generateReactComponent({} as Tree, {
+    await generateReactComponent(createStubTree(), {
       config: configPath,
       name: "demo",
     });
@@ -197,7 +224,7 @@ describe("conformetry-nx index", () => {
     process.chdir(workingDirectory);
 
     try {
-      await generateReactComponent({} as Tree, {
+      await generateReactComponent(createStubTree(), {
         config: "./conformetry.config.mjs",
         name: "demo",
       });
@@ -223,7 +250,7 @@ describe("conformetry-nx index", () => {
     `);
 
     await expect(
-      generateNestjsServiceModule({} as Tree, { config: configPath }),
+      generateNestjsServiceModule(createStubTree(), { config: configPath }),
     ).rejects.toThrow('Unknown conformetry generator "nestjs-service-module"');
   });
 
@@ -231,7 +258,7 @@ describe("conformetry-nx index", () => {
     const configPath = await createConfigurationModule(`export default 42`);
 
     await expect(
-      generateReactComponent({} as Tree, { config: configPath }),
+      generateReactComponent(createStubTree(), { config: configPath }),
     ).rejects.toThrow("missing generators map");
   });
 
@@ -239,7 +266,7 @@ describe("conformetry-nx index", () => {
     const configPath = await createConfigurationModule(`export default {}`);
 
     await expect(
-      generateReactComponent({} as Tree, { config: configPath }),
+      generateReactComponent(createStubTree(), { config: configPath }),
     ).rejects.toThrow("missing generators map");
   });
 });

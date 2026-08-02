@@ -10,8 +10,8 @@ describe(createPythonValidatorPlugin, () => {
     const plugin = createPythonValidatorPlugin();
 
     expect(plugin.descriptor).toStrictEqual({
-      description: "Checks that Python files exist",
-      fileExtensions: [".py"],
+      description: "Checks Python and notebook conformance against templates",
+      fileExtensions: [".ipynb", ".py"],
       name: "python",
     });
   });

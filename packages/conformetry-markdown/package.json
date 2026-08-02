@@ -5,8 +5,11 @@
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
+    "mdast-util-to-string": "catalog:",
     "pino": "catalog:",
     "reflect-metadata": "catalog:",
+    "remark": "catalog:",
+    "remark-gfm": "catalog:",
     "tslib": "catalog:",
     "zod": "catalog:"
   },

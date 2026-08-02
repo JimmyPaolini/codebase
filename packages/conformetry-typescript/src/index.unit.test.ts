@@ -10,7 +10,7 @@ describe(createTypeScriptValidatorPlugin, () => {
     const plugin = createTypeScriptValidatorPlugin();
 
     expect(plugin.descriptor).toStrictEqual({
-      description: "Checks that TypeScript entrypoints exist",
+      description: "Checks TypeScript AST structure and required comments",
       fileExtensions: [".ts", ".tsx"],
       name: "typescript",
     });

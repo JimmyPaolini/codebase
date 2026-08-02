@@ -92,25 +92,35 @@ export class ValidateCommand extends CommandRunner {
       createJsonValidatorPlugin(),
       createTextValidatorPlugin(),
     ];
+    const pluginNames = new Set(
+      plugins.map((plugin) => plugin.descriptor.name),
+    );
+    const pluginScopedRules =
+      options.rules?.filter((ruleName) => pluginNames.has(ruleName)) ?? [];
+    const templateRuleNames =
+      options.rules?.filter((ruleName) => !pluginNames.has(ruleName)) ?? [];
     const filteredPlugins =
-      options.rules === undefined
-        ? plugins
-        : plugins.filter((plugin) =>
-            options.rules?.includes(plugin.descriptor.name),
-          );
+      pluginScopedRules.length > 0
+        ? plugins.filter((plugin) =>
+            pluginScopedRules.includes(plugin.descriptor.name),
+          )
+        : plugins;
 
     const validationService = new ValidationService();
     const validationResult = await validationService.runValidation({
+      configurationPath,
       plugins: filteredPlugins,
       projectPaths: options.projects?.length
         ? options.projects
         : [process.cwd()],
+      ...(templateRuleNames.length > 0 ? { templateRuleNames } : {}),
       workingDirectory: process.cwd(),
     });
 
     this.logger.log(JSON.stringify(validationResult, null, 2));
 
     if (!validationResult.ok) {
+      process.exitCode = 1;
       throw new Error("Validation failed");
     }
   }

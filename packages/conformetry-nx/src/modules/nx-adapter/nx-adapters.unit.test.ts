@@ -118,6 +118,39 @@ class InMemoryTree implements Tree {
   }
 }
 
+class StringReadTree extends InMemoryTree {
+  public override read(pathName: string): Buffer | null;
+  public override read(
+    pathName: string,
+    encoding: BufferEncoding,
+  ): null | string;
+  public override read(
+    pathName: string,
+    encoding?: BufferEncoding,
+  ): Buffer | null | string {
+    if (pathName === "plain.txt") {
+      return "plain-string";
+    }
+
+    if (encoding === undefined) {
+      return super.read(pathName);
+    }
+
+    return super.read(pathName, encoding);
+  }
+}
+
+class GhostChildTree extends InMemoryTree {
+  public override children(pathName: string): string[] {
+    const baseChildren = super.children(pathName);
+    if (pathName === "templates") {
+      return [...baseChildren, "ghost-directory"];
+    }
+
+    return baseChildren;
+  }
+}
+
 describe("nx adapters", () => {
   describe(NxPathMatcher, () => {
     it("matches basic wildcard path patterns", () => {
@@ -186,43 +219,19 @@ describe("nx adapters", () => {
     });
 
     it("returns string file content without buffer conversion", async () => {
-      const tree = new InMemoryTree();
+      const tree = new StringReadTree();
       tree.write("plain.txt", "buffer-value");
 
-      const read = tree.read.bind(tree);
-      const treeWithStringRead = tree as unknown as Tree;
-      (
-        treeWithStringRead as { read(pathName: string): Buffer | null | string }
-      ).read = (pathName: string) => {
-        if (pathName === "plain.txt") {
-          return "plain-string";
-        }
-
-        return read(pathName);
-      };
-
-      const adapter = new NxFileSystemAdapter(treeWithStringRead);
+      const adapter = new NxFileSystemAdapter(tree);
 
       await expect(adapter.readFile("plain.txt")).resolves.toBe("plain-string");
     });
 
     it("treats missing child paths as files when tree metadata is stale", async () => {
-      const tree = new InMemoryTree();
+      const tree = new GhostChildTree();
       tree.write("templates/root.txt", "root");
 
-      const children = tree.children.bind(tree);
-      const treeWithGhostChild = tree as unknown as Tree;
-      (
-        treeWithGhostChild as { children(pathName: string): string[] }
-      ).children = (pathName: string) => {
-        if (pathName === "templates") {
-          return [...children(pathName), "ghost-directory"];
-        }
-
-        return children(pathName);
-      };
-
-      const adapter = new NxFileSystemAdapter(treeWithGhostChild);
+      const adapter = new NxFileSystemAdapter(tree);
       const entries = await adapter.listDirectory("templates");
 
       expect(entries).toStrictEqual(

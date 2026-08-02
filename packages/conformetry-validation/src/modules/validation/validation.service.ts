@@ -24,6 +24,12 @@ export class ValidationService {
     for (const plugin of args.plugins) {
       const pluginArguments: ValidationPluginArguments = {
         filePaths: projectPaths,
+        ...(args.configurationPath === undefined
+          ? {}
+          : { configurationPath: args.configurationPath }),
+        ...(args.templateRuleNames === undefined
+          ? {}
+          : { templateRuleNames: args.templateRuleNames }),
         workingDirectory: args.workingDirectory,
       };
 

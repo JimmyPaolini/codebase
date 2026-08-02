@@ -7,7 +7,7 @@ const { mockRepl } = vi.hoisted(() => {
 });
 
 vi.mock("@nestjs/core", async (importOriginal) => {
-  const originalModule = await importOriginal();
+  const originalModule = (await importOriginal()) as Record<string, unknown>;
 
   return {
     ...originalModule,

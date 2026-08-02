@@ -14,7 +14,7 @@ describe(createJsonValidatorPlugin, () => {
     const plugin = createJsonValidatorPlugin();
 
     expect(plugin.descriptor).toStrictEqual({
-      description: "Checks that JSON files exist",
+      description: "Checks JSON and JSONC structural conformance",
       fileExtensions: [".json", ".jsonc"],
       name: "json",
     });

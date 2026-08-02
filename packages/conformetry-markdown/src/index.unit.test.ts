@@ -10,7 +10,7 @@ describe(createMarkdownValidatorPlugin, () => {
     const plugin = createMarkdownValidatorPlugin();
 
     expect(plugin.descriptor).toStrictEqual({
-      description: "Checks that Markdown files exist",
+      description: "Checks markdown structural conformance using mdast",
       fileExtensions: [".md"],
       name: "markdown",
     });

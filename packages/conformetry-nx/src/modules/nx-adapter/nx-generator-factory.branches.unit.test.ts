@@ -50,6 +50,33 @@ import type {
 } from "./nx-generation-runtime.js";
 import type { Tree } from "@nx/devkit";
 
+function createStubTree(): Tree {
+  const read: Tree["read"] = (_pathName: string, encoding?: BufferEncoding) => {
+    return encoding === undefined ? null : null;
+  };
+
+  return {
+    changePermissions: (_pathName: string, _mode: number) => {},
+    children: (_pathName: string) => {
+      return [];
+    },
+    delete: (_pathName: string) => {},
+    exists: (_pathName: string) => {
+      return false;
+    },
+    isFile: (_pathName: string) => {
+      return false;
+    },
+    listChanges: () => {
+      return [];
+    },
+    read,
+    rename: (_fromPathName: string, _toPathName: string) => {},
+    root: ".",
+    write: (_pathName: string, _content: Buffer | string) => {},
+  };
+}
+
 describe("nx-generator-factory branches", () => {
   beforeEach(() => {
     mockGetProjects.mockReset();
@@ -76,7 +103,7 @@ describe("nx-generator-factory branches", () => {
       },
     });
 
-    await factory({} as Tree, {
+    await factory(createStubTree(), {
       enabled: true,
       name: "demo",
       nested: { alpha: "one" },
@@ -86,21 +113,20 @@ describe("nx-generator-factory branches", () => {
     });
 
     expect(mockRunGenerator).toHaveBeenCalledTimes(1);
-
-    const runArguments = mockRunGenerator.mock.calls[0]?.[0] as {
-      inputs: Record<string, string | undefined>;
-      targetDirectoryPath: string;
-    };
-
-    expect(runArguments.targetDirectoryPath).toBe("apps/demo-project");
-    expect(runArguments.inputs).toStrictEqual({
-      enabled: "true",
-      name: "demo",
-      nested: '{"alpha":"one"}',
-      projectName: "demo-project",
-      retries: "3",
-      skipped: undefined,
-    });
+    expect(mockRunGenerator).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        inputs: {
+          enabled: "true",
+          name: "demo",
+          nested: '{"alpha":"one"}',
+          projectName: "demo-project",
+          retries: "3",
+          skipped: undefined,
+        },
+        targetDirectoryPath: "apps/demo-project",
+      }),
+    );
   });
 
   it("uses sourceRoot when root is unavailable", async () => {
@@ -124,7 +150,7 @@ describe("nx-generator-factory branches", () => {
       options: {
         project: "demo-project",
       },
-      tree: {} as Tree,
+      tree: createStubTree(),
     });
 
     expect(resolvedPath).toBe("packages/demo-project/src");
@@ -143,7 +169,7 @@ describe("nx-generator-factory branches", () => {
         options: {
           targetDirectoryPath: "target-directory",
         },
-        tree: {} as Tree,
+        tree: createStubTree(),
       }),
     ).resolves.toBe("target-directory");
 
@@ -157,7 +183,7 @@ describe("nx-generator-factory branches", () => {
         options: {
           outputDirectoryPath: "output-directory",
         },
-        tree: {} as Tree,
+        tree: createStubTree(),
       }),
     ).resolves.toBe("output-directory");
 
@@ -171,7 +197,7 @@ describe("nx-generator-factory branches", () => {
         options: {
           outputPath: "output-path",
         },
-        tree: {} as Tree,
+        tree: createStubTree(),
       }),
     ).resolves.toBe("output-path");
   });
@@ -188,7 +214,7 @@ describe("nx-generator-factory branches", () => {
       options: {
         projectName: "missing-project",
       },
-      tree: {} as Tree,
+      tree: createStubTree(),
     });
 
     expect(resolvedPath).toBe("generated/demo-generator");
@@ -206,7 +232,7 @@ describe("nx-generator-factory branches", () => {
       options: {
         projectName: 123,
       },
-      tree: {} as Tree,
+      tree: createStubTree(),
     });
 
     expect(resolvedPath).toBe("generated/demo-generator");
@@ -234,20 +260,16 @@ describe("nx-generator-factory branches", () => {
       resolveTargetDirectoryPath,
     });
 
-    const callback = await factory({} as Tree, { name: "demo" });
+    const callback = await factory(createStubTree(), { name: "demo" });
 
     expect(resolveTargetDirectoryPath).toHaveBeenCalledTimes(1);
     expect(mockRunGenerator).toHaveBeenCalledTimes(1);
-
-    const firstRunCall = mockRunGenerator.mock.calls[0];
-
-    expect(firstRunCall).toBeDefined();
-
-    const runArguments = firstRunCall[0] as {
-      targetDirectoryPath: string;
-    };
-
-    expect(runArguments.targetDirectoryPath).toBe("custom-target");
+    expect(mockRunGenerator).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        targetDirectoryPath: "custom-target",
+      }),
+    );
     await expect(callback()).resolves.toBeUndefined();
   });
 });

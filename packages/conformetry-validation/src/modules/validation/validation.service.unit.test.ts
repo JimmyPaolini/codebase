@@ -32,6 +32,7 @@ describe(ValidationService, () => {
   it("uses explicit project paths and returns a failed result when any plugin fails", async () => {
     const validationService = new ValidationService();
     const result = await validationService.runValidation({
+      configurationPath: "configuration/conformetry.config.ts",
       plugins: [
         {
           descriptor: {
@@ -59,17 +60,13 @@ describe(ValidationService, () => {
               checkedPaths: filePaths,
               ok: false,
               pluginName: "fail-plugin",
-              violations: [
-                {
-                  filePath: "demo.ts",
-                  message: "failed",
-                },
-              ],
+              violations: ["demo.ts: failed"],
             };
           },
         },
       ],
       projectPaths: ["packages/demo"],
+      templateRuleNames: ["nestjs-service-module"],
       workingDirectory: process.cwd(),
     });
 
@@ -79,6 +76,9 @@ describe(ValidationService, () => {
     ]);
     expect(result.pluginResults[1]?.checkedPaths).toStrictEqual([
       "packages/demo",
+    ]);
+    expect(result.pluginResults[1]?.violations).toStrictEqual([
+      "demo.ts: failed",
     ]);
   });
 });

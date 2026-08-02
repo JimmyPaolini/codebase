@@ -8,6 +8,7 @@
     "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:",
+    "typescript": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

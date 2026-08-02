@@ -10,7 +10,7 @@ describe(createTextValidatorPlugin, () => {
     const plugin = createTextValidatorPlugin();
 
     expect(plugin.descriptor).toStrictEqual({
-      description: "Checks that text files exist",
+      description: "Checks text files using duplicate-aware line conformance",
       fileExtensions: [".txt"],
       name: "text",
     });

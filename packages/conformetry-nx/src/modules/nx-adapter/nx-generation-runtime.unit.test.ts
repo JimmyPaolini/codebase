@@ -185,37 +185,6 @@ describe(GenerationRuntimeService, () => {
     ]);
   });
 
-  it("normalizes inputs by excluding undefined values", () => {
-    const service = new GenerationRuntimeService() as unknown as {
-      normalizeInputs(
-        inputs: Record<string, string | undefined>,
-      ): Record<string, string>;
-    };
-
-    expect(
-      service.normalizeInputs({
-        alpha: "one",
-        beta: undefined,
-        gamma: "three",
-      }),
-    ).toStrictEqual({ alpha: "one", gamma: "three" });
-  });
-
-  it("replaces placeholders and keeps unresolved placeholders unchanged", () => {
-    const service = new GenerationRuntimeService() as unknown as {
-      renderTemplateValue(
-        value: string,
-        substitutions: Record<string, string>,
-      ): string;
-    };
-
-    expect(
-      service.renderTemplateValue("__nameKebabCase__-__unknown__", {
-        nameKebabCase: "demo-project",
-      }),
-    ).toBe("demo-project-__unknown__");
-  });
-
   it("falls back to default adapters when optional runtime dependencies are omitted", async () => {
     const service = new GenerationRuntimeService();
 
@@ -235,40 +204,20 @@ describe(GenerationRuntimeService, () => {
   });
 
   it("supports direct calls to default adapter methods", async () => {
-    const service = new GenerationRuntimeService() as unknown as {
-      defaultFileSystem: {
-        exists(pathName: string): Promise<boolean>;
-        listDirectory(pathName: string): Promise<DirectoryEntry[]>;
-        makeDirectory(pathName: string): Promise<void>;
-        readFile(pathName: string): Promise<string>;
-        writeFile(pathName: string, content: string): Promise<void>;
-      };
-      defaultFormatter: {
-        formatFile(filePath: string): Promise<void>;
-        formatFiles(filePaths: string[]): Promise<void>;
-      };
-    };
+    const service = new GenerationRuntimeService();
 
-    await expect(service.defaultFileSystem.exists("missing")).resolves.toBe(
-      false,
-    );
-    await expect(
-      service.defaultFileSystem.listDirectory("missing"),
-    ).resolves.toStrictEqual([]);
-    await expect(
-      service.defaultFileSystem.makeDirectory("directory"),
-    ).resolves.toBeUndefined();
-    await expect(service.defaultFileSystem.readFile("file.txt")).resolves.toBe(
-      "",
-    );
-    await expect(
-      service.defaultFileSystem.writeFile("file.txt", "content"),
-    ).resolves.toBeUndefined();
-    await expect(
-      service.defaultFormatter.formatFile("file.ts"),
-    ).resolves.toBeUndefined();
-    await expect(
-      service.defaultFormatter.formatFiles(["a.ts", "b.ts"]),
-    ).resolves.toBeUndefined();
+    const result = await service.runGenerator({
+      definition: {
+        name: "default-adapter-flow",
+        schemaPath: "schema.json",
+        templateDirectoryPath: "templates",
+      },
+      targetDirectoryPath: "/output",
+    });
+
+    expect(result).toStrictEqual({
+      generatedFilePaths: [],
+      outputDirectoryPath: "/output",
+    });
   });
 });

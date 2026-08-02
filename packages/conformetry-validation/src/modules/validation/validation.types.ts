@@ -10,8 +10,10 @@ export interface ConformetryValidatorPlugin {
  * Arguments accepted by the validation orchestration runner.
  */
 export interface RunValidationArguments {
+  configurationPath?: string;
   plugins: ConformetryValidatorPlugin[];
   projectPaths?: string[];
+  templateRuleNames?: string[];
   workingDirectory: string;
 }
 
@@ -27,8 +29,30 @@ export interface RunValidationResult {
  * Arguments provided to an individual validator plugin.
  */
 export interface ValidationPluginArguments {
+  configurationPath?: string;
   filePaths: string[];
+  templateRuleNames?: string[];
   workingDirectory: string;
+}
+
+/**
+ * Prepared template-instance document pair for language validation.
+ */
+export interface PreparedValidationDocument {
+  filename: string;
+  instance: string;
+  instanceFilePath: string;
+  renderedTemplate: string;
+  templateFilePath: string;
+}
+
+/**
+ * Prepared payload containing all documents and discovery-time violations.
+ */
+export interface PreparedValidationPayload {
+  checkedPaths: string[];
+  documents: PreparedValidationDocument[];
+  violations: string[];
 }
 
 /**
