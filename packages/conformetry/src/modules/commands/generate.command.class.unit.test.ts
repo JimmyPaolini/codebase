@@ -85,11 +85,11 @@ describe("generateCommand", () => {
     const { GenerateCommand } = await import("./generate.command.js");
     const command = new GenerateCommand();
 
+    await expect(command.run([], { name: "react-component" })).rejects.toThrow(
+      "Both --config and --name are required",
+    );
     await expect(
-      command.run([], { config: undefined, name: "react-component" }),
-    ).rejects.toThrow("Both --config and --name are required");
-    await expect(
-      command.run([], { config: "configuration/config.ts", name: undefined }),
+      command.run([], { config: "configuration/config.ts" }),
     ).rejects.toThrow("Both --config and --name are required");
   });
 

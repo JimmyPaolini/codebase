@@ -1,10 +1,12 @@
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-import type { CreateNodes, GeneratorCallback, Tree } from "@nx/devkit";
 import { createConformetryGeneratorFactory } from "./modules/nx-adapter/nx-generator-factory";
 
+import type { CreateNodes, GeneratorCallback, Tree } from "@nx/devkit";
 export * from "./generators/init/generator";
+
+export { resolveTemplateRuleRouting } from "./modules/rule-routing/rule-routing.service";
 
 /**
  * Minimal conformetry configuration shape required by the Nx adapter.

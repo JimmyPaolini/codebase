@@ -1,6 +1,7 @@
 import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
 import { createJsonValidatorPlugin } from "@jimmypaolini/conformetry-json";
 import { createMarkdownValidatorPlugin } from "@jimmypaolini/conformetry-markdown";
+import { resolveTemplateRuleRouting } from "@jimmypaolini/conformetry-nx";
 import { createPythonValidatorPlugin } from "@jimmypaolini/conformetry-python";
 import { createTextValidatorPlugin } from "@jimmypaolini/conformetry-text";
 import { createTypeScriptValidatorPlugin } from "@jimmypaolini/conformetry-typescript";
@@ -84,7 +85,10 @@ export class ValidateCommand extends CommandRunner {
       options.config ?? "configuration/conformetry.config.ts";
 
     const configurationService = new ConfigurationService();
-    await configurationService.loadConformetryConfiguration(configurationPath);
+    const conformetryConfiguration =
+      await configurationService.loadConformetryConfiguration(
+        configurationPath,
+      );
     const plugins = [
       createTypeScriptValidatorPlugin(),
       createPythonValidatorPlugin(),
@@ -97,7 +101,7 @@ export class ValidateCommand extends CommandRunner {
     );
     const pluginScopedRules =
       options.rules?.filter((ruleName) => pluginNames.has(ruleName)) ?? [];
-    const templateRuleNames =
+    const requestedTemplateRuleNames =
       options.rules?.filter((ruleName) => !pluginNames.has(ruleName)) ?? [];
     const filteredPlugins =
       pluginScopedRules.length > 0
@@ -105,15 +109,25 @@ export class ValidateCommand extends CommandRunner {
             pluginScopedRules.includes(plugin.descriptor.name),
           )
         : plugins;
+    const routedTemplateRules = resolveTemplateRuleRouting({
+      configuredTemplateRuleNames: Object.keys(
+        conformetryConfiguration.generators,
+      ),
+      projectSelectors: options.projects?.length
+        ? options.projects
+        : [process.cwd()],
+      ...(requestedTemplateRuleNames.length > 0
+        ? { requestedTemplateRuleNames }
+        : {}),
+      workingDirectory: process.cwd(),
+    });
 
     const validationService = new ValidationService();
     const validationResult = await validationService.runValidation({
       configurationPath,
       plugins: filteredPlugins,
-      projectPaths: options.projects?.length
-        ? options.projects
-        : [process.cwd()],
-      ...(templateRuleNames.length > 0 ? { templateRuleNames } : {}),
+      projectPaths: routedTemplateRules.projectPaths,
+      templateRuleNames: routedTemplateRules.templateRuleNames,
       workingDirectory: process.cwd(),
     });
 

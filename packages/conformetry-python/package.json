@@ -20,7 +20,7 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "main": "src/index.js",
+  "main": "src/plugin.ts",
   "name": "@jimmypaolini/conformetry-python",
   "publishConfig": {
     "access": "public",
@@ -34,6 +34,6 @@
     ],
     "strict": true
   },
-  "types": "src/index.ts",
+  "types": "src/plugin.ts",
   "version": "0.0.1"
 }

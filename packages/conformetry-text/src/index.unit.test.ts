@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { createTextValidatorPlugin } from "./index";
+import { createTextValidatorPlugin } from "./plugin";
 
 describe(createTextValidatorPlugin, () => {
   it("returns the expected plugin descriptor", () => {

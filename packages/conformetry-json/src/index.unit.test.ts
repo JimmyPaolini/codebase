@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { createJsonValidatorPlugin } from "./index";
+import { createJsonValidatorPlugin } from "./plugin";
 
 describe(createJsonValidatorPlugin, () => {
   afterEach(() => {

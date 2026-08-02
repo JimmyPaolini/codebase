@@ -4,6 +4,7 @@ const mockLoadConformetryConfiguration =
   vi.fn<(path: string) => Promise<unknown>>();
 const mockRunValidation = vi.fn<(input: unknown) => Promise<unknown>>();
 const mockLoggerLog = vi.fn<(message: unknown) => void>();
+const mockResolveTemplateRuleRouting = vi.fn<(input: unknown) => unknown>();
 
 const typeScriptPlugin = { descriptor: { name: "typescript" } };
 const pythonPlugin = { descriptor: { name: "python" } };
@@ -78,6 +79,12 @@ vi.mock("@jimmypaolini/conformetry-validation", () => {
   };
 });
 
+vi.mock("@jimmypaolini/conformetry-nx", () => {
+  return {
+    resolveTemplateRuleRouting: mockResolveTemplateRuleRouting,
+  };
+});
+
 describe("validateCommand", () => {
   beforeEach(() => {
     vi.resetModules();
@@ -105,6 +112,15 @@ describe("validateCommand", () => {
   });
 
   it("runs all validators with default options and working directory", async () => {
+    mockLoadConformetryConfiguration.mockResolvedValue({
+      generators: {
+        "nestjs-service-module": {},
+      },
+    });
+    mockResolveTemplateRuleRouting.mockReturnValue({
+      projectPaths: ["packages/conformetry"],
+      templateRuleNames: ["nestjs-service-module"],
+    });
     mockRunValidation.mockResolvedValue({ ok: true, results: [] });
 
     const { ValidateCommand } = await import("./validate.command.js");
@@ -124,7 +140,8 @@ describe("validateCommand", () => {
           jsonPlugin,
           textPlugin,
         ],
-        projectPaths: [process.cwd()],
+        projectPaths: ["packages/conformetry"],
+        templateRuleNames: ["nestjs-service-module"],
         workingDirectory: process.cwd(),
       }),
     );
@@ -134,6 +151,16 @@ describe("validateCommand", () => {
   });
 
   it("filters validators and project paths when rules and projects are provided", async () => {
+    mockLoadConformetryConfiguration.mockResolvedValue({
+      generators: {
+        "nestjs-service-module": {},
+        "react-component": {},
+      },
+    });
+    mockResolveTemplateRuleRouting.mockReturnValue({
+      projectPaths: ["packages/conformetry-json"],
+      templateRuleNames: ["react-component"],
+    });
     mockRunValidation.mockResolvedValue({ ok: true });
 
     const { ValidateCommand } = await import("./validate.command.js");
@@ -148,15 +175,26 @@ describe("validateCommand", () => {
     expect(mockLoadConformetryConfiguration).toHaveBeenCalledWith(
       "configuration/custom.config.ts",
     );
+    expect(mockResolveTemplateRuleRouting).toHaveBeenCalledWith({
+      configuredTemplateRuleNames: ["nestjs-service-module", "react-component"],
+      projectSelectors: ["packages/conformetry", "packages/conformetry-json"],
+      workingDirectory: process.cwd(),
+    });
     expect(mockRunValidation).toHaveBeenCalledWith(
       expect.objectContaining({
         plugins: [markdownPlugin, jsonPlugin],
-        projectPaths: ["packages/conformetry", "packages/conformetry-json"],
+        projectPaths: ["packages/conformetry-json"],
+        templateRuleNames: ["react-component"],
       }),
     );
   });
 
   it("throws when validation result is not ok", async () => {
+    mockLoadConformetryConfiguration.mockResolvedValue({ generators: {} });
+    mockResolveTemplateRuleRouting.mockReturnValue({
+      projectPaths: [process.cwd()],
+      templateRuleNames: [],
+    });
     mockRunValidation.mockResolvedValue({ failures: ["x"], ok: false });
 
     const { ValidateCommand } = await import("./validate.command.js");

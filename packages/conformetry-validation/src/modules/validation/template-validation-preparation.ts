@@ -335,9 +335,7 @@ function resolveSelectedGeneratorNames(args: {
     (generatorName) => args.templateRuleNames?.includes(generatorName),
   );
 
-  return selectedGeneratorNames.length === 0
-    ? configuredGeneratorNames
-    : selectedGeneratorNames;
+  return selectedGeneratorNames;
 }
 
 /**
