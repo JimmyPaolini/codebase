@@ -164,8 +164,8 @@ const scopes = [
   },
   {
     description:
-      "NestJS command-line application for metitur metric collection and reporting",
-    name: "metitur",
+      "NestJS command-line application for codometer metric collection and reporting",
+    name: "codometer",
   },
   {
     description:

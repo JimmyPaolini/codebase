@@ -291,7 +291,7 @@ PR description template:
 | `lexico-components` | Shared React/shadcn component library |
 | `lexico-entities` | Shared TypeORM entities and GraphQL types |
 | `lexico-ingestion` | Data ingestion scripts for Lexico |
-| `metitur` | NestJS command-line application for code measurement and reporting (codometer) |
+| `codometer` | NestJS command-line application for codometer metric collection and reporting |
 | `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
 | `no-release` | Escape hatch: suppress semantic-release for any commit type |
 | `packages` | Changes spanning multiple shared packages in packages/ |

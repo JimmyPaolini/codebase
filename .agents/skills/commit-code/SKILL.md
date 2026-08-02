@@ -74,7 +74,7 @@ This skill teaches how to write commit messages for this codebase. All commits *
 | `lexico-components` | Shared React/shadcn component library |
 | `lexico-entities` | Shared TypeORM entities and GraphQL types |
 | `lexico-ingestion` | Data ingestion scripts for Lexico |
-| `metitur` | NestJS command-line application for metitur metric collection and reporting |
+| `codometer` | NestJS command-line application for codometer metric collection and reporting |
 | `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
 | `no-release` | Escape hatch: suppress semantic-release for any commit type |
 | `packages` | Changes spanning multiple shared packages in packages/ |
