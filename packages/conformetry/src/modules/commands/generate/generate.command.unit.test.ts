@@ -1,4 +1,8 @@
+import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
+import { GenerationRuntimeService } from "@jimmypaolini/conformetry-generation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { GenerateCommandArgumentsService } from "./generate-command-arguments.service.js";
 
 const mockLoadConformetryConfiguration =
   vi.fn<(path: string) => Promise<{ generators: Record<string, unknown> }>>();
@@ -43,23 +47,19 @@ vi.mock("@jimmypaolini/conformetry-configuration", () => {
 });
 
 vi.mock("@jimmypaolini/conformetry-generation", () => {
-  function MockTemplateRenderer(): void {}
-
-  function MockNodeFileSystemAdapter(): void {}
-
-  function MockNoopFormatterAdapter(): void {}
-
   return {
-    DefaultTemplateRenderer: MockTemplateRenderer,
     GenerationRuntimeService: class GenerationRuntimeService {
       runGenerator = mockRunGenerator;
     },
-    NodeFileSystemAdapter: MockNodeFileSystemAdapter,
-    NoopFormatterAdapter: MockNoopFormatterAdapter,
   };
 });
 
 describe("generateCommand", () => {
+  const createGenerateCommandArgumentsService =
+    (): GenerateCommandArgumentsService => {
+      return new GenerateCommandArgumentsService();
+    };
+
   beforeEach(() => {
     vi.resetModules();
     vi.clearAllMocks();
@@ -69,7 +69,11 @@ describe("generateCommand", () => {
 
   it("parses CLI option values", async () => {
     const { GenerateCommand } = await import("./generate.command.js");
-    const command = new GenerateCommand();
+    const command = new GenerateCommand(
+      new ConfigurationService(),
+      new GenerationRuntimeService(),
+      createGenerateCommandArgumentsService(),
+    );
 
     expect(command.parseConfig("configuration/conformetry.config.ts")).toBe(
       "configuration/conformetry.config.ts",
@@ -83,7 +87,11 @@ describe("generateCommand", () => {
 
   it("throws when required options are missing", async () => {
     const { GenerateCommand } = await import("./generate.command.js");
-    const command = new GenerateCommand();
+    const command = new GenerateCommand(
+      new ConfigurationService(),
+      new GenerationRuntimeService(),
+      createGenerateCommandArgumentsService(),
+    );
 
     await expect(command.run([], { name: "react-component" })).rejects.toThrow(
       "Both --config and --name are required",
@@ -99,7 +107,11 @@ describe("generateCommand", () => {
     });
 
     const { GenerateCommand } = await import("./generate.command.js");
-    const command = new GenerateCommand();
+    const command = new GenerateCommand(
+      new ConfigurationService(),
+      new GenerationRuntimeService(),
+      createGenerateCommandArgumentsService(),
+    );
 
     await expect(
       command.run([], {
@@ -139,7 +151,11 @@ describe("generateCommand", () => {
     ]);
 
     const { GenerateCommand } = await import("./generate.command.js");
-    const command = new GenerateCommand();
+    const command = new GenerateCommand(
+      new ConfigurationService(),
+      new GenerationRuntimeService(),
+      createGenerateCommandArgumentsService(),
+    );
 
     await command.run([], {
       config: "configuration/conformetry.config.ts",
@@ -199,7 +215,11 @@ describe("generateCommand", () => {
     });
 
     const { GenerateCommand } = await import("./generate.command.js");
-    const command = new GenerateCommand();
+    const command = new GenerateCommand(
+      new ConfigurationService(),
+      new GenerationRuntimeService(),
+      createGenerateCommandArgumentsService(),
+    );
 
     await command.run([], {
       config: "configuration/conformetry.config.ts",

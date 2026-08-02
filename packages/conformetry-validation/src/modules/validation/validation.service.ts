@@ -1,3 +1,5 @@
+import { Injectable } from "@nestjs/common";
+
 import type {
   RunValidationArguments,
   RunValidationResult,
@@ -8,6 +10,7 @@ import type {
 /**
  * Orchestrates validator plugin execution over selected project paths.
  */
+@Injectable()
 export class ValidationService {
   /**
    * Runs a set of validator plugins against the requested project paths.

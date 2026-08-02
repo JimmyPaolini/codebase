@@ -1,4 +1,6 @@
-export * from "./modules/configuration/configuration.constants.js";
-export * from "./modules/configuration/configuration.errors.js";
-export * from "./modules/configuration/configuration.service.js";
-export type * from "./modules/configuration/configuration.types.js";
+export { ConfigurationModule } from "./modules/configuration/configuration.module.js";
+export { ConfigurationService } from "./modules/configuration/configuration.service.js";
+export type {
+  ConformetryConfiguration,
+  ConformetryGeneratorDefinition,
+} from "./modules/configuration/configuration.types.js";

@@ -29,9 +29,6 @@
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,
-    "ignoreFiles": [
-      "src/main.ts"
-    ],
     "strict": true
   },
   "types": "src/index.ts",

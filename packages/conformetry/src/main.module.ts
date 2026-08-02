@@ -3,7 +3,8 @@ import { ConfigModule } from "@nestjs/config";
 import { DiscoveryModule } from "@nestjs/core";
 
 import { environmentSchema } from "./constants.js";
-import { CommandsModule } from "./modules/commands/commands.module.js";
+import { GenerateModule } from "./modules/commands/generate/generate.module.js";
+import { ValidateModule } from "./modules/commands/validate/validate.module.js";
 import { LoggerModule } from "./modules/logger/logger.module.js";
 
 /**
@@ -19,7 +20,8 @@ import { LoggerModule } from "./modules/logger/logger.module.js";
     }),
     DiscoveryModule,
     LoggerModule,
-    CommandsModule,
+    GenerateModule,
+    ValidateModule,
   ],
 })
 export class MainModule {}

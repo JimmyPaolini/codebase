@@ -5,7 +5,7 @@
   "sourceRoot": "packages/conformetry-markdown",
   "tags": [
     "framework:nestjs",
-    "generator:nestjs-service-application",
+    "generator:nestjs-service-package",
     "language:typescript",
     "type:package"
   ],
@@ -21,7 +21,7 @@
             "output": "."
           }
         ],
-        "main": "packages/conformetry-markdown/src/main.ts",
+        "main": "packages/conformetry-markdown/src/index.ts",
         "outputPath": "dist/packages/conformetry-markdown",
         "tsConfig": "packages/conformetry-markdown/tsconfig.lib.json"
       },

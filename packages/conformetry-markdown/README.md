@@ -1,6 +1,6 @@
 # ConformetryMarkdown
 
-NestJS service application scaffold generated with `conformance:nestjs-service-application`.
+NestJS service package scaffold generated with `conformetry:nestjs-service-package`.
 
 ## Start
 

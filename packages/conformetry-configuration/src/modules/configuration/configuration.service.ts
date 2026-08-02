@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 
 import { createJiti } from "jiti";
 import { parse as parseJsonc } from "jsonc-parser";
+import { Injectable } from "@nestjs/common";
 
 import { conformetryConfigurationSchema } from "../../constants.js";
 
@@ -20,6 +21,7 @@ import type { z } from "zod";
 /**
  * Loads and validates conformetry configuration files.
  */
+@Injectable()
 export class ConfigurationService {
   /**
    * Finds the nearest workspace root from the current process directory.

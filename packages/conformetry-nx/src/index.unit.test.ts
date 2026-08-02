@@ -26,6 +26,7 @@ import conformetryPluginDefinition, {
   generateNestjsGraphqlModule,
   generateNestjsServiceFile,
   generateNestjsServiceModule,
+  generateNestjsServicePackage,
   generateReactComponent,
 } from "./index.js";
 
@@ -141,6 +142,12 @@ describe("conformetry-nx index", () => {
             targetPathStrategy: "direct",
             templateDirectoryPath: "templates/nsm"
           },
+          "nestjs-service-package": {
+            name: "nestjs-service-package",
+            schemaPath: "schema.json",
+            targetPathStrategy: "direct",
+            templateDirectoryPath: "templates/nsp"
+          },
           "react-component": {
             name: "react-component",
             schemaPath: "schema.json",
@@ -163,6 +170,7 @@ describe("conformetry-nx index", () => {
       generateNestjsGraphqlModule,
       generateNestjsServiceFile,
       generateNestjsServiceModule,
+      generateNestjsServicePackage,
       generateReactComponent,
     ];
 

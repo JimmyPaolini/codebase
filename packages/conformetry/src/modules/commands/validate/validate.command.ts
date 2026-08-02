@@ -1,30 +1,15 @@
 import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
-import {
-  JSON_VALIDATOR_PLUGIN_DESCRIPTOR,
-  JsonValidatorService,
-} from "@jimmypaolini/conformetry-json";
-import {
-  MARKDOWN_VALIDATOR_PLUGIN_DESCRIPTOR,
-  MarkdownValidatorService,
-} from "@jimmypaolini/conformetry-markdown";
+import { JsonValidatorService } from "@jimmypaolini/conformetry-json";
+import { MarkdownValidatorService } from "@jimmypaolini/conformetry-markdown";
 import { resolveTemplateRuleRouting } from "@jimmypaolini/conformetry-nx";
-import {
-  PYTHON_VALIDATOR_PLUGIN_DESCRIPTOR,
-  PythonValidatorService,
-} from "@jimmypaolini/conformetry-python";
-import {
-  TEXT_VALIDATOR_PLUGIN_DESCRIPTOR,
-  TextValidatorService,
-} from "@jimmypaolini/conformetry-text";
-import {
-  TYPESCRIPT_VALIDATOR_PLUGIN_DESCRIPTOR,
-  TypeScriptValidatorService,
-} from "@jimmypaolini/conformetry-typescript";
+import { PythonValidatorService } from "@jimmypaolini/conformetry-python";
+import { TextValidatorService } from "@jimmypaolini/conformetry-text";
+import { TypeScriptValidatorService } from "@jimmypaolini/conformetry-typescript";
 import { ValidationService } from "@jimmypaolini/conformetry-validation";
 import { ConsoleLogger, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
-import type { ValidateCommandOptions } from "./command.types.js";
+import type { ValidateCommandOptions } from "./validate.types.js";
 import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-validation";
 
 /**
@@ -37,6 +22,8 @@ import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-valid
 @Injectable()
 export class ValidateCommand extends CommandRunner {
   constructor(
+    private readonly configurationService: ConfigurationService,
+    private readonly validationService: ValidationService,
     private readonly typeScriptValidatorService: TypeScriptValidatorService,
     private readonly pythonValidatorService: PythonValidatorService,
     private readonly markdownValidatorService: MarkdownValidatorService,
@@ -53,31 +40,31 @@ export class ValidateCommand extends CommandRunner {
   private buildValidatorPlugins(): ConformetryValidatorPlugin[] {
     return [
       {
-        descriptor: TYPESCRIPT_VALIDATOR_PLUGIN_DESCRIPTOR,
+        descriptor: this.typeScriptValidatorService.pluginDescriptor,
         validate: async (validationArguments) => {
           return this.typeScriptValidatorService.validate(validationArguments);
         },
       },
       {
-        descriptor: PYTHON_VALIDATOR_PLUGIN_DESCRIPTOR,
+        descriptor: this.pythonValidatorService.pluginDescriptor,
         validate: async (validationArguments) => {
           return this.pythonValidatorService.validate(validationArguments);
         },
       },
       {
-        descriptor: MARKDOWN_VALIDATOR_PLUGIN_DESCRIPTOR,
+        descriptor: this.markdownValidatorService.pluginDescriptor,
         validate: async (validationArguments) => {
           return this.markdownValidatorService.validate(validationArguments);
         },
       },
       {
-        descriptor: JSON_VALIDATOR_PLUGIN_DESCRIPTOR,
+        descriptor: this.jsonValidatorService.pluginDescriptor,
         validate: async (validationArguments) => {
           return this.jsonValidatorService.validate(validationArguments);
         },
       },
       {
-        descriptor: TEXT_VALIDATOR_PLUGIN_DESCRIPTOR,
+        descriptor: this.textValidatorService.pluginDescriptor,
         validate: async (validationArguments) => {
           return this.textValidatorService.validate(validationArguments);
         },
@@ -142,9 +129,8 @@ export class ValidateCommand extends CommandRunner {
     const configurationPath =
       options.config ?? "configuration/conformetry.config.ts";
 
-    const configurationService = new ConfigurationService();
     const conformetryConfiguration =
-      await configurationService.loadConformetryConfiguration(
+      await this.configurationService.loadConformetryConfiguration(
         configurationPath,
       );
     const plugins = this.buildValidatorPlugins();
@@ -174,8 +160,7 @@ export class ValidateCommand extends CommandRunner {
       workingDirectory: process.cwd(),
     });
 
-    const validationService = new ValidationService();
-    const validationResult = await validationService.runValidation({
+    const validationResult = await this.validationService.runValidation({
       configurationPath,
       plugins: filteredPlugins,
       projectPaths: routedTemplateRules.projectPaths,

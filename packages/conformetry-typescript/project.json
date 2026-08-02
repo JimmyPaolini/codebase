@@ -5,7 +5,7 @@
   "sourceRoot": "packages/conformetry-typescript",
   "tags": [
     "framework:nestjs",
-    "generator:nestjs-service-application",
+    "generator:nestjs-service-package",
     "language:typescript",
     "type:package"
   ],
@@ -21,7 +21,7 @@
             "output": "."
           }
         ],
-        "main": "packages/conformetry-typescript/src/main.ts",
+        "main": "packages/conformetry-typescript/src/index.ts",
         "outputPath": "dist/packages/conformetry-typescript",
         "tsConfig": "packages/conformetry-typescript/tsconfig.lib.json"
       },

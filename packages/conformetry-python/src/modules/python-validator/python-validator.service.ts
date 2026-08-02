@@ -26,6 +26,8 @@ import type {
  */
 @Injectable()
 export class PythonValidatorService {
+  public readonly pluginDescriptor = PYTHON_VALIDATOR_PLUGIN_DESCRIPTOR;
+
   // 🌎 Public Methods
 
   /** Internal helper. */

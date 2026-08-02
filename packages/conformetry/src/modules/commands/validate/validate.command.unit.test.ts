@@ -1,8 +1,10 @@
+import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
 import { JsonValidatorService } from "@jimmypaolini/conformetry-json";
 import { MarkdownValidatorService } from "@jimmypaolini/conformetry-markdown";
 import { PythonValidatorService } from "@jimmypaolini/conformetry-python";
 import { TextValidatorService } from "@jimmypaolini/conformetry-text";
 import { TypeScriptValidatorService } from "@jimmypaolini/conformetry-typescript";
+import { ValidationService } from "@jimmypaolini/conformetry-validation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 interface ValidationInputShape {
@@ -72,6 +74,8 @@ describe("validateCommand", () => {
   it("parses config, project, and rule options", async () => {
     const { ValidateCommand } = await import("./validate.command.js");
     const command = new ValidateCommand(
+      new ConfigurationService(),
+      new ValidationService(),
       new TypeScriptValidatorService(),
       new PythonValidatorService(),
       new MarkdownValidatorService(),
@@ -109,6 +113,8 @@ describe("validateCommand", () => {
 
     const { ValidateCommand } = await import("./validate.command.js");
     const command = new ValidateCommand(
+      new ConfigurationService(),
+      new ValidationService(),
       new TypeScriptValidatorService(),
       new PythonValidatorService(),
       new MarkdownValidatorService(),
@@ -154,6 +160,8 @@ describe("validateCommand", () => {
 
     const { ValidateCommand } = await import("./validate.command.js");
     const command = new ValidateCommand(
+      new ConfigurationService(),
+      new ValidationService(),
       new TypeScriptValidatorService(),
       new PythonValidatorService(),
       new MarkdownValidatorService(),
@@ -203,6 +211,8 @@ describe("validateCommand", () => {
 
     const { ValidateCommand } = await import("./validate.command.js");
     const command = new ValidateCommand(
+      new ConfigurationService(),
+      new ValidationService(),
       new TypeScriptValidatorService(),
       new PythonValidatorService(),
       new MarkdownValidatorService(),

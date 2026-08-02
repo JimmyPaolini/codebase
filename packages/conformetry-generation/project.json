@@ -5,7 +5,7 @@
   "sourceRoot": "packages/conformetry-generation",
   "tags": [
     "framework:nestjs",
-    "generator:nestjs-service-application",
+    "generator:nestjs-service-package",
     "language:typescript",
     "type:package"
   ],

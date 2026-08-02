@@ -18,7 +18,8 @@ export const TEMPLATE_RULE_NAMES_BY_PROJECT_TAG: Readonly<
     "nestjs-service-file",
     "nestjs-service-module",
   ],
-  "generator:nestjs-service-application": [
+  "generator:nestjs-service-package": [
+    "nestjs-service-package",
     "nestjs-service-file",
     "nestjs-service-module",
   ],

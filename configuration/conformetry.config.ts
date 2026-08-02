@@ -120,6 +120,17 @@ const conformetryConfiguration: ConformetryConfiguration = {
       templateDirectoryPath:
         "configuration/conformetry-templates/nestjs-service-module",
     },
+    "nestjs-service-package": {
+      aliases: ["nsp"],
+      description:
+        "Generate a NestJS service package template for internal workspace libraries",
+      name: "nestjs-service-package",
+      schemaPath:
+        "configuration/conformetry-templates/nestjs-service-package/schema.json",
+      targetPathStrategy: "name",
+      templateDirectoryPath:
+        "configuration/conformetry-templates/nestjs-service-package",
+    },
     "react-component": {
       aliases: ["c"],
       description: "Generate a React component with test file",

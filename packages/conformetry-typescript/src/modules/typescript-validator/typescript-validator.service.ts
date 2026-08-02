@@ -49,6 +49,8 @@ import type {
 /** Validates TypeScript files against conformetry templates. */
 @Injectable()
 export class TypeScriptValidatorService {
+  public readonly pluginDescriptor = TYPESCRIPT_VALIDATOR_PLUGIN_DESCRIPTOR;
+
   /** Internal helper method. */
   private buildDecoratorName(callee: Node): null | string {
     const parts: string[] = [];

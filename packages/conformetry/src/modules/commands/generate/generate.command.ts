@@ -2,21 +2,16 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
-import {
-  DefaultTemplateRenderer,
-  GenerationRuntimeService,
-  NodeFileSystemAdapter,
-  NoopFormatterAdapter,
-} from "@jimmypaolini/conformetry-generation";
+import { GenerationRuntimeService } from "@jimmypaolini/conformetry-generation";
 import { ConsoleLogger, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
-import { collectGeneratorInputsFromArguments } from "./generate.command.helpers.js";
+import { GenerateCommandArgumentsService } from "./generate-command-arguments.service.js";
 
 import type {
   GenerateCommandOptions,
   JsonSchemaDefinition,
-} from "./command.types.js";
+} from "./generate.types.js";
 
 /**
  * Executes a conformetry generator from a configuration file.
@@ -27,7 +22,11 @@ import type {
 })
 @Injectable()
 export class GenerateCommand extends CommandRunner {
-  constructor() {
+  constructor(
+    private readonly configurationService: ConfigurationService,
+    private readonly generationRuntimeService: GenerationRuntimeService,
+    private readonly generateCommandArgumentsService: GenerateCommandArgumentsService,
+  ) {
     super();
     this.logger.setContext(GenerateCommand.name);
   }
@@ -80,9 +79,10 @@ export class GenerateCommand extends CommandRunner {
       throw new Error("Both --config and --name are required");
     }
 
-    const configurationService = new ConfigurationService();
     const configuration =
-      await configurationService.loadConformetryConfiguration(options.config);
+      await this.configurationService.loadConformetryConfiguration(
+        options.config,
+      );
     const generatorDefinition = configuration.generators[options.name];
 
     if (generatorDefinition === undefined) {
@@ -100,13 +100,13 @@ export class GenerateCommand extends CommandRunner {
     const rawArguments = process.env["CONFORMETRY_GENERATOR_OPTIONS"]
       ? (JSON.parse(process.env["CONFORMETRY_GENERATOR_OPTIONS"]) as string[])
       : process.argv.slice(2);
-    const generatorInputs = collectGeneratorInputsFromArguments(
-      rawArguments,
-      schema,
-    );
+    const generatorInputs =
+      this.generateCommandArgumentsService.collectGeneratorInputsFromArguments(
+        rawArguments,
+        schema,
+      );
 
-    const runtime = new GenerationRuntimeService();
-    const result = await runtime.runGenerator({
+    const result = await this.generationRuntimeService.runGenerator({
       definition: {
         ...(generatorDefinition.aliases === undefined
           ? {}
@@ -119,14 +119,11 @@ export class GenerateCommand extends CommandRunner {
         targetPathStrategy: generatorDefinition.targetPathStrategy,
         templateDirectoryPath: generatorDefinition.templateDirectoryPath,
       },
-      filesystem: new NodeFileSystemAdapter(),
-      formatter: new NoopFormatterAdapter(),
       inputs: {
         name: generatorDefinition.name,
         ...generatorInputs,
       },
       targetDirectoryPath,
-      templateRenderer: new DefaultTemplateRenderer(),
     });
 
     this.logger.log(

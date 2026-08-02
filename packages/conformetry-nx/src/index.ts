@@ -11,8 +11,6 @@ import type {
 import type { CreateNodes, GeneratorCallback, Tree } from "@nx/devkit";
 export * from "./generators/init/generator";
 
-export { RuleRoutingModule } from "./modules/rule-routing/rule-routing.module";
-
 /**
  * Minimal conformetry configuration shape required by the Nx adapter.
  */
@@ -158,6 +156,20 @@ export async function generateNestjsServiceModule(
 ): Promise<GeneratorCallback> {
   return await runWorkspaceGenerator({
     generatorName: "nestjs-service-module",
+    options,
+    tree,
+  });
+}
+
+/**
+ * Executes the nestjs-service-package generator.
+ */
+export async function generateNestjsServicePackage(
+  tree: Tree,
+  options?: Record<string, unknown>,
+): Promise<GeneratorCallback> {
+  return await runWorkspaceGenerator({
+    generatorName: "nestjs-service-package",
     options,
     tree,
   });

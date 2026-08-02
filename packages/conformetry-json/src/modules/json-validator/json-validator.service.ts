@@ -26,6 +26,8 @@ import type {
  */
 @Injectable()
 export class JsonValidatorService {
+  public readonly pluginDescriptor = JSON_VALIDATOR_PLUGIN_DESCRIPTOR;
+
   // 🌎 Public Methods
 
   /** Internal helper. */

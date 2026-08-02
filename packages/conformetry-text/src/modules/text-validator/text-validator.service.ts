@@ -21,6 +21,8 @@ import type {
  */
 @Injectable()
 export class TextValidatorService {
+  public readonly pluginDescriptor = TEXT_VALIDATOR_PLUGIN_DESCRIPTOR;
+
   // 🌎 Public Methods
 
   /** Internal helper. */

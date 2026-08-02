@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("./modules/commands/generate.command.js", () => {
+vi.mock("./modules/commands/generate/generate.command.js", () => {
   function MockGenerateCommand(): void {}
 
   return {
@@ -8,7 +8,7 @@ vi.mock("./modules/commands/generate.command.js", () => {
   };
 });
 
-vi.mock("./modules/commands/validate.command.js", () => {
+vi.mock("./modules/commands/validate/validate.command.js", () => {
   function MockValidateCommand(): void {}
 
   return {
@@ -23,12 +23,15 @@ describe("module export surfaces", () => {
 
   it("exports nest modules used by command bootstrap", async () => {
     const { MainModule } = await import("./main.module.js");
-    const { CommandsModule } =
-      await import("./modules/commands/commands.module.js");
+    const { GenerateModule } =
+      await import("./modules/commands/generate/generate.module.js");
+    const { ValidateModule } =
+      await import("./modules/commands/validate/validate.module.js");
     const { LoggerModule } = await import("./modules/logger/logger.module.js");
 
     expect(MainModule).toBeDefined();
-    expect(CommandsModule).toBeDefined();
+    expect(GenerateModule).toBeDefined();
+    expect(ValidateModule).toBeDefined();
     expect(LoggerModule).toBeDefined();
   });
 });

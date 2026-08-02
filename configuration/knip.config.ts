@@ -203,7 +203,7 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
     "packages/conformetry-configuration": {
-      entry: ["src/main.ts", "src/repl.ts"],
+      entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       ignoreDependencies: [
         "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
@@ -214,7 +214,7 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
     "packages/conformetry-generation": {
-      entry: ["src/main.ts", "src/repl.ts"],
+      entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       ignoreDependencies: [
         "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
@@ -225,7 +225,7 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
     "packages/conformetry-validation": {
-      entry: ["src/main.ts", "src/repl.ts"],
+      entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       ignoreDependencies: [
         "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
@@ -236,7 +236,7 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
     "packages/conformetry-nx": {
-      entry: ["src/index.ts", "src/main.ts", "src/repl.ts"],
+      entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "src/**/templates/**", "testing/**"],
       ignoreDependencies: [
         "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
@@ -247,7 +247,7 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
     "packages/conformetry-typescript": {
-      entry: ["src/main.ts", "src/repl.ts"],
+      entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       ignoreDependencies: [
         "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
@@ -258,7 +258,7 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
     "packages/conformetry-python": {
-      entry: ["src/main.ts", "src/repl.ts"],
+      entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       ignoreDependencies: [
         "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
@@ -269,7 +269,7 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
     "packages/conformetry-markdown": {
-      entry: ["src/main.ts", "src/repl.ts"],
+      entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       ignoreDependencies: [
         "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
@@ -280,7 +280,7 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
     "packages/conformetry-json": {
-      entry: ["src/main.ts", "src/repl.ts"],
+      entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       ignoreDependencies: [
         "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
@@ -291,7 +291,7 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
     "packages/conformetry-text": {
-      entry: ["src/main.ts", "src/repl.ts"],
+      entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       ignoreDependencies: [
         "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope

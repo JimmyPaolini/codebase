@@ -1,5 +1,7 @@
 import path from "node:path";
 
+import { Injectable } from "@nestjs/common";
+
 import { DefaultTemplateRenderer } from "./default-template-renderer.js";
 import { NodeFileSystemAdapter } from "./node-file-system-adapter.js";
 import { NoopFormatterAdapter } from "./noop-formatter-adapter.js";
@@ -16,6 +18,7 @@ import type {
 /**
  * Runs conformetry generators without depending on Nx devkit.
  */
+@Injectable()
 export class GenerationRuntimeService {
   private readonly defaultFileSystem: FileSystemAdapter =
     new NodeFileSystemAdapter();

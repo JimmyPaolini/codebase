@@ -1,3 +1,5 @@
+// 🏷️ Types
+
 /**
  * Describes the CLI options accepted by the generate command.
  */
@@ -12,13 +14,4 @@ export interface GenerateCommandOptions {
  */
 export interface JsonSchemaDefinition {
   properties?: Record<string, unknown>;
-}
-
-/**
- * Describes the CLI options accepted by the validate command.
- */
-export interface ValidateCommandOptions {
-  config?: string;
-  projects?: string[];
-  rules?: string[];
 }

@@ -30,6 +30,8 @@ import type {
  */
 @Injectable()
 export class MarkdownValidatorService {
+  public readonly pluginDescriptor = MARKDOWN_VALIDATOR_PLUGIN_DESCRIPTOR;
+
   // 🌎 Public Methods
 
   /** Internal helper. */

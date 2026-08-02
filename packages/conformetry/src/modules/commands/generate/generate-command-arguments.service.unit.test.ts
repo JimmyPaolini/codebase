@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { collectGeneratorInputsFromArguments } from "./generate.command.helpers.js";
+import { GenerateCommandArgumentsService } from "./generate-command-arguments.service.js";
 
-describe(collectGeneratorInputsFromArguments, () => {
+describe(GenerateCommandArgumentsService, () => {
   it("collects schema-defined generator inputs from CLI arguments", () => {
-    const inputs = collectGeneratorInputsFromArguments(
+    const service = new GenerateCommandArgumentsService();
+
+    const inputs = service.collectGeneratorInputsFromArguments(
       [
         "generate",
         "--config",
@@ -26,7 +28,9 @@ describe(collectGeneratorInputsFromArguments, () => {
   });
 
   it("supports kebab-case schema fields and inline option values", () => {
-    const inputs = collectGeneratorInputsFromArguments(
+    const service = new GenerateCommandArgumentsService();
+
+    const inputs = service.collectGeneratorInputsFromArguments(
       [
         "--project-name=lexico-components",
         "--target-directory-path=packages/lexico-components",
@@ -45,7 +49,9 @@ describe(collectGeneratorInputsFromArguments, () => {
   });
 
   it("ignores reserved options, flags without values, and unknown fields", () => {
-    const inputs = collectGeneratorInputsFromArguments(
+    const service = new GenerateCommandArgumentsService();
+
+    const inputs = service.collectGeneratorInputsFromArguments(
       [
         "generate",
         "--config",
@@ -70,7 +76,9 @@ describe(collectGeneratorInputsFromArguments, () => {
   });
 
   it("ignores reserved options matched by option name even when schema property differs", () => {
-    const inputs = collectGeneratorInputsFromArguments(
+    const service = new GenerateCommandArgumentsService();
+
+    const inputs = service.collectGeneratorInputsFromArguments(
       [
         "--config",
         "configuration/conformetry.config.ts",
@@ -89,7 +97,9 @@ describe(collectGeneratorInputsFromArguments, () => {
   });
 
   it("ignores schema-matched options when no option value is provided", () => {
-    const inputs = collectGeneratorInputsFromArguments(
+    const service = new GenerateCommandArgumentsService();
+
+    const inputs = service.collectGeneratorInputsFromArguments(
       ["--project", "--name", "component"],
       {
         properties: {
@@ -103,7 +113,9 @@ describe(collectGeneratorInputsFromArguments, () => {
   });
 
   it("returns no inputs when schema properties are undefined", () => {
-    const inputs = collectGeneratorInputsFromArguments(
+    const service = new GenerateCommandArgumentsService();
+
+    const inputs = service.collectGeneratorInputsFromArguments(
       ["generate", "--project", "lexico-components"],
       {},
     );
