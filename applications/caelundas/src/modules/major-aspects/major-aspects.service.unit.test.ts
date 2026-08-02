@@ -10,9 +10,9 @@ import { Test } from "@nestjs/testing";
 import moment, { type Moment } from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { MajorAspectEventService } from "./major-aspect-event.service";
-import { MajorAspectProgressiveService } from "./major-aspect-progressive.service";
-import { MajorAspectsService } from "./major-aspects.service";
+import { MajorAspectEventService } from "./major-aspect-event.service.js";
+import { MajorAspectProgressiveService } from "./major-aspect-progressive.service.js";
+import { MajorAspectsService } from "./major-aspects.service.js";
 
 import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
 import type { CoordinateEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";

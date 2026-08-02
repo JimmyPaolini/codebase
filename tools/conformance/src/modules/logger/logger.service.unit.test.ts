@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LoggerService } from "./logger.service";
+import { LoggerService } from "./logger.service.js";
 
 describe(LoggerService, () => {
   let service: LoggerService;

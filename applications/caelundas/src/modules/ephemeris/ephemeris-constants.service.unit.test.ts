@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { EphemerisConstantsService } from "./ephemeris-constants.service";
+import { EphemerisConstantsService } from "./ephemeris-constants.service.js";
 
 describe(EphemerisConstantsService, () => {
   let service: EphemerisConstantsService;

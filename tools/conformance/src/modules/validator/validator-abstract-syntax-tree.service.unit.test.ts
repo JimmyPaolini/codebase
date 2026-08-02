@@ -2,7 +2,7 @@ import { Test } from "@nestjs/testing";
 import { createSourceFile, ScriptKind, ScriptTarget } from "typescript";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { ValidatorAbstractSyntaxTreeService } from "./validator-abstract-syntax-tree.service";
+import { ValidatorAbstractSyntaxTreeService } from "./validator-abstract-syntax-tree.service.js";
 
 describe(ValidatorAbstractSyntaxTreeService, () => {
   let service: ValidatorAbstractSyntaxTreeService;

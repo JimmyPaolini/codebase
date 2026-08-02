@@ -11,7 +11,7 @@ import {
   VerbInflection,
 } from "@codebase/lexico-entities";
 
-import { PartOfSpeechService } from "./part-of-speech.service";
+import { PartOfSpeechService } from "./part-of-speech.service.js";
 
 import type { Lexeme, PrincipalPart } from "@codebase/lexico-entities";
 import type { AnyNode } from "domhandler";

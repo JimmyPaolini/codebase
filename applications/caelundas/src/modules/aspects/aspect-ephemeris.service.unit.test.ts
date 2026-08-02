@@ -3,7 +3,7 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { AspectEphemerisService } from "./aspect-ephemeris.service";
+import { AspectEphemerisService } from "./aspect-ephemeris.service.js";
 
 describe(AspectEphemerisService, () => {
   let service: AspectEphemerisService;

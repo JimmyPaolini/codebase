@@ -20,7 +20,7 @@ vi.mock("./validator-comments.service", () => ({
   },
 }));
 
-import { ValidatorTypescriptService } from "./validator-typescript.service";
+import { ValidatorTypescriptService } from "./validator-typescript.service.js";
 
 describe(ValidatorTypescriptService, () => {
   interface ValidateDepthFirstSearchArgument {

@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { AspectPhaseEmojiService } from "./aspect-phase-emoji.service";
+import { AspectPhaseEmojiService } from "./aspect-phase-emoji.service.js";
 
 describe(AspectPhaseEmojiService, () => {
   let service: AspectPhaseEmojiService;

@@ -1,8 +1,8 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { PronunciationEcclesiasticalService } from "./pronunciation-ecclesiastical.service";
-import { PronunciationPhonemesService } from "./pronunciation-phonemes.service";
+import { PronunciationEcclesiasticalService } from "./pronunciation-ecclesiastical.service.js";
+import { PronunciationPhonemesService } from "./pronunciation-phonemes.service.js";
 
 import type { PronunciationPhoneme } from "./pronunciation.types";
 

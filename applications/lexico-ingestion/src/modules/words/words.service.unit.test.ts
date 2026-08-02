@@ -14,7 +14,7 @@ import {
 import { createRepositoryMock } from "../../../testing/mocks";
 import { LEXICO_INGESTION_BY_ID } from "../lexico-ingestion/lexico-ingestion.constants";
 
-import { WordsService } from "./words.service";
+import { WordsService } from "./words.service.js";
 
 import type { DeepMocked } from "@golevelup/ts-vitest";
 import type { InsertResult, Repository } from "typeorm";

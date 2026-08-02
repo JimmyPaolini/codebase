@@ -3,7 +3,7 @@ import { ProgressiveCompoundEventService } from "@caelundas/src/modules/aspects/
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { SextupleAspectsComposerService } from "./sextuple-aspects-composer.service";
+import { SextupleAspectsComposerService } from "./sextuple-aspects-composer.service.js";
 
 import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
 

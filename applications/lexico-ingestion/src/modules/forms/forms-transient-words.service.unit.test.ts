@@ -3,7 +3,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { Form } from "@codebase/lexico-entities";
 
-import { FormsTransientWordsService } from "./forms-transient-words.service";
+import { FormsTransientWordsService } from "./forms-transient-words.service.js";
 
 describe(FormsTransientWordsService, () => {
   let service: FormsTransientWordsService;

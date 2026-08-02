@@ -7,12 +7,12 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { PhaseCalculationService } from "./phase-calculation.service";
+import { PhaseCalculationService } from "./phase-calculation.service.js";
 import {
   VENUS_EVENING_VISIBILITY_DESCRIPTION,
   VENUS_MORNING_VISIBILITY_DESCRIPTION,
 } from "./phases.constants";
-import { VenusianPhaseService } from "./venusian-phase.service";
+import { VenusianPhaseService } from "./venusian-phase.service.js";
 
 import type { PhaseParameters } from "./phases.types";
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";

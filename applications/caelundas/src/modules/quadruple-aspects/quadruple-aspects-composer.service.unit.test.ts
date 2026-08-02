@@ -5,8 +5,8 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { QuadrupleAspectsBaseService } from "./quadruple-aspects-base.service";
-import { QuadrupleAspectsComposerService } from "./quadruple-aspects-composer.service";
+import { QuadrupleAspectsBaseService } from "./quadruple-aspects-base.service.js";
+import { QuadrupleAspectsComposerService } from "./quadruple-aspects-composer.service.js";
 
 import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
 import type { Aspect } from "@caelundas/src/modules/caelundas/caelundas.types";

@@ -6,9 +6,9 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { TripleAspectsComposerService } from "./triple-aspects-composer.service";
-import { TripleAspectsDetectorService } from "./triple-aspects-detector.service";
-import { TripleAspectsService } from "./triple-aspects.service";
+import { TripleAspectsComposerService } from "./triple-aspects-composer.service.js";
+import { TripleAspectsDetectorService } from "./triple-aspects-detector.service.js";
+import { TripleAspectsService } from "./triple-aspects.service.js";
 
 import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";

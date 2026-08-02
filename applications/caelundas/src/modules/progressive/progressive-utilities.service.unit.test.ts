@@ -5,7 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { ProgressiveUtilitiesService } from "./progressive-utilities.service";
+import { ProgressiveUtilitiesService } from "./progressive-utilities.service.js";
 
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 

@@ -6,9 +6,9 @@ import _ from "lodash";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { QuadrupleAspectsBaseService } from "./quadruple-aspects-base.service";
-import { QuadrupleAspectsComposerService } from "./quadruple-aspects-composer.service";
-import { QuadrupleAspectsService } from "./quadruple-aspects.service";
+import { QuadrupleAspectsBaseService } from "./quadruple-aspects-base.service.js";
+import { QuadrupleAspectsComposerService } from "./quadruple-aspects-composer.service.js";
+import { QuadrupleAspectsService } from "./quadruple-aspects.service.js";
 
 import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";

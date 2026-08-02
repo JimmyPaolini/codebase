@@ -2,7 +2,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { {{namePascalCase}}DataLoader } from "./{{nameKebabCase}}.dataloader";
-import { {{namePascalCase}}Service } from "./{{nameKebabCase}}.service";
+import { {{namePascalCase}}Service } from "./{{nameKebabCase}}.service.js";
 
 describe({{namePascalCase}}DataLoader, () => {
   let dataloader: {{namePascalCase}}DataLoader;

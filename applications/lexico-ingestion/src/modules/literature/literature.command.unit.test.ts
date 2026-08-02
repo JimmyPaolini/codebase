@@ -7,7 +7,7 @@ import { setPromptsMockResponse } from "../../../testing/mocks";
 import { LoggerService } from "../logger/logger.service";
 
 import { LiteratureCommand } from "./literature.command";
-import { LiteratureService } from "./literature.service";
+import { LiteratureService } from "./literature.service.js";
 
 import type { LibraryEntry } from "./literature.types";
 

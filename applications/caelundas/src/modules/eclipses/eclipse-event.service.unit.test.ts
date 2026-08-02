@@ -6,7 +6,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { EclipseEventService } from "./eclipse-event.service";
+import { EclipseEventService } from "./eclipse-event.service.js";
 
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 

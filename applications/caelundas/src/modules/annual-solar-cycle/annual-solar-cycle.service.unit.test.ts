@@ -7,8 +7,8 @@ import { Test } from "@nestjs/testing";
 import moment, { type Moment } from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { AnnualSolarCycleEventsService } from "./annual-solar-cycle-events.service";
-import { AnnualSolarCycleService } from "./annual-solar-cycle.service";
+import { AnnualSolarCycleEventsService } from "./annual-solar-cycle-events.service.js";
+import { AnnualSolarCycleService } from "./annual-solar-cycle.service.js";
 
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 import type {

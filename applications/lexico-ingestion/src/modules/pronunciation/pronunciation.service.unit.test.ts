@@ -8,11 +8,11 @@ import { Lexeme, Pronunciation } from "@codebase/lexico-entities";
 import { loadCheerioWithRoot } from "../../../testing/mocks";
 import { LoggerService } from "../logger/logger.service";
 
-import { PronunciationClassicalService } from "./pronunciation-classical.service";
-import { PronunciationClassifierService } from "./pronunciation-classifier.service";
-import { PronunciationEcclesiasticalService } from "./pronunciation-ecclesiastical.service";
-import { PronunciationPhonemesService } from "./pronunciation-phonemes.service";
-import { PronunciationService } from "./pronunciation.service";
+import { PronunciationClassicalService } from "./pronunciation-classical.service.js";
+import { PronunciationClassifierService } from "./pronunciation-classifier.service.js";
+import { PronunciationEcclesiasticalService } from "./pronunciation-ecclesiastical.service.js";
+import { PronunciationPhonemesService } from "./pronunciation-phonemes.service.js";
+import { PronunciationService } from "./pronunciation.service.js";
 
 import type {
   PronunciationClassicalCharacterContext,

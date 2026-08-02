@@ -4,9 +4,9 @@ import moment from "moment-timezone";
 import { pheno_ut } from "sweph";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { EphemerisConstantsService } from "./ephemeris-constants.service";
-import { EphemerisPhenomenaService } from "./ephemeris-phenomena.service";
-import { EphemerisTimeService } from "./ephemeris-time.service";
+import { EphemerisConstantsService } from "./ephemeris-constants.service.js";
+import { EphemerisPhenomenaService } from "./ephemeris-phenomena.service.js";
+import { EphemerisTimeService } from "./ephemeris-time.service.js";
 
 import type * as Sweph from "sweph";
 

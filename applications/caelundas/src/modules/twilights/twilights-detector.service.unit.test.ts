@@ -5,8 +5,8 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { TwilightsBuilderService } from "./twilights-builder.service";
-import { TwilightsDetectorService } from "./twilights-detector.service";
+import { TwilightsBuilderService } from "./twilights-builder.service.js";
+import { TwilightsDetectorService } from "./twilights-detector.service.js";
 
 import type { AzimuthElevationEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
 

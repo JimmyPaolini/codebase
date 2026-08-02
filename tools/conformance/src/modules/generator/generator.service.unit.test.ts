@@ -57,7 +57,7 @@ vi.mock("nx/src/generators/tree", () => ({
   flushChanges: vi.fn<(root: string, changes: unknown[]) => void>(),
 }));
 
-import { GeneratorService } from "./generator.service";
+import { GeneratorService } from "./generator.service.js";
 
 interface FakeDirectoryEntry {
   isDirectory: () => boolean;

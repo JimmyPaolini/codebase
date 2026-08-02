@@ -3,9 +3,9 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { EphemerisCoordinateService } from "./ephemeris-coordinate.service";
-import { EphemerisHorizonService } from "./ephemeris-horizon.service";
-import { EphemerisTimeService } from "./ephemeris-time.service";
+import { EphemerisCoordinateService } from "./ephemeris-coordinate.service.js";
+import { EphemerisHorizonService } from "./ephemeris-horizon.service.js";
+import { EphemerisTimeService } from "./ephemeris-time.service.js";
 
 import type { azalt } from "sweph";
 import type * as Sweph from "sweph";

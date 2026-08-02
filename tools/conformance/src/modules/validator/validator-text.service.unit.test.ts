@@ -1,8 +1,8 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { ValidatorTemplateService } from "./validator-template.service";
-import { ValidatorTextService } from "./validator-text.service";
+import { ValidatorTemplateService } from "./validator-template.service.js";
+import { ValidatorTextService } from "./validator-text.service.js";
 
 describe(ValidatorTextService, () => {
   let service: ValidatorTextService;

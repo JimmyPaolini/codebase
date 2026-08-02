@@ -22,7 +22,7 @@ import { PronunciationService } from "../pronunciation/pronunciation.service";
 import { TranslationsService } from "../translations/translations.service";
 import { WordsService } from "../words/words.service";
 
-import { LexemesService } from "./lexemes.service";
+import { LexemesService } from "./lexemes.service.js";
 
 import type { WiktionaryPage } from "../lexico-ingestion/lexico-ingestion.types";
 import type { Repository } from "typeorm";

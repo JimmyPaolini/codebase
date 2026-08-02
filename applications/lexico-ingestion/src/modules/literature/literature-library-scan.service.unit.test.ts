@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LiteratureLibraryScanService } from "./literature-library-scan.service";
+import { LiteratureLibraryScanService } from "./literature-library-scan.service.js";
 
 import type { Dirent } from "node:fs";
 

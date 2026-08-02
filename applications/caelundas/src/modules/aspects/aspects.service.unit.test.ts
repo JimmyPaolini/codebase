@@ -30,19 +30,19 @@ import { SpecialtyAspectsService } from "../specialty-aspects/specialty-aspects.
 import { StelliumService } from "../stellium/stellium.service";
 import { TripleAspectsService } from "../triple-aspects/triple-aspects.service";
 
-import { AspectEphemerisService } from "./aspect-ephemeris.service";
-import { AspectEventFormattingService } from "./aspect-event-formatting.service";
-import { AspectGraphService } from "./aspect-graph.service";
-import { AspectPhaseEmojiService } from "./aspect-phase-emoji.service";
-import { AspectsUtilitiesService } from "./aspects-utilities.service";
+import { AspectEphemerisService } from "./aspect-ephemeris.service.js";
+import { AspectEventFormattingService } from "./aspect-event-formatting.service.js";
+import { AspectGraphService } from "./aspect-graph.service.js";
+import { AspectPhaseEmojiService } from "./aspect-phase-emoji.service.js";
+import { AspectsUtilitiesService } from "./aspects-utilities.service.js";
 import {
   COMPOSITE_ASPECT_DETECTORS_TOKEN,
   PROGRESSIVE_ASPECT_DETECTORS_TOKEN,
   SIMPLE_ASPECT_DETECTORS_TOKEN,
 } from "./aspects.constants";
-import { AspectsService } from "./aspects.service";
-import { CompoundPhaseService } from "./compound-phase.service";
-import { ProgressiveCompoundEventService } from "./progressive-compound-event.service";
+import { AspectsService } from "./aspects.service.js";
+import { CompoundPhaseService } from "./compound-phase.service.js";
+import { ProgressiveCompoundEventService } from "./progressive-compound-event.service.js";
 
 import type {
   CompositeAspectDetector,

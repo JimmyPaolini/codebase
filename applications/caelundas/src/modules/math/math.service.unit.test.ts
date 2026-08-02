@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { MathService } from "./math.service";
+import { MathService } from "./math.service.js";
 
 describe(MathService, () => {
   let service: MathService;

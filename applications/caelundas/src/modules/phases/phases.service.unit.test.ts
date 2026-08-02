@@ -4,10 +4,10 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { MartianPhaseService } from "./martian-phase.service";
-import { MercurianPhaseService } from "./mercurian-phase.service";
-import { PhasesService } from "./phases.service";
-import { VenusianPhaseService } from "./venusian-phase.service";
+import { MartianPhaseService } from "./martian-phase.service.js";
+import { MercurianPhaseService } from "./mercurian-phase.service.js";
+import { PhasesService } from "./phases.service.js";
+import { VenusianPhaseService } from "./venusian-phase.service.js";
 
 import type { DetectPlanetaryEventsArguments } from "./phases.types";
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";

@@ -5,7 +5,7 @@ import { Test } from "@nestjs/testing";
 import { workspaceRoot } from "@nx/devkit";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ValidatorWorkspaceService } from "./validator-workspace.service";
+import { ValidatorWorkspaceService } from "./validator-workspace.service.js";
 
 type ReaddirDirent = ReturnType<typeof fs.readdirSync>[number];
 type ReaddirResult = ReturnType<typeof fs.readdirSync>;

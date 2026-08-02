@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { repl } from "@nestjs/core";
 
-import { MainModule } from "./main.module";
+import { MainModule } from "./main.module.js";
 
 /**
  * Starts the NestJS REPL for the metitur application.

@@ -4,9 +4,9 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { EclipseCalculationService } from "./eclipse-calculation.service";
-import { EclipseEventService } from "./eclipse-event.service";
-import { EclipsesService } from "./eclipses.service";
+import { EclipseCalculationService } from "./eclipse-calculation.service.js";
+import { EclipseEventService } from "./eclipse-event.service.js";
+import { EclipsesService } from "./eclipses.service.js";
 
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 

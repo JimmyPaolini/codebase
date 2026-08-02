@@ -8,7 +8,7 @@ import _ from "lodash";
 import moment, { type Moment } from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { SextupleAspectsService } from "./sextuple-aspects.service";
+import { SextupleAspectsService } from "./sextuple-aspects.service.js";
 
 import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";

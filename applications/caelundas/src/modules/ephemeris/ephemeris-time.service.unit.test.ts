@@ -3,7 +3,7 @@ import moment from "moment-timezone";
 import { utc_to_jd } from "sweph";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { EphemerisTimeService } from "./ephemeris-time.service";
+import { EphemerisTimeService } from "./ephemeris-time.service.js";
 
 import type * as Sweph from "sweph";
 

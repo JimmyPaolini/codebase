@@ -5,7 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { TwilightsBuilderService } from "./twilights-builder.service";
+import { TwilightsBuilderService } from "./twilights-builder.service.js";
 
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 

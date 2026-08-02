@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { DatabaseService } from "./database.service";
+import { DatabaseService } from "./database.service.js";
 
 describe(DatabaseService, () => {
   let service: DatabaseService;

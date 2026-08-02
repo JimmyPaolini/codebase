@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { PronunciationPhonemesService } from "./pronunciation-phonemes.service";
+import { PronunciationPhonemesService } from "./pronunciation-phonemes.service.js";
 
 describe(PronunciationPhonemesService, () => {
   let service: PronunciationPhonemesService;

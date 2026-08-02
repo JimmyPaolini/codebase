@@ -7,7 +7,7 @@ import { LoggerService } from "../logger/logger.service";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import { ConventionalConfigCommand } from "./conventional-config.command";
-import { ConventionalConfigService } from "./conventional-config.service";
+import { ConventionalConfigService } from "./conventional-config.service.js";
 
 describe(ConventionalConfigCommand, () => {
   let command: ConventionalConfigCommand;

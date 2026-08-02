@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { ProgressiveCompoundEventService } from "./progressive-compound-event.service";
+import { ProgressiveCompoundEventService } from "./progressive-compound-event.service.js";
 
 describe(ProgressiveCompoundEventService, () => {
   let service: ProgressiveCompoundEventService;

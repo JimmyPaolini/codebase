@@ -4,9 +4,9 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { Pronunciation } from "@codebase/lexico-entities";
 
-import { PronunciationClassicalService } from "./pronunciation-classical.service";
-import { PronunciationClassifierService } from "./pronunciation-classifier.service";
-import { PronunciationEcclesiasticalService } from "./pronunciation-ecclesiastical.service";
+import { PronunciationClassicalService } from "./pronunciation-classical.service.js";
+import { PronunciationClassifierService } from "./pronunciation-classifier.service.js";
+import { PronunciationEcclesiasticalService } from "./pronunciation-ecclesiastical.service.js";
 
 import type {
   PronunciationClassicalCharacterContext,

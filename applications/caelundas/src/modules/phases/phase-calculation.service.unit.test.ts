@@ -7,7 +7,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { PhaseCalculationService } from "./phase-calculation.service";
+import { PhaseCalculationService } from "./phase-calculation.service.js";
 
 import type { DeepMocked } from "@golevelup/ts-vitest";
 

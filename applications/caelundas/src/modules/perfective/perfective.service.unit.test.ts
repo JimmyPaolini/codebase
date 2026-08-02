@@ -13,7 +13,7 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { PerfectiveService } from "./perfective.service";
+import { PerfectiveService } from "./perfective.service.js";
 
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 import type { Input } from "@caelundas/src/modules/input/input.types";

@@ -37,7 +37,7 @@ import {
 
 import { partsOfSpeech } from "./dictionary/PartOfSpeech.entity";
 import { pronunciationVariants } from "./dictionary/Pronunciation.entity";
-import { EntitiesService } from "./entities.service";
+import { EntitiesService } from "./entities.service.js";
 
 class MetadataDataSource extends DataSource {
   public async buildMetadataForTests(): Promise<void> {

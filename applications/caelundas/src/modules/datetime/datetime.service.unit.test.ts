@@ -2,7 +2,7 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { DatetimeService } from "./datetime.service";
+import { DatetimeService } from "./datetime.service.js";
 
 describe(DatetimeService, () => {
   let service: DatetimeService;

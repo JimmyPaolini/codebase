@@ -7,8 +7,8 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { MercurianPhaseService } from "./mercurian-phase.service";
-import { PhaseCalculationService } from "./phase-calculation.service";
+import { MercurianPhaseService } from "./mercurian-phase.service.js";
+import { PhaseCalculationService } from "./phase-calculation.service.js";
 import {
   MERCURY_EVENING_VISIBILITY_DESCRIPTION,
   MERCURY_MORNING_VISIBILITY_DESCRIPTION,

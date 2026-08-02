@@ -7,7 +7,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
-import { SpecialtyAspectsEventService } from "./specialty-aspects-event.service";
+import { SpecialtyAspectsEventService } from "./specialty-aspects-event.service.js";
 
 describe(SpecialtyAspectsEventService, () => {
   let service: SpecialtyAspectsEventService;

@@ -8,7 +8,7 @@ import { LoggerModule } from "../logger/logger.module";
 import { PullRequestTemplateModule } from "../pull-request-template/pull-request-template.module";
 
 import { SynchronizationModule } from "./synchronization.module";
-import { SynchronizationService } from "./synchronization.service";
+import { SynchronizationService } from "./synchronization.service.js";
 
 describe(SynchronizationModule, () => {
   it("registers expected imports and providers", () => {
