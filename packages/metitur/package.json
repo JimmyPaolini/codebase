@@ -7,6 +7,7 @@
     "nest-commander": "catalog:",
     "pino": "catalog:",
     "reflect-metadata": "catalog:",
+    "typescript": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

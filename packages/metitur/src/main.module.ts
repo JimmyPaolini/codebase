@@ -5,6 +5,7 @@ import { DiscoveryModule } from "@nestjs/core";
 import { environmentSchema } from "./constants";
 import { FileDiscoveryModule } from "./modules/file-discovery/file-discovery.module";
 import { LoggerModule } from "./modules/logger/logger.module";
+import { TypescriptAnalysisModule } from "./modules/typescript-analysis/typescript-analysis.module";
 
 /**
  * Root NestJS application module.
@@ -20,6 +21,7 @@ import { LoggerModule } from "./modules/logger/logger.module";
     DiscoveryModule,
     FileDiscoveryModule,
     LoggerModule,
+    TypescriptAnalysisModule,
   ],
 })
 export class MainModule {}
