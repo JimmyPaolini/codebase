@@ -1,15 +1,31 @@
 import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
-import { createJsonValidatorPlugin } from "@jimmypaolini/conformetry-json";
-import { createMarkdownValidatorPlugin } from "@jimmypaolini/conformetry-markdown";
+import {
+  JSON_VALIDATOR_PLUGIN_DESCRIPTOR,
+  JsonValidatorService,
+} from "@jimmypaolini/conformetry-json";
+import {
+  MARKDOWN_VALIDATOR_PLUGIN_DESCRIPTOR,
+  MarkdownValidatorService,
+} from "@jimmypaolini/conformetry-markdown";
 import { resolveTemplateRuleRouting } from "@jimmypaolini/conformetry-nx";
-import { createPythonValidatorPlugin } from "@jimmypaolini/conformetry-python";
-import { createTextValidatorPlugin } from "@jimmypaolini/conformetry-text";
-import { createTypeScriptValidatorPlugin } from "@jimmypaolini/conformetry-typescript";
+import {
+  PYTHON_VALIDATOR_PLUGIN_DESCRIPTOR,
+  PythonValidatorService,
+} from "@jimmypaolini/conformetry-python";
+import {
+  TEXT_VALIDATOR_PLUGIN_DESCRIPTOR,
+  TextValidatorService,
+} from "@jimmypaolini/conformetry-text";
+import {
+  TYPESCRIPT_VALIDATOR_PLUGIN_DESCRIPTOR,
+  TypeScriptValidatorService,
+} from "@jimmypaolini/conformetry-typescript";
 import { ValidationService } from "@jimmypaolini/conformetry-validation";
 import { ConsoleLogger, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import type { ValidateCommandOptions } from "./command.types.js";
+import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-validation";
 
 /**
  * Executes conformetry validation plugins against the selected project paths.
@@ -20,12 +36,54 @@ import type { ValidateCommandOptions } from "./command.types.js";
 })
 @Injectable()
 export class ValidateCommand extends CommandRunner {
-  constructor() {
+  constructor(
+    private readonly typeScriptValidatorService: TypeScriptValidatorService,
+    private readonly pythonValidatorService: PythonValidatorService,
+    private readonly markdownValidatorService: MarkdownValidatorService,
+    private readonly jsonValidatorService: JsonValidatorService,
+    private readonly textValidatorService: TextValidatorService,
+  ) {
     super();
     this.logger.setContext(ValidateCommand.name);
   }
 
   private readonly logger = new ConsoleLogger();
+
+  /** Builds plugin contracts from injected validator services. */
+  private buildValidatorPlugins(): ConformetryValidatorPlugin[] {
+    return [
+      {
+        descriptor: TYPESCRIPT_VALIDATOR_PLUGIN_DESCRIPTOR,
+        validate: async (validationArguments) => {
+          return this.typeScriptValidatorService.validate(validationArguments);
+        },
+      },
+      {
+        descriptor: PYTHON_VALIDATOR_PLUGIN_DESCRIPTOR,
+        validate: async (validationArguments) => {
+          return this.pythonValidatorService.validate(validationArguments);
+        },
+      },
+      {
+        descriptor: MARKDOWN_VALIDATOR_PLUGIN_DESCRIPTOR,
+        validate: async (validationArguments) => {
+          return this.markdownValidatorService.validate(validationArguments);
+        },
+      },
+      {
+        descriptor: JSON_VALIDATOR_PLUGIN_DESCRIPTOR,
+        validate: async (validationArguments) => {
+          return this.jsonValidatorService.validate(validationArguments);
+        },
+      },
+      {
+        descriptor: TEXT_VALIDATOR_PLUGIN_DESCRIPTOR,
+        validate: async (validationArguments) => {
+          return this.textValidatorService.validate(validationArguments);
+        },
+      },
+    ];
+  }
 
   /**
    * Parses the configuration path option for the validate command.
@@ -89,13 +147,7 @@ export class ValidateCommand extends CommandRunner {
       await configurationService.loadConformetryConfiguration(
         configurationPath,
       );
-    const plugins = [
-      createTypeScriptValidatorPlugin(),
-      createPythonValidatorPlugin(),
-      createMarkdownValidatorPlugin(),
-      createJsonValidatorPlugin(),
-      createTextValidatorPlugin(),
-    ];
+    const plugins = this.buildValidatorPlugins();
     const pluginNames = new Set(
       plugins.map((plugin) => plugin.descriptor.name),
     );

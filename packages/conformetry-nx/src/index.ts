@@ -2,11 +2,16 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 import { createConformetryGeneratorFactory } from "./modules/nx-adapter/nx-generator-factory";
+import { RuleRoutingService } from "./modules/rule-routing/rule-routing.service";
 
+import type {
+  ResolveTemplateRuleRoutingArguments,
+  ResolveTemplateRuleRoutingResult,
+} from "./modules/rule-routing/rule-routing.types";
 import type { CreateNodes, GeneratorCallback, Tree } from "@nx/devkit";
 export * from "./generators/init/generator";
 
-export { resolveTemplateRuleRouting } from "./modules/rule-routing/rule-routing.service";
+export { RuleRoutingModule } from "./modules/rule-routing/rule-routing.module";
 
 /**
  * Minimal conformetry configuration shape required by the Nx adapter.
@@ -41,6 +46,8 @@ const conformetryPluginDefinition = {
   createNodes,
   name: "@jimmypaolini/conformetry-nx",
 };
+
+const ruleRoutingService = new RuleRoutingService();
 
 export default conformetryPluginDefinition;
 
@@ -168,6 +175,15 @@ export async function generateReactComponent(
     options,
     tree,
   });
+}
+
+/**
+ * Resolves template rule routing from selected project scopes.
+ */
+export function resolveTemplateRuleRouting(
+  args: ResolveTemplateRuleRoutingArguments,
+): ResolveTemplateRuleRoutingResult {
+  return ruleRoutingService.resolveTemplateRuleRouting(args);
 }
 
 /**

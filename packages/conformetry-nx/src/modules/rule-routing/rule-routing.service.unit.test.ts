@@ -1,16 +1,17 @@
-import { mkdtemp, mkdir, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { resolveTemplateRuleRouting } from "./rule-routing.service.js";
+import { RuleRoutingService } from "./rule-routing.service.js";
 
-describe(resolveTemplateRuleRouting, () => {
+describe(RuleRoutingService, () => {
   it("routes template rules from project tags and resolves project names to paths", async () => {
     const workspaceDirectory = await createWorkspaceFixture();
+    const ruleRoutingService = new RuleRoutingService();
 
-    const result = resolveTemplateRuleRouting({
+    const result = ruleRoutingService.resolveTemplateRuleRouting({
       configuredTemplateRuleNames: [
         "jupyter-notebook-application",
         "nestjs-command-application",
@@ -37,8 +38,9 @@ describe(resolveTemplateRuleRouting, () => {
 
   it("filters requested template rules to rules applicable to selected projects", async () => {
     const workspaceDirectory = await createWorkspaceFixture();
+    const ruleRoutingService = new RuleRoutingService();
 
-    const result = resolveTemplateRuleRouting({
+    const result = ruleRoutingService.resolveTemplateRuleRouting({
       configuredTemplateRuleNames: [
         "jupyter-notebook-application",
         "nestjs-command-application",
@@ -60,8 +62,9 @@ describe(resolveTemplateRuleRouting, () => {
 
   it("passes unresolved selectors through as project paths", async () => {
     const workspaceDirectory = await createWorkspaceFixture();
+    const ruleRoutingService = new RuleRoutingService();
 
-    const result = resolveTemplateRuleRouting({
+    const result = ruleRoutingService.resolveTemplateRuleRouting({
       configuredTemplateRuleNames: ["react-component"],
       projectSelectors: ["packages/custom-package"],
       workingDirectory: workspaceDirectory,

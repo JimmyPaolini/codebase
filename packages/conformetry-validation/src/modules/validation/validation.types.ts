@@ -7,6 +7,26 @@ export interface ConformetryValidatorPlugin {
 }
 
 /**
+ * Prepared template-instance document pair for language validation.
+ */
+export interface PreparedValidationDocument {
+  filename: string;
+  instance: string;
+  instanceFilePath: string;
+  renderedTemplate: string;
+  templateFilePath: string;
+}
+
+/**
+ * Prepared payload containing all documents and discovery-time violations.
+ */
+export interface PreparedValidationPayload {
+  checkedPaths: string[];
+  documents: PreparedValidationDocument[];
+  violations: string[];
+}
+
+/**
  * Arguments accepted by the validation orchestration runner.
  */
 export interface RunValidationArguments {
@@ -33,26 +53,6 @@ export interface ValidationPluginArguments {
   filePaths: string[];
   templateRuleNames?: string[];
   workingDirectory: string;
-}
-
-/**
- * Prepared template-instance document pair for language validation.
- */
-export interface PreparedValidationDocument {
-  filename: string;
-  instance: string;
-  instanceFilePath: string;
-  renderedTemplate: string;
-  templateFilePath: string;
-}
-
-/**
- * Prepared payload containing all documents and discovery-time violations.
- */
-export interface PreparedValidationPayload {
-  checkedPaths: string[];
-  documents: PreparedValidationDocument[];
-  violations: string[];
 }
 
 /**

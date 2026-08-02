@@ -118,6 +118,17 @@ class InMemoryTree implements Tree {
   }
 }
 
+class GhostChildTree extends InMemoryTree {
+  public override children(pathName: string): string[] {
+    const baseChildren = super.children(pathName);
+    if (pathName === "templates") {
+      return [...baseChildren, "ghost-directory"];
+    }
+
+    return baseChildren;
+  }
+}
+
 class StringReadTree extends InMemoryTree {
   public override read(pathName: string): Buffer | null;
   public override read(
@@ -137,17 +148,6 @@ class StringReadTree extends InMemoryTree {
     }
 
     return super.read(pathName, encoding);
-  }
-}
-
-class GhostChildTree extends InMemoryTree {
-  public override children(pathName: string): string[] {
-    const baseChildren = super.children(pathName);
-    if (pathName === "templates") {
-      return [...baseChildren, "ghost-directory"];
-    }
-
-    return baseChildren;
   }
 }
 

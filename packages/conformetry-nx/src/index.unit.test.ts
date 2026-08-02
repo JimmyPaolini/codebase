@@ -31,6 +31,16 @@ import conformetryPluginDefinition, {
 
 import type { Tree } from "@nx/devkit";
 
+async function createConfigurationModule(
+  moduleContent: string,
+): Promise<string> {
+  const directory = await mkdtemp(path.join(tmpdir(), "conformetry-nx-index-"));
+  const filePath = path.join(directory, "conformetry.config.mjs");
+  await writeFile(filePath, moduleContent, "utf8");
+
+  return filePath;
+}
+
 function createStubTree(): Tree {
   const read: Tree["read"] = (_pathName: string, encoding?: BufferEncoding) => {
     return encoding === undefined ? null : null;
@@ -56,16 +66,6 @@ function createStubTree(): Tree {
     root: ".",
     write: (_pathName: string, _content: Buffer | string) => {},
   };
-}
-
-async function createConfigurationModule(
-  moduleContent: string,
-): Promise<string> {
-  const directory = await mkdtemp(path.join(tmpdir(), "conformetry-nx-index-"));
-  const filePath = path.join(directory, "conformetry.config.mjs");
-  await writeFile(filePath, moduleContent, "utf8");
-
-  return filePath;
 }
 
 describe("conformetry-nx index", () => {

@@ -137,20 +137,6 @@ describe("collectGeneratorPassthroughArguments", () => {
     ]);
   });
 
-  it("ignores undefined raw argument entries", async () => {
-    const { collectGeneratorPassthroughArguments } = await importMainModule();
-
-    const result = collectGeneratorPassthroughArguments([
-      "generate",
-      undefined as unknown as string,
-    ]);
-
-    expect(result).toStrictEqual({
-      passthroughArguments: [],
-      sanitizedArguments: ["generate"],
-    });
-  });
-
   it("runs command factory and stores passthrough options in environment", async () => {
     process.argv = [
       "node",

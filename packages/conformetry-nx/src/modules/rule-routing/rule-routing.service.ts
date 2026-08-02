@@ -1,6 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import { Injectable } from "@nestjs/common";
+
 import {
   PROJECT_METADATA_FILENAME,
   SKIPPED_DIRECTORY_NAMES,
@@ -16,239 +18,298 @@ import type {
 /**
  * Resolves routed template rules and project paths from Nx project metadata.
  */
-export function resolveTemplateRuleRouting(
-  args: ResolveTemplateRuleRoutingArguments,
-): ResolveTemplateRuleRoutingResult {
-  const workspaceProjects = discoverWorkspaceProjects(args.workingDirectory);
-  const matchedProjects = resolveMatchedProjects({
-    projectSelectors: args.projectSelectors,
-    workspaceProjects,
-  });
-  const projectPaths = resolveProjectPaths({
-    matchedProjects,
-    projectSelectors: args.projectSelectors,
-    workingDirectory: args.workingDirectory,
-  });
-  const applicableTemplateRuleNames = resolveApplicableTemplateRuleNames({
-    configuredTemplateRuleNames: args.configuredTemplateRuleNames,
-    matchedProjects,
-  });
-  const templateRuleNames =
-    args.requestedTemplateRuleNames === undefined
-      ? applicableTemplateRuleNames
-      : args.requestedTemplateRuleNames.filter((requestedTemplateRuleName) => {
-          return applicableTemplateRuleNames.includes(
-            requestedTemplateRuleName,
-          );
-        });
+@Injectable()
+export class RuleRoutingService {
+  /**
+   * Handles a single directory entry while scanning workspace metadata.
+   */
+  private collectProjectMetadataFromDirectoryEntry(args: {
+    currentDirectory: string;
+    directoryEntry: fs.Dirent;
+    discoveredProjects: WorkspaceProjectMetadata[];
+    pendingDirectories: string[];
+  }): void {
+    const absoluteEntryPath = path.join(
+      args.currentDirectory,
+      args.directoryEntry.name,
+    );
 
-  return {
-    projectPaths,
-    templateRuleNames,
-  };
-}
-
-/**
- * Discovers Nx project metadata by scanning workspace project.json files.
- */
-function discoverWorkspaceProjects(
-  workingDirectory: string,
-): WorkspaceProjectMetadata[] {
-  const discoveredProjects: WorkspaceProjectMetadata[] = [];
-  const pendingDirectories = [workingDirectory];
-
-  while (pendingDirectories.length > 0) {
-    const currentDirectory = pendingDirectories.pop();
-    if (currentDirectory === undefined) {
-      continue;
+    if (args.directoryEntry.isDirectory()) {
+      this.enqueueDirectoryIfScannable({
+        directoryName: args.directoryEntry.name,
+        directoryPath: absoluteEntryPath,
+        pendingDirectories: args.pendingDirectories,
+      });
+      return;
     }
 
-    const directoryEntries = fs.readdirSync(currentDirectory, {
-      withFileTypes: true,
+    if (
+      !args.directoryEntry.isFile() ||
+      args.directoryEntry.name !== PROJECT_METADATA_FILENAME
+    ) {
+      return;
+    }
+
+    const projectMetadata = this.parseWorkspaceProjectMetadata({
+      projectJsonPath: absoluteEntryPath,
     });
 
-    for (const directoryEntry of directoryEntries) {
-      const absoluteEntryPath = path.join(
-        currentDirectory,
-        directoryEntry.name,
-      );
+    if (projectMetadata !== undefined) {
+      args.discoveredProjects.push(projectMetadata);
+    }
+  }
 
-      if (directoryEntry.isDirectory()) {
-        if (!SKIPPED_DIRECTORY_NAMES.has(directoryEntry.name)) {
-          pendingDirectories.push(absoluteEntryPath);
-        }
+  /**
+   * Discovers Nx project metadata by scanning workspace project.json files.
+   */
+  private discoverWorkspaceProjects(
+    workingDirectory: string,
+  ): WorkspaceProjectMetadata[] {
+    const discoveredProjects: WorkspaceProjectMetadata[] = [];
+    const pendingDirectories = [workingDirectory];
 
+    while (pendingDirectories.length > 0) {
+      const currentDirectory = pendingDirectories.pop();
+      if (currentDirectory === undefined) {
         continue;
       }
 
-      if (!directoryEntry.isFile()) {
-        continue;
-      }
-
-      if (directoryEntry.name !== PROJECT_METADATA_FILENAME) {
-        continue;
-      }
-
-      const projectMetadata = parseWorkspaceProjectMetadata({
-        projectJsonPath: absoluteEntryPath,
-        workingDirectory,
+      const directoryEntries = fs.readdirSync(currentDirectory, {
+        withFileTypes: true,
       });
 
-      if (projectMetadata !== undefined) {
-        discoveredProjects.push(projectMetadata);
+      for (const directoryEntry of directoryEntries) {
+        this.collectProjectMetadataFromDirectoryEntry({
+          currentDirectory,
+          directoryEntry,
+          discoveredProjects,
+          pendingDirectories,
+        });
       }
     }
+
+    return discoveredProjects;
   }
 
-  return discoveredProjects;
-}
+  /**
+   * Adds a directory to the scan queue when it is not skipped.
+   */
+  private enqueueDirectoryIfScannable(args: {
+    directoryName: string;
+    directoryPath: string;
+    pendingDirectories: string[];
+  }): void {
+    if (SKIPPED_DIRECTORY_NAMES.has(args.directoryName)) {
+      return;
+    }
 
-/**
- * Returns true when the provided unknown value is an object-like record.
- */
-function isUnknownRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
-
-/**
- * Normalizes paths for deterministic path comparisons.
- */
-function normalizePathForComparison(pathValue: string): string {
-  return pathValue.replaceAll("\\", "/");
-}
-
-/**
- * Parses a project.json file into minimal routing metadata.
- */
-function parseWorkspaceProjectMetadata(args: {
-  projectJsonPath: string;
-  workingDirectory: string;
-}): WorkspaceProjectMetadata | undefined {
-  const projectJson = JSON.parse(
-    fs.readFileSync(args.projectJsonPath, "utf8"),
-  ) as unknown;
-  if (!isUnknownRecord(projectJson)) {
-    return undefined;
+    args.pendingDirectories.push(args.directoryPath);
   }
 
-  const projectName = projectJson["name"];
-  const sourceRoot = projectJson["sourceRoot"];
-  const tags = projectJson["tags"];
-
-  if (typeof projectName !== "string" || typeof sourceRoot !== "string") {
-    return undefined;
+  /**
+   * Returns true when the provided unknown value is an object-like record.
+   */
+  private isUnknownRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null;
   }
 
-  return {
-    name: projectName,
-    rootPath: sourceRoot,
-    tags: Array.isArray(tags)
-      ? tags.filter((tag): tag is string => {
-          return typeof tag === "string";
-        })
-      : [],
-  };
-}
+  /**
+   * Normalizes paths for deterministic path comparisons.
+   */
+  private normalizePathForComparison(pathValue: string): string {
+    return pathValue.replaceAll("\\", "/");
+  }
 
-/**
- * Resolves the applicable template rule names for matched projects.
- */
-function resolveApplicableTemplateRuleNames(args: {
-  configuredTemplateRuleNames: string[];
-  matchedProjects: WorkspaceProjectMetadata[];
-}): string[] {
-  const configuredTemplateRuleNameSet = new Set(
-    args.configuredTemplateRuleNames,
-  );
-  const applicableTemplateRuleNames = new Set<string>();
+  /**
+   * Parses project tags into a string array.
+   */
+  private parseProjectTags(projectTags: unknown): string[] {
+    if (!Array.isArray(projectTags)) {
+      return [];
+    }
 
-  for (const matchedProject of args.matchedProjects) {
-    for (const projectTag of matchedProject.tags) {
-      const tagMappedTemplateRuleNames =
-        TEMPLATE_RULE_NAMES_BY_PROJECT_TAG[projectTag] ?? [];
+    const tags: string[] = [];
+    for (const projectTag of projectTags as unknown[]) {
+      if (typeof projectTag === "string") {
+        tags.push(projectTag);
+      }
+    }
 
-      for (const templateRuleName of tagMappedTemplateRuleNames) {
-        if (configuredTemplateRuleNameSet.has(templateRuleName)) {
-          applicableTemplateRuleNames.add(templateRuleName);
+    return tags;
+  }
+
+  /**
+   * Parses a project.json file into minimal routing metadata.
+   */
+  private parseWorkspaceProjectMetadata(args: {
+    projectJsonPath: string;
+  }): undefined | WorkspaceProjectMetadata {
+    const projectJson = JSON.parse(
+      fs.readFileSync(args.projectJsonPath, "utf8"),
+    ) as unknown;
+    if (!this.isUnknownRecord(projectJson)) {
+      return undefined;
+    }
+
+    const projectName = projectJson["name"];
+    const sourceRoot = projectJson["sourceRoot"];
+    const tags = this.parseProjectTags(projectJson["tags"]);
+
+    if (typeof projectName !== "string" || typeof sourceRoot !== "string") {
+      return undefined;
+    }
+
+    return {
+      name: projectName,
+      rootPath: sourceRoot,
+      tags,
+    };
+  }
+
+  /**
+   * Resolves the applicable template rule names for matched projects.
+   */
+  private resolveApplicableTemplateRuleNames(args: {
+    configuredTemplateRuleNames: string[];
+    matchedProjects: WorkspaceProjectMetadata[];
+  }): string[] {
+    const configuredTemplateRuleNameSet = new Set(
+      args.configuredTemplateRuleNames,
+    );
+    const applicableTemplateRuleNames = new Set<string>();
+
+    for (const matchedProject of args.matchedProjects) {
+      for (const projectTag of matchedProject.tags) {
+        const tagMappedTemplateRuleNames =
+          TEMPLATE_RULE_NAMES_BY_PROJECT_TAG[projectTag] ?? [];
+
+        for (const templateRuleName of tagMappedTemplateRuleNames) {
+          if (configuredTemplateRuleNameSet.has(templateRuleName)) {
+            applicableTemplateRuleNames.add(templateRuleName);
+          }
+        }
+
+        if (projectTag.startsWith("generator:")) {
+          const generatorTemplateRuleName = projectTag.slice(
+            "generator:".length,
+          );
+          if (configuredTemplateRuleNameSet.has(generatorTemplateRuleName)) {
+            applicableTemplateRuleNames.add(generatorTemplateRuleName);
+          }
         }
       }
+    }
 
-      if (projectTag.startsWith("generator:")) {
-        const generatorTemplateRuleName = projectTag.slice("generator:".length);
-        if (configuredTemplateRuleNameSet.has(generatorTemplateRuleName)) {
-          applicableTemplateRuleNames.add(generatorTemplateRuleName);
+    return args.configuredTemplateRuleNames.filter(
+      (configuredTemplateRuleName) => {
+        return applicableTemplateRuleNames.has(configuredTemplateRuleName);
+      },
+    );
+  }
+
+  /**
+   * Resolves workspace projects matched by project selectors.
+   */
+  private resolveMatchedProjects(args: {
+    projectSelectors: string[];
+    workspaceProjects: WorkspaceProjectMetadata[];
+  }): WorkspaceProjectMetadata[] {
+    const matchedProjects = new Map<string, WorkspaceProjectMetadata>();
+
+    for (const projectSelector of args.projectSelectors) {
+      const matchingByName = args.workspaceProjects.find((workspaceProject) => {
+        return workspaceProject.name === projectSelector;
+      });
+
+      if (matchingByName !== undefined) {
+        matchedProjects.set(matchingByName.name, matchingByName);
+        continue;
+      }
+
+      const normalizedSelector =
+        this.normalizePathForComparison(projectSelector);
+      for (const workspaceProject of args.workspaceProjects) {
+        const normalizedProjectRoot = this.normalizePathForComparison(
+          workspaceProject.rootPath,
+        );
+        if (
+          normalizedSelector === normalizedProjectRoot ||
+          normalizedSelector.startsWith(`${normalizedProjectRoot}/`)
+        ) {
+          matchedProjects.set(workspaceProject.name, workspaceProject);
         }
       }
     }
+
+    return [...matchedProjects.values()];
   }
 
-  return args.configuredTemplateRuleNames.filter(
-    (configuredTemplateRuleName) => {
-      return applicableTemplateRuleNames.has(configuredTemplateRuleName);
-    },
-  );
-}
+  /**
+   * Resolves project paths consumed by validation service.
+   */
+  private resolveProjectPaths(args: {
+    matchedProjects: WorkspaceProjectMetadata[];
+    projectSelectors: string[];
+    workingDirectory: string;
+  }): string[] {
+    const projectPaths = new Set<string>();
 
-/**
- * Resolves workspace projects matched by project selectors.
- */
-function resolveMatchedProjects(args: {
-  projectSelectors: string[];
-  workspaceProjects: WorkspaceProjectMetadata[];
-}): WorkspaceProjectMetadata[] {
-  const matchedProjects = new Map<string, WorkspaceProjectMetadata>();
-
-  for (const projectSelector of args.projectSelectors) {
-    const matchingByName = args.workspaceProjects.find((workspaceProject) => {
-      return workspaceProject.name === projectSelector;
-    });
-
-    if (matchingByName !== undefined) {
-      matchedProjects.set(matchingByName.name, matchingByName);
-      continue;
+    for (const matchedProject of args.matchedProjects) {
+      projectPaths.add(matchedProject.rootPath);
     }
 
-    const normalizedSelector = normalizePathForComparison(projectSelector);
-    for (const workspaceProject of args.workspaceProjects) {
-      const normalizedProjectRoot = normalizePathForComparison(
-        workspaceProject.rootPath,
-      );
-      if (
-        normalizedSelector === normalizedProjectRoot ||
-        normalizedSelector.startsWith(`${normalizedProjectRoot}/`)
-      ) {
-        matchedProjects.set(workspaceProject.name, workspaceProject);
-      }
+    if (projectPaths.size > 0) {
+      return [...projectPaths].toSorted();
     }
-  }
 
-  return [...matchedProjects.values()];
-}
+    for (const projectSelector of args.projectSelectors) {
+      const relativeSelectorPath = path.isAbsolute(projectSelector)
+        ? path.relative(args.workingDirectory, projectSelector)
+        : projectSelector;
+      projectPaths.add(relativeSelectorPath);
+    }
 
-/**
- * Resolves project paths consumed by validation service.
- */
-function resolveProjectPaths(args: {
-  matchedProjects: WorkspaceProjectMetadata[];
-  projectSelectors: string[];
-  workingDirectory: string;
-}): string[] {
-  const projectPaths = new Set<string>();
-
-  for (const matchedProject of args.matchedProjects) {
-    projectPaths.add(matchedProject.rootPath);
-  }
-
-  if (projectPaths.size > 0) {
     return [...projectPaths].toSorted();
   }
 
-  for (const projectSelector of args.projectSelectors) {
-    const relativeSelectorPath = path.isAbsolute(projectSelector)
-      ? path.relative(args.workingDirectory, projectSelector)
-      : projectSelector;
-    projectPaths.add(relativeSelectorPath);
-  }
+  /**
+   * Resolves template rule and project path routing for the requested selectors.
+   */
+  public resolveTemplateRuleRouting(
+    args: ResolveTemplateRuleRoutingArguments,
+  ): ResolveTemplateRuleRoutingResult {
+    const workspaceProjects = this.discoverWorkspaceProjects(
+      args.workingDirectory,
+    );
+    const matchedProjects = this.resolveMatchedProjects({
+      projectSelectors: args.projectSelectors,
+      workspaceProjects,
+    });
+    const projectPaths = this.resolveProjectPaths({
+      matchedProjects,
+      projectSelectors: args.projectSelectors,
+      workingDirectory: args.workingDirectory,
+    });
+    const applicableTemplateRuleNames = this.resolveApplicableTemplateRuleNames(
+      {
+        configuredTemplateRuleNames: args.configuredTemplateRuleNames,
+        matchedProjects,
+      },
+    );
+    const templateRuleNames =
+      args.requestedTemplateRuleNames === undefined
+        ? applicableTemplateRuleNames
+        : args.requestedTemplateRuleNames.filter(
+            (requestedTemplateRuleName) => {
+              return applicableTemplateRuleNames.includes(
+                requestedTemplateRuleName,
+              );
+            },
+          );
 
-  return [...projectPaths].toSorted();
+    return {
+      projectPaths,
+      templateRuleNames,
+    };
+  }
 }

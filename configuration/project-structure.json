@@ -140,6 +140,10 @@
               "name": "validators"
             },
             {
+              "enforceExistence": "__plugin_entrypoints_are_forbidden__",
+              "name": "plugin.ts"
+            },
+            {
               "ruleId": "any-file"
             }
           ],

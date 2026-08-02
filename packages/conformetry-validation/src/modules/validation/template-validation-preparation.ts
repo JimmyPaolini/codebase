@@ -7,11 +7,11 @@ import {
   GenerationRuntimeService,
 } from "@jimmypaolini/conformetry-generation";
 
-import type { ConformetryConfiguration } from "@jimmypaolini/conformetry-configuration";
 import type {
   PreparedValidationDocument,
   PreparedValidationPayload,
 } from "./validation.types.js";
+import type { ConformetryConfiguration } from "@jimmypaolini/conformetry-configuration";
 
 /**
  * Arguments for template-aware validation preparation.
@@ -24,6 +24,9 @@ export interface PrepareTemplateValidationPayloadArguments {
   workingDirectory: string;
 }
 
+/**
+ *
+ */
 interface MatchedGeneratorCandidate {
   absoluteTemplateDirectoryPath: string;
   existingFileCount: number;
@@ -170,11 +173,11 @@ function createTemplateSubstitutions(args: {
     args.workingDirectory,
     args.projectPath,
   );
-  const relativePathSegments = relativeProjectPath
+  const relativePathSegment = relativeProjectPath
     .split(path.sep)
     .map((segment) => segment.trim())
-    .filter((segment) => segment.length > 0);
-  const projectType = relativePathSegments[0] ?? "applications";
+    .find((segment) => segment.length > 0);
+  const projectType = relativePathSegment ?? "applications";
 
   return {
     description: resolveProjectDescription(args.projectPath),
@@ -184,6 +187,84 @@ function createTemplateSubstitutions(args: {
     namePascalCase: projectNameSubstitutions["namePascalCase"] ?? projectName,
     nameSnakeCase: projectNameSubstitutions["nameSnakeCase"] ?? projectName,
     type: projectType,
+  };
+}
+
+/**
+ * Infers likely generator names from the project directory name.
+ */
+function inferGeneratorNamesFromProjectPath(args: {
+  configuredGeneratorNames: string[];
+  projectPath: string;
+}): Set<string> {
+  const projectDirectoryName = path.basename(args.projectPath).toLowerCase();
+  const inferredGeneratorNames = args.configuredGeneratorNames.filter(
+    (generatorName) =>
+      projectDirectoryName.includes(generatorName.toLowerCase()),
+  );
+
+  return new Set(inferredGeneratorNames);
+}
+
+/**
+ * Prepares documents for one matched generator candidate.
+ */
+function prepareDocumentsForGenerator(args: {
+  fileExtensions: string[];
+  generatorCandidate: MatchedGeneratorCandidate;
+  projectPath: string;
+}): {
+  documents: PreparedValidationDocument[];
+  violations: string[];
+} {
+  const absoluteTemplateDirectoryPath =
+    args.generatorCandidate.absoluteTemplateDirectoryPath;
+  const templateRenderer = new DefaultTemplateRenderer();
+  const extensionSet = new Set(args.fileExtensions);
+  const documents: PreparedValidationDocument[] = [];
+  const violations: string[] = [];
+
+  for (const templateFilePath of args.generatorCandidate.templateFilePaths) {
+    const extension = path.extname(templateFilePath);
+    if (!extensionSet.has(extension)) {
+      continue;
+    }
+
+    const templateRelativePath = path.relative(
+      absoluteTemplateDirectoryPath,
+      templateFilePath,
+    );
+    const instanceRelativePath = applySubstitutions(
+      templateRelativePath,
+      args.generatorCandidate.substitutions,
+    );
+    const instanceFilePath = path.join(args.projectPath, instanceRelativePath);
+
+    if (!fs.existsSync(instanceFilePath)) {
+      violations.push(
+        `Missing file ${instanceFilePath} required by template ${templateFilePath}`,
+      );
+      continue;
+    }
+
+    const instanceFileContent = fs.readFileSync(instanceFilePath, "utf8");
+    const templateFileContent = fs.readFileSync(templateFilePath, "utf8");
+
+    documents.push({
+      filename: path.basename(instanceFilePath),
+      instance: instanceFileContent,
+      instanceFilePath,
+      renderedTemplate: templateRenderer.render(
+        templateFileContent,
+        args.generatorCandidate.substitutions,
+      ),
+      templateFilePath,
+    });
+  }
+
+  return {
+    documents,
+    violations,
   };
 }
 
@@ -281,22 +362,6 @@ function resolveBestMatchedGeneratorCandidate(args: {
 }
 
 /**
- * Infers likely generator names from the project directory name.
- */
-function inferGeneratorNamesFromProjectPath(args: {
-  configuredGeneratorNames: string[];
-  projectPath: string;
-}): Set<string> {
-  const projectDirectoryName = path.basename(args.projectPath).toLowerCase();
-  const inferredGeneratorNames = args.configuredGeneratorNames.filter(
-    (generatorName) =>
-      projectDirectoryName.includes(generatorName.toLowerCase()),
-  );
-
-  return new Set(inferredGeneratorNames);
-}
-
-/**
  * Resolves project description from pyproject.toml, when present.
  */
 function resolveProjectDescription(projectPath: string): string {
@@ -336,66 +401,4 @@ function resolveSelectedGeneratorNames(args: {
   );
 
   return selectedGeneratorNames;
-}
-
-/**
- * Prepares documents for one matched generator candidate.
- */
-function prepareDocumentsForGenerator(args: {
-  fileExtensions: string[];
-  generatorCandidate: MatchedGeneratorCandidate;
-  projectPath: string;
-}): {
-  documents: PreparedValidationDocument[];
-  violations: string[];
-} {
-  const absoluteTemplateDirectoryPath =
-    args.generatorCandidate.absoluteTemplateDirectoryPath;
-  const templateRenderer = new DefaultTemplateRenderer();
-  const extensionSet = new Set(args.fileExtensions);
-  const documents: PreparedValidationDocument[] = [];
-  const violations: string[] = [];
-
-  for (const templateFilePath of args.generatorCandidate.templateFilePaths) {
-    const extension = path.extname(templateFilePath);
-    if (!extensionSet.has(extension)) {
-      continue;
-    }
-
-    const templateRelativePath = path.relative(
-      absoluteTemplateDirectoryPath,
-      templateFilePath,
-    );
-    const instanceRelativePath = applySubstitutions(
-      templateRelativePath,
-      args.generatorCandidate.substitutions,
-    );
-    const instanceFilePath = path.join(args.projectPath, instanceRelativePath);
-
-    if (!fs.existsSync(instanceFilePath)) {
-      violations.push(
-        `Missing file ${instanceFilePath} required by template ${templateFilePath}`,
-      );
-      continue;
-    }
-
-    const instanceFileContent = fs.readFileSync(instanceFilePath, "utf8");
-    const templateFileContent = fs.readFileSync(templateFilePath, "utf8");
-
-    documents.push({
-      filename: path.basename(instanceFilePath),
-      instance: instanceFileContent,
-      instanceFilePath,
-      renderedTemplate: templateRenderer.render(
-        templateFileContent,
-        args.generatorCandidate.substitutions,
-      ),
-      templateFilePath,
-    });
-  }
-
-  return {
-    documents,
-    violations,
-  };
 }

@@ -19,7 +19,7 @@
     "@vitest/coverage-v8": "catalog:",
     "vitest": "catalog:"
   },
-  "main": "src/plugin.ts",
+  "main": "src/index.ts",
   "name": "@jimmypaolini/conformetry-typescript",
   "publishConfig": {
     "access": "public",
@@ -33,6 +33,6 @@
     ],
     "strict": true
   },
-  "types": "src/plugin.ts",
+  "types": "src/index.ts",
   "version": "0.0.1"
 }
