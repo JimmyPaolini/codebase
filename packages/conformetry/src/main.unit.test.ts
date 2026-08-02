@@ -1,8 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mockCommandFactoryRun = vi.fn<() => Promise<void>>(async () => {
-  
-});
+const mockCommandFactoryRun = vi.fn<() => Promise<void>>(async () => {});
 
 vi.mock("nest-commander", () => {
   return {
