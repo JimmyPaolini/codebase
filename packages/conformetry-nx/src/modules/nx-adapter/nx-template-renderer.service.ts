@@ -1,16 +1,11 @@
-/**
- * Renders template placeholders into generated output files.
- */
-export interface TemplateRenderer {
-  render(
-    templateContent: string,
-    substitutions: Record<string, string>,
-  ): string;
-}
+import { Injectable } from "@nestjs/common";
+
+import type { TemplateRenderer } from "./nx-adapter.types";
 
 /**
  * Replaces template placeholders with generated substitutions.
  */
+@Injectable()
 export class NxTemplateRenderer implements TemplateRenderer {
   /**
    * Renders a template string using double-curly placeholders.

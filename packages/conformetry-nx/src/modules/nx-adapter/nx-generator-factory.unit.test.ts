@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createConformetryGeneratorFactory } from "./nx-generator-factory";
+import { createConformetryGeneratorFactory } from "./nx-generator-factory.utilities.js";
 
 import type { FileChange, Tree } from "@nx/devkit";
 

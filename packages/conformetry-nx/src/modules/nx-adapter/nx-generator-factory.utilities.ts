@@ -2,32 +2,20 @@ import path from "node:path";
 
 import { type GeneratorCallback, getProjects, type Tree } from "@nx/devkit";
 
-import { NxFileSystemAdapter } from "./nx-file-system-adapter";
-import { NxFormatterAdapter } from "./nx-formatter-adapter";
 import {
-  GenerationRuntimeService,
-  type GeneratorDefinition,
-} from "./nx-generation-runtime";
-import { NxPathMatcher } from "./nx-path-matcher";
+  DEFAULT_GENERATED_OUTPUT_DIRECTORY,
+  TARGET_DIRECTORY_OPTION_KEYS,
+} from "./nx-adapter.constants";
+import { NxFileSystemAdapter } from "./nx-file-system-adapter.service";
+import { NxFormatterAdapter } from "./nx-formatter-adapter.service";
+import { GenerationRuntimeService } from "./nx-generation-runtime.service";
+import { NxPathMatcher } from "./nx-path-matcher.service";
 
-/**
- * A generator callback compatible with Nx generator factories.
- */
-export type ConformetryGeneratorFactory = (
-  tree: Tree,
-  options?: Record<string, unknown>,
-) => Promise<GeneratorCallback>;
-
-/**
- * Creates a generator factory that renders templates into an Nx tree.
- */
-export interface ConformetryGeneratorFactoryOptions {
-  definition: GeneratorDefinition;
-  resolveTargetDirectoryPath?: (args: {
-    options: Record<string, unknown>;
-    tree: Tree;
-  }) => Promise<string> | string;
-}
+import type {
+  ConformetryGeneratorFactory,
+  ConformetryGeneratorFactoryOptions,
+  ResolveConformetryTargetDirectoryPathArguments,
+} from "./nx-adapter.types";
 
 /**
  * Creates a conformetry generator factory for Nx trees.
@@ -69,11 +57,9 @@ export function createConformetryGeneratorFactory(
 /**
  * Resolves the target directory for generated files.
  */
-export async function resolveConformetryTargetDirectoryPath(args: {
-  definition: GeneratorDefinition;
-  options: Record<string, unknown>;
-  tree: Tree;
-}): Promise<string> {
+export async function resolveConformetryTargetDirectoryPath(
+  args: ResolveConformetryTargetDirectoryPathArguments,
+): Promise<string> {
   const { definition, options, tree } = args;
   const directTargetDirectoryPath = resolveTargetDirectoryPathOption(options);
 
@@ -87,7 +73,9 @@ export async function resolveConformetryTargetDirectoryPath(args: {
     return await Promise.resolve(projectRoot);
   }
 
-  return await Promise.resolve(path.join("generated", definition.name));
+  return await Promise.resolve(
+    path.join(DEFAULT_GENERATED_OUTPUT_DIRECTORY, definition.name),
+  );
 }
 
 /**
@@ -146,20 +134,11 @@ function resolveProjectRootPath(args: {
 function resolveTargetDirectoryPathOption(
   options: Record<string, unknown>,
 ): string | undefined {
-  const directTargetDirectoryPath = options["targetDirectoryPath"];
-  const directOutputDirectoryPath = options["outputDirectoryPath"];
-  const directOutputPath = options["outputPath"];
-
-  if (typeof directTargetDirectoryPath === "string") {
-    return directTargetDirectoryPath;
-  }
-
-  if (typeof directOutputDirectoryPath === "string") {
-    return directOutputDirectoryPath;
-  }
-
-  if (typeof directOutputPath === "string") {
-    return directOutputPath;
+  for (const targetDirectoryOptionKey of TARGET_DIRECTORY_OPTION_KEYS) {
+    const optionValue = options[targetDirectoryOptionKey];
+    if (typeof optionValue === "string") {
+      return optionValue;
+    }
   }
 
   return undefined;

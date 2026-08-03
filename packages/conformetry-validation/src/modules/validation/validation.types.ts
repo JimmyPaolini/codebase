@@ -66,6 +66,15 @@ export interface ValidationPluginResult {
 }
 
 /**
+ * Project metadata used to improve template matching and substitutions.
+ */
+export interface ValidationProjectTemplateMetadata {
+  description?: string;
+  generatorName?: string;
+  type?: string;
+}
+
+/**
  * Describes a validator plugin for conformetry validations.
  */
 export interface ValidatorPluginDescriptor {

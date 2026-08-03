@@ -1,14 +1,17 @@
+import { createRequire } from "node:module";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-import { createConformetryGeneratorFactory } from "./modules/nx-adapter/nx-generator-factory";
+import type { CreateNodes, GeneratorCallback, Tree } from "@nx/devkit";
+
+import { NxAdapterService } from "./modules/nx-adapter/nx-adapter.service";
 import { RuleRoutingService } from "./modules/rule-routing/rule-routing.service";
 
 import type {
   ResolveTemplateRuleRoutingArguments,
   ResolveTemplateRuleRoutingResult,
 } from "./modules/rule-routing/rule-routing.types";
-import type { CreateNodes, GeneratorCallback, Tree } from "@nx/devkit";
+
 export * from "./generators/init/generator";
 
 /**
@@ -45,7 +48,7 @@ const conformetryPluginDefinition = {
   name: "@jimmypaolini/conformetry-nx",
 };
 
-const ruleRoutingService = new RuleRoutingService();
+const moduleRequire = createRequire(import.meta.url);
 
 export default conformetryPluginDefinition;
 
@@ -192,9 +195,11 @@ export async function generateReactComponent(
 /**
  * Resolves template rule routing from selected project scopes.
  */
-export function resolveTemplateRuleRouting(
+export async function resolveTemplateRuleRouting(
   args: ResolveTemplateRuleRoutingArguments,
-): ResolveTemplateRuleRoutingResult {
+): Promise<ResolveTemplateRuleRoutingResult> {
+  const ruleRoutingService = new RuleRoutingService();
+
   return ruleRoutingService.resolveTemplateRuleRouting(args);
 }
 
@@ -223,6 +228,22 @@ function isWorkspaceConformetryConfiguration(
     typeof value["generators"] === "object" && value["generators"] !== null
   );
 }
+/**
+ * Loads a configuration module from either ESM import or Nx-compatible require.
+ */
+async function loadConfigurationModule(
+  configurationPath: string,
+): Promise<unknown> {
+  const extension = path.extname(configurationPath).toLowerCase();
+  const shouldPreferRequire =
+    extension === ".ts" || extension === ".mts" || extension === ".cts";
+
+  if (shouldPreferRequire) {
+    return await Promise.resolve(moduleRequire(configurationPath));
+  }
+
+  return await import(pathToFileURL(configurationPath).href);
+}
 
 /**
  * Loads the conformetry configuration module from the current workspace.
@@ -233,18 +254,8 @@ async function loadWorkspaceConformetryConfiguration(
   const resolvedPath = path.isAbsolute(configurationPath)
     ? configurationPath
     : path.resolve(configurationPath);
-  const importedModule: unknown = await import(
-    pathToFileURL(resolvedPath).href
-  );
-
-  if (!isUnknownRecord(importedModule)) {
-    throw new Error(
-      `Invalid conformetry configuration module at "${resolvedPath}"`,
-    );
-  }
-
-  const configurationValue =
-    importedModule["default"] ?? importedModule["conformetryConfiguration"];
+  const importedModule = await loadConfigurationModule(resolvedPath);
+  const configurationValue = resolveConfigurationValue(importedModule);
 
   if (!isWorkspaceConformetryConfiguration(configurationValue)) {
     throw new Error(
@@ -253,6 +264,28 @@ async function loadWorkspaceConformetryConfiguration(
   }
 
   return configurationValue;
+}
+
+/**
+ * Resolves the actual configuration value from imported module shapes.
+ */
+function resolveConfigurationValue(importedModule: unknown): unknown {
+  if (!isUnknownRecord(importedModule)) {
+    return importedModule;
+  }
+
+  if ("default" in importedModule && importedModule["default"] !== undefined) {
+    return importedModule["default"];
+  }
+
+  if (
+    "conformetryConfiguration" in importedModule &&
+    importedModule["conformetryConfiguration"] !== undefined
+  ) {
+    return importedModule["conformetryConfiguration"];
+  }
+
+  return importedModule;
 }
 
 /**
@@ -276,7 +309,8 @@ async function runWorkspaceGenerator(args: {
     throw new Error(`Unknown conformetry generator "${args.generatorName}"`);
   }
 
-  const factory = createConformetryGeneratorFactory({
+  const nxAdapterService = new NxAdapterService();
+  const factory = nxAdapterService.createConformetryGeneratorFactory({
     definition: {
       ...(generatorDefinition.aliases === undefined
         ? {}

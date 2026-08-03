@@ -16,7 +16,7 @@ vi.mock("@nx/devkit", async (importOriginal) => {
   };
 });
 
-vi.mock("./nx-generation-runtime", async (importOriginal) => {
+vi.mock("./nx-generation-runtime.service", async (importOriginal) => {
   const originalModule: Record<string, unknown> = await importOriginal();
 
   class MockGenerationRuntimeService {
@@ -42,12 +42,12 @@ vi.mock("./nx-generation-runtime", async (importOriginal) => {
 import {
   createConformetryGeneratorFactory,
   resolveConformetryTargetDirectoryPath,
-} from "./nx-generator-factory.js";
+} from "./nx-generator-factory.utilities.js";
 
 import type {
   GenerationRuntimeService,
   RunGeneratorResult,
-} from "./nx-generation-runtime.js";
+} from "./nx-generation-runtime.service.js";
 import type { Tree } from "@nx/devkit";
 
 function createStubTree(): Tree {

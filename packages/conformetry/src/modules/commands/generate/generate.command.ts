@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
 import { GenerationRuntimeService } from "@jimmypaolini/conformetry-generation";
-import { ConsoleLogger, Injectable } from "@nestjs/common";
+import { ConsoleLogger, Inject, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import { GenerateCommandArgumentsService } from "./generate-command-arguments.service.js";
@@ -23,8 +23,11 @@ import type {
 @Injectable()
 export class GenerateCommand extends CommandRunner {
   constructor(
+    @Inject(ConfigurationService)
     private readonly configurationService: ConfigurationService,
+    @Inject(GenerationRuntimeService)
     private readonly generationRuntimeService: GenerationRuntimeService,
+    @Inject(GenerateCommandArgumentsService)
     private readonly generateCommandArgumentsService: GenerateCommandArgumentsService,
   ) {
     super();

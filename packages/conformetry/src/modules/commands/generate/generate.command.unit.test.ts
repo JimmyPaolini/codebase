@@ -4,12 +4,15 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { GenerateCommandArgumentsService } from "./generate-command-arguments.service.js";
 
+import type { TestingModule } from "@nestjs/testing";
+
 const mockLoadConformetryConfiguration =
   vi.fn<(path: string) => Promise<{ generators: Record<string, unknown> }>>();
 const mockRunGenerator = vi.fn<(input: unknown) => Promise<unknown>>();
 const mockReadFile =
   vi.fn<(path: string, encoding: string) => Promise<string>>();
 const mockLoggerLog = vi.fn<(message: unknown) => void>();
+const designParameterTypesMetadataKey = `design:${["param", "types"].join("")}`;
 
 vi.mock("node:fs/promises", () => {
   return {
@@ -61,7 +64,6 @@ describe("generateCommand", () => {
     };
 
   beforeEach(() => {
-    vi.resetModules();
     vi.clearAllMocks();
     process.argv = ["node", "conformetry", "generate", "--project", "lexico"];
     delete process.env["CONFORMETRY_GENERATOR_OPTIONS"];
@@ -235,5 +237,92 @@ describe("generateCommand", () => {
         targetDirectoryPath: "generated/react-component",
       }),
     );
+  });
+
+  it("injects command dependencies when constructor type metadata is unavailable", async () => {
+    mockLoadConformetryConfiguration.mockResolvedValue({
+      generators: {
+        "react-component": {
+          name: "react-component",
+          schemaPath: "./schema.json",
+          targetPathStrategy: "append",
+          templateDirectoryPath: "./templates",
+        },
+      },
+    });
+    mockReadFile.mockResolvedValue(
+      JSON.stringify({
+        properties: {
+          project: { type: "string" },
+        },
+      }),
+    );
+    mockRunGenerator.mockResolvedValue({
+      generatedFilePaths: [],
+      outputDirectoryPath: "generated/react-component",
+    });
+
+    const { Test } = await import("@nestjs/testing");
+    const { GenerateCommand } = await import("./generate.command.js");
+    const originalParameterTypes = Reflect.getMetadata(
+      designParameterTypesMetadataKey,
+      GenerateCommand,
+    ) as undefined | unknown[];
+
+    Reflect.defineMetadata(
+      designParameterTypesMetadataKey,
+      [],
+      GenerateCommand,
+    );
+
+    let testingModule: null | TestingModule = null;
+
+    try {
+      testingModule = await Test.createTestingModule({
+        providers: [
+          GenerateCommand,
+          GenerateCommandArgumentsService,
+          {
+            provide: ConfigurationService,
+            useValue: {
+              loadConformetryConfiguration: mockLoadConformetryConfiguration,
+            },
+          },
+          {
+            provide: GenerationRuntimeService,
+            useValue: {
+              runGenerator: mockRunGenerator,
+            },
+          },
+        ],
+      }).compile();
+
+      const command = testingModule.get(GenerateCommand);
+
+      await expect(
+        command.run([], {
+          config: "configuration/conformetry.config.ts",
+          name: "react-component",
+        }),
+      ).resolves.toBeUndefined();
+      expect(mockRunGenerator).toHaveBeenCalledTimes(1);
+    } finally {
+      if (testingModule !== null) {
+        await testingModule.close();
+      }
+
+      if (originalParameterTypes === undefined) {
+        Reflect.deleteMetadata(
+          designParameterTypesMetadataKey,
+          GenerateCommand,
+        );
+      } else {
+        Reflect.defineMetadata(
+          designParameterTypesMetadataKey,
+          originalParameterTypes,
+          GenerateCommand,
+        );
+      }
+    }
   });
 });

@@ -28,6 +28,7 @@ export class RuleRoutingService {
     directoryEntry: fs.Dirent;
     discoveredProjects: WorkspaceProjectMetadata[];
     pendingDirectories: string[];
+    workingDirectory: string;
   }): void {
     const absoluteEntryPath = path.join(
       args.currentDirectory,
@@ -51,6 +52,7 @@ export class RuleRoutingService {
     }
 
     const projectMetadata = this.parseWorkspaceProjectMetadata({
+      workingDirectory: args.workingDirectory,
       projectJsonPath: absoluteEntryPath,
     });
 
@@ -84,6 +86,7 @@ export class RuleRoutingService {
           directoryEntry,
           discoveredProjects,
           pendingDirectories,
+          workingDirectory,
         });
       }
     }
@@ -142,6 +145,7 @@ export class RuleRoutingService {
    * Parses a project.json file into minimal routing metadata.
    */
   private parseWorkspaceProjectMetadata(args: {
+    workingDirectory: string;
     projectJsonPath: string;
   }): undefined | WorkspaceProjectMetadata {
     const projectJson = JSON.parse(
@@ -161,9 +165,53 @@ export class RuleRoutingService {
 
     return {
       name: projectName,
-      rootPath: sourceRoot,
+      rootPath: path.relative(
+        args.workingDirectory,
+        path.dirname(args.projectJsonPath),
+      ),
+      sourceRoot,
       tags,
     };
+  }
+
+  /**
+   * Returns true when a selector resolves to a project path or one of its descendants.
+   */
+  private matchesProjectPathSelector(args: {
+    projectPath: string;
+    projectSelector: string;
+    workingDirectory: string;
+  }): boolean {
+    const normalizedProjectPath = this.normalizePathForComparison(
+      args.projectPath,
+    );
+    const normalizedAbsoluteProjectPath = this.normalizePathForComparison(
+      path.resolve(args.workingDirectory, args.projectPath),
+    );
+    const normalizedSelectorCandidates = new Set<string>([
+      this.normalizePathForComparison(args.projectSelector),
+    ]);
+
+    if (path.isAbsolute(args.projectSelector)) {
+      normalizedSelectorCandidates.add(
+        this.normalizePathForComparison(
+          path.relative(args.workingDirectory, args.projectSelector),
+        ),
+      );
+    }
+
+    for (const selectorCandidate of normalizedSelectorCandidates) {
+      if (
+        selectorCandidate === normalizedProjectPath ||
+        selectorCandidate.startsWith(`${normalizedProjectPath}/`) ||
+        selectorCandidate === normalizedAbsoluteProjectPath ||
+        selectorCandidate.startsWith(`${normalizedAbsoluteProjectPath}/`)
+      ) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -213,6 +261,7 @@ export class RuleRoutingService {
   private resolveMatchedProjects(args: {
     projectSelectors: string[];
     workspaceProjects: WorkspaceProjectMetadata[];
+    workingDirectory: string;
   }): WorkspaceProjectMetadata[] {
     const matchedProjects = new Map<string, WorkspaceProjectMetadata>();
 
@@ -226,15 +275,18 @@ export class RuleRoutingService {
         continue;
       }
 
-      const normalizedSelector =
-        this.normalizePathForComparison(projectSelector);
       for (const workspaceProject of args.workspaceProjects) {
-        const normalizedProjectRoot = this.normalizePathForComparison(
-          workspaceProject.rootPath,
-        );
         if (
-          normalizedSelector === normalizedProjectRoot ||
-          normalizedSelector.startsWith(`${normalizedProjectRoot}/`)
+          this.matchesProjectPathSelector({
+            projectPath: workspaceProject.rootPath,
+            projectSelector,
+            workingDirectory: args.workingDirectory,
+          }) ||
+          this.matchesProjectPathSelector({
+            projectPath: workspaceProject.sourceRoot,
+            projectSelector,
+            workingDirectory: args.workingDirectory,
+          })
         ) {
           matchedProjects.set(workspaceProject.name, workspaceProject);
         }
@@ -284,6 +336,7 @@ export class RuleRoutingService {
     const matchedProjects = this.resolveMatchedProjects({
       projectSelectors: args.projectSelectors,
       workspaceProjects,
+      workingDirectory: args.workingDirectory,
     });
     const projectPaths = this.resolveProjectPaths({
       matchedProjects,
@@ -296,16 +349,27 @@ export class RuleRoutingService {
         matchedProjects,
       },
     );
+    const configuredTemplateRuleNameSet = new Set(
+      args.configuredTemplateRuleNames,
+    );
     const templateRuleNames =
       args.requestedTemplateRuleNames === undefined
         ? applicableTemplateRuleNames
-        : args.requestedTemplateRuleNames.filter(
-            (requestedTemplateRuleName) => {
-              return applicableTemplateRuleNames.includes(
-                requestedTemplateRuleName,
-              );
-            },
-          );
+        : matchedProjects.length === 0
+          ? args.requestedTemplateRuleNames.filter(
+              (requestedTemplateRuleName) => {
+                return configuredTemplateRuleNameSet.has(
+                  requestedTemplateRuleName,
+                );
+              },
+            )
+          : args.requestedTemplateRuleNames.filter(
+              (requestedTemplateRuleName) => {
+                return applicableTemplateRuleNames.includes(
+                  requestedTemplateRuleName,
+                );
+              },
+            );
 
     return {
       projectPaths,

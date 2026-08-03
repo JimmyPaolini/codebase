@@ -75,6 +75,53 @@ describe(RuleRoutingService, () => {
       templateRuleNames: [],
     });
   });
+
+  it("preserves explicitly requested configured rules when selector metadata is unresolved", async () => {
+    const workspaceDirectory = await createWorkspaceFixture();
+    const ruleRoutingService = new RuleRoutingService();
+
+    const result = ruleRoutingService.resolveTemplateRuleRouting({
+      configuredTemplateRuleNames: ["nestjs-service-module", "react-component"],
+      projectSelectors: ["generated/nestjs-service-module"],
+      requestedTemplateRuleNames: ["nestjs-service-module", "typescript"],
+      workingDirectory: workspaceDirectory,
+    });
+
+    expect(result).toStrictEqual({
+      projectPaths: ["generated/nestjs-service-module"],
+      templateRuleNames: ["nestjs-service-module"],
+    });
+  });
+
+  it("matches project root and sourceRoot selectors to the same project", async () => {
+    const workspaceDirectory = await createWorkspaceFixture();
+    const ruleRoutingService = new RuleRoutingService();
+
+    const result = ruleRoutingService.resolveTemplateRuleRouting({
+      configuredTemplateRuleNames: [
+        "jupyter-notebook-application",
+        "nestjs-command-application",
+        "nestjs-service-file",
+        "nestjs-service-module",
+        "react-component",
+      ],
+      projectSelectors: [
+        "applications/caelundas",
+        path.resolve(workspaceDirectory, "applications/lexico/src"),
+      ],
+      workingDirectory: workspaceDirectory,
+    });
+
+    expect(result).toStrictEqual({
+      projectPaths: ["applications/caelundas", "applications/lexico"],
+      templateRuleNames: [
+        "nestjs-command-application",
+        "nestjs-service-file",
+        "nestjs-service-module",
+        "react-component",
+      ],
+    });
+  });
 });
 
 async function createWorkspaceFixture(): Promise<string> {
@@ -97,7 +144,7 @@ async function createWorkspaceFixture(): Promise<string> {
     directoryPath: path.join(workspaceDirectory, "applications", "lexico"),
     projectMetadata: {
       name: "lexico",
-      sourceRoot: "applications/lexico",
+      sourceRoot: "applications/lexico/src",
       tags: ["framework:react", "language:typescript"],
     },
   });

@@ -4,16 +4,19 @@ import path from "node:path";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { mockFactory, mockGenerator } = vi.hoisted(() => {
-  return {
-    mockFactory: vi.fn(),
-    mockGenerator: vi.fn(),
-  };
-});
+const { mockCreateFactory, mockGenerator, mockResolveNxAdapterService } =
+  vi.hoisted(() => {
+    return {
+      mockCreateFactory: vi.fn(),
+      mockGenerator: vi.fn(),
+      mockResolveNxAdapterService: vi.fn(),
+    };
+  });
 
-vi.mock("./modules/nx-adapter/nx-generator-factory", () => {
+vi.mock("./modules/nx-adapter/nx-adapter-context.utilities.js", () => {
   return {
-    createConformetryGeneratorFactory: mockFactory,
+    resolveNxAdapterService: mockResolveNxAdapterService,
+    resolveRuleRoutingService: vi.fn(),
   };
 });
 
@@ -71,12 +74,16 @@ function createStubTree(): Tree {
 
 describe("conformetry-nx index", () => {
   beforeEach(() => {
-    mockFactory.mockReset();
+    mockCreateFactory.mockReset();
     mockGenerator.mockReset();
+    mockResolveNxAdapterService.mockReset();
     mockGenerator.mockResolvedValue(async () => {
       await Promise.resolve();
     });
-    mockFactory.mockReturnValue(mockGenerator);
+    mockCreateFactory.mockReturnValue(mockGenerator);
+    mockResolveNxAdapterService.mockResolvedValue({
+      createConformetryGeneratorFactory: mockCreateFactory,
+    });
   });
 
   it("exposes the Nx plugin definition", () => {
@@ -178,7 +185,7 @@ describe("conformetry-nx index", () => {
       await generator(tree, options);
     }
 
-    expect(mockFactory).toHaveBeenCalledTimes(generators.length);
+    expect(mockCreateFactory).toHaveBeenCalledTimes(generators.length);
     expect(mockGenerator).toHaveBeenCalledTimes(generators.length);
     expect(mockGenerator).toHaveBeenCalledWith(tree, options);
   });
@@ -202,7 +209,35 @@ describe("conformetry-nx index", () => {
       name: "demo",
     });
 
-    expect(mockFactory).toHaveBeenCalledTimes(1);
+    expect(mockCreateFactory).toHaveBeenCalledTimes(1);
+  });
+
+  it("loads TypeScript configuration files used by Nx workspaces", async () => {
+    const directory = await mkdtemp(
+      path.join(tmpdir(), "conformetry-nx-ts-config-"),
+    );
+    const configurationPath = path.join(directory, "conformetry.config.ts");
+    await writeFile(
+      configurationPath,
+      `export default {
+        generators: {
+          "react-component": {
+            name: "react-component",
+            schemaPath: "schema.json",
+            targetPathStrategy: "direct",
+            templateDirectoryPath: "templates/react"
+          }
+        }
+      }`,
+      "utf8",
+    );
+
+    await generateReactComponent(createStubTree(), {
+      config: configurationPath,
+      name: "demo",
+    });
+
+    expect(mockCreateFactory).toHaveBeenCalledTimes(1);
   });
 
   it("resolves relative configuration paths from the current working directory", async () => {
@@ -237,7 +272,7 @@ describe("conformetry-nx index", () => {
         name: "demo",
       });
 
-      expect(mockFactory).toHaveBeenCalledTimes(1);
+      expect(mockCreateFactory).toHaveBeenCalledTimes(1);
     } finally {
       process.chdir(previousWorkingDirectory);
     }

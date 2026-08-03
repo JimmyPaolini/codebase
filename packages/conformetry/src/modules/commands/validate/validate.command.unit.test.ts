@@ -7,6 +7,8 @@ import { TypeScriptValidatorService } from "@jimmypaolini/conformetry-typescript
 import { ValidationService } from "@jimmypaolini/conformetry-validation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { TestingModule } from "@nestjs/testing";
+
 interface ValidationInputShape {
   readonly plugins: { readonly descriptor: { readonly name: string } }[];
   readonly projectPaths: string[];
@@ -19,7 +21,7 @@ const mockLoadConformetryConfiguration =
 const mockRunValidation =
   vi.fn<(input: ValidationInputShape) => Promise<unknown>>();
 const mockLoggerLog = vi.fn<(message: unknown) => void>();
-const mockResolveTemplateRuleRouting = vi.fn<(input: unknown) => unknown>();
+const designParameterTypesMetadataKey = `design:${["param", "types"].join("")}`;
 
 vi.mock("@nestjs/common", async () => {
   const actual = await vi.importActual("@nestjs/common");
@@ -58,15 +60,8 @@ vi.mock("@jimmypaolini/conformetry-validation", () => {
   };
 });
 
-vi.mock("@jimmypaolini/conformetry-nx", () => {
-  return {
-    resolveTemplateRuleRouting: mockResolveTemplateRuleRouting,
-  };
-});
-
 describe("validateCommand", () => {
   beforeEach(() => {
-    vi.resetModules();
     vi.clearAllMocks();
     process.exitCode = 0;
   });
@@ -105,10 +100,6 @@ describe("validateCommand", () => {
         "nestjs-service-module": {},
       },
     });
-    mockResolveTemplateRuleRouting.mockReturnValue({
-      projectPaths: ["packages/conformetry"],
-      templateRuleNames: ["nestjs-service-module"],
-    });
     mockRunValidation.mockResolvedValue({ ok: true, results: [] });
 
     const { ValidateCommand } = await import("./validate.command.js");
@@ -133,9 +124,7 @@ describe("validateCommand", () => {
     expect(
       validationInput?.plugins.map((plugin) => plugin.descriptor.name),
     ).toStrictEqual(["typescript", "python", "markdown", "json", "text"]);
-    expect(validationInput?.projectPaths).toStrictEqual([
-      "packages/conformetry",
-    ]);
+    expect(validationInput?.projectPaths).toStrictEqual([process.cwd()]);
     expect(validationInput?.templateRuleNames).toStrictEqual([
       "nestjs-service-module",
     ]);
@@ -145,16 +134,12 @@ describe("validateCommand", () => {
     );
   });
 
-  it("filters validators and project paths when rules and projects are provided", async () => {
+  it("uses local project and template rule selection when options are provided", async () => {
     mockLoadConformetryConfiguration.mockResolvedValue({
       generators: {
         "nestjs-service-module": {},
         "react-component": {},
       },
-    });
-    mockResolveTemplateRuleRouting.mockReturnValue({
-      projectPaths: ["packages/conformetry-json"],
-      templateRuleNames: ["react-component"],
     });
     mockRunValidation.mockResolvedValue({ ok: true });
 
@@ -172,17 +157,12 @@ describe("validateCommand", () => {
     await command.run([], {
       config: "configuration/custom.config.ts",
       projects: ["packages/conformetry", "packages/conformetry-json"],
-      rules: ["markdown", "json"],
+      rules: ["json", "react-component", "non-existent-rule"],
     });
 
     expect(mockLoadConformetryConfiguration).toHaveBeenCalledWith(
       "configuration/custom.config.ts",
     );
-    expect(mockResolveTemplateRuleRouting).toHaveBeenCalledWith({
-      configuredTemplateRuleNames: ["nestjs-service-module", "react-component"],
-      projectSelectors: ["packages/conformetry", "packages/conformetry-json"],
-      workingDirectory: process.cwd(),
-    });
 
     const validationInput = mockRunValidation.mock.calls[0]?.[0];
 
@@ -190,9 +170,10 @@ describe("validateCommand", () => {
 
     expect(
       validationInput?.plugins.map((plugin) => plugin.descriptor.name),
-    ).toStrictEqual(["markdown", "json"]);
+    ).toStrictEqual(["json"]);
 
     expect(validationInput?.projectPaths).toStrictEqual([
+      "packages/conformetry",
       "packages/conformetry-json",
     ]);
 
@@ -203,10 +184,6 @@ describe("validateCommand", () => {
 
   it("throws when validation result is not ok", async () => {
     mockLoadConformetryConfiguration.mockResolvedValue({ generators: {} });
-    mockResolveTemplateRuleRouting.mockReturnValue({
-      projectPaths: [process.cwd()],
-      templateRuleNames: [],
-    });
     mockRunValidation.mockResolvedValue({ failures: ["x"], ok: false });
 
     const { ValidateCommand } = await import("./validate.command.js");
@@ -222,5 +199,91 @@ describe("validateCommand", () => {
 
     await expect(command.run([], {})).rejects.toThrow("Validation failed");
     expect(process.exitCode).toBe(1);
+  });
+
+  it("injects command dependencies when constructor type metadata is unavailable", async () => {
+    mockLoadConformetryConfiguration.mockResolvedValue({
+      generators: {
+        "nestjs-service-module": {},
+      },
+    });
+    mockRunValidation.mockResolvedValue({ ok: true, results: [] });
+
+    const { Test } = await import("@nestjs/testing");
+    const { ValidateCommand } = await import("./validate.command.js");
+    const originalParameterTypes = Reflect.getMetadata(
+      designParameterTypesMetadataKey,
+      ValidateCommand,
+    ) as undefined | unknown[];
+
+    Reflect.defineMetadata(
+      designParameterTypesMetadataKey,
+      [],
+      ValidateCommand,
+    );
+
+    let testingModule: null | TestingModule = null;
+
+    try {
+      testingModule = await Test.createTestingModule({
+        providers: [
+          ValidateCommand,
+          {
+            provide: ConfigurationService,
+            useValue: {
+              loadConformetryConfiguration: mockLoadConformetryConfiguration,
+            },
+          },
+          {
+            provide: ValidationService,
+            useValue: {
+              runValidation: mockRunValidation,
+            },
+          },
+          {
+            provide: TypeScriptValidatorService,
+            useValue: new TypeScriptValidatorService(),
+          },
+          {
+            provide: PythonValidatorService,
+            useValue: new PythonValidatorService(),
+          },
+          {
+            provide: MarkdownValidatorService,
+            useValue: new MarkdownValidatorService(),
+          },
+          {
+            provide: JsonValidatorService,
+            useValue: new JsonValidatorService(),
+          },
+          {
+            provide: TextValidatorService,
+            useValue: new TextValidatorService(),
+          },
+        ],
+      }).compile();
+
+      const command = testingModule.get(ValidateCommand);
+
+      await expect(command.run([], {})).resolves.toBeUndefined();
+      expect(mockRunValidation).toHaveBeenCalledTimes(1);
+    } finally {
+      if (testingModule !== null) {
+        await testingModule.close();
+      }
+
+      if (originalParameterTypes === undefined) {
+        Reflect.deleteMetadata(
+          designParameterTypesMetadataKey,
+          ValidateCommand,
+        );
+      } else {
+        Reflect.defineMetadata(
+          designParameterTypesMetadataKey,
+          originalParameterTypes,
+          ValidateCommand,
+        );
+      }
+    }
   });
 });

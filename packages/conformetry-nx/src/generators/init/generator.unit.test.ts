@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { conformetryInitGenerator } from "./generator";
+import { conformetryInitGenerator } from "./generator.js";
 
 import type { FileChange, Tree } from "@nx/devkit";
 

@@ -22,5 +22,6 @@ export interface ResolveTemplateRuleRoutingResult {
 export interface WorkspaceProjectMetadata {
   name: string;
   rootPath: string;
+  sourceRoot: string;
   tags: string[];
 }

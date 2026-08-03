@@ -39,6 +39,7 @@
     "prettier": {},
     "spell-check": {},
     "start": {
+      "cache": false,
       "executor": "nx:run-commands",
       "options": {
         "command": "tsx --tsconfig packages/conformetry/tsconfig.json packages/conformetry/src/main.ts",

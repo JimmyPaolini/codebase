@@ -10,6 +10,7 @@ import {
 import type {
   PreparedValidationDocument,
   PreparedValidationPayload,
+  ValidationProjectTemplateMetadata,
 } from "./validation.types.js";
 import type { ConformetryConfiguration } from "@jimmypaolini/conformetry-configuration";
 
@@ -163,24 +164,23 @@ function collectTemplateFilePaths(templateDirectoryPath: string): string[] {
  */
 function createTemplateSubstitutions(args: {
   projectPath: string;
+  projectTemplateMetadata: ValidationProjectTemplateMetadata;
   workingDirectory: string;
 }): Record<string, string> {
   const runtimeService = new GenerationRuntimeService();
   const projectName = path.basename(args.projectPath);
   const projectNameSubstitutions =
     runtimeService.buildNameSubstitutions(projectName);
-  const relativeProjectPath = path.relative(
-    args.workingDirectory,
-    args.projectPath,
-  );
-  const relativePathSegment = relativeProjectPath
-    .split(path.sep)
-    .map((segment) => segment.trim())
-    .find((segment) => segment.length > 0);
-  const projectType = relativePathSegment ?? "applications";
+  const projectType = resolveProjectType({
+    projectPath: args.projectPath,
+    projectTemplateMetadata: args.projectTemplateMetadata,
+    workingDirectory: args.workingDirectory,
+  });
 
   return {
-    description: resolveProjectDescription(args.projectPath),
+    description:
+      args.projectTemplateMetadata.description ??
+      resolveProjectDescription(args.projectPath),
     name: projectName,
     nameCamelCase: projectNameSubstitutions["nameCamelCase"] ?? projectName,
     nameKebabCase: projectNameSubstitutions["nameKebabCase"] ?? projectName,
@@ -278,10 +278,16 @@ function resolveBestMatchedGeneratorCandidate(args: {
   workingDirectory: string;
 }): MatchedGeneratorCandidate | undefined {
   const candidates: MatchedGeneratorCandidate[] = [];
+  const projectTemplateMetadata = resolveProjectTemplateMetadata(
+    args.projectPath,
+  );
   const inferredGeneratorNames = inferGeneratorNamesFromProjectPath({
     configuredGeneratorNames: args.selectedGeneratorNames,
     projectPath: args.projectPath,
   });
+  if (projectTemplateMetadata.generatorName !== undefined) {
+    inferredGeneratorNames.add(projectTemplateMetadata.generatorName);
+  }
 
   for (const generatorName of args.selectedGeneratorNames) {
     const generatorDefinition = args.configuration.generators[generatorName];
@@ -306,6 +312,7 @@ function resolveBestMatchedGeneratorCandidate(args: {
 
     const substitutions = createTemplateSubstitutions({
       projectPath: args.projectPath,
+      projectTemplateMetadata,
       workingDirectory: args.workingDirectory,
     });
 
@@ -340,6 +347,19 @@ function resolveBestMatchedGeneratorCandidate(args: {
   const sortedCandidates = candidates
     .filter((candidate) => candidate.existingFileCount > 0)
     .toSorted((leftCandidate, rightCandidate) => {
+      const leftGeneratorTagPriority =
+        projectTemplateMetadata.generatorName === leftCandidate.generatorName
+          ? 1
+          : 0;
+      const rightGeneratorTagPriority =
+        projectTemplateMetadata.generatorName === rightCandidate.generatorName
+          ? 1
+          : 0;
+
+      if (leftGeneratorTagPriority !== rightGeneratorTagPriority) {
+        return rightGeneratorTagPriority - leftGeneratorTagPriority;
+      }
+
       const leftPriority = inferredGeneratorNames.has(
         leftCandidate.generatorName,
       )
@@ -355,7 +375,17 @@ function resolveBestMatchedGeneratorCandidate(args: {
         return rightPriority - leftPriority;
       }
 
-      return rightCandidate.existingFileCount - leftCandidate.existingFileCount;
+      if (
+        leftCandidate.existingFileCount !== rightCandidate.existingFileCount
+      ) {
+        return (
+          rightCandidate.existingFileCount - leftCandidate.existingFileCount
+        );
+      }
+
+      return leftCandidate.generatorName.localeCompare(
+        rightCandidate.generatorName,
+      );
     });
 
   return sortedCandidates[0];
@@ -378,6 +408,101 @@ function resolveProjectDescription(projectPath: string): string {
 
   const description = descriptionMatch?.groups?.["description"];
   return description === undefined ? "" : description;
+}
+
+/**
+ * Reads project metadata from project.json and pyproject.toml, when present.
+ */
+function resolveProjectTemplateMetadata(
+  projectPath: string,
+): ValidationProjectTemplateMetadata {
+  const projectMetadata: ValidationProjectTemplateMetadata = {
+    description: resolveProjectDescription(projectPath),
+  };
+  const projectMetadataPath = path.join(projectPath, "project.json");
+  if (!fs.existsSync(projectMetadataPath)) {
+    return projectMetadata;
+  }
+
+  const projectMetadataContent = fs.readFileSync(projectMetadataPath, "utf8");
+
+  let parsedProjectMetadata: unknown;
+  try {
+    parsedProjectMetadata = JSON.parse(projectMetadataContent) as unknown;
+  } catch {
+    return projectMetadata;
+  }
+
+  if (
+    typeof parsedProjectMetadata !== "object" ||
+    parsedProjectMetadata === null
+  ) {
+    return projectMetadata;
+  }
+
+  const projectMetadataRecord = parsedProjectMetadata as Record<
+    string,
+    unknown
+  >;
+
+  const sourceRoot = projectMetadataRecord["sourceRoot"];
+  if (typeof sourceRoot === "string") {
+    const sourceRootType = sourceRoot
+      .split(/[\\/]/u)
+      .map((segment) => segment.trim())
+      .find((segment) => segment.length > 0);
+
+    if (sourceRootType !== undefined) {
+      projectMetadata.type = sourceRootType;
+    }
+  }
+
+  const tags = projectMetadataRecord["tags"];
+  if (!Array.isArray(tags)) {
+    return projectMetadata;
+  }
+
+  for (const tag of tags) {
+    if (typeof tag !== "string") {
+      continue;
+    }
+
+    if (!tag.startsWith("generator:")) {
+      continue;
+    }
+
+    const generatorName = tag.slice("generator:".length).trim();
+    if (generatorName.length > 0) {
+      projectMetadata.generatorName = generatorName;
+      return projectMetadata;
+    }
+  }
+
+  return projectMetadata;
+}
+
+/**
+ * Resolves a stable project type for substitution rendering.
+ */
+function resolveProjectType(args: {
+  projectPath: string;
+  projectTemplateMetadata: ValidationProjectTemplateMetadata;
+  workingDirectory: string;
+}): string {
+  if (args.projectTemplateMetadata.type !== undefined) {
+    return args.projectTemplateMetadata.type;
+  }
+
+  const relativeProjectPath = path.relative(
+    args.workingDirectory,
+    args.projectPath,
+  );
+  const relativePathSegment = relativeProjectPath
+    .split(path.sep)
+    .map((segment) => segment.trim())
+    .find((segment) => segment.length > 0);
+
+  return relativePathSegment ?? "applications";
 }
 
 /**

@@ -1,12 +1,11 @@
 import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
 import { JsonValidatorService } from "@jimmypaolini/conformetry-json";
 import { MarkdownValidatorService } from "@jimmypaolini/conformetry-markdown";
-import { resolveTemplateRuleRouting } from "@jimmypaolini/conformetry-nx";
 import { PythonValidatorService } from "@jimmypaolini/conformetry-python";
 import { TextValidatorService } from "@jimmypaolini/conformetry-text";
 import { TypeScriptValidatorService } from "@jimmypaolini/conformetry-typescript";
 import { ValidationService } from "@jimmypaolini/conformetry-validation";
-import { ConsoleLogger, Injectable } from "@nestjs/common";
+import { ConsoleLogger, Inject, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import type { ValidateCommandOptions } from "./validate.types.js";
@@ -22,12 +21,19 @@ import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-valid
 @Injectable()
 export class ValidateCommand extends CommandRunner {
   constructor(
+    @Inject(ConfigurationService)
     private readonly configurationService: ConfigurationService,
+    @Inject(ValidationService)
     private readonly validationService: ValidationService,
+    @Inject(TypeScriptValidatorService)
     private readonly typeScriptValidatorService: TypeScriptValidatorService,
+    @Inject(PythonValidatorService)
     private readonly pythonValidatorService: PythonValidatorService,
+    @Inject(MarkdownValidatorService)
     private readonly markdownValidatorService: MarkdownValidatorService,
+    @Inject(JsonValidatorService)
     private readonly jsonValidatorService: JsonValidatorService,
+    @Inject(TextValidatorService)
     private readonly textValidatorService: TextValidatorService,
   ) {
     super();
@@ -139,32 +145,33 @@ export class ValidateCommand extends CommandRunner {
     );
     const pluginScopedRules =
       options.rules?.filter((ruleName) => pluginNames.has(ruleName)) ?? [];
-    const requestedTemplateRuleNames =
-      options.rules?.filter((ruleName) => !pluginNames.has(ruleName)) ?? [];
     const filteredPlugins =
       pluginScopedRules.length > 0
         ? plugins.filter((plugin) =>
             pluginScopedRules.includes(plugin.descriptor.name),
           )
         : plugins;
-    const routedTemplateRules = resolveTemplateRuleRouting({
-      configuredTemplateRuleNames: Object.keys(
-        conformetryConfiguration.generators,
-      ),
-      projectSelectors: options.projects?.length
-        ? options.projects
-        : [process.cwd()],
-      ...(requestedTemplateRuleNames.length > 0
-        ? { requestedTemplateRuleNames }
-        : {}),
-      workingDirectory: process.cwd(),
-    });
+    const requestedProjectPaths = options.projects ?? [];
+    const projectPaths =
+      requestedProjectPaths.length > 0
+        ? requestedProjectPaths
+        : [process.cwd()];
+    const configuredTemplateRuleNames = Object.keys(
+      conformetryConfiguration.generators,
+    );
+    const requestedRuleNames = options.rules ?? [];
+    const templateRuleNames =
+      requestedRuleNames.length > 0
+        ? requestedRuleNames.filter((ruleName) =>
+            configuredTemplateRuleNames.includes(ruleName),
+          )
+        : configuredTemplateRuleNames;
 
     const validationResult = await this.validationService.runValidation({
       configurationPath,
       plugins: filteredPlugins,
-      projectPaths: routedTemplateRules.projectPaths,
-      templateRuleNames: routedTemplateRules.templateRuleNames,
+      projectPaths,
+      templateRuleNames,
       workingDirectory: process.cwd(),
     });
 

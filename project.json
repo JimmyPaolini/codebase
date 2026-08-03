@@ -132,6 +132,7 @@
       }
     },
     "conformetry-generate": {
+      "cache": false,
       "description": "Run the conformetry generate command from the workspace root",
       "executor": "nx:run-commands",
       "options": {
@@ -140,6 +141,7 @@
       }
     },
     "conformetry-validate": {
+      "cache": false,
       "description": "Run the conformetry validate command from the workspace root",
       "executor": "nx:run-commands",
       "options": {

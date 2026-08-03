@@ -3,9 +3,9 @@ import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { Injectable } from "@nestjs/common";
 import { createJiti } from "jiti";
 import { parse as parseJsonc } from "jsonc-parser";
-import { Injectable } from "@nestjs/common";
 
 import { conformetryConfigurationSchema } from "../../constants.js";
 

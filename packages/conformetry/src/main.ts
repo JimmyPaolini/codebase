@@ -126,7 +126,18 @@ async function main(): Promise<void> {
       JSON.stringify(passthroughArguments);
   }
 
-  await CommandFactory.run(MainModule, { bufferLogs: true, logger });
+  await CommandFactory.run(MainModule, {
+    bufferLogs: true,
+    errorHandler: (error) => {
+      process.exitCode = 1;
+      logger.error(error);
+    },
+    logger,
+    serviceErrorHandler: (error) => {
+      process.exitCode = 1;
+      logger.error(error);
+    },
+  });
 }
 
 /**

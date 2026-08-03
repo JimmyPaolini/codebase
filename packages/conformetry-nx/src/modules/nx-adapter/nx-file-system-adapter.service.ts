@@ -1,14 +1,14 @@
 import path from "node:path";
 
-import type {
-  DirectoryEntry,
-  FileSystemAdapter,
-} from "./nx-generation-runtime";
+import { Injectable } from "@nestjs/common";
+
+import type { DirectoryEntry, FileSystemAdapter } from "./nx-adapter.types";
 import type { Tree } from "@nx/devkit";
 
 /**
  * Implements the filesystem adapter contract using an Nx tree.
  */
+@Injectable()
 export class NxFileSystemAdapter implements FileSystemAdapter {
   constructor(tree: Tree) {
     this.tree = tree;
