@@ -1,8 +1,4 @@
-import { createRequire } from "node:module";
-import path from "node:path";
-import { pathToFileURL } from "node:url";
-
-import type { CreateNodes, GeneratorCallback, Tree } from "@nx/devkit";
+import { NestFactory } from "@nestjs/core";
 
 import { NxAdapterService } from "./modules/nx-adapter/nx-adapter.service";
 import { RuleRoutingService } from "./modules/rule-routing/rule-routing.service";
@@ -11,27 +7,9 @@ import type {
   ResolveTemplateRuleRoutingArguments,
   ResolveTemplateRuleRoutingResult,
 } from "./modules/rule-routing/rule-routing.types";
+import type { CreateNodes, GeneratorCallback, Tree } from "@nx/devkit";
 
 export * from "./generators/init/generator";
-
-/**
- * Minimal conformetry configuration shape required by the Nx adapter.
- */
-interface WorkspaceConformetryConfiguration {
-  generators: Record<string, WorkspaceGeneratorDefinition>;
-}
-
-/**
- * Minimal generator configuration required by the Nx adapter.
- */
-interface WorkspaceGeneratorDefinition {
-  aliases?: string[];
-  description?: string;
-  name: string;
-  schemaPath: string;
-  targetPathStrategy: string;
-  templateDirectoryPath: string;
-}
 
 /**
  * A minimal Nx plugin entrypoint so the package can be discovered by Nx.
@@ -48,7 +26,35 @@ const conformetryPluginDefinition = {
   name: "@jimmypaolini/conformetry-nx",
 };
 
-const moduleRequire = createRequire(import.meta.url);
+const noopGeneratorCallback: GeneratorCallback = async (): Promise<void> => {};
+const conformetryPackageName = "@jimmypaolini/conformetry";
+
+/**
+ * Contract used by conformetry-nx for generator delegation.
+ */
+interface ConformetryIntegrationFacade {
+  runConfiguredGenerator(
+    args: RunConfiguredGeneratorArguments,
+  ): Promise<unknown>;
+}
+
+/**
+ * Dynamic module surface loaded from the conformetry package.
+ */
+interface ConformetryIntegrationModuleSurface {
+  IntegrationModule: unknown;
+  IntegrationService: unknown;
+}
+
+/**
+ * Arguments forwarded to conformetry IntegrationService.runConfiguredGenerator.
+ */
+interface RunConfiguredGeneratorArguments {
+  configurationPath: string;
+  generatorInputs: Record<string, string | undefined>;
+  generatorName: string;
+  targetDirectoryPath: string;
+}
 
 export default conformetryPluginDefinition;
 
@@ -199,93 +205,44 @@ export async function resolveTemplateRuleRouting(
   args: ResolveTemplateRuleRoutingArguments,
 ): Promise<ResolveTemplateRuleRoutingResult> {
   const ruleRoutingService = new RuleRoutingService();
+  await Promise.resolve();
 
   return ruleRoutingService.resolveTemplateRuleRouting(args);
 }
 
 /**
- * Determines whether a value is a string-keyed object record.
+ * Loads conformetry integration module exports lazily at runtime.
  */
-function isUnknownRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
+async function loadConformetryIntegrationModuleSurface(): Promise<ConformetryIntegrationModuleSurface> {
+  return (await import(
+    conformetryPackageName
+  )) as ConformetryIntegrationModuleSurface;
 }
 
 /**
- * Validates the loaded conformetry configuration shape.
+ * Runs work with a short-lived conformetry integration service context.
  */
-function isWorkspaceConformetryConfiguration(
-  value: unknown,
-): value is WorkspaceConformetryConfiguration {
-  if (!isUnknownRecord(value)) {
-    return false;
-  }
-
-  if (!("generators" in value)) {
-    return false;
-  }
-
-  return (
-    typeof value["generators"] === "object" && value["generators"] !== null
+async function runWithIntegrationService<T>(
+  callback: (integrationService: ConformetryIntegrationFacade) => Promise<T>,
+): Promise<T> {
+  const conformetryIntegrationModule =
+    await loadConformetryIntegrationModuleSurface();
+  const applicationContext = await NestFactory.createApplicationContext(
+    conformetryIntegrationModule.IntegrationModule as never,
+    {
+      logger: false,
+    },
   );
-}
-/**
- * Loads a configuration module from either ESM import or Nx-compatible require.
- */
-async function loadConfigurationModule(
-  configurationPath: string,
-): Promise<unknown> {
-  const extension = path.extname(configurationPath).toLowerCase();
-  const shouldPreferRequire =
-    extension === ".ts" || extension === ".mts" || extension === ".cts";
 
-  if (shouldPreferRequire) {
-    return await Promise.resolve(moduleRequire(configurationPath));
+  try {
+    const integrationService: ConformetryIntegrationFacade =
+      applicationContext.get(
+        conformetryIntegrationModule.IntegrationService as never,
+      );
+    return await callback(integrationService);
+  } finally {
+    await applicationContext.close();
   }
-
-  return await import(pathToFileURL(configurationPath).href);
-}
-
-/**
- * Loads the conformetry configuration module from the current workspace.
- */
-async function loadWorkspaceConformetryConfiguration(
-  configurationPath: string,
-): Promise<WorkspaceConformetryConfiguration> {
-  const resolvedPath = path.isAbsolute(configurationPath)
-    ? configurationPath
-    : path.resolve(configurationPath);
-  const importedModule = await loadConfigurationModule(resolvedPath);
-  const configurationValue = resolveConfigurationValue(importedModule);
-
-  if (!isWorkspaceConformetryConfiguration(configurationValue)) {
-    throw new Error(
-      `Invalid conformetry configuration at "${resolvedPath}": missing generators map`,
-    );
-  }
-
-  return configurationValue;
-}
-
-/**
- * Resolves the actual configuration value from imported module shapes.
- */
-function resolveConfigurationValue(importedModule: unknown): unknown {
-  if (!isUnknownRecord(importedModule)) {
-    return importedModule;
-  }
-
-  if ("default" in importedModule && importedModule["default"] !== undefined) {
-    return importedModule["default"];
-  }
-
-  if (
-    "conformetryConfiguration" in importedModule &&
-    importedModule["conformetryConfiguration"] !== undefined
-  ) {
-    return importedModule["conformetryConfiguration"];
-  }
-
-  return importedModule;
 }
 
 /**
@@ -301,29 +258,28 @@ async function runWorkspaceGenerator(args: {
     typeof options["config"] === "string"
       ? options["config"]
       : "configuration/conformetry.config.ts";
-  const configuration =
-    await loadWorkspaceConformetryConfiguration(configurationPath);
-  const generatorDefinition = configuration.generators[args.generatorName];
-
-  if (generatorDefinition === undefined) {
-    throw new Error(`Unknown conformetry generator "${args.generatorName}"`);
-  }
 
   const nxAdapterService = new NxAdapterService();
-  const factory = nxAdapterService.createConformetryGeneratorFactory({
-    definition: {
-      ...(generatorDefinition.aliases === undefined
-        ? {}
-        : { aliases: generatorDefinition.aliases }),
-      ...(generatorDefinition.description === undefined
-        ? {}
-        : { description: generatorDefinition.description }),
-      name: generatorDefinition.name,
-      schemaPath: generatorDefinition.schemaPath,
-      targetPathStrategy: generatorDefinition.targetPathStrategy,
-      templateDirectoryPath: generatorDefinition.templateDirectoryPath,
-    },
+  const targetDirectoryPath =
+    await nxAdapterService.resolveConformetryTargetDirectoryPath({
+      definition: {
+        name: args.generatorName,
+        schemaPath: "",
+        templateDirectoryPath: "",
+      },
+      options,
+      tree: args.tree,
+    });
+  const generatorInputs = nxAdapterService.normalizeGeneratorInputs(options);
+
+  await runWithIntegrationService(async (integrationService) => {
+    await integrationService.runConfiguredGenerator({
+      configurationPath,
+      generatorInputs,
+      generatorName: args.generatorName,
+      targetDirectoryPath,
+    });
   });
 
-  return await factory(args.tree, options);
+  return noopGeneratorCallback;
 }

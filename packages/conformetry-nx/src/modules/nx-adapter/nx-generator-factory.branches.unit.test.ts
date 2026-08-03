@@ -44,10 +44,8 @@ import {
   resolveConformetryTargetDirectoryPath,
 } from "./nx-generator-factory.utilities.js";
 
-import type {
-  GenerationRuntimeService,
-  RunGeneratorResult,
-} from "./nx-generation-runtime.service.js";
+import type { RunGeneratorResult } from "./nx-adapter.types";
+import type { GenerationRuntimeService } from "./nx-generation-runtime.service.js";
 import type { Tree } from "@nx/devkit";
 
 function createStubTree(): Tree {

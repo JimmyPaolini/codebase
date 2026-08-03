@@ -9,7 +9,7 @@
 [![Jupyter](https://img.shields.io/badge/Jupyter-1.1-F37626?logo=jupyter&logoColor=white)](https://jupyter.org/)
 
 <!-- CODE_STATISTICS_START -->
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-198019-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-197936-22c55e?style=flat-square)
 ![Repo Size](https://img.shields.io/badge/Repo_Size-153.3_MiB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-565-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-1067-3178c6?style=flat-square)
@@ -17,15 +17,15 @@
 ![External Packages](https://img.shields.io/badge/External_Packages-146-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-347-7c3aed?style=flat-square)
 ![Functions](https://img.shields.io/badge/Functions-11023-16a34a?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-9817-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-1132-059669?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-319-0ea5e9?style=flat-square)
-![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-29-0369a1?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-9820-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-1129-059669?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-320-0ea5e9?style=flat-square)
+![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-30-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-16535-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-4359-0284c7?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-16522-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-4355-0284c7?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-703-db2777?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-1511-ea580c?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-1512-ea580c?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-45-ca8a04?style=flat-square)
 <!-- CODE_STATISTICS_END -->
 

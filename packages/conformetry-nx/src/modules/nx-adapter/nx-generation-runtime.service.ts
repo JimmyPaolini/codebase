@@ -15,6 +15,10 @@ import type {
 
 /**
  * Executes generation against the provided filesystem adapter.
+ *
+ * Workspace generator execution is delegated through the conformetry
+ * IntegrationService. This runtime remains for Nx-local generator factories
+ * such as the init generator.
  */
 @Injectable()
 export class GenerationRuntimeService {

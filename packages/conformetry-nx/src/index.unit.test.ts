@@ -1,22 +1,31 @@
-import { mkdtemp, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import path from "node:path";
-
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { mockCreateFactory, mockGenerator, mockResolveNxAdapterService } =
-  vi.hoisted(() => {
-    return {
-      mockCreateFactory: vi.fn(),
-      mockGenerator: vi.fn(),
-      mockResolveNxAdapterService: vi.fn(),
-    };
-  });
-
-vi.mock("./modules/nx-adapter/nx-adapter-context.utilities.js", () => {
+const {
+  mockIntegrationRunConfiguredGenerator,
+  mockNestClose,
+  mockNestCreateApplicationContext,
+  mockNestGet,
+} = vi.hoisted(() => {
   return {
-    resolveNxAdapterService: mockResolveNxAdapterService,
-    resolveRuleRoutingService: vi.fn(),
+    mockIntegrationRunConfiguredGenerator: vi.fn(),
+    mockNestClose: vi.fn(),
+    mockNestCreateApplicationContext: vi.fn(),
+    mockNestGet: vi.fn(),
+  };
+});
+
+vi.mock("@jimmypaolini/conformetry", () => {
+  return {
+    IntegrationModule: { token: "IntegrationModule" },
+    IntegrationService: { token: "IntegrationService" },
+  };
+});
+
+vi.mock("@nestjs/core", () => {
+  return {
+    NestFactory: {
+      createApplicationContext: mockNestCreateApplicationContext,
+    },
   };
 });
 
@@ -34,16 +43,6 @@ import conformetryPluginDefinition, {
 } from "./index.js";
 
 import type { Tree } from "@nx/devkit";
-
-async function createConfigurationModule(
-  moduleContent: string,
-): Promise<string> {
-  const directory = await mkdtemp(path.join(tmpdir(), "conformetry-nx-index-"));
-  const filePath = path.join(directory, "conformetry.config.mjs");
-  await writeFile(filePath, moduleContent, "utf8");
-
-  return filePath;
-}
 
 function createStubTree(): Tree {
   const read: Tree["read"] = (_pathName: string, encoding?: BufferEncoding) => {
@@ -74,15 +73,22 @@ function createStubTree(): Tree {
 
 describe("conformetry-nx index", () => {
   beforeEach(() => {
-    mockCreateFactory.mockReset();
-    mockGenerator.mockReset();
-    mockResolveNxAdapterService.mockReset();
-    mockGenerator.mockResolvedValue(async () => {
-      await Promise.resolve();
+    mockIntegrationRunConfiguredGenerator.mockReset();
+    mockNestClose.mockReset();
+    mockNestCreateApplicationContext.mockReset();
+    mockNestGet.mockReset();
+
+    mockIntegrationRunConfiguredGenerator.mockResolvedValue({
+      generatedFilePaths: ["generated/react/example.ts"],
+      outputDirectoryPath: "generated/react",
     });
-    mockCreateFactory.mockReturnValue(mockGenerator);
-    mockResolveNxAdapterService.mockResolvedValue({
-      createConformetryGeneratorFactory: mockCreateFactory,
+    mockNestGet.mockReturnValue({
+      runConfiguredGenerator: mockIntegrationRunConfiguredGenerator,
+    });
+    mockNestClose.mockResolvedValue(undefined);
+    mockNestCreateApplicationContext.mockResolvedValue({
+      close: mockNestClose,
+      get: mockNestGet,
     });
   });
 
@@ -95,221 +101,102 @@ describe("conformetry-nx index", () => {
     expect(typeof conformetryPluginDefinition.createNodes[1]).toBe("function");
   });
 
-  it("loads workspace configuration and executes every exported generator", async () => {
-    const configPath = await createConfigurationModule(`
-      export default {
-        generators: {
-          "jupyter-notebook-application": {
-            aliases: ["jna"],
-            description: "jupyter",
-            name: "jupyter-notebook-application",
-            schemaPath: "schema.json",
-            targetPathStrategy: "direct",
-            templateDirectoryPath: "templates/jupyter"
-          },
-          "nestjs-command-application": {
-            name: "nestjs-command-application",
-            schemaPath: "schema.json",
-            targetPathStrategy: "direct",
-            templateDirectoryPath: "templates/nca"
-          },
-          "nestjs-command-module": {
-            name: "nestjs-command-module",
-            schemaPath: "schema.json",
-            targetPathStrategy: "direct",
-            templateDirectoryPath: "templates/ncm"
-          },
-          "nestjs-dataloader-module": {
-            name: "nestjs-dataloader-module",
-            schemaPath: "schema.json",
-            targetPathStrategy: "direct",
-            templateDirectoryPath: "templates/ndm"
-          },
-          "nestjs-graphql-application": {
-            name: "nestjs-graphql-application",
-            schemaPath: "schema.json",
-            targetPathStrategy: "direct",
-            templateDirectoryPath: "templates/nga"
-          },
-          "nestjs-graphql-module": {
-            name: "nestjs-graphql-module",
-            schemaPath: "schema.json",
-            targetPathStrategy: "direct",
-            templateDirectoryPath: "templates/ngm"
-          },
-          "nestjs-service-file": {
-            name: "nestjs-service-file",
-            schemaPath: "schema.json",
-            targetPathStrategy: "direct",
-            templateDirectoryPath: "templates/nsf"
-          },
-          "nestjs-service-module": {
-            name: "nestjs-service-module",
-            schemaPath: "schema.json",
-            targetPathStrategy: "direct",
-            templateDirectoryPath: "templates/nsm"
-          },
-          "nestjs-service-package": {
-            name: "nestjs-service-package",
-            schemaPath: "schema.json",
-            targetPathStrategy: "direct",
-            templateDirectoryPath: "templates/nsp"
-          },
-          "react-component": {
-            name: "react-component",
-            schemaPath: "schema.json",
-            targetPathStrategy: "direct",
-            templateDirectoryPath: "templates/react"
-          }
-        }
-      }
-    `);
-
+  it("delegates generation execution to conformetry integration facade", async () => {
     const tree = createStubTree();
-    const options = { config: configPath, name: "demo" };
-
     const generators = [
-      generateJupyterNotebookApplication,
-      generateNestjsCommandApplication,
-      generateNestjsCommandModule,
-      generateNestjsDataloaderModule,
-      generateNestjsGraphqlApplication,
-      generateNestjsGraphqlModule,
-      generateNestjsServiceFile,
-      generateNestjsServiceModule,
-      generateNestjsServicePackage,
-      generateReactComponent,
+      {
+        generatorName: "jupyter-notebook-application",
+        run: generateJupyterNotebookApplication,
+      },
+      {
+        generatorName: "nestjs-command-application",
+        run: generateNestjsCommandApplication,
+      },
+      {
+        generatorName: "nestjs-command-module",
+        run: generateNestjsCommandModule,
+      },
+      {
+        generatorName: "nestjs-dataloader-module",
+        run: generateNestjsDataloaderModule,
+      },
+      {
+        generatorName: "nestjs-graphql-application",
+        run: generateNestjsGraphqlApplication,
+      },
+      {
+        generatorName: "nestjs-graphql-module",
+        run: generateNestjsGraphqlModule,
+      },
+      {
+        generatorName: "nestjs-service-file",
+        run: generateNestjsServiceFile,
+      },
+      {
+        generatorName: "nestjs-service-module",
+        run: generateNestjsServiceModule,
+      },
+      {
+        generatorName: "nestjs-service-package",
+        run: generateNestjsServicePackage,
+      },
+      {
+        generatorName: "react-component",
+        run: generateReactComponent,
+      },
     ];
 
     for (const generator of generators) {
-      await generator(tree, options);
-    }
-
-    expect(mockCreateFactory).toHaveBeenCalledTimes(generators.length);
-    expect(mockGenerator).toHaveBeenCalledTimes(generators.length);
-    expect(mockGenerator).toHaveBeenCalledWith(tree, options);
-  });
-
-  it("supports configuration provided via conformetryConfiguration named export", async () => {
-    const configPath = await createConfigurationModule(`
-      export const conformetryConfiguration = {
-        generators: {
-          "react-component": {
-            name: "react-component",
-            schemaPath: "schema.json",
-            targetPathStrategy: "direct",
-            templateDirectoryPath: "templates/react"
-          }
-        }
-      }
-    `);
-
-    await generateReactComponent(createStubTree(), {
-      config: configPath,
-      name: "demo",
-    });
-
-    expect(mockCreateFactory).toHaveBeenCalledTimes(1);
-  });
-
-  it("loads TypeScript configuration files used by Nx workspaces", async () => {
-    const directory = await mkdtemp(
-      path.join(tmpdir(), "conformetry-nx-ts-config-"),
-    );
-    const configurationPath = path.join(directory, "conformetry.config.ts");
-    await writeFile(
-      configurationPath,
-      `export default {
-        generators: {
-          "react-component": {
-            name: "react-component",
-            schemaPath: "schema.json",
-            targetPathStrategy: "direct",
-            templateDirectoryPath: "templates/react"
-          }
-        }
-      }`,
-      "utf8",
-    );
-
-    await generateReactComponent(createStubTree(), {
-      config: configurationPath,
-      name: "demo",
-    });
-
-    expect(mockCreateFactory).toHaveBeenCalledTimes(1);
-  });
-
-  it("resolves relative configuration paths from the current working directory", async () => {
-    const workingDirectory = await mkdtemp(
-      path.join(tmpdir(), "conformetry-nx-relative-config-"),
-    );
-    const configurationPath = path.join(
-      workingDirectory,
-      "conformetry.config.mjs",
-    );
-    await writeFile(
-      configurationPath,
-      `export default {
-        generators: {
-          "react-component": {
-            name: "react-component",
-            schemaPath: "schema.json",
-            targetPathStrategy: "direct",
-            templateDirectoryPath: "templates/react"
-          }
-        }
-      }`,
-      "utf8",
-    );
-
-    const previousWorkingDirectory = process.cwd();
-    process.chdir(workingDirectory);
-
-    try {
-      await generateReactComponent(createStubTree(), {
-        config: "./conformetry.config.mjs",
+      const callback = await generator.run(tree, {
+        config: "configuration/conformetry.config.ts",
+        count: 3,
+        enabled: true,
+        metadata: { level: "advanced" },
         name: "demo",
+        targetDirectoryPath: `generated/${generator.generatorName}`,
       });
 
-      expect(mockCreateFactory).toHaveBeenCalledTimes(1);
-    } finally {
-      process.chdir(previousWorkingDirectory);
+      expect(typeof callback).toBe("function");
+    }
+
+    expect(mockNestCreateApplicationContext).toHaveBeenCalledTimes(
+      generators.length,
+    );
+    expect(mockNestClose).toHaveBeenCalledTimes(generators.length);
+    expect(mockIntegrationRunConfiguredGenerator).toHaveBeenCalledTimes(
+      generators.length,
+    );
+
+    for (const [index, generator] of generators.entries()) {
+      expect(mockIntegrationRunConfiguredGenerator).toHaveBeenNthCalledWith(
+        index + 1,
+        {
+          configurationPath: "configuration/conformetry.config.ts",
+          generatorInputs: {
+            config: "configuration/conformetry.config.ts",
+            count: "3",
+            enabled: "true",
+            metadata: '{"level":"advanced"}',
+            name: "demo",
+            targetDirectoryPath: `generated/${generator.generatorName}`,
+          },
+          generatorName: generator.generatorName,
+          targetDirectoryPath: `generated/${generator.generatorName}`,
+        },
+      );
     }
   });
 
-  it("throws when a requested generator is missing from configuration", async () => {
-    const configPath = await createConfigurationModule(`
-      export default {
-        generators: {
-          "react-component": {
-            name: "react-component",
-            schemaPath: "schema.json",
-            targetPathStrategy: "direct",
-            templateDirectoryPath: "templates/react"
-          }
-        }
-      }
-    `);
+  it("uses the default configuration path when config is omitted", async () => {
+    await generateReactComponent(createStubTree(), {
+      name: "demo",
+      targetDirectoryPath: "generated/react",
+    });
 
-    await expect(
-      generateNestjsServiceModule(createStubTree(), { config: configPath }),
-    ).rejects.toThrow('Unknown conformetry generator "nestjs-service-module"');
-  });
-
-  it("throws when the configuration module is not an object", async () => {
-    const configPath = await createConfigurationModule(`export default 42`);
-
-    await expect(
-      generateReactComponent(createStubTree(), { config: configPath }),
-    ).rejects.toThrow("missing generators map");
-  });
-
-  it("throws when configuration is missing the generators map", async () => {
-    const configPath = await createConfigurationModule(`export default {}`);
-
-    await expect(
-      generateReactComponent(createStubTree(), { config: configPath }),
-    ).rejects.toThrow("missing generators map");
+    expect(mockIntegrationRunConfiguredGenerator).toHaveBeenCalledWith(
+      expect.objectContaining({
+        configurationPath: "configuration/conformetry.config.ts",
+      }),
+    );
   });
 });

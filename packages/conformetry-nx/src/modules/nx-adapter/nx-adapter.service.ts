@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 
 import {
   createConformetryGeneratorFactory,
+  normalizeGeneratorInputs,
   resolveConformetryTargetDirectoryPath,
 } from "./nx-generator-factory.utilities";
 
@@ -23,6 +24,15 @@ export class NxAdapterService {
     args: ConformetryGeneratorFactoryOptions,
   ): ConformetryGeneratorFactory {
     return createConformetryGeneratorFactory(args);
+  }
+
+  /**
+   * Normalizes Nx generator options into conformetry input values.
+   */
+  public normalizeGeneratorInputs(
+    options: Record<string, unknown>,
+  ): Record<string, string | undefined> {
+    return normalizeGeneratorInputs(options);
   }
 
   /**

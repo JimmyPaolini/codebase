@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { createConformetryGeneratorFactory } from "./nx-generator-factory.utilities.js";
+import {
+  createConformetryGeneratorFactory,
+  normalizeGeneratorInputs,
+  resolveConformetryTargetDirectoryPath,
+} from "./nx-generator-factory.utilities.js";
 
 import type { FileChange, Tree } from "@nx/devkit";
 
@@ -115,22 +119,80 @@ class InMemoryTree implements Tree {
   }
 }
 
-describe(createConformetryGeneratorFactory, () => {
-  it("renders templates into an Nx tree and returns generated file paths", async () => {
-    const tree = new InMemoryTree();
-    tree.write("templates/example.txt", "hello {{name}}");
+describe("nx generator factory utilities", () => {
+  describe(createConformetryGeneratorFactory, () => {
+    it("renders templates into an Nx tree and returns generated file paths", async () => {
+      const tree = new InMemoryTree();
+      tree.write("templates/example.txt", "hello {{name}}");
 
-    const factory = createConformetryGeneratorFactory({
-      definition: {
-        name: "example-generator",
-        schemaPath: "schema.json",
-        templateDirectoryPath: "templates",
-      },
-      resolveTargetDirectoryPath: () => "generated",
+      const factory = createConformetryGeneratorFactory({
+        definition: {
+          name: "example-generator",
+          schemaPath: "schema.json",
+          templateDirectoryPath: "templates",
+        },
+        resolveTargetDirectoryPath: () => "generated",
+      });
+
+      await factory(tree, { name: "demo" });
+
+      expect(tree.read("generated/example.txt")?.toString()).toBe("hello demo");
+    });
+  });
+
+  describe(normalizeGeneratorInputs, () => {
+    it("converts mixed option values into string inputs", () => {
+      expect(
+        normalizeGeneratorInputs({
+          enabled: true,
+          metadata: { level: "advanced" },
+          name: "demo",
+          retries: 3,
+          skipped: undefined,
+        }),
+      ).toStrictEqual({
+        enabled: "true",
+        metadata: '{"level":"advanced"}',
+        name: "demo",
+        retries: "3",
+        skipped: undefined,
+      });
+    });
+  });
+
+  describe(resolveConformetryTargetDirectoryPath, () => {
+    it("prefers an explicit target directory option", async () => {
+      const tree = new InMemoryTree();
+
+      await expect(
+        resolveConformetryTargetDirectoryPath({
+          definition: {
+            name: "react-component",
+            schemaPath: "schema.json",
+            templateDirectoryPath: "templates",
+          },
+          options: {
+            targetDirectoryPath: "custom/generated",
+          },
+          tree,
+        }),
+      ).resolves.toBe("custom/generated");
     });
 
-    await factory(tree, { name: "demo" });
+    it("falls back to generated/<name> when no overrides are provided", async () => {
+      const tree = new InMemoryTree();
 
-    expect(tree.read("generated/example.txt")?.toString()).toBe("hello demo");
+      await expect(
+        resolveConformetryTargetDirectoryPath({
+          definition: {
+            name: "react-component",
+            schemaPath: "schema.json",
+            templateDirectoryPath: "templates",
+          },
+          options: {},
+          tree,
+        }),
+      ).resolves.toBe("generated/react-component");
+    });
   });
 });

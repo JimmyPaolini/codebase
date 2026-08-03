@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { type GeneratorCallback, getProjects, type Tree } from "@nx/devkit";
+import { getProjects, type Tree } from "@nx/devkit";
 
 import {
   DEFAULT_GENERATED_OUTPUT_DIRECTORY,
@@ -16,11 +16,6 @@ import type {
   ConformetryGeneratorFactoryOptions,
   ResolveConformetryTargetDirectoryPathArguments,
 } from "./nx-adapter.types";
-
-/**
- * Creates a conformetry generator factory for Nx trees.
- */
-const noopGeneratorCallback: GeneratorCallback = async (): Promise<void> => {};
 
 /**
  * Creates a conformetry generator factory for Nx trees.
@@ -55,33 +50,9 @@ export function createConformetryGeneratorFactory(
 }
 
 /**
- * Resolves the target directory for generated files.
- */
-export async function resolveConformetryTargetDirectoryPath(
-  args: ResolveConformetryTargetDirectoryPathArguments,
-): Promise<string> {
-  const { definition, options, tree } = args;
-  const directTargetDirectoryPath = resolveTargetDirectoryPathOption(options);
-
-  if (typeof directTargetDirectoryPath === "string") {
-    return await Promise.resolve(directTargetDirectoryPath);
-  }
-
-  const projectRoot = resolveProjectRootPath({ options, tree });
-
-  if (typeof projectRoot === "string") {
-    return await Promise.resolve(projectRoot);
-  }
-
-  return await Promise.resolve(
-    path.join(DEFAULT_GENERATED_OUTPUT_DIRECTORY, definition.name),
-  );
-}
-
-/**
  * Normalizes runtime options into string inputs.
  */
-function normalizeGeneratorInputs(
+export function normalizeGeneratorInputs(
   options: Record<string, unknown>,
 ): Record<string, string | undefined> {
   const normalizedInputs: Record<string, string | undefined> = {};
@@ -107,6 +78,35 @@ function normalizeGeneratorInputs(
 
   return normalizedInputs;
 }
+
+/**
+ * Resolves the target directory for generated files.
+ */
+export async function resolveConformetryTargetDirectoryPath(
+  args: ResolveConformetryTargetDirectoryPathArguments,
+): Promise<string> {
+  const { definition, options, tree } = args;
+  const directTargetDirectoryPath = resolveTargetDirectoryPathOption(options);
+
+  if (typeof directTargetDirectoryPath === "string") {
+    return await Promise.resolve(directTargetDirectoryPath);
+  }
+
+  const projectRoot = resolveProjectRootPath({ options, tree });
+
+  if (typeof projectRoot === "string") {
+    return await Promise.resolve(projectRoot);
+  }
+
+  return await Promise.resolve(
+    path.join(DEFAULT_GENERATED_OUTPUT_DIRECTORY, definition.name),
+  );
+}
+
+/**
+ * Creates a no-op callback compatible with Nx generator APIs.
+ */
+async function noopGeneratorCallback(): Promise<void> {}
 
 /**
  * Resolves the project root path from Nx metadata.

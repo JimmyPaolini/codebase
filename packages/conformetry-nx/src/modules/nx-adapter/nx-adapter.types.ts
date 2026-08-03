@@ -3,6 +3,25 @@ import type { GeneratorCallback, Tree } from "@nx/devkit";
 // 🏷️ Types
 
 /**
+ * A generator callback compatible with Nx generator factories.
+ */
+export type ConformetryGeneratorFactory = (
+  tree: Tree,
+  options?: Record<string, unknown>,
+) => Promise<GeneratorCallback>;
+
+/**
+ * Creates a generator factory that renders templates into an Nx tree.
+ */
+export interface ConformetryGeneratorFactoryOptions {
+  definition: GeneratorDefinition;
+  resolveTargetDirectoryPath?: (args: {
+    options: Record<string, unknown>;
+    tree: Tree;
+  }) => Promise<string> | string;
+}
+
+/**
  * A directory entry read from the source template tree.
  */
 export interface DirectoryEntry {
@@ -27,16 +46,6 @@ export interface FileSystemAdapter {
 export interface FormatterAdapter {
   formatFile(filePath: string): Promise<void>;
   formatFiles(filePaths: string[]): Promise<void>;
-}
-
-/**
- * Renders template placeholders into generated output files.
- */
-export interface TemplateRenderer {
-  render(
-    templateContent: string,
-    substitutions: Record<string, string>,
-  ): string;
 }
 
 /**
@@ -86,6 +95,15 @@ export interface PathMatcher {
 }
 
 /**
+ * Resolves the target directory for generated files.
+ */
+export interface ResolveConformetryTargetDirectoryPathArguments {
+  definition: GeneratorDefinition;
+  options: Record<string, unknown>;
+  tree: Tree;
+}
+
+/**
  * Arguments accepted by the runtime runner.
  */
 export interface RunGeneratorArguments {
@@ -107,29 +125,11 @@ export interface RunGeneratorResult {
 }
 
 /**
- * A generator callback compatible with Nx generator factories.
+ * Renders template placeholders into generated output files.
  */
-export type ConformetryGeneratorFactory = (
-  tree: Tree,
-  options?: Record<string, unknown>,
-) => Promise<GeneratorCallback>;
-
-/**
- * Creates a generator factory that renders templates into an Nx tree.
- */
-export interface ConformetryGeneratorFactoryOptions {
-  definition: GeneratorDefinition;
-  resolveTargetDirectoryPath?: (args: {
-    options: Record<string, unknown>;
-    tree: Tree;
-  }) => Promise<string> | string;
-}
-
-/**
- * Resolves the target directory for generated files.
- */
-export interface ResolveConformetryTargetDirectoryPathArguments {
-  definition: GeneratorDefinition;
-  options: Record<string, unknown>;
-  tree: Tree;
+export interface TemplateRenderer {
+  render(
+    templateContent: string,
+    substitutions: Record<string, string>,
+  ): string;
 }
