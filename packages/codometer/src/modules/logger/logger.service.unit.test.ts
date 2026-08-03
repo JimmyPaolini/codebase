@@ -3,6 +3,8 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "./logger.service";
 
+import type pino from "pino";
+
 describe(LoggerService, () => {
   let service: LoggerService;
   const debugMock = vi.fn();
@@ -111,5 +113,30 @@ describe(LoggerService, () => {
       { context: "ExplicitContext" },
       "warn-message",
     );
+  });
+
+  it("builds pino options for production and development environments", () => {
+    const createPinoOptions = Reflect.get(
+      Reflect.get(service, "constructor"),
+      "createPinoOptions",
+    ) as () => pino.LoggerOptions;
+
+    Reflect.set(Reflect.get(service, "constructor"), "isProduction", true);
+    const productionOptions = createPinoOptions();
+
+    expect(productionOptions).toStrictEqual({
+      level: process.env["LOG_LEVEL"] ?? "info",
+    });
+
+    Reflect.set(Reflect.get(service, "constructor"), "isProduction", false);
+    const developmentOptions = createPinoOptions();
+
+    expect(developmentOptions).toStrictEqual({
+      level: process.env["LOG_LEVEL"] ?? "info",
+      transport: {
+        options: { colorize: true, singleLine: true },
+        target: "pino-pretty",
+      },
+    });
   });
 });

@@ -18,19 +18,24 @@ export class LoggerService extends ConsoleLogger {
   private static readonly isProduction =
     process.env["NODE_ENV"] === "production";
 
-  private static readonly root = pino(
-    LoggerService.isProduction
-      ? { level: process.env["LOG_LEVEL"] ?? "info" }
-      : {
-          level: process.env["LOG_LEVEL"] ?? "info",
-          transport: {
-            options: { colorize: true, singleLine: true },
-            target: "pino-pretty",
-          },
-        },
-  );
+  private static readonly root = pino(LoggerService.createPinoOptions());
 
   private child: pino.Logger = LoggerService.root;
+
+  /** Build pino options for production or local development output modes. */
+  private static createPinoOptions(): pino.LoggerOptions {
+    if (LoggerService.isProduction) {
+      return { level: process.env["LOG_LEVEL"] ?? "info" };
+    }
+
+    return {
+      level: process.env["LOG_LEVEL"] ?? "info",
+      transport: {
+        options: { colorize: true, singleLine: true },
+        target: "pino-pretty",
+      },
+    };
+  }
 
   /** Logs a debug message at the `debug` level. */
   override debug(message: unknown, context?: string): void {
