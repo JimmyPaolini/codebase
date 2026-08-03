@@ -369,18 +369,46 @@ describe(MeasureTypescriptService, () => {
     expect(result.docTags).toStrictEqual({});
   });
 
-  it("handles import declarations with non-string module specifiers", () => {
-    readFileSyncMock.mockReturnValue(
-      `import foo = require("bar");
-       const x = 1;`,
-    );
+  it("counts helper calls for non-import nodes", () => {
+    const handleImport = Reflect.get(service, "handleImport") as (
+      node: tsCompiler.Node,
+      stats: {
+        externalPackages: Set<string>;
+        imports: number;
+      },
+    ) => void;
+    const stats = {
+      externalPackages: new Set<string>(),
+      imports: 0,
+    };
 
-    const result = service.analyze({
-      sourceFiles: ["src/require.ts"],
-      workingDirectory: "/repo",
-    });
+    handleImport(tsCompiler.factory.createIdentifier("value"), stats);
 
-    expect(result.imports).toBe(1);
+    expect(stats.imports).toBe(1);
+    expect(stats.externalPackages.size).toBe(0);
+  });
+
+  it("ignores import declarations with non-string module specifiers", () => {
+    const handleImport = Reflect.get(service, "handleImport") as (
+      node: tsCompiler.Node,
+      stats: {
+        externalPackages: Set<string>;
+        imports: number;
+      },
+    ) => void;
+    const stats = {
+      externalPackages: new Set<string>(),
+      imports: 0,
+    };
+    const importDeclaration = {
+      kind: tsCompiler.SyntaxKind.ImportDeclaration,
+      moduleSpecifier: tsCompiler.factory.createIdentifier("module"),
+    } as unknown as tsCompiler.Node;
+
+    handleImport(importDeclaration, stats);
+
+    expect(stats.imports).toBe(1);
+    expect(stats.externalPackages.size).toBe(0);
   });
 
   it("counts relative imports without treating them as external packages", () => {

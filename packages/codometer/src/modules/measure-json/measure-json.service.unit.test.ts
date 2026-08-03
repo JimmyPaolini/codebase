@@ -99,16 +99,18 @@ describe(MeasureJsonService, () => {
 
   it("handles JSONC escape sequences correctly", () => {
     const filePath = path.join(tempDirectory, "escaped.jsonc");
-    writeFileSync(
-      filePath,
-      String.raw`{
-  "path": "C:\\Users\\root",
-  "escaped": "line\nbreak",
-  "quote": "say \"hello\""
-}
-`,
-      "utf8",
+    const backslash = String.fromCodePoint(92);
+    const content = JSON.stringify(
+      {
+        escaped: ["line", backslash, "n", "break"].join(""),
+        path: `C:${backslash}${backslash}Users${backslash}${backslash}root`,
+        quote: 'say "hello"',
+      },
+      undefined,
+      2,
     );
+
+    writeFileSync(filePath, `${content}${String.fromCodePoint(10)}`, "utf8");
 
     const result = service.analyze({
       jsonFiles: [path.relative(tempDirectory, filePath)],
@@ -178,7 +180,21 @@ describe(MeasureJsonService, () => {
     });
 
     expect(result.objects).toBe(1);
-    expect(result.arrays).toBe(3);
+    expect(result.arrays).toBe(4);
     expect(result.numbers).toBe(4);
+  });
+
+  it("skips unreadable files without failing the batch", () => {
+    const filePath = path.join(tempDirectory, "missing.json");
+
+    const result = service.analyze({
+      jsonFiles: [path.relative(tempDirectory, filePath)],
+      workingDirectory: tempDirectory,
+    });
+
+    expect(result.files).toBe(1);
+    expect(result.lines).toBe(0);
+    expect(result.objects).toBe(0);
+    expect(result.arrays).toBe(0);
   });
 });
