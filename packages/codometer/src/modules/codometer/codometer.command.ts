@@ -135,15 +135,16 @@ export class CodometerCommand extends CommandRunner {
     _passedParameters: string[],
     options: CodometerCommandOptions,
   ): Promise<void> {
-    const directory = options.directory ?? process.cwd();
+    const directory = this.parseDirectory(options.directory);
     const statistics = this.measureService.measure(directory);
-    const checkMode = options.check === true;
+    const checkMode = this.parseCheck(options.check);
+    const readmePath = this.parseReadme(options.readme);
 
     await Promise.resolve();
 
-    if (options.readme) {
+    if (readmePath) {
       const isCurrent = this.writeReadmeService.syncReadme(
-        options.readme,
+        readmePath,
         statistics,
         checkMode,
       );
