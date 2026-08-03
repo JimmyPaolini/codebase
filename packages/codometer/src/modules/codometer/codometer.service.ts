@@ -84,8 +84,14 @@ export class CodometerService {
     return {
       asyncFunctions: typescriptStats.asyncFunctions,
       classes: typescriptStats.classes + pythonStatsResult.classes,
+      commentLines:
+        typescriptStats.commentLines + pythonStatsResult.commentLines,
+      comments: typescriptStats.comments + pythonStatsResult.comments,
       constants: typescriptStats.constants + pythonStatsResult.constants,
       decorators: typescriptStats.decorators + pythonStatsResult.decorators,
+      docComments: typescriptStats.docComments,
+      docstringLines: pythonStatsResult.docstringLines,
+      docstrings: pythonStatsResult.docstrings,
       enums: typescriptStats.enums,
       exported: typescriptStats.exported,
       externalPackages: typescriptStats.externalPackages.size,

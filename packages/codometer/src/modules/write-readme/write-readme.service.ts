@@ -95,8 +95,11 @@ export class WriteReadmeService {
   /**
    * Sync the README badge block with the current statistics.
    *
-   * In check mode returns whether the block is already up-to-date without
-   * writing. In write mode updates or appends the block and returns true.
+   * - **Write mode** (default): replaces the block when the anchor markers are
+   *   found, or appends the block to the bottom of the file when they are
+   *   absent. Creates the file if it does not yet exist.
+   * - **Check mode**: returns `true` when the block is already up to date,
+   *   `false` when it is missing or stale (does not write any changes).
    */
   syncReadme(
     readmePath: string,

@@ -4,7 +4,12 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 import tsCompiler from "typescript";
 
-import { JS_EXTENSIONS, TODO_REGEX } from "./measure-typescript.constants";
+import {
+  DOC_TAG_REGEX,
+  EMPTY_TYPESCRIPT_RESULT,
+  JS_EXTENSIONS,
+  TODO_REGEX,
+} from "./measure-typescript.constants";
 
 import type {
   MeasureTypescriptInput,
@@ -59,6 +64,36 @@ export class MeasureTypescriptService {
   };
 
   // 🔏 Private Methods
+
+  /** Count a discovered comment and update the appropriate metrics. */
+  private countComment(
+    commentText: string,
+    stats: MeasureTypescriptResult,
+  ): void {
+    stats.comments++;
+    const normalizedComment = commentText.replaceAll("\r\n", "\n");
+    const lineCount = normalizedComment.split("\n").length;
+    const commentLineCount = normalizedComment.includes("\n")
+      ? Math.max(1, lineCount - 1)
+      : 1;
+    stats.commentLines += commentLineCount;
+
+    if (commentText.startsWith("/**")) {
+      stats.docComments++;
+      for (const match of commentText.matchAll(DOC_TAG_REGEX)) {
+        const tagName = match[1]?.toLowerCase() ?? "";
+        stats.docTags[tagName] = (stats.docTags[tagName] ?? 0) + 1;
+      }
+      return;
+    }
+
+    if (commentText.startsWith("/*")) {
+      stats.blockComments++;
+      return;
+    }
+
+    stats.lineComments++;
+  }
 
   /** Dispatches non-class AST nodes to the appropriate metric-collection handler. */
   private dispatchNode(
@@ -208,6 +243,29 @@ export class MeasureTypescriptService {
     );
   }
 
+  /** Scan the provided source text and collect comment-based metrics. */
+  private scanComments(content: string, stats: MeasureTypescriptResult): void {
+    const scanner = tsCompiler.createScanner(
+      tsCompiler.ScriptTarget.Latest,
+      false,
+      tsCompiler.LanguageVariant.Standard,
+      content,
+    );
+
+    let token = scanner.scan();
+
+    while (token !== tsCompiler.SyntaxKind.EndOfFileToken) {
+      if (
+        token === tsCompiler.SyntaxKind.SingleLineCommentTrivia ||
+        token === tsCompiler.SyntaxKind.MultiLineCommentTrivia
+      ) {
+        this.countComment(scanner.getTokenText(), stats);
+      }
+
+      token = scanner.scan();
+    }
+  }
+
   /** Recursively visits each AST node and dispatches to the appropriate handler. */
   private walkNode(
     node: tsCompiler.Node,
@@ -237,29 +295,17 @@ export class MeasureTypescriptService {
     const { sourceFiles, workingDirectory } = input;
 
     const stats: MeasureTypescriptResult = {
-      asyncFunctions: 0,
-      classes: 0,
-      constants: 0,
-      decorators: 0,
-      enums: 0,
-      exported: 0,
+      ...EMPTY_TYPESCRIPT_RESULT,
+      docTags: { ...EMPTY_TYPESCRIPT_RESULT.docTags },
       externalPackages: new Set<string>(),
-      functions: 0,
-      genericDeclarations: 0,
-      imports: 0,
-      interfaces: 0,
       jsFiles: sourceFiles.filter((filePath) =>
         JS_EXTENSIONS.has(path.extname(filePath)),
       ).length,
-      lines: 0,
-      methods: 0,
-      syncFunctions: 0,
       testFiles: sourceFiles.filter((filePath) =>
         /\.(test|spec|unit\.test|integration\.test|end-to-end\.test)\.[cm]?[jt]sx?$/.test(
           filePath,
         ),
       ).length,
-      todos: 0,
       tsFiles: sourceFiles.filter(
         (filePath) => !JS_EXTENSIONS.has(path.extname(filePath)),
       ).length,
@@ -285,8 +331,9 @@ export class MeasureTypescriptService {
         scriptKind,
       );
 
-      stats.lines += content.split("\n").length;
+      stats.lines += content.split(/\r?\n/).length;
       stats.todos += (content.match(TODO_REGEX) ?? []).length;
+      this.scanComments(content, stats);
 
       this.walkNode(sourceFile, stats, false);
     }

@@ -6,8 +6,13 @@
 export interface CodeStatisticsResult {
   asyncFunctions: number;
   classes: number;
+  commentLines: number;
+  comments: number;
   constants: number;
   decorators: number;
+  docComments: number;
+  docstringLines: number;
+  docstrings: number;
   enums: number;
   exported: number;
   externalPackages: number;

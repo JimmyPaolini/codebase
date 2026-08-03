@@ -174,45 +174,24 @@ export class MeasureJsonService {
   }
 
   /** Handle block comments while parsing JSONC content. */
-  private handleBlockComment(
-    currentCharacter: string,
-    nextCharacter: string,
-  ): { isInBlockComment: boolean; shouldSkipCurrentCharacter: boolean } {
-    if (currentCharacter === "*" && nextCharacter === "/") {
-      return { isInBlockComment: false, shouldSkipCurrentCharacter: true };
-    }
-
-    return { isInBlockComment: true, shouldSkipCurrentCharacter: false };
-  }
-
-  /** Update the JSONC parser when it is inside a block comment. */
   private handleBlockCommentState(
     currentCharacter: string,
     nextCharacter: string,
     state: JsoncState,
   ): JsoncState {
-    const blockCommentState = this.handleBlockComment(
-      currentCharacter,
-      nextCharacter,
-    );
+    if (currentCharacter === "*" && nextCharacter === "/") {
+      return {
+        ...state,
+        isInBlockComment: false,
+        shouldAdvanceIndex: true,
+      };
+    }
 
     return {
       ...state,
-      isInBlockComment: blockCommentState.isInBlockComment,
-      shouldAdvanceIndex: blockCommentState.shouldSkipCurrentCharacter,
+      isInBlockComment: true,
+      shouldAdvanceIndex: false,
     };
-  }
-
-  /** Handle line comments while parsing JSONC content. */
-  private handleLineComment(currentCharacter: string): {
-    isInLineComment: boolean;
-    shouldAppendCurrentCharacter: boolean;
-  } {
-    if (currentCharacter === "\n") {
-      return { isInLineComment: false, shouldAppendCurrentCharacter: true };
-    }
-
-    return { isInLineComment: true, shouldAppendCurrentCharacter: false };
   }
 
   /** Update the JSONC parser when it is inside a line comment. */
@@ -220,31 +199,15 @@ export class MeasureJsonService {
     currentCharacter: string,
     state: JsoncState,
   ): JsoncState {
-    const lineCommentState = this.handleLineComment(currentCharacter);
-
-    return {
-      ...state,
-      isInLineComment: lineCommentState.isInLineComment,
-      sanitizedContent: lineCommentState.shouldAppendCurrentCharacter
-        ? `${state.sanitizedContent}${currentCharacter}`
-        : state.sanitizedContent,
-    };
-  }
-
-  /** Handle escaping while parsing JSON string literals. */
-  private handleStringCharacter(currentCharacter: string): {
-    isInString: boolean;
-    shouldSkipNextCharacter: boolean;
-  } {
-    if (currentCharacter === "\\") {
-      return { isInString: true, shouldSkipNextCharacter: true };
+    if (currentCharacter === "\n") {
+      return {
+        ...state,
+        isInLineComment: false,
+        sanitizedContent: `${state.sanitizedContent}${currentCharacter}`,
+      };
     }
 
-    if (currentCharacter === '"') {
-      return { isInString: false, shouldSkipNextCharacter: false };
-    }
-
-    return { isInString: true, shouldSkipNextCharacter: false };
+    return { ...state, isInLineComment: true };
   }
 
   /** Update the JSONC parser when it is inside a string literal. */
@@ -253,16 +216,29 @@ export class MeasureJsonService {
     nextCharacter: string,
     state: JsoncState,
   ): JsoncState {
-    const stringState = this.handleStringCharacter(currentCharacter);
     const nextSanitizedContent = `${state.sanitizedContent}${currentCharacter}`;
+
+    if (currentCharacter === "\\") {
+      return {
+        ...state,
+        isInString: true,
+        sanitizedContent: `${nextSanitizedContent}${nextCharacter}`,
+        shouldAdvanceIndex: true,
+      };
+    }
+
+    if (currentCharacter === '"') {
+      return {
+        ...state,
+        isInString: false,
+        sanitizedContent: nextSanitizedContent,
+      };
+    }
 
     return {
       ...state,
-      isInString: stringState.isInString,
-      sanitizedContent: stringState.shouldSkipNextCharacter
-        ? `${nextSanitizedContent}${nextCharacter}`
-        : nextSanitizedContent,
-      shouldAdvanceIndex: stringState.shouldSkipNextCharacter,
+      isInString: true,
+      sanitizedContent: nextSanitizedContent,
     };
   }
 
@@ -305,6 +281,7 @@ export class MeasureJsonService {
     for (let index = 0; index < content.length; index++) {
       const currentCharacter = content[index] ?? "";
       const nextCharacter = content[index + 1] ?? "";
+      const shouldAdvanceIndex = state.shouldAdvanceIndex;
       state = this.consumeJsoncCharacter(
         currentCharacter,
         nextCharacter,
@@ -312,9 +289,14 @@ export class MeasureJsonService {
       );
       sanitizedContent = state.sanitizedContent;
 
-      if (state.shouldAdvanceIndex) {
+      if (shouldAdvanceIndex) {
         index++;
       }
+
+      state = {
+        ...state,
+        shouldAdvanceIndex: false,
+      };
     }
 
     return sanitizedContent;

@@ -16,8 +16,13 @@ describe(CodometerCommand, () => {
   const statistics: CodeStatisticsResult = {
     asyncFunctions: 0,
     classes: 0,
+    commentLines: 0,
+    comments: 0,
     constants: 0,
     decorators: 0,
+    docComments: 0,
+    docstringLines: 0,
+    docstrings: 0,
     enums: 0,
     exported: 0,
     externalPackages: 0,

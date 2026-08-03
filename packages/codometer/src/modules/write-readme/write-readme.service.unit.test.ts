@@ -30,45 +30,50 @@ describe(WriteReadmeService, () => {
   const sampleStatistics: CodeStatisticsResult = {
     asyncFunctions: 1,
     classes: 2,
-    constants: 3,
-    decorators: 4,
-    enums: 5,
-    exported: 6,
-    externalPackages: 7,
-    folders: 8,
-    functions: 9,
-    genericDeclarations: 10,
-    imports: 11,
-    interfaces: 12,
-    jsFiles: 13,
-    jsonArrays: 14,
-    jsonBooleans: 15,
-    jsonFiles: 16,
-    jsonItems: 17,
-    jsonLines: 18,
-    jsonMaxDepth: 19,
-    jsonNulls: 20,
-    jsonNumbers: 21,
-    jsonObjects: 22,
-    jsonProperties: 23,
-    jsonStrings: 24,
-    jsonTotalNodes: 25,
-    linesOfCode: 26,
-    methods: 27,
-    pythonClasses: 28,
-    pythonConstants: 29,
-    pythonDecorators: 30,
-    pythonFiles: 31,
-    pythonFunctions: 32,
-    pythonImports: 33,
-    pythonLines: 34,
-    pythonProtocols: 35,
+    commentLines: 3,
+    comments: 4,
+    constants: 5,
+    decorators: 6,
+    docComments: 7,
+    docstringLines: 8,
+    docstrings: 9,
+    enums: 10,
+    exported: 11,
+    externalPackages: 12,
+    folders: 13,
+    functions: 14,
+    genericDeclarations: 15,
+    imports: 16,
+    interfaces: 17,
+    jsFiles: 18,
+    jsonArrays: 19,
+    jsonBooleans: 20,
+    jsonFiles: 21,
+    jsonItems: 22,
+    jsonLines: 23,
+    jsonMaxDepth: 24,
+    jsonNulls: 25,
+    jsonNumbers: 26,
+    jsonObjects: 27,
+    jsonProperties: 28,
+    jsonStrings: 29,
+    jsonTotalNodes: 30,
+    linesOfCode: 31,
+    methods: 32,
+    pythonClasses: 33,
+    pythonConstants: 34,
+    pythonDecorators: 35,
+    pythonFiles: 36,
+    pythonFunctions: 37,
+    pythonImports: 38,
+    pythonLines: 39,
+    pythonProtocols: 40,
     repoSizeMiB: "1.5",
-    sourceFiles: 36,
-    syncFunctions: 37,
-    testFiles: 38,
-    todos: 39,
-    tsFiles: 40,
+    sourceFiles: 41,
+    syncFunctions: 42,
+    testFiles: 43,
+    todos: 44,
+    tsFiles: 45,
   };
 
   it("is defined", () => {
@@ -109,6 +114,20 @@ describe(WriteReadmeService, () => {
 
     expect(written).toContain("<!-- CODE_STATISTICS_START -->");
     expect(written).toContain("![Source Files]");
+    expect(written.trimEnd()).toContain("<!-- CODE_STATISTICS_END -->");
+    expect(written.indexOf("# Project")).toBeLessThan(
+      written.indexOf("<!-- CODE_STATISTICS_START -->"),
+    );
+  });
+
+  it("returns false in check mode when no markers exist", () => {
+    const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
+    temporaryDirectories.push(temporaryDirectory);
+    const readmePath = path.join(temporaryDirectory, "README.md");
+
+    writeFileSync(readmePath, "# Project\n", "utf8");
+
+    expect(service.syncReadme(readmePath, sampleStatistics, true)).toBe(false);
   });
 
   it("returns true when block is already current in check mode", () => {

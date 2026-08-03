@@ -60,19 +60,28 @@ describe(CodometerService, () => {
     });
     vi.spyOn(pythonService, "analyze").mockReturnValue({
       classes: 2,
-      constants: 3,
-      decorators: 4,
+      commentLines: 4,
+      comments: 3,
+      constants: 5,
+      decorators: 6,
+      docstringLines: 8,
+      docstrings: 7,
       files: 1,
-      functions: 5,
-      imports: 6,
-      lines: 7,
-      protocols: 8,
+      functions: 9,
+      imports: 10,
+      lines: 11,
+      protocols: 12,
     });
     vi.spyOn(typescriptService, "analyze").mockReturnValue({
       asyncFunctions: 9,
+      blockComments: 1,
       classes: 10,
+      commentLines: 2,
+      comments: 3,
       constants: 11,
       decorators: 12,
+      docComments: 4,
+      docTags: { param: 1 },
       enums: 13,
       exported: 14,
       externalPackages: new Set(["react"]),
@@ -81,6 +90,7 @@ describe(CodometerService, () => {
       imports: 17,
       interfaces: 18,
       jsFiles: 1,
+      lineComments: 5,
       lines: 19,
       methods: 20,
       syncFunctions: 21,
@@ -116,12 +126,17 @@ describe(CodometerService, () => {
     expect(measurePythonService.analyze).toHaveBeenCalledWith("/repo");
 
     expect(result.classes).toBe(12);
-    expect(result.constants).toBe(14);
-    expect(result.decorators).toBe(16);
+    expect(result.comments).toBe(6);
+    expect(result.commentLines).toBe(6);
+    expect(result.constants).toBe(16);
+    expect(result.decorators).toBe(18);
+    expect(result.docComments).toBe(4);
+    expect(result.docstrings).toBe(7);
+    expect(result.docstringLines).toBe(8);
     expect(result.externalPackages).toBe(1);
-    expect(result.functions).toBe(40);
-    expect(result.imports).toBe(23);
-    expect(result.linesOfCode).toBe(26);
+    expect(result.functions).toBe(44);
+    expect(result.imports).toBe(27);
+    expect(result.linesOfCode).toBe(30);
     expect(result.sourceFiles).toBe(3);
   });
 });

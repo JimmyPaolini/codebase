@@ -35,13 +35,17 @@ describe(MeasurePythonService, () => {
     execSyncMock.mockReturnValue(
       JSON.stringify({
         classes: 1,
-        constants: 2,
-        decorators: 3,
-        files: 4,
-        functions: 5,
-        imports: 6,
-        lines: 7,
-        protocols: 8,
+        commentLines: 3,
+        comments: 2,
+        constants: 4,
+        decorators: 5,
+        docstringLines: 7,
+        docstrings: 6,
+        files: 8,
+        functions: 9,
+        imports: 10,
+        lines: 11,
+        protocols: 12,
       }),
     );
 
@@ -56,13 +60,17 @@ describe(MeasurePythonService, () => {
     );
     expect(result).toStrictEqual({
       classes: 1,
-      constants: 2,
-      decorators: 3,
-      files: 4,
-      functions: 5,
-      imports: 6,
-      lines: 7,
-      protocols: 8,
+      commentLines: 3,
+      comments: 2,
+      constants: 4,
+      decorators: 5,
+      docstringLines: 7,
+      docstrings: 6,
+      files: 8,
+      functions: 9,
+      imports: 10,
+      lines: 11,
+      protocols: 12,
     });
   });
 
@@ -78,8 +86,12 @@ describe(MeasurePythonService, () => {
 
     expect(result).toStrictEqual({
       classes: 0,
+      commentLines: 0,
+      comments: 0,
       constants: 0,
       decorators: 0,
+      docstringLines: 0,
+      docstrings: 0,
       files: 0,
       functions: 0,
       imports: 0,

@@ -101,6 +101,31 @@ describe(MeasureTypescriptService, () => {
     );
   });
 
+  it("counts comments, doc comments, and doc tags", () => {
+    readFileSyncMock.mockReturnValue(
+      `// line comment
+       /* block comment */
+       /**
+       * @param value
+       * @returns string
+       */
+       const answer = 42;`,
+    );
+
+    const result = service.analyze({
+      sourceFiles: ["src/comments.ts"],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.comments).toBe(3);
+    expect(result.commentLines).toBe(5);
+    expect(result.lineComments).toBe(1);
+    expect(result.blockComments).toBe(1);
+    expect(result.docComments).toBe(1);
+    expect(result.docTags["param"]).toBe(1);
+    expect(result.docTags["returns"]).toBe(1);
+  });
+
   it("counts TODO and FIXME comments", () => {
     readFileSyncMock.mockReturnValue(
       `// TODO: implement this
