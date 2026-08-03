@@ -8,14 +8,14 @@ import { prepareTemplateValidationPayload } from "./template-validation-preparat
 
 const temporaryDirectoryPaths: string[] = [];
 
-afterEach(() => {
-  for (const temporaryDirectoryPath of temporaryDirectoryPaths) {
-    fs.rmSync(temporaryDirectoryPath, { force: true, recursive: true });
-  }
-  temporaryDirectoryPaths.length = 0;
-});
-
 describe(prepareTemplateValidationPayload, () => {
+  afterEach(() => {
+    for (const temporaryDirectoryPath of temporaryDirectoryPaths) {
+      fs.rmSync(temporaryDirectoryPath, { force: true, recursive: true });
+    }
+    temporaryDirectoryPaths.length = 0;
+  });
+
   it("prefers the generator tag from project metadata when multiple templates appear to match", async () => {
     const workingDirectory = createTemporaryDirectoryPath();
     const configurationPath = writeConfiguration({

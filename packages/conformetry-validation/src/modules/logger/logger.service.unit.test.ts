@@ -30,12 +30,8 @@ describe(LoggerService, () => {
   it("logs through all severity methods and stringifies non-string values", () => {
     const service = new LoggerService();
     const child = createLoggerChild();
-    const loggerService = service as unknown as {
-      child: LoggerChild;
-      context?: string;
-    };
-    loggerService.child = child;
-    loggerService.context = "ServiceContext";
+    Reflect.set(service, "child", child);
+    Reflect.set(service, "context", "ServiceContext");
 
     service.debug({ message: "debug" });
     service.log(123, "ExplicitContext");
@@ -69,23 +65,15 @@ describe(LoggerService, () => {
     const service = new LoggerService();
     const nextChild = createLoggerChild();
     const rootChild = vi.fn().mockReturnValue(nextChild);
-    const loggerClass = LoggerService as unknown as {
-      root: { child: (bindings: { context: string }) => LoggerChild };
-    };
-    const originalRoot = loggerClass.root;
-    loggerClass.root = { child: rootChild };
+    Reflect.set(LoggerService, "root", { child: rootChild });
 
-    try {
-      service.setContext("UpdatedContext");
-      service.log("message");
+    service.setContext("UpdatedContext");
+    service.log("message");
 
-      expect(rootChild).toHaveBeenCalledWith({ context: "UpdatedContext" });
-      expect(nextChild.info).toHaveBeenCalledWith(
-        { context: "UpdatedContext" },
-        "message",
-      );
-    } finally {
-      loggerClass.root = originalRoot;
-    }
+    expect(rootChild).toHaveBeenCalledWith({ context: "UpdatedContext" });
+    expect(nextChild.info).toHaveBeenCalledWith(
+      { context: "UpdatedContext" },
+      "message",
+    );
   });
 });
