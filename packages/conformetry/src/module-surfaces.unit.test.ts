@@ -21,6 +21,16 @@ describe("module export surfaces", () => {
     vi.resetModules();
   });
 
+  it("exports integration module/service for nx handoff", async () => {
+    const { IntegrationModule } =
+      await import("./modules/integration/integration.module.js");
+    const { IntegrationService } =
+      await import("./modules/integration/integration.service.js");
+
+    expect(IntegrationModule).toBeDefined();
+    expect(IntegrationService).toBeDefined();
+  });
+
   it("exports nest modules used by command bootstrap", async () => {
     const { MainModule } = await import("./main.module.js");
     const { GenerateModule } =
