@@ -8,6 +8,7 @@
     "framework:nestjs",
     "generator:nestjs-command-application",
     "language:typescript",
+    "package:conformetry",
     "type:package"
   ],
   "targets": {

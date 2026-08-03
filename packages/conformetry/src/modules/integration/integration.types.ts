@@ -1,6 +1,15 @@
 import type { RunValidationArguments } from "@jimmypaolini/conformetry-validation";
+import type { INestApplicationContext, Type } from "@nestjs/common";
 
 // 🏷️ Types
+
+/**
+ * Runtime token surface consumed by conformetry-nx generator delegation.
+ */
+export interface IntegrationModuleSurface {
+  IntegrationModule: Type<unknown>;
+  IntegrationService: Parameters<INestApplicationContext["get"]>[0];
+}
 
 /**
  * Arguments for running a configured generator through conformetry integration.

@@ -18,7 +18,7 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "main": "src/index.js",
+  "main": "src/index.ts",
   "name": "@jimmypaolini/conformetry-generation",
   "publishConfig": {
     "access": "public",

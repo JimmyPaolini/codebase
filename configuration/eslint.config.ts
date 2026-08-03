@@ -310,12 +310,17 @@ export default [
       "@nx/enforce-module-boundaries": [
         "error",
         {
-          allow: [],
+          allow: ["@jimmypaolini/conformetry"],
           depConstraints: [
             // Applications can only depend on workspace packages (not other apps or tools)
             {
               onlyDependOnLibsWithTags: ["type:package"],
               sourceTag: "type:application",
+            },
+            // conformetry CLI cannot depend on conformetry-nx integration layer
+            {
+              notDependOnLibsWithTags: ["package:conformetry-nx"],
+              sourceTag: "package:conformetry",
             },
             // Packages cannot depend on applications (no upward dependencies)
             {

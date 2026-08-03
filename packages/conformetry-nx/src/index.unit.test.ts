@@ -2,12 +2,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
   mockIntegrationRunConfiguredGenerator,
+  mockLoadIntegrationModuleSurface,
   mockNestClose,
   mockNestCreateApplicationContext,
   mockNestGet,
 } = vi.hoisted(() => {
   return {
     mockIntegrationRunConfiguredGenerator: vi.fn(),
+    mockLoadIntegrationModuleSurface: vi.fn(),
     mockNestClose: vi.fn(),
     mockNestCreateApplicationContext: vi.fn(),
     mockNestGet: vi.fn(),
@@ -16,8 +18,7 @@ const {
 
 vi.mock("@jimmypaolini/conformetry", () => {
   return {
-    IntegrationModule: { token: "IntegrationModule" },
-    IntegrationService: { token: "IntegrationService" },
+    loadIntegrationModuleSurface: mockLoadIntegrationModuleSurface,
   };
 });
 
@@ -73,11 +74,16 @@ function createStubTree(): Tree {
 
 describe("conformetry-nx index", () => {
   beforeEach(() => {
+    mockLoadIntegrationModuleSurface.mockReset();
     mockIntegrationRunConfiguredGenerator.mockReset();
     mockNestClose.mockReset();
     mockNestCreateApplicationContext.mockReset();
     mockNestGet.mockReset();
 
+    mockLoadIntegrationModuleSurface.mockResolvedValue({
+      IntegrationModule: { token: "IntegrationModule" },
+      IntegrationService: { token: "IntegrationService" },
+    });
     mockIntegrationRunConfiguredGenerator.mockResolvedValue({
       generatedFilePaths: ["generated/react/example.ts"],
       outputDirectoryPath: "generated/react",
@@ -160,6 +166,9 @@ describe("conformetry-nx index", () => {
     }
 
     expect(mockNestCreateApplicationContext).toHaveBeenCalledTimes(
+      generators.length,
+    );
+    expect(mockLoadIntegrationModuleSurface).toHaveBeenCalledTimes(
       generators.length,
     );
     expect(mockNestClose).toHaveBeenCalledTimes(generators.length);

@@ -122,6 +122,57 @@ describe(RuleRoutingService, () => {
       ],
     });
   });
+
+  it("treats relative and dot-prefixed selectors consistently", async () => {
+    const workspaceDirectory = await createWorkspaceFixture();
+    const ruleRoutingService = new RuleRoutingService();
+
+    const relativeSelectorResult =
+      ruleRoutingService.resolveTemplateRuleRouting({
+        configuredTemplateRuleNames: [
+          "nestjs-command-application",
+          "nestjs-service-file",
+        ],
+        projectSelectors: ["applications/caelundas"],
+        workingDirectory: workspaceDirectory,
+      });
+    const dotPrefixedSelectorResult =
+      ruleRoutingService.resolveTemplateRuleRouting({
+        configuredTemplateRuleNames: [
+          "nestjs-command-application",
+          "nestjs-service-file",
+        ],
+        projectSelectors: ["./applications/caelundas"],
+        workingDirectory: workspaceDirectory,
+      });
+
+    expect(dotPrefixedSelectorResult).toStrictEqual(relativeSelectorResult);
+  });
+
+  it("filters template rules by project tags in configured order", async () => {
+    const workspaceDirectory = await createWorkspaceFixture();
+    const ruleRoutingService = new RuleRoutingService();
+
+    const result = ruleRoutingService.resolveTemplateRuleRouting({
+      configuredTemplateRuleNames: [
+        "react-component",
+        "nestjs-service-module",
+        "nestjs-command-application",
+        "jupyter-notebook-application",
+      ],
+      projectSelectors: ["caelundas", "lexico"],
+      workingDirectory: workspaceDirectory,
+    });
+
+    expect(result).toStrictEqual({
+      projectPaths: ["applications/caelundas", "applications/lexico"],
+      templateRuleNames: [
+        "react-component",
+        "nestjs-service-module",
+        "nestjs-command-application",
+      ],
+    });
+  });
 });
 
 async function createWorkspaceFixture(): Promise<string> {

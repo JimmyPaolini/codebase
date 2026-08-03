@@ -52,8 +52,8 @@ export class RuleRoutingService {
     }
 
     const projectMetadata = this.parseWorkspaceProjectMetadata({
-      workingDirectory: args.workingDirectory,
       projectJsonPath: absoluteEntryPath,
+      workingDirectory: args.workingDirectory,
     });
 
     if (projectMetadata !== undefined) {
@@ -117,64 +117,6 @@ export class RuleRoutingService {
   }
 
   /**
-   * Normalizes paths for deterministic path comparisons.
-   */
-  private normalizePathForComparison(pathValue: string): string {
-    return pathValue.replaceAll("\\", "/");
-  }
-
-  /**
-   * Parses project tags into a string array.
-   */
-  private parseProjectTags(projectTags: unknown): string[] {
-    if (!Array.isArray(projectTags)) {
-      return [];
-    }
-
-    const tags: string[] = [];
-    for (const projectTag of projectTags as unknown[]) {
-      if (typeof projectTag === "string") {
-        tags.push(projectTag);
-      }
-    }
-
-    return tags;
-  }
-
-  /**
-   * Parses a project.json file into minimal routing metadata.
-   */
-  private parseWorkspaceProjectMetadata(args: {
-    workingDirectory: string;
-    projectJsonPath: string;
-  }): undefined | WorkspaceProjectMetadata {
-    const projectJson = JSON.parse(
-      fs.readFileSync(args.projectJsonPath, "utf8"),
-    ) as unknown;
-    if (!this.isUnknownRecord(projectJson)) {
-      return undefined;
-    }
-
-    const projectName = projectJson["name"];
-    const sourceRoot = projectJson["sourceRoot"];
-    const tags = this.parseProjectTags(projectJson["tags"]);
-
-    if (typeof projectName !== "string" || typeof sourceRoot !== "string") {
-      return undefined;
-    }
-
-    return {
-      name: projectName,
-      rootPath: path.relative(
-        args.workingDirectory,
-        path.dirname(args.projectJsonPath),
-      ),
-      sourceRoot,
-      tags,
-    };
-  }
-
-  /**
    * Returns true when a selector resolves to a project path or one of its descendants.
    */
   private matchesProjectPathSelector(args: {
@@ -212,6 +154,71 @@ export class RuleRoutingService {
     }
 
     return false;
+  }
+
+  /**
+   * Normalizes paths for deterministic path comparisons.
+   */
+  private normalizePathForComparison(pathValue: string): string {
+    const normalizedPath = path.normalize(pathValue).replaceAll("\\", "/");
+    const withoutCurrentDirectoryPrefix = normalizedPath.startsWith("./")
+      ? normalizedPath.slice(2)
+      : normalizedPath;
+
+    return withoutCurrentDirectoryPrefix.endsWith("/")
+      ? withoutCurrentDirectoryPrefix.slice(0, -1)
+      : withoutCurrentDirectoryPrefix;
+  }
+
+  /**
+   * Parses project tags into a string array.
+   */
+  private parseProjectTags(projectTags: unknown): string[] {
+    if (!Array.isArray(projectTags)) {
+      return [];
+    }
+
+    const tags: string[] = [];
+    for (const projectTag of projectTags as unknown[]) {
+      if (typeof projectTag === "string") {
+        tags.push(projectTag);
+      }
+    }
+
+    return tags;
+  }
+
+  /**
+   * Parses a project.json file into minimal routing metadata.
+   */
+  private parseWorkspaceProjectMetadata(args: {
+    projectJsonPath: string;
+    workingDirectory: string;
+  }): undefined | WorkspaceProjectMetadata {
+    const projectJson = JSON.parse(
+      fs.readFileSync(args.projectJsonPath, "utf8"),
+    ) as unknown;
+    if (!this.isUnknownRecord(projectJson)) {
+      return undefined;
+    }
+
+    const projectName = projectJson["name"];
+    const sourceRoot = projectJson["sourceRoot"];
+    const tags = this.parseProjectTags(projectJson["tags"]);
+
+    if (typeof projectName !== "string" || typeof sourceRoot !== "string") {
+      return undefined;
+    }
+
+    return {
+      name: projectName,
+      rootPath: path.relative(
+        args.workingDirectory,
+        path.dirname(args.projectJsonPath),
+      ),
+      sourceRoot,
+      tags,
+    };
   }
 
   /**
@@ -260,8 +267,8 @@ export class RuleRoutingService {
    */
   private resolveMatchedProjects(args: {
     projectSelectors: string[];
-    workspaceProjects: WorkspaceProjectMetadata[];
     workingDirectory: string;
+    workspaceProjects: WorkspaceProjectMetadata[];
   }): WorkspaceProjectMetadata[] {
     const matchedProjects = new Map<string, WorkspaceProjectMetadata>();
 
@@ -318,7 +325,7 @@ export class RuleRoutingService {
       const relativeSelectorPath = path.isAbsolute(projectSelector)
         ? path.relative(args.workingDirectory, projectSelector)
         : projectSelector;
-      projectPaths.add(relativeSelectorPath);
+      projectPaths.add(this.normalizePathForComparison(relativeSelectorPath));
     }
 
     return [...projectPaths].toSorted();
@@ -335,8 +342,8 @@ export class RuleRoutingService {
     );
     const matchedProjects = this.resolveMatchedProjects({
       projectSelectors: args.projectSelectors,
-      workspaceProjects,
       workingDirectory: args.workingDirectory,
+      workspaceProjects,
     });
     const projectPaths = this.resolveProjectPaths({
       matchedProjects,

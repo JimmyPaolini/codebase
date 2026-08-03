@@ -1,7 +1,6 @@
-export { MainModule } from "./main.module.js";
-export { IntegrationModule } from "./modules/integration/integration.module.js";
-export { IntegrationService } from "./modules/integration/integration.service.js";
+export { loadIntegrationModuleSurface } from "./modules/integration/integration-surface.utilities.js";
 export type {
+  IntegrationModuleSurface,
   RunConfiguredGeneratorArguments,
   RunConfiguredGeneratorResult,
   RunConfiguredValidationArguments,

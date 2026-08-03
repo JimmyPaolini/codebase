@@ -3,7 +3,12 @@
   "name": "conformetry-nx",
   "projectType": "library",
   "sourceRoot": "packages/conformetry-nx",
-  "tags": ["framework:nestjs", "language:typescript", "type:package"],
+  "tags": [
+    "framework:nestjs",
+    "language:typescript",
+    "package:conformetry-nx",
+    "type:package"
+  ],
   "targets": {
     "analyze-code": {},
     "build": {

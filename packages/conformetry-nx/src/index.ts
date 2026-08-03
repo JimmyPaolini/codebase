@@ -1,3 +1,8 @@
+import {
+  type IntegrationModuleSurface,
+  loadIntegrationModuleSurface,
+  type RunConfiguredGeneratorArguments,
+} from "@jimmypaolini/conformetry";
 import { NestFactory } from "@nestjs/core";
 
 import { NxAdapterService } from "./modules/nx-adapter/nx-adapter.service";
@@ -27,7 +32,6 @@ const conformetryPluginDefinition = {
 };
 
 const noopGeneratorCallback: GeneratorCallback = async (): Promise<void> => {};
-const conformetryPackageName = "@jimmypaolini/conformetry";
 
 /**
  * Contract used by conformetry-nx for generator delegation.
@@ -36,24 +40,6 @@ interface ConformetryIntegrationFacade {
   runConfiguredGenerator(
     args: RunConfiguredGeneratorArguments,
   ): Promise<unknown>;
-}
-
-/**
- * Dynamic module surface loaded from the conformetry package.
- */
-interface ConformetryIntegrationModuleSurface {
-  IntegrationModule: unknown;
-  IntegrationService: unknown;
-}
-
-/**
- * Arguments forwarded to conformetry IntegrationService.runConfiguredGenerator.
- */
-interface RunConfiguredGeneratorArguments {
-  configurationPath: string;
-  generatorInputs: Record<string, string | undefined>;
-  generatorName: string;
-  targetDirectoryPath: string;
 }
 
 export default conformetryPluginDefinition;
@@ -211,33 +197,26 @@ export async function resolveTemplateRuleRouting(
 }
 
 /**
- * Loads conformetry integration module exports lazily at runtime.
- */
-async function loadConformetryIntegrationModuleSurface(): Promise<ConformetryIntegrationModuleSurface> {
-  return (await import(
-    conformetryPackageName
-  )) as ConformetryIntegrationModuleSurface;
-}
-
-/**
  * Runs work with a short-lived conformetry integration service context.
  */
 async function runWithIntegrationService<T>(
   callback: (integrationService: ConformetryIntegrationFacade) => Promise<T>,
 ): Promise<T> {
-  const conformetryIntegrationModule =
-    await loadConformetryIntegrationModuleSurface();
+  const integrationModuleSurface: IntegrationModuleSurface =
+    await loadIntegrationModuleSurface();
+  const integrationModule = integrationModuleSurface.IntegrationModule;
+  const integrationServiceToken = integrationModuleSurface.IntegrationService;
   const applicationContext = await NestFactory.createApplicationContext(
-    conformetryIntegrationModule.IntegrationModule as never,
+    integrationModule,
     {
       logger: false,
     },
   );
 
   try {
-    const integrationService: ConformetryIntegrationFacade =
-      applicationContext.get(
-        conformetryIntegrationModule.IntegrationService as never,
+    const integrationService =
+      applicationContext.get<ConformetryIntegrationFacade>(
+        integrationServiceToken,
       );
     return await callback(integrationService);
   } finally {
