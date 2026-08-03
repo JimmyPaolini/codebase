@@ -4,6 +4,7 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 
 import { DiscoverFilesService } from "../discover-files/discover-files.service";
+import { MeasureJsonService } from "../measure-json/measure-json.service";
 import { MeasurePythonService } from "../measure-python/measure-python.service";
 import { MeasureTypescriptService } from "../measure-typescript/measure-typescript.service";
 
@@ -20,6 +21,7 @@ export class CodometerService {
     private readonly discoverFilesService: DiscoverFilesService,
     private readonly measureTypescriptService: MeasureTypescriptService,
     private readonly measurePythonService: MeasurePythonService,
+    private readonly measureJsonService: MeasureJsonService,
   ) {}
 
   /**
@@ -69,6 +71,10 @@ export class CodometerService {
       workingDirectory: directory,
     });
     const pythonStatsResult = this.measurePythonService.analyze(directory);
+    const jsonStatsResult = this.measureJsonService.analyze({
+      jsonFiles: discoveredFiles.jsonFiles,
+      workingDirectory: directory,
+    });
     const repoBytes = this.getRepositoryBytes(
       discoveredFiles.trackedFiles,
       directory,
@@ -92,6 +98,18 @@ export class CodometerService {
       imports: typescriptStats.imports + pythonStatsResult.imports,
       interfaces: typescriptStats.interfaces + pythonStatsResult.protocols,
       jsFiles: typescriptStats.jsFiles,
+      jsonArrays: jsonStatsResult.arrays,
+      jsonBooleans: jsonStatsResult.booleans,
+      jsonFiles: jsonStatsResult.files,
+      jsonItems: jsonStatsResult.items,
+      jsonLines: jsonStatsResult.lines,
+      jsonMaxDepth: jsonStatsResult.maxDepth,
+      jsonNulls: jsonStatsResult.nulls,
+      jsonNumbers: jsonStatsResult.numbers,
+      jsonObjects: jsonStatsResult.objects,
+      jsonProperties: jsonStatsResult.properties,
+      jsonStrings: jsonStatsResult.strings,
+      jsonTotalNodes: jsonStatsResult.totalNodes,
       linesOfCode: typescriptStats.lines + pythonStatsResult.lines,
       methods: typescriptStats.methods,
       pythonClasses: pythonStatsResult.classes,

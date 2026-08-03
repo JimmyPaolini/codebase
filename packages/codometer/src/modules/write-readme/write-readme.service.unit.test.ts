@@ -7,6 +7,8 @@ import { afterEach, beforeAll, describe, expect, it } from "vitest";
 
 import { WriteReadmeService } from "./write-readme.service";
 
+import type { CodeStatisticsResult } from "../codometer/codometer.types";
+
 describe(WriteReadmeService, () => {
   let service: WriteReadmeService;
   const temporaryDirectories: string[] = [];
@@ -25,7 +27,7 @@ describe(WriteReadmeService, () => {
     }
   });
 
-  const sampleStatistics = {
+  const sampleStatistics: CodeStatisticsResult = {
     asyncFunctions: 1,
     classes: 2,
     constants: 3,
@@ -39,23 +41,35 @@ describe(WriteReadmeService, () => {
     imports: 11,
     interfaces: 12,
     jsFiles: 13,
-    linesOfCode: 14,
-    methods: 15,
-    pythonClasses: 16,
-    pythonConstants: 17,
-    pythonDecorators: 18,
-    pythonFiles: 19,
-    pythonFunctions: 20,
-    pythonImports: 21,
-    pythonLines: 22,
-    pythonProtocols: 23,
+    jsonArrays: 14,
+    jsonBooleans: 15,
+    jsonFiles: 16,
+    jsonItems: 17,
+    jsonLines: 18,
+    jsonMaxDepth: 19,
+    jsonNulls: 20,
+    jsonNumbers: 21,
+    jsonObjects: 22,
+    jsonProperties: 23,
+    jsonStrings: 24,
+    jsonTotalNodes: 25,
+    linesOfCode: 26,
+    methods: 27,
+    pythonClasses: 28,
+    pythonConstants: 29,
+    pythonDecorators: 30,
+    pythonFiles: 31,
+    pythonFunctions: 32,
+    pythonImports: 33,
+    pythonLines: 34,
+    pythonProtocols: 35,
     repoSizeMiB: "1.5",
-    sourceFiles: 24,
-    syncFunctions: 25,
-    testFiles: 26,
-    todos: 27,
-    tsFiles: 28,
-  } as const;
+    sourceFiles: 36,
+    syncFunctions: 37,
+    testFiles: 38,
+    todos: 39,
+    tsFiles: 40,
+  };
 
   it("is defined", () => {
     expect(service).toBeDefined();

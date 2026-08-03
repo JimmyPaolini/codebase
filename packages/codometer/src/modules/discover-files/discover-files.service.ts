@@ -40,11 +40,20 @@ export class DiscoverFilesService {
     const sourceFiles = trackedFiles.filter((filePath) =>
       allExtensions.has(path.extname(filePath)),
     );
+    const jsonFiles = trackedFiles.filter((filePath) => {
+      const extension = path.extname(filePath).toLowerCase();
+      return (
+        extension === ".json" ||
+        extension === ".jsonc" ||
+        extension === ".jsonl"
+      );
+    });
 
     return {
       jsFiles: sourceFiles.filter((filePath) =>
         JS_EXTENSIONS.has(path.extname(filePath)),
       ),
+      jsonFiles,
       pyFiles: trackedFiles.filter(
         (filePath) => path.extname(filePath) === ".py",
       ),

@@ -17,6 +17,18 @@ export interface CodeStatisticsResult {
   imports: number;
   interfaces: number;
   jsFiles: number;
+  jsonArrays: number;
+  jsonBooleans: number;
+  jsonFiles: number;
+  jsonItems: number;
+  jsonLines: number;
+  jsonMaxDepth: number;
+  jsonNulls: number;
+  jsonNumbers: number;
+  jsonObjects: number;
+  jsonProperties: number;
+  jsonStrings: number;
+  jsonTotalNodes: number;
   linesOfCode: number;
   methods: number;
   pythonClasses: number;

@@ -6,13 +6,14 @@ import { CodometerCommand } from "./codometer.command";
 import type { LoggerService } from "../logger/logger.service";
 import type { WriteReadmeService } from "../write-readme/write-readme.service";
 import type { CodometerService } from "./codometer.service";
+import type { CodeStatisticsResult } from "./codometer.types";
 
 describe(CodometerCommand, () => {
   let command: CodometerCommand;
   let loggerService: LoggerService;
   let codometerService: CodometerService;
   let writeReadmeService: WriteReadmeService;
-  const statistics = {
+  const statistics: CodeStatisticsResult = {
     asyncFunctions: 0,
     classes: 0,
     constants: 0,
@@ -26,6 +27,18 @@ describe(CodometerCommand, () => {
     imports: 0,
     interfaces: 0,
     jsFiles: 0,
+    jsonArrays: 0,
+    jsonBooleans: 0,
+    jsonFiles: 0,
+    jsonItems: 0,
+    jsonLines: 0,
+    jsonMaxDepth: 0,
+    jsonNulls: 0,
+    jsonNumbers: 0,
+    jsonObjects: 0,
+    jsonProperties: 0,
+    jsonStrings: 0,
+    jsonTotalNodes: 0,
     linesOfCode: 0,
     methods: 0,
     pythonClasses: 0,
@@ -42,7 +55,7 @@ describe(CodometerCommand, () => {
     testFiles: 0,
     todos: 0,
     tsFiles: 0,
-  } as const;
+  };
 
   beforeEach(() => {
     loggerService = createMock<LoggerService>();

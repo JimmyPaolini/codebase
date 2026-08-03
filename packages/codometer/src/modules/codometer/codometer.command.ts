@@ -3,6 +3,7 @@ import { Command, CommandRunner } from "nest-commander";
 
 import { DiscoverFilesService } from "../discover-files/discover-files.service";
 import { LoggerService } from "../logger/logger.service";
+import { MeasureJsonService } from "../measure-json/measure-json.service";
 import { MeasurePythonService } from "../measure-python/measure-python.service";
 import { MeasureTypescriptService } from "../measure-typescript/measure-typescript.service";
 import { WriteReadmeService } from "../write-readme/write-readme.service";
@@ -64,11 +65,13 @@ export class CodometerCommand extends CommandRunner {
     const discoverFilesService = new DiscoverFilesService();
     const measureTypescriptService = new MeasureTypescriptService();
     const measurePythonService = new MeasurePythonService();
+    const measureJsonService = new MeasureJsonService();
 
     return new CodometerService(
       discoverFilesService,
       measureTypescriptService,
       measurePythonService,
+      measureJsonService,
     );
   }
 
