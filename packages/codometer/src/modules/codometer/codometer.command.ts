@@ -39,6 +39,10 @@ export class CodometerCommand extends CommandRunner {
       description: "Optional README path to update with generated badges",
       flags: "-r, --readme [readme]",
     });
+    this.registerOptionMetadata("parseCheck", {
+      description: "Validate README badges without writing changes",
+      flags: "--check",
+    });
   }
 
   // 🔐 Private Fields
@@ -96,6 +100,21 @@ export class CodometerCommand extends CommandRunner {
   // 🌎 Public Methods
 
   /**
+   * Parse the optional check mode flag from command-line input.
+   */
+  parseCheck(value: boolean | string | undefined): boolean {
+    if (typeof value === "boolean") {
+      return value;
+    }
+
+    if (typeof value === "string") {
+      return value.toLowerCase() === "true";
+    }
+
+    return false;
+  }
+
+  /**
    * Parse the directory option from command-line input.
    */
   parseDirectory(value: string | undefined): string {
@@ -118,8 +137,7 @@ export class CodometerCommand extends CommandRunner {
   ): Promise<void> {
     const directory = options.directory ?? process.cwd();
     const statistics = this.measureService.measure(directory);
-    const checkMode =
-      process.argv.includes("--check") || options.check === true;
+    const checkMode = options.check === true;
 
     await Promise.resolve();
 

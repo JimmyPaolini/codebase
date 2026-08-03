@@ -4,7 +4,7 @@
 
 **Goal:** Create `packages/metitur`, a NestJS command application that measures codebase statistics and optionally updates a README badge block.
 
-**Architecture:** Six service modules (`file-discovery`, `typescript-analysis`, `python-analysis`, `statistics`, `readme-badges`) plus one command module (`measure`) are scaffolded with conformance generators and wired into `main.module.ts`. After validation, the old `scripts/measure-code.ts` and `scripts/measure-code.py` are deleted and the root `project.json` `measure-code` target is updated to call the new app.
+**Architecture:** Six service modules (`file-discovery`, `typescript-analysis`, `python-analysis`, `statistics`, `readme-badges`) plus one command module (`measure`) are scaffolded with conformance generators and wired into `main.module.ts`. After validation, the old `scripts/codometer.ts` and `scripts/codometer.py` are deleted and the root `project.json` `codometer` target is updated to call the new app.
 
 **Tech Stack:** NestJS, nest-commander, TypeScript compiler API (`typescript` package), Node.js `child_process`, `zod`, `vitest`
 
@@ -76,8 +76,8 @@ packages/metitur/
     mocks.ts                                           # generated
     setup.ts                                           # generated
 scripts/
-  measure-code.ts                                      # deleted Task 8
-  measure-code.py                                      # deleted Task 8
+  codometer.ts                                      # deleted Task 8
+  codometer.py                                      # deleted Task 8
 project.json (workspace root)                          # modified Task 8
 ```
 
@@ -986,10 +986,10 @@ pnpm exec nx g conformance:nestjs-service-module --name=python-analysis --projec
 - [ ] **Step 2: Copy the Python script into the module**
 
 ```bash
-cp scripts/measure-code.py packages/metitur/src/modules/python-analysis/analyze.py
+cp scripts/codometer.py packages/metitur/src/modules/python-analysis/analyze.py
 ```
 
-Do NOT delete `scripts/measure-code.py` yet — that happens in Task 8.
+Do NOT delete `scripts/codometer.py` yet — that happens in Task 8.
 
 - [ ] **Step 3: Write the types**
 
@@ -1806,7 +1806,7 @@ export class ReadmeBadgesService {
 
     throw new Error(
       `README code stats are stale.\n` +
-        `Run \`nx run codebase:measure-code:write\` locally and commit the result.`,
+        `Run \`nx run codebase:codometer:write\` locally and commit the result.`,
     );
   }
 }
@@ -2245,16 +2245,16 @@ git commit -m "feat(metitur): ✨ add measure command and wire main module"
 ## Task 8: Migration — replace scripts with `metitur`
 
 **Files:**
-- Delete: `scripts/measure-code.ts`
-- Delete: `scripts/measure-code.py`
-- Modify: `project.json` (workspace root) — `measure-code` target
+- Delete: `scripts/codometer.ts`
+- Delete: `scripts/codometer.py`
+- Modify: `project.json` (workspace root) — `codometer` target
 
-- [ ] **Step 1: Update the root `project.json` `measure-code` target**
+- [ ] **Step 1: Update the root `project.json` `codometer` target**
 
-In the workspace root `project.json`, replace the `measure-code` target with:
+In the workspace root `project.json`, replace the `codometer` target with:
 
 ```json
-"measure-code": {
+"codometer": {
   "cache": false,
   "configurations": {
     "check": {
@@ -2279,7 +2279,7 @@ In the workspace root `project.json`, replace the `measure-code` target with:
 - [ ] **Step 2: Verify the write target runs successfully**
 
 ```bash
-pnpm exec nx run codebase:measure-code:write
+pnpm exec nx run codebase:codometer:write
 ```
 
 Expected: exits 0, README.md badge block is updated.
@@ -2287,7 +2287,7 @@ Expected: exits 0, README.md badge block is updated.
 - [ ] **Step 3: Verify the check target passes after writing**
 
 ```bash
-pnpm exec nx run codebase:measure-code:check
+pnpm exec nx run codebase:codometer:check
 ```
 
 Expected: exits 0 with "✅ README code stats are up to date."
@@ -2295,13 +2295,13 @@ Expected: exits 0 with "✅ README code stats are up to date."
 - [ ] **Step 4: Delete the old scripts**
 
 ```bash
-git rm scripts/measure-code.ts scripts/measure-code.py
+git rm scripts/codometer.ts scripts/codometer.py
 ```
 
 - [ ] **Step 5: Verify no remaining references to the old scripts**
 
 ```bash
-git grep "scripts/measure-code" -- '*.json' '*.ts' '*.yml' '*.yaml'
+git grep "scripts/codometer" -- '*.json' '*.ts' '*.yml' '*.yaml'
 ```
 
 Expected: no matches (the only reference was in `project.json` which was updated in Step 1).
@@ -2318,5 +2318,5 @@ Expected: all checks pass.
 
 ```bash
 git add project.json scripts/
-git commit -m "refactor(metitur): ♻️ migrate measure-code scripts to metitur package"
+git commit -m "refactor(metitur): ♻️ migrate codometer scripts to metitur package"
 ```

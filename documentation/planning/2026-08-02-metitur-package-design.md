@@ -6,7 +6,7 @@
 
 ## Summary
 
-Formalize the ad-hoc `scripts/measure-code.ts` and `scripts/measure-code.py` scripts
+Formalize the ad-hoc `scripts/codometer.ts` and `scripts/codometer.py` scripts
 into a proper NestJS command application at `packages/metitur`. The package must be
 generic enough to run against any codebase, and must separate measurement logic from
 README output logic.
@@ -105,7 +105,7 @@ analyze(files: Pick<FileDiscoveryResult, 'sourceFiles'>): TypescriptAnalysisResu
 
 Invokes `uv run python packages/metitur/src/modules/python-analysis/analyze.py`
 (or the equivalent relative path resolved from `workingDirectory`) and parses its
-JSON output. The Python script is the same logic currently in `scripts/measure-code.py`,
+JSON output. The Python script is the same logic currently in `scripts/codometer.py`,
 moved into the module folder.
 
 Gracefully returns a zeroed result when:
@@ -211,11 +211,11 @@ The CLI entry point. Uses `nest-commander` `@Command` decorator.
 
 After `metitur` is complete:
 
-1. Update the `measure-code` target in the root `project.json`:
+1. Update the `codometer` target in the root `project.json`:
    - `write`: `pnpm exec nx run metitur:start -- measure --directory={workspaceRoot} --readme=README.md`
    - `check`: `pnpm exec nx run metitur:start -- measure --check --directory={workspaceRoot} --readme=README.md`
-2. Delete `scripts/measure-code.ts` and `scripts/measure-code.py`
-3. CI call `nx run codebase:measure-code:check` continues to work unchanged
+2. Delete `scripts/codometer.ts` and `scripts/codometer.py`
+3. CI call `nx run codebase:codometer:check` continues to work unchanged
 
 ---
 

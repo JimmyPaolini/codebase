@@ -55,7 +55,7 @@ This plan tracks remediation of ESLint warnings and errors produced by running `
 
 | Task     | Description                                                                                                                                                                                                          | Completed | Date |
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ---- |
-| TASK-005 | `scripts/measure-code.ts:169` — rename variable `nodeWithTypeParams` → `nodeWithTypeParameters`                                                                                                                      | ✅        | 2026-06-15T21:00:00Z |
+| TASK-005 | `scripts/codometer.ts:169` — rename variable `nodeWithTypeParams` → `nodeWithTypeParameters`                                                                                                                      | ✅        | 2026-06-15T21:00:00Z |
 | TASK-006 | `applications/lexico/src/components/entry/identifier.tsx` — rename all `bg` property keys → `background` in the color-map object literal (lines 87–172). Update all call sites that destructure or access `.bg`      | ✅        | 2026-06-15T21:00:00Z |
 | TASK-007 | `applications/lexico/src/components/layout/navigation.tsx:42` and `applications/lexico/src/components/layout/index.ts:4` — rename `NavItem` → `NavigationItem` (component name + all imports/exports)               | ✅        | 2026-06-15T21:00:00Z |
 | TASK-008 | `applications/lexico/src/lib/auth.ts:6` — rename `AuthUser` → `AuthenticationUser` (or `AuthorizationUser` if auth is authorization-focused); update all imports and type references                                 | ✅        | 2026-06-15T21:00:00Z |
@@ -206,7 +206,7 @@ This plan tracks remediation of ESLint warnings and errors produced by running `
 - **FILE-048**: `packages/lexico-entities/src/database/lexico-naming-strategy.ts` → `packages/lexico-entities/src/modules/database/lexico-naming-strategy.ts` (TASK-012)
 - **FILE-049**: `packages/lexico-entities/src/modules/database/` — generated scaffold files: `database.service.ts`, `database.types.ts`, `database.constants.ts`, `database.service.unit.test.ts` (TASK-010)
 - **FILE-050**: `packages/lexico-entities/src/modules/entities/` — generated scaffold files: `entities.module.ts`, `entities.service.ts`, `entities.types.ts`, `entities.constants.ts`, `entities.service.unit.test.ts` (TASK-011)
-- **FILE-008**: `scripts/measure-code.ts` — rename `nodeWithTypeParams` (TASK-005)
+- **FILE-008**: `scripts/codometer.ts` — rename `nodeWithTypeParams` (TASK-005)
 - **FILE-009**: `scripts/sync-conventional-config.ts` — fix complexity + import violation (TASK-029, TASK-030)
 - **FILE-010**: `scripts/sync-vscode-extensions.ts` — fix max-statements (TASK-031)
 - **FILE-011**: `packages/lexico-entities/scripts/extract-migration-sql.ts` — fix `visit` complexity (TASK-032)
