@@ -121,4 +121,16 @@ describe(WriteReadmeService, () => {
 
     expect(service.syncReadme(readmePath, sampleStatistics, true)).toBe(false);
   });
+
+  it("creates a new README when the file does not exist", () => {
+    const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
+    temporaryDirectories.push(temporaryDirectory);
+    const readmePath = path.join(temporaryDirectory, "README.md");
+
+    expect(service.syncReadme(readmePath, sampleStatistics)).toBe(true);
+
+    const written = readFileSync(readmePath, "utf8");
+
+    expect(written).toContain("<!-- CODE_STATISTICS_START -->");
+  });
 });

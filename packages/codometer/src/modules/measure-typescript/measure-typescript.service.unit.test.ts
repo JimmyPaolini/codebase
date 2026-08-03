@@ -1,4 +1,5 @@
 import { Test } from "@nestjs/testing";
+import tsCompiler from "typescript";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { MeasureTypescriptService } from "./measure-typescript.service";
@@ -128,6 +129,188 @@ describe(MeasureTypescriptService, () => {
 
     expect(result.constants).toBe(2);
     expect(result.exported).toBe(2);
+  });
+
+  it("counts class property functions, accessors, and type aliases", () => {
+    readFileSyncMock.mockReturnValue(
+      `type LocalTypeAlias<T> = T;
+       class Worker {
+         get size(): number { return 1; }
+         set size(value: number) { void value; }
+         task = async (): Promise<void> => {};
+       }`,
+    );
+
+    const result = service.analyze({
+      sourceFiles: ["src/advanced.ts"],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.methods).toBe(3);
+    expect(result.asyncFunctions).toBe(1);
+    expect(result.genericDeclarations).toBe(1);
+    expect(result.exported).toBe(0);
+  });
+
+  it("does not count non-const variable statements", () => {
+    readFileSyncMock.mockReturnValue("let mutable = 1;");
+
+    const result = service.analyze({
+      sourceFiles: ["src/mutable.ts"],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.constants).toBe(0);
+  });
+
+  it("counts function expressions and decorators", () => {
+    readFileSyncMock.mockReturnValue(
+      `@sealed
+       export class DecoratedClass {}
+       const worker = function namedWorker(): void {};`,
+    );
+
+    const result = service.analyze({
+      sourceFiles: ["src/decorated.ts"],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.decorators).toBe(1);
+    expect(result.functions).toBe(1);
+    expect(result.syncFunctions).toBe(1);
+    expect(result.classes).toBe(1);
+  });
+
+  it("counts class expressions and JavaScript/TSX file kinds", () => {
+    readFileSyncMock
+      .mockReturnValueOnce(
+        `const Worker = class WorkerClass {
+           run(): void {}
+         };`,
+      )
+      .mockReturnValueOnce("const element = <div>Hello</div>;")
+      .mockReturnValueOnce("module.exports = {};");
+
+    const result = service.analyze({
+      sourceFiles: ["src/class-expression.ts", "src/view.tsx", "src/index.js"],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.classes).toBe(1);
+    expect(result.methods).toBe(1);
+    expect(result.tsFiles).toBe(2);
+    expect(result.jsFiles).toBe(1);
+  });
+
+  it("ignores relative and absolute imports for external package counting", () => {
+    readFileSyncMock.mockReturnValue(
+      `import "./local";
+       import "/absolute/path";
+       import "external-lib";`,
+    );
+
+    const result = service.analyze({
+      sourceFiles: ["src/imports-mixed.ts"],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.imports).toBe(3);
+    expect(result.externalPackages).toStrictEqual(new Set(["external-lib"]));
+  });
+
+  it("covers private node helpers for non-modifier and non-variable inputs", () => {
+    const hasAsyncKeyword = Reflect.get(service, "hasAsyncKeyword") as (
+      node: tsCompiler.Node,
+    ) => boolean;
+    const hasExportKeyword = Reflect.get(service, "hasExportKeyword") as (
+      node: tsCompiler.Node,
+    ) => boolean;
+    const hasTypeParameters = Reflect.get(service, "hasTypeParameters") as (
+      node: tsCompiler.Node,
+    ) => boolean;
+    const handleVariable = Reflect.get(service, "handleVariable") as (
+      node: tsCompiler.Node,
+      stats: {
+        constants: number;
+        exported: number;
+      },
+    ) => void;
+
+    const identifierNode = tsCompiler.factory.createIdentifier("value");
+    const typeAliasWithoutTypeParameters =
+      tsCompiler.factory.createTypeAliasDeclaration(
+        undefined,
+        "Alias",
+        undefined,
+        tsCompiler.factory.createKeywordTypeNode(
+          tsCompiler.SyntaxKind.StringKeyword,
+        ),
+      );
+    const nonConstVariableStatement =
+      tsCompiler.factory.createVariableStatement(
+        undefined,
+        tsCompiler.factory.createVariableDeclarationList(
+          [tsCompiler.factory.createVariableDeclaration("mutable")],
+          tsCompiler.NodeFlags.Let,
+        ),
+      );
+    const helperStats = {
+      constants: 0,
+      exported: 0,
+    };
+
+    expect(hasAsyncKeyword(identifierNode)).toBe(false);
+    expect(hasExportKeyword(identifierNode)).toBe(false);
+    expect(hasTypeParameters(identifierNode)).toBe(false);
+    expect(hasTypeParameters(typeAliasWithoutTypeParameters)).toBe(false);
+
+    handleVariable(identifierNode, helperStats);
+    handleVariable(nonConstVariableStatement, helperStats);
+
+    expect(helperStats.constants).toBe(0);
+    expect(helperStats.exported).toBe(0);
+  });
+
+  it("covers exported and local interface/type alias branches", () => {
+    readFileSyncMock.mockReturnValue(
+      `import packageMember from "plain-package/submodule";
+       import scopedMember from "@scope/pkg/submodule";
+       export interface ExportedInterface<T> {}
+       interface LocalInterface {}
+       export type ExportedTypeAlias<T> = T;
+       type LocalTypeAlias = string;`,
+    );
+
+    const result = service.analyze({
+      sourceFiles: ["src/type-shapes.ts"],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.imports).toBe(2);
+    expect(result.interfaces).toBe(2);
+    expect(result.genericDeclarations).toBe(2);
+    expect(result.externalPackages).toStrictEqual(
+      new Set(["@scope/pkg", "plain-package"]),
+    );
+    expect(result.exported).toBe(2);
+  });
+
+  it("covers generic class and function branches with local enums", () => {
+    readFileSyncMock.mockReturnValue(
+      `class GenericClass<T> {}
+       enum LocalEnum { A }
+       function genericFunction<T>(value: T): T { return value; }`,
+    );
+
+    const result = service.analyze({
+      sourceFiles: ["src/generics.ts"],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.classes).toBe(1);
+    expect(result.enums).toBe(1);
+    expect(result.functions).toBe(1);
+    expect(result.genericDeclarations).toBe(2);
   });
 
   it("sums line counts across multiple files", () => {
