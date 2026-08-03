@@ -104,4 +104,36 @@ describe(MeasurePythonService, () => {
 
     loggerWarnSpy.mockRestore();
   });
+
+  it("handles non-Error exceptions gracefully", () => {
+    const loggerWarnSpy = vi
+      .spyOn(Logger.prototype, "warn")
+      .mockReturnValue(undefined);
+    execSyncMock.mockImplementation(() => {
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
+      throw "string error";
+    });
+
+    const result = service.analyze("/repo");
+
+    expect(result).toStrictEqual({
+      classes: 0,
+      commentLines: 0,
+      comments: 0,
+      constants: 0,
+      decorators: 0,
+      docstringLines: 0,
+      docstrings: 0,
+      files: 0,
+      functions: 0,
+      imports: 0,
+      lines: 0,
+      protocols: 0,
+    });
+    expect(loggerWarnSpy).toHaveBeenCalledWith(
+      "Python analysis skipped: string error",
+    );
+
+    loggerWarnSpy.mockRestore();
+  });
 });

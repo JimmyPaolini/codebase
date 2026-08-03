@@ -350,4 +350,93 @@ describe(MeasureTypescriptService, () => {
 
     expect(result.lines).toBe(5);
   });
+
+  it("handles doc comments without @ prefix tags", () => {
+    readFileSyncMock.mockReturnValue(
+      `/**
+        * Plain description without tags
+        * Another line
+        */
+        const x = 1;`,
+    );
+
+    const result = service.analyze({
+      sourceFiles: ["src/no-tags.ts"],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.docComments).toBe(1);
+    expect(result.docTags).toStrictEqual({});
+  });
+
+  it("handles import declarations with non-string module specifiers", () => {
+    readFileSyncMock.mockReturnValue(
+      `import foo = require("bar");
+       const x = 1;`,
+    );
+
+    const result = service.analyze({
+      sourceFiles: ["src/require.ts"],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.imports).toBe(1);
+  });
+
+  it("counts relative imports without treating them as external packages", () => {
+    readFileSyncMock.mockReturnValue(
+      `import { helper } from "../utils";
+       import "./styles.css";`,
+    );
+
+    const result = service.analyze({
+      sourceFiles: ["src/local.ts"],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.imports).toBe(2);
+    expect(result.externalPackages.size).toBe(0);
+  });
+
+  it("handles edge case doc tags with special characters", () => {
+    readFileSyncMock.mockReturnValue(
+      `/**
+        * @param-special test
+        * @returns-value string
+        * @see https://example.com
+        */
+        function test(): void {}`,
+    );
+
+    const result = service.analyze({
+      sourceFiles: ["src/special-tags.ts"],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.docComments).toBe(1);
+    expect(result.docTags["param-special"]).toBe(1);
+    expect(result.docTags["returns-value"]).toBe(1);
+    expect(result.docTags["see"]).toBe(1);
+  });
+
+  it("distinguishes between different doc tag styles", () => {
+    readFileSyncMock.mockReturnValue(
+      `/**
+        * @deprecated
+        * @experimental
+        * @internal
+        */
+        const config = {};`,
+    );
+
+    const result = service.analyze({
+      sourceFiles: ["src/decorators.ts"],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.docComments).toBe(1);
+    expect(result.docTags["deprecated"]).toBe(1);
+    expect(result.docTags["experimental"]).toBe(1);
+    expect(result.docTags["internal"]).toBe(1);
+  });
 });

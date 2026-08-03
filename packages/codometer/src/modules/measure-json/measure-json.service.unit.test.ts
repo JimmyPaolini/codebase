@@ -96,4 +96,89 @@ describe(MeasureJsonService, () => {
     expect(result.numbers).toBe(1);
     expect(result.strings).toBe(2);
   });
+
+  it("handles JSONC escape sequences correctly", () => {
+    const filePath = path.join(tempDirectory, "escaped.jsonc");
+    writeFileSync(
+      filePath,
+      String.raw`{
+  "path": "C:\\Users\\root",
+  "escaped": "line\nbreak",
+  "quote": "say \"hello\""
+}
+`,
+      "utf8",
+    );
+
+    const result = service.analyze({
+      jsonFiles: [path.relative(tempDirectory, filePath)],
+      workingDirectory: tempDirectory,
+    });
+
+    expect(result.files).toBe(1);
+    expect(result.objects).toBe(1);
+    expect(result.strings).toBe(3);
+  });
+
+  it("handles files with no content gracefully", () => {
+    const filePath = path.join(tempDirectory, "empty.json");
+    writeFileSync(filePath, "", "utf8");
+
+    const result = service.analyze({
+      jsonFiles: [path.relative(tempDirectory, filePath)],
+      workingDirectory: tempDirectory,
+    });
+
+    expect(result.files).toBe(1);
+    expect(result.objects).toBe(0);
+    expect(result.arrays).toBe(0);
+    expect(result.strings).toBe(0);
+  });
+
+  it("handles JSONC block comments with quotes inside", () => {
+    const filePath = path.join(tempDirectory, "block-comment.jsonc");
+    writeFileSync(
+      filePath,
+      `{
+  /* comment with "quote" inside */
+  "value": 42
+}
+`,
+      "utf8",
+    );
+
+    const result = service.analyze({
+      jsonFiles: [path.relative(tempDirectory, filePath)],
+      workingDirectory: tempDirectory,
+    });
+
+    expect(result.files).toBe(1);
+    expect(result.objects).toBe(1);
+    expect(result.numbers).toBe(1);
+  });
+
+  it("counts nested arrays correctly", () => {
+    const filePath = path.join(tempDirectory, "nested-arrays.json");
+    writeFileSync(
+      filePath,
+      `{
+  "outer": [
+    [1, 2],
+    [3, 4]
+  ],
+  "empty": []
+}
+`,
+      "utf8",
+    );
+
+    const result = service.analyze({
+      jsonFiles: [path.relative(tempDirectory, filePath)],
+      workingDirectory: tempDirectory,
+    });
+
+    expect(result.objects).toBe(1);
+    expect(result.arrays).toBe(3);
+    expect(result.numbers).toBe(4);
+  });
 });
