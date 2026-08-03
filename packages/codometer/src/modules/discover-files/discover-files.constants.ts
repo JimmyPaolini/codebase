@@ -6,6 +6,9 @@ export const TS_EXTENSIONS = new Set([".cts", ".mts", ".ts", ".tsx"]);
 /** File extensions treated as JavaScript source. */
 export const JS_EXTENSIONS = new Set([".cjs", ".js", ".jsx", ".mjs"]);
 
+/** File extensions treated as markdown source. */
+export const MARKDOWN_EXTENSIONS = new Set([".md", ".mdx"]);
+
 /** Path segments that cause a file to be excluded from analysis. */
 export const EXCLUDE_PATHS = [
   "node_modules/",

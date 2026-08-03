@@ -62,6 +62,15 @@ export class WriteReadmeService {
   buildBadgeBlock(statistics: CodeStatisticsResult): string {
     const badges = [
       this.buildBadge("Lines of Code", statistics.linesOfCode, "22c55e"),
+      this.buildBadge("Markdown Files", statistics.markdownFiles, "84cc16"),
+      this.buildBadge("Markdown Lines", statistics.markdownLines, "65a30d"),
+      this.buildBadge("Markdown Headers", statistics.markdownHeaders, "16a34a"),
+      this.buildBadge("Markdown Lists", statistics.markdownLists, "15803d"),
+      this.buildBadge(
+        "Markdown Elements",
+        statistics.markdownElements,
+        "3f6212",
+      ),
       this.buildBadge("Repo Size", `${statistics.repoSizeMiB} MiB`, "6b7280"),
       this.buildBadge("Folders", statistics.folders, "4a4a4a"),
       this.buildBadge("Source Files", statistics.sourceFiles, "3178c6"),

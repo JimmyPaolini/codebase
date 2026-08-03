@@ -39,6 +39,7 @@ describe(DiscoverFilesService, () => {
           "src/app.test.ts",
           "src/util.js",
           "src/script.py",
+          "documentation/guide.md",
           "node_modules/lib/index.ts",
           "dist/bundle.js",
         ].join("\n"),
@@ -51,6 +52,7 @@ describe(DiscoverFilesService, () => {
     expect(result.jsFiles).toStrictEqual(["src/util.js"]);
     expect(result.testFiles).toStrictEqual(["src/app.test.ts"]);
     expect(result.pyFiles).toStrictEqual(["src/script.py"]);
+    expect(result.markdownFiles).toStrictEqual(["documentation/guide.md"]);
     expect(result.sourceFiles).toStrictEqual([
       "src/app.ts",
       "src/app.test.ts",

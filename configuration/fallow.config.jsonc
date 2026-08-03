@@ -212,7 +212,7 @@
   "usedClassMembers": [
     {
       "extends": "CommandRunner",
-      "members": ["parseDirectory", "parseReadme", "run"],
+      "members": ["parseCheck", "parseDirectory", "parseReadme", "run"],
     },
     "ingest",
   ],

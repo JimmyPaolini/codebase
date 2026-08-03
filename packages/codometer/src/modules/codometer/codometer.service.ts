@@ -4,6 +4,7 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 
 import { DiscoverFilesService } from "../discover-files/discover-files.service";
+import { MeasureMarkdownService } from "../measure-markdown/measure-markdown.service";
 import { MeasurePythonService } from "../measure-python/measure-python.service";
 import { MeasureTypescriptService } from "../measure-typescript/measure-typescript.service";
 
@@ -19,6 +20,7 @@ export class CodometerService {
   constructor(
     private readonly discoverFilesService: DiscoverFilesService,
     private readonly measureTypescriptService: MeasureTypescriptService,
+    private readonly measureMarkdownService: MeasureMarkdownService,
     private readonly measurePythonService: MeasurePythonService,
   ) {}
 
@@ -68,6 +70,10 @@ export class CodometerService {
       sourceFiles: discoveredFiles.sourceFiles,
       workingDirectory: directory,
     });
+    const markdownStats = this.measureMarkdownService.analyze({
+      markdownFiles: discoveredFiles.markdownFiles,
+      workingDirectory: directory,
+    });
     const pythonStatsResult = this.measurePythonService.analyze(directory);
     const repoBytes = this.getRepositoryBytes(
       discoveredFiles.trackedFiles,
@@ -92,7 +98,23 @@ export class CodometerService {
       imports: typescriptStats.imports + pythonStatsResult.imports,
       interfaces: typescriptStats.interfaces + pythonStatsResult.protocols,
       jsFiles: typescriptStats.jsFiles,
-      linesOfCode: typescriptStats.lines + pythonStatsResult.lines,
+      linesOfCode:
+        typescriptStats.lines + markdownStats.lines + pythonStatsResult.lines,
+      markdownBlockquotes: markdownStats.blockquotes,
+      markdownCodeBlocks: markdownStats.codeBlocks,
+      markdownElements: markdownStats.markdownElements,
+      markdownFiles: markdownStats.files,
+      markdownHeaders: markdownStats.headers,
+      markdownImages: markdownStats.images,
+      markdownInlineCode: markdownStats.inlineCode,
+      markdownLines: markdownStats.lines,
+      markdownLinks: markdownStats.links,
+      markdownListItems: markdownStats.listItems,
+      markdownLists: markdownStats.lists,
+      markdownOtherElements: markdownStats.otherMarkdownElements,
+      markdownParagraphs: markdownStats.paragraphs,
+      markdownTables: markdownStats.tables,
+      markdownThematicBreaks: markdownStats.thematicBreaks,
       methods: typescriptStats.methods,
       pythonClasses: pythonStatsResult.classes,
       pythonConstants: pythonStatsResult.constants,

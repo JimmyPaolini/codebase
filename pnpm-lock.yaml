@@ -1090,6 +1090,12 @@ importers:
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
+      remark:
+        specifier: 'catalog:'
+        version: 15.0.1
+      remark-gfm:
+        specifier: 'catalog:'
+        version: 4.0.1
       zod:
         specifier: 'catalog:'
         version: 4.4.3

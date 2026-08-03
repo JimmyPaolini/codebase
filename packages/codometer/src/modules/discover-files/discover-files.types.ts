@@ -3,6 +3,7 @@
 /** Categorized lists of file paths (relative to the working directory) discovered in a git repository. */
 export interface DiscoverFilesResult {
   jsFiles: string[];
+  markdownFiles: string[];
   pyFiles: string[];
   sourceFiles: string[];
   testFiles: string[];
