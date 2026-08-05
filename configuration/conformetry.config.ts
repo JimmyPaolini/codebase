@@ -14,20 +14,19 @@ const conformetryConfiguration: ConformetryConfiguration = {
       parameters: {
         description: {
           description: "Application description",
-          t/**
- * Represents a hook that can run before or after a generator execution.
- */
-export interface ConformetryGeneratorHookDefinition {
-  name: string;
-}
-
-/**
- * Describes one configurable parameter for a generator.
- */
-export interface ConformetryGeneratorParameterDefinition {
-  description?: string;
-  type: string;
-}nestjs-command-application",
+          type: "string",
+        },
+        name: {
+          description: "Application name in kebab-case",
+          type: "string",
+        },
+      },
+    },
+    "nestjs-command-application": {
+      aliases: ["nca"],
+      description:
+        "Generate a NestJS command-line application using nest-commander",
+      name: "nestjs-command-application",
       parameters: {
         name: {
           description: "Project name (kebab-case)",
