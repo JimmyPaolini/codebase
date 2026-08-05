@@ -1,21 +1,68 @@
-import { NestFactory } from "@nestjs/core";
+import fs from "node:fs";
+import path from "node:path";
 
-import { NxAdapterService } from "./modules/nx-adapter/nx-adapter.service";
+import { resolveConformetryNxPluginOptions } from "./modules/plugin-options/plugin-options.utilities";
 import { RuleRoutingService } from "./modules/rule-routing/rule-routing.service";
+import { buildInferredValidationTarget } from "./modules/validation-target/validation-target.utilities";
+import { runWorkspaceGenerator } from "./modules/workspace-generator/workspace-generator.utilities";
 
 import type {
   ResolveTemplateRuleRoutingArguments,
   ResolveTemplateRuleRoutingResult,
 } from "./modules/rule-routing/rule-routing.types";
-import type { CreateNodes, GeneratorCallback, Tree } from "@nx/devkit";
+import type {
+  CreateNodes,
+  CreateNodesContext,
+  CreateNodesResultArray,
+  GeneratorCallback,
+  Tree,
+} from "@nx/devkit";
 
 /**
  * A minimal Nx plugin entrypoint so the package can be discovered by Nx.
  */
 const createNodes: CreateNodes = [
-  "**/package.json",
-  (): never[] => {
-    return [];
+  "**/project.json",
+  (
+    projectConfigurationFiles: readonly string[],
+    options: unknown,
+    context: CreateNodesContext,
+  ): CreateNodesResultArray => {
+    const pluginOptions = resolveConformetryNxPluginOptions(options);
+    const createNodesResults: CreateNodesResultArray = [];
+
+    for (const projectConfigurationFile of projectConfigurationFiles) {
+      const absoluteProjectConfigurationFilePath = path.resolve(
+        context.workspaceRoot,
+        projectConfigurationFile,
+      );
+      const rawProjectConfiguration = JSON.parse(
+        fs.readFileSync(absoluteProjectConfigurationFilePath, "utf8"),
+      ) as { tags?: string[] };
+      const inferredTargets = buildInferredValidationTarget({
+        pluginOptions,
+        projectRoot: path.dirname(projectConfigurationFile),
+        projectTags: rawProjectConfiguration.tags ?? [],
+      });
+
+      if (inferredTargets === undefined) {
+        continue;
+      }
+
+      const projectRoot = path.dirname(projectConfigurationFile);
+      createNodesResults.push([
+        projectConfigurationFile,
+        {
+          projects: {
+            [projectRoot]: {
+              targets: inferredTargets,
+            },
+          },
+        },
+      ]);
+    }
+
+    return createNodesResults;
   },
 ];
 
@@ -23,8 +70,6 @@ const conformetryPluginDefinition = {
   createNodes,
   name: "@jimmypaolini/conformetry-nx",
 };
-
-const noopGeneratorCallback: GeneratorCallback = async (): Promise<void> => {};
 
 export default conformetryPluginDefinition;
 
@@ -168,7 +213,9 @@ export async function generateReactComponent(
   });
 }
 
-/** Resolves template rule routing for the Nx plugin. */
+/**
+ * Resolves template rule routing for the Nx plugin.
+ */
 export async function resolveTemplateRuleRouting(
   args: ResolveTemplateRuleRoutingArguments,
 ): Promise<ResolveTemplateRuleRoutingResult> {
@@ -176,54 +223,4 @@ export async function resolveTemplateRuleRouting(
   await Promise.resolve();
 
   return ruleRoutingService.resolveTemplateRuleRouting(args);
-}
-
-/**
- * Runs a workspace generator backed by the shared conformetry configuration.
- */
-async function runWorkspaceGenerator(args: {
-  generatorName: string;
-  options: Record<string, unknown> | undefined;
-  tree: Tree;
-}): Promise<GeneratorCallback> {
-  const options = args.options ?? {};
-  const configurationPath =
-    typeof options["config"] === "string"
-      ? options["config"]
-      : "configuration/conformetry.config.ts";
-
-  const nxAdapterService = new NxAdapterService();
-  const targetDirectoryPath =
-    await nxAdapterService.resolveConformetryTargetDirectoryPath({
-      definition: {
-        name: args.generatorName,
-        templateDirectoryPath: "configuration/conformetry-templates",
-      },
-      options,
-      tree: args.tree,
-    });
-  const generatorInputs = nxAdapterService.normalizeGeneratorInputs(options);
-  const { GenerateCommand, MainModule } =
-    await import("@jimmypaolini/conformetry");
-
-  const applicationContext = await NestFactory.createApplicationContext(
-    MainModule,
-    {
-      logger: false,
-    },
-  );
-
-  try {
-    const generateCommand = applicationContext.get(GenerateCommand);
-    await generateCommand.runConfiguredGeneration({
-      configurationPath,
-      generatorInputs,
-      generatorName: args.generatorName,
-      targetDirectoryPath,
-    });
-  } finally {
-    await applicationContext.close();
-  }
-
-  return noopGeneratorCallback;
 }

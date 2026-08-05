@@ -80,6 +80,37 @@
       "plugin": "@nx/vitest"
     },
     {
+      "options": {
+        "templateRuleNamesByProjectTag": {
+          "framework:nest-commander": [
+            "nestjs-command-application",
+            "nestjs-command-module",
+            "nestjs-service-file",
+            "nestjs-service-module"
+          ],
+          "generator:jupyter-notebook-application": [
+            "jupyter-notebook-application"
+          ],
+          "generator:nestjs-command-application": [
+            "nestjs-command-application",
+            "nestjs-command-module",
+            "nestjs-service-file",
+            "nestjs-service-module"
+          ],
+          "generator:nestjs-graphql-application": [
+            "nestjs-graphql-application",
+            "nestjs-graphql-module",
+            "nestjs-service-file",
+            "nestjs-service-module"
+          ],
+          "generator:nestjs-service-package": [
+            "nestjs-service-package",
+            "nestjs-service-file",
+            "nestjs-service-module"
+          ]
+        },
+        "validationTargetName": "conformetry-validate"
+      },
       "plugin": "@jimmypaolini/conformetry-nx"
     }
   ],

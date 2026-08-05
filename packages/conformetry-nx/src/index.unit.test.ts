@@ -1,16 +1,22 @@
+import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
-  mockGenerateRunConfiguredGeneration,
-  mockNestClose,
-  mockNestCreateApplicationContext,
-  mockNestGet,
+  mockClose,
+  mockCreateApplicationContext,
+  mockGenerateRun,
+  mockGet,
+  mockValidateRun,
 } = vi.hoisted(() => {
   return {
-    mockGenerateRunConfiguredGeneration: vi.fn(),
-    mockNestClose: vi.fn(),
-    mockNestCreateApplicationContext: vi.fn(),
-    mockNestGet: vi.fn(),
+    mockClose: vi.fn(),
+    mockCreateApplicationContext: vi.fn(),
+    mockGenerateRun: vi.fn(),
+    mockGet: vi.fn(),
+    mockValidateRun: vi.fn(),
   };
 });
 
@@ -18,13 +24,68 @@ vi.mock("@jimmypaolini/conformetry", () => {
   return {
     GenerateCommand: function GenerateCommand(): void {},
     MainModule: function MainModule(): void {},
+    normalizeRuntimeOptions: (options: Record<string, unknown>) => {
+      const normalizedInputs: Record<string, string | undefined> = {};
+
+      for (const [key, value] of Object.entries(options)) {
+        if (typeof value === "string") {
+          normalizedInputs[key] = value;
+          continue;
+        }
+
+        if (typeof value === "number" || typeof value === "boolean") {
+          normalizedInputs[key] = `${value}`;
+          continue;
+        }
+
+        if (value === undefined) {
+          normalizedInputs[key] = undefined;
+          continue;
+        }
+
+        normalizedInputs[key] = JSON.stringify(value);
+      }
+
+      return normalizedInputs;
+    },
+    resolveConfigurationPath: (args: {
+      defaultConfigurationPath?: string;
+      options: Record<string, unknown>;
+      pluginOptions?: {
+        configFilePath?: string;
+      };
+    }) => {
+      if (typeof args.options["config"] === "string") {
+        return args.options["config"];
+      }
+
+      if (typeof args.pluginOptions?.configFilePath === "string") {
+        return args.pluginOptions.configFilePath;
+      }
+
+      return (
+        args.defaultConfigurationPath ?? "configuration/conformetry.config.ts"
+      );
+    },
+    resolveTargetDirectoryPath: (args: {
+      generatorName: string;
+      options: Record<string, unknown>;
+    }) => {
+      const outputPath = args.options["outputPath"];
+      if (typeof outputPath === "string") {
+        return outputPath;
+      }
+
+      return `generated/${args.generatorName}`;
+    },
+    ValidateCommand: function ValidateCommand(): void {},
   };
 });
 
 vi.mock("@nestjs/core", () => {
   return {
     NestFactory: {
-      createApplicationContext: mockNestCreateApplicationContext,
+      createApplicationContext: mockCreateApplicationContext,
     },
   };
 });
@@ -45,9 +106,38 @@ import conformetryPluginDefinition, {
 import type { Tree } from "@nx/devkit";
 
 function createStubTree(): Tree {
-  const read: Tree["read"] = (_pathName: string, encoding?: BufferEncoding) => {
-    return encoding === undefined ? null : null;
-  };
+  function read(pathName: string): Buffer | null;
+  function read(pathName: string, encoding: BufferEncoding): null | string;
+  function read(
+    pathName: string,
+    encoding?: BufferEncoding,
+  ): Buffer | null | string {
+    if (pathName !== "nx.json") {
+      return null;
+    }
+
+    const nxJson = {
+      plugins: [
+        {
+          options: {
+            configFilePath: "configuration/plugin.conformetry.config.ts",
+            templateRuleNamesByProjectTag: {
+              "framework:nest-commander": [
+                "nestjs-command-application",
+                "nestjs-command-module",
+                "nestjs-service-file",
+                "nestjs-service-module",
+              ],
+            },
+          },
+          plugin: "@jimmypaolini/conformetry-nx",
+        },
+      ],
+    };
+    const content = JSON.stringify(nxJson);
+
+    return encoding === undefined ? Buffer.from(content, "utf8") : content;
+  }
 
   return {
     changePermissions: (_pathName: string, _mode: number) => {},
@@ -55,8 +145,8 @@ function createStubTree(): Tree {
       return [];
     },
     delete: (_pathName: string) => {},
-    exists: (_pathName: string) => {
-      return false;
+    exists: (pathName: string) => {
+      return pathName === "nx.json";
     },
     isFile: (_pathName: string) => {
       return false;
@@ -73,22 +163,21 @@ function createStubTree(): Tree {
 
 describe("conformetry-nx index", () => {
   beforeEach(() => {
-    mockGenerateRunConfiguredGeneration.mockReset();
-    mockNestClose.mockReset();
-    mockNestCreateApplicationContext.mockReset();
-    mockNestGet.mockReset();
+    mockClose.mockReset();
+    mockCreateApplicationContext.mockReset();
+    mockGenerateRun.mockReset();
+    mockGet.mockReset();
+    mockValidateRun.mockReset();
 
-    mockGenerateRunConfiguredGeneration.mockResolvedValue({
-      generatedFilePaths: ["generated/react/example.ts"],
-      outputDirectoryPath: "generated/react",
+    mockClose.mockResolvedValue(undefined);
+    mockGenerateRun.mockResolvedValue(undefined);
+    mockValidateRun.mockResolvedValue(undefined);
+    mockGet.mockReturnValue({
+      run: mockGenerateRun,
     });
-    mockNestGet.mockReturnValue({
-      runConfiguredGeneration: mockGenerateRunConfiguredGeneration,
-    });
-    mockNestClose.mockResolvedValue(undefined);
-    mockNestCreateApplicationContext.mockResolvedValue({
-      close: mockNestClose,
-      get: mockNestGet,
+    mockCreateApplicationContext.mockResolvedValue({
+      close: mockClose,
+      get: mockGet,
     });
   });
 
@@ -97,11 +186,11 @@ describe("conformetry-nx index", () => {
       "@jimmypaolini/conformetry-nx",
     );
     expect(Array.isArray(conformetryPluginDefinition.createNodes)).toBe(true);
-    expect(conformetryPluginDefinition.createNodes[0]).toBe("**/package.json");
+    expect(conformetryPluginDefinition.createNodes[0]).toBe("**/project.json");
     expect(typeof conformetryPluginDefinition.createNodes[1]).toBe("function");
   });
 
-  it("delegates generation execution to conformetry integration facade", async () => {
+  it("delegates generation to GenerateCommand.run for all exported generators", async () => {
     const tree = createStubTree();
     const generators = [
       {
@@ -148,55 +237,110 @@ describe("conformetry-nx index", () => {
 
     for (const generator of generators) {
       const callback = await generator.run(tree, {
-        config: "configuration/conformetry.config.ts",
-        count: 3,
-        enabled: true,
-        metadata: { level: "advanced" },
-        name: "demo",
-        targetDirectoryPath: `generated/${generator.generatorName}`,
+        componentName: "demo",
+        config: "configuration/custom.config.ts",
+        outputPath: `generated/${generator.generatorName}`,
       });
 
       expect(typeof callback).toBe("function");
     }
 
-    expect(mockNestCreateApplicationContext).toHaveBeenCalledTimes(
-      generators.length,
-    );
-    expect(mockNestClose).toHaveBeenCalledTimes(generators.length);
-    expect(mockGenerateRunConfiguredGeneration).toHaveBeenCalledTimes(
-      generators.length,
-    );
+    expect(mockGenerateRun).toHaveBeenCalledTimes(generators.length);
 
     for (const [index, generator] of generators.entries()) {
-      expect(mockGenerateRunConfiguredGeneration).toHaveBeenNthCalledWith(
+      expect(mockGenerateRun).toHaveBeenNthCalledWith(
         index + 1,
+        [
+          "generate",
+          "--name",
+          generator.generatorName,
+          "--directory",
+          `generated/${generator.generatorName}`,
+          "--component-name",
+          "demo",
+          "--output-path",
+          `generated/${generator.generatorName}`,
+        ],
         {
-          configurationPath: "configuration/conformetry.config.ts",
-          generatorInputs: {
-            config: "configuration/conformetry.config.ts",
-            count: "3",
-            enabled: "true",
-            metadata: '{"level":"advanced"}',
-            name: "demo",
-            targetDirectoryPath: `generated/${generator.generatorName}`,
-          },
-          generatorName: generator.generatorName,
+          config: "configuration/custom.config.ts",
+          name: generator.generatorName,
           targetDirectoryPath: `generated/${generator.generatorName}`,
         },
       );
     }
   });
 
-  it("uses the default configuration path when config is omitted", async () => {
+  it("uses plugin configFilePath from nx.json when config option is omitted", async () => {
     await generateReactComponent(createStubTree(), {
-      name: "demo",
-      targetDirectoryPath: "generated/react",
+      outputPath: "generated/react-component",
     });
 
-    expect(mockGenerateRunConfiguredGeneration).toHaveBeenCalledWith(
+    expect(mockGenerateRun).toHaveBeenCalledWith(
+      expect.any(Array),
       expect.objectContaining({
-        configurationPath: "configuration/conformetry.config.ts",
+        config: "configuration/plugin.conformetry.config.ts",
       }),
     );
+  });
+
+  it("infers validation targets only for projects with generator tags", async () => {
+    const workspaceDirectory = await mkdtemp(
+      path.join(tmpdir(), "conformetry-nx-create-nodes-"),
+    );
+
+    await mkdir(path.join(workspaceDirectory, "applications", "lexico"), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspaceDirectory, "packages", "conformetry-nx"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspaceDirectory, "applications", "lexico", "project.json"),
+      JSON.stringify({ tags: ["framework:react"] }),
+      "utf8",
+    );
+    await writeFile(
+      path.join(
+        workspaceDirectory,
+        "packages",
+        "conformetry-nx",
+        "project.json",
+      ),
+      JSON.stringify({ tags: ["generator:nestjs-service-module"] }),
+      "utf8",
+    );
+
+    const createNodesFunction = conformetryPluginDefinition.createNodes[1];
+    const result = await createNodesFunction(
+      [
+        "applications/lexico/project.json",
+        "packages/conformetry-nx/project.json",
+      ],
+      {
+        validationTargetName: "validate-conformetry",
+      },
+      {
+        nxJsonConfiguration: {},
+        workspaceRoot: workspaceDirectory,
+      },
+    );
+
+    expect(result).toStrictEqual([
+      [
+        "packages/conformetry-nx/project.json",
+        {
+          projects: {
+            "packages/conformetry-nx": {
+              targets: {
+                "validate-conformetry": {
+                  command:
+                    "pnpm nx run codebase:conformetry-validate -- --projects=packages/conformetry-nx --rules=nestjs-service-module",
+                },
+              },
+            },
+          },
+        },
+      ],
+    ]);
   });
 });

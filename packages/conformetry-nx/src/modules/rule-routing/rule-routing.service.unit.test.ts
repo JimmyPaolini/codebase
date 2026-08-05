@@ -6,6 +6,15 @@ import { describe, expect, it } from "vitest";
 
 import { RuleRoutingService } from "./rule-routing.service.js";
 
+const TEMPLATE_RULE_NAMES_BY_PROJECT_TAG = {
+  "framework:nest-commander": [
+    "nestjs-command-application",
+    "nestjs-command-module",
+    "nestjs-service-file",
+    "nestjs-service-module",
+  ],
+} as const;
+
 describe(RuleRoutingService, () => {
   it("routes template rules from project tags and resolves project names to paths", async () => {
     const workspaceDirectory = await createWorkspaceFixture();
@@ -21,6 +30,7 @@ describe(RuleRoutingService, () => {
         "react-component",
       ],
       projectSelectors: ["caelundas", "lexico"],
+      templateRuleNamesByProjectTag: TEMPLATE_RULE_NAMES_BY_PROJECT_TAG,
       workingDirectory: workspaceDirectory,
     });
 
@@ -31,7 +41,6 @@ describe(RuleRoutingService, () => {
         "nestjs-command-module",
         "nestjs-service-file",
         "nestjs-service-module",
-        "react-component",
       ],
     });
   });
@@ -51,6 +60,7 @@ describe(RuleRoutingService, () => {
         "jupyter-notebook-application",
         "nestjs-command-application",
       ],
+      templateRuleNamesByProjectTag: TEMPLATE_RULE_NAMES_BY_PROJECT_TAG,
       workingDirectory: workspaceDirectory,
     });
 
@@ -67,6 +77,7 @@ describe(RuleRoutingService, () => {
     const result = ruleRoutingService.resolveTemplateRuleRouting({
       configuredTemplateRuleNames: ["react-component"],
       projectSelectors: ["packages/custom-package"],
+      templateRuleNamesByProjectTag: TEMPLATE_RULE_NAMES_BY_PROJECT_TAG,
       workingDirectory: workspaceDirectory,
     });
 
@@ -84,6 +95,7 @@ describe(RuleRoutingService, () => {
       configuredTemplateRuleNames: ["nestjs-service-module", "react-component"],
       projectSelectors: ["generated/nestjs-service-module"],
       requestedTemplateRuleNames: ["nestjs-service-module", "typescript"],
+      templateRuleNamesByProjectTag: TEMPLATE_RULE_NAMES_BY_PROJECT_TAG,
       workingDirectory: workspaceDirectory,
     });
 
@@ -103,12 +115,12 @@ describe(RuleRoutingService, () => {
         "nestjs-command-application",
         "nestjs-service-file",
         "nestjs-service-module",
-        "react-component",
       ],
       projectSelectors: [
         "applications/caelundas",
         path.resolve(workspaceDirectory, "applications/lexico/src"),
       ],
+      templateRuleNamesByProjectTag: TEMPLATE_RULE_NAMES_BY_PROJECT_TAG,
       workingDirectory: workspaceDirectory,
     });
 
@@ -118,7 +130,6 @@ describe(RuleRoutingService, () => {
         "nestjs-command-application",
         "nestjs-service-file",
         "nestjs-service-module",
-        "react-component",
       ],
     });
   });
@@ -134,6 +145,7 @@ describe(RuleRoutingService, () => {
           "nestjs-service-file",
         ],
         projectSelectors: ["applications/caelundas"],
+        templateRuleNamesByProjectTag: TEMPLATE_RULE_NAMES_BY_PROJECT_TAG,
         workingDirectory: workspaceDirectory,
       });
     const dotPrefixedSelectorResult =
@@ -143,6 +155,7 @@ describe(RuleRoutingService, () => {
           "nestjs-service-file",
         ],
         projectSelectors: ["./applications/caelundas"],
+        templateRuleNamesByProjectTag: TEMPLATE_RULE_NAMES_BY_PROJECT_TAG,
         workingDirectory: workspaceDirectory,
       });
 
@@ -155,19 +168,18 @@ describe(RuleRoutingService, () => {
 
     const result = ruleRoutingService.resolveTemplateRuleRouting({
       configuredTemplateRuleNames: [
-        "react-component",
         "nestjs-service-module",
         "nestjs-command-application",
         "jupyter-notebook-application",
       ],
       projectSelectors: ["caelundas", "lexico"],
+      templateRuleNamesByProjectTag: TEMPLATE_RULE_NAMES_BY_PROJECT_TAG,
       workingDirectory: workspaceDirectory,
     });
 
     expect(result).toStrictEqual({
       projectPaths: ["applications/caelundas", "applications/lexico"],
       templateRuleNames: [
-        "react-component",
         "nestjs-service-module",
         "nestjs-command-application",
       ],

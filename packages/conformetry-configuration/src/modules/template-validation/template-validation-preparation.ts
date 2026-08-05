@@ -4,12 +4,12 @@ import { ConfigurationService } from "../configuration/configuration.service.js"
 
 import { prepareDocumentsForProjectPath } from "./template-validation-preparation.utilities.js";
 
+import type { ConformetryConfiguration } from "../configuration/configuration.types.js";
 import type {
-  PrepareTemplateValidationPayloadArguments,
   PreparedValidationDocument,
   PreparedValidationPayload,
+  PrepareTemplateValidationPayloadArguments,
 } from "./template-validation.types.js";
-import type { ConformetryConfiguration } from "../configuration/configuration.types.js";
 
 /**
  * Prepares rendered template-instance documents for language validators.

@@ -8,3 +8,18 @@ export type {
 export { ValidateCommand } from "./modules/commands/validate/validate.command.js";
 export { ValidateModule } from "./modules/commands/validate/validate.module.js";
 export type { ValidateCommandOptions } from "./modules/commands/validate/validate.types.js";
+export {
+  collectGeneratorInputsFromCommandArguments,
+  normalizeRuntimeOptions,
+  resolveConfigurationPath,
+  resolveTargetDirectoryPath,
+} from "@jimmypaolini/conformetry-configuration";
+export type {
+  ConformetryNxPluginOptions,
+  ResolveConfigurationPathArguments,
+  ResolveTargetDirectoryPathArguments,
+} from "@jimmypaolini/conformetry-configuration";
+export {
+  ValidationPluginsService,
+  ValidationService,
+} from "@jimmypaolini/conformetry-validation";

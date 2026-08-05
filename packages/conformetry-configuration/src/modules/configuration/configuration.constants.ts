@@ -21,3 +21,21 @@ export const supportedExtensions = new Set([
   ".mts",
   ".ts",
 ]);
+
+export const DEFAULT_CONFIGURATION_PATH = "configuration/conformetry.config.ts";
+
+export const DEFAULT_GENERATED_OUTPUT_DIRECTORY = "generated";
+
+export const RESERVED_GENERATOR_OPTION_NAMES = new Set([
+  "config",
+  "description",
+  "help",
+  "name",
+  "targetDirectoryPath",
+]);
+
+export const TARGET_DIRECTORY_OPTION_KEYS = [
+  "targetDirectoryPath",
+  "outputDirectoryPath",
+  "outputPath",
+] as const;

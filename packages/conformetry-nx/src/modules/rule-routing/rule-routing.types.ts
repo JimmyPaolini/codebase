@@ -5,6 +5,7 @@ export interface ResolveTemplateRuleRoutingArguments {
   configuredTemplateRuleNames: string[];
   projectSelectors: string[];
   requestedTemplateRuleNames?: string[];
+  templateRuleNamesByProjectTag?: Readonly<Record<string, readonly string[]>>;
   workingDirectory: string;
 }
 

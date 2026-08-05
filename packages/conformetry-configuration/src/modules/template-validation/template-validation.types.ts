@@ -1,9 +1,58 @@
 /**
+ * Ranking inputs for candidate comparison.
+ */
+export interface CompareMatchedCandidatesArguments {
+  inferredGeneratorNames: Set<string>;
+  leftCandidate: MatchedGeneratorCandidate;
+  projectTemplateMetadata: ValidationProjectTemplateMetadata;
+  rightCandidate: MatchedGeneratorCandidate;
+}
+
+/**
  * Describes a validator plugin for conformetry validations.
  */
 export interface ConformetryValidatorPlugin {
   descriptor: ValidationPluginDescriptor;
   validate(args: ValidationPluginArguments): Promise<ValidationPluginResult>;
+}
+
+/**
+ * Candidate template metadata for one generator.
+ */
+export interface MatchedGeneratorCandidate {
+  absoluteTemplateDirectoryPath: string;
+  existingFileCount: number;
+  generatorName: string;
+  substitutions: Record<string, string>;
+  templateFilePaths: string[];
+}
+
+/**
+ * Parsed project metadata fields used by template preparation.
+ */
+export interface ParsedProjectMetadata {
+  sourceRoot?: string;
+  tags?: string[];
+}
+
+/**
+ * Prepared template-instance document pair for language validation.
+ */
+export interface PreparedValidationDocument {
+  filename: string;
+  instance: string;
+  instanceFilePath: string;
+  renderedTemplate: string;
+  templateFilePath: string;
+}
+
+/**
+ * Prepared payload containing all documents and discovery-time violations.
+ */
+export interface PreparedValidationPayload {
+  checkedPaths: string[];
+  documents: PreparedValidationDocument[];
+  violations: string[];
 }
 
 /**
@@ -37,26 +86,6 @@ export interface RunValidationResult {
 }
 
 /**
- * Prepared template-instance document pair for language validation.
- */
-export interface PreparedValidationDocument {
-  filename: string;
-  instance: string;
-  instanceFilePath: string;
-  renderedTemplate: string;
-  templateFilePath: string;
-}
-
-/**
- * Prepared payload containing all documents and discovery-time violations.
- */
-export interface PreparedValidationPayload {
-  checkedPaths: string[];
-  documents: PreparedValidationDocument[];
-  violations: string[];
-}
-
-/**
  * Arguments provided to an individual validator plugin.
  */
 export interface ValidationPluginArguments {
@@ -64,6 +93,15 @@ export interface ValidationPluginArguments {
   filePaths: string[];
   templateRuleNames?: string[];
   workingDirectory: string;
+}
+
+/**
+ * Describes a validator plugin for conformetry validations.
+ */
+export interface ValidationPluginDescriptor {
+  description?: string;
+  fileExtensions: string[];
+  name: string;
 }
 
 /**
@@ -77,48 +115,10 @@ export interface ValidationPluginResult {
 }
 
 /**
- * Describes a validator plugin for conformetry validations.
- */
-export interface ValidationPluginDescriptor {
-  description?: string;
-  fileExtensions: string[];
-  name: string;
-}
-
-/**
  * Project metadata used to improve template matching and substitutions.
  */
 export interface ValidationProjectTemplateMetadata {
   description?: string;
   generatorName?: string;
   type?: string;
-}
-
-/**
- * Candidate template metadata for one generator.
- */
-export interface MatchedGeneratorCandidate {
-  absoluteTemplateDirectoryPath: string;
-  existingFileCount: number;
-  generatorName: string;
-  substitutions: Record<string, string>;
-  templateFilePaths: string[];
-}
-
-/**
- * Parsed project metadata fields used by template preparation.
- */
-export interface ParsedProjectMetadata {
-  sourceRoot?: string;
-  tags?: string[];
-}
-
-/**
- * Ranking inputs for candidate comparison.
- */
-export interface CompareMatchedCandidatesArguments {
-  inferredGeneratorNames: Set<string>;
-  leftCandidate: MatchedGeneratorCandidate;
-  projectTemplateMetadata: ValidationProjectTemplateMetadata;
-  rightCandidate: MatchedGeneratorCandidate;
 }

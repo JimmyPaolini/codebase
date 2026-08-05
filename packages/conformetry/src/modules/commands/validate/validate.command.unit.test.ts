@@ -1,11 +1,11 @@
 import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
-import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-configuration";
 import {
   ValidationPluginsService,
   ValidationService,
 } from "@jimmypaolini/conformetry-validation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-configuration";
 import type { TestingModule } from "@nestjs/testing";
 
 interface ValidationInputShape {

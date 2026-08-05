@@ -2,7 +2,6 @@ import fs from "node:fs";
 import path from "node:path";
 
 import type { ConformetryConfiguration } from "../configuration/configuration.types.js";
-
 import type {
   CompareMatchedCandidatesArguments,
   MatchedGeneratorCandidate,
@@ -11,6 +10,9 @@ import type {
   ValidationProjectTemplateMetadata,
 } from "./template-validation.types.js";
 
+/**
+ *
+ */
 interface TemplateRenderer {
   render(
     templateContent: string,
@@ -22,6 +24,9 @@ interface TemplateRenderer {
  * Replaces template placeholders with generated substitutions.
  */
 class DefaultTemplateRenderer implements TemplateRenderer {
+  /**
+   *
+   */
   public render(
     templateContent: string,
     substitutions: Record<string, string>,
@@ -197,78 +202,6 @@ export function createTemplateSubstitutions(args: {
 }
 
 /**
- * Builds common name substitutions from the provided generator name.
- */
-function buildNameSubstitutions(name: string): Record<string, string> {
-  return {
-    nameCamelCase: toCamelCase(name),
-    nameKebabCase: toKebabCase(name),
-    namePascalCase: toPascalCase(name),
-    nameSnakeCase: toSnakeCase(name),
-  };
-}
-
-/**
- * Converts a generator name to camel case.
- */
-function toCamelCase(value: string): string {
-  return value
-    .split(/[-_\s]+/)
-    .filter(Boolean)
-    .map((segment, index) => {
-      if (index === 0) {
-        return segment.toLowerCase();
-      }
-
-      return segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase();
-    })
-    .join("");
-}
-
-/**
- * Converts a generator name to kebab case.
- */
-function toKebabCase(value: string): string {
-  return value
-    .trim()
-    .split(/[_\s]+/)
-    .flatMap((segment) => {
-      return segment.split(/(?=[A-Z])/);
-    })
-    .filter(Boolean)
-    .map((segment) => {
-      return segment.toLowerCase();
-    })
-    .join("-");
-}
-
-/**
- * Converts a generator name to Pascal case.
- */
-function toPascalCase(value: string): string {
-  return toCamelCase(value).replace(/^./u, (character) => {
-    return character.toUpperCase();
-  });
-}
-
-/**
- * Converts a generator name to snake case.
- */
-function toSnakeCase(value: string): string {
-  return value
-    .trim()
-    .split(/[-\s]+/)
-    .flatMap((segment) => {
-      return segment.split(/(?=[A-Z])/);
-    })
-    .filter(Boolean)
-    .map((segment) => {
-      return segment.toLowerCase();
-    })
-    .join("_");
-}
-
-/**
  * Determines whether a directory entry should be included as a template file.
  */
 export function isTemplateFile(entryName: string, isFile: boolean): boolean {
@@ -318,6 +251,33 @@ export function prepareDocumentsForProjectPath(args: {
     generatorCandidate: matchedCandidate,
     projectPath: args.projectPath,
   });
+}
+
+/**
+ * Validates that the path exists and points to a directory.
+ */
+export function validateProjectPath(projectPath: string): string[] {
+  if (!fs.existsSync(projectPath)) {
+    return [`Missing project path ${projectPath}`];
+  }
+
+  if (!fs.statSync(projectPath).isDirectory()) {
+    return [`Expected a project directory path but found file ${projectPath}`];
+  }
+
+  return [];
+}
+
+/**
+ * Builds common name substitutions from the provided generator name.
+ */
+function buildNameSubstitutions(name: string): Record<string, string> {
+  return {
+    nameCamelCase: toCamelCase(name),
+    nameKebabCase: toKebabCase(name),
+    namePascalCase: toPascalCase(name),
+    nameSnakeCase: toSnakeCase(name),
+  };
 }
 
 /**
@@ -376,6 +336,102 @@ function inferGeneratorNamesFromProjectPath(args: {
   );
 
   return new Set(inferredGeneratorNames);
+}
+
+/**
+ * Parses project metadata content into a plain record.
+ */
+function parseProjectMetadataRecord(
+  projectMetadataContent: string,
+): ParsedProjectMetadata | undefined {
+  let parsedProjectMetadata: unknown;
+  try {
+    parsedProjectMetadata = JSON.parse(projectMetadataContent) as unknown;
+  } catch {
+    return undefined;
+  }
+
+  if (
+    typeof parsedProjectMetadata !== "object" ||
+    parsedProjectMetadata === null
+  ) {
+    return undefined;
+  }
+
+  const parsedProjectMetadataRecord = parsedProjectMetadata as {
+    sourceRoot?: unknown;
+    tags?: unknown;
+  };
+  const sourceRoot =
+    typeof parsedProjectMetadataRecord.sourceRoot === "string"
+      ? parsedProjectMetadataRecord.sourceRoot
+      : undefined;
+  const rawTags = toUnknownArray(parsedProjectMetadataRecord.tags);
+  const tags: string[] | undefined = rawTags?.flatMap((tagValue) => {
+    return typeof tagValue === "string" ? [tagValue] : [];
+  });
+
+  const parsedProjectMetadataResult: ParsedProjectMetadata = {};
+  if (sourceRoot !== undefined) {
+    parsedProjectMetadataResult.sourceRoot = sourceRoot;
+  }
+  if (tags !== undefined) {
+    parsedProjectMetadataResult.tags = tags;
+  }
+
+  return parsedProjectMetadataResult;
+}
+
+/**
+ * Prepares a mapped validation document for a template file.
+ */
+function prepareDocumentForTemplateFile(args: {
+  extensionSet: Set<string>;
+  generatorCandidate: MatchedGeneratorCandidate;
+  projectPath: string;
+  templateFilePath: string;
+  templateRenderer: TemplateRenderer;
+  templateRootPath: string;
+}):
+  | undefined
+  | { document: PreparedValidationDocument }
+  | { violation: string } {
+  const extension = path.extname(args.templateFilePath);
+  if (!args.extensionSet.has(extension)) {
+    return undefined;
+  }
+
+  const templateRelativePath = path.relative(
+    args.templateRootPath,
+    args.templateFilePath,
+  );
+  const instanceRelativePath = applySubstitutions(
+    templateRelativePath,
+    args.generatorCandidate.substitutions,
+  );
+  const instanceFilePath = path.join(args.projectPath, instanceRelativePath);
+
+  if (!fs.existsSync(instanceFilePath)) {
+    return {
+      violation: `Missing file ${instanceFilePath} required by template ${args.templateFilePath}`,
+    };
+  }
+
+  const instanceFileContent = fs.readFileSync(instanceFilePath, "utf8");
+  const templateFileContent = fs.readFileSync(args.templateFilePath, "utf8");
+
+  return {
+    document: {
+      filename: path.basename(instanceFilePath),
+      instance: instanceFileContent,
+      instanceFilePath,
+      renderedTemplate: args.templateRenderer.render(
+        templateFileContent,
+        args.generatorCandidate.substitutions,
+      ),
+      templateFilePath: args.templateFilePath,
+    },
+  };
 }
 
 /**
@@ -476,152 +532,6 @@ function resolveBestMatchedGeneratorCandidate(args: {
 }
 
 /**
- * Prepares a mapped validation document for a template file.
- */
-function prepareDocumentForTemplateFile(args: {
-  extensionSet: Set<string>;
-  generatorCandidate: MatchedGeneratorCandidate;
-  projectPath: string;
-  templateFilePath: string;
-  templateRenderer: TemplateRenderer;
-  templateRootPath: string;
-}):
-  | undefined
-  | { document: PreparedValidationDocument }
-  | { violation: string } {
-  const extension = path.extname(args.templateFilePath);
-  if (!args.extensionSet.has(extension)) {
-    return undefined;
-  }
-
-  const templateRelativePath = path.relative(
-    args.templateRootPath,
-    args.templateFilePath,
-  );
-  const instanceRelativePath = applySubstitutions(
-    templateRelativePath,
-    args.generatorCandidate.substitutions,
-  );
-  const instanceFilePath = path.join(args.projectPath, instanceRelativePath);
-
-  if (!fs.existsSync(instanceFilePath)) {
-    return {
-      violation: `Missing file ${instanceFilePath} required by template ${args.templateFilePath}`,
-    };
-  }
-
-  const instanceFileContent = fs.readFileSync(instanceFilePath, "utf8");
-  const templateFileContent = fs.readFileSync(args.templateFilePath, "utf8");
-
-  return {
-    document: {
-      filename: path.basename(instanceFilePath),
-      instance: instanceFileContent,
-      instanceFilePath,
-      renderedTemplate: args.templateRenderer.render(
-        templateFileContent,
-        args.generatorCandidate.substitutions,
-      ),
-      templateFilePath: args.templateFilePath,
-    },
-  };
-}
-
-/**
- * Resolves metadata-driven template context values for a project path.
- */
-function resolveProjectTemplateMetadata(
-  projectPath: string,
-): ValidationProjectTemplateMetadata {
-  const projectMetadata: ValidationProjectTemplateMetadata = {
-    description: resolveProjectDescription(projectPath),
-  };
-  const projectMetadataPath = path.join(projectPath, "project.json");
-  if (!fs.existsSync(projectMetadataPath)) {
-    return projectMetadata;
-  }
-
-  const projectMetadataContent = fs.readFileSync(projectMetadataPath, "utf8");
-  const projectMetadataRecord = parseProjectMetadataRecord(
-    projectMetadataContent,
-  );
-  if (projectMetadataRecord === undefined) {
-    return projectMetadata;
-  }
-
-  const sourceRootType = resolveSourceRootType(projectMetadataRecord);
-  if (sourceRootType !== undefined) {
-    projectMetadata.type = sourceRootType;
-  }
-
-  const generatorName = resolveGeneratorNameFromTags(projectMetadataRecord);
-  if (generatorName !== undefined) {
-    projectMetadata.generatorName = generatorName;
-  }
-
-  return projectMetadata;
-}
-
-/**
- * Validates that the path exists and points to a directory.
- */
-export function validateProjectPath(projectPath: string): string[] {
-  if (!fs.existsSync(projectPath)) {
-    return [`Missing project path ${projectPath}`];
-  }
-
-  if (!fs.statSync(projectPath).isDirectory()) {
-    return [`Expected a project directory path but found file ${projectPath}`];
-  }
-
-  return [];
-}
-
-/**
- * Parses project metadata content into a plain record.
- */
-function parseProjectMetadataRecord(
-  projectMetadataContent: string,
-): ParsedProjectMetadata | undefined {
-  let parsedProjectMetadata: unknown;
-  try {
-    parsedProjectMetadata = JSON.parse(projectMetadataContent) as unknown;
-  } catch {
-    return undefined;
-  }
-
-  if (
-    typeof parsedProjectMetadata !== "object" ||
-    parsedProjectMetadata === null
-  ) {
-    return undefined;
-  }
-
-  const parsedProjectMetadataRecord = parsedProjectMetadata as {
-    sourceRoot?: unknown;
-    tags?: unknown;
-  };
-  const sourceRoot =
-    typeof parsedProjectMetadataRecord.sourceRoot === "string"
-      ? parsedProjectMetadataRecord.sourceRoot
-      : undefined;
-  const rawTags = toUnknownArray(parsedProjectMetadataRecord.tags);
-  const tags: string[] | undefined = rawTags?.flatMap((tagValue) => {
-    return typeof tagValue === "string" ? [tagValue] : [];
-  });
-
-  const parsedProjectMetadataResult: ParsedProjectMetadata = {};
-  if (sourceRoot !== undefined) {
-    parsedProjectMetadataResult.sourceRoot = sourceRoot;
-  }
-  if (tags !== undefined) {
-    parsedProjectMetadataResult.tags = tags;
-  }
-
-  return parsedProjectMetadataResult;
-}
-
-/**
  * Resolves a generator tag from project metadata tags.
  */
 function resolveGeneratorNameFromTags(
@@ -665,6 +575,41 @@ function resolveProjectDescription(projectPath: string): string {
 }
 
 /**
+ * Resolves metadata-driven template context values for a project path.
+ */
+function resolveProjectTemplateMetadata(
+  projectPath: string,
+): ValidationProjectTemplateMetadata {
+  const projectMetadata: ValidationProjectTemplateMetadata = {
+    description: resolveProjectDescription(projectPath),
+  };
+  const projectMetadataPath = path.join(projectPath, "project.json");
+  if (!fs.existsSync(projectMetadataPath)) {
+    return projectMetadata;
+  }
+
+  const projectMetadataContent = fs.readFileSync(projectMetadataPath, "utf8");
+  const projectMetadataRecord = parseProjectMetadataRecord(
+    projectMetadataContent,
+  );
+  if (projectMetadataRecord === undefined) {
+    return projectMetadata;
+  }
+
+  const sourceRootType = resolveSourceRootType(projectMetadataRecord);
+  if (sourceRootType !== undefined) {
+    projectMetadata.type = sourceRootType;
+  }
+
+  const generatorName = resolveGeneratorNameFromTags(projectMetadataRecord);
+  if (generatorName !== undefined) {
+    projectMetadata.generatorName = generatorName;
+  }
+
+  return projectMetadata;
+}
+
+/**
  * Resolves a stable project type for substitution rendering.
  */
 function resolveProjectType(args: {
@@ -702,6 +647,66 @@ function resolveSourceRootType(
     .split(/[\\/]/u)
     .map((segment) => segment.trim())
     .find((segment) => segment.length > 0);
+}
+
+/**
+ * Converts a generator name to camel case.
+ */
+function toCamelCase(value: string): string {
+  return value
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((segment, index) => {
+      if (index === 0) {
+        return segment.toLowerCase();
+      }
+
+      return segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase();
+    })
+    .join("");
+}
+
+/**
+ * Converts a generator name to kebab case.
+ */
+function toKebabCase(value: string): string {
+  return value
+    .trim()
+    .split(/[_\s]+/)
+    .flatMap((segment) => {
+      return segment.split(/(?=[A-Z])/);
+    })
+    .filter(Boolean)
+    .map((segment) => {
+      return segment.toLowerCase();
+    })
+    .join("-");
+}
+
+/**
+ * Converts a generator name to Pascal case.
+ */
+function toPascalCase(value: string): string {
+  return toCamelCase(value).replace(/^./u, (character) => {
+    return character.toUpperCase();
+  });
+}
+
+/**
+ * Converts a generator name to snake case.
+ */
+function toSnakeCase(value: string): string {
+  return value
+    .trim()
+    .split(/[-\s]+/)
+    .flatMap((segment) => {
+      return segment.split(/(?=[A-Z])/);
+    })
+    .filter(Boolean)
+    .map((segment) => {
+      return segment.toLowerCase();
+    })
+    .join("_");
 }
 
 /**

@@ -6,7 +6,6 @@ import { Injectable } from "@nestjs/common";
 import {
   PROJECT_METADATA_FILENAME,
   SKIPPED_DIRECTORY_NAMES,
-  TEMPLATE_RULE_NAMES_BY_PROJECT_TAG,
 } from "./rule-routing.constants";
 
 import type {
@@ -227,16 +226,18 @@ export class RuleRoutingService {
   private resolveApplicableTemplateRuleNames(args: {
     configuredTemplateRuleNames: string[];
     matchedProjects: WorkspaceProjectMetadata[];
+    templateRuleNamesByProjectTag?: Readonly<Record<string, readonly string[]>>;
   }): string[] {
     const configuredTemplateRuleNameSet = new Set(
       args.configuredTemplateRuleNames,
     );
     const applicableTemplateRuleNames = new Set<string>();
+    const templateRuleNamesByProjectTag = args.templateRuleNamesByProjectTag;
 
     for (const matchedProject of args.matchedProjects) {
       for (const projectTag of matchedProject.tags) {
         const tagMappedTemplateRuleNames =
-          TEMPLATE_RULE_NAMES_BY_PROJECT_TAG[projectTag] ?? [];
+          templateRuleNamesByProjectTag?.[projectTag] ?? [];
 
         for (const templateRuleName of tagMappedTemplateRuleNames) {
           if (configuredTemplateRuleNameSet.has(templateRuleName)) {
@@ -354,6 +355,11 @@ export class RuleRoutingService {
       {
         configuredTemplateRuleNames: args.configuredTemplateRuleNames,
         matchedProjects,
+        ...(args.templateRuleNamesByProjectTag === undefined
+          ? {}
+          : {
+              templateRuleNamesByProjectTag: args.templateRuleNamesByProjectTag,
+            }),
       },
     );
     const configuredTemplateRuleNameSet = new Set(
