@@ -1,8 +1,3 @@
-import {
-  type IntegrationModuleSurface,
-  loadIntegrationModuleSurface,
-  type RunConfiguredGeneratorArguments,
-} from "@jimmypaolini/conformetry";
 import { NestFactory } from "@nestjs/core";
 
 import { NxAdapterService } from "./modules/nx-adapter/nx-adapter.service";
@@ -13,8 +8,6 @@ import type {
   ResolveTemplateRuleRoutingResult,
 } from "./modules/rule-routing/rule-routing.types";
 import type { CreateNodes, GeneratorCallback, Tree } from "@nx/devkit";
-
-export * from "./generators/init/generator";
 
 /**
  * A minimal Nx plugin entrypoint so the package can be discovered by Nx.
@@ -32,15 +25,6 @@ const conformetryPluginDefinition = {
 };
 
 const noopGeneratorCallback: GeneratorCallback = async (): Promise<void> => {};
-
-/**
- * Contract used by conformetry-nx for generator delegation.
- */
-interface ConformetryIntegrationFacade {
-  runConfiguredGenerator(
-    args: RunConfiguredGeneratorArguments,
-  ): Promise<unknown>;
-}
 
 export default conformetryPluginDefinition;
 
@@ -184,9 +168,7 @@ export async function generateReactComponent(
   });
 }
 
-/**
- * Resolves template rule routing from selected project scopes.
- */
+/** Resolves template rule routing for the Nx plugin. */
 export async function resolveTemplateRuleRouting(
   args: ResolveTemplateRuleRoutingArguments,
 ): Promise<ResolveTemplateRuleRoutingResult> {
@@ -194,34 +176,6 @@ export async function resolveTemplateRuleRouting(
   await Promise.resolve();
 
   return ruleRoutingService.resolveTemplateRuleRouting(args);
-}
-
-/**
- * Runs work with a short-lived conformetry integration service context.
- */
-async function runWithIntegrationService<T>(
-  callback: (integrationService: ConformetryIntegrationFacade) => Promise<T>,
-): Promise<T> {
-  const integrationModuleSurface: IntegrationModuleSurface =
-    await loadIntegrationModuleSurface();
-  const integrationModule = integrationModuleSurface.IntegrationModule;
-  const integrationServiceToken = integrationModuleSurface.IntegrationService;
-  const applicationContext = await NestFactory.createApplicationContext(
-    integrationModule,
-    {
-      logger: false,
-    },
-  );
-
-  try {
-    const integrationService =
-      applicationContext.get<ConformetryIntegrationFacade>(
-        integrationServiceToken,
-      );
-    return await callback(integrationService);
-  } finally {
-    await applicationContext.close();
-  }
 }
 
 /**
@@ -249,15 +203,27 @@ async function runWorkspaceGenerator(args: {
       tree: args.tree,
     });
   const generatorInputs = nxAdapterService.normalizeGeneratorInputs(options);
+  const { GenerateCommand, MainModule } =
+    await import("@jimmypaolini/conformetry");
 
-  await runWithIntegrationService(async (integrationService) => {
-    await integrationService.runConfiguredGenerator({
+  const applicationContext = await NestFactory.createApplicationContext(
+    MainModule,
+    {
+      logger: false,
+    },
+  );
+
+  try {
+    const generateCommand = applicationContext.get(GenerateCommand);
+    await generateCommand.runConfiguredGeneration({
       configurationPath,
       generatorInputs,
       generatorName: args.generatorName,
       targetDirectoryPath,
     });
-  });
+  } finally {
+    await applicationContext.close();
+  }
 
   return noopGeneratorCallback;
 }

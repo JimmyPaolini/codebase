@@ -1,4 +1,4 @@
-import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-validation";
+import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-configuration";
 
 /** Internal helper. */
 export type JsonValidatorValidateArguments = Parameters<

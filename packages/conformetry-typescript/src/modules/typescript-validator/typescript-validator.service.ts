@@ -1,7 +1,7 @@
 import { access } from "node:fs/promises";
 import path from "node:path";
 
-import { prepareTemplateValidationPayload } from "@jimmypaolini/conformetry-validation";
+import { prepareTemplateValidationPayload } from "@jimmypaolini/conformetry-configuration";
 import { Injectable } from "@nestjs/common";
 import {
   createSourceFile,
@@ -50,8 +50,7 @@ import type {
 @Injectable()
 export class TypeScriptValidatorService {
   public readonly pluginDescriptor = TYPESCRIPT_VALIDATOR_PLUGIN_DESCRIPTOR;
-
-  /** Internal helper method. */
+  /** Builds a dotted name for decorators and callable member expressions. */
   private buildDecoratorName(callee: Node): null | string {
     const parts: string[] = [];
     let currentNode: Node = callee;
@@ -68,7 +67,7 @@ export class TypeScriptValidatorService {
     parts.unshift(currentNode.text);
     return parts.join(".");
   }
-  /** Internal helper method. */
+  /** Extracts and de-duplicates comments from a source file. */
   private extractAllComments(sourceFile: SourceFile): ExtractedComment[] {
     const sourceText = sourceFile.text;
     const extractedComments = new Map<number, ExtractedComment>();

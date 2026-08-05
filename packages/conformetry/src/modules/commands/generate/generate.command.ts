@@ -62,7 +62,7 @@ export class GenerateCommand extends CommandRunner {
    */
   @Option({
     description: "Override the output directory for generated files",
-    flags: "--targetDirectoryPath [path]",
+    flags: "--directory [path]",
   })
   parseTargetDirectoryPath(value: string | undefined): string | undefined {
     return value;
@@ -72,7 +72,7 @@ export class GenerateCommand extends CommandRunner {
    * Runs the requested generator and reports the generated output paths.
    */
   async run(
-    _passedParameters: string[],
+    passedParameters: string[],
     options: GenerateCommandOptions,
   ): Promise<void> {
     if (options.config === undefined || options.name === undefined) {
@@ -89,19 +89,42 @@ export class GenerateCommand extends CommandRunner {
       throw new Error(`Unknown generator "${options.name}"`);
     }
 
-    const targetDirectoryPath =
-      options.targetDirectoryPath ?? `generated/${generatorDefinition.name}`;
     const schema: JsonSchemaDefinition = {
       properties: generatorDefinition.parameters,
     };
-    const rawArguments = process.env["CONFORMETRY_GENERATOR_OPTIONS"]
-      ? (JSON.parse(process.env["CONFORMETRY_GENERATOR_OPTIONS"]) as string[])
-      : process.argv.slice(2);
     const generatorInputs =
       this.generateCommandArgumentsService.collectGeneratorInputsFromArguments(
-        rawArguments,
+        passedParameters,
         schema,
       );
+
+    await this.runConfiguredGeneration({
+      configurationPath: options.config,
+      generatorInputs,
+      generatorName: options.name,
+      targetDirectoryPath:
+        options.targetDirectoryPath ?? `generated/${generatorDefinition.name}`,
+    });
+  }
+
+  /**
+   * Runs a configured generator and reports the generated output paths.
+   */
+  public async runConfiguredGeneration(args: {
+    configurationPath: string;
+    generatorInputs: Record<string, string | undefined>;
+    generatorName: string;
+    targetDirectoryPath: string;
+  }): Promise<void> {
+    const configuration =
+      await this.configurationService.loadConformetryConfiguration(
+        args.configurationPath,
+      );
+    const generatorDefinition = configuration.generators[args.generatorName];
+
+    if (generatorDefinition === undefined) {
+      throw new Error(`Unknown generator "${args.generatorName}"`);
+    }
 
     const result = await this.generationRuntimeService.runGenerator({
       definition: {
@@ -116,9 +139,9 @@ export class GenerateCommand extends CommandRunner {
       },
       inputs: {
         name: generatorDefinition.name,
-        ...generatorInputs,
+        ...args.generatorInputs,
       },
-      targetDirectoryPath,
+      targetDirectoryPath: args.targetDirectoryPath,
     });
 
     this.logger.log(

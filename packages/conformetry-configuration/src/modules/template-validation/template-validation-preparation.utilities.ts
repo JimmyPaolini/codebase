@@ -1,20 +1,39 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import {
-  type DefaultTemplateRenderer,
-  GenerationRuntimeService,
-} from "@jimmypaolini/conformetry-generation";
+import type { ConformetryConfiguration } from "../configuration/configuration.types.js";
 
 import type {
   CompareMatchedCandidatesArguments,
   MatchedGeneratorCandidate,
   ParsedProjectMetadata,
-} from "./template-validation-preparation.types.js";
-import type {
   PreparedValidationDocument,
   ValidationProjectTemplateMetadata,
-} from "./validation.types.js";
+} from "./template-validation.types.js";
+
+interface TemplateRenderer {
+  render(
+    templateContent: string,
+    substitutions: Record<string, string>,
+  ): string;
+}
+
+/**
+ * Replaces template placeholders with generated substitutions.
+ */
+class DefaultTemplateRenderer implements TemplateRenderer {
+  public render(
+    templateContent: string,
+    substitutions: Record<string, string>,
+  ): string {
+    return templateContent.replaceAll(
+      /\{\{([^{}]+)\}\}/gu,
+      (_token, field: string) => {
+        return substitutions[field.trim()] ?? _token;
+      },
+    );
+  }
+}
 
 /**
  * Applies template placeholder substitutions.
@@ -156,10 +175,8 @@ export function createTemplateSubstitutions(args: {
   projectTemplateMetadata: ValidationProjectTemplateMetadata;
   workingDirectory: string;
 }): Record<string, string> {
-  const runtimeService = new GenerationRuntimeService();
   const projectName = path.basename(args.projectPath);
-  const projectNameSubstitutions =
-    runtimeService.buildNameSubstitutions(projectName);
+  const projectNameSubstitutions = buildNameSubstitutions(projectName);
   const projectType = resolveProjectType({
     projectPath: args.projectPath,
     projectTemplateMetadata: args.projectTemplateMetadata,
@@ -180,6 +197,78 @@ export function createTemplateSubstitutions(args: {
 }
 
 /**
+ * Builds common name substitutions from the provided generator name.
+ */
+function buildNameSubstitutions(name: string): Record<string, string> {
+  return {
+    nameCamelCase: toCamelCase(name),
+    nameKebabCase: toKebabCase(name),
+    namePascalCase: toPascalCase(name),
+    nameSnakeCase: toSnakeCase(name),
+  };
+}
+
+/**
+ * Converts a generator name to camel case.
+ */
+function toCamelCase(value: string): string {
+  return value
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((segment, index) => {
+      if (index === 0) {
+        return segment.toLowerCase();
+      }
+
+      return segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase();
+    })
+    .join("");
+}
+
+/**
+ * Converts a generator name to kebab case.
+ */
+function toKebabCase(value: string): string {
+  return value
+    .trim()
+    .split(/[_\s]+/)
+    .flatMap((segment) => {
+      return segment.split(/(?=[A-Z])/);
+    })
+    .filter(Boolean)
+    .map((segment) => {
+      return segment.toLowerCase();
+    })
+    .join("-");
+}
+
+/**
+ * Converts a generator name to Pascal case.
+ */
+function toPascalCase(value: string): string {
+  return toCamelCase(value).replace(/^./u, (character) => {
+    return character.toUpperCase();
+  });
+}
+
+/**
+ * Converts a generator name to snake case.
+ */
+function toSnakeCase(value: string): string {
+  return value
+    .trim()
+    .split(/[-\s]+/)
+    .flatMap((segment) => {
+      return segment.split(/(?=[A-Z])/);
+    })
+    .filter(Boolean)
+    .map((segment) => {
+      return segment.toLowerCase();
+    })
+    .join("_");
+}
+
+/**
  * Determines whether a directory entry should be included as a template file.
  */
 export function isTemplateFile(entryName: string, isFile: boolean): boolean {
@@ -191,14 +280,210 @@ export function isTemplateFile(entryName: string, isFile: boolean): boolean {
 }
 
 /**
+ * Prepares validation documents for a single project path.
+ */
+export function prepareDocumentsForProjectPath(args: {
+  configuration: ConformetryConfiguration;
+  fileExtensions: string[];
+  projectPath: string;
+  selectedGeneratorNames: string[];
+  workingDirectory: string;
+}): {
+  documents: PreparedValidationDocument[];
+  violations: string[];
+} {
+  const projectPathViolations = validateProjectPath(args.projectPath);
+  if (projectPathViolations.length > 0) {
+    return {
+      documents: [],
+      violations: projectPathViolations,
+    };
+  }
+
+  const matchedCandidate = resolveBestMatchedGeneratorCandidate({
+    configuration: args.configuration,
+    projectPath: args.projectPath,
+    selectedGeneratorNames: args.selectedGeneratorNames,
+    workingDirectory: args.workingDirectory,
+  });
+  if (matchedCandidate === undefined) {
+    return {
+      documents: [],
+      violations: [],
+    };
+  }
+
+  return prepareDocumentsForGenerator({
+    fileExtensions: args.fileExtensions,
+    generatorCandidate: matchedCandidate,
+    projectPath: args.projectPath,
+  });
+}
+
+/**
+ * Creates one candidate from generator definition and project mapping.
+ */
+function createMatchedGeneratorCandidate(args: {
+  configuration: ConformetryConfiguration;
+  generatorName: string;
+  projectPath: string;
+  substitutions: Record<string, string>;
+  workingDirectory: string;
+}): MatchedGeneratorCandidate | undefined {
+  const generatorDefinition = args.configuration.generators[args.generatorName];
+  if (generatorDefinition === undefined) {
+    return undefined;
+  }
+
+  const absoluteTemplateDirectoryPath = path.resolve(
+    args.workingDirectory,
+    generatorDefinition.templateDirectoryPath,
+  );
+  const templateFilePaths = collectTemplateFilePaths(
+    absoluteTemplateDirectoryPath,
+  );
+  if (templateFilePaths.length === 0) {
+    return undefined;
+  }
+
+  const existingFileCount = countExistingTemplateMappedFiles({
+    absoluteTemplateDirectoryPath,
+    projectPath: args.projectPath,
+    substitutions: args.substitutions,
+    templateFilePaths,
+  });
+
+  return {
+    absoluteTemplateDirectoryPath,
+    existingFileCount,
+    generatorName: args.generatorName,
+    substitutions: args.substitutions,
+    templateFilePaths,
+  };
+}
+
+/**
+ * Infers likely generator names from the project directory name.
+ */
+function inferGeneratorNamesFromProjectPath(args: {
+  configuredGeneratorNames: string[];
+  projectPath: string;
+}): Set<string> {
+  const projectDirectoryName = path.basename(args.projectPath).toLowerCase();
+  const inferredGeneratorNames = args.configuredGeneratorNames.filter(
+    (generatorName) =>
+      projectDirectoryName.includes(generatorName.toLowerCase()),
+  );
+
+  return new Set(inferredGeneratorNames);
+}
+
+/**
+ * Prepares documents for one matched generator candidate.
+ */
+function prepareDocumentsForGenerator(args: {
+  fileExtensions: string[];
+  generatorCandidate: MatchedGeneratorCandidate;
+  projectPath: string;
+}): {
+  documents: PreparedValidationDocument[];
+  violations: string[];
+} {
+  const absoluteTemplateDirectoryPath =
+    args.generatorCandidate.absoluteTemplateDirectoryPath;
+  const templateRenderer = new DefaultTemplateRenderer();
+  const extensionSet = new Set(args.fileExtensions);
+  const documents: PreparedValidationDocument[] = [];
+  const violations: string[] = [];
+
+  for (const templateFilePath of args.generatorCandidate.templateFilePaths) {
+    const documentPreparation = prepareDocumentForTemplateFile({
+      extensionSet,
+      generatorCandidate: args.generatorCandidate,
+      projectPath: args.projectPath,
+      templateFilePath,
+      templateRenderer,
+      templateRootPath: absoluteTemplateDirectoryPath,
+    });
+
+    if (documentPreparation === undefined) {
+      continue;
+    }
+
+    if ("violation" in documentPreparation) {
+      violations.push(documentPreparation.violation);
+      continue;
+    }
+
+    documents.push(documentPreparation.document);
+  }
+
+  return {
+    documents,
+    violations,
+  };
+}
+
+/**
+ * Resolves the best matching template generator for a project path.
+ */
+function resolveBestMatchedGeneratorCandidate(args: {
+  configuration: ConformetryConfiguration;
+  projectPath: string;
+  selectedGeneratorNames: string[];
+  workingDirectory: string;
+}): MatchedGeneratorCandidate | undefined {
+  const projectTemplateMetadata = resolveProjectTemplateMetadata(
+    args.projectPath,
+  );
+  const inferredGeneratorNames = inferGeneratorNamesFromProjectPath({
+    configuredGeneratorNames: args.selectedGeneratorNames,
+    projectPath: args.projectPath,
+  });
+  if (projectTemplateMetadata.generatorName !== undefined) {
+    inferredGeneratorNames.add(projectTemplateMetadata.generatorName);
+  }
+
+  const substitutions = createTemplateSubstitutions({
+    projectPath: args.projectPath,
+    projectTemplateMetadata,
+    workingDirectory: args.workingDirectory,
+  });
+  const candidates = args.selectedGeneratorNames
+    .map((generatorName) => {
+      return createMatchedGeneratorCandidate({
+        configuration: args.configuration,
+        generatorName,
+        projectPath: args.projectPath,
+        substitutions,
+        workingDirectory: args.workingDirectory,
+      });
+    })
+    .filter((candidate) => candidate !== undefined);
+
+  const sortedCandidates = candidates
+    .filter((candidate) => candidate.existingFileCount > 0)
+    .toSorted((leftCandidate, rightCandidate) => {
+      return compareMatchedCandidates({
+        inferredGeneratorNames,
+        leftCandidate,
+        projectTemplateMetadata,
+        rightCandidate,
+      });
+    });
+
+  return sortedCandidates[0];
+}
+
+/**
  * Prepares a mapped validation document for a template file.
  */
-export function prepareDocumentForTemplateFile(args: {
+function prepareDocumentForTemplateFile(args: {
   extensionSet: Set<string>;
   generatorCandidate: MatchedGeneratorCandidate;
   projectPath: string;
   templateFilePath: string;
-  templateRenderer: DefaultTemplateRenderer;
+  templateRenderer: TemplateRenderer;
   templateRootPath: string;
 }):
   | undefined
@@ -245,7 +530,7 @@ export function prepareDocumentForTemplateFile(args: {
 /**
  * Resolves metadata-driven template context values for a project path.
  */
-export function resolveProjectTemplateMetadata(
+function resolveProjectTemplateMetadata(
   projectPath: string,
 ): ValidationProjectTemplateMetadata {
   const projectMetadata: ValidationProjectTemplateMetadata = {

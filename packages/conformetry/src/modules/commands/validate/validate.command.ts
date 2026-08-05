@@ -1,15 +1,12 @@
 import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
-import { JsonValidatorService } from "@jimmypaolini/conformetry-json";
-import { MarkdownValidatorService } from "@jimmypaolini/conformetry-markdown";
-import { PythonValidatorService } from "@jimmypaolini/conformetry-python";
-import { TextValidatorService } from "@jimmypaolini/conformetry-text";
-import { TypeScriptValidatorService } from "@jimmypaolini/conformetry-typescript";
-import { ValidationService } from "@jimmypaolini/conformetry-validation";
+import {
+  ValidationPluginsService,
+  ValidationService,
+} from "@jimmypaolini/conformetry-validation";
 import { ConsoleLogger, Inject, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import type { ValidateCommandOptions } from "./validate.types.js";
-import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-validation";
 
 /**
  * Executes conformetry validation plugins against the selected project paths.
@@ -25,58 +22,14 @@ export class ValidateCommand extends CommandRunner {
     private readonly configurationService: ConfigurationService,
     @Inject(ValidationService)
     private readonly validationService: ValidationService,
-    @Inject(TypeScriptValidatorService)
-    private readonly typeScriptValidatorService: TypeScriptValidatorService,
-    @Inject(PythonValidatorService)
-    private readonly pythonValidatorService: PythonValidatorService,
-    @Inject(MarkdownValidatorService)
-    private readonly markdownValidatorService: MarkdownValidatorService,
-    @Inject(JsonValidatorService)
-    private readonly jsonValidatorService: JsonValidatorService,
-    @Inject(TextValidatorService)
-    private readonly textValidatorService: TextValidatorService,
+    @Inject(ValidationPluginsService)
+    private readonly validationPluginsService: ValidationPluginsService,
   ) {
     super();
     this.logger.setContext(ValidateCommand.name);
   }
 
   private readonly logger = new ConsoleLogger();
-
-  /** Builds plugin contracts from injected validator services. */
-  private buildValidatorPlugins(): ConformetryValidatorPlugin[] {
-    return [
-      {
-        descriptor: this.typeScriptValidatorService.pluginDescriptor,
-        validate: async (validationArguments) => {
-          return this.typeScriptValidatorService.validate(validationArguments);
-        },
-      },
-      {
-        descriptor: this.pythonValidatorService.pluginDescriptor,
-        validate: async (validationArguments) => {
-          return this.pythonValidatorService.validate(validationArguments);
-        },
-      },
-      {
-        descriptor: this.markdownValidatorService.pluginDescriptor,
-        validate: async (validationArguments) => {
-          return this.markdownValidatorService.validate(validationArguments);
-        },
-      },
-      {
-        descriptor: this.jsonValidatorService.pluginDescriptor,
-        validate: async (validationArguments) => {
-          return this.jsonValidatorService.validate(validationArguments);
-        },
-      },
-      {
-        descriptor: this.textValidatorService.pluginDescriptor,
-        validate: async (validationArguments) => {
-          return this.textValidatorService.validate(validationArguments);
-        },
-      },
-    ];
-  }
 
   /**
    * Parses the configuration path option for the validate command.
@@ -139,7 +92,7 @@ export class ValidateCommand extends CommandRunner {
       await this.configurationService.loadConformetryConfiguration(
         configurationPath,
       );
-    const plugins = this.buildValidatorPlugins();
+    const plugins = this.validationPluginsService.buildValidatorPlugins();
     const pluginNames = new Set(
       plugins.map((plugin) => plugin.descriptor.name),
     );
@@ -167,7 +120,7 @@ export class ValidateCommand extends CommandRunner {
           )
         : configuredTemplateRuleNames;
 
-    const validationResult = await this.validationService.runValidation({
+    const validationResult = await this.runConfiguredValidation({
       configurationPath,
       plugins: filteredPlugins,
       projectPaths,
@@ -181,5 +134,24 @@ export class ValidateCommand extends CommandRunner {
       process.exitCode = 1;
       throw new Error("Validation failed");
     }
+  }
+
+  /**
+   * Runs configured validation and returns the validation result.
+   */
+  public async runConfiguredValidation(args: {
+    configurationPath: string;
+    plugins: Parameters<ValidationService["runValidation"]>[0]["plugins"];
+    projectPaths: string[];
+    templateRuleNames: string[];
+    workingDirectory: string;
+  }): Promise<Awaited<ReturnType<ValidationService["runValidation"]>>> {
+    return await this.validationService.runValidation({
+      configurationPath: args.configurationPath,
+      plugins: args.plugins,
+      projectPaths: args.projectPaths,
+      templateRuleNames: args.templateRuleNames,
+      workingDirectory: args.workingDirectory,
+    });
   }
 }

@@ -1,11 +1,6 @@
 {
   "$schema": "../../node_modules/@nx/devkit/src/generators/generators-schema.json",
   "generators": {
-    "init": {
-      "description": "Initializes a conformetry configuration file in the current workspace",
-      "factory": "./src/index.ts#conformetryInitGenerator",
-      "schema": "./src/generators/init/schema.json"
-    },
     "jupyter-notebook-application": {
       "aliases": ["jna"],
       "description": "Generate a Python Jupyter notebook application",

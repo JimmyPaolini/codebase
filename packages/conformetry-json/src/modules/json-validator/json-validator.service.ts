@@ -1,7 +1,7 @@
 import { access } from "node:fs/promises";
 import path from "node:path";
 
-import { prepareTemplateValidationPayload } from "@jimmypaolini/conformetry-validation";
+import { prepareTemplateValidationPayload } from "@jimmypaolini/conformetry-configuration";
 import { Injectable } from "@nestjs/common";
 import { parse } from "jsonc-parser";
 

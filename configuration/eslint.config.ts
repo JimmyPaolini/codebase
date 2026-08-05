@@ -310,7 +310,6 @@ export default [
       "@nx/enforce-module-boundaries": [
         "error",
         {
-          allow: ["@jimmypaolini/conformetry"],
           depConstraints: [
             // Applications can only depend on workspace packages (not other apps or tools)
             {
@@ -331,9 +330,10 @@ export default [
               ],
               sourceTag: "name:conformetry",
             },
-            // conformetry-validation can only depend on language-specific validator packages
+            // conformetry-validation can only depend on configuration and language-specific validator packages
             {
               onlyDependOnLibsWithTags: [
+                "name:conformetry-configuration",
                 "name:conformetry-json",
                 "name:conformetry-markdown",
                 "name:conformetry-python",
@@ -342,25 +342,25 @@ export default [
               ],
               sourceTag: "name:conformetry-validation",
             },
-            // Language-specific validators cannot depend on other workspace libraries
+            // Language-specific validators can depend on configuration but not on other workspace libraries
             {
-              onlyDependOnLibsWithTags: [],
+              onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
               sourceTag: "name:conformetry-json",
             },
             {
-              onlyDependOnLibsWithTags: [],
+              onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
               sourceTag: "name:conformetry-markdown",
             },
             {
-              onlyDependOnLibsWithTags: [],
+              onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
               sourceTag: "name:conformetry-python",
             },
             {
-              onlyDependOnLibsWithTags: [],
+              onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
               sourceTag: "name:conformetry-text",
             },
             {
-              onlyDependOnLibsWithTags: [],
+              onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
               sourceTag: "name:conformetry-typescript",
             },
             // conformetry-configuration and conformetry-generation cannot depend on other workspace libraries
@@ -804,7 +804,7 @@ export default [
           message:
             "Only imports and const declarations are allowed in constant files. Move other top-level symbols to dedicated files.",
           selector:
-            "Program > :not(ImportDeclaration):not(VariableDeclaration[kind='const']):not(ExportNamedDeclaration[declaration.type='VariableDeclaration'][declaration.kind='const']):not(ExportDefaultDeclaration[declaration.type='VariableDeclaration'][declaration.kind='const'])",
+            "Program > :not(ImportDeclaration):not(VariableDeclaration[kind='const']):not(ExportNamedDeclaration[declaration.type='VariableDeclaration'][declaration.kind='const']):not(ExportDefaultDeclaration[declaration.type='VariableDeclaration'][declaration.kind='const']):not(ClassDeclaration[superClass.type='Identifier'][superClass.name='Error']):not(ExportNamedDeclaration[declaration.type='ClassDeclaration'][declaration.superClass.type='Identifier'][declaration.superClass.name='Error']):not(ExportDefaultDeclaration[declaration.type='ClassDeclaration'][declaration.superClass.type='Identifier'][declaration.superClass.name='Error'])",
         },
       ],
     },

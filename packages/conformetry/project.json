@@ -1,7 +1,7 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "name": "conformetry",
-  "projectType": "application",
+  "projectType": "library",
   "sourceRoot": "packages/conformetry",
   "tags": [
     "framework:nest-commander",

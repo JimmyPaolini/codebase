@@ -8,7 +8,7 @@ const { prepareTemplateValidationPayloadMock } = vi.hoisted(() => {
   };
 });
 
-vi.mock("@jimmypaolini/conformetry-validation", () => {
+vi.mock("@jimmypaolini/conformetry-configuration", () => {
   return {
     prepareTemplateValidationPayload: prepareTemplateValidationPayloadMock,
   };

@@ -9,8 +9,10 @@ import { parse as parseJsonc } from "jsonc-parser";
 
 import { conformetryConfigurationSchema } from "../../constants.js";
 
-import { supportedExtensions } from "./configuration.constants.js";
-import { UnknownConfigurationFileTypeError } from "./configuration.errors.js";
+import {
+  supportedExtensions,
+  UnknownConfigurationFileTypeError,
+} from "./configuration.constants.js";
 
 import type {
   ConformetryConfiguration,

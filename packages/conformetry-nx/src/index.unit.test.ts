@@ -1,15 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
-  mockIntegrationRunConfiguredGenerator,
-  mockLoadIntegrationModuleSurface,
+  mockGenerateRunConfiguredGeneration,
   mockNestClose,
   mockNestCreateApplicationContext,
   mockNestGet,
 } = vi.hoisted(() => {
   return {
-    mockIntegrationRunConfiguredGenerator: vi.fn(),
-    mockLoadIntegrationModuleSurface: vi.fn(),
+    mockGenerateRunConfiguredGeneration: vi.fn(),
     mockNestClose: vi.fn(),
     mockNestCreateApplicationContext: vi.fn(),
     mockNestGet: vi.fn(),
@@ -18,7 +16,8 @@ const {
 
 vi.mock("@jimmypaolini/conformetry", () => {
   return {
-    loadIntegrationModuleSurface: mockLoadIntegrationModuleSurface,
+    GenerateCommand: function GenerateCommand(): void {},
+    MainModule: function MainModule(): void {},
   };
 });
 
@@ -74,22 +73,17 @@ function createStubTree(): Tree {
 
 describe("conformetry-nx index", () => {
   beforeEach(() => {
-    mockLoadIntegrationModuleSurface.mockReset();
-    mockIntegrationRunConfiguredGenerator.mockReset();
+    mockGenerateRunConfiguredGeneration.mockReset();
     mockNestClose.mockReset();
     mockNestCreateApplicationContext.mockReset();
     mockNestGet.mockReset();
 
-    mockLoadIntegrationModuleSurface.mockResolvedValue({
-      IntegrationModule: { token: "IntegrationModule" },
-      IntegrationService: { token: "IntegrationService" },
-    });
-    mockIntegrationRunConfiguredGenerator.mockResolvedValue({
+    mockGenerateRunConfiguredGeneration.mockResolvedValue({
       generatedFilePaths: ["generated/react/example.ts"],
       outputDirectoryPath: "generated/react",
     });
     mockNestGet.mockReturnValue({
-      runConfiguredGenerator: mockIntegrationRunConfiguredGenerator,
+      runConfiguredGeneration: mockGenerateRunConfiguredGeneration,
     });
     mockNestClose.mockResolvedValue(undefined);
     mockNestCreateApplicationContext.mockResolvedValue({
@@ -168,16 +162,13 @@ describe("conformetry-nx index", () => {
     expect(mockNestCreateApplicationContext).toHaveBeenCalledTimes(
       generators.length,
     );
-    expect(mockLoadIntegrationModuleSurface).toHaveBeenCalledTimes(
-      generators.length,
-    );
     expect(mockNestClose).toHaveBeenCalledTimes(generators.length);
-    expect(mockIntegrationRunConfiguredGenerator).toHaveBeenCalledTimes(
+    expect(mockGenerateRunConfiguredGeneration).toHaveBeenCalledTimes(
       generators.length,
     );
 
     for (const [index, generator] of generators.entries()) {
-      expect(mockIntegrationRunConfiguredGenerator).toHaveBeenNthCalledWith(
+      expect(mockGenerateRunConfiguredGeneration).toHaveBeenNthCalledWith(
         index + 1,
         {
           configurationPath: "configuration/conformetry.config.ts",
@@ -202,7 +193,7 @@ describe("conformetry-nx index", () => {
       targetDirectoryPath: "generated/react",
     });
 
-    expect(mockIntegrationRunConfiguredGenerator).toHaveBeenCalledWith(
+    expect(mockGenerateRunConfiguredGeneration).toHaveBeenCalledWith(
       expect.objectContaining({
         configurationPath: "configuration/conformetry.config.ts",
       }),

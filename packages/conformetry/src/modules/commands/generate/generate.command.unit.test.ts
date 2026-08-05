@@ -58,7 +58,6 @@ describe("generateCommand", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.argv = ["node", "conformetry", "generate", "--project", "lexico"];
-    delete process.env["CONFORMETRY_GENERATOR_OPTIONS"];
   });
 
   it("parses CLI option values", async () => {
@@ -133,11 +132,6 @@ describe("generateCommand", () => {
       generatedFilePaths: ["output/button.tsx"],
       outputDirectoryPath: "generated/react-component",
     });
-    process.env["CONFORMETRY_GENERATOR_OPTIONS"] = JSON.stringify([
-      "--project",
-      "lexico-components",
-    ]);
-
     const { GenerateCommand } = await import("./generate.command.js");
     const command = new GenerateCommand(
       new ConfigurationService(),
@@ -145,7 +139,7 @@ describe("generateCommand", () => {
       createGenerateCommandArgumentsService(),
     );
 
-    await command.run([], {
+    await command.run(["--project", "lexico-components"], {
       config: "configuration/conformetry.config.ts",
       name: "react-component",
       targetDirectoryPath: "packages/lexico-components",
@@ -199,7 +193,7 @@ describe("generateCommand", () => {
       createGenerateCommandArgumentsService(),
     );
 
-    await command.run([], {
+    await command.run(["--project", "lexico"], {
       config: "configuration/conformetry.config.ts",
       name: "react-component",
     });

@@ -43,9 +43,6 @@
     "packages/lexico-entities/src/modules/database/migrations/**/*.ts",
     "release.config.cjs",
     "scripts/**/*.{js,mjs,ts,sh}",
-    "tools/conformance/src/generators/**/templates/**",
-    "tools/conformance/src/modules/*/*.utilities.ts",
-    "tools/conformance/src/repl.ts",
     "validate-branch-name.config.cjs",
   ],
   "health": {

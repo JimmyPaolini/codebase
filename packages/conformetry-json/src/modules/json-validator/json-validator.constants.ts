@@ -1,4 +1,4 @@
-import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-validation";
+import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-configuration";
 
 // ♟️ Constants
 export const JSON_VALIDATOR_FILE_EXTENSIONS = [".json", ".jsonc"];

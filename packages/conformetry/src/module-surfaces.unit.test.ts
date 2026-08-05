@@ -21,27 +21,27 @@ describe("module export surfaces", () => {
     vi.resetModules();
   });
 
-  it("exports integration module/service for nx handoff", async () => {
-    const { IntegrationModule } =
-      await import("./modules/integration/integration.module.js");
-    const { IntegrationService } =
-      await import("./modules/integration/integration.service.js");
+  it("exports command and module surfaces for nx handoff", async () => {
+    const { MainModule } = await import("./main.module.js");
+    const { GenerateCommand } =
+      await import("./modules/commands/generate/generate.command.js");
+    const { GenerateModule } =
+      await import("./modules/commands/generate/generate.module.js");
+    const { ValidateCommand } =
+      await import("./modules/commands/validate/validate.command.js");
+    const { ValidateModule } =
+      await import("./modules/commands/validate/validate.module.js");
 
-    expect(IntegrationModule).toBeDefined();
-    expect(IntegrationService).toBeDefined();
+    expect(MainModule).toBeDefined();
+    expect(GenerateCommand).toBeDefined();
+    expect(GenerateModule).toBeDefined();
+    expect(ValidateCommand).toBeDefined();
+    expect(ValidateModule).toBeDefined();
   });
 
   it("exports nest modules used by command bootstrap", async () => {
-    const { MainModule } = await import("./main.module.js");
-    const { GenerateModule } =
-      await import("./modules/commands/generate/generate.module.js");
-    const { ValidateModule } =
-      await import("./modules/commands/validate/validate.module.js");
     const { LoggerModule } = await import("./modules/logger/logger.module.js");
 
-    expect(MainModule).toBeDefined();
-    expect(GenerateModule).toBeDefined();
-    expect(ValidateModule).toBeDefined();
     expect(LoggerModule).toBeDefined();
   });
 });

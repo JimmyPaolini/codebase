@@ -1,4 +1,4 @@
-import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-validation";
+import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-configuration";
 
 // ♟️ Constants
 export const PYTHON_VALIDATOR_FILE_EXTENSIONS = [".ipynb", ".py"];

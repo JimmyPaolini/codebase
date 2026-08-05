@@ -1,4 +1,4 @@
-import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-validation";
+import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-configuration";
 import type { Node, SourceFile } from "typescript";
 
 /** Internal helper. */

@@ -1075,21 +1075,6 @@ importers:
       '@jimmypaolini/conformetry-generation':
         specifier: workspace:*
         version: link:../conformetry-generation
-      '@jimmypaolini/conformetry-json':
-        specifier: workspace:*
-        version: link:../conformetry-json
-      '@jimmypaolini/conformetry-markdown':
-        specifier: workspace:*
-        version: link:../conformetry-markdown
-      '@jimmypaolini/conformetry-python':
-        specifier: workspace:*
-        version: link:../conformetry-python
-      '@jimmypaolini/conformetry-text':
-        specifier: workspace:*
-        version: link:../conformetry-text
-      '@jimmypaolini/conformetry-typescript':
-        specifier: workspace:*
-        version: link:../conformetry-typescript
       '@jimmypaolini/conformetry-validation':
         specifier: workspace:*
         version: link:../conformetry-validation
@@ -1249,9 +1234,9 @@ importers:
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
-      '@jimmypaolini/conformetry-validation':
+      '@jimmypaolini/conformetry-configuration':
         specifier: workspace:*
-        version: link:../conformetry-validation
+        version: link:../conformetry-configuration
       '@nestjs/common':
         specifier: 'catalog:'
         version: 11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -1304,9 +1289,9 @@ importers:
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
-      '@jimmypaolini/conformetry-validation':
+      '@jimmypaolini/conformetry-configuration':
         specifier: workspace:*
-        version: link:../conformetry-validation
+        version: link:../conformetry-configuration
       '@nestjs/common':
         specifier: 'catalog:'
         version: 11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -1420,9 +1405,9 @@ importers:
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
-      '@jimmypaolini/conformetry-validation':
+      '@jimmypaolini/conformetry-configuration':
         specifier: workspace:*
-        version: link:../conformetry-validation
+        version: link:../conformetry-configuration
       '@nestjs/common':
         specifier: 'catalog:'
         version: 11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -1475,9 +1460,9 @@ importers:
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
-      '@jimmypaolini/conformetry-validation':
+      '@jimmypaolini/conformetry-configuration':
         specifier: workspace:*
-        version: link:../conformetry-validation
+        version: link:../conformetry-configuration
       '@nestjs/common':
         specifier: 'catalog:'
         version: 11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -1527,9 +1512,9 @@ importers:
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
-      '@jimmypaolini/conformetry-validation':
+      '@jimmypaolini/conformetry-configuration':
         specifier: workspace:*
-        version: link:../conformetry-validation
+        version: link:../conformetry-configuration
       '@nestjs/common':
         specifier: 'catalog:'
         version: 11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -1582,9 +1567,21 @@ importers:
       '@jimmypaolini/conformetry-configuration':
         specifier: workspace:*
         version: link:../conformetry-configuration
-      '@jimmypaolini/conformetry-generation':
+      '@jimmypaolini/conformetry-json':
         specifier: workspace:*
-        version: link:../conformetry-generation
+        version: link:../conformetry-json
+      '@jimmypaolini/conformetry-markdown':
+        specifier: workspace:*
+        version: link:../conformetry-markdown
+      '@jimmypaolini/conformetry-python':
+        specifier: workspace:*
+        version: link:../conformetry-python
+      '@jimmypaolini/conformetry-text':
+        specifier: workspace:*
+        version: link:../conformetry-text
+      '@jimmypaolini/conformetry-typescript':
+        specifier: workspace:*
+        version: link:../conformetry-typescript
       '@nestjs/common':
         specifier: 'catalog:'
         version: 11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2)

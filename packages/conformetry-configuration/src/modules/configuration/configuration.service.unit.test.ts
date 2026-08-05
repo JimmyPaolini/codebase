@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { conformetryConfigurationSchema } from "../../constants.js";
 
-import { UnknownConfigurationFileTypeError } from "./configuration.errors.js";
+import { UnknownConfigurationFileTypeError } from "./configuration.constants.js";
 import { ConfigurationService } from "./configuration.service.js";
 
 describe("configurationService.loadConformetryConfiguration", () => {

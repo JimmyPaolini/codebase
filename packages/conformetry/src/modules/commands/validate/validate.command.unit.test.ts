@@ -1,10 +1,9 @@
 import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
-import { JsonValidatorService } from "@jimmypaolini/conformetry-json";
-import { MarkdownValidatorService } from "@jimmypaolini/conformetry-markdown";
-import { PythonValidatorService } from "@jimmypaolini/conformetry-python";
-import { TextValidatorService } from "@jimmypaolini/conformetry-text";
-import { TypeScriptValidatorService } from "@jimmypaolini/conformetry-typescript";
-import { ValidationService } from "@jimmypaolini/conformetry-validation";
+import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-configuration";
+import {
+  ValidationPluginsService,
+  ValidationService,
+} from "@jimmypaolini/conformetry-validation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TestingModule } from "@nestjs/testing";
@@ -18,6 +17,7 @@ interface ValidationInputShape {
 
 const mockLoadConformetryConfiguration =
   vi.fn<(path: string) => Promise<unknown>>();
+const mockBuildValidatorPlugins = vi.fn<() => ConformetryValidatorPlugin[]>();
 const mockRunValidation =
   vi.fn<(input: ValidationInputShape) => Promise<unknown>>();
 const mockLoggerLog = vi.fn<(message: unknown) => void>();
@@ -54,6 +54,9 @@ vi.mock("@jimmypaolini/conformetry-configuration", () => {
 
 vi.mock("@jimmypaolini/conformetry-validation", () => {
   return {
+    ValidationPluginsService: class ValidationPluginsService {
+      buildValidatorPlugins = mockBuildValidatorPlugins;
+    },
     ValidationService: class ValidationService {
       runValidation = mockRunValidation;
     },
@@ -71,11 +74,7 @@ describe("validateCommand", () => {
     const command = new ValidateCommand(
       new ConfigurationService(),
       new ValidationService(),
-      new TypeScriptValidatorService(),
-      new PythonValidatorService(),
-      new MarkdownValidatorService(),
-      new JsonValidatorService(),
-      new TextValidatorService(),
+      new ValidationPluginsService(),
     );
 
     expect(command.parseConfig("configuration/conformetry.config.ts")).toBe(
@@ -100,17 +99,90 @@ describe("validateCommand", () => {
         "nestjs-service-module": {},
       },
     });
-    mockRunValidation.mockResolvedValue({ ok: true, results: [] });
+    mockBuildValidatorPlugins.mockReturnValue([
+      {
+        descriptor: {
+          fileExtensions: [".ts"],
+          name: "typescript",
+        },
+        validate: async ({ filePaths }) => {
+          await Promise.resolve();
+          return {
+            checkedPaths: filePaths,
+            ok: true,
+            pluginName: "typescript",
+            violations: [],
+          };
+        },
+      },
+      {
+        descriptor: {
+          fileExtensions: [".py"],
+          name: "python",
+        },
+        validate: async ({ filePaths }) => {
+          await Promise.resolve();
+          return {
+            checkedPaths: filePaths,
+            ok: true,
+            pluginName: "python",
+            violations: [],
+          };
+        },
+      },
+      {
+        descriptor: {
+          fileExtensions: [".md"],
+          name: "markdown",
+        },
+        validate: async ({ filePaths }) => {
+          await Promise.resolve();
+          return {
+            checkedPaths: filePaths,
+            ok: true,
+            pluginName: "markdown",
+            violations: [],
+          };
+        },
+      },
+      {
+        descriptor: {
+          fileExtensions: [".json"],
+          name: "json",
+        },
+        validate: async ({ filePaths }) => {
+          await Promise.resolve();
+          return {
+            checkedPaths: filePaths,
+            ok: true,
+            pluginName: "json",
+            violations: [],
+          };
+        },
+      },
+      {
+        descriptor: {
+          fileExtensions: [".txt"],
+          name: "text",
+        },
+        validate: async ({ filePaths }) => {
+          await Promise.resolve();
+          return {
+            checkedPaths: filePaths,
+            ok: true,
+            pluginName: "text",
+            violations: [],
+          };
+        },
+      },
+    ]);
+    mockRunValidation.mockResolvedValue({ ok: true, pluginResults: [] });
 
     const { ValidateCommand } = await import("./validate.command.js");
     const command = new ValidateCommand(
       new ConfigurationService(),
       new ValidationService(),
-      new TypeScriptValidatorService(),
-      new PythonValidatorService(),
-      new MarkdownValidatorService(),
-      new JsonValidatorService(),
-      new TextValidatorService(),
+      new ValidationPluginsService(),
     );
 
     await command.run([], {});
@@ -130,7 +202,7 @@ describe("validateCommand", () => {
     ]);
     expect(validationInput?.workingDirectory).toBe(process.cwd());
     expect(mockLoggerLog).toHaveBeenCalledWith(
-      JSON.stringify({ ok: true, results: [] }, null, 2),
+      JSON.stringify({ ok: true, pluginResults: [] }, null, 2),
     );
   });
 
@@ -141,17 +213,30 @@ describe("validateCommand", () => {
         "react-component": {},
       },
     });
-    mockRunValidation.mockResolvedValue({ ok: true });
+    mockBuildValidatorPlugins.mockReturnValue([
+      {
+        descriptor: {
+          fileExtensions: [".json"],
+          name: "json",
+        },
+        validate: async ({ filePaths }) => {
+          await Promise.resolve();
+          return {
+            checkedPaths: filePaths,
+            ok: true,
+            pluginName: "json",
+            violations: [],
+          };
+        },
+      },
+    ]);
+    mockRunValidation.mockResolvedValue({ ok: true, pluginResults: [] });
 
     const { ValidateCommand } = await import("./validate.command.js");
     const command = new ValidateCommand(
       new ConfigurationService(),
       new ValidationService(),
-      new TypeScriptValidatorService(),
-      new PythonValidatorService(),
-      new MarkdownValidatorService(),
-      new JsonValidatorService(),
-      new TextValidatorService(),
+      new ValidationPluginsService(),
     );
 
     await command.run([], {
@@ -184,17 +269,14 @@ describe("validateCommand", () => {
 
   it("throws when validation result is not ok", async () => {
     mockLoadConformetryConfiguration.mockResolvedValue({ generators: {} });
-    mockRunValidation.mockResolvedValue({ failures: ["x"], ok: false });
+    mockBuildValidatorPlugins.mockReturnValue([]);
+    mockRunValidation.mockResolvedValue({ ok: false, pluginResults: [] });
 
     const { ValidateCommand } = await import("./validate.command.js");
     const command = new ValidateCommand(
       new ConfigurationService(),
       new ValidationService(),
-      new TypeScriptValidatorService(),
-      new PythonValidatorService(),
-      new MarkdownValidatorService(),
-      new JsonValidatorService(),
-      new TextValidatorService(),
+      new ValidationPluginsService(),
     );
 
     await expect(command.run([], {})).rejects.toThrow("Validation failed");
@@ -207,7 +289,8 @@ describe("validateCommand", () => {
         "nestjs-service-module": {},
       },
     });
-    mockRunValidation.mockResolvedValue({ ok: true, results: [] });
+    mockBuildValidatorPlugins.mockReturnValue([]);
+    mockRunValidation.mockResolvedValue({ ok: true, pluginResults: [] });
 
     const { Test } = await import("@nestjs/testing");
     const { ValidateCommand } = await import("./validate.command.js");
@@ -241,24 +324,10 @@ describe("validateCommand", () => {
             },
           },
           {
-            provide: TypeScriptValidatorService,
-            useValue: new TypeScriptValidatorService(),
-          },
-          {
-            provide: PythonValidatorService,
-            useValue: new PythonValidatorService(),
-          },
-          {
-            provide: MarkdownValidatorService,
-            useValue: new MarkdownValidatorService(),
-          },
-          {
-            provide: JsonValidatorService,
-            useValue: new JsonValidatorService(),
-          },
-          {
-            provide: TextValidatorService,
-            useValue: new TextValidatorService(),
+            provide: ValidationPluginsService,
+            useValue: {
+              buildValidatorPlugins: mockBuildValidatorPlugins,
+            },
           },
         ],
       }).compile();

@@ -1,7 +1,10 @@
-export { loadIntegrationModuleSurface } from "./modules/integration/integration-surface.utilities.js";
+export { MainModule } from "./main.module.js";
+export { GenerateCommand } from "./modules/commands/generate/generate.command.js";
+export { GenerateModule } from "./modules/commands/generate/generate.module.js";
 export type {
-  IntegrationModuleSurface,
-  RunConfiguredGeneratorArguments,
-  RunConfiguredGeneratorResult,
-  RunConfiguredValidationArguments,
-} from "./modules/integration/integration.types.js";
+  GenerateCommandOptions,
+  JsonSchemaDefinition,
+} from "./modules/commands/generate/generate.types.js";
+export { ValidateCommand } from "./modules/commands/validate/validate.command.js";
+export { ValidateModule } from "./modules/commands/validate/validate.module.js";
+export type { ValidateCommandOptions } from "./modules/commands/validate/validate.types.js";

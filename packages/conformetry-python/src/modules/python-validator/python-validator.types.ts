@@ -1,7 +1,7 @@
 import type {
   ConformetryValidatorPlugin,
   PreparedValidationDocument,
-} from "@jimmypaolini/conformetry-validation";
+} from "@jimmypaolini/conformetry-configuration";
 
 // 🏷️ Types
 /** Internal helper. */
