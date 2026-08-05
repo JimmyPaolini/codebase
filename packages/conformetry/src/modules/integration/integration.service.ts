@@ -49,8 +49,6 @@ export class IntegrationService {
           ? {}
           : { description: generatorDefinition.description }),
         name: generatorDefinition.name,
-        schemaPath: generatorDefinition.schemaPath,
-        targetPathStrategy: generatorDefinition.targetPathStrategy,
         templateDirectoryPath: generatorDefinition.templateDirectoryPath,
       },
       inputs: {

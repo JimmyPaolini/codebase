@@ -1,6 +1,3 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-
 import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
 import { GenerationRuntimeService } from "@jimmypaolini/conformetry-generation";
 import { ConsoleLogger, Inject, Injectable } from "@nestjs/common";
@@ -94,12 +91,9 @@ export class GenerateCommand extends CommandRunner {
 
     const targetDirectoryPath =
       options.targetDirectoryPath ?? `generated/${generatorDefinition.name}`;
-    const schemaPath = path.resolve(
-      process.cwd(),
-      generatorDefinition.schemaPath,
-    );
-    const schemaFileContent = await readFile(schemaPath, "utf8");
-    const schema = JSON.parse(schemaFileContent) as JsonSchemaDefinition;
+    const schema: JsonSchemaDefinition = {
+      properties: generatorDefinition.parameters,
+    };
     const rawArguments = process.env["CONFORMETRY_GENERATOR_OPTIONS"]
       ? (JSON.parse(process.env["CONFORMETRY_GENERATOR_OPTIONS"]) as string[])
       : process.argv.slice(2);
@@ -118,8 +112,6 @@ export class GenerateCommand extends CommandRunner {
           ? {}
           : { description: generatorDefinition.description }),
         name: generatorDefinition.name,
-        schemaPath: generatorDefinition.schemaPath,
-        targetPathStrategy: generatorDefinition.targetPathStrategy,
         templateDirectoryPath: generatorDefinition.templateDirectoryPath,
       },
       inputs: {

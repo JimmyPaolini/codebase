@@ -136,7 +136,6 @@ describe(GenerationRuntimeService, () => {
         preGenerate,
       },
       name: "alpha-module",
-      schemaPath: "./schema.json",
       templateDirectoryPath: "/templates",
     };
 
@@ -231,7 +230,6 @@ describe(GenerationRuntimeService, () => {
     );
     const definition: GeneratorDefinition = {
       name: "fallback-name",
-      schemaPath: "schema.json",
       templateDirectoryPath,
     };
 

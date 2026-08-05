@@ -19,9 +19,13 @@ export const conformetryConfigurationSchema = z.object({
         })
         .optional(),
       name: z.string(),
-      schemaPath: z.string(),
-      targetPathStrategy: z.string(),
-      templateDirectoryPath: z.string(),
+      parameters: z.record(
+        z.string(),
+        z.object({
+          description: z.string().optional(),
+          type: z.string(),
+        }),
+      ),
     }),
   ),
 });

@@ -210,24 +210,20 @@ function createTemporaryDirectoryPath(): string {
 }
 
 function writeConfiguration(args: {
-  generators: Record<string, { templateDirectoryPath: string }>;
+  generators: Record<string, unknown>;
   workingDirectory: string;
 }): string {
   const configurationPath = path.join(args.workingDirectory, "config.json");
   const generators = Object.fromEntries(
-    Object.entries(args.generators).map(
-      ([generatorName, generatorDefinition]) => {
-        return [
-          generatorName,
-          {
-            name: generatorName,
-            schemaPath: `schemas/${generatorName}.json`,
-            targetPathStrategy: "none",
-            templateDirectoryPath: generatorDefinition.templateDirectoryPath,
-          },
-        ];
-      },
-    ),
+    Object.keys(args.generators).map((generatorName) => {
+      return [
+        generatorName,
+        {
+          name: generatorName,
+          parameters: {},
+        },
+      ];
+    }),
   );
 
   fs.writeFileSync(configurationPath, JSON.stringify({ generators }), "utf8");
@@ -242,7 +238,8 @@ function writeTemplateFile(args: {
 }): void {
   const templateFilePath = path.join(
     args.workingDirectory,
-    "templates",
+    "configuration",
+    "conformetry-templates",
     args.generatorName,
     args.relativeFilePath,
   );

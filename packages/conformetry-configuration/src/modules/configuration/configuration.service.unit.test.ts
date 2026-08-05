@@ -47,9 +47,11 @@ describe("configurationService.loadConformetryConfiguration", () => {
               preGenerate: { name: "pre-hook" },
             },
             name: "demo",
-            schemaPath: "schema.json",
-            targetPathStrategy: "direct",
-            templateDirectoryPath: "templates",
+            parameters: {
+              project: {
+                type: "string",
+              },
+            },
           },
         },
       }),
@@ -70,9 +72,12 @@ describe("configurationService.loadConformetryConfiguration", () => {
         preGenerate: { name: "pre-hook" },
       },
       name: "demo",
-      schemaPath: "schema.json",
-      targetPathStrategy: "direct",
-      templateDirectoryPath: "templates",
+      parameters: {
+        project: {
+          type: "string",
+        },
+      },
+      templateDirectoryPath: "configuration/conformetry-templates/demo",
     });
   });
 
@@ -88,9 +93,11 @@ describe("configurationService.loadConformetryConfiguration", () => {
         "generators": {
           "demo": {
             "name": "demo",
-            "schemaPath": "schema.json",
-            "targetPathStrategy": "direct",
-            "templateDirectoryPath": "templates"
+            "parameters": {
+              "project": {
+                "type": "string"
+              }
+            }
           }
         }
       }`,
@@ -126,9 +133,11 @@ describe("configurationService.loadConformetryConfiguration", () => {
         generators: {
           demo: {
             name: "demo",
-            schemaPath: "schema.json",
-            targetPathStrategy: "direct",
-            templateDirectoryPath: "templates",
+            parameters: {
+              project: {
+                type: "string",
+              },
+            },
           },
         },
       }),
@@ -145,7 +154,9 @@ describe("configurationService.loadConformetryConfiguration", () => {
           "configuration/conformetry.config.json",
         );
 
-      expect(configuration.generators["demo"]?.schemaPath).toBe("schema.json");
+      expect(configuration.generators["demo"]?.templateDirectoryPath).toBe(
+        "configuration/conformetry-templates/demo",
+      );
     } finally {
       process.chdir(previousWorkingDirectory);
     }
@@ -165,17 +176,15 @@ describe("configurationService.loadConformetryConfiguration", () => {
     expect(
       configurationService.isConformetryGeneratorDefinition({
         name: "demo",
-        schemaPath: "schema.json",
+        parameters: {},
       }),
-    ).toBe(false);
+    ).toBe(true);
     expect(
       configurationService.isConformetryGeneratorDefinition({
         name: "demo",
-        schemaPath: "schema.json",
-        targetPathStrategy: "direct",
-        templateDirectoryPath: "templates",
+        parameters: "invalid",
       }),
-    ).toBe(true);
+    ).toBe(false);
   });
 
   it("resolves to absolute path when workspace root cannot be discovered", async () => {
@@ -236,9 +245,11 @@ describe("configurationService.loadConformetryConfiguration", () => {
         generators: {
           demo: {
             name: "demo",
-            schemaPath: "schema.json",
-            targetPathStrategy: "direct",
-            templateDirectoryPath: "templates"
+            parameters: {
+              project: {
+                type: "string"
+              }
+            }
           }
         }
       };`,
@@ -260,9 +271,11 @@ describe("configurationService.loadConformetryConfiguration", () => {
       generators: {
         demo: {
           name: "demo",
-          schemaPath: "schema.json",
-          targetPathStrategy: "direct",
-          templateDirectoryPath: "templates",
+          parameters: {
+            project: {
+              type: "string",
+            },
+          },
         },
       },
     });
@@ -282,9 +295,11 @@ describe("configurationService.loadConformetryConfiguration", () => {
         generators: {
           demo: {
             name: "demo",
-            schemaPath: "schema.json",
-            targetPathStrategy: "direct",
-            templateDirectoryPath: "templates"
+            parameters: {
+              project: {
+                type: "string"
+              }
+            }
           }
         }
       };`,
@@ -306,9 +321,11 @@ describe("configurationService.loadConformetryConfiguration", () => {
       generators: {
         demo: {
           name: "demo",
-          schemaPath: "schema.json",
-          targetPathStrategy: "direct",
-          templateDirectoryPath: "templates",
+          parameters: {
+            project: {
+              type: "string",
+            },
+          },
         },
       },
     });

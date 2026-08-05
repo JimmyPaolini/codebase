@@ -6,7 +6,6 @@ import { createConformetryGeneratorFactory } from "../../modules/nx-adapter/nx-g
 export const conformetryInitGenerator = createConformetryGeneratorFactory({
   definition: {
     name: "conformetry-init",
-    schemaPath: "packages/conformetry-nx/src/generators/init/schema.json",
     templateDirectoryPath:
       "packages/conformetry-nx/src/generators/init/templates",
   },

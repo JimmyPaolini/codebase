@@ -1,14 +1,13 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "name": "conformetry",
-  "projectType": "application",
-  "sourceRoot": "packages/conformetry",
+  "name": "{{nameKebabCase}}",
+  "projectType": "library",
+  "sourceRoot": "{{type}}/{{nameKebabCase}}",
   "tags": [
-    "framework:nest-commander",
     "framework:nestjs",
-    "generator:nestjs-command-application",
+    "generator:nestjs-service-package",
     "language:typescript",
-    "name:conformetry",
+    "name:{{nameKebabCase}}",
     "type:package"
   ],
   "targets": {
@@ -19,13 +18,13 @@
         "assets": [
           {
             "glob": "README.md",
-            "input": "packages/conformetry",
+            "input": "{{type}}/{{nameKebabCase}}",
             "output": "."
           }
         ],
-        "main": "packages/conformetry/src/main.ts",
-        "outputPath": "dist/packages/conformetry",
-        "tsConfig": "packages/conformetry/tsconfig.lib.json"
+        "main": "{{type}}/{{nameKebabCase}}/src/index.ts",
+        "outputPath": "dist/{{type}}/{{nameKebabCase}}",
+        "tsConfig": "{{type}}/{{nameKebabCase}}/tsconfig.lib.json"
       },
       "outputs": ["{options.outputPath}"]
     },
@@ -39,14 +38,6 @@
     "oxlint": {},
     "prettier": {},
     "spell-check": {},
-    "start": {
-      "cache": false,
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsx --tsconfig packages/conformetry/tsconfig.json packages/conformetry/src/main.ts",
-        "cwd": "{workspaceRoot}"
-      }
-    },
     "test": {},
     "type-coverage": {},
     "typecheck": {},

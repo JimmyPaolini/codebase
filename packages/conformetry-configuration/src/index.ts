@@ -3,4 +3,7 @@ export { ConfigurationService } from "./modules/configuration/configuration.serv
 export type {
   ConformetryConfiguration,
   ConformetryGeneratorDefinition,
+  ConformetryGeneratorHookDefinition,
+  ConformetryGeneratorParameterDefinition,
+  ParsedConformetryGeneratorDefinition,
 } from "./modules/configuration/configuration.types.js";

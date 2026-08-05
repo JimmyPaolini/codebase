@@ -15,6 +15,7 @@ import { UnknownConfigurationFileTypeError } from "./configuration.errors.js";
 import type {
   ConformetryConfiguration,
   ConformetryGeneratorDefinition,
+  ParsedConformetryGeneratorDefinition,
 } from "./configuration.types.js";
 import type { z } from "zod";
 
@@ -56,18 +57,15 @@ export class ConfigurationService {
    */
   private isConformetryGeneratorDefinition(
     value: unknown,
-  ): value is ConformetryGeneratorDefinition {
+  ): value is ParsedConformetryGeneratorDefinition {
     return (
       typeof value === "object" &&
       value !== null &&
       "name" in value &&
-      "schemaPath" in value &&
-      "targetPathStrategy" in value &&
-      "templateDirectoryPath" in value &&
+      "parameters" in value &&
       typeof value.name === "string" &&
-      typeof value.schemaPath === "string" &&
-      typeof value.targetPathStrategy === "string" &&
-      typeof value.templateDirectoryPath === "string"
+      typeof value.parameters === "object" &&
+      value.parameters !== null
     );
   }
 
@@ -188,9 +186,12 @@ export class ConfigurationService {
           ? {}
           : { hooks: generatorDefinition.hooks }),
         name: generatorDefinition.name,
-        schemaPath: generatorDefinition.schemaPath,
-        targetPathStrategy: generatorDefinition.targetPathStrategy,
-        templateDirectoryPath: generatorDefinition.templateDirectoryPath,
+        parameters: generatorDefinition.parameters,
+        templateDirectoryPath: path.join(
+          "configuration",
+          "conformetry-templates",
+          generatorName,
+        ),
       };
     }
 

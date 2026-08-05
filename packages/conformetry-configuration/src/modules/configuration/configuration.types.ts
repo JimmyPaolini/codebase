@@ -16,8 +16,7 @@ export interface ConformetryGeneratorDefinition {
     preGenerate?: ConformetryGeneratorHookDefinition;
   };
   name: string;
-  schemaPath: string;
-  targetPathStrategy: string;
+  parameters: Record<string, ConformetryGeneratorParameterDefinition>;
   templateDirectoryPath: string;
 }
 
@@ -26,4 +25,26 @@ export interface ConformetryGeneratorDefinition {
  */
 export interface ConformetryGeneratorHookDefinition {
   name: string;
+}
+
+/**
+ * Describes one configurable parameter for a generator.
+ */
+export interface ConformetryGeneratorParameterDefinition {
+  description?: string;
+  type: string;
+}
+
+/**
+ * Parsed generator definition before derived runtime fields are added.
+ */
+export interface ParsedConformetryGeneratorDefinition {
+  aliases?: string[];
+  description?: string;
+  hooks?: {
+    postGenerate?: ConformetryGeneratorHookDefinition;
+    preGenerate?: ConformetryGeneratorHookDefinition;
+  };
+  name: string;
+  parameters: Record<string, ConformetryGeneratorParameterDefinition>;
 }

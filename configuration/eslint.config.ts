@@ -317,10 +317,60 @@ export default [
               onlyDependOnLibsWithTags: ["type:package"],
               sourceTag: "type:application",
             },
-            // conformetry CLI cannot depend on conformetry-nx integration layer
+            // conformetry-nx can only depend on conformetry
             {
-              notDependOnLibsWithTags: ["package:conformetry-nx"],
-              sourceTag: "package:conformetry",
+              onlyDependOnLibsWithTags: ["name:conformetry"],
+              sourceTag: "name:conformetry-nx",
+            },
+            // conformetry can only depend on configuration, generation, and validation
+            {
+              onlyDependOnLibsWithTags: [
+                "name:conformetry-configuration",
+                "name:conformetry-generation",
+                "name:conformetry-validation",
+              ],
+              sourceTag: "name:conformetry",
+            },
+            // conformetry-validation can only depend on language-specific validator packages
+            {
+              onlyDependOnLibsWithTags: [
+                "name:conformetry-json",
+                "name:conformetry-markdown",
+                "name:conformetry-python",
+                "name:conformetry-text",
+                "name:conformetry-typescript",
+              ],
+              sourceTag: "name:conformetry-validation",
+            },
+            // Language-specific validators cannot depend on other workspace libraries
+            {
+              onlyDependOnLibsWithTags: [],
+              sourceTag: "name:conformetry-json",
+            },
+            {
+              onlyDependOnLibsWithTags: [],
+              sourceTag: "name:conformetry-markdown",
+            },
+            {
+              onlyDependOnLibsWithTags: [],
+              sourceTag: "name:conformetry-python",
+            },
+            {
+              onlyDependOnLibsWithTags: [],
+              sourceTag: "name:conformetry-text",
+            },
+            {
+              onlyDependOnLibsWithTags: [],
+              sourceTag: "name:conformetry-typescript",
+            },
+            // conformetry-configuration and conformetry-generation cannot depend on other workspace libraries
+            {
+              onlyDependOnLibsWithTags: [],
+              sourceTag: "name:conformetry-configuration",
+            },
+            {
+              onlyDependOnLibsWithTags: [],
+              sourceTag: "name:conformetry-generation",
             },
             // Packages cannot depend on applications (no upward dependencies)
             {

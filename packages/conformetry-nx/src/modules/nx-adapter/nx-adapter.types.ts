@@ -56,8 +56,6 @@ export interface GeneratorDefinition {
   description?: string;
   hooks?: GeneratorHooks;
   name: string;
-  schemaPath: string;
-  targetPathStrategy?: string;
   templateDirectoryPath: string;
 }
 

@@ -7,6 +7,7 @@
     "framework:nestjs",
     "generator:nestjs-service-package",
     "language:typescript",
+    "name:conformetry-text",
     "type:package"
   ],
   "targets": {

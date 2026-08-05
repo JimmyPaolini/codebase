@@ -6,7 +6,7 @@
   "tags": [
     "framework:nestjs",
     "language:typescript",
-    "package:conformetry-nx",
+    "name:conformetry-nx",
     "type:package"
   ],
   "targets": {

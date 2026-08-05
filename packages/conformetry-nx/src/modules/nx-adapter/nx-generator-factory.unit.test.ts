@@ -128,7 +128,6 @@ describe("nx generator factory utilities", () => {
       const factory = createConformetryGeneratorFactory({
         definition: {
           name: "example-generator",
-          schemaPath: "schema.json",
           templateDirectoryPath: "templates",
         },
         resolveTargetDirectoryPath: () => "generated",
@@ -168,7 +167,6 @@ describe("nx generator factory utilities", () => {
         resolveConformetryTargetDirectoryPath({
           definition: {
             name: "react-component",
-            schemaPath: "schema.json",
             templateDirectoryPath: "templates",
           },
           options: {
@@ -186,7 +184,6 @@ describe("nx generator factory utilities", () => {
         resolveConformetryTargetDirectoryPath({
           definition: {
             name: "react-component",
-            schemaPath: "schema.json",
             templateDirectoryPath: "templates",
           },
           options: {},

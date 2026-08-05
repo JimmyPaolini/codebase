@@ -96,7 +96,6 @@ describe("nx-generator-factory branches", () => {
     const factory = createConformetryGeneratorFactory({
       definition: {
         name: "demo-generator",
-        schemaPath: "schema.json",
         templateDirectoryPath: "templates",
       },
     });
@@ -142,7 +141,6 @@ describe("nx-generator-factory branches", () => {
     const resolvedPath = await resolveConformetryTargetDirectoryPath({
       definition: {
         name: "demo-generator",
-        schemaPath: "schema.json",
         templateDirectoryPath: "templates",
       },
       options: {
@@ -161,7 +159,6 @@ describe("nx-generator-factory branches", () => {
       resolveConformetryTargetDirectoryPath({
         definition: {
           name: "demo-generator",
-          schemaPath: "schema.json",
           templateDirectoryPath: "templates",
         },
         options: {
@@ -175,7 +172,6 @@ describe("nx-generator-factory branches", () => {
       resolveConformetryTargetDirectoryPath({
         definition: {
           name: "demo-generator",
-          schemaPath: "schema.json",
           templateDirectoryPath: "templates",
         },
         options: {
@@ -189,7 +185,6 @@ describe("nx-generator-factory branches", () => {
       resolveConformetryTargetDirectoryPath({
         definition: {
           name: "demo-generator",
-          schemaPath: "schema.json",
           templateDirectoryPath: "templates",
         },
         options: {
@@ -206,7 +201,6 @@ describe("nx-generator-factory branches", () => {
     const resolvedPath = await resolveConformetryTargetDirectoryPath({
       definition: {
         name: "demo-generator",
-        schemaPath: "schema.json",
         templateDirectoryPath: "templates",
       },
       options: {
@@ -224,7 +218,6 @@ describe("nx-generator-factory branches", () => {
     const resolvedPath = await resolveConformetryTargetDirectoryPath({
       definition: {
         name: "demo-generator",
-        schemaPath: "schema.json",
         templateDirectoryPath: "templates",
       },
       options: {
@@ -252,7 +245,6 @@ describe("nx-generator-factory branches", () => {
     const factory = createConformetryGeneratorFactory({
       definition: {
         name: "demo-generator",
-        schemaPath: "schema.json",
         templateDirectoryPath: "templates",
       },
       resolveTargetDirectoryPath,

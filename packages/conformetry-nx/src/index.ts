@@ -243,8 +243,7 @@ async function runWorkspaceGenerator(args: {
     await nxAdapterService.resolveConformetryTargetDirectoryPath({
       definition: {
         name: args.generatorName,
-        schemaPath: "",
-        templateDirectoryPath: "",
+        templateDirectoryPath: "configuration/conformetry-templates",
       },
       options,
       tree: args.tree,

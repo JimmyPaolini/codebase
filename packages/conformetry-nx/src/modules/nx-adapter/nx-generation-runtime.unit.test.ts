@@ -132,7 +132,6 @@ describe(GenerationRuntimeService, () => {
         preGenerate,
       },
       name: "alpha-module",
-      schemaPath: "./schema.json",
       templateDirectoryPath: "/templates",
     };
 
@@ -191,7 +190,6 @@ describe(GenerationRuntimeService, () => {
     const result = await service.runGenerator({
       definition: {
         name: "fallback-name",
-        schemaPath: "schema.json",
         templateDirectoryPath: "templates",
       },
       targetDirectoryPath: "/output",
@@ -209,7 +207,6 @@ describe(GenerationRuntimeService, () => {
     const result = await service.runGenerator({
       definition: {
         name: "default-adapter-flow",
-        schemaPath: "schema.json",
         templateDirectoryPath: "templates",
       },
       targetDirectoryPath: "/output",

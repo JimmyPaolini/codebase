@@ -9,16 +9,8 @@ import type { TestingModule } from "@nestjs/testing";
 const mockLoadConformetryConfiguration =
   vi.fn<(path: string) => Promise<{ generators: Record<string, unknown> }>>();
 const mockRunGenerator = vi.fn<(input: unknown) => Promise<unknown>>();
-const mockReadFile =
-  vi.fn<(path: string, encoding: string) => Promise<string>>();
 const mockLoggerLog = vi.fn<(message: unknown) => void>();
 const designParameterTypesMetadataKey = `design:${["param", "types"].join("")}`;
-
-vi.mock("node:fs/promises", () => {
-  return {
-    readFile: mockReadFile,
-  };
-});
 
 vi.mock("@nestjs/common", async () => {
   const actual = await vi.importActual("@nestjs/common");
@@ -130,19 +122,13 @@ describe("generateCommand", () => {
           aliases: ["component"],
           description: "Create a React component",
           name: "react-component",
-          schemaPath: "./schema.json",
-          targetPathStrategy: "append",
+          parameters: {
+            project: { type: "string" },
+          },
           templateDirectoryPath: "./templates",
         },
       },
     });
-    mockReadFile.mockResolvedValue(
-      JSON.stringify({
-        properties: {
-          project: { type: "string" },
-        },
-      }),
-    );
     mockRunGenerator.mockResolvedValue({
       generatedFilePaths: ["output/button.tsx"],
       outputDirectoryPath: "generated/react-component",
@@ -167,10 +153,6 @@ describe("generateCommand", () => {
 
     expect(mockLoadConformetryConfiguration).toHaveBeenCalledWith(
       "configuration/conformetry.config.ts",
-    );
-    expect(mockReadFile).toHaveBeenCalledWith(
-      expect.stringContaining("schema.json"),
-      "utf8",
     );
     expect(mockRunGenerator).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -198,19 +180,13 @@ describe("generateCommand", () => {
       generators: {
         "react-component": {
           name: "react-component",
-          schemaPath: "./schema.json",
-          targetPathStrategy: "append",
+          parameters: {
+            project: { type: "string" },
+          },
           templateDirectoryPath: "./templates",
         },
       },
     });
-    mockReadFile.mockResolvedValue(
-      JSON.stringify({
-        properties: {
-          project: { type: "string" },
-        },
-      }),
-    );
     mockRunGenerator.mockResolvedValue({
       generatedFilePaths: [],
       outputDirectoryPath: "generated/react-component",
@@ -244,19 +220,13 @@ describe("generateCommand", () => {
       generators: {
         "react-component": {
           name: "react-component",
-          schemaPath: "./schema.json",
-          targetPathStrategy: "append",
+          parameters: {
+            project: { type: "string" },
+          },
           templateDirectoryPath: "./templates",
         },
       },
     });
-    mockReadFile.mockResolvedValue(
-      JSON.stringify({
-        properties: {
-          project: { type: "string" },
-        },
-      }),
-    );
     mockRunGenerator.mockResolvedValue({
       generatedFilePaths: [],
       outputDirectoryPath: "generated/react-component",
