@@ -1,8 +1,8 @@
 export type {
   ConformetryValidatorPlugin,
-  PrepareTemplateValidationPayloadArguments,
   PreparedValidationDocument,
   PreparedValidationPayload,
+  PrepareTemplateValidationPayloadArguments,
   RunValidationArguments,
   RunValidationResult,
   ValidationPluginArguments,

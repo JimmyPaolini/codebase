@@ -1,10 +1,9 @@
-import { Module } from "@nestjs/common";
-
 import { JsonValidatorModule } from "@jimmypaolini/conformetry-json";
 import { MarkdownValidatorModule } from "@jimmypaolini/conformetry-markdown";
 import { PythonValidatorModule } from "@jimmypaolini/conformetry-python";
 import { TextValidatorModule } from "@jimmypaolini/conformetry-text";
 import { TypeScriptValidatorModule } from "@jimmypaolini/conformetry-typescript";
+import { Module } from "@nestjs/common";
 
 import { ValidationPluginsService } from "./validation-plugins.service.js";
 import { ValidationService } from "./validation.service.js";

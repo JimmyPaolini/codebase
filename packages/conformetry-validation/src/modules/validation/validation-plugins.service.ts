@@ -1,10 +1,9 @@
-import { Injectable } from "@nestjs/common";
-
 import { JsonValidatorService } from "@jimmypaolini/conformetry-json";
 import { MarkdownValidatorService } from "@jimmypaolini/conformetry-markdown";
 import { PythonValidatorService } from "@jimmypaolini/conformetry-python";
 import { TextValidatorService } from "@jimmypaolini/conformetry-text";
 import { TypeScriptValidatorService } from "@jimmypaolini/conformetry-typescript";
+import { Injectable } from "@nestjs/common";
 
 import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-configuration";
 
@@ -20,6 +19,37 @@ export class ValidationPluginsService {
     private readonly jsonValidatorService?: JsonValidatorService,
     private readonly textValidatorService?: TextValidatorService,
   ) {}
+
+  /**
+   *
+   */
+  private requireValidatorServices(): {
+    jsonValidatorService: JsonValidatorService;
+    markdownValidatorService: MarkdownValidatorService;
+    pythonValidatorService: PythonValidatorService;
+    textValidatorService: TextValidatorService;
+    typeScriptValidatorService: TypeScriptValidatorService;
+  } {
+    if (
+      this.typeScriptValidatorService === undefined ||
+      this.pythonValidatorService === undefined ||
+      this.markdownValidatorService === undefined ||
+      this.jsonValidatorService === undefined ||
+      this.textValidatorService === undefined
+    ) {
+      throw new Error(
+        "ValidationPluginsService requires injected validator services",
+      );
+    }
+
+    return {
+      jsonValidatorService: this.jsonValidatorService,
+      markdownValidatorService: this.markdownValidatorService,
+      pythonValidatorService: this.pythonValidatorService,
+      textValidatorService: this.textValidatorService,
+      typeScriptValidatorService: this.typeScriptValidatorService,
+    };
+  }
 
   /**
    * Returns all validator plugins in command execution order.
@@ -68,33 +98,5 @@ export class ValidationPluginsService {
         validate: textValidate,
       },
     ];
-  }
-
-  private requireValidatorServices(): {
-    jsonValidatorService: JsonValidatorService;
-    markdownValidatorService: MarkdownValidatorService;
-    pythonValidatorService: PythonValidatorService;
-    textValidatorService: TextValidatorService;
-    typeScriptValidatorService: TypeScriptValidatorService;
-  } {
-    if (
-      this.typeScriptValidatorService === undefined ||
-      this.pythonValidatorService === undefined ||
-      this.markdownValidatorService === undefined ||
-      this.jsonValidatorService === undefined ||
-      this.textValidatorService === undefined
-    ) {
-      throw new Error(
-        "ValidationPluginsService requires injected validator services",
-      );
-    }
-
-    return {
-      jsonValidatorService: this.jsonValidatorService,
-      markdownValidatorService: this.markdownValidatorService,
-      pythonValidatorService: this.pythonValidatorService,
-      textValidatorService: this.textValidatorService,
-      typeScriptValidatorService: this.typeScriptValidatorService,
-    };
   }
 }

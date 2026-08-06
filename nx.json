@@ -104,9 +104,9 @@
             "nestjs-service-module"
           ],
           "generator:nestjs-service-package": [
-            "nestjs-service-package",
             "nestjs-service-file",
-            "nestjs-service-module"
+            "nestjs-service-module",
+            "nestjs-service-package"
           ]
         },
         "validationTargetName": "conformetry-validate"

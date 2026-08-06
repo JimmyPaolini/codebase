@@ -95,6 +95,7 @@ The table below reflects the conformetry generator registry in `configuration/co
 | `nestjs-graphql-module` | `ngm` | Generate a NestJS GraphQL module with resolver, entities, inputs, args, factories, service, types, constants, and unit test files |
 | `nestjs-service-file` | `nsf` | Generate NestJS service and unit test files |
 | `nestjs-service-module` | `nsm` | Generate a NestJS service module with module, service, types, constants, and unit test files |
+| `nestjs-service-package` | `nsp` | Generate a NestJS service package template for internal workspace libraries |
 | `react-component` | `c` | Generate a React component with test file |
 <!-- conformetry-generators-table end -->
 
