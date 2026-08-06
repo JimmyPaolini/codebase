@@ -1,4 +1,4 @@
-import { NestFactory } from "@nestjs/core";
+import { CommandFactory } from "nest-commander";
 
 import { NEST_APPLICATION_CONTEXT_OPTIONS } from "./command-execution.constants";
 
@@ -11,7 +11,7 @@ export async function runGenerateCommand(
   args: RunGenerateCommandArguments,
 ): Promise<void> {
   const conformetryModule = await import("@jimmypaolini/conformetry");
-  const applicationContext = await NestFactory.createApplicationContext(
+  const applicationContext = await CommandFactory.createWithoutRunning(
     conformetryModule.MainModule,
     NEST_APPLICATION_CONTEXT_OPTIONS,
   );

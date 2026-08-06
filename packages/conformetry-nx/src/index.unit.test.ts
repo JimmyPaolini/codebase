@@ -6,14 +6,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
   mockClose,
-  mockCreateApplicationContext,
+  mockCreateWithoutRunning,
   mockGenerateRun,
   mockGet,
   mockValidateRun,
 } = vi.hoisted(() => {
   return {
     mockClose: vi.fn(),
-    mockCreateApplicationContext: vi.fn(),
+    mockCreateWithoutRunning: vi.fn(),
     mockGenerateRun: vi.fn(),
     mockGet: vi.fn(),
     mockValidateRun: vi.fn(),
@@ -82,10 +82,10 @@ vi.mock("@jimmypaolini/conformetry", () => {
   };
 });
 
-vi.mock("@nestjs/core", () => {
+vi.mock("nest-commander", () => {
   return {
-    NestFactory: {
-      createApplicationContext: mockCreateApplicationContext,
+    CommandFactory: {
+      createWithoutRunning: mockCreateWithoutRunning,
     },
   };
 });
@@ -164,7 +164,7 @@ function createStubTree(): Tree {
 describe("conformetry-nx index", () => {
   beforeEach(() => {
     mockClose.mockReset();
-    mockCreateApplicationContext.mockReset();
+    mockCreateWithoutRunning.mockReset();
     mockGenerateRun.mockReset();
     mockGet.mockReset();
     mockValidateRun.mockReset();
@@ -175,7 +175,7 @@ describe("conformetry-nx index", () => {
     mockGet.mockReturnValue({
       run: mockGenerateRun,
     });
-    mockCreateApplicationContext.mockResolvedValue({
+    mockCreateWithoutRunning.mockResolvedValue({
       close: mockClose,
       get: mockGet,
     });

@@ -72,7 +72,10 @@ export function resolveConformetryNxPluginOptionsFromNxJson(args: {
 }): ConformetryNxPluginRegistrationOptions {
   const plugins = args.nxJsonConfiguration.plugins;
   if (!isUnknownArray(plugins)) {
-    return resolveConformetryNxPluginOptions  for (const pluginDefinition of plugins) {
+    return resolveConformetryNxPluginOptions();
+  }
+
+  for (const pluginDefinition of plugins) {
     if (!isUnknownRecord(pluginDefinition)) {
       continue;
     }
@@ -88,7 +91,8 @@ export function resolveConformetryNxPluginOptionsFromNxJson(args: {
   return resolveConformetryNxPluginOptions();
 }
 
-/*rns true when the provided value is an array of unknown values.
+/**
+ * Returns true when the provided value is an array of unknown values.
  */
 function isUnknownArray(value: unknown): value is unknown[] {
   return Array.isArray(value);

@@ -6,6 +6,7 @@
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
     "@nx/devkit": "catalog:",
+    "nest-commander": "catalog:",
     "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:",
