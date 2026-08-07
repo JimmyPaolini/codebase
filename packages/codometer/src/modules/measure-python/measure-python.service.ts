@@ -20,7 +20,7 @@ export class MeasurePythonService {
   private readonly logger = new Logger(MeasurePythonService.name);
   private readonly scriptPath = path.resolve(
     path.dirname(fileURLToPath(import.meta.url)),
-    "analyze.py",
+    "measure-python.service.py",
   );
 
   /**
