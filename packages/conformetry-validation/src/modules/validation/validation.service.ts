@@ -1,6 +1,5 @@
-import { Injectable } from "@nestjs/common";
-
 import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
+import { Injectable } from "@nestjs/common";
 
 import { ValidationLanguageService } from "./validation-language.service.js";
 
@@ -20,6 +19,40 @@ export class ValidationService {
     private readonly configurationService: ConfigurationService,
     private readonly validationLanguageService: ValidationLanguageService,
   ) {}
+
+  /**
+   * Runs a set of validator plugins against the requested project paths.
+   */
+  public async validate(
+    args: RunValidationArguments,
+  ): Promise<RunValidationResult> {
+    const projectPaths = args.projectPaths?.length
+      ? args.projectPaths
+      : [args.workingDirectory];
+
+    const pluginResults: ValidationPluginResult[] = [];
+
+    for (const plugin of args.plugins) {
+      const pluginArguments: ValidationPluginArguments = {
+        filePaths: projectPaths,
+        ...(args.configurationPath === undefined
+          ? {}
+          : { configurationPath: args.configurationPath }),
+        ...(args.templateRuleNames === undefined
+          ? {}
+          : { templateRuleNames: args.templateRuleNames }),
+        workingDirectory: args.workingDirectory,
+      };
+
+      const pluginResult = await plugin.validate(pluginArguments);
+      pluginResults.push(pluginResult);
+    }
+
+    return {
+      ok: pluginResults.every((pluginResult) => pluginResult.ok),
+      pluginResults,
+    };
+  }
 
   /**
    * Loads configuration, resolves requested rule/project filters, and executes validation.
@@ -70,39 +103,5 @@ export class ValidationService {
       templateRuleNames,
       workingDirectory: args.workingDirectory,
     });
-  }
-
-  /**
-   * Runs a set of validator plugins against the requested project paths.
-   */
-  public async validate(
-    args: RunValidationArguments,
-  ): Promise<RunValidationResult> {
-    const projectPaths = args.projectPaths?.length
-      ? args.projectPaths
-      : [args.workingDirectory];
-
-    const pluginResults: ValidationPluginResult[] = [];
-
-    for (const plugin of args.plugins) {
-      const pluginArguments: ValidationPluginArguments = {
-        filePaths: projectPaths,
-        ...(args.configurationPath === undefined
-          ? {}
-          : { configurationPath: args.configurationPath }),
-        ...(args.templateRuleNames === undefined
-          ? {}
-          : { templateRuleNames: args.templateRuleNames }),
-        workingDirectory: args.workingDirectory,
-      };
-
-      const pluginResult = await plugin.validate(pluginArguments);
-      pluginResults.push(pluginResult);
-    }
-
-    return {
-      ok: pluginResults.every((pluginResult) => pluginResult.ok),
-      pluginResults,
-    };
   }
 }

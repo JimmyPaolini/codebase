@@ -22,22 +22,6 @@ const conformetryConfiguration: ConformetryConfiguration = {
         },
       },
     },
-    "nestjs-command-project": {
-      aliases: ["nca"],
-      description:
-        "Generate a NestJS command-line application using nest-commander",
-      name: "nestjs-command-project",
-      parameters: {
-        name: {
-          description: "Project name (kebab-case)",
-          type: "string",
-        },
-        type: {
-          description: "Project type (application, package, or tools)",
-          type: "string",
-        },
-      },
-    },
     "nestjs-command-module": {
       aliases: ["ncm"],
       description:
@@ -50,6 +34,22 @@ const conformetryConfiguration: ConformetryConfiguration = {
         },
         project: {
           description: "Parent project name in kebab-case",
+          type: "string",
+        },
+      },
+    },
+    "nestjs-command-project": {
+      aliases: ["nca"],
+      description:
+        "Generate a NestJS command-line application using nest-commander",
+      name: "nestjs-command-project",
+      parameters: {
+        name: {
+          description: "Project name (kebab-case)",
+          type: "string",
+        },
+        type: {
+          description: "Project type (application, package, or tools)",
           type: "string",
         },
       },
