@@ -29,6 +29,22 @@ describe(WriteReadmeService, () => {
 
   const sampleStatistics: CodeStatisticsResult = {
     folders: 13,
+    javascript: {
+      asyncFunctions: 1,
+      classes: 2,
+      commentLines: 3,
+      comments: 4,
+      constants: 5,
+      exported: 11,
+      externalPackages: 12,
+      files: 18,
+      functions: 14,
+      imports: 16,
+      methods: 32,
+      syncFunctions: 42,
+      testFiles: 43,
+      todos: 44,
+    },
     json: {
       arrays: 19,
       booleans: 20,
@@ -60,27 +76,13 @@ describe(WriteReadmeService, () => {
     },
     repoSizeMiB: "1.5",
     sourceFiles: 41,
-    typescriptJavascript: {
-      asyncFunctions: 1,
-      classes: 2,
-      commentLines: 3,
-      comments: 4,
-      constants: 5,
+    typescript: {
       decorators: 6,
       docComments: 7,
       enums: 10,
-      exported: 11,
-      externalPackages: 12,
-      functions: 14,
+      files: 45,
       genericDeclarations: 15,
-      imports: 16,
       interfaces: 17,
-      jsFiles: 18,
-      methods: 32,
-      syncFunctions: 42,
-      testFiles: 43,
-      todos: 44,
-      tsFiles: 45,
     },
   };
 

@@ -17,6 +17,22 @@ describe(CodometerCommand, () => {
   let writeReadmeService: WriteReadmeService;
   const statistics: CodeStatisticsResult = {
     folders: 0,
+    javascript: {
+      asyncFunctions: 0,
+      classes: 0,
+      commentLines: 0,
+      comments: 0,
+      constants: 0,
+      exported: 0,
+      externalPackages: 0,
+      files: 0,
+      functions: 0,
+      imports: 0,
+      methods: 0,
+      syncFunctions: 0,
+      testFiles: 0,
+      todos: 0,
+    },
     json: {
       arrays: 0,
       booleans: 0,
@@ -48,27 +64,13 @@ describe(CodometerCommand, () => {
     },
     repoSizeMiB: "0",
     sourceFiles: 0,
-    typescriptJavascript: {
-      asyncFunctions: 0,
-      classes: 0,
-      commentLines: 0,
-      comments: 0,
-      constants: 0,
+    typescript: {
       decorators: 0,
       docComments: 0,
       enums: 0,
-      exported: 0,
-      externalPackages: 0,
-      functions: 0,
+      files: 0,
       genericDeclarations: 0,
-      imports: 0,
       interfaces: 0,
-      jsFiles: 0,
-      methods: 0,
-      syncFunctions: 0,
-      testFiles: 0,
-      todos: 0,
-      tsFiles: 0,
     },
   };
 
