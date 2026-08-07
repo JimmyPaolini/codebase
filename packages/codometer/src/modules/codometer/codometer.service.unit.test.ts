@@ -125,17 +125,33 @@ describe(CodometerService, () => {
     });
     expect(measurePythonService.analyze).toHaveBeenCalledWith("/repo");
 
-    expect(result.classes).toBe(12);
-    expect(result.comments).toBe(6);
-    expect(result.commentLines).toBe(6);
-    expect(result.constants).toBe(16);
-    expect(result.decorators).toBe(18);
-    expect(result.docComments).toBe(4);
-    expect(result.docstrings).toBe(7);
-    expect(result.docstringLines).toBe(8);
-    expect(result.externalPackages).toBe(1);
-    expect(result.functions).toBe(44);
-    expect(result.imports).toBe(27);
+    expect(result.typescriptJavascript.classes + result.python.classes).toBe(
+      12,
+    );
+    expect(result.typescriptJavascript.comments + result.python.comments).toBe(
+      6,
+    );
+    expect(
+      result.typescriptJavascript.commentLines + result.python.commentLines,
+    ).toBe(6);
+    expect(
+      result.typescriptJavascript.constants + result.python.constants,
+    ).toBe(16);
+    expect(
+      result.typescriptJavascript.decorators + result.python.decorators,
+    ).toBe(18);
+    expect(result.typescriptJavascript.docComments).toBe(4);
+    expect(result.python.docstrings).toBe(7);
+    expect(result.python.docstringLines).toBe(8);
+    expect(result.typescriptJavascript.externalPackages).toBe(1);
+    expect(
+      result.typescriptJavascript.functions +
+        result.typescriptJavascript.methods +
+        result.python.functions,
+    ).toBe(44);
+    expect(result.typescriptJavascript.imports + result.python.imports).toBe(
+      27,
+    );
     expect(result.linesOfCode).toBe(30);
     expect(result.sourceFiles).toBe(3);
   });

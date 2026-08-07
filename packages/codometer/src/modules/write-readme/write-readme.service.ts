@@ -60,33 +60,34 @@ export class WriteReadmeService {
    * Build the full badge block that represents the repository statistics.
    */
   buildBadgeBlock(statistics: CodeStatisticsResult): string {
+    const { python, typescriptJavascript: ts } = statistics;
     const badges = [
       this.buildBadge("Lines of Code", statistics.linesOfCode, "22c55e"),
       this.buildBadge("Repo Size", `${statistics.repoSizeMiB} MiB`, "6b7280"),
       this.buildBadge("Folders", statistics.folders, "4a4a4a"),
       this.buildBadge("Source Files", statistics.sourceFiles, "3178c6"),
-      this.buildBadge("Test Files", statistics.testFiles, "10b981"),
+      this.buildBadge("Test Files", ts.testFiles, "10b981"),
+      this.buildBadge("External Packages", ts.externalPackages, "8b5cf6"),
+      this.buildBadge("Classes", ts.classes + python.classes, "7c3aed"),
       this.buildBadge(
-        "External Packages",
-        statistics.externalPackages,
-        "8b5cf6",
+        "Functions",
+        ts.functions + ts.methods + python.functions,
+        "16a34a",
       ),
-      this.buildBadge("Classes", statistics.classes, "7c3aed"),
-      this.buildBadge("Functions", statistics.functions, "16a34a"),
-      this.buildBadge("Sync Functions", statistics.syncFunctions, "4ade80"),
-      this.buildBadge("Async Functions", statistics.asyncFunctions, "059669"),
-      this.buildBadge("Interfaces", statistics.interfaces, "0ea5e9"),
+      this.buildBadge("Sync Functions", ts.syncFunctions, "4ade80"),
+      this.buildBadge("Async Functions", ts.asyncFunctions, "059669"),
+      this.buildBadge("Interfaces", ts.interfaces + python.protocols, "0ea5e9"),
+      this.buildBadge("Generic Declarations", ts.genericDeclarations, "0369a1"),
+      this.buildBadge("Enums", ts.enums, "f97316"),
+      this.buildBadge("Constants", ts.constants + python.constants, "dc2626"),
+      this.buildBadge("Imports", ts.imports + python.imports, "0284c7"),
       this.buildBadge(
-        "Generic Declarations",
-        statistics.genericDeclarations,
-        "0369a1",
+        "Decorators",
+        ts.decorators + python.decorators,
+        "db2777",
       ),
-      this.buildBadge("Enums", statistics.enums, "f97316"),
-      this.buildBadge("Constants", statistics.constants, "dc2626"),
-      this.buildBadge("Imports", statistics.imports, "0284c7"),
-      this.buildBadge("Decorators", statistics.decorators, "db2777"),
-      this.buildBadge("Exported Symbols", statistics.exported, "ea580c"),
-      this.buildBadge("TODO Comments", statistics.todos, "ca8a04"),
+      this.buildBadge("Exported Symbols", ts.exported, "ea580c"),
+      this.buildBadge("TODO Comments", ts.todos, "ca8a04"),
     ].join("\n");
 
     return `${STATISTICS_BLOCK_START}\n${badges}\n${STATISTICS_BLOCK_END}`;

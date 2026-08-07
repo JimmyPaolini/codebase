@@ -1,9 +1,59 @@
 // 🏷️ Types
 
 /**
- * Aggregated code statistics produced by the measurement pipeline.
+ * Aggregated code statistics produced by the measurement pipeline,
+ * grouped by language.
  */
 export interface CodeStatisticsResult {
+  folders: number;
+  json: JsonStatistics;
+  linesOfCode: number;
+  python: PythonStatistics;
+  repoSizeMiB: string;
+  sourceFiles: number;
+  typescriptJavascript: TypescriptJavascriptStatistics;
+}
+
+/**
+ * Code statistics specific to JSON, JSONC, and JSONL files.
+ */
+export interface JsonStatistics {
+  arrays: number;
+  booleans: number;
+  files: number;
+  items: number;
+  lines: number;
+  maxDepth: number;
+  nulls: number;
+  numbers: number;
+  objects: number;
+  properties: number;
+  strings: number;
+  totalNodes: number;
+}
+
+/**
+ * Code statistics specific to Python source files.
+ */
+export interface PythonStatistics {
+  classes: number;
+  commentLines: number;
+  comments: number;
+  constants: number;
+  decorators: number;
+  docstringLines: number;
+  docstrings: number;
+  files: number;
+  functions: number;
+  imports: number;
+  lines: number;
+  protocols: number;
+}
+
+/**
+ * Code statistics specific to TypeScript and JavaScript source files.
+ */
+export interface TypescriptJavascriptStatistics {
   asyncFunctions: number;
   classes: number;
   commentLines: number;
@@ -11,41 +61,15 @@ export interface CodeStatisticsResult {
   constants: number;
   decorators: number;
   docComments: number;
-  docstringLines: number;
-  docstrings: number;
   enums: number;
   exported: number;
   externalPackages: number;
-  folders: number;
   functions: number;
   genericDeclarations: number;
   imports: number;
   interfaces: number;
   jsFiles: number;
-  jsonArrays: number;
-  jsonBooleans: number;
-  jsonFiles: number;
-  jsonItems: number;
-  jsonLines: number;
-  jsonMaxDepth: number;
-  jsonNulls: number;
-  jsonNumbers: number;
-  jsonObjects: number;
-  jsonProperties: number;
-  jsonStrings: number;
-  jsonTotalNodes: number;
-  linesOfCode: number;
   methods: number;
-  pythonClasses: number;
-  pythonConstants: number;
-  pythonDecorators: number;
-  pythonFiles: number;
-  pythonFunctions: number;
-  pythonImports: number;
-  pythonLines: number;
-  pythonProtocols: number;
-  repoSizeMiB: string;
-  sourceFiles: number;
   syncFunctions: number;
   testFiles: number;
   todos: number;
