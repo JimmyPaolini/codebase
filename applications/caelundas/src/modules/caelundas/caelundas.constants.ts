@@ -12,6 +12,7 @@ import {
 // ♟️ Constants
 
 // Local type aliases for ephemeris body subsets to avoid a circular import through ephemeris.types.ts
+// These are copies of the corresponding types in ephemeris.types.ts — update both if the body sets change.
 /** Bodies for which azimuth/elevation ephemerides are generated. */
 type AzimuthElevationEphemerisBody = Extract<Body, "moon" | "sun">;
 /** Union of all tracked celestial bodies, derived from the symbol map. */
