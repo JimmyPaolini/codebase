@@ -1133,18 +1133,15 @@ importers:
       '@nestjs/common':
         specifier: 'catalog:'
         version: 11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nestjs/config':
-        specifier: 'catalog:'
-        version: 4.0.4(@nestjs/common@11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2))(rxjs@7.8.2)
-      '@nestjs/core':
-        specifier: 'catalog:'
-        version: 11.1.28(@nestjs/common@11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)
       jiti:
         specifier: 'catalog:'
         version: 2.7.0
       jsonc-parser:
         specifier: 'catalog:'
         version: 3.3.1
+      lodash:
+        specifier: 'catalog:'
+        version: 4.18.1
       pino:
         specifier: 'catalog:'
         version: 10.3.1
@@ -1356,6 +1353,9 @@ importers:
       '@jimmypaolini/conformetry':
         specifier: workspace:*
         version: link:../conformetry
+      '@jimmypaolini/conformetry-configuration':
+        specifier: workspace:*
+        version: link:../conformetry-configuration
       '@nestjs/common':
         specifier: 'catalog:'
         version: 11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2)

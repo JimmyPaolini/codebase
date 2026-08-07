@@ -6,7 +6,6 @@ import { TextValidatorModule } from "@jimmypaolini/conformetry-text";
 import { TypeScriptValidatorModule } from "@jimmypaolini/conformetry-typescript";
 import { Module } from "@nestjs/common";
 
-import { ValidationLanguageService } from "./validation-language.service.js";
 import { ValidationService } from "./validation.service.js";
 
 /**
@@ -14,7 +13,7 @@ import { ValidationService } from "./validation.service.js";
  */
 @Module({
   controllers: [],
-  exports: [ValidationLanguageService, ValidationService],
+  exports: [ValidationService],
   imports: [
     ConfigurationModule,
     TypeScriptValidatorModule,
@@ -23,6 +22,6 @@ import { ValidationService } from "./validation.service.js";
     JsonValidatorModule,
     TextValidatorModule,
   ],
-  providers: [ValidationLanguageService, ValidationService],
+  providers: [ValidationService],
 })
 export class ValidationModule {}

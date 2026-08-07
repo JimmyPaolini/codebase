@@ -24,7 +24,7 @@
         ],
         "main": "packages/conformetry-validation/src/index.ts",
         "outputPath": "dist/packages/conformetry-validation",
-        "tsConfig": "packages/conformetry-validation/tsconfig.lib.json"
+        "tsConfig": "packages/conformetry-validation/tsconfig.json"
       },
       "outputs": ["{options.outputPath}"]
     },

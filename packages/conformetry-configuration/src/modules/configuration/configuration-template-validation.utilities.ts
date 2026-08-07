@@ -1,18 +1,20 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import type { ConformetryConfiguration } from "../configuration/configuration.types.js";
+import { ConfigurationService } from "./configuration.service.js";
+import { buildNameSubstitutions } from "./configuration.utilities.js";
+
 import type {
   CompareMatchedCandidatesArguments,
+  ConformetryConfiguration,
   MatchedGeneratorCandidate,
   ParsedProjectMetadata,
   PreparedValidationDocument,
+  PreparedValidationPayload,
+  PrepareTemplateValidationPayloadArguments,
   ValidationProjectTemplateMetadata,
-} from "./template-validation.types.js";
+} from "./configuration.types.js";
 
-/**
- *
- */
 interface TemplateRenderer {
   render(
     templateContent: string,
@@ -41,7 +43,9 @@ class DefaultTemplateRenderer implements TemplateRenderer {
 }
 
 /**
- * Applies template placeholder substitutions.
+ * Prepares rendered template-instance documents for language validators.
+/**
+ * Replaces template placeholders with generated substitutions.
  */
 export function applySubstitutions(
   value: string,
@@ -254,6 +258,49 @@ export function prepareDocumentsForProjectPath(args: {
 }
 
 /**
+ * Prepares rendered template-instance documents for language validators.
+ */
+export async function prepareTemplateValidationPayload(
+  args: PrepareTemplateValidationPayloadArguments,
+): Promise<PreparedValidationPayload> {
+  const configurationService = new ConfigurationService();
+  const configuration = await configurationService.loadConformetryConfiguration(
+    args.configurationPath,
+  );
+  const selectedGeneratorNames = resolveSelectedGeneratorNames(
+    args.templateRuleNames === undefined
+      ? { configuration }
+      : {
+          configuration,
+          templateRuleNames: args.templateRuleNames,
+        },
+  );
+
+  const preparedValidationDocuments: PreparedValidationDocument[] = [];
+  const violations: string[] = [];
+
+  for (const rawProjectPath of args.filePaths) {
+    const projectPath = path.resolve(args.workingDirectory, rawProjectPath);
+    const preparedProject = prepareDocumentsForProjectPath({
+      configuration,
+      fileExtensions: args.fileExtensions,
+      projectPath,
+      selectedGeneratorNames,
+      workingDirectory: args.workingDirectory,
+    });
+
+    preparedValidationDocuments.push(...preparedProject.documents);
+    violations.push(...preparedProject.violations);
+  }
+
+  return {
+    checkedPaths: args.filePaths,
+    documents: preparedValidationDocuments,
+    violations,
+  };
+}
+
+/**
  * Validates that the path exists and points to a directory.
  */
 export function validateProjectPath(projectPath: string): string[] {
@@ -266,18 +313,6 @@ export function validateProjectPath(projectPath: string): string[] {
   }
 
   return [];
-}
-
-/**
- * Builds common name substitutions from the provided generator name.
- */
-function buildNameSubstitutions(name: string): Record<string, string> {
-  return {
-    nameCamelCase: toCamelCase(name),
-    nameKebabCase: toKebabCase(name),
-    namePascalCase: toPascalCase(name),
-    nameSnakeCase: toSnakeCase(name),
-  };
 }
 
 /**
@@ -634,6 +669,29 @@ function resolveProjectType(args: {
 }
 
 /**
+ * Resolves selected generator names from optional template rule names.
+ */
+function resolveSelectedGeneratorNames(args: {
+  configuration: ConformetryConfiguration;
+  templateRuleNames?: string[];
+}): string[] {
+  const configuredGeneratorNames = Object.keys(args.configuration.generators);
+
+  if (
+    args.templateRuleNames === undefined ||
+    args.templateRuleNames.length === 0
+  ) {
+    return configuredGeneratorNames;
+  }
+
+  const selectedGeneratorNames = configuredGeneratorNames.filter(
+    (generatorName) => args.templateRuleNames?.includes(generatorName),
+  );
+
+  return selectedGeneratorNames;
+}
+
+/**
  * Resolves sourceRoot-derived type from parsed project metadata.
  */
 function resolveSourceRootType(
@@ -647,66 +705,6 @@ function resolveSourceRootType(
     .split(/[\\/]/u)
     .map((segment) => segment.trim())
     .find((segment) => segment.length > 0);
-}
-
-/**
- * Converts a generator name to camel case.
- */
-function toCamelCase(value: string): string {
-  return value
-    .split(/[-_\s]+/)
-    .filter(Boolean)
-    .map((segment, index) => {
-      if (index === 0) {
-        return segment.toLowerCase();
-      }
-
-      return segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase();
-    })
-    .join("");
-}
-
-/**
- * Converts a generator name to kebab case.
- */
-function toKebabCase(value: string): string {
-  return value
-    .trim()
-    .split(/[_\s]+/)
-    .flatMap((segment) => {
-      return segment.split(/(?=[A-Z])/);
-    })
-    .filter(Boolean)
-    .map((segment) => {
-      return segment.toLowerCase();
-    })
-    .join("-");
-}
-
-/**
- * Converts a generator name to Pascal case.
- */
-function toPascalCase(value: string): string {
-  return toCamelCase(value).replace(/^./u, (character) => {
-    return character.toUpperCase();
-  });
-}
-
-/**
- * Converts a generator name to snake case.
- */
-function toSnakeCase(value: string): string {
-  return value
-    .trim()
-    .split(/[-\s]+/)
-    .flatMap((segment) => {
-      return segment.split(/(?=[A-Z])/);
-    })
-    .filter(Boolean)
-    .map((segment) => {
-      return segment.toLowerCase();
-    })
-    .join("_");
 }
 
 /**

@@ -1,3 +1,7 @@
+import {
+  normalizeRuntimeOptions,
+  resolveTargetDirectoryPath,
+} from "@jimmypaolini/conformetry-configuration";
 import { getProjects } from "@nx/devkit";
 
 import { runGenerateCommand } from "../command-execution/command-execution.utilities";
@@ -59,8 +63,6 @@ export async function runConformetryGenerator(args: {
     options: args.options,
     pluginOptions: normalizedPluginOptions,
   });
-  const { normalizeRuntimeOptions, resolveTargetDirectoryPath } =
-    await import("@jimmypaolini/conformetry");
   const targetDirectoryPath = await resolveTargetDirectoryPath({
     generatorName: args.generatorName,
     options: args.options,

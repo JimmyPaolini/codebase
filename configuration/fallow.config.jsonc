@@ -163,7 +163,6 @@
     "**/helm/**/templates/**",
     "**/library.json",
     "**/node_modules/**",
-    "**/packages/conformetry*/src/repl.ts",
     "**/pnpm-lock.yaml",
     "**/src/**/*.constants.ts",
     "**/src/**/*.types.ts",

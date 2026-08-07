@@ -38,7 +38,7 @@
         ],
         "main": "packages/conformetry-nx/src/index.ts",
         "outputPath": "dist/packages/conformetry-nx",
-        "tsConfig": "packages/conformetry-nx/tsconfig.lib.json"
+        "tsConfig": "packages/conformetry-nx/tsconfig.json"
       },
       "outputs": ["{options.outputPath}"]
     },

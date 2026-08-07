@@ -2,10 +2,9 @@
   "dependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/common": "catalog:",
-    "@nestjs/config": "catalog:",
-    "@nestjs/core": "catalog:",
     "jiti": "catalog:",
     "jsonc-parser": "catalog:",
+    "lodash": "catalog:",
     "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:",

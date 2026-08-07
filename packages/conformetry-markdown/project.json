@@ -24,7 +24,7 @@
         ],
         "main": "packages/conformetry-markdown/src/index.ts",
         "outputPath": "dist/packages/conformetry-markdown",
-        "tsConfig": "packages/conformetry-markdown/tsconfig.lib.json"
+        "tsConfig": "packages/conformetry-markdown/tsconfig.json"
       },
       "outputs": ["{options.outputPath}"]
     },

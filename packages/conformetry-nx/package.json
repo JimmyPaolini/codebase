@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@golevelup/ts-vitest": "catalog:",
+    "@jimmypaolini/conformetry-configuration": "workspace:*",
     "@jimmypaolini/conformetry": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",

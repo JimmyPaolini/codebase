@@ -24,7 +24,7 @@
         ],
         "main": "packages/conformetry-generation/src/index.ts",
         "outputPath": "dist/packages/conformetry-generation",
-        "tsConfig": "packages/conformetry-generation/tsconfig.lib.json"
+        "tsConfig": "packages/conformetry-generation/tsconfig.json"
       },
       "outputs": ["{options.outputPath}"]
     },

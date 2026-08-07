@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { describe, expect, it, vi } from "vitest";
 
-import { conformetryConfigurationSchema } from "../../constants.js";
+import { conformetryConfigurationSchema } from "./configuration.constants.js";
 
 import { UnknownConfigurationFileTypeError } from "./configuration.constants.js";
 import { ConfigurationService } from "./configuration.service.js";

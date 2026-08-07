@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { prepareTemplateValidationPayload } from "./template-validation-preparation.js";
+import { prepareTemplateValidationPayload } from "@jimmypaolini/conformetry-configuration";
 
 const temporaryDirectoryPaths: string[] = [];
 

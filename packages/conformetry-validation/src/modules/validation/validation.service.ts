@@ -1,7 +1,10 @@
 import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
+import { JsonValidatorService } from "@jimmypaolini/conformetry-json";
+import { MarkdownValidatorService } from "@jimmypaolini/conformetry-markdown";
 import { Injectable } from "@nestjs/common";
-
-import { ValidationLanguageService } from "./validation-language.service.js";
+import { PythonValidatorService } from "@jimmypaolini/conformetry-python";
+import { TextValidatorService } from "@jimmypaolini/conformetry-text";
+import { TypeScriptValidatorService } from "@jimmypaolini/conformetry-typescript";
 
 import type {
   RunValidationArguments,
@@ -17,7 +20,11 @@ import type {
 export class ValidationService {
   constructor(
     private readonly configurationService: ConfigurationService,
-    private readonly validationLanguageService: ValidationLanguageService,
+    private readonly typeScriptValidatorService: TypeScriptValidatorService,
+    private readonly pythonValidatorService: PythonValidatorService,
+    private readonly markdownValidatorService: MarkdownValidatorService,
+    private readonly jsonValidatorService: JsonValidatorService,
+    private readonly textValidatorService: TextValidatorService,
   ) {}
 
   /**
@@ -67,7 +74,38 @@ export class ValidationService {
       await this.configurationService.loadConformetryConfiguration(
         args.configurationPath,
       );
-    const plugins = this.validationLanguageService.buildValidatorPlugins();
+    const plugins = [
+      {
+        descriptor: this.typeScriptValidatorService.pluginDescriptor,
+        validate: this.typeScriptValidatorService.validate.bind(
+          this.typeScriptValidatorService,
+        ),
+      },
+      {
+        descriptor: this.pythonValidatorService.pluginDescriptor,
+        validate: this.pythonValidatorService.validate.bind(
+          this.pythonValidatorService,
+        ),
+      },
+      {
+        descriptor: this.markdownValidatorService.pluginDescriptor,
+        validate: this.markdownValidatorService.validate.bind(
+          this.markdownValidatorService,
+        ),
+      },
+      {
+        descriptor: this.jsonValidatorService.pluginDescriptor,
+        validate: this.jsonValidatorService.validate.bind(
+          this.jsonValidatorService,
+        ),
+      },
+      {
+        descriptor: this.textValidatorService.pluginDescriptor,
+        validate: this.textValidatorService.validate.bind(
+          this.textValidatorService,
+        ),
+      },
+    ];
     const pluginNames = new Set(
       plugins.map((plugin) => plugin.descriptor.name),
     );

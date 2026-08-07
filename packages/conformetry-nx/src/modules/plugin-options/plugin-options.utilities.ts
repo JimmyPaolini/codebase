@@ -1,3 +1,5 @@
+import { resolveConfigurationPath } from "@jimmypaolini/conformetry-configuration";
+
 import {
   CONFORMETRY_NX_PLUGIN_NAME,
   DEFAULT_CONFORMETRY_CONFIGURATION_PATH,
@@ -16,9 +18,6 @@ export async function resolveConformetryConfigurationPath(args: {
   options: Record<string, unknown>;
   pluginOptions?: ConformetryNxPluginRegistrationOptions;
 }): Promise<string> {
-  const { resolveConfigurationPath } =
-    await import("@jimmypaolini/conformetry");
-
   return resolveConfigurationPath({
     defaultConfigurationPath: DEFAULT_CONFORMETRY_CONFIGURATION_PATH,
     options: args.options,

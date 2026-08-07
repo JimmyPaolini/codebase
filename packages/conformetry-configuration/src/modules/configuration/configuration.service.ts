@@ -7,9 +7,8 @@ import { Injectable } from "@nestjs/common";
 import { createJiti } from "jiti";
 import { parse as parseJsonc } from "jsonc-parser";
 
-import { conformetryConfigurationSchema } from "../../constants.js";
-
 import {
+  conformetryConfigurationSchema,
   supportedExtensions,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants.js";

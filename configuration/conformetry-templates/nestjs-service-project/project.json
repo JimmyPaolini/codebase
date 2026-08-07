@@ -24,7 +24,7 @@
         ],
         "main": "{{type}}/{{nameKebabCase}}/src/index.ts",
         "outputPath": "dist/{{type}}/{{nameKebabCase}}",
-        "tsConfig": "{{type}}/{{nameKebabCase}}/tsconfig.lib.json"
+        "tsConfig": "{{type}}/{{nameKebabCase}}/tsconfig.json"
       },
       "outputs": ["{options.outputPath}"]
     },

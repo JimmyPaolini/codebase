@@ -9,8 +9,18 @@ describe(ValidationService, () => {
         loadConformetryConfiguration: vi.fn(),
       } as never,
       {
-        buildValidatorPlugins: vi.fn(),
+        pluginDescriptor: { fileExtensions: [".ts"], name: "typescript" },
       } as never,
+      {
+        pluginDescriptor: { fileExtensions: [".py"], name: "python" },
+      } as never,
+      {
+        pluginDescriptor: { fileExtensions: [".md"], name: "markdown" },
+      } as never,
+      {
+        pluginDescriptor: { fileExtensions: [".json"], name: "json" },
+      } as never,
+      { pluginDescriptor: { fileExtensions: [".txt"], name: "text" } } as never,
     );
     const result = await validationService.validate({
       plugins: [
@@ -42,8 +52,18 @@ describe(ValidationService, () => {
         loadConformetryConfiguration: vi.fn(),
       } as never,
       {
-        buildValidatorPlugins: vi.fn(),
+        pluginDescriptor: { fileExtensions: [".ts"], name: "typescript" },
       } as never,
+      {
+        pluginDescriptor: { fileExtensions: [".py"], name: "python" },
+      } as never,
+      {
+        pluginDescriptor: { fileExtensions: [".md"], name: "markdown" },
+      } as never,
+      {
+        pluginDescriptor: { fileExtensions: [".json"], name: "json" },
+      } as never,
+      { pluginDescriptor: { fileExtensions: [".txt"], name: "text" } } as never,
     );
     const result = await validationService.validate({
       configurationPath: "configuration/conformetry.config.ts",
@@ -103,29 +123,40 @@ describe(ValidationService, () => {
         "react-component": {},
       },
     });
-    const buildValidatorPlugins = vi.fn().mockReturnValue([
-      {
-        descriptor: {
-          fileExtensions: [".json"],
-          name: "json",
-        },
-        validate: async ({ filePaths }) => {
-          await Promise.resolve();
-          return {
-            checkedPaths: filePaths,
-            ok: true,
-            pluginName: "json",
-            violations: [],
-          };
-        },
+    const jsonValidate = vi.fn(
+      async ({ filePaths }: { filePaths: string[] }) => {
+        await Promise.resolve();
+        return {
+          checkedPaths: filePaths,
+          ok: true,
+          pluginName: "json",
+          violations: [],
+        };
       },
-    ]);
+    );
     const validationService = new ValidationService(
       {
         loadConformetryConfiguration,
       } as never,
       {
-        buildValidatorPlugins,
+        pluginDescriptor: { fileExtensions: [".ts"], name: "typescript" },
+        validate: vi.fn(),
+      } as never,
+      {
+        pluginDescriptor: { fileExtensions: [".py"], name: "python" },
+        validate: vi.fn(),
+      } as never,
+      {
+        pluginDescriptor: { fileExtensions: [".md"], name: "markdown" },
+        validate: vi.fn(),
+      } as never,
+      {
+        pluginDescriptor: { fileExtensions: [".json"], name: "json" },
+        validate: jsonValidate,
+      } as never,
+      {
+        pluginDescriptor: { fileExtensions: [".txt"], name: "text" },
+        validate: vi.fn(),
       } as never,
     );
 
@@ -139,7 +170,7 @@ describe(ValidationService, () => {
     expect(loadConformetryConfiguration).toHaveBeenCalledWith(
       "configuration/custom.config.ts",
     );
-    expect(buildValidatorPlugins).toHaveBeenCalledTimes(1);
+    expect(jsonValidate).toHaveBeenCalledTimes(1);
     expect(result.ok).toBe(true);
     expect(result.pluginResults[0]?.checkedPaths).toStrictEqual([
       "packages/conformetry",

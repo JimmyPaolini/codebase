@@ -305,23 +305,19 @@ export default [
       perfectionist: perfectionistPlugin,
     },
     rules: {
-      // Nx-specific rules
       "@nx/dependency-checks": "error",
       "@nx/enforce-module-boundaries": [
         "error",
         {
           depConstraints: [
-            // Applications can only depend on workspace packages (not other apps or tools)
             {
               onlyDependOnLibsWithTags: ["type:package"],
               sourceTag: "type:application",
             },
-            // conformetry-nx can only depend on conformetry
             {
               onlyDependOnLibsWithTags: ["name:conformetry"],
               sourceTag: "name:conformetry-nx",
             },
-            // conformetry can only depend on configuration, generation, and validation
             {
               onlyDependOnLibsWithTags: [
                 "name:conformetry-configuration",
@@ -330,7 +326,6 @@ export default [
               ],
               sourceTag: "name:conformetry",
             },
-            // conformetry-validation can only depend on configuration and language-specific validator packages
             {
               onlyDependOnLibsWithTags: [
                 "name:conformetry-configuration",
@@ -342,7 +337,6 @@ export default [
               ],
               sourceTag: "name:conformetry-validation",
             },
-            // Language-specific validators can depend on configuration but not on other workspace libraries
             {
               onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
               sourceTag: "name:conformetry-json",
@@ -363,32 +357,26 @@ export default [
               onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
               sourceTag: "name:conformetry-typescript",
             },
-            // conformetry-configuration cannot depend on other workspace libraries
             {
               onlyDependOnLibsWithTags: [],
               sourceTag: "name:conformetry-configuration",
             },
-            // conformetry-generation can depend on conformetry-configuration only
             {
               onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
               sourceTag: "name:conformetry-generation",
             },
-            // Packages cannot depend on applications (no upward dependencies)
             {
               notDependOnLibsWithTags: ["type:application"],
               sourceTag: "type:package",
             },
-            // Frontend (React) must not import backend (NestJS) code
             {
               notDependOnLibsWithTags: ["framework:nestjs"],
               sourceTag: "framework:react",
             },
-            // Domain isolation: caelundas cannot import lexico packages
             {
               notDependOnLibsWithTags: ["domain:lexico"],
               sourceTag: "domain:caelundas",
             },
-            // Domain isolation: lexico cannot import caelundas packages
             {
               notDependOnLibsWithTags: ["domain:caelundas"],
               sourceTag: "domain:lexico",

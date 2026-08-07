@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   collectGeneratorInputsFromCommandArguments,
   normalizeRuntimeOptions,
+  parseCommaDelimitedOption,
   resolveConfigurationPath,
   resolveTargetDirectoryPath,
 } from "./configuration.utilities.js";
@@ -130,6 +131,18 @@ describe("configuration utilities", () => {
         componentType: "card",
         project: "lexico",
       });
+    });
+  });
+
+  describe(parseCommaDelimitedOption, () => {
+    it("returns undefined for missing values", () => {
+      expect(parseCommaDelimitedOption(undefined)).toBeUndefined();
+    });
+
+    it("returns trimmed non-empty values", () => {
+      expect(
+        parseCommaDelimitedOption(" first-project, second-project ,, third "),
+      ).toStrictEqual(["first-project", "second-project", "third"]);
     });
   });
 });

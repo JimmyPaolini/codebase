@@ -178,7 +178,7 @@ export class GenerationService {
       });
 
       if (entry.isDirectory) {
-        await filesystem.makeDirectory(paths.nextTargetPath);
+        await filesystem.makeDirectory(paths.nextInstancePath);
         const childPaths = await this.renderDirectory({
           filesystem,
           instanceDirectoryPath: paths.nextInstancePath,

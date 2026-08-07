@@ -1,5 +1,7 @@
 import path from "node:path";
 
+import { camelCase, kebabCase, snakeCase, upperFirst } from "lodash";
+
 import {
   DEFAULT_CONFIGURATION_PATH,
   DEFAULT_GENERATED_OUTPUT_DIRECTORY,
@@ -14,6 +16,20 @@ import type {
 } from "./configuration.types.js";
 
 /**
+ * Builds common name substitutions from the provided generator name.
+ */
+export function buildNameSubstitutions(name: string): Record<string, string> {
+  const normalizedCamelCaseName = camelCase(name);
+
+  return {
+    nameCamelCase: normalizedCamelCaseName,
+    nameKebabCase: kebabCase(name),
+    namePascalCase: upperFirst(normalizedCamelCaseName),
+    nameSnakeCase: snakeCase(name),
+  };
+}
+
+/**
  * Extracts schema-backed generator input flags from raw command arguments.
  */
 export function collectGeneratorInputsFromCommandArguments(
@@ -26,18 +42,6 @@ export function collectGeneratorInputsFromCommandArguments(
     commandArguments,
     schemaPropertyNames,
   });
-}
-
-/**
- * Builds common name substitutions from the provided generator name.
- */
-export function buildNameSubstitutions(name: string): Record<string, string> {
-  return {
-    nameCamelCase: toCamelCase(name),
-    nameKebabCase: toGeneratorKebabCase(name),
-    namePascalCase: toPascalCase(name),
-    nameSnakeCase: toSnakeCase(name),
-  };
 }
 
 /**
@@ -68,6 +72,22 @@ export function normalizeRuntimeOptions(
   }
 
   return normalizedInputs;
+}
+
+/**
+ * Parses comma-delimited CLI options into a trimmed string array.
+ */
+export function parseCommaDelimitedOption(
+  value: string | undefined,
+): string[] | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  return value
+    .split(",")
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0);
 }
 
 /**
@@ -240,7 +260,7 @@ function resolveSchemaPropertyName(
   return schemaPropertyNames.find((candidatePropertyName) => {
     return (
       optionName === candidatePropertyName ||
-      optionName === toKebabCase(candidatePropertyName)
+      optionName === kebabCase(candidatePropertyName)
     );
   });
 }
@@ -272,71 +292,4 @@ function shouldIgnoreOptionName(args: {
     RESERVED_GENERATOR_OPTION_NAMES.has(args.optionName) ||
     RESERVED_GENERATOR_OPTION_NAMES.has(args.propertyName)
   );
-}
-
-/**
- * Converts camelCase option names to kebab-case for CLI matching.
- */
-function toKebabCase(value: string): string {
-  return value.replaceAll(/([a-z0-9])([A-Z])/gu, "$1-$2").toLowerCase();
-}
-
-/**
- * Converts a generator name to camel case.
- */
-function toCamelCase(value: string): string {
-  return value
-    .split(/[-_\s]+/)
-    .filter(Boolean)
-    .map((segment, index) => {
-      if (index === 0) {
-        return segment.toLowerCase();
-      }
-
-      return segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase();
-    })
-    .join("");
-}
-
-/**
- * Converts a generator name to kebab case.
- */
-function toGeneratorKebabCase(value: string): string {
-  return value
-    .trim()
-    .split(/[_\s]+/)
-    .flatMap((segment) => {
-      return segment.split(/(?=[A-Z])/);
-    })
-    .filter(Boolean)
-    .map((segment) => {
-      return segment.toLowerCase();
-    })
-    .join("-");
-}
-
-/**
- * Converts a generator name to Pascal case.
- */
-function toPascalCase(value: string): string {
-  return toCamelCase(value).replace(/^./u, (character) => {
-    return character.toUpperCase();
-  });
-}
-
-/**
- * Converts a generator name to snake case.
- */
-function toSnakeCase(value: string): string {
-  return value
-    .trim()
-    .split(/[-\s]+/)
-    .flatMap((segment) => {
-      return segment.split(/(?=[A-Z])/);
-    })
-    .filter(Boolean)
-    .map((segment) => {
-      return segment.toLowerCase();
-    })
-    .join("_");
 }

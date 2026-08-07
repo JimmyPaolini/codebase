@@ -1,3 +1,7 @@
+import {
+  ConfigurationService,
+  parseCommaDelimitedOption,
+} from "@jimmypaolini/conformetry-configuration";
 import { ValidationService } from "@jimmypaolini/conformetry-validation";
 import { ConsoleLogger, Inject, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
@@ -14,6 +18,8 @@ import type { ValidateCommandOptions } from "./validate.types.js";
 @Injectable()
 export class ValidateCommand extends CommandRunner {
   constructor(
+    @Inject(ConfigurationService)
+    private readonly configurationService: ConfigurationService,
     @Inject(ValidationService)
     private readonly validationService: ValidationService,
   ) {
@@ -42,14 +48,7 @@ export class ValidateCommand extends CommandRunner {
     flags: "--projects [projects]",
   })
   parseProjects(value: string | undefined): string[] | undefined {
-    if (value === undefined) {
-      return undefined;
-    }
-
-    return value
-      .split(",")
-      .map((projectName) => projectName.trim())
-      .filter((projectName) => projectName.length > 0);
+    return parseCommaDelimitedOption(value);
   }
 
   /**
@@ -60,14 +59,7 @@ export class ValidateCommand extends CommandRunner {
     flags: "--rules [rules]",
   })
   parseRules(value: string | undefined): string[] | undefined {
-    if (value === undefined) {
-      return undefined;
-    }
-
-    return value
-      .split(",")
-      .map((ruleName) => ruleName.trim())
-      .filter((ruleName) => ruleName.length > 0);
+    return parseCommaDelimitedOption(value);
   }
 
   /**
@@ -80,11 +72,19 @@ export class ValidateCommand extends CommandRunner {
     const configurationPath =
       options.config ?? "configuration/conformetry.config.ts";
 
+    await this.configurationService.loadConformetryConfiguration(
+      configurationPath,
+    );
+
     const validationResult =
       await this.validationService.validateConfiguredSelection({
         configurationPath,
-        requestedProjectPaths: options.projects,
-        requestedRuleNames: options.rules,
+        ...(options.projects === undefined
+          ? {}
+          : { requestedProjectPaths: options.projects }),
+        ...(options.rules === undefined
+          ? {}
+          : { requestedRuleNames: options.rules }),
         workingDirectory: process.cwd(),
       });
 

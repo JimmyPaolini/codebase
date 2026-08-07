@@ -12,6 +12,8 @@ const mockValidateConfiguredSelection =
       workingDirectory: string;
     }) => Promise<unknown>
   >();
+const mockLoadConformetryConfiguration =
+  vi.fn<(configurationPath: string) => Promise<unknown>>();
 const mockLoggerLog = vi.fn<(message: unknown) => void>();
 const designParameterTypesMetadataKey = `design:${["param", "types"].join("")}`;
 
@@ -44,15 +46,62 @@ vi.mock("@jimmypaolini/conformetry-validation", () => {
   };
 });
 
+vi.mock("@jimmypaolini/conformetry-configuration", async () => {
+  const actual = await vi.importActual(
+    "@jimmypaolini/conformetry-configuration",
+  );
+
+  return {
+    ...actual,
+    ConfigurationService: class ConfigurationService {
+      loadConformetryConfiguration = mockLoadConformetryConfiguration;
+    },
+  };
+});
+
 describe("validateCommand", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockLoadConformetryConfiguration.mockResolvedValue({ generators: {} });
     process.exitCode = 0;
   });
 
+  function createValidationService(): ValidationService {
+    return new ValidationService(
+      {
+        loadConformetryConfiguration: mockLoadConformetryConfiguration,
+      } as never,
+      {
+        pluginDescriptor: { fileExtensions: [".ts"], name: "typescript" },
+        validate: vi.fn(),
+      } as never,
+      {
+        pluginDescriptor: { fileExtensions: [".py"], name: "python" },
+        validate: vi.fn(),
+      } as never,
+      {
+        pluginDescriptor: { fileExtensions: [".md"], name: "markdown" },
+        validate: vi.fn(),
+      } as never,
+      {
+        pluginDescriptor: { fileExtensions: [".json"], name: "json" },
+        validate: vi.fn(),
+      } as never,
+      {
+        pluginDescriptor: { fileExtensions: [".txt"], name: "text" },
+        validate: vi.fn(),
+      } as never,
+    );
+  }
+
   it("parses config, project, and rule options", async () => {
     const { ValidateCommand } = await import("./validate.command.js");
-    const command = new ValidateCommand(new ValidationService());
+    const { ConfigurationService } =
+      await import("@jimmypaolini/conformetry-configuration");
+    const command = new ValidateCommand(
+      new ConfigurationService(),
+      createValidationService(),
+    );
 
     expect(command.parseConfig("configuration/conformetry.config.ts")).toBe(
       "configuration/conformetry.config.ts",
@@ -77,14 +126,17 @@ describe("validateCommand", () => {
     });
 
     const { ValidateCommand } = await import("./validate.command.js");
-    const command = new ValidateCommand(new ValidationService());
+    const { ConfigurationService } =
+      await import("@jimmypaolini/conformetry-configuration");
+    const command = new ValidateCommand(
+      new ConfigurationService(),
+      createValidationService(),
+    );
 
     await command.run([], {});
 
     expect(mockValidateConfiguredSelection).toHaveBeenCalledWith({
       configurationPath: "configuration/conformetry.config.ts",
-      requestedProjectPaths: undefined,
-      requestedRuleNames: undefined,
       workingDirectory: process.cwd(),
     });
     expect(mockLoggerLog).toHaveBeenCalledWith(
@@ -99,7 +151,12 @@ describe("validateCommand", () => {
     });
 
     const { ValidateCommand } = await import("./validate.command.js");
-    const command = new ValidateCommand(new ValidationService());
+    const { ConfigurationService } =
+      await import("@jimmypaolini/conformetry-configuration");
+    const command = new ValidateCommand(
+      new ConfigurationService(),
+      createValidationService(),
+    );
 
     await command.run([], {
       config: "configuration/custom.config.ts",
@@ -125,7 +182,12 @@ describe("validateCommand", () => {
     });
 
     const { ValidateCommand } = await import("./validate.command.js");
-    const command = new ValidateCommand(new ValidationService());
+    const { ConfigurationService } =
+      await import("@jimmypaolini/conformetry-configuration");
+    const command = new ValidateCommand(
+      new ConfigurationService(),
+      createValidationService(),
+    );
 
     await expect(command.run([], {})).rejects.toThrow("Validation failed");
     expect(process.exitCode).toBe(1);
@@ -138,6 +200,8 @@ describe("validateCommand", () => {
     });
 
     const { Test } = await import("@nestjs/testing");
+    const { ConfigurationService } =
+      await import("@jimmypaolini/conformetry-configuration");
     const { ValidateCommand } = await import("./validate.command.js");
     const originalParameterTypes = Reflect.getMetadata(
       designParameterTypesMetadataKey,
@@ -156,6 +220,12 @@ describe("validateCommand", () => {
       testingModule = await Test.createTestingModule({
         providers: [
           ValidateCommand,
+          {
+            provide: ConfigurationService,
+            useValue: {
+              loadConformetryConfiguration: mockLoadConformetryConfiguration,
+            },
+          },
           {
             provide: ValidationService,
             useValue: {

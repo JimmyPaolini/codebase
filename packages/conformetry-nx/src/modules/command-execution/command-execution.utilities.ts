@@ -1,3 +1,4 @@
+import { GenerateCommand, MainModule } from "@jimmypaolini/conformetry";
 import { CommandFactory } from "nest-commander";
 
 import { NEST_APPLICATION_CONTEXT_OPTIONS } from "./command-execution.constants";
@@ -10,9 +11,8 @@ import type { RunGenerateCommandArguments } from "./command-execution.types";
 export async function runGenerateCommand(
   args: RunGenerateCommandArguments,
 ): Promise<void> {
-  const conformetryModule = await import("@jimmypaolini/conformetry");
   const applicationContext = await CommandFactory.createWithoutRunning(
-    conformetryModule.MainModule,
+    MainModule,
     NEST_APPLICATION_CONTEXT_OPTIONS,
   );
 
@@ -26,7 +26,7 @@ export async function runGenerateCommand(
           targetDirectoryPath: string;
         },
       ) => Promise<void>;
-    }>(conformetryModule.GenerateCommand);
+    }>(GenerateCommand);
 
     await generateCommand.run(args.passedParameters, {
       config: args.configurationPath,
