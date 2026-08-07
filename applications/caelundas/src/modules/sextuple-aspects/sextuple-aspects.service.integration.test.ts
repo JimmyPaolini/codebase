@@ -1,15 +1,16 @@
-import { AspectPhaseEmojiService } from "@caelundas/src/modules/aspects/aspect-phase-emoji.service";
-import { CompoundPhaseService } from "@caelundas/src/modules/aspects/compound-phase.service";
-import { ProgressiveCompoundEventService } from "@caelundas/src/modules/aspects/progressive-compound-event.service";
-import { MathService } from "@caelundas/src/modules/math/math.service";
 import moment from "moment-timezone";
 import { describe, expect, it } from "vitest";
+
+import { AspectPhaseEmojiService } from "../aspects/aspect-phase-emoji.service";
+import { CompoundPhaseService } from "../aspects/compound-phase.service";
+import { ProgressiveCompoundEventService } from "../aspects/progressive-compound-event.service";
+import { MathService } from "../math/math.service";
 
 import { SextupleAspectsComposerService } from "./sextuple-aspects-composer.service";
 import { SextupleAspectsService } from "./sextuple-aspects.service";
 
-import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import type { AspectBodies } from "../aspects/aspects.types";
+import type { Event } from "../calendar/calendar.types";
 
 /**
  * Integration tests for Sextuple Aspects (Hexagram/Star of David) detection

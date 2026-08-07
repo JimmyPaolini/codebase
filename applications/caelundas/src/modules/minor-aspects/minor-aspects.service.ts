@@ -1,23 +1,23 @@
-import { AspectsUtilitiesService } from "@caelundas/src/modules/aspects/aspects-utilities.service";
+import { Injectable } from "@nestjs/common";
+
+import { AspectsUtilitiesService } from "../aspects/aspects-utilities.service";
 import {
   aspectBodies as minorAspectBodies,
   minorAspects,
-} from "@caelundas/src/modules/caelundas/caelundas.constants";
-import { Injectable } from "@nestjs/common";
-
+} from "../caelundas/caelundas.constants";
 import { LoggerService } from "../logger/logger.service";
 
 import { MinorAspectsEventService } from "./minor-aspects-event.service";
 import { MinorAspectsProgressiveService } from "./minor-aspects-progressive.service";
 
-import type { DetectBodyPairAspectArguments } from "./minor-aspects.types";
 import type {
   AspectPhase,
   Body,
   MinorAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
-import type { CoordinateEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
+} from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
+import type { CoordinateEphemeris } from "../ephemeris/ephemeris.types";
+import type { DetectBodyPairAspectArguments } from "./minor-aspects.types";
 import type { Moment } from "moment-timezone";
 
 /**

@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "../logger/logger.service";
 
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import type { Event } from "../calendar/calendar.types";
 
 /**
  * Utility service for pairing progressive events.

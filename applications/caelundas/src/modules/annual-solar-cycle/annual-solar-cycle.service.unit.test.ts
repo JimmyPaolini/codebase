@@ -1,20 +1,21 @@
-import { MARGIN_MINUTES } from "@caelundas/src/modules/caelundas/caelundas.constants";
-import { EphemerisModule } from "@caelundas/src/modules/ephemeris/ephemeris.module";
-import { LoggerService } from "@caelundas/src/modules/logger/logger.service";
-import { MathService } from "@caelundas/src/modules/math/math.service";
-import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { Test } from "@nestjs/testing";
 import moment, { type Moment } from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { MARGIN_MINUTES } from "../caelundas/caelundas.constants";
+import { EphemerisModule } from "../ephemeris/ephemeris.module";
+import { LoggerService } from "../logger/logger.service";
+import { MathService } from "../math/math.service";
+import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
+
 import { AnnualSolarCycleEventsService } from "./annual-solar-cycle-events.service";
 import { AnnualSolarCycleService } from "./annual-solar-cycle.service";
 
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import type { Event } from "../calendar/calendar.types";
 import type {
   CoordinateEphemeris,
   DistanceEphemeris,
-} from "@caelundas/src/modules/ephemeris/ephemeris.types";
+} from "../ephemeris/ephemeris.types";
 
 vi.mock("fs", () => ({
   default: {

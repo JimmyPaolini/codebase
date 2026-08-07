@@ -9,12 +9,12 @@
 [![Jupyter](https://img.shields.io/badge/Jupyter-1.1-F37626?logo=jupyter&logoColor=white)](https://jupyter.org/)
 
 <!-- CODE_STATISTICS_START -->
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-197839-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-197842-22c55e?style=flat-square)
 ![Repo Size](https://img.shields.io/badge/Repo_Size-153.2_MiB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-497-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-882-3178c6?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-185-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-137-8b5cf6?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-134-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-287-7c3aed?style=flat-square)
 ![Functions](https://img.shields.io/badge/Functions-10992-16a34a?style=flat-square)
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-9741-4ade80?style=flat-square)
@@ -23,7 +23,7 @@
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-28-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-16490-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-4237-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-4236-0284c7?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-668-db2777?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-1354-ea580c?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-36-ca8a04?style=flat-square)

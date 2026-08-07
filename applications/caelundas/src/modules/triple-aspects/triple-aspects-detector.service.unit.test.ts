@@ -1,17 +1,18 @@
-import { AspectGraphService } from "@caelundas/src/modules/aspects/aspect-graph.service";
-import { AspectPhaseEmojiService } from "@caelundas/src/modules/aspects/aspect-phase-emoji.service";
-import { CompoundPhaseService } from "@caelundas/src/modules/aspects/compound-phase.service";
-import { LoggerService } from "@caelundas/src/modules/logger/logger.service";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { AspectGraphService } from "../aspects/aspect-graph.service";
+import { AspectPhaseEmojiService } from "../aspects/aspect-phase-emoji.service";
+import { CompoundPhaseService } from "../aspects/compound-phase.service";
+import { LoggerService } from "../logger/logger.service";
+
 import { TripleAspectsComposerService } from "./triple-aspects-composer.service";
 import { TripleAspectsDetectorService } from "./triple-aspects-detector.service";
 
-import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
-import type { Aspect } from "@caelundas/src/modules/caelundas/caelundas.types";
+import type { AspectBodies } from "../aspects/aspects.types";
+import type { Aspect } from "../caelundas/caelundas.types";
 
 describe(TripleAspectsDetectorService, () => {
   let service: TripleAspectsDetectorService;

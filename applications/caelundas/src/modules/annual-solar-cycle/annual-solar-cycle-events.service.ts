@@ -10,11 +10,11 @@ import {
   SOLAR_CYCLE_LONGITUDE_THRESHOLDS,
 } from "./annual-solar-cycle.constants.js";
 
+import type { Event } from "../calendar/calendar.types";
 import type {
   BuildSolarCycleEventArguments,
   SolarCycleLongitudes,
 } from "./annual-solar-cycle.types.js";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 import type { Moment } from "moment-timezone";
 
 /**

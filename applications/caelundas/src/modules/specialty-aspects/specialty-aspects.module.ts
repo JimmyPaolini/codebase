@@ -1,7 +1,8 @@
-import { AspectsUtilitiesModule } from "@caelundas/src/modules/aspects/aspects.utilities.module";
-import { EphemerisModule } from "@caelundas/src/modules/ephemeris/ephemeris.module";
-import { ProgressiveUtilitiesModule } from "@caelundas/src/modules/progressive/progressive-utilities.module";
 import { Module } from "@nestjs/common";
+
+import { AspectsUtilitiesModule } from "../aspects/aspects.utilities.module";
+import { EphemerisModule } from "../ephemeris/ephemeris.module";
+import { ProgressiveUtilitiesModule } from "../progressive/progressive-utilities.module";
 
 import { SpecialtyAspectsEventService } from "./specialty-aspects-event.service";
 import { SpecialtyAspectsProgressiveService } from "./specialty-aspects-progressive.service";

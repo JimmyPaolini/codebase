@@ -1,19 +1,19 @@
-import { AspectEventFormattingService } from "@caelundas/src/modules/aspects/aspect-event-formatting.service";
-import { AspectsUtilitiesService } from "@caelundas/src/modules/aspects/aspects-utilities.service";
-import { specialtyAspects } from "@caelundas/src/modules/caelundas/caelundas.constants";
-import { symbolBySpecialtyAspect } from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
-import { EphemerisService } from "@caelundas/src/modules/ephemeris/ephemeris.service";
 import { Injectable } from "@nestjs/common";
 
+import { AspectEventFormattingService } from "../aspects/aspect-event-formatting.service";
+import { AspectsUtilitiesService } from "../aspects/aspects-utilities.service";
+import { specialtyAspects } from "../caelundas/caelundas.constants";
+import { symbolBySpecialtyAspect } from "../caelundas/caelundas.symbol-constants";
+import { EphemerisService } from "../ephemeris/ephemeris.service";
 import { LoggerService } from "../logger/logger.service";
 
 import type {
   AspectPhase,
   Body,
   SpecialtyAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
-import type { CoordinateEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
+} from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
+import type { CoordinateEphemeris } from "../ephemeris/ephemeris.types";
 import type { Moment } from "moment-timezone";
 
 /**

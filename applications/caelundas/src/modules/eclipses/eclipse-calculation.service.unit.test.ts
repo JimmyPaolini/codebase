@@ -1,21 +1,21 @@
-import { EphemerisService } from "@caelundas/src/modules/ephemeris/ephemeris.service";
-import { MathService } from "@caelundas/src/modules/math/math.service";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import moment, { type Moment } from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { EphemerisService } from "../ephemeris/ephemeris.service";
 import { LoggerService } from "../logger/logger.service";
+import { MathService } from "../math/math.service";
 
 import { EclipseCalculationService } from "./eclipse-calculation.service";
 import { EclipseEventService } from "./eclipse-event.service";
 import { EclipseGeometryService } from "./eclipse-geometry.service";
 import { EclipseTopocentricService } from "./eclipse-topocentric.service";
 
+import type { EclipsePhase } from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
 import type { NeighborValues } from "../math/math.types";
 import type { EclipseCoordinates, EclipseFrame } from "./eclipses.types";
-import type { EclipsePhase } from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 
 describe(EclipseCalculationService, () => {
   let service: EclipseCalculationService;

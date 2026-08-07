@@ -1,15 +1,13 @@
-import { nodes } from "@caelundas/src/modules/caelundas/caelundas.constants";
 import { Injectable } from "@nestjs/common";
+
+import { nodes } from "../caelundas/caelundas.constants";
 
 import {
   swissEphemerisConstantByAsteroid,
   swissEphemerisConstantByPlanet,
 } from "./ephemeris.constants";
 
-import type {
-  Body,
-  Node,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
+import type { Body, Node } from "../caelundas/caelundas.types";
 
 /**
  * Body and node constant lookups and classification predicates for Swiss Ephemeris.

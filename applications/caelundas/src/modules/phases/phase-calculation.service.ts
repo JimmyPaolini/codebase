@@ -1,11 +1,12 @@
-import { MARGIN_MINUTES } from "@caelundas/src/modules/caelundas/caelundas.constants";
-import { EphemerisService } from "@caelundas/src/modules/ephemeris/ephemeris.service";
-import { MathService } from "@caelundas/src/modules/math/math.service";
-import { TwilightsService } from "@caelundas/src/modules/twilights/twilights.service";
 import { Injectable } from "@nestjs/common";
 
+import { MARGIN_MINUTES } from "../caelundas/caelundas.constants";
+import { EphemerisService } from "../ephemeris/ephemeris.service";
 import { LoggerService } from "../logger/logger.service";
+import { MathService } from "../math/math.service";
+import { TwilightsService } from "../twilights/twilights.service";
 
+import type { Event } from "../calendar/calendar.types";
 import type {
   BrightnessArguments,
   BrightnessesArguments,
@@ -19,7 +20,6 @@ import type {
   PhaseParameters,
   RiseSetLongitudeArguments,
 } from "./phases.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 import type { Moment } from "moment-timezone";
 
 /**

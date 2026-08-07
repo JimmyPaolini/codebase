@@ -1,5 +1,6 @@
-import { AspectsUtilitiesModule } from "@caelundas/src/modules/aspects/aspects.utilities.module";
 import { Module } from "@nestjs/common";
+
+import { AspectsUtilitiesModule } from "../aspects/aspects.utilities.module";
 
 import { TripleAspectsComposerService } from "./triple-aspects-composer.service";
 import { TripleAspectsDetectorService } from "./triple-aspects-detector.service";

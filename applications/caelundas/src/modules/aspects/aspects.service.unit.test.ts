@@ -1,33 +1,33 @@
-import { LoggerService } from "@caelundas/src/modules/logger/logger.service";
-import { MajorAspectEventService } from "@caelundas/src/modules/major-aspects/major-aspect-event.service";
-import { MajorAspectProgressiveService } from "@caelundas/src/modules/major-aspects/major-aspect-progressive.service";
-import { MinorAspectsComposerService } from "@caelundas/src/modules/minor-aspects/minor-aspects-composer.service";
-import { MinorAspectsEventService } from "@caelundas/src/modules/minor-aspects/minor-aspects-event.service";
-import { MinorAspectsProgressiveService } from "@caelundas/src/modules/minor-aspects/minor-aspects-progressive.service";
-import { QuadrupleAspectsBaseService } from "@caelundas/src/modules/quadruple-aspects/quadruple-aspects-base.service";
-import { QuadrupleAspectsComposerService } from "@caelundas/src/modules/quadruple-aspects/quadruple-aspects-composer.service";
-import { QuintupleAspectsComposerService } from "@caelundas/src/modules/quintuple-aspects/quintuple-aspects-composer.service";
-import { SextupleAspectsComposerService } from "@caelundas/src/modules/sextuple-aspects/sextuple-aspects-composer.service";
-import { SpecialtyAspectsComposerService } from "@caelundas/src/modules/specialty-aspects/specialty-aspects-composer.service";
-import { SpecialtyAspectsEventService } from "@caelundas/src/modules/specialty-aspects/specialty-aspects-event.service";
-import { SpecialtyAspectsProgressiveService } from "@caelundas/src/modules/specialty-aspects/specialty-aspects-progressive.service";
-import { TripleAspectsComposerService } from "@caelundas/src/modules/triple-aspects/triple-aspects-composer.service";
-import { TripleAspectsDetectorService } from "@caelundas/src/modules/triple-aspects/triple-aspects-detector.service";
 import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { EphemerisModule } from "../ephemeris/ephemeris.module";
+import { LoggerService } from "../logger/logger.service";
+import { MajorAspectEventService } from "../major-aspects/major-aspect-event.service";
+import { MajorAspectProgressiveService } from "../major-aspects/major-aspect-progressive.service";
 import { MajorAspectsService } from "../major-aspects/major-aspects.service";
 import { MathService } from "../math/math.service";
+import { MinorAspectsComposerService } from "../minor-aspects/minor-aspects-composer.service";
+import { MinorAspectsEventService } from "../minor-aspects/minor-aspects-event.service";
+import { MinorAspectsProgressiveService } from "../minor-aspects/minor-aspects-progressive.service";
 import { MinorAspectsService } from "../minor-aspects/minor-aspects.service";
 import { ProgressiveAspectService } from "../progressive/progressive-aspect.service";
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
+import { QuadrupleAspectsBaseService } from "../quadruple-aspects/quadruple-aspects-base.service";
+import { QuadrupleAspectsComposerService } from "../quadruple-aspects/quadruple-aspects-composer.service";
 import { QuadrupleAspectsService } from "../quadruple-aspects/quadruple-aspects.service";
+import { QuintupleAspectsComposerService } from "../quintuple-aspects/quintuple-aspects-composer.service";
 import { QuintupleAspectsService } from "../quintuple-aspects/quintuple-aspects.service";
+import { SextupleAspectsComposerService } from "../sextuple-aspects/sextuple-aspects-composer.service";
 import { SextupleAspectsService } from "../sextuple-aspects/sextuple-aspects.service";
+import { SpecialtyAspectsComposerService } from "../specialty-aspects/specialty-aspects-composer.service";
+import { SpecialtyAspectsEventService } from "../specialty-aspects/specialty-aspects-event.service";
+import { SpecialtyAspectsProgressiveService } from "../specialty-aspects/specialty-aspects-progressive.service";
 import { SpecialtyAspectsService } from "../specialty-aspects/specialty-aspects.service";
 import { StelliumService } from "../stellium/stellium.service";
+import { TripleAspectsComposerService } from "../triple-aspects/triple-aspects-composer.service";
+import { TripleAspectsDetectorService } from "../triple-aspects/triple-aspects-detector.service";
 import { TripleAspectsService } from "../triple-aspects/triple-aspects.service";
 
 import { AspectEphemerisService } from "./aspect-ephemeris.service";
@@ -44,14 +44,14 @@ import { AspectsService } from "./aspects.service";
 import { CompoundPhaseService } from "./compound-phase.service";
 import { ProgressiveCompoundEventService } from "./progressive-compound-event.service";
 
+import type { Body } from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
+import type { CoordinateEphemeris } from "../ephemeris/ephemeris.types";
 import type {
   CompositeAspectDetector,
   ProgressiveAspectDetector,
   SimpleAspectDetector,
 } from "./aspects.types";
-import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
-import type { CoordinateEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
 
 describe(AspectsService, () => {
   let service: AspectsService;

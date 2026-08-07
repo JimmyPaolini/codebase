@@ -1,14 +1,15 @@
-import { EphemerisService } from "@caelundas/src/modules/ephemeris/ephemeris.service";
-import { LoggerService } from "@caelundas/src/modules/logger/logger.service";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { EphemerisService } from "../ephemeris/ephemeris.service";
+import { LoggerService } from "../logger/logger.service";
+
 import { TwilightsBuilderService } from "./twilights-builder.service";
 import { TwilightsDetectorService } from "./twilights-detector.service";
 
-import type { AzimuthElevationEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
+import type { AzimuthElevationEphemeris } from "../ephemeris/ephemeris.types";
 
 describe(TwilightsDetectorService, () => {
   let service: TwilightsDetectorService;

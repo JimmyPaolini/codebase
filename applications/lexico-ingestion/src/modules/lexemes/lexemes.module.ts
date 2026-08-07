@@ -1,4 +1,3 @@
-import { WordsModule } from "@lexico-ingestion/src/modules/words/words.module";
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
@@ -10,6 +9,7 @@ import { PartOfSpeechModule } from "../part-of-speech/part-of-speech.module";
 import { PrincipalPartsModule } from "../principal-parts/principal-parts.module";
 import { PronunciationModule } from "../pronunciation/pronunciation.module";
 import { TranslationsModule } from "../translations/translations.module";
+import { WordsModule } from "../words/words.module";
 
 import { LexemesService } from "./lexemes.service";
 

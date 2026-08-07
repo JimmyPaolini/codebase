@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
+import type { Longitude } from "../ephemeris/ephemeris.types";
 import type { NeighborValues } from "./math.types";
-import type { Longitude } from "@caelundas/src/modules/ephemeris/ephemeris.types";
 
 /**
  * NestJS provider exposing mathematical utility functions for astronomical calculations.

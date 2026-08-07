@@ -1,21 +1,21 @@
-import { AspectsUtilitiesService } from "@caelundas/src/modules/aspects/aspects-utilities.service";
-import { majorAspects } from "@caelundas/src/modules/caelundas/caelundas.constants";
-import {
-  symbolByBody,
-  symbolByMajorAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
-import { capitalize } from "@caelundas/src/modules/caelundas/caelundas.types";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { AspectsUtilitiesService } from "../aspects/aspects-utilities.service";
+import { majorAspects } from "../caelundas/caelundas.constants";
+import {
+  symbolByBody,
+  symbolByMajorAspect,
+} from "../caelundas/caelundas.symbol-constants";
+import { capitalize } from "../caelundas/caelundas.types";
 import { LoggerService } from "../logger/logger.service";
 
 import type {
   AspectPhase,
   Body,
   MajorAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+} from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
 import type { Moment } from "moment-timezone";
 
 /**

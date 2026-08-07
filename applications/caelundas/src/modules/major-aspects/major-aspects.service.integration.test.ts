@@ -1,21 +1,22 @@
-import { AspectEphemerisService } from "@caelundas/src/modules/aspects/aspect-ephemeris.service";
-import { AspectsUtilitiesService } from "@caelundas/src/modules/aspects/aspects-utilities.service";
-import { aspectBodies as majorAspectBodies } from "@caelundas/src/modules/caelundas/caelundas.constants";
-import { EphemerisModule } from "@caelundas/src/modules/ephemeris/ephemeris.module";
-import { LoggerService } from "@caelundas/src/modules/logger/logger.service";
-import { MathService } from "@caelundas/src/modules/math/math.service";
-import { ProgressiveAspectService } from "@caelundas/src/modules/progressive/progressive-aspect.service";
-import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { Test } from "@nestjs/testing";
 import moment, { type Moment } from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
+
+import { AspectEphemerisService } from "../aspects/aspect-ephemeris.service";
+import { AspectsUtilitiesService } from "../aspects/aspects-utilities.service";
+import { aspectBodies as majorAspectBodies } from "../caelundas/caelundas.constants";
+import { EphemerisModule } from "../ephemeris/ephemeris.module";
+import { LoggerService } from "../logger/logger.service";
+import { MathService } from "../math/math.service";
+import { ProgressiveAspectService } from "../progressive/progressive-aspect.service";
+import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
 import { MajorAspectEventService } from "./major-aspect-event.service";
 import { MajorAspectProgressiveService } from "./major-aspect-progressive.service";
 import { MajorAspectsService } from "./major-aspects.service";
 
-import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { CoordinateEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
+import type { Body } from "../caelundas/caelundas.types";
+import type { CoordinateEphemeris } from "../ephemeris/ephemeris.types";
 
 /**
  * Integration tests for major aspect phase detection.

@@ -1,9 +1,9 @@
-import { EphemerisService } from "@caelundas/src/modules/ephemeris/ephemeris.service";
-import { MathService } from "@caelundas/src/modules/math/math.service";
-import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { Injectable } from "@nestjs/common";
 
+import { EphemerisService } from "../ephemeris/ephemeris.service";
 import { LoggerService } from "../logger/logger.service.js";
+import { MathService } from "../math/math.service";
+import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
 import { AnnualSolarCycleEventsService } from "./annual-solar-cycle-events.service.js";
 import {
@@ -18,6 +18,8 @@ import {
   SOLAR_RETREATING_SUMMARY,
 } from "./annual-solar-cycle.constants.js";
 
+import type { Event } from "../calendar/calendar.types";
+import type { DistanceEphemeris } from "../ephemeris/ephemeris.types";
 import type {
   DetectAnnualSolarCycleArguments,
   DetectAnnualSolarCycleEventsArguments,
@@ -25,8 +27,6 @@ import type {
   SolarCycleLongitudes,
   SolarDistanceSample,
 } from "./annual-solar-cycle.types.js";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
-import type { DistanceEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
 import type { Moment } from "moment-timezone";
 
 /**

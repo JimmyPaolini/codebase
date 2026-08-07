@@ -1,4 +1,4 @@
-import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
+import type { Body } from "../caelundas/caelundas.types";
 
 // 🏷️ Types
 

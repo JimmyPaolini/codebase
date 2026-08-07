@@ -1,16 +1,14 @@
-import { AspectGraphService } from "@caelundas/src/modules/aspects/aspect-graph.service";
-import { CompoundPhaseService } from "@caelundas/src/modules/aspects/compound-phase.service";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { AspectGraphService } from "../aspects/aspect-graph.service";
+import { CompoundPhaseService } from "../aspects/compound-phase.service";
+
 import { TripleAspectsComposerService } from "./triple-aspects-composer.service";
 
-import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
-import type {
-  Aspect,
-  Body,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import type { AspectBodies } from "../aspects/aspects.types";
+import type { Aspect, Body } from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
 import type { Moment } from "moment-timezone";
 
 /**

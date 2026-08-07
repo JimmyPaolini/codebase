@@ -1,17 +1,17 @@
-import { MathService } from "@caelundas/src/modules/math/math.service";
 import { createMock, type DeepMocked } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
+import { MathService } from "../math/math.service";
 
 import { EclipseEventService } from "./eclipse-event.service";
 import { EclipseGeometryService } from "./eclipse-geometry.service";
 import { EclipseTopocentricService } from "./eclipse-topocentric.service";
 
+import type { Event } from "../calendar/calendar.types";
 import type { EclipseCoordinates } from "./eclipses.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 
 describe(EclipseTopocentricService, () => {
   let service: EclipseTopocentricService;

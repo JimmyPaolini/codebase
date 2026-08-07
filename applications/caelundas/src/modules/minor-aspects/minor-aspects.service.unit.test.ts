@@ -1,23 +1,24 @@
-import { AspectEphemerisService } from "@caelundas/src/modules/aspects/aspect-ephemeris.service";
-import { AspectEventFormattingService } from "@caelundas/src/modules/aspects/aspect-event-formatting.service";
-import { AspectsUtilitiesService } from "@caelundas/src/modules/aspects/aspects-utilities.service";
-import { aspectBodies as minorAspectBodies } from "@caelundas/src/modules/caelundas/caelundas.constants";
-import { EphemerisModule } from "@caelundas/src/modules/ephemeris/ephemeris.module";
-import { LoggerService } from "@caelundas/src/modules/logger/logger.service";
-import { MathService } from "@caelundas/src/modules/math/math.service";
-import { MinorAspectsEventService } from "@caelundas/src/modules/minor-aspects/minor-aspects-event.service";
-import { MinorAspectsProgressiveService } from "@caelundas/src/modules/minor-aspects/minor-aspects-progressive.service";
-import { ProgressiveAspectService } from "@caelundas/src/modules/progressive/progressive-aspect.service";
-import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { Test } from "@nestjs/testing";
 import moment, { type Moment } from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { AspectEphemerisService } from "../aspects/aspect-ephemeris.service";
+import { AspectEventFormattingService } from "../aspects/aspect-event-formatting.service";
+import { AspectsUtilitiesService } from "../aspects/aspects-utilities.service";
+import { aspectBodies as minorAspectBodies } from "../caelundas/caelundas.constants";
+import { EphemerisModule } from "../ephemeris/ephemeris.module";
+import { LoggerService } from "../logger/logger.service";
+import { MathService } from "../math/math.service";
+import { ProgressiveAspectService } from "../progressive/progressive-aspect.service";
+import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
+
+import { MinorAspectsEventService } from "./minor-aspects-event.service";
+import { MinorAspectsProgressiveService } from "./minor-aspects-progressive.service";
 import { MinorAspectsService } from "./minor-aspects.service";
 
-import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
-import type { CoordinateEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
+import type { Body } from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
+import type { CoordinateEphemeris } from "../ephemeris/ephemeris.types";
 
 vi.mock("fs", () => ({
   default: {

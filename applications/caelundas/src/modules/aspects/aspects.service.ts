@@ -1,6 +1,7 @@
-import { bodies } from "@caelundas/src/modules/caelundas/caelundas.constants";
-import { isAspect } from "@caelundas/src/modules/caelundas/caelundas.types";
 import { Inject, Injectable } from "@nestjs/common";
+
+import { bodies } from "../caelundas/caelundas.constants";
+import { isAspect } from "../caelundas/caelundas.types";
 
 import {
   COMPOSITE_ASPECT_DETECTORS_TOKEN,
@@ -8,18 +9,15 @@ import {
   SIMPLE_ASPECT_DETECTORS_TOKEN,
 } from "./aspects.constants";
 
+import type { Aspect, Body } from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
+import type { CoordinateEphemeris } from "../ephemeris/ephemeris.types";
 import type {
   AspectBodies,
   CompositeAspectDetector,
   ProgressiveAspectDetector,
   SimpleAspectDetector,
 } from "./aspects.types";
-import type {
-  Aspect,
-  Body,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
-import type { CoordinateEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
 import type { Moment } from "moment-timezone";
 
 /**

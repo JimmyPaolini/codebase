@@ -1,14 +1,15 @@
-import { AspectGraphService } from "@caelundas/src/modules/aspects/aspect-graph.service";
-import { CompoundPhaseService } from "@caelundas/src/modules/aspects/compound-phase.service";
-import { ProgressiveCompoundEventService } from "@caelundas/src/modules/aspects/progressive-compound-event.service";
 import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { AspectGraphService } from "../aspects/aspect-graph.service";
+import { CompoundPhaseService } from "../aspects/compound-phase.service";
+import { ProgressiveCompoundEventService } from "../aspects/progressive-compound-event.service";
+
 import { StelliumService } from "./stellium.service";
 
-import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import type { AspectBodies } from "../aspects/aspects.types";
+import type { Event } from "../calendar/calendar.types";
 
 describe(StelliumService, () => {
   let service: StelliumService;

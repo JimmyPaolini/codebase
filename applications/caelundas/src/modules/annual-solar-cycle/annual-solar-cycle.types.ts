@@ -3,7 +3,7 @@
 import type {
   CoordinateEphemeris,
   DistanceEphemeris,
-} from "@caelundas/src/modules/ephemeris/ephemeris.types";
+} from "../ephemeris/ephemeris.types";
 import type { Moment } from "moment-timezone";
 
 /** Arguments used to build a single annual solar cycle event. */

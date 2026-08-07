@@ -1,14 +1,15 @@
-import { CompoundPhaseService } from "@caelundas/src/modules/aspects/compound-phase.service";
-import { MathService } from "@caelundas/src/modules/math/math.service";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { CompoundPhaseService } from "../aspects/compound-phase.service";
+import { MathService } from "../math/math.service";
+
 import { SextupleAspectsComposerService } from "./sextuple-aspects-composer.service";
 
+import type { AspectBodies } from "../aspects/aspects.types";
+import type { Body } from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
 import type { ComposeHexagramsArguments } from "./sextuple-aspects.types";
-import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
-import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 import type { Moment } from "moment-timezone";
 
 /**

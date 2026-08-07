@@ -1,5 +1,6 @@
-import { EphemerisModule } from "@caelundas/src/modules/ephemeris/ephemeris.module";
 import { Module } from "@nestjs/common";
+
+import { EphemerisModule } from "../ephemeris/ephemeris.module";
 
 import { IngressesComposerService } from "./ingresses-composer.service";
 import { IngressesService } from "./ingresses.service";

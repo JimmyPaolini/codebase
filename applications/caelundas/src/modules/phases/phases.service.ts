@@ -12,13 +12,13 @@ import {
 } from "./phases.constants";
 import { VenusianPhaseService } from "./venusian-phase.service";
 
+import type { Event } from "../calendar/calendar.types";
 import type {
   DetectPlanetaryEventsArguments,
   MartianPhaseEventArguments,
   MercurianPhaseEventArguments,
   VenusianPhaseEventArguments,
 } from "./phases.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 
 /**
  * Orchestrates planetary phase event detection across Venus, Mercury, and Mars.

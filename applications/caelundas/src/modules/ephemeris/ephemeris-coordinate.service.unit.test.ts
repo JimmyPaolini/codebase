@@ -1,9 +1,10 @@
-import { MathService } from "@caelundas/src/modules/math/math.service";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { calc, nod_aps_ut } from "sweph";
 import { beforeAll, describe, expect, it, vi } from "vitest";
+
+import { MathService } from "../math/math.service";
 
 import { EphemerisConstantsService } from "./ephemeris-constants.service";
 import { EphemerisCoordinateService } from "./ephemeris-coordinate.service";
