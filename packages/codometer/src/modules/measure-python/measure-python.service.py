@@ -1,4 +1,4 @@
-# packages/codometer/src/modules/python-analysis/analyze.py
+# packages/codometer/src/modules/measure-python/measure-python.service.py
 import ast
 import io
 import json
