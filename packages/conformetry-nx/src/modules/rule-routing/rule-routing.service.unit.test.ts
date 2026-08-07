@@ -8,7 +8,7 @@ import { RuleRoutingService } from "./rule-routing.service.js";
 
 const TEMPLATE_RULE_NAMES_BY_PROJECT_TAG = {
   "framework:nest-commander": [
-    "nestjs-command-application",
+    "nestjs-command-project",
     "nestjs-command-module",
     "nestjs-service-file",
     "nestjs-service-module",
@@ -23,7 +23,7 @@ describe(RuleRoutingService, () => {
     const result = ruleRoutingService.resolveTemplateRuleRouting({
       configuredTemplateRuleNames: [
         "jupyter-notebook-application",
-        "nestjs-command-application",
+        "nestjs-command-project",
         "nestjs-command-module",
         "nestjs-service-file",
         "nestjs-service-module",
@@ -37,7 +37,7 @@ describe(RuleRoutingService, () => {
     expect(result).toStrictEqual({
       projectPaths: ["applications/caelundas", "applications/lexico"],
       templateRuleNames: [
-        "nestjs-command-application",
+        "nestjs-command-project",
         "nestjs-command-module",
         "nestjs-service-file",
         "nestjs-service-module",
@@ -52,13 +52,13 @@ describe(RuleRoutingService, () => {
     const result = ruleRoutingService.resolveTemplateRuleRouting({
       configuredTemplateRuleNames: [
         "jupyter-notebook-application",
-        "nestjs-command-application",
+        "nestjs-command-project",
         "nestjs-service-file",
       ],
       projectSelectors: ["affirmations"],
       requestedTemplateRuleNames: [
         "jupyter-notebook-application",
-        "nestjs-command-application",
+        "nestjs-command-project",
       ],
       templateRuleNamesByProjectTag: TEMPLATE_RULE_NAMES_BY_PROJECT_TAG,
       workingDirectory: workspaceDirectory,
@@ -112,7 +112,7 @@ describe(RuleRoutingService, () => {
     const result = ruleRoutingService.resolveTemplateRuleRouting({
       configuredTemplateRuleNames: [
         "jupyter-notebook-application",
-        "nestjs-command-application",
+        "nestjs-command-project",
         "nestjs-service-file",
         "nestjs-service-module",
       ],
@@ -127,7 +127,7 @@ describe(RuleRoutingService, () => {
     expect(result).toStrictEqual({
       projectPaths: ["applications/caelundas", "applications/lexico"],
       templateRuleNames: [
-        "nestjs-command-application",
+        "nestjs-command-project",
         "nestjs-service-file",
         "nestjs-service-module",
       ],
@@ -141,7 +141,7 @@ describe(RuleRoutingService, () => {
     const relativeSelectorResult =
       ruleRoutingService.resolveTemplateRuleRouting({
         configuredTemplateRuleNames: [
-          "nestjs-command-application",
+          "nestjs-command-project",
           "nestjs-service-file",
         ],
         projectSelectors: ["applications/caelundas"],
@@ -151,7 +151,7 @@ describe(RuleRoutingService, () => {
     const dotPrefixedSelectorResult =
       ruleRoutingService.resolveTemplateRuleRouting({
         configuredTemplateRuleNames: [
-          "nestjs-command-application",
+          "nestjs-command-project",
           "nestjs-service-file",
         ],
         projectSelectors: ["./applications/caelundas"],
@@ -169,7 +169,7 @@ describe(RuleRoutingService, () => {
     const result = ruleRoutingService.resolveTemplateRuleRouting({
       configuredTemplateRuleNames: [
         "nestjs-service-module",
-        "nestjs-command-application",
+        "nestjs-command-project",
         "jupyter-notebook-application",
       ],
       projectSelectors: ["caelundas", "lexico"],
@@ -181,7 +181,7 @@ describe(RuleRoutingService, () => {
       projectPaths: ["applications/caelundas", "applications/lexico"],
       templateRuleNames: [
         "nestjs-service-module",
-        "nestjs-command-application",
+        "nestjs-command-project",
       ],
     });
   });
@@ -199,7 +199,7 @@ async function createWorkspaceFixture(): Promise<string> {
       sourceRoot: "applications/caelundas",
       tags: [
         "framework:nest-commander",
-        "generator:nestjs-command-application",
+        "generator:nestjs-command-project",
       ],
     },
   });

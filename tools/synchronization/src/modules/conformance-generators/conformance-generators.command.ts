@@ -24,6 +24,7 @@ export class ConformanceGeneratorsCommand extends CommandRunner {
   // 🏗 Dependency Injection
 
   constructor(
+    private readonly configurationService: ConfigurationService,
     private readonly logger: LoggerService,
     private readonly synchronizationModeService: SynchronizationService,
   ) {
@@ -121,14 +122,13 @@ export class ConformanceGeneratorsCommand extends CommandRunner {
    * Reads configuration/conformetry.config.ts and returns the list of generator metadata.
    */
   private async readGenerators(): Promise<ConformanceGeneratorMetadata[]> {
-    const configurationService = new ConfigurationService();
     const configurationPath = path.join(
       process.cwd(),
       "configuration/conformetry.config.ts",
     );
 
     const configuration =
-      await configurationService.loadConformetryConfiguration(
+      await this.configurationService.loadConformetryConfiguration(
         configurationPath,
       );
 

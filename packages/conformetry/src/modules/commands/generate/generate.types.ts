@@ -8,10 +8,3 @@ export interface GenerateCommandOptions {
   name?: string;
   targetDirectoryPath?: string;
 }
-
-/**
- * Describes a JSON schema fragment for generator input definitions.
- */
-export interface JsonSchemaDefinition {
-  properties?: Record<string, unknown>;
-}

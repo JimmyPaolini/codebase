@@ -5,7 +5,7 @@
   "sourceRoot": "packages/conformetry-json",
   "tags": [
     "framework:nestjs",
-    "generator:nestjs-service-package",
+    "generator:nestjs-service-project",
     "language:typescript",
     "name:conformetry-json",
     "type:package"

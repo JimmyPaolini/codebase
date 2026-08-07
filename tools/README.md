@@ -22,10 +22,6 @@ pnpm nx generate conformetry:react-component --name=Button
 - Auto-formatted code
 - Codebase conventions
 
-**Documentation:**
-
-- [documentation/development/conformance.md](../documentation/development/conformance.md) - Generator usage and conventions
-
 **Example Usage:**
 
 ```bash

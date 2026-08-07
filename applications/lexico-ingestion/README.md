@@ -1,6 +1,6 @@
 # LexicoIngestion
 
-NestJS command-line application scaffold generated with `conformance:nestjs-command-application`.
+NestJS command-line application scaffold generated with `conformance:nestjs-command-project`.
 
 ## Start
 

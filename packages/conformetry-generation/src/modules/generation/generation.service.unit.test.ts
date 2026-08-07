@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { describe, expect, it, vi } from "vitest";
 
-import { GenerationRuntimeService } from "./runtime.service.js";
+import { GenerationService } from "./generation.service.js";
 
 import type {
   DirectoryEntry,
@@ -12,7 +12,7 @@ import type {
   FormatterAdapter,
   GeneratorDefinition,
   GeneratorHookContext,
-} from "./runtime.types.js";
+} from "./generation.types.js";
 
 class MockFileSystemAdapter implements FileSystemAdapter {
   private readonly directoryEntries = new Map<string, DirectoryEntry[]>();
@@ -78,9 +78,9 @@ class MockFormatterAdapter implements FormatterAdapter {
   }
 }
 
-describe(GenerationRuntimeService, () => {
+describe(GenerationService, () => {
   it("builds expected substitutions for a generator name", () => {
-    const service = new GenerationRuntimeService();
+    const service = new GenerationService();
 
     expect(service.buildNameSubstitutions("alpha-module")).toStrictEqual({
       nameCamelCase: "alphaModule",
@@ -91,7 +91,7 @@ describe(GenerationRuntimeService, () => {
   });
 
   it("renders templates, runs hooks, and formats generated files", async () => {
-    const service = new GenerationRuntimeService();
+    const service = new GenerationService();
     const filesystem = new MockFileSystemAdapter();
     const formatter = new MockFormatterAdapter();
     let preGenerateContext: GeneratorHookContext | undefined;
@@ -189,7 +189,7 @@ describe(GenerationRuntimeService, () => {
   });
 
   it("normalizes inputs by excluding undefined values", () => {
-    const service = new GenerationRuntimeService() as unknown as {
+    const service = new GenerationService() as unknown as {
       normalizeInputs(
         inputs: Record<string, string | undefined>,
       ): Record<string, string>;
@@ -208,7 +208,7 @@ describe(GenerationRuntimeService, () => {
   });
 
   it("replaces placeholders and keeps unresolved placeholders unchanged", () => {
-    const service = new GenerationRuntimeService() as unknown as {
+    const service = new GenerationService() as unknown as {
       renderTemplateValue(
         value: string,
         substitutions: Record<string, string>,
@@ -224,7 +224,7 @@ describe(GenerationRuntimeService, () => {
   });
 
   it("falls back to default adapters and definition name when inputs are omitted", async () => {
-    const service = new GenerationRuntimeService();
+    const service = new GenerationService();
     const templateDirectoryPath = await mkdtemp(
       path.join(tmpdir(), "conformetry-generation-default-runtime-"),
     );

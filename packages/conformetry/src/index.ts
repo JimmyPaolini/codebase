@@ -1,10 +1,7 @@
 export { MainModule } from "./main.module.js";
 export { GenerateCommand } from "./modules/commands/generate/generate.command.js";
 export { GenerateModule } from "./modules/commands/generate/generate.module.js";
-export type {
-  GenerateCommandOptions,
-  JsonSchemaDefinition,
-} from "./modules/commands/generate/generate.types.js";
+export type { GenerateCommandOptions } from "./modules/commands/generate/generate.types.js";
 export { ValidateCommand } from "./modules/commands/validate/validate.command.js";
 export { ValidateModule } from "./modules/commands/validate/validate.module.js";
 export type { ValidateCommandOptions } from "./modules/commands/validate/validate.types.js";
@@ -16,10 +13,11 @@ export {
 } from "@jimmypaolini/conformetry-configuration";
 export type {
   ConformetryNxPluginOptions,
+  JsonSchemaDefinition,
   ResolveConfigurationPathArguments,
   ResolveTargetDirectoryPathArguments,
 } from "@jimmypaolini/conformetry-configuration";
 export {
-  ValidationPluginsService,
+  ValidationLanguageService,
   ValidationService,
 } from "@jimmypaolini/conformetry-validation";

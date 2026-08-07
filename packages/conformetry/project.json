@@ -6,7 +6,7 @@
   "tags": [
     "framework:nest-commander",
     "framework:nestjs",
-    "generator:nestjs-command-application",
+    "generator:nestjs-command-project",
     "language:typescript",
     "name:conformetry",
     "type:package"

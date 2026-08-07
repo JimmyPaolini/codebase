@@ -1,6 +1,6 @@
 # ConformetryPython
 
-NestJS service package scaffold generated with `conformetry:nestjs-service-package`.
+NestJS service package scaffold generated with `conformetry:nestjs-service-project`.
 
 ## Start
 

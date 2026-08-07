@@ -11,7 +11,7 @@ import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-confi
  * Builds the validator plugin set used by conformetry commands.
  */
 @Injectable()
-export class ValidationPluginsService {
+export class ValidationLanguageService {
   constructor(
     private readonly typeScriptValidatorService?: TypeScriptValidatorService,
     private readonly pythonValidatorService?: PythonValidatorService,
@@ -21,7 +21,7 @@ export class ValidationPluginsService {
   ) {}
 
   /**
-   *
+   * Ensures that all validator services are injected and available.
    */
   private requireValidatorServices(): {
     jsonValidatorService: JsonValidatorService;
@@ -38,7 +38,7 @@ export class ValidationPluginsService {
       this.textValidatorService === undefined
     ) {
       throw new Error(
-        "ValidationPluginsService requires injected validator services",
+        "ValidationLanguageService requires injected validator services",
       );
     }
 

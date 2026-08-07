@@ -22,11 +22,11 @@ const conformetryConfiguration: ConformetryConfiguration = {
         },
       },
     },
-    "nestjs-command-application": {
+    "nestjs-command-project": {
       aliases: ["nca"],
       description:
         "Generate a NestJS command-line application using nest-commander",
-      name: "nestjs-command-application",
+      name: "nestjs-command-project",
       parameters: {
         name: {
           description: "Project name (kebab-case)",
@@ -132,11 +132,11 @@ const conformetryConfiguration: ConformetryConfiguration = {
         },
       },
     },
-    "nestjs-service-package": {
+    "nestjs-service-project": {
       aliases: ["nsp"],
       description:
         "Generate a NestJS service package template for internal workspace libraries",
-      name: "nestjs-service-package",
+      name: "nestjs-service-project",
       parameters: {
         name: {
           description: "Project name (kebab-case)",

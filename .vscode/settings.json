@@ -931,12 +931,19 @@
     "statusBar.background": "#215732",
     "statusBar.foreground": "#e7e7e7",
     "statusBarItem.hoverBackground": "#2f7c47",
-    "statusBarItem.remoteBackground": "#215732",
+    "statusBarItem.remoteBackground": "#1b122e",
     "statusBarItem.remoteForeground": "#e7e7e7",
     "titleBar.activeBackground": "#215732",
     "titleBar.activeForeground": "#e7e7e7",
     "titleBar.inactiveBackground": "#21573299",
-    "titleBar.inactiveForeground": "#e7e7e799"
+    "titleBar.inactiveForeground": "#e7e7e799",
+    "activityBarTop.activeBackground": "#2f7c47",
+    "activityBarTop.background": "#2f7c47",
+    "activityBarTop.foreground": "#e7e7e7",
+    "activityBarTop.inactiveForeground": "#e7e7e799",
+    "commandCenter.foreground": "#e7e7e7",
+    "statusBar.debuggingBackground": "#215732",
+    "statusBar.debuggingForeground": "#e7e7e7"
   },
   "workbench.editor.alwaysShowEditorActions": true,
   "workbench.editor.editorActionsLocation": "titleBar",
@@ -961,5 +968,6 @@
   "workbench.panel.showLabels": false,
   "workbench.settings.alwaysShowAdvancedSettings": true,
   "workbench.sideBar.location": "right",
-  "workbench.startupEditor": "agentSessionsWelcomePage"
+  "workbench.startupEditor": "agentSessionsWelcomePage",
+  "github.copilot.chat.claudeAgent.allowAutoPermissions": true
 }

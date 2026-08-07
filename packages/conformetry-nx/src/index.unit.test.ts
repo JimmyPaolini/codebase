@@ -123,7 +123,7 @@ function createStubTree(): Tree {
             configFilePath: "configuration/plugin.conformetry.config.ts",
             templateRuleNamesByProjectTag: {
               "framework:nest-commander": [
-                "nestjs-command-application",
+                "nestjs-command-project",
                 "nestjs-command-module",
                 "nestjs-service-file",
                 "nestjs-service-module",
@@ -198,7 +198,7 @@ describe("conformetry-nx index", () => {
         run: generateJupyterNotebookApplication,
       },
       {
-        generatorName: "nestjs-command-application",
+        generatorName: "nestjs-command-project",
         run: generateNestjsCommandApplication,
       },
       {
@@ -226,7 +226,7 @@ describe("conformetry-nx index", () => {
         run: generateNestjsServiceModule,
       },
       {
-        generatorName: "nestjs-service-package",
+        generatorName: "nestjs-service-project",
         run: generateNestjsServicePackage,
       },
       {

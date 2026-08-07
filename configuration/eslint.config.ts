@@ -363,13 +363,14 @@ export default [
               onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
               sourceTag: "name:conformetry-typescript",
             },
-            // conformetry-configuration and conformetry-generation cannot depend on other workspace libraries
+            // conformetry-configuration cannot depend on other workspace libraries
             {
               onlyDependOnLibsWithTags: [],
               sourceTag: "name:conformetry-configuration",
             },
+            // conformetry-generation can depend on conformetry-configuration only
             {
-              onlyDependOnLibsWithTags: [],
+              onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
               sourceTag: "name:conformetry-generation",
             },
             // Packages cannot depend on applications (no upward dependencies)

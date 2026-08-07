@@ -1,6 +1,6 @@
 # Conformetry
 
-NestJS command-line application scaffold generated with `conformance:nestjs-command-application`.
+NestJS command-line application scaffold generated with `conformance:nestjs-command-project`.
 
 `@jimmypaolini/conformetry` is the orchestration facade for conformetry generation and validation workflows.
 

@@ -1,15 +1,26 @@
 import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
-import { GenerationRuntimeService } from "@jimmypaolini/conformetry-generation";
+import { GenerationService } from "@jimmypaolini/conformetry-generation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-
-import { GenerateCommandArgumentsService } from "./generate-command-arguments.service.js";
 
 import type { TestingModule } from "@nestjs/testing";
 
-const mockLoadConformetryConfiguration =
-  vi.fn<(path: string) => Promise<{ generators: Record<string, unknown> }>>();
-const mockRunGenerator = vi.fn<(input: unknown) => Promise<unknown>>();
-const mockLoggerLog = vi.fn<(message: unknown) => void>();
+const {
+  mockCollectGeneratorInputsFromCommandArguments,
+  mockLoadConformetryConfiguration,
+  mockLoggerLog,
+  mockRunGenerator,
+} = vi.hoisted(() => {
+  return {
+    mockCollectGeneratorInputsFromCommandArguments:
+      vi.fn<(args: unknown) => Record<string, string>>(),
+    mockLoadConformetryConfiguration:
+      vi.fn<
+        (path: string) => Promise<{ generators: Record<string, unknown> }>
+      >(),
+    mockLoggerLog: vi.fn<(message: unknown) => void>(),
+    mockRunGenerator: vi.fn<(input: unknown) => Promise<unknown>>(),
+  };
+});
 const designParameterTypesMetadataKey = `design:${["param", "types"].join("")}`;
 
 vi.mock("@nestjs/common", async () => {
@@ -35,6 +46,8 @@ vi.mock("@nestjs/common", async () => {
 
 vi.mock("@jimmypaolini/conformetry-configuration", () => {
   return {
+    collectGeneratorInputsFromCommandArguments:
+      mockCollectGeneratorInputsFromCommandArguments,
     ConfigurationService: class ConfigurationService {
       loadConformetryConfiguration = mockLoadConformetryConfiguration;
     },
@@ -43,20 +56,18 @@ vi.mock("@jimmypaolini/conformetry-configuration", () => {
 
 vi.mock("@jimmypaolini/conformetry-generation", () => {
   return {
-    GenerationRuntimeService: class GenerationRuntimeService {
+    GenerationService: class GenerationService {
       runGenerator = mockRunGenerator;
     },
   };
 });
 
 describe("generateCommand", () => {
-  const createGenerateCommandArgumentsService =
-    (): GenerateCommandArgumentsService => {
-      return new GenerateCommandArgumentsService();
-    };
-
   beforeEach(() => {
     vi.clearAllMocks();
+    mockCollectGeneratorInputsFromCommandArguments.mockReturnValue({
+      project: "lexico",
+    });
     process.argv = ["node", "conformetry", "generate", "--project", "lexico"];
   });
 
@@ -64,8 +75,7 @@ describe("generateCommand", () => {
     const { GenerateCommand } = await import("./generate.command.js");
     const command = new GenerateCommand(
       new ConfigurationService(),
-      new GenerationRuntimeService(),
-      createGenerateCommandArgumentsService(),
+      new GenerationService(),
     );
 
     expect(command.parseConfig("configuration/conformetry.config.ts")).toBe(
@@ -82,8 +92,7 @@ describe("generateCommand", () => {
     const { GenerateCommand } = await import("./generate.command.js");
     const command = new GenerateCommand(
       new ConfigurationService(),
-      new GenerationRuntimeService(),
-      createGenerateCommandArgumentsService(),
+      new GenerationService(),
     );
 
     await expect(command.run([], { name: "react-component" })).rejects.toThrow(
@@ -102,8 +111,7 @@ describe("generateCommand", () => {
     const { GenerateCommand } = await import("./generate.command.js");
     const command = new GenerateCommand(
       new ConfigurationService(),
-      new GenerationRuntimeService(),
-      createGenerateCommandArgumentsService(),
+      new GenerationService(),
     );
 
     await expect(
@@ -115,6 +123,10 @@ describe("generateCommand", () => {
   });
 
   it("runs generator with schema-derived inputs and logs resulting file paths", async () => {
+    mockCollectGeneratorInputsFromCommandArguments.mockReturnValue({
+      project: "lexico-components",
+    });
+
     mockLoadConformetryConfiguration.mockResolvedValue({
       generators: {
         "react-component": {
@@ -135,8 +147,7 @@ describe("generateCommand", () => {
     const { GenerateCommand } = await import("./generate.command.js");
     const command = new GenerateCommand(
       new ConfigurationService(),
-      new GenerationRuntimeService(),
-      createGenerateCommandArgumentsService(),
+      new GenerationService(),
     );
 
     await command.run(["--project", "lexico-components"], {
@@ -147,6 +158,16 @@ describe("generateCommand", () => {
 
     expect(mockLoadConformetryConfiguration).toHaveBeenCalledWith(
       "configuration/conformetry.config.ts",
+    );
+    expect(mockCollectGeneratorInputsFromCommandArguments).toHaveBeenCalledWith(
+      {
+        rawArguments: ["--project", "lexico-components"],
+        schema: {
+          properties: {
+            project: { type: "string" },
+          },
+        },
+      },
     );
     expect(mockRunGenerator).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -189,8 +210,7 @@ describe("generateCommand", () => {
     const { GenerateCommand } = await import("./generate.command.js");
     const command = new GenerateCommand(
       new ConfigurationService(),
-      new GenerationRuntimeService(),
-      createGenerateCommandArgumentsService(),
+      new GenerationService(),
     );
 
     await command.run(["--project", "lexico"], {
@@ -245,7 +265,6 @@ describe("generateCommand", () => {
       testingModule = await Test.createTestingModule({
         providers: [
           GenerateCommand,
-          GenerateCommandArgumentsService,
           {
             provide: ConfigurationService,
             useValue: {
@@ -253,7 +272,7 @@ describe("generateCommand", () => {
             },
           },
           {
-            provide: GenerationRuntimeService,
+            provide: GenerationService,
             useValue: {
               runGenerator: mockRunGenerator,
             },

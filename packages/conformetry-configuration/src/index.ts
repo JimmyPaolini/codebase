@@ -15,6 +15,7 @@ export type {
   ResolveTargetDirectoryPathArguments,
 } from "./modules/configuration/configuration.types.js";
 export {
+  buildNameSubstitutions,
   collectGeneratorInputsFromCommandArguments,
   normalizeRuntimeOptions,
   resolveConfigurationPath,

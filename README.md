@@ -106,7 +106,6 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
 ### Architecture & Systems
 
 - [CI/CD Pipeline](documentation/github-actions.md) - GitHub Actions workflows
-- [Conformetry Generators](documentation/development/conformance.md) - Scaffolding code with the conformetry package ecosystem
 - [Static Analysis & Code Quality](documentation/code-quality/static-analysis.md) - Linting, formatting, and tests
 - [Deployment Models](documentation/architecture/deployment-models.md) - Kubernetes, Helm, and infrastructure architecture
 - [Framework Guides](documentation/frameworks/) - References for [Kubernetes](documentation/frameworks/kubernetes.md), [NestJS](documentation/frameworks/nestjs.md), and [LangChain Python](documentation/frameworks/langchain-python.md)

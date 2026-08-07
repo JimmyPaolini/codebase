@@ -5,7 +5,7 @@
   "sourceRoot": "packages/conformetry-markdown",
   "tags": [
     "framework:nestjs",
-    "generator:nestjs-service-package",
+    "generator:nestjs-service-project",
     "language:typescript",
     "name:conformetry-markdown",
     "type:package"

@@ -2,6 +2,7 @@ import { writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { createMock } from "@golevelup/ts-vitest";
+import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -63,6 +64,7 @@ describe(ConformanceGeneratorsCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         ConformanceGeneratorsCommand,
+        ConfigurationService,
         SynchronizationService,
         {
           provide: LoggerService,
@@ -90,6 +92,7 @@ describe(ConformanceGeneratorsCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         ConformanceGeneratorsCommand,
+        ConfigurationService,
         SynchronizationService,
         {
           provide: LoggerService,

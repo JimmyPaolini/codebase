@@ -1,51 +1,134 @@
+import { access, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { buildNameSubstitutions } from "@jimmypaolini/conformetry-configuration";
 import { Injectable } from "@nestjs/common";
 
-import { DefaultTemplateRenderer } from "./default-template-renderer.js";
-import { NodeFileSystemAdapter } from "./node-file-system-adapter.js";
-import { NoopFormatterAdapter } from "./noop-formatter-adapter.js";
-
 import type {
+  DirectoryEntry,
   FileSystemAdapter,
   FormatterAdapter,
   GeneratorHookContext,
   RunGeneratorArguments,
   RunGeneratorResult,
   TemplateRenderer,
-} from "./runtime.types.js";
+} from "./generation.types.js";
 
 /**
  * Runs conformetry generators without depending on Nx devkit.
  */
 @Injectable()
-export class GenerationRuntimeService {
-  private readonly defaultFileSystem: FileSystemAdapter =
-    new NodeFileSystemAdapter();
+export class GenerationService {
+  private readonly defaultFileSystem: FileSystemAdapter = {
+    exists: async (pathName: string): Promise<boolean> => {
+      return this.fileSystemPathExists(pathName);
+    },
+    listDirectory: async (directoryPath: string) => {
+      return this.fileSystemListDirectory(directoryPath);
+    },
+    makeDirectory: async (directoryPath: string): Promise<void> => {
+      await this.fileSystemMakeDirectory(directoryPath);
+    },
+    readFile: async (filePath: string): Promise<string> => {
+      return this.fileSystemReadFile(filePath);
+    },
+    writeFile: async (filePath: string, content: string): Promise<void> => {
+      await this.fileSystemWriteFile(filePath, content);
+    },
+  };
 
-  private readonly defaultFormatter: FormatterAdapter =
-    new NoopFormatterAdapter();
+  private readonly defaultFormatter: FormatterAdapter = {
+    formatFile: async (_filePath: string): Promise<void> => {
+      await Promise.resolve();
+    },
+    formatFiles: async (_filePaths: string[]): Promise<void> => {
+      await Promise.resolve();
+    },
+  };
 
-  private readonly defaultTemplateRenderer: TemplateRenderer =
-    new DefaultTemplateRenderer();
+  private readonly defaultTemplateRenderer: TemplateRenderer = {
+    render: (
+      templateContent: string,
+      substitutions: Record<string, string>,
+    ): string => {
+      return templateContent.replaceAll(
+        /\{\{([^{}]+)\}\}/gu,
+        (_token, field: string) => {
+          return substitutions[field.trim()] ?? _token;
+        },
+      );
+    },
+  };
 
   /**
    * Creates the hook context passed to generator hooks.
    */
   private createHookContext(args: {
     definition: RunGeneratorArguments["definition"];
-    generatedFilePaths: string[];
+    generatedInstanceFilePaths: string[];
     input: Record<string, string>;
     outputDirectoryPath: string;
     substitutions: Record<string, string>;
   }): GeneratorHookContext {
     return {
       definition: args.definition,
-      generatedFilePaths: args.generatedFilePaths,
+      generatedFilePaths: args.generatedInstanceFilePaths,
       input: args.input,
       outputDirectoryPath: args.outputDirectoryPath,
       substitutions: args.substitutions,
     };
+  }
+
+  /**
+   * Lists entries in a filesystem directory.
+   */
+  private async fileSystemListDirectory(
+    directoryPath: string,
+  ): Promise<DirectoryEntry[]> {
+    const entries = await readdir(directoryPath, { withFileTypes: true });
+    return entries.map((entry) => {
+      return {
+        isDirectory: entry.isDirectory(),
+        name: entry.name,
+      };
+    });
+  }
+
+  /**
+   * Creates a directory recursively.
+   */
+  private async fileSystemMakeDirectory(directoryPath: string): Promise<void> {
+    await mkdir(directoryPath, { recursive: true });
+  }
+
+  /**
+   * Returns whether a filesystem path exists.
+   */
+  private async fileSystemPathExists(pathName: string): Promise<boolean> {
+    try {
+      await access(pathName);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Reads a UTF-8 file from disk.
+   */
+  private async fileSystemReadFile(filePath: string): Promise<string> {
+    return readFile(filePath, "utf8");
+  }
+
+  /**
+   * Writes a UTF-8 file and ensures parent directories exist.
+   */
+  private async fileSystemWriteFile(
+    filePath: string,
+    content: string,
+  ): Promise<void> {
+    await mkdir(path.dirname(filePath), { recursive: true });
+    await writeFile(filePath, content, "utf8");
   }
 
   /**
@@ -66,51 +149,51 @@ export class GenerationRuntimeService {
   }
 
   /**
-   * Recursively renders a template tree and returns all generated paths.
+   * Recursively renders a template tree and returns all generated instance paths.
    */
-  private async renderTemplateDirectory(args: {
+  private async renderDirectory(args: {
     filesystem: FileSystemAdapter;
+    instanceDirectoryPath: string;
     substitutions: Record<string, string>;
-    targetDirectoryPath: string;
     templateDirectoryPath: string;
     templateRenderer: TemplateRenderer;
   }): Promise<string[]> {
     const {
       filesystem,
+      instanceDirectoryPath,
       substitutions,
-      targetDirectoryPath,
       templateDirectoryPath,
       templateRenderer,
     } = args;
 
     const entries = await filesystem.listDirectory(templateDirectoryPath);
-    const generatedFilePaths: string[] = [];
+    const generatedInstanceFilePaths: string[] = [];
 
     for (const entry of entries) {
       const paths = this.resolveTemplatePaths({
         entryName: entry.name,
+        instanceDirectoryPath,
         substitutions,
-        targetDirectoryPath,
         templateDirectoryPath,
       });
 
       if (entry.isDirectory) {
         await filesystem.makeDirectory(paths.nextTargetPath);
-        const childPaths = await this.renderTemplateDirectory({
+        const childPaths = await this.renderDirectory({
           filesystem,
+          instanceDirectoryPath: paths.nextInstancePath,
           substitutions,
-          targetDirectoryPath: paths.nextTargetPath,
           templateDirectoryPath: paths.nextTemplatePath,
           templateRenderer,
         });
-        generatedFilePaths.push(...childPaths);
+        generatedInstanceFilePaths.push(...childPaths);
         continue;
       }
 
-      generatedFilePaths.push(
-        await this.renderTemplateFile({
+      generatedInstanceFilePaths.push(
+        await this.renderFile({
           filesystem,
-          nextTargetPath: paths.nextTargetPath,
+          nextInstancePath: paths.nextInstancePath,
           nextTemplatePath: paths.nextTemplatePath,
           substitutions,
           templateRenderer,
@@ -118,15 +201,15 @@ export class GenerationRuntimeService {
       );
     }
 
-    return generatedFilePaths;
+    return generatedInstanceFilePaths;
   }
 
   /**
-   * Renders a single template file to disk.
+   * Renders a single template file into the generated instance tree.
    */
-  private async renderTemplateFile(args: {
+  private async renderFile(args: {
     filesystem: FileSystemAdapter;
-    nextTargetPath: string;
+    nextInstancePath: string;
     nextTemplatePath: string;
     substitutions: Record<string, string>;
     templateRenderer: TemplateRenderer;
@@ -136,23 +219,9 @@ export class GenerationRuntimeService {
       fileContent,
       args.substitutions,
     );
-    await args.filesystem.writeFile(args.nextTargetPath, renderedContent);
+    await args.filesystem.writeFile(args.nextInstancePath, renderedContent);
 
-    return args.nextTargetPath;
-  }
-
-  /**
-   * Renders the full template tree and sorts the generated paths.
-   */
-  private async renderTemplateTree(args: {
-    filesystem: FileSystemAdapter;
-    substitutions: Record<string, string>;
-    targetDirectoryPath: string;
-    templateDirectoryPath: string;
-    templateRenderer: TemplateRenderer;
-  }): Promise<string[]> {
-    const generatedFilePaths = await this.renderTemplateDirectory(args);
-    return generatedFilePaths.toSorted();
+    return args.nextInstancePath;
   }
 
   /**
@@ -189,15 +258,15 @@ export class GenerationRuntimeService {
   }
 
   /**
-   * Resolves template entry and target paths for the current item.
+   * Resolves template entry and instance paths for the current item.
    */
   private resolveTemplatePaths(args: {
     entryName: string;
+    instanceDirectoryPath: string;
     substitutions: Record<string, string>;
-    targetDirectoryPath: string;
     templateDirectoryPath: string;
   }): {
-    nextTargetPath: string;
+    nextInstancePath: string;
     nextTemplatePath: string;
   } {
     const renderedName = this.renderTemplateValue(
@@ -206,81 +275,16 @@ export class GenerationRuntimeService {
     );
 
     return {
-      nextTargetPath: path.join(args.targetDirectoryPath, renderedName),
+      nextInstancePath: path.join(args.instanceDirectoryPath, renderedName),
       nextTemplatePath: path.join(args.templateDirectoryPath, args.entryName),
     };
-  }
-
-  /**
-   * Converts a generator name to camel case.
-   */
-  private toCamelCase(value: string): string {
-    return value
-      .split(/[-_\s]+/)
-      .filter(Boolean)
-      .map((segment, index) => {
-        if (index === 0) {
-          return segment.toLowerCase();
-        }
-
-        return segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase();
-      })
-      .join("");
-  }
-
-  /**
-   * Converts a generator name to kebab case.
-   */
-  private toKebabCase(value: string): string {
-    return value
-      .trim()
-      .split(/[_\s]+/)
-      .flatMap((segment) => {
-        return segment.split(/(?=[A-Z])/);
-      })
-      .filter(Boolean)
-      .map((segment) => {
-        return segment.toLowerCase();
-      })
-      .join("-");
-  }
-
-  /**
-   * Converts a generator name to Pascal case.
-   */
-  private toPascalCase(value: string): string {
-    return this.toCamelCase(value).replace(/^./u, (character) => {
-      return character.toUpperCase();
-    });
-  }
-
-  /**
-   * Converts a generator name to snake case.
-   */
-  private toSnakeCase(value: string): string {
-    return value
-      .trim()
-      .split(/[-\s]+/)
-      .flatMap((segment) => {
-        return segment.split(/(?=[A-Z])/);
-      })
-      .filter(Boolean)
-      .map((segment) => {
-        return segment.toLowerCase();
-      })
-      .join("_");
   }
 
   /**
    * Builds common name substitutions from the provided generator name.
    */
   public buildNameSubstitutions(name: string): Record<string, string> {
-    return {
-      nameCamelCase: this.toCamelCase(name),
-      nameKebabCase: this.toKebabCase(name),
-      namePascalCase: this.toPascalCase(name),
-      nameSnakeCase: this.toSnakeCase(name),
-    };
+    return buildNameSubstitutions(name);
   }
 
   /**
@@ -306,7 +310,7 @@ export class GenerationRuntimeService {
     };
     const context = this.createHookContext({
       definition,
-      generatedFilePaths: [],
+      generatedInstanceFilePaths: [],
       input: normalizedInputs,
       outputDirectoryPath: targetDirectoryPath,
       substitutions,
@@ -314,13 +318,15 @@ export class GenerationRuntimeService {
 
     await definition.hooks?.preGenerate?.(context);
 
-    context.generatedFilePaths = await this.renderTemplateTree({
-      filesystem,
-      substitutions,
-      targetDirectoryPath,
-      templateDirectoryPath: definition.templateDirectoryPath,
-      templateRenderer,
-    });
+    context.generatedFilePaths = (
+      await this.renderDirectory({
+        filesystem,
+        instanceDirectoryPath: targetDirectoryPath,
+        substitutions,
+        templateDirectoryPath: definition.templateDirectoryPath,
+        templateRenderer,
+      })
+    ).toSorted();
 
     await definition.hooks?.postGenerate?.(context);
     await formatter.formatFiles(context.generatedFilePaths);

@@ -1,3 +1,4 @@
+// 🏷️ Types
 import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-configuration";
 
 /** Internal helper. */
@@ -10,7 +11,6 @@ export type JsonValidatorValidateResult = Awaited<
   ReturnType<ConformetryValidatorPlugin["validate"]>
 >;
 
-// 🏷️ Types
 /** Internal helper. */
 export type JsonValue =
   | boolean

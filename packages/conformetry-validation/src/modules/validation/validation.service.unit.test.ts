@@ -1,11 +1,18 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { ValidationService } from "./validation.service.js";
 
 describe(ValidationService, () => {
   it("returns success when all supplied plugins pass", async () => {
-    const validationService = new ValidationService();
-    const result = await validationService.runValidation({
+    const validationService = new ValidationService(
+      {
+        loadConformetryConfiguration: vi.fn(),
+      } as never,
+      {
+        buildValidatorPlugins: vi.fn(),
+      } as never,
+    );
+    const result = await validationService.validate({
       plugins: [
         {
           descriptor: {
@@ -30,8 +37,15 @@ describe(ValidationService, () => {
   });
 
   it("uses explicit project paths and returns a failed result when any plugin fails", async () => {
-    const validationService = new ValidationService();
-    const result = await validationService.runValidation({
+    const validationService = new ValidationService(
+      {
+        loadConformetryConfiguration: vi.fn(),
+      } as never,
+      {
+        buildValidatorPlugins: vi.fn(),
+      } as never,
+    );
+    const result = await validationService.validate({
       configurationPath: "configuration/conformetry.config.ts",
       plugins: [
         {
@@ -79,6 +93,56 @@ describe(ValidationService, () => {
     ]);
     expect(result.pluginResults[1]?.violations).toStrictEqual([
       "demo.ts: failed",
+    ]);
+  });
+
+  it("loads configuration and routes rules/projects before running plugin validation", async () => {
+    const loadConformetryConfiguration = vi.fn().mockResolvedValue({
+      generators: {
+        "nestjs-service-module": {},
+        "react-component": {},
+      },
+    });
+    const buildValidatorPlugins = vi.fn().mockReturnValue([
+      {
+        descriptor: {
+          fileExtensions: [".json"],
+          name: "json",
+        },
+        validate: async ({ filePaths }) => {
+          await Promise.resolve();
+          return {
+            checkedPaths: filePaths,
+            ok: true,
+            pluginName: "json",
+            violations: [],
+          };
+        },
+      },
+    ]);
+    const validationService = new ValidationService(
+      {
+        loadConformetryConfiguration,
+      } as never,
+      {
+        buildValidatorPlugins,
+      } as never,
+    );
+
+    const result = await validationService.validateConfiguredSelection({
+      configurationPath: "configuration/custom.config.ts",
+      requestedProjectPaths: ["packages/conformetry"],
+      requestedRuleNames: ["json", "react-component", "non-existent-rule"],
+      workingDirectory: process.cwd(),
+    });
+
+    expect(loadConformetryConfiguration).toHaveBeenCalledWith(
+      "configuration/custom.config.ts",
+    );
+    expect(buildValidatorPlugins).toHaveBeenCalledTimes(1);
+    expect(result.ok).toBe(true);
+    expect(result.pluginResults[0]?.checkedPaths).toStrictEqual([
+      "packages/conformetry",
     ]);
   });
 });

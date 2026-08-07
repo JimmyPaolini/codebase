@@ -5,7 +5,6 @@
   "cacheDirectory": ".nx/cache",
   "defaultBase": "main",
   "defaultProject": "codebase",
-  "excludedGlobs": ["**/configuration/conformetry-templates/**"],
   "generators": {
     "@nx/react": {
       "application": {
@@ -54,7 +53,6 @@
   "parallel": 3,
   "plugins": [
     {
-      "exclude": ["**/configuration/conformetry-templates/**"],
       "options": {
         "buildDepsTargetName": false,
         "buildTargetName": "build",
@@ -69,21 +67,19 @@
       "plugin": "@nx/vite/plugin"
     },
     {
-      "exclude": ["**/configuration/conformetry-templates/**"],
       "options": {
         "targetName": "eslint"
       },
       "plugin": "@nx/eslint/plugin"
     },
     {
-      "exclude": ["**/configuration/conformetry-templates/**"],
       "plugin": "@nx/vitest"
     },
     {
       "options": {
         "templateRuleNamesByProjectTag": {
           "framework:nest-commander": [
-            "nestjs-command-application",
+            "nestjs-command-project",
             "nestjs-command-module",
             "nestjs-service-file",
             "nestjs-service-module"
@@ -91,8 +87,8 @@
           "generator:jupyter-notebook-application": [
             "jupyter-notebook-application"
           ],
-          "generator:nestjs-command-application": [
-            "nestjs-command-application",
+          "generator:nestjs-command-project": [
+            "nestjs-command-project",
             "nestjs-command-module",
             "nestjs-service-file",
             "nestjs-service-module"
@@ -103,10 +99,10 @@
             "nestjs-service-file",
             "nestjs-service-module"
           ],
-          "generator:nestjs-service-package": [
+          "generator:nestjs-service-project": [
             "nestjs-service-file",
             "nestjs-service-module",
-            "nestjs-service-package"
+            "nestjs-service-project"
           ]
         },
         "validationTargetName": "conformetry-validate"

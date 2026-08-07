@@ -88,14 +88,14 @@ export async function generateJupyterNotebookApplication(
 }
 
 /**
- * Executes the nestjs-command-application generator.
+ * Executes the nestjs-command-project generator.
  */
 export async function generateNestjsCommandApplication(
   tree: Tree,
   options?: Record<string, unknown>,
 ): Promise<GeneratorCallback> {
   return await runWorkspaceGenerator({
-    generatorName: "nestjs-command-application",
+    generatorName: "nestjs-command-project",
     options,
     tree,
   });
@@ -186,14 +186,14 @@ export async function generateNestjsServiceModule(
 }
 
 /**
- * Executes the nestjs-service-package generator.
+ * Executes the nestjs-service-project generator.
  */
 export async function generateNestjsServicePackage(
   tree: Tree,
   options?: Record<string, unknown>,
 ): Promise<GeneratorCallback> {
   return await runWorkspaceGenerator({
-    generatorName: "nestjs-service-package",
+    generatorName: "nestjs-service-project",
     options,
     tree,
   });

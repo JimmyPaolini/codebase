@@ -1,6 +1,6 @@
 # ConformetryNx
 
-NestJS service package scaffold generated with `conformetry:nestjs-service-package`.
+NestJS service package scaffold generated with `conformetry:nestjs-service-project`.
 
 `@jimmypaolini/conformetry-nx` is the thin Nx integration layer for the conformetry toolchain.
 

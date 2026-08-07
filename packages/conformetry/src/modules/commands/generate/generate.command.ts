@@ -1,14 +1,13 @@
-import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
-import { GenerationRuntimeService } from "@jimmypaolini/conformetry-generation";
+import {
+  collectGeneratorInputsFromCommandArguments,
+  ConfigurationService,
+} from "@jimmypaolini/conformetry-configuration";
+import { GenerationService } from "@jimmypaolini/conformetry-generation";
 import { ConsoleLogger, Inject, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
-import { GenerateCommandArgumentsService } from "./generate-command-arguments.service.js";
-
-import type {
-  GenerateCommandOptions,
-  JsonSchemaDefinition,
-} from "./generate.types.js";
+import type { GenerateCommandOptions } from "./generate.types.js";
+import type { JsonSchemaDefinition } from "@jimmypaolini/conformetry-configuration";
 
 /**
  * Executes a conformetry generator from a configuration file.
@@ -22,10 +21,8 @@ export class GenerateCommand extends CommandRunner {
   constructor(
     @Inject(ConfigurationService)
     private readonly configurationService: ConfigurationService,
-    @Inject(GenerationRuntimeService)
-    private readonly generationRuntimeService: GenerationRuntimeService,
-    @Inject(GenerateCommandArgumentsService)
-    private readonly generateCommandArgumentsService: GenerateCommandArgumentsService,
+    @Inject(GenerationService)
+    private readonly generationService: GenerationService,
   ) {
     super();
     this.logger.setContext(GenerateCommand.name);
@@ -92,11 +89,10 @@ export class GenerateCommand extends CommandRunner {
     const schema: JsonSchemaDefinition = {
       properties: generatorDefinition.parameters,
     };
-    const generatorInputs =
-      this.generateCommandArgumentsService.collectGeneratorInputsFromArguments(
-        passedParameters,
-        schema,
-      );
+    const generatorInputs = collectGeneratorInputsFromCommandArguments({
+      rawArguments: passedParameters,
+      schema,
+    });
 
     await this.runConfiguredGeneration({
       configurationPath: options.config,
@@ -126,7 +122,7 @@ export class GenerateCommand extends CommandRunner {
       throw new Error(`Unknown generator "${args.generatorName}"`);
     }
 
-    const result = await this.generationRuntimeService.runGenerator({
+    const result = await this.generationService.runGenerator({
       definition: {
         ...(generatorDefinition.aliases === undefined
           ? {}

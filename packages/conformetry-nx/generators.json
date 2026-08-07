@@ -7,11 +7,11 @@
       "factory": "./src/index.ts#generateJupyterNotebookApplication",
       "schema": "../../configuration/conformetry-templates/jupyter-notebook-application/schema.json"
     },
-    "nestjs-command-application": {
+    "nestjs-command-project": {
       "aliases": ["nca"],
       "description": "Generate a NestJS command-line application using nest-commander",
       "factory": "./src/index.ts#generateNestjsCommandApplication",
-      "schema": "../../configuration/conformetry-templates/nestjs-command-application/schema.json"
+      "schema": "../../configuration/conformetry-templates/nestjs-command-project/schema.json"
     },
     "nestjs-command-module": {
       "aliases": ["ncm"],
@@ -49,11 +49,11 @@
       "factory": "./src/index.ts#generateNestjsServiceModule",
       "schema": "../../configuration/conformetry-templates/nestjs-service-module/schema.json"
     },
-    "nestjs-service-package": {
+    "nestjs-service-project": {
       "aliases": ["nsp"],
       "description": "Generate a NestJS service package template for internal workspace libraries",
       "factory": "./src/index.ts#generateNestjsServicePackage",
-      "schema": "../../configuration/conformetry-templates/nestjs-service-package/schema.json"
+      "schema": "../../configuration/conformetry-templates/nestjs-service-project/schema.json"
     },
     "react-component": {
       "aliases": ["c"],

@@ -1,5 +1,12 @@
 import type { KnipConfig } from "knip";
 
+const CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES = [
+  "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
+  "@nestjs/testing",
+  "pino-pretty",
+  "vitest",
+] as const;
+
 const config: KnipConfig = {
   $schema: "https://unpkg.com/knip@5/schema.json",
 
@@ -205,100 +212,55 @@ const config: KnipConfig = {
     "packages/conformetry-configuration": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [
-        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
-        "@nestjs/testing",
-        "pino-pretty",
-        "vitest",
-      ],
+      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-generation": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [
-        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
-        "@nestjs/testing",
-        "pino-pretty",
-        "vitest",
-      ],
-      project: "src/**/*.ts",
-    },
-    "packages/conformetry-validation": {
-      entry: ["src/index.ts"],
-      ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [
-        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
-        "@nestjs/testing",
-        "pino-pretty",
-        "vitest",
-      ],
-      project: "src/**/*.ts",
-    },
-    "packages/conformetry-nx": {
-      entry: ["src/index.ts"],
-      ignore: ["src/**/*.test.ts", "src/**/templates/**", "testing/**"],
-      ignoreDependencies: [
-        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
-        "@nestjs/testing",
-        "pino-pretty",
-        "vitest",
-      ],
-      project: "src/**/*.ts",
-    },
-    "packages/conformetry-typescript": {
-      entry: ["src/index.ts"],
-      ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [
-        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
-        "@nestjs/testing",
-        "pino-pretty",
-        "vitest",
-      ],
-      project: "src/**/*.ts",
-    },
-    "packages/conformetry-python": {
-      entry: ["src/index.ts"],
-      ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [
-        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
-        "@nestjs/testing",
-        "pino-pretty",
-        "vitest",
-      ],
-      project: "src/**/*.ts",
-    },
-    "packages/conformetry-markdown": {
-      entry: ["src/index.ts"],
-      ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [
-        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
-        "@nestjs/testing",
-        "pino-pretty",
-        "vitest",
-      ],
+      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-json": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [
-        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
-        "@nestjs/testing",
-        "pino-pretty",
-        "vitest",
-      ],
+      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      project: "src/**/*.ts",
+    },
+    "packages/conformetry-markdown": {
+      entry: ["src/index.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      project: "src/**/*.ts",
+    },
+    "packages/conformetry-nx": {
+      entry: ["src/index.ts"],
+      ignore: ["src/**/*.test.ts", "src/**/templates/**", "testing/**"],
+      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      project: "src/**/*.ts",
+    },
+    "packages/conformetry-python": {
+      entry: ["src/index.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-text": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [
-        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
-        "@nestjs/testing",
-        "pino-pretty",
-        "vitest",
-      ],
+      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      project: "src/**/*.ts",
+    },
+    "packages/conformetry-typescript": {
+      entry: ["src/index.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      project: "src/**/*.ts",
+    },
+    "packages/conformetry-validation": {
+      entry: ["src/index.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
   },
