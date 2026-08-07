@@ -6,12 +6,33 @@
  */
 export interface CodeStatisticsResult {
   folders: number;
+  javascript: JavascriptStatistics;
   json: JsonStatistics;
   linesOfCode: number;
   python: PythonStatistics;
   repoSizeMiB: string;
   sourceFiles: number;
-  typescriptJavascript: TypescriptJavascriptStatistics;
+  typescript: TypescriptStatistics;
+}
+
+/**
+ * Code statistics specific to JavaScript source files.
+ */
+export interface JavascriptStatistics {
+  asyncFunctions: number;
+  classes: number;
+  commentLines: number;
+  comments: number;
+  constants: number;
+  exported: number;
+  externalPackages: number;
+  files: number;
+  functions: number;
+  imports: number;
+  methods: number;
+  syncFunctions: number;
+  testFiles: number;
+  todos: number;
 }
 
 /**
@@ -51,27 +72,13 @@ export interface PythonStatistics {
 }
 
 /**
- * Code statistics specific to TypeScript and JavaScript source files.
+ * Code statistics specific to TypeScript source files.
  */
-export interface TypescriptJavascriptStatistics {
-  asyncFunctions: number;
-  classes: number;
-  commentLines: number;
-  comments: number;
-  constants: number;
+export interface TypescriptStatistics {
   decorators: number;
   docComments: number;
   enums: number;
-  exported: number;
-  externalPackages: number;
-  functions: number;
+  files: number;
   genericDeclarations: number;
-  imports: number;
   interfaces: number;
-  jsFiles: number;
-  methods: number;
-  syncFunctions: number;
-  testFiles: number;
-  todos: number;
-  tsFiles: number;
 }

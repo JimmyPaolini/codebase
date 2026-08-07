@@ -83,6 +83,22 @@ export class CodometerService {
 
     return {
       folders: folderCount,
+      javascript: {
+        asyncFunctions: typescriptStats.asyncFunctions,
+        classes: typescriptStats.classes,
+        commentLines: typescriptStats.commentLines,
+        comments: typescriptStats.comments,
+        constants: typescriptStats.constants,
+        exported: typescriptStats.exported,
+        externalPackages: typescriptStats.externalPackages.size,
+        files: typescriptStats.jsFiles,
+        functions: typescriptStats.functions,
+        imports: typescriptStats.imports,
+        methods: typescriptStats.methods,
+        syncFunctions: typescriptStats.syncFunctions,
+        testFiles: typescriptStats.testFiles,
+        todos: typescriptStats.todos,
+      },
       json: {
         arrays: jsonStatsResult.arrays,
         booleans: jsonStatsResult.booleans,
@@ -117,27 +133,13 @@ export class CodometerService {
         typescriptStats.tsFiles +
         typescriptStats.jsFiles +
         pythonStatsResult.files,
-      typescriptJavascript: {
-        asyncFunctions: typescriptStats.asyncFunctions,
-        classes: typescriptStats.classes,
-        commentLines: typescriptStats.commentLines,
-        comments: typescriptStats.comments,
-        constants: typescriptStats.constants,
+      typescript: {
         decorators: typescriptStats.decorators,
         docComments: typescriptStats.docComments,
         enums: typescriptStats.enums,
-        exported: typescriptStats.exported,
-        externalPackages: typescriptStats.externalPackages.size,
-        functions: typescriptStats.functions,
+        files: typescriptStats.tsFiles,
         genericDeclarations: typescriptStats.genericDeclarations,
-        imports: typescriptStats.imports,
         interfaces: typescriptStats.interfaces,
-        jsFiles: typescriptStats.jsFiles,
-        methods: typescriptStats.methods,
-        syncFunctions: typescriptStats.syncFunctions,
-        testFiles: typescriptStats.testFiles,
-        todos: typescriptStats.todos,
-        tsFiles: typescriptStats.tsFiles,
       },
     };
   }
