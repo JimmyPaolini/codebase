@@ -1,15 +1,15 @@
-import { EphemerisService } from "@caelundas/src/modules/ephemeris/ephemeris.service";
-import { MathService } from "@caelundas/src/modules/math/math.service";
 import { Injectable } from "@nestjs/common";
 
+import { EphemerisService } from "../ephemeris/ephemeris.service";
 import { LoggerService } from "../logger/logger.service";
+import { MathService } from "../math/math.service";
 
-import type { EclipseCoordinates } from "./eclipses.types";
 import type {
   AzimuthElevationEphemeris,
   CoordinateEphemeris,
   DiameterEphemeris,
-} from "@caelundas/src/modules/ephemeris/ephemeris.types";
+} from "../ephemeris/ephemeris.types";
+import type { EclipseCoordinates } from "./eclipses.types";
 import type { Moment } from "moment-timezone";
 
 /**

@@ -1,10 +1,10 @@
-import { AspectEphemerisService } from "@caelundas/src/modules/aspects/aspect-ephemeris.service";
-import { AspectEventFormattingService } from "@caelundas/src/modules/aspects/aspect-event-formatting.service";
-import { AspectsUtilitiesService } from "@caelundas/src/modules/aspects/aspects-utilities.service";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { AspectEphemerisService } from "../aspects/aspect-ephemeris.service";
+import { AspectEventFormattingService } from "../aspects/aspect-event-formatting.service";
+import { AspectsUtilitiesService } from "../aspects/aspects-utilities.service";
 import { LoggerService } from "../logger/logger.service";
 
 import { MinorAspectsEventService } from "./minor-aspects-event.service";

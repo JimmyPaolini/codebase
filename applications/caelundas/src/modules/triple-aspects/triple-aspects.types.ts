@@ -1,8 +1,5 @@
 // 🏷️ Types
-import type {
-  Body,
-  TripleAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
+import type { Body, TripleAspect } from "../caelundas/caelundas.types";
 
 /**
  * Typed body/aspect metadata extracted from a forming triple-aspect event for progressive output.

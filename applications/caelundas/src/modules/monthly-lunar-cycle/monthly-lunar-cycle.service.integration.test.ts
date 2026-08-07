@@ -1,16 +1,17 @@
-import { MARGIN_MINUTES } from "@caelundas/src/modules/caelundas/caelundas.constants";
-import { CalendarService } from "@caelundas/src/modules/calendar/calendar.service";
-import { EphemerisModule } from "@caelundas/src/modules/ephemeris/ephemeris.module";
-import { LoggerService } from "@caelundas/src/modules/logger/logger.service";
-import { MathService } from "@caelundas/src/modules/math/math.service";
 import { ConfigService } from "@nestjs/config";
 import { Test } from "@nestjs/testing";
 import moment, { type Moment } from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { MARGIN_MINUTES } from "../caelundas/caelundas.constants";
+import { CalendarService } from "../calendar/calendar.service";
+import { EphemerisModule } from "../ephemeris/ephemeris.module";
+import { LoggerService } from "../logger/logger.service";
+import { MathService } from "../math/math.service";
+
 import { MonthlyLunarCycleService } from "./monthly-lunar-cycle.service";
 
-import type { IlluminationEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
+import type { IlluminationEphemeris } from "../ephemeris/ephemeris.types";
 
 /**
  * Integration tests for lunar phase detection.

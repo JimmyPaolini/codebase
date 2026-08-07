@@ -1,11 +1,11 @@
-import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "../logger/logger.service";
+import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
+import type { EclipsePhase } from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
 import type { EclipseFrame } from "./eclipses.types";
-import type { EclipsePhase } from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 import type { Moment } from "moment-timezone";
 
 /**

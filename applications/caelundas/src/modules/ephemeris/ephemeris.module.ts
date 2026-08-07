@@ -1,5 +1,6 @@
-import { MathModule } from "@caelundas/src/modules/math/math.module";
 import { Module } from "@nestjs/common";
+
+import { MathModule } from "../math/math.module";
 
 import { EphemerisAggregationService } from "./ephemeris-aggregation.service";
 import { EphemerisConstantsService } from "./ephemeris-constants.service";

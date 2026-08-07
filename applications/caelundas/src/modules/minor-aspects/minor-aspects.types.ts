@@ -3,8 +3,8 @@ import type {
   AspectPhase,
   Body,
   MinorAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { CoordinateEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
+} from "../caelundas/caelundas.types";
+import type { CoordinateEphemeris } from "../ephemeris/ephemeris.types";
 import type { Moment } from "moment-timezone";
 
 /**

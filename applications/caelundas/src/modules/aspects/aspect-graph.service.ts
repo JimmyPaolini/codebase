@@ -2,11 +2,8 @@ import { Injectable } from "@nestjs/common";
 
 import { groupByToMap } from "../caelundas/caelundas.types";
 
+import type { Aspect, Body } from "../caelundas/caelundas.types";
 import type { AspectBodies } from "./aspects.types";
-import type {
-  Aspect,
-  Body,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
 
 /**
  * Shared helpers for aspect-edge graph queries used by compound-aspect services.

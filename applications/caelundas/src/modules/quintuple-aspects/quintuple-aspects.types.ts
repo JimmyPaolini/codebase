@@ -1,10 +1,10 @@
 // 🏷️ Types
-import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
+import type { AspectBodies } from "../aspects/aspects.types";
 import type {
   AspectPhase,
   Body,
   QuintupleAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
+} from "../caelundas/caelundas.types";
 import type { Moment } from "moment-timezone";
 
 /**

@@ -1,19 +1,16 @@
-import {
-  lunarPhases,
-  MARGIN_MINUTES,
-} from "@caelundas/src/modules/caelundas/caelundas.constants";
-import { symbolByLunarPhase } from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
-import { isLunarPhase } from "@caelundas/src/modules/caelundas/caelundas.types";
-import { CalendarService } from "@caelundas/src/modules/calendar/calendar.service";
-import { EphemerisService } from "@caelundas/src/modules/ephemeris/ephemeris.service";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { lunarPhases, MARGIN_MINUTES } from "../caelundas/caelundas.constants";
+import { symbolByLunarPhase } from "../caelundas/caelundas.symbol-constants";
+import { isLunarPhase } from "../caelundas/caelundas.types";
+import { CalendarService } from "../calendar/calendar.service";
+import { EphemerisService } from "../ephemeris/ephemeris.service";
 import { LoggerService } from "../logger/logger.service";
 
-import type { LunarPhase } from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
-import type { IlluminationEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
+import type { LunarPhase } from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
+import type { IlluminationEphemeris } from "../ephemeris/ephemeris.types";
 import type { Moment } from "moment-timezone";
 
 /**

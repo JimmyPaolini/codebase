@@ -1,21 +1,21 @@
-import { MajorAspectsModule } from "@caelundas/src/modules/major-aspects/major-aspects.module";
-import { MinorAspectsModule } from "@caelundas/src/modules/minor-aspects/minor-aspects.module";
-import { QuadrupleAspectsModule } from "@caelundas/src/modules/quadruple-aspects/quadruple-aspects.module";
-import { QuintupleAspectsModule } from "@caelundas/src/modules/quintuple-aspects/quintuple-aspects.module";
-import { SextupleAspectsModule } from "@caelundas/src/modules/sextuple-aspects/sextuple-aspects.module";
-import { SextupleAspectsService } from "@caelundas/src/modules/sextuple-aspects/sextuple-aspects.service";
-import { SpecialtyAspectsModule } from "@caelundas/src/modules/specialty-aspects/specialty-aspects.module";
-import { SpecialtyAspectsService } from "@caelundas/src/modules/specialty-aspects/specialty-aspects.service";
-import { StelliumModule } from "@caelundas/src/modules/stellium/stellium.module";
-import { StelliumService } from "@caelundas/src/modules/stellium/stellium.service";
-import { TripleAspectsModule } from "@caelundas/src/modules/triple-aspects/triple-aspects.module";
-import { TripleAspectsService } from "@caelundas/src/modules/triple-aspects/triple-aspects.service";
 import { Module } from "@nestjs/common";
 
+import { MajorAspectsModule } from "../major-aspects/major-aspects.module";
 import { MajorAspectsService } from "../major-aspects/major-aspects.service";
+import { MinorAspectsModule } from "../minor-aspects/minor-aspects.module";
 import { MinorAspectsService } from "../minor-aspects/minor-aspects.service";
+import { QuadrupleAspectsModule } from "../quadruple-aspects/quadruple-aspects.module";
 import { QuadrupleAspectsService } from "../quadruple-aspects/quadruple-aspects.service";
+import { QuintupleAspectsModule } from "../quintuple-aspects/quintuple-aspects.module";
 import { QuintupleAspectsService } from "../quintuple-aspects/quintuple-aspects.service";
+import { SextupleAspectsModule } from "../sextuple-aspects/sextuple-aspects.module";
+import { SextupleAspectsService } from "../sextuple-aspects/sextuple-aspects.service";
+import { SpecialtyAspectsModule } from "../specialty-aspects/specialty-aspects.module";
+import { SpecialtyAspectsService } from "../specialty-aspects/specialty-aspects.service";
+import { StelliumModule } from "../stellium/stellium.module";
+import { StelliumService } from "../stellium/stellium.service";
+import { TripleAspectsModule } from "../triple-aspects/triple-aspects.module";
+import { TripleAspectsService } from "../triple-aspects/triple-aspects.service";
 
 import {
   COMPOSITE_ASPECT_DETECTORS_TOKEN,

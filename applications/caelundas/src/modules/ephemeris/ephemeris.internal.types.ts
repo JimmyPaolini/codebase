@@ -1,3 +1,4 @@
+import type { Body, Node } from "../caelundas/caelundas.types";
 import type {
   AzimuthElevationEphemeris,
   CoordinateEphemeris,
@@ -5,10 +6,6 @@ import type {
   DistanceEphemeris,
   IlluminationEphemeris,
 } from "./ephemeris.types";
-import type {
-  Body,
-  Node,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
 import type { Moment } from "moment-timezone";
 
 /**

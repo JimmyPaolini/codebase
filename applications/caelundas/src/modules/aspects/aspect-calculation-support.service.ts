@@ -2,12 +2,9 @@ import { Injectable, Optional } from "@nestjs/common";
 
 import { EphemerisService } from "../ephemeris/ephemeris.service";
 
-import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
-import type {
-  AspectPhase,
-  Body,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { CoordinateEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
+import type { AspectPhase, Body } from "../caelundas/caelundas.types";
+import type { CoordinateEphemeris } from "../ephemeris/ephemeris.types";
+import type { AspectBodies } from "./aspects.types";
 import type { Moment } from "moment-timezone";
 
 /**

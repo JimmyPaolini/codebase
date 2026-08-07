@@ -1,20 +1,21 @@
-import { AnnualSolarCycleService } from "@caelundas/src/modules/annual-solar-cycle/annual-solar-cycle.service";
-import { AspectsService } from "@caelundas/src/modules/aspects/aspects.service";
-import { EclipsesService } from "@caelundas/src/modules/eclipses/eclipses.service";
-import { IngressesService } from "@caelundas/src/modules/ingresses/ingresses.service";
-import { LoggerService } from "@caelundas/src/modules/logger/logger.service";
-import { MonthlyLunarCycleService } from "@caelundas/src/modules/monthly-lunar-cycle/monthly-lunar-cycle.service";
-import { PhasesService } from "@caelundas/src/modules/phases/phases.service";
-import { RetrogradesService } from "@caelundas/src/modules/retrogrades/retrogrades.service";
-import { TwilightsService } from "@caelundas/src/modules/twilights/twilights.service";
 import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { AnnualSolarCycleService } from "../annual-solar-cycle/annual-solar-cycle.service";
+import { AspectsService } from "../aspects/aspects.service";
+import { EclipsesService } from "../eclipses/eclipses.service";
+import { IngressesService } from "../ingresses/ingresses.service";
+import { LoggerService } from "../logger/logger.service";
+import { MonthlyLunarCycleService } from "../monthly-lunar-cycle/monthly-lunar-cycle.service";
+import { PhasesService } from "../phases/phases.service";
+import { RetrogradesService } from "../retrogrades/retrogrades.service";
+import { TwilightsService } from "../twilights/twilights.service";
+
 import { ProgressiveUtilitiesService } from "./progressive-utilities.service";
 import { ProgressiveService } from "./progressive.service";
 
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import type { Event } from "../calendar/calendar.types";
 
 function makeEvent(summary: string): Event {
   return {

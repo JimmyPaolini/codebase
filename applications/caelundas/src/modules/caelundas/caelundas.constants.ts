@@ -10,12 +10,25 @@ import {
 } from "./caelundas.symbol-constants";
 
 // ♟️ Constants
-import type {
-  AzimuthElevationEphemerisBody,
-  DiameterEphemerisBody,
-  DistanceEphemerisBody,
-  IlluminationEphemerisBody,
-} from "../ephemeris/ephemeris.types";
+
+// Local type aliases for ephemeris body subsets to avoid a circular import through ephemeris.types.ts
+// These are copies of the corresponding types in ephemeris.types.ts — update both if the body sets change.
+/** Bodies for which azimuth/elevation ephemerides are generated. */
+type AzimuthElevationEphemerisBody = Extract<Body, "moon" | "sun">;
+/** Union of all tracked celestial bodies, derived from the symbol map. */
+type Body = keyof typeof symbolByBody;
+/** Bodies for which angular diameter ephemerides are generated. */
+type DiameterEphemerisBody = Extract<Body, "moon" | "sun">;
+/** Bodies for which distance ephemerides are generated. */
+type DistanceEphemerisBody = Extract<
+  Body,
+  "mars" | "mercury" | "sun" | "venus"
+>;
+/** Bodies for which illumination ephemerides are generated. */
+type IlluminationEphemerisBody = Extract<
+  Body,
+  "mars" | "mercury" | "moon" | "sun" | "venus"
+>;
 
 /** Union of all supported aspect keys from the combined aspect symbol map. */
 const aspectSymbols = {

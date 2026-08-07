@@ -1,25 +1,25 @@
+import { Injectable } from "@nestjs/common";
+
 import {
   MARGIN_MINUTES,
   retrogradeBodies,
-} from "@caelundas/src/modules/caelundas/caelundas.constants";
+} from "../caelundas/caelundas.constants";
 import {
   symbolByBody,
   symbolByOrbitalDirection,
-} from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
-import { capitalize } from "@caelundas/src/modules/caelundas/caelundas.types";
-import { EphemerisService } from "@caelundas/src/modules/ephemeris/ephemeris.service";
-import { MathService } from "@caelundas/src/modules/math/math.service";
-import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
-import { Injectable } from "@nestjs/common";
-
+} from "../caelundas/caelundas.symbol-constants";
+import { capitalize } from "../caelundas/caelundas.types";
+import { EphemerisService } from "../ephemeris/ephemeris.service";
 import { LoggerService } from "../logger/logger.service";
+import { MathService } from "../math/math.service";
+import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
 import type {
   OrbitalDirection,
   RetrogradeBody,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
-import type { CoordinateEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
+} from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
+import type { CoordinateEphemeris } from "../ephemeris/ephemeris.types";
 import type { Moment } from "moment-timezone";
 
 /**

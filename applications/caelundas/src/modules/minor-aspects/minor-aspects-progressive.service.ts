@@ -1,24 +1,19 @@
+import { Injectable } from "@nestjs/common";
+
 import {
   aspectBodies as minorAspectBodies,
   minorAspects,
-} from "@caelundas/src/modules/caelundas/caelundas.constants";
+} from "../caelundas/caelundas.constants";
 import {
   symbolByBody,
   symbolByMinorAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
-import {
-  isBody,
-  isMinorAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
-import { ProgressiveAspectService } from "@caelundas/src/modules/progressive/progressive-aspect.service";
-import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
-import { Injectable } from "@nestjs/common";
+} from "../caelundas/caelundas.symbol-constants";
+import { isBody, isMinorAspect } from "../caelundas/caelundas.types";
+import { ProgressiveAspectService } from "../progressive/progressive-aspect.service";
+import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
-import type {
-  Body,
-  MinorAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import type { Body, MinorAspect } from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
 
 /**
  * Builds progressive minor-aspect duration events by pairing forming and dissolving boundaries.

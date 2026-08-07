@@ -1,11 +1,7 @@
 // ♟️ Constants
 import { constants, set_ephe_path } from "sweph";
 
-import type {
-  Asteroid,
-  Node,
-  Planet,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
+import type { Asteroid, Node, Planet } from "../caelundas/caelundas.types";
 
 /** Swiss Ephemeris flag for converting ecliptic coordinates to horizontal (azimuth/elevation). */
 export const ECLIPTIC_TO_HORIZONTAL_FLAG: number = constants.SE_ECL2HOR;

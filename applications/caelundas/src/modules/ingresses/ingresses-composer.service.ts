@@ -1,32 +1,28 @@
+import { Injectable } from "@nestjs/common";
+import _ from "lodash";
+
 import {
   ingressBodies as signIngressBodies,
   signs,
-} from "@caelundas/src/modules/caelundas/caelundas.constants";
+} from "../caelundas/caelundas.constants";
 import {
   symbolByBody,
   symbolByDecan,
   symbolBySign,
-} from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
+} from "../caelundas/caelundas.symbol-constants";
 import {
   capitalize,
   isBody,
   isDecan,
   isSign,
   objectEntries,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
-import { EphemerisService } from "@caelundas/src/modules/ephemeris/ephemeris.service";
-import { Injectable } from "@nestjs/common";
-import _ from "lodash";
-
+} from "../caelundas/caelundas.types";
+import { EphemerisService } from "../ephemeris/ephemeris.service";
 import { LoggerService } from "../logger/logger.service";
 
-import type {
-  Body,
-  Decan,
-  Sign,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
-import type { CoordinateEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
+import type { Body, Decan, Sign } from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
+import type { CoordinateEphemeris } from "../ephemeris/ephemeris.types";
 import type { Moment } from "moment-timezone";
 
 /** Event building and ingress detection helpers for {@link IngressesService}. */

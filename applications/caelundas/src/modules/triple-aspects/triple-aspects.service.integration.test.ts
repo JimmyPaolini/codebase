@@ -1,17 +1,17 @@
-import { AspectGraphService } from "@caelundas/src/modules/aspects/aspect-graph.service";
-import { AspectPhaseEmojiService } from "@caelundas/src/modules/aspects/aspect-phase-emoji.service";
-import { CompoundPhaseService } from "@caelundas/src/modules/aspects/compound-phase.service";
 import moment from "moment-timezone";
 import { describe, expect, it } from "vitest";
 
+import { AspectGraphService } from "../aspects/aspect-graph.service";
+import { AspectPhaseEmojiService } from "../aspects/aspect-phase-emoji.service";
+import { CompoundPhaseService } from "../aspects/compound-phase.service";
 import { LoggerService } from "../logger/logger.service";
 
 import { TripleAspectsComposerService } from "./triple-aspects-composer.service";
 import { TripleAspectsDetectorService } from "./triple-aspects-detector.service";
 import { TripleAspectsService } from "./triple-aspects.service";
 
-import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import type { AspectBodies } from "../aspects/aspects.types";
+import type { Event } from "../calendar/calendar.types";
 
 /**
  * Integration tests for Triple Aspect pattern detection

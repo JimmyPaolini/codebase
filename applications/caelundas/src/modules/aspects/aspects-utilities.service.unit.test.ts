@@ -1,6 +1,7 @@
-import { MathService } from "@caelundas/src/modules/math/math.service";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
+
+import { MathService } from "../math/math.service";
 
 import { AspectsUtilitiesService } from "./aspects-utilities.service";
 

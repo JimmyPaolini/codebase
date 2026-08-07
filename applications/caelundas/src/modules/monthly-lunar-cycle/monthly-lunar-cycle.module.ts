@@ -1,6 +1,7 @@
-import { CalendarModule } from "@caelundas/src/modules/calendar/calendar.module";
-import { EphemerisModule } from "@caelundas/src/modules/ephemeris/ephemeris.module";
 import { Module } from "@nestjs/common";
+
+import { CalendarModule } from "../calendar/calendar.module";
+import { EphemerisModule } from "../ephemeris/ephemeris.module";
 
 import { MonthlyLunarCycleService } from "./monthly-lunar-cycle.service";
 

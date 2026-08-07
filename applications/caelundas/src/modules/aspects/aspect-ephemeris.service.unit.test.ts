@@ -1,7 +1,8 @@
-import { EphemerisService } from "@caelundas/src/modules/ephemeris/ephemeris.service";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
+
+import { EphemerisService } from "../ephemeris/ephemeris.service";
 
 import { AspectEphemerisService } from "./aspect-ephemeris.service";
 

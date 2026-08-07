@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-authentication_token="${GH_TOKEN:-${GITHUB_TOKEN:-}}"
 github_host='github.com'
 
 resolve_repository_owner() {
@@ -45,22 +44,62 @@ if verify_github_cli_access; then
   exit 0
 fi
 
-if [[ -z "${authentication_token}" ]]; then
+if [[ -z "${GH_TOKEN:-}" && -z "${GITHUB_TOKEN:-}" ]]; then
   echo '❌ GH CLI is not authenticated and GH_TOKEN/GITHUB_TOKEN are unavailable.' >&2
   exit 1
 fi
 
-if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
-  echo "::add-mask::${authentication_token}"
+authenticate_with_token() {
+  local authentication_token="$1"
+
+  # Return codes:
+  # 0 => authenticated and verified
+  # 1 => token login failed (fallback token may be attempted)
+  # 2 => non-token setup failure (do not attempt fallback token)
+  if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
+    echo "::add-mask::${authentication_token}"
+  fi
+
+  mkdir -p "${HOME}/.config/gh"
+  rm -f "${HOME}/.config/gh/hosts.yml"
+
+  if ! printf '%s' "${authentication_token}" | gh auth login --hostname "${github_host}" --with-token; then
+    return 1
+  fi
+
+  if ! gh auth setup-git; then
+    echo '❌ GH CLI authenticated but failed to configure git credential helper.' >&2
+    return 2
+  fi
+
+  verify_github_cli_access
+}
+
+if [[ -n "${GH_TOKEN:-}" ]]; then
+  authentication_status=0
+  authenticate_with_token "${GH_TOKEN}" || authentication_status=$?
+
+  if [[ "${authentication_status}" -eq 0 ]]; then
+    exit 0
+  fi
+
+  if [[ "${authentication_status}" -eq 2 ]]; then
+    exit 1
+  fi
 fi
 
-mkdir -p "${HOME}/.config/gh"
-rm -f "${HOME}/.config/gh/hosts.yml"
+if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+  authentication_status=0
+  authenticate_with_token "${GITHUB_TOKEN}" || authentication_status=$?
 
-printf '%s' "${authentication_token}" | gh auth login --hostname "${github_host}" --with-token
-gh auth setup-git
+  if [[ "${authentication_status}" -eq 0 ]]; then
+    exit 0
+  fi
 
-if ! verify_github_cli_access; then
-  echo '❌ GH CLI authentication bootstrap failed.' >&2
-  exit 1
+  if [[ "${authentication_status}" -eq 2 ]]; then
+    exit 1
+  fi
 fi
+
+echo '❌ GH CLI authentication bootstrap failed.' >&2
+exit 1

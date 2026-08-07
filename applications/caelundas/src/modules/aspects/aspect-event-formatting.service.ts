@@ -1,13 +1,11 @@
-import { symbolByBody } from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
-import { capitalize } from "@caelundas/src/modules/caelundas/caelundas.types";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
-import type {
-  AspectPhase,
-  Body,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import { symbolByBody } from "../caelundas/caelundas.symbol-constants";
+import { capitalize } from "../caelundas/caelundas.types";
+
+import type { AspectPhase, Body } from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
 import type { Moment } from "moment-timezone";
 
 /**

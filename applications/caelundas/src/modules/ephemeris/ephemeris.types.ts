@@ -1,4 +1,4 @@
-import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
+import type { Body } from "../caelundas/caelundas.types";
 
 // 🏷️ Types
 
@@ -18,6 +18,9 @@ export type AzimuthElevationEphemeris = Record<
 /**
  * Bodies for which azimuth/elevation ephemerides are generated.
  * Limited to Sun and Moon for rise/set calculations.
+ *
+ * @note A copy of this type exists in `caelundas.constants.ts` to avoid a circular
+ * import. Update both when the body set changes.
  */
 export type AzimuthElevationEphemerisBody = Extract<Body, "moon" | "sun">;
 
@@ -57,6 +60,9 @@ export type DiameterEphemeris = Record<string, { diameter: number }>;
 /**
  * Bodies for which diameter ephemerides are generated.
  * Limited to Sun and Moon for eclipse calculations.
+ *
+ * @note A copy of this type exists in `caelundas.constants.ts` to avoid a circular
+ * import. Update both when the body set changes.
  */
 export type DiameterEphemerisBody = Extract<Body, "moon" | "sun">;
 
@@ -71,6 +77,9 @@ export type DistanceEphemeris = Record<string, { distance: number }>;
 /**
  * Bodies for which distance ephemerides are generated.
  * Includes Sun (for apsis) and inner planets with visible orbital variations.
+ *
+ * @note A copy of this type exists in `caelundas.constants.ts` to avoid a circular
+ * import. Update both when the body set changes.
  */
 export type DistanceEphemerisBody = Extract<
   Body,
@@ -99,6 +108,9 @@ export type IlluminationEphemeris = Record<string, { illumination: number }>;
 /**
  * Bodies for which illumination ephemerides are generated.
  * Includes bodies with visible phases: Sun (always 100%), Moon, and inner planets.
+ *
+ * @note A copy of this type exists in `caelundas.constants.ts` to avoid a circular
+ * import. Update both when the body set changes.
  */
 export type IlluminationEphemerisBody = Extract<
   Body,

@@ -5,14 +5,11 @@ import { EphemerisConstantsService } from "./ephemeris-constants.service";
 import { EphemerisTimeService } from "./ephemeris-time.service";
 import { SWISS_EPHEMERIS_FLAGS } from "./ephemeris.constants";
 
+import type { Body, Node } from "../caelundas/caelundas.types";
 import type {
   DiameterEphemeris,
   IlluminationEphemeris,
 } from "./ephemeris.types";
-import type {
-  Body,
-  Node,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
 import type { Moment } from "moment-timezone";
 
 /**

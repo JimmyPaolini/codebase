@@ -1,11 +1,12 @@
-import { EphemerisService } from "@caelundas/src/modules/ephemeris/ephemeris.service";
 import { Injectable } from "@nestjs/common";
+
+import { EphemerisService } from "../ephemeris/ephemeris.service";
 
 import { TwilightsBuilderService } from "./twilights-builder.service";
 
+import type { Event } from "../calendar/calendar.types";
+import type { AzimuthElevationEphemeris } from "../ephemeris/ephemeris.types";
 import type { Twilight } from "./twilights.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
-import type { AzimuthElevationEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
 import type { Moment } from "moment-timezone";
 
 /**

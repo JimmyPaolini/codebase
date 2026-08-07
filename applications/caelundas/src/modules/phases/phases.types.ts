@@ -6,7 +6,7 @@ import type {
   DistanceEphemerisBody,
   IlluminationEphemeris,
   IlluminationEphemerisBody,
-} from "@caelundas/src/modules/ephemeris/ephemeris.types";
+} from "../ephemeris/ephemeris.types";
 import type { Moment } from "moment-timezone";
 
 /** Arguments used to compute scalar brightness. */
