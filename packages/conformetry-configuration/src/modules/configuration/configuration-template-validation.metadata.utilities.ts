@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { TemplateValidationOperations } from "./configuration-template-validation.operations.js";
+import { TemplateValidationOperations } from "./configuration-template-validation.operations.utilities.js";
 
 import type {
   ConformetryConfiguration,
