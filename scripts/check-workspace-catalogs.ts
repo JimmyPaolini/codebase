@@ -34,7 +34,10 @@ const workspaceScopes = ["applications", "packages", "tools"];
  * Determines whether a dependency name is a local workspace package.
  */
 function isInternalWorkspaceDependency(dependencyName: string): boolean {
-  return dependencyName.startsWith("@codebase/");
+  return (
+    dependencyName.startsWith("@codebase/") ||
+    dependencyName.startsWith("@jimmypaolini/")
+  );
 }
 
 /**

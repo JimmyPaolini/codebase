@@ -11,6 +11,7 @@
     "@eslint-react/eslint-plugin": "catalog:",
     "@eslint/js": "catalog:",
     "@eslint/markdown": "catalog:",
+    "@jimmypaolini/conformetry-nx": "workspace:*",
     "@nx/eslint": "catalog:",
     "@nx/eslint-plugin": "catalog:",
     "@nx/js": "catalog:",

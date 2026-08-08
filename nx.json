@@ -5,7 +5,6 @@
   "cacheDirectory": ".nx/cache",
   "defaultBase": "main",
   "defaultProject": "codebase",
-  "excludedGlobs": ["**/tools/conformance/src/modules/*/templates/**"],
   "generators": {
     "@nx/react": {
       "application": {
@@ -54,7 +53,6 @@
   "parallel": 3,
   "plugins": [
     {
-      "exclude": ["**/tools/conformance/src/modules/*/templates/**"],
       "options": {
         "buildDepsTargetName": false,
         "buildTargetName": "build",
@@ -69,15 +67,47 @@
       "plugin": "@nx/vite/plugin"
     },
     {
-      "exclude": ["**/tools/conformance/src/modules/*/templates/**"],
       "options": {
         "targetName": "eslint"
       },
       "plugin": "@nx/eslint/plugin"
     },
     {
-      "exclude": ["**/tools/conformance/src/modules/*/templates/**"],
       "plugin": "@nx/vitest"
+    },
+    {
+      "options": {
+        "templateRuleNamesByProjectTag": {
+          "framework:nest-commander": [
+            "nestjs-command-project",
+            "nestjs-command-module",
+            "nestjs-service-file",
+            "nestjs-service-module"
+          ],
+          "generator:jupyter-notebook-application": [
+            "jupyter-notebook-application"
+          ],
+          "generator:nestjs-command-project": [
+            "nestjs-command-project",
+            "nestjs-command-module",
+            "nestjs-service-file",
+            "nestjs-service-module"
+          ],
+          "generator:nestjs-graphql-application": [
+            "nestjs-graphql-application",
+            "nestjs-graphql-module",
+            "nestjs-service-file",
+            "nestjs-service-module"
+          ],
+          "generator:nestjs-service-project": [
+            "nestjs-service-file",
+            "nestjs-service-module",
+            "nestjs-service-project"
+          ]
+        },
+        "validationTargetName": "conformetry-validate"
+      },
+      "plugin": "@jimmypaolini/conformetry-nx"
     }
   ],
   "projects": {

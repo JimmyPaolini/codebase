@@ -3,5 +3,5 @@
 /** Files managed by the conformance-generators sync workflow. */
 export const SYNC_CONFORMANCE_GENERATORS_FILES: string[] = [
   "AGENTS.md",
-  "tools/conformance/generators.json",
+  "configuration/conformetry.config.ts",
 ];

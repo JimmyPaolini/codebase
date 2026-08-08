@@ -1,0 +1,60 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "conformetry-nx",
+  "projectType": "library",
+  "sourceRoot": "packages/conformetry-nx",
+  "tags": [
+    "framework:nestjs",
+    "language:typescript",
+    "name:conformetry-nx",
+    "type:package"
+  ],
+  "targets": {
+    "analyze-code": {},
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "assets": [
+          {
+            "glob": "generators.json",
+            "input": "packages/conformetry-nx",
+            "output": "."
+          },
+          {
+            "glob": "README.md",
+            "input": "packages/conformetry-nx",
+            "output": "."
+          },
+          {
+            "glob": "src/generators/init/schema.json",
+            "input": "packages/conformetry-nx",
+            "output": "."
+          },
+          {
+            "glob": "src/generators/init/templates/**",
+            "input": "packages/conformetry-nx",
+            "output": "."
+          }
+        ],
+        "main": "packages/conformetry-nx/src/index.ts",
+        "outputPath": "dist/packages/conformetry-nx",
+        "tsConfig": "packages/conformetry-nx/tsconfig.json"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "clean": {},
+    "dependency-cruiser": {},
+    "format": {},
+    "knip": {},
+    "lint": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "oxlint": {},
+    "prettier": {},
+    "spell-check": {},
+    "test": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}

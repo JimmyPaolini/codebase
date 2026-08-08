@@ -1,6 +1,6 @@
 # Caelundas
 
-NestJS command-line application scaffold generated with `conformance:nestjs-command-application`.
+NestJS command-line application scaffold generated with `conformance:nestjs-command-project`.
 
 **Astronomical event calendar generator using NASA's JPL Horizons ephemeris data.**
 

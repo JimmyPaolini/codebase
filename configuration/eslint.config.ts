@@ -305,34 +305,78 @@ export default [
       perfectionist: perfectionistPlugin,
     },
     rules: {
-      // Nx-specific rules
       "@nx/dependency-checks": "error",
       "@nx/enforce-module-boundaries": [
         "error",
         {
-          allow: [],
           depConstraints: [
-            // Applications can only depend on workspace packages (not other apps or tools)
             {
               onlyDependOnLibsWithTags: ["type:package"],
               sourceTag: "type:application",
             },
-            // Packages cannot depend on applications (no upward dependencies)
+            {
+              onlyDependOnLibsWithTags: ["name:conformetry"],
+              sourceTag: "name:conformetry-nx",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:conformetry-configuration",
+                "name:conformetry-generation",
+                "name:conformetry-validation",
+              ],
+              sourceTag: "name:conformetry",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:conformetry-configuration",
+                "name:conformetry-json",
+                "name:conformetry-markdown",
+                "name:conformetry-python",
+                "name:conformetry-text",
+                "name:conformetry-typescript",
+              ],
+              sourceTag: "name:conformetry-validation",
+            },
+            {
+              onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
+              sourceTag: "name:conformetry-json",
+            },
+            {
+              onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
+              sourceTag: "name:conformetry-markdown",
+            },
+            {
+              onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
+              sourceTag: "name:conformetry-python",
+            },
+            {
+              onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
+              sourceTag: "name:conformetry-text",
+            },
+            {
+              onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
+              sourceTag: "name:conformetry-typescript",
+            },
+            {
+              onlyDependOnLibsWithTags: [],
+              sourceTag: "name:conformetry-configuration",
+            },
+            {
+              onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
+              sourceTag: "name:conformetry-generation",
+            },
             {
               notDependOnLibsWithTags: ["type:application"],
               sourceTag: "type:package",
             },
-            // Frontend (React) must not import backend (NestJS) code
             {
               notDependOnLibsWithTags: ["framework:nestjs"],
               sourceTag: "framework:react",
             },
-            // Domain isolation: caelundas cannot import lexico packages
             {
               notDependOnLibsWithTags: ["domain:lexico"],
               sourceTag: "domain:caelundas",
             },
-            // Domain isolation: lexico cannot import caelundas packages
             {
               notDependOnLibsWithTags: ["domain:caelundas"],
               sourceTag: "domain:lexico",
@@ -749,7 +793,7 @@ export default [
           message:
             "Only imports and const declarations are allowed in constant files. Move other top-level symbols to dedicated files.",
           selector:
-            "Program > :not(ImportDeclaration):not(VariableDeclaration[kind='const']):not(ExportNamedDeclaration[declaration.type='VariableDeclaration'][declaration.kind='const']):not(ExportDefaultDeclaration[declaration.type='VariableDeclaration'][declaration.kind='const'])",
+            "Program > :not(ImportDeclaration):not(VariableDeclaration[kind='const']):not(ExportNamedDeclaration[declaration.type='VariableDeclaration'][declaration.kind='const']):not(ExportDefaultDeclaration[declaration.type='VariableDeclaration'][declaration.kind='const']):not(ClassDeclaration[superClass.type='Identifier'][superClass.name='Error']):not(ExportNamedDeclaration[declaration.type='ClassDeclaration'][declaration.superClass.type='Identifier'][declaration.superClass.name='Error']):not(ExportDefaultDeclaration[declaration.type='ClassDeclaration'][declaration.superClass.type='Identifier'][declaration.superClass.name='Error'])",
         },
       ],
     },

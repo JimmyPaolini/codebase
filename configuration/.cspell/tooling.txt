@@ -17,9 +17,11 @@ cipe
 cipes
 clinerules
 cmdk
+codebase
 codemod
 codemods
 commitlint
+conformetry
 context7
 cssmodule
 ctest
@@ -92,7 +94,6 @@ materialui
 mcp
 metatype
 middlewares
-codebase
 multiset
 multivalued
 musescore
@@ -124,12 +125,12 @@ oxlintignore
 oxlintrc
 pagehead
 paolini
+pbakaus
 pbundlesize
 peaceiris
 pinentry
 pipx
 pkill
-pbakaus
 pnpm
 pnpmfile
 polymorphic
@@ -201,8 +202,8 @@ ty
 typeof
 uncapitalize
 uncapitalizes
-unknowncase
 underspecified
+unknowncase
 unredacted
 unrs
 unstub

@@ -1,0 +1,67 @@
+{
+  "$schema": "../../node_modules/@nx/devkit/src/generators/generators-schema.json",
+  "generators": {
+    "jupyter-notebook-application": {
+      "aliases": ["jna"],
+      "description": "Generate a Python Jupyter notebook application",
+      "factory": "./src/index.ts#generateJupyterNotebookApplication",
+      "schema": "../../configuration/conformetry-templates/jupyter-notebook-application/schema.json"
+    },
+    "nestjs-command-project": {
+      "aliases": ["nca"],
+      "description": "Generate a NestJS command-line application using nest-commander",
+      "factory": "./src/index.ts#generateNestjsCommandApplication",
+      "schema": "../../configuration/conformetry-templates/nestjs-command-project/schema.json"
+    },
+    "nestjs-command-module": {
+      "aliases": ["ncm"],
+      "description": "Generate a NestJS command module with command, module, and unit test files",
+      "factory": "./src/index.ts#generateNestjsCommandModule",
+      "schema": "../../configuration/conformetry-templates/nestjs-command-module/schema.json"
+    },
+    "nestjs-dataloader-module": {
+      "aliases": ["ndm"],
+      "description": "Generate a NestJS dataloader module with dataloader, types, and unit test files",
+      "factory": "./src/index.ts#generateNestjsDataloaderModule",
+      "schema": "../../configuration/conformetry-templates/nestjs-dataloader-module/schema.json"
+    },
+    "nestjs-graphql-application": {
+      "aliases": ["nga"],
+      "description": "Generate a NestJS GraphQL API application",
+      "factory": "./src/index.ts#generateNestjsGraphqlApplication",
+      "schema": "../../configuration/conformetry-templates/nestjs-graphql-application/schema.json"
+    },
+    "nestjs-graphql-module": {
+      "aliases": ["ngm"],
+      "description": "Generate a NestJS GraphQL module with resolver, entities, inputs, args, factories, service, types, constants, and unit test files",
+      "factory": "./src/index.ts#generateNestjsGraphqlModule",
+      "schema": "../../configuration/conformetry-templates/nestjs-graphql-module/schema.json"
+    },
+    "nestjs-service-file": {
+      "aliases": ["nsf"],
+      "description": "Generate NestJS service and unit test files",
+      "factory": "./src/index.ts#generateNestjsServiceFile",
+      "schema": "../../configuration/conformetry-templates/nestjs-service-file/schema.json"
+    },
+    "nestjs-service-module": {
+      "aliases": ["nsm"],
+      "description": "Generate a NestJS service module with module, service, types, constants, and unit test files",
+      "factory": "./src/index.ts#generateNestjsServiceModule",
+      "schema": "../../configuration/conformetry-templates/nestjs-service-module/schema.json"
+    },
+    "nestjs-service-project": {
+      "aliases": ["nsp"],
+      "description": "Generate a NestJS service package template for internal workspace libraries",
+      "factory": "./src/index.ts#generateNestjsServicePackage",
+      "schema": "../../configuration/conformetry-templates/nestjs-service-project/schema.json"
+    },
+    "react-component": {
+      "aliases": ["c"],
+      "description": "Generate a React component with test file",
+      "factory": "./src/index.ts#generateReactComponent",
+      "schema": "../../configuration/conformetry-templates/react-component/schema.json"
+    }
+  },
+  "name": "@jimmypaolini/conformetry-nx",
+  "version": "0.0.1"
+}

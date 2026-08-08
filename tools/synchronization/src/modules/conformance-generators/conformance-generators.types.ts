@@ -6,11 +6,3 @@ export interface ConformanceGeneratorMetadata {
   description: string;
   name: string;
 }
-
-/** Shape of tools/conformance/generators.json consumed by this sync command. */
-export interface ConformanceGeneratorsJson {
-  generators: Record<
-    string,
-    { aliases?: string[]; description: string; factory: string; schema: string }
-  >;
-}

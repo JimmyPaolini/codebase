@@ -1,20 +1,18 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
+import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "../logger/logger.service";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
-import type {
-  ConformanceGeneratorMetadata,
-  ConformanceGeneratorsJson,
-} from "./conformance-generators.types";
+import type { ConformanceGeneratorMetadata } from "./conformance-generators.types";
 
 /**
- * CLI command that syncs the conformance generators table into AGENTS.md.
- * Reads tools/conformance/generators.json and injects a markdown table
+ * CLI command that syncs the conformetry generators table into AGENTS.md.
+ * Reads configuration/conformetry.config.ts and injects a markdown table
  * between marker comments.
  */
 @Command({
@@ -26,6 +24,7 @@ export class ConformanceGeneratorsCommand extends CommandRunner {
   // 🏗 Dependency Injection
 
   constructor(
+    private readonly configurationService: ConfigurationService,
     private readonly logger: LoggerService,
     private readonly synchronizationModeService: SynchronizationService,
   ) {
@@ -54,7 +53,7 @@ export class ConformanceGeneratorsCommand extends CommandRunner {
         "❌ Conformance generators table in AGENTS.md is out of sync\n",
       );
       this.logger.log(
-        `  Found ${generators.length} generators in tools/conformance/generators.json`,
+        "  Found generators in configuration/conformetry.config.ts",
       );
       this.logger.log("  Generated content doesn't match stored content");
       this.logger.log(
@@ -94,8 +93,8 @@ export class ConformanceGeneratorsCommand extends CommandRunner {
   } {
     const agentsFile = path.join(process.cwd(), "AGENTS.md");
     const content = readFileSync(agentsFile, "utf8");
-    const startMarker = "<!-- conformance-generators-table start -->";
-    const endMarker = "<!-- conformance-generators-table end -->";
+    const startMarker = "<!-- conformetry-generators-table start -->";
+    const endMarker = "<!-- conformetry-generators-table end -->";
 
     const startIndex = content.indexOf(startMarker);
     const endIndex = content.indexOf(endMarker);
@@ -120,19 +119,22 @@ export class ConformanceGeneratorsCommand extends CommandRunner {
   }
 
   /**
-   * Reads tools/conformance/generators.json and returns the list of generator metadata.
+   * Reads configuration/conformetry.config.ts and returns the list of generator metadata.
    */
-  private readGenerators(): ConformanceGeneratorMetadata[] {
-    const generatorsFile = path.join(
+  private async readGenerators(): Promise<ConformanceGeneratorMetadata[]> {
+    const configurationPath = path.join(
       process.cwd(),
-      "tools/conformance/generators.json",
+      "configuration/conformetry.config.ts",
     );
-    const content = readFileSync(generatorsFile, "utf8");
-    const json = JSON.parse(content) as ConformanceGeneratorsJson;
 
-    return Object.entries(json.generators).map(([name, config]) => ({
+    const configuration =
+      await this.configurationService.loadConformetryConfiguration(
+        configurationPath,
+      );
+
+    return Object.entries(configuration.generators).map(([name, config]) => ({
       aliases: config.aliases ?? [],
-      description: config.description,
+      description: config.description ?? "",
       name,
     }));
   }
@@ -173,7 +175,7 @@ export class ConformanceGeneratorsCommand extends CommandRunner {
       });
 
     try {
-      const generators = this.readGenerators();
+      const generators = await this.readGenerators();
 
       if (mode === "check") {
         const success = this.checkSync(generators);

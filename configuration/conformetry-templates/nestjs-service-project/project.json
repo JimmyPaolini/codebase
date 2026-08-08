@@ -1,0 +1,46 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "{{nameKebabCase}}",
+  "projectType": "library",
+  "sourceRoot": "{{type}}/{{nameKebabCase}}",
+  "tags": [
+    "framework:nestjs",
+    "generator:nestjs-service-project",
+    "language:typescript",
+    "name:{{nameKebabCase}}",
+    "type:package"
+  ],
+  "targets": {
+    "analyze-code": {},
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "{{type}}/{{nameKebabCase}}",
+            "output": "."
+          }
+        ],
+        "main": "{{type}}/{{nameKebabCase}}/src/index.ts",
+        "outputPath": "dist/{{type}}/{{nameKebabCase}}",
+        "tsConfig": "{{type}}/{{nameKebabCase}}/tsconfig.json"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "clean": {},
+    "dependency-cruiser": {},
+    "format": {},
+    "knip": {},
+    "lint": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "oxlint": {},
+    "prettier": {},
+    "spell-check": {},
+    "test": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}

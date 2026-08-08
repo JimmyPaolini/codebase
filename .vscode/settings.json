@@ -191,7 +191,7 @@
     "applications", // Changes spanning multiple applications in applications/ (e.g. lexico, caelundas, etc.)
     "caelundas", // Node.js CLI for astronomical calendar generation (NASA JPL ephemeris)
     "configuration", // Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.)
-    "conformance", // Code generator templates and conformance validation tests for generated instances
+    "conformetry", // Code generator templates and validation tests for generated instances
     "dependencies", // Dependency version changes (upgrades, additions, removals via pnpm)
     "deps", // Dependency version changes (upgrades, additions, removals via pnpm)
     "deployments", // GitHub Actions workflows and CI/CD pipeline configuration
@@ -619,7 +619,7 @@
     "commits": false,
     "contributors": false,
     "fileHistory": false,
-    "launchpad": false,
+    "launchpad": true,
     "remotes": false,
     "repositories": false,
     "searchAndCompare": false,
@@ -631,12 +631,12 @@
     "branches": true,
     "commits": true,
     "contributors": true,
-    "fileHistory": false,
+    "fileHistory": true,
     "launchpad": false,
     "remotes": true,
     "repositories": true,
-    "searchAndCompare": false,
-    "stashes": false,
+    "searchAndCompare": true,
+    "stashes": true,
     "tags": true,
     "worktrees": true
   },
@@ -931,12 +931,19 @@
     "statusBar.background": "#215732",
     "statusBar.foreground": "#e7e7e7",
     "statusBarItem.hoverBackground": "#2f7c47",
-    "statusBarItem.remoteBackground": "#215732",
+    "statusBarItem.remoteBackground": "#1b122e",
     "statusBarItem.remoteForeground": "#e7e7e7",
     "titleBar.activeBackground": "#215732",
     "titleBar.activeForeground": "#e7e7e7",
     "titleBar.inactiveBackground": "#21573299",
-    "titleBar.inactiveForeground": "#e7e7e799"
+    "titleBar.inactiveForeground": "#e7e7e799",
+    "activityBarTop.activeBackground": "#2f7c47",
+    "activityBarTop.background": "#2f7c47",
+    "activityBarTop.foreground": "#e7e7e7",
+    "activityBarTop.inactiveForeground": "#e7e7e799",
+    "commandCenter.foreground": "#e7e7e7",
+    "statusBar.debuggingBackground": "#215732",
+    "statusBar.debuggingForeground": "#e7e7e7"
   },
   "workbench.editor.alwaysShowEditorActions": true,
   "workbench.editor.editorActionsLocation": "titleBar",
@@ -961,5 +968,6 @@
   "workbench.panel.showLabels": false,
   "workbench.settings.alwaysShowAdvancedSettings": true,
   "workbench.sideBar.location": "right",
-  "workbench.startupEditor": "agentSessionsWelcomePage"
+  "workbench.startupEditor": "agentSessionsWelcomePage",
+  "github.copilot.chat.claudeAgent.allowAutoPermissions": true
 }

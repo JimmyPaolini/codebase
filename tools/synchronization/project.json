@@ -6,8 +6,9 @@
   "tags": [
     "framework:nest-commander",
     "framework:nestjs",
-    "generator:nestjs-command-application",
-    "language:typescript"
+    "generator:nestjs-command-project",
+    "language:typescript",
+    "type:package"
   ],
   "targets": {
     "analyze-code": {},

@@ -1,134 +1,65 @@
 # Tools - Nx Workspace Utilities
 
-This directory contains Nx plugins and generators for the codebase.
+This directory contains Nx plugins and workspace helpers for the codebase.
 
 ## Available Generators
 
-### Conformance (`conformance`)
+### Conformetry (`@jimmypaolini/conformetry-nx`)
 
-**Purpose:** Generate React components with test files following codebase conventions
+**Purpose:** Generate React components and other scaffolded modules with the conformetry package ecosystem.
 
 **Quick Start:**
 
 ```bash
-nx build conformance
-nx generate conformance:react-component --name=Button
+pnpm nx run codebase:conformetry-generate -- --help
+pnpm nx generate conformetry:react-component --name=Button
 ```
 
 **Features:**
 
 - React component with TypeScript
 - Vitest test file
-- Barrel exports (optional)
 - Auto-formatted code
 - Codebase conventions
-
-**Documentation:**
-
-- [README.md](./conformance/README.md) - Plugin overview and usage
 
 **Example Usage:**
 
 ```bash
 # Basic component
-nx generate conformance:react-component --name=Button
+pnpm nx generate conformetry:react-component --name=Button
 
 # With custom directory
-nx generate conformance:react-component \
+pnpm nx generate conformetry:react-component \
   --name=FormInput \
   --directory=src/components/form
-
-# Without barrel export
-nx generate conformance:react-component \
-  --name=Modal \
-  --export=direct
 ```
 
 ## Adding New Generators
 
 To add more generators to this workspace:
 
-1. Create new generator directory: `tools/new-generator/`
-2. Follow the structure of `conformance`
-3. Define schema, templates, and implementation
-4. Register in `generators.json`
+1. Create a new conformetry generator package under `packages/`
+2. Follow the runtime contracts in `packages/conformetry-generation`
+3. Register the generator in `configuration/conformetry.config.ts`
+4. Expose it through `packages/conformetry-nx`
 5. Build and test
-
-See [tools/conformance/AGENTS.md](./conformance/AGENTS.md) for detailed generator development patterns.
 
 ## Project Structure
 
 ```text
-tools/
-├── conformance/             # React component generator
-│   ├── src/
-│   │   └── generators/
-│   ├── package.json
-│   ├── generators.json
-│   ├── AGENTS.md
-│   └── README.md
-└── (more generators as needed)
+packages/
+├── conformetry/
+├── conformetry-generation/
+├── conformetry-validation/
+├── conformetry-nx/
+└── conformetry-configuration/
 ```
 
 ## Building Generators
 
 ```bash
-# Build specific generator
-nx build conformance
-
-# Watch mode
-nx build conformance --watch
+pnpm nx run conformetry-nx:build
 ```
-
-## Using in Projects
-
-### In lexico-components
-
-```bash
-nx generate conformance:react-component \
-  --name=Button \
-  --directory=packages/lexico-components/src/components
-```
-
-### In lexico App
-
-```bash
-nx generate conformance:react-component \
-  --name=HomePage \
-  --directory=applications/lexico/src/components
-```
-
-## Generator Development
-
-### Structure for New Generator
-
-```text
-tools/my-generator/
-├── src/
-│   ├── generators/
-│   │   └── my-generator/
-│   │       ├── generator.ts
-│   │       ├── schema.json
-│   │       ├── schema.d.ts
-│   │       ├── lib/
-│   │       │   ├── normalize-options.ts
-│   │       │   └── helper-functions.ts
-│   │       └── files/
-│   │           └── template-files
-│   └── index.ts
-├── generators.json
-├── package.json
-├── project.json
-└── README.md
-```
-
-### Key Generator APIs
-
-- `generateFiles()` - Copy and process template files
-- `updateJson()` - Modify JSON configuration
-- `addProjectConfiguration()` - Register new projects
-- `formatFiles()` - Auto-format generated code
-- `installPackagesTask()` - Install dependencies
 
 ## Best Practices
 
@@ -144,9 +75,9 @@ tools/my-generator/
 **Generator not found?**
 
 ```bash
-nx build conformance
-nx reset
-nx generate conformance:react-component --name=Test
+pnpm nx run conformetry-nx:build
+pnpm nx reset
+pnpm nx generate conformetry:react-component --name=Test
 ```
 
 **Build failed?**
@@ -156,7 +87,7 @@ nx generate conformance:react-component --name=Test
 pnpm install
 
 # Rebuild with verbose output
-nx build conformance --verbose
+pnpm nx run conformetry-nx:build --verbose
 ```
 
 **Template syntax issues?**
@@ -183,4 +114,4 @@ When adding new generators:
 
 ---
 
-**Current Generators:** 1 (conformance)
+**Current Generators:** 1 (conformetry)
