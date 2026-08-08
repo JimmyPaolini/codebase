@@ -1,5 +1,3 @@
-import { Injectable } from "@nestjs/common";
-
 import {
   CONFORMETRY_NX_PLUGIN_NAME,
   DEFAULT_CONFORMETRY_CONFIGURATION_PATH,
@@ -14,7 +12,6 @@ import type {
 /**
  * Resolves effective plugin options for Nx wrappers.
  */
-@Injectable()
 export class PluginOptionsService {
   /**
    * Resolves effective configuration path for Nx wrappers.

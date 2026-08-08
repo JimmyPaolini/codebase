@@ -1,4 +1,3 @@
-import { Injectable } from "@nestjs/common";
 import path from "node:path";
 
 import { DEFAULT_VALIDATION_TARGET_NAME } from "../plugin-options/plugin-options.constants.js";
@@ -9,7 +8,6 @@ import type { TargetConfiguration } from "@nx/devkit";
 /**
  * Builds inferred validation targets for conformetry-tagged projects.
  */
-@Injectable()
 export class ValidationTargetService {
   /**
    * Builds an inferred conformetry validation target for tagged projects.

@@ -1,4 +1,3 @@
-import { Injectable } from "@nestjs/common";
 import {
   normalizeRuntimeOptions,
   resolveTargetDirectoryPath,
@@ -14,7 +13,6 @@ import type { GeneratorCallback } from "@nx/devkit";
 /**
  * Runs conformetry generators through the shared command-execution layer.
  */
-@Injectable()
 export class GenerationService {
   constructor(
     private readonly commandExecutionService: CommandExecutionService,

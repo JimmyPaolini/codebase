@@ -1,8 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { Injectable } from "@nestjs/common";
-
 import {
   PROJECT_METADATA_FILENAME,
   SKIPPED_DIRECTORY_NAMES,
@@ -17,7 +15,6 @@ import type {
 /**
  * Resolves routed template rules and project paths from Nx project metadata.
  */
-@Injectable()
 export class RuleRoutingService {
   /**
    * Handles a single directory entry while scanning workspace metadata.

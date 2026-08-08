@@ -1,5 +1,6 @@
 export { ConfigurationModule } from "./modules/configuration/configuration.module.js";
 export { ConfigurationService } from "./modules/configuration/configuration.service.js";
+export { TemplateValidationService } from "./modules/configuration/configuration-template-validation.service.js";
 export type {
   CompareMatchedCandidatesArguments,
   CollectGeneratorInputsFromCommandArgumentsArguments,

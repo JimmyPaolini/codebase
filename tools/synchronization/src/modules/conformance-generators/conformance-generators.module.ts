@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { ConfigurationModule } from "@jimmypaolini/conformetry-configuration";
 
 import { LoggerModule } from "../logger/logger.module";
 import { SynchronizationService } from "../synchronization/synchronization.service";
@@ -11,7 +12,7 @@ import { ConformanceGeneratorsCommand } from "./conformance-generators.command";
 @Module({
   controllers: [],
   exports: [ConformanceGeneratorsCommand],
-  imports: [LoggerModule],
+  imports: [ConfigurationModule, LoggerModule],
   providers: [ConformanceGeneratorsCommand, SynchronizationService],
 })
 export class ConformanceGeneratorsModule {}

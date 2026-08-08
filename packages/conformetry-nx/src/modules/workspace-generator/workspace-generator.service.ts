@@ -1,4 +1,3 @@
-import { Injectable } from "@nestjs/common";
 import { readNxJson, type Tree } from "@nx/devkit";
 
 import { GenerationService } from "../generation/generation.service.js";
@@ -9,7 +8,6 @@ import type { GeneratorCallback } from "@nx/devkit";
 /**
  * Runs workspace generators backed by the shared conformetry configuration.
  */
-@Injectable()
 export class WorkspaceGeneratorService {
   constructor(
     private readonly generationService: GenerationService,

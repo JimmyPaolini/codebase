@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { camelCase, kebabCase, snakeCase, upperFirst } from "lodash";
+import lodash from "lodash";
 
 import {
   DEFAULT_CONFIGURATION_PATH,
@@ -293,3 +293,4 @@ function shouldIgnoreOptionName(args: {
     RESERVED_GENERATOR_OPTION_NAMES.has(args.propertyName)
   );
 }
+const { camelCase, kebabCase, snakeCase, upperFirst } = lodash;
