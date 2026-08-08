@@ -1,29 +1,29 @@
 import { Injectable } from "@nestjs/common";
 
-import {
-  createConformetryGeneratorFactory,
-  normalizeGeneratorInputs,
-  resolveConformetryTargetDirectoryPath,
-} from "./nx-generator-factory.utilities";
+import { NxGeneratorFactoryService } from "./nx-generator-factory.service.js";
 
 import type {
   ConformetryGeneratorFactory,
   ConformetryGeneratorFactoryOptions,
   ResolveConformetryTargetDirectoryPathArguments,
-} from "./nx-adapter.types";
+} from "./nx-adapter.types.js";
 
 /**
  * Orchestrates Nx adapter behavior through injectable NestJS services.
  */
 @Injectable()
 export class NxAdapterService {
+  constructor(
+    private readonly nxGeneratorFactoryService: NxGeneratorFactoryService,
+  ) {}
+
   /**
    * Creates a conformetry generator factory for Nx trees.
    */
   public createConformetryGeneratorFactory(
     args: ConformetryGeneratorFactoryOptions,
   ): ConformetryGeneratorFactory {
-    return createConformetryGeneratorFactory(args);
+    return this.nxGeneratorFactoryService.createConformetryGeneratorFactory(args);
   }
 
   /**
@@ -32,7 +32,7 @@ export class NxAdapterService {
   public normalizeGeneratorInputs(
     options: Record<string, unknown>,
   ): Record<string, string | undefined> {
-    return normalizeGeneratorInputs(options);
+    return this.nxGeneratorFactoryService.normalizeGeneratorInputs(options);
   }
 
   /**
@@ -41,6 +41,8 @@ export class NxAdapterService {
   public async resolveConformetryTargetDirectoryPath(
     args: ResolveConformetryTargetDirectoryPathArguments,
   ): Promise<string> {
-    return await resolveConformetryTargetDirectoryPath(args);
+    return await this.nxGeneratorFactoryService.resolveConformetryTargetDirectoryPath(
+      args,
+    );
   }
 }

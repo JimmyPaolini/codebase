@@ -1,9 +1,15 @@
-import { readNxJson } from "@nx/devkit";
+import { CommandExecutionService } from "../command-execution/command-execution.service.js";
+import { GenerationService } from "../generation/generation.service.js";
+import { PluginOptionsService } from "../plugin-options/plugin-options.service.js";
+import { WorkspaceGeneratorService } from "./workspace-generator.service.js";
 
-import { runConformetryGenerator } from "../generation/generation.utilities";
-import { resolveConformetryNxPluginOptionsFromNxJson } from "../plugin-options/plugin-options.utilities";
-
-import type { GeneratorCallback, Tree } from "@nx/devkit";
+const workspaceGeneratorService = new WorkspaceGeneratorService(
+  new GenerationService(
+    new CommandExecutionService(),
+    new PluginOptionsService(),
+  ),
+  new PluginOptionsService(),
+);
 
 /**
  * Runs a workspace generator backed by the shared conformetry configuration.
@@ -11,16 +17,11 @@ import type { GeneratorCallback, Tree } from "@nx/devkit";
 export async function runWorkspaceGenerator(args: {
   generatorName: string;
   options: Record<string, unknown> | undefined;
-  tree: Tree;
-}): Promise<GeneratorCallback> {
-  const nxJsonConfiguration = readNxJson(args.tree) ?? {};
-
-  return await runConformetryGenerator({
-    generatorName: args.generatorName,
-    options: args.options ?? {},
-    pluginOptions: resolveConformetryNxPluginOptionsFromNxJson({
-      nxJsonConfiguration,
-    }),
-    tree: args.tree,
+  tree: unknown;
+}): Promise<unknown> {
+  return await workspaceGeneratorService.runWorkspaceGenerator(args as {
+    generatorName: string;
+    options: Record<string, unknown> | undefined;
+    tree: unknown;
   });
 }
