@@ -91,6 +91,8 @@ maplibre
 materialui
 mcp
 metatype
+codometer
+metitur
 middlewares
 codebase
 multiset
@@ -221,3 +223,5 @@ windsurfrules
 workspaces
 worktree
 worktrees
+docstring
+docstrings

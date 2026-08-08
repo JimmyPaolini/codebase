@@ -93,4 +93,4 @@ jobs:
         run: npx nx run conformance:start:validator
 
       - name: 📊 Validate Code Statistics
-        run: npx nx run codebase:measure-code:check
+        run: npx nx run codebase:codometer:check
