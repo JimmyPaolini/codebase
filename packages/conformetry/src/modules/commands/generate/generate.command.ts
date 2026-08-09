@@ -19,9 +19,7 @@ import type { JsonSchemaDefinition } from "@jimmypaolini/conformetry-configurati
 @Injectable()
 export class GenerateCommand extends CommandRunner {
   constructor(
-    @Inject(ConfigurationService)
     private readonly configurationService: ConfigurationService,
-    @Inject(GenerationService)
     private readonly generationService: GenerationService,
   ) {
     super();

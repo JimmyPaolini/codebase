@@ -17,17 +17,6 @@
     "any-file": {
       "name": "*"
     },
-    "kebab-case-folder": {
-      "children": [
-        {
-          "ruleId": "kebab-case-folder"
-        },
-        {
-          "ruleId": "any-file"
-        }
-      ],
-      "name": "^(?!(dir|err|req|res|utils|ctx|app)$)[a-z0-9-]+$"
-    },
     "codebase-project": {
       "children": [
         {
@@ -43,10 +32,7 @@
             {
               "children": [
                 {
-                  "ruleId": "kebab-case-folder"
-                },
-                {
-                  "ruleId": "any-file"
+                  "ruleId": "module-folder"
                 }
               ],
               "name": "modules"
@@ -228,6 +214,31 @@
         },
         {
           "ruleId": "any-file"
+        }
+      ],
+      "name": "^(?!(dir|err|req|res|utils|ctx|app)$)[a-z0-9-]+$"
+    },
+    "kebab-case-folder": {
+      "children": [
+        {
+          "ruleId": "kebab-case-folder"
+        },
+        {
+          "ruleId": "any-file"
+        }
+      ],
+      "name": "^(?!(dir|err|req|res|utils|ctx|app)$)[a-z0-9-]+$"
+    },
+    "module-file": {
+      "name": "^[a-z0-9.-]+\\.(module|service|command|constants|types|utilities)(\\.([a-z0-9-]+\\.)*test)?\\.(ts|tsx|js|jsx|mts|cts)$"
+    },
+    "module-folder": {
+      "children": [
+        {
+          "ruleId": "kebab-case-folder"
+        },
+        {
+          "ruleId": "module-file"
         }
       ],
       "name": "^(?!(dir|err|req|res|utils|ctx|app)$)[a-z0-9-]+$"
