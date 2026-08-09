@@ -2,12 +2,12 @@ import {
   CONFORMETRY_NX_PLUGIN_NAME,
   DEFAULT_CONFORMETRY_CONFIGURATION_PATH,
   DEFAULT_VALIDATION_TARGET_NAME,
-} from "./plugin-options.constants.js";
+} from "./plugin-options.constants";
 
 import type {
   ConformetryNxPluginRegistrationOptions,
   TemplateRuleNamesByProjectTag,
-} from "./plugin-options.types.js";
+} from "./plugin-options.types";
 
 /**
  * Resolves effective plugin options for Nx wrappers.
@@ -50,9 +50,10 @@ export class PluginOptionsService {
       typeof optionsRecord["validationTargetName"] === "string"
         ? optionsRecord["validationTargetName"]
         : DEFAULT_VALIDATION_TARGET_NAME;
-    const templateRuleNamesByProjectTag = this.resolveTemplateRuleNamesByProjectTag(
-      optionsRecord["templateRuleNamesByProjectTag"],
-    );
+    const templateRuleNamesByProjectTag =
+      this.resolveTemplateRuleNamesByProjectTag(
+        optionsRecord["templateRuleNamesByProjectTag"],
+      );
 
     return {
       ...(configFilePath === undefined ? {} : { configFilePath }),

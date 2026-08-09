@@ -2,22 +2,28 @@ import { describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "./logger.service";
 
+type LoggerMethod = ReturnType<typeof vi.fn<(...args: unknown[]) => void>>;
+
 describe(LoggerService, () => {
   interface LoggerChild {
-    debug: ReturnType<typeof vi.fn>;
-    error: ReturnType<typeof vi.fn>;
-    info: ReturnType<typeof vi.fn>;
-    trace: ReturnType<typeof vi.fn>;
-    warn: ReturnType<typeof vi.fn>;
+    debug: LoggerMethod;
+    error: LoggerMethod;
+    info: LoggerMethod;
+    trace: LoggerMethod;
+    warn: LoggerMethod;
+  }
+
+  interface LoggerRoot {
+    child: (bindings: { context: string }) => LoggerChild;
   }
 
   function createLoggerChild(): LoggerChild {
     return {
-      debug: vi.fn(),
-      error: vi.fn(),
-      info: vi.fn(),
-      trace: vi.fn(),
-      warn: vi.fn(),
+      debug: vi.fn<(...args: unknown[]) => void>(),
+      error: vi.fn<(...args: unknown[]) => void>(),
+      info: vi.fn<(...args: unknown[]) => void>(),
+      trace: vi.fn<(...args: unknown[]) => void>(),
+      warn: vi.fn<(...args: unknown[]) => void>(),
     };
   }
 
@@ -30,12 +36,7 @@ describe(LoggerService, () => {
   it("logs through all severity methods and stringifies non-string values", () => {
     const service = new LoggerService();
     const child = createLoggerChild();
-    const loggerService = service as unknown as {
-      child: LoggerChild;
-      context?: string;
-    };
-    loggerService.child = child;
-    loggerService.context = "ServiceContext";
+    Object.assign(service, { child, context: "ServiceContext" });
 
     service.debug({ message: "debug" });
     service.log(123, "ExplicitContext");
@@ -68,12 +69,13 @@ describe(LoggerService, () => {
   it("updates child logger when context changes", () => {
     const service = new LoggerService();
     const nextChild = createLoggerChild();
-    const rootChild = vi.fn().mockReturnValue(nextChild);
-    const loggerClass = LoggerService as unknown as {
-      root: { child: (bindings: { context: string }) => LoggerChild };
-    };
-    const originalRoot = loggerClass.root;
-    loggerClass.root = { child: rootChild };
+    const rootChild = vi
+      .fn<(...args: unknown[]) => LoggerChild>()
+      .mockReturnValue(nextChild);
+    const originalRoot = Reflect.get(LoggerService, "root") as
+      | LoggerRoot
+      | undefined;
+    Reflect.set(LoggerService, "root", { child: rootChild });
 
     try {
       service.setContext("UpdatedContext");
@@ -85,7 +87,7 @@ describe(LoggerService, () => {
         "message",
       );
     } finally {
-      loggerClass.root = originalRoot;
+      Reflect.set(LoggerService, "root", originalRoot);
     }
   });
 });

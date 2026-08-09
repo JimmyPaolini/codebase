@@ -4,8 +4,8 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { TemplateValidationService } from "./configuration-template-validation.service.js";
-import { ConfigurationService } from "./configuration.service.js";
+import { TemplateValidationService } from "./configuration-template-validation.service";
+import { ConfigurationService } from "./configuration.service";
 
 const createdDirectories: string[] = [];
 
@@ -17,6 +17,7 @@ describe("template validation service", () => {
       }),
     );
   });
+
   it("prepares validation payloads from template files", async () => {
     const workingDirectory = await mkdtemp(
       path.join(tmpdir(), "conformetry-template-validation-"),
@@ -83,14 +84,13 @@ describe("template validation service", () => {
       const templateValidationService = new TemplateValidationService(
         configurationService,
       );
-      const payload = await templateValidationService.prepareTemplateValidationPayload(
-        {
+      const payload =
+        await templateValidationService.prepareTemplateValidationPayload({
           configurationPath: "configuration/conformetry.config.json",
           fileExtensions: [".ts"],
           filePaths: ["apps/demo"],
           workingDirectory,
-        },
-      );
+        });
 
       expect(payload.violations).toStrictEqual([]);
       expect(payload.documents).toHaveLength(1);

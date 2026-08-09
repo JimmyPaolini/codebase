@@ -101,7 +101,7 @@ import conformetryPluginDefinition, {
   generateNestjsServiceModule,
   generateNestjsServicePackage,
   generateReactComponent,
-} from "./index.js";
+} from "./index";
 
 import type { Tree } from "@nx/devkit";
 

@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { PythonValidatorService } from "./python-validator.service.js";
+import { PythonValidatorService } from "./python-validator.service";
 
 /**
  * Provides the Python validator service.

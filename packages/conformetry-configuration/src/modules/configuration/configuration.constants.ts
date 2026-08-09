@@ -69,7 +69,7 @@ export const conformetryConfigurationSchema = z.object({
         })
         .optional(),
       name: z.string(),
-      parameters: z.record(z.string(), jsonSchemaDefinitionSchema),
+      parameters: z.record(z.string(), jsonSchemaDefinitionSchema).optional(),
     }),
   ),
 });

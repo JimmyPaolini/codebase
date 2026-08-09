@@ -2,32 +2,32 @@ import path from "node:path";
 
 import lodash from "lodash";
 
+/**
+ * Builds common name substitutions from the provided generator name.
+ */
+export function buildNameSubstitutions(name: string): Record<string, string> {
+  const normalizedCamelCaseName = lodash.camelCase(name);
+
+  return {
+    nameCamelCase: normalizedCamelCaseName,
+    nameKebabCase: lodash.kebabCase(name),
+    namePascalCase: lodash.upperFirst(normalizedCamelCaseName),
+    nameSnakeCase: lodash.snakeCase(name),
+  };
+}
+
 import {
   DEFAULT_CONFIGURATION_PATH,
   DEFAULT_GENERATED_OUTPUT_DIRECTORY,
   RESERVED_GENERATOR_OPTION_NAMES,
   TARGET_DIRECTORY_OPTION_KEYS,
-} from "./configuration.constants.js";
+} from "./configuration.constants";
 
 import type {
   CollectGeneratorInputsFromCommandArgumentsArguments,
   ResolveConfigurationPathArguments,
   ResolveTargetDirectoryPathArguments,
-} from "./configuration.types.js";
-
-/**
- * Builds common name substitutions from the provided generator name.
- */
-export function buildNameSubstitutions(name: string): Record<string, string> {
-  const normalizedCamelCaseName = camelCase(name);
-
-  return {
-    nameCamelCase: normalizedCamelCaseName,
-    nameKebabCase: kebabCase(name),
-    namePascalCase: upperFirst(normalizedCamelCaseName),
-    nameSnakeCase: snakeCase(name),
-  };
-}
+} from "./configuration.types";
 
 /**
  * Extracts schema-backed generator input flags from raw command arguments.
@@ -260,7 +260,7 @@ function resolveSchemaPropertyName(
   return schemaPropertyNames.find((candidatePropertyName) => {
     return (
       optionName === candidatePropertyName ||
-      optionName === kebabCase(candidatePropertyName)
+      optionName === toKebabCase(candidatePropertyName)
     );
   });
 }
@@ -293,4 +293,10 @@ function shouldIgnoreOptionName(args: {
     RESERVED_GENERATOR_OPTION_NAMES.has(args.propertyName)
   );
 }
-const { camelCase, kebabCase, snakeCase, upperFirst } = lodash;
+
+/**
+ * Converts a string into its kebab-case form.
+ */
+function toKebabCase(value: string): string {
+  return lodash.kebabCase(value);
+}

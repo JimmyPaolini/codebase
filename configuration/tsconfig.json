@@ -4,7 +4,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     // 📦 Module System
-    "allowImportingTsExtensions": true,
+    "noEmit": true,
     // 🔒 Strict Safety
     // All strict flags are on; these additional flags catch more bugs:
     "allowUnreachableCode": false,

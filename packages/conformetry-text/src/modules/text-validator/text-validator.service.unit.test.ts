@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { TextValidatorService } from "./text-validator.service.js";
+import { TextValidatorService } from "./text-validator.service";
 
 const { prepareTemplateValidationPayloadMock } = vi.hoisted(() => {
   return {

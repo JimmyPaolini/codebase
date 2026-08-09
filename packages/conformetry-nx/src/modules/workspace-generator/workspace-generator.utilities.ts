@@ -1,7 +1,7 @@
-import { CommandExecutionService } from "../command-execution/command-execution.service.js";
-import { GenerationService } from "../generation/generation.service.js";
-import { PluginOptionsService } from "../plugin-options/plugin-options.service.js";
-import { WorkspaceGeneratorService } from "./workspace-generator.service.js";
+import { CommandExecutionService } from "../command-execution/command-execution.service";
+import { GenerationService } from "../generation/generation.service";
+import { PluginOptionsService } from "../plugin-options/plugin-options.service";
+import { WorkspaceGeneratorService } from "./workspace-generator.service";
 
 const workspaceGeneratorService = new WorkspaceGeneratorService(
   new GenerationService(
@@ -19,9 +19,11 @@ export async function runWorkspaceGenerator(args: {
   options: Record<string, unknown> | undefined;
   tree: unknown;
 }): Promise<unknown> {
-  return await workspaceGeneratorService.runWorkspaceGenerator(args as {
-    generatorName: string;
-    options: Record<string, unknown> | undefined;
-    tree: unknown;
-  });
+  return await workspaceGeneratorService.runWorkspaceGenerator(
+    args as {
+      generatorName: string;
+      options: Record<string, unknown> | undefined;
+      tree: unknown;
+    },
+  );
 }

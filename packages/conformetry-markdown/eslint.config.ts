@@ -1,4 +1,4 @@
-import baseConfig from "../../configuration/eslint.config.ts";
+import baseConfig from "../../configuration/eslint.config";
 
 export default [
   // 🛠️ Base Config

@@ -6,7 +6,7 @@ import {
   parseCommaDelimitedOption,
   resolveConfigurationPath,
   resolveTargetDirectoryPath,
-} from "./configuration.utilities.js";
+} from "./configuration.utilities";
 
 describe("configuration utilities", () => {
   describe(resolveConfigurationPath, () => {

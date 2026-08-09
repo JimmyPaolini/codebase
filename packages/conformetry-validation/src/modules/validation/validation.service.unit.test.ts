@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { ValidationService } from "./validation.service.js";
+import { ValidationService } from "./validation.service";
 
 describe(ValidationService, () => {
   it("returns success when all supplied plugins pass", async () => {

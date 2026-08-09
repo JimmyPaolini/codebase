@@ -7,14 +7,14 @@ import { Injectable } from "@nestjs/common";
 import {
   TEXT_VALIDATOR_FILE_EXTENSIONS,
   TEXT_VALIDATOR_PLUGIN_DESCRIPTOR,
-} from "./text-validator.constants.js";
+} from "./text-validator.constants";
 
 import type {
   TextValidationDocument,
   TextValidatorValidateArguments,
   TextValidatorValidateResult,
   ValidatePathExistenceArguments,
-} from "./text-validator.types.js";
+} from "./text-validator.types";
 
 /**
  * Validates text files against conformetry templates.

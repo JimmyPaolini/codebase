@@ -1,9 +1,7 @@
-import { readNxJson, type Tree } from "@nx/devkit";
+import { readNxJson, type GeneratorCallback, type Tree } from "@nx/devkit";
 
-import { GenerationService } from "../generation/generation.service.js";
-import { PluginOptionsService } from "../plugin-options/plugin-options.service.js";
-
-import type { GeneratorCallback } from "@nx/devkit";
+import { GenerationService } from "../generation/generation.service";
+import { PluginOptionsService } from "../plugin-options/plugin-options.service";
 
 /**
  * Runs workspace generators backed by the shared conformetry configuration.
@@ -27,11 +25,10 @@ export class WorkspaceGeneratorService {
     return await this.generationService.runConformetryGenerator({
       generatorName: args.generatorName,
       options: args.options ?? {},
-      pluginOptions: this.pluginOptionsService.resolveConformetryNxPluginOptionsFromNxJson(
-        {
+      pluginOptions:
+        this.pluginOptionsService.resolveConformetryNxPluginOptionsFromNxJson({
           nxJsonConfiguration,
-        },
-      ),
+        }),
       tree: args.tree,
     });
   }

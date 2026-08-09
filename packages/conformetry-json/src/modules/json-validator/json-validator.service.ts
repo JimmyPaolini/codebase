@@ -8,7 +8,7 @@ import { parse } from "jsonc-parser";
 import {
   JSON_VALIDATOR_FILE_EXTENSIONS,
   JSON_VALIDATOR_PLUGIN_DESCRIPTOR,
-} from "./json-validator.constants.js";
+} from "./json-validator.constants";
 
 import type {
   JsonValidatorValidateArguments,
@@ -19,7 +19,7 @@ import type {
   ValidateJsonObjectsArguments,
   ValidateJsonSupersetArguments,
   ValidatePathExistenceArguments,
-} from "./json-validator.types.js";
+} from "./json-validator.types";
 
 /**
  * Validates JSON files against conformetry templates.

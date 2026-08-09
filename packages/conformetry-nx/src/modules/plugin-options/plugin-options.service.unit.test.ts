@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { PluginOptionsService } from "./plugin-options.service.js";
+import { PluginOptionsService } from "./plugin-options.service";
 
 describe(PluginOptionsService, () => {
   let service: PluginOptionsService;

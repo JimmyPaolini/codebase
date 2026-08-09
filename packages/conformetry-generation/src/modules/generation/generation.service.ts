@@ -12,7 +12,7 @@ import type {
   RunGeneratorArguments,
   RunGeneratorResult,
   TemplateRenderer,
-} from "./generation.types.js";
+} from "./generation.types";
 
 /**
  * Runs conformetry generators without depending on Nx devkit.

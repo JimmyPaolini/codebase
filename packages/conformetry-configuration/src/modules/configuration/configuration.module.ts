@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 
-import { ConfigurationService } from "./configuration.service.js";
-import { TemplateValidationService } from "./configuration-template-validation.service.js";
+import { TemplateValidationService } from "./configuration-template-validation.service";
+import { ConfigurationService } from "./configuration.service";
 
 /**
  * Provides the configuration service.

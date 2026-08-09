@@ -1,4 +1,4 @@
-import { ValidationTargetService } from "./validation-target.service.js";
+import { ValidationTargetService } from "./validation-target.service";
 
 const validationTargetService = new ValidationTargetService();
 
@@ -10,18 +10,13 @@ export function buildInferredValidationTarget(args: {
   projectRoot: string;
   projectTags: string[];
 }): Record<string, unknown> | undefined {
-  return validationTargetService.buildInferredValidationTarget(args as {
-    pluginOptions?: {
-      validationTargetName?: string;
-    };
-    projectRoot: string;
-    projectTags: string[];
-  });
-}
-
-/**
- * Extracts conformetry generator names from project tags.
- */
-export function extractGeneratorRuleNames(projectTags: string[]): string[] {
-  return validationTargetService.extractGeneratorRuleNames(projectTags);
+  return validationTargetService.buildInferredValidationTarget(
+    args as {
+      pluginOptions?: {
+        validationTargetName?: string;
+      };
+      projectRoot: string;
+      projectTags: string[];
+    },
+  );
 }

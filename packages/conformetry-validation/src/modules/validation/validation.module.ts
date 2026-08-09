@@ -6,7 +6,7 @@ import { TextValidatorModule } from "@jimmypaolini/conformetry-text";
 import { TypeScriptValidatorModule } from "@jimmypaolini/conformetry-typescript";
 import { Module } from "@nestjs/common";
 
-import { ValidationService } from "./validation.service.js";
+import { ValidationService } from "./validation.service";
 
 /**
  * Provides the validation service.

@@ -8,12 +8,9 @@
     "@jimmypaolini/conformetry-text": "workspace:*",
     "@jimmypaolini/conformetry-typescript": "workspace:*",
     "@nestjs/common": "catalog:",
-    "@nestjs/config": "catalog:",
-    "@nestjs/core": "catalog:",
     "pino": "catalog:",
     "reflect-metadata": "catalog:",
-    "tslib": "catalog:",
-    "zod": "catalog:"
+    "tslib": "catalog:"
   },
   "devDependencies": {
     "@nestjs/testing": "catalog:",

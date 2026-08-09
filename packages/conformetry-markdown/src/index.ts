@@ -1,2 +1,2 @@
-export { MarkdownValidatorModule } from "./modules/markdown-validator/markdown-validator.module.js";
-export { MarkdownValidatorService } from "./modules/markdown-validator/markdown-validator.service.js";
+export { MarkdownValidatorModule } from "./modules/markdown-validator/markdown-validator.module";
+export { MarkdownValidatorService } from "./modules/markdown-validator/markdown-validator.service";

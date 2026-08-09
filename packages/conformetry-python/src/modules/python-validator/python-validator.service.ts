@@ -8,7 +8,7 @@ import { parse } from "jsonc-parser";
 import {
   PYTHON_VALIDATOR_FILE_EXTENSIONS,
   PYTHON_VALIDATOR_PLUGIN_DESCRIPTOR,
-} from "./python-validator.constants.js";
+} from "./python-validator.constants";
 
 import type {
   JsonValue,
@@ -19,7 +19,7 @@ import type {
   ValidateJsonDepthFirstSearchArguments,
   ValidateJsonObjectsArguments,
   ValidatePathExistenceArguments,
-} from "./python-validator.types.js";
+} from "./python-validator.types";
 
 /**
  * Validates Python and notebook files against conformetry templates.

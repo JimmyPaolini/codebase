@@ -1,8 +1,8 @@
 import path from "node:path";
 
-import { DEFAULT_VALIDATION_TARGET_NAME } from "../plugin-options/plugin-options.constants.js";
+import { DEFAULT_VALIDATION_TARGET_NAME } from "../plugin-options/plugin-options.constants";
 
-import type { ConformetryNxPluginRegistrationOptions } from "../plugin-options/plugin-options.types.js";
+import type { ConformetryNxPluginRegistrationOptions } from "../plugin-options/plugin-options.types";
 import type { TargetConfiguration } from "@nx/devkit";
 
 /**
@@ -23,7 +23,8 @@ export class ValidationTargetService {
     }
 
     const targetName =
-      args.pluginOptions?.validationTargetName ?? DEFAULT_VALIDATION_TARGET_NAME;
+      args.pluginOptions?.validationTargetName ??
+      DEFAULT_VALIDATION_TARGET_NAME;
 
     return {
       [targetName]: {

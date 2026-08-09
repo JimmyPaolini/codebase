@@ -33,7 +33,7 @@ describe("loggerService", () => {
   });
 
   it("is defined", async () => {
-    const { LoggerService } = await import("./logger.service.js");
+    const { LoggerService } = await import("./logger.service");
     const service = new LoggerService();
 
     expect(service).toBeDefined();
@@ -41,7 +41,7 @@ describe("loggerService", () => {
   });
 
   it("sets context and forwards log calls to pino child logger", async () => {
-    const { LoggerService } = await import("./logger.service.js");
+    const { LoggerService } = await import("./logger.service");
     const service = new LoggerService();
 
     service.setContext("GenerateCommand");
@@ -77,7 +77,7 @@ describe("loggerService", () => {
   });
 
   it("uses call-specific context override when provided", async () => {
-    const { LoggerService } = await import("./logger.service.js");
+    const { LoggerService } = await import("./logger.service");
     const service = new LoggerService();
 
     service.setContext("DefaultContext");
@@ -108,7 +108,7 @@ describe("loggerService", () => {
     process.env["NODE_ENV"] = "production";
     process.env["LOG_LEVEL"] = "debug";
 
-    const { LoggerService } = await import("./logger.service.js");
+    const { LoggerService } = await import("./logger.service");
     const service = new LoggerService();
 
     expect(service).toBeDefined();
@@ -118,7 +118,7 @@ describe("loggerService", () => {
   it("uses default production log level when LOG_LEVEL is not defined", async () => {
     process.env["NODE_ENV"] = "production";
 
-    const { LoggerService } = await import("./logger.service.js");
+    const { LoggerService } = await import("./logger.service");
     const service = new LoggerService();
 
     expect(service).toBeDefined();

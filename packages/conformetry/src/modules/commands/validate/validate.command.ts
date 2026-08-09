@@ -6,7 +6,7 @@ import { ValidationService } from "@jimmypaolini/conformetry-validation";
 import { ConsoleLogger, Inject, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
-import type { ValidateCommandOptions } from "./validate.types.js";
+import type { ValidateCommandOptions } from "./validate.types";
 
 /**
  * Executes conformetry validation plugins against the selected project paths.

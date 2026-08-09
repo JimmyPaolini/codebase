@@ -35,7 +35,7 @@ import {
   TODO_LINE_REGEX,
   TYPESCRIPT_VALIDATOR_FILE_EXTENSIONS,
   TYPESCRIPT_VALIDATOR_PLUGIN_DESCRIPTOR,
-} from "./typescript-validator.constants.js";
+} from "./typescript-validator.constants";
 
 import type {
   ExtractedComment,
@@ -44,7 +44,7 @@ import type {
   ValidateCommentsArguments,
   ValidateDepthFirstSearchArguments,
   ValidatePathExistenceArguments,
-} from "./typescript-validator.types.js";
+} from "./typescript-validator.types";
 
 /** Validates TypeScript files against conformetry templates. */
 @Injectable()

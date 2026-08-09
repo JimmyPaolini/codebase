@@ -3,13 +3,10 @@
     "@golevelup/ts-vitest": "catalog:",
     "@jimmypaolini/conformetry-configuration": "workspace:*",
     "@nestjs/common": "catalog:",
-    "@nestjs/config": "catalog:",
-    "@nestjs/core": "catalog:",
     "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:",
-    "typescript": "catalog:",
-    "zod": "catalog:"
+    "typescript": "catalog:"
   },
   "devDependencies": {
     "@nestjs/testing": "catalog:",

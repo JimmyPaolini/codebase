@@ -95,7 +95,7 @@ describe("validateCommand", () => {
   }
 
   it("parses config, project, and rule options", async () => {
-    const { ValidateCommand } = await import("./validate.command.js");
+    const { ValidateCommand } = await import("./validate.command");
     const { ConfigurationService } =
       await import("@jimmypaolini/conformetry-configuration");
     const command = new ValidateCommand(
@@ -125,7 +125,7 @@ describe("validateCommand", () => {
       pluginResults: [],
     });
 
-    const { ValidateCommand } = await import("./validate.command.js");
+    const { ValidateCommand } = await import("./validate.command");
     const { ConfigurationService } =
       await import("@jimmypaolini/conformetry-configuration");
     const command = new ValidateCommand(
@@ -150,7 +150,7 @@ describe("validateCommand", () => {
       pluginResults: [],
     });
 
-    const { ValidateCommand } = await import("./validate.command.js");
+    const { ValidateCommand } = await import("./validate.command");
     const { ConfigurationService } =
       await import("@jimmypaolini/conformetry-configuration");
     const command = new ValidateCommand(
@@ -181,7 +181,7 @@ describe("validateCommand", () => {
       pluginResults: [],
     });
 
-    const { ValidateCommand } = await import("./validate.command.js");
+    const { ValidateCommand } = await import("./validate.command");
     const { ConfigurationService } =
       await import("@jimmypaolini/conformetry-configuration");
     const command = new ValidateCommand(
@@ -202,7 +202,7 @@ describe("validateCommand", () => {
     const { Test } = await import("@nestjs/testing");
     const { ConfigurationService } =
       await import("@jimmypaolini/conformetry-configuration");
-    const { ValidateCommand } = await import("./validate.command.js");
+    const { ValidateCommand } = await import("./validate.command");
     const originalParameterTypes = Reflect.getMetadata(
       designParameterTypesMetadataKey,
       ValidateCommand,

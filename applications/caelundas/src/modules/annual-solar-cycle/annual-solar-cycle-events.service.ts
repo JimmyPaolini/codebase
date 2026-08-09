@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { LoggerService } from "../logger/logger.service.js";
+import { LoggerService } from "../logger/logger.service";
 
 import {
   ANNUAL_SOLAR_CYCLE_BASE_CATEGORIES,
@@ -8,12 +8,12 @@ import {
   PERIHELION_CATEGORY,
   SOLAR_CYCLE_EVENT_TIMEZONE,
   SOLAR_CYCLE_LONGITUDE_THRESHOLDS,
-} from "./annual-solar-cycle.constants.js";
+} from "./annual-solar-cycle.constants";
 
 import type {
   BuildSolarCycleEventArguments,
   SolarCycleLongitudes,
-} from "./annual-solar-cycle.types.js";
+} from "./annual-solar-cycle.types";
 import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 import type { Moment } from "moment-timezone";
 

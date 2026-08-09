@@ -3,9 +3,9 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { TemplateValidationOperations } from "./configuration-template-validation.operations.utilities.js";
-import { TemplateValidationMetadataOperations } from "./configuration-template-validation.metadata.utilities.js";
-import { ConfigurationService } from "./configuration.service.js";
+import { createTemplateValidationMetadataOperations } from "./configuration-template-validation.metadata.utilities";
+import { createTemplateValidationOperations } from "./configuration-template-validation.operations.utilities";
+import { ConfigurationService } from "./configuration.service";
 
 import type {
   CompareMatchedCandidatesArguments,
@@ -14,21 +14,20 @@ import type {
   PreparedValidationPayload,
   PrepareTemplateValidationPayloadArguments,
   ValidationProjectTemplateMetadata,
-} from "./configuration.types.js";
+} from "./configuration.types";
 
 /**
  * Prepares rendered template-instance documents for language validators.
  */
 @Injectable()
 export class TemplateValidationService {
-  private readonly operations = new TemplateValidationOperations();
-  private readonly metadataOperations = new TemplateValidationMetadataOperations(
-    this.operations,
-  );
-
   public constructor(
     private readonly configurationService: ConfigurationService,
   ) {}
+  private readonly operations = createTemplateValidationOperations();
+
+  private readonly metadataOperations =
+    createTemplateValidationMetadataOperations(this.operations);
 
   /**
    * Replaces template placeholders with generated substitutions.
@@ -107,12 +106,13 @@ export class TemplateValidationService {
       };
     }
 
-    const matchedCandidate = this.metadataOperations.resolveBestMatchedGeneratorCandidate({
-      configuration: args.configuration,
-      projectPath: args.projectPath,
-      selectedGeneratorNames: args.selectedGeneratorNames,
-      workingDirectory: args.workingDirectory,
-    });
+    const matchedCandidate =
+      this.metadataOperations.resolveBestMatchedGeneratorCandidate({
+        configuration: args.configuration,
+        projectPath: args.projectPath,
+        selectedGeneratorNames: args.selectedGeneratorNames,
+        workingDirectory: args.workingDirectory,
+      });
     if (matchedCandidate === undefined) {
       return {
         documents: [],
@@ -133,17 +133,19 @@ export class TemplateValidationService {
   public async prepareTemplateValidationPayload(
     args: PrepareTemplateValidationPayloadArguments,
   ): Promise<PreparedValidationPayload> {
-    const configuration = await this.configurationService.loadConformetryConfiguration(
-      args.configurationPath,
-    );
-    const selectedGeneratorNames = this.metadataOperations.resolveSelectedGeneratorNames(
-      args.templateRuleNames === undefined
-        ? { configuration }
-        : {
-            configuration,
-            templateRuleNames: args.templateRuleNames,
-          },
-    );
+    const configuration =
+      await this.configurationService.loadConformetryConfiguration(
+        args.configurationPath,
+      );
+    const selectedGeneratorNames =
+      this.metadataOperations.resolveSelectedGeneratorNames(
+        args.templateRuleNames === undefined
+          ? { configuration }
+          : {
+              configuration,
+              templateRuleNames: args.templateRuleNames,
+            },
+      );
 
     const preparedValidationDocuments: PreparedValidationDocument[] = [];
     const violations: string[] = [];
@@ -178,7 +180,9 @@ export class TemplateValidationService {
     }
 
     if (!fs.statSync(projectPath).isDirectory()) {
-      return [`Expected a project directory path but found file ${projectPath}`];
+      return [
+        `Expected a project directory path but found file ${projectPath}`,
+      ];
     }
 
     return [];

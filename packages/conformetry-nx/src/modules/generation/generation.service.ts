@@ -2,13 +2,12 @@ import {
   normalizeRuntimeOptions,
   resolveTargetDirectoryPath,
 } from "@jimmypaolini/conformetry-configuration";
-import { getProjects, type Tree } from "@nx/devkit";
+import { getProjects, type GeneratorCallback, type Tree } from "@nx/devkit";
 
-import { CommandExecutionService } from "../command-execution/command-execution.service.js";
-import { PluginOptionsService } from "../plugin-options/plugin-options.service.js";
+import { CommandExecutionService } from "../command-execution/command-execution.service";
+import { PluginOptionsService } from "../plugin-options/plugin-options.service";
 
-import type { ConformetryNxPluginRegistrationOptions } from "../plugin-options/plugin-options.types.js";
-import type { GeneratorCallback } from "@nx/devkit";
+import type { ConformetryNxPluginRegistrationOptions } from "../plugin-options/plugin-options.types";
 
 /**
  * Runs conformetry generators through the shared command-execution layer.
@@ -62,13 +61,15 @@ export class GenerationService {
     pluginOptions?: ConformetryNxPluginRegistrationOptions;
     tree: Tree;
   }): Promise<GeneratorCallback> {
-    const normalizedPluginOptions = this.pluginOptionsService.resolveConformetryNxPluginOptions(
-      args.pluginOptions,
-    );
-    const configurationPath = await this.pluginOptionsService.resolveConformetryConfigurationPath({
-      options: args.options,
-      pluginOptions: normalizedPluginOptions,
-    });
+    const normalizedPluginOptions =
+      this.pluginOptionsService.resolveConformetryNxPluginOptions(
+        args.pluginOptions,
+      );
+    const configurationPath =
+      await this.pluginOptionsService.resolveConformetryConfigurationPath({
+        options: args.options,
+        pluginOptions: normalizedPluginOptions,
+      });
     const targetDirectoryPath = await resolveTargetDirectoryPath({
       generatorName: args.generatorName,
       options: args.options,

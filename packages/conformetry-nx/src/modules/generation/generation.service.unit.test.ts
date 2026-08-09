@@ -1,9 +1,9 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { CommandExecutionService } from "../command-execution/command-execution.service.js";
-import { PluginOptionsService } from "../plugin-options/plugin-options.service.js";
-import { GenerationService } from "./generation.service.js";
+import { CommandExecutionService } from "../command-execution/command-execution.service";
+import { PluginOptionsService } from "../plugin-options/plugin-options.service";
+import { GenerationService } from "./generation.service";
 
 describe(GenerationService, () => {
   let service: GenerationService;
@@ -20,7 +20,7 @@ describe(GenerationService, () => {
         {
           provide: PluginOptionsService,
           useValue: {
-            resolveConformetryNxPluginOptions: () => ({}) ,
+            resolveConformetryNxPluginOptions: () => ({}),
             resolveConformetryConfigurationPath: async () => "",
           },
         },

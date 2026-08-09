@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { GenerationService } from "./generation.service.js";
+import { GenerationService } from "./generation.service";
 
 /**
  * Provides the generation service.

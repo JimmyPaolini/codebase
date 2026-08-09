@@ -1,2 +1,2 @@
-export { TypeScriptValidatorModule } from "./modules/typescript-validator/typescript-validator.module.js";
-export { TypeScriptValidatorService } from "./modules/typescript-validator/typescript-validator.service.js";
+export { TypeScriptValidatorModule } from "./modules/typescript-validator/typescript-validator.module";
+export { TypeScriptValidatorService } from "./modules/typescript-validator/typescript-validator.service";

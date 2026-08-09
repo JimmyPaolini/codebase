@@ -48,9 +48,7 @@ export interface ConformetryGeneratorHookDefinition {
 /**
  * Describes one configurable parameter for a generator.
  */
-export interface ConformetryGeneratorParameterDefinition {
-  [key: string]: unknown;
-}
+export type ConformetryGeneratorParameterDefinition = Record<string, unknown>;
 
 /**
  * Shared plugin options for conformetry Nx integrations.
@@ -102,7 +100,7 @@ export interface ParsedConformetryGeneratorDefinition {
     preGenerate?: ConformetryGeneratorHookDefinition;
   };
   name: string;
-  parameters: Record<string, ConformetryGeneratorParameterDefinition>;
+  parameters?: Record<string, ConformetryGeneratorParameterDefinition>;
 }
 
 /**

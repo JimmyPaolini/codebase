@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { MarkdownValidatorService } from "./markdown-validator.service.js";
+import { MarkdownValidatorService } from "./markdown-validator.service";
 
 const { prepareTemplateValidationPayloadMock } = vi.hoisted(() => {
   return {

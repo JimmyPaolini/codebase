@@ -11,13 +11,14 @@ import {
   conformetryConfigurationSchema,
   supportedExtensions,
   UnknownConfigurationFileTypeError,
-} from "./configuration.constants.js";
+} from "./configuration.constants";
 
 import type {
   ConformetryConfiguration,
   ConformetryGeneratorDefinition,
+  ConformetryGeneratorParameterDefinition,
   ParsedConformetryGeneratorDefinition,
-} from "./configuration.types.js";
+} from "./configuration.types";
 import type { z } from "zod";
 
 /**
@@ -58,7 +59,9 @@ export class ConfigurationService {
    */
   private isConformetryGeneratorDefinition(
     value: unknown,
-  ): value is ParsedConformetryGeneratorDefinition {
+  ): value is ParsedConformetryGeneratorDefinition & {
+    parameters: Record<string, ConformetryGeneratorParameterDefinition>;
+  } {
     return (
       typeof value === "object" &&
       value !== null &&

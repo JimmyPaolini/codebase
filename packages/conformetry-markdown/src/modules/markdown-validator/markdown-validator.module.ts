@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { MarkdownValidatorService } from "./markdown-validator.service.js";
+import { MarkdownValidatorService } from "./markdown-validator.service";
 
 /**
  * Provides the Markdown validator service.

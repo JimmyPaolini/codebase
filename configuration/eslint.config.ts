@@ -315,7 +315,10 @@ export default [
               sourceTag: "type:application",
             },
             {
-              onlyDependOnLibsWithTags: ["name:conformetry"],
+              onlyDependOnLibsWithTags: [
+                "name:conformetry",
+                "name:conformetry-configuration",
+              ],
               sourceTag: "name:conformetry-nx",
             },
             {

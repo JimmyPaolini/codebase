@@ -1,9 +1,9 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { GenerationService } from "../generation/generation.service.js";
-import { PluginOptionsService } from "../plugin-options/plugin-options.service.js";
-import { WorkspaceGeneratorService } from "./workspace-generator.service.js";
+import { GenerationService } from "../generation/generation.service";
+import { PluginOptionsService } from "../plugin-options/plugin-options.service";
+import { WorkspaceGeneratorService } from "./workspace-generator.service";
 
 describe(WorkspaceGeneratorService, () => {
   let service: WorkspaceGeneratorService;

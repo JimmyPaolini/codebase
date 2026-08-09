@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { TypeScriptValidatorService } from "./typescript-validator.service.js";
+import { TypeScriptValidatorService } from "./typescript-validator.service";
 
 const { prepareTemplateValidationPayloadMock } = vi.hoisted(() => {
   return {
@@ -25,10 +25,10 @@ describe(TypeScriptValidatorService, () => {
         {
           filename: "example.ts",
           instance:
-            'import { beta } from "./dependency.js";\nexport const selected = beta;\n',
+            'import { beta } from "./dependency";\nexport const selected = beta;\n',
           instanceFilePath: "src/example.ts",
           renderedTemplate:
-            'import { alpha } from "./dependency.js";\nexport const selected = alpha;\n',
+            'import { alpha } from "./dependency";\nexport const selected = alpha;\n',
           templateFilePath: "templates/example.ts",
         },
       ],

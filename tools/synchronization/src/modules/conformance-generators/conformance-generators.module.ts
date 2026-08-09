@@ -1,5 +1,5 @@
-import { Module } from "@nestjs/common";
 import { ConfigurationModule } from "@jimmypaolini/conformetry-configuration";
+import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "../logger/logger.module";
 import { SynchronizationService } from "../synchronization/synchronization.service";

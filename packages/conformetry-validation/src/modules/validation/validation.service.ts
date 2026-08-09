@@ -1,10 +1,10 @@
 import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
 import { JsonValidatorService } from "@jimmypaolini/conformetry-json";
 import { MarkdownValidatorService } from "@jimmypaolini/conformetry-markdown";
-import { Injectable } from "@nestjs/common";
 import { PythonValidatorService } from "@jimmypaolini/conformetry-python";
 import { TextValidatorService } from "@jimmypaolini/conformetry-text";
 import { TypeScriptValidatorService } from "@jimmypaolini/conformetry-typescript";
+import { Injectable } from "@nestjs/common";
 
 import type {
   RunValidationArguments,

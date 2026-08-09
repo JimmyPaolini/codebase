@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
 
-import { NxGeneratorFactoryService } from "./nx-generator-factory.service.js";
+import { NxGeneratorFactoryService } from "./nx-generator-factory.service";
 
 import type {
   ConformetryGeneratorFactory,
   ConformetryGeneratorFactoryOptions,
   ResolveConformetryTargetDirectoryPathArguments,
-} from "./nx-adapter.types.js";
+} from "./nx-adapter.types";
 
 /**
  * Orchestrates Nx adapter behavior through injectable NestJS services.
@@ -23,7 +23,9 @@ export class NxAdapterService {
   public createConformetryGeneratorFactory(
     args: ConformetryGeneratorFactoryOptions,
   ): ConformetryGeneratorFactory {
-    return this.nxGeneratorFactoryService.createConformetryGeneratorFactory(args);
+    return this.nxGeneratorFactoryService.createConformetryGeneratorFactory(
+      args,
+    );
   }
 
   /**

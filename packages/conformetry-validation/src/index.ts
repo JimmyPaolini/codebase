@@ -1,2 +1,2 @@
-export { ValidationModule } from "./modules/validation/validation.module.js";
-export { ValidationService } from "./modules/validation/validation.service.js";
+export { ValidationModule } from "./modules/validation/validation.module";
+export { ValidationService } from "./modules/validation/validation.service";

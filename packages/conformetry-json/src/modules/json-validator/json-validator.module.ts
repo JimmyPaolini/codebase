@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { JsonValidatorService } from "./json-validator.service.js";
+import { JsonValidatorService } from "./json-validator.service";
 
 /**
  * Provides the JSON validator service.

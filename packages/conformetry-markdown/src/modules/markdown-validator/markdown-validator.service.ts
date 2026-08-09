@@ -11,7 +11,7 @@ import {
   CONTAINER_TYPES,
   MARKDOWN_VALIDATOR_FILE_EXTENSIONS,
   MARKDOWN_VALIDATOR_PLUGIN_DESCRIPTOR,
-} from "./markdown-validator.constants.js";
+} from "./markdown-validator.constants";
 
 import type {
   MarkdownAbstractSyntaxTreeNode,
@@ -23,7 +23,7 @@ import type {
   ValidateMarkdownChildrenArguments,
   ValidateMarkdownDocumentArguments,
   ValidatePathExistenceArguments,
-} from "./markdown-validator.types.js";
+} from "./markdown-validator.types";
 
 /**
  * Validates Markdown files against conformetry templates.

@@ -22,15 +22,15 @@ describe("module export surfaces", () => {
   });
 
   it("exports command and module surfaces for nx handoff", async () => {
-    const { MainModule } = await import("./main.module.js");
+    const { MainModule } = await import("./main.module");
     const { GenerateCommand } =
-      await import("./modules/commands/generate/generate.command.js");
+      await import("./modules/commands/generate/generate.command");
     const { GenerateModule } =
-      await import("./modules/commands/generate/generate.module.js");
+      await import("./modules/commands/generate/generate.module");
     const { ValidateCommand } =
-      await import("./modules/commands/validate/validate.command.js");
+      await import("./modules/commands/validate/validate.command");
     const { ValidateModule } =
-      await import("./modules/commands/validate/validate.module.js");
+      await import("./modules/commands/validate/validate.module");
 
     expect(MainModule).toBeDefined();
     expect(GenerateCommand).toBeDefined();
@@ -40,7 +40,7 @@ describe("module export surfaces", () => {
   });
 
   it("exports nest modules used by command bootstrap", async () => {
-    const { LoggerModule } = await import("./modules/logger/logger.module.js");
+    const { LoggerModule } = await import("./modules/logger/logger.module");
 
     expect(LoggerModule).toBeDefined();
   });

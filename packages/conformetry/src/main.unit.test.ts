@@ -23,7 +23,7 @@ vi.mock("./main.module.js", () => {
 });
 
 async function importMainModule(): Promise<void> {
-  await import("./main.js");
+  await import("./main");
 }
 
 describe("main", () => {

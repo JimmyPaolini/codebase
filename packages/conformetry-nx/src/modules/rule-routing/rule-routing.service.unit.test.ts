@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { RuleRoutingService } from "./rule-routing.service.js";
+import { RuleRoutingService } from "./rule-routing.service";
 
 const TEMPLATE_RULE_NAMES_BY_PROJECT_TAG = {
   "framework:nest-commander": [
@@ -179,10 +179,7 @@ describe(RuleRoutingService, () => {
 
     expect(result).toStrictEqual({
       projectPaths: ["applications/caelundas", "applications/lexico"],
-      templateRuleNames: [
-        "nestjs-service-module",
-        "nestjs-command-project",
-      ],
+      templateRuleNames: ["nestjs-service-module", "nestjs-command-project"],
     });
   });
 });
@@ -197,10 +194,7 @@ async function createWorkspaceFixture(): Promise<string> {
     projectMetadata: {
       name: "caelundas",
       sourceRoot: "applications/caelundas",
-      tags: [
-        "framework:nest-commander",
-        "generator:nestjs-command-project",
-      ],
+      tags: ["framework:nest-commander", "generator:nestjs-command-project"],
     },
   });
   await writeProjectMetadata({

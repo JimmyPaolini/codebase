@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { describe, expect, it, vi } from "vitest";
 
-import { GenerationService } from "./generation.service.js";
+import { GenerationService } from "./generation.service";
 
 import type {
   DirectoryEntry,
@@ -12,7 +12,7 @@ import type {
   FormatterAdapter,
   GeneratorDefinition,
   GeneratorHookContext,
-} from "./generation.types.js";
+} from "./generation.types";
 
 class MockFileSystemAdapter implements FileSystemAdapter {
   private readonly directoryEntries = new Map<string, DirectoryEntry[]>();

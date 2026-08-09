@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { TypeScriptValidatorService } from "./typescript-validator.service.js";
+import { TypeScriptValidatorService } from "./typescript-validator.service";
 
 /**
  * Provides the TypeScript validator service.

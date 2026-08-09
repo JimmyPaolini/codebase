@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { TextValidatorService } from "./text-validator.service.js";
+import { TextValidatorService } from "./text-validator.service";
 
 /**
  * Provides the text validator service.

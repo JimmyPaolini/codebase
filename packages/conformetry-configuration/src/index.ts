@@ -1,20 +1,21 @@
-export { ConfigurationModule } from "./modules/configuration/configuration.module.js";
-export { ConfigurationService } from "./modules/configuration/configuration.service.js";
-export { TemplateValidationService } from "./modules/configuration/configuration-template-validation.service.js";
+export { TemplateValidationService } from "./modules/configuration/configuration-template-validation.service";
+export { prepareTemplateValidationPayload } from "./modules/configuration/configuration-template-validation.utilities";
+export { ConfigurationModule } from "./modules/configuration/configuration.module";
+export { ConfigurationService } from "./modules/configuration/configuration.service";
 export type {
-  CompareMatchedCandidatesArguments,
   CollectGeneratorInputsFromCommandArgumentsArguments,
+  CompareMatchedCandidatesArguments,
   ConformetryConfiguration,
   ConformetryGeneratorDefinition,
   ConformetryGeneratorHookDefinition,
   ConformetryGeneratorParameterDefinition,
   ConformetryNxPluginOptions,
-  ConformetryValidatorPlugin,
   ConformetryPluginOptions,
+  ConformetryValidatorPlugin,
   JsonSchemaDefinition,
   MatchedGeneratorCandidate,
-  ParsedProjectMetadata,
   ParsedConformetryGeneratorDefinition,
+  ParsedProjectMetadata,
   PreparedValidationDocument,
   PreparedValidationPayload,
   PrepareTemplateValidationPayloadArguments,
@@ -27,7 +28,7 @@ export type {
   ValidationPluginDescriptor,
   ValidationPluginResult,
   ValidationProjectTemplateMetadata,
-} from "./modules/configuration/configuration.types.js";
+} from "./modules/configuration/configuration.types";
 export {
   buildNameSubstitutions,
   collectGeneratorInputsFromCommandArguments,
@@ -35,5 +36,4 @@ export {
   parseCommaDelimitedOption,
   resolveConfigurationPath,
   resolveTargetDirectoryPath,
-} from "./modules/configuration/configuration.utilities.js";
-export { prepareTemplateValidationPayload } from "./modules/configuration/configuration-template-validation.utilities.js";
+} from "./modules/configuration/configuration.utilities";

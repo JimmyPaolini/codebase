@@ -1,4 +1,4 @@
-import { NxGeneratorFactoryService } from "./nx-generator-factory.service.js";
+import { NxGeneratorFactoryService } from "./nx-generator-factory.service";
 
 const nxGeneratorFactoryService = new NxGeneratorFactoryService();
 
@@ -13,16 +13,21 @@ export function createConformetryGeneratorFactory(args: {
     options: Record<string, unknown>;
     tree: unknown;
   }) => Promise<string> | string;
-}): (tree: unknown, options?: Record<string, unknown>) => Promise<() => Promise<void>> {
-  return nxGeneratorFactoryService.createConformetryGeneratorFactory(args as {
-    definition: {
-      name: string;
-    };
-    resolveTargetDirectoryPath?: (args: {
-      options: Record<string, unknown>;
-      tree: unknown;
-    }) => Promise<string> | string;
-  });
+}): (
+  tree: unknown,
+  options?: Record<string, unknown>,
+) => Promise<() => Promise<void>> {
+  return nxGeneratorFactoryService.createConformetryGeneratorFactory(
+    args as {
+      definition: {
+        name: string;
+      };
+      resolveTargetDirectoryPath?: (args: {
+        options: Record<string, unknown>;
+        tree: unknown;
+      }) => Promise<string> | string;
+    },
+  );
 }
 
 /**
@@ -44,11 +49,13 @@ export async function resolveConformetryTargetDirectoryPath(args: {
   options: Record<string, unknown>;
   tree: unknown;
 }): Promise<string> {
-  return await nxGeneratorFactoryService.resolveConformetryTargetDirectoryPath(args as {
-    definition: {
-      name: string;
-    };
-    options: Record<string, unknown>;
-    tree: unknown;
-  });
+  return await nxGeneratorFactoryService.resolveConformetryTargetDirectoryPath(
+    args as {
+      definition: {
+        name: string;
+      };
+      options: Record<string, unknown>;
+      tree: unknown;
+    },
+  );
 }

@@ -72,7 +72,7 @@ describe("generateCommand", () => {
   });
 
   it("parses CLI option values", async () => {
-    const { GenerateCommand } = await import("./generate.command.js");
+    const { GenerateCommand } = await import("./generate.command");
     const command = new GenerateCommand(
       new ConfigurationService(),
       new GenerationService(),
@@ -89,7 +89,7 @@ describe("generateCommand", () => {
   });
 
   it("throws when required options are missing", async () => {
-    const { GenerateCommand } = await import("./generate.command.js");
+    const { GenerateCommand } = await import("./generate.command");
     const command = new GenerateCommand(
       new ConfigurationService(),
       new GenerationService(),
@@ -108,7 +108,7 @@ describe("generateCommand", () => {
       generators: {},
     });
 
-    const { GenerateCommand } = await import("./generate.command.js");
+    const { GenerateCommand } = await import("./generate.command");
     const command = new GenerateCommand(
       new ConfigurationService(),
       new GenerationService(),
@@ -144,7 +144,7 @@ describe("generateCommand", () => {
       generatedFilePaths: ["output/button.tsx"],
       outputDirectoryPath: "generated/react-component",
     });
-    const { GenerateCommand } = await import("./generate.command.js");
+    const { GenerateCommand } = await import("./generate.command");
     const command = new GenerateCommand(
       new ConfigurationService(),
       new GenerationService(),
@@ -207,7 +207,7 @@ describe("generateCommand", () => {
       outputDirectoryPath: "generated/react-component",
     });
 
-    const { GenerateCommand } = await import("./generate.command.js");
+    const { GenerateCommand } = await import("./generate.command");
     const command = new GenerateCommand(
       new ConfigurationService(),
       new GenerationService(),
@@ -247,7 +247,7 @@ describe("generateCommand", () => {
     });
 
     const { Test } = await import("@nestjs/testing");
-    const { GenerateCommand } = await import("./generate.command.js");
+    const { GenerateCommand } = await import("./generate.command");
     const originalParameterTypes = Reflect.getMetadata(
       designParameterTypesMetadataKey,
       GenerateCommand,

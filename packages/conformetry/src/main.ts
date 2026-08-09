@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { ConsoleLogger } from "@nestjs/common";
 import { CommandFactory } from "nest-commander";
 
-import { MainModule } from "./main.module.js";
+import { MainModule } from "./main.module";
 
 /**
  * Bootstraps the NestJS command application.

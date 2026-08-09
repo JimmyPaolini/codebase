@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { JsonValidatorService } from "./json-validator.service.js";
+import { JsonValidatorService } from "./json-validator.service";
 
 const { prepareTemplateValidationPayloadMock } = vi.hoisted(() => {
   return {

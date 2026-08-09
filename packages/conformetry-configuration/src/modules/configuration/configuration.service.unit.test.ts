@@ -4,10 +4,26 @@ import path from "node:path";
 
 import { describe, expect, it, vi } from "vitest";
 
-import { conformetryConfigurationSchema } from "./configuration.constants.js";
+import {
+  conformetryConfigurationSchema,
+  UnknownConfigurationFileTypeError,
+} from "./configuration.constants";
+import { ConfigurationService } from "./configuration.service";
 
-import { UnknownConfigurationFileTypeError } from "./configuration.constants.js";
-import { ConfigurationService } from "./configuration.service.js";
+interface ConfigurationServiceTestHarness {
+  isConformetryGeneratorDefinition(value: unknown): boolean;
+  loadConfigurationModule(
+    pathName: string,
+    extension: string,
+  ): Promise<unknown>;
+  resolveConfigurationPath(configurationPath: string): Promise<string>;
+}
+
+function createConfigurationServiceHarness(): ConfigurationServiceTestHarness {
+  return Object.create(
+    ConfigurationService.prototype,
+  ) as ConfigurationServiceTestHarness;
+}
 
 describe("configurationService.loadConformetryConfiguration", () => {
   it("loads the repository conformetry config from the root configuration file", async () => {
@@ -163,9 +179,7 @@ describe("configurationService.loadConformetryConfiguration", () => {
   });
 
   it("treats invalid generator definitions as non-matching", () => {
-    const configurationService = new ConfigurationService() as unknown as {
-      isConformetryGeneratorDefinition(value: unknown): boolean;
-    };
+    const configurationService = createConfigurationServiceHarness();
 
     expect(
       configurationService.isConformetryGeneratorDefinition(undefined),
@@ -188,9 +202,7 @@ describe("configurationService.loadConformetryConfiguration", () => {
   });
 
   it("resolves to absolute path when workspace root cannot be discovered", async () => {
-    const service = new ConfigurationService() as unknown as {
-      resolveConfigurationPath(configurationPath: string): Promise<string>;
-    };
+    const service = createConfigurationServiceHarness();
     const workingDirectory = await mkdtemp(
       path.join(tmpdir(), "conformetry-configuration-no-workspace-"),
     );
@@ -217,12 +229,7 @@ describe("configurationService.loadConformetryConfiguration", () => {
     );
     await writeFile(configurationPath, "module.exports = 42;", "utf8");
 
-    const configurationService = new ConfigurationService() as unknown as {
-      loadConfigurationModule(
-        pathName: string,
-        extension: string,
-      ): Promise<unknown>;
-    };
+    const configurationService = createConfigurationServiceHarness();
     const configuration = await configurationService.loadConfigurationModule(
       configurationPath,
       ".js",
@@ -256,12 +263,7 @@ describe("configurationService.loadConformetryConfiguration", () => {
       "utf8",
     );
 
-    const configurationService = new ConfigurationService() as unknown as {
-      loadConfigurationModule(
-        pathName: string,
-        extension: string,
-      ): Promise<unknown>;
-    };
+    const configurationService = createConfigurationServiceHarness();
     const configuration = await configurationService.loadConfigurationModule(
       configurationPath,
       ".js",
@@ -306,12 +308,7 @@ describe("configurationService.loadConformetryConfiguration", () => {
       "utf8",
     );
 
-    const configurationService = new ConfigurationService() as unknown as {
-      loadConfigurationModule(
-        pathName: string,
-        extension: string,
-      ): Promise<unknown>;
-    };
+    const configurationService = createConfigurationServiceHarness();
     const configuration = await configurationService.loadConfigurationModule(
       configurationPath,
       ".mjs",
@@ -332,13 +329,16 @@ describe("configurationService.loadConformetryConfiguration", () => {
   });
 
   it("skips invalid generator entries returned from parser fallback behavior", async () => {
+    const invalidConfiguration = {
+      generators: {
+        invalid: {
+          name: "only-name",
+        },
+      },
+    } satisfies ReturnType<typeof conformetryConfigurationSchema.parse>;
     const parseSpy = vi
       .spyOn(conformetryConfigurationSchema, "parse")
-      .mockReturnValueOnce({
-        generators: {
-          invalid: { name: "only-name" },
-        },
-      } as never);
+      .mockReturnValueOnce(invalidConfiguration);
 
     try {
       const configurationService = new ConfigurationService();

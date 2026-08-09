@@ -44,7 +44,7 @@ describe("loggerService production mode", () => {
       };
     });
 
-    const { LoggerService } = await import("./logger.service.js");
+    const { LoggerService } = await import("./logger.service");
     const service = new LoggerService();
 
     service.setContext("ProductionContext");

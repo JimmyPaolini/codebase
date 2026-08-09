@@ -6,7 +6,7 @@ import { GenerationService } from "@jimmypaolini/conformetry-generation";
 import { ConsoleLogger, Inject, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
-import type { GenerateCommandOptions } from "./generate.types.js";
+import type { GenerateCommandOptions } from "./generate.types";
 import type { JsonSchemaDefinition } from "@jimmypaolini/conformetry-configuration";
 
 /**

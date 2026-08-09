@@ -1,6 +1,6 @@
 import { defineConfig, mergeConfig } from "vitest/config";
 
-import vitestConfig from "../../configuration/vitest.config.js";
+import vitestConfig from "../../configuration/vitest.config";
 
 import viteConfig from "./vite.config.mts";
 

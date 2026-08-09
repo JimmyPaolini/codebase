@@ -1,3 +1,3 @@
-export { MainModule } from "./main.module.js";
-export { LoggerModule } from "./modules/logger/logger.module.js";
-export { LoggerService } from "./modules/logger/logger.service.js";
+export { MainModule } from "./main.module";
+export { LoggerModule } from "./modules/logger/logger.module";
+export { LoggerService } from "./modules/logger/logger.service";
