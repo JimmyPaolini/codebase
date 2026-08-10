@@ -230,7 +230,7 @@
       "name": "^(?!(dir|err|req|res|utils|ctx|app)$)[a-z0-9-]+$"
     },
     "module-file": {
-      "name": "^[a-z0-9.-]+\\.(module|service|command|constants|types|utilities)(\\.([a-z0-9-]+\\.)*test)?\\.(ts|tsx|js|jsx|mts|cts)$"
+      "name": "^[a-z0-9-]+.(command|constants|module|service|types|utilities)(.(unit|integration|end-to-end).test)?.(ts|tsx|mts|cts|js|jsx|mjs|cjs)$"
     },
     "module-folder": {
       "children": [
@@ -381,9 +381,6 @@
           },
           {
             "ruleId": "codebase-project"
-          },
-          {
-            "ruleId": "any-file"
           }
         ],
         "name": "applications"
@@ -442,9 +439,6 @@
         "children": [
           {
             "ruleId": "codebase-project"
-          },
-          {
-            "ruleId": "any-file"
           }
         ],
         "name": "packages"
@@ -482,9 +476,6 @@
         "children": [
           {
             "ruleId": "codebase-project"
-          },
-          {
-            "ruleId": "any-file"
           }
         ],
         "name": "tools"
