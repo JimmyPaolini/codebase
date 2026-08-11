@@ -255,10 +255,9 @@ describe("template validation service", () => {
       workingDirectory: "/workspace",
     });
 
-    expect(result).toStrictEqual({
-      documents: [],
-      violations: [expect.stringContaining("Missing project path")],
-    });
+    expect(result.documents).toStrictEqual([]);
+    expect(result.violations).toHaveLength(1);
+    expect(result.violations[0]).toContain("Missing project path");
   });
 
   it("returns empty documents and violations when no generator candidate matches", async () => {
@@ -303,14 +302,12 @@ describe("template validation service", () => {
       renderedTemplate: "rendered",
       templateFilePath: "/workspace/templates/alpha/index.ts",
     };
-    const loadConformetryConfiguration = vi
-      .fn<(configurationPath: string) => Promise<ConformetryConfiguration>>()
+    const configurationService = new ConfigurationService();
+    const loadConformetryConfigurationSpy = vi
+      .spyOn(configurationService, "loadConformetryConfiguration")
       .mockResolvedValue(configuration);
-    const configurationService = {
-      loadConformetryConfiguration,
-    } satisfies Pick<ConfigurationService, "loadConformetryConfiguration">;
     const configuredService = new TemplateValidationService(
-      configurationService as ConfigurationService,
+      configurationService,
     );
     const prepareDocumentsForProjectPathSpy = vi
       .spyOn(configuredService, "prepareDocumentsForProjectPath")
@@ -344,7 +341,7 @@ describe("template validation service", () => {
         workingDirectory: "/workspace",
       });
 
-      expect(loadConformetryConfiguration).toHaveBeenCalledWith(
+      expect(loadConformetryConfigurationSpy).toHaveBeenCalledWith(
         "configuration/conformetry.config.ts",
       );
       expect(prepareDocumentsForProjectPathSpy).toHaveBeenCalledTimes(2);
@@ -355,6 +352,7 @@ describe("template validation service", () => {
       });
     } finally {
       prepareDocumentsForProjectPathSpy.mockRestore();
+      loadConformetryConfigurationSpy.mockRestore();
     }
   });
 });
