@@ -11,6 +11,7 @@
     "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:",
+    "tsx": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -22,8 +23,16 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
+  "exports": {
+    ".": {
+      "default": "./src/index.cjs",
+      "import": "./src/index.cjs",
+      "require": "./src/index.cjs",
+      "types": "./src/index.ts"
+    }
+  },
   "generators": "./generators.json",
-  "main": "src/index.ts",
+  "main": "src/index.cjs",
   "name": "@jimmypaolini/conformetry-nx",
   "nx": {
     "generators": "./generators.json"

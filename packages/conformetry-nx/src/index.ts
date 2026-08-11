@@ -4,7 +4,6 @@ import path from "node:path";
 import { resolveConformetryNxPluginOptions } from "./modules/plugin-options/plugin-options.utilities.js";
 import { RuleRoutingService } from "./modules/rule-routing/rule-routing.service.js";
 import { buildInferredValidationTarget } from "./modules/validation-target/validation-target.utilities.js";
-import { runWorkspaceGenerator } from "./modules/workspace-generator/workspace-generator.utilities.js";
 export { MainModule } from "./main.module.js";
 
 import type {
@@ -18,6 +17,18 @@ import type {
   GeneratorCallback,
   Tree,
 } from "@nx/devkit";
+
+async function runWorkspaceGeneratorImplementation(args: {
+  generatorName: string;
+  options: Record<string, unknown> | undefined;
+  tree: Tree;
+}): Promise<GeneratorCallback> {
+  const { runWorkspaceGenerator } = await import(
+    "./modules/workspace-generator/workspace-generator.utilities.js"
+  );
+
+  return await runWorkspaceGenerator(args);
+}
 
 /**
  * A minimal Nx plugin entrypoint so the package can be discovered by Nx.
@@ -81,7 +92,7 @@ export async function generateJupyterNotebookApplication(
   tree: Tree,
   options?: Record<string, unknown>,
 ): Promise<GeneratorCallback> {
-  return await runWorkspaceGenerator({
+  return await runWorkspaceGeneratorImplementation({
     generatorName: "jupyter-notebook-application",
     options,
     tree,
@@ -95,7 +106,7 @@ export async function generateNestjsCommandApplication(
   tree: Tree,
   options?: Record<string, unknown>,
 ): Promise<GeneratorCallback> {
-  return await runWorkspaceGenerator({
+  return await runWorkspaceGeneratorImplementation({
     generatorName: "nestjs-command-project",
     options,
     tree,
@@ -109,7 +120,7 @@ export async function generateNestjsCommandModule(
   tree: Tree,
   options?: Record<string, unknown>,
 ): Promise<GeneratorCallback> {
-  return await runWorkspaceGenerator({
+  return await runWorkspaceGeneratorImplementation({
     generatorName: "nestjs-command-module",
     options,
     tree,
@@ -123,7 +134,7 @@ export async function generateNestjsDataloaderModule(
   tree: Tree,
   options?: Record<string, unknown>,
 ): Promise<GeneratorCallback> {
-  return await runWorkspaceGenerator({
+  return await runWorkspaceGeneratorImplementation({
     generatorName: "nestjs-dataloader-module",
     options,
     tree,
@@ -137,7 +148,7 @@ export async function generateNestjsGraphqlApplication(
   tree: Tree,
   options?: Record<string, unknown>,
 ): Promise<GeneratorCallback> {
-  return await runWorkspaceGenerator({
+  return await runWorkspaceGeneratorImplementation({
     generatorName: "nestjs-graphql-application",
     options,
     tree,
@@ -151,7 +162,7 @@ export async function generateNestjsGraphqlModule(
   tree: Tree,
   options?: Record<string, unknown>,
 ): Promise<GeneratorCallback> {
-  return await runWorkspaceGenerator({
+  return await runWorkspaceGeneratorImplementation({
     generatorName: "nestjs-graphql-module",
     options,
     tree,
@@ -165,7 +176,7 @@ export async function generateNestjsServiceFile(
   tree: Tree,
   options?: Record<string, unknown>,
 ): Promise<GeneratorCallback> {
-  return await runWorkspaceGenerator({
+  return await runWorkspaceGeneratorImplementation({
     generatorName: "nestjs-service-file",
     options,
     tree,
@@ -179,7 +190,7 @@ export async function generateNestjsServiceModule(
   tree: Tree,
   options?: Record<string, unknown>,
 ): Promise<GeneratorCallback> {
-  return await runWorkspaceGenerator({
+  return await runWorkspaceGeneratorImplementation({
     generatorName: "nestjs-service-module",
     options,
     tree,
@@ -193,7 +204,7 @@ export async function generateNestjsServicePackage(
   tree: Tree,
   options?: Record<string, unknown>,
 ): Promise<GeneratorCallback> {
-  return await runWorkspaceGenerator({
+  return await runWorkspaceGeneratorImplementation({
     generatorName: "nestjs-service-project",
     options,
     tree,
@@ -207,7 +218,7 @@ export async function generateReactComponent(
   tree: Tree,
   options?: Record<string, unknown>,
 ): Promise<GeneratorCallback> {
-  return await runWorkspaceGenerator({
+  return await runWorkspaceGeneratorImplementation({
     generatorName: "react-component",
     options,
     tree,

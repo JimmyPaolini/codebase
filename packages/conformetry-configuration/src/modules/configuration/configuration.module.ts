@@ -10,6 +10,17 @@ import { ConfigurationService } from "./configuration.service";
   controllers: [],
   exports: [ConfigurationService, TemplateValidationService],
   imports: [],
-  providers: [ConfigurationService, TemplateValidationService],
+  providers: [
+    ConfigurationService,
+    {
+      inject: [ConfigurationService],
+      provide: TemplateValidationService,
+      useFactory: (
+        configurationService: ConfigurationService,
+      ): TemplateValidationService => {
+        return new TemplateValidationService(configurationService);
+      },
+    },
+  ],
 })
 export class ConfigurationModule {}

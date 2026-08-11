@@ -1,5 +1,11 @@
-import { ConfigurationModule } from "@jimmypaolini/conformetry-configuration";
-import { GenerationModule } from "@jimmypaolini/conformetry-generation";
+import {
+  ConfigurationModule,
+  ConfigurationService,
+} from "@jimmypaolini/conformetry-configuration";
+import {
+  GenerationModule,
+  GenerationService,
+} from "@jimmypaolini/conformetry-generation";
 import { Module } from "@nestjs/common";
 
 import { GenerateCommand } from "./generate.command";
@@ -11,6 +17,17 @@ import { GenerateCommand } from "./generate.command";
   controllers: [],
   exports: [GenerateCommand],
   imports: [ConfigurationModule, GenerationModule],
-  providers: [GenerateCommand],
+  providers: [
+    {
+      inject: [ConfigurationService, GenerationService],
+      provide: GenerateCommand,
+      useFactory: (
+        configurationService: ConfigurationService,
+        generationService: GenerationService,
+      ): GenerateCommand => {
+        return new GenerateCommand(configurationService, generationService);
+      },
+    },
+  ],
 })
 export class GenerateModule {}

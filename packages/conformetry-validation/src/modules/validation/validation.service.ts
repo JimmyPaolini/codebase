@@ -6,6 +6,8 @@ import { TextValidatorService } from "@jimmypaolini/conformetry-text";
 import { TypeScriptValidatorService } from "@jimmypaolini/conformetry-typescript";
 import { Injectable } from "@nestjs/common";
 
+import { discoverWorkspaceProjectPaths } from "./validation-project-paths.utilities.js";
+
 import type {
   RunValidationArguments,
   RunValidationResult,
@@ -123,7 +125,22 @@ export class ValidationService {
     const projectPaths =
       requestedProjectPaths.length > 0
         ? requestedProjectPaths
-        : [args.workingDirectory];
+        : discoverWorkspaceProjectPaths(args.workingDirectory);
+    if (projectPaths.length === 0) {
+      return {
+        ok: false,
+        pluginResults: [
+          {
+            checkedPaths: [],
+            ok: false,
+            pluginName: "workspace-discovery",
+            violations: [
+              `No project paths were found under ${args.workingDirectory}`,
+            ],
+          },
+        ],
+      };
+    }
     const configuredTemplateRuleNames = Object.keys(
       conformetryConfiguration.generators,
     );

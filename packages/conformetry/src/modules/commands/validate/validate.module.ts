@@ -1,5 +1,11 @@
-import { ConfigurationModule } from "@jimmypaolini/conformetry-configuration";
-import { ValidationModule } from "@jimmypaolini/conformetry-validation";
+import {
+  ConfigurationModule,
+  ConfigurationService,
+} from "@jimmypaolini/conformetry-configuration";
+import {
+  ValidationModule,
+  ValidationService,
+} from "@jimmypaolini/conformetry-validation";
 import { Module } from "@nestjs/common";
 
 import { ValidateCommand } from "./validate.command";
@@ -11,6 +17,17 @@ import { ValidateCommand } from "./validate.command";
   controllers: [],
   exports: [ValidateCommand],
   imports: [ConfigurationModule, ValidationModule],
-  providers: [ValidateCommand],
+  providers: [
+    {
+      inject: [ConfigurationService, ValidationService],
+      provide: ValidateCommand,
+      useFactory: (
+        configurationService: ConfigurationService,
+        validationService: ValidationService,
+      ): ValidateCommand => {
+        return new ValidateCommand(configurationService, validationService);
+      },
+    },
+  ],
 })
 export class ValidateModule {}

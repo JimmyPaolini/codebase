@@ -1,10 +1,14 @@
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+
 import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
 import { JsonValidatorService } from "@jimmypaolini/conformetry-json";
 import { MarkdownValidatorService } from "@jimmypaolini/conformetry-markdown";
 import { PythonValidatorService } from "@jimmypaolini/conformetry-python";
 import { TextValidatorService } from "@jimmypaolini/conformetry-text";
 import { TypeScriptValidatorService } from "@jimmypaolini/conformetry-typescript";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ValidationService } from "./validation.service";
 
@@ -30,6 +34,8 @@ const {
     mockTypeScriptValidate: vi.fn(),
   };
 });
+
+const temporaryDirectoryPaths: string[] = [];
 
 vi.mock("@jimmypaolini/conformetry-configuration", () => {
   return {
@@ -149,6 +155,13 @@ describe(ValidationService, () => {
     mockTypeScriptValidate.mockReset();
   });
 
+  afterEach(() => {
+    for (const temporaryDirectoryPath of temporaryDirectoryPaths) {
+      fs.rmSync(temporaryDirectoryPath, { force: true, recursive: true });
+    }
+    temporaryDirectoryPaths.length = 0;
+  });
+
   it("returns success when all supplied plugins pass", async () => {
     const validationService = new ValidationService(
       new ConfigurationService(),
@@ -250,6 +263,100 @@ describe(ValidationService, () => {
     ]);
   });
 
+  it("uses discovered project paths when explicit project paths are omitted", async () => {
+    const workingDirectory = createTemporaryDirectoryPath();
+    mockLoadConformetryConfiguration.mockResolvedValue({
+      generators: {
+        "nestjs-service-module": {},
+        "react-component": {},
+      },
+    });
+    mockTypeScriptValidate.mockResolvedValue(createPassingValidationResult());
+    mockPythonValidate.mockResolvedValue(createPassingValidationResult());
+    mockMarkdownValidate.mockResolvedValue(createPassingValidationResult());
+    mockJsonValidate.mockResolvedValue(createPassingValidationResult());
+    mockTextValidate.mockResolvedValue(createPassingValidationResult());
+
+    writeProjectMetadata({
+      projectMetadata: {
+        name: "affirmations",
+        sourceRoot: "applications/affirmations",
+      },
+      relativeProjectPath: "applications/affirmations",
+      workingDirectory,
+    });
+    writeProjectMetadata({
+      projectMetadata: {
+        name: "conformetry",
+        sourceRoot: "packages/conformetry",
+      },
+      relativeProjectPath: "packages/conformetry",
+      workingDirectory,
+    });
+
+    const validationService = new ValidationService(
+      new ConfigurationService(),
+      new TypeScriptValidatorService(),
+      new PythonValidatorService(),
+      new MarkdownValidatorService(),
+      new JsonValidatorService(),
+      new TextValidatorService(),
+    );
+
+    const result = await validationService.validateConfiguredSelection({
+      configurationPath: "configuration/custom.config.ts",
+      workingDirectory,
+    });
+
+    expect(mockTypeScriptValidate).toHaveBeenCalledWith({
+      configurationPath: "configuration/custom.config.ts",
+      filePaths: ["applications/affirmations", "packages/conformetry"],
+      templateRuleNames: ["nestjs-service-module", "react-component"],
+      workingDirectory,
+    });
+    expect(result.ok).toBe(true);
+  });
+
+  it("returns an explanatory failure result when no project roots are discovered", async () => {
+    const workingDirectory = createTemporaryDirectoryPath();
+    mockLoadConformetryConfiguration.mockResolvedValue({
+      generators: {
+        "nestjs-service-module": {},
+      },
+    });
+
+    const validationService = new ValidationService(
+      new ConfigurationService(),
+      new TypeScriptValidatorService(),
+      new PythonValidatorService(),
+      new MarkdownValidatorService(),
+      new JsonValidatorService(),
+      new TextValidatorService(),
+    );
+
+    const result = await validationService.validateConfiguredSelection({
+      configurationPath: "configuration/custom.config.ts",
+      workingDirectory,
+    });
+
+    expect(mockTypeScriptValidate).not.toHaveBeenCalled();
+    expect(mockPythonValidate).not.toHaveBeenCalled();
+    expect(mockMarkdownValidate).not.toHaveBeenCalled();
+    expect(mockJsonValidate).not.toHaveBeenCalled();
+    expect(mockTextValidate).not.toHaveBeenCalled();
+    expect(result).toStrictEqual({
+      ok: false,
+      pluginResults: [
+        {
+          checkedPaths: [],
+          ok: false,
+          pluginName: "workspace-discovery",
+          violations: [`No project paths were found under ${workingDirectory}`],
+        },
+      ],
+    });
+  });
+
   it("loads configuration and routes rules/projects before running plugin validation", async () => {
     mockLoadConformetryConfiguration.mockResolvedValue({
       generators: {
@@ -345,31 +452,31 @@ describe(ValidationService, () => {
 
     expect(mockTypeScriptValidate).toHaveBeenCalledWith({
       configurationPath: "configuration/custom.config.ts",
-      filePaths: [process.cwd()],
+      filePaths: ["."],
       templateRuleNames: ["nestjs-service-module", "react-component"],
       workingDirectory: process.cwd(),
     });
     expect(mockPythonValidate).toHaveBeenCalledWith({
       configurationPath: "configuration/custom.config.ts",
-      filePaths: [process.cwd()],
+      filePaths: ["."],
       templateRuleNames: ["nestjs-service-module", "react-component"],
       workingDirectory: process.cwd(),
     });
     expect(mockMarkdownValidate).toHaveBeenCalledWith({
       configurationPath: "configuration/custom.config.ts",
-      filePaths: [process.cwd()],
+      filePaths: ["."],
       templateRuleNames: ["nestjs-service-module", "react-component"],
       workingDirectory: process.cwd(),
     });
     expect(mockJsonValidate).toHaveBeenCalledWith({
       configurationPath: "configuration/custom.config.ts",
-      filePaths: [process.cwd()],
+      filePaths: ["."],
       templateRuleNames: ["nestjs-service-module", "react-component"],
       workingDirectory: process.cwd(),
     });
     expect(mockTextValidate).toHaveBeenCalledWith({
       configurationPath: "configuration/custom.config.ts",
-      filePaths: [process.cwd()],
+      filePaths: ["."],
       templateRuleNames: ["nestjs-service-module", "react-component"],
       workingDirectory: process.cwd(),
     });
@@ -377,3 +484,37 @@ describe(ValidationService, () => {
     expect(result.pluginResults).toHaveLength(5);
   });
 });
+
+function createPassingValidationResult(): ValidationPluginResult {
+  return {
+    checkedPaths: [],
+    ok: true,
+    pluginName: "test-plugin",
+    violations: [],
+  };
+}
+
+function createTemporaryDirectoryPath(): string {
+  const temporaryDirectoryPath = fs.mkdtempSync(
+    path.join(os.tmpdir(), "conformetry-validation-"),
+  );
+  temporaryDirectoryPaths.push(temporaryDirectoryPath);
+  return temporaryDirectoryPath;
+}
+
+function writeProjectMetadata(args: {
+  projectMetadata: unknown;
+  relativeProjectPath: string;
+  workingDirectory: string;
+}): void {
+  const projectDirectoryPath = path.join(
+    args.workingDirectory,
+    args.relativeProjectPath,
+  );
+  fs.mkdirSync(projectDirectoryPath, { recursive: true });
+  fs.writeFileSync(
+    path.join(projectDirectoryPath, "project.json"),
+    JSON.stringify(args.projectMetadata),
+    "utf8",
+  );
+}
