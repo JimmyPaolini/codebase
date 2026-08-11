@@ -4,7 +4,32 @@ import { fileURLToPath } from "node:url";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mockCommandFactoryRun = vi.fn<() => Promise<void>>(async () => {});
+type CommandFactoryRunOptions = {
+  errorHandler: (error: Error) => void;
+  serviceErrorHandler: (error: Error) => void;
+};
+
+const mockLoggerError = vi.fn<(message: unknown) => void>();
+const mockLoggerSetContext = vi.fn<(context: string) => void>();
+const mockCommandFactoryRun = vi.fn<
+  (_module: unknown, _options: CommandFactoryRunOptions) => Promise<void>
+>(async () => {});
+
+vi.mock("@nestjs/common", () => {
+  class MockConsoleLogger {
+    error(message: unknown): void {
+      mockLoggerError(message);
+    }
+
+    setContext(context: string): void {
+      mockLoggerSetContext(context);
+    }
+  }
+
+  return {
+    ConsoleLogger: MockConsoleLogger,
+  };
+});
 
 vi.mock("nest-commander", () => {
   return {
@@ -26,10 +51,29 @@ async function importMainModule(): Promise<void> {
   await import("./main");
 }
 
+function getRunOptions(): CommandFactoryRunOptions {
+  const firstCall = mockCommandFactoryRun.mock.calls[0];
+
+  if (firstCall === undefined) {
+    throw new Error("Expected CommandFactory.run to be called once.");
+  }
+
+  const options = firstCall[1];
+
+  if (options === undefined) {
+    throw new Error("Expected CommandFactory.run options to be defined.");
+  }
+
+  return options;
+}
+
 describe("main", () => {
   beforeEach(() => {
     vi.resetModules();
+    mockLoggerError.mockClear();
+    mockLoggerSetContext.mockClear();
     mockCommandFactoryRun.mockClear();
+    process.exitCode = 0;
     process.argv = ["node", "conformetry"];
   });
 
@@ -47,6 +91,7 @@ describe("main", () => {
     await importMainModule();
 
     expect(mockCommandFactoryRun).toHaveBeenCalledTimes(1);
+    expect(mockLoggerSetContext).toHaveBeenCalledWith("CommandFactory");
     expect(process.argv).toStrictEqual([
       "node",
       "conformetry",
@@ -57,6 +102,30 @@ describe("main", () => {
       "lexico-components",
     ]);
     expect(process.env["CONFORMETRY_GENERATOR_OPTIONS"]).toBeUndefined();
+  });
+
+  it("wires command error handler to mark process as failed", async () => {
+    await importMainModule();
+
+    const runOptions = getRunOptions();
+    const failure = new Error("command failure");
+
+    runOptions.errorHandler(failure);
+
+    expect(process.exitCode).toBe(1);
+    expect(mockLoggerError).toHaveBeenCalledWith(failure);
+  });
+
+  it("wires service error handler to mark process as failed", async () => {
+    await importMainModule();
+
+    const runOptions = getRunOptions();
+    const failure = new Error("service failure");
+
+    runOptions.serviceErrorHandler(failure);
+
+    expect(process.exitCode).toBe(1);
+    expect(mockLoggerError).toHaveBeenCalledWith(failure);
   });
 
   describe("wrapper target wiring", () => {

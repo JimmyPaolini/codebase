@@ -1,5 +1,54 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("@jimmypaolini/conformetry-configuration", () => {
+  function MockConfigurationModule(): void {}
+  function MockConfigurationService(): void {}
+
+  function parseCommaDelimitedOption(
+    value: string | undefined,
+  ): string[] | undefined {
+    if (value === undefined) {
+      return undefined;
+    }
+
+    return value
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0);
+  }
+
+  return {
+    collectGeneratorInputsFromCommandArguments: vi.fn<
+      () => Record<string, never>
+    >(() => {
+      return {};
+    }),
+    ConfigurationModule: MockConfigurationModule,
+    ConfigurationService: MockConfigurationService,
+    parseCommaDelimitedOption,
+  };
+});
+
+vi.mock("@jimmypaolini/conformetry-generation", () => {
+  function MockGenerationModule(): void {}
+  function MockGenerationService(): void {}
+
+  return {
+    GenerationModule: MockGenerationModule,
+    GenerationService: MockGenerationService,
+  };
+});
+
+vi.mock("@jimmypaolini/conformetry-validation", () => {
+  function MockValidationModule(): void {}
+  function MockValidationService(): void {}
+
+  return {
+    ValidationModule: MockValidationModule,
+    ValidationService: MockValidationService,
+  };
+});
+
 vi.mock("./modules/commands/generate/generate.command.js", () => {
   function MockGenerateCommand(): void {}
 

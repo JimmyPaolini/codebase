@@ -111,6 +111,7 @@ import conformetryPluginDefinition, {
   generateNestjsServiceModule,
   generateNestjsServicePackage,
   generateReactComponent,
+  resolveTemplateRuleRouting,
 } from "./index.js";
 
 import type { Tree } from "@nx/devkit";
@@ -272,7 +273,7 @@ describe("conformetry-nx index", () => {
           `generated/${generator.generatorName}`,
         ],
         {
-          config: "configuration/custom.config.ts",
+          config: "configuration/plugin.conformetry.config.ts",
           name: generator.generatorName,
           targetDirectoryPath: `generated/${generator.generatorName}`,
         },
@@ -352,5 +353,64 @@ describe("conformetry-nx index", () => {
         },
       ],
     ]);
+  });
+
+  it("skips inferred targets when project tags are missing", async () => {
+    const workspaceDirectory = await mkdtemp(
+      path.join(tmpdir(), "conformetry-nx-create-nodes-no-tags-"),
+    );
+
+    await mkdir(path.join(workspaceDirectory, "applications", "lexico"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspaceDirectory, "applications", "lexico", "project.json"),
+      JSON.stringify({}),
+      "utf8",
+    );
+
+    const createNodesFunction = conformetryPluginDefinition.createNodes[1];
+    const result = await createNodesFunction(
+      ["applications/lexico/project.json"],
+      {
+        validationTargetName: "validate-conformetry",
+      },
+      {
+        nxJsonConfiguration: {},
+        workspaceRoot: workspaceDirectory,
+      },
+    );
+
+    expect(result).toStrictEqual([]);
+  });
+
+  it("resolves template rule routing through the public helper", async () => {
+    const workspaceDirectory = await mkdtemp(
+      path.join(tmpdir(), "conformetry-nx-rule-routing-from-index-"),
+    );
+
+    await mkdir(path.join(workspaceDirectory, "applications", "demo"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspaceDirectory, "applications", "demo", "project.json"),
+      JSON.stringify({
+        name: "demo",
+        sourceRoot: "applications/demo/src",
+        tags: ["generator:react-component"],
+      }),
+      "utf8",
+    );
+
+    await expect(
+      resolveTemplateRuleRouting({
+        configuredTemplateRuleNames: ["react-component"],
+        projectSelectors: ["demo"],
+        workingDirectory: workspaceDirectory,
+      }),
+    ).resolves.toStrictEqual({
+      projectPaths: ["applications/demo"],
+      templateRuleNames: ["react-component"],
+    });
   });
 });

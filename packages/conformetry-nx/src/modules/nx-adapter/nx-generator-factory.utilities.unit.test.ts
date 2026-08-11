@@ -1,195 +1,121 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { NxGeneratorFactoryService } from "./nx-generator-factory.service.js";
 import {
   createConformetryGeneratorFactory,
   normalizeGeneratorInputs,
   resolveConformetryTargetDirectoryPath,
 } from "./nx-generator-factory.utilities.js";
 
-import type { FileChange, Tree } from "@nx/devkit";
+import type { Tree } from "@nx/devkit";
 
-class InMemoryTree implements Tree {
-  private readonly directories = new Set<string>();
-  private readonly files = new Map<string, Buffer>();
-  public readonly root = ".";
+function createStubTree(): Tree {
+  const read: Tree["read"] = (_pathName: string, encoding?: BufferEncoding) => {
+    return encoding === undefined ? null : null;
+  };
 
-  private ensureDirectory(pathName: string): void {
-    const segments = pathName.split("/");
-    const directories: string[] = [];
-
-    for (let index = 0; index < segments.length - 1; index += 1) {
-      const directoryPath = segments.slice(0, index + 1).join("/");
-      directories.push(directoryPath);
-    }
-
-    for (const directoryPath of directories) {
-      this.directories.add(directoryPath);
-    }
-  }
-
-  private listEntries(
-    prefix: string,
-    entries: Map<string, Buffer> | Set<string>,
-  ): string[] {
-    return [...entries.keys()]
-      .filter((entryPath) => {
-        return entryPath.startsWith(prefix);
-      })
-      .map((entryPath) => {
-        return entryPath.slice(prefix.length).split("/")[0];
-      })
-      .filter((segment): segment is string => {
-        return typeof segment === "string" && segment.length > 0;
-      });
-  }
-
-  public changePermissions(pathName: string, mode: number): void {
-    void pathName;
-    void mode;
-  }
-
-  public children(pathName: string): string[] {
-    const prefix = `${pathName}/`;
-
-    return [
-      ...new Set([
-        ...this.listEntries(prefix, this.files),
-        ...this.listEntries(prefix, this.directories),
-      ]),
-    ].toSorted();
-  }
-
-  public delete(pathName: string): void {
-    this.files.delete(pathName);
-    this.directories.delete(pathName);
-  }
-
-  public exists(pathName: string): boolean {
-    return this.files.has(pathName) || this.directories.has(pathName);
-  }
-
-  public isDirectory(pathName: string): boolean {
-    return this.directories.has(pathName);
-  }
-
-  public isFile(pathName: string): boolean {
-    return this.files.has(pathName);
-  }
-
-  public listChanges(): FileChange[] {
-    return [];
-  }
-  public read(pathName: string): Buffer | null;
-  public read(pathName: string, encoding: BufferEncoding): null | string;
-  public read(
-    pathName: string,
-    encoding?: BufferEncoding,
-  ): Buffer | null | string {
-    const content = this.files.get(pathName);
-
-    if (content === undefined) {
-      return null;
-    }
-
-    return encoding === undefined ? content : content.toString(encoding);
-  }
-
-  public rename(fromPathName: string, toPathName: string): void {
-    const content = this.files.get(fromPathName);
-
-    if (content !== undefined) {
-      this.files.delete(fromPathName);
-      this.files.set(toPathName, content);
-    }
-
-    if (this.directories.has(fromPathName)) {
-      this.directories.delete(fromPathName);
-      this.directories.add(toPathName);
-    }
-
-    this.ensureDirectory(toPathName);
-  }
-
-  public write(pathName: string, content: Buffer | string): void {
-    this.files.set(
-      pathName,
-      typeof content === "string" ? Buffer.from(content) : content,
-    );
-    this.ensureDirectory(pathName);
-  }
+  return {
+    changePermissions: (_pathName: string, _mode: number) => {},
+    children: (_pathName: string) => {
+      return [];
+    },
+    delete: (_pathName: string) => {},
+    exists: (_pathName: string) => {
+      return false;
+    },
+    isFile: (_pathName: string) => {
+      return false;
+    },
+    listChanges: () => {
+      return [];
+    },
+    read,
+    rename: (_fromPathName: string, _toPathName: string) => {},
+    root: ".",
+    write: (_pathName: string, _content: Buffer | string) => {},
+  };
 }
 
-describe("nx generator factory utilities", () => {
-  describe(createConformetryGeneratorFactory, () => {
-    it("renders templates into an Nx tree and returns generated file paths", async () => {
-      const tree = new InMemoryTree();
-      tree.write("templates/example.txt", "hello {{name}}");
+describe("nx-generator-factory utilities", () => {
+  const createFactorySpy = vi.spyOn(
+    NxGeneratorFactoryService.prototype,
+    "createConformetryGeneratorFactory",
+  );
+  const normalizeInputsSpy = vi.spyOn(
+    NxGeneratorFactoryService.prototype,
+    "normalizeGeneratorInputs",
+  );
+  const resolveTargetDirectoryPathSpy = vi.spyOn(
+    NxGeneratorFactoryService.prototype,
+    "resolveConformetryTargetDirectoryPath",
+  );
 
-      const factory = createConformetryGeneratorFactory({
+  beforeEach(() => {
+    createFactorySpy.mockReset();
+    normalizeInputsSpy.mockReset();
+    resolveTargetDirectoryPathSpy.mockReset();
+  });
+
+  it("delegates factory creation to NxGeneratorFactoryService", async () => {
+    const tree = createStubTree();
+    const callback = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
+
+    createFactorySpy.mockReturnValue(async () => {
+      await Promise.resolve();
+      return callback;
+    });
+
+    const generatorFactory = createConformetryGeneratorFactory({
+      definition: {
+        name: "react-component",
+        templateDirectoryPath: "templates",
+      },
+    });
+
+    const generatedCallback = await generatorFactory(tree, { name: "demo" });
+
+    await expect(generatedCallback()).resolves.toBeUndefined();
+
+    expect(createFactorySpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("delegates generator input normalization to NxGeneratorFactoryService", () => {
+    normalizeInputsSpy.mockReturnValue({
+      enabled: "true",
+      name: "demo",
+    });
+
+    expect(
+      normalizeGeneratorInputs({
+        enabled: true,
+        name: "demo",
+      }),
+    ).toStrictEqual({
+      enabled: "true",
+      name: "demo",
+    });
+    expect(normalizeInputsSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("delegates target directory resolution to NxGeneratorFactoryService", async () => {
+    const tree = createStubTree();
+    resolveTargetDirectoryPathSpy.mockResolvedValue(
+      "generated/react-component",
+    );
+
+    await expect(
+      resolveConformetryTargetDirectoryPath({
         definition: {
-          name: "example-generator",
+          name: "react-component",
           templateDirectoryPath: "templates",
         },
-        resolveTargetDirectoryPath: () => "generated",
-      });
+        options: {
+          outputPath: "generated/react-component",
+        },
+        tree,
+      }),
+    ).resolves.toBe("generated/react-component");
 
-      await factory(tree, { name: "demo" });
-
-      expect(tree.read("generated/example.txt")?.toString()).toBe("hello demo");
-    });
-  });
-
-  describe(normalizeGeneratorInputs, () => {
-    it("converts mixed option values into string inputs", () => {
-      expect(
-        normalizeGeneratorInputs({
-          enabled: true,
-          metadata: { level: "advanced" },
-          name: "demo",
-          retries: 3,
-          skipped: undefined,
-        }),
-      ).toStrictEqual({
-        enabled: "true",
-        metadata: '{"level":"advanced"}',
-        name: "demo",
-        retries: "3",
-        skipped: undefined,
-      });
-    });
-  });
-
-  describe(resolveConformetryTargetDirectoryPath, () => {
-    it("prefers an explicit target directory option", async () => {
-      const tree = new InMemoryTree();
-
-      await expect(
-        resolveConformetryTargetDirectoryPath({
-          definition: {
-            name: "react-component",
-            templateDirectoryPath: "templates",
-          },
-          options: {
-            targetDirectoryPath: "custom/generated",
-          },
-          tree,
-        }),
-      ).resolves.toBe("custom/generated");
-    });
-
-    it("falls back to generated/<name> when no overrides are provided", async () => {
-      const tree = new InMemoryTree();
-
-      await expect(
-        resolveConformetryTargetDirectoryPath({
-          definition: {
-            name: "react-component",
-            templateDirectoryPath: "templates",
-          },
-          options: {},
-          tree,
-        }),
-      ).resolves.toBe("generated/react-component");
-    });
+    expect(resolveTargetDirectoryPathSpy).toHaveBeenCalledTimes(1);
   });
 });

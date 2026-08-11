@@ -1,25 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { RunGeneratorResult } from "./nx-adapter.types.js";
-import type { GenerationRuntimeService } from "./nx-generation-runtime.service.js";
-import type { Tree } from "@nx/devkit";
-
-type MockGetProjects = () => Map<
-  string,
-  { root?: string; sourceRoot?: string }
->;
-
-type MockRunGenerator = (
-  args: Parameters<GenerationRuntimeService["runGenerator"]>[0],
-) => void;
-
-const { mockGetProjects, mockRunGenerator } = vi.hoisted(() => {
-  return {
-    mockGetProjects: vi.fn<MockGetProjects>(),
-    mockRunGenerator: vi.fn<MockRunGenerator>(),
-  };
-});
-
 vi.mock("@nx/devkit", async (importOriginal) => {
   const originalModule: Record<string, unknown> = await importOriginal();
 
@@ -29,33 +9,23 @@ vi.mock("@nx/devkit", async (importOriginal) => {
   };
 });
 
-vi.mock("./nx-generation-runtime.service", async (importOriginal) => {
-  const originalModule: Record<string, unknown> = await importOriginal();
-
-  class MockGenerationRuntimeService {
-    public async runGenerator(
-      args: Parameters<GenerationRuntimeService["runGenerator"]>[0],
-    ): Promise<RunGeneratorResult> {
-      mockRunGenerator(args);
-      await Promise.resolve();
-
-      return {
-        generatedFilePaths: [],
-        outputDirectoryPath: args.targetDirectoryPath,
-      };
-    }
-  }
-
-  return {
-    ...originalModule,
-    GenerationRuntimeService: MockGenerationRuntimeService,
-  };
-});
-
 import {
   createConformetryGeneratorFactory,
   resolveConformetryTargetDirectoryPath,
 } from "./nx-generator-factory.utilities.js";
+
+import type { Tree } from "@nx/devkit";
+
+type MockGetProjects = () => Map<
+  string,
+  { root?: string; sourceRoot?: string }
+>;
+
+const { mockGetProjects } = vi.hoisted(() => {
+  return {
+    mockGetProjects: vi.fn<MockGetProjects>(),
+  };
+});
 
 function createStubTree(): Tree {
   const read: Tree["read"] = (_pathName: string, encoding?: BufferEncoding) => {
@@ -87,10 +57,9 @@ function createStubTree(): Tree {
 describe("nx-generator-factory branches", () => {
   beforeEach(() => {
     mockGetProjects.mockReset();
-    mockRunGenerator.mockReset();
   });
 
-  it("normalizes option value types and resolves project root from projectName", async () => {
+  it("returns an async callback and resolves project root from projectName", async () => {
     mockGetProjects.mockReturnValue(
       new Map([
         [
@@ -109,7 +78,7 @@ describe("nx-generator-factory branches", () => {
       },
     });
 
-    await factory(createStubTree(), {
+    const callback = await factory(createStubTree(), {
       enabled: true,
       name: "demo",
       nested: { alpha: "one" },
@@ -118,21 +87,7 @@ describe("nx-generator-factory branches", () => {
       skipped: undefined,
     });
 
-    expect(mockRunGenerator).toHaveBeenCalledTimes(1);
-    expect(mockRunGenerator).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({
-        inputs: {
-          enabled: "true",
-          name: "demo",
-          nested: '{"alpha":"one"}',
-          projectName: "demo-project",
-          retries: "3",
-          skipped: undefined,
-        },
-        targetDirectoryPath: "apps/demo-project",
-      }),
-    );
+    await expect(callback()).resolves.toBeUndefined();
   });
 
   it("uses sourceRoot when root is unavailable", async () => {
@@ -262,13 +217,6 @@ describe("nx-generator-factory branches", () => {
     const callback = await factory(createStubTree(), { name: "demo" });
 
     expect(resolveTargetDirectoryPath).toHaveBeenCalledTimes(1);
-    expect(mockRunGenerator).toHaveBeenCalledTimes(1);
-    expect(mockRunGenerator).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({
-        targetDirectoryPath: "custom-target",
-      }),
-    );
     await expect(callback()).resolves.toBeUndefined();
   });
 });

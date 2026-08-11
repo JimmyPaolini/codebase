@@ -53,16 +53,25 @@ vi.mock("@jimmypaolini/conformetry-validation", () => {
   };
 });
 
-vi.mock("@jimmypaolini/conformetry-configuration", async () => {
-  const actual = await vi.importActual(
-    "@jimmypaolini/conformetry-configuration",
-  );
+vi.mock("@jimmypaolini/conformetry-configuration", () => {
+  function parseCommaDelimitedOption(
+    value: string | undefined,
+  ): string[] | undefined {
+    if (value === undefined) {
+      return undefined;
+    }
+
+    return value
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0);
+  }
 
   return {
-    ...actual,
     ConfigurationService: class ConfigurationService {
       loadConformetryConfiguration = mockLoadConformetryConfiguration;
     },
+    parseCommaDelimitedOption,
   };
 });
 

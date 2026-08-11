@@ -115,12 +115,17 @@ describe(GenerationRuntimeService, () => {
 
     filesystem.seedDirectory("/templates", [
       { isDirectory: true, name: "__nameKebabCase__" },
+      { isDirectory: false, name: "__missingToken__.txt" },
       { isDirectory: false, name: "README.md" },
     ]);
     filesystem.seedDirectory("/templates/__nameKebabCase__", [
       { isDirectory: false, name: "index.ts" },
     ]);
     filesystem.seedFile("/templates/README.md", "# {{namePascalCase}}\n");
+    filesystem.seedFile(
+      "/templates/__missingToken__.txt",
+      "{{nameKebabCase}}\n",
+    );
     filesystem.seedFile(
       "/templates/__nameKebabCase__/index.ts",
       "export const name = '{{nameKebabCase}}';\n",
@@ -139,7 +144,7 @@ describe(GenerationRuntimeService, () => {
       definition,
       filesystem,
       formatter,
-      inputs: { name: "alpha-module" },
+      inputs: { missingValue: undefined, name: "alpha-module" },
       targetDirectoryPath: "/output",
     });
 
@@ -162,6 +167,7 @@ describe(GenerationRuntimeService, () => {
       definition,
       generatedFilePaths: [
         "/output/README.md",
+        "/output/__missingToken__.txt",
         "/output/alpha-module/index.ts",
       ],
       input: { name: "alpha-module" },
@@ -176,10 +182,12 @@ describe(GenerationRuntimeService, () => {
     });
     expect(result.generatedFilePaths).toStrictEqual([
       "/output/README.md",
+      "/output/__missingToken__.txt",
       "/output/alpha-module/index.ts",
     ]);
     expect(formatter.formattedFiles).toStrictEqual([
       "/output/README.md",
+      "/output/__missingToken__.txt",
       "/output/alpha-module/index.ts",
     ]);
   });
@@ -217,4 +225,61 @@ describe(GenerationRuntimeService, () => {
       outputDirectoryPath: "/output",
     });
   });
+
+  it("exposes inert default adapters for direct calls", async () => {
+    const service = new GenerationRuntimeService();
+    const defaultFileSystem: unknown = Reflect.get(
+      service,
+      "defaultFileSystem",
+    );
+    const defaultFormatter: unknown = Reflect.get(service, "defaultFormatter");
+
+    if (!isFileSystemAdapter(defaultFileSystem)) {
+      throw new TypeError("defaultFileSystem adapter is not available");
+    }
+
+    if (!isFormatterAdapter(defaultFormatter)) {
+      throw new TypeError("defaultFormatter adapter is not available");
+    }
+
+    await expect(defaultFileSystem.exists("missing.txt")).resolves.toBe(false);
+    await expect(
+      defaultFileSystem.listDirectory("/tmp"),
+    ).resolves.toStrictEqual([]);
+    await expect(
+      defaultFileSystem.makeDirectory("/tmp"),
+    ).resolves.toBeUndefined();
+    await expect(defaultFileSystem.readFile("missing.txt")).resolves.toBe("");
+    await expect(
+      defaultFileSystem.writeFile("missing.txt", "content"),
+    ).resolves.toBeUndefined();
+    await expect(
+      defaultFormatter.formatFile("missing.txt"),
+    ).resolves.toBeUndefined();
+    await expect(
+      defaultFormatter.formatFiles(["a.ts", "b.ts"]),
+    ).resolves.toBeUndefined();
+  });
 });
+
+function isFileSystemAdapter(value: unknown): value is FileSystemAdapter {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  return (
+    "exists" in value &&
+    "listDirectory" in value &&
+    "makeDirectory" in value &&
+    "readFile" in value &&
+    "writeFile" in value
+  );
+}
+
+function isFormatterAdapter(value: unknown): value is FormatterAdapter {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  return "formatFile" in value && "formatFiles" in value;
+}
