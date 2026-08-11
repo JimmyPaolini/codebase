@@ -11,18 +11,6 @@ import type {
   ValidationProjectTemplateMetadata,
 } from "./configuration.types";
 
-const IGNORED_TEMPLATE_RELATIVE_PATHS = new Set<string>([
-  "src/constants.ts",
-  "src/index.ts",
-  "src/main.end-to-end.test.ts",
-  "src/main.module.ts",
-  "src/modules/logger/logger.module.unit.test.ts",
-  "src/modules/logger/logger.service.ts",
-  "src/modules/logger/logger.service.unit.test.ts",
-  "testing/mocks.ts",
-  "testing/setup.ts",
-]);
-
 /**
  * Creates the validation-operation helpers used by template validation.
  */
@@ -166,13 +154,25 @@ function compareMatchedCandidates(
  */
 function countExistingTemplateMappedFiles(args: {
   absoluteTemplateDirectoryPath: string;
+  fileExtensions?: string[];
   projectPath: string;
   substitutions: Record<string, string>;
   templateFilePaths: string[];
 }): number {
+  const extensionSet =
+    args.fileExtensions === undefined
+      ? undefined
+      : new Set(args.fileExtensions);
   let existingFileCount = 0;
 
   for (const templateFilePath of args.templateFilePaths) {
+    if (
+      extensionSet !== undefined &&
+      !extensionSet.has(path.extname(templateFilePath))
+    ) {
+      continue;
+    }
+
     const templateRelativePath = path.relative(
       args.absoluteTemplateDirectoryPath,
       templateFilePath,
@@ -195,6 +195,7 @@ function countExistingTemplateMappedFiles(args: {
  */
 function createMatchedGeneratorCandidate(args: {
   configuration: ConformetryConfiguration;
+  fileExtensions?: string[];
   generatorName: string;
   projectPath: string;
   substitutions: Record<string, string>;
@@ -218,6 +219,9 @@ function createMatchedGeneratorCandidate(args: {
 
   const existingFileCount = countExistingTemplateMappedFiles({
     absoluteTemplateDirectoryPath,
+    ...(args.fileExtensions === undefined
+      ? {}
+      : { fileExtensions: args.fileExtensions }),
     projectPath: args.projectPath,
     substitutions: args.substitutions,
     templateFilePaths,
@@ -285,14 +289,7 @@ function isTemplateFile(
   templateRelativePath: string,
   isFile: boolean,
 ): boolean {
-  if (!isFile) {
-    return false;
-  }
-
-  return (
-    templateRelativePath !== "schema.json" &&
-    !IGNORED_TEMPLATE_RELATIVE_PATHS.has(templateRelativePath)
-  );
+  return isFile && templateRelativePath.length > 0;
 }
 
 /**

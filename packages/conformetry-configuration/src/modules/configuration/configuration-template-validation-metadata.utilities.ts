@@ -18,6 +18,7 @@ export function createTemplateValidationMetadataOperations(
   parseProjectMetadataRecord: typeof parseProjectMetadataRecord;
   resolveBestMatchedGeneratorCandidate: (args: {
     configuration: ConformetryConfiguration;
+    fileExtensions: string[];
     projectPath: string;
     selectedGeneratorNames: string[];
     workingDirectory: string;
@@ -39,6 +40,7 @@ export function createTemplateValidationMetadataOperations(
     parseProjectMetadataRecord,
     resolveBestMatchedGeneratorCandidate: (args: {
       configuration: ConformetryConfiguration;
+      fileExtensions: string[];
       projectPath: string;
       selectedGeneratorNames: string[];
       workingDirectory: string;
@@ -108,6 +110,7 @@ function resolveBestMatchedGeneratorCandidate(
   operations: ReturnType<typeof createTemplateValidationOperations>,
   args: {
     configuration: ConformetryConfiguration;
+    fileExtensions: string[];
     projectPath: string;
     selectedGeneratorNames: string[];
     workingDirectory: string;
@@ -133,6 +136,7 @@ function resolveBestMatchedGeneratorCandidate(
     .map((generatorName) => {
       return operations.createMatchedGeneratorCandidate({
         configuration: args.configuration,
+        fileExtensions: args.fileExtensions,
         generatorName,
         projectPath: args.projectPath,
         substitutions,

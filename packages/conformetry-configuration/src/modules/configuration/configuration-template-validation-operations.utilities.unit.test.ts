@@ -41,7 +41,7 @@ describe("template validation operations utilities", () => {
     expect(substitutedValue).toBe("hello world, __unknown__");
   });
 
-  it("collects template file paths from nested directories and excludes ignored scaffold files", async () => {
+  it("collects all template file paths from nested directories", async () => {
     const operations = createTemplateValidationOperations();
     const templateDirectoryPath = await createTemporaryDirectory(
       "conformetry-operations-collect-",
@@ -60,6 +60,11 @@ describe("template validation operations utilities", () => {
     await writeFile(
       path.join(templateDirectoryPath, "README.md"),
       "# demo",
+      "utf8",
+    );
+    await writeFile(
+      path.join(templateDirectoryPath, "notes.txt"),
+      "note\n",
       "utf8",
     );
     await writeFile(
@@ -91,6 +96,16 @@ describe("template validation operations utilities", () => {
     expect(templateFilePaths).toStrictEqual([
       path.join(templateDirectoryPath, "README.md"),
       path.join(templateDirectoryPath, "nested", "index.ts"),
+      path.join(templateDirectoryPath, "notes.txt"),
+      path.join(templateDirectoryPath, "schema.json"),
+      path.join(templateDirectoryPath, "src", "index.ts"),
+      path.join(
+        templateDirectoryPath,
+        "src",
+        "modules",
+        "logger",
+        "logger.service.ts",
+      ),
     ]);
   });
 
@@ -188,6 +203,12 @@ describe("template validation operations utilities", () => {
     await mkdir(path.join(projectPath, "src"), { recursive: true });
     await mkdir(path.join(templateDirectoryPath, "src"), { recursive: true });
     await writeFile(
+      path.join(templateDirectoryPath, "README.md"),
+      "# demo\n",
+      "utf8",
+    );
+    await writeFile(path.join(projectPath, "README.md"), "# demo\n", "utf8");
+    await writeFile(
       path.join(templateDirectoryPath, "src", "__nameKebabCase__.ts"),
       "export const value = '{{name}}';\n",
       "utf8",
@@ -210,6 +231,7 @@ describe("template validation operations utilities", () => {
 
     const matchedCandidate = operations.createMatchedGeneratorCandidate({
       configuration,
+      fileExtensions: [".ts"],
       generatorName: "demo-generator",
       projectPath,
       substitutions: {
@@ -224,8 +246,26 @@ describe("template validation operations utilities", () => {
       generatorName: "demo-generator",
     });
     expect(matchedCandidate?.templateFilePaths).toStrictEqual([
+      path.join(templateDirectoryPath, "README.md"),
       path.join(templateDirectoryPath, "src", "__nameKebabCase__.ts"),
     ]);
+    expect(
+      operations.countExistingTemplateMappedFiles({
+        absoluteTemplateDirectoryPath: templateDirectoryPath,
+        fileExtensions: [".ts"],
+        projectPath,
+        substitutions: {
+          name: "demo",
+          nameKebabCase: "demo",
+        },
+        templateFilePaths: [
+          path.join(templateDirectoryPath, "README.md"),
+          path.join(templateDirectoryPath, "src", "__nameKebabCase__.ts"),
+          path.join(templateDirectoryPath, "src", "missing.ts"),
+        ],
+      }),
+    ).toBe(1);
+
     expect(
       operations.countExistingTemplateMappedFiles({
         absoluteTemplateDirectoryPath: templateDirectoryPath,
@@ -235,11 +275,11 @@ describe("template validation operations utilities", () => {
           nameKebabCase: "demo",
         },
         templateFilePaths: [
+          path.join(templateDirectoryPath, "README.md"),
           path.join(templateDirectoryPath, "src", "__nameKebabCase__.ts"),
-          path.join(templateDirectoryPath, "src", "missing.ts"),
         ],
       }),
-    ).toBe(1);
+    ).toBe(2);
 
     const missingGeneratorCandidate =
       operations.createMatchedGeneratorCandidate({
@@ -359,7 +399,7 @@ describe("template validation operations utilities", () => {
       }),
     ).toStrictEqual(new Set(["nestjs-service-module"]));
 
-    expect(operations.isTemplateFile("schema.json", true)).toBe(false);
+    expect(operations.isTemplateFile("schema.json", true)).toBe(true);
     expect(operations.isTemplateFile("component.ts", false)).toBe(false);
     expect(operations.isTemplateFile("component.ts", true)).toBe(true);
   });

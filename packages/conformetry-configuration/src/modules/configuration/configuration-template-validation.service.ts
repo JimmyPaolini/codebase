@@ -109,6 +109,7 @@ export class TemplateValidationService {
     const matchedCandidate =
       this.metadataOperations.resolveBestMatchedGeneratorCandidate({
         configuration: args.configuration,
+        fileExtensions: args.fileExtensions,
         projectPath: args.projectPath,
         selectedGeneratorNames: args.selectedGeneratorNames,
         workingDirectory: args.workingDirectory,

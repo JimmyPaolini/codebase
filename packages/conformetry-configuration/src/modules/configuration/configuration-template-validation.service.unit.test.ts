@@ -152,8 +152,9 @@ describe("template validation service", () => {
       ),
     ).toStrictEqual([
       path.join(workingDirectory, "templates", "demo", "index.ts"),
+      path.join(workingDirectory, "templates", "demo", "schema.json"),
     ]);
-    expect(service.isTemplateFile("schema.json", true)).toBe(false);
+    expect(service.isTemplateFile("schema.json", true)).toBe(true);
     expect(service.isTemplateFile("index.ts", true)).toBe(true);
 
     const compareResult = service.compareMatchedCandidates({

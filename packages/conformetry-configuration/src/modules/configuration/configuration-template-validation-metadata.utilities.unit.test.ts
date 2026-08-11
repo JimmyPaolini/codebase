@@ -278,6 +278,7 @@ describe("template validation metadata utilities", () => {
     const bestCandidate =
       metadataOperations.resolveBestMatchedGeneratorCandidate({
         configuration,
+        fileExtensions: [".ts"],
         projectPath,
         selectedGeneratorNames: ["alpha", "beta"],
         workingDirectory,
@@ -289,6 +290,7 @@ describe("template validation metadata utilities", () => {
     const unmatchedCandidate =
       metadataOperations.resolveBestMatchedGeneratorCandidate({
         configuration,
+        fileExtensions: [".ts"],
         projectPath,
         selectedGeneratorNames: ["missing-generator"],
         workingDirectory,
