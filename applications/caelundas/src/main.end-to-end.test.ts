@@ -30,7 +30,9 @@ const calendarService = new CalendarService(logger, {
 describe("environment schema e2e", () => {
   it("allows an empty schema by default", () => {
     expect.hasAssertions();
-    expect(environmentSchema.parse({})).toStrictEqual({});
+    expect(environmentSchema.parse({})).toStrictEqual({
+      OUTPUT_DIRECTORY: "./output",
+    });
   });
 });
 

@@ -5,6 +5,7 @@ const repl = vi
   .mockResolvedValue(undefined);
 
 vi.mock("@nestjs/core", () => ({
+  DiscoveryModule: class DiscoveryModule {},
   repl,
 }));
 
