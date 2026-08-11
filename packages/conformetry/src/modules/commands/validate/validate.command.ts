@@ -3,7 +3,7 @@ import {
   parseCommaDelimitedOption,
 } from "@jimmypaolini/conformetry-configuration";
 import { ValidationService } from "@jimmypaolini/conformetry-validation";
-import { ConsoleLogger, Inject, Injectable } from "@nestjs/common";
+import { ConsoleLogger, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import type { ValidateCommandOptions } from "./validate.types.js";
@@ -94,11 +94,3 @@ export class ValidateCommand extends CommandRunner {
     }
   }
 }
-
-// Manually apply Inject parameter decorators at runtime so the class remains
-// injectable even when design:paramtypes metadata is absent (some test
-// reproductions clear that metadata). This mirrors using `@Inject(...)` on
-// the constructor parameters but avoids parameter-decorator syntax so build
-// tooling that doesn't enable experimental decorators won't fail.
-Inject(ConfigurationService)(ValidateCommand, undefined, 0);
-Inject(ValidationService)(ValidateCommand, undefined, 1);

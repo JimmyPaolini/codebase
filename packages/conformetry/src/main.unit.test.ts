@@ -54,9 +54,9 @@ function getRunOptions(): CommandFactoryRunOptions {
     throw new Error("Expected CommandFactory.run to be called once.");
   }
 
-  const options = firstCall[1];
+  const options = firstCall[1] as CommandFactoryRunOptions | undefined;
 
-  if (options === undefined) {
+  if (!options) {
     throw new Error("Expected CommandFactory.run options to be defined.");
   }
 

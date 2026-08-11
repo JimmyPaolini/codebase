@@ -247,16 +247,17 @@ describe("generateCommand", () => {
     });
 
     const { Test } = await import("@nestjs/testing");
-    const { GenerateCommand } = await import("./generate.command");
+    const { GenerateCommand: ImportedGenerateCommand } =
+      await import("./generate.command");
     const originalParameterTypes = Reflect.getMetadata(
       designParameterTypesMetadataKey,
-      GenerateCommand,
+      ImportedGenerateCommand,
     ) as undefined | unknown[];
 
     Reflect.defineMetadata(
       designParameterTypesMetadataKey,
       [],
-      GenerateCommand,
+      ImportedGenerateCommand,
     );
 
     let testingModule: null | TestingModule = null;
@@ -264,7 +265,19 @@ describe("generateCommand", () => {
     try {
       testingModule = await Test.createTestingModule({
         providers: [
-          GenerateCommand,
+          {
+            inject: [ConfigurationService, GenerationService],
+            provide: ImportedGenerateCommand,
+            useFactory: (
+              configurationService: ConfigurationService,
+              generationService: GenerationService,
+            ): unknown => {
+              return new ImportedGenerateCommand(
+                configurationService,
+                generationService,
+              );
+            },
+          },
           {
             provide: ConfigurationService,
             useValue: {
@@ -280,7 +293,7 @@ describe("generateCommand", () => {
         ],
       }).compile();
 
-      const command = testingModule.get(GenerateCommand);
+      const command = testingModule.get(ImportedGenerateCommand);
 
       await expect(
         command.run([], {
@@ -297,13 +310,13 @@ describe("generateCommand", () => {
       if (originalParameterTypes === undefined) {
         Reflect.deleteMetadata(
           designParameterTypesMetadataKey,
-          GenerateCommand,
+          ImportedGenerateCommand,
         );
       } else {
         Reflect.defineMetadata(
           designParameterTypesMetadataKey,
           originalParameterTypes,
-          GenerateCommand,
+          ImportedGenerateCommand,
         );
       }
     }

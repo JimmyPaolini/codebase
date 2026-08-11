@@ -242,7 +242,19 @@ describe("validateCommand", () => {
     try {
       testingModule = await Test.createTestingModule({
         providers: [
-          ValidateCommand,
+          {
+            inject: [ConfigurationService, ValidationService],
+            provide: ValidateCommand,
+            useFactory: (
+              configurationService: ConfigurationService,
+              validationService: ValidationService,
+            ): ValidateCommand => {
+              return new ValidateCommand(
+                configurationService,
+                validationService,
+              );
+            },
+          },
           {
             provide: ConfigurationService,
             useValue: configurationService,

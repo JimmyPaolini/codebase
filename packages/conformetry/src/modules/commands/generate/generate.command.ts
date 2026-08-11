@@ -3,7 +3,7 @@ import {
   ConfigurationService,
 } from "@jimmypaolini/conformetry-configuration";
 import { GenerationService } from "@jimmypaolini/conformetry-generation";
-import { ConsoleLogger, Inject, Injectable } from "@nestjs/common";
+import { ConsoleLogger, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import type { GenerateCommandOptions } from "./generate.types";
@@ -150,11 +150,3 @@ export class GenerateCommand extends CommandRunner {
     );
   }
 }
-
-// Manually apply Inject parameter decorators at runtime so the class remains
-// injectable even when design:paramtypes metadata is absent (some test
-// reproductions clear that metadata). This mirrors using `@Inject(...)` on
-// the constructor parameters but avoids parameter-decorator syntax so build
-// tooling that doesn't enable experimental decorators won't fail.
-Inject(ConfigurationService)(GenerateCommand, undefined, 0);
-Inject(GenerationService)(GenerateCommand, undefined, 1);
