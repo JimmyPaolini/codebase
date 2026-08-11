@@ -4,7 +4,7 @@ import { utc_to_jd } from "sweph";
 
 import { GREGORIAN_CALENDAR_FLAG } from "./ephemeris.constants";
 
-import type { JulianDays } from "./ephemeris.internal.types";
+import type { JulianDays } from "./internal-ephemeris.types";
 
 /**
  * Time conversion and iteration utilities for ephemeris calculations.

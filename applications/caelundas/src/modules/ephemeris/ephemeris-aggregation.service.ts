@@ -8,12 +8,6 @@ import { EphemerisPhenomenaService } from "./ephemeris-phenomena.service";
 import { EphemerisTimeService } from "./ephemeris-time.service";
 
 import type {
-  EphemerisAccumulators,
-  EphemerisEntries,
-  EphemerisFeatureSets,
-  NonNodeBodyMinuteProcessingArguments,
-} from "./ephemeris.internal.types";
-import type {
   AzimuthElevationEphemeris,
   AzimuthElevationEphemerisBody,
   CoordinateEphemeris,
@@ -24,6 +18,12 @@ import type {
   IlluminationEphemeris,
   IlluminationEphemerisBody,
 } from "./ephemeris.types";
+import type {
+  EphemerisAccumulators,
+  EphemerisEntries,
+  EphemerisFeatureSets,
+  NonNodeBodyMinuteProcessingArguments,
+} from "./internal-ephemeris.types";
 import type {
   Body,
   Node,

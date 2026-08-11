@@ -1,11 +1,11 @@
 import { AspectPhaseEmojiService } from "@caelundas/src/modules/aspects/aspect-phase-emoji.service";
 import { ProgressiveCompoundEventService } from "@caelundas/src/modules/aspects/progressive-compound-event.service";
 import { aspectBodies as sextupleAspectBodies } from "@caelundas/src/modules/caelundas/caelundas.constants";
+import { groupByToMap } from "@caelundas/src/modules/caelundas/caelundas.types";
 import {
   symbolByBody,
   symbolBySextupleAspect,
 } from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
-import { groupByToMap } from "@caelundas/src/modules/caelundas/caelundas.types";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 

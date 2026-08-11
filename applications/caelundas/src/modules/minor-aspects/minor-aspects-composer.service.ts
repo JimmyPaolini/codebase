@@ -4,14 +4,14 @@ import {
   minorAspects,
 } from "@caelundas/src/modules/caelundas/caelundas.constants";
 import {
-  symbolByBody,
-  symbolByMinorAspect,
-} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
-import {
   capitalize,
   isBody,
   isMinorAspect,
 } from "@caelundas/src/modules/caelundas/caelundas.types";
+import {
+  symbolByBody,
+  symbolByMinorAspect,
+} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";

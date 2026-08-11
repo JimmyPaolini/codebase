@@ -1,16 +1,3 @@
-// 🔣 Symbol Constants
-
-/**
- * Strongly-typed wrapper around `Object.keys()` that preserves the key union type.
- *
- * `Object.keys()` always returns `string[]` by design, so a cast is required to
- * recover the typed keys. This helper centralizes that cast in one place.
- */
-export function typedObjectKeys<T extends object>(object: T): (keyof T)[] {
-  // type-coverage:ignore-next-line
-  return Object.keys(object) as (keyof T)[];
-}
-
 // 🪧 Signs
 
 /**

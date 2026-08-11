@@ -3,13 +3,13 @@ import {
   majorAspects,
 } from "@caelundas/src/modules/caelundas/caelundas.constants";
 import {
-  symbolByBody,
-  symbolByMajorAspect,
-} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
-import {
   isBody,
   isMajorAspect,
 } from "@caelundas/src/modules/caelundas/caelundas.types";
+import {
+  symbolByBody,
+  symbolByMajorAspect,
+} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { ProgressiveAspectService } from "@caelundas/src/modules/progressive/progressive-aspect.service";
 import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { Injectable } from "@nestjs/common";

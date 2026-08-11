@@ -1,10 +1,10 @@
 import { AspectsUtilitiesService } from "@caelundas/src/modules/aspects/aspects-utilities.service";
 import { majorAspects } from "@caelundas/src/modules/caelundas/caelundas.constants";
+import { capitalize } from "@caelundas/src/modules/caelundas/caelundas.types";
 import {
   symbolByBody,
   symbolByMajorAspect,
 } from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
-import { capitalize } from "@caelundas/src/modules/caelundas/caelundas.types";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
