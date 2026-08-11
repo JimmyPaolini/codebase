@@ -373,7 +373,8 @@ describe(TypeScriptValidatorService, () => {
       expressionSourceFile,
       (node): node is ExpressionStatement => {
         return (
-          isExpressionStatement(node) && node.getText(expressionSourceFile) === '"use strict";'
+          isExpressionStatement(node) &&
+          node.getText(expressionSourceFile) === '"use strict";'
         );
       },
     );
@@ -381,7 +382,8 @@ describe(TypeScriptValidatorService, () => {
       expressionSourceFile,
       (node): node is ExpressionStatement => {
         return (
-          isExpressionStatement(node) && node.getText(expressionSourceFile) === "setup();"
+          isExpressionStatement(node) &&
+          node.getText(expressionSourceFile) === "setup();"
         );
       },
     );
@@ -405,7 +407,9 @@ describe(TypeScriptValidatorService, () => {
     );
 
     expect(
-      internalService.getExpressionStatementKey(expressionStatementWithLiteral.expression),
+      internalService.getExpressionStatementKey(
+        expressionStatementWithLiteral.expression,
+      ),
     ).toBeNull();
     expect(
       internalService.getExpressionStatementKey(
@@ -475,17 +479,23 @@ describe(TypeScriptValidatorService, () => {
       bigVariableDeclaration.initializer === undefined ||
       templateVariableDeclaration.initializer === undefined
     ) {
-      throw new Error("Expected variable declarations to include initializers.");
+      throw new Error(
+        "Expected variable declarations to include initializers.",
+      );
     }
 
-    expect(internalService.getLiteralKey(namedVariableDeclaration.name)).toBe("named");
-    expect(internalService.getLiteralKey(namedVariableDeclaration.initializer)).toBe(
-      "1",
+    expect(internalService.getLiteralKey(namedVariableDeclaration.name)).toBe(
+      "named",
     );
-    expect(internalService.getLiteralKey(bigVariableDeclaration.initializer)).toBe("1n");
-    expect(internalService.getLiteralKey(templateVariableDeclaration.initializer)).toBe(
-      "value",
-    );
+    expect(
+      internalService.getLiteralKey(namedVariableDeclaration.initializer),
+    ).toBe("1");
+    expect(
+      internalService.getLiteralKey(bigVariableDeclaration.initializer),
+    ).toBe("1n");
+    expect(
+      internalService.getLiteralKey(templateVariableDeclaration.initializer),
+    ).toBe("value");
     expect(internalService.getLiteralKey(callableSourceFile)).toBeUndefined();
 
     const declarationSourceFile = createTypeScriptSourceFile(
@@ -547,13 +557,21 @@ describe(TypeScriptValidatorService, () => {
     expect(internalService.getNameNodeText(typeAliasDeclaration.name)).toBe(
       "Alias",
     );
-    expect(internalService.getNameNodeText(quotedPropertySignature.name)).toBe("quoted");
-    expect(internalService.getNameNodeText(numericPropertySignature.name)).toBe("123");
+    expect(internalService.getNameNodeText(quotedPropertySignature.name)).toBe(
+      "quoted",
+    );
+    expect(internalService.getNameNodeText(numericPropertySignature.name)).toBe(
+      "123",
+    );
     expect(
       internalService.getNameNodeText(privatePropertyDeclaration.name),
     ).toBe("#secret");
-    expect(internalService.getNameNodeText(stringNamedClassMethod.name)).toBe("named");
-    expect(internalService.getNameNodeText(numericNamedClassMethod.name)).toBe("123");
+    expect(internalService.getNameNodeText(stringNamedClassMethod.name)).toBe(
+      "named",
+    );
+    expect(internalService.getNameNodeText(numericNamedClassMethod.name)).toBe(
+      "123",
+    );
     expect(internalService.getNameNodeText(classDeclaration)).toBeNull();
 
     expect(internalService.getNodeKey(typeAliasDeclaration)).toBe("Alias");

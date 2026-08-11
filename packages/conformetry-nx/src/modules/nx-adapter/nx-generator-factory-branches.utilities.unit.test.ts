@@ -1,9 +1,22 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { RunGeneratorResult } from "./nx-adapter.types.js";
+import type { GenerationRuntimeService } from "./nx-generation-runtime.service.js";
+import type { Tree } from "@nx/devkit";
+
+type MockGetProjects = () => Map<
+  string,
+  { root?: string; sourceRoot?: string }
+>;
+
+type MockRunGenerator = (
+  args: Parameters<GenerationRuntimeService["runGenerator"]>[0],
+) => void;
+
 const { mockGetProjects, mockRunGenerator } = vi.hoisted(() => {
   return {
-    mockGetProjects: vi.fn(),
-    mockRunGenerator: vi.fn(),
+    mockGetProjects: vi.fn<MockGetProjects>(),
+    mockRunGenerator: vi.fn<MockRunGenerator>(),
   };
 });
 
@@ -43,10 +56,6 @@ import {
   createConformetryGeneratorFactory,
   resolveConformetryTargetDirectoryPath,
 } from "./nx-generator-factory.utilities.js";
-
-import type { RunGeneratorResult } from "./nx-adapter.types.js";
-import type { GenerationRuntimeService } from "./nx-generation-runtime.service.js";
-import type { Tree } from "@nx/devkit";
 
 function createStubTree(): Tree {
   const read: Tree["read"] = (_pathName: string, encoding?: BufferEncoding) => {

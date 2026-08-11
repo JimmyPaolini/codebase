@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
-import { LEXICO_DATABASE_ENTITIES } from "./data-source";
+import { LEXICO_DATABASE_ENTITIES } from "./data-source.constants";
 import { LexicoNamingStrategy } from "./database.constants";
 import { DatabaseService } from "./database.service";
 

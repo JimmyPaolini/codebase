@@ -1,4 +1,4 @@
-import { mkdtemp } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -12,9 +12,11 @@ import type {
   FormatterAdapter,
   GeneratorDefinition,
   GeneratorHookContext,
+  RunGeneratorArguments,
 } from "./generation.types";
 
 interface GenerationServiceWithPrivateMethods {
+  fileSystemPathExists(pathName: string): Promise<boolean>;
   normalizeInputs(
     inputs: Record<string, string | undefined>,
   ): Record<string, string>;
@@ -22,6 +24,9 @@ interface GenerationServiceWithPrivateMethods {
     value: string,
     substitutions: Record<string, string>,
   ): string;
+  resolveRunGeneratorArguments(args: RunGeneratorArguments): {
+    formatter: FormatterAdapter;
+  };
 }
 
 class MockFileSystemAdapter implements FileSystemAdapter {
@@ -253,5 +258,97 @@ describe(GenerationService, () => {
       namePascalCase: "FallbackName",
       nameSnakeCase: "fallback_name",
     });
+  });
+
+  it("renders with default adapters against the real file system", async () => {
+    const service = new GenerationService();
+    const templateDirectoryPath = await mkdtemp(
+      path.join(tmpdir(), "conformetry-generation-template-"),
+    );
+    const nestedTemplateDirectoryPath = path.join(
+      templateDirectoryPath,
+      "__nameKebabCase__",
+    );
+    await mkdir(nestedTemplateDirectoryPath, { recursive: true });
+    await writeFile(
+      path.join(templateDirectoryPath, "README.md"),
+      "# {{ namePascalCase }}\n{{ unresolved }}\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(nestedTemplateDirectoryPath, "__nameCamelCase__.ts"),
+      "export const generated = '{{nameKebabCase}}';\n",
+      "utf8",
+    );
+
+    const outputDirectoryPath = await mkdtemp(
+      path.join(tmpdir(), "conformetry-generation-output-"),
+    );
+    const definition: GeneratorDefinition = {
+      name: "alpha-module",
+      templateDirectoryPath,
+    };
+
+    const result = await service.runGenerator({
+      definition,
+      targetDirectoryPath: outputDirectoryPath,
+    });
+
+    const readmeOutputPath = path.join(outputDirectoryPath, "README.md");
+    const sourceOutputPath = path.join(
+      outputDirectoryPath,
+      "alpha-module",
+      "alphaModule.ts",
+    );
+
+    expect(result.generatedFilePaths).toStrictEqual([
+      readmeOutputPath,
+      sourceOutputPath,
+    ]);
+    await expect(readFile(readmeOutputPath, "utf8")).resolves.toBe(
+      "# AlphaModule\n{{ unresolved }}\n",
+    );
+    await expect(readFile(sourceOutputPath, "utf8")).resolves.toBe(
+      "export const generated = 'alpha-module';\n",
+    );
+  });
+
+  it("checks filesystem path existence for existing and missing paths", async () => {
+    const service =
+      // type-coverage:ignore-next-line
+      new GenerationService() as unknown as GenerationServiceWithPrivateMethods;
+    const existingFilePath = path.join(
+      await mkdtemp(path.join(tmpdir(), "conformetry-generation-exists-")),
+      "existing.txt",
+    );
+    await writeFile(existingFilePath, "content", "utf8");
+
+    await expect(service.fileSystemPathExists(existingFilePath)).resolves.toBe(
+      true,
+    );
+    await expect(
+      service.fileSystemPathExists(`${existingFilePath}.missing`),
+    ).resolves.toBe(false);
+  });
+
+  it("resolves a default formatter that supports both format methods", async () => {
+    const service =
+      // type-coverage:ignore-next-line
+      new GenerationService() as unknown as GenerationServiceWithPrivateMethods;
+    const definition: GeneratorDefinition = {
+      name: "formatter-test",
+      templateDirectoryPath: "/unused",
+    };
+    const { formatter } = service.resolveRunGeneratorArguments({
+      definition,
+      targetDirectoryPath: "/output",
+    });
+
+    await expect(
+      formatter.formatFile("/output/file.ts"),
+    ).resolves.toBeUndefined();
+    await expect(
+      formatter.formatFiles(["/output/file-one.ts", "/output/file-two.ts"]),
+    ).resolves.toBeUndefined();
   });
 });

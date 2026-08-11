@@ -1,20 +1,20 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 interface MockChildLogger {
-  debug: ReturnType<typeof vi.fn>;
-  error: ReturnType<typeof vi.fn>;
-  info: ReturnType<typeof vi.fn>;
-  trace: ReturnType<typeof vi.fn>;
-  warn: ReturnType<typeof vi.fn>;
+  debug: ReturnType<typeof vi.fn<() => void>>;
+  error: ReturnType<typeof vi.fn<() => void>>;
+  info: ReturnType<typeof vi.fn<() => void>>;
+  trace: ReturnType<typeof vi.fn<() => void>>;
+  warn: ReturnType<typeof vi.fn<() => void>>;
 }
 
 function createMockChildLogger(): MockChildLogger {
   return {
-    debug: vi.fn(),
-    error: vi.fn(),
-    info: vi.fn(),
-    trace: vi.fn(),
-    warn: vi.fn(),
+    debug: vi.fn<() => void>(),
+    error: vi.fn<() => void>(),
+    info: vi.fn<() => void>(),
+    trace: vi.fn<() => void>(),
+    warn: vi.fn<() => void>(),
   };
 }
 
@@ -34,9 +34,12 @@ describe("loggerService production mode", () => {
     process.env["NODE_ENV"] = "production";
     const childLogger = createMockChildLogger();
     const rootLogger = {
-      child: vi.fn().mockReturnValue(childLogger),
+      child: vi.fn<(bindings: { context: string }) => MockChildLogger>(),
     };
-    const pinoFactory = vi.fn().mockReturnValue(rootLogger);
+    const pinoFactory = vi.fn<() => typeof rootLogger>();
+
+    rootLogger.child.mockReturnValue(childLogger);
+    pinoFactory.mockReturnValue(rootLogger);
 
     vi.doMock("pino", () => {
       return {

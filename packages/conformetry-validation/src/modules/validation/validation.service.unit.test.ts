@@ -290,4 +290,137 @@ describe(ValidationService, () => {
       "packages/conformetry",
     ]);
   });
+
+  it("uses all plugins and defaults project path to working directory when optional filters are omitted", async () => {
+    mockLoadConformetryConfiguration.mockResolvedValue({
+      generators: {
+        "nestjs-service-module": {},
+        "react-component": {},
+      },
+    });
+    mockTypeScriptValidate.mockResolvedValue({
+      checkedPaths: [process.cwd()],
+      ok: true,
+      pluginName: "typescript",
+      violations: [],
+    });
+    mockPythonValidate.mockResolvedValue({
+      checkedPaths: [process.cwd()],
+      ok: true,
+      pluginName: "python",
+      violations: [],
+    });
+    mockMarkdownValidate.mockResolvedValue({
+      checkedPaths: [process.cwd()],
+      ok: true,
+      pluginName: "markdown",
+      violations: [],
+    });
+    mockJsonValidate.mockResolvedValue({
+      checkedPaths: [process.cwd()],
+      ok: true,
+      pluginName: "json",
+      violations: [],
+    });
+    mockTextValidate.mockResolvedValue({
+      checkedPaths: [process.cwd()],
+      ok: true,
+      pluginName: "text",
+      violations: [],
+    });
+
+    const validationService = new ValidationService(
+      new ConfigurationService(),
+      new TypeScriptValidatorService(),
+      new PythonValidatorService(),
+      new MarkdownValidatorService(),
+      new JsonValidatorService(),
+      new TextValidatorService(),
+    );
+    const workingDirectory = process.cwd();
+
+    const result = await validationService.validateConfiguredSelection({
+      configurationPath: "configuration/default.config.ts",
+      workingDirectory,
+    });
+
+    expect(result.ok).toBe(true);
+    expect(mockTypeScriptValidate).toHaveBeenCalledTimes(1);
+    expect(mockPythonValidate).toHaveBeenCalledTimes(1);
+    expect(mockMarkdownValidate).toHaveBeenCalledTimes(1);
+    expect(mockJsonValidate).toHaveBeenCalledTimes(1);
+    expect(mockTextValidate).toHaveBeenCalledTimes(1);
+    expect(mockJsonValidate).toHaveBeenCalledWith({
+      configurationPath: "configuration/default.config.ts",
+      filePaths: [workingDirectory],
+      templateRuleNames: ["nestjs-service-module", "react-component"],
+      workingDirectory,
+    });
+  });
+
+  it("keeps all plugins when requested rules only include template rules", async () => {
+    mockLoadConformetryConfiguration.mockResolvedValue({
+      generators: {
+        "nestjs-service-module": {},
+        "react-component": {},
+      },
+    });
+    mockTypeScriptValidate.mockResolvedValue({
+      checkedPaths: [process.cwd()],
+      ok: true,
+      pluginName: "typescript",
+      violations: [],
+    });
+    mockPythonValidate.mockResolvedValue({
+      checkedPaths: [process.cwd()],
+      ok: true,
+      pluginName: "python",
+      violations: [],
+    });
+    mockMarkdownValidate.mockResolvedValue({
+      checkedPaths: [process.cwd()],
+      ok: true,
+      pluginName: "markdown",
+      violations: [],
+    });
+    mockJsonValidate.mockResolvedValue({
+      checkedPaths: [process.cwd()],
+      ok: true,
+      pluginName: "json",
+      violations: [],
+    });
+    mockTextValidate.mockResolvedValue({
+      checkedPaths: [process.cwd()],
+      ok: true,
+      pluginName: "text",
+      violations: [],
+    });
+
+    const validationService = new ValidationService(
+      new ConfigurationService(),
+      new TypeScriptValidatorService(),
+      new PythonValidatorService(),
+      new MarkdownValidatorService(),
+      new JsonValidatorService(),
+      new TextValidatorService(),
+    );
+
+    await validationService.validateConfiguredSelection({
+      configurationPath: "configuration/custom.config.ts",
+      requestedRuleNames: ["react-component"],
+      workingDirectory: process.cwd(),
+    });
+
+    expect(mockTypeScriptValidate).toHaveBeenCalledTimes(1);
+    expect(mockPythonValidate).toHaveBeenCalledTimes(1);
+    expect(mockMarkdownValidate).toHaveBeenCalledTimes(1);
+    expect(mockJsonValidate).toHaveBeenCalledTimes(1);
+    expect(mockTextValidate).toHaveBeenCalledTimes(1);
+    expect(mockTypeScriptValidate).toHaveBeenCalledWith({
+      configurationPath: "configuration/custom.config.ts",
+      filePaths: [process.cwd()],
+      templateRuleNames: ["react-component"],
+      workingDirectory: process.cwd(),
+    });
+  });
 });

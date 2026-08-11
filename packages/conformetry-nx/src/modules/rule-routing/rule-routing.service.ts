@@ -220,6 +220,38 @@ export class RuleRoutingService {
   /**
    * Resolves the applicable template rule names for matched projects.
    */
+  private collectApplicableTemplateRuleNamesForProjectTag(args: {
+    applicableTemplateRuleNames: Set<string>;
+    configuredTemplateRuleNameSet: ReadonlySet<string>;
+    projectTag: string;
+    templateRuleNamesByProjectTag:
+      | Readonly<Record<string, readonly string[]>>
+      | undefined;
+  }): void {
+    const tagMappedTemplateRuleNames =
+      args.templateRuleNamesByProjectTag?.[args.projectTag] ?? [];
+
+    for (const templateRuleName of tagMappedTemplateRuleNames) {
+      if (args.configuredTemplateRuleNameSet.has(templateRuleName)) {
+        args.applicableTemplateRuleNames.add(templateRuleName);
+      }
+    }
+
+    if (!args.projectTag.startsWith("generator:")) {
+      return;
+    }
+
+    const generatorTemplateRuleName = args.projectTag.slice(
+      "generator:".length,
+    );
+    if (args.configuredTemplateRuleNameSet.has(generatorTemplateRuleName)) {
+      args.applicableTemplateRuleNames.add(generatorTemplateRuleName);
+    }
+  }
+
+  /**
+   * Resolves the applicable template rule names for matched projects.
+   */
   private resolveApplicableTemplateRuleNames(args: {
     configuredTemplateRuleNames: string[];
     matchedProjects: WorkspaceProjectMetadata[];
@@ -233,23 +265,12 @@ export class RuleRoutingService {
 
     for (const matchedProject of args.matchedProjects) {
       for (const projectTag of matchedProject.tags) {
-        const tagMappedTemplateRuleNames =
-          templateRuleNamesByProjectTag?.[projectTag] ?? [];
-
-        for (const templateRuleName of tagMappedTemplateRuleNames) {
-          if (configuredTemplateRuleNameSet.has(templateRuleName)) {
-            applicableTemplateRuleNames.add(templateRuleName);
-          }
-        }
-
-        if (projectTag.startsWith("generator:")) {
-          const generatorTemplateRuleName = projectTag.slice(
-            "generator:".length,
-          );
-          if (configuredTemplateRuleNameSet.has(generatorTemplateRuleName)) {
-            applicableTemplateRuleNames.add(generatorTemplateRuleName);
-          }
-        }
+        this.collectApplicableTemplateRuleNamesForProjectTag({
+          applicableTemplateRuleNames,
+          configuredTemplateRuleNameSet,
+          projectTag,
+          templateRuleNamesByProjectTag,
+        });
       }
     }
 

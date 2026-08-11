@@ -49,7 +49,7 @@ const { mockPino, rootLogger, scopedLogger } = vi.hoisted(() => {
   scoped.child.mockReturnValue(scoped);
 
   return {
-    mockPino: vi.fn(() => {
+    mockPino: vi.fn<() => typeof root>(() => {
       return root;
     }),
     rootLogger: root,

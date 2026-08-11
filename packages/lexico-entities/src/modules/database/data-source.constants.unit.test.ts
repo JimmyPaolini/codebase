@@ -35,7 +35,7 @@ describe("lexico data source", () => {
   });
 
   it("should use default postgres configuration values", async () => {
-    const { lexicoDataSource } = await import("./data-source");
+    const { lexicoDataSource } = await import("./data-source.constants");
     const postgresDataSourceOptions = toPostgresDataSourceOptions(
       lexicoDataSource.options,
     );
@@ -55,7 +55,7 @@ describe("lexico data source", () => {
     process.env["POSTGRES_PORT"] = "6001";
     process.env["POSTGRES_USER"] = "custom_user";
 
-    const { lexicoDataSource } = await import("./data-source");
+    const { lexicoDataSource } = await import("./data-source.constants");
     const postgresDataSourceOptions = toPostgresDataSourceOptions(
       lexicoDataSource.options,
     );
