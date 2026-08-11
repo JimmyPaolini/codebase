@@ -49,7 +49,7 @@ vi.mock("@jimmypaolini/conformetry-validation", () => {
   };
 });
 
-vi.mock("./modules/commands/generate/generate.command.js", () => {
+vi.mock("./modules/generate/generate.command.js", () => {
   function MockGenerateCommand(): void {}
 
   return {
@@ -57,7 +57,7 @@ vi.mock("./modules/commands/generate/generate.command.js", () => {
   };
 });
 
-vi.mock("./modules/commands/validate/validate.command.js", () => {
+vi.mock("./modules/validate/validate.command.js", () => {
   function MockValidateCommand(): void {}
 
   return {
@@ -73,13 +73,13 @@ describe("module export surfaces", () => {
   it("exports command and module surfaces for nx handoff", async () => {
     const { MainModule } = await import("./main.module");
     const { GenerateCommand } =
-      await import("./modules/commands/generate/generate.command");
+      await import("./modules/generate/generate.command");
     const { GenerateModule } =
-      await import("./modules/commands/generate/generate.module");
+      await import("./modules/generate/generate.module");
     const { ValidateCommand } =
-      await import("./modules/commands/validate/validate.command");
+      await import("./modules/validate/validate.command");
     const { ValidateModule } =
-      await import("./modules/commands/validate/validate.module");
+      await import("./modules/validate/validate.module");
 
     expect(MainModule).toBeDefined();
     expect(GenerateCommand).toBeDefined();

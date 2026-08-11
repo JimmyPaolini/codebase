@@ -3,8 +3,10 @@ import {
   parseCommaDelimitedOption,
 } from "@jimmypaolini/conformetry-configuration";
 import { ValidationService } from "@jimmypaolini/conformetry-validation";
-import { ConsoleLogger, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
+
+import { LoggerService } from "../logger/logger.service";
 
 import type { ValidateCommandOptions } from "./validate.types.js";
 
@@ -20,12 +22,11 @@ export class ValidateCommand extends CommandRunner {
   constructor(
     private readonly configurationService: ConfigurationService,
     private readonly validationService: ValidationService,
+    private readonly logger: LoggerService,
   ) {
     super();
     this.logger.setContext(ValidateCommand.name);
   }
-
-  private readonly logger = new ConsoleLogger();
 
   /**
    * Parses the configuration path option for the validate command.

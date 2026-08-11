@@ -3,8 +3,10 @@ import {
   ConfigurationService,
 } from "@jimmypaolini/conformetry-configuration";
 import { GenerationService } from "@jimmypaolini/conformetry-generation";
-import { ConsoleLogger, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
+
+import { LoggerService } from "../logger/logger.service";
 
 import type { GenerateCommandOptions } from "./generate.types";
 import type { JsonSchemaDefinition } from "@jimmypaolini/conformetry-configuration";
@@ -21,12 +23,11 @@ export class GenerateCommand extends CommandRunner {
   constructor(
     private readonly configurationService: ConfigurationService,
     private readonly generationService: GenerationService,
+    private readonly logger: LoggerService,
   ) {
     super();
     this.logger.setContext(GenerateCommand.name);
   }
-
-  private readonly logger = new ConsoleLogger();
 
   /**
    * Parses the configuration path option for the generate command.

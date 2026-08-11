@@ -8,6 +8,8 @@ import {
 } from "@jimmypaolini/conformetry-generation";
 import { Module } from "@nestjs/common";
 
+import { LoggerService } from "../logger/logger.service";
+
 import { GenerateCommand } from "./generate.command";
 
 /**
@@ -19,13 +21,18 @@ import { GenerateCommand } from "./generate.command";
   imports: [ConfigurationModule, GenerationModule],
   providers: [
     {
-      inject: [ConfigurationService, GenerationService],
+      inject: [ConfigurationService, GenerationService, LoggerService],
       provide: GenerateCommand,
       useFactory: (
         configurationService: ConfigurationService,
         generationService: GenerationService,
+        loggerService: LoggerService,
       ): GenerateCommand => {
-        return new GenerateCommand(configurationService, generationService);
+        return new GenerateCommand(
+          configurationService,
+          generationService,
+          loggerService,
+        );
       },
     },
   ],

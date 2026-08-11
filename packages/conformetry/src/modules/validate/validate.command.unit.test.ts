@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ValidateCommand } from "./validate.command";
 
+import type { LoggerService } from "../logger/logger.service";
 import type { TestingModule } from "@nestjs/testing";
 
 const mockValidateConfiguredSelection =
@@ -23,27 +24,6 @@ const mockLoadConformetryConfiguration =
   vi.fn<(configurationPath: string) => Promise<ConformetryConfiguration>>();
 const mockLoggerLog = vi.fn<(message: unknown) => void>();
 const designParameterTypesMetadataKey = `design:${["param", "types"].join("")}`;
-
-vi.mock("@nestjs/common", async () => {
-  const actual = await vi.importActual("@nestjs/common");
-
-  class MockConsoleLogger {
-    public context?: string;
-
-    log(message: unknown): void {
-      mockLoggerLog(message);
-    }
-
-    setContext(context: string): void {
-      this.context = context;
-    }
-  }
-
-  return {
-    ...actual,
-    ConsoleLogger: MockConsoleLogger,
-  };
-});
 
 vi.mock("@jimmypaolini/conformetry-validation", () => {
   function MockValidationModule(): void {}
@@ -129,10 +109,33 @@ describe("validateCommand", () => {
     return validationService;
   }
 
+  function isLoggerService(value: unknown): value is LoggerService {
+    return (
+      typeof value === "object" &&
+      value !== null &&
+      "log" in value &&
+      "setContext" in value
+    );
+  }
+
+  function createLoggerService(): LoggerService {
+    const loggerService = {
+      log: mockLoggerLog,
+      setContext: vi.fn<(context: string) => void>(),
+    };
+
+    if (!isLoggerService(loggerService)) {
+      throw new Error("Failed to create logger service mock.");
+    }
+
+    return loggerService;
+  }
+
   function createCommand(): ValidateCommand {
     return new ValidateCommand(
       createConfigurationService(),
       createValidationService(),
+      createLoggerService(),
     );
   }
 
@@ -249,15 +252,21 @@ describe("validateCommand", () => {
       testingModule = await Test.createTestingModule({
         providers: [
           {
-            inject: [ConfigurationService, ValidationService],
+            inject: [
+              ConfigurationService,
+              ValidationService,
+              "LOGGER_SERVICE_TOKEN",
+            ],
             provide: ValidateCommand,
             useFactory: (
               configurationService: ConfigurationService,
               validationService: ValidationService,
+              loggerService: LoggerService,
             ): ValidateCommand => {
               return new ValidateCommand(
                 configurationService,
                 validationService,
+                loggerService,
               );
             },
           },
@@ -268,6 +277,10 @@ describe("validateCommand", () => {
           {
             provide: ValidationService,
             useValue: validationService,
+          },
+          {
+            provide: "LOGGER_SERVICE_TOKEN",
+            useValue: createLoggerService(),
           },
         ],
       }).compile();
@@ -311,6 +324,7 @@ describe("validateCommand", () => {
       useFactory: (
         configurationService: ConfigurationService,
         validationService: ValidationService,
+        loggerService: LoggerService,
       ) => ImportedValidateCommandType;
     }[];
 
@@ -320,6 +334,7 @@ describe("validateCommand", () => {
       providerDefinitions[0]?.useFactory(
         new ConfigurationService(),
         createValidationService(),
+        createLoggerService(),
       ),
     ).toBeInstanceOf(ImportedValidateCommand);
   });

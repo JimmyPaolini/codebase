@@ -8,6 +8,8 @@ import {
 } from "@jimmypaolini/conformetry-validation";
 import { Module } from "@nestjs/common";
 
+import { LoggerService } from "../logger/logger.service";
+
 import { ValidateCommand } from "./validate.command";
 
 /**
@@ -19,13 +21,18 @@ import { ValidateCommand } from "./validate.command";
   imports: [ConfigurationModule, ValidationModule],
   providers: [
     {
-      inject: [ConfigurationService, ValidationService],
+      inject: [ConfigurationService, ValidationService, LoggerService],
       provide: ValidateCommand,
       useFactory: (
         configurationService: ConfigurationService,
         validationService: ValidationService,
+        loggerService: LoggerService,
       ): ValidateCommand => {
-        return new ValidateCommand(configurationService, validationService);
+        return new ValidateCommand(
+          configurationService,
+          validationService,
+          loggerService,
+        );
       },
     },
   ],

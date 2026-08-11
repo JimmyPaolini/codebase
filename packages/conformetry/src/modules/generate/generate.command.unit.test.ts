@@ -2,6 +2,7 @@ import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
 import { GenerationService } from "@jimmypaolini/conformetry-generation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { LoggerService } from "../logger/logger.service";
 import type { TestingModule } from "@nestjs/testing";
 
 const {
@@ -22,27 +23,6 @@ const {
   };
 });
 const designParameterTypesMetadataKey = `design:${["param", "types"].join("")}`;
-
-vi.mock("@nestjs/common", async () => {
-  const actual = await vi.importActual("@nestjs/common");
-
-  class MockConsoleLogger {
-    public context?: string;
-
-    log(message: unknown): void {
-      mockLoggerLog(message);
-    }
-
-    setContext(context: string): void {
-      this.context = context;
-    }
-  }
-
-  return {
-    ...actual,
-    ConsoleLogger: MockConsoleLogger,
-  };
-});
 
 vi.mock("@jimmypaolini/conformetry-configuration", () => {
   function MockConfigurationModule(): void {}
@@ -69,6 +49,28 @@ vi.mock("@jimmypaolini/conformetry-generation", () => {
 });
 
 describe("generateCommand", () => {
+  function isLoggerService(value: unknown): value is LoggerService {
+    return (
+      typeof value === "object" &&
+      value !== null &&
+      "log" in value &&
+      "setContext" in value
+    );
+  }
+
+  function createLoggerService(): LoggerService {
+    const loggerService = {
+      log: mockLoggerLog,
+      setContext: vi.fn<(context: string) => void>(),
+    };
+
+    if (!isLoggerService(loggerService)) {
+      throw new Error("Failed to create logger service mock.");
+    }
+
+    return loggerService;
+  }
+
   beforeEach(() => {
     vi.clearAllMocks();
     mockCollectGeneratorInputsFromCommandArguments.mockReturnValue({
@@ -82,6 +84,7 @@ describe("generateCommand", () => {
     const command = new GenerateCommand(
       new ConfigurationService(),
       new GenerationService(),
+      createLoggerService(),
     );
 
     expect(command.parseConfig("configuration/conformetry.config.ts")).toBe(
@@ -99,6 +102,7 @@ describe("generateCommand", () => {
     const command = new GenerateCommand(
       new ConfigurationService(),
       new GenerationService(),
+      createLoggerService(),
     );
 
     await expect(command.run([], { name: "react-component" })).rejects.toThrow(
@@ -118,6 +122,7 @@ describe("generateCommand", () => {
     const command = new GenerateCommand(
       new ConfigurationService(),
       new GenerationService(),
+      createLoggerService(),
     );
 
     await expect(
@@ -154,6 +159,7 @@ describe("generateCommand", () => {
     const command = new GenerateCommand(
       new ConfigurationService(),
       new GenerationService(),
+      createLoggerService(),
     );
 
     await command.run(["--project", "lexico-components"], {
@@ -217,6 +223,7 @@ describe("generateCommand", () => {
     const command = new GenerateCommand(
       new ConfigurationService(),
       new GenerationService(),
+      createLoggerService(),
     );
 
     await command.run(["--project", "lexico"], {
@@ -272,15 +279,21 @@ describe("generateCommand", () => {
       testingModule = await Test.createTestingModule({
         providers: [
           {
-            inject: [ConfigurationService, GenerationService],
+            inject: [
+              ConfigurationService,
+              GenerationService,
+              "LOGGER_SERVICE_TOKEN",
+            ],
             provide: ImportedGenerateCommand,
             useFactory: (
               configurationService: ConfigurationService,
               generationService: GenerationService,
+              loggerService: LoggerService,
             ): unknown => {
               return new ImportedGenerateCommand(
                 configurationService,
                 generationService,
+                loggerService,
               );
             },
           },
@@ -295,6 +308,10 @@ describe("generateCommand", () => {
             useValue: {
               runGenerator: mockRunGenerator,
             },
+          },
+          {
+            provide: "LOGGER_SERVICE_TOKEN",
+            useValue: createLoggerService(),
           },
         ],
       }).compile();
@@ -342,6 +359,7 @@ describe("generateCommand", () => {
       useFactory: (
         configurationService: ConfigurationService,
         generationService: GenerationService,
+        loggerService: LoggerService,
       ) => ImportedGenerateCommandType;
     }[];
 
@@ -351,6 +369,7 @@ describe("generateCommand", () => {
       providerDefinitions[0]?.useFactory(
         new ConfigurationService(),
         new GenerationService(),
+        createLoggerService(),
       ),
     ).toBeInstanceOf(ImportedGenerateCommand);
   });
