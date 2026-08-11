@@ -56,6 +56,10 @@ function getRunOptions(): CommandFactoryRunOptions {
 
   const options = firstCall[1];
 
+  if (options === undefined) {
+    throw new Error("Expected CommandFactory.run options to be defined.");
+  }
+
   return options;
 }
 

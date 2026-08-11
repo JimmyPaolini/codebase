@@ -6,17 +6,9 @@ const {
   mockResolveTargetDirectoryPath,
 } = vi.hoisted(() => {
   return {
-    mockGetProjects: vi.fn<() => Map<string, unknown>>(),
-    mockNormalizeRuntimeOptions: vi.fn<
-      (options: Record<string, unknown>) => Record<string, string | undefined>
-    >(),
-    mockResolveTargetDirectoryPath: vi.fn<
-      (args: {
-        resolveProjectRootPath: (args: {
-          projectName: string;
-        }) => string | undefined;
-      }) => Promise<string>
-    >(),
+    mockGetProjects: vi.fn(),
+    mockNormalizeRuntimeOptions: vi.fn(),
+    mockResolveTargetDirectoryPath: vi.fn(),
   };
 });
 
@@ -158,7 +150,7 @@ describe(GenerationService, () => {
         resolveProjectRootPath: (args: {
           projectName: string;
         }) => string | undefined;
-      }): Promise<string> => {
+      }) => {
         await Promise.resolve();
         return (
           resolveProjectRootPath({

@@ -6,7 +6,7 @@ import {
 import { ValidationService } from "@jimmypaolini/conformetry-validation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ValidateCommand } from "./validate.command.js";
+import { ValidateCommand } from "./validate.command";
 
 import type { TestingModule } from "@nestjs/testing";
 
