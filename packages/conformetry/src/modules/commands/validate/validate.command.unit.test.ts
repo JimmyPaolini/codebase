@@ -299,12 +299,12 @@ describe("validateCommand", () => {
     const providerDefinitions = Reflect.getMetadata(
       "providers",
       ValidateModule,
-    ) as Array<{
+    ) as {
       useFactory: (
         configurationService: ConfigurationService,
         validationService: ValidationService,
       ) => ValidateCommand;
-    }>;
+    }[];
 
     expect(ValidateModule).toBeDefined();
     expect(providerDefinitions).toHaveLength(1);

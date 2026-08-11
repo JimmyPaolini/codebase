@@ -123,6 +123,7 @@ describe("main", () => {
 
     expect(process.exitCode).toBe(1);
     expect(errorSpy).toHaveBeenCalledWith(failure);
+
     errorSpy.mockRestore();
   });
 
@@ -139,6 +140,7 @@ describe("main", () => {
 
     expect(process.exitCode).toBe(1);
     expect(errorSpy).toHaveBeenCalledWith(failure);
+
     errorSpy.mockRestore();
   });
 

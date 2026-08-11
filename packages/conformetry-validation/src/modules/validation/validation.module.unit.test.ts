@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { ValidationService } from "./validation.service";
 import { ValidationModule } from "./validation.module";
+import { ValidationService } from "./validation.service";
 
 describe(ValidationModule, () => {
   it("is defined", () => {
@@ -10,10 +10,10 @@ describe(ValidationModule, () => {
 
   it("creates the validation service through the module provider factory", () => {
     const providers = Reflect.getMetadata("providers", ValidationModule) as
-      | Array<
-          | { provide: unknown; useFactory?: (...args: unknown[]) => unknown }
+      | (
           | unknown
-        >
+          | { provide: unknown; useFactory?: (...args: unknown[]) => unknown }
+        )[]
       | undefined;
     const validationProvider = providers?.find(
       (provider) =>
@@ -26,23 +26,16 @@ describe(ValidationModule, () => {
     expect(validationProvider).toBeDefined();
     expect(
       typeof validationProvider === "object" &&
-      validationProvider !== null &&
-      "useFactory" in validationProvider &&
-      validationProvider.useFactory,
+        validationProvider !== null &&
+        "useFactory" in validationProvider &&
+        validationProvider.useFactory,
     ).toBeTypeOf("function");
 
     const service = (
       validationProvider as {
         useFactory: (...args: unknown[]) => ValidationService;
       }
-    ).useFactory(
-      {} as never,
-      {} as never,
-      {} as never,
-      {} as never,
-      {} as never,
-      {} as never,
-    );
+    ).useFactory({}, {}, {}, {}, {}, {});
 
     expect(service).toBeInstanceOf(ValidationService);
   });

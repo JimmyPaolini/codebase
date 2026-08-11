@@ -330,12 +330,12 @@ describe("generateCommand", () => {
     const providerDefinitions = Reflect.getMetadata(
       "providers",
       GenerateModule,
-    ) as Array<{
+    ) as {
       useFactory: (
         configurationService: ConfigurationService,
         generationService: GenerationService,
       ) => GenerateCommand;
-    }>;
+    }[];
 
     expect(GenerateModule).toBeDefined();
     expect(providerDefinitions).toHaveLength(1);

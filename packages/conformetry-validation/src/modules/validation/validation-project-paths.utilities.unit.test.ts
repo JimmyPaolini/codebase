@@ -172,19 +172,24 @@ describe("validation project path utilities", () => {
   it("normalizes selectors and resolves tag mappings for configured rules", () => {
     const workingDirectory = createTemporaryDirectoryPath();
     const relativeProjectPath = "./applications/fixtures/project";
-    const projectSelector = path.join(workingDirectory, "applications", "fixtures", "project");
+    const projectSelector = path.join(
+      workingDirectory,
+      "applications",
+      "fixtures",
+      "project",
+    );
     const templateRuleNamesByProjectTag = {
       "framework:nest-commander": ["nestjs-command-project"],
-      "generator:jupyter-notebook-application": ["jupyter-notebook-application"],
+      "generator:jupyter-notebook-application": [
+        "jupyter-notebook-application",
+      ],
     };
 
     expect(normalizeProjectPath(relativeProjectPath)).toBe(
       "applications/fixtures/project",
     );
     expect(normalizeProjectPath(".")).toBe(".");
-    expect(
-      readTemplateRuleNamesByProjectTag(workingDirectory),
-    ).toBeUndefined();
+    expect(readTemplateRuleNamesByProjectTag(workingDirectory)).toBeUndefined();
 
     fs.writeFileSync(
       path.join(workingDirectory, "nx.json"),
@@ -217,10 +222,7 @@ describe("validation project path utilities", () => {
         ],
         templateRuleNamesByProjectTag,
       }),
-    ).toStrictEqual([
-      "jupyter-notebook-application",
-      "nestjs-command-project",
-    ]);
+    ).toStrictEqual(["jupyter-notebook-application", "nestjs-command-project"]);
     expect(
       resolveMatchedProjects({
         projectSelectors: [projectSelector],
@@ -259,12 +261,12 @@ describe("validation project path utilities", () => {
       JSON.stringify({
         plugins: [
           {
-            plugin: "@jimmypaolini/conformetry-nx",
             options: {
               templateRuleNamesByProjectTag: {
                 "framework:typescript": ["react-component", 42],
               },
             },
+            plugin: "@jimmypaolini/conformetry-nx",
           },
         ],
       }),
@@ -306,7 +308,9 @@ describe("validation project path utilities", () => {
       tags: ["generator:custom-generator"],
     };
 
-    expect(normalizeProjectPath("./apps/demo-project")).toBe("apps/demo-project");
+    expect(normalizeProjectPath("./apps/demo-project")).toBe(
+      "apps/demo-project",
+    );
     expect(
       resolveApplicableTemplateRuleNames({
         configuredTemplateRuleNames: ["custom-generator"],
@@ -319,6 +323,7 @@ describe("validation project path utilities", () => {
       JSON.stringify(null),
       "utf8",
     );
+
     expect(readTemplateRuleNamesByProjectTag(workingDirectory)).toBeUndefined();
 
     fs.writeFileSync(
@@ -326,17 +331,18 @@ describe("validation project path utilities", () => {
       JSON.stringify({
         plugins: [
           {
-            plugin: "@jimmypaolini/conformetry-nx",
             options: {
               templateRuleNamesByProjectTag: {
                 "framework:typescript": "not-an-array",
               },
             },
+            plugin: "@jimmypaolini/conformetry-nx",
           },
         ],
       }),
       "utf8",
     );
+
     expect(readTemplateRuleNamesByProjectTag(workingDirectory)).toBeUndefined();
 
     fs.writeFileSync(
@@ -344,13 +350,14 @@ describe("validation project path utilities", () => {
       JSON.stringify({
         plugins: [
           {
-            plugin: "@jimmypaolini/conformetry-nx",
             options: null,
+            plugin: "@jimmypaolini/conformetry-nx",
           },
         ],
       }),
       "utf8",
     );
+
     expect(readTemplateRuleNamesByProjectTag(workingDirectory)).toBeUndefined();
 
     expect(
@@ -374,6 +381,7 @@ describe("validation project path utilities", () => {
         workingDirectory,
       }),
     ).toStrictEqual(["apps/demo-project"]);
+
     writeProjectMetadata({
       projectMetadata: {
         name: "demo-project",
@@ -417,6 +425,7 @@ describe("validation project path utilities", () => {
       }),
       "utf8",
     );
+
     expect(readTemplateRuleNamesByProjectTag(workingDirectory)).toBeUndefined();
 
     fs.writeFileSync(
@@ -424,17 +433,18 @@ describe("validation project path utilities", () => {
       JSON.stringify({
         plugins: [
           {
-            plugin: "@jimmypaolini/conformetry-nx",
             options: {
               templateRuleNamesByProjectTag: {
                 "framework:react": [],
               },
             },
+            plugin: "@jimmypaolini/conformetry-nx",
           },
         ],
       }),
       "utf8",
     );
+
     expect(readTemplateRuleNamesByProjectTag(workingDirectory)).toBeUndefined();
     expect(
       resolveApplicableTemplateRuleNames({
@@ -510,14 +520,14 @@ describe("validation project path utilities", () => {
       JSON.stringify({
         plugins: [
           "not-a-plugin",
-          { plugin: "other-plugin", options: "ignored" },
+          { options: "ignored", plugin: "other-plugin" },
           {
-            plugin: "@jimmypaolini/conformetry-nx",
             options: {
               templateRuleNamesByProjectTag: {
                 "framework:react": ["react-component", null],
               },
             },
+            plugin: "@jimmypaolini/conformetry-nx",
           },
         ],
       }),
@@ -529,7 +539,9 @@ describe("validation project path utilities", () => {
     });
     expect(
       resolveMatchedProjects({
-        projectSelectors: [path.join(workingDirectory, "apps", "named-project", "src", "nested")],
+        projectSelectors: [
+          path.join(workingDirectory, "apps", "named-project", "src", "nested"),
+        ],
         workingDirectory,
         workspaceProjects: [project],
       }),
