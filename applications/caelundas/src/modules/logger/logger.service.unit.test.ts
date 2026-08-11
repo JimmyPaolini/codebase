@@ -15,7 +15,9 @@ describe(LoggerService, () => {
   });
 
   it("is defined", () => {
-    expect(service).toBeDefined();
+    const command = service;
+
+    expect(command).toBeDefined();
   });
 
   it("routes log levels through the scoped child logger", () => {

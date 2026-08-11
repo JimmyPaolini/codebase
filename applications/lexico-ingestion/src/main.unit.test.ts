@@ -1,8 +1,12 @@
 import { CommandFactory } from "nest-commander";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const setContextMock = vi.fn<(context: string) => void>();
 const loggerConstructorMock = vi.fn<() => void>();
+
+vi.mock("./main.module", () => ({
+  MainModule: class MainModule {},
+}));
 
 vi.mock("./modules/logger/logger.service", () => ({
   LoggerService: class MockLoggerService {
@@ -15,6 +19,10 @@ vi.mock("./modules/logger/logger.service", () => ({
 }));
 
 describe("main bootstrap", () => {
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
   afterEach(() => {
     vi.clearAllMocks();
   });

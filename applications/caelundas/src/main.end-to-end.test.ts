@@ -28,6 +28,13 @@ const calendarService = new CalendarService(logger, {
 } as unknown as ConfigService<Environment>);
 
 describe("calendar generation e2e", { timeout: 10_000 }, () => {
+  describe("environment schema e2e", () => {
+    it("allows an empty schema by default", () => {
+      expect.hasAssertions();
+      expect(environmentSchema.parse({})).toStrictEqual({});
+    });
+  });
+
   // E2E tests may need more time
   beforeAll(() => {
     // Ensure test output directory exists

@@ -1,11 +1,20 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 const replMock = vi.fn<() => Promise<void>>(async (): Promise<void> => {});
 
 vi.mock("@nestjs/core", () => ({
   repl: replMock,
 }));
 
+vi.mock("./main.module", () => ({
+  MainModule: class MainModule {},
+}));
+
 describe("repl bootstrap", () => {
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
   afterEach(() => {
     vi.clearAllMocks();
   });

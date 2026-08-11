@@ -1,14 +1,25 @@
 import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
+import { DiscoveryModule } from "@nestjs/core";
 
+import { environmentSchema } from "./constants";
 import { CaelundasModule } from "./modules/caelundas/caelundas.module";
+import { LoggerModule } from "./modules/logger/logger.module";
 
 /**
- * Compatibility root module for conformetry command-project validation.
+ * Root NestJS application module.
  */
 @Module({
-  controllers: [],
-  exports: [],
-  imports: [CaelundasModule],
-  providers: [],
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: ".env",
+      isGlobal: true,
+      validate: (config: Record<string, unknown>) =>
+        environmentSchema.parse(config),
+    }),
+    DiscoveryModule,
+    LoggerModule,
+    CaelundasModule,
+  ],
 })
 export class MainModule {}

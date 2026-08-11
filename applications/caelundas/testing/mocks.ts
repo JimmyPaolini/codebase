@@ -40,15 +40,14 @@ export const MOCK_PATTERNS = {
 
 /**
  * Default test date used across time-sensitive tests.
- * Set to mid-2025 to avoid edge cases with year boundaries.
  */
-export const DEFAULT_TEST_DATE = new Date("2025-06-15T12:00:00Z");
+export const DEFAULT_TEST_DATE = new Date("2025-03-20T14:46:00Z");
 
 /**
  * Sets up fake timers with a fixed system time before each test
  * and restores real timers after each test.
  *
- * Usage in test files:.
+ * Usage in test files:
  * ```ts
  * import { mockDates } from '../testing/mocks'
  *

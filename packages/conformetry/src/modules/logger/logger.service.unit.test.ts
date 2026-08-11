@@ -1,10 +1,21 @@
-import { describe, expect, it, vi } from "vitest";
+import { Test } from "@nestjs/testing";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "./logger.service";
 
 type LoggerMethod = ReturnType<typeof vi.fn<(...args: unknown[]) => void>>;
 
 describe(LoggerService, () => {
+  let service: LoggerService;
+
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
+      providers: [LoggerService],
+    }).compile();
+
+    service = await module.resolve(LoggerService);
+  });
+
   interface LoggerChild {
     debug: LoggerMethod;
     error: LoggerMethod;
@@ -28,9 +39,9 @@ describe(LoggerService, () => {
   }
 
   it("is defined", () => {
-    const service = new LoggerService();
+    const command = service;
 
-    expect(service).toBeDefined();
+    expect(command).toBeDefined();
   });
 
   it("logs through all severity methods and stringifies non-string values", () => {
