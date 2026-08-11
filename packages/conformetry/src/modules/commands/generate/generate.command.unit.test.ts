@@ -45,10 +45,12 @@ vi.mock("@nestjs/common", async () => {
 });
 
 vi.mock("@jimmypaolini/conformetry-configuration", () => {
+  function MockConfigurationModule(): void {}
+
   return {
     collectGeneratorInputsFromCommandArguments:
       mockCollectGeneratorInputsFromCommandArguments,
-    ConfigurationModule: class ConfigurationModule {},
+    ConfigurationModule: MockConfigurationModule,
     ConfigurationService: class ConfigurationService {
       loadConformetryConfiguration = mockLoadConformetryConfiguration;
     },
@@ -56,8 +58,10 @@ vi.mock("@jimmypaolini/conformetry-configuration", () => {
 });
 
 vi.mock("@jimmypaolini/conformetry-generation", () => {
+  function MockGenerationModule(): void {}
+
   return {
-    GenerationModule: class GenerationModule {},
+    GenerationModule: MockGenerationModule,
     GenerationService: class GenerationService {
       runGenerator = mockRunGenerator;
     },
@@ -326,7 +330,11 @@ describe("generateCommand", () => {
 
   it("exports the generate module for Nest registration", async () => {
     const { GenerateModule } = await import("./generate.module");
-    const { GenerateCommand } = await import("./generate.command");
+    const { GenerateCommand: ImportedGenerateCommand } =
+      await import("./generate.command");
+    type ImportedGenerateCommandType = InstanceType<
+      typeof ImportedGenerateCommand
+    >;
     const providerDefinitions = Reflect.getMetadata(
       "providers",
       GenerateModule,
@@ -334,7 +342,7 @@ describe("generateCommand", () => {
       useFactory: (
         configurationService: ConfigurationService,
         generationService: GenerationService,
-      ) => GenerateCommand;
+      ) => ImportedGenerateCommandType;
     }[];
 
     expect(GenerateModule).toBeDefined();
@@ -344,6 +352,6 @@ describe("generateCommand", () => {
         new ConfigurationService(),
         new GenerationService(),
       ),
-    ).toBeInstanceOf(GenerateCommand);
+    ).toBeInstanceOf(ImportedGenerateCommand);
   });
 });

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { CaelundasModule } from "./modules/caelundas/caelundas.module";
+import { MainModule } from "./main.module";
 
 import type * as NestCommanderModule from "nest-commander";
 
@@ -51,7 +51,7 @@ describe("main", () => {
 
     const module = firstCall[0];
 
-    expect(module.name).toBe(CaelundasModule.name);
+    expect(module.name).toBe(MainModule.name);
 
     const options = firstCall[1];
 

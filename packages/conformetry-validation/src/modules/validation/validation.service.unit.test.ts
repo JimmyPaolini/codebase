@@ -17,6 +17,14 @@ import type {
   ValidationPluginResult,
 } from "@jimmypaolini/conformetry-configuration";
 
+type LoadConformetryConfigurationMock = (
+  configurationPath: string,
+) => Promise<{ generators: Record<string, unknown> }>;
+
+type ValidationPluginValidateMock = (
+  args: ValidationPluginArguments,
+) => Promise<ValidationPluginResult>;
+
 const {
   mockJsonValidate,
   mockLoadConformetryConfiguration,
@@ -26,12 +34,12 @@ const {
   mockTypeScriptValidate,
 } = vi.hoisted(() => {
   return {
-    mockJsonValidate: vi.fn(),
-    mockLoadConformetryConfiguration: vi.fn(),
-    mockMarkdownValidate: vi.fn(),
-    mockPythonValidate: vi.fn(),
-    mockTextValidate: vi.fn(),
-    mockTypeScriptValidate: vi.fn(),
+    mockJsonValidate: vi.fn<ValidationPluginValidateMock>(),
+    mockLoadConformetryConfiguration: vi.fn<LoadConformetryConfigurationMock>(),
+    mockMarkdownValidate: vi.fn<ValidationPluginValidateMock>(),
+    mockPythonValidate: vi.fn<ValidationPluginValidateMock>(),
+    mockTextValidate: vi.fn<ValidationPluginValidateMock>(),
+    mockTypeScriptValidate: vi.fn<ValidationPluginValidateMock>(),
   };
 });
 
@@ -55,8 +63,7 @@ vi.mock("@jimmypaolini/conformetry-configuration", () => {
       async loadConformetryConfiguration(
         configPath: string,
       ): Promise<{ generators: Record<string, unknown> }> {
-        await Promise.resolve();
-        return mockLoadConformetryConfiguration(configPath);
+        return await mockLoadConformetryConfiguration(configPath);
       }
 
       loadJsonConfiguration(): Record<string, unknown> {
@@ -78,8 +85,7 @@ vi.mock("@jimmypaolini/conformetry-json", () => {
       async validate(
         args: ValidationPluginArguments,
       ): Promise<ValidationPluginResult> {
-        await Promise.resolve();
-        return mockJsonValidate(args);
+        return await mockJsonValidate(args);
       }
     },
   };
@@ -93,8 +99,7 @@ vi.mock("@jimmypaolini/conformetry-markdown", () => {
       async validate(
         args: ValidationPluginArguments,
       ): Promise<ValidationPluginResult> {
-        await Promise.resolve();
-        return mockMarkdownValidate(args);
+        return await mockMarkdownValidate(args);
       }
     },
   };
@@ -108,8 +113,7 @@ vi.mock("@jimmypaolini/conformetry-python", () => {
       async validate(
         args: ValidationPluginArguments,
       ): Promise<ValidationPluginResult> {
-        await Promise.resolve();
-        return mockPythonValidate(args);
+        return await mockPythonValidate(args);
       }
     },
   };
@@ -123,8 +127,7 @@ vi.mock("@jimmypaolini/conformetry-text", () => {
       async validate(
         args: ValidationPluginArguments,
       ): Promise<ValidationPluginResult> {
-        await Promise.resolve();
-        return mockTextValidate(args);
+        return await mockTextValidate(args);
       }
     },
   };
@@ -138,8 +141,7 @@ vi.mock("@jimmypaolini/conformetry-typescript", () => {
       async validate(
         args: ValidationPluginArguments,
       ): Promise<ValidationPluginResult> {
-        await Promise.resolve();
-        return mockTypeScriptValidate(args);
+        return await mockTypeScriptValidate(args);
       }
     },
   };

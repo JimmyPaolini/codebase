@@ -9,14 +9,16 @@ describe(ValidationModule, () => {
   });
 
   it("creates the validation service through the module provider factory", () => {
+    interface ValidationModuleProvider {
+      provide: unknown;
+      useFactory?: (...args: unknown[]) => unknown;
+    }
+
     const providers = Reflect.getMetadata("providers", ValidationModule) as
-      | (
-          | unknown
-          | { provide: unknown; useFactory?: (...args: unknown[]) => unknown }
-        )[]
-      | undefined;
+      | undefined
+      | unknown[];
     const validationProvider = providers?.find(
-      (provider) =>
+      (provider): provider is ValidationModuleProvider =>
         typeof provider === "object" &&
         provider !== null &&
         "provide" in provider &&
@@ -24,18 +26,12 @@ describe(ValidationModule, () => {
     );
 
     expect(validationProvider).toBeDefined();
-    expect(
-      typeof validationProvider === "object" &&
-        validationProvider !== null &&
-        "useFactory" in validationProvider &&
-        validationProvider.useFactory,
-    ).toBeTypeOf("function");
+    expect(validationProvider?.useFactory).toBeTypeOf("function");
 
-    const service = (
-      validationProvider as {
-        useFactory: (...args: unknown[]) => ValidationService;
-      }
-    ).useFactory({}, {}, {}, {}, {}, {});
+    if (typeof validationProvider?.useFactory !== "function") {
+      throw new TypeError("ValidationModule provider is missing useFactory");
+    }
+    const service = validationProvider.useFactory({}, {}, {}, {}, {}, {});
 
     expect(service).toBeInstanceOf(ValidationService);
   });

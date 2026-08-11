@@ -28,7 +28,7 @@ vi.mock("@nestjs/common", () => {
 
   return {
     ConsoleLogger: MockConsoleLogger,
-    Injectable: (options?: unknown) => {
+    Injectable: (_options?: unknown) => {
       return (target: unknown): unknown => target;
     },
     Scope: {

@@ -46,8 +46,10 @@ vi.mock("@nestjs/common", async () => {
 });
 
 vi.mock("@jimmypaolini/conformetry-validation", () => {
+  function MockValidationModule(): void {}
+
   return {
-    ValidationModule: class ValidationModule {},
+    ValidationModule: MockValidationModule,
     ValidationService: class ValidationService {
       validateConfiguredSelection = mockValidateConfiguredSelection;
     },
@@ -55,6 +57,8 @@ vi.mock("@jimmypaolini/conformetry-validation", () => {
 });
 
 vi.mock("@jimmypaolini/conformetry-configuration", () => {
+  function MockConfigurationModule(): void {}
+
   function parseCommaDelimitedOption(
     value: string | undefined,
   ): string[] | undefined {
@@ -69,7 +73,7 @@ vi.mock("@jimmypaolini/conformetry-configuration", () => {
   }
 
   return {
-    ConfigurationModule: class ConfigurationModule {},
+    ConfigurationModule: MockConfigurationModule,
     ConfigurationService: class ConfigurationService {
       loadConformetryConfiguration = mockLoadConformetryConfiguration;
     },
@@ -295,7 +299,11 @@ describe("validateCommand", () => {
 
   it("exports the validate module for Nest registration", async () => {
     const { ValidateModule } = await import("./validate.module");
-    const { ValidateCommand } = await import("./validate.command");
+    const { ValidateCommand: ImportedValidateCommand } =
+      await import("./validate.command");
+    type ImportedValidateCommandType = InstanceType<
+      typeof ImportedValidateCommand
+    >;
     const providerDefinitions = Reflect.getMetadata(
       "providers",
       ValidateModule,
@@ -303,7 +311,7 @@ describe("validateCommand", () => {
       useFactory: (
         configurationService: ConfigurationService,
         validationService: ValidationService,
-      ) => ValidateCommand;
+      ) => ImportedValidateCommandType;
     }[];
 
     expect(ValidateModule).toBeDefined();
@@ -311,8 +319,8 @@ describe("validateCommand", () => {
     expect(
       providerDefinitions[0]?.useFactory(
         new ConfigurationService(),
-        new ValidationService(),
+        createValidationService(),
       ),
-    ).toBeInstanceOf(ValidateCommand);
+    ).toBeInstanceOf(ImportedValidateCommand);
   });
 });
