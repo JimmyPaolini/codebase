@@ -5,7 +5,7 @@ import {
 import {
   symbolByBody,
   symbolByOrbitalDirection,
-} from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
+} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { capitalize } from "@caelundas/src/modules/caelundas/caelundas.types";
 import { EphemerisService } from "@caelundas/src/modules/ephemeris/ephemeris.service";
 import { MathService } from "@caelundas/src/modules/math/math.service";

@@ -5,7 +5,7 @@ import { aspectBodies as quintupleAspectBodies } from "@caelundas/src/modules/ca
 import {
   symbolByBody,
   symbolByQuintupleAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
+} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { groupByToMap } from "@caelundas/src/modules/caelundas/caelundas.types";
 import { MathService } from "@caelundas/src/modules/math/math.service";
 import { Injectable } from "@nestjs/common";

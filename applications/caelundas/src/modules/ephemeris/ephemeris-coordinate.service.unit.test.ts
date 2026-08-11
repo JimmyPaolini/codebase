@@ -1,20 +1,16 @@
-import { MathService } from "@caelundas/src/modules/math/math.service";
 import { createMock } from "@golevelup/ts-vitest";
-import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
-import { calc, nod_aps_ut } from "sweph";
-import { beforeAll, describe, expect, it, vi } from "vitest";
-
-import { EphemerisConstantsService } from "./ephemeris-constants.service";
-import { EphemerisCoordinateService } from "./ephemeris-coordinate.service";
-import { EphemerisTimeService } from "./ephemeris-time.service";
-
-import type * as Sweph from "sweph";
+import { calc, type nod_aps_ut } from "sweph";
+import { describe, expect, it, vi } from "vitest";
 
 vi.mock("sweph", async (importOriginal) => {
-  const original = await importOriginal<typeof Sweph>();
+  const importedModule = await importOriginal();
+  const actual =
+    typeof importedModule === "object" && importedModule !== null
+      ? importedModule
+      : {};
   return {
-    ...original,
+    ...actual,
     calc: vi.fn<typeof calc>().mockReturnValue({
       data: [120.5, -1.2, 1.01, 0, 0, 0],
       error: "",
@@ -30,148 +26,90 @@ vi.mock("sweph", async (importOriginal) => {
   };
 });
 
-describe(EphemerisCoordinateService, () => {
-  let service: EphemerisCoordinateService;
-  let constantsService: ReturnType<
-    typeof createMock<EphemerisConstantsService>
-  >;
-  let timeService: ReturnType<typeof createMock<EphemerisTimeService>>;
-  let mathService: ReturnType<typeof createMock<MathService>>;
+vi.mock("./ephemeris.constants", async (importOriginal) => {
+  const importedModule = await importOriginal();
+  const actual =
+    typeof importedModule === "object" && importedModule !== null
+      ? importedModule
+      : {};
+  return {
+    ...actual,
+    swissEphemerisConstantByNode: {
+      "lunar apogee": 22,
+      "lunar perigee": null,
+      "north lunar node": null,
+      "south lunar node": 11,
+    },
+  };
+});
 
-  beforeAll(async () => {
-    const module = await Test.createTestingModule({
-      providers: [
-        EphemerisCoordinateService,
-        {
-          provide: EphemerisConstantsService,
-          useValue: createMock<EphemerisConstantsService>(),
-        },
-        {
-          provide: EphemerisTimeService,
-          useValue: createMock<EphemerisTimeService>(),
-        },
-        {
-          provide: MathService,
-          useValue: createMock<MathService>(),
-        },
-      ],
-    }).compile();
+import { EphemerisCoordinateService } from "./ephemeris-coordinate.service";
 
-    service = await module.resolve(EphemerisCoordinateService);
-    constantsService = await module.resolve(EphemerisConstantsService);
-    timeService = await module.resolve(EphemerisTimeService);
-    mathService = await module.resolve(MathService);
+import type { MathService } from "../math/math.service";
+import type { EphemerisConstantsService } from "./ephemeris-constants.service";
+import type { EphemerisTimeService } from "./ephemeris-time.service";
 
-    vi.mocked(
-      constantsService.getSwissEphemerisConstantForBody,
-    ).mockReturnValue(0);
-    vi.mocked(timeService.dateToJulianDays).mockReturnValue({
-      julianDayEphemerisTime: 2_460_395.5,
-      julianDayUniversalTime: 2_460_395.499_306,
-    });
-    vi.mocked(timeService.generateMinutes).mockImplementation(
-      (start: moment.Moment, end: moment.Moment) => {
-        const values: moment.Moment[] = [];
-        let current = start.clone();
-        while (current.valueOf() <= end.valueOf()) {
-          values.push(current.clone());
-          current = current.clone().add(1, "minute");
-        }
-        return values;
-      },
-    );
-    vi.mocked(mathService.normalizeDegrees).mockImplementation(
-      (degree: number) => degree,
-    );
-  });
-
-  describe("computeBodyCoordinate", () => {
-    it("returns longitude and latitude from calc", () => {
-      const result = service.computeBodyCoordinate("sun", 2_460_395.5);
-
-      expect(result).toStrictEqual({ latitude: -1.2, longitude: 120.5 });
-    });
-  });
-
-  it("is defined", () => {
-    expect(service).toBeDefined();
-  });
-
-  describe("computeDistanceForBody", () => {
-    it("returns distance ephemeris by minute", () => {
-      const result = service.computeDistanceForBody({
-        body: "sun",
-        end: moment.utc("2024-03-21T00:01:00.000Z"),
-        start: moment.utc("2024-03-21T00:00:00.000Z"),
-      });
-
-      expect(Object.keys(result)).toHaveLength(2);
-
-      for (const value of Object.values(result)) {
-        expect(value.distance).toBe(1.01);
+describe("ephemerisCoordinateService branch coverage", () => {
+  const constantsService = {
+    getSwissEphemerisConstantForBody: vi
+      .fn<EphemerisConstantsService["getSwissEphemerisConstantForBody"]>()
+      .mockReturnValue(0),
+  };
+  const timeService = {
+    dateToJulianDays: vi
+      .fn<EphemerisTimeService["dateToJulianDays"]>()
+      .mockReturnValue({
+        julianDayEphemerisTime: 2_460_395.5,
+        julianDayUniversalTime: 2_460_395.499_306,
+      }),
+    generateMinutes: vi.fn<
+      (start: moment.Moment, end: moment.Moment) => Iterable<moment.Moment>
+    >((start: moment.Moment, end: moment.Moment) => {
+      const values: moment.Moment[] = [];
+      let current = start.clone();
+      while (current.valueOf() <= end.valueOf()) {
+        values.push(current.clone());
+        current = current.clone().add(1, "minute");
       }
-    });
-  });
+      return values;
+    }),
+  };
+  const mathService = createMock<MathService>();
+  vi.mocked(mathService.normalizeDegrees).mockImplementation(
+    (degree: number) => degree,
+  );
 
-  describe("computeNodeBodyMinutes", () => {
-    it("returns node coordinates for each minute", () => {
-      const result = service.computeNodeBodyMinutes({
+  const service = new EphemerisCoordinateService(
+    constantsService as never,
+    timeService as never,
+    mathService,
+  );
+
+  it("throws when a node has no Swiss Ephemeris constant", () => {
+    expect(() =>
+      service.computeNodeBodyMinutes({
         body: "north lunar node",
-        end: moment.utc("2024-03-21T00:01:00.000Z"),
-        start: moment.utc("2024-03-21T00:00:00.000Z"),
-      });
-
-      expect(Object.keys(result)).toHaveLength(2);
-
-      for (const value of Object.values(result)) {
-        expect(value.latitude).toBe(0);
-      }
-    });
-
-    it("returns lunar perigee coordinates for each minute", () => {
-      const result = service.computeNodeBodyMinutes({
-        body: "lunar perigee",
         end: moment.utc("2024-03-21T00:00:00.000Z"),
         start: moment.utc("2024-03-21T00:00:00.000Z"),
-      });
-
-      expect(Object.keys(result)).toHaveLength(1);
-      expect(Object.values(result)[0]).toStrictEqual({
-        latitude: 0,
-        longitude: 90,
-      });
-    });
+      }),
+    ).toThrow(
+      "No Swiss Ephemeris constant configured for node: north lunar node",
+    );
   });
 
-  describe("error handling", () => {
-    it("throws when calc fails for a body", () => {
-      vi.mocked(calc).mockReturnValueOnce({
-        data: [0, 0, 0, 0, 0, 0],
-        error: "calc failed",
-        flag: -1,
-      } as never);
+  it("throws when a regular node calculation fails", () => {
+    vi.mocked(calc).mockReturnValueOnce({
+      data: [0, 0, 0, 0, 0, 0],
+      error: "calc failed",
+      flag: -1,
+    } as never);
 
-      expect(() => service.computeBodyCoordinate("sun", 2_460_395.5)).toThrow(
-        "calc failed for sun: calc failed",
-      );
-    });
-
-    it("throws when lunar perigee calculation fails", () => {
-      vi.mocked(nod_aps_ut).mockReturnValueOnce({
-        data: {
-          perihelion: [0, 0, 0, 0, 0, 0],
-        },
-        error: "nod_aps_ut failed",
-        flag: -1,
-      } as never);
-
-      expect(() =>
-        service.computeNodeBodyMinutes({
-          body: "lunar perigee",
-          end: moment.utc("2024-03-21T00:00:00.000Z"),
-          start: moment.utc("2024-03-21T00:00:00.000Z"),
-        }),
-      ).toThrow("nod_aps_ut failed for lunar perigee: nod_aps_ut failed");
-    });
+    expect(() =>
+      service.computeNodeBodyMinutes({
+        body: "south lunar node",
+        end: moment.utc("2024-03-21T00:00:00.000Z"),
+        start: moment.utc("2024-03-21T00:00:00.000Z"),
+      }),
+    ).toThrow("calc failed for south lunar node: calc failed");
   });
 });

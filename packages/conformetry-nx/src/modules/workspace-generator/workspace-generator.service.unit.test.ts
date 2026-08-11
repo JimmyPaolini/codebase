@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mockReadNxJson } = vi.hoisted(() => {
   return {
-    mockReadNxJson: vi.fn(),
+    mockReadNxJson: vi.fn<() => Record<string, unknown> | undefined>(),
   };
 });
 

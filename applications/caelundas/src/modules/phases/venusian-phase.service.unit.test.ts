@@ -1,4 +1,4 @@
-import { symbolByVenusianPhase } from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
+import { symbolByVenusianPhase } from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";

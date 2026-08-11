@@ -4,7 +4,7 @@ import { aspectBodies as tripleAspectBodies } from "@caelundas/src/modules/caelu
 import {
   symbolByBody,
   symbolByTripleAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
+} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 

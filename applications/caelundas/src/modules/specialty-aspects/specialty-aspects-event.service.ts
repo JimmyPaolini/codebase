@@ -1,7 +1,7 @@
 import { AspectEventFormattingService } from "@caelundas/src/modules/aspects/aspect-event-formatting.service";
 import { AspectsUtilitiesService } from "@caelundas/src/modules/aspects/aspects-utilities.service";
 import { specialtyAspects } from "@caelundas/src/modules/caelundas/caelundas.constants";
-import { symbolBySpecialtyAspect } from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
+import { symbolBySpecialtyAspect } from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { EphemerisService } from "@caelundas/src/modules/ephemeris/ephemeris.service";
 import { Injectable } from "@nestjs/common";
 

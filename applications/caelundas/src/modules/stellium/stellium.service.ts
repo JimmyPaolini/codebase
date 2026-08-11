@@ -5,7 +5,7 @@ import { aspectBodies as stelliumBodies } from "@caelundas/src/modules/caelundas
 import {
   symbolByBody,
   symbolByStellium,
-} from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
+} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { isKeyOf } from "@caelundas/src/modules/caelundas/caelundas.types";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";

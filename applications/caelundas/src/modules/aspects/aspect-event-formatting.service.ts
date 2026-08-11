@@ -1,4 +1,4 @@
-import { symbolByBody } from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
+import { symbolByBody } from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { capitalize } from "@caelundas/src/modules/caelundas/caelundas.types";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";

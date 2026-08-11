@@ -43,6 +43,8 @@ const config: KnipConfig = {
   // devDependencies used via npx, CLI, or ESLint config (not directly imported)
   ignoreDependencies: [
     "@commitlint/config-conventional", // commitlint preset, referenced as string in extends array
+    "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
+    "@nestjs/testing", // NestJS testing utilities; tests are excluded from knip project scope
     "@nx/eslint-plugin", // Loaded dynamically by Nx ESLint integration
     "@nx/js", // Nx JavaScript/TypeScript plugin (auto-detected by Nx)
     "@nx/web", // Nx web plugin (auto-detected by Nx)
@@ -62,6 +64,7 @@ const config: KnipConfig = {
     "tslib", // TypeScript helper library, implicit runtime dependency for compiled TS
     "unplugin-swc", // Vite plugin for SWC transformation with emitDecoratorMetadata support (caelundas/vitest.config.ts)
     "squawk-cli",
+    "vitest", // Test framework; tests are excluded from knip project scope
     "skills", // skills.sh CLI, invoked via pnpm exec skills for skill management
     "view", // pnpm sub-command used as `pnpm view pnpm version` in upgrade-dependencies workflow
   ],
@@ -234,9 +237,7 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
     "packages/conformetry-nx": {
-      entry: ["src/index.ts"],
-      ignore: ["src/**/*.test.ts", "src/**/templates/**", "testing/**"],
-      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      ignoreDependencies: [],
       project: "src/**/*.ts",
     },
     "packages/conformetry-python": {

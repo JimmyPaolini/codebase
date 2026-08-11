@@ -2,7 +2,7 @@ import {
   lunarPhases,
   MARGIN_MINUTES,
 } from "@caelundas/src/modules/caelundas/caelundas.constants";
-import { symbolByLunarPhase } from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
+import { symbolByLunarPhase } from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { isLunarPhase } from "@caelundas/src/modules/caelundas/caelundas.types";
 import { CalendarService } from "@caelundas/src/modules/calendar/calendar.service";
 import { EphemerisService } from "@caelundas/src/modules/ephemeris/ephemeris.service";

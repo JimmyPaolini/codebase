@@ -4,10 +4,10 @@ import { fileURLToPath } from "node:url";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-type CommandFactoryRunOptions = {
+interface CommandFactoryRunOptions {
   errorHandler: (error: Error) => void;
   serviceErrorHandler: (error: Error) => void;
-};
+}
 
 const mockLoggerError = vi.fn<(message: unknown) => void>();
 const mockLoggerSetContext = vi.fn<(context: string) => void>();
@@ -47,10 +47,6 @@ vi.mock("./main.module.js", () => {
   };
 });
 
-async function importMainModule(): Promise<void> {
-  await import("./main");
-}
-
 function getRunOptions(): CommandFactoryRunOptions {
   const firstCall = mockCommandFactoryRun.mock.calls[0];
 
@@ -60,11 +56,11 @@ function getRunOptions(): CommandFactoryRunOptions {
 
   const options = firstCall[1];
 
-  if (options === undefined) {
-    throw new Error("Expected CommandFactory.run options to be defined.");
-  }
-
   return options;
+}
+
+async function importMainModule(): Promise<void> {
+  await import("./main");
 }
 
 describe("main", () => {

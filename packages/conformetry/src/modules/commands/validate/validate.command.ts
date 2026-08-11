@@ -6,7 +6,7 @@ import { ValidationService } from "@jimmypaolini/conformetry-validation";
 import { ConsoleLogger, Inject, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
-import type { ValidateCommandOptions } from "./validate.types";
+import type { ValidateCommandOptions } from "./validate.types.js";
 
 /**
  * Executes conformetry validation plugins against the selected project paths.
@@ -18,9 +18,7 @@ import type { ValidateCommandOptions } from "./validate.types";
 @Injectable()
 export class ValidateCommand extends CommandRunner {
   constructor(
-    @Inject(ConfigurationService)
     private readonly configurationService: ConfigurationService,
-    @Inject(ValidationService)
     private readonly validationService: ValidationService,
   ) {
     super();
@@ -96,3 +94,11 @@ export class ValidateCommand extends CommandRunner {
     }
   }
 }
+
+// Manually apply Inject parameter decorators at runtime so the class remains
+// injectable even when design:paramtypes metadata is absent (some test
+// reproductions clear that metadata). This mirrors using `@Inject(...)` on
+// the constructor parameters but avoids parameter-decorator syntax so build
+// tooling that doesn't enable experimental decorators won't fail.
+Inject(ConfigurationService)(ValidateCommand, undefined, 0);
+Inject(ValidationService)(ValidateCommand, undefined, 1);

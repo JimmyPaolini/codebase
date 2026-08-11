@@ -5,7 +5,7 @@ import {
 import {
   symbolByBody,
   symbolBySpecialtyAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
+} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import {
   isBody,
   isSpecialtyAspect,

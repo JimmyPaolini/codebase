@@ -6,7 +6,7 @@ import {
 import {
   symbolByBody,
   symbolByMinorAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
+} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import {
   capitalize,
   isBody,

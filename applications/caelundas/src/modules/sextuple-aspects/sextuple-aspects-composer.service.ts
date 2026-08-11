@@ -4,7 +4,7 @@ import { aspectBodies as sextupleAspectBodies } from "@caelundas/src/modules/cae
 import {
   symbolByBody,
   symbolBySextupleAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
+} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { groupByToMap } from "@caelundas/src/modules/caelundas/caelundas.types";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
