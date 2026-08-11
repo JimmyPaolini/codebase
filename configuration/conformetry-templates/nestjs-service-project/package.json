@@ -2,12 +2,9 @@
   "dependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/common": "catalog:",
-    "@nestjs/config": "catalog:",
-    "@nestjs/core": "catalog:",
     "pino": "catalog:",
     "reflect-metadata": "catalog:",
-    "tslib": "catalog:",
-    "zod": "catalog:"
+    "tslib": "catalog:"
   },
   "devDependencies": {
     "@nestjs/testing": "catalog:",
@@ -15,11 +12,9 @@
     "@swc/helpers": "catalog:",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
-    "typescript": "catalog:",
     "vitest": "catalog:"
   },
   "main": "src/index.ts",
-  "name": "{{{npmScopePrefix}}}{{nameKebabCase}}",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"

@@ -108,7 +108,7 @@ See [Testing Strategy](../../documentation/code-quality/testing-strategy.md) for
 Use the generator to scaffold new domain modules, then implement the service:
 
 ```bash
-nx g conformance:nestjs-service-module --name=<domain>
+nx g conformetry:nestjs-service-module --name=<domain>
 ```
 
 This creates five files in `src/modules/<domain>/`:
@@ -211,12 +211,12 @@ After generating a module, import it in `main.module.ts`:
 export class MainModule {}
 ```
 
-### Conformance check
+### Conformetry validation
 
-Conformance checks are run centrally from `tools/conformance/src/conformance.test.ts`, which validates generated and existing module structures against templates across the workspace (including generated command applications).
+Conformetry validation is run centrally through the workspace wrapper target, which validates generated and existing module structures against templates across the workspace (including generated command applications).
 
 ```bash
-nx run conformance:test
+pnpm nx run codebase:conformetry-validate
 ```
 
 ## Best Practices

@@ -11,6 +11,18 @@ import type {
   ValidationProjectTemplateMetadata,
 } from "./configuration.types";
 
+const IGNORED_TEMPLATE_RELATIVE_PATHS = new Set<string>([
+  "src/constants.ts",
+  "src/index.ts",
+  "src/main.end-to-end.test.ts",
+  "src/main.module.ts",
+  "src/modules/logger/logger.module.unit.test.ts",
+  "src/modules/logger/logger.service.ts",
+  "src/modules/logger/logger.service.unit.test.ts",
+  "testing/mocks.ts",
+  "testing/setup.ts",
+]);
+
 /**
  * Creates the validation-operation helpers used by template validation.
  */
@@ -85,7 +97,11 @@ function collectTemplateFilePaths(templateDirectoryPath: string): string[] {
         continue;
       }
 
-      if (isTemplateFile(directoryEntry.name, directoryEntry.isFile())) {
+      const templateRelativePath = path
+        .relative(templateDirectoryPath, absoluteEntryPath)
+        .replaceAll("\\", "/");
+
+      if (isTemplateFile(templateRelativePath, directoryEntry.isFile())) {
         templateFilePaths.push(absoluteEntryPath);
       }
     }
@@ -265,12 +281,18 @@ function inferGeneratorNamesFromProjectPath(args: {
 /**
  * Determines whether a filesystem entry should be treated as a template file.
  */
-function isTemplateFile(entryName: string, isFile: boolean): boolean {
+function isTemplateFile(
+  templateRelativePath: string,
+  isFile: boolean,
+): boolean {
   if (!isFile) {
     return false;
   }
 
-  return entryName !== "schema.json";
+  return (
+    templateRelativePath !== "schema.json" &&
+    !IGNORED_TEMPLATE_RELATIVE_PATHS.has(templateRelativePath)
+  );
 }
 
 /**

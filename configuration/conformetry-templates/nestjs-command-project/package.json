@@ -18,7 +18,6 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "name": "{{{npmScopePrefix}}}{{nameKebabCase}}",
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,

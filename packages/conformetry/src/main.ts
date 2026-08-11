@@ -1,14 +1,14 @@
 import "reflect-metadata";
-import { ConsoleLogger } from "@nestjs/common";
 import { CommandFactory } from "nest-commander";
 
 import { MainModule } from "./main.module";
+import { LoggerService } from "./modules/logger/logger.service";
 
 /**
  * Bootstraps the NestJS command application.
  */
 async function main(): Promise<void> {
-  const logger = new ConsoleLogger();
+  const logger = new LoggerService();
   logger.setContext("CommandFactory");
 
   await CommandFactory.run(MainModule, {

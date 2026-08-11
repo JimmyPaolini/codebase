@@ -6,6 +6,7 @@ import _ from "lodash";
 import moment from "moment-timezone";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
+import { environmentSchema } from "./constants";
 import { CalendarService } from "./modules/calendar/calendar.service";
 import { LoggerService } from "./modules/logger/logger.service";
 
@@ -173,6 +174,13 @@ describe("calendar generation e2e", { timeout: 10_000 }, () => {
       expect(calendar).toContain("URL:https://eclipse.nasa.gov");
       expect(calendar).toContain("PRIORITY:1");
       expect(calendar).toContain("COLOR:red");
+    });
+  });
+
+  describe("environment schema e2e", () => {
+    it("allows an empty schema by default", () => {
+      expect.hasAssertions();
+      expect(() => environmentSchema.parse({})).not.toThrow();
     });
   });
 

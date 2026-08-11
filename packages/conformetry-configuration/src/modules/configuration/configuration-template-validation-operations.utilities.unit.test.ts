@@ -41,12 +41,15 @@ describe("template validation operations utilities", () => {
     expect(substitutedValue).toBe("hello world, __unknown__");
   });
 
-  it("collects template file paths from nested directories and excludes schema.json", async () => {
+  it("collects template file paths from nested directories and excludes ignored scaffold files", async () => {
     const operations = createTemplateValidationOperations();
     const templateDirectoryPath = await createTemporaryDirectory(
       "conformetry-operations-collect-",
     );
     await mkdir(path.join(templateDirectoryPath, "nested"), {
+      recursive: true,
+    });
+    await mkdir(path.join(templateDirectoryPath, "src", "modules", "logger"), {
       recursive: true,
     });
     await writeFile(
@@ -62,6 +65,22 @@ describe("template validation operations utilities", () => {
     await writeFile(
       path.join(templateDirectoryPath, "nested", "index.ts"),
       "export const value = 1;\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(templateDirectoryPath, "src", "index.ts"),
+      "export {};\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(
+        templateDirectoryPath,
+        "src",
+        "modules",
+        "logger",
+        "logger.service.ts",
+      ),
+      "export class LoggerService {}\n",
       "utf8",
     );
 

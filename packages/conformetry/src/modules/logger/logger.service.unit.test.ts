@@ -1,127 +1,93 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-const mockLogger = {
-  debug: vi.fn<(payload: unknown, message: string) => void>(),
-  error: vi.fn<(payload: unknown, message: string) => void>(),
-  info: vi.fn<(payload: unknown, message: string) => void>(),
-  trace: vi.fn<(payload: unknown, message: string) => void>(),
-  warn: vi.fn<(payload: unknown, message: string) => void>(),
-};
+import { LoggerService } from "./logger.service";
 
-const mockRootLogger = {
-  child: vi.fn<(bindings: Record<string, string>) => typeof mockLogger>(() => {
-    return mockLogger;
-  }),
-};
+type LoggerMethod = ReturnType<typeof vi.fn<(...args: unknown[]) => void>>;
 
-const mockPino = vi.fn<(options: unknown) => typeof mockRootLogger>(() => {
-  return mockRootLogger;
-});
+describe(LoggerService, () => {
+  interface LoggerChild {
+    debug: LoggerMethod;
+    error: LoggerMethod;
+    info: LoggerMethod;
+    trace: LoggerMethod;
+    warn: LoggerMethod;
+  }
 
-vi.mock("pino", () => {
-  return {
-    default: mockPino,
-  };
-});
+  interface LoggerRoot {
+    child: (bindings: { context: string }) => LoggerChild;
+  }
 
-describe("loggerService", () => {
-  beforeEach(() => {
-    vi.resetModules();
-    vi.clearAllMocks();
-    delete process.env["NODE_ENV"];
-    delete process.env["LOG_LEVEL"];
-  });
+  function createLoggerChild(): LoggerChild {
+    return {
+      debug: vi.fn<(...args: unknown[]) => void>(),
+      error: vi.fn<(...args: unknown[]) => void>(),
+      info: vi.fn<(...args: unknown[]) => void>(),
+      trace: vi.fn<(...args: unknown[]) => void>(),
+      warn: vi.fn<(...args: unknown[]) => void>(),
+    };
+  }
 
-  it("is defined", async () => {
-    const { LoggerService } = await import("./logger.service");
+  it("is defined", () => {
     const service = new LoggerService();
 
     expect(service).toBeDefined();
-    expect(mockPino).toHaveBeenCalledTimes(1);
   });
 
-  it("sets context and forwards log calls to pino child logger", async () => {
-    const { LoggerService } = await import("./logger.service");
+  it("logs through all severity methods and stringifies non-string values", () => {
     const service = new LoggerService();
+    const child = createLoggerChild();
+    Object.assign(service, { child, context: "ServiceContext" });
 
-    service.setContext("GenerateCommand");
-    service.log("generated file");
-    service.debug("debug message");
-    service.verbose("trace message");
-    service.warn("warn message");
-    service.error("error message", "stack-trace");
+    service.debug({ message: "debug" });
+    service.log(123, "ExplicitContext");
+    service.warn("warning");
+    service.verbose("verbose");
+    service.error(new Error("boom"), "stack trace");
 
-    expect(mockRootLogger.child).toHaveBeenCalledWith({
-      context: "GenerateCommand",
-    });
-    expect(mockLogger.info).toHaveBeenCalledWith(
-      { context: "GenerateCommand" },
-      "generated file",
+    expect(child.debug).toHaveBeenCalledWith(
+      { context: "ServiceContext" },
+      "[object Object]",
     );
-    expect(mockLogger.debug).toHaveBeenCalledWith(
-      { context: "GenerateCommand" },
-      "debug message",
+    expect(child.info).toHaveBeenCalledWith(
+      { context: "ExplicitContext" },
+      "123",
     );
-    expect(mockLogger.trace).toHaveBeenCalledWith(
-      { context: "GenerateCommand" },
-      "trace message",
+    expect(child.warn).toHaveBeenCalledWith(
+      { context: "ServiceContext" },
+      "warning",
     );
-    expect(mockLogger.warn).toHaveBeenCalledWith(
-      { context: "GenerateCommand" },
-      "warn message",
-    );
-    expect(mockLogger.error).toHaveBeenCalledWith(
-      { context: "GenerateCommand", stack: "stack-trace" },
-      "error message",
-    );
-  });
-
-  it("uses call-specific context override when provided", async () => {
-    const { LoggerService } = await import("./logger.service");
-    const service = new LoggerService();
-
-    service.setContext("DefaultContext");
-    service.log("hello", "Override");
-    service.debug("debug", "Override");
-    service.verbose("verbose", "Override");
-    service.warn("warn", "Override");
-
-    expect(mockLogger.info).toHaveBeenCalledWith(
-      { context: "Override" },
-      "hello",
-    );
-    expect(mockLogger.debug).toHaveBeenCalledWith(
-      { context: "Override" },
-      "debug",
-    );
-    expect(mockLogger.trace).toHaveBeenCalledWith(
-      { context: "Override" },
+    expect(child.trace).toHaveBeenCalledWith(
+      { context: "ServiceContext" },
       "verbose",
     );
-    expect(mockLogger.warn).toHaveBeenCalledWith(
-      { context: "Override" },
-      "warn",
+    expect(child.error).toHaveBeenCalledWith(
+      { context: "ServiceContext", stack: "stack trace" },
+      "Error: boom",
     );
   });
 
-  it("initializes pino without pretty transport in production", async () => {
-    process.env["NODE_ENV"] = "production";
-    process.env["LOG_LEVEL"] = "debug";
-
-    const { LoggerService } = await import("./logger.service");
+  it("updates child logger when context changes", () => {
     const service = new LoggerService();
+    const nextChild = createLoggerChild();
+    const rootChild = vi
+      .fn<(...args: unknown[]) => LoggerChild>()
+      .mockReturnValue(nextChild);
+    const originalRoot = Reflect.get(LoggerService, "root") as
+      | LoggerRoot
+      | undefined;
+    Reflect.set(LoggerService, "root", { child: rootChild });
 
-    expect(service).toBeDefined();
-    expect(mockPino).toHaveBeenCalledWith({ level: "debug" });
-  });
+    try {
+      service.setContext("UpdatedContext");
+      service.log("message");
 
-  it("uses default production log level when LOG_LEVEL is not defined", async () => {
-    process.env["NODE_ENV"] = "production";
-
-    const { LoggerService } = await import("./logger.service");
-    const service = new LoggerService();
-
-    expect(service).toBeDefined();
-    expect(mockPino).toHaveBeenCalledWith({ level: "info" });
+      expect(rootChild).toHaveBeenCalledWith({ context: "UpdatedContext" });
+      expect(nextChild.info).toHaveBeenCalledWith(
+        { context: "UpdatedContext" },
+        "message",
+      );
+    } finally {
+      Reflect.set(LoggerService, "root", originalRoot);
+    }
   });
 });

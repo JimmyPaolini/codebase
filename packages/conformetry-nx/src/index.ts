@@ -23,9 +23,8 @@ async function runWorkspaceGeneratorImplementation(args: {
   options: Record<string, unknown> | undefined;
   tree: Tree;
 }): Promise<GeneratorCallback> {
-  const { runWorkspaceGenerator } = await import(
-    "./modules/workspace-generator/workspace-generator.utilities.js"
-  );
+  const { runWorkspaceGenerator } =
+    await import("./modules/workspace-generator/workspace-generator.utilities.js");
 
   return await runWorkspaceGenerator(args);
 }

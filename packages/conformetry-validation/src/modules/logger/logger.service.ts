@@ -34,6 +34,8 @@ export class LoggerService extends ConsoleLogger {
 
   private child: pino.Logger = LoggerService.root;
 
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
 
   // 🌎 Public Methods
