@@ -6,19 +6,55 @@ import { getProjects, type Tree } from "@nx/devkit";
 import {
   DEFAULT_GENERATED_OUTPUT_DIRECTORY,
   TARGET_DIRECTORY_OPTION_KEYS,
-} from "./nx-adapter.constants";
+} from "./nx-adapter.constants.js";
 
 import type {
   ConformetryGeneratorFactory,
   ConformetryGeneratorFactoryOptions,
   ResolveConformetryTargetDirectoryPathArguments,
-} from "./nx-adapter.types";
+} from "./nx-adapter.types.js";
 
 /**
  * Creates a conformetry generator factory for Nx trees.
  */
 @Injectable()
 export class NxGeneratorFactoryService {
+  /**
+   * Resolves the project root path for the current tree.
+   */
+  private resolveProjectRootPath(args: {
+    options: Record<string, unknown>;
+    tree: Tree;
+  }): string | undefined {
+    const { options, tree } = args;
+    const projectName = options["projectName"] ?? options["project"];
+
+    if (typeof projectName !== "string") {
+      return undefined;
+    }
+
+    const projects = getProjects(tree);
+    const projectConfiguration = projects.get(projectName);
+
+    return projectConfiguration?.root ?? projectConfiguration?.sourceRoot;
+  }
+
+  /**
+   * Resolves the target directory path from explicit options or project metadata.
+   */
+  private resolveTargetDirectoryPathOption(
+    options: Record<string, unknown>,
+  ): string | undefined {
+    for (const targetDirectoryOptionKey of TARGET_DIRECTORY_OPTION_KEYS) {
+      const optionValue = options[targetDirectoryOptionKey];
+      if (typeof optionValue === "string") {
+        return optionValue;
+      }
+    }
+
+    return undefined;
+  }
+
   /**
    * Creates a conformetry generator factory for Nx trees.
    */
@@ -98,35 +134,5 @@ export class NxGeneratorFactoryService {
     return await Promise.resolve(
       path.join(DEFAULT_GENERATED_OUTPUT_DIRECTORY, definition.name),
     );
-  }
-
-  private resolveProjectRootPath(args: {
-    options: Record<string, unknown>;
-    tree: Tree;
-  }): string | undefined {
-    const { options, tree } = args;
-    const projectName = options["projectName"] ?? options["project"];
-
-    if (typeof projectName !== "string") {
-      return undefined;
-    }
-
-    const projects = getProjects(tree);
-    const projectConfiguration = projects.get(projectName);
-
-    return projectConfiguration?.root ?? projectConfiguration?.sourceRoot;
-  }
-
-  private resolveTargetDirectoryPathOption(
-    options: Record<string, unknown>,
-  ): string | undefined {
-    for (const targetDirectoryOptionKey of TARGET_DIRECTORY_OPTION_KEYS) {
-      const optionValue = options[targetDirectoryOptionKey];
-      if (typeof optionValue === "string") {
-        return optionValue;
-      }
-    }
-
-    return undefined;
   }
 }

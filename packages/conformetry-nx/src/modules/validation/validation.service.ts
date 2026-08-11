@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { VALIDATION_SERVICE_NAME } from "./validation.constants";
+import { VALIDATION_SERVICE_NAME } from "./validation.constants.js";
 
 /**
  * Placeholder validation service for the conformetry Nx package.

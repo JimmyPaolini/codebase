@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { CommandExecutionService } from "./command-execution.service";
+import { CommandExecutionService } from "./command-execution.service.js";
 
 describe(CommandExecutionService, () => {
   let service: CommandExecutionService;

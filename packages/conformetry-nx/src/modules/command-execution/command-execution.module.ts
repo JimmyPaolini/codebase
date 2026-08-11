@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { CommandExecutionService } from "./command-execution.service";
+import { CommandExecutionService } from "./command-execution.service.js";
 
 /**
  * Provides command execution behavior for conformetry generators.

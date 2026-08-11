@@ -3,7 +3,7 @@ import {
   ConfigurationService,
 } from "@jimmypaolini/conformetry-configuration";
 import { GenerationService } from "@jimmypaolini/conformetry-generation";
-import { ConsoleLogger, Inject, Injectable } from "@nestjs/common";
+import { ConsoleLogger, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import type { GenerateCommandOptions } from "./generate.types";

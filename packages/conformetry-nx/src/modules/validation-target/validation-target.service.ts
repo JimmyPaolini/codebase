@@ -1,14 +1,24 @@
 import path from "node:path";
 
-import { DEFAULT_VALIDATION_TARGET_NAME } from "../plugin-options/plugin-options.constants";
+import { DEFAULT_VALIDATION_TARGET_NAME } from "../plugin-options/plugin-options.constants.js";
 
-import type { ConformetryNxPluginRegistrationOptions } from "../plugin-options/plugin-options.types";
+import type { ConformetryNxPluginRegistrationOptions } from "../plugin-options/plugin-options.types.js";
 import type { TargetConfiguration } from "@nx/devkit";
 
 /**
  * Builds inferred validation targets for conformetry-tagged projects.
  */
 export class ValidationTargetService {
+  /**
+   * Normalizes filesystem paths for command-line arguments.
+   */
+  private normalizePath(pathValue: string): string {
+    const normalizedPath = path.normalize(pathValue).replaceAll("\\", "/");
+    return normalizedPath.startsWith("./")
+      ? normalizedPath.slice(2)
+      : normalizedPath;
+  }
+
   /**
    * Builds an inferred conformetry validation target for tagged projects.
    */
@@ -51,12 +61,5 @@ export class ValidationTargetService {
     }
 
     return [...generatorRuleNames].toSorted();
-  }
-
-  private normalizePath(pathValue: string): string {
-    const normalizedPath = path.normalize(pathValue).replaceAll("\\", "/");
-    return normalizedPath.startsWith("./")
-      ? normalizedPath.slice(2)
-      : normalizedPath;
   }
 }

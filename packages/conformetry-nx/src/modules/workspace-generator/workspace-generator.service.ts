@@ -1,7 +1,8 @@
-import { readNxJson, type GeneratorCallback, type Tree } from "@nx/devkit";
+import { readNxJson } from "@nx/devkit";
 
-import { GenerationService } from "../generation/generation.service";
-import { PluginOptionsService } from "../plugin-options/plugin-options.service";
+import type { GenerationService } from "../generation/generation.service.js";
+import type { PluginOptionsService } from "../plugin-options/plugin-options.service.js";
+import type { GeneratorCallback, Tree } from "@nx/devkit";
 
 /**
  * Runs workspace generators backed by the shared conformetry configuration.

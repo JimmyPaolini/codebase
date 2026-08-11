@@ -3,8 +3,8 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { createTemplateValidationMetadataOperations } from "./configuration-template-validation.metadata.utilities";
-import { createTemplateValidationOperations } from "./configuration-template-validation.operations.utilities";
+import { createTemplateValidationMetadataOperations } from "./configuration-template-validation-metadata.utilities";
+import { createTemplateValidationOperations } from "./configuration-template-validation-operations.utilities";
 import { ConfigurationService } from "./configuration.service";
 
 import type {

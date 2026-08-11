@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import type { createTemplateValidationOperations } from "./configuration-template-validation.operations.utilities";
+import type { createTemplateValidationOperations } from "./configuration-template-validation-operations.utilities";
 import type {
   ConformetryConfiguration,
   MatchedGeneratorCandidate,

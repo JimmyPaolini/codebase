@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { CommandRunnerService } from "./command-runner.service";
+import { CommandRunnerService } from "./command-runner.service.js";
 
 /**
  * Provides command-runner helpers for the conformetry Nx plugin.

@@ -1,5 +1,12 @@
+import {
+  ConfigurationService,
+  type ConformetryConfiguration,
+  type RunValidationResult,
+} from "@jimmypaolini/conformetry-configuration";
 import { ValidationService } from "@jimmypaolini/conformetry-validation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { ValidateCommand } from "./validate.command";
 
 import type { TestingModule } from "@nestjs/testing";
 
@@ -10,10 +17,10 @@ const mockValidateConfiguredSelection =
       requestedProjectPaths?: string[];
       requestedRuleNames?: string[];
       workingDirectory: string;
-    }) => Promise<unknown>
+    }) => Promise<RunValidationResult>
   >();
 const mockLoadConformetryConfiguration =
-  vi.fn<(configurationPath: string) => Promise<unknown>>();
+  vi.fn<(configurationPath: string) => Promise<ConformetryConfiguration>>();
 const mockLoggerLog = vi.fn<(message: unknown) => void>();
 const designParameterTypesMetadataKey = `design:${["param", "types"].join("")}`;
 
@@ -62,46 +69,60 @@ vi.mock("@jimmypaolini/conformetry-configuration", async () => {
 describe("validateCommand", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockLoadConformetryConfiguration.mockResolvedValue({ generators: {} });
     process.exitCode = 0;
   });
 
-  function createValidationService(): ValidationService {
-    return new ValidationService(
-      {
-        loadConformetryConfiguration: mockLoadConformetryConfiguration,
-      } as never,
-      {
-        pluginDescriptor: { fileExtensions: [".ts"], name: "typescript" },
-        validate: vi.fn(),
-      } as never,
-      {
-        pluginDescriptor: { fileExtensions: [".py"], name: "python" },
-        validate: vi.fn(),
-      } as never,
-      {
-        pluginDescriptor: { fileExtensions: [".md"], name: "markdown" },
-        validate: vi.fn(),
-      } as never,
-      {
-        pluginDescriptor: { fileExtensions: [".json"], name: "json" },
-        validate: vi.fn(),
-      } as never,
-      {
-        pluginDescriptor: { fileExtensions: [".txt"], name: "text" },
-        validate: vi.fn(),
-      } as never,
+  function isConfigurationService(
+    value: unknown,
+  ): value is ConfigurationService {
+    return (
+      typeof value === "object" &&
+      value !== null &&
+      "loadConformetryConfiguration" in value
     );
   }
 
-  it("parses config, project, and rule options", async () => {
-    const { ValidateCommand } = await import("./validate.command");
-    const { ConfigurationService } =
-      await import("@jimmypaolini/conformetry-configuration");
-    const command = new ValidateCommand(
-      new ConfigurationService(),
+  function createConfigurationService(): ConfigurationService {
+    const configurationService = {
+      loadConformetryConfiguration: mockLoadConformetryConfiguration,
+    };
+
+    if (!isConfigurationService(configurationService)) {
+      throw new Error("Failed to create configuration service mock.");
+    }
+
+    return configurationService;
+  }
+
+  function isValidationService(value: unknown): value is ValidationService {
+    return (
+      typeof value === "object" &&
+      value !== null &&
+      "validateConfiguredSelection" in value
+    );
+  }
+
+  function createValidationService(): ValidationService {
+    const validationService = {
+      validateConfiguredSelection: mockValidateConfiguredSelection,
+    };
+
+    if (!isValidationService(validationService)) {
+      throw new Error("Failed to create validation service mock.");
+    }
+
+    return validationService;
+  }
+
+  function createCommand(): ValidateCommand {
+    return new ValidateCommand(
+      createConfigurationService(),
       createValidationService(),
     );
+  }
+
+  it("parses config, project, and rule options", () => {
+    const command = createCommand();
 
     expect(command.parseConfig("configuration/conformetry.config.ts")).toBe(
       "configuration/conformetry.config.ts",
@@ -120,21 +141,20 @@ describe("validateCommand", () => {
   });
 
   it("delegates validation orchestration to ValidationService with defaults", async () => {
+    const command = createCommand();
+    mockLoadConformetryConfiguration.mockResolvedValue({
+      generators: {},
+    });
     mockValidateConfiguredSelection.mockResolvedValue({
       ok: true,
       pluginResults: [],
     });
 
-    const { ValidateCommand } = await import("./validate.command");
-    const { ConfigurationService } =
-      await import("@jimmypaolini/conformetry-configuration");
-    const command = new ValidateCommand(
-      new ConfigurationService(),
-      createValidationService(),
-    );
-
     await command.run([], {});
 
+    expect(mockLoadConformetryConfiguration).toHaveBeenCalledWith(
+      "configuration/conformetry.config.ts",
+    );
     expect(mockValidateConfiguredSelection).toHaveBeenCalledWith({
       configurationPath: "configuration/conformetry.config.ts",
       workingDirectory: process.cwd(),
@@ -145,18 +165,14 @@ describe("validateCommand", () => {
   });
 
   it("passes through provided config/project/rule options", async () => {
+    const command = createCommand();
+    mockLoadConformetryConfiguration.mockResolvedValue({
+      generators: {},
+    });
     mockValidateConfiguredSelection.mockResolvedValue({
       ok: true,
       pluginResults: [],
     });
-
-    const { ValidateCommand } = await import("./validate.command");
-    const { ConfigurationService } =
-      await import("@jimmypaolini/conformetry-configuration");
-    const command = new ValidateCommand(
-      new ConfigurationService(),
-      createValidationService(),
-    );
 
     await command.run([], {
       config: "configuration/custom.config.ts",
@@ -176,33 +192,31 @@ describe("validateCommand", () => {
   });
 
   it("throws when validation result is not ok", async () => {
+    const command = createCommand();
+    mockLoadConformetryConfiguration.mockResolvedValue({
+      generators: {},
+    });
     mockValidateConfiguredSelection.mockResolvedValue({
       ok: false,
       pluginResults: [],
     });
-
-    const { ValidateCommand } = await import("./validate.command");
-    const { ConfigurationService } =
-      await import("@jimmypaolini/conformetry-configuration");
-    const command = new ValidateCommand(
-      new ConfigurationService(),
-      createValidationService(),
-    );
 
     await expect(command.run([], {})).rejects.toThrow("Validation failed");
     expect(process.exitCode).toBe(1);
   });
 
   it("injects command dependencies when constructor type metadata is unavailable", async () => {
+    const { Test } = await import("@nestjs/testing");
+    const configurationService = createConfigurationService();
+    const validationService = createValidationService();
+    mockLoadConformetryConfiguration.mockResolvedValue({
+      generators: {},
+    });
     mockValidateConfiguredSelection.mockResolvedValue({
       ok: true,
       pluginResults: [],
     });
 
-    const { Test } = await import("@nestjs/testing");
-    const { ConfigurationService } =
-      await import("@jimmypaolini/conformetry-configuration");
-    const { ValidateCommand } = await import("./validate.command");
     const originalParameterTypes = Reflect.getMetadata(
       designParameterTypesMetadataKey,
       ValidateCommand,
@@ -222,15 +236,11 @@ describe("validateCommand", () => {
           ValidateCommand,
           {
             provide: ConfigurationService,
-            useValue: {
-              loadConformetryConfiguration: mockLoadConformetryConfiguration,
-            },
+            useValue: configurationService,
           },
           {
             provide: ValidationService,
-            useValue: {
-              validateConfiguredSelection: mockValidateConfiguredSelection,
-            },
+            useValue: validationService,
           },
         ],
       }).compile();
@@ -238,6 +248,7 @@ describe("validateCommand", () => {
       const command = testingModule.get(ValidateCommand);
 
       await expect(command.run([], {})).resolves.toBeUndefined();
+      expect(mockLoadConformetryConfiguration).toHaveBeenCalledTimes(1);
       expect(mockValidateConfiguredSelection).toHaveBeenCalledTimes(1);
     } finally {
       if (testingModule !== null) {

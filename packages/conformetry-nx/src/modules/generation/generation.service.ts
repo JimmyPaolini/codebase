@@ -2,12 +2,11 @@ import {
   normalizeRuntimeOptions,
   resolveTargetDirectoryPath,
 } from "@jimmypaolini/conformetry-configuration";
-import { getProjects, type GeneratorCallback, type Tree } from "@nx/devkit";
+import { type GeneratorCallback, getProjects, type Tree } from "@nx/devkit";
 
-import { CommandExecutionService } from "../command-execution/command-execution.service";
-import { PluginOptionsService } from "../plugin-options/plugin-options.service";
-
-import type { ConformetryNxPluginRegistrationOptions } from "../plugin-options/plugin-options.types";
+import type { CommandExecutionService } from "../command-execution/command-execution.service.js";
+import type { PluginOptionsService } from "../plugin-options/plugin-options.service.js";
+import type { ConformetryNxPluginRegistrationOptions } from "../plugin-options/plugin-options.types.js";
 
 /**
  * Runs conformetry generators through the shared command-execution layer.
@@ -17,6 +16,13 @@ export class GenerationService {
     private readonly commandExecutionService: CommandExecutionService,
     private readonly pluginOptionsService: PluginOptionsService,
   ) {}
+
+  /**
+   * Converts generator names to kebab case.
+   */
+  private toKebabCase(value: string): string {
+    return value.replaceAll(/([a-z0-9])([A-Z])/gu, "$1-$2").toLowerCase();
+  }
 
   /**
    * Builds passed parameters for GenerateCommand.run from normalized options.
@@ -92,9 +98,5 @@ export class GenerationService {
     });
 
     return async (): Promise<void> => {};
-  }
-
-  private toKebabCase(value: string): string {
-    return value.replaceAll(/([a-z0-9])([A-Z])/gu, "$1-$2").toLowerCase();
   }
 }

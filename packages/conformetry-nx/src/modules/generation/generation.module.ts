@@ -1,8 +1,9 @@
 import { Module } from "@nestjs/common";
 
-import { CommandExecutionModule } from "../command-execution/command-execution.module";
-import { PluginOptionsModule } from "../plugin-options/plugin-options.module";
-import { GenerationService } from "./generation.service";
+import { CommandExecutionModule } from "../command-execution/command-execution.module.js";
+import { PluginOptionsModule } from "../plugin-options/plugin-options.module.js";
+
+import { GenerationService } from "./generation.service.js";
 
 /**
  * Provides generation helpers for conformetry workflow execution.

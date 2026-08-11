@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { ValidationService } from "./validation.service";
+import { ValidationService } from "./validation.service.js";
 
 /**
  * Provides validation helpers for the conformetry Nx plugin.

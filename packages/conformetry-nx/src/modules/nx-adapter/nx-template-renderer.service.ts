@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import type { TemplateRenderer } from "./nx-adapter.types";
+import type { TemplateRenderer } from "./nx-adapter.types.js";
 
 /**
  * Replaces template placeholders with generated substitutions.

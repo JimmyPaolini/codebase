@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { COMMAND_RUNNER_SERVICE_NAME } from "./command-runner.constants";
+import { COMMAND_RUNNER_SERVICE_NAME } from "./command-runner.constants.js";
 
 /**
  * Placeholder command-runner service for the conformetry Nx package.

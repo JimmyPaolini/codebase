@@ -1,27 +1,164 @@
-import { describe, expect, it, vi } from "vitest";
+import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
+import { JsonValidatorService } from "@jimmypaolini/conformetry-json";
+import { MarkdownValidatorService } from "@jimmypaolini/conformetry-markdown";
+import { PythonValidatorService } from "@jimmypaolini/conformetry-python";
+import { TextValidatorService } from "@jimmypaolini/conformetry-text";
+import { TypeScriptValidatorService } from "@jimmypaolini/conformetry-typescript";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ValidationService } from "./validation.service";
 
+import type {
+  ValidationPluginArguments,
+  ValidationPluginResult,
+} from "@jimmypaolini/conformetry-configuration";
+
+const {
+  mockJsonValidate,
+  mockLoadConformetryConfiguration,
+  mockMarkdownValidate,
+  mockPythonValidate,
+  mockTextValidate,
+  mockTypeScriptValidate,
+} = vi.hoisted(() => {
+  return {
+    mockJsonValidate: vi.fn(),
+    mockLoadConformetryConfiguration: vi.fn(),
+    mockMarkdownValidate: vi.fn(),
+    mockPythonValidate: vi.fn(),
+    mockTextValidate: vi.fn(),
+    mockTypeScriptValidate: vi.fn(),
+  };
+});
+
+vi.mock("@jimmypaolini/conformetry-configuration", () => {
+  return {
+    ConfigurationService: class {
+      findWorkspaceRoot(): string {
+        return process.cwd();
+      }
+
+      isConformetryGeneratorDefinition(): boolean {
+        return false;
+      }
+
+      loadConfigurationModule(): Record<string, unknown> {
+        return {};
+      }
+
+      async loadConformetryConfiguration(
+        configPath: string,
+      ): Promise<{ generators: Record<string, unknown> }> {
+        await Promise.resolve();
+        return mockLoadConformetryConfiguration(configPath);
+      }
+
+      loadJsonConfiguration(): Record<string, unknown> {
+        return {};
+      }
+
+      resolveConfigurationPath(): string {
+        return "configuration/conformetry.config.ts";
+      }
+    },
+  };
+});
+
+vi.mock("@jimmypaolini/conformetry-json", () => {
+  return {
+    JsonValidatorService: class {
+      pluginDescriptor = { fileExtensions: [".json"], name: "json" };
+
+      async validate(
+        args: ValidationPluginArguments,
+      ): Promise<ValidationPluginResult> {
+        await Promise.resolve();
+        return mockJsonValidate(args);
+      }
+    },
+  };
+});
+
+vi.mock("@jimmypaolini/conformetry-markdown", () => {
+  return {
+    MarkdownValidatorService: class {
+      pluginDescriptor = { fileExtensions: [".md"], name: "markdown" };
+
+      async validate(
+        args: ValidationPluginArguments,
+      ): Promise<ValidationPluginResult> {
+        await Promise.resolve();
+        return mockMarkdownValidate(args);
+      }
+    },
+  };
+});
+
+vi.mock("@jimmypaolini/conformetry-python", () => {
+  return {
+    PythonValidatorService: class {
+      pluginDescriptor = { fileExtensions: [".py"], name: "python" };
+
+      async validate(
+        args: ValidationPluginArguments,
+      ): Promise<ValidationPluginResult> {
+        await Promise.resolve();
+        return mockPythonValidate(args);
+      }
+    },
+  };
+});
+
+vi.mock("@jimmypaolini/conformetry-text", () => {
+  return {
+    TextValidatorService: class {
+      pluginDescriptor = { fileExtensions: [".txt"], name: "text" };
+
+      async validate(
+        args: ValidationPluginArguments,
+      ): Promise<ValidationPluginResult> {
+        await Promise.resolve();
+        return mockTextValidate(args);
+      }
+    },
+  };
+});
+
+vi.mock("@jimmypaolini/conformetry-typescript", () => {
+  return {
+    TypeScriptValidatorService: class {
+      pluginDescriptor = { fileExtensions: [".ts"], name: "typescript" };
+
+      async validate(
+        args: ValidationPluginArguments,
+      ): Promise<ValidationPluginResult> {
+        await Promise.resolve();
+        return mockTypeScriptValidate(args);
+      }
+    },
+  };
+});
+
 describe(ValidationService, () => {
+  beforeEach(() => {
+    mockJsonValidate.mockReset();
+    mockLoadConformetryConfiguration.mockReset();
+    mockMarkdownValidate.mockReset();
+    mockPythonValidate.mockReset();
+    mockTextValidate.mockReset();
+    mockTypeScriptValidate.mockReset();
+  });
+
   it("returns success when all supplied plugins pass", async () => {
     const validationService = new ValidationService(
-      {
-        loadConformetryConfiguration: vi.fn(),
-      } as never,
-      {
-        pluginDescriptor: { fileExtensions: [".ts"], name: "typescript" },
-      } as never,
-      {
-        pluginDescriptor: { fileExtensions: [".py"], name: "python" },
-      } as never,
-      {
-        pluginDescriptor: { fileExtensions: [".md"], name: "markdown" },
-      } as never,
-      {
-        pluginDescriptor: { fileExtensions: [".json"], name: "json" },
-      } as never,
-      { pluginDescriptor: { fileExtensions: [".txt"], name: "text" } } as never,
+      new ConfigurationService(),
+      new TypeScriptValidatorService(),
+      new PythonValidatorService(),
+      new MarkdownValidatorService(),
+      new JsonValidatorService(),
+      new TextValidatorService(),
     );
+
     const result = await validationService.validate({
       plugins: [
         {
@@ -29,7 +166,9 @@ describe(ValidationService, () => {
             fileExtensions: [".ts"],
             name: "test-plugin",
           },
-          validate: async ({ filePaths }) => {
+          validate: async ({
+            filePaths,
+          }: ValidationPluginArguments): Promise<ValidationPluginResult> => {
             await Promise.resolve();
             return {
               checkedPaths: filePaths,
@@ -48,23 +187,14 @@ describe(ValidationService, () => {
 
   it("uses explicit project paths and returns a failed result when any plugin fails", async () => {
     const validationService = new ValidationService(
-      {
-        loadConformetryConfiguration: vi.fn(),
-      } as never,
-      {
-        pluginDescriptor: { fileExtensions: [".ts"], name: "typescript" },
-      } as never,
-      {
-        pluginDescriptor: { fileExtensions: [".py"], name: "python" },
-      } as never,
-      {
-        pluginDescriptor: { fileExtensions: [".md"], name: "markdown" },
-      } as never,
-      {
-        pluginDescriptor: { fileExtensions: [".json"], name: "json" },
-      } as never,
-      { pluginDescriptor: { fileExtensions: [".txt"], name: "text" } } as never,
+      new ConfigurationService(),
+      new TypeScriptValidatorService(),
+      new PythonValidatorService(),
+      new MarkdownValidatorService(),
+      new JsonValidatorService(),
+      new TextValidatorService(),
     );
+
     const result = await validationService.validate({
       configurationPath: "configuration/conformetry.config.ts",
       plugins: [
@@ -73,7 +203,9 @@ describe(ValidationService, () => {
             fileExtensions: [".ts"],
             name: "pass-plugin",
           },
-          validate: async ({ filePaths }) => {
+          validate: async ({
+            filePaths,
+          }: ValidationPluginArguments): Promise<ValidationPluginResult> => {
             await Promise.resolve();
             return {
               checkedPaths: filePaths,
@@ -88,7 +220,9 @@ describe(ValidationService, () => {
             fileExtensions: [".ts"],
             name: "fail-plugin",
           },
-          validate: async ({ filePaths }) => {
+          validate: async ({
+            filePaths,
+          }: ValidationPluginArguments): Promise<ValidationPluginResult> => {
             await Promise.resolve();
             return {
               checkedPaths: filePaths,
@@ -117,47 +251,27 @@ describe(ValidationService, () => {
   });
 
   it("loads configuration and routes rules/projects before running plugin validation", async () => {
-    const loadConformetryConfiguration = vi.fn().mockResolvedValue({
+    mockLoadConformetryConfiguration.mockResolvedValue({
       generators: {
         "nestjs-service-module": {},
         "react-component": {},
       },
     });
-    const jsonValidate = vi.fn(
-      async ({ filePaths }: { filePaths: string[] }) => {
-        await Promise.resolve();
-        return {
-          checkedPaths: filePaths,
-          ok: true,
-          pluginName: "json",
-          violations: [],
-        };
-      },
-    );
+
+    mockJsonValidate.mockResolvedValue({
+      checkedPaths: ["packages/conformetry"],
+      ok: true,
+      pluginName: "json",
+      violations: [],
+    });
+
     const validationService = new ValidationService(
-      {
-        loadConformetryConfiguration,
-      } as never,
-      {
-        pluginDescriptor: { fileExtensions: [".ts"], name: "typescript" },
-        validate: vi.fn(),
-      } as never,
-      {
-        pluginDescriptor: { fileExtensions: [".py"], name: "python" },
-        validate: vi.fn(),
-      } as never,
-      {
-        pluginDescriptor: { fileExtensions: [".md"], name: "markdown" },
-        validate: vi.fn(),
-      } as never,
-      {
-        pluginDescriptor: { fileExtensions: [".json"], name: "json" },
-        validate: jsonValidate,
-      } as never,
-      {
-        pluginDescriptor: { fileExtensions: [".txt"], name: "text" },
-        validate: vi.fn(),
-      } as never,
+      new ConfigurationService(),
+      new TypeScriptValidatorService(),
+      new PythonValidatorService(),
+      new MarkdownValidatorService(),
+      new JsonValidatorService(),
+      new TextValidatorService(),
     );
 
     const result = await validationService.validateConfiguredSelection({
@@ -167,10 +281,10 @@ describe(ValidationService, () => {
       workingDirectory: process.cwd(),
     });
 
-    expect(loadConformetryConfiguration).toHaveBeenCalledWith(
+    expect(mockLoadConformetryConfiguration).toHaveBeenCalledWith(
       "configuration/custom.config.ts",
     );
-    expect(jsonValidate).toHaveBeenCalledTimes(1);
+    expect(mockJsonValidate).toHaveBeenCalledTimes(1);
     expect(result.ok).toBe(true);
     expect(result.pluginResults[0]?.checkedPaths).toStrictEqual([
       "packages/conformetry",

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { environmentSchema } from "./constants";
+import { environmentSchema } from "./constants.js";
 
 describe("environment schema e2e", () => {
   it("allows an empty schema by default", () => {

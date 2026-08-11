@@ -4,13 +4,13 @@ import path from "node:path";
 import {
   PROJECT_METADATA_FILENAME,
   SKIPPED_DIRECTORY_NAMES,
-} from "./rule-routing.constants";
+} from "./rule-routing.constants.js";
 
 import type {
   ResolveTemplateRuleRoutingArguments,
   ResolveTemplateRuleRoutingResult,
   WorkspaceProjectMetadata,
-} from "./rule-routing.types";
+} from "./rule-routing.types.js";
 
 /**
  * Resolves routed template rules and project paths from Nx project metadata.

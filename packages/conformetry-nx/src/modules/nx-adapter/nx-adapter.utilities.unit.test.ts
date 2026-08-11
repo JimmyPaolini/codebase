@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { NxFileSystemAdapter } from "./nx-file-system-adapter.service";
-import { NxFormatterAdapter } from "./nx-formatter-adapter.service";
-import { NxPathMatcher } from "./nx-path-matcher.service";
-import { NxTemplateRenderer } from "./nx-template-renderer.service";
+import { NxFileSystemAdapter } from "./nx-file-system-adapter.service.js";
+import { NxFormatterAdapter } from "./nx-formatter-adapter.service.js";
+import { NxPathMatcher } from "./nx-path-matcher.service.js";
+import { NxTemplateRenderer } from "./nx-template-renderer.service.js";
 
 import type { FileChange, Tree } from "@nx/devkit";
 

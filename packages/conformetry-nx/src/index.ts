@@ -1,15 +1,16 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { resolveConformetryNxPluginOptions } from "./modules/plugin-options/plugin-options.utilities";
-import { RuleRoutingService } from "./modules/rule-routing/rule-routing.service";
-import { buildInferredValidationTarget } from "./modules/validation-target/validation-target.utilities";
-import { runWorkspaceGenerator } from "./modules/workspace-generator/workspace-generator.utilities";
+import { resolveConformetryNxPluginOptions } from "./modules/plugin-options/plugin-options.utilities.js";
+import { RuleRoutingService } from "./modules/rule-routing/rule-routing.service.js";
+import { buildInferredValidationTarget } from "./modules/validation-target/validation-target.utilities.js";
+import { runWorkspaceGenerator } from "./modules/workspace-generator/workspace-generator.utilities.js";
+export { MainModule } from "./main.module.js";
 
 import type {
   ResolveTemplateRuleRoutingArguments,
   ResolveTemplateRuleRoutingResult,
-} from "./modules/rule-routing/rule-routing.types";
+} from "./modules/rule-routing/rule-routing.types.js";
 import type {
   CreateNodes,
   CreateNodesContext,

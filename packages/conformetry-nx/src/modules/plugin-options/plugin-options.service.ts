@@ -2,17 +2,98 @@ import {
   CONFORMETRY_NX_PLUGIN_NAME,
   DEFAULT_CONFORMETRY_CONFIGURATION_PATH,
   DEFAULT_VALIDATION_TARGET_NAME,
-} from "./plugin-options.constants";
+} from "./plugin-options.constants.js";
 
 import type {
   ConformetryNxPluginRegistrationOptions,
   TemplateRuleNamesByProjectTag,
-} from "./plugin-options.types";
+} from "./plugin-options.types.js";
 
 /**
  * Resolves effective plugin options for Nx wrappers.
  */
 export class PluginOptionsService {
+  /**
+   * Returns whether the provided value is an array.
+   */
+  private isUnknownArray(value: unknown): value is unknown[] {
+    return Array.isArray(value);
+  }
+
+  /**
+   * Returns whether the provided value is a plain record.
+   */
+  private isUnknownRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null;
+  }
+
+  /**
+   * Resolves configuration paths using raw Nx options and plugin options.
+   */
+  private resolveConfigurationPath(args: {
+    defaultConfigurationPath: string;
+    options: Record<string, unknown>;
+    pluginOptions?: ConformetryNxPluginRegistrationOptions;
+  }): string {
+    return this.resolveConfigurationPathFromOptions(args);
+  }
+
+  /**
+   * Resolves the configuration path from direct options.
+   */
+  private resolveConfigurationPathFromOptions(args: {
+    defaultConfigurationPath: string;
+    options: Record<string, unknown>;
+    pluginOptions?: ConformetryNxPluginRegistrationOptions;
+  }): string {
+    const configFilePath = args.options["configFilePath"];
+    if (typeof configFilePath === "string") {
+      return configFilePath;
+    }
+
+    if (args.pluginOptions?.configFilePath !== undefined) {
+      return args.pluginOptions.configFilePath;
+    }
+
+    return args.defaultConfigurationPath;
+  }
+
+  /**
+   * Converts project-tag mappings into normalized rule-name arrays.
+   */
+  private resolveTemplateRuleNamesByProjectTag(
+    value: unknown,
+  ): TemplateRuleNamesByProjectTag | undefined {
+    if (!this.isUnknownRecord(value)) {
+      return undefined;
+    }
+
+    const recordValue = value;
+    const mapping: Record<string, readonly string[]> = {};
+
+    for (const [projectTag, mappedRuleNames] of Object.entries(recordValue)) {
+      if (!this.isUnknownArray(mappedRuleNames)) {
+        continue;
+      }
+
+      const normalizedRuleNames: string[] = [];
+
+      for (const mappedRuleName of mappedRuleNames) {
+        if (typeof mappedRuleName === "string") {
+          normalizedRuleNames.push(mappedRuleName);
+        }
+      }
+
+      if (normalizedRuleNames.length === 0) {
+        continue;
+      }
+
+      mapping[projectTag] = normalizedRuleNames;
+    }
+
+    return Object.keys(mapping).length > 0 ? mapping : undefined;
+  }
+
   /**
    * Resolves effective configuration path for Nx wrappers.
    */
@@ -20,13 +101,15 @@ export class PluginOptionsService {
     options: Record<string, unknown>;
     pluginOptions?: ConformetryNxPluginRegistrationOptions;
   }): Promise<string> {
-    return this.resolveConfigurationPath({
-      defaultConfigurationPath: DEFAULT_CONFORMETRY_CONFIGURATION_PATH,
-      options: args.options,
-      ...(args.pluginOptions === undefined
-        ? {}
-        : { pluginOptions: args.pluginOptions }),
-    });
+    return await Promise.resolve(
+      this.resolveConfigurationPath({
+        defaultConfigurationPath: DEFAULT_CONFORMETRY_CONFIGURATION_PATH,
+        options: args.options,
+        ...(args.pluginOptions === undefined
+          ? {}
+          : { pluginOptions: args.pluginOptions }),
+      }),
+    );
   }
 
   /**
@@ -91,71 +174,5 @@ export class PluginOptionsService {
     }
 
     return this.resolveConformetryNxPluginOptions();
-  }
-
-  private resolveConfigurationPath(args: {
-    defaultConfigurationPath: string;
-    options: Record<string, unknown>;
-    pluginOptions?: ConformetryNxPluginRegistrationOptions;
-  }): string {
-    return this.resolveConfigurationPathFromOptions(args);
-  }
-
-  private resolveConfigurationPathFromOptions(args: {
-    defaultConfigurationPath: string;
-    options: Record<string, unknown>;
-    pluginOptions?: ConformetryNxPluginRegistrationOptions;
-  }): string {
-    const configFilePath = args.options["configFilePath"];
-    if (typeof configFilePath === "string") {
-      return configFilePath;
-    }
-
-    if (args.pluginOptions?.configFilePath !== undefined) {
-      return args.pluginOptions.configFilePath;
-    }
-
-    return args.defaultConfigurationPath;
-  }
-
-  private isUnknownArray(value: unknown): value is unknown[] {
-    return Array.isArray(value);
-  }
-
-  private isUnknownRecord(value: unknown): value is Record<string, unknown> {
-    return typeof value === "object" && value !== null;
-  }
-
-  private resolveTemplateRuleNamesByProjectTag(
-    value: unknown,
-  ): TemplateRuleNamesByProjectTag | undefined {
-    if (!this.isUnknownRecord(value)) {
-      return undefined;
-    }
-
-    const recordValue = value;
-    const mapping: Record<string, readonly string[]> = {};
-
-    for (const [projectTag, mappedRuleNames] of Object.entries(recordValue)) {
-      if (!this.isUnknownArray(mappedRuleNames)) {
-        continue;
-      }
-
-      const normalizedRuleNames: string[] = [];
-
-      for (const mappedRuleName of mappedRuleNames) {
-        if (typeof mappedRuleName === "string") {
-          normalizedRuleNames.push(mappedRuleName);
-        }
-      }
-
-      if (normalizedRuleNames.length === 0) {
-        continue;
-      }
-
-      mapping[projectTag] = normalizedRuleNames;
-    }
-
-    return Object.keys(mapping).length > 0 ? mapping : undefined;
   }
 }

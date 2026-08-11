@@ -4,7 +4,7 @@ import {
   createConformetryGeneratorFactory,
   normalizeGeneratorInputs,
   resolveConformetryTargetDirectoryPath,
-} from "./nx-generator-factory.utilities";
+} from "./nx-generator-factory.utilities.js";
 
 import type { FileChange, Tree } from "@nx/devkit";
 

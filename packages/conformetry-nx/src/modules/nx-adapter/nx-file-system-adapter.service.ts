@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import type { DirectoryEntry, FileSystemAdapter } from "./nx-adapter.types";
+import type { DirectoryEntry, FileSystemAdapter } from "./nx-adapter.types.js";
 import type { Tree } from "@nx/devkit";
 
 /**

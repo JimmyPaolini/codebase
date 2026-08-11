@@ -2,10 +2,10 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { DiscoveryModule } from "@nestjs/core";
 
-import { environmentSchema } from "./constants";
-import { LoggerModule } from "./modules/logger/logger.module";
-import { NxAdapterModule } from "./modules/nx-adapter/nx-adapter.module";
-import { RuleRoutingModule } from "./modules/rule-routing/rule-routing.module";
+import { environmentSchema } from "./constants.js";
+import { LoggerModule } from "./modules/logger/logger.module.js";
+import { NxAdapterModule } from "./modules/nx-adapter/nx-adapter.module.js";
+import { RuleRoutingModule } from "./modules/rule-routing/rule-routing.module.js";
 
 /**
  * Root NestJS application module.

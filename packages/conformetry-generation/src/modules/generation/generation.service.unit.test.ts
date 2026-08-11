@@ -14,6 +14,16 @@ import type {
   GeneratorHookContext,
 } from "./generation.types";
 
+interface GenerationServiceWithPrivateMethods {
+  normalizeInputs(
+    inputs: Record<string, string | undefined>,
+  ): Record<string, string>;
+  renderTemplateValue(
+    value: string,
+    substitutions: Record<string, string>,
+  ): string;
+}
+
 class MockFileSystemAdapter implements FileSystemAdapter {
   private readonly directoryEntries = new Map<string, DirectoryEntry[]>();
   private readonly files = new Map<string, string>();
@@ -189,11 +199,9 @@ describe(GenerationService, () => {
   });
 
   it("normalizes inputs by excluding undefined values", () => {
-    const service = new GenerationService() as unknown as {
-      normalizeInputs(
-        inputs: Record<string, string | undefined>,
-      ): Record<string, string>;
-    };
+    const service =
+      // type-coverage:ignore-next-line
+      new GenerationService() as unknown as GenerationServiceWithPrivateMethods;
 
     const normalizedInputs = service.normalizeInputs({
       alpha: "one",
@@ -208,12 +216,9 @@ describe(GenerationService, () => {
   });
 
   it("replaces placeholders and keeps unresolved placeholders unchanged", () => {
-    const service = new GenerationService() as unknown as {
-      renderTemplateValue(
-        value: string,
-        substitutions: Record<string, string>,
-      ): string;
-    };
+    const service =
+      // type-coverage:ignore-next-line
+      new GenerationService() as unknown as GenerationServiceWithPrivateMethods;
 
     const renderedValue = service.renderTemplateValue(
       "__nameKebabCase__-__unknown__",

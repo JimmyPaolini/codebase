@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 
-import { NxAdapterService } from "./nx-adapter.service";
-import { NxGeneratorFactoryService } from "./nx-generator-factory.service";
+import { NxAdapterService } from "./nx-adapter.service.js";
+import { NxGeneratorFactoryService } from "./nx-generator-factory.service.js";
 
 /**
  * Provides the Nx adapter service.

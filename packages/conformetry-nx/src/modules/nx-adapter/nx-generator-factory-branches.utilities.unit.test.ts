@@ -42,10 +42,10 @@ vi.mock("./nx-generation-runtime.service", async (importOriginal) => {
 import {
   createConformetryGeneratorFactory,
   resolveConformetryTargetDirectoryPath,
-} from "./nx-generator-factory.utilities";
+} from "./nx-generator-factory.utilities.js";
 
-import type { RunGeneratorResult } from "./nx-adapter.types";
-import type { GenerationRuntimeService } from "./nx-generation-runtime.service";
+import type { RunGeneratorResult } from "./nx-adapter.types.js";
+import type { GenerationRuntimeService } from "./nx-generation-runtime.service.js";
 import type { Tree } from "@nx/devkit";
 
 function createStubTree(): Tree {

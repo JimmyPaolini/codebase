@@ -7,17 +7,17 @@
       "factory": "./src/index.ts#generateJupyterNotebookApplication",
       "schema": "../../configuration/conformetry-templates/jupyter-notebook-application/schema.json"
     },
-    "nestjs-command-project": {
-      "aliases": ["nca"],
-      "description": "Generate a NestJS command-line application using nest-commander",
-      "factory": "./src/index.ts#generateNestjsCommandApplication",
-      "schema": "../../configuration/conformetry-templates/nestjs-command-project/schema.json"
-    },
     "nestjs-command-module": {
       "aliases": ["ncm"],
       "description": "Generate a NestJS command module with command, module, and unit test files",
       "factory": "./src/index.ts#generateNestjsCommandModule",
       "schema": "../../configuration/conformetry-templates/nestjs-command-module/schema.json"
+    },
+    "nestjs-command-project": {
+      "aliases": ["nca"],
+      "description": "Generate a NestJS command-line application using nest-commander",
+      "factory": "./src/index.ts#generateNestjsCommandApplication",
+      "schema": "../../configuration/conformetry-templates/nestjs-command-project/schema.json"
     },
     "nestjs-dataloader-module": {
       "aliases": ["ndm"],

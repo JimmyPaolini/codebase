@@ -318,15 +318,14 @@ export class GenerationService {
 
     await definition.hooks?.preGenerate?.(context);
 
-    context.generatedFilePaths = (
-      await this.renderDirectory({
-        filesystem,
-        instanceDirectoryPath: targetDirectoryPath,
-        substitutions,
-        templateDirectoryPath: definition.templateDirectoryPath,
-        templateRenderer,
-      })
-    ).toSorted();
+    const renderedPaths = await this.renderDirectory({
+      filesystem,
+      instanceDirectoryPath: targetDirectoryPath,
+      substitutions,
+      templateDirectoryPath: definition.templateDirectoryPath,
+      templateRenderer,
+    });
+    context.generatedFilePaths = renderedPaths.toSorted();
 
     await definition.hooks?.postGenerate?.(context);
     await formatter.formatFiles(context.generatedFilePaths);
