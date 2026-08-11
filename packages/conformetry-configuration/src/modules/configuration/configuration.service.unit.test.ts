@@ -328,6 +328,53 @@ describe("configurationService.loadConformetryConfiguration", () => {
     });
   });
 
+  it("unwraps nested default exports when a JS module default is wrapped in an object", async () => {
+    const workingDirectory = await mkdtemp(
+      path.join(tmpdir(), "conformetry-configuration-js-nested-default-"),
+    );
+    const configurationPath = path.join(
+      workingDirectory,
+      "conformetry.config.js",
+    );
+    await writeFile(
+      configurationPath,
+      `module.exports = {
+        default: {
+          generators: {
+            demo: {
+              name: "demo",
+              parameters: {
+                project: {
+                  type: "string"
+                }
+              }
+            }
+          }
+        }
+      };`,
+      "utf8",
+    );
+
+    const configurationService = createConfigurationServiceHarness();
+    const configuration = await configurationService.loadConfigurationModule(
+      configurationPath,
+      ".js",
+    );
+
+    expect(configuration).toStrictEqual({
+      generators: {
+        demo: {
+          name: "demo",
+          parameters: {
+            project: {
+              type: "string",
+            },
+          },
+        },
+      },
+    });
+  });
+
   it("skips invalid generator entries returned from parser fallback behavior", async () => {
     const invalidConfiguration = {
       generators: {

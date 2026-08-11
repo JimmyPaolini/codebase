@@ -235,18 +235,7 @@ const config: KnipConfig = {
     },
     "packages/conformetry-nx": {
       entry: ["src/index.ts"],
-      ignore: [
-        "src/**/*.test.ts",
-        "src/**/templates/**",
-        "src/modules/command-execution/command-execution.module.ts", // Scaffolded Nest modules not wired into the runtime entrypoint
-        "src/modules/command-runner/command-runner.module.ts",
-        "src/modules/generation/generation.module.ts",
-        "src/modules/plugin-options/plugin-options.module.ts",
-        "src/modules/validation-target/validation-target.module.ts",
-        "src/modules/validation/validation.module.ts",
-        "src/modules/workspace-generator/workspace-generator.module.ts",
-        "testing/**",
-      ],
+      ignore: ["src/**/*.test.ts", "src/**/templates/**", "testing/**"],
       ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },

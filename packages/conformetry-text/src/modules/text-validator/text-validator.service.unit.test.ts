@@ -1,17 +1,14 @@
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { TEXT_VALIDATOR_PLUGIN_DESCRIPTOR } from "./text-validator.constants";
 import { TextValidatorService } from "./text-validator.service";
 
 const { prepareTemplateValidationPayloadMock } = vi.hoisted(() => {
   return {
     prepareTemplateValidationPayloadMock: vi.fn(),
-  };
-});
-
-const { accessMock } = vi.hoisted(() => {
-  return {
-    accessMock: vi.fn(),
   };
 });
 
@@ -21,16 +18,68 @@ vi.mock("@jimmypaolini/conformetry-configuration", () => {
   };
 });
 
-vi.mock("node:fs/promises", () => {
-  return {
-    access: accessMock,
-  };
-});
-
 describe(TextValidatorService, () => {
   beforeEach(() => {
     prepareTemplateValidationPayloadMock.mockReset();
-    accessMock.mockReset();
+  });
+
+  it("returns violations for missing paths when configurationPath is undefined", async () => {
+    const textValidatorService = new TextValidatorService();
+    const temporaryDirectory = await mkdtemp(
+      path.join(tmpdir(), "conformetry-text-validator-"),
+    );
+    try {
+      const existingFilePath = "existing.txt";
+      await writeFile(
+        path.join(temporaryDirectory, existingFilePath),
+        "exists",
+      );
+
+      const result = await textValidatorService.validate({
+        filePaths: [existingFilePath, "missing.txt"],
+        workingDirectory: temporaryDirectory,
+      });
+
+      expect(result.checkedPaths).toStrictEqual([
+        existingFilePath,
+        "missing.txt",
+      ]);
+      expect(result.ok).toBe(false);
+      expect(result.pluginName).toBe("text");
+      expect(result.violations).toStrictEqual([
+        `Missing text path ${path.resolve(temporaryDirectory, "missing.txt")}`,
+      ]);
+      expect(prepareTemplateValidationPayloadMock).not.toHaveBeenCalled();
+    } finally {
+      await rm(temporaryDirectory, { force: true, recursive: true });
+    }
+  });
+
+  it("returns ok when all file paths exist and configurationPath is undefined", async () => {
+    const textValidatorService = new TextValidatorService();
+    const temporaryDirectory = await mkdtemp(
+      path.join(tmpdir(), "conformetry-text-validator-ok-"),
+    );
+    try {
+      const existingFilePath = "existing.txt";
+      await writeFile(
+        path.join(temporaryDirectory, existingFilePath),
+        "exists",
+      );
+
+      const result = await textValidatorService.validate({
+        filePaths: [existingFilePath],
+        workingDirectory: temporaryDirectory,
+      });
+
+      expect(result.checkedPaths).toStrictEqual([existingFilePath]);
+      expect(result.ok).toBe(true);
+      expect(result.pluginName).toBe("text");
+      expect(result.violations).toStrictEqual([]);
+      expect(prepareTemplateValidationPayloadMock).not.toHaveBeenCalled();
+    } finally {
+      await rm(temporaryDirectory, { force: true, recursive: true });
+    }
   });
 
   it("reports missing template lines with original template line numbers", async () => {
@@ -89,48 +138,39 @@ describe(TextValidatorService, () => {
     );
   });
 
-  it("validates file path existence when no configuration path is provided", async () => {
-    accessMock.mockImplementation(async (pathName: string) => {
-      if (pathName.endsWith("missing.txt")) {
-        throw new Error("missing file");
-      }
-
-      await Promise.resolve();
+  it("forwards templateRuleNames and includes payload violations", async () => {
+    prepareTemplateValidationPayloadMock.mockResolvedValue({
+      documents: [
+        {
+          filename: "example.txt",
+          instance: "first\nsecond\n",
+          instanceFilePath: "src/example.txt",
+          renderedTemplate: "first\nsecond\n",
+          templateFilePath: "templates/example.txt",
+        },
+      ],
+      violations: ["Configuration parse failure"],
     });
 
     const textValidatorService = new TextValidatorService();
+    const workingDirectory = process.cwd();
+    const filePaths = ["src/example.txt"];
 
     const result = await textValidatorService.validate({
-      filePaths: ["exists.txt", "missing.txt"],
-      workingDirectory: "/workspace",
+      configurationPath: "configuration/conformetry.config.ts",
+      filePaths,
+      templateRuleNames: ["text-rule"],
+      workingDirectory,
     });
 
-    expect(result).toStrictEqual({
-      checkedPaths: ["exists.txt", "missing.txt"],
-      ok: false,
-      pluginName: TEXT_VALIDATOR_PLUGIN_DESCRIPTOR.name,
-      violations: ["Missing text path /workspace/missing.txt"],
+    expect(prepareTemplateValidationPayloadMock).toHaveBeenCalledWith({
+      configurationPath: "configuration/conformetry.config.ts",
+      fileExtensions: [".txt"],
+      filePaths,
+      templateRuleNames: ["text-rule"],
+      workingDirectory,
     });
-    expect(prepareTemplateValidationPayloadMock).not.toHaveBeenCalled();
-    expect(accessMock).toHaveBeenCalledTimes(2);
-  });
-
-  it("returns ok when all provided file paths exist", async () => {
-    accessMock.mockResolvedValue(undefined);
-
-    const textValidatorService = new TextValidatorService();
-
-    const result = await textValidatorService.validate({
-      filePaths: ["exists.txt"],
-      workingDirectory: "/workspace",
-    });
-
-    expect(result).toStrictEqual({
-      checkedPaths: ["exists.txt"],
-      ok: true,
-      pluginName: TEXT_VALIDATOR_PLUGIN_DESCRIPTOR.name,
-      violations: [],
-    });
-    expect(prepareTemplateValidationPayloadMock).not.toHaveBeenCalled();
+    expect(result.ok).toBe(false);
+    expect(result.violations).toStrictEqual(["Configuration parse failure"]);
   });
 });

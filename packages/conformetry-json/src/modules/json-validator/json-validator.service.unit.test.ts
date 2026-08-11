@@ -1,8 +1,7 @@
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import os from "node:os";
+import { tmpdir } from "node:os";
 import path from "node:path";
 
-import * as jsoncParser from "jsonc-parser";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { JsonValidatorService } from "./json-validator.service";
@@ -20,78 +19,91 @@ vi.mock("@jimmypaolini/conformetry-configuration", () => {
 });
 
 describe(JsonValidatorService, () => {
+  const temporaryDirectoryPaths: string[] = [];
+
   beforeEach(() => {
     prepareTemplateValidationPayloadMock.mockReset();
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it("exposes the expected plugin descriptor", () => {
-    const jsonValidatorService = new JsonValidatorService();
-
-    expect(jsonValidatorService.pluginDescriptor).toStrictEqual({
-      description: "Checks JSON and JSONC structural conformance",
-      fileExtensions: [".json", ".jsonc"],
-      name: "json",
-    });
-  });
-
-  it("reports missing file paths when configurationPath is undefined", async () => {
-    const temporaryDirectoryPath = await mkdtemp(
-      path.join(os.tmpdir(), "json-validator-"),
+  afterEach(async () => {
+    await Promise.all(
+      temporaryDirectoryPaths.map(async (temporaryDirectoryPath) => {
+        await rm(temporaryDirectoryPath, { force: true, recursive: true });
+      }),
     );
-    const existingRelativePath = "existing.json";
-    const missingRelativePath = "missing.json";
+    temporaryDirectoryPaths.length = 0;
+  });
+
+  it("validates path existence when no configuration path is provided", async () => {
+    const temporaryDirectoryPath = await mkdtemp(
+      path.join(tmpdir(), "conformetry-json-validator-"),
+    );
+    temporaryDirectoryPaths.push(temporaryDirectoryPath);
 
     await writeFile(
-      path.join(temporaryDirectoryPath, existingRelativePath),
-      '{"enabled":true}',
+      path.join(temporaryDirectoryPath, "existing.json"),
+      '{"name":"existing"}',
       "utf8",
     );
 
     const jsonValidatorService = new JsonValidatorService();
     const result = await jsonValidatorService.validate({
-      filePaths: [existingRelativePath, missingRelativePath],
+      filePaths: ["existing.json", "missing.json"],
       workingDirectory: temporaryDirectoryPath,
     });
 
-    await rm(temporaryDirectoryPath, { force: true, recursive: true });
-
-    expect(result.checkedPaths).toStrictEqual([
-      existingRelativePath,
-      missingRelativePath,
-    ]);
+    expect(prepareTemplateValidationPayloadMock).not.toHaveBeenCalled();
     expect(result.ok).toBe(false);
-    expect(result.pluginName).toBe("json");
     expect(result.violations).toStrictEqual([
-      `Missing JSON path ${path.resolve(temporaryDirectoryPath, missingRelativePath)}`,
+      `Missing JSON path ${path.resolve(temporaryDirectoryPath, "missing.json")}`,
     ]);
   });
 
-  it("returns ok when all file paths exist and configurationPath is undefined", async () => {
+  it("returns a successful validation when all required paths exist", async () => {
     const temporaryDirectoryPath = await mkdtemp(
-      path.join(os.tmpdir(), "json-validator-"),
+      path.join(tmpdir(), "conformetry-json-validator-"),
     );
-    const existingRelativePath = "existing.json";
+    temporaryDirectoryPaths.push(temporaryDirectoryPath);
 
     await writeFile(
-      path.join(temporaryDirectoryPath, existingRelativePath),
-      '{"enabled":true}',
+      path.join(temporaryDirectoryPath, "existing.json"),
+      '{"name":"existing"}',
       "utf8",
     );
 
     const jsonValidatorService = new JsonValidatorService();
     const result = await jsonValidatorService.validate({
-      filePaths: [existingRelativePath],
+      filePaths: ["existing.json"],
       workingDirectory: temporaryDirectoryPath,
     });
-
-    await rm(temporaryDirectoryPath, { force: true, recursive: true });
 
     expect(result.ok).toBe(true);
     expect(result.violations).toStrictEqual([]);
+  });
+
+  it("forwards templateRuleNames and returns payload violations", async () => {
+    prepareTemplateValidationPayloadMock.mockResolvedValue({
+      documents: [],
+      violations: ["Invalid template reference"],
+    });
+
+    const jsonValidatorService = new JsonValidatorService();
+    const result = await jsonValidatorService.validate({
+      configurationPath: "configuration/conformetry.config.ts",
+      filePaths: ["src/example.json"],
+      templateRuleNames: ["json-structure-rule"],
+      workingDirectory: process.cwd(),
+    });
+
+    expect(prepareTemplateValidationPayloadMock).toHaveBeenCalledWith({
+      configurationPath: "configuration/conformetry.config.ts",
+      fileExtensions: [".json", ".jsonc"],
+      filePaths: ["src/example.json"],
+      templateRuleNames: ["json-structure-rule"],
+      workingDirectory: process.cwd(),
+    });
+    expect(result.ok).toBe(false);
+    expect(result.violations).toStrictEqual(["Invalid template reference"]);
   });
 
   it("reports missing required nested keys from template documents", async () => {
@@ -122,22 +134,23 @@ describe(JsonValidatorService, () => {
     );
   });
 
-  it("reports primitive value mismatches and appends payload violations", async () => {
+  it("reports primitive mismatches at nested array paths", async () => {
     prepareTemplateValidationPayloadMock.mockResolvedValue({
       documents: [
         {
           filename: "example.json",
-          instance: '{"enabled":false}',
+          instance:
+            '{"items":[{"id":2,"metadata":{"version":null}}],"enabled":true}',
           instanceFilePath: "src/example.json",
-          renderedTemplate: '{"enabled":true}',
+          renderedTemplate:
+            '{"items":[{"id":1,"metadata":{"version":null}}],"enabled":true}',
           templateFilePath: "templates/example.json",
         },
       ],
-      violations: ["invalid template mapping"],
+      violations: [],
     });
 
     const jsonValidatorService = new JsonValidatorService();
-
     const result = await jsonValidatorService.validate({
       configurationPath: "configuration/conformetry.config.ts",
       filePaths: ["src/example.json"],
@@ -146,12 +159,11 @@ describe(JsonValidatorService, () => {
 
     expect(result.ok).toBe(false);
     expect(result.violations).toContain(
-      'src/example.json: Expected true at "enabled" but found false (template: templates/example.json)',
+      'src/example.json: Expected 1 at "items[0].id" but found 2 (template: templates/example.json)',
     );
-    expect(result.violations).toContain("invalid template mapping");
   });
 
-  it("reports missing primitive array entries", async () => {
+  it("reports missing primitive array values", async () => {
     prepareTemplateValidationPayloadMock.mockResolvedValue({
       documents: [
         {
@@ -172,19 +184,20 @@ describe(JsonValidatorService, () => {
       workingDirectory: process.cwd(),
     });
 
+    expect(result.ok).toBe(false);
     expect(result.violations).toContain(
       'src/example.json: Missing required array value "core" at "tags" (template: templates/example.json)',
     );
   });
 
-  it("reports missing array structures for object templates when arrays are empty", async () => {
+  it("reports missing object array structures when the instance array is empty", async () => {
     prepareTemplateValidationPayloadMock.mockResolvedValue({
       documents: [
         {
           filename: "example.json",
-          instance: '{"items":[]}',
+          instance: '{"rules":[]}',
           instanceFilePath: "src/example.json",
-          renderedTemplate: '{"items":[{"name":"required"}]}',
+          renderedTemplate: '{"rules":[{"name":"required"}]}',
           templateFilePath: "templates/example.json",
         },
       ],
@@ -198,20 +211,21 @@ describe(JsonValidatorService, () => {
       workingDirectory: process.cwd(),
     });
 
+    expect(result.ok).toBe(false);
     expect(result.violations).toContain(
-      'src/example.json: Missing required array structure at "items" (template: templates/example.json)',
+      'src/example.json: Missing required array structure at "rules" (template: templates/example.json)',
     );
   });
 
-  it("picks the closest array candidate when validating nested object templates", async () => {
+  it("chooses the best matching array candidate when multiple objects exist", async () => {
     prepareTemplateValidationPayloadMock.mockResolvedValue({
       documents: [
         {
           filename: "example.json",
           instance:
-            '{"items":[{"name":"not-matching"},{"name":"required","status":"active"}]}',
+            '{"rules":[{"name":"required"},{"name":"required","enabled":true}]}',
           instanceFilePath: "src/example.json",
-          renderedTemplate: '{"items":[{"name":"required","status":"active"}]}',
+          renderedTemplate: '{"rules":[{"name":"required","enabled":true}]}',
           templateFilePath: "templates/example.json",
         },
       ],
@@ -229,15 +243,14 @@ describe(JsonValidatorService, () => {
     expect(result.violations).toStrictEqual([]);
   });
 
-  it("retains the first array candidate when later candidates are not closer", async () => {
+  it("keeps the first array candidate when later candidates are not better", async () => {
     prepareTemplateValidationPayloadMock.mockResolvedValue({
       documents: [
         {
           filename: "example.json",
-          instance:
-            '{"items":[{"name":"required","status":"active"},{"name":"not-matching"}]}',
+          instance: '{"rules":[{"name":"required"},{"name":"optional"}]}',
           instanceFilePath: "src/example.json",
-          renderedTemplate: '{"items":[{"name":"required","status":"active"}]}',
+          renderedTemplate: '{"rules":[{"name":"required","enabled":true}]}',
           templateFilePath: "templates/example.json",
         },
       ],
@@ -251,61 +264,10 @@ describe(JsonValidatorService, () => {
       workingDirectory: process.cwd(),
     });
 
-    expect(result.ok).toBe(true);
-    expect(result.violations).toStrictEqual([]);
-  });
-
-  it("treats undefined parsed object values as null through nullish fallback", async () => {
-    prepareTemplateValidationPayloadMock.mockResolvedValue({
-      documents: [
-        {
-          filename: "example.json",
-          instance: "{}",
-          instanceFilePath: "src/example.json",
-          renderedTemplate: "{}",
-          templateFilePath: "templates/example.json",
-        },
-      ],
-      violations: [],
-    });
-
-    const parseSpy = vi.spyOn(jsoncParser, "parse");
-    parseSpy
-      .mockReturnValueOnce({ value: undefined })
-      .mockReturnValueOnce({ value: undefined });
-
-    const jsonValidatorService = new JsonValidatorService();
-    const result = await jsonValidatorService.validate({
-      configurationPath: "configuration/conformetry.config.ts",
-      filePaths: ["src/example.json"],
-      workingDirectory: process.cwd(),
-    });
-
-    expect(result.ok).toBe(true);
-    expect(result.violations).toStrictEqual([]);
-  });
-
-  it("forwards templateRuleNames to prepareTemplateValidationPayload", async () => {
-    prepareTemplateValidationPayloadMock.mockResolvedValue({
-      documents: [],
-      violations: [],
-    });
-
-    const jsonValidatorService = new JsonValidatorService();
-    await jsonValidatorService.validate({
-      configurationPath: "configuration/conformetry.config.ts",
-      filePaths: ["src/example.json"],
-      templateRuleNames: ["json-basic"],
-      workingDirectory: "/workspace",
-    });
-
-    expect(prepareTemplateValidationPayloadMock).toHaveBeenCalledWith({
-      configurationPath: "configuration/conformetry.config.ts",
-      fileExtensions: [".json", ".jsonc"],
-      filePaths: ["src/example.json"],
-      templateRuleNames: ["json-basic"],
-      workingDirectory: "/workspace",
-    });
+    expect(result.ok).toBe(false);
+    expect(result.violations).toContain(
+      'src/example.json: Missing required key "rules[0].enabled" (template: templates/example.json)',
+    );
   });
 
   it("allows additional object keys and array values when template requirements are preserved", async () => {

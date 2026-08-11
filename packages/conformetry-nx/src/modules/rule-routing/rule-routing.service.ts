@@ -17,6 +17,38 @@ import type {
  */
 export class RuleRoutingService {
   /**
+   * Resolves the applicable template rule names for matched projects.
+   */
+  private collectApplicableTemplateRuleNamesForProjectTag(args: {
+    applicableTemplateRuleNames: Set<string>;
+    configuredTemplateRuleNameSet: ReadonlySet<string>;
+    projectTag: string;
+    templateRuleNamesByProjectTag:
+      | Readonly<Record<string, readonly string[]>>
+      | undefined;
+  }): void {
+    const tagMappedTemplateRuleNames =
+      args.templateRuleNamesByProjectTag?.[args.projectTag] ?? [];
+
+    for (const templateRuleName of tagMappedTemplateRuleNames) {
+      if (args.configuredTemplateRuleNameSet.has(templateRuleName)) {
+        args.applicableTemplateRuleNames.add(templateRuleName);
+      }
+    }
+
+    if (!args.projectTag.startsWith("generator:")) {
+      return;
+    }
+
+    const generatorTemplateRuleName = args.projectTag.slice(
+      "generator:".length,
+    );
+    if (args.configuredTemplateRuleNameSet.has(generatorTemplateRuleName)) {
+      args.applicableTemplateRuleNames.add(generatorTemplateRuleName);
+    }
+  }
+
+  /**
    * Handles a single directory entry while scanning workspace metadata.
    */
   private collectProjectMetadataFromDirectoryEntry(args: {
@@ -215,38 +247,6 @@ export class RuleRoutingService {
       sourceRoot,
       tags,
     };
-  }
-
-  /**
-   * Resolves the applicable template rule names for matched projects.
-   */
-  private collectApplicableTemplateRuleNamesForProjectTag(args: {
-    applicableTemplateRuleNames: Set<string>;
-    configuredTemplateRuleNameSet: ReadonlySet<string>;
-    projectTag: string;
-    templateRuleNamesByProjectTag:
-      | Readonly<Record<string, readonly string[]>>
-      | undefined;
-  }): void {
-    const tagMappedTemplateRuleNames =
-      args.templateRuleNamesByProjectTag?.[args.projectTag] ?? [];
-
-    for (const templateRuleName of tagMappedTemplateRuleNames) {
-      if (args.configuredTemplateRuleNameSet.has(templateRuleName)) {
-        args.applicableTemplateRuleNames.add(templateRuleName);
-      }
-    }
-
-    if (!args.projectTag.startsWith("generator:")) {
-      return;
-    }
-
-    const generatorTemplateRuleName = args.projectTag.slice(
-      "generator:".length,
-    );
-    if (args.configuredTemplateRuleNameSet.has(generatorTemplateRuleName)) {
-      args.applicableTemplateRuleNames.add(generatorTemplateRuleName);
-    }
   }
 
   /**

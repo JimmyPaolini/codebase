@@ -1,33 +1,39 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { TemplateValidationService } from "./configuration-template-validation.service";
-import { prepareTemplateValidationPayload } from "./configuration-template-validation.utilities";
+import { TemplateValidationService } from "./configuration-template-validation.service.js";
+import { prepareTemplateValidationPayload } from "./configuration-template-validation.utilities.js";
 
-describe("configuration template validation utilities", () => {
-  it("delegates payload preparation to template validation service", async () => {
-    const expectedPayload = {
+describe(prepareTemplateValidationPayload, () => {
+  it("delegates payload preparation to the template validation service", async () => {
+    const payload = {
       checkedPaths: ["apps/demo"],
       documents: [],
       violations: [],
     };
-    const preparePayloadSpy = vi
+    const prepareTemplateValidationPayloadSpy = vi
       .spyOn(
         TemplateValidationService.prototype,
         "prepareTemplateValidationPayload",
       )
-      .mockResolvedValueOnce(expectedPayload);
+      .mockResolvedValueOnce(payload);
 
     try {
-      await expect(
-        prepareTemplateValidationPayload({
-          configurationPath: "configuration/conformetry.config.ts",
-          fileExtensions: [".ts"],
-          filePaths: ["apps/demo"],
-          workingDirectory: "/workspace",
-        }),
-      ).resolves.toStrictEqual(expectedPayload);
+      const result = await prepareTemplateValidationPayload({
+        configurationPath: "configuration/conformetry.config.ts",
+        fileExtensions: [".ts"],
+        filePaths: ["apps/demo"],
+        workingDirectory: "/workspace",
+      });
+
+      expect(result).toStrictEqual(payload);
+      expect(prepareTemplateValidationPayloadSpy).toHaveBeenCalledWith({
+        configurationPath: "configuration/conformetry.config.ts",
+        fileExtensions: [".ts"],
+        filePaths: ["apps/demo"],
+        workingDirectory: "/workspace",
+      });
     } finally {
-      preparePayloadSpy.mockRestore();
+      prepareTemplateValidationPayloadSpy.mockRestore();
     }
   });
 });

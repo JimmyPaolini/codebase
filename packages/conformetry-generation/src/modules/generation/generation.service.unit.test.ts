@@ -12,11 +12,11 @@ import type {
   FormatterAdapter,
   GeneratorDefinition,
   GeneratorHookContext,
-  RunGeneratorArguments,
 } from "./generation.types";
 
 interface GenerationServiceWithPrivateMethods {
-  fileSystemPathExists(pathName: string): Promise<boolean>;
+  defaultFileSystem: FileSystemAdapter;
+  defaultFormatter: FormatterAdapter;
   normalizeInputs(
     inputs: Record<string, string | undefined>,
   ): Record<string, string>;
@@ -24,9 +24,6 @@ interface GenerationServiceWithPrivateMethods {
     value: string,
     substitutions: Record<string, string>,
   ): string;
-  resolveRunGeneratorArguments(args: RunGeneratorArguments): {
-    formatter: FormatterAdapter;
-  };
 }
 
 class MockFileSystemAdapter implements FileSystemAdapter {
@@ -260,95 +257,77 @@ describe(GenerationService, () => {
     });
   });
 
-  it("renders with default adapters against the real file system", async () => {
+  it("renders nested templates using default runtime adapters", async () => {
     const service = new GenerationService();
     const templateDirectoryPath = await mkdtemp(
-      path.join(tmpdir(), "conformetry-generation-template-"),
+      path.join(tmpdir(), "conformetry-generation-template-runtime-"),
     );
+    const targetDirectoryPath = await mkdtemp(
+      path.join(tmpdir(), "conformetry-generation-output-runtime-"),
+    );
+    const definition: GeneratorDefinition = {
+      name: "fallback-name",
+      templateDirectoryPath,
+    };
     const nestedTemplateDirectoryPath = path.join(
       templateDirectoryPath,
       "__nameKebabCase__",
     );
+
     await mkdir(nestedTemplateDirectoryPath, { recursive: true });
     await writeFile(
       path.join(templateDirectoryPath, "README.md"),
-      "# {{ namePascalCase }}\n{{ unresolved }}\n",
+      "# {{namePascalCase}}\n",
       "utf8",
     );
     await writeFile(
-      path.join(nestedTemplateDirectoryPath, "__nameCamelCase__.ts"),
-      "export const generated = '{{nameKebabCase}}';\n",
+      path.join(nestedTemplateDirectoryPath, "__nameSnakeCase__.txt"),
+      "{{nameKebabCase}}",
       "utf8",
     );
 
-    const outputDirectoryPath = await mkdtemp(
-      path.join(tmpdir(), "conformetry-generation-output-"),
-    );
-    const definition: GeneratorDefinition = {
-      name: "alpha-module",
-      templateDirectoryPath,
-    };
-
     const result = await service.runGenerator({
       definition,
-      targetDirectoryPath: outputDirectoryPath,
+      inputs: { name: "nested-template" },
+      targetDirectoryPath,
     });
 
-    const readmeOutputPath = path.join(outputDirectoryPath, "README.md");
-    const sourceOutputPath = path.join(
-      outputDirectoryPath,
-      "alpha-module",
-      "alphaModule.ts",
+    const renderedReadmePath = path.join(targetDirectoryPath, "README.md");
+    const renderedNestedPath = path.join(
+      targetDirectoryPath,
+      "nested-template",
+      "nested_template.txt",
     );
 
-    expect(result.generatedFilePaths).toStrictEqual([
-      readmeOutputPath,
-      sourceOutputPath,
-    ]);
-    await expect(readFile(readmeOutputPath, "utf8")).resolves.toBe(
-      "# AlphaModule\n{{ unresolved }}\n",
+    expect(result.generatedFilePaths).toStrictEqual(
+      [renderedReadmePath, renderedNestedPath].toSorted(),
     );
-    await expect(readFile(sourceOutputPath, "utf8")).resolves.toBe(
-      "export const generated = 'alpha-module';\n",
+    await expect(readFile(renderedReadmePath, "utf8")).resolves.toBe(
+      "# NestedTemplate\n",
+    );
+    await expect(readFile(renderedNestedPath, "utf8")).resolves.toBe(
+      "nested-template",
     );
   });
 
-  it("checks filesystem path existence for existing and missing paths", async () => {
+  it("checks path existence through default file system and no-op formatter", async () => {
     const service =
       // type-coverage:ignore-next-line
       new GenerationService() as unknown as GenerationServiceWithPrivateMethods;
-    const existingFilePath = path.join(
-      await mkdtemp(path.join(tmpdir(), "conformetry-generation-exists-")),
-      "existing.txt",
+    const existingDirectoryPath = await mkdtemp(
+      path.join(tmpdir(), "conformetry-generation-exists-check-"),
     );
-    await writeFile(existingFilePath, "content", "utf8");
 
-    await expect(service.fileSystemPathExists(existingFilePath)).resolves.toBe(
-      true,
-    );
     await expect(
-      service.fileSystemPathExists(`${existingFilePath}.missing`),
+      service.defaultFileSystem.exists(existingDirectoryPath),
+    ).resolves.toBe(true);
+    await expect(
+      service.defaultFileSystem.exists(
+        path.join(existingDirectoryPath, "missing-path"),
+      ),
     ).resolves.toBe(false);
-  });
-
-  it("resolves a default formatter that supports both format methods", async () => {
-    const service =
-      // type-coverage:ignore-next-line
-      new GenerationService() as unknown as GenerationServiceWithPrivateMethods;
-    const definition: GeneratorDefinition = {
-      name: "formatter-test",
-      templateDirectoryPath: "/unused",
-    };
-    const { formatter } = service.resolveRunGeneratorArguments({
-      definition,
-      targetDirectoryPath: "/output",
-    });
-
     await expect(
-      formatter.formatFile("/output/file.ts"),
-    ).resolves.toBeUndefined();
-    await expect(
-      formatter.formatFiles(["/output/file-one.ts", "/output/file-two.ts"]),
+      service.defaultFormatter.formatFile(existingDirectoryPath),
     ).resolves.toBeUndefined();
   });
 });

@@ -6,8 +6,11 @@ import {
 } from "./python-validator.constants";
 
 describe("pythonValidatorConstants", () => {
-  it("declares supported file extensions and plugin descriptor metadata", () => {
+  it("defines the expected python-related file extensions", () => {
     expect(PYTHON_VALIDATOR_FILE_EXTENSIONS).toStrictEqual([".ipynb", ".py"]);
+  });
+
+  it("exposes the validator plugin descriptor", () => {
     expect(PYTHON_VALIDATOR_PLUGIN_DESCRIPTOR).toStrictEqual({
       description: "Checks Python and notebook conformance against templates",
       fileExtensions: [".ipynb", ".py"],

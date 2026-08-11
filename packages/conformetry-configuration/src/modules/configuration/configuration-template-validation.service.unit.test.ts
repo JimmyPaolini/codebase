@@ -2,14 +2,25 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { TemplateValidationService } from "./configuration-template-validation.service";
 import { ConfigurationService } from "./configuration.service";
 
+import type {
+  ConformetryConfiguration,
+  PreparedValidationDocument,
+} from "./configuration.types";
+
 const createdDirectories: string[] = [];
 
 describe("template validation service", () => {
+  let service: TemplateValidationService;
+
+  beforeEach(() => {
+    service = new TemplateValidationService(new ConfigurationService());
+  });
+
   afterEach(async () => {
     await Promise.all(
       createdDirectories.splice(0).map(async (directoryPath) => {
@@ -105,238 +116,245 @@ describe("template validation service", () => {
     }
   });
 
-  it("validates project paths for missing files and non-directory paths", async () => {
+  it("delegates helper operations for substitutions, file collection, and candidate ranking", async () => {
     const workingDirectory = await mkdtemp(
-      path.join(tmpdir(), "conformetry-template-path-validation-"),
+      path.join(tmpdir(), "conformetry-template-validation-helpers-"),
     );
     createdDirectories.push(workingDirectory);
-
-    const templateValidationService = new TemplateValidationService(
-      new ConfigurationService(),
+    await mkdir(path.join(workingDirectory, "templates", "demo"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workingDirectory, "templates", "demo", "index.ts"),
+      "export const value = 1;\n",
+      "utf8",
     );
-    const missingPath = path.join(workingDirectory, "missing");
-    const filePath = path.join(workingDirectory, "file.ts");
-    await writeFile(filePath, "export {};\n", "utf8");
+    await writeFile(
+      path.join(workingDirectory, "templates", "demo", "schema.json"),
+      "{}\n",
+      "utf8",
+    );
+    await mkdir(path.join(workingDirectory, "apps", "demo", "src"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workingDirectory, "apps", "demo", "src", "demo.ts"),
+      "export {};\n",
+      "utf8",
+    );
 
     expect(
-      templateValidationService.validateProjectPath(missingPath),
-    ).toStrictEqual([`Missing project path ${missingPath}`]);
+      service.applySubstitutions("hello __name__", { name: "world" }),
+    ).toBe("hello world");
     expect(
-      templateValidationService.validateProjectPath(filePath),
+      service.collectTemplateFilePaths(
+        path.join(workingDirectory, "templates"),
+      ),
     ).toStrictEqual([
-      `Expected a project directory path but found file ${filePath}`,
+      path.join(workingDirectory, "templates", "demo", "index.ts"),
     ]);
+    expect(service.isTemplateFile("schema.json", true)).toBe(false);
+    expect(service.isTemplateFile("index.ts", true)).toBe(true);
+
+    const compareResult = service.compareMatchedCandidates({
+      inferredGeneratorNames: new Set(["demo"]),
+      leftCandidate: {
+        absoluteTemplateDirectoryPath: "/tmp/left",
+        existingFileCount: 1,
+        generatorName: "demo",
+        substitutions: {},
+        templateFilePaths: [],
+      },
+      projectTemplateMetadata: {},
+      rightCandidate: {
+        absoluteTemplateDirectoryPath: "/tmp/right",
+        existingFileCount: 1,
+        generatorName: "alpha",
+        substitutions: {},
+        templateFilePaths: [],
+      },
+    });
+
+    expect(compareResult).toBeLessThan(0);
+
     expect(
-      templateValidationService.validateProjectPath(workingDirectory),
-    ).toStrictEqual([]);
+      service.countExistingTemplateMappedFiles({
+        absoluteTemplateDirectoryPath: path.join(
+          workingDirectory,
+          "templates",
+          "demo",
+        ),
+        projectPath: path.join(workingDirectory, "apps", "demo"),
+        substitutions: { nameKebabCase: "demo" },
+        templateFilePaths: [
+          path.join(
+            workingDirectory,
+            "templates",
+            "demo",
+            "src",
+            "__nameKebabCase__.ts",
+          ),
+        ],
+      }),
+    ).toBe(1);
   });
 
-  it("prepares project documents for matched generators", async () => {
-    const templateValidationService = new TemplateValidationService(
-      new ConfigurationService(),
+  it("creates template substitutions from metadata and fallback path inference", () => {
+    const metadataSubstitutions = service.createTemplateSubstitutions({
+      projectPath: "/workspace/packages/demo-app",
+      projectTemplateMetadata: {
+        description: "explicit description",
+        type: "packages",
+      },
+      workingDirectory: "/workspace",
+    });
+
+    expect(metadataSubstitutions["description"]).toBe("explicit description");
+    expect(metadataSubstitutions["type"]).toBe("packages");
+
+    const fallbackSubstitutions = service.createTemplateSubstitutions({
+      projectPath: "/workspace/apps/demo-app",
+      projectTemplateMetadata: {},
+      workingDirectory: "/workspace",
+    });
+
+    expect(fallbackSubstitutions["type"]).toBe("apps");
+  });
+
+  it("returns path violations for missing paths and file paths", async () => {
+    const missingProjectPath = path.join(
+      tmpdir(),
+      "conformetry-template-validation-missing-path",
     );
+
+    expect(service.validateProjectPath(missingProjectPath)).toStrictEqual([
+      `Missing project path ${missingProjectPath}`,
+    ]);
+
     const workingDirectory = await mkdtemp(
-      path.join(tmpdir(), "conformetry-template-project-documents-"),
+      path.join(tmpdir(), "conformetry-template-validation-file-path-"),
+    );
+    createdDirectories.push(workingDirectory);
+    const filePath = path.join(workingDirectory, "project.txt");
+    await writeFile(filePath, "demo\n", "utf8");
+
+    expect(service.validateProjectPath(filePath)).toStrictEqual([
+      `Expected a project directory path but found file ${filePath}`,
+    ]);
+  });
+
+  it("returns violations when project path validation fails", () => {
+    const result = service.prepareDocumentsForProjectPath({
+      configuration: { generators: {} },
+      fileExtensions: [".ts"],
+      projectPath: path.join(
+        tmpdir(),
+        "conformetry-template-validation-missing-project",
+      ),
+      selectedGeneratorNames: [],
+      workingDirectory: "/workspace",
+    });
+
+    expect(result).toStrictEqual({
+      documents: [],
+      violations: [expect.stringContaining("Missing project path")],
+    });
+  });
+
+  it("returns empty documents and violations when no generator candidate matches", async () => {
+    const workingDirectory = await mkdtemp(
+      path.join(tmpdir(), "conformetry-template-validation-no-match-"),
     );
     createdDirectories.push(workingDirectory);
     const projectPath = path.join(workingDirectory, "apps", "demo");
-    const templateDirectoryPath = path.join(
-      workingDirectory,
-      "configuration",
-      "conformetry-templates",
-      "demo",
-      "src",
-    );
+    await mkdir(projectPath, { recursive: true });
+    const configuration: ConformetryConfiguration = {
+      generators: {},
+    };
 
-    expect(
-      templateValidationService.prepareDocumentsForProjectPath({
-        configuration: { generators: {} },
-        fileExtensions: [".ts"],
-        projectPath: "/missing",
-        selectedGeneratorNames: [],
-        workingDirectory,
-      }),
-    ).toStrictEqual({
-      documents: [],
-      violations: ["Missing project path /missing"],
+    const result = service.prepareDocumentsForProjectPath({
+      configuration,
+      fileExtensions: [".ts"],
+      projectPath,
+      selectedGeneratorNames: ["demo"],
+      workingDirectory,
     });
 
-    await mkdir(projectPath, { recursive: true });
-
-    expect(
-      templateValidationService.prepareDocumentsForProjectPath({
-        configuration: { generators: {} },
-        fileExtensions: [".ts"],
-        projectPath,
-        selectedGeneratorNames: [],
-        workingDirectory,
-      }),
-    ).toStrictEqual({
+    expect(result).toStrictEqual({
       documents: [],
       violations: [],
     });
-
-    await mkdir(templateDirectoryPath, { recursive: true });
-    await mkdir(path.join(projectPath, "src"), { recursive: true });
-    await writeFile(
-      path.join(templateDirectoryPath, "index.ts"),
-      'export const name = "{{name}}";\n',
-      "utf8",
-    );
-    await writeFile(
-      path.join(projectPath, "src", "index.ts"),
-      'export const name = "demo";\n',
-      "utf8",
-    );
-    await writeFile(
-      path.join(projectPath, "project.json"),
-      JSON.stringify({
-        tags: ["generator:demo"],
-      }),
-      "utf8",
-    );
-
-    const preparedProject =
-      templateValidationService.prepareDocumentsForProjectPath({
-        configuration: {
-          generators: {
-            demo: {
-              name: "demo",
-              parameters: {},
-              templateDirectoryPath: "configuration/conformetry-templates/demo",
-            },
-          },
-        },
-        fileExtensions: [".ts"],
-        projectPath,
-        selectedGeneratorNames: ["demo"],
-        workingDirectory,
-      });
-
-    expect(preparedProject.violations).toStrictEqual([]);
-    expect(preparedProject.documents).toHaveLength(1);
-    expect(preparedProject.documents[0]?.renderedTemplate).toBe(
-      'export const name = "demo";\n',
-    );
   });
 
-  it("exposes helper operations through public methods", async () => {
-    const templateValidationService = new TemplateValidationService(
-      new ConfigurationService(),
-    );
-    const workingDirectory = await mkdtemp(
-      path.join(tmpdir(), "conformetry-template-helper-methods-"),
-    );
-    createdDirectories.push(workingDirectory);
-    const templateDirectoryPath = path.join(workingDirectory, "template");
-
-    await mkdir(templateDirectoryPath, { recursive: true });
-    await writeFile(path.join(templateDirectoryPath, "schema.json"), "{}\n");
-    await writeFile(path.join(templateDirectoryPath, "index.ts"), "", "utf8");
-
-    expect(
-      templateValidationService.applySubstitutions("__name__", {
-        name: "demo",
-      }),
-    ).toBe("demo");
-    expect(
-      templateValidationService.collectTemplateFilePaths(templateDirectoryPath),
-    ).toStrictEqual([path.join(templateDirectoryPath, "index.ts")]);
-    expect(templateValidationService.isTemplateFile("index.ts", true)).toBe(
-      true,
-    );
-    expect(templateValidationService.isTemplateFile("index.ts", false)).toBe(
-      false,
-    );
-    expect(
-      templateValidationService.compareMatchedCandidates({
-        inferredGeneratorNames: new Set<string>(),
-        leftCandidate: {
-          absoluteTemplateDirectoryPath: "/left",
-          existingFileCount: 1,
-          generatorName: "alpha",
-          substitutions: {},
-          templateFilePaths: [],
+  it("aggregates prepared project documents for each input path with template-rule filtering", async () => {
+    const configuration: ConformetryConfiguration = {
+      generators: {
+        alpha: {
+          name: "alpha",
+          parameters: {},
+          templateDirectoryPath: "templates/alpha",
         },
-        projectTemplateMetadata: {},
-        rightCandidate: {
-          absoluteTemplateDirectoryPath: "/right",
-          existingFileCount: 1,
-          generatorName: "beta",
-          substitutions: {},
-          templateFilePaths: [],
-        },
-      }),
-    ).toBeLessThan(0);
-    expect(
-      templateValidationService.countExistingTemplateMappedFiles({
-        absoluteTemplateDirectoryPath: templateDirectoryPath,
-        projectPath: workingDirectory,
-        substitutions: {},
-        templateFilePaths: [path.join(templateDirectoryPath, "index.ts")],
-      }),
-    ).toBe(0);
-  });
-
-  it("prepares payloads with and without template rule filters", async () => {
-    const templateValidationService = new TemplateValidationService(
-      new ConfigurationService(),
+      },
+    };
+    const preparedDocument: PreparedValidationDocument = {
+      filename: "index.ts",
+      instance: "instance",
+      instanceFilePath: "/workspace/apps/demo/index.ts",
+      renderedTemplate: "rendered",
+      templateFilePath: "/workspace/templates/alpha/index.ts",
+    };
+    const loadConformetryConfiguration = vi
+      .fn<(configurationPath: string) => Promise<ConformetryConfiguration>>()
+      .mockResolvedValue(configuration);
+    const configurationService = {
+      loadConformetryConfiguration,
+    } satisfies Pick<ConfigurationService, "loadConformetryConfiguration">;
+    const configuredService = new TemplateValidationService(
+      configurationService as ConfigurationService,
     );
-    const loadConformetryConfigurationSpy = vi
-      .spyOn(ConfigurationService.prototype, "loadConformetryConfiguration")
-      .mockResolvedValue({
-        generators: {
-          demo: {
-            name: "demo",
-            parameters: {},
-            templateDirectoryPath: "configuration/conformetry-templates/demo",
-          },
-          second: {
-            name: "second",
-            parameters: {},
-            templateDirectoryPath: "configuration/conformetry-templates/second",
-          },
-        },
-      });
     const prepareDocumentsForProjectPathSpy = vi
-      .spyOn(templateValidationService, "prepareDocumentsForProjectPath")
-      .mockReturnValue({
-        documents: [],
-        violations: [],
-      });
+      .spyOn(configuredService, "prepareDocumentsForProjectPath")
+      .mockImplementation(
+        ({
+          projectPath,
+        }: {
+          projectPath: string;
+        }): {
+          documents: PreparedValidationDocument[];
+          violations: string[];
+        } => {
+          return projectPath.endsWith("demo")
+            ? {
+                documents: [preparedDocument],
+                violations: [],
+              }
+            : {
+                documents: [],
+                violations: [`Violation in ${projectPath}`],
+              };
+        },
+      );
 
     try {
-      await templateValidationService.prepareTemplateValidationPayload({
+      const payload = await configuredService.prepareTemplateValidationPayload({
         configurationPath: "configuration/conformetry.config.ts",
         fileExtensions: [".ts"],
-        filePaths: ["apps/demo", "packages/demo"],
-        workingDirectory: "/workspace",
-      });
-      await templateValidationService.prepareTemplateValidationPayload({
-        configurationPath: "configuration/conformetry.config.ts",
-        fileExtensions: [".ts"],
-        filePaths: ["apps/demo"],
-        templateRuleNames: ["demo"],
+        filePaths: ["apps/demo", "apps/other"],
+        templateRuleNames: ["alpha"],
         workingDirectory: "/workspace",
       });
 
-      expect(loadConformetryConfigurationSpy).toHaveBeenCalledTimes(2);
-      expect(prepareDocumentsForProjectPathSpy).toHaveBeenCalledTimes(3);
-      expect(prepareDocumentsForProjectPathSpy).toHaveBeenNthCalledWith(
-        1,
-        expect.objectContaining({
-          selectedGeneratorNames: ["demo", "second"],
-        }),
+      expect(loadConformetryConfiguration).toHaveBeenCalledWith(
+        "configuration/conformetry.config.ts",
       );
-      expect(prepareDocumentsForProjectPathSpy).toHaveBeenNthCalledWith(
-        3,
-        expect.objectContaining({
-          selectedGeneratorNames: ["demo"],
-        }),
-      );
+      expect(prepareDocumentsForProjectPathSpy).toHaveBeenCalledTimes(2);
+      expect(payload).toStrictEqual({
+        checkedPaths: ["apps/demo", "apps/other"],
+        documents: [preparedDocument],
+        violations: ["Violation in /workspace/apps/other"],
+      });
     } finally {
       prepareDocumentsForProjectPathSpy.mockRestore();
-      loadConformetryConfigurationSpy.mockRestore();
     }
   });
 });

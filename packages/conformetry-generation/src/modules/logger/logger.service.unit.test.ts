@@ -20,6 +20,7 @@ function createMockChildLogger(): MockChildLogger {
 
 describe("loggerService production mode", () => {
   const previousNodeEnvironment = process.env["NODE_ENV"];
+  const previousLogLevel = process.env["LOG_LEVEL"];
 
   beforeEach(() => {
     vi.resetModules();
@@ -27,6 +28,7 @@ describe("loggerService production mode", () => {
 
   afterEach(() => {
     process.env["NODE_ENV"] = previousNodeEnvironment;
+    process.env["LOG_LEVEL"] = previousLogLevel;
     vi.doUnmock("pino");
   });
 
@@ -52,15 +54,7 @@ describe("loggerService production mode", () => {
     const service = new LoggerService();
 
     service.setContext("ProductionContext");
-    service.debug("debug message");
-    service.debug("debug message explicit", "ExplicitContext");
     service.log("message");
-    service.log("message explicit", "ExplicitContext");
-    service.verbose("verbose message");
-    service.verbose("verbose message explicit", "ExplicitContext");
-    service.warn("warn message");
-    service.warn("warn message explicit", "ExplicitContext");
-    service.error("error message", "stack trace");
 
     expect(pinoFactory).toHaveBeenCalledTimes(1);
     expect(pinoFactory).toHaveBeenCalledWith({ level: "info" });
@@ -71,44 +65,74 @@ describe("loggerService production mode", () => {
       { context: "ProductionContext" },
       "message",
     );
+  });
+
+  it("creates the root logger with pretty transport in development and routes all log levels", async () => {
+    process.env["NODE_ENV"] = "development";
+    process.env["LOG_LEVEL"] = "debug";
+    const childLogger = createMockChildLogger();
+    const rootLogger = {
+      child: vi
+        .fn<(obj: Record<string, string>) => MockChildLogger>()
+        .mockReturnValue(childLogger),
+    };
+    const pinoFactory = vi
+      .fn<(obj: Record<string, unknown>) => typeof rootLogger>()
+      .mockReturnValue(rootLogger);
+
+    vi.doMock("pino", () => {
+      return {
+        default: pinoFactory,
+      };
+    });
+
+    const { LoggerService } = await import("./logger.service");
+    const service = new LoggerService();
+
+    service.setContext("DevelopmentContext");
+    service.log("log message");
+    service.debug("debug message");
+    service.verbose("verbose message");
+    service.warn("warn message");
+    service.error("error message", "stack trace");
+    service.debug("explicit context message", "ExplicitContext");
+
+    expect(pinoFactory).toHaveBeenCalledTimes(1);
+    expect(pinoFactory).toHaveBeenCalledWith({
+      level: "debug",
+      transport: {
+        options: { colorize: true, singleLine: true },
+        target: "pino-pretty",
+      },
+    });
+    expect(rootLogger.child).toHaveBeenCalledWith({
+      context: "DevelopmentContext",
+    });
+    expect(childLogger.info).toHaveBeenCalledWith(
+      { context: "DevelopmentContext" },
+      "log message",
+    );
     expect(childLogger.debug).toHaveBeenNthCalledWith(
       1,
-      { context: "ProductionContext" },
+      { context: "DevelopmentContext" },
       "debug message",
     );
+    expect(childLogger.trace).toHaveBeenCalledWith(
+      { context: "DevelopmentContext" },
+      "verbose message",
+    );
+    expect(childLogger.warn).toHaveBeenCalledWith(
+      { context: "DevelopmentContext" },
+      "warn message",
+    );
+    expect(childLogger.error).toHaveBeenCalledWith(
+      { context: "DevelopmentContext", stack: "stack trace" },
+      "error message",
+    );
     expect(childLogger.debug).toHaveBeenNthCalledWith(
       2,
       { context: "ExplicitContext" },
-      "debug message explicit",
-    );
-    expect(childLogger.info).toHaveBeenNthCalledWith(
-      2,
-      { context: "ExplicitContext" },
-      "message explicit",
-    );
-    expect(childLogger.trace).toHaveBeenNthCalledWith(
-      1,
-      { context: "ProductionContext" },
-      "verbose message",
-    );
-    expect(childLogger.trace).toHaveBeenNthCalledWith(
-      2,
-      { context: "ExplicitContext" },
-      "verbose message explicit",
-    );
-    expect(childLogger.warn).toHaveBeenNthCalledWith(
-      1,
-      { context: "ProductionContext" },
-      "warn message",
-    );
-    expect(childLogger.warn).toHaveBeenNthCalledWith(
-      2,
-      { context: "ExplicitContext" },
-      "warn message explicit",
-    );
-    expect(childLogger.error).toHaveBeenCalledWith(
-      { context: "ProductionContext", stack: "stack trace" },
-      "error message",
+      "explicit context message",
     );
   });
 });

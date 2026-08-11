@@ -5,16 +5,7 @@ import path from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 type CommandRunMock = ReturnType<
-  typeof vi.fn<
-    (
-      passedParameters: string[],
-      options: {
-        config: string;
-        name: string;
-        targetDirectoryPath: string;
-      },
-    ) => Promise<void>
-  >
+  typeof vi.fn<(...args: unknown[]) => Promise<void>>
 >;
 
 interface CreateWithoutRunningResult {
@@ -33,27 +24,9 @@ const {
     mockClose: vi.fn<() => Promise<void>>(),
     mockCreateWithoutRunning:
       vi.fn<() => Promise<CreateWithoutRunningResult>>(),
-    mockGenerateRun: vi.fn<
-      (
-        passedParameters: string[],
-        options: {
-          config: string;
-          name: string;
-          targetDirectoryPath: string;
-        },
-      ) => Promise<void>
-    >(),
+    mockGenerateRun: vi.fn<(...args: unknown[]) => Promise<void>>(),
     mockGet: vi.fn<() => { run: CommandRunMock }>(),
-    mockValidateRun: vi.fn<
-      (
-        passedParameters: string[],
-        options: {
-          config: string;
-          name: string;
-          targetDirectoryPath: string;
-        },
-      ) => Promise<void>
-    >(),
+    mockValidateRun: vi.fn<(...args: unknown[]) => Promise<void>>(),
   };
 });
 
@@ -299,7 +272,7 @@ describe("conformetry-nx index", () => {
           `generated/${generator.generatorName}`,
         ],
         {
-          config: expect.stringMatching(/configuration\/(custom\.config\.ts|plugin\.conformetry\.config\.ts)/),
+          config: "configuration/custom.config.ts",
           name: generator.generatorName,
           targetDirectoryPath: `generated/${generator.generatorName}`,
         },

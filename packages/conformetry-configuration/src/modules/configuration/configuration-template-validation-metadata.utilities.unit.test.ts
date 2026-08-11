@@ -4,319 +4,321 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { createTemplateValidationMetadataOperations } from "./configuration-template-validation-metadata.utilities";
-import { createTemplateValidationOperations } from "./configuration-template-validation-operations.utilities";
+import { createTemplateValidationMetadataOperations } from "./configuration-template-validation-metadata.utilities.js";
+import { createTemplateValidationOperations } from "./configuration-template-validation-operations.utilities.js";
 
-const createdDirectories: string[] = [];
+import type { ConformetryConfiguration } from "./configuration.types.js";
 
-describe("template validation metadata operations", () => {
+const createdDirectoryPaths: string[] = [];
+
+async function createTemporaryDirectory(prefix: string): Promise<string> {
+  const directoryPath = await mkdtemp(path.join(tmpdir(), prefix));
+  createdDirectoryPaths.push(directoryPath);
+
+  return directoryPath;
+}
+
+describe("template validation metadata utilities", () => {
   afterEach(async () => {
     await Promise.all(
-      createdDirectories.splice(0).map(async (directoryPath) => {
+      createdDirectoryPaths.splice(0).map(async (directoryPath) => {
         await rm(directoryPath, { force: true, recursive: true });
       }),
     );
   });
 
-  it("parses project metadata records and handles invalid values", () => {
-    const operations = createTemplateValidationMetadataOperations(
+  it("parses project metadata records and safely handles invalid payloads", () => {
+    const metadataOperations = createTemplateValidationMetadataOperations(
       createTemplateValidationOperations(),
     );
 
-    expect(operations.parseProjectMetadataRecord("{not json")).toBeUndefined();
-    expect(operations.parseProjectMetadataRecord("42")).toBeUndefined();
     expect(
-      operations.parseProjectMetadataRecord(
+      metadataOperations.parseProjectMetadataRecord("invalid"),
+    ).toBeUndefined();
+    expect(
+      metadataOperations.parseProjectMetadataRecord('"text"'),
+    ).toBeUndefined();
+    expect(
+      metadataOperations.parseProjectMetadataRecord(
         JSON.stringify({
           sourceRoot: "packages/demo/src",
-          tags: ["generator:nestjs-service-project", 1, true],
+          tags: ["generator:demo", 42],
         }),
       ),
     ).toStrictEqual({
       sourceRoot: "packages/demo/src",
-      tags: ["generator:nestjs-service-project"],
+      tags: ["generator:demo"],
     });
+    expect(metadataOperations.parseProjectMetadataRecord("{}")).toStrictEqual(
+      {},
+    );
     expect(
-      operations.parseProjectMetadataRecord(JSON.stringify({})),
+      metadataOperations.parseProjectMetadataRecord(
+        JSON.stringify({ sourceRoot: 42, tags: "invalid" }),
+      ),
     ).toStrictEqual({});
   });
 
-  it("resolves generator tags, source root type, and unknown arrays", () => {
-    const operations = createTemplateValidationMetadataOperations(
+  it("resolves generator names from tags and ignores missing or empty values", () => {
+    const metadataOperations = createTemplateValidationMetadataOperations(
       createTemplateValidationOperations(),
     );
 
+    expect(metadataOperations.resolveGeneratorNameFromTags({})).toBeUndefined();
     expect(
-      operations.resolveGeneratorNameFromTags({
-        tags: ["name:demo", "generator: nestjs-service-project "],
-      }),
-    ).toBe("nestjs-service-project");
-    expect(
-      operations.resolveGeneratorNameFromTags({ tags: ["name:demo"] }),
-    ).toBeUndefined();
-    expect(operations.resolveGeneratorNameFromTags({})).toBeUndefined();
-    expect(
-      operations.resolveGeneratorNameFromTags({
-        tags: ["generator:   "],
+      metadataOperations.resolveGeneratorNameFromTags({
+        tags: ["framework:nestjs", "name:demo"],
       }),
     ).toBeUndefined();
     expect(
-      operations.resolveSourceRootType({
-        sourceRoot: "applications/demo/src",
+      metadataOperations.resolveGeneratorNameFromTags({
+        tags: ["framework:nestjs", "generator:   ", "generator:demo-rule"],
       }),
-    ).toBe("applications");
-    expect(operations.resolveSourceRootType({})).toBeUndefined();
-    expect(operations.toUnknownArray(["a", 1])).toStrictEqual(["a", 1]);
-    expect(operations.toUnknownArray("value")).toBeUndefined();
+    ).toBe("demo-rule");
   });
 
-  it("resolves project template metadata from pyproject and project.json", async () => {
-    const operations = createTemplateValidationMetadataOperations(
+  it("resolves selected generator names with and without template rule filters", () => {
+    const metadataOperations = createTemplateValidationMetadataOperations(
       createTemplateValidationOperations(),
     );
-    const temporaryDirectoryPath = await mkdtemp(
-      path.join(tmpdir(), "conformetry-metadata-project-"),
-    );
-    createdDirectories.push(temporaryDirectoryPath);
-    const projectPath = path.join(
-      temporaryDirectoryPath,
-      "applications",
-      "demo",
-    );
+    const configuration: ConformetryConfiguration = {
+      generators: {
+        alpha: {
+          name: "alpha",
+          parameters: {},
+          templateDirectoryPath: "templates/alpha",
+        },
+        beta: {
+          name: "beta",
+          parameters: {},
+          templateDirectoryPath: "templates/beta",
+        },
+      },
+    };
 
+    expect(
+      metadataOperations.resolveSelectedGeneratorNames({
+        configuration,
+      }),
+    ).toStrictEqual(["alpha", "beta"]);
+    expect(
+      metadataOperations.resolveSelectedGeneratorNames({
+        configuration,
+        templateRuleNames: ["beta", "missing"],
+      }),
+    ).toStrictEqual(["beta"]);
+    expect(
+      metadataOperations.resolveSelectedGeneratorNames({
+        configuration,
+        templateRuleNames: [],
+      }),
+    ).toStrictEqual(["alpha", "beta"]);
+  });
+
+  it("resolves project metadata and fallback project types from filesystem content", async () => {
+    const metadataOperations = createTemplateValidationMetadataOperations(
+      createTemplateValidationOperations(),
+    );
+    const workingDirectory = await createTemporaryDirectory(
+      "conformetry-metadata-filesystem-",
+    );
+    const projectPath = path.join(workingDirectory, "packages", "demo");
     await mkdir(projectPath, { recursive: true });
     await writeFile(
       path.join(projectPath, "pyproject.toml"),
       'description = "metadata description"\n',
       "utf8",
     );
+
+    expect(metadataOperations.resolveProjectDescription(projectPath)).toBe(
+      "metadata description",
+    );
+    expect(
+      metadataOperations.resolveProjectDescription(
+        path.join(workingDirectory, "missing"),
+      ),
+    ).toBe("");
+
+    expect(
+      metadataOperations.resolveProjectTemplateMetadata(projectPath),
+    ).toStrictEqual({
+      description: "metadata description",
+    });
+
+    await writeFile(path.join(projectPath, "project.json"), "{invalid", "utf8");
+
+    expect(
+      metadataOperations.resolveProjectTemplateMetadata(projectPath),
+    ).toStrictEqual({
+      description: "metadata description",
+    });
+
     await writeFile(
       path.join(projectPath, "project.json"),
       JSON.stringify({
-        sourceRoot: "packages/demo/src",
-        tags: ["name:demo", "generator:nestjs-service-project"],
+        sourceRoot: "applications/demo/src",
+        tags: ["name:demo", "generator:nestjs-service-module"],
       }),
       "utf8",
     );
 
     expect(
-      operations.resolveProjectTemplateMetadata(projectPath),
+      metadataOperations.resolveProjectTemplateMetadata(projectPath),
     ).toStrictEqual({
       description: "metadata description",
-      generatorName: "nestjs-service-project",
-      type: "packages",
+      generatorName: "nestjs-service-module",
+      type: "applications",
     });
-    expect(operations.resolveProjectDescription(projectPath)).toBe(
-      "metadata description",
-    );
-    expect(operations.resolveProjectTemplateMetadata("/missing")).toStrictEqual(
-      {
-        description: "",
-      },
-    );
-  });
-
-  it("returns empty description and no generator when metadata tags do not match", async () => {
-    const operations = createTemplateValidationMetadataOperations(
-      createTemplateValidationOperations(),
-    );
-    const temporaryDirectoryPath = await mkdtemp(
-      path.join(tmpdir(), "conformetry-metadata-no-generator-"),
-    );
-    createdDirectories.push(temporaryDirectoryPath);
 
     await writeFile(
-      path.join(temporaryDirectoryPath, "pyproject.toml"),
+      path.join(projectPath, "project.json"),
+      JSON.stringify({ tags: ["name:demo"] }),
+      "utf8",
+    );
+
+    expect(
+      metadataOperations.resolveProjectTemplateMetadata(projectPath),
+    ).toStrictEqual({
+      description: "metadata description",
+    });
+
+    await writeFile(
+      path.join(projectPath, "pyproject.toml"),
       'name = "demo"\n',
       "utf8",
     );
-    await writeFile(
-      path.join(temporaryDirectoryPath, "project.json"),
-      JSON.stringify({
-        tags: ["name:demo"],
+
+    expect(metadataOperations.resolveProjectDescription(projectPath)).toBe("");
+
+    expect(
+      metadataOperations.resolveProjectType({
+        projectPath,
+        projectTemplateMetadata: { type: "tools" },
+        workingDirectory,
       }),
-      "utf8",
-    );
-
+    ).toBe("tools");
     expect(
-      operations.resolveProjectTemplateMetadata(temporaryDirectoryPath),
-    ).toStrictEqual({
-      description: "",
-    });
-  });
-
-  it("falls back when project metadata cannot be parsed", async () => {
-    const operations = createTemplateValidationMetadataOperations(
-      createTemplateValidationOperations(),
-    );
-    const temporaryDirectoryPath = await mkdtemp(
-      path.join(tmpdir(), "conformetry-metadata-invalid-"),
-    );
-    createdDirectories.push(temporaryDirectoryPath);
-    const projectPath = path.join(temporaryDirectoryPath, "packages", "demo");
-
-    await mkdir(projectPath, { recursive: true });
-    await writeFile(
-      path.join(projectPath, "pyproject.toml"),
-      'description = "invalid metadata fallback"\n',
-      "utf8",
-    );
-    await writeFile(
-      path.join(projectPath, "project.json"),
-      "{not-json",
-      "utf8",
-    );
-
-    expect(
-      operations.resolveProjectTemplateMetadata(projectPath),
-    ).toStrictEqual({
-      description: "invalid metadata fallback",
-    });
-  });
-
-  it("resolves selected generators and project type fallback", () => {
-    const operations = createTemplateValidationMetadataOperations(
-      createTemplateValidationOperations(),
-    );
-    const configuration = {
-      generators: {
-        alpha: {
-          name: "alpha",
-          parameters: {},
-          templateDirectoryPath: "configuration/conformetry-templates/alpha",
-        },
-        beta: {
-          name: "beta",
-          parameters: {},
-          templateDirectoryPath: "configuration/conformetry-templates/beta",
-        },
-      },
-    };
-
-    expect(
-      operations.resolveSelectedGeneratorNames({ configuration }),
-    ).toStrictEqual(["alpha", "beta"]);
-    expect(
-      operations.resolveSelectedGeneratorNames({
-        configuration,
-        templateRuleNames: ["beta", "missing"],
-      }),
-    ).toStrictEqual(["beta"]);
-    expect(
-      operations.resolveProjectType({
-        projectPath: "/workspace/apps/demo",
+      metadataOperations.resolveProjectType({
+        projectPath,
         projectTemplateMetadata: {},
-        workingDirectory: "/workspace",
-      }),
-    ).toBe("apps");
-    expect(
-      operations.resolveProjectType({
-        projectPath: "/workspace/apps/demo",
-        projectTemplateMetadata: { type: "packages" },
-        workingDirectory: "/workspace",
+        workingDirectory,
       }),
     ).toBe("packages");
     expect(
-      operations.resolveProjectType({
-        projectPath: "/workspace",
+      metadataOperations.resolveProjectType({
+        projectPath: workingDirectory,
         projectTemplateMetadata: {},
-        workingDirectory: "/workspace",
+        workingDirectory,
       }),
     ).toBe("applications");
   });
 
-  it("resolves the best matched candidate from inferred and tagged generators", async () => {
-    const templateValidationOperations = createTemplateValidationOperations();
+  it("selects the best matched generator candidate using metadata and candidate ranking", async () => {
     const metadataOperations = createTemplateValidationMetadataOperations(
-      templateValidationOperations,
+      createTemplateValidationOperations(),
     );
-    const temporaryDirectoryPath = await mkdtemp(
-      path.join(tmpdir(), "conformetry-metadata-best-candidate-"),
+    const workingDirectory = await createTemporaryDirectory(
+      "conformetry-metadata-candidate-",
     );
-    createdDirectories.push(temporaryDirectoryPath);
-    const projectPath = path.join(
-      temporaryDirectoryPath,
-      "applications",
-      "demo-project",
+    const projectPath = path.join(workingDirectory, "apps", "demo");
+    const alphaTemplateDirectoryPath = path.join(
+      workingDirectory,
+      "templates",
+      "alpha",
+      "src",
     );
-
+    const betaTemplateDirectoryPath = path.join(
+      workingDirectory,
+      "templates",
+      "beta",
+      "src",
+    );
     await mkdir(path.join(projectPath, "src"), { recursive: true });
-    await writeFile(path.join(projectPath, "src", "index.ts"), "", "utf8");
+    await mkdir(alphaTemplateDirectoryPath, { recursive: true });
+    await mkdir(betaTemplateDirectoryPath, { recursive: true });
+    await writeFile(
+      path.join(projectPath, "src", "index.ts"),
+      "export const project = 'demo';\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(alphaTemplateDirectoryPath, "index.ts"),
+      "export const project = '{{name}}';\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(betaTemplateDirectoryPath, "index.ts"),
+      "export const project = '{{name}}';\n",
+      "utf8",
+    );
     await writeFile(
       path.join(projectPath, "project.json"),
       JSON.stringify({
+        sourceRoot: "apps/demo/src",
         tags: ["generator:beta"],
       }),
       "utf8",
     );
-    await mkdir(
-      path.join(
-        temporaryDirectoryPath,
-        "configuration",
-        "conformetry-templates",
-        "alpha",
-        "src",
-      ),
-      { recursive: true },
-    );
-    await mkdir(
-      path.join(
-        temporaryDirectoryPath,
-        "configuration",
-        "conformetry-templates",
-        "beta",
-        "src",
-      ),
-      { recursive: true },
-    );
-    await writeFile(
-      path.join(
-        temporaryDirectoryPath,
-        "configuration",
-        "conformetry-templates",
-        "alpha",
-        "src",
-        "index.ts",
-      ),
-      "",
-      "utf8",
-    );
-    await writeFile(
-      path.join(
-        temporaryDirectoryPath,
-        "configuration",
-        "conformetry-templates",
-        "beta",
-        "src",
-        "index.ts",
-      ),
-      "",
-      "utf8",
-    );
 
-    const configuration = {
+    const configuration: ConformetryConfiguration = {
       generators: {
         alpha: {
           name: "alpha",
           parameters: {},
-          templateDirectoryPath: "configuration/conformetry-templates/alpha",
+          templateDirectoryPath: "templates/alpha",
         },
         beta: {
           name: "beta",
           parameters: {},
-          templateDirectoryPath: "configuration/conformetry-templates/beta",
+          templateDirectoryPath: "templates/beta",
         },
       },
     };
 
-    const matchedCandidate =
+    const bestCandidate =
       metadataOperations.resolveBestMatchedGeneratorCandidate({
         configuration,
         projectPath,
         selectedGeneratorNames: ["alpha", "beta"],
-        workingDirectory: temporaryDirectoryPath,
+        workingDirectory,
       });
 
-    expect(matchedCandidate?.generatorName).toBe("beta");
+    expect(bestCandidate?.generatorName).toBe("beta");
+    expect(bestCandidate?.existingFileCount).toBe(1);
+
+    const unmatchedCandidate =
+      metadataOperations.resolveBestMatchedGeneratorCandidate({
+        configuration,
+        projectPath,
+        selectedGeneratorNames: ["missing-generator"],
+        workingDirectory,
+      });
+
+    expect(unmatchedCandidate).toBeUndefined();
+  });
+
+  it("converts unknown arrays only when values are arrays", () => {
+    const metadataOperations = createTemplateValidationMetadataOperations(
+      createTemplateValidationOperations(),
+    );
+
+    expect(metadataOperations.toUnknownArray("value")).toBeUndefined();
+    expect(metadataOperations.toUnknownArray([1, "two"])).toStrictEqual([
+      1,
+      "two",
+    ]);
+  });
+
+  it("resolves source-root types only when sourceRoot is present", () => {
+    const metadataOperations = createTemplateValidationMetadataOperations(
+      createTemplateValidationOperations(),
+    );
+
+    expect(metadataOperations.resolveSourceRootType({})).toBeUndefined();
+    expect(
+      metadataOperations.resolveSourceRootType({
+        sourceRoot: "packages/demo/src",
+      }),
+    ).toBe("packages");
   });
 });

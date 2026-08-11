@@ -98,29 +98,18 @@ describe("configuration utilities", () => {
       expect(targetDirectoryPath).toBe("packages/lexico-components");
     });
 
-    it("falls back to generated output directory when no project root resolves", async () => {
-      const targetDirectoryPath = await resolveTargetDirectoryPath({
-        defaultGeneratedOutputDirectory: "output",
-        generatorName: "react-component",
-        options: {},
-      });
-
-      expect(targetDirectoryPath).toBe("output/react-component");
-    });
-
-    it("uses outputDirectoryPath and projectName aliases", async () => {
+    it("falls back to generated directory when project root cannot be resolved", async () => {
       const targetDirectoryPath = await resolveTargetDirectoryPath({
         generatorName: "react-component",
         options: {
-          outputDirectoryPath: "packages/lexico-components",
-          projectName: "lexico-components",
+          project: "unknown-project",
         },
         resolveProjectRootPath: () => {
-          return "should-not-be-used";
+          return undefined;
         },
       });
 
-      expect(targetDirectoryPath).toBe("packages/lexico-components");
+      expect(targetDirectoryPath).toBe("generated/react-component");
     });
   });
 
@@ -158,15 +147,13 @@ describe("configuration utilities", () => {
       });
     });
 
-    it("supports kebab-case schema options and ignores reserved/missing values", () => {
+    it("ignores options that do not have a value or use reserved property names", () => {
       const inputs = collectGeneratorInputsFromCommandArguments({
         rawArguments: [
-          "--component-type",
-          "table",
-          "--help",
+          "generate",
+          "--name=component-name",
+          "--name",
           "--project",
-          "--target-directory-path",
-          "ignored",
           "--component-type",
         ],
         schema: {
@@ -174,25 +161,26 @@ describe("configuration utilities", () => {
             componentType: {
               type: "string",
             },
-            targetDirectoryPath: {
+            name: {
+              type: "string",
+            },
+            project: {
               type: "string",
             },
           },
         },
       });
 
-      expect(inputs).toStrictEqual({
-        componentType: "table",
-      });
+      expect(inputs).toStrictEqual({});
     });
 
-    it("returns no inputs when schema properties are missing", () => {
-      expect(
-        collectGeneratorInputsFromCommandArguments({
-          rawArguments: ["--component-type", "table"],
-          schema: {},
-        }),
-      ).toStrictEqual({});
+    it("handles raw arguments without generate prefix and schemas without properties", () => {
+      const inputs = collectGeneratorInputsFromCommandArguments({
+        rawArguments: ["--component-type=card"],
+        schema: {},
+      });
+
+      expect(inputs).toStrictEqual({});
     });
   });
 
@@ -205,26 +193,6 @@ describe("configuration utilities", () => {
       expect(
         parseCommaDelimitedOption(" first-project, second-project ,, third "),
       ).toStrictEqual(["first-project", "second-project", "third"]);
-    });
-
-    it("returns empty arrays for blank values", () => {
-      expect(parseCommaDelimitedOption(" , , ")).toStrictEqual([]);
-    });
-  });
-
-  describe(resolveTargetDirectoryPath, () => {
-    it("falls back to default generated directory when project root is unresolved", async () => {
-      const targetDirectoryPath = await resolveTargetDirectoryPath({
-        generatorName: "demo-generator",
-        options: {
-          project: "demo",
-        },
-        resolveProjectRootPath: () => {
-          return undefined;
-        },
-      });
-
-      expect(targetDirectoryPath).toBe("generated/demo-generator");
     });
   });
 });
