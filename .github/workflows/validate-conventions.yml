@@ -90,7 +90,7 @@ jobs:
         run: pnpm exec nx run synchronization:start:conformance-generators-check
 
       - name: 👔 Validate Code Conformance
-        run: pnpm exec nx run conformance:start:validator
+        run: pnpm exec nx run codebase:conformetry-validate
 
       - name: 📊 Validate Code Statistics
         run: pnpm exec nx run codebase:measure-code:check
