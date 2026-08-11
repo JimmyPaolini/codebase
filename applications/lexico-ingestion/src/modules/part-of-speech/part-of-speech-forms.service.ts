@@ -1,3 +1,4 @@
+import { Injectable } from "@nestjs/common";
 import * as cheerio from "cheerio";
 import cheerioTableParser from "cheerio-tableparser";
 
@@ -7,9 +8,25 @@ import type { Lexeme } from "@codebase/lexico-entities";
 import type { AnyNode } from "domhandler";
 
 /**
- * Parses Wiktionary inflection tables into nested form objects.
+ * Service that parses Wiktionary inflection tables into nested form objects.
  */
-export class PartOfSpeechFormsParser {
+@Injectable()
+export class PartOfSpeechFormsService {
+  // 🏗 Dependency Injection
+
+  constructor() {}
+
+  // 🔐 Private Fields
+
+  // 🔏 Private Methods
+
+  /**
+   * Checks whether unknown values can be treated as indexed records.
+   */
+  private static isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
+  }
+
   /**
    * Collects table identifiers required by part-of-speech parsing.
    */
@@ -328,10 +345,12 @@ export class PartOfSpeechFormsParser {
     const current = object[identifier];
     object[identifier] = this.sortIdentifiers(
       inflection,
-      isRecord(current) ? current : {},
+      PartOfSpeechFormsService.isRecord(current) ? current : {},
     );
     return object;
   }
+
+  // 🌎 Public Methods
 
   /** Parses non-verb inflection table forms into nested identifiers. */
   public parseGenericForms(args: {
@@ -409,11 +428,4 @@ export class PartOfSpeechFormsParser {
     }
     return forms;
   }
-}
-
-/**
- * Checks whether record in part-of-speech parsing logic.
- */
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }

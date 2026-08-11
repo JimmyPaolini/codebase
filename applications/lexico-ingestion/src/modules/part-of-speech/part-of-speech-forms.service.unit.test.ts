@@ -1,19 +1,24 @@
+import { Test } from "@nestjs/testing";
 import * as cheerio from "cheerio";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { loadCheerioElement } from "../../../testing/mocks";
 
-import { PartOfSpeechFormsParser } from "./part-of-speech.forms-parser";
+import { PartOfSpeechFormsService } from "./part-of-speech-forms.service";
 
 import type { Lexeme } from "@codebase/lexico-entities";
 import type { CheerioAPI } from "cheerio";
 import type { AnyNode } from "domhandler";
 
-describe(PartOfSpeechFormsParser, () => {
-  let parser: PartOfSpeechFormsParser;
+describe(PartOfSpeechFormsService, () => {
+  let parser: PartOfSpeechFormsService;
 
-  beforeEach(() => {
-    parser = new PartOfSpeechFormsParser();
+  beforeEach(async () => {
+    const module = await Test.createTestingModule({
+      providers: [PartOfSpeechFormsService],
+    }).compile();
+
+    parser = await module.resolve(PartOfSpeechFormsService);
   });
 
   it("should initialize the parser instance", () => {

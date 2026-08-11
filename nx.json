@@ -79,8 +79,8 @@
       "options": {
         "templateRuleNamesByProjectTag": {
           "framework:nest-commander": [
-            "nestjs-command-project",
             "nestjs-command-module",
+            "nestjs-command-project",
             "nestjs-service-file",
             "nestjs-service-module"
           ],
@@ -88,8 +88,8 @@
             "jupyter-notebook-application"
           ],
           "generator:nestjs-command-project": [
-            "nestjs-command-project",
             "nestjs-command-module",
+            "nestjs-command-project",
             "nestjs-service-file",
             "nestjs-service-module"
           ],

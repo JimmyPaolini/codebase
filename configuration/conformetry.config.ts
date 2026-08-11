@@ -10,6 +10,9 @@ export const CONFORMETRY_PATTERNS = [
   "configuration/conformetry-templates/**",
 ] as const;
 
+/**
+ * Defines the parameters for a generator using a Zod schema shape and converts it to JSON Schema.
+ */
 function defineParameters(
   shape: z.ZodRawShape,
 ): Record<string, JsonSchemaDefinition> {
@@ -33,6 +36,8 @@ const conformetryConfiguration: ConformetryConfiguration = {
         description: z.string().describe("Application description"),
         name: z.string().describe("Application name in kebab-case"),
       }),
+      templateDirectoryPath:
+        "configuration/conformetry-templates/jupyter-notebook-application",
     },
     "nestjs-command-module": {
       aliases: ["ncm"],
@@ -43,6 +48,8 @@ const conformetryConfiguration: ConformetryConfiguration = {
         name: z.string().describe("Module name in kebab-case"),
         project: z.string().describe("Parent project name in kebab-case"),
       }),
+      templateDirectoryPath:
+        "configuration/conformetry-templates/nestjs-command-module",
     },
     "nestjs-command-project": {
       aliases: ["nca"],
@@ -55,6 +62,8 @@ const conformetryConfiguration: ConformetryConfiguration = {
           .string()
           .describe("Project type (application, package, or tools)"),
       }),
+      templateDirectoryPath:
+        "configuration/conformetry-templates/nestjs-command-project",
     },
     "nestjs-dataloader-module": {
       aliases: ["ndm"],
@@ -65,6 +74,8 @@ const conformetryConfiguration: ConformetryConfiguration = {
         name: z.string().describe("Module name in kebab-case"),
         project: z.string().describe("Parent project name in kebab-case"),
       }),
+      templateDirectoryPath:
+        "configuration/conformetry-templates/nestjs-dataloader-module",
     },
     "nestjs-graphql-application": {
       aliases: ["nga"],
@@ -73,6 +84,8 @@ const conformetryConfiguration: ConformetryConfiguration = {
       parameters: defineParameters({
         name: z.string().describe("Application name in kebab-case"),
       }),
+      templateDirectoryPath:
+        "configuration/conformetry-templates/nestjs-graphql-application",
     },
     "nestjs-graphql-module": {
       aliases: ["ngm"],
@@ -83,6 +96,8 @@ const conformetryConfiguration: ConformetryConfiguration = {
         name: z.string().describe("Module name in kebab-case"),
         project: z.string().describe("Parent project name in kebab-case"),
       }),
+      templateDirectoryPath:
+        "configuration/conformetry-templates/nestjs-graphql-module",
     },
     "nestjs-service-file": {
       aliases: ["nsf"],
@@ -93,6 +108,8 @@ const conformetryConfiguration: ConformetryConfiguration = {
         name: z.string().describe("Service name in kebab-case"),
         project: z.string().describe("Parent project name in kebab-case"),
       }),
+      templateDirectoryPath:
+        "configuration/conformetry-templates/nestjs-service-file",
     },
     "nestjs-service-module": {
       aliases: ["nsm"],
@@ -103,6 +120,8 @@ const conformetryConfiguration: ConformetryConfiguration = {
         name: z.string().describe("Module name in kebab-case"),
         project: z.string().describe("Parent project name in kebab-case"),
       }),
+      templateDirectoryPath:
+        "configuration/conformetry-templates/nestjs-service-module",
     },
     "nestjs-service-project": {
       aliases: ["nsp"],
@@ -115,6 +134,8 @@ const conformetryConfiguration: ConformetryConfiguration = {
           .string()
           .describe("Project type (application, package, or tools)"),
       }),
+      templateDirectoryPath:
+        "configuration/conformetry-templates/nestjs-service-project",
     },
     "react-component": {
       aliases: ["c"],
@@ -124,6 +145,8 @@ const conformetryConfiguration: ConformetryConfiguration = {
         name: z.string().describe("Component name in kebab-case"),
         project: z.string().describe("Parent project name in kebab-case"),
       }),
+      templateDirectoryPath:
+        "configuration/conformetry-templates/react-component",
     },
   },
 };

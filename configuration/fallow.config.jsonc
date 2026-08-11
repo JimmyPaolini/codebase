@@ -199,6 +199,10 @@
       "extends": "CommandRunner",
       "members": ["run"],
     },
+    {
+      "extends": "ConsoleLogger",
+      "members": ["debug", "error", "log", "setContext", "verbose", "warn"],
+    },
     "ingest",
   ],
 }
