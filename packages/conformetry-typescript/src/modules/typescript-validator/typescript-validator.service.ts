@@ -104,11 +104,11 @@ export class TypeScriptValidatorService {
     );
   }
   /** Internal helper method. */
-  private findMatchingKeyChild(args: {
+  private findMatchingKeyChildren(args: {
     readonly instanceChildren: Node[];
     readonly templateNodeKey: string;
-  }): Node | undefined {
-    return args.instanceChildren.find((instanceChild) => {
+  }): Node[] {
+    return args.instanceChildren.filter((instanceChild) => {
       return this.getNodeKey(instanceChild) === args.templateNodeKey;
     });
   }
@@ -402,19 +402,19 @@ export class TypeScriptValidatorService {
     const templateNodeKey = this.getNodeKey(args.templateChild);
 
     if (templateNodeKey !== null) {
-      const matchingKeyChild = this.findMatchingKeyChild({
+      const matchingKeyChildren = this.findMatchingKeyChildren({
         instanceChildren: args.instanceChildren,
         templateNodeKey,
       });
 
-      if (matchingKeyChild === undefined) {
+      if (matchingKeyChildren.length === 0) {
         const kindLabel = this.getKindLabel(args.templateChild);
         return [`Missing ${kindLabel} "${templateNodeKey}"`];
       }
 
-      return this.validateDepthFirstSearch({
-        instanceNode: matchingKeyChild,
-        templateNode: args.templateChild,
+      return this.findMinimumViolationCandidate({
+        sameKindChildren: matchingKeyChildren,
+        templateChild: args.templateChild,
       });
     }
 

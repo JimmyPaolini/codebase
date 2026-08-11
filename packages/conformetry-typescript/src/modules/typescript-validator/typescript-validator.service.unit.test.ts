@@ -53,10 +53,10 @@ interface TypeScriptValidatorServiceInternals {
     readonly position: number;
     readonly text: string;
   }[];
-  findMatchingKeyChild(args: {
+  findMatchingKeyChildren(args: {
     readonly instanceChildren: Node[];
     readonly templateNodeKey: string;
-  }): Node | undefined;
+  }): Node[];
   findMinimumViolationCandidate(args: {
     readonly sameKindChildren: Node[];
     readonly templateChild: Node;
@@ -685,11 +685,11 @@ describe(TypeScriptValidatorService, () => {
       internalService.getChildren(templateCommentFile).length,
     ).toBeGreaterThan(0);
     expect(
-      internalService.findMatchingKeyChild({
+      internalService.findMatchingKeyChildren({
         instanceChildren: internalService.getChildren(instanceCommentFile),
         templateNodeKey: "missing-key",
       }),
-    ).toBeUndefined();
+    ).toStrictEqual([]);
 
     const importSourceFile = createTypeScriptSourceFile(
       'import { item } from "./module";',
