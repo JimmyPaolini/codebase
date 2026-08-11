@@ -267,10 +267,12 @@ describe(ValidationService, () => {
     const workingDirectory = createTemporaryDirectoryPath();
     mockLoadConformetryConfiguration.mockResolvedValue({
       generators: {
+        "jupyter-notebook-application": {},
         "nestjs-service-module": {},
         "react-component": {},
       },
     });
+    writeNxJsonConfiguration(workingDirectory);
     mockTypeScriptValidate.mockResolvedValue(createPassingValidationResult());
     mockPythonValidate.mockResolvedValue(createPassingValidationResult());
     mockMarkdownValidate.mockResolvedValue(createPassingValidationResult());
@@ -281,6 +283,7 @@ describe(ValidationService, () => {
       projectMetadata: {
         name: "affirmations",
         sourceRoot: "applications/affirmations",
+        tags: ["generator:jupyter-notebook-application", "language:python"],
       },
       relativeProjectPath: "applications/affirmations",
       workingDirectory,
@@ -289,6 +292,7 @@ describe(ValidationService, () => {
       projectMetadata: {
         name: "conformetry",
         sourceRoot: "packages/conformetry",
+        tags: ["generator:nestjs-service-module"],
       },
       relativeProjectPath: "packages/conformetry",
       workingDirectory,
@@ -311,7 +315,10 @@ describe(ValidationService, () => {
     expect(mockTypeScriptValidate).toHaveBeenCalledWith({
       configurationPath: "configuration/custom.config.ts",
       filePaths: ["applications/affirmations", "packages/conformetry"],
-      templateRuleNames: ["nestjs-service-module", "react-component"],
+      templateRuleNames: [
+        "jupyter-notebook-application",
+        "nestjs-service-module",
+      ],
       workingDirectory,
     });
     expect(result.ok).toBe(true);
@@ -358,15 +365,26 @@ describe(ValidationService, () => {
   });
 
   it("loads configuration and routes rules/projects before running plugin validation", async () => {
+    const workingDirectory = createTemporaryDirectoryPath();
     mockLoadConformetryConfiguration.mockResolvedValue({
       generators: {
-        "nestjs-service-module": {},
+        "nestjs-command-project": {},
         "react-component": {},
       },
     });
+    writeNxJsonConfiguration(workingDirectory);
+    writeProjectMetadata({
+      projectMetadata: {
+        name: "caelundas",
+        sourceRoot: "applications/caelundas",
+        tags: ["framework:nest-commander", "generator:nestjs-command-project"],
+      },
+      relativeProjectPath: "applications/caelundas",
+      workingDirectory,
+    });
 
     mockJsonValidate.mockResolvedValue({
-      checkedPaths: ["packages/conformetry"],
+      checkedPaths: ["applications/caelundas"],
       ok: true,
       pluginName: "json",
       violations: [],
@@ -383,9 +401,13 @@ describe(ValidationService, () => {
 
     const result = await validationService.validateConfiguredSelection({
       configurationPath: "configuration/custom.config.ts",
-      requestedProjectPaths: ["packages/conformetry"],
-      requestedRuleNames: ["json", "react-component", "non-existent-rule"],
-      workingDirectory: process.cwd(),
+      requestedProjectPaths: ["caelundas"],
+      requestedRuleNames: [
+        "json",
+        "nestjs-command-project",
+        "non-existent-rule",
+      ],
+      workingDirectory,
     });
 
     expect(mockLoadConformetryConfiguration).toHaveBeenCalledWith(
@@ -394,43 +416,73 @@ describe(ValidationService, () => {
     expect(mockJsonValidate).toHaveBeenCalledTimes(1);
     expect(result.ok).toBe(true);
     expect(result.pluginResults[0]?.checkedPaths).toStrictEqual([
-      "packages/conformetry",
+      "applications/caelundas",
     ]);
   });
 
   it("uses default plugins, template rules, and working directory when optional filters are omitted", async () => {
+    const workingDirectory = createTemporaryDirectoryPath();
     mockLoadConformetryConfiguration.mockResolvedValue({
       generators: {
-        "nestjs-service-module": {},
+        "jupyter-notebook-application": {},
+        "nestjs-command-project": {},
         "react-component": {},
       },
     });
+    writeNxJsonConfiguration(workingDirectory);
+    writeProjectMetadata({
+      projectMetadata: {
+        name: "affirmations",
+        sourceRoot: "applications/affirmations",
+        tags: ["generator:jupyter-notebook-application", "language:python"],
+      },
+      relativeProjectPath: "applications/affirmations",
+      workingDirectory,
+    });
+    writeProjectMetadata({
+      projectMetadata: {
+        name: "caelundas",
+        sourceRoot: "applications/caelundas",
+        tags: ["framework:nest-commander", "generator:nestjs-command-project"],
+      },
+      relativeProjectPath: "applications/caelundas",
+      workingDirectory,
+    });
+    writeProjectMetadata({
+      projectMetadata: {
+        name: "lexico",
+        sourceRoot: "applications/lexico/src",
+        tags: ["framework:react", "language:typescript"],
+      },
+      relativeProjectPath: "applications/lexico",
+      workingDirectory,
+    });
     mockTypeScriptValidate.mockResolvedValue({
-      checkedPaths: [process.cwd()],
+      checkedPaths: ["applications/affirmations", "applications/caelundas"],
       ok: true,
       pluginName: "typescript",
       violations: [],
     });
     mockPythonValidate.mockResolvedValue({
-      checkedPaths: [process.cwd()],
+      checkedPaths: ["applications/affirmations", "applications/caelundas"],
       ok: true,
       pluginName: "python",
       violations: [],
     });
     mockMarkdownValidate.mockResolvedValue({
-      checkedPaths: [process.cwd()],
+      checkedPaths: ["applications/affirmations", "applications/caelundas"],
       ok: true,
       pluginName: "markdown",
       violations: [],
     });
     mockJsonValidate.mockResolvedValue({
-      checkedPaths: [process.cwd()],
+      checkedPaths: ["applications/affirmations", "applications/caelundas"],
       ok: true,
       pluginName: "json",
       violations: [],
     });
     mockTextValidate.mockResolvedValue({
-      checkedPaths: [process.cwd()],
+      checkedPaths: ["applications/affirmations", "applications/caelundas"],
       ok: true,
       pluginName: "text",
       violations: [],
@@ -447,38 +499,53 @@ describe(ValidationService, () => {
 
     const result = await validationService.validateConfiguredSelection({
       configurationPath: "configuration/custom.config.ts",
-      workingDirectory: process.cwd(),
+      workingDirectory,
     });
 
     expect(mockTypeScriptValidate).toHaveBeenCalledWith({
       configurationPath: "configuration/custom.config.ts",
-      filePaths: ["."],
-      templateRuleNames: ["nestjs-service-module", "react-component"],
-      workingDirectory: process.cwd(),
+      filePaths: ["applications/affirmations", "applications/caelundas"],
+      templateRuleNames: [
+        "jupyter-notebook-application",
+        "nestjs-command-project",
+      ],
+      workingDirectory,
     });
     expect(mockPythonValidate).toHaveBeenCalledWith({
       configurationPath: "configuration/custom.config.ts",
-      filePaths: ["."],
-      templateRuleNames: ["nestjs-service-module", "react-component"],
-      workingDirectory: process.cwd(),
+      filePaths: ["applications/affirmations", "applications/caelundas"],
+      templateRuleNames: [
+        "jupyter-notebook-application",
+        "nestjs-command-project",
+      ],
+      workingDirectory,
     });
     expect(mockMarkdownValidate).toHaveBeenCalledWith({
       configurationPath: "configuration/custom.config.ts",
-      filePaths: ["."],
-      templateRuleNames: ["nestjs-service-module", "react-component"],
-      workingDirectory: process.cwd(),
+      filePaths: ["applications/affirmations", "applications/caelundas"],
+      templateRuleNames: [
+        "jupyter-notebook-application",
+        "nestjs-command-project",
+      ],
+      workingDirectory,
     });
     expect(mockJsonValidate).toHaveBeenCalledWith({
       configurationPath: "configuration/custom.config.ts",
-      filePaths: ["."],
-      templateRuleNames: ["nestjs-service-module", "react-component"],
-      workingDirectory: process.cwd(),
+      filePaths: ["applications/affirmations", "applications/caelundas"],
+      templateRuleNames: [
+        "jupyter-notebook-application",
+        "nestjs-command-project",
+      ],
+      workingDirectory,
     });
     expect(mockTextValidate).toHaveBeenCalledWith({
       configurationPath: "configuration/custom.config.ts",
-      filePaths: ["."],
-      templateRuleNames: ["nestjs-service-module", "react-component"],
-      workingDirectory: process.cwd(),
+      filePaths: ["applications/affirmations", "applications/caelundas"],
+      templateRuleNames: [
+        "jupyter-notebook-application",
+        "nestjs-command-project",
+      ],
+      workingDirectory,
     });
     expect(result.ok).toBe(true);
     expect(result.pluginResults).toHaveLength(5);
@@ -500,6 +567,25 @@ function createTemporaryDirectoryPath(): string {
   );
   temporaryDirectoryPaths.push(temporaryDirectoryPath);
   return temporaryDirectoryPath;
+}
+
+function writeNxJsonConfiguration(workingDirectory: string): void {
+  fs.writeFileSync(
+    path.join(workingDirectory, "nx.json"),
+    JSON.stringify({
+      plugins: [
+        {
+          options: {
+            templateRuleNamesByProjectTag: {
+              "framework:nest-commander": ["nestjs-command-project"],
+            },
+          },
+          plugin: "@jimmypaolini/conformetry-nx",
+        },
+      ],
+    }),
+    "utf8",
+  );
 }
 
 function writeProjectMetadata(args: {

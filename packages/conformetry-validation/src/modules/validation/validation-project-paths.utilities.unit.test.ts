@@ -4,11 +4,14 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { discoverWorkspaceProjectPaths } from "./validation-project-paths.utilities.js";
+import {
+  discoverWorkspaceProjectPaths,
+  resolveValidationSelection,
+} from "./validation-project-paths.utilities.js";
 
 const temporaryDirectoryPaths: string[] = [];
 
-describe(discoverWorkspaceProjectPaths, () => {
+describe("validation project path utilities", () => {
   afterEach(() => {
     for (const temporaryDirectoryPath of temporaryDirectoryPaths) {
       fs.rmSync(temporaryDirectoryPath, { force: true, recursive: true });
@@ -59,6 +62,105 @@ describe(discoverWorkspaceProjectPaths, () => {
 
     expect(discoverWorkspaceProjectPaths(workingDirectory)).toStrictEqual([]);
   });
+
+  it("routes all-project validation to only tagged conformetry projects", () => {
+    const workingDirectory = createTemporaryDirectoryPath();
+    writeNxJsonConfiguration(workingDirectory);
+    writeProjectMetadata({
+      projectMetadata: {
+        name: "caelundas",
+        sourceRoot: "applications/caelundas",
+        tags: ["framework:nest-commander", "generator:nestjs-command-project"],
+      },
+      relativeProjectPath: "applications/caelundas",
+      workingDirectory,
+    });
+    writeProjectMetadata({
+      projectMetadata: {
+        name: "lexico",
+        sourceRoot: "applications/lexico/src",
+        tags: ["framework:react", "language:typescript"],
+      },
+      relativeProjectPath: "applications/lexico",
+      workingDirectory,
+    });
+    writeProjectMetadata({
+      projectMetadata: {
+        name: "affirmations",
+        sourceRoot: "applications/affirmations",
+        tags: ["generator:jupyter-notebook-application", "language:python"],
+      },
+      relativeProjectPath: "applications/affirmations",
+      workingDirectory,
+    });
+    writeProjectMetadata({
+      projectMetadata: {
+        name: "nestjs-service-project",
+        sourceRoot:
+          "configuration/conformetry-templates/nestjs-service-project",
+        tags: ["generator:nestjs-service-project"],
+      },
+      relativeProjectPath:
+        "configuration/conformetry-templates/nestjs-service-project",
+      workingDirectory,
+    });
+
+    expect(
+      resolveValidationSelection({
+        configuredTemplateRuleNames: [
+          "jupyter-notebook-application",
+          "nestjs-command-module",
+          "nestjs-command-project",
+          "nestjs-service-file",
+          "nestjs-service-module",
+          "react-component",
+        ],
+        workingDirectory,
+      }),
+    ).toStrictEqual({
+      projectPaths: ["applications/affirmations", "applications/caelundas"],
+      templateRuleNames: [
+        "jupyter-notebook-application",
+        "nestjs-command-module",
+        "nestjs-command-project",
+        "nestjs-service-file",
+        "nestjs-service-module",
+      ],
+    });
+  });
+
+  it("filters requested rules to those applicable to selected projects", () => {
+    const workingDirectory = createTemporaryDirectoryPath();
+    writeNxJsonConfiguration(workingDirectory);
+    writeProjectMetadata({
+      projectMetadata: {
+        name: "caelundas",
+        sourceRoot: "applications/caelundas",
+        tags: ["framework:nest-commander", "generator:nestjs-command-project"],
+      },
+      relativeProjectPath: "applications/caelundas",
+      workingDirectory,
+    });
+
+    expect(
+      resolveValidationSelection({
+        configuredTemplateRuleNames: [
+          "nestjs-command-project",
+          "react-component",
+        ],
+        requestedProjectPaths: ["caelundas"],
+        requestedRuleNames: [
+          "json",
+          "react-component",
+          "nestjs-command-project",
+        ],
+        workingDirectory,
+      }),
+    ).toStrictEqual({
+      projectPaths: ["applications/caelundas"],
+      templateRuleNames: ["nestjs-command-project"],
+    });
+  });
 });
 
 function createTemporaryDirectoryPath(): string {
@@ -67,6 +169,30 @@ function createTemporaryDirectoryPath(): string {
   );
   temporaryDirectoryPaths.push(temporaryDirectoryPath);
   return temporaryDirectoryPath;
+}
+
+function writeNxJsonConfiguration(workingDirectory: string): void {
+  fs.writeFileSync(
+    path.join(workingDirectory, "nx.json"),
+    JSON.stringify({
+      plugins: [
+        {
+          options: {
+            templateRuleNamesByProjectTag: {
+              "framework:nest-commander": [
+                "nestjs-command-module",
+                "nestjs-command-project",
+                "nestjs-service-file",
+                "nestjs-service-module",
+              ],
+            },
+          },
+          plugin: "@jimmypaolini/conformetry-nx",
+        },
+      ],
+    }),
+    "utf8",
+  );
 }
 
 function writeProjectMetadata(args: {

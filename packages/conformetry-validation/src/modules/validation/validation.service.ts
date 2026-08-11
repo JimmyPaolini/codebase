@@ -6,7 +6,7 @@ import { TextValidatorService } from "@jimmypaolini/conformetry-text";
 import { TypeScriptValidatorService } from "@jimmypaolini/conformetry-typescript";
 import { Injectable } from "@nestjs/common";
 
-import { discoverWorkspaceProjectPaths } from "./validation-project-paths.utilities.js";
+import { resolveValidationSelection } from "./validation-project-paths.utilities.js";
 
 import type {
   RunValidationArguments,
@@ -121,11 +121,19 @@ export class ValidationService {
             pluginScopedRules.includes(plugin.descriptor.name),
           )
         : plugins;
-    const requestedProjectPaths = args.requestedProjectPaths ?? [];
-    const projectPaths =
-      requestedProjectPaths.length > 0
-        ? requestedProjectPaths
-        : discoverWorkspaceProjectPaths(args.workingDirectory);
+    const { projectPaths, templateRuleNames } = resolveValidationSelection({
+      configuredTemplateRuleNames: Object.keys(
+        conformetryConfiguration.generators,
+      ),
+      ...(args.requestedProjectPaths === undefined
+        ? {}
+        : { requestedProjectPaths: args.requestedProjectPaths }),
+      ...(args.requestedRuleNames === undefined
+        ? {}
+        : { requestedRuleNames: args.requestedRuleNames }),
+      workingDirectory: args.workingDirectory,
+    });
+
     if (projectPaths.length === 0) {
       return {
         ok: false,
@@ -141,16 +149,6 @@ export class ValidationService {
         ],
       };
     }
-    const configuredTemplateRuleNames = Object.keys(
-      conformetryConfiguration.generators,
-    );
-    const templateRuleNames =
-      requestedRuleNames.length > 0
-        ? requestedRuleNames.filter((ruleName) =>
-            configuredTemplateRuleNames.includes(ruleName),
-          )
-        : configuredTemplateRuleNames;
-
     return await this.validate({
       configurationPath: args.configurationPath,
       plugins: filteredPlugins,

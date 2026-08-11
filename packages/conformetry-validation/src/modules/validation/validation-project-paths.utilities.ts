@@ -1,39 +1,102 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import {
+  PROJECT_METADATA_FILENAME,
+  SKIPPED_DIRECTORY_NAMES,
+} from "./validation-project-paths.constants.js";
+import {
+  isPluginScopedRuleName,
+  normalizeProjectPath,
+  readTemplateRuleNamesByProjectTag,
+  resolveApplicableTemplateRuleNames,
+  resolveMatchedProjects,
+  resolveProjectPaths,
+} from "./validation-project-selection.utilities.js";
+
+import type { WorkspaceProjectMetadata } from "./validation-project-paths.types.js";
+
 /**
  * Discovers real workspace project roots by scanning project.json metadata.
  */
 export function discoverWorkspaceProjectPaths(
   workingDirectory: string,
 ): string[] {
-  const discoveredProjectPaths = new Set<string>();
-  const projectMetadataFilename = "project.json";
-  const skippedDirectoryNames = new Set<string>([
-    ".git",
-    "dist",
-    "node_modules",
-  ]);
-
-  collectWorkspaceProjectPaths({
-    currentDirectory: workingDirectory,
-    discoveredProjectPaths,
-    projectMetadataFilename,
-    skippedDirectoryNames,
-    workingDirectory,
-  });
-
-  return [...discoveredProjectPaths].toSorted();
+  return discoverWorkspaceProjects(workingDirectory).map(
+    (workspaceProject) => workspaceProject.rootPath,
+  );
 }
 
 /**
- * Recursively scans a directory tree for project.json files.
+ * Resolves the validation project paths and template rules that apply to the
+ * selected projects.
  */
-function collectWorkspaceProjectPaths(args: {
+export function resolveValidationSelection(args: {
+  configuredTemplateRuleNames: string[];
+  requestedProjectPaths?: string[];
+  requestedRuleNames?: string[];
+  workingDirectory: string;
+}): {
+  projectPaths: string[];
+  templateRuleNames: string[];
+} {
+  const workspaceProjects = discoverWorkspaceProjects(args.workingDirectory);
+  const templateRuleNamesByProjectTag = readTemplateRuleNamesByProjectTag(
+    args.workingDirectory,
+  );
+  const requestedProjectPaths = args.requestedProjectPaths ?? [];
+  const requestedRuleNames = args.requestedRuleNames ?? [];
+  const requestedTemplateRuleNames = requestedRuleNames.filter(
+    (requestedRuleName) => !isPluginScopedRuleName(requestedRuleName),
+  );
+  const normalizedRequestedTemplateRuleNames =
+    requestedTemplateRuleNames.filter((requestedRuleName) =>
+      args.configuredTemplateRuleNames.includes(requestedRuleName),
+    );
+  const matchedProjects =
+    requestedProjectPaths.length > 0
+      ? resolveMatchedProjects({
+          projectSelectors: requestedProjectPaths,
+          workingDirectory: args.workingDirectory,
+          workspaceProjects,
+        })
+      : filterProjectsForAutomaticValidation({
+          configuredTemplateRuleNames: args.configuredTemplateRuleNames,
+          requestedTemplateRuleNames: normalizedRequestedTemplateRuleNames,
+          ...(templateRuleNamesByProjectTag === undefined
+            ? {}
+            : { templateRuleNamesByProjectTag }),
+          workspaceProjects,
+        });
+  const projectPaths = resolveProjectPaths({
+    matchedProjects,
+    projectSelectors: requestedProjectPaths,
+    workingDirectory: args.workingDirectory,
+  });
+  const applicableTemplateRuleNames =
+    resolveApplicableTemplateRuleNamesForProjects({
+      configuredTemplateRuleNames: args.configuredTemplateRuleNames,
+      matchedProjects,
+      ...(templateRuleNamesByProjectTag === undefined
+        ? {}
+        : { templateRuleNamesByProjectTag }),
+    });
+  const templateRuleNames = resolveTemplateRuleNames({
+    applicableTemplateRuleNames,
+    matchedProjects,
+    requestedTemplateRuleNames: normalizedRequestedTemplateRuleNames,
+  });
+
+  return { projectPaths, templateRuleNames };
+}
+
+/**
+ * Collects workspace projects from a single directory entry batch.
+ */
+function collectWorkspaceProjectsFromDirectory(args: {
   currentDirectory: string;
-  discoveredProjectPaths: Set<string>;
-  projectMetadataFilename: string;
-  skippedDirectoryNames: Set<string>;
+  discoveredProjects: WorkspaceProjectMetadata[];
+  pendingDirectories: string[];
   workingDirectory: string;
 }): void {
   const directoryEntries = fs.readdirSync(args.currentDirectory, {
@@ -44,14 +107,8 @@ function collectWorkspaceProjectPaths(args: {
     const entryPath = path.join(args.currentDirectory, directoryEntry.name);
 
     if (directoryEntry.isDirectory()) {
-      if (!args.skippedDirectoryNames.has(directoryEntry.name)) {
-        collectWorkspaceProjectPaths({
-          currentDirectory: entryPath,
-          discoveredProjectPaths: args.discoveredProjectPaths,
-          projectMetadataFilename: args.projectMetadataFilename,
-          skippedDirectoryNames: args.skippedDirectoryNames,
-          workingDirectory: args.workingDirectory,
-        });
+      if (!SKIPPED_DIRECTORY_NAMES.has(directoryEntry.name)) {
+        args.pendingDirectories.push(entryPath);
       }
 
       continue;
@@ -59,22 +116,113 @@ function collectWorkspaceProjectPaths(args: {
 
     if (
       !directoryEntry.isFile() ||
-      directoryEntry.name !== args.projectMetadataFilename
+      directoryEntry.name !== PROJECT_METADATA_FILENAME
     ) {
       continue;
     }
 
-    const projectPath = path.dirname(entryPath);
     const projectMetadata = readProjectMetadata(entryPath);
 
     if (!isWorkspaceProjectMetadata(projectMetadata)) {
       continue;
     }
 
-    args.discoveredProjectPaths.add(
-      normalizeProjectPath(path.relative(args.workingDirectory, projectPath)),
-    );
+    args.discoveredProjects.push({
+      name: projectMetadata.name,
+      rootPath: normalizeProjectPath(
+        path.relative(args.workingDirectory, path.dirname(entryPath)),
+      ),
+      sourceRoot: normalizeProjectPath(projectMetadata.sourceRoot),
+      tags: projectMetadata.tags ?? [],
+    });
   }
+}
+
+/**
+ * Discovers real workspace projects by scanning project.json metadata.
+ */
+function discoverWorkspaceProjects(
+  workingDirectory: string,
+): WorkspaceProjectMetadata[] {
+  const discoveredProjects: WorkspaceProjectMetadata[] = [];
+  const pendingDirectories = [workingDirectory];
+
+  while (pendingDirectories.length > 0) {
+    const currentDirectory = pendingDirectories.pop();
+
+    if (currentDirectory === undefined) {
+      continue;
+    }
+
+    collectWorkspaceProjectsFromDirectory({
+      currentDirectory,
+      discoveredProjects,
+      pendingDirectories,
+      workingDirectory,
+    });
+  }
+
+  return discoveredProjects.toSorted((leftProject, rightProject) =>
+    leftProject.rootPath.localeCompare(rightProject.rootPath),
+  );
+}
+
+/**
+ * Filters workspace projects for the default "validate everything relevant"
+ * flow when the caller did not specify project selectors.
+ */
+function filterProjectsForAutomaticValidation(args: {
+  configuredTemplateRuleNames: string[];
+  requestedTemplateRuleNames: string[];
+  templateRuleNamesByProjectTag?: Readonly<Record<string, readonly string[]>>;
+  workspaceProjects: WorkspaceProjectMetadata[];
+}): WorkspaceProjectMetadata[] {
+  return args.workspaceProjects.filter((workspaceProject) => {
+    if (
+      workspaceProject.rootPath.startsWith(
+        "configuration/conformetry-templates/",
+      )
+    ) {
+      return false;
+    }
+
+    const applicableTemplateRuleNames = resolveApplicableTemplateRuleNames({
+      configuredTemplateRuleNames: args.configuredTemplateRuleNames,
+      projectTags: workspaceProject.tags,
+      ...(args.templateRuleNamesByProjectTag === undefined
+        ? {}
+        : {
+            templateRuleNamesByProjectTag: args.templateRuleNamesByProjectTag,
+          }),
+    });
+    const templateRuleNamesToMatch =
+      args.requestedTemplateRuleNames.length > 0
+        ? args.requestedTemplateRuleNames
+        : applicableTemplateRuleNames;
+
+    return templateRuleNamesToMatch.some((templateRuleName) =>
+      applicableTemplateRuleNames.includes(templateRuleName),
+    );
+  });
+}
+
+/**
+ * Returns whether a value is a string array.
+ */
+function isStringArray(value: unknown): value is string[] {
+  if (!Array.isArray(value)) {
+    return false;
+  }
+
+  const candidateEntries: unknown[] = value;
+
+  for (const entry of candidateEntries) {
+    if (typeof entry !== "string") {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 /**
@@ -85,6 +233,7 @@ function isWorkspaceProjectMetadata(
 ): projectMetadata is {
   name: string;
   sourceRoot: string;
+  tags?: string[];
 } {
   if (typeof projectMetadata !== "object" || projectMetadata === null) {
     return false;
@@ -93,27 +242,24 @@ function isWorkspaceProjectMetadata(
   const projectMetadataRecord = projectMetadata as {
     name?: unknown;
     sourceRoot?: unknown;
+    tags?: unknown;
   };
+  const tags = isStringArray(projectMetadataRecord.tags)
+    ? projectMetadataRecord.tags
+    : undefined;
 
   return (
     typeof projectMetadataRecord.name === "string" &&
-    typeof projectMetadataRecord.sourceRoot === "string"
+    typeof projectMetadataRecord.sourceRoot === "string" &&
+    (projectMetadataRecord.tags === undefined || tags !== undefined)
   );
 }
 
 /**
- * Normalizes a discovered project path to a workspace-relative value.
+ * Reads and parses a JSON file.
  */
-function normalizeProjectPath(projectPath: string): string {
-  const normalizedPath = path.normalize(projectPath).replaceAll("\\", "/");
-
-  if (normalizedPath === ".") {
-    return ".";
-  }
-
-  return normalizedPath.startsWith("./")
-    ? normalizedPath.slice(2)
-    : normalizedPath;
+function readJsonFile(filePath: string): unknown {
+  return JSON.parse(fs.readFileSync(filePath, "utf8")) as unknown;
 }
 
 /**
@@ -121,8 +267,52 @@ function normalizeProjectPath(projectPath: string): string {
  */
 function readProjectMetadata(projectMetadataPath: string): unknown {
   try {
-    return JSON.parse(fs.readFileSync(projectMetadataPath, "utf8")) as unknown;
+    return readJsonFile(projectMetadataPath);
   } catch {
     return undefined;
   }
+}
+
+/**
+ * Resolves the configured template rules that apply across the matched projects.
+ */
+function resolveApplicableTemplateRuleNamesForProjects(args: {
+  configuredTemplateRuleNames: string[];
+  matchedProjects: WorkspaceProjectMetadata[];
+  templateRuleNamesByProjectTag?: Readonly<Record<string, readonly string[]>>;
+}): string[] {
+  return args.configuredTemplateRuleNames.filter((configuredTemplateRuleName) =>
+    args.matchedProjects.some((matchedProject) =>
+      resolveApplicableTemplateRuleNames({
+        configuredTemplateRuleNames: args.configuredTemplateRuleNames,
+        projectTags: matchedProject.tags,
+        ...(args.templateRuleNamesByProjectTag === undefined
+          ? {}
+          : {
+              templateRuleNamesByProjectTag: args.templateRuleNamesByProjectTag,
+            }),
+      }).includes(configuredTemplateRuleName),
+    ),
+  );
+}
+
+/**
+ * Resolves the final template-rule selection after routing.
+ */
+function resolveTemplateRuleNames(args: {
+  applicableTemplateRuleNames: string[];
+  matchedProjects: WorkspaceProjectMetadata[];
+  requestedTemplateRuleNames: string[];
+}): string[] {
+  if (args.requestedTemplateRuleNames.length === 0) {
+    return args.applicableTemplateRuleNames;
+  }
+
+  if (args.matchedProjects.length === 0) {
+    return args.requestedTemplateRuleNames;
+  }
+
+  return args.requestedTemplateRuleNames.filter((requestedTemplateRuleName) =>
+    args.applicableTemplateRuleNames.includes(requestedTemplateRuleName),
+  );
 }
