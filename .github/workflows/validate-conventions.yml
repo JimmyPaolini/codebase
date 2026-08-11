@@ -78,19 +78,19 @@ jobs:
           echo "✅ All required sections present"
 
       - name: 🏛️ Validate Convention Configuration
-        run: npx nx run synchronization:start:conventional-config-check
+        run: pnpm exec nx run synchronization:start:conventional-config-check
 
       - name: 📋 Validate Pull Request Template
-        run: npx nx run synchronization:start:pull-request-template-check
+        run: pnpm exec nx run synchronization:start:pull-request-template-check
 
       - name: 💡 Validate Agent Skills
-        run: npx nx run synchronization:start:agent-skills-check
+        run: pnpm exec nx run synchronization:start:agent-skills-check
 
       - name: 🧩 Validate Conformance Generators
-        run: npx nx run synchronization:start:conformance-generators-check
+        run: pnpm exec nx run synchronization:start:conformance-generators-check
 
       - name: 👔 Validate Code Conformance
-        run: npx nx run conformance:start:validator
+        run: pnpm exec nx run conformance:start:validator
 
       - name: 📊 Validate Code Statistics
-        run: npx nx run codebase:measure-code:check
+        run: pnpm exec nx run codebase:measure-code:check

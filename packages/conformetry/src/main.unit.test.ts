@@ -28,6 +28,12 @@ vi.mock("@nestjs/common", () => {
 
   return {
     ConsoleLogger: MockConsoleLogger,
+    Injectable: (options?: unknown) => {
+      return (target: unknown): unknown => target;
+    },
+    Scope: {
+      TRANSIENT: "TRANSIENT",
+    },
   };
 });
 
@@ -105,6 +111,9 @@ describe("main", () => {
   });
 
   it("wires command error handler to mark process as failed", async () => {
+    const { LoggerService } = await import("./modules/logger/logger.service");
+    const errorSpy = vi.spyOn(LoggerService.prototype, "error");
+
     await importMainModule();
 
     const runOptions = getRunOptions();
@@ -113,10 +122,14 @@ describe("main", () => {
     runOptions.errorHandler(failure);
 
     expect(process.exitCode).toBe(1);
-    expect(mockLoggerError).toHaveBeenCalledWith(failure);
+    expect(errorSpy).toHaveBeenCalledWith(failure);
+    errorSpy.mockRestore();
   });
 
   it("wires service error handler to mark process as failed", async () => {
+    const { LoggerService } = await import("./modules/logger/logger.service");
+    const errorSpy = vi.spyOn(LoggerService.prototype, "error");
+
     await importMainModule();
 
     const runOptions = getRunOptions();
@@ -125,7 +138,8 @@ describe("main", () => {
     runOptions.serviceErrorHandler(failure);
 
     expect(process.exitCode).toBe(1);
-    expect(mockLoggerError).toHaveBeenCalledWith(failure);
+    expect(errorSpy).toHaveBeenCalledWith(failure);
+    errorSpy.mockRestore();
   });
 
   describe("wrapper target wiring", () => {

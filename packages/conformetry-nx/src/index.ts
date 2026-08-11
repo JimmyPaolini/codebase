@@ -18,6 +18,9 @@ import type {
   Tree,
 } from "@nx/devkit";
 
+/**
+ * Executes a workspace generator by name, passing the provided options and tree.
+ */
 async function runWorkspaceGeneratorImplementation(args: {
   generatorName: string;
   options: Record<string, unknown> | undefined;

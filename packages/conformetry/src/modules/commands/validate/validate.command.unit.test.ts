@@ -47,6 +47,7 @@ vi.mock("@nestjs/common", async () => {
 
 vi.mock("@jimmypaolini/conformetry-validation", () => {
   return {
+    ValidationModule: class ValidationModule {},
     ValidationService: class ValidationService {
       validateConfiguredSelection = mockValidateConfiguredSelection;
     },
@@ -68,6 +69,7 @@ vi.mock("@jimmypaolini/conformetry-configuration", () => {
   }
 
   return {
+    ConfigurationModule: class ConfigurationModule {},
     ConfigurationService: class ConfigurationService {
       loadConformetryConfiguration = mockLoadConformetryConfiguration;
     },
@@ -289,5 +291,28 @@ describe("validateCommand", () => {
         );
       }
     }
+  });
+
+  it("exports the validate module for Nest registration", async () => {
+    const { ValidateModule } = await import("./validate.module");
+    const { ValidateCommand } = await import("./validate.command");
+    const providerDefinitions = Reflect.getMetadata(
+      "providers",
+      ValidateModule,
+    ) as Array<{
+      useFactory: (
+        configurationService: ConfigurationService,
+        validationService: ValidationService,
+      ) => ValidateCommand;
+    }>;
+
+    expect(ValidateModule).toBeDefined();
+    expect(providerDefinitions).toHaveLength(1);
+    expect(
+      providerDefinitions[0]?.useFactory(
+        new ConfigurationService(),
+        new ValidationService(),
+      ),
+    ).toBeInstanceOf(ValidateCommand);
   });
 });
