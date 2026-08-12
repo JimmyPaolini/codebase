@@ -429,23 +429,23 @@ describe(InputService, () => {
       it("rejects start date after maximum date", () => {
         expect(() =>
           inputSchema.parse({
-            endDate: "2101-01-01",
+            endDate: "2100-12-31",
             latitude: "40",
             longitude: "-74",
-            startDate: "2100-12-31",
+            startDate: "2101-01-01",
           }),
         ).toThrow(/Start date must be on or before 2100-12-31/i);
       });
 
-      it("accepts start date exactly at maximum date boundary", () => {
-        const result = inputSchema.parse({
-          endDate: "2101-01-01",
-          latitude: "40",
-          longitude: "-74",
-          startDate: "2100-12-31",
-        });
-
-        expect(result.start.format("YYYY-MM-DD")).toBe("2100-12-31");
+      it("rejects start date exactly at maximum date boundary when end date is not later", () => {
+        expect(() =>
+          inputSchema.parse({
+            endDate: "2100-12-31",
+            latitude: "40",
+            longitude: "-74",
+            startDate: "2100-12-31",
+          }),
+        ).toThrow(/End date must be after start date/i);
       });
     });
 
@@ -461,15 +461,15 @@ describe(InputService, () => {
         ).toThrow(/End date must be on or after 1900-01-01/i);
       });
 
-      it("accepts end date exactly at minimum date boundary", () => {
-        const result = inputSchema.parse({
-          endDate: "1900-01-01",
-          latitude: "40",
-          longitude: "-74",
-          startDate: "1900-01-01",
-        });
-
-        expect(result.end.format("YYYY-MM-DD")).toBe("1900-01-01");
+      it("rejects end date exactly at minimum date boundary when it is not after start date", () => {
+        expect(() =>
+          inputSchema.parse({
+            endDate: "1900-01-01",
+            latitude: "40",
+            longitude: "-74",
+            startDate: "1900-01-01",
+          }),
+        ).toThrow(/End date must be after start date/i);
       });
 
       it("rejects end date after maximum date", () => {
