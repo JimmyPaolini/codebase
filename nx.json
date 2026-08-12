@@ -1031,7 +1031,7 @@
         "cache": true,
         "configurations": {
           "coverage": {
-            "command": "pnpm exec vitest run --coverage"
+            "command": "pnpm exec vitest run --coverage --coverage.provider=v8"
           },
           "integration": {
             "command": "pnpm exec vitest run integration.test.ts"
@@ -1062,7 +1062,7 @@
         "cache": true,
         "configurations": {
           "coverage": {
-            "command": "pnpm exec vitest run --coverage"
+            "command": "pnpm exec vitest run --coverage --coverage.provider=v8"
           },
           "end-to-end": {
             "command": "pnpm exec vitest run end-to-end.test.ts"
