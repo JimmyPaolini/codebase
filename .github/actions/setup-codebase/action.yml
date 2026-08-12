@@ -54,5 +54,5 @@ runs:
       shell: bash
 
     - name: 📚 Install Node Dependencies
-      run: pnpm install --frozen-lockfile --reporter=silent
+      run: CI=true pnpm install --frozen-lockfile --reporter=append-only
       shell: bash
