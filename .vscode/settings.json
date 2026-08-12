@@ -841,9 +841,10 @@
       "onAutoForward": "notify"
     }
   },
-  "ruff.interpreter": [
-    "${workspaceFolder}/applications/affirmations/.venv/bin/python"
-  ],
+  "ruff.configurationPreference": "editorOnly",
+  "ruff.configuration": "${workspaceFolder}/configuration/pyproject.toml",
+  "ruff.exclude": ["configuration/conformetry-templates/**"],
+  "ruff.interpreter": ["${workspaceFolder}/.venv/bin/python"],
   "ruff.nativeServer": "auto",
   "ruff.organizeImports": true,
   "scm.alwaysShowActions": true,

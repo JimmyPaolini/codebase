@@ -27,7 +27,7 @@ const calendarService = new CalendarService(logger, {
   get: () => TEST_OUTPUT_DIR,
 } as unknown as ConfigService<Environment>);
 
-describe("caelundas end-to-end suite", () => {
+describe("main end-to-end suite", () => {
   describe("environment schema e2e", () => {
     it("allows an empty schema by default", () => {
       expect.hasAssertions();

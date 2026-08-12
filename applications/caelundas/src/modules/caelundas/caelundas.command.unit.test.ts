@@ -115,7 +115,9 @@ describe(CaelundasCommand, () => {
           {
             provide: CalendarService,
             useValue: createMock<CalendarService>({
-              write: async () => undefined,
+              write: async () => {
+                await Promise.resolve();
+              },
             }),
           },
         ],
@@ -136,9 +138,9 @@ describe(CaelundasCommand, () => {
       );
       expect(calendarService.write).toHaveBeenCalledWith(
         expect.arrayContaining([
-          expect.objectContaining({ start: { valueOf: () => 1100 } }),
-          expect.objectContaining({ start: { valueOf: () => 1200 } }),
-          expect.objectContaining({ start: { valueOf: () => 1500 } }),
+          expect.objectContaining({ start: { valueOf: (): number => 1100 } }),
+          expect.objectContaining({ start: { valueOf: (): number => 1200 } }),
+          expect.objectContaining({ start: { valueOf: (): number => 1500 } }),
         ]),
         mockInput,
       );
@@ -187,7 +189,9 @@ describe(CaelundasCommand, () => {
           {
             provide: CalendarService,
             useValue: createMock<CalendarService>({
-              write: async () => undefined,
+              write: async () => {
+                await Promise.resolve();
+              },
             }),
           },
         ],
@@ -250,7 +254,9 @@ describe(CaelundasCommand, () => {
           {
             provide: CalendarService,
             useValue: createMock<CalendarService>({
-              write: async () => undefined,
+              write: async () => {
+                await Promise.resolve();
+              },
             }),
           },
         ],
@@ -264,7 +270,7 @@ describe(CaelundasCommand, () => {
       const writtenEvents = (calendarService.write as any).mock.calls[0][0];
 
       expect(writtenEvents).toHaveLength(2);
-      expect(writtenEvents).toEqual(
+      expect(writtenEvents).toStrictEqual(
         expect.arrayContaining([
           expect.objectContaining({ type: "perfective" }),
           expect.objectContaining({ type: "progressive" }),
@@ -309,7 +315,9 @@ describe(CaelundasCommand, () => {
           {
             provide: CalendarService,
             useValue: createMock<CalendarService>({
-              write: async () => undefined,
+              write: async () => {
+                await Promise.resolve();
+              },
             }),
           },
         ],
