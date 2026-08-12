@@ -1031,16 +1031,16 @@
         "cache": true,
         "configurations": {
           "coverage": {
-            "command": "vitest run --coverage"
+            "command": "pnpm exec vitest run --coverage"
           },
           "integration": {
-            "command": "vitest run integration.test.ts"
+            "command": "pnpm exec vitest run integration.test.ts"
           },
           "unit": {
-            "command": "vitest run unit.test.ts"
+            "command": "pnpm exec vitest run unit.test.ts"
           },
           "watch": {
-            "command": "vitest"
+            "command": "pnpm exec vitest"
           }
         },
         "executor": "nx:run-commands",
@@ -1054,7 +1054,7 @@
           "shared-globals"
         ],
         "options": {
-          "command": "vitest run",
+          "command": "pnpm exec vitest run",
           "cwd": "{projectRoot}"
         }
       },
@@ -1062,19 +1062,19 @@
         "cache": true,
         "configurations": {
           "coverage": {
-            "command": "vitest run --coverage"
+            "command": "pnpm exec vitest run --coverage"
           },
           "end-to-end": {
-            "command": "vitest run end-to-end.test.ts"
+            "command": "pnpm exec vitest run end-to-end.test.ts"
           },
           "integration": {
-            "command": "vitest run integration.test.ts"
+            "command": "pnpm exec vitest run integration.test.ts"
           },
           "unit": {
-            "command": "vitest run unit.test.ts"
+            "command": "pnpm exec vitest run unit.test.ts"
           },
           "watch": {
-            "command": "vitest"
+            "command": "pnpm exec vitest"
           }
         },
         "executor": "nx:run-commands",
@@ -1083,7 +1083,7 @@
         },
         "inputs": ["^production", "default"],
         "options": {
-          "command": "vitest run",
+          "command": "pnpm exec vitest run",
           "cwd": "{projectRoot}"
         }
       }
