@@ -1,3 +1,4 @@
+// 📤 Exports
 export { MainModule } from "./main.module";
 export { GenerateCommand } from "./modules/generate/generate.command";
 export { GenerateModule } from "./modules/generate/generate.module";

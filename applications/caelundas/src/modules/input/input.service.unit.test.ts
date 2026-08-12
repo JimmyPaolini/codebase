@@ -4,7 +4,9 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { environmentSchema, inputSchema } from "./input.constants";
+import { environmentSchema } from "../../constants";
+
+import { inputSchema } from "./input.constants";
 import { InputService } from "./input.service";
 
 import type { Environment } from "./input.types";
