@@ -1,17 +1,23 @@
+import { createMock } from "@golevelup/ts-vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import type { SynchronizationModule } from "./modules/synchronization/synchronization.module";
 
 const repl = vi
   .fn<(module: unknown) => Promise<void>>()
   .mockResolvedValue(undefined);
+const synchronizationModuleMock = createMock<SynchronizationModule>();
 
 vi.mock("@nestjs/core", () => ({
-  DiscoveryModule: class DiscoveryModule {},
+  DiscoveryModule: function DiscoveryModule() {
+    return undefined;
+  },
   repl,
 }));
 
 vi.mock("./modules/synchronization/synchronization.module", () => ({
-  SynchronizationModule: class {
-    readonly moduleName = "SynchronizationModuleMock";
+  SynchronizationModule: function SynchronizationModule() {
+    return synchronizationModuleMock;
   },
 }));
 

@@ -5,7 +5,9 @@ const setContextMock = vi.fn<(context: string) => void>();
 const loggerConstructorMock = vi.fn<() => void>();
 
 vi.mock("./main.module", () => ({
-  MainModule: class MainModule {},
+  MainModule: function MainModule() {
+    return undefined;
+  },
 }));
 
 vi.mock("./modules/logger/logger.service", () => ({

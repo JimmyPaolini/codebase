@@ -7,7 +7,9 @@ vi.mock("@nestjs/core", () => ({
 }));
 
 vi.mock("./main.module", () => ({
-  MainModule: class MainModule {},
+  MainModule: function MainModule() {
+    return undefined;
+  },
 }));
 
 describe("repl bootstrap", () => {
