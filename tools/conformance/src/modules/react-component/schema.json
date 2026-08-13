@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "properties": {
+    "name": {
+      "description": "Component name in kebab-case",
+      "type": "string"
+    },
+    "project": {
+      "description": "Parent project name in kebab-case",
+      "type": "string"
+    }
+  },
+  "required": [],
+  "title": "Generator Schema",
+  "type": "object"
+}

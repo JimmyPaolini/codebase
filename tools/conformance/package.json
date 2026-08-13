@@ -1,0 +1,40 @@
+{
+  "dependencies": {
+    "@golevelup/ts-vitest": "catalog:",
+    "@nestjs/common": "catalog:",
+    "@nestjs/config": "catalog:",
+    "@nestjs/core": "catalog:",
+    "@nx/devkit": "catalog:",
+    "jsonc-parser": "catalog:",
+    "lodash": "catalog:",
+    "mdast-util-to-string": "catalog:",
+    "mustache": "catalog:",
+    "nest-commander": "catalog:",
+    "pino": "catalog:",
+    "prompts": "catalog:",
+    "reflect-metadata": "catalog:",
+    "remark": "catalog:",
+    "remark-gfm": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "catalog:",
+    "@nx/eslint-plugin": "catalog:",
+    "@swc/helpers": "catalog:",
+    "@types/lodash": "catalog:",
+    "@types/mustache": "catalog:",
+    "@types/node": "catalog:",
+    "@types/prompts": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "generators": "./generators.json",
+  "name": "conformance",
+  "type": "module",
+  "typeCoverage": {
+    "atLeast": 100,
+    "strict": true
+  },
+  "version": "0.0.1"
+}

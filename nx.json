@@ -74,40 +74,6 @@
     },
     {
       "plugin": "@nx/vitest"
-    },
-    {
-      "options": {
-        "templateRuleNamesByProjectTag": {
-          "framework:nest-commander": [
-            "nestjs-command-module",
-            "nestjs-command-project",
-            "nestjs-service-file",
-            "nestjs-service-module"
-          ],
-          "generator:jupyter-notebook-application": [
-            "jupyter-notebook-application"
-          ],
-          "generator:nestjs-command-project": [
-            "nestjs-command-module",
-            "nestjs-command-project",
-            "nestjs-service-file",
-            "nestjs-service-module"
-          ],
-          "generator:nestjs-graphql-application": [
-            "nestjs-graphql-application",
-            "nestjs-graphql-module",
-            "nestjs-service-file",
-            "nestjs-service-module"
-          ],
-          "generator:nestjs-service-project": [
-            "nestjs-service-file",
-            "nestjs-service-module",
-            "nestjs-service-project"
-          ]
-        },
-        "validationTargetName": "conformetry-validate"
-      },
-      "plugin": "@jimmypaolini/conformetry-nx"
     }
   ],
   "projects": {

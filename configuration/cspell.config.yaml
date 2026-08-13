@@ -36,6 +36,7 @@ ignorePaths:
   - "**/packages/lexico-components/src/lib/**"
   - "**/pnpm-lock.yaml"
   - "**/routeTree.gen.ts"
+  - "tools/conformance"
   - "**/terraform.tfstate*"
   - coverage
   - dist

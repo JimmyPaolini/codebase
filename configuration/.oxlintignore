@@ -38,3 +38,6 @@ lint-staged.config.ts
 **/.agents/skills/**
 **/.github/skills/**
 **/documentation/skills/**
+
+# TODO: remove
+**/tools/conformance

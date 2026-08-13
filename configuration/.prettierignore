@@ -60,3 +60,6 @@ projectStructure.cache.json
 # 🏗 Infrastructure templates
 **/helm/**/templates/**
 **/.terraform/**
+
+# TODO: remove
+**/tools/conformance

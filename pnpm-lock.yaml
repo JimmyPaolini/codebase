@@ -216,6 +216,9 @@ catalogs:
     '@types/mdast':
       specifier: ^4.0.4
       version: 4.0.4
+    '@types/mustache':
+      specifier: ^4.2.6
+      version: 4.2.6
     '@types/node':
       specifier: ^25.9.1
       version: 25.9.5
@@ -375,6 +378,9 @@ catalogs:
     moment-timezone:
       specifier: ^0.6.2
       version: 0.6.3
+    mustache:
+      specifier: ^4.2.0
+      version: 4.2.0
     nest-commander:
       specifier: ^3.20.1
       version: 3.20.1
@@ -1804,6 +1810,88 @@ importers:
       vite-tsconfig-paths:
         specifier: 'catalog:'
         version: 6.1.1(typescript@6.0.3)(vite@8.1.5(@types/node@25.9.5)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+
+  tools/conformance:
+    dependencies:
+      '@golevelup/ts-vitest':
+        specifier: 'catalog:'
+        version: 4.0.0
+      '@nestjs/common':
+        specifier: 'catalog:'
+        version: 11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/config':
+        specifier: 'catalog:'
+        version: 4.0.4(@nestjs/common@11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2))(rxjs@7.8.2)
+      '@nestjs/core':
+        specifier: 'catalog:'
+        version: 11.1.28(@nestjs/common@11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nx/devkit':
+        specifier: 'catalog:'
+        version: 23.1.0(nx@23.1.0(@swc-node/register@1.12.1(@swc/core@1.15.46(@swc/helpers@0.5.23))(@swc/types@0.1.27)(typescript@6.0.3))(@swc/core@1.15.46(@swc/helpers@0.5.23)))
+      jsonc-parser:
+        specifier: 'catalog:'
+        version: 3.3.1
+      lodash:
+        specifier: 'catalog:'
+        version: 4.18.1
+      mdast-util-to-string:
+        specifier: 'catalog:'
+        version: 4.0.0
+      mustache:
+        specifier: 'catalog:'
+        version: 4.2.0
+      nest-commander:
+        specifier: 'catalog:'
+        version: 3.20.1(@nestjs/common@11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.28(@nestjs/common@11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(@types/inquirer@8.2.13)(@types/node@25.9.5)(typescript@6.0.3)
+      pino:
+        specifier: 'catalog:'
+        version: 10.3.1
+      prompts:
+        specifier: 'catalog:'
+        version: 2.4.2
+      reflect-metadata:
+        specifier: 'catalog:'
+        version: 0.2.2
+      remark:
+        specifier: 'catalog:'
+        version: 15.0.1
+      remark-gfm:
+        specifier: 'catalog:'
+        version: 4.0.1
+      zod:
+        specifier: 'catalog:'
+        version: 4.4.3
+    devDependencies:
+      '@nestjs/testing':
+        specifier: 'catalog:'
+        version: 11.1.28(@nestjs/common@11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.28(@nestjs/common@11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))
+      '@nx/eslint-plugin':
+        specifier: 'catalog:'
+        version: 23.1.0(@babel/traverse@7.29.7)(@swc-node/register@1.12.1(@swc/core@1.15.46(@swc/helpers@0.5.23))(@swc/types@0.1.27)(typescript@6.0.3))(@swc/core@1.15.46(@swc/helpers@0.5.23))(@typescript-eslint/parser@8.65.0(eslint@10.8.0(jiti@2.7.0))(typescript@6.0.3))(eslint-config-prettier@10.1.8(eslint@10.8.0(jiti@2.7.0)))(eslint@10.8.0(jiti@2.7.0))(nx@23.1.0(@swc-node/register@1.12.1(@swc/core@1.15.46(@swc/helpers@0.5.23))(@swc/types@0.1.27)(typescript@6.0.3))(@swc/core@1.15.46(@swc/helpers@0.5.23)))(typescript@6.0.3)
+      '@swc/helpers':
+        specifier: 'catalog:'
+        version: 0.5.23
+      '@types/lodash':
+        specifier: 'catalog:'
+        version: 4.17.24
+      '@types/mustache':
+        specifier: 'catalog:'
+        version: 4.2.6
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.9.5
+      '@types/prompts':
+        specifier: 'catalog:'
+        version: 2.4.9
+      '@vitest/coverage-v8':
+        specifier: 'catalog:'
+        version: 4.1.10(vitest@4.1.10)
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.10(@types/node@25.9.5)(@vitest/coverage-v8@4.1.10)(@vitest/ui@4.1.10)(jsdom@29.1.1)(vite@8.1.5(@types/node@25.9.5)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
 
   tools/synchronization:
     dependencies:
@@ -6177,6 +6265,9 @@ packages:
 
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
+
+  '@types/mustache@4.2.6':
+    resolution: {integrity: sha512-t+8/QWTAhOFlrF1IVZqKnMRJi84EgkIK5Kh0p2JV4OLywUvCwJPFxbJAl7XAow7DVIHsF+xW9f1MVzg0L6Szjw==}
 
   '@types/node@18.19.130':
     resolution: {integrity: sha512-GRaXQx6jGfL8sKfaIDD6OupbIHBr9jv7Jnaml9tB7l4v068PAOXqfcujMMo5PhbIs6ggR1XODELqahT2R8v0fg==}
@@ -17442,6 +17533,8 @@ snapshots:
       '@types/unist': 3.0.3
 
   '@types/ms@2.1.0': {}
+
+  '@types/mustache@4.2.6': {}
 
   '@types/node@18.19.130':
     dependencies:

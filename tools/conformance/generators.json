@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "generators": {
+    "jupyter-notebook-application": {
+      "aliases": ["jna"],
+      "description": "Generate a Python Jupyter notebook application",
+      "factory": "./src/main#generateJupyterNotebookApplication",
+      "schema": "./src/modules/jupyter-notebook-application/schema.json"
+    },
+    "nestjs-command-application": {
+      "aliases": ["nca"],
+      "description": "Generate a NestJS command-line application using nest-commander",
+      "factory": "./src/main#generateNestjsCommandApplication",
+      "schema": "./src/modules/nestjs-command-application/schema.json"
+    },
+    "nestjs-command-module": {
+      "aliases": ["ncm"],
+      "description": "Generate a NestJS command module with command, module, types, constants, and unit test files",
+      "factory": "./src/main#generateNestjsCommandModule",
+      "schema": "./src/modules/nestjs-command-module/schema.json"
+    },
+    "nestjs-dataloader-module": {
+      "aliases": ["ndm"],
+      "description": "Generate a NestJS DataLoader module with dataloader, types, and unit test files",
+      "factory": "./src/main#generateNestjsDataloaderModule",
+      "schema": "./src/modules/nestjs-dataloader-module/schema.json"
+    },
+    "nestjs-graphql-application": {
+      "aliases": ["nga"],
+      "description": "Generate a NestJS GraphQL API application",
+      "factory": "./src/main#generateNestjsGraphqlApplication",
+      "schema": "./src/modules/nestjs-graphql-application/schema.json"
+    },
+    "nestjs-graphql-module": {
+      "aliases": ["ngm"],
+      "description": "Generate a NestJS GraphQL module with resolver, entities, inputs, args, factories, service, types, constants, and unit test files",
+      "factory": "./src/main#generateNestjsGraphqlModule",
+      "schema": "./src/modules/nestjs-graphql-module/schema.json"
+    },
+    "nestjs-service-file": {
+      "aliases": ["nsf"],
+      "description": "Generate NestJS service and unit test files",
+      "factory": "./src/main#generateNestjsServiceFile",
+      "schema": "./src/modules/nestjs-service-file/schema.json"
+    },
+    "nestjs-service-module": {
+      "aliases": ["nsm"],
+      "description": "Generate a NestJS service module with module, service, types, constants, and unit test files",
+      "factory": "./src/main#generateNestjsServiceModule",
+      "schema": "./src/modules/nestjs-service-module/schema.json"
+    },
+    "react-component": {
+      "aliases": ["c"],
+      "description": "Generate a React component with test file",
+      "factory": "./src/main#generateReactComponent",
+      "schema": "./src/modules/react-component/schema.json"
+    }
+  }
+}

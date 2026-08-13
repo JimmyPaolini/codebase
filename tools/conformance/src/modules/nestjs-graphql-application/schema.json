@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "properties": {
+    "name": {
+      "description": "Application name in kebab-case",
+      "type": "string"
+    }
+  },
+  "required": [],
+  "title": "Generator Schema",
+  "type": "object"
+}
