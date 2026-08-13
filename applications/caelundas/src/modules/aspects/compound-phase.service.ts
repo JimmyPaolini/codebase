@@ -14,4 +14,11 @@ export class CompoundPhaseService extends AspectCalculationSupportService {
   constructor(@Optional() ephemerisService?: EphemerisService) {
     super(ephemerisService);
   }
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
+  // 🌎 Public Methods
 }

@@ -1,6 +1,6 @@
 import { Test } from "@nestjs/testing";
 import * as cheerio from "cheerio";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { loadCheerioElement } from "../../../testing/mocks";
 
@@ -11,18 +11,32 @@ import type { CheerioAPI } from "cheerio";
 import type { AnyNode } from "domhandler";
 
 describe(PartOfSpeechFormsService, () => {
-  let parser: PartOfSpeechFormsService;
+  let service: PartOfSpeechFormsService;
 
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
+      providers: [PartOfSpeechFormsService],
+    }).compile();
+
+    service = await module.resolve(PartOfSpeechFormsService);
+  });
+
+  // Re-resolved per test: the parser accumulates state across a parse, so a
+  // shared instance would let one case's forms leak into the next.
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [PartOfSpeechFormsService],
     }).compile();
 
-    parser = await module.resolve(PartOfSpeechFormsService);
+    service = await module.resolve(PartOfSpeechFormsService);
   });
 
-  it("should initialize the parser instance", () => {
-    expect(parser).toBeDefined();
+  it("is defined", () => {
+    expect(service).toBeDefined();
+  });
+
+  it("should initialize the service instance", () => {
+    expect(service).toBeDefined();
   });
 
   describe("parseGenericForms", () => {
@@ -32,7 +46,7 @@ describe(PartOfSpeechFormsService, () => {
         "#entry",
       );
 
-      const forms = parser.parseGenericForms({
+      const forms = service.parseGenericForms({
         $,
         elt: element,
         lexeme: { partOfSpeech: "noun" } as Lexeme,
@@ -42,7 +56,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("builds nested identifier structure for adjective forms", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         parseFormTable: ($: CheerioAPI, elt: AnyNode) => null | string[][];
       };
 
@@ -54,7 +68,7 @@ describe(PartOfSpeechFormsService, () => {
 
       const { $, element } = loadCheerioElement("<p />", "p");
 
-      const forms = parser.parseGenericForms({
+      const forms = service.parseGenericForms({
         $,
         elt: element,
         lexeme: { partOfSpeech: "adjective" } as Lexeme,
@@ -69,7 +83,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("skips non-latin content cells", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         parseFormTable: (
           $: cheerio.CheerioAPI,
           elt: AnyNode,
@@ -81,7 +95,7 @@ describe(PartOfSpeechFormsService, () => {
         ["Nominative", '<span class="Latn" lang="la">123</span>'],
       ]);
 
-      const forms = parser.parseGenericForms({
+      const forms = service.parseGenericForms({
         $: cheerio.load("<p />"),
         elt: cheerio.load("<p />")("p").get(0) as AnyNode,
         lexeme: { partOfSpeech: "noun" } as Lexeme,
@@ -91,7 +105,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("handles sparse generic form tables without row entries", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         parseFormTable: (
           $: cheerio.CheerioAPI,
           elt: AnyNode,
@@ -108,7 +122,7 @@ describe(PartOfSpeechFormsService, () => {
         sparseTable,
       );
 
-      const forms = parser.parseGenericForms({
+      const forms = service.parseGenericForms({
         $: cheerio.load("<p />"),
         elt: cheerio.load("<p />")("p").get(0) as AnyNode,
         lexeme: { partOfSpeech: "noun" } as Lexeme,
@@ -127,7 +141,7 @@ describe(PartOfSpeechFormsService, () => {
 
       expect(entryNode).toBeDefined();
 
-      const forms = parser.parseVerbForms({
+      const forms = service.parseVerbForms({
         $,
         elt: entryNode as AnyNode,
       });
@@ -136,7 +150,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("sorts processed verb inflections into nested objects", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         parseFormTable: (
           $: cheerio.CheerioAPI,
           elt: AnyNode,
@@ -172,7 +186,7 @@ describe(PartOfSpeechFormsService, () => {
         },
       );
 
-      const forms = parser.parseVerbForms({
+      const forms = service.parseVerbForms({
         $: cheerio.load("<p />"),
         elt: cheerio.load("<p />")("p").get(0) as AnyNode,
       });
@@ -186,7 +200,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("handles sparse verb form tables without row entries", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         parseFormTable: (
           $: cheerio.CheerioAPI,
           elt: AnyNode,
@@ -200,7 +214,7 @@ describe(PartOfSpeechFormsService, () => {
         sparseTable,
       );
 
-      const forms = parser.parseVerbForms({
+      const forms = service.parseVerbForms({
         $: cheerio.load("<p />"),
         elt: cheerio.load("<p />")("p").get(0) as AnyNode,
       });
@@ -211,7 +225,7 @@ describe(PartOfSpeechFormsService, () => {
 
   describe("resolveVerbSumEntry", () => {
     it("expands known sum/esse/fui lookup entries", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         resolveVerbSumEntry: (
           cleaned: string,
           number: string,
@@ -229,7 +243,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("returns original input when lookup does not exist", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         resolveVerbSumEntry: (
           cleaned: string,
           number: string,
@@ -249,7 +263,7 @@ describe(PartOfSpeechFormsService, () => {
 
   describe("private helpers", () => {
     it("parses verb word cell variants", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         parseVerbWordCell: (
           cell: string,
           number: string,
@@ -271,7 +285,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("finds generic identifiers for adjective and noun", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         findGenericIdentifiers: (args: {
           index: number;
           index_: number;
@@ -307,7 +321,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("uses empty defaults for missing adjective number and case identifiers", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         collectTableIdentifiers: (
           index: number,
           index_: number,
@@ -336,7 +350,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("finds and normalizes verb identifiers", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         findVerbIdentifiers: (
           index: number,
           index_: number,
@@ -357,7 +371,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("finds verb identifiers when row lookup falls back to empty cells", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         findVerbIdentifiers: (
           index: number,
           index_: number,
@@ -373,7 +387,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("normalizes non-finite and verbal nouns verb identifiers", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         findVerbIdentifiers: (
           index: number,
           index_: number,
@@ -394,7 +408,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("processes verb row only when valid verb form cell exists", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         processVerbFormRow: (args: {
           cell: string;
           disorganizedForms: { identifiers: string[]; word: string[] }[];
@@ -429,7 +443,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("processes plus-sign verb rows without span markup", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         processVerbFormRow: (args: {
           cell: string;
           disorganizedForms: { identifiers: string[]; word: string[] }[];
@@ -455,7 +469,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("skips verb row when span text is not latin letters", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         processVerbFormRow: (args: {
           cell: string;
           disorganizedForms: { identifiers: string[]; word: string[] }[];
@@ -483,7 +497,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("scans table axis and verb headers", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         scanTableAxis: (
           startIndex: number,
           cellGetter: (index: number) => string,
@@ -509,7 +523,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("includes previous verb header cell when start cell is not a form cell", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         scanVerbHeader: (
           startIndex: number,
           getCell: (index: number) => string,
@@ -526,7 +540,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("returns only current verb header cell when scanning from index zero", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         scanVerbHeader: (
           startIndex: number,
           getCell: (index: number) => string,
@@ -543,7 +557,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("sorts identifiers into nested object", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         sortIdentifiers: (
           inflection: { identifiers: string[]; word: string[] },
           object: Record<string, unknown>,
@@ -566,7 +580,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("returns object unchanged when sortIdentifiers receives no identifiers", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         sortIdentifiers: (
           inflection: { identifiers: string[]; word: string[] },
           object: Record<string, unknown>,
@@ -587,7 +601,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("replaces non-record intermediate values while sorting identifiers", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         sortIdentifiers: (
           inflection: { identifiers: string[]; word: string[] },
           object: Record<string, unknown>,
@@ -610,7 +624,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("parses form table from nearby html table", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         parseFormTable: (
           $: cheerio.CheerioAPI,
           elt: AnyNode,
@@ -632,7 +646,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("parses empty html tables into an empty matrix", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         parseFormTable: (
           $: cheerio.CheerioAPI,
           elt: AnyNode,
@@ -653,7 +667,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("fills sparse transposed table cells with empty strings", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         parseFormTable: (
           $: cheerio.CheerioAPI,
           elt: AnyNode,
@@ -677,7 +691,7 @@ describe(PartOfSpeechFormsService, () => {
     });
 
     it("collects table identifiers when row lookup falls back to empty strings", () => {
-      const parserWithPrivates = parser as unknown as {
+      const parserWithPrivates = service as unknown as {
         collectTableIdentifiers: (
           index: number,
           index_: number,

@@ -17,6 +17,14 @@ export class TwilightsComposerService {
     private readonly progressiveUtilitiesService: ProgressiveUtilitiesService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
+  // 🌎 Public Methods
+
   /**
    * Builds morning twilight intervals from astronomical to nautical and nautical to civil.
    */

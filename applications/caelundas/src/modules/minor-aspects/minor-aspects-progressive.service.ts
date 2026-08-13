@@ -32,6 +32,14 @@ export class MinorAspectsProgressiveService {
     private readonly progressiveUtilitiesService: ProgressiveUtilitiesService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
+  // 🌎 Public Methods
+
   /**
    * Builds a stable grouping key from sorted bodies plus aspect name for pairing.
    */
@@ -42,8 +50,6 @@ export class MinorAspectsProgressiveService {
       categories: event.categories,
     });
   }
-
-  // 🔏 Private Methods
 
   /**
    * Backward-compatible wrapper retained for existing unit tests.

@@ -32,6 +32,12 @@ export class MinorAspectsEventService {
     this.logger.setContext(MinorAspectsEventService.name);
   }
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   // 🌎 Public Methods
 
   /**

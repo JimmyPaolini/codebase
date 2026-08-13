@@ -43,6 +43,8 @@ export class MajorAspectEventService {
     { emoji: string; label: string; verb: string }
   >;
 
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
 
   /**

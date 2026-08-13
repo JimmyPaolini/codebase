@@ -32,6 +32,12 @@ export class SpecialtyAspectsEventService {
     this.logger.setContext(SpecialtyAspectsEventService.name);
   }
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   // 🌎 Public Methods
 
   /**

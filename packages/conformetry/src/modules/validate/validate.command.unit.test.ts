@@ -13,26 +13,6 @@ import { LoggerService } from "../logger/logger.service";
 
 import { ValidateCommand } from "./validate.command";
 
-import type { TestingModule } from "@nestjs/testing";
-
-/** Compiles the command with every dependency mocked. */
-async function createModule(): Promise<TestingModule> {
-  return Test.createTestingModule({
-    providers: [
-      ValidateCommand,
-      {
-        provide: ConfigurationService,
-        useValue: createMock<ConfigurationService>(),
-      },
-      { provide: DiscoveryService, useValue: createMock<DiscoveryService>() },
-      { provide: InputService, useValue: createMock<InputService>() },
-      { provide: LoggerService, useValue: createMock<LoggerService>() },
-      { provide: ReportingService, useValue: createMock<ReportingService>() },
-      { provide: ValidationService, useValue: createMock<ValidationService>() },
-    ],
-  }).compile();
-}
-
 /**
  * Dependencies are mocked here; that the real graph wires is proven by
  * `main.integration.test.ts`, which compiles the whole application.
@@ -41,7 +21,23 @@ describe(ValidateCommand, () => {
   let command: ValidateCommand;
 
   beforeAll(async () => {
-    const module = await createModule();
+    const module = await Test.createTestingModule({
+      providers: [
+        ValidateCommand,
+        {
+          provide: ConfigurationService,
+          useValue: createMock<ConfigurationService>(),
+        },
+        { provide: DiscoveryService, useValue: createMock<DiscoveryService>() },
+        { provide: InputService, useValue: createMock<InputService>() },
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+        { provide: ReportingService, useValue: createMock<ReportingService>() },
+        {
+          provide: ValidationService,
+          useValue: createMock<ValidationService>(),
+        },
+      ],
+    }).compile();
 
     command = await module.resolve(ValidateCommand);
   });
@@ -51,7 +47,23 @@ describe(ValidateCommand, () => {
   });
 
   it("sets logger context", async () => {
-    const module = await createModule();
+    const module = await Test.createTestingModule({
+      providers: [
+        ValidateCommand,
+        {
+          provide: ConfigurationService,
+          useValue: createMock<ConfigurationService>(),
+        },
+        { provide: DiscoveryService, useValue: createMock<DiscoveryService>() },
+        { provide: InputService, useValue: createMock<InputService>() },
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+        { provide: ReportingService, useValue: createMock<ReportingService>() },
+        {
+          provide: ValidationService,
+          useValue: createMock<ValidationService>(),
+        },
+      ],
+    }).compile();
     const logger = await module.resolve(LoggerService);
 
     expect(logger.setContext).toHaveBeenCalledWith("ValidateCommand");

@@ -34,6 +34,7 @@ devdeps
 devkit
 disambiguator
 domcontentloaded
+dunder
 effectful
 elipssis
 embla
@@ -125,6 +126,7 @@ oxlintignore
 oxlintrc
 pagehead
 paolini
+paramtypes
 pbakaus
 pbundlesize
 peaceiris
@@ -200,13 +202,16 @@ tsconfig
 ttfb
 ty
 typeof
+uncacheable
 uncapitalize
 uncapitalizes
 underspecified
+unioned
 unknowncase
 unredacted
 unrs
 unstub
+unsuffixed
 untaint
 uppercased
 uppercases

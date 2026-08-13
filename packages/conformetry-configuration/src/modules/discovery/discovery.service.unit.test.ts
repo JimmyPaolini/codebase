@@ -35,6 +35,7 @@ describe(DiscoveryService, () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [DiscoveryModule],
+      providers: [DiscoveryService],
     }).compile();
 
     service = await module.resolve(DiscoveryService);

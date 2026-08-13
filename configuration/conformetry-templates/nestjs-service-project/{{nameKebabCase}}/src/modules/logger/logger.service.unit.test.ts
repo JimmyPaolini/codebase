@@ -1,4 +1,5 @@
-import { afterAll, describe, expect, it, vi } from "vitest";
+import { Test } from "@nestjs/testing";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "./logger.service";
 
@@ -35,6 +36,16 @@ const importLoggerService = async (
 };
 
 describe(LoggerService, () => {
+  let service: LoggerService;
+
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
+      providers: [LoggerService],
+    }).compile();
+
+    service = await module.resolve(LoggerService);
+  });
+
   interface LoggerChild {
     debug: LoggerMethod;
     error: LoggerMethod;
@@ -74,8 +85,6 @@ describe(LoggerService, () => {
   });
 
   it("is defined", () => {
-    const service = new LoggerService();
-
     expect(service).toBeDefined();
   });
 

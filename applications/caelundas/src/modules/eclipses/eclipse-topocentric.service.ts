@@ -28,6 +28,12 @@ export class EclipseTopocentricService {
     this.logger.setContext(EclipseTopocentricService.name);
   }
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   /**
    * Derives current longitude/latitude separation angles and eclipse diameter sum.
    */
@@ -154,6 +160,8 @@ export class EclipseTopocentricService {
 
     return null;
   }
+
+  // 🌎 Public Methods
 
   /**
    * Computes topocentric eclipse events for both solar and lunar branches.

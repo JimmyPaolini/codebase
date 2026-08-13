@@ -40,7 +40,13 @@ export class SpecialtyAspectsComposerService {
     this.logger.setContext(SpecialtyAspectsComposerService.name);
   }
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
+
+  // 🌎 Public Methods
 
   /**
    * Builds and logs one specialty-aspect boundary event from pre-resolved display parts.

@@ -15,6 +15,6 @@ describe(LoggerService, () => {
   });
 
   it("is defined", () => {
-    expect(command).toBeDefined();
+    expect(service).toBeDefined();
   });
 });

@@ -12,7 +12,7 @@ import { GeneratorService } from "./generator.service";
  */
 @Module({
   controllers: [],
-  exports: [GeneratorService],
+  exports: [ConfigurationModule, GeneratorService, RenderingModule],
   imports: [ConfigurationModule, RenderingModule],
   providers: [GeneratorService],
 })

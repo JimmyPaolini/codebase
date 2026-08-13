@@ -44,7 +44,13 @@ export class MinorAspectsComposerService {
     this.logger.setContext(MinorAspectsComposerService.name);
   }
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
+
+  // 🌎 Public Methods
 
   /**
    * Assembles minor aspect event.

@@ -46,7 +46,11 @@ export class EphemerisAggregationService {
     private readonly time: EphemerisTimeService,
   ) {}
 
-  // 🌎 Public Methods
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
 
   /**
    * Computes minute-by-minute ephemeris for a single non-node body.
@@ -155,6 +159,8 @@ export class EphemerisAggregationService {
     }
   }
 
+  // 🌎 Public Methods
+
   /**
    * Accumulates ephemeris data for a single body across the date range.
    * Dispatches to node or non-node handlers based on body classification.
@@ -227,8 +233,6 @@ export class EphemerisAggregationService {
       illuminationEntries: [],
     };
   }
-
-  // 🔏 Private Methods
 
   /**
    * Builds feature request sets from requested body lists.

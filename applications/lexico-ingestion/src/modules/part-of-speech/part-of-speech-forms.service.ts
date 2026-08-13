@@ -18,6 +18,8 @@ export class PartOfSpeechFormsService {
 
   // 🔐 Private Fields
 
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
 
   /**

@@ -5,6 +5,7 @@
   "sourceRoot": "packages/conformetry-nx",
   "tags": [
     "framework:nestjs",
+    "generator:nestjs-service-project",
     "language:typescript",
     "name:conformetry-nx",
     "type:package"
@@ -16,12 +17,17 @@
       "options": {
         "assets": [
           {
+            "glob": "README.md",
+            "input": "packages/conformetry-nx",
+            "output": "."
+          },
+          {
             "glob": "executors.json",
             "input": "packages/conformetry-nx",
             "output": "."
           },
           {
-            "glob": "README.md",
+            "glob": "generators.json",
             "input": "packages/conformetry-nx",
             "output": "."
           },
@@ -29,9 +35,14 @@
             "glob": "src/executors/**/schema.json",
             "input": "packages/conformetry-nx",
             "output": "."
+          },
+          {
+            "glob": "src/generators/**/schema.json",
+            "input": "packages/conformetry-nx",
+            "output": "."
           }
         ],
-        "main": "packages/conformetry-nx/src/index.cjs",
+        "main": "packages/conformetry-nx/src/index.ts",
         "outputPath": "dist/packages/conformetry-nx",
         "tsConfig": "packages/conformetry-nx/tsconfig.json"
       },

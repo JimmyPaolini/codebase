@@ -15,6 +15,12 @@ export class LiteratureLibraryScanService {
 
   constructor() {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   /**
    * Recursively walks one provider directory and collects markdown entries.
    */
@@ -55,6 +61,8 @@ export class LiteratureLibraryScanService {
       });
     }
   }
+
+  // 🌎 Public Methods
 
   /**
    * Walks the library data directory and collects text file metadata.

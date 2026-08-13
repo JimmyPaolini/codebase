@@ -30,6 +30,10 @@ export class AnnualSolarCycleEventsService {
 
   // 🔐 Private Fields
 
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   /** Builds a calendar event anchored at a single minute. */
   private buildSolarCycleEvent(args: BuildSolarCycleEventArguments): Event {
     const { categories, date, description, summary } = args;
@@ -46,8 +50,6 @@ export class AnnualSolarCycleEventsService {
       summary,
     };
   }
-
-  // 🌎 Public Methods
 
   /** Collects autumn events for the detected longitude crossing. */
   private getAutumnEvents(
@@ -141,6 +143,8 @@ export class AnnualSolarCycleEventsService {
     const { currentLongitude, previousLongitude } = args;
     return currentLongitude >= threshold && previousLongitude < threshold;
   }
+
+  // 🌎 Public Methods
 
   /** Builds the solar aphelion event. */
   buildAphelionEvent(date: Moment): Event {

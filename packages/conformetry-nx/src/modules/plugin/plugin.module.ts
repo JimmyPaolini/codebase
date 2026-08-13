@@ -23,7 +23,18 @@ import { PluginService } from "./plugin.service";
  */
 @Module({
   controllers: [],
-  exports: [PluginService],
+  exports: [
+    AdapterModule,
+    CandidatesModule,
+    ConfigurationModule,
+    DiscoveryModule,
+    GenerationModule,
+    OptionsModule,
+    PathsModule,
+    PluginService,
+    ReportingModule,
+    ValidationModule,
+  ],
   imports: [
     AdapterModule,
     CandidatesModule,

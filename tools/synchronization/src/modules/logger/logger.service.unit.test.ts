@@ -62,9 +62,7 @@ describe(LoggerService, () => {
   });
 
   it("is defined", () => {
-    const command = service;
-
-    expect(command).toBeDefined();
+    expect(service).toBeDefined();
   });
 
   it("is defined when loaded in development mode", async () => {

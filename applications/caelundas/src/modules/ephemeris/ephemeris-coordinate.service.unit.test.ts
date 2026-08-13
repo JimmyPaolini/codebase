@@ -1,7 +1,8 @@
 import { createMock } from "@golevelup/ts-vitest";
+import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { calc, type nod_aps_ut } from "sweph";
-import { describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 vi.mock("sweph", async (importOriginal) => {
   const importedModule = await importOriginal();
@@ -43,13 +44,13 @@ vi.mock("./ephemeris.constants", async (importOriginal) => {
   };
 });
 
+import { MathService } from "../math/math.service";
+
+import { EphemerisConstantsService } from "./ephemeris-constants.service";
 import { EphemerisCoordinateService } from "./ephemeris-coordinate.service";
+import { EphemerisTimeService } from "./ephemeris-time.service";
 
-import type { MathService } from "../math/math.service";
-import type { EphemerisConstantsService } from "./ephemeris-constants.service";
-import type { EphemerisTimeService } from "./ephemeris-time.service";
-
-describe("ephemerisCoordinateService branch coverage", () => {
+describe(EphemerisCoordinateService, () => {
   const constantsService = {
     getSwissEphemerisConstantForBody: vi
       .fn<EphemerisConstantsService["getSwissEphemerisConstantForBody"]>()
@@ -79,11 +80,24 @@ describe("ephemerisCoordinateService branch coverage", () => {
     (degree: number) => degree,
   );
 
-  const service = new EphemerisCoordinateService(
-    constantsService as never,
-    timeService as never,
-    mathService,
-  );
+  let service: EphemerisCoordinateService;
+
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
+      providers: [
+        EphemerisCoordinateService,
+        { provide: EphemerisConstantsService, useValue: constantsService },
+        { provide: MathService, useValue: mathService },
+        { provide: EphemerisTimeService, useValue: timeService },
+      ],
+    }).compile();
+
+    service = await module.resolve(EphemerisCoordinateService);
+  });
+
+  it("is defined", () => {
+    expect(service).toBeDefined();
+  });
 
   it("throws when a node has no Swiss Ephemeris constant", () => {
     expect(() =>

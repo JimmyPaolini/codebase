@@ -66,6 +66,8 @@ export class IngressesComposerService {
     "Ingress",
   ];
 
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
 
   /**
@@ -82,6 +84,8 @@ export class IngressesComposerService {
     }
     return signDegreeRangeEntry[0];
   }
+
+  // 🌎 Public Methods
 
   /**
    * Creates a decan ingress calendar event.

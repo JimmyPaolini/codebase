@@ -38,7 +38,13 @@ export class QuintupleAspectsComposerService {
     private readonly progressiveCompoundEventService: ProgressiveCompoundEventService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
+
+  // 🌎 Public Methods
 
   /**
    * Emits a pentagram boundary event when exactly five ordered bodies are available.

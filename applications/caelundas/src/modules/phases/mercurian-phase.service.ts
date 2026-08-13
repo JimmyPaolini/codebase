@@ -50,6 +50,8 @@ export class MercurianPhaseService {
 
   private static readonly categories = PHASE_EVENT_BASE_CATEGORIES;
 
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
 
   /**

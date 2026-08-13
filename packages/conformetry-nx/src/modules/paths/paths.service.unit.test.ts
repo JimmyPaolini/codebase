@@ -76,6 +76,7 @@ describe(PathsService, () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [PathsModule],
+      providers: [PathsService],
     }).compile();
 
     service = await module.resolve(PathsService);

@@ -32,6 +32,14 @@ export class SpecialtyAspectsProgressiveService {
     private readonly progressiveUtilitiesService: ProgressiveUtilitiesService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
+  // 🌎 Public Methods
+
   /**
    * Builds progressive specialty-aspect events from detected minute-level events.
    */
@@ -53,8 +61,6 @@ export class SpecialtyAspectsProgressiveService {
       },
     );
   }
-
-  // 🔏 Private Methods
 
   /**
    * Backward-compatible wrapper retained for existing unit tests.

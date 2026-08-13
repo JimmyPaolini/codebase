@@ -19,6 +19,12 @@ The package uses a NestJS-backed `nx-adapter` module/service layer for Nx plugin
 ## Start
 
 ```bash
+nx run conformetry-nx:start
+```
+
+## Build
+
+```bash
 nx run conformetry-nx:build
 ```
 

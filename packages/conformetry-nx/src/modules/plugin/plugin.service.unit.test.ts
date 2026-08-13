@@ -93,6 +93,7 @@ describe(PluginService, () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [PluginModule],
+      providers: [PluginService],
     }).compile();
 
     service = await module.resolve(PluginService);

@@ -32,6 +32,12 @@ export class MajorAspectProgressiveService {
     private readonly progressiveUtilitiesService: ProgressiveUtilitiesService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   /**
    * Builds a stable grouping key from sorted bodies plus major-aspect label.
    */
@@ -42,8 +48,6 @@ export class MajorAspectProgressiveService {
       categories: event.categories,
     });
   }
-
-  // 🔏 Private Methods
 
   /**
    * Builds one progressive duration event from a forming/dissolving pair.
@@ -64,6 +68,8 @@ export class MajorAspectProgressiveService {
       symbolByBody,
     });
   }
+
+  // 🌎 Public Methods
 
   /**
    * Backward-compatible wrapper retained for existing unit tests.
@@ -112,8 +118,6 @@ export class MajorAspectProgressiveService {
       },
     );
   }
-
-  // 🌎 Public Methods
 
   /**
    * Pairs forming and dissolving events for one grouped body-pair/aspect key.

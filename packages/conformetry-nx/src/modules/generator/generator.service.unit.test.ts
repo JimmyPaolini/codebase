@@ -65,6 +65,7 @@ describe(GeneratorService, () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [GeneratorModule],
+      providers: [GeneratorService],
     }).compile();
 
     service = await module.resolve(GeneratorService);

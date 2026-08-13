@@ -28,7 +28,13 @@ export class QuadrupleAspectsBaseService {
     private readonly aspectPhaseEmojiService: AspectPhaseEmojiService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
+
+  // 🌎 Public Methods
 
   /**
    * Creates a bidirectional lookup of each opposition endpoint to its opposite body.

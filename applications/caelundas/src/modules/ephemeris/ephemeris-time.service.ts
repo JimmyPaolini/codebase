@@ -15,6 +15,12 @@ export class EphemerisTimeService {
 
   constructor() {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   // 🌎 Public Methods
 
   /**

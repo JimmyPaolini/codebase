@@ -33,6 +33,8 @@ export class ConventionalConfigValidatorsService {
 
   private readonly workspaceRoot = process.cwd();
 
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
 
   /** Checks that a named marker block in a skill file matches the source config values. */

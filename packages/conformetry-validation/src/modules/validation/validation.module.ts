@@ -26,7 +26,22 @@ import { ValidationService } from "./validation.service";
  */
 @Module({
   controllers: [],
-  exports: [ValidationService],
+  exports: [
+    DiscoveryModule,
+    FilesModule,
+    JsonValidatorModule,
+    JupyterValidatorModule,
+    LanguageModule,
+    MarkdownValidatorModule,
+    PythonValidatorModule,
+    ReportingModule,
+    TextValidatorModule,
+    TypescriptValidatorModule,
+    ValidationDeduplicationService,
+    ValidationFindingsService,
+    ValidationLanguagesService,
+    ValidationService,
+  ],
   imports: [
     DiscoveryModule,
     FilesModule,

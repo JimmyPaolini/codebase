@@ -85,9 +85,7 @@ describe(LoggerService, () => {
   }
 
   it("is defined", () => {
-    const command = service;
-
-    expect(command).toBeDefined();
+    expect(service).toBeDefined();
   });
 
   it("logs through all severity methods and stringifies non-string values", () => {

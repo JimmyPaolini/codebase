@@ -35,7 +35,13 @@ export class SextupleAspectsComposerService {
     private readonly progressiveCompoundEventService: ProgressiveCompoundEventService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
+
+  // 🌎 Public Methods
 
   /**
    * Adds connection.

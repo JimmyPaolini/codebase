@@ -21,6 +21,14 @@ export class QuadrupleAspectsComposerService {
     private readonly quadrupleAspectsBaseService: QuadrupleAspectsBaseService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
+  // 🌎 Public Methods
+
   /**
    * Collects grand crosses for opp1.
    */

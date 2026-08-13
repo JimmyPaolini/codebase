@@ -13,7 +13,7 @@ import { PathsService } from "./paths.service";
  */
 @Module({
   controllers: [],
-  exports: [PathsService],
+  exports: [CandidatesModule, PathsService],
   imports: [CandidatesModule],
   providers: [PathsService],
 })

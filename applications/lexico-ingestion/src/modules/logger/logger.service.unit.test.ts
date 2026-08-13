@@ -104,9 +104,7 @@ describe(LoggerService, () => {
   });
 
   it("is defined", () => {
-    const command = service;
-
-    expect(command).toBeDefined();
+    expect(service).toBeDefined();
   });
 
   describe("setContext", () => {

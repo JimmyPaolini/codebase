@@ -71,6 +71,7 @@ describe(ValidationService, () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [ValidationModule],
+      providers: [ValidationService],
     }).compile();
 
     service = await module.resolve(ValidationService);
