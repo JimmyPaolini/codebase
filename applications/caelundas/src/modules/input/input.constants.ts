@@ -64,16 +64,16 @@ export const inputSchema = z
       timezone,
     };
   })
-  .refine((data) => data.start.isSameOrAfter(moment(minimumDate)), {
+  .refine((data) => data.start.format("YYYY-MM-DD") >= minimumDate, {
     message: `Start date must be on or after ${minimumDate}`,
   })
-  .refine((data) => data.start.isSameOrBefore(moment(maximumDate)), {
+  .refine((data) => data.start.format("YYYY-MM-DD") <= maximumDate, {
     message: `Start date must be on or before ${maximumDate}`,
   })
-  .refine((data) => data.end.isSameOrAfter(moment(minimumDate)), {
+  .refine((data) => data.end.format("YYYY-MM-DD") >= minimumDate, {
     message: `End date must be on or after ${minimumDate}`,
   })
-  .refine((data) => data.end.isSameOrBefore(moment(maximumDate)), {
+  .refine((data) => data.end.format("YYYY-MM-DD") <= maximumDate, {
     message: `End date must be on or before ${maximumDate}`,
   })
   .refine((data) => data.end.isAfter(data.start), {

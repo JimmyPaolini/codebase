@@ -10,6 +10,45 @@ import { ProgressiveService } from "../progressive/progressive.service";
 
 import { CaelundasCommand } from "./caelundas.command";
 
+interface EventWithStart {
+  start: {
+    valueOf: () => number;
+  };
+  type?: string;
+}
+
+interface ParsedInputShape {
+  end: {
+    valueOf: () => number;
+  };
+  latitude: number;
+  longitude: number;
+  start: {
+    valueOf: () => number;
+  };
+  timezone: string;
+}
+
+const getWriteCallArguments = (
+  calendarService: CalendarService,
+): [EventWithStart[], ParsedInputShape] => {
+  const calendarServiceMock = calendarService as unknown as {
+    write: {
+      mock: {
+        calls: [EventWithStart[], ParsedInputShape][];
+      };
+    };
+  };
+
+  const firstCall = calendarServiceMock.write.mock.calls[0];
+
+  if (firstCall === undefined) {
+    throw new Error("Expected calendarService.write to be called once");
+  }
+
+  return firstCall;
+};
+
 describe(CaelundasCommand, () => {
   let command: CaelundasCommand;
 
@@ -136,14 +175,18 @@ describe(CaelundasCommand, () => {
       expect(progressiveService.detect).toHaveBeenCalledWith(
         mockPerfectiveEvents,
       );
-      expect(calendarService.write).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ start: { valueOf: (): number => 1100 } }),
-          expect.objectContaining({ start: { valueOf: (): number => 1200 } }),
-          expect.objectContaining({ start: { valueOf: (): number => 1500 } }),
-        ]),
+      expect(calendarService.write).toHaveBeenCalledExactlyOnceWith(
+        expect.any(Array),
         mockInput,
       );
+
+      const [writtenEvents, writtenInput] =
+        getWriteCallArguments(calendarService);
+
+      expect(writtenEvents.map((event) => event.start.valueOf())).toStrictEqual(
+        [1100, 1200, 1500],
+      );
+      expect(writtenInput).toBe(mockInput);
     });
 
     it("sorts events by start time before writing to calendar", async () => {
@@ -202,11 +245,11 @@ describe(CaelundasCommand, () => {
 
       await resolvedCommand.run();
 
-      const writtenEvents = (calendarService.write as any).mock.calls[0][0];
+      const [writtenEvents] = getWriteCallArguments(calendarService);
 
-      expect(writtenEvents[0].start.valueOf()).toBe(1100);
-      expect(writtenEvents[1].start.valueOf()).toBe(1300);
-      expect(writtenEvents[2].start.valueOf()).toBe(1500);
+      expect(writtenEvents.map((event) => event.start.valueOf())).toStrictEqual(
+        [1100, 1300, 1500],
+      );
     });
 
     it("handles both perfective and progressive events when present", async () => {
@@ -267,7 +310,7 @@ describe(CaelundasCommand, () => {
 
       await resolvedCommand.run();
 
-      const writtenEvents = (calendarService.write as any).mock.calls[0][0];
+      const [writtenEvents] = getWriteCallArguments(calendarService);
 
       expect(writtenEvents).toHaveLength(2);
       expect(writtenEvents).toStrictEqual(
