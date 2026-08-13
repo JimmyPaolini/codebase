@@ -66,5 +66,16 @@ export type ConformanceErrorLanguage =
   | "text"
   | "typescript";
 
-/** Category of the missing element that caused the conformance failure. */
-export type ConformanceErrorType = "code" | "comment" | "directory" | "file";
+/**
+ * Category of the element that caused the conformance failure.
+ *
+ * `"instance"` is the odd one out: it does not name a missing element inside a
+ * file but a directory or file the caller declared to be generated code, which
+ * conformetry could not attribute to any single template.
+ */
+export type ConformanceErrorType =
+  | "code"
+  | "comment"
+  | "directory"
+  | "file"
+  | "instance";

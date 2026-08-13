@@ -114,15 +114,17 @@ export class GenerateCommand extends CommandRunner {
       await this.configurationService.loadConformetryConfiguration(
         options.config ?? "configuration/conformetry.config.ts",
       );
-    const definition = configuration.generators[options.generator];
+    const definition = configuration.find((generator) => {
+      return generator.name === options.generator;
+    });
 
     if (definition === undefined) {
       throw new Error(
-        `Unknown generator "${options.generator}". Available: ${Object.keys(configuration.generators).join(", ")}`,
+        `Unknown generator "${options.generator}". Available: ${configuration.map((generator) => generator.name).join(", ")}`,
       );
     }
 
-    const schema: JsonSchemaDefinition = { properties: definition.parameters };
+    const schema: JsonSchemaDefinition = { properties: definition.inputs };
     const inputs = await this.inputService.resolveGeneratorInputs({
       promptWhenMissing: this.canPrompt(options),
       rawArguments: [...passedParameters, ...process.argv.slice(2)],
@@ -131,10 +133,10 @@ export class GenerateCommand extends CommandRunner {
     const result = await this.generationService.runGenerator({
       definition: {
         name: definition.name,
-        templateDirectoryPath: definition.templateDirectoryPath,
+        templateDirectoryPath: definition.templatePath,
       },
       inputs,
-      targetDirectoryPath:
+      instancePath:
         options.directory ??
         `${DEFAULT_GENERATED_DIRECTORY}/${definition.name}`,
     });

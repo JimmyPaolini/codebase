@@ -1,19 +1,16 @@
 // ♟️ Constants
 
-/**
- * Matches `{{field}}` placeholders inside template *contents*.
- *
- * The field excludes braces so the match cannot run greedily across two
- * adjacent placeholders. Note this still matches the inner `{{name}}` of a
- * triple-brace `{{{name}}}`, leaving the outer braces in place — templates
- * should not rely on Handlebars-style triple-brace escaping.
- */
-export const CONTENT_PLACEHOLDER_PATTERN = /\{\{([^{}]+)\}\}/gu;
+import type { RenderOptions } from "mustache";
 
 /**
- * Matches `__field__` placeholders inside template *paths*.
+ * Mustache options used for every render.
  *
- * Paths use a different syntax from contents because `{{` and `}}` are not
- * portable across filesystems.
+ * Escaping is disabled. Mustache HTML-escapes `{{field}}` by default, so a
+ * substitution containing `&`, `<`, or `>` would be written into generated
+ * source as `&amp;` and corrupt it. Passing `escape` per call leaves
+ * mustache's global `escape` untouched, so nothing else in the process is
+ * affected, and templates keep using `{{field}}` rather than `{{{field}}}`.
  */
-export const PATH_PLACEHOLDER_PATTERN = /__(\w+)__/gu;
+export const MUSTACHE_RENDER_OPTIONS: RenderOptions = {
+  escape: String,
+};

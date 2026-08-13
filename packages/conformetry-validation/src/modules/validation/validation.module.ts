@@ -1,7 +1,4 @@
-import {
-  ConfigurationModule,
-  DiscoveryModule as TemplateDiscoveryModule,
-} from "@jimmypaolini/conformetry-configuration";
+import { DiscoveryModule } from "@jimmypaolini/conformetry-configuration";
 import {
   LanguageModule,
   ReportingModule,
@@ -15,10 +12,9 @@ import { TextValidatorModule } from "@jimmypaolini/conformetry-text";
 import { TypescriptValidatorModule } from "@jimmypaolini/conformetry-typescript";
 import { Module } from "@nestjs/common";
 
-import { DiscoveryModule } from "../discovery/discovery.module";
-
+import { ValidationDeduplicationService } from "./validation-deduplication.service";
+import { ValidationFindingsService } from "./validation-findings.service";
 import { ValidationLanguagesService } from "./validation-languages.service";
-import { ValidationSelectionService } from "./validation-selection.service";
 import { ValidationService } from "./validation.service";
 
 /**
@@ -32,7 +28,6 @@ import { ValidationService } from "./validation.service";
   controllers: [],
   exports: [ValidationService],
   imports: [
-    ConfigurationModule,
     DiscoveryModule,
     FilesModule,
     JsonValidatorModule,
@@ -41,13 +36,13 @@ import { ValidationService } from "./validation.service";
     MarkdownValidatorModule,
     PythonValidatorModule,
     ReportingModule,
-    TemplateDiscoveryModule,
     TextValidatorModule,
     TypescriptValidatorModule,
   ],
   providers: [
+    ValidationDeduplicationService,
+    ValidationFindingsService,
     ValidationLanguagesService,
-    ValidationSelectionService,
     ValidationService,
   ],
 })

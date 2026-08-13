@@ -1,115 +1,115 @@
-import { mkdtemp } from "node:fs/promises";
+import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { RenderingService } from "@jimmypaolini/conformetry-generation";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { ConfigurationService } from "../configuration/configuration.service";
-
-import { DiscoveryMatchingService } from "./discovery-matching.service";
-import { DiscoveryMetadataService } from "./discovery-metadata.service";
-import { DiscoveryTemplatesService } from "./discovery-templates.service";
+import { DiscoveryModule } from "./discovery.module";
 import { DiscoveryService } from "./discovery.service";
 
-import type { ConformetryConfiguration } from "../configuration/configuration.types";
+import type { MatchedInstance, TemplateDefinition } from "./discovery.types";
 
-/** Tests run from the package directory; templates resolve from the root. */
-const WORKSPACE_ROOT = path.resolve(process.cwd(), "..", "..");
+/** A flat two-file template: it produces loose files, not a folder. */
+async function createTemplatePath(): Promise<string> {
+  const templatePath = path.join(
+    await mkdtemp(path.join(tmpdir(), "conformetry-templates-")),
+    "widget",
+  );
 
-const CONFIGURATION: ConformetryConfiguration = {
-  generators: {
-    alpha: { name: "alpha", parameters: {}, templateDirectoryPath: "t/alpha" },
-    beta: { name: "beta", parameters: {}, templateDirectoryPath: "t/beta" },
-  },
-};
+  await mkdir(templatePath, { recursive: true });
+  await writeFile(
+    path.join(templatePath, "{{nameKebabCase}}.service.ts"),
+    "export class {{namePascalCase}}Service {}\n",
+    "utf8",
+  );
+  await writeFile(path.join(templatePath, ".gitignore"), "dist\n", "utf8");
+
+  return templatePath;
+}
 
 describe(DiscoveryService, () => {
   let service: DiscoveryService;
+  let templates: TemplateDefinition[];
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [
-        ConfigurationService,
-        DiscoveryMatchingService,
-        DiscoveryMetadataService,
-        DiscoveryService,
-        DiscoveryTemplatesService,
-        RenderingService,
-      ],
+      imports: [DiscoveryModule],
     }).compile();
 
     service = await module.resolve(DiscoveryService);
+    templates = [
+      service.collectTemplate({
+        name: "widget",
+        templatePath: await createTemplatePath(),
+      }),
+    ];
   });
 
   it("is defined", () => {
     expect(service).toBeDefined();
   });
 
-  describe("resolveGeneratorNames", () => {
-    it("returns every configured generator when unfiltered", () => {
-      expect(
-        service.resolveGeneratorNames({ configuration: CONFIGURATION }),
-      ).toStrictEqual(["alpha", "beta"]);
-    });
-
-    it("returns every generator for an empty filter", () => {
-      expect(
-        service.resolveGeneratorNames({
-          configuration: CONFIGURATION,
-          templateRuleNames: [],
-        }),
-      ).toStrictEqual(["alpha", "beta"]);
-    });
-
-    it("narrows to the requested generators", () => {
-      expect(
-        service.resolveGeneratorNames({
-          configuration: CONFIGURATION,
-          templateRuleNames: ["beta"],
-        }),
-      ).toStrictEqual(["beta"]);
-    });
-
-    it("ignores requested names that are not configured", () => {
-      expect(
-        service.resolveGeneratorNames({
-          configuration: CONFIGURATION,
-          templateRuleNames: ["gamma"],
-        }),
-      ).toStrictEqual([]);
-    });
+  it("reads a template from its folder", () => {
+    expect(templates.map((template) => template.name)).toStrictEqual([
+      "widget",
+    ]);
   });
 
-  describe("prepareValidationPayload", () => {
-    it("prepares documents for a real workspace project", async () => {
-      const documents = await service.prepareValidationPayload({
-        configurationPath: "configuration/conformetry.config.ts",
-        fileExtensions: [".ts"],
-        projectPaths: ["packages/conformetry-core"],
-        workingDirectory: WORKSPACE_ROOT,
-      });
-
-      expect(documents.length).toBeGreaterThan(0);
-      expect(
-        documents.every((document) => document.filename.endsWith(".ts")),
-      ).toBe(true);
-    });
-
-    it("returns nothing for a directory sharing no file with any template", async () => {
-      const emptyProjectPath = await mkdtemp(
-        path.join(tmpdir(), "conformetry-empty-project-"),
+  describe("resolveInstances and prepareDocuments", () => {
+    async function createInstance(): Promise<MatchedInstance> {
+      const instancePath = await mkdtemp(
+        path.join(tmpdir(), "conformetry-instance-"),
       );
 
-      const documents = await service.prepareValidationPayload({
-        configurationPath: "configuration/conformetry.config.ts",
+      await writeFile(
+        path.join(instancePath, "alpha.service.ts"),
+        "export class AlphaService {}\n",
+        "utf8",
+      );
+
+      const { matched } = service.resolveInstances({
+        candidates: [{ instancePath, nameStem: "alpha" }],
+        templates,
+      });
+      const instance = matched[0];
+
+      if (instance === undefined) {
+        throw new Error("expected the candidate to match");
+      }
+
+      return instance;
+    }
+
+    it("matches a candidate to its template", async () => {
+      const instance = await createInstance();
+
+      expect(instance.template.name).toBe("widget");
+      expect(instance.matchedFileCount).toBe(1);
+    });
+
+    it("prepares documents only for the requested extensions", async () => {
+      const [prepared] = service.prepareDocuments({
         fileExtensions: [".ts"],
-        projectPaths: [emptyProjectPath],
-        workingDirectory: WORKSPACE_ROOT,
+        instances: [await createInstance()],
       });
 
-      expect(documents).toStrictEqual([]);
+      expect(prepared?.documents).toHaveLength(1);
+      expect(prepared?.documents[0]?.renderedTemplate).toBe(
+        "export class AlphaService {}\n",
+      );
+    });
+
+    it("lists every required file regardless of extension", async () => {
+      const instanceFiles = service.resolveInstanceFiles([
+        await createInstance(),
+      ]);
+
+      expect(
+        instanceFiles
+          .map((instanceFile) => path.basename(instanceFile.instanceFilePath))
+          .toSorted(),
+      ).toStrictEqual([".gitignore", "alpha.service.ts"]);
     });
   });
 });

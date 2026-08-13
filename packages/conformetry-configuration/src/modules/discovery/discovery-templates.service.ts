@@ -4,10 +4,18 @@ import path from "node:path";
 import { RenderingService } from "@jimmypaolini/conformetry-generation";
 import { Injectable } from "@nestjs/common";
 
+import type { TemplateDefinition } from "./discovery.types";
 import type { PreparedValidationDocument } from "@jimmypaolini/conformetry-core";
+import type { Substitutions } from "@jimmypaolini/conformetry-generation";
 
 /**
- * Reads template trees and pairs each template file with its instance file.
+ * Reads template folders and maps their files onto instance files.
+ *
+ * A template's tree is laid over the instance path verbatim, so a template
+ * that should produce a folder contains that folder — `{{nameKebabCase}}/…` —
+ * rather than the runtime inventing one. That keeps the shape of the output
+ * visible in the template itself, and lets one template produce a folder while
+ * another produces loose files, with nothing but their contents to say so.
  *
  * Rendering goes through `RenderingService` so a template is substituted here
  * exactly as it was when the generator wrote the file — otherwise validation
@@ -25,22 +33,14 @@ export class DiscoveryTemplatesService {
 
   // 🔏 Private Methods
 
-  // 🌎 Public Methods
-
-  /**
-   * Lists every file under a template directory, recursively and sorted.
-   *
-   * A directory that does not exist yields no files rather than throwing: a
-   * generator can be declared before its templates are written, and that
-   * should not abort validation of every other project.
-   */
-  public collectTemplateFilePaths(templateDirectoryPath: string): string[] {
-    if (!fs.existsSync(templateDirectoryPath)) {
+  /** Lists every file under a directory, recursively and sorted. */
+  private collectFilePaths(directoryPath: string): string[] {
+    if (!fs.existsSync(directoryPath)) {
       return [];
     }
 
-    const templateFilePaths: string[] = [];
-    const pendingDirectoryPaths = [templateDirectoryPath];
+    const filePaths: string[] = [];
+    const pendingDirectoryPaths = [directoryPath];
 
     while (pendingDirectoryPaths.length > 0) {
       const currentDirectoryPath = pendingDirectoryPaths.pop();
@@ -57,36 +57,62 @@ export class DiscoveryTemplatesService {
         if (entry.isDirectory()) {
           pendingDirectoryPaths.push(entryPath);
         } else if (entry.isFile()) {
-          templateFilePaths.push(entryPath);
+          filePaths.push(entryPath);
         }
       }
     }
 
-    return templateFilePaths.toSorted();
+    return filePaths.toSorted();
+  }
+
+  // 🌎 Public Methods
+
+  /**
+   * Reads one template folder.
+   *
+   * The folder is the whole definition — nothing but the files it contains is
+   * needed to validate against it.
+   */
+  public collectTemplate(args: {
+    name: string;
+    templatePath: string;
+  }): TemplateDefinition {
+    return {
+      directoryPath: args.templatePath,
+      filePaths: this.collectFilePaths(args.templatePath),
+      name: args.name,
+    };
   }
 
   /**
-   * Counts how many of a template's files already exist in a project.
+   * Counts how many of a template's files the instance path already has.
    *
-   * This is the primary evidence the matcher ranks candidates by: the template
-   * with the most files already present is almost certainly the one that
-   * generated the project.
+   * When a file scope is given, only files inside it count — that is what lets
+   * a file glob select a template describing exactly those files rather than
+   * the larger template describing the whole directory.
    */
-  public countExistingFiles(args: {
-    projectPath: string;
-    substitutions: Record<string, string>;
-    templateDirectoryPath: string;
-    templateFilePaths: string[];
+  public countMatchingFiles(args: {
+    fileScope?: string[] | undefined;
+    instancePath: string;
+    substitutions: Substitutions;
+    template: TemplateDefinition;
   }): number {
-    return args.templateFilePaths.filter((templateFilePath) => {
-      return fs.existsSync(
-        this.resolveInstancePath({
-          projectPath: args.projectPath,
-          substitutions: args.substitutions,
-          templateDirectoryPath: args.templateDirectoryPath,
-          templateFilePath,
-        }),
-      );
+    const scope =
+      args.fileScope === undefined ? undefined : new Set(args.fileScope);
+
+    return args.template.filePaths.filter((templateFilePath) => {
+      const instanceFilePath = this.resolveInstanceFilePath({
+        instancePath: args.instancePath,
+        substitutions: args.substitutions,
+        templateDirectoryPath: args.template.directoryPath,
+        templateFilePath,
+      });
+
+      if (scope !== undefined && !scope.has(instanceFilePath)) {
+        return false;
+      }
+
+      return fs.existsSync(instanceFilePath);
     }).length;
   }
 
@@ -98,12 +124,12 @@ export class DiscoveryTemplatesService {
    * to compare and should not see the pair at all.
    */
   public prepareDocument(args: {
-    projectPath: string;
-    substitutions: Record<string, string>;
+    instancePath: string;
+    substitutions: Substitutions;
     templateDirectoryPath: string;
     templateFilePath: string;
   }): PreparedValidationDocument | undefined {
-    const instanceFilePath = this.resolveInstancePath(args);
+    const instanceFilePath = this.resolveInstanceFilePath(args);
 
     if (!fs.existsSync(instanceFilePath)) {
       return undefined;
@@ -121,15 +147,15 @@ export class DiscoveryTemplatesService {
     };
   }
 
-  /** Maps a template file path to the instance path it governs. */
-  public resolveInstancePath(args: {
-    projectPath: string;
-    substitutions: Record<string, string>;
+  /** Maps a template file path to the instance file path it governs. */
+  public resolveInstanceFilePath(args: {
+    instancePath: string;
+    substitutions: Substitutions;
     templateDirectoryPath: string;
     templateFilePath: string;
   }): string {
     return path.join(
-      args.projectPath,
+      args.instancePath,
       this.renderingService.renderPath({
         substitutions: args.substitutions,
         templatePath: path.relative(

@@ -25,6 +25,11 @@
     "{applications,packages,tools}/*/src/index.ts",
     "{applications,packages,tools}/*/src/main.ts",
     "{applications,packages,tools}/*/src/modules/**/*.module.ts",
+    // Nx resolves these from executors.json and generators.json, which is not
+    // an import, so nothing reaches them through the module graph.
+    "{applications,packages,tools}/*/src/executors/**/executor.ts",
+    "{applications,packages,tools}/*/src/generators/**/generator.ts",
+    "{applications,packages,tools}/*/src/generators.ts",
     "{applications,packages,tools}/*/src/repl.ts",
     "{applications,packages,tools}/*/testing/**/*.ts",
     "configuration/**",

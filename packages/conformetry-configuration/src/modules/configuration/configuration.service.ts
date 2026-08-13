@@ -9,7 +9,6 @@ import { parse as parseJsonc } from "jsonc-parser";
 
 import {
   conformetryConfigurationSchema,
-  DEFAULT_TEMPLATE_DIRECTORY,
   SUPPORTED_CONFIGURATION_EXTENSIONS,
   UnknownConfigurationFileTypeError,
   WORKSPACE_MANIFEST_FILENAME,
@@ -41,18 +40,14 @@ export class ConfigurationService {
   // 🔏 Private Methods
 
   /**
-   * Applies defaults to one parsed generator entry.
+   * Fills in the optional halves of one parsed generator entry.
    *
-   * An explicitly configured `templateDirectoryPath` wins; otherwise the path
-   * is derived from the registry key, which is the common case and keeps
-   * configs terse.
+   * A generator with no inputs and no instances is legal — it renders a fixed
+   * template nobody validates — so both default to empty rather than failing.
    */
-  private applyGeneratorDefaults(args: {
-    definition: ParsedGeneratorEntry;
-    generatorName: string;
-  }): ConformetryGeneratorDefinition {
-    const { definition } = args;
-
+  private applyGeneratorDefaults(
+    definition: ParsedGeneratorEntry,
+  ): ConformetryGeneratorDefinition {
     return {
       ...(definition.aliases === undefined
         ? {}
@@ -60,12 +55,10 @@ export class ConfigurationService {
       ...(definition.description === undefined
         ? {}
         : { description: definition.description }),
-      ...(definition.hooks === undefined ? {} : { hooks: definition.hooks }),
+      inputs: definition.inputs ?? {},
+      instances: definition.instances ?? [],
       name: definition.name,
-      parameters: definition.parameters ?? {},
-      templateDirectoryPath:
-        definition.templateDirectoryPath ??
-        path.join(DEFAULT_TEMPLATE_DIRECTORY, args.generatorName),
+      templatePath: definition.templatePath,
     };
   }
 
@@ -111,7 +104,7 @@ export class ConfigurationService {
     });
 
     if (typeof importedModule !== "object" || importedModule === null) {
-      return { generators: {} };
+      return [];
     }
 
     const defaultExport = (importedModule as { default?: unknown }).default;
@@ -184,19 +177,8 @@ export class ConfigurationService {
       configurationPath: resolvedPath,
       extension,
     });
-    const parsedConfiguration =
-      conformetryConfigurationSchema.parse(configurationModule);
-    const generators: Record<string, ConformetryGeneratorDefinition> = {};
-
-    for (const [generatorName, definition] of Object.entries(
-      parsedConfiguration.generators,
-    )) {
-      generators[generatorName] = this.applyGeneratorDefaults({
-        definition,
-        generatorName,
-      });
-    }
-
-    return { generators };
+    return conformetryConfigurationSchema
+      .parse(configurationModule)
+      .map((definition) => this.applyGeneratorDefaults(definition));
   }
 }

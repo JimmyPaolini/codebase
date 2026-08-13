@@ -3,8 +3,6 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 import lodash from "lodash";
 
-import { DEFAULT_CONFIGURATION_PATH } from "../configuration/configuration.constants";
-
 import {
   DEFAULT_GENERATED_OUTPUT_DIRECTORY,
   GENERATE_COMMAND_TOKEN,
@@ -12,15 +10,12 @@ import {
   TARGET_DIRECTORY_OPTION_KEYS,
 } from "./input.constants";
 
-import type {
-  ConformetryNxPluginOptions,
-  JsonSchemaDefinition,
-} from "../configuration/configuration.types";
+import type { JsonSchemaDefinition } from "../configuration/configuration.types";
 
 /**
  * Parses command-line options into generator inputs.
  *
- * Generator parameters are not declared as CLI flags ahead of time — they come
+ * Generator inputs are not declared as CLI flags ahead of time — they come
  * from whichever generator the user selected — so they are scanned out of the
  * raw argument list and matched against the generator's schema.
  */
@@ -169,25 +164,6 @@ export class InputOptionsService {
     }
 
     return normalized;
-  }
-
-  /** Resolves the config path from explicit, plugin, then default sources. */
-  public resolveConfigurationPath(args: {
-    defaultConfigurationPath?: string;
-    options: Record<string, unknown>;
-    pluginOptions?: ConformetryNxPluginOptions;
-  }): string {
-    const explicitPath = args.options["config"];
-
-    if (typeof explicitPath === "string") {
-      return explicitPath;
-    }
-
-    const pluginPath = args.pluginOptions?.configFilePath;
-
-    return typeof pluginPath === "string"
-      ? pluginPath
-      : (args.defaultConfigurationPath ?? DEFAULT_CONFIGURATION_PATH);
   }
 
   /**

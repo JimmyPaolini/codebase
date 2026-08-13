@@ -2,18 +2,53 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { DiscoveryModule } from "@jimmypaolini/conformetry-configuration";
+import {
+  DiscoveryModule,
+  DiscoveryService,
+} from "@jimmypaolini/conformetry-configuration";
 import { ErrorsModule } from "@jimmypaolini/conformetry-core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { FilesService } from "./files.service";
 
-/** Tests run from the package directory; templates resolve from the root. */
-const WORKSPACE_ROOT = path.resolve(process.cwd(), "..", "..");
+import type {
+  MatchedInstance,
+  TemplateDefinition,
+} from "@jimmypaolini/conformetry-configuration";
+
+/** Writes a flat two-file template and returns its folder. */
+async function createTemplatePath(): Promise<string> {
+  const templatePath = path.join(
+    await mkdtemp(path.join(tmpdir(), "conformetry-files-templates-")),
+    "widget",
+  );
+
+  await mkdir(path.join(templatePath, "nested"), { recursive: true });
+  await writeFile(
+    path.join(templatePath, "{{nameKebabCase}}.service.ts"),
+    "",
+    "utf8",
+  );
+  await writeFile(path.join(templatePath, "nested", ".gitignore"), "", "utf8");
+
+  return templatePath;
+}
 
 describe(FilesService, () => {
+  let discoveryService: DiscoveryService;
   let service: FilesService;
+  let template: TemplateDefinition;
+
+  /** Matches an instance path against the single `widget` template. */
+  function matchInstance(instancePath: string): MatchedInstance[] {
+    const { matched } = discoveryService.resolveInstances({
+      candidates: [{ instancePath, nameStem: "my-widget" }],
+      templates: [template],
+    });
+
+    return matched;
+  }
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -22,58 +57,82 @@ describe(FilesService, () => {
     }).compile();
 
     service = await module.resolve(FilesService);
+    discoveryService = await module.resolve(DiscoveryService);
+    template = discoveryService.collectTemplate({
+      name: "widget",
+      templatePath: await createTemplatePath(),
+    });
   });
 
   it("is defined", () => {
     expect(service).toBeDefined();
   });
 
-  it("reports nothing for a project that has every template file", async () => {
-    await expect(
-      service.checkProjectFiles({
-        configurationPath: "configuration/conformetry.config.ts",
-        projectPaths: ["packages/conformetry-core"],
-        workingDirectory: WORKSPACE_ROOT,
-      }),
-    ).resolves.toStrictEqual([]);
-  });
-
-  it("reports nothing for a directory that matches no template", async () => {
-    const emptyProjectPath = await mkdtemp(
-      path.join(tmpdir(), "conformetry-files-empty-"),
+  it("reports nothing when the instance has every template file", async () => {
+    const instancePath = await mkdtemp(
+      path.join(tmpdir(), "conformetry-files-complete-"),
     );
 
-    await expect(
-      service.checkProjectFiles({
-        configurationPath: "configuration/conformetry.config.ts",
-        projectPaths: [emptyProjectPath],
-        workingDirectory: WORKSPACE_ROOT,
-      }),
-    ).resolves.toStrictEqual([]);
+    await mkdir(path.join(instancePath, "nested"), { recursive: true });
+    await writeFile(
+      path.join(instancePath, "my-widget.service.ts"),
+      "",
+      "utf8",
+    );
+    await writeFile(
+      path.join(instancePath, "nested", ".gitignore"),
+      "",
+      "utf8",
+    );
+
+    expect(
+      service.checkInstanceFiles({ instances: matchInstance(instancePath) }),
+    ).toStrictEqual([]);
   });
 
-  it("reports a missing file against a matched template", async () => {
-    const workspace = await mkdtemp(path.join(tmpdir(), "conformetry-files-"));
-    const projectPath = path.join(workspace, "packages", "conformetry-core");
+  it("reports nothing when no instance matched", () => {
+    expect(service.checkInstanceFiles({ instances: [] })).toStrictEqual([]);
+  });
 
-    await mkdir(projectPath, { recursive: true });
-    // Enough of the template to match, but missing .gitignore and the rest.
-    await writeFile(path.join(projectPath, "README.md"), "# x\n", "utf8");
-    await writeFile(path.join(projectPath, "package.json"), "{}\n", "utf8");
+  it("reports an extension-less file the template requires", async () => {
+    const instancePath = await mkdtemp(
+      path.join(tmpdir(), "conformetry-files-partial-"),
+    );
 
-    const results = await service.checkProjectFiles({
-      configurationPath: path.join(
-        WORKSPACE_ROOT,
-        "configuration/conformetry.config.ts",
-      ),
-      projectPaths: [projectPath],
-      workingDirectory: WORKSPACE_ROOT,
+    await mkdir(path.join(instancePath, "nested"), { recursive: true });
+    await writeFile(
+      path.join(instancePath, "my-widget.service.ts"),
+      "",
+      "utf8",
+    );
+
+    const results = service.checkInstanceFiles({
+      instances: matchInstance(instancePath),
     });
 
-    expect(results.length).toBeGreaterThan(0);
-    expect(results.some((result) => result.filename === ".gitignore")).toBe(
-      true,
-    );
+    expect(results.map((result) => result.filename)).toStrictEqual([
+      ".gitignore",
+    ]);
+    expect(results[0]?.errors[0]?.errorType).toBe("file");
     expect(results[0]?.errors[0]?.fix).toContain("Create the");
+  });
+
+  it("collapses a missing directory into one finding", async () => {
+    const instancePath = await mkdtemp(
+      path.join(tmpdir(), "conformetry-files-missing-"),
+    );
+
+    await writeFile(
+      path.join(instancePath, "my-widget.service.ts"),
+      "",
+      "utf8",
+    );
+
+    const results = service.checkInstanceFiles({
+      instances: matchInstance(instancePath),
+    });
+
+    expect(results).toHaveLength(1);
+    expect(results[0]?.errors[0]?.errorType).toBe("directory");
   });
 });

@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "description": "Generate a NestJS command module with command, module, and unit test files",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Module name in kebab-case"
+    },
+    "project": {
+      "type": "string",
+      "description": "Parent project name in kebab-case"
+    }
+  },
+  "required": [
+    "name",
+    "project"
+  ],
+  "title": "nestjs-command-module",
+  "type": "object"
+}

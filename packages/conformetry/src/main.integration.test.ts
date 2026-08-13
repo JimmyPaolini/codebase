@@ -43,6 +43,6 @@ describe(MainModule, () => {
     const command = await module.resolve(ValidateCommand);
 
     expect(command).toBeDefined();
-    expect(command.parseRules("typescript")).toStrictEqual(["typescript"]);
+    expect(command.parseLanguages("typescript")).toStrictEqual(["typescript"]);
   });
 });

@@ -1,48 +1,42 @@
-import {
-  ConfigurationService,
-  DiscoveryService as TemplateDiscoveryService,
-} from "@jimmypaolini/conformetry-configuration";
+import { DiscoveryService } from "@jimmypaolini/conformetry-configuration";
 import { LanguageService } from "@jimmypaolini/conformetry-core";
 import { FilesService } from "@jimmypaolini/conformetry-files";
 import { Injectable } from "@nestjs/common";
 
-import { DiscoveryScopeService } from "../discovery/discovery-scope.service";
-import { DiscoveryService } from "../discovery/discovery.service";
-
+import { ValidationDeduplicationService } from "./validation-deduplication.service";
+import { ValidationFindingsService } from "./validation-findings.service";
 import { ValidationLanguagesService } from "./validation-languages.service";
-import { ValidationSelectionService } from "./validation-selection.service";
-import { DEFAULT_CONFIGURATION_PATH } from "./validation.constants";
 
 import type {
+  InstanceFileResults,
   RunValidationArguments,
   RunValidationResult,
 } from "./validation.types";
+import type { MatchedInstance } from "@jimmypaolini/conformetry-configuration";
 import type {
   ConformetryLanguageValidator,
   ValidationFileResult,
 } from "@jimmypaolini/conformetry-core";
 
 /**
- * Runs a full conformetry validation: discover projects, resolve which
- * templates apply where, check files exist, then compare contents.
+ * Runs a full conformetry validation: match candidates to templates, check the
+ * files exist, then compare contents language by language.
  *
- * Configuration is loaded once per run and threaded through. It used to be
- * re-read from disk by every language validator on every call — seven reads
- * for a single command.
+ * The candidates arrive from the caller. This package used to scan the
+ * workspace for `project.json` files and infer scope from generator name
+ * suffixes, which made a generic package depend on one repository's layout.
  */
 @Injectable()
 export class ValidationService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly configurationService: ConfigurationService,
-    private readonly discoveryScopeService: DiscoveryScopeService,
     private readonly discoveryService: DiscoveryService,
     private readonly filesService: FilesService,
     private readonly languageService: LanguageService,
+    private readonly validationDeduplicationService: ValidationDeduplicationService,
+    private readonly validationFindingsService: ValidationFindingsService,
     private readonly validationLanguagesService: ValidationLanguagesService,
-    private readonly templateDiscoveryService: TemplateDiscoveryService,
-    private readonly validationSelectionService: ValidationSelectionService,
   ) {}
 
   // 🔐 Private Fields
@@ -51,114 +45,87 @@ export class ValidationService {
 
   // 🔏 Private Methods
 
-  /** Compares one scoped directory's documents with every selected validator. */
-  private async validateScopedPath(args: {
-    configurationPath: string;
-    generatorNames: string[];
-    scopedPath: string;
-    validators: ConformetryLanguageValidator[];
-    workingDirectory: string;
-  }): Promise<ValidationFileResult[]> {
-    const fileExtensions = args.validators.flatMap((validator) => {
-      return [...validator.descriptor.fileExtensions];
-    });
-    const documents =
-      await this.templateDiscoveryService.prepareValidationPayload({
-        configurationPath: args.configurationPath,
-        fileExtensions,
-        projectPaths: [args.scopedPath],
-        templateRuleNames: args.generatorNames,
-        workingDirectory: args.workingDirectory,
-      });
+  /** Selects the validators a run should drive, honouring the name filter. */
+  private selectValidators(
+    languageNames: string[] | undefined,
+  ): ConformetryLanguageValidator[] {
+    const validators = this.validationLanguagesService.readValidators();
 
-    return args.validators.flatMap((validator) => {
-      return this.languageService.runValidator({
-        checkedPaths: [args.scopedPath],
-        documents,
-        validator,
-      }).fileResults;
+    if (languageNames === undefined || languageNames.length === 0) {
+      return validators;
+    }
+
+    return validators.filter((validator) => {
+      return languageNames.includes(validator.descriptor.name);
     });
+  }
+
+  /**
+   * Checks one instance's files exist, then compares the documents whose
+   * extensions the selected validators claim.
+   *
+   * File existence comes first because a missing file cannot be compared, and
+   * reporting it once is clearer than every language reporting it in turn.
+   */
+  private validateInstance(args: {
+    instance: MatchedInstance;
+    validators: ConformetryLanguageValidator[];
+  }): ValidationFileResult[] {
+    const [prepared] = this.discoveryService.prepareDocuments({
+      fileExtensions: args.validators.flatMap((validator) => {
+        return [...validator.descriptor.fileExtensions];
+      }),
+      instances: [args.instance],
+    });
+
+    return [
+      ...this.filesService.checkInstanceFiles({ instances: [args.instance] }),
+      ...args.validators.flatMap((validator) => {
+        return this.languageService.runValidator({
+          checkedPaths: [args.instance.candidate.instancePath],
+          documents: prepared?.documents ?? [],
+          validator,
+        }).fileResults;
+      }),
+    ];
   }
 
   // 🌎 Public Methods
 
   /**
-   * Validates the requested projects and returns every difference found.
+   * Validates every candidate and returns the differences found.
    *
-   * File existence is checked first: a missing file cannot be compared, and
-   * reporting it once is clearer than reporting it from each language.
+   * Candidates that matched no template are reported alongside the content
+   * differences rather than skipped, so one report covers both "this file is
+   * wrong" and "conformetry cannot tell what this path was generated from".
    */
-  public async validate(
-    args: RunValidationArguments,
-  ): Promise<RunValidationResult> {
-    const configurationPath =
-      args.configurationPath ?? DEFAULT_CONFIGURATION_PATH;
-    const configuration =
-      await this.configurationService.loadConformetryConfiguration(
-        configurationPath,
-      );
-    const allValidators = this.validationLanguagesService.readValidators();
-    const { generatorNames, languageNames } =
-      this.validationSelectionService.partitionRuleNames({
-        languageNames: allValidators.map(
-          (validator) => validator.descriptor.name,
-        ),
-        ruleNames: args.ruleNames,
-      });
-    const validators =
-      languageNames.length === 0
-        ? allValidators
-        : allValidators.filter((validator) => {
-            return languageNames.includes(validator.descriptor.name);
-          });
-    const projects = this.validationSelectionService.selectProjects({
-      projects: this.discoveryService.discoverProjects(args.workingDirectory),
-      selectors: args.projectPaths,
-      workingDirectory: args.workingDirectory,
+  public validate(args: RunValidationArguments): RunValidationResult {
+    const { matched, unmatched } = this.discoveryService.resolveInstances({
+      candidates: args.candidates,
+      templates: args.templates,
     });
-    const scopedPaths = projects.flatMap((project) => {
-      return this.discoveryScopeService
-        .resolveScopedPaths({
-          configuration,
-          project,
-          workingDirectory: args.workingDirectory,
-        })
-        .map((scopedPath) => {
-          return generatorNames.length === 0
-            ? scopedPath
-            : {
-                ...scopedPath,
-                generatorNames: scopedPath.generatorNames.filter((name) => {
-                  return generatorNames.includes(name);
-                }),
-              };
-        })
-        .filter((scopedPath) => scopedPath.generatorNames.length > 0);
+    const validators = this.selectValidators(args.languageNames);
+    const groups: InstanceFileResults[] = matched.map((instance) => {
+      return {
+        fileResults: this.validateInstance({ instance, validators }),
+        instance,
+      };
     });
-    const fileResults: ValidationFileResult[] = [];
-
-    for (const scopedPath of scopedPaths) {
-      fileResults.push(
-        ...(await this.filesService.checkProjectFiles({
-          configurationPath,
-          projectPaths: [scopedPath.path],
-          templateRuleNames: scopedPath.generatorNames,
-          workingDirectory: args.workingDirectory,
-        })),
-        ...(await this.validateScopedPath({
-          configurationPath,
-          generatorNames: scopedPath.generatorNames,
-          scopedPath: scopedPath.path,
-          validators,
-          workingDirectory: args.workingDirectory,
-        })),
-      );
-    }
+    const fileResults = [
+      ...this.validationDeduplicationService.deduplicate(groups),
+      ...this.validationFindingsService.buildUnmatchedResults({
+        templates: args.templates,
+        unmatched,
+      }),
+    ];
 
     return {
-      checkedPaths: scopedPaths.map((scopedPath) => scopedPath.path),
+      checkedPaths: matched.map((instance) => {
+        return instance.candidate.instancePath;
+      }),
       fileResults,
       ok: fileResults.length === 0,
+      unmatched,
     };
   }
 }

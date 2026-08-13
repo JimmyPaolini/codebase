@@ -8,6 +8,16 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { UnknownConfigurationFileTypeError } from "./configuration.constants";
 import { ConfigurationService } from "./configuration.service";
 
+/** Writes a JSON config holding whatever the caller passes. */
+async function writeConfiguration(configuration: unknown): Promise<string> {
+  const directory = await mkdtemp(path.join(tmpdir(), "conformetry-config-"));
+  const configurationPath = path.join(directory, "conformetry.config.json");
+
+  await writeFile(configurationPath, JSON.stringify(configuration), "utf8");
+
+  return configurationPath;
+}
+
 describe(ConfigurationService, () => {
   let service: ConfigurationService;
 
@@ -28,7 +38,9 @@ describe(ConfigurationService, () => {
       "configuration/conformetry.config.ts",
     );
 
-    expect(configuration.generators["react-component"]).toBeDefined();
+    expect(configuration.map((generator) => generator.name)).toContain(
+      "react-component",
+    );
   });
 
   it("throws a typed error for an unsupported extension", async () => {
@@ -37,77 +49,69 @@ describe(ConfigurationService, () => {
     ).rejects.toBeInstanceOf(UnknownConfigurationFileTypeError);
   });
 
-  it("honors a configured templateDirectoryPath", async () => {
-    const directory = await mkdtemp(path.join(tmpdir(), "conformetry-config-"));
-    const configurationPath = path.join(directory, "conformetry.config.json");
+  it("keeps the configured template path", async () => {
+    const configurationPath = await writeConfiguration([
+      { name: "example", templatePath: "custom/templates/example" },
+    ]);
 
-    await writeFile(
-      configurationPath,
-      JSON.stringify({
-        generators: {
-          example: {
-            name: "example",
-            templateDirectoryPath: "custom/templates/example",
+    const configuration =
+      await service.loadConformetryConfiguration(configurationPath);
+
+    expect(configuration[0]?.templatePath).toBe("custom/templates/example");
+  });
+
+  it("defaults inputs and instances to empty", async () => {
+    const configurationPath = await writeConfiguration([
+      { name: "example", templatePath: "templates/example" },
+    ]);
+
+    const configuration =
+      await service.loadConformetryConfiguration(configurationPath);
+
+    expect(configuration[0]?.inputs).toStrictEqual({});
+    expect(configuration[0]?.instances).toStrictEqual([]);
+  });
+
+  it("keeps instance globs, substitutions, and tags", async () => {
+    const configurationPath = await writeConfiguration([
+      {
+        instances: [
+          {
+            patterns: ["packages/*/src/modules/*"],
+            substitutions: { type: "packages" },
+            tags: ["type:package"],
           },
-        },
-      }),
-      "utf8",
-    );
+        ],
+        name: "example",
+        templatePath: "templates/example",
+      },
+    ]);
 
     const configuration =
       await service.loadConformetryConfiguration(configurationPath);
 
-    expect(configuration.generators["example"]?.templateDirectoryPath).toBe(
-      "custom/templates/example",
-    );
+    expect(configuration[0]?.instances[0]).toStrictEqual({
+      patterns: ["packages/*/src/modules/*"],
+      substitutions: { type: "packages" },
+      tags: ["type:package"],
+    });
   });
 
-  it("derives templateDirectoryPath from the registry key when unset", async () => {
-    const directory = await mkdtemp(path.join(tmpdir(), "conformetry-config-"));
-    const configurationPath = path.join(directory, "conformetry.config.json");
-
-    await writeFile(
-      configurationPath,
-      JSON.stringify({ generators: { example: { name: "example" } } }),
-      "utf8",
-    );
-
-    const configuration =
-      await service.loadConformetryConfiguration(configurationPath);
-
-    expect(configuration.generators["example"]?.templateDirectoryPath).toBe(
-      path.join("configuration", "conformetry-templates", "example"),
-    );
-  });
-
-  it("defaults parameters to an empty record", async () => {
-    const directory = await mkdtemp(path.join(tmpdir(), "conformetry-config-"));
-    const configurationPath = path.join(directory, "conformetry.config.json");
-
-    await writeFile(
-      configurationPath,
-      JSON.stringify({ generators: { example: { name: "example" } } }),
-      "utf8",
-    );
-
-    const configuration =
-      await service.loadConformetryConfiguration(configurationPath);
-
-    expect(configuration.generators["example"]?.parameters).toStrictEqual({});
-  });
-
-  it("rejects a malformed registry rather than validating nothing", async () => {
-    const directory = await mkdtemp(path.join(tmpdir(), "conformetry-config-"));
-    const configurationPath = path.join(directory, "conformetry.config.json");
-
-    await writeFile(
-      configurationPath,
-      JSON.stringify({ generators: { example: { missingName: true } } }),
-      "utf8",
-    );
+  it("rejects a generator missing its name rather than validating nothing", async () => {
+    const configurationPath = await writeConfiguration([
+      { templatePath: "templates/example" },
+    ]);
 
     await expect(
       service.loadConformetryConfiguration(configurationPath),
-    ).rejects.toThrow("invalid_type");
+    ).rejects.toThrow("name");
+  });
+
+  it("rejects a generator missing its template path", async () => {
+    const configurationPath = await writeConfiguration([{ name: "example" }]);
+
+    await expect(
+      service.loadConformetryConfiguration(configurationPath),
+    ).rejects.toThrow("templatePath");
   });
 });

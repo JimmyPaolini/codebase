@@ -8,33 +8,48 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { DiscoveryTemplatesService } from "./discovery-templates.service";
 
+import type { TemplateDefinition } from "./discovery.types";
+
 const SUBSTITUTIONS = {
   nameKebabCase: "my-widget",
   namePascalCase: "MyWidget",
 };
 
-async function createTemplateDirectory(): Promise<string> {
-  const templateDirectoryPath = await mkdtemp(
-    path.join(tmpdir(), "conformetry-templates-"),
+/**
+ * Writes a template that produces a folder: its whole tree sits under
+ * `{{nameKebabCase}}/`, so the template itself says an instance is a folder.
+ */
+async function createTemplatePath(): Promise<string> {
+  const templatePath = path.join(
+    await mkdtemp(path.join(tmpdir(), "conformetry-templates-")),
+    "example",
   );
 
-  await mkdir(path.join(templateDirectoryPath, "src"), { recursive: true });
+  await mkdir(path.join(templatePath, "{{nameKebabCase}}", "src"), {
+    recursive: true,
+  });
   await writeFile(
-    path.join(templateDirectoryPath, "README.md"),
+    path.join(templatePath, "{{nameKebabCase}}", "README.md"),
     "# {{namePascalCase}}\n",
     "utf8",
   );
   await writeFile(
-    path.join(templateDirectoryPath, "src", "__nameKebabCase__.service.ts"),
+    path.join(
+      templatePath,
+      "{{nameKebabCase}}",
+      "src",
+      "{{nameKebabCase}}.service.ts",
+    ),
     "export class {{namePascalCase}}Service {}\n",
     "utf8",
   );
 
-  return templateDirectoryPath;
+  return templatePath;
 }
 
 describe(DiscoveryTemplatesService, () => {
   let service: DiscoveryTemplatesService;
+  let template: TemplateDefinition;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -42,99 +57,153 @@ describe(DiscoveryTemplatesService, () => {
     }).compile();
 
     service = await module.resolve(DiscoveryTemplatesService);
+    template = service.collectTemplate({
+      name: "example",
+      templatePath: await createTemplatePath(),
+    });
   });
 
   it("is defined", () => {
     expect(service).toBeDefined();
   });
 
-  it("collects template files recursively and sorted", async () => {
-    const templateDirectoryPath = await createTemplateDirectory();
-
-    expect(
-      service
-        .collectTemplateFilePaths(templateDirectoryPath)
-        .map((filePath) => path.relative(templateDirectoryPath, filePath)),
-    ).toStrictEqual([
-      "README.md",
-      path.join("src", "__nameKebabCase__.service.ts"),
-    ]);
-  });
-
-  it("maps a template path to its substituted instance path", async () => {
-    const templateDirectoryPath = await createTemplateDirectory();
-
-    expect(
-      service.resolveInstancePath({
-        projectPath: "/project",
-        substitutions: SUBSTITUTIONS,
-        templateDirectoryPath,
-        templateFilePath: path.join(
-          templateDirectoryPath,
-          "src",
-          "__nameKebabCase__.service.ts",
-        ),
-      }),
-    ).toBe(path.join("/project", "src", "my-widget.service.ts"));
-  });
-
-  it("counts only the template files that exist in the project", async () => {
-    const templateDirectoryPath = await createTemplateDirectory();
-    const projectPath = await mkdtemp(
-      path.join(tmpdir(), "conformetry-project-"),
-    );
-
-    await writeFile(
-      path.join(projectPath, "README.md"),
-      "# MyWidget\n",
-      "utf8",
-    );
-
-    expect(
-      service.countExistingFiles({
-        projectPath,
-        substitutions: SUBSTITUTIONS,
-        templateDirectoryPath,
-        templateFilePaths: service.collectTemplateFilePaths(
-          templateDirectoryPath,
-        ),
-      }),
-    ).toBe(1);
-  });
-
-  it("renders the template when preparing a document", async () => {
-    const templateDirectoryPath = await createTemplateDirectory();
-    const projectPath = await mkdtemp(
-      path.join(tmpdir(), "conformetry-project-"),
-    );
-
-    await writeFile(path.join(projectPath, "README.md"), "# Actual\n", "utf8");
-
-    const document = service.prepareDocument({
-      projectPath,
-      substitutions: SUBSTITUTIONS,
-      templateDirectoryPath,
-      templateFilePath: path.join(templateDirectoryPath, "README.md"),
+  describe("collectTemplate", () => {
+    it("reads every file in the template folder", () => {
+      expect(template.name).toBe("example");
+      expect(
+        template.filePaths.map((filePath) => path.basename(filePath)),
+      ).toStrictEqual(["README.md", "{{nameKebabCase}}.service.ts"]);
     });
 
-    expect(document?.filename).toBe("README.md");
-    expect(document?.renderedTemplate).toBe("# MyWidget\n");
-    expect(document?.instance).toBe("# Actual\n");
+    it("returns no files when the template folder does not exist", () => {
+      expect(
+        service.collectTemplate({
+          name: "missing",
+          templatePath: "/does/not/exist",
+        }).filePaths,
+      ).toStrictEqual([]);
+    });
   });
 
-  it("returns nothing when the instance file is absent", async () => {
-    const templateDirectoryPath = await createTemplateDirectory();
-    const projectPath = await mkdtemp(
-      path.join(tmpdir(), "conformetry-project-"),
-    );
+  describe("resolveInstanceFilePath", () => {
+    it("lays the template's tree over the instance path", () => {
+      expect(
+        service.resolveInstanceFilePath({
+          instancePath: "/project/src/modules",
+          substitutions: SUBSTITUTIONS,
+          templateDirectoryPath: template.directoryPath,
+          templateFilePath: path.join(
+            template.directoryPath,
+            "{{nameKebabCase}}",
+            "src",
+            "{{nameKebabCase}}.service.ts",
+          ),
+        }),
+      ).toBe(
+        path.join(
+          "/project/src/modules",
+          "my-widget",
+          "src",
+          "my-widget.service.ts",
+        ),
+      );
+    });
+  });
 
-    expect(
-      service.prepareDocument({
-        projectPath,
+  describe("countMatchingFiles", () => {
+    it("counts only files the instance path already has", async () => {
+      const instancePath = await mkdtemp(
+        path.join(tmpdir(), "conformetry-instance-"),
+      );
+
+      await mkdir(path.join(instancePath, "my-widget"), { recursive: true });
+      await writeFile(
+        path.join(instancePath, "my-widget", "README.md"),
+        "# MyWidget\n",
+        "utf8",
+      );
+
+      expect(
+        service.countMatchingFiles({
+          instancePath,
+          substitutions: SUBSTITUTIONS,
+          template,
+        }),
+      ).toBe(1);
+    });
+
+    it("counts only files inside the given scope", async () => {
+      const instancePath = await mkdtemp(
+        path.join(tmpdir(), "conformetry-instance-"),
+      );
+      const readmePath = path.join(instancePath, "my-widget", "README.md");
+
+      await mkdir(path.join(instancePath, "my-widget", "src"), {
+        recursive: true,
+      });
+      await writeFile(readmePath, "# MyWidget\n", "utf8");
+      await writeFile(
+        path.join(instancePath, "my-widget", "src", "my-widget.service.ts"),
+        "",
+        "utf8",
+      );
+
+      expect(
+        service.countMatchingFiles({
+          fileScope: [readmePath],
+          instancePath,
+          substitutions: SUBSTITUTIONS,
+          template,
+        }),
+      ).toBe(1);
+    });
+  });
+
+  describe("prepareDocument", () => {
+    it("renders the template when the instance exists", async () => {
+      const instancePath = await mkdtemp(
+        path.join(tmpdir(), "conformetry-instance-"),
+      );
+
+      await mkdir(path.join(instancePath, "my-widget"), { recursive: true });
+      await writeFile(
+        path.join(instancePath, "my-widget", "README.md"),
+        "# Drifted\n",
+        "utf8",
+      );
+
+      const document = service.prepareDocument({
+        instancePath,
         substitutions: SUBSTITUTIONS,
-        templateDirectoryPath,
-        templateFilePath: path.join(templateDirectoryPath, "README.md"),
-      }),
-    ).toBeUndefined();
+        templateDirectoryPath: template.directoryPath,
+        templateFilePath: path.join(
+          template.directoryPath,
+          "{{nameKebabCase}}",
+          "README.md",
+        ),
+      });
+
+      expect(document?.renderedTemplate).toBe("# MyWidget\n");
+      expect(document?.instance).toBe("# Drifted\n");
+    });
+
+    it("returns nothing when the instance file is absent", async () => {
+      const instancePath = await mkdtemp(
+        path.join(tmpdir(), "conformetry-instance-"),
+      );
+
+      expect(
+        service.prepareDocument({
+          instancePath,
+          substitutions: SUBSTITUTIONS,
+          templateDirectoryPath: template.directoryPath,
+          templateFilePath: path.join(
+            template.directoryPath,
+            "{{nameKebabCase}}",
+            "README.md",
+          ),
+        }),
+      ).toBeUndefined();
+    });
   });
 });

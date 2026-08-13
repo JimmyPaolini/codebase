@@ -112,6 +112,17 @@
                   "ruleId": "any-file"
                 }
               ],
+              "name": "executors"
+            },
+            {
+              "children": [
+                {
+                  "ruleId": "kebab-case-folder"
+                },
+                {
+                  "ruleId": "any-file"
+                }
+              ],
               "name": "generators"
             },
             {

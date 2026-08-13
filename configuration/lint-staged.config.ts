@@ -9,17 +9,43 @@
  */
 import path from "node:path";
 
-import { SYNC_AGENT_SKILLS_FILES } from "../tools/synchronization/src/modules/agent-skills/agent-skills.constants";
-import { SYNC_CONFORMANCE_GENERATORS_FILES } from "../tools/synchronization/src/modules/conformance-generators/conformance-generators.constants";
-import { SYNC_CONVENTIONAL_CONFIG_FILES } from "../tools/synchronization/src/modules/conventional-config/conventional-config.constants";
-import { SYNC_PULL_REQUEST_TEMPLATE_FILES } from "../tools/synchronization/src/modules/pull-request-template/pull-request-template.constants";
+import { SYNC_AGENT_SKILLS_FILES } from "../tools/synchronization/src/modules/agent-skills/agent-skills.constants.ts";
+import { SYNC_CONFORMANCE_GENERATORS_FILES } from "../tools/synchronization/src/modules/conformance-generators/conformance-generators.constants.ts";
+import { SYNC_CONVENTIONAL_CONFIG_FILES } from "../tools/synchronization/src/modules/conventional-config/conventional-config.constants.ts";
+import { SYNC_PULL_REQUEST_TEMPLATE_FILES } from "../tools/synchronization/src/modules/pull-request-template/pull-request-template.constants.ts";
 
 /**
- * Convert absolute staged paths into workspace-relative comma-separated paths
- * for `nx affected --files`.
+ * Largest number of paths to put in one `nx affected --files` argument.
+ *
+ * The whole staged list used to go into a single command. On a large commit
+ * that resolves to nearly every project, and running every check over all of
+ * them in one process is enough for the operating system to kill it — which
+ * surfaces only as "Task failed to spawn: undefined".
  */
-function getPaths(files: string[]): string {
-  return files.map((file) => path.relative(process.cwd(), file)).join(",");
+const MAXIMUM_PATHS_PER_COMMAND = 50;
+
+/**
+ * Splits staged paths into workspace-relative, comma-separated batches.
+ * `nx affected` over each batch covers the same projects as one call over all
+ * of them, with a bounded amount of work per invocation.
+ */
+function getPathBatches(files: string[]): string[] {
+  const relativePaths = files.map((file) => {
+    return path.relative(process.cwd(), file);
+  });
+  const batches: string[] = [];
+
+  for (
+    let index = 0;
+    index < relativePaths.length;
+    index += MAXIMUM_PATHS_PER_COMMAND
+  ) {
+    batches.push(
+      relativePaths.slice(index, index + MAXIMUM_PATHS_PER_COMMAND).join(","),
+    );
+  }
+
+  return batches;
 }
 
 const config = {
@@ -84,7 +110,9 @@ const config = {
   // nx affected includes codebase when root-level files change.
   "*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}": (files: string[]): string[] => {
     return [
-      `pnpm exec nx affected --target=clean,format,lint,typecheck,spell-check,fallow-dead-code --configuration=check --outputStyle=static --files=${getPaths(files)}`,
+      ...getPathBatches(files).map((paths) => {
+        return `pnpm exec nx affected --target=clean,format,lint,typecheck,spell-check,fallow-dead-code --configuration=check --outputStyle=static --files=${paths}`;
+      }),
       "pnpm exec nx run codebase:fallow-duplicates --outputStyle=static",
     ];
   },
@@ -94,8 +122,12 @@ const config = {
   // clean file), then run Ruff format/lint, typecheck, dead-code analysis, and spell-check.
   "*.ipynb": (files: string[]): string[] => {
     return [
-      `pnpm exec nx affected --target=nbstripout --configuration=check --outputStyle=static --files=${getPaths(files)}`,
-      `pnpm exec nx affected --target=clean,format,lint,typecheck,spell-check --configuration=check --outputStyle=static --files=${getPaths(files)}`,
+      ...getPathBatches(files).map((paths) => {
+        return `pnpm exec nx affected --target=nbstripout --configuration=check --outputStyle=static --files=${paths}`;
+      }),
+      ...getPathBatches(files).map((paths) => {
+        return `pnpm exec nx affected --target=clean,format,lint,typecheck,spell-check --configuration=check --outputStyle=static --files=${paths}`;
+      }),
     ];
   },
 
@@ -103,7 +135,9 @@ const config = {
   // Runs format (Ruff), lint (Ruff), typecheck, spell-check, and clean (Vulture for Python)
   "*.py": (files: string[]): string[] => {
     return [
-      `pnpm exec nx affected --target=clean,format,lint,spell-check,typecheck --configuration=check --outputStyle=static --files=${getPaths(files)}`,
+      ...getPathBatches(files).map((paths) => {
+        return `pnpm exec nx affected --target=clean,format,lint,spell-check,typecheck --configuration=check --outputStyle=static --files=${paths}`;
+      }),
     ];
   },
 
@@ -111,7 +145,9 @@ const config = {
   // Runs format, lint, and spell-check
   "*.{json,jsonc,json5,html}": (files: string[]): string[] => {
     return [
-      `pnpm exec nx affected --target=format,lint,spell-check --configuration=check --outputStyle=static --files=${getPaths(files)}`,
+      ...getPathBatches(files).map((paths) => {
+        return `pnpm exec nx affected --target=format,lint,spell-check --configuration=check --outputStyle=static --files=${paths}`;
+      }),
     ];
   },
 
@@ -119,7 +155,9 @@ const config = {
   // Runs Stylelint, format, lint, and spell-check
   "*.css": (files: string[]): string[] => {
     return [
-      `pnpm exec nx affected --target=stylelint,format,lint,spell-check --configuration=check --outputStyle=static --files=${getPaths(files)}`,
+      ...getPathBatches(files).map((paths) => {
+        return `pnpm exec nx affected --target=stylelint,format,lint,spell-check --configuration=check --outputStyle=static --files=${paths}`;
+      }),
     ];
   },
 
@@ -127,7 +165,9 @@ const config = {
   // Runs format, ESLint markdown plugin, markdownlint, and spell-check
   "*.{md,mdx}": (files: string[]): string[] => {
     return [
-      `pnpm exec nx affected --target=format,lint,markdown-lint,spell-check --configuration=check --outputStyle=static --files=${getPaths(files)}`,
+      ...getPathBatches(files).map((paths) => {
+        return `pnpm exec nx affected --target=format,lint,markdown-lint,spell-check --configuration=check --outputStyle=static --files=${paths}`;
+      }),
     ];
   },
 
@@ -136,13 +176,18 @@ const config = {
   // pnpm-lock.yaml is excluded: it's auto-generated and should not be linted.
   "{*.yml,!(pnpm-lock).yaml}": (files: string[]): string[] => {
     return [
-      `pnpm exec nx affected --target=format,yaml-lint,spell-check --configuration=check --outputStyle=static --files=${getPaths(files)}`,
+      ...getPathBatches(files).map((paths) => {
+        return `pnpm exec nx affected --target=format,yaml-lint,spell-check --configuration=check --outputStyle=static --files=${paths}`;
+      }),
     ];
   },
 
   // ✅ Conformetry validation
   // Run conformetry validation on every commit to ensure conformance is always checked,
   // including changes to generated instances that may not match template-pattern globs.
+  // `nx sync:check` runs from the Husky hook instead: it needs NX_DAEMON=false,
+  // and lint-staged spawns commands without a shell, so an environment prefix
+  // here would be parsed as the executable name.
   "*": (): string[] => [
     "pnpm exec nx run codebase:conformetry-validate --outputStyle=static",
   ],
@@ -151,8 +196,12 @@ const config = {
   // Runs format (SQLFluff), lint (SQLFluff), and squawk (migration safety checks)
   "*.sql": (files: string[]): string[] => {
     return [
-      `pnpm exec nx affected --target=format,lint --configuration=check --outputStyle=static --files=${getPaths(files)}`,
-      `pnpm exec nx affected --target=squawk --configuration=check --outputStyle=static --files=${getPaths(files)}`,
+      ...getPathBatches(files).map((paths) => {
+        return `pnpm exec nx affected --target=format,lint --configuration=check --outputStyle=static --files=${paths}`;
+      }),
+      ...getPathBatches(files).map((paths) => {
+        return `pnpm exec nx affected --target=squawk --configuration=check --outputStyle=static --files=${paths}`;
+      }),
     ];
   },
 };

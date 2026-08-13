@@ -21,20 +21,20 @@ class MockFileSystemAdapter implements FileSystemAdapter {
   private readonly directoryEntries = new Map<string, DirectoryEntry[]>();
   private readonly files = new Map<string, string>();
 
-  public async listDirectory(directoryPath: string): Promise<DirectoryEntry[]> {
+  public async listDirectory(instancePath: string): Promise<DirectoryEntry[]> {
     await Promise.resolve();
-    const entries = this.directoryEntries.get(directoryPath);
+    const entries = this.directoryEntries.get(instancePath);
     if (entries === undefined) {
-      throw new Error(`Directory ${directoryPath} does not exist`);
+      throw new Error(`Directory ${instancePath} does not exist`);
     }
 
     return entries;
   }
 
-  public async makeDirectory(directoryPath: string): Promise<void> {
+  public async makeDirectory(instancePath: string): Promise<void> {
     await Promise.resolve();
-    if (!this.directoryEntries.has(directoryPath)) {
-      this.directoryEntries.set(directoryPath, []);
+    if (!this.directoryEntries.has(instancePath)) {
+      this.directoryEntries.set(instancePath, []);
     }
   }
 
@@ -48,8 +48,8 @@ class MockFileSystemAdapter implements FileSystemAdapter {
     return content;
   }
 
-  public seedDirectory(directoryPath: string, entries: DirectoryEntry[]): void {
-    this.directoryEntries.set(directoryPath, entries);
+  public seedDirectory(instancePath: string, entries: DirectoryEntry[]): void {
+    this.directoryEntries.set(instancePath, entries);
   }
 
   public seedFile(filePath: string, content: string): void {
@@ -113,15 +113,15 @@ describe(GenerationService, () => {
     );
 
     filesystem.seedDirectory("/templates", [
-      { isDirectory: true, name: "__nameKebabCase__" },
+      { isDirectory: true, name: "{{nameKebabCase}}" },
       { isDirectory: false, name: "README.md" },
     ]);
-    filesystem.seedDirectory("/templates/__nameKebabCase__", [
+    filesystem.seedDirectory("/templates/{{nameKebabCase}}", [
       { isDirectory: false, name: "index.ts" },
     ]);
     filesystem.seedFile("/templates/README.md", "# {{namePascalCase}}\n");
     filesystem.seedFile(
-      "/templates/__nameKebabCase__/index.ts",
+      "/templates/{{nameKebabCase}}/index.ts",
       "export const name = '{{nameKebabCase}}';\n",
     );
 
@@ -136,7 +136,7 @@ describe(GenerationService, () => {
       filesystem,
       formatter,
       inputs: { name: "alpha-module" },
-      targetDirectoryPath: "/output",
+      instancePath: "/output",
     });
 
     expect(preGenerate).toHaveBeenCalledTimes(1);
@@ -181,7 +181,7 @@ describe(GenerationService, () => {
       },
       filesystem,
       inputs: { alpha: "one", beta: undefined, gamma: "three" },
-      targetDirectoryPath: "/output",
+      instancePath: "/output",
     });
 
     expect(hookContext?.input).toStrictEqual({ alpha: "one", gamma: "three" });
@@ -208,7 +208,7 @@ describe(GenerationService, () => {
       },
       filesystem,
       inputs: { name: "alpha-module", namePascalCase: "OverriddenName" },
-      targetDirectoryPath: "/output",
+      instancePath: "/output",
     });
 
     expect(hookContext?.substitutions["namePascalCase"]).toBe("OverriddenName");
@@ -221,7 +221,7 @@ describe(GenerationService, () => {
 
     const result = await service.runGenerator({
       definition: { name: "fallback-name", templateDirectoryPath },
-      targetDirectoryPath: "/output",
+      instancePath: "/output",
     });
 
     expect(result).toStrictEqual({
@@ -234,12 +234,12 @@ describe(GenerationService, () => {
     const templateDirectoryPath = await mkdtemp(
       path.join(tmpdir(), "conformetry-generation-template-runtime-"),
     );
-    const targetDirectoryPath = await mkdtemp(
+    const instancePath = await mkdtemp(
       path.join(tmpdir(), "conformetry-generation-output-runtime-"),
     );
     const nestedTemplateDirectoryPath = path.join(
       templateDirectoryPath,
-      "__nameKebabCase__",
+      "{{nameKebabCase}}",
     );
 
     await mkdir(nestedTemplateDirectoryPath, { recursive: true });
@@ -249,7 +249,7 @@ describe(GenerationService, () => {
       "utf8",
     );
     await writeFile(
-      path.join(nestedTemplateDirectoryPath, "__nameSnakeCase__.txt"),
+      path.join(nestedTemplateDirectoryPath, "{{nameSnakeCase}}.txt"),
       "{{nameKebabCase}}",
       "utf8",
     );
@@ -257,12 +257,12 @@ describe(GenerationService, () => {
     const result = await service.runGenerator({
       definition: { name: "fallback-name", templateDirectoryPath },
       inputs: { name: "nested-template" },
-      targetDirectoryPath,
+      instancePath,
     });
 
-    const renderedReadmePath = path.join(targetDirectoryPath, "README.md");
+    const renderedReadmePath = path.join(instancePath, "README.md");
     const renderedNestedPath = path.join(
-      targetDirectoryPath,
+      instancePath,
       "nested-template",
       "nested_template.txt",
     );

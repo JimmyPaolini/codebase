@@ -77,7 +77,14 @@ export interface RunGeneratorArguments {
   filesystem?: FileSystemAdapter;
   formatter?: FormatterAdapter;
   inputs?: Record<string, string | undefined>;
-  targetDirectoryPath: string;
+  /**
+   * The directory the template's tree is rendered into.
+   *
+   * A template that should produce a folder contains that folder, so this is
+   * the folder's parent. Nothing here derives a path — the caller decides
+   * where an instance goes, because that is workspace knowledge.
+   */
+  instancePath: string;
 }
 
 /**

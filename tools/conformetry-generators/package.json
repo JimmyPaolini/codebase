@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "@jimmypaolini/conformetry-nx": "workspace:*",
+    "@nx/devkit": "catalog:"
+  },
+  "generators": "./generators.json",
+  "name": "@jimmypaolini/conformetry-generators",
+  "nx": {
+    "generators": "./generators.json"
+  },
+  "private": true,
+  "type": "module",
+  "version": "0.0.1"
+}

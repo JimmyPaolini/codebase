@@ -1,17 +1,31 @@
 // ♟️ Constants
 
-/** Prefix of the `project.json` tag that names a project's generator. */
-export const GENERATOR_TAG_PREFIX = "generator:";
+/**
+ * Separator joining a candidate's directory, name, and scope kind into a map
+ * key. A NUL byte cannot occur in any of the three, so it can never collide.
+ */
+export const CANDIDATE_KEY_SEPARATOR = "\u0000";
 
-/** Project metadata file read during discovery. */
-export const PROJECT_METADATA_FILENAME = "project.json";
+/**
+ * Coverage at which a candidate has every file a template declares.
+ *
+ * Several templates reaching this together are all applied rather than being
+ * reported as ambiguous — the candidate satisfies each of them.
+ */
+export const COMPLETE_MATCH_RATIO = 1;
 
-/** Fallback project type when none can be derived from the path. */
-export const DEFAULT_PROJECT_TYPE = "applications";
+/** Matches a filename's final extension, used to name an unsuffixed file. */
+export const FILE_EXTENSION_PATTERN = /\.[^.]+$/u;
 
-/** Python project metadata file, read for a project description. */
-export const PYPROJECT_FILENAME = "pyproject.toml";
+/** Characters that make a glob segment a pattern rather than a literal name. */
+export const GLOB_WILDCARD_CHARACTERS = ["*", "?", "]"];
 
-/** Extracts the `description` field from a `pyproject.toml`. */
-export const PYPROJECT_DESCRIPTION_PATTERN =
-  /^description\s*=\s*["'](?<description>.*)["']$/mu;
+/**
+ * Minimum share of a template's files an instance must already have before the
+ * template is considered a match.
+ *
+ * Set to zero: any overlap makes a template a candidate, and ranking decides
+ * between them. A higher floor would silently drop instances that have drifted
+ * far from their template — which is exactly the drift worth reporting.
+ */
+export const MINIMUM_MATCH_RATIO = 0;

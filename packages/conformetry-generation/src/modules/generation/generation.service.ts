@@ -197,7 +197,7 @@ export class GenerationService {
       definition: args.definition,
       generatedFilePaths: [],
       input: inputs,
-      outputDirectoryPath: args.targetDirectoryPath,
+      outputDirectoryPath: args.instancePath,
       substitutions,
     };
 
@@ -205,7 +205,7 @@ export class GenerationService {
 
     const generatedFilePaths = await this.renderDirectory({
       filesystem,
-      instanceDirectoryPath: args.targetDirectoryPath,
+      instanceDirectoryPath: args.instancePath,
       substitutions,
       templateDirectoryPath: args.definition.templateDirectoryPath,
     });
@@ -216,7 +216,7 @@ export class GenerationService {
 
     return {
       generatedFilePaths: context.generatedFilePaths,
-      outputDirectoryPath: args.targetDirectoryPath,
+      outputDirectoryPath: args.instancePath,
     };
   }
 }

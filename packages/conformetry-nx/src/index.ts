@@ -1,241 +1,93 @@
 // 📤 Exports
-import fs from "node:fs";
 import path from "node:path";
 
-import { resolveConformetryNxPluginOptions } from "./modules/plugin-options/plugin-options.utilities";
-import { RuleRoutingService } from "./modules/rule-routing/rule-routing.service";
-import { buildInferredValidationTarget } from "./modules/validation-target/validation-target.utilities";
-export { MainModule } from "./main.module";
+import { PROJECT_CONFIGURATION_GLOB } from "./modules/plugin/plugin.constants";
+import { resolvePluginService } from "./plugin-context.utilities";
 
-import type {
-  ResolveTemplateRuleRoutingArguments,
-  ResolveTemplateRuleRoutingResult,
-} from "./modules/rule-routing/rule-routing.types";
 import type {
   CreateNodes,
   CreateNodesContext,
   CreateNodesResultArray,
-  GeneratorCallback,
   Tree,
 } from "@nx/devkit";
 
-/**
- * Executes a workspace generator by name, passing the provided options and tree.
- */
-async function runWorkspaceGeneratorImplementation(args: {
-  generatorName: string;
-  options: Record<string, unknown> | undefined;
-  tree: Tree;
-}): Promise<GeneratorCallback> {
-  const { runWorkspaceGenerator } =
-    await import("./modules/workspace-generator/workspace-generator.utilities");
+export { MainModule } from "./main.module";
+export { AdapterModule } from "./modules/adapter/adapter.module";
+export { AdapterService } from "./modules/adapter/adapter.service";
+export { CandidatesModule } from "./modules/candidates/candidates.module";
+export { CandidatesService } from "./modules/candidates/candidates.service";
+export type { ProjectScope } from "./modules/candidates/candidates.types";
+export { OptionsModule } from "./modules/options/options.module";
+export { OptionsService } from "./modules/options/options.service";
+export type { ConformetryPluginOptions } from "./modules/options/options.types";
+export { PluginModule } from "./modules/plugin/plugin.module";
+export { PluginService } from "./modules/plugin/plugin.service";
+export { resolvePluginService } from "./plugin-context.utilities";
 
-  return await runWorkspaceGenerator(args);
-}
-
 /**
- * A minimal Nx plugin entrypoint so the package can be discovered by Nx.
+ * Infers a `conformetry-validate` target onto every project holding instances.
+ *
+ * Nx hands this every `project.json` at once, which is why the conformetry
+ * configuration is read a single time inside `inferTargets` rather than once
+ * per project — the older per-file hook reloaded and re-globbed for each one.
  */
 const createNodes: CreateNodes = [
-  "**/project.json",
-  (
+  PROJECT_CONFIGURATION_GLOB,
+  async (
     projectConfigurationFiles: readonly string[],
     options: unknown,
     context: CreateNodesContext,
-  ): CreateNodesResultArray => {
-    const pluginOptions = resolveConformetryNxPluginOptions(options);
-    const createNodesResults: CreateNodesResultArray = [];
+  ): Promise<CreateNodesResultArray> => {
+    const pluginService = await resolvePluginService();
+    const targetsByProjectRoot = await pluginService.inferTargets({
+      options,
+      projectConfigurationFiles,
+      workspaceRoot: context.workspaceRoot,
+    });
 
-    for (const projectConfigurationFile of projectConfigurationFiles) {
-      const absoluteProjectConfigurationFilePath = path.resolve(
-        context.workspaceRoot,
-        projectConfigurationFile,
-      );
-      const rawProjectConfiguration = JSON.parse(
-        fs.readFileSync(absoluteProjectConfigurationFilePath, "utf8"),
-      ) as { tags?: string[] };
-      const inferredTargets = buildInferredValidationTarget({
-        pluginOptions,
-        projectRoot: path.dirname(projectConfigurationFile),
-        projectTags: rawProjectConfiguration.tags ?? [],
-      });
+    return projectConfigurationFiles
+      .map((projectConfigurationFile): CreateNodesResultArray[number] => {
+        const projectRoot = path.dirname(projectConfigurationFile);
+        const targets = targetsByProjectRoot.get(projectRoot);
 
-      if (inferredTargets === undefined) {
-        continue;
-      }
-
-      const projectRoot = path.dirname(projectConfigurationFile);
-      createNodesResults.push([
-        projectConfigurationFile,
-        {
-          projects: {
-            [projectRoot]: {
-              targets: inferredTargets,
-            },
-          },
-        },
-      ]);
-    }
-
-    return createNodesResults;
+        return [
+          projectConfigurationFile,
+          targets === undefined
+            ? {}
+            : { projects: { [projectRoot]: { targets } } },
+        ];
+      })
+      .filter(([, result]) => Object.keys(result).length > 0);
   },
 ];
 
-const conformetryPluginDefinition = {
+const conformetryPlugin = {
   createNodes,
   name: "@jimmypaolini/conformetry-nx",
 };
 
-export default conformetryPluginDefinition;
+export default conformetryPlugin;
 
 /**
- * Executes the jupyter-notebook-application generator.
+ * Runs one configured generator against an Nx tree.
+ *
+ * This is the machinery a consumer's generated generator wrappers call. The
+ * published package deliberately declares no generators of its own: which
+ * generators exist is a property of the consumer's configuration, not of this
+ * package, so `nx g @jimmypaolini/conformetry-nx:anything` resolves nothing by
+ * design.
  */
-export async function generateJupyterNotebookApplication(
-  tree: Tree,
-  options?: Record<string, unknown>,
-): Promise<GeneratorCallback> {
-  return await runWorkspaceGeneratorImplementation({
-    generatorName: "jupyter-notebook-application",
-    options,
-    tree,
+export async function runConformetryGenerator(args: {
+  generatorName: string;
+  options?: Record<string, unknown>;
+  tree: Tree;
+}): Promise<string[]> {
+  const pluginService = await resolvePluginService();
+
+  return await pluginService.runGenerator({
+    generatorName: args.generatorName,
+    options: args.options ?? {},
+    tree: args.tree,
+    workspaceRoot: args.tree.root,
   });
-}
-
-/**
- * Executes the nestjs-command-project generator.
- */
-export async function generateNestjsCommandApplication(
-  tree: Tree,
-  options?: Record<string, unknown>,
-): Promise<GeneratorCallback> {
-  return await runWorkspaceGeneratorImplementation({
-    generatorName: "nestjs-command-project",
-    options,
-    tree,
-  });
-}
-
-/**
- * Executes the nestjs-command-module generator.
- */
-export async function generateNestjsCommandModule(
-  tree: Tree,
-  options?: Record<string, unknown>,
-): Promise<GeneratorCallback> {
-  return await runWorkspaceGeneratorImplementation({
-    generatorName: "nestjs-command-module",
-    options,
-    tree,
-  });
-}
-
-/**
- * Executes the nestjs-dataloader-module generator.
- */
-export async function generateNestjsDataloaderModule(
-  tree: Tree,
-  options?: Record<string, unknown>,
-): Promise<GeneratorCallback> {
-  return await runWorkspaceGeneratorImplementation({
-    generatorName: "nestjs-dataloader-module",
-    options,
-    tree,
-  });
-}
-
-/**
- * Executes the nestjs-graphql-application generator.
- */
-export async function generateNestjsGraphqlApplication(
-  tree: Tree,
-  options?: Record<string, unknown>,
-): Promise<GeneratorCallback> {
-  return await runWorkspaceGeneratorImplementation({
-    generatorName: "nestjs-graphql-application",
-    options,
-    tree,
-  });
-}
-
-/**
- * Executes the nestjs-graphql-module generator.
- */
-export async function generateNestjsGraphqlModule(
-  tree: Tree,
-  options?: Record<string, unknown>,
-): Promise<GeneratorCallback> {
-  return await runWorkspaceGeneratorImplementation({
-    generatorName: "nestjs-graphql-module",
-    options,
-    tree,
-  });
-}
-
-/**
- * Executes the nestjs-service-file generator.
- */
-export async function generateNestjsServiceFile(
-  tree: Tree,
-  options?: Record<string, unknown>,
-): Promise<GeneratorCallback> {
-  return await runWorkspaceGeneratorImplementation({
-    generatorName: "nestjs-service-file",
-    options,
-    tree,
-  });
-}
-
-/**
- * Executes the nestjs-service-module generator.
- */
-export async function generateNestjsServiceModule(
-  tree: Tree,
-  options?: Record<string, unknown>,
-): Promise<GeneratorCallback> {
-  return await runWorkspaceGeneratorImplementation({
-    generatorName: "nestjs-service-module",
-    options,
-    tree,
-  });
-}
-
-/**
- * Executes the nestjs-service-project generator.
- */
-export async function generateNestjsServicePackage(
-  tree: Tree,
-  options?: Record<string, unknown>,
-): Promise<GeneratorCallback> {
-  return await runWorkspaceGeneratorImplementation({
-    generatorName: "nestjs-service-project",
-    options,
-    tree,
-  });
-}
-
-/**
- * Executes the react-component generator.
- */
-export async function generateReactComponent(
-  tree: Tree,
-  options?: Record<string, unknown>,
-): Promise<GeneratorCallback> {
-  return await runWorkspaceGeneratorImplementation({
-    generatorName: "react-component",
-    options,
-    tree,
-  });
-}
-
-/**
- * Resolves template rule routing for the Nx plugin.
- */
-export async function resolveTemplateRuleRouting(
-  args: ResolveTemplateRuleRoutingArguments,
-): Promise<ResolveTemplateRuleRoutingResult> {
-  const ruleRoutingService = new RuleRoutingService();
-  await Promise.resolve();
-
-  return ruleRoutingService.resolveTemplateRuleRouting(args);
 }

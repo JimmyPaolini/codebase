@@ -1,27 +1,20 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import { DiscoveryModule } from "@nestjs/core";
 
-import { environmentSchema } from "./constants";
+import { GeneratorModule } from "./modules/generator/generator.module";
 import { LoggerModule } from "./modules/logger/logger.module";
-import { NxAdapterModule } from "./modules/nx-adapter/nx-adapter.module";
-import { RuleRoutingModule } from "./modules/rule-routing/rule-routing.module";
+import { PluginModule } from "./modules/plugin/plugin.module";
 
 /**
- * Root NestJS application module.
+ * Root module of the plugin's application context.
+ *
+ * Built once per process and cached — the Nx daemon is long-lived, so paying
+ * for a NestJS context on every generator invocation would make the plugin the
+ * slowest thing in the graph.
  */
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      envFilePath: ".env",
-      isGlobal: true,
-      validate: (config: Record<string, unknown>) =>
-        environmentSchema.parse(config),
-    }),
-    DiscoveryModule,
-    LoggerModule,
-    NxAdapterModule,
-    RuleRoutingModule,
-  ],
+  controllers: [],
+  exports: [GeneratorModule, PluginModule],
+  imports: [GeneratorModule, LoggerModule, PluginModule],
+  providers: [],
 })
 export class MainModule {}

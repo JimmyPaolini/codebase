@@ -5,9 +5,7 @@ import { DiscoveryService } from "@jimmypaolini/conformetry-configuration";
 import { ErrorsService } from "@jimmypaolini/conformetry-core";
 import { Injectable } from "@nestjs/common";
 
-import { FILES_VALIDATOR_NAME } from "./files.constants";
-
-import type { CheckProjectFilesArguments } from "./files.types";
+import type { CheckInstanceFilesArguments } from "./files.types";
 import type { ValidationFileResult } from "@jimmypaolini/conformetry-core";
 
 /**
@@ -31,9 +29,6 @@ export class FilesService {
   // 🔐 Private Fields
 
   // 🔑 Public Fields
-
-  /** The name file and directory findings are reported under. */
-  public readonly validatorName = FILES_VALIDATOR_NAME;
 
   // 🔏 Private Methods
 
@@ -69,16 +64,18 @@ export class FilesService {
   }
 
   /**
-   * Reports every file a project's template requires but the project lacks.
+   * Reports every file a matched instance's template requires but the instance
+   * lacks.
    *
    * Missing directories are collapsed to one finding each, so deleting a whole
    * module reports the directory rather than each file within it.
    */
-  public async checkProjectFiles(
-    args: CheckProjectFilesArguments,
-  ): Promise<ValidationFileResult[]> {
-    const expectedFiles =
-      await this.discoveryService.resolveExpectedFiles(args);
+  public checkInstanceFiles(
+    args: CheckInstanceFilesArguments,
+  ): ValidationFileResult[] {
+    const expectedFiles = this.discoveryService.resolveInstanceFiles(
+      args.instances,
+    );
     const reportedDirectories = new Set<string>();
     const fileResults: ValidationFileResult[] = [];
 

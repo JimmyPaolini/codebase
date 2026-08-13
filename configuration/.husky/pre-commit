@@ -18,12 +18,24 @@ git restore --staged notepads/notepad.ts || true
 
 EXIT_CODE=0
 
+# 🔄 Check the workspace is in sync
+# NX_DAEMON=false because the daemon caches sync-generator results and does not
+# invalidate them when conformetry.config.ts changes, so a stale "up to date"
+# would let a drifted generator plugin through.
+NX_DAEMON=false nx sync:check --outputStyle=static || EXIT_CODE=$?
+
 # 📏 Measure code
 nx run codebase:measure-code:write || EXIT_CODE=$?
 git add README.md
 
 # 🧹 Check staged files
-NX_PERF_LOGGING=false NODE_OPTIONS='--import=tsx' lint-staged --config configuration/lint-staged.config.ts --continue-on-error > last-lint-staged-output.log 2>&1 || EXIT_CODE=$?
+# NODE_OPTIONS deliberately unset: it is inherited by every command lint-staged
+# runs, and a `--import=tsx` loader preempts the transpiler Nx uses for
+# workspace plugins. esbuild emits no `design:paramtypes`, so the conformetry
+# plugin's NestJS constructor injection would silently resolve to `undefined`
+# and the project graph would fail to build. Node reads the TypeScript config
+# natively.
+NX_PERF_LOGGING=false lint-staged --config configuration/lint-staged.config.ts --continue-on-error > last-lint-staged-output.log 2>&1 || EXIT_CODE=$?
 
 # 🖨️ Log output
 LAST_LINT_STAGED_OUTPUT=$(cat last-lint-staged-output.log \

@@ -13,13 +13,13 @@ import { SynchronizationService } from "../synchronization/synchronization.servi
 import { ConformanceGeneratorsCommand } from "./conformance-generators.command";
 
 const fileContents = new Map<string, string>();
-interface ConformetryTestConfiguration {
-  generators: Record<string, { aliases?: string[]; description?: string }>;
-}
+type ConformetryTestConfiguration = {
+  aliases?: string[];
+  description?: string;
+  name: string;
+}[];
 
-let currentConformetryConfiguration: ConformetryTestConfiguration = {
-  generators: {},
-};
+let currentConformetryConfiguration: ConformetryTestConfiguration = [];
 let loadConformetryConfigurationError: Error | undefined;
 
 vi.mock("@jimmypaolini/conformetry-configuration", () => {
@@ -80,7 +80,7 @@ describe(ConformanceGeneratorsCommand, () => {
   beforeEach(() => {
     fileContents.clear();
     vi.clearAllMocks();
-    currentConformetryConfiguration = { generators: {} };
+    currentConformetryConfiguration = [];
     loadConformetryConfigurationError = undefined;
   });
 
@@ -121,16 +121,10 @@ describe(ConformanceGeneratorsCommand, () => {
       ].join("\n"),
       expectedLogMessage:
         "✅ Conformance generators table is in sync (2 generators)",
-      generators: {
-        alpha: {
-          aliases: ["a"],
-          description: "first",
-        },
-        beta: {
-          aliases: ["b"],
-          description: "second",
-        },
-      },
+      generators: [
+        { aliases: ["a"], description: "first", name: "alpha" },
+        { aliases: ["b"], description: "second", name: "beta" },
+      ],
       modeArguments: ["check"],
       scenarioName:
         "passes check mode when generated table matches AGENTS markers",
@@ -146,9 +140,7 @@ describe(ConformanceGeneratorsCommand, () => {
       ].join("\n"),
       expectedLogMessage:
         "✅ Conformance generators table is in sync (1 generators)",
-      generators: {
-        alpha: { description: "first" },
-      },
+      generators: [{ description: "first", name: "alpha" }],
       modeArguments: [],
       scenarioName: "defaults to check mode when no mode is provided",
     },
@@ -160,7 +152,7 @@ describe(ConformanceGeneratorsCommand, () => {
       generators,
       modeArguments,
     }) => {
-      currentConformetryConfiguration = { generators };
+      currentConformetryConfiguration = generators;
       fileContents.set(agentsFile, agentsContent);
 
       await command.run(modeArguments);
@@ -171,14 +163,9 @@ describe(ConformanceGeneratorsCommand, () => {
   );
 
   it("writes generated table to AGENTS in write mode", async () => {
-    currentConformetryConfiguration = {
-      generators: {
-        alpha: {
-          aliases: ["a"],
-          description: "first",
-        },
-      },
-    };
+    currentConformetryConfiguration = [
+      { aliases: ["a"], description: "first", name: "alpha" },
+    ];
     fileContents.set(
       agentsFile,
       [
@@ -245,14 +232,9 @@ describe(ConformanceGeneratorsCommand, () => {
       scenarioName:
         "reports drift when generated table differs from AGENTS content",
       setup: (): void => {
-        currentConformetryConfiguration = {
-          generators: {
-            alpha: {
-              aliases: ["a"],
-              description: "first",
-            },
-          },
-        };
+        currentConformetryConfiguration = [
+          { aliases: ["a"], description: "first", name: "alpha" },
+        ];
         fileContents.set(
           agentsFile,
           [

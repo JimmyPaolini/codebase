@@ -1,10 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import lodash from "lodash";
+import mustache from "mustache";
 
-import {
-  CONTENT_PLACEHOLDER_PATTERN,
-  PATH_PLACEHOLDER_PATTERN,
-} from "./rendering.constants";
+import { MUSTACHE_RENDER_OPTIONS } from "./rendering.constants";
 
 import type { Substitutions } from "./rendering.types";
 
@@ -49,41 +47,45 @@ export class RenderingService {
   }
 
   /**
-   * Substitutes `{{field}}` placeholders in template contents.
+   * Renders template contents with mustache.
    *
-   * An unknown placeholder is left verbatim rather than replaced with an empty
-   * string: a template referencing a field nobody supplied is a template bug,
-   * and leaving the token visible makes that obvious in the generated file
-   * instead of silently producing a hole.
+   * Full mustache is available — sections, inverted sections, partials — with
+   * HTML escaping disabled so substituted values cannot corrupt source code.
+   *
+   * Note that mustache renders an unknown placeholder as an empty string
+   * rather than leaving the token visible. A template referencing a field
+   * nobody supplies therefore produces a silent hole, so every placeholder a
+   * template uses must be supplied by the caller.
    */
   public renderContent(args: {
     substitutions: Substitutions;
     templateContent: string;
   }): string {
-    return args.templateContent.replaceAll(
-      CONTENT_PLACEHOLDER_PATTERN,
-      (token: string, field: string) => {
-        return args.substitutions[field.trim()] ?? token;
-      },
+    return mustache.render(
+      args.templateContent,
+      args.substitutions,
+      {},
+      MUSTACHE_RENDER_OPTIONS,
     );
   }
 
   /**
-   * Substitutes `__field__` placeholders in template paths.
+   * Renders a template path with mustache, the same way contents are rendered.
    *
-   * Paths use a distinct syntax from contents because braces are not portable
-   * across filesystems. Unknown placeholders are left verbatim, for the same
-   * reason as `renderContent`.
+   * Paths once used a `__field__` syntax of their own, on the assumption that
+   * braces were not portable across filesystems. They are — and the separate
+   * syntax could not tell a placeholder from a Python dunder, so a template
+   * shipping `__init__.py` depended on `init` never being a substitution.
    */
   public renderPath(args: {
     substitutions: Substitutions;
     templatePath: string;
   }): string {
-    return args.templatePath.replaceAll(
-      PATH_PLACEHOLDER_PATTERN,
-      (token: string, field: string) => {
-        return args.substitutions[field] ?? token;
-      },
+    return mustache.render(
+      args.templatePath,
+      args.substitutions,
+      {},
+      MUSTACHE_RENDER_OPTIONS,
     );
   }
 }

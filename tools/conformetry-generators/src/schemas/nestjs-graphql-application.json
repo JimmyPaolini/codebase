@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "description": "Generate a NestJS GraphQL API application",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Application name in kebab-case"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "title": "nestjs-graphql-application",
+  "type": "object"
+}

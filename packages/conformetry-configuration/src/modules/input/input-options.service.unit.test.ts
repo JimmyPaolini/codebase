@@ -7,8 +7,8 @@ import { InputOptionsService } from "./input-options.service";
 
 const SCHEMA = {
   properties: {
+    instancePath: { type: "string" },
     name: { type: "string" },
-    targetDirectoryPath: { type: "string" },
     unitTestName: { type: "string" },
   },
 };
@@ -68,7 +68,7 @@ describe(InputOptionsService, () => {
     it("ignores reserved command options", () => {
       expect(
         service.collectGeneratorInputs({
-          rawArguments: ["--targetDirectoryPath", "/out", "--name", "widget"],
+          rawArguments: ["--instancePath", "/out", "--name", "widget"],
           schema: SCHEMA,
         }),
       ).toStrictEqual({ name: "widget" });
@@ -110,29 +110,6 @@ describe(InputOptionsService, () => {
         nested: '{"a":1}',
         text: "value",
       });
-    });
-  });
-
-  describe("resolveConfigurationPath", () => {
-    it("prefers an explicit option", () => {
-      expect(
-        service.resolveConfigurationPath({
-          options: { config: "explicit.ts" },
-          pluginOptions: { configFilePath: "plugin.ts" },
-        }),
-      ).toBe("explicit.ts");
-    });
-
-    it("falls back to plugin options, then the default", () => {
-      expect(
-        service.resolveConfigurationPath({
-          options: {},
-          pluginOptions: { configFilePath: "plugin.ts" },
-        }),
-      ).toBe("plugin.ts");
-      expect(service.resolveConfigurationPath({ options: {} })).toBe(
-        "configuration/conformetry.config.ts",
-      );
     });
   });
 

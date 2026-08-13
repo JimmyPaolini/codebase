@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "description": "Generate NestJS service and unit test files",
+  "properties": {
+    "module": {
+      "type": "string",
+      "description": "Target module name in kebab-case"
+    },
+    "name": {
+      "type": "string",
+      "description": "Service name in kebab-case"
+    },
+    "project": {
+      "type": "string",
+      "description": "Parent project name in kebab-case"
+    }
+  },
+  "required": [
+    "module",
+    "name",
+    "project"
+  ],
+  "title": "nestjs-service-file",
+  "type": "object"
+}

@@ -1,35 +1,35 @@
-import path from "node:path";
-
+import { RenderingService } from "@jimmypaolini/conformetry-generation";
 import { Injectable } from "@nestjs/common";
 
-import { DiscoveryMetadataService } from "./discovery-metadata.service";
 import { DiscoveryTemplatesService } from "./discovery-templates.service";
+import {
+  COMPLETE_MATCH_RATIO,
+  MINIMUM_MATCH_RATIO,
+} from "./discovery.constants";
 
 import type {
-  ConformetryConfiguration,
-  ConformetryGeneratorDefinition,
-} from "../configuration/configuration.types";
-import type {
-  CompareCandidatesArguments,
-  MatchedGeneratorCandidate,
-  ProjectTemplateMetadata,
+  InstanceCandidate,
+  MatchedInstance,
+  ResolvedInstances,
+  ScoredTemplate,
+  TemplateDefinition,
 } from "./discovery.types";
+import type { Substitutions } from "@jimmypaolini/conformetry-generation";
 
 /**
- * Decides which generator's templates govern a given project.
+ * Decides which template a candidate directory is an instance of.
  *
- * A project does not record the template it was generated from beyond an
- * optional `generator:` tag, so the match is inferred. Ranking is deliberately
- * ordered from strongest evidence to weakest, ending in a name comparison so
- * the result is deterministic rather than filesystem-order dependent.
+ * Nothing declares the answer — an instance is ordinary code with no marker
+ * saying where it came from — so the template is inferred from how much of its
+ * structure the candidate already has.
  */
 @Injectable()
 export class DiscoveryMatchingService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly discoveryMetadataService: DiscoveryMetadataService,
     private readonly discoveryTemplatesService: DiscoveryTemplatesService,
+    private readonly renderingService: RenderingService,
   ) {}
 
   // 🔐 Private Fields
@@ -38,172 +38,142 @@ export class DiscoveryMatchingService {
 
   // 🔏 Private Methods
 
-  /** Scores a candidate on one boolean signal, higher being better. */
-  private scoreCandidate(args: {
-    candidate: MatchedGeneratorCandidate;
-    inferredGeneratorNames: Set<string>;
-    projectMetadata: ProjectTemplateMetadata;
-  }): { inferredScore: number; taggedScore: number } {
-    return {
-      inferredScore: args.inferredGeneratorNames.has(
-        args.candidate.generatorName,
-      )
-        ? 1
-        : 0,
-      taggedScore:
-        args.projectMetadata.generatorName === args.candidate.generatorName
-          ? 1
-          : 0,
-    };
+  /**
+   * Orders scored templates best-first.
+   *
+   * Coverage ratio leads, because absolute count alone lets a large template
+   * win on a weak partial match — a module directory matching three of a
+   * seven-file GraphQL template would beat nothing, and used to. Absolute
+   * count breaks ratio ties, so a five-file module template beats a two-file
+   * service-file template when both match completely. Name makes it
+   * deterministic.
+   */
+  private compareScored(left: ScoredTemplate, right: ScoredTemplate): number {
+    if (left.ratio !== right.ratio) {
+      return right.ratio - left.ratio;
+    }
+
+    if (left.matchedFileCount !== right.matchedFileCount) {
+      return right.matchedFileCount - left.matchedFileCount;
+    }
+
+    return left.template.name.localeCompare(right.template.name);
+  }
+
+  /** Scores every template that shares at least one file with the candidate. */
+  private scoreTemplates(args: {
+    candidate: InstanceCandidate;
+    substitutions: Substitutions;
+    templates: TemplateDefinition[];
+  }): ScoredTemplate[] {
+    return args.templates
+      .map((template) => {
+        const matchedFileCount =
+          this.discoveryTemplatesService.countMatchingFiles({
+            fileScope: args.candidate.fileScope,
+            instancePath: args.candidate.instancePath,
+            substitutions: args.substitutions,
+            template,
+          });
+
+        return {
+          matchedFileCount,
+          ratio: matchedFileCount / template.filePaths.length,
+          template,
+        };
+      })
+      .filter((scored) => {
+        return (
+          scored.matchedFileCount > 0 && scored.ratio > MINIMUM_MATCH_RATIO
+        );
+      })
+      .toSorted((left, right) => this.compareScored(left, right));
   }
 
   // 🌎 Public Methods
 
   /**
-   * Orders two candidates, best first.
+   * Builds the substitutions a candidate's template is rendered with.
    *
-   * Precedence: an explicit `generator:` tag, then a name inferred from the
-   * project directory, then how many template files already exist, then the
-   * generator name as a stable tiebreak.
+   * Name variants come from the candidate's stem; caller-supplied values are
+   * spread last so an explicit `type` or `description` always wins.
    */
-  public compareCandidates(args: CompareCandidatesArguments): number {
-    const left = this.scoreCandidate({
-      candidate: args.leftCandidate,
-      inferredGeneratorNames: args.inferredGeneratorNames,
-      projectMetadata: args.projectMetadata,
-    });
-    const right = this.scoreCandidate({
-      candidate: args.rightCandidate,
-      inferredGeneratorNames: args.inferredGeneratorNames,
-      projectMetadata: args.projectMetadata,
-    });
-
-    if (left.taggedScore !== right.taggedScore) {
-      return right.taggedScore - left.taggedScore;
-    }
-
-    if (left.inferredScore !== right.inferredScore) {
-      return right.inferredScore - left.inferredScore;
-    }
-
-    if (
-      args.leftCandidate.existingFileCount !==
-      args.rightCandidate.existingFileCount
-    ) {
-      return (
-        args.rightCandidate.existingFileCount -
-        args.leftCandidate.existingFileCount
-      );
-    }
-
-    return args.leftCandidate.generatorName.localeCompare(
-      args.rightCandidate.generatorName,
-    );
-  }
-
-  /**
-   * Builds a candidate for one generator, or `undefined` when its template
-   * directory holds no files.
-   */
-  public createCandidate(args: {
-    definition: ConformetryGeneratorDefinition;
-    generatorName: string;
-    projectPath: string;
-    substitutions: Record<string, string>;
-    workingDirectory: string;
-  }): MatchedGeneratorCandidate | undefined {
-    const absoluteTemplateDirectoryPath = path.resolve(
-      args.workingDirectory,
-      args.definition.templateDirectoryPath,
-    );
-    const templateFilePaths =
-      this.discoveryTemplatesService.collectTemplateFilePaths(
-        absoluteTemplateDirectoryPath,
-      );
-
-    if (templateFilePaths.length === 0) {
-      return undefined;
-    }
-
+  public buildSubstitutions(candidate: InstanceCandidate): Substitutions {
     return {
-      absoluteTemplateDirectoryPath,
-      existingFileCount: this.discoveryTemplatesService.countExistingFiles({
-        projectPath: args.projectPath,
-        substitutions: args.substitutions,
-        templateDirectoryPath: absoluteTemplateDirectoryPath,
-        templateFilePaths,
-      }),
-      generatorName: args.generatorName,
-      substitutions: args.substitutions,
-      templateFilePaths,
+      ...this.renderingService.buildNameSubstitutions(candidate.nameStem),
+      name: candidate.nameStem,
+      ...candidate.substitutions,
     };
   }
 
-  /** Guesses generator names from the project directory name. */
-  public inferGeneratorNames(args: {
-    generatorNames: string[];
-    projectPath: string;
-  }): Set<string> {
-    const projectDirectoryName = path.basename(args.projectPath).toLowerCase();
-
-    return new Set(
-      args.generatorNames.filter((generatorName) => {
-        return projectDirectoryName.includes(generatorName.toLowerCase());
-      }),
-    );
-  }
-
   /**
-   * Picks the generator that best explains a project, or `undefined` when no
-   * template has a single file in common with it.
+   * Resolves every candidate to the template — or templates — that explain it.
+   *
+   * A candidate matching nothing, or matching two templates equally well but
+   * only partially, is returned as unmatched rather than dropped: the caller
+   * asserted these are instances, so silence would hide both a drifted
+   * instance and a pair of indistinguishable templates.
+   *
+   * A complete tie is different, and is matched against every tied template. A
+   * module holding both a command and a service really is an instance of both
+   * `nestjs-command-module` and `nestjs-service-module`; calling that ambiguous
+   * would demand the author narrow a glob that is not wrong.
    */
-  public resolveBestCandidate(args: {
-    configuration: ConformetryConfiguration;
-    generatorNames: string[];
-    projectPath: string;
-    workingDirectory: string;
-  }): MatchedGeneratorCandidate | undefined {
-    const projectMetadata = this.discoveryMetadataService.readProjectMetadata(
-      args.projectPath,
-    );
-    const inferredGeneratorNames = this.inferGeneratorNames({
-      generatorNames: args.generatorNames,
-      projectPath: args.projectPath,
-    });
+  public resolveInstances(args: {
+    candidates: InstanceCandidate[];
+    templates: TemplateDefinition[];
+  }): ResolvedInstances {
+    const matched: MatchedInstance[] = [];
+    const unmatched: ResolvedInstances["unmatched"] = [];
 
-    if (projectMetadata.generatorName !== undefined) {
-      inferredGeneratorNames.add(projectMetadata.generatorName);
+    for (const candidate of args.candidates) {
+      const substitutions = this.buildSubstitutions(candidate);
+      const scored = this.scoreTemplates({
+        candidate,
+        substitutions,
+        templates: args.templates,
+      });
+      const best = scored[0];
+
+      if (best === undefined) {
+        unmatched.push({
+          candidate,
+          candidateTemplateNames: [],
+          reason: "no-match",
+        });
+        continue;
+      }
+
+      const tied = scored.filter((scoredTemplate) => {
+        return (
+          scoredTemplate.ratio === best.ratio &&
+          scoredTemplate.matchedFileCount === best.matchedFileCount
+        );
+      });
+
+      if (tied.length > 1 && best.ratio < COMPLETE_MATCH_RATIO) {
+        unmatched.push({
+          candidate,
+          candidateTemplateNames: tied.map((scoredTemplate) => {
+            return scoredTemplate.template.name;
+          }),
+          reason: "ambiguous",
+        });
+        continue;
+      }
+
+      matched.push(
+        ...tied.map((scoredTemplate) => {
+          return {
+            candidate,
+            matchedFileCount: scoredTemplate.matchedFileCount,
+            substitutions,
+            template: scoredTemplate.template,
+          };
+        }),
+      );
     }
 
-    const substitutions = this.discoveryMetadataService.buildSubstitutions({
-      projectMetadata,
-      projectPath: args.projectPath,
-      workingDirectory: args.workingDirectory,
-    });
-
-    return args.generatorNames
-      .map((generatorName) => {
-        const definition = args.configuration.generators[generatorName];
-
-        return definition === undefined
-          ? undefined
-          : this.createCandidate({
-              definition,
-              generatorName,
-              projectPath: args.projectPath,
-              substitutions,
-              workingDirectory: args.workingDirectory,
-            });
-      })
-      .filter((candidate) => candidate !== undefined)
-      .filter((candidate) => candidate.existingFileCount > 0)
-      .toSorted((leftCandidate, rightCandidate) => {
-        return this.compareCandidates({
-          inferredGeneratorNames,
-          leftCandidate,
-          projectMetadata,
-          rightCandidate,
-        });
-      })[0];
+    return { matched, unmatched };
   }
 }

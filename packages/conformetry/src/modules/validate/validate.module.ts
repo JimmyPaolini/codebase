@@ -1,4 +1,8 @@
-import { InputModule } from "@jimmypaolini/conformetry-configuration";
+import {
+  ConfigurationModule,
+  DiscoveryModule,
+  InputModule,
+} from "@jimmypaolini/conformetry-configuration";
 import { ReportingModule } from "@jimmypaolini/conformetry-core";
 import { ValidationModule } from "@jimmypaolini/conformetry-validation";
 import { Module } from "@nestjs/common";
@@ -13,7 +17,14 @@ import { ValidateCommand } from "./validate.command";
 @Module({
   controllers: [],
   exports: [ValidateCommand],
-  imports: [InputModule, LoggerModule, ReportingModule, ValidationModule],
+  imports: [
+    ConfigurationModule,
+    DiscoveryModule,
+    InputModule,
+    LoggerModule,
+    ReportingModule,
+    ValidationModule,
+  ],
   providers: [ValidateCommand],
 })
 export class ValidateModule {}

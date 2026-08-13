@@ -416,10 +416,10 @@ export default [
             },
             {
               onlyDependOnLibsWithTags: [
-                "name:conformetry",
                 "name:conformetry-configuration",
                 "name:conformetry-core",
                 "name:conformetry-generation",
+                "name:conformetry-validation",
               ],
               sourceTag: "name:conformetry-nx",
             },

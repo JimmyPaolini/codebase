@@ -13,14 +13,6 @@ export class UnknownConfigurationFileTypeError extends Error {
 /** Config path used when the caller supplies none. */
 export const DEFAULT_CONFIGURATION_PATH = "configuration/conformetry.config.ts";
 
-/**
- * Directory holding generator templates, relative to the workspace root.
- *
- * Used to derive `templateDirectoryPath` for a generator that does not declare
- * one, by joining this with the generator's registry key.
- */
-export const DEFAULT_TEMPLATE_DIRECTORY = "configuration/conformetry-templates";
-
 /** Marks the workspace root during an upward search from the process cwd. */
 export const WORKSPACE_MANIFEST_FILENAME = "pnpm-workspace.yaml";
 
@@ -36,7 +28,7 @@ export const SUPPORTED_CONFIGURATION_EXTENSIONS = new Set([
   ".ts",
 ]);
 
-/** Any JSON value, used to accept arbitrary JSON Schema parameter fragments. */
+/** Any JSON value, used to accept arbitrary JSON Schema input fragments. */
 const jsonSchemaDefinitionSchema: z.ZodType = z.lazy(() => {
   return z.union([
     z.string(),
@@ -49,31 +41,31 @@ const jsonSchemaDefinitionSchema: z.ZodType = z.lazy(() => {
 });
 
 /**
- * Validates the declarative generator registry loaded from a config file.
+ * Validates the generator list loaded from a config file.
  *
- * `templateDirectoryPath` is part of the schema deliberately: Zod strips
- * unknown keys, so omitting it here would silently discard a path the author
- * wrote in their config.
+ * Every field a generator needs is declared here deliberately: Zod strips
+ * unknown keys, so anything omitted would be silently discarded rather than
+ * rejected. `tags` is carried uninterpreted for whichever host reads it.
  */
-export const conformetryConfigurationSchema = z.object({
-  generators: z.record(
-    z.string(),
-    z.object({
-      aliases: z.array(z.string()).optional(),
-      description: z.string().optional(),
-      hooks: z
-        .object({
-          postGenerate: z.object({ name: z.string() }).optional(),
-          preGenerate: z.object({ name: z.string() }).optional(),
-        })
-        .optional(),
-      name: z.string(),
-      // Each parameter is a JSON Schema fragment, so it must be an object;
-      // its own fields may hold any JSON value.
-      parameters: z
-        .record(z.string(), z.record(z.string(), jsonSchemaDefinitionSchema))
-        .optional(),
-      templateDirectoryPath: z.string().optional(),
-    }),
-  ),
-});
+export const conformetryConfigurationSchema = z.array(
+  z.object({
+    aliases: z.array(z.string()).optional(),
+    description: z.string().optional(),
+    // Each input is a JSON Schema fragment, so it must be an object; its own
+    // fields may hold any JSON value.
+    inputs: z
+      .record(z.string(), z.record(z.string(), jsonSchemaDefinitionSchema))
+      .optional(),
+    instances: z
+      .array(
+        z.object({
+          patterns: z.array(z.string()),
+          substitutions: z.record(z.string(), z.string()).optional(),
+          tags: z.array(z.string()).optional(),
+        }),
+      )
+      .optional(),
+    name: z.string(),
+    templatePath: z.string(),
+  }),
+);

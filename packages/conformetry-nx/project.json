@@ -16,7 +16,7 @@
       "options": {
         "assets": [
           {
-            "glob": "generators.json",
+            "glob": "executors.json",
             "input": "packages/conformetry-nx",
             "output": "."
           },
@@ -26,12 +26,7 @@
             "output": "."
           },
           {
-            "glob": "src/generators/init/schema.json",
-            "input": "packages/conformetry-nx",
-            "output": "."
-          },
-          {
-            "glob": "src/generators/init/templates/**",
+            "glob": "src/executors/**/schema.json",
             "input": "packages/conformetry-nx",
             "output": "."
           }

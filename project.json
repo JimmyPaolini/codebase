@@ -142,10 +142,10 @@
     },
     "conformetry-validate": {
       "cache": false,
-      "description": "Run the conformetry validate command from the workspace root",
+      "description": "Run every project's inferred conformetry validation target",
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec nx run conformetry:start -- validate {args}",
+        "command": "pnpm exec nx run-many -t conformetry-validate --exclude=codebase {args}",
         "cwd": "{workspaceRoot}"
       }
     },
@@ -204,7 +204,7 @@
           "command": "fallow audit --config configuration/fallow.config.jsonc --format=pr-comment-github"
         }
       },
-      "description": "Fallow audit gate (new-only regression check on changed code) — advisory",
+      "description": "Fallow audit gate (new-only regression check on changed code) \u2014 advisory",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
@@ -229,7 +229,7 @@
           "command": "fallow dead-code --config configuration/fallow.config.jsonc --format=pr-comment-github"
         }
       },
-      "description": "Fallow dead-code analysis (unused files, exports, deps, circular deps) — advisory",
+      "description": "Fallow dead-code analysis (unused files, exports, deps, circular deps) \u2014 advisory",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
@@ -277,7 +277,7 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "⚠️  MANUAL-ONLY (write config): removes unused exports/deps from source files — never include in automated pipelines. Use check config for safe dry-run preview.",
+      "description": "\u26a0\ufe0f  MANUAL-ONLY (write config): removes unused exports/deps from source files \u2014 never include in automated pipelines. Use check config for safe dry-run preview.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
@@ -301,7 +301,7 @@
           "command": "fallow health --config configuration/fallow.config.jsonc --format=pr-comment-github || true"
         }
       },
-      "description": "Fallow code health analysis (complexity, hotspots, maintainability) — advisory",
+      "description": "Fallow code health analysis (complexity, hotspots, maintainability) \u2014 advisory",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
@@ -482,7 +482,9 @@
       "options": {
         "cwd": "{workspaceRoot}"
       },
-      "outputs": ["{workspaceRoot}/README.md"]
+      "outputs": [
+        "{workspaceRoot}/README.md"
+      ]
     },
     "openwiki": {
       "cache": false,
@@ -556,7 +558,10 @@
       "defaultConfiguration": "check",
       "description": "Run Oxlint on workspace root files (config files, scripts, documentation, infrastructure)",
       "executor": "nx:run-commands",
-      "inputs": ["{workspaceRoot}/configuration/oxlint.config.ts", "default"],
+      "inputs": [
+        "{workspaceRoot}/configuration/oxlint.config.ts",
+        "default"
+      ],
       "options": {
         "cwd": "{projectRoot}"
       }
@@ -725,7 +730,9 @@
       "defaultConfiguration": "check",
       "description": "Lint codebase for consistent package.json conventions",
       "executor": "nx:run-commands",
-      "inputs": ["{workspaceRoot}/**/package.json"],
+      "inputs": [
+        "{workspaceRoot}/**/package.json"
+      ],
       "options": {
         "cwd": "{workspaceRoot}"
       }
@@ -827,7 +834,9 @@
       "defaultConfiguration": "write",
       "description": "Validate that VS Code Machine settings contain all workspace settings (check) or merge workspace settings into Machine settings (write)",
       "executor": "nx:run-commands",
-      "inputs": ["{projectRoot}/.vscode/settings.json"],
+      "inputs": [
+        "{projectRoot}/.vscode/settings.json"
+      ],
       "options": {
         "command": "tsx .devcontainer/scripts/sync-vscode-settings.ts"
       }
@@ -893,7 +902,9 @@
       "cache": false,
       "description": "Scan Terraform infrastructure code for misconfigurations using Trivy",
       "executor": "nx:run-commands",
-      "inputs": ["{workspaceRoot}/infrastructure/terraform/**/*.tf"],
+      "inputs": [
+        "{workspaceRoot}/infrastructure/terraform/**/*.tf"
+      ],
       "options": {
         "command": "trivy config infrastructure/terraform --severity CRITICAL,HIGH --exit-code 1 --ignorefile configuration/trivyignore",
         "cwd": "{projectRoot}"

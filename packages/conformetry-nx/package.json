@@ -1,18 +1,17 @@
 {
   "dependencies": {
     "@golevelup/ts-vitest": "catalog:",
-    "@jimmypaolini/conformetry": "workspace:*",
     "@jimmypaolini/conformetry-configuration": "workspace:*",
+    "@jimmypaolini/conformetry-core": "workspace:*",
+    "@jimmypaolini/conformetry-generation": "workspace:*",
+    "@jimmypaolini/conformetry-validation": "workspace:*",
     "@nestjs/common": "catalog:",
-    "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
     "@nx/devkit": "catalog:",
-    "nest-commander": "catalog:",
+    "@swc-node/register": "catalog:",
     "pino": "catalog:",
     "reflect-metadata": "catalog:",
-    "tslib": "catalog:",
-    "tsx": "catalog:",
-    "zod": "catalog:"
+    "tslib": "catalog:"
   },
   "devDependencies": {
     "@nestjs/testing": "catalog:",
@@ -23,18 +22,25 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
+  "executors": "./executors.json",
   "exports": {
     ".": {
       "default": "./src/index.cjs",
       "import": "./src/index.cjs",
       "require": "./src/index.cjs",
       "types": "./src/index.ts"
-    }
+    },
+    "./executors.json": "./executors.json",
+    "./generators.json": "./generators.json",
+    "./package.json": "./package.json",
+    "./src/executors/*": "./src/executors/*",
+    "./src/generators/*": "./src/generators/*"
   },
   "generators": "./generators.json",
   "main": "src/index.cjs",
   "name": "@jimmypaolini/conformetry-nx",
   "nx": {
+    "executors": "./executors.json",
     "generators": "./generators.json"
   },
   "publishConfig": {

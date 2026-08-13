@@ -1,4 +1,7 @@
 // ♟️ Constants
 
-/** Config path used when the caller names none. */
-export const DEFAULT_CONFIGURATION_PATH = "configuration/conformetry.config.ts";
+/**
+ * Separator joining an instance path and a template path into a deduplication
+ * key. A NUL byte cannot occur in either, so it can never collide.
+ */
+export const FINDING_KEY_SEPARATOR = "\u0000";

@@ -57,13 +57,40 @@ describe(RenderingService, () => {
       expect(rendered).toBe("a widget b");
     });
 
-    it("leaves unknown placeholders verbatim so template bugs stay visible", () => {
+    it("renders an unknown placeholder as empty, per mustache semantics", () => {
       const rendered = service.renderContent({
         substitutions: {},
         templateContent: "value: {{missing}}",
       });
 
-      expect(rendered).toBe("value: {{missing}}");
+      expect(rendered).toBe("value: ");
+    });
+
+    it("does not HTML-escape substituted values", () => {
+      const rendered = service.renderContent({
+        substitutions: { description: `Tools & <utilities> "quoted"` },
+        templateContent: "// {{description}}",
+      });
+
+      expect(rendered).toBe(`// Tools & <utilities> "quoted"`);
+    });
+
+    it("renders sections", () => {
+      const rendered = service.renderContent({
+        substitutions: { name: "widget" },
+        templateContent: "{{#name}}has {{name}}{{/name}}",
+      });
+
+      expect(rendered).toBe("has widget");
+    });
+
+    it("renders inverted sections for absent values", () => {
+      const rendered = service.renderContent({
+        substitutions: {},
+        templateContent: "{{^name}}no name{{/name}}",
+      });
+
+      expect(rendered).toBe("no name");
     });
 
     it("does not run greedily across two adjacent placeholders", () => {
@@ -75,13 +102,13 @@ describe(RenderingService, () => {
       expect(rendered).toBe("ab");
     });
 
-    it("substitutes the inner pair of a triple-brace token", () => {
+    it("renders a triple-brace token unescaped", () => {
       const rendered = service.renderContent({
         substitutions: { name: "widget" },
         templateContent: "{{{name}}}",
       });
 
-      expect(rendered).toBe("{widget}");
+      expect(rendered).toBe("widget");
     });
   });
 
@@ -89,7 +116,7 @@ describe(RenderingService, () => {
     it("substitutes path placeholders", () => {
       const rendered = service.renderPath({
         substitutions: { nameKebabCase: "my-widget" },
-        templatePath: "__nameKebabCase__.service.ts",
+        templatePath: "{{nameKebabCase}}.service.ts",
       });
 
       expect(rendered).toBe("my-widget.service.ts");
@@ -98,19 +125,30 @@ describe(RenderingService, () => {
     it("substitutes every placeholder in a nested path", () => {
       const rendered = service.renderPath({
         substitutions: { nameKebabCase: "my-widget" },
-        templatePath: "src/__nameKebabCase__/__nameKebabCase__.module.ts",
+        templatePath: "src/{{nameKebabCase}}/{{nameKebabCase}}.module.ts",
       });
 
       expect(rendered).toBe("src/my-widget/my-widget.module.ts");
     });
 
-    it("leaves unknown placeholders verbatim", () => {
+    it("renders an unknown placeholder as empty, as content does", () => {
       const rendered = service.renderPath({
         substitutions: {},
-        templatePath: "__missing__.ts",
+        templatePath: "{{missing}}.ts",
       });
 
-      expect(rendered).toBe("__missing__.ts");
+      expect(rendered).toBe(".ts");
+    });
+
+    it("leaves a Python dunder alone", () => {
+      // The reason paths moved off `__field__`: that syntax could not tell a
+      // placeholder from `__init__.py`, which every Python package ships.
+      const rendered = service.renderPath({
+        substitutions: { init: "wrong", nameKebabCase: "my-widget" },
+        templatePath: "src/__init__.py",
+      });
+
+      expect(rendered).toBe("src/__init__.py");
     });
   });
 
@@ -120,7 +158,7 @@ describe(RenderingService, () => {
     expect(
       service.renderPath({
         substitutions,
-        templatePath: "__nameKebabCase__.service.ts",
+        templatePath: "{{nameKebabCase}}.service.ts",
       }),
     ).toBe("my-widget.service.ts");
     expect(

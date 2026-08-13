@@ -22,6 +22,7 @@ export const CONFORMANCE_ERROR_TYPES: readonly ConformanceErrorType[] = [
   "comment",
   "directory",
   "file",
+  "instance",
 ];
 
 /** Category used when an untrusted payload carries an unrecognized one. */

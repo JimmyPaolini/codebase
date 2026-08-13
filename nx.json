@@ -23,7 +23,10 @@
     }
   },
   "namedInputs": {
-    "default": ["{projectRoot}/**/*", "shared-globals"],
+    "default": [
+      "{projectRoot}/**/*",
+      "shared-globals"
+    ],
     "production": [
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
       "!{projectRoot}/tsconfig.spec.json",
@@ -34,7 +37,9 @@
       "{projectRoot}/**/*.py",
       "{projectRoot}/pyproject.toml"
     ],
-    "python-tests": ["{projectRoot}/testing/**/*.py"],
+    "python-tests": [
+      "{projectRoot}/testing/**/*.py"
+    ],
     "shared-globals": [
       "{workspaceRoot}/.github/workflows/*.yml",
       "{workspaceRoot}/configuration/tsconfig.json",
@@ -74,15 +79,34 @@
     },
     {
       "plugin": "@nx/vitest"
+    },
+    {
+      "options": {
+        "configurationPath": "configuration/conformetry.config.ts",
+        "validateTargetName": "conformetry-validate"
+      },
+      "plugin": "@jimmypaolini/conformetry-nx"
     }
   ],
   "projects": {
     "caelundas": {
-      "tags": ["domain:caelundas", "language:typescript", "type:application"]
+      "tags": [
+        "domain:caelundas",
+        "language:typescript",
+        "type:application"
+      ]
     },
     "codebase": {
-      "tags": ["language:typescript", "type:tool"]
+      "tags": [
+        "language:typescript",
+        "type:tool"
+      ]
     }
+  },
+  "sync": {
+    "globalGenerators": [
+      "@jimmypaolini/conformetry-nx:sync"
+    ]
   },
   "targetDefaults": {
     "analyze-code": [
@@ -119,7 +143,9 @@
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:python"]
+          "projects": [
+            "tag:language:python"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{py,ipynb,md,yaml,yml,json}",
@@ -163,7 +189,9 @@
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:framework:typeorm"]
+          "projects": [
+            "tag:framework:typeorm"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml,sql}",
@@ -205,7 +233,9 @@
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml,sql}",
@@ -218,9 +248,13 @@
         "cache": true,
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:python"]
+          "projects": [
+            "tag:language:python"
+          ]
         },
-        "inputs": ["python-source"],
+        "inputs": [
+          "python-source"
+        ],
         "options": {
           "command": "uv run bandit -c pyproject.toml -r src/",
           "cwd": "{projectRoot}"
@@ -230,11 +264,19 @@
     "build": [
       {
         "cache": true,
-        "dependsOn": ["^build"],
+        "dependsOn": [
+          "^build"
+        ],
         "filter": {
-          "projects": ["tag:language:python", "tag:language:typescript"]
+          "projects": [
+            "tag:language:python",
+            "tag:language:typescript"
+          ]
         },
-        "inputs": ["^production", "production"]
+        "inputs": [
+          "^production",
+          "production"
+        ]
       }
     ],
     "clean": [
@@ -242,37 +284,52 @@
         "cache": true,
         "configurations": {
           "check": {
-            "commands": ["nx run {projectName}:vulture:check"],
+            "commands": [
+              "nx run {projectName}:vulture:check"
+            ],
             "parallel": true
           },
           "write": {
-            "commands": ["nx run {projectName}:vulture:write"],
+            "commands": [
+              "nx run {projectName}:vulture:write"
+            ],
             "parallel": false
           }
         },
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:python"]
+          "projects": [
+            "tag:language:python"
+          ]
         },
-        "inputs": ["python-source", "shared-globals"]
+        "inputs": [
+          "python-source",
+          "shared-globals"
+        ]
       },
       {
         "cache": true,
         "configurations": {
           "check": {
-            "commands": ["nx run {projectName}:knip:check"],
+            "commands": [
+              "nx run {projectName}:knip:check"
+            ],
             "parallel": true
           },
           "write": {
-            "commands": ["nx run {projectName}:knip:write"],
+            "commands": [
+              "nx run {projectName}:knip:write"
+            ],
             "parallel": false
           }
         },
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,py}",
@@ -286,7 +343,9 @@
         "cache": true,
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "^default",
@@ -312,7 +371,9 @@
         },
         "defaultConfiguration": "check",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml}",
@@ -329,7 +390,9 @@
         "cache": true,
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
@@ -343,7 +406,9 @@
         "cache": false,
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
@@ -357,7 +422,9 @@
         "cache": true,
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
@@ -371,7 +438,9 @@
         "cache": true,
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
@@ -385,7 +454,9 @@
         "cache": true,
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
@@ -399,18 +470,24 @@
         "cache": true,
         "configurations": {
           "check": {
-            "commands": ["nx run {projectName}:ruff-format:check"],
+            "commands": [
+              "nx run {projectName}:ruff-format:check"
+            ],
             "parallel": true
           },
           "write": {
-            "commands": ["nx run {projectName}:ruff-format:write"],
+            "commands": [
+              "nx run {projectName}:ruff-format:write"
+            ],
             "parallel": false
           }
         },
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:python"]
+          "projects": [
+            "tag:language:python"
+          ]
         },
         "inputs": [
           "{workspaceRoot}/configuration/pyproject.toml",
@@ -440,7 +517,9 @@
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:framework:typeorm"]
+          "projects": [
+            "tag:framework:typeorm"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml,sql}",
@@ -471,7 +550,9 @@
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml,sql}",
@@ -496,9 +577,14 @@
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
-        "inputs": ["{workspaceRoot}/configuration/knip.config.ts", "default"],
+        "inputs": [
+          "{workspaceRoot}/configuration/knip.config.ts",
+          "default"
+        ],
         "options": {
           "command": "knip --config configuration/knip.config.ts --workspace {projectRoot}",
           "cwd": "{workspaceRoot}"
@@ -510,18 +596,24 @@
         "cache": true,
         "configurations": {
           "check": {
-            "commands": ["nx run {projectName}:ruff-lint:check"],
+            "commands": [
+              "nx run {projectName}:ruff-lint:check"
+            ],
             "parallel": true
           },
           "write": {
-            "commands": ["nx run {projectName}:ruff-lint:write"],
+            "commands": [
+              "nx run {projectName}:ruff-lint:write"
+            ],
             "parallel": false
           }
         },
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:python"]
+          "projects": [
+            "tag:language:python"
+          ]
         },
         "inputs": [
           "{workspaceRoot}/configuration/pyproject.toml",
@@ -551,7 +643,9 @@
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:framework:typeorm"]
+          "projects": [
+            "tag:framework:typeorm"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,md,mdx,css}",
@@ -581,7 +675,9 @@
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,md,mdx,css}",
@@ -605,7 +701,10 @@
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:python", "tag:language:typescript"]
+          "projects": [
+            "tag:language:python",
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.md",
@@ -632,9 +731,13 @@
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:python"]
+          "projects": [
+            "tag:language:python"
+          ]
         },
-        "inputs": ["{projectRoot}/src/**/*.ipynb"],
+        "inputs": [
+          "{projectRoot}/src/**/*.ipynb"
+        ],
         "options": {
           "command": "find src -name '*.ipynb' -exec uv run nbstripout {args} {} +",
           "cwd": "{projectRoot}"
@@ -655,7 +758,9 @@
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml}",
@@ -681,7 +786,9 @@
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
@@ -708,7 +815,9 @@
         "defaultConfiguration": "write",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml}",
@@ -726,7 +835,9 @@
         "cache": true,
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:python"]
+          "projects": [
+            "tag:language:python"
+          ]
         },
         "inputs": [
           "{workspaceRoot}/configuration/pyproject.toml",
@@ -757,7 +868,9 @@
         },
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:python"]
+          "projects": [
+            "tag:language:python"
+          ]
         },
         "inputs": [
           "{workspaceRoot}/configuration/pyproject.toml",
@@ -776,7 +889,9 @@
         "description": "Start a Nest Commander application in REPL mode",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:framework:nest-commander"]
+          "projects": [
+            "tag:framework:nest-commander"
+          ]
         },
         "options": {
           "command": "node --import @swc-node/register/esm-register src/repl.ts",
@@ -796,7 +911,9 @@
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:python"]
+          "projects": [
+            "tag:language:python"
+          ]
         },
         "inputs": [
           "{workspaceRoot}/configuration/pyproject.toml",
@@ -820,7 +937,9 @@
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:python"]
+          "projects": [
+            "tag:language:python"
+          ]
         },
         "inputs": [
           "{workspaceRoot}/configuration/pyproject.toml",
@@ -837,7 +956,10 @@
         "cache": true,
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:python", "tag:language:typescript"]
+          "projects": [
+            "tag:language:python",
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,css,scss,html,yaml,yml,md,mdx,py,ipynb,sql}",
@@ -865,7 +987,9 @@
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:framework:typeorm"]
+          "projects": [
+            "tag:framework:typeorm"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.sql",
@@ -892,7 +1016,9 @@
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:framework:typeorm"]
+          "projects": [
+            "tag:framework:typeorm"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.sql",
@@ -910,7 +1036,9 @@
         "cache": true,
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:framework:typeorm"]
+          "projects": [
+            "tag:framework:typeorm"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.sql",
@@ -929,7 +1057,9 @@
         "description": "Start a Nest Commander application",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:framework:nest-commander"]
+          "projects": [
+            "tag:framework:nest-commander"
+          ]
         },
         "options": {
           "command": "node --import @swc-node/register/esm-register src/main.ts {projectName}",
@@ -951,7 +1081,9 @@
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "{projectRoot}/src/**/*.css",
@@ -968,21 +1100,31 @@
         "cache": true,
         "configurations": {
           "coverage": {
-            "commands": ["nx run {projectName}:pytest:coverage"]
+            "commands": [
+              "nx run {projectName}:pytest:coverage"
+            ]
           },
           "integration": {
-            "commands": ["nx run {projectName}:pytest:integration"]
+            "commands": [
+              "nx run {projectName}:pytest:integration"
+            ]
           },
           "unit": {
-            "commands": ["nx run {projectName}:pytest:unit"]
+            "commands": [
+              "nx run {projectName}:pytest:unit"
+            ]
           },
           "watch": {
-            "commands": ["nx run {projectName}:pytest:watch"]
+            "commands": [
+              "nx run {projectName}:pytest:watch"
+            ]
           }
         },
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:python"]
+          "projects": [
+            "tag:language:python"
+          ]
         },
         "inputs": [
           "{workspaceRoot}/configuration/pyproject.toml",
@@ -990,7 +1132,9 @@
           "python-tests"
         ],
         "options": {
-          "commands": ["nx run {projectName}:pytest"]
+          "commands": [
+            "nx run {projectName}:pytest"
+          ]
         }
       },
       {
@@ -1011,7 +1155,9 @@
         },
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:framework:typeorm"]
+          "projects": [
+            "tag:framework:typeorm"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.test.ts",
@@ -1045,9 +1191,14 @@
         },
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
-        "inputs": ["^production", "default"],
+        "inputs": [
+          "^production",
+          "default"
+        ],
         "options": {
           "command": "pnpm exec vitest run",
           "cwd": "{projectRoot}"
@@ -1059,7 +1210,9 @@
         "cache": true,
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:python"]
+          "projects": [
+            "tag:language:python"
+          ]
         },
         "inputs": [
           "{workspaceRoot}/configuration/pyproject.toml",
@@ -1076,7 +1229,9 @@
         "cache": true,
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.ts",
@@ -1088,7 +1243,9 @@
           "command": "type-coverage --detail > type-coverage-report.txt 2>&1 || (cat type-coverage-report.txt && exit 1)",
           "cwd": "{projectRoot}"
         },
-        "outputs": ["{projectRoot}/type-coverage-report.txt"]
+        "outputs": [
+          "{projectRoot}/type-coverage-report.txt"
+        ]
       }
     ],
     "typecheck": [
@@ -1096,7 +1253,9 @@
         "cache": true,
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:python"]
+          "projects": [
+            "tag:language:python"
+          ]
         },
         "inputs": [
           "{workspaceRoot}/configuration/pyproject.toml",
@@ -1114,13 +1273,17 @@
         "cache": true,
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:typescript"]
+          "projects": [
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "^production",
           "typescript-files",
           {
-            "externalDependencies": ["typescript"]
+            "externalDependencies": [
+              "typescript"
+            ]
           }
         ],
         "options": {
@@ -1140,9 +1303,14 @@
         "defaultConfiguration": "check",
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:python"]
+          "projects": [
+            "tag:language:python"
+          ]
         },
-        "inputs": ["{projectRoot}/.vulture_whitelist.py", "python-source"],
+        "inputs": [
+          "{projectRoot}/.vulture_whitelist.py",
+          "python-source"
+        ],
         "options": {
           "command": "uv run python -m vulture src/ .vulture_whitelist.py --min-confidence 80",
           "cwd": "{projectRoot}"
@@ -1154,7 +1322,10 @@
         "cache": true,
         "executor": "nx:run-commands",
         "filter": {
-          "projects": ["tag:language:python", "tag:language:typescript"]
+          "projects": [
+            "tag:language:python",
+            "tag:language:typescript"
+          ]
         },
         "inputs": [
           "{projectRoot}/**/*.{yaml,yml}",

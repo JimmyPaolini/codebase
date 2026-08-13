@@ -1,4 +1,10 @@
-import { InputService } from "@jimmypaolini/conformetry-configuration";
+import path from "node:path";
+
+import {
+  ConfigurationService,
+  DiscoveryService,
+  InputService,
+} from "@jimmypaolini/conformetry-configuration";
 import { ReportingService } from "@jimmypaolini/conformetry-core";
 import { ValidationService } from "@jimmypaolini/conformetry-validation";
 import { Injectable } from "@nestjs/common";
@@ -6,14 +12,23 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "../logger/logger.service";
 
+import { DEFAULT_CONFIGURATION_PATH } from "./validate.constants";
+
 import type { ValidateCommandOptions } from "./validate.types.js";
+import type {
+  ConformetryConfiguration,
+  ConformetryInstanceGroup,
+  InstanceCandidate,
+  TemplateDefinition,
+} from "@jimmypaolini/conformetry-configuration";
 
 /**
- * Validates workspace projects against their conformetry templates.
+ * Validates instances against their conformetry templates.
  *
- * Every option is optional and none is ever prompted for: `--projects` and
- * `--rules` narrow a run that otherwise covers the whole workspace, so an
- * absent value is a meaningful default rather than a missing answer.
+ * Which paths are instances comes from the configuration's `instances` globs,
+ * which `--instances` overrides for a one-off run. Every option is optional
+ * and none is ever prompted for: an absent filter means "everything", which is
+ * a meaningful default rather than a missing answer.
  */
 @Command({
   description: "Run the validate command",
@@ -24,6 +39,8 @@ export class ValidateCommand extends CommandRunner {
   // 🏗 Dependency Injection
 
   constructor(
+    private readonly configurationService: ConfigurationService,
+    private readonly discoveryService: DiscoveryService,
     private readonly inputService: InputService,
     private readonly reportingService: ReportingService,
     private readonly validationService: ValidationService,
@@ -39,6 +56,45 @@ export class ValidateCommand extends CommandRunner {
 
   // 🔏 Private Methods
 
+  /**
+   * Expands every configured glob group into candidates, or the single
+   * override group `--instances` supplies.
+   *
+   * Groups exist so that substitutions can differ per glob: `type` is
+   * `packages` for one set of paths and `applications` for another, and no
+   * generic rule can tell them apart.
+   */
+  private resolveCandidates(args: {
+    groups: ConformetryInstanceGroup[];
+    workingDirectory: string;
+  }): InstanceCandidate[] {
+    return args.groups.flatMap((group) => {
+      return this.discoveryService.resolveCandidates({
+        patterns: group.patterns,
+        ...(group.substitutions === undefined
+          ? {}
+          : { substitutions: group.substitutions }),
+        workingDirectory: args.workingDirectory,
+      });
+    });
+  }
+
+  /** Reads every configured generator's template folder. */
+  private resolveTemplates(args: {
+    configuration: ConformetryConfiguration;
+    workingDirectory: string;
+  }): TemplateDefinition[] {
+    return args.configuration.map((generator) => {
+      return this.discoveryService.collectTemplate({
+        name: generator.name,
+        templatePath: path.resolve(
+          args.workingDirectory,
+          generator.templatePath,
+        ),
+      });
+    });
+  }
+
   // 🌎 Public Methods
 
   /** Parses the optional configuration path. */
@@ -50,21 +106,22 @@ export class ValidateCommand extends CommandRunner {
     return this.inputService.parseOptionalOption(value);
   }
 
-  /** Parses the optional project filter. */
+  /** Parses the optional instance glob override. */
   @Option({
-    description: "Comma-separated project paths or names to validate",
-    flags: "--projects [projects]",
+    description:
+      "Comma-separated glob patterns to validate, overriding the configuration",
+    flags: "--instances [globs]",
   })
-  public parseProjects(value: string | undefined): string[] | undefined {
+  public parseInstances(value: string | undefined): string[] | undefined {
     return this.inputService.parseCommaDelimitedOption(value);
   }
 
-  /** Parses the optional rule filter. */
+  /** Parses the optional language filter. */
   @Option({
-    description: "Comma-separated language or generator names to run",
-    flags: "--rules [rules]",
+    description: "Comma-separated language names to run",
+    flags: "--languages [languages]",
   })
-  public parseRules(value: string | undefined): string[] | undefined {
+  public parseLanguages(value: string | undefined): string[] | undefined {
     return this.inputService.parseCommaDelimitedOption(value);
   }
 
@@ -74,15 +131,22 @@ export class ValidateCommand extends CommandRunner {
     options: ValidateCommandOptions,
   ): Promise<void> {
     const workingDirectory = process.cwd();
-    const result = await this.validationService.validate({
-      ...(options.config === undefined
+    const configuration =
+      await this.configurationService.loadConformetryConfiguration(
+        options.config ?? DEFAULT_CONFIGURATION_PATH,
+      );
+    const result = this.validationService.validate({
+      candidates: this.resolveCandidates({
+        groups:
+          options.instances === undefined
+            ? configuration.flatMap((generator) => generator.instances)
+            : [{ patterns: options.instances }],
+        workingDirectory,
+      }),
+      ...(options.languages === undefined
         ? {}
-        : { configurationPath: options.config }),
-      ...(options.projects === undefined
-        ? {}
-        : { projectPaths: options.projects }),
-      ...(options.rules === undefined ? {} : { ruleNames: options.rules }),
-      workingDirectory,
+        : { languageNames: options.languages }),
+      templates: this.resolveTemplates({ configuration, workingDirectory }),
     });
 
     this.logger.log(

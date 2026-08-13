@@ -132,10 +132,10 @@ export class ConformanceGeneratorsCommand extends CommandRunner {
         configurationPath,
       );
 
-    return Object.entries(configuration.generators).map(([name, config]) => ({
-      aliases: config.aliases ?? [],
-      description: config.description ?? "",
-      name,
+    return configuration.map((generator) => ({
+      aliases: generator.aliases ?? [],
+      description: generator.description ?? "",
+      name: generator.name,
     }));
   }
 
