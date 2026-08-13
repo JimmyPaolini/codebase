@@ -495,7 +495,7 @@
   "github.copilot.chat.codesearch.enabled": true,
   "github.copilot.chat.commitMessageGeneration.instructions": [
     {
-      "file": "./documentation/skills/commit-code/SKILL.md"
+      "file": "./agents/skills/commit-code/SKILL.md"
     }
   ],
   "github.copilot.chat.completionsFetcher": "node-fetch",
@@ -841,8 +841,8 @@
       "onAutoForward": "notify"
     }
   },
-  "ruff.configurationPreference": "editorOnly",
   "ruff.configuration": "${workspaceFolder}/configuration/pyproject.toml",
+  "ruff.configurationPreference": "editorOnly",
   "ruff.exclude": ["configuration/conformetry-templates/**"],
   "ruff.interpreter": ["${workspaceFolder}/.venv/bin/python"],
   "ruff.nativeServer": "auto",
