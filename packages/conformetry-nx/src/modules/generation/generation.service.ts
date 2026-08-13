@@ -1,12 +1,9 @@
-import {
-  normalizeRuntimeOptions,
-  resolveTargetDirectoryPath,
-} from "@jimmypaolini/conformetry-configuration";
 import { type GeneratorCallback, getProjects, type Tree } from "@nx/devkit";
 
-import type { CommandExecutionService } from "../command-execution/command-execution.service.js";
-import type { PluginOptionsService } from "../plugin-options/plugin-options.service.js";
-import type { ConformetryNxPluginRegistrationOptions } from "../plugin-options/plugin-options.types.js";
+import type { CommandExecutionService } from "../command-execution/command-execution.service";
+import type { PluginOptionsService } from "../plugin-options/plugin-options.service";
+import type { ConformetryNxPluginRegistrationOptions } from "../plugin-options/plugin-options.types";
+import type { InputOptionsService } from "@jimmypaolini/conformetry-configuration";
 
 /**
  * Runs conformetry generators through the shared command-execution layer.
@@ -14,6 +11,7 @@ import type { ConformetryNxPluginRegistrationOptions } from "../plugin-options/p
 export class GenerationService {
   constructor(
     private readonly commandExecutionService: CommandExecutionService,
+    private readonly inputOptionsService: InputOptionsService,
     private readonly pluginOptionsService: PluginOptionsService,
   ) {}
 
@@ -76,15 +74,19 @@ export class GenerationService {
         options: args.options,
         pluginOptions: normalizedPluginOptions,
       });
-    const targetDirectoryPath = await resolveTargetDirectoryPath({
-      generatorName: args.generatorName,
-      options: args.options,
-      resolveProjectRootPath: ({ projectName }) => {
-        const projectConfiguration = getProjects(args.tree).get(projectName);
-        return projectConfiguration?.root ?? projectConfiguration?.sourceRoot;
-      },
-    });
-    const generatorInputs = normalizeRuntimeOptions(args.options);
+    const targetDirectoryPath =
+      this.inputOptionsService.resolveTargetDirectoryPath({
+        generatorName: args.generatorName,
+        options: args.options,
+        resolveProjectRootPath: (projectName: string) => {
+          const projectConfiguration = getProjects(args.tree).get(projectName);
+
+          return projectConfiguration?.root ?? projectConfiguration?.sourceRoot;
+        },
+      });
+    const generatorInputs = this.inputOptionsService.normalizeRuntimeOptions(
+      args.options,
+    );
 
     await this.commandExecutionService.runGenerateCommand({
       configurationPath,

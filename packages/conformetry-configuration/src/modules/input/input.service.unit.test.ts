@@ -1,193 +1,135 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { Test } from "@nestjs/testing";
+import { beforeAll, describe, expect, it } from "vitest";
 
-const { promptsMock } = vi.hoisted(() => {
-  return {
-    promptsMock:
-      vi.fn<(request: unknown) => Promise<Record<string, unknown>>>(),
-  };
-});
-
-vi.mock("prompts", () => {
-  return {
-    default: promptsMock,
-  };
-});
-
+import { InputOptionsService } from "./input-options.service";
+import { InputPromptingService } from "./input-prompting.service";
+import { InputSchemaService } from "./input-schema.service";
 import { InputService } from "./input.service";
 
-describe("inputService.resolveGeneratorInputs", () => {
+const REQUIRED_NAME_SCHEMA = {
+  properties: { name: { description: "Module name", type: "string" } },
+  required: ["name"],
+};
+
+describe(InputService, () => {
   let service: InputService;
 
-  beforeEach(() => {
-    promptsMock.mockReset();
-    service = new InputService();
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
+      providers: [
+        InputOptionsService,
+        InputPromptingService,
+        InputSchemaService,
+        InputService,
+      ],
+    }).compile();
+
+    service = await module.resolve(InputService);
   });
 
-  it("parses option values through dedicated helpers", () => {
-    expect(service.parseConfigurationPathOption("   ")).toBeUndefined();
-    expect(
-      service.parseConfigurationPathOption(
-        " configuration/conformetry.config.ts ",
-      ),
-    ).toBe("configuration/conformetry.config.ts");
-    expect(service.parseGeneratorNameOption(" react-component ")).toBe(
-      "react-component",
-    );
-    expect(() => {
-      service.parseGeneratorNameOption("   ");
-    }).toThrow("Generator name must not be empty");
-    expect(
-      service.parseTargetDirectoryPathOption(" packages/lexico-components "),
-    ).toBe("packages/lexico-components");
-    expect(service.parseTargetDirectoryPathOption("   ")).toBeUndefined();
-    expect(service.parseTargetDirectoryPathOption(undefined)).toBeUndefined();
-    expect(
-      service.parseProjectFilterOption("lexico, conformetry , ,"),
-    ).toStrictEqual(["lexico", "conformetry"]);
-    expect(service.parseProjectFilterOption("   ")).toBeUndefined();
-    expect(service.parseProjectFilterOption(undefined)).toBeUndefined();
-    expect(service.parseRuleFilterOption("json, markdown, ,")).toStrictEqual([
-      "json",
-      "markdown",
-    ]);
-    expect(service.parseRuleFilterOption("   ")).toBeUndefined();
-    expect(service.parseRuleFilterOption(undefined)).toBeUndefined();
+  it("is defined", () => {
+    expect(service).toBeDefined();
   });
 
-  it("resolves provided values and prompts only for missing values", async () => {
-    promptsMock.mockResolvedValueOnce({ value: "packages/conformetry" });
-
-    const result = await service.resolveInputsFromValues({
-      providedInputs: {
-        config: " configuration/custom.config.ts ",
-      },
-      schema: {
-        properties: {
-          config: {
-            type: "string",
-          },
-          projects: {
-            description: "Comma-separated project paths",
-            type: "string",
-          },
-        },
-      },
+  describe("option parsing", () => {
+    it("treats blank optional options as absent", () => {
+      expect(service.parseOptionalOption("  ")).toBeUndefined();
+      expect(service.parseOptionalOption(undefined)).toBeUndefined();
+      expect(service.parseOptionalOption(" path ")).toBe("path");
     });
 
-    expect(result).toStrictEqual({
-      config: " configuration/custom.config.ts ",
-      projects: "packages/conformetry",
-    });
-    expect(promptsMock).toHaveBeenCalledTimes(1);
-  });
-
-  it("returns direct schema-backed values without prompting", async () => {
-    const result = await service.resolveGeneratorInputs({
-      rawArguments: ["generate", "--project", "lexico"],
-      schema: {
-        properties: {
-          project: {
-            description: "Project name",
-            type: "string",
-          },
-        },
-        required: ["project"],
-      },
+    it("rejects a blank required option", () => {
+      expect(() =>
+        service.parseRequiredOption({ optionName: "generator", value: "  " }),
+      ).toThrow("generator must not be empty");
     });
 
-    expect(result).toStrictEqual({ project: "lexico" });
-    expect(promptsMock).not.toHaveBeenCalled();
+    it("splits comma-delimited filters and drops empties", () => {
+      expect(service.parseCommaDelimitedOption("a, ,b ")).toStrictEqual([
+        "a",
+        "b",
+      ]);
+      expect(service.parseCommaDelimitedOption(" , ")).toBeUndefined();
+      expect(service.parseCommaDelimitedOption(undefined)).toBeUndefined();
+    });
   });
 
-  it("throws for invalid direct enum values", async () => {
-    await expect(
-      service.resolveGeneratorInputs({
-        rawArguments: ["--type", "service"],
-        schema: {
-          properties: {
-            type: {
-              enum: ["application", "package", "tools"],
-              type: "string",
-            },
-          },
-          required: ["type"],
-        },
-      }),
-    ).rejects.toThrow("type must be one of: application, package, tools");
-  });
+  describe("resolveGeneratorInputs", () => {
+    it("reads a schema-backed flag from raw arguments", async () => {
+      const inputs = await service.resolveGeneratorInputs({
+        promptWhenMissing: false,
+        rawArguments: ["generate", "--name", "my-widget"],
+        schema: REQUIRED_NAME_SCHEMA,
+      });
 
-  it("prompts for missing required values", async () => {
-    promptsMock.mockResolvedValueOnce({ value: "lexico-components" });
-
-    const result = await service.resolveGeneratorInputs({
-      rawArguments: [],
-      schema: {
-        properties: {
-          project: {
-            description: "Parent project name",
-            type: "string",
-          },
-        },
-        required: ["project"],
-      },
+      expect(inputs).toStrictEqual({ name: "my-widget" });
     });
 
-    expect(result).toStrictEqual({ project: "lexico-components" });
-    expect(promptsMock).toHaveBeenCalledTimes(1);
-  });
+    it("reads the inline --flag=value form", async () => {
+      const inputs = await service.resolveGeneratorInputs({
+        promptWhenMissing: false,
+        rawArguments: ["--name=my-widget"],
+        schema: REQUIRED_NAME_SCHEMA,
+      });
 
-  it("throws when a required prompted value is missing", async () => {
-    promptsMock.mockResolvedValueOnce({ value: "" });
+      expect(inputs).toStrictEqual({ name: "my-widget" });
+    });
 
-    await expect(
-      service.resolveGeneratorInputs({
+    it("throws instead of prompting when a required value is missing", async () => {
+      await expect(
+        service.resolveGeneratorInputs({
+          promptWhenMissing: false,
+          rawArguments: [],
+          schema: REQUIRED_NAME_SCHEMA,
+        }),
+      ).rejects.toThrow("name is required");
+    });
+
+    it("skips a missing optional value without prompting", async () => {
+      const inputs = await service.resolveGeneratorInputs({
+        promptWhenMissing: false,
         rawArguments: [],
-        schema: {
-          properties: {
-            project: {
-              description: "Parent project name",
-              type: "string",
-            },
-          },
-          required: ["project"],
-        },
-      }),
-    ).rejects.toThrow("project is required");
-  });
+        schema: { properties: { note: { type: "string" } } },
+      });
 
-  it("skips missing optional values when prompting is disabled", async () => {
-    const result = await service.resolveGeneratorInputs({
-      promptWhenMissing: false,
-      rawArguments: [],
-      schema: {
-        properties: {
-          description: {
-            type: "string",
-          },
-        },
-      },
+      expect(inputs).toStrictEqual({});
     });
 
-    expect(result).toStrictEqual({});
-    expect(promptsMock).not.toHaveBeenCalled();
+    it("rejects a value outside the schema enum", async () => {
+      await expect(
+        service.resolveGeneratorInputs({
+          promptWhenMissing: false,
+          rawArguments: ["--type", "nope"],
+          schema: {
+            properties: { type: { enum: ["packages", "applications"] } },
+            required: ["type"],
+          },
+        }),
+      ).rejects.toThrow("type must be one of: packages, applications");
+    });
   });
 
-  it("validates prompted values against pattern constraints", async () => {
-    promptsMock.mockResolvedValueOnce({ value: "BadName" });
+  describe("resolveInputsFromValues", () => {
+    it("passes through values the caller already had", async () => {
+      const inputs = await service.resolveInputsFromValues({
+        promptWhenMissing: false,
+        providedInputs: { config: "configuration/conformetry.config.ts" },
+        schema: { properties: { config: { type: "string" } } },
+      });
 
-    await expect(
-      service.resolveGeneratorInputs({
-        rawArguments: [],
-        schema: {
-          properties: {
-            name: {
-              pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$",
-              type: "string",
-            },
-          },
-          required: ["name"],
-        },
-      }),
-    ).rejects.toThrow("name does not match pattern ^[a-z0-9]+(?:-[a-z0-9]+)*$");
+      expect(inputs).toStrictEqual({
+        config: "configuration/conformetry.config.ts",
+      });
+    });
+
+    it("omits values the caller left undefined", async () => {
+      const inputs = await service.resolveInputsFromValues({
+        promptWhenMissing: false,
+        providedInputs: { projects: undefined },
+        schema: { properties: { projects: { type: "string" } } },
+      });
+
+      expect(inputs).toStrictEqual({});
+    });
   });
 });

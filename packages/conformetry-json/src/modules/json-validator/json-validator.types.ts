@@ -1,17 +1,25 @@
 // 🏷️ Types
-import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-configuration";
 
-/** Internal helper. */
-export type JsonValidatorValidateArguments = Parameters<
-  ConformetryValidatorPlugin["validate"]
->[0];
+/** Arguments for comparing two JSON values. */
+export interface CompareJsonArguments {
+  readonly instanceValue: JsonValue;
+  readonly language: JsonComparisonLanguage;
+  readonly pathSegments?: JsonPathSegment[];
+  readonly templateValue: JsonValue;
+}
 
-/** Internal helper. */
-export type JsonValidatorValidateResult = Awaited<
-  ReturnType<ConformetryValidatorPlugin["validate"]>
->;
+/**
+ * Which validator is asking for the comparison.
+ *
+ * The walk is shared between JSON files and Jupyter notebooks, and the errors
+ * it emits must be attributed to whichever one raised them.
+ */
+export type JsonComparisonLanguage = "json" | "python";
 
-/** Internal helper. */
+/** One step of a JSON path: an object key or an array index. */
+export type JsonPathSegment = number | string;
+
+/** Any JSON value, used when structurally comparing two documents. */
 export type JsonValue =
   | boolean
   | JsonValue[]
@@ -19,36 +27,3 @@ export type JsonValue =
   | number
   | string
   | { [key: string]: JsonValue };
-
-/** Internal helper. */
-export interface ValidateJsonArraysArguments {
-  readonly instanceArray: JsonValue[];
-  readonly pathSegments: (number | string)[];
-  readonly templateArray: JsonValue[];
-}
-
-/** Internal helper. */
-export interface ValidateJsonDepthFirstSearchArguments {
-  readonly instanceValue: JsonValue;
-  readonly pathSegments?: (number | string)[];
-  readonly templateValue: JsonValue;
-}
-
-/** Internal helper. */
-export interface ValidateJsonObjectsArguments {
-  readonly instanceObject: Record<string, JsonValue>;
-  readonly pathSegments: (number | string)[];
-  readonly templateObject: Record<string, JsonValue>;
-}
-
-/** Internal helper. */
-export interface ValidateJsonSupersetArguments {
-  readonly instanceValue: JsonValue;
-  readonly templateValue: JsonValue;
-}
-
-/** Internal helper. */
-export interface ValidatePathExistenceArguments {
-  readonly filePaths: string[];
-  readonly workingDirectory: string;
-}

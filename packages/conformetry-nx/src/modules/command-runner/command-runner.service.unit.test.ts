@@ -1,8 +1,8 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { COMMAND_RUNNER_SERVICE_NAME } from "./command-runner.constants.js";
-import { CommandRunnerService } from "./command-runner.service.js";
+import { COMMAND_RUNNER_SERVICE_NAME } from "./command-runner.constants";
+import { CommandRunnerService } from "./command-runner.service";
 
 describe(CommandRunnerService, () => {
   let service: CommandRunnerService;

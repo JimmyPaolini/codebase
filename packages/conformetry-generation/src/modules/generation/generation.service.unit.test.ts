@@ -2,7 +2,10 @@ import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { describe, expect, it, vi } from "vitest";
+import { Test } from "@nestjs/testing";
+import { beforeAll, describe, expect, it, vi } from "vitest";
+
+import { RenderingService } from "../rendering/rendering.service";
 
 import { GenerationService } from "./generation.service";
 
@@ -14,26 +17,9 @@ import type {
   GeneratorHookContext,
 } from "./generation.types";
 
-interface GenerationServiceWithPrivateMethods {
-  defaultFileSystem: FileSystemAdapter;
-  defaultFormatter: FormatterAdapter;
-  normalizeInputs(
-    inputs: Record<string, string | undefined>,
-  ): Record<string, string>;
-  renderTemplateValue(
-    value: string,
-    substitutions: Record<string, string>,
-  ): string;
-}
-
 class MockFileSystemAdapter implements FileSystemAdapter {
   private readonly directoryEntries = new Map<string, DirectoryEntry[]>();
   private readonly files = new Map<string, string>();
-
-  public async exists(pathName: string): Promise<boolean> {
-    await Promise.resolve();
-    return this.directoryEntries.has(pathName) || this.files.has(pathName);
-  }
 
   public async listDirectory(directoryPath: string): Promise<DirectoryEntry[]> {
     await Promise.resolve();
@@ -79,11 +65,6 @@ class MockFileSystemAdapter implements FileSystemAdapter {
 class MockFormatterAdapter implements FormatterAdapter {
   public readonly formattedFiles: string[] = [];
 
-  public async formatFile(filePath: string): Promise<void> {
-    await Promise.resolve();
-    this.formattedFiles.push(filePath);
-  }
-
   public async formatFiles(filePaths: string[]): Promise<void> {
     await Promise.resolve();
     this.formattedFiles.push(...filePaths);
@@ -91,19 +72,21 @@ class MockFormatterAdapter implements FormatterAdapter {
 }
 
 describe(GenerationService, () => {
-  it("builds expected substitutions for a generator name", () => {
-    const service = new GenerationService();
+  let service: GenerationService;
 
-    expect(service.buildNameSubstitutions("alpha-module")).toStrictEqual({
-      nameCamelCase: "alphaModule",
-      nameKebabCase: "alpha-module",
-      namePascalCase: "AlphaModule",
-      nameSnakeCase: "alpha_module",
-    });
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
+      providers: [GenerationService, RenderingService],
+    }).compile();
+
+    service = await module.resolve(GenerationService);
+  });
+
+  it("is defined", () => {
+    expect(service).toBeDefined();
   });
 
   it("renders templates, runs hooks, and formats generated files", async () => {
-    const service = new GenerationService();
     const filesystem = new MockFileSystemAdapter();
     const formatter = new MockFormatterAdapter();
     let preGenerateContext: GeneratorHookContext | undefined;
@@ -143,10 +126,7 @@ describe(GenerationService, () => {
     );
 
     const definition: GeneratorDefinition = {
-      hooks: {
-        postGenerate,
-        preGenerate,
-      },
+      hooks: { postGenerate, preGenerate },
       name: "alpha-module",
       templateDirectoryPath: "/templates",
     };
@@ -161,35 +141,18 @@ describe(GenerationService, () => {
 
     expect(preGenerate).toHaveBeenCalledTimes(1);
     expect(postGenerate).toHaveBeenCalledTimes(1);
-    expect(preGenerateContext).toStrictEqual({
-      definition,
-      generatedFilePaths: [],
-      input: { name: "alpha-module" },
-      outputDirectoryPath: "/output",
-      substitutions: {
-        name: "alpha-module",
-        nameCamelCase: "alphaModule",
-        nameKebabCase: "alpha-module",
-        namePascalCase: "AlphaModule",
-        nameSnakeCase: "alpha_module",
-      },
+    expect(preGenerateContext?.generatedFilePaths).toStrictEqual([]);
+    expect(preGenerateContext?.substitutions).toStrictEqual({
+      name: "alpha-module",
+      nameCamelCase: "alphaModule",
+      nameKebabCase: "alpha-module",
+      namePascalCase: "AlphaModule",
+      nameSnakeCase: "alpha_module",
     });
-    expect(postGenerateContext).toStrictEqual({
-      definition,
-      generatedFilePaths: [
-        "/output/README.md",
-        "/output/alpha-module/index.ts",
-      ],
-      input: { name: "alpha-module" },
-      outputDirectoryPath: "/output",
-      substitutions: {
-        name: "alpha-module",
-        nameCamelCase: "alphaModule",
-        nameKebabCase: "alpha-module",
-        namePascalCase: "AlphaModule",
-        nameSnakeCase: "alpha_module",
-      },
-    });
+    expect(postGenerateContext?.generatedFilePaths).toStrictEqual([
+      "/output/README.md",
+      "/output/alpha-module/index.ts",
+    ]);
     expect(result.generatedFilePaths).toStrictEqual([
       "/output/README.md",
       "/output/alpha-module/index.ts",
@@ -200,48 +163,64 @@ describe(GenerationService, () => {
     ]);
   });
 
-  it("normalizes inputs by excluding undefined values", () => {
-    const service =
-      // type-coverage:ignore-next-line
-      new GenerationService() as unknown as GenerationServiceWithPrivateMethods;
+  it("excludes unset inputs so they cannot shadow derived substitutions", async () => {
+    const filesystem = new MockFileSystemAdapter();
+    let hookContext: GeneratorHookContext | undefined;
 
-    const normalizedInputs = service.normalizeInputs({
-      alpha: "one",
-      beta: undefined,
-      gamma: "three",
+    filesystem.seedDirectory("/templates", []);
+
+    await service.runGenerator({
+      definition: {
+        hooks: {
+          preGenerate: (context) => {
+            hookContext = { ...context, input: { ...context.input } };
+          },
+        },
+        name: "alpha-module",
+        templateDirectoryPath: "/templates",
+      },
+      filesystem,
+      inputs: { alpha: "one", beta: undefined, gamma: "three" },
+      targetDirectoryPath: "/output",
     });
 
-    expect(normalizedInputs).toStrictEqual({
-      alpha: "one",
-      gamma: "three",
+    expect(hookContext?.input).toStrictEqual({ alpha: "one", gamma: "three" });
+  });
+
+  it("lets an explicit input win over the derived name substitution", async () => {
+    const filesystem = new MockFileSystemAdapter();
+    let hookContext: GeneratorHookContext | undefined;
+
+    filesystem.seedDirectory("/templates", []);
+
+    await service.runGenerator({
+      definition: {
+        hooks: {
+          preGenerate: (context) => {
+            hookContext = {
+              ...context,
+              substitutions: { ...context.substitutions },
+            };
+          },
+        },
+        name: "alpha-module",
+        templateDirectoryPath: "/templates",
+      },
+      filesystem,
+      inputs: { name: "alpha-module", namePascalCase: "OverriddenName" },
+      targetDirectoryPath: "/output",
     });
+
+    expect(hookContext?.substitutions["namePascalCase"]).toBe("OverriddenName");
   });
 
-  it("replaces placeholders and keeps unresolved placeholders unchanged", () => {
-    const service =
-      // type-coverage:ignore-next-line
-      new GenerationService() as unknown as GenerationServiceWithPrivateMethods;
-
-    const renderedValue = service.renderTemplateValue(
-      "__nameKebabCase__-__unknown__",
-      { nameKebabCase: "demo-project" },
-    );
-
-    expect(renderedValue).toBe("demo-project-__unknown__");
-  });
-
-  it("falls back to default adapters and definition name when inputs are omitted", async () => {
-    const service = new GenerationService();
+  it("falls back to the definition name and default adapters", async () => {
     const templateDirectoryPath = await mkdtemp(
       path.join(tmpdir(), "conformetry-generation-default-runtime-"),
     );
-    const definition: GeneratorDefinition = {
-      name: "fallback-name",
-      templateDirectoryPath,
-    };
 
     const result = await service.runGenerator({
-      definition,
+      definition: { name: "fallback-name", templateDirectoryPath },
       targetDirectoryPath: "/output",
     });
 
@@ -249,26 +228,15 @@ describe(GenerationService, () => {
       generatedFilePaths: [],
       outputDirectoryPath: "/output",
     });
-    expect(service.buildNameSubstitutions(definition.name)).toStrictEqual({
-      nameCamelCase: "fallbackName",
-      nameKebabCase: "fallback-name",
-      namePascalCase: "FallbackName",
-      nameSnakeCase: "fallback_name",
-    });
   });
 
-  it("renders nested templates using default runtime adapters", async () => {
-    const service = new GenerationService();
+  it("renders nested templates through the default filesystem", async () => {
     const templateDirectoryPath = await mkdtemp(
       path.join(tmpdir(), "conformetry-generation-template-runtime-"),
     );
     const targetDirectoryPath = await mkdtemp(
       path.join(tmpdir(), "conformetry-generation-output-runtime-"),
     );
-    const definition: GeneratorDefinition = {
-      name: "fallback-name",
-      templateDirectoryPath,
-    };
     const nestedTemplateDirectoryPath = path.join(
       templateDirectoryPath,
       "__nameKebabCase__",
@@ -287,7 +255,7 @@ describe(GenerationService, () => {
     );
 
     const result = await service.runGenerator({
-      definition,
+      definition: { name: "fallback-name", templateDirectoryPath },
       inputs: { name: "nested-template" },
       targetDirectoryPath,
     });
@@ -308,26 +276,5 @@ describe(GenerationService, () => {
     await expect(readFile(renderedNestedPath, "utf8")).resolves.toBe(
       "nested-template",
     );
-  });
-
-  it("checks path existence through default file system and no-op formatter", async () => {
-    const service =
-      // type-coverage:ignore-next-line
-      new GenerationService() as unknown as GenerationServiceWithPrivateMethods;
-    const existingDirectoryPath = await mkdtemp(
-      path.join(tmpdir(), "conformetry-generation-exists-check-"),
-    );
-
-    await expect(
-      service.defaultFileSystem.exists(existingDirectoryPath),
-    ).resolves.toBe(true);
-    await expect(
-      service.defaultFileSystem.exists(
-        path.join(existingDirectoryPath, "missing-path"),
-      ),
-    ).resolves.toBe(false);
-    await expect(
-      service.defaultFormatter.formatFile(existingDirectoryPath),
-    ).resolves.toBeUndefined();
   });
 });

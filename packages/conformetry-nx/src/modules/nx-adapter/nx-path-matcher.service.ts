@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import type { PathMatcher } from "./nx-adapter.types.js";
+import type { PathMatcher } from "./nx-adapter.types";
 
 /**
  * Implements a minimal path matcher for Nx-backed generation.

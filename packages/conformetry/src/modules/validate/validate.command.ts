@@ -1,7 +1,5 @@
-import {
-  ConfigurationService,
-  InputService,
-} from "@jimmypaolini/conformetry-configuration";
+import { InputService } from "@jimmypaolini/conformetry-configuration";
+import { ReportingService } from "@jimmypaolini/conformetry-core";
 import { ValidationService } from "@jimmypaolini/conformetry-validation";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
@@ -11,17 +9,23 @@ import { LoggerService } from "../logger/logger.service";
 import type { ValidateCommandOptions } from "./validate.types.js";
 
 /**
- * Executes conformetry validation plugins against the selected project paths.
+ * Validates workspace projects against their conformetry templates.
+ *
+ * Every option is optional and none is ever prompted for: `--projects` and
+ * `--rules` narrow a run that otherwise covers the whole workspace, so an
+ * absent value is a meaningful default rather than a missing answer.
  */
 @Command({
-  description: "Validate project files using conformetry validator plugins",
+  description: "Run the validate command",
   name: "validate",
 })
 @Injectable()
 export class ValidateCommand extends CommandRunner {
+  // 🏗 Dependency Injection
+
   constructor(
     private readonly inputService: InputService,
-    private readonly configurationService: ConfigurationService,
+    private readonly reportingService: ReportingService,
     private readonly validationService: ValidationService,
     private readonly logger: LoggerService,
   ) {
@@ -29,127 +33,70 @@ export class ValidateCommand extends CommandRunner {
     this.logger.setContext(ValidateCommand.name);
   }
 
-  /**
-   * Resolves CLI inputs and prompts for missing values in interactive sessions.
-   */
-  private async resolveValidateInputs(args: {
-    options: ValidateCommandOptions;
-  }): Promise<{
-    configurationPath: string;
-    requestedProjectPaths?: string[];
-    requestedRuleNames?: string[];
-  }> {
-    const promptWhenMissing =
-      process.stdin.isTTY && process.env["CI"] !== "true";
-    const resolvedInputs = await this.inputService.resolveInputsFromValues({
-      promptWhenMissing,
-      providedInputs: {
-        config: args.options.config,
-        projects: args.options.projects?.join(","),
-        rules: args.options.rules?.join(","),
-      },
-      schema: {
-        properties: {
-          config: {
-            description:
-              "Path to conformetry config (leave blank to use configuration/conformetry.config.ts)",
-            type: "string",
-          },
-          projects: {
-            description:
-              "Comma-separated project paths or names to validate (leave blank for all projects)",
-            type: "string",
-          },
-          rules: {
-            description:
-              "Comma-separated validator rule names (leave blank for all rules)",
-            type: "string",
-          },
-        },
-      },
-    });
+  // 🔐 Private Fields
 
-    const defaultConfigurationPath = "configuration/conformetry.config.ts";
-    const configurationPath =
-      resolvedInputs["config"] ?? defaultConfigurationPath;
-    const requestedProjectPaths = this.inputService.parseProjectFilterOption(
-      resolvedInputs["projects"],
-    );
-    const requestedRuleNames = this.inputService.parseRuleFilterOption(
-      resolvedInputs["rules"],
-    );
+  // 🔑 Public Fields
 
-    return {
-      configurationPath,
-      ...(requestedProjectPaths === undefined ? {} : { requestedProjectPaths }),
-      ...(requestedRuleNames === undefined ? {} : { requestedRuleNames }),
-    };
-  }
+  // 🔏 Private Methods
 
-  /**
-   * Parses the configuration path option for the validate command.
-   */
+  // 🌎 Public Methods
+
+  /** Parses the optional configuration path. */
   @Option({
     description: "Path to the conformetry configuration file",
     flags: "--config [path]",
   })
-  parseConfig(value: string | undefined): string | undefined {
-    return this.inputService.parseConfigurationPathOption(value);
+  public parseConfig(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
   }
 
-  /**
-   * Parses the optional project filter option for the validate command.
-   */
+  /** Parses the optional project filter. */
   @Option({
     description: "Comma-separated project paths or names to validate",
     flags: "--projects [projects]",
   })
-  parseProjects(value: string | undefined): string[] | undefined {
-    return this.inputService.parseProjectFilterOption(value);
+  public parseProjects(value: string | undefined): string[] | undefined {
+    return this.inputService.parseCommaDelimitedOption(value);
   }
 
-  /**
-   * Parses the optional rule filter option for the validate command.
-   */
+  /** Parses the optional rule filter. */
   @Option({
-    description: "Comma-separated validator rule names to run",
+    description: "Comma-separated language or generator names to run",
     flags: "--rules [rules]",
   })
-  parseRules(value: string | undefined): string[] | undefined {
-    return this.inputService.parseRuleFilterOption(value);
+  public parseRules(value: string | undefined): string[] | undefined {
+    return this.inputService.parseCommaDelimitedOption(value);
   }
 
-  /**
-   * Runs the selected validator plugins and reports the aggregated result.
-   */
-  async run(
+  /** Runs validation and reports every difference found. */
+  public async run(
     _passedParameters: string[],
     options: ValidateCommandOptions,
   ): Promise<void> {
-    const resolvedInputs = await this.resolveValidateInputs({ options });
-    const configurationPath = resolvedInputs.configurationPath;
+    const workingDirectory = process.cwd();
+    const result = await this.validationService.validate({
+      ...(options.config === undefined
+        ? {}
+        : { configurationPath: options.config }),
+      ...(options.projects === undefined
+        ? {}
+        : { projectPaths: options.projects }),
+      ...(options.rules === undefined ? {} : { ruleNames: options.rules }),
+      workingDirectory,
+    });
 
-    await this.configurationService.loadConformetryConfiguration(
-      configurationPath,
+    this.logger.log(
+      this.reportingService.formatReport({
+        fileResults: result.fileResults,
+        workingDirectory,
+      }),
     );
 
-    const validationResult =
-      await this.validationService.validateConfiguredSelection({
-        configurationPath,
-        ...(resolvedInputs.requestedProjectPaths === undefined
-          ? {}
-          : { requestedProjectPaths: resolvedInputs.requestedProjectPaths }),
-        ...(resolvedInputs.requestedRuleNames === undefined
-          ? {}
-          : { requestedRuleNames: resolvedInputs.requestedRuleNames }),
-        workingDirectory: process.cwd(),
-      });
-
-    this.logger.log(JSON.stringify(validationResult, null, 2));
-
-    if (!validationResult.ok) {
+    if (!result.ok) {
       process.exitCode = 1;
-      throw new Error("Validation failed");
+      throw new Error(
+        `Validation failed: ${String(result.fileResults.length)} file(s) do not conform.`,
+      );
     }
   }
 }

@@ -1,7 +1,7 @@
 import { readNxJson } from "@nx/devkit";
 
-import type { GenerationService } from "../generation/generation.service.js";
-import type { PluginOptionsService } from "../plugin-options/plugin-options.service.js";
+import type { GenerationService } from "../generation/generation.service";
+import type { PluginOptionsService } from "../plugin-options/plugin-options.service";
 import type { GeneratorCallback, Tree } from "@nx/devkit";
 
 /**

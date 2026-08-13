@@ -1,14 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const {
-  mockGetProjects,
-  mockNormalizeRuntimeOptions,
-  mockResolveTargetDirectoryPath,
-} = vi.hoisted(() => {
+const { mockGetProjects } = vi.hoisted(() => {
   return {
-    mockGetProjects: vi.fn(),
-    mockNormalizeRuntimeOptions: vi.fn(),
-    mockResolveTargetDirectoryPath: vi.fn(),
+    mockGetProjects: vi.fn<() => Map<string, unknown>>(),
   };
 });
 
@@ -21,20 +15,12 @@ vi.mock("@nx/devkit", async (importOriginal) => {
   };
 });
 
-vi.mock("@jimmypaolini/conformetry-configuration", async (importOriginal) => {
-  const originalModule: Record<string, unknown> = await importOriginal();
+import { InputOptionsService } from "@jimmypaolini/conformetry-configuration";
 
-  return {
-    ...originalModule,
-    normalizeRuntimeOptions: mockNormalizeRuntimeOptions,
-    resolveTargetDirectoryPath: mockResolveTargetDirectoryPath,
-  };
-});
+import { CommandExecutionService } from "../command-execution/command-execution.service";
+import { PluginOptionsService } from "../plugin-options/plugin-options.service";
 
-import { CommandExecutionService } from "../command-execution/command-execution.service.js";
-import { PluginOptionsService } from "../plugin-options/plugin-options.service.js";
-
-import { GenerationService } from "./generation.service.js";
+import { GenerationService } from "./generation.service";
 
 import type { Tree } from "@nx/devkit";
 
@@ -67,6 +53,15 @@ function createStubTree(): Tree {
 
 describe(GenerationService, () => {
   const commandExecutionService = new CommandExecutionService();
+  const inputOptionsService = new InputOptionsService();
+  const mockNormalizeRuntimeOptions = vi.spyOn(
+    inputOptionsService,
+    "normalizeRuntimeOptions",
+  );
+  const mockResolveTargetDirectoryPath = vi.spyOn(
+    inputOptionsService,
+    "resolveTargetDirectoryPath",
+  );
   const pluginOptionsService = new PluginOptionsService();
 
   const runGenerateCommandSpy = vi.spyOn(
@@ -94,6 +89,7 @@ describe(GenerationService, () => {
   it("builds generate parameters and filters internal option names", () => {
     const service = new GenerationService(
       commandExecutionService,
+      inputOptionsService,
       pluginOptionsService,
     );
 
@@ -144,18 +140,14 @@ describe(GenerationService, () => {
       ]),
     );
     mockResolveTargetDirectoryPath.mockImplementation(
-      async ({
+      ({
         resolveProjectRootPath,
       }: {
-        resolveProjectRootPath: (args: {
-          projectName: string;
-        }) => string | undefined;
+        resolveProjectRootPath?: (projectName: string) => string | undefined;
       }) => {
-        await Promise.resolve();
         return (
-          resolveProjectRootPath({
-            projectName: "demo-project",
-          }) ?? "generated/react-component"
+          resolveProjectRootPath?.("demo-project") ??
+          "generated/react-component"
         );
       },
     );
@@ -163,6 +155,7 @@ describe(GenerationService, () => {
 
     const service = new GenerationService(
       commandExecutionService,
+      inputOptionsService,
       pluginOptionsService,
     );
 

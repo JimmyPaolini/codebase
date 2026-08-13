@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { NxGeneratorFactoryService } from "./nx-generator-factory.service.js";
+import { NxGeneratorFactoryService } from "./nx-generator-factory.service";
 
 describe(NxGeneratorFactoryService, () => {
   let service: NxGeneratorFactoryService;

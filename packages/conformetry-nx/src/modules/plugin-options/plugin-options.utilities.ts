@@ -1,4 +1,4 @@
-import { PluginOptionsService } from "./plugin-options.service.js";
+import { PluginOptionsService } from "./plugin-options.service";
 
 /**
  * Parses raw Nx plugin options into a validated plugin options shape.

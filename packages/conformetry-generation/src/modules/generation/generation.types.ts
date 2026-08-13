@@ -1,3 +1,5 @@
+// 🏷️ Types
+
 /**
  * A directory entry read from the source template tree.
  */
@@ -8,9 +10,12 @@ export interface DirectoryEntry {
 
 /**
  * Filesystem operations used by the runtime.
+ *
+ * Exists so a host with a virtual filesystem — an Nx generator `Tree`, for
+ * instance — can run generation without touching disk. The default
+ * implementation reads and writes directly.
  */
 export interface FileSystemAdapter {
-  exists(pathName: string): Promise<boolean>;
   listDirectory(directoryPath: string): Promise<DirectoryEntry[]>;
   makeDirectory(directoryPath: string): Promise<void>;
   readFile(filePath: string): Promise<string>;
@@ -18,10 +23,12 @@ export interface FileSystemAdapter {
 }
 
 /**
- * Formatting operations applied after generation completes.
+ * Formatting applied once generation completes.
+ *
+ * The default is a no-op: formatting is the host's concern, and a plain CLI
+ * run leaves files to the workspace formatter.
  */
 export interface FormatterAdapter {
-  formatFile(filePath: string): Promise<void>;
   formatFiles(filePaths: string[]): Promise<void>;
 }
 
@@ -63,13 +70,6 @@ export interface GeneratorHooks {
 }
 
 /**
- * Minimal glob matcher used by the runtime.
- */
-export interface PathMatcher {
-  match(pathName: string, pattern: string): boolean;
-}
-
-/**
  * Arguments accepted by the runtime runner.
  */
 export interface RunGeneratorArguments {
@@ -77,9 +77,7 @@ export interface RunGeneratorArguments {
   filesystem?: FileSystemAdapter;
   formatter?: FormatterAdapter;
   inputs?: Record<string, string | undefined>;
-  pathMatcher?: PathMatcher;
   targetDirectoryPath: string;
-  templateRenderer?: TemplateRenderer;
 }
 
 /**
@@ -88,14 +86,4 @@ export interface RunGeneratorArguments {
 export interface RunGeneratorResult {
   generatedFilePaths: string[];
   outputDirectoryPath: string;
-}
-
-/**
- * Template placeholder rendering contract.
- */
-export interface TemplateRenderer {
-  render(
-    templateContent: string,
-    substitutions: Record<string, string>,
-  ): string;
 }

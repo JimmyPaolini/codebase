@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { NxGeneratorFactoryService } from "./nx-generator-factory.service.js";
+import { NxGeneratorFactoryService } from "./nx-generator-factory.service";
 import {
   createConformetryGeneratorFactory,
   normalizeGeneratorInputs,
   resolveConformetryTargetDirectoryPath,
-} from "./nx-generator-factory.utilities.js";
+} from "./nx-generator-factory.utilities";
 
 import type { Tree } from "@nx/devkit";
 

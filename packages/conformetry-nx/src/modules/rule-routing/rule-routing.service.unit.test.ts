@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { RuleRoutingService } from "./rule-routing.service.js";
+import { RuleRoutingService } from "./rule-routing.service";
 
 const TEMPLATE_RULE_NAMES_BY_PROJECT_TAG = {
   "framework:nest-commander": [

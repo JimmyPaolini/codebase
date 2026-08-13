@@ -1,82 +1,48 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { Test } from "@nestjs/testing";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-vi.mock("@jimmypaolini/conformetry-configuration", () => {
-  function MockConfigurationModule(): void {}
-  function MockConfigurationService(): void {}
+import { MainModule } from "./main.module";
+import { GenerateCommand } from "./modules/generate/generate.command";
+import { ValidateCommand } from "./modules/validate/validate.command";
 
-  return {
-    collectGeneratorInputsFromCommandArguments: vi.fn<
-      () => Record<string, never>
-    >(() => {
-      return {};
-    }),
-    ConfigurationModule: MockConfigurationModule,
-    ConfigurationService: MockConfigurationService,
-  };
-});
+import type { TestingModule } from "@nestjs/testing";
 
-vi.mock("@jimmypaolini/conformetry-generation", () => {
-  function MockGenerationModule(): void {}
-  function MockGenerationService(): void {}
+/**
+ * Boots the real module graph rather than mocking the packages.
+ *
+ * Mocked module stubs cannot catch the failure that matters here: a command
+ * whose dependencies resolve to `undefined` still constructs fine and only
+ * fails when a method is called. Compiling the actual graph is what proves
+ * the wiring.
+ */
+describe(MainModule, () => {
+  let module: TestingModule;
 
-  return {
-    GenerationModule: MockGenerationModule,
-    GenerationService: MockGenerationService,
-  };
-});
-
-vi.mock("@jimmypaolini/conformetry-validation", () => {
-  function MockValidationModule(): void {}
-  function MockValidationService(): void {}
-
-  return {
-    ValidationModule: MockValidationModule,
-    ValidationService: MockValidationService,
-  };
-});
-
-vi.mock("./modules/generate/generate.command.js", () => {
-  function MockGenerateCommand(): void {}
-
-  return {
-    GenerateCommand: MockGenerateCommand,
-  };
-});
-
-vi.mock("./modules/validate/validate.command.js", () => {
-  function MockValidateCommand(): void {}
-
-  return {
-    ValidateCommand: MockValidateCommand,
-  };
-});
-
-describe("module export surfaces", () => {
-  beforeEach(() => {
-    vi.resetModules();
+  beforeAll(async () => {
+    module = await Test.createTestingModule({
+      imports: [MainModule],
+    }).compile();
   });
 
-  it("exports command and module surfaces for nx handoff", async () => {
-    const { MainModule } = await import("./main.module");
-    const { GenerateCommand } =
-      await import("./modules/generate/generate.command");
-    const { GenerateModule } =
-      await import("./modules/generate/generate.module");
-    const { ValidateCommand } =
-      await import("./modules/validate/validate.command");
-    const { ValidateModule } =
-      await import("./modules/validate/validate.module");
-
-    expect(MainModule).toBeDefined();
-    expect(GenerateCommand).toBeDefined();
-    expect(GenerateModule).toBeDefined();
-    expect(ValidateCommand).toBeDefined();
-    expect(ValidateModule).toBeDefined();
+  afterAll(async () => {
+    await module.close();
   });
 
-  it("exports nest modules used by command bootstrap", async () => {
-    const { LoggerModule } = await import("./modules/logger/logger.module");
+  it("compiles the whole application graph", () => {
+    expect(module).toBeDefined();
+  });
 
-    expect(LoggerModule).toBeDefined();
+  it("resolves the generate command with every dependency injected", async () => {
+    const command = await module.resolve(GenerateCommand);
+
+    expect(command).toBeDefined();
+    expect(command.parseGenerator("example")).toBe("example");
+  });
+
+  it("resolves the validate command with every dependency injected", async () => {
+    const command = await module.resolve(ValidateCommand);
+
+    expect(command).toBeDefined();
+    expect(command.parseRules("typescript")).toStrictEqual(["typescript"]);
   });
 });

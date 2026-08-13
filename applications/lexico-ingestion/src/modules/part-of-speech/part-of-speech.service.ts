@@ -121,6 +121,8 @@ export class PartOfSpeechService {
   private static readonly prepositionCaseValueList = prepositionCases;
   private static readonly verbConjugationValueList = verbConjugationValues;
 
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
 
   /** Returns the first matching typed value from the provided candidate list. */

@@ -6,13 +6,13 @@ import { getProjects, type Tree } from "@nx/devkit";
 import {
   DEFAULT_GENERATED_OUTPUT_DIRECTORY,
   TARGET_DIRECTORY_OPTION_KEYS,
-} from "./nx-adapter.constants.js";
+} from "./nx-adapter.constants";
 
 import type {
   ConformetryGeneratorFactory,
   ConformetryGeneratorFactoryOptions,
   ResolveConformetryTargetDirectoryPathArguments,
-} from "./nx-adapter.types.js";
+} from "./nx-adapter.types";
 
 /**
  * Creates a conformetry generator factory for Nx trees.

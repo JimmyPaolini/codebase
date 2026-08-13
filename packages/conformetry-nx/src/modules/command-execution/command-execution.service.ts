@@ -1,9 +1,9 @@
 import { GenerateCommand, MainModule } from "@jimmypaolini/conformetry";
 import { CommandFactory } from "nest-commander";
 
-import { NEST_APPLICATION_CONTEXT_OPTIONS } from "./command-execution.constants.js";
+import { NEST_APPLICATION_CONTEXT_OPTIONS } from "./command-execution.constants";
 
-import type { RunGenerateCommandArguments } from "./command-execution.types.js";
+import type { RunGenerateCommandArguments } from "./command-execution.types";
 
 /**
  * Invokes conformetry generation commands using the shared Nest application.

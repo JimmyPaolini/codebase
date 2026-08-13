@@ -12,7 +12,7 @@ vi.mock("@nx/devkit", async (importOriginal) => {
 import {
   createConformetryGeneratorFactory,
   resolveConformetryTargetDirectoryPath,
-} from "./nx-generator-factory.utilities.js";
+} from "./nx-generator-factory.utilities";
 
 import type { Tree } from "@nx/devkit";
 

@@ -1,10 +1,10 @@
-import { NxGeneratorFactoryService } from "./nx-generator-factory.service.js";
+import { NxGeneratorFactoryService } from "./nx-generator-factory.service";
 
 import type {
   ConformetryGeneratorFactory,
   ConformetryGeneratorFactoryOptions,
   ResolveConformetryTargetDirectoryPathArguments,
-} from "./nx-adapter.types.js";
+} from "./nx-adapter.types";
 
 /**
  * Creates a conformetry generator factory for Nx trees.

@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { PluginOptionsService } from "./plugin-options.service.js";
+import { PluginOptionsService } from "./plugin-options.service";
 
 /**
  * Provides plugin option resolution helpers.

@@ -2,15 +2,15 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { resolveConformetryNxPluginOptions } from "./modules/plugin-options/plugin-options.utilities.js";
-import { RuleRoutingService } from "./modules/rule-routing/rule-routing.service.js";
-import { buildInferredValidationTarget } from "./modules/validation-target/validation-target.utilities.js";
-export { MainModule } from "./main.module.js";
+import { resolveConformetryNxPluginOptions } from "./modules/plugin-options/plugin-options.utilities";
+import { RuleRoutingService } from "./modules/rule-routing/rule-routing.service";
+import { buildInferredValidationTarget } from "./modules/validation-target/validation-target.utilities";
+export { MainModule } from "./main.module";
 
 import type {
   ResolveTemplateRuleRoutingArguments,
   ResolveTemplateRuleRoutingResult,
-} from "./modules/rule-routing/rule-routing.types.js";
+} from "./modules/rule-routing/rule-routing.types";
 import type {
   CreateNodes,
   CreateNodesContext,
@@ -28,7 +28,7 @@ async function runWorkspaceGeneratorImplementation(args: {
   tree: Tree;
 }): Promise<GeneratorCallback> {
   const { runWorkspaceGenerator } =
-    await import("./modules/workspace-generator/workspace-generator.utilities.js");
+    await import("./modules/workspace-generator/workspace-generator.utilities");
 
   return await runWorkspaceGenerator(args);
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { MainModule } from "./main.module.js";
+import { MainModule } from "./main.module";
 
 describe(MainModule, () => {
   it("is defined", () => {

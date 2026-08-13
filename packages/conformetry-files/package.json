@@ -1,0 +1,32 @@
+{
+  "dependencies": {
+    "@golevelup/ts-vitest": "catalog:",
+    "@jimmypaolini/conformetry-configuration": "workspace:*",
+    "@jimmypaolini/conformetry-core": "workspace:*",
+    "@nestjs/common": "catalog:",
+    "pino": "catalog:",
+    "reflect-metadata": "catalog:",
+    "tslib": "catalog:"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "catalog:",
+    "@nx/eslint-plugin": "catalog:",
+    "@swc/helpers": "catalog:",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "vitest": "catalog:"
+  },
+  "main": "src/index.ts",
+  "name": "@jimmypaolini/conformetry-files",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "type": "module",
+  "typeCoverage": {
+    "atLeast": 100,
+    "strict": true
+  },
+  "types": "src/index.ts",
+  "version": "0.0.1"
+}

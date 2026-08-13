@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { RuleRoutingService } from "./rule-routing.service.js";
+import { RuleRoutingService } from "./rule-routing.service";
 
 /**
  * Provides the rule-routing service.

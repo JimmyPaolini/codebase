@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { environmentSchema } from "./constants.js";
+import { environmentSchema } from "./constants";
 
 describe("main end-to-end suite", () => {
   describe("environment schema e2e", () => {

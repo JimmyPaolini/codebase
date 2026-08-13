@@ -1,26 +1,14 @@
 import { Module } from "@nestjs/common";
 
-import { TemplateValidationService } from "./configuration-template-validation.service";
 import { ConfigurationService } from "./configuration.service";
 
 /**
- * Provides the configuration service.
+ * Provides loading and validation of conformetry configuration files.
  */
 @Module({
   controllers: [],
-  exports: [ConfigurationService, TemplateValidationService],
+  exports: [ConfigurationService],
   imports: [],
-  providers: [
-    ConfigurationService,
-    {
-      inject: [ConfigurationService],
-      provide: TemplateValidationService,
-      useFactory: (
-        configurationService: ConfigurationService,
-      ): TemplateValidationService => {
-        return new TemplateValidationService(configurationService);
-      },
-    },
-  ],
+  providers: [ConfigurationService],
 })
 export class ConfigurationModule {}

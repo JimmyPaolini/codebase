@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "@golevelup/ts-vitest": "catalog:",
+    "@jimmypaolini/conformetry-core": "workspace:*",
+    "@jimmypaolini/conformetry-generation": "workspace:*",
     "@nestjs/common": "catalog:",
     "jiti": "catalog:",
     "jsonc-parser": "catalog:",

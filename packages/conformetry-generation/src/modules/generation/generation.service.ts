@@ -1,9 +1,11 @@
-import { access, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { buildNameSubstitutions } from "@jimmypaolini/conformetry-configuration";
 import { Injectable } from "@nestjs/common";
 
+import { RenderingService } from "../rendering/rendering.service";
+
+import type { Substitutions } from "../rendering/rendering.types";
 import type {
   DirectoryEntry,
   FileSystemAdapter,
@@ -11,133 +13,80 @@ import type {
   GeneratorHookContext,
   RunGeneratorArguments,
   RunGeneratorResult,
-  TemplateRenderer,
 } from "./generation.types";
 
 /**
- * Runs conformetry generators without depending on Nx devkit.
+ * Runs conformetry generators: walks a template tree, renders every path and
+ * file through `RenderingService`, and writes the result.
+ *
+ * Filesystem and formatter access go through adapters so a host with a virtual
+ * filesystem (an Nx generator `Tree`) can reuse this runtime unchanged.
+ * Rendering deliberately is *not* an adapter — validation must substitute
+ * exactly as generation does, so both share one `RenderingService`.
  */
 @Injectable()
 export class GenerationService {
+  // 🏗 Dependency Injection
+
+  constructor(private readonly renderingService: RenderingService) {}
+
+  // 🔐 Private Fields
+
+  /** Reads and writes directly to disk. Used when no adapter is supplied. */
   private readonly defaultFileSystem: FileSystemAdapter = {
-    exists: async (pathName: string): Promise<boolean> => {
-      return this.fileSystemPathExists(pathName);
-    },
-    listDirectory: async (directoryPath: string) => {
-      return this.fileSystemListDirectory(directoryPath);
+    listDirectory: async (directoryPath: string): Promise<DirectoryEntry[]> => {
+      const entries = await readdir(directoryPath, { withFileTypes: true });
+
+      return entries.map((entry) => {
+        return { isDirectory: entry.isDirectory(), name: entry.name };
+      });
     },
     makeDirectory: async (directoryPath: string): Promise<void> => {
-      await this.fileSystemMakeDirectory(directoryPath);
+      await mkdir(directoryPath, { recursive: true });
     },
     readFile: async (filePath: string): Promise<string> => {
-      return this.fileSystemReadFile(filePath);
+      return readFile(filePath, "utf8");
     },
     writeFile: async (filePath: string, content: string): Promise<void> => {
-      await this.fileSystemWriteFile(filePath, content);
+      await mkdir(path.dirname(filePath), { recursive: true });
+      await writeFile(filePath, content, "utf8");
     },
   };
 
+  /** Leaves formatting to the workspace formatter unless a host overrides it. */
   private readonly defaultFormatter: FormatterAdapter = {
-    formatFile: async (_filePath: string): Promise<void> => {
-      await Promise.resolve();
-    },
     formatFiles: async (_filePaths: string[]): Promise<void> => {
       await Promise.resolve();
     },
   };
 
-  private readonly defaultTemplateRenderer: TemplateRenderer = {
-    render: (
-      templateContent: string,
-      substitutions: Record<string, string>,
-    ): string => {
-      return templateContent.replaceAll(
-        /\{\{([^{}]+)\}\}/gu,
-        (_token, field: string) => {
-          return substitutions[field.trim()] ?? _token;
-        },
-      );
-    },
-  };
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
 
   /**
-   * Creates the hook context passed to generator hooks.
+   * Merges the derived name variants with the caller's inputs.
+   *
+   * Inputs are spread last so an explicit value always wins over the variant
+   * derived from the same name.
    */
-  private createHookContext(args: {
-    definition: RunGeneratorArguments["definition"];
-    generatedInstanceFilePaths: string[];
-    input: Record<string, string>;
-    outputDirectoryPath: string;
-    substitutions: Record<string, string>;
-  }): GeneratorHookContext {
+  private buildSubstitutions(args: {
+    definitionName: string;
+    inputs: Substitutions;
+  }): Substitutions {
     return {
-      definition: args.definition,
-      generatedFilePaths: args.generatedInstanceFilePaths,
-      input: args.input,
-      outputDirectoryPath: args.outputDirectoryPath,
-      substitutions: args.substitutions,
+      ...this.renderingService.buildNameSubstitutions(
+        args.inputs["name"] ?? args.definitionName,
+      ),
+      ...args.inputs,
     };
   }
 
-  /**
-   * Lists entries in a filesystem directory.
-   */
-  private async fileSystemListDirectory(
-    directoryPath: string,
-  ): Promise<DirectoryEntry[]> {
-    const entries = await readdir(directoryPath, { withFileTypes: true });
-    return entries.map((entry) => {
-      return {
-        isDirectory: entry.isDirectory(),
-        name: entry.name,
-      };
-    });
-  }
-
-  /**
-   * Creates a directory recursively.
-   */
-  private async fileSystemMakeDirectory(directoryPath: string): Promise<void> {
-    await mkdir(directoryPath, { recursive: true });
-  }
-
-  /**
-   * Returns whether a filesystem path exists.
-   */
-  private async fileSystemPathExists(pathName: string): Promise<boolean> {
-    try {
-      await access(pathName);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  /**
-   * Reads a UTF-8 file from disk.
-   */
-  private async fileSystemReadFile(filePath: string): Promise<string> {
-    return readFile(filePath, "utf8");
-  }
-
-  /**
-   * Writes a UTF-8 file and ensures parent directories exist.
-   */
-  private async fileSystemWriteFile(
-    filePath: string,
-    content: string,
-  ): Promise<void> {
-    await mkdir(path.dirname(filePath), { recursive: true });
-    await writeFile(filePath, content, "utf8");
-  }
-
-  /**
-   * Filters undefined input values out of the runtime input map.
-   */
+  /** Drops unset inputs so they never shadow a derived name substitution. */
   private normalizeInputs(
     inputs: Record<string, string | undefined>,
-  ): Record<string, string> {
-    const normalizedInputs: Record<string, string> = {};
+  ): Substitutions {
+    const normalizedInputs: Substitutions = {};
 
     for (const [key, value] of Object.entries(inputs)) {
       if (value !== undefined) {
@@ -149,190 +98,125 @@ export class GenerationService {
   }
 
   /**
-   * Recursively renders a template tree and returns all generated instance paths.
+   * Recursively renders a template tree, returning every generated file path.
    */
   private async renderDirectory(args: {
     filesystem: FileSystemAdapter;
     instanceDirectoryPath: string;
-    substitutions: Record<string, string>;
+    substitutions: Substitutions;
     templateDirectoryPath: string;
-    templateRenderer: TemplateRenderer;
   }): Promise<string[]> {
-    const {
-      filesystem,
-      instanceDirectoryPath,
-      substitutions,
-      templateDirectoryPath,
-      templateRenderer,
-    } = args;
-
-    const entries = await filesystem.listDirectory(templateDirectoryPath);
-    const generatedInstanceFilePaths: string[] = [];
+    const entries = await args.filesystem.listDirectory(
+      args.templateDirectoryPath,
+    );
+    const generatedFilePaths: string[] = [];
 
     for (const entry of entries) {
-      const paths = this.resolveTemplatePaths({
-        entryName: entry.name,
-        instanceDirectoryPath,
-        substitutions,
-        templateDirectoryPath,
-      });
+      const templatePath = path.join(args.templateDirectoryPath, entry.name);
+      const instancePath = path.join(
+        args.instanceDirectoryPath,
+        this.renderingService.renderPath({
+          substitutions: args.substitutions,
+          templatePath: entry.name,
+        }),
+      );
 
       if (entry.isDirectory) {
-        await filesystem.makeDirectory(paths.nextInstancePath);
-        const childPaths = await this.renderDirectory({
-          filesystem,
-          instanceDirectoryPath: paths.nextInstancePath,
-          substitutions,
-          templateDirectoryPath: paths.nextTemplatePath,
-          templateRenderer,
-        });
-        generatedInstanceFilePaths.push(...childPaths);
+        await args.filesystem.makeDirectory(instancePath);
+        generatedFilePaths.push(
+          ...(await this.renderDirectory({
+            filesystem: args.filesystem,
+            instanceDirectoryPath: instancePath,
+            substitutions: args.substitutions,
+            templateDirectoryPath: templatePath,
+          })),
+        );
         continue;
       }
 
-      generatedInstanceFilePaths.push(
+      generatedFilePaths.push(
         await this.renderFile({
-          filesystem,
-          nextInstancePath: paths.nextInstancePath,
-          nextTemplatePath: paths.nextTemplatePath,
-          substitutions,
-          templateRenderer,
+          filesystem: args.filesystem,
+          instancePath,
+          substitutions: args.substitutions,
+          templatePath,
         }),
       );
     }
 
-    return generatedInstanceFilePaths;
+    return generatedFilePaths;
   }
 
-  /**
-   * Renders a single template file into the generated instance tree.
-   */
+  /** Renders one template file and writes it, returning the written path. */
   private async renderFile(args: {
     filesystem: FileSystemAdapter;
-    nextInstancePath: string;
-    nextTemplatePath: string;
-    substitutions: Record<string, string>;
-    templateRenderer: TemplateRenderer;
+    instancePath: string;
+    substitutions: Substitutions;
+    templatePath: string;
   }): Promise<string> {
-    const fileContent = await args.filesystem.readFile(args.nextTemplatePath);
-    const renderedContent = args.templateRenderer.render(
-      fileContent,
-      args.substitutions,
+    const templateContent = await args.filesystem.readFile(args.templatePath);
+
+    await args.filesystem.writeFile(
+      args.instancePath,
+      this.renderingService.renderContent({
+        substitutions: args.substitutions,
+        templateContent,
+      }),
     );
-    await args.filesystem.writeFile(args.nextInstancePath, renderedContent);
 
-    return args.nextInstancePath;
+    return args.instancePath;
   }
 
-  /**
-   * Replaces `__placeholder__` tokens in names and paths.
-   */
-  private renderTemplateValue(
-    value: string,
-    substitutions: Record<string, string>,
-  ): string {
-    return value.replaceAll(/__(\w+)__/g, (_token, field: string) => {
-      return substitutions[field] ?? _token;
-    });
-  }
-
-  /**
-   * Resolves runtime arguments with the built-in default adapters.
-   */
-  private resolveRunGeneratorArguments(args: RunGeneratorArguments): {
-    definition: RunGeneratorArguments["definition"];
+  /** Falls back to the disk filesystem and no-op formatter when unset. */
+  private resolveAdapters(args: RunGeneratorArguments): {
     filesystem: FileSystemAdapter;
     formatter: FormatterAdapter;
-    inputs: Record<string, string | undefined>;
-    targetDirectoryPath: string;
-    templateRenderer: TemplateRenderer;
   } {
     return {
-      definition: args.definition,
       filesystem: args.filesystem ?? this.defaultFileSystem,
       formatter: args.formatter ?? this.defaultFormatter,
-      inputs: args.inputs ?? {},
-      targetDirectoryPath: args.targetDirectoryPath,
-      templateRenderer: args.templateRenderer ?? this.defaultTemplateRenderer,
     };
   }
 
-  /**
-   * Resolves template entry and instance paths for the current item.
-   */
-  private resolveTemplatePaths(args: {
-    entryName: string;
-    instanceDirectoryPath: string;
-    substitutions: Record<string, string>;
-    templateDirectoryPath: string;
-  }): {
-    nextInstancePath: string;
-    nextTemplatePath: string;
-  } {
-    const renderedName = this.renderTemplateValue(
-      args.entryName,
-      args.substitutions,
-    );
-
-    return {
-      nextInstancePath: path.join(args.instanceDirectoryPath, renderedName),
-      nextTemplatePath: path.join(args.templateDirectoryPath, args.entryName),
-    };
-  }
+  // 🌎 Public Methods
 
   /**
-   * Builds common name substitutions from the provided generator name.
-   */
-  public buildNameSubstitutions(name: string): Record<string, string> {
-    return buildNameSubstitutions(name);
-  }
-
-  /**
-   * Runs the generator lifecycle and returns generated file paths.
+   * Runs the generator lifecycle — `preGenerate`, render, `postGenerate`,
+   * format — and returns the sorted list of generated file paths.
    */
   public async runGenerator(
     args: RunGeneratorArguments,
   ): Promise<RunGeneratorResult> {
-    const {
-      definition,
-      filesystem,
-      formatter,
+    const { filesystem, formatter } = this.resolveAdapters(args);
+    const inputs = this.normalizeInputs(args.inputs ?? {});
+    const substitutions = this.buildSubstitutions({
+      definitionName: args.definition.name,
       inputs,
-      targetDirectoryPath,
-      templateRenderer,
-    } = this.resolveRunGeneratorArguments(args);
-
-    const normalizedInputs = this.normalizeInputs(inputs);
-    const name = normalizedInputs["name"] ?? definition.name;
-    const substitutions = {
-      ...this.buildNameSubstitutions(name),
-      ...normalizedInputs,
+    });
+    const context: GeneratorHookContext = {
+      definition: args.definition,
+      generatedFilePaths: [],
+      input: inputs,
+      outputDirectoryPath: args.targetDirectoryPath,
+      substitutions,
     };
-    const context = this.createHookContext({
-      definition,
-      generatedInstanceFilePaths: [],
-      input: normalizedInputs,
-      outputDirectoryPath: targetDirectoryPath,
-      substitutions,
-    });
 
-    await definition.hooks?.preGenerate?.(context);
+    await args.definition.hooks?.preGenerate?.(context);
 
-    const renderedPaths = await this.renderDirectory({
+    const generatedFilePaths = await this.renderDirectory({
       filesystem,
-      instanceDirectoryPath: targetDirectoryPath,
+      instanceDirectoryPath: args.targetDirectoryPath,
       substitutions,
-      templateDirectoryPath: definition.templateDirectoryPath,
-      templateRenderer,
+      templateDirectoryPath: args.definition.templateDirectoryPath,
     });
-    context.generatedFilePaths = renderedPaths.toSorted();
+    context.generatedFilePaths = generatedFilePaths.toSorted();
 
-    await definition.hooks?.postGenerate?.(context);
+    await args.definition.hooks?.postGenerate?.(context);
     await formatter.formatFiles(context.generatedFilePaths);
 
     return {
       generatedFilePaths: context.generatedFilePaths,
-      outputDirectoryPath: targetDirectoryPath,
+      outputDirectoryPath: args.targetDirectoryPath,
     };
   }
 }

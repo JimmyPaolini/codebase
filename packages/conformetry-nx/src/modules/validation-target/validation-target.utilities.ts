@@ -1,6 +1,6 @@
-import { ValidationTargetService } from "./validation-target.service.js";
+import { ValidationTargetService } from "./validation-target.service";
 
-import type { ConformetryNxPluginRegistrationOptions } from "../plugin-options/plugin-options.types.js";
+import type { ConformetryNxPluginRegistrationOptions } from "../plugin-options/plugin-options.types";
 import type { TargetConfiguration } from "@nx/devkit";
 
 /**

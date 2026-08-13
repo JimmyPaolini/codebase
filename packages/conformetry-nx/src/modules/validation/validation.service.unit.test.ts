@@ -1,8 +1,8 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { VALIDATION_SERVICE_NAME } from "./validation.constants.js";
-import { ValidationService } from "./validation.service.js";
+import { VALIDATION_SERVICE_NAME } from "./validation.constants";
+import { ValidationService } from "./validation.service";
 
 describe(ValidationService, () => {
   let service: ValidationService;

@@ -9,38 +9,80 @@ import { parse as parseJsonc } from "jsonc-parser";
 
 import {
   conformetryConfigurationSchema,
-  supportedExtensions,
+  DEFAULT_TEMPLATE_DIRECTORY,
+  SUPPORTED_CONFIGURATION_EXTENSIONS,
   UnknownConfigurationFileTypeError,
+  WORKSPACE_MANIFEST_FILENAME,
 } from "./configuration.constants";
 
 import type {
   ConformetryConfiguration,
   ConformetryGeneratorDefinition,
-  ConformetryGeneratorParameterDefinition,
-  ParsedConformetryGeneratorDefinition,
+  ParsedGeneratorEntry,
 } from "./configuration.types";
-import type { z } from "zod";
 
 /**
  * Loads and validates conformetry configuration files.
+ *
+ * This service owns loading only — resolving templates, matching them to
+ * projects, and preparing documents for validation all live in the discovery
+ * module, so that reading a config file stays free of filesystem walking.
  */
 @Injectable()
 export class ConfigurationService {
+  // 🏗 Dependency Injection
+
+  constructor() {}
+
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   /**
-   * Finds the nearest workspace root from the current process directory.
+   * Applies defaults to one parsed generator entry.
+   *
+   * An explicitly configured `templateDirectoryPath` wins; otherwise the path
+   * is derived from the registry key, which is the common case and keeps
+   * configs terse.
+   */
+  private applyGeneratorDefaults(args: {
+    definition: ParsedGeneratorEntry;
+    generatorName: string;
+  }): ConformetryGeneratorDefinition {
+    const { definition } = args;
+
+    return {
+      ...(definition.aliases === undefined
+        ? {}
+        : { aliases: definition.aliases }),
+      ...(definition.description === undefined
+        ? {}
+        : { description: definition.description }),
+      ...(definition.hooks === undefined ? {} : { hooks: definition.hooks }),
+      name: definition.name,
+      parameters: definition.parameters ?? {},
+      templateDirectoryPath:
+        definition.templateDirectoryPath ??
+        path.join(DEFAULT_TEMPLATE_DIRECTORY, args.generatorName),
+    };
+  }
+
+  /**
+   * Walks upward from the process cwd looking for the workspace manifest.
+   *
+   * Used to resolve a config path given relative to the workspace root even
+   * when the command was invoked from a nested directory.
    */
   private async findWorkspaceRoot(): Promise<string | undefined> {
-    const currentDirectory = process.cwd();
-    let candidateDirectory = path.resolve(currentDirectory);
+    let candidateDirectory = path.resolve(process.cwd());
 
     for (;;) {
-      const workspaceManifestPath = path.join(
-        candidateDirectory,
-        "pnpm-workspace.yaml",
-      );
-
       try {
-        await access(workspaceManifestPath);
+        await access(
+          path.join(candidateDirectory, WORKSPACE_MANIFEST_FILENAME),
+        );
         return candidateDirectory;
       } catch {
         const parentDirectory = path.dirname(candidateDirectory);
@@ -54,72 +96,45 @@ export class ConfigurationService {
     }
   }
 
-  /**
-   * Checks whether a value matches the required generator definition shape.
-   */
-  private isConformetryGeneratorDefinition(
-    value: unknown,
-  ): value is ParsedConformetryGeneratorDefinition & {
-    parameters: Record<string, ConformetryGeneratorParameterDefinition>;
-  } {
-    return (
-      typeof value === "object" &&
-      value !== null &&
-      "name" in value &&
-      "parameters" in value &&
-      typeof value.name === "string" &&
-      typeof value.parameters === "object" &&
-      value.parameters !== null
-    );
-  }
-
-  /**
-   * Loads a config module from the supported file extensions.
-   */
-  private async loadConfigurationModule(
-    configurationPath: string,
-    extension: string,
-  ): Promise<unknown> {
-    if (extension === ".json" || extension === ".jsonc") {
-      return this.loadJsonConfiguration(configurationPath, extension);
+  /** Loads a config module, choosing the reader by extension. */
+  private async loadConfigurationModule(args: {
+    configurationPath: string;
+    extension: string;
+  }): Promise<unknown> {
+    if (args.extension === ".json" || args.extension === ".jsonc") {
+      return this.loadJsonConfiguration(args);
     }
 
     const jiti = createJiti(fileURLToPath(import.meta.url));
-    const importedModule: unknown = await jiti.import(configurationPath, {
+    const importedModule: unknown = await jiti.import(args.configurationPath, {
       default: true,
     });
 
-    if (typeof importedModule === "object" && importedModule !== null) {
-      const defaultExport = (importedModule as { default?: unknown }).default;
-
-      if (typeof defaultExport === "object" && defaultExport !== null) {
-        return defaultExport;
-      }
-
-      return importedModule;
+    if (typeof importedModule !== "object" || importedModule === null) {
+      return { generators: {} };
     }
 
-    return { generators: {} };
+    const defaultExport = (importedModule as { default?: unknown }).default;
+
+    return typeof defaultExport === "object" && defaultExport !== null
+      ? defaultExport
+      : importedModule;
+  }
+
+  /** Reads a JSON or JSONC config file. */
+  private async loadJsonConfiguration(args: {
+    configurationPath: string;
+    extension: string;
+  }): Promise<unknown> {
+    const configurationContent = await readFile(args.configurationPath, "utf8");
+
+    return args.extension === ".jsonc"
+      ? parseJsonc(configurationContent)
+      : JSON.parse(configurationContent);
   }
 
   /**
-   * Loads a JSON or JSONC configuration file.
-   */
-  private async loadJsonConfiguration(
-    configurationPath: string,
-    extension: string,
-  ): Promise<unknown> {
-    const configurationContent = await readFile(configurationPath, "utf8");
-
-    if (extension === ".jsonc") {
-      return parseJsonc(configurationContent);
-    }
-
-    return JSON.parse(configurationContent);
-  }
-
-  /**
-   * Resolves a configuration path against the current workspace if needed.
+   * Resolves a config path against the cwd, falling back to the workspace root.
    */
   private async resolveConfigurationPath(
     configurationPath: string,
@@ -141,62 +156,45 @@ export class ConfigurationService {
       configurationPath,
     );
 
-    if (existsSync(workspaceRelativePath)) {
-      return workspaceRelativePath;
-    }
-
-    return absolutePath;
+    return existsSync(workspaceRelativePath)
+      ? workspaceRelativePath
+      : absolutePath;
   }
 
+  // 🌎 Public Methods
+
   /**
-   * Loads a conformetry configuration from a local file path.
+   * Loads, validates, and normalizes a conformetry configuration file.
+   *
+   * Throws `UnknownConfigurationFileTypeError` for an unreadable extension, and
+   * propagates the Zod error for a malformed registry — a bad config should
+   * fail loudly rather than silently validate nothing.
    */
   public async loadConformetryConfiguration(
     configurationPath: string,
   ): Promise<ConformetryConfiguration> {
-    const normalizedConfigurationPath =
-      await this.resolveConfigurationPath(configurationPath);
-    const extension = path.extname(normalizedConfigurationPath).toLowerCase();
+    const resolvedPath = await this.resolveConfigurationPath(configurationPath);
+    const extension = path.extname(resolvedPath).toLowerCase();
 
-    if (!supportedExtensions.has(extension)) {
-      throw new UnknownConfigurationFileTypeError(normalizedConfigurationPath);
+    if (!SUPPORTED_CONFIGURATION_EXTENSIONS.has(extension)) {
+      throw new UnknownConfigurationFileTypeError(resolvedPath);
     }
 
-    const configurationModule = await this.loadConfigurationModule(
-      normalizedConfigurationPath,
+    const configurationModule = await this.loadConfigurationModule({
+      configurationPath: resolvedPath,
       extension,
-    );
-
-    const parsedConfiguration: z.infer<typeof conformetryConfigurationSchema> =
+    });
+    const parsedConfiguration =
       conformetryConfigurationSchema.parse(configurationModule);
-
     const generators: Record<string, ConformetryGeneratorDefinition> = {};
 
-    for (const [generatorName, generatorDefinition] of Object.entries(
+    for (const [generatorName, definition] of Object.entries(
       parsedConfiguration.generators,
     )) {
-      if (!this.isConformetryGeneratorDefinition(generatorDefinition)) {
-        continue;
-      }
-
-      generators[generatorName] = {
-        ...(generatorDefinition.aliases === undefined
-          ? {}
-          : { aliases: generatorDefinition.aliases }),
-        ...(generatorDefinition.description === undefined
-          ? {}
-          : { description: generatorDefinition.description }),
-        ...(generatorDefinition.hooks === undefined
-          ? {}
-          : { hooks: generatorDefinition.hooks }),
-        name: generatorDefinition.name,
-        parameters: generatorDefinition.parameters,
-        templateDirectoryPath: path.join(
-          "configuration",
-          "conformetry-templates",
-          generatorName,
-        ),
-      };
+      generators[generatorName] = this.applyGeneratorDefaults({
+        definition,
+        generatorName,
+      });
     }
 
     return { generators };

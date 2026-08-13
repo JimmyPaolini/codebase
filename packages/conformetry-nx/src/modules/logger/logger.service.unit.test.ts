@@ -63,7 +63,7 @@ vi.mock("pino", () => {
   };
 });
 
-import { LoggerService } from "./logger.service.js";
+import { LoggerService } from "./logger.service";
 
 describe(LoggerService, () => {
   beforeEach(() => {

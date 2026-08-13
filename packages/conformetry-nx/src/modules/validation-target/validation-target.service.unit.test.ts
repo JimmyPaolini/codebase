@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { DEFAULT_VALIDATION_TARGET_NAME } from "../plugin-options/plugin-options.constants.js";
+import { DEFAULT_VALIDATION_TARGET_NAME } from "../plugin-options/plugin-options.constants";
 
-import { ValidationTargetService } from "./validation-target.service.js";
+import { ValidationTargetService } from "./validation-target.service";
 
 describe(ValidationTargetService, () => {
   it("returns undefined when no generator tags are provided", () => {

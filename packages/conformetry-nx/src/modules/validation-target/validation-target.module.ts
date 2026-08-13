@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { ValidationTargetService } from "./validation-target.service.js";
+import { ValidationTargetService } from "./validation-target.service";
 
 /**
  * Provides validation-target helpers for conformetry validation workflows.

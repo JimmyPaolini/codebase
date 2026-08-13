@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { NxTemplateRenderer } from "./nx-template-renderer.service.js";
+import { NxTemplateRenderer } from "./nx-template-renderer.service";
 
 import type {
   FileSystemAdapter,
@@ -11,7 +11,7 @@ import type {
   RunGeneratorArguments,
   RunGeneratorResult,
   TemplateRenderer,
-} from "./nx-adapter.types.js";
+} from "./nx-adapter.types";
 
 /**
  * Executes generation against the provided filesystem adapter.

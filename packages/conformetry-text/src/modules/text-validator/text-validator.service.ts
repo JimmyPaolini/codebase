@@ -1,33 +1,39 @@
-import { access } from "node:fs/promises";
-import path from "node:path";
-
-import { prepareTemplateValidationPayload } from "@jimmypaolini/conformetry-configuration";
 import { Injectable } from "@nestjs/common";
 
-import {
-  TEXT_VALIDATOR_FILE_EXTENSIONS,
-  TEXT_VALIDATOR_PLUGIN_DESCRIPTOR,
-} from "./text-validator.constants";
+import { TEXT_VALIDATOR_DESCRIPTOR } from "./text-validator.constants";
 
+import type { MissingLine } from "./text-validator.types";
 import type {
-  TextValidationDocument,
-  TextValidatorValidateArguments,
-  TextValidatorValidateResult,
-  ValidatePathExistenceArguments,
-} from "./text-validator.types";
+  ConformanceError,
+  ConformetryLanguageValidator,
+  PreparedValidationDocument,
+} from "@jimmypaolini/conformetry-core";
 
 /**
- * Validates text files against conformetry templates.
+ * Checks that a text file contains every line its template requires.
+ *
+ * Matching is duplicate-aware: a template line that appears twice must appear
+ * twice in the instance. Order is not enforced, so a file may add lines
+ * anywhere — the template is a lower bound, not an exact specification.
  */
 @Injectable()
-export class TextValidatorService {
-  public readonly pluginDescriptor = TEXT_VALIDATOR_PLUGIN_DESCRIPTOR;
+export class TextValidatorService implements ConformetryLanguageValidator {
+  // 🏗 Dependency Injection
 
-  // 🌎 Public Methods
+  constructor() {}
 
-  /** Internal helper. */
-  private buildLineCounts(text: string): Map<string, number> {
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  public readonly descriptor = TEXT_VALIDATOR_DESCRIPTOR;
+
+  // 🔏 Private Methods
+
+  /** Counts how many times each line occurs, for duplicate-aware matching. */
+  private countLines(text: string): Map<string, number> {
     const lineCounts = new Map<string, number>();
+
     for (const line of text.split("\n")) {
       lineCounts.set(line, (lineCounts.get(line) ?? 0) + 1);
     }
@@ -35,104 +41,43 @@ export class TextValidatorService {
     return lineCounts;
   }
 
-  // 🔏 Private Methods
+  /** Finds template lines the instance does not supply often enough. */
+  private findMissingLines(
+    document: PreparedValidationDocument,
+  ): MissingLine[] {
+    const remainingLines = this.countLines(document.instance);
+    const missingLines: MissingLine[] = [];
 
-  /** Internal helper. */
-  private async pathExists(pathName: string): Promise<boolean> {
-    try {
-      await access(pathName);
-      return true;
-    } catch {
-      return false;
-    }
-  }
+    for (const [index, line] of document.renderedTemplate
+      .split("\n")
+      .entries()) {
+      const remaining = remainingLines.get(line) ?? 0;
 
-  /** Internal helper. */
-  private async validatePathExistence(
-    arguments_: ValidatePathExistenceArguments,
-  ): Promise<string[]> {
-    const issues: string[] = [];
-
-    for (const filePath of arguments_.filePaths) {
-      const resolvedPath = path.resolve(arguments_.workingDirectory, filePath);
-      if (!(await this.pathExists(resolvedPath))) {
-        issues.push(`Missing text path ${resolvedPath}`);
+      if (remaining === 0) {
+        missingLines.push({ line, templateLine: index + 1 });
+      } else {
+        remainingLines.set(line, remaining - 1);
       }
     }
 
-    return issues;
+    return missingLines;
   }
 
-  /** Internal helper. */
-  private validateTextDocument(document: TextValidationDocument): string[] {
-    const instanceLineCounts = this.buildLineCounts(document.instance);
-    const templateLines = document.renderedTemplate.split("\n");
-    const violations: string[] = [];
+  // 🌎 Public Methods
 
-    for (const [index, line] of templateLines.entries()) {
-      const lineCount = instanceLineCounts.get(line) ?? 0;
-      if (lineCount === 0) {
-        violations.push(`Missing line at template line ${index + 1}: ${line}`);
-        continue;
-      }
-
-      instanceLineCounts.set(line, lineCount - 1);
-    }
-
-    return violations;
-  }
-
-  /** Internal helper. */
-  public async validate(
-    arguments_: TextValidatorValidateArguments,
-  ): Promise<TextValidatorValidateResult> {
-    const {
-      configurationPath,
-      filePaths,
-      templateRuleNames,
-      workingDirectory,
-    } = arguments_;
-
-    if (configurationPath === undefined) {
-      const pathViolations = await this.validatePathExistence({
-        filePaths,
-        workingDirectory,
-      });
-
+  /** Reports every template line missing from the instance. */
+  public validateDocument(
+    document: PreparedValidationDocument,
+  ): ConformanceError[] {
+    return this.findMissingLines(document).map((missingLine) => {
       return {
-        checkedPaths: filePaths,
-        ok: pathViolations.length === 0,
-        pluginName: TEXT_VALIDATOR_PLUGIN_DESCRIPTOR.name,
-        violations: pathViolations,
+        errorType: "code",
+        expected: missingLine.line,
+        fix: `Add the line \`${missingLine.line}\` to the instance file.`,
+        language: "text",
+        message: `Missing line: ${missingLine.line}`,
+        templateLine: missingLine.templateLine,
       };
-    }
-
-    const payload = await prepareTemplateValidationPayload({
-      configurationPath,
-      fileExtensions: TEXT_VALIDATOR_FILE_EXTENSIONS,
-      filePaths,
-      ...(templateRuleNames === undefined ? {} : { templateRuleNames }),
-      workingDirectory,
     });
-
-    const issues: string[] = [];
-
-    for (const document of payload.documents) {
-      const lineViolations = this.validateTextDocument(document);
-      for (const violation of lineViolations) {
-        issues.push(
-          `${document.instanceFilePath}: ${violation} (template: ${document.templateFilePath})`,
-        );
-      }
-    }
-
-    issues.push(...payload.violations);
-
-    return {
-      checkedPaths: filePaths,
-      ok: issues.length === 0,
-      pluginName: TEXT_VALIDATOR_PLUGIN_DESCRIPTOR.name,
-      violations: issues,
-    };
   }
 }

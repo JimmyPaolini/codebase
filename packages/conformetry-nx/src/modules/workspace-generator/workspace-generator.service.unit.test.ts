@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mockReadNxJson } = vi.hoisted(() => {
   return {
-    mockReadNxJson: vi.fn(),
+    mockReadNxJson: vi.fn<() => Record<string, unknown> | undefined>(),
   };
 });
 
@@ -15,11 +15,13 @@ vi.mock("@nx/devkit", async (importOriginal) => {
   };
 });
 
-import { CommandExecutionService } from "../command-execution/command-execution.service.js";
-import { GenerationService } from "../generation/generation.service.js";
-import { PluginOptionsService } from "../plugin-options/plugin-options.service.js";
+import { InputOptionsService } from "@jimmypaolini/conformetry-configuration";
 
-import { WorkspaceGeneratorService } from "./workspace-generator.service.js";
+import { CommandExecutionService } from "../command-execution/command-execution.service";
+import { GenerationService } from "../generation/generation.service";
+import { PluginOptionsService } from "../plugin-options/plugin-options.service";
+
+import { WorkspaceGeneratorService } from "./workspace-generator.service";
 
 import type { GeneratorCallback, Tree } from "@nx/devkit";
 
@@ -53,6 +55,7 @@ function createStubTree(): Tree {
 describe(WorkspaceGeneratorService, () => {
   const generationService = new GenerationService(
     new CommandExecutionService(),
+    new InputOptionsService(),
     new PluginOptionsService(),
   );
   const pluginOptionsService = new PluginOptionsService();

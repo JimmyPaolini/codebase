@@ -4,8 +4,8 @@ import {
   CONFORMETRY_NX_PLUGIN_NAME,
   DEFAULT_CONFORMETRY_CONFIGURATION_PATH,
   DEFAULT_VALIDATION_TARGET_NAME,
-} from "./plugin-options.constants.js";
-import { PluginOptionsService } from "./plugin-options.service.js";
+} from "./plugin-options.constants";
+import { PluginOptionsService } from "./plugin-options.service";
 
 describe(PluginOptionsService, () => {
   it("uses default configuration path when no overrides are provided", async () => {

@@ -1,21 +1,21 @@
 import { MODULE_METADATA } from "@nestjs/common/constants";
 import { describe, expect, it } from "vitest";
 
-import { TypeScriptValidatorModule } from "./typescript-validator.module";
-import { TypeScriptValidatorService } from "./typescript-validator.service";
+import { TypescriptValidatorModule } from "./typescript-validator.module";
+import { TypescriptValidatorService } from "./typescript-validator.service";
 
-describe(TypeScriptValidatorModule, () => {
-  it("exports and provides TypeScriptValidatorService", () => {
+describe(TypescriptValidatorModule, () => {
+  it("exports and provides TypescriptValidatorService", () => {
     const exportsMetadata = Reflect.getMetadata(
       MODULE_METADATA.EXPORTS,
-      TypeScriptValidatorModule,
+      TypescriptValidatorModule,
     ) as undefined | unknown[];
     const providersMetadata = Reflect.getMetadata(
       MODULE_METADATA.PROVIDERS,
-      TypeScriptValidatorModule,
+      TypescriptValidatorModule,
     ) as undefined | unknown[];
 
-    expect(exportsMetadata).toContain(TypeScriptValidatorService);
-    expect(providersMetadata).toContain(TypeScriptValidatorService);
+    expect(exportsMetadata).toContain(TypescriptValidatorService);
+    expect(providersMetadata).toContain(TypescriptValidatorService);
   });
 });

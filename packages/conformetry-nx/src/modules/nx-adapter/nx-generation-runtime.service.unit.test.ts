@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { GenerationRuntimeService } from "./nx-generation-runtime.service.js";
+import { GenerationRuntimeService } from "./nx-generation-runtime.service";
 
 import type {
   DirectoryEntry,
@@ -8,7 +8,7 @@ import type {
   FormatterAdapter,
   GeneratorDefinition,
   GeneratorHookContext,
-} from "./nx-adapter.types.js";
+} from "./nx-adapter.types";
 
 class MockFileSystemAdapter implements FileSystemAdapter {
   private readonly directoryEntries = new Map<string, DirectoryEntry[]>();

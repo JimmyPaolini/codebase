@@ -1,8 +1,8 @@
 {
   "dependencies": {
     "@golevelup/ts-vitest": "catalog:",
-    "@jimmypaolini/conformetry-configuration": "workspace:*",
     "@nestjs/common": "catalog:",
+    "lodash": "catalog:",
     "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:"
@@ -11,6 +11,7 @@
     "@nestjs/testing": "catalog:",
     "@nx/eslint-plugin": "catalog:",
     "@swc/helpers": "catalog:",
+    "@types/lodash": "catalog:",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "typescript": "catalog:",

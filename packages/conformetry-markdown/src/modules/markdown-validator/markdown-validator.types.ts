@@ -1,9 +1,46 @@
-import type { ConformetryValidatorPlugin } from "@jimmypaolini/conformetry-configuration";
+// 🏷️ Types
 
-/** Internal helper. */
-export interface MarkdownAbstractSyntaxTreeNode {
+/** Arguments for walking one level of two markdown trees. */
+export interface CompareChildrenArguments {
+  readonly instanceChildren: MarkdownNode[];
+  readonly templateChildren: MarkdownNode[];
+}
+
+/** Arguments for matching one template node against the instance's children. */
+export interface CompareNodeArguments {
+  readonly instanceChildren: MarkdownNode[];
+  /**
+   * The most recent instance node matched at this level, used to locate an
+   * error when the template node itself has no instance counterpart.
+   */
+  readonly lastMatchedNode: MarkdownNode | undefined;
+  readonly templateChild: MarkdownNode;
+}
+
+/** The outcome of matching one template node. */
+export interface CompareNodeResult {
+  readonly errors: MarkdownComparisonError[];
+  readonly lastMatchedNode: MarkdownNode | undefined;
+}
+
+/** A required markdown node the instance does not contain. */
+export interface MarkdownComparisonError {
+  /** 1-based line in the instance where the node was expected. */
+  readonly instanceLine: number | undefined;
+  readonly nodeType: string;
+  readonly text: string;
+}
+
+/**
+ * The subset of an mdast node this validator reads.
+ *
+ * Declared structurally rather than importing mdast's own types because only
+ * these fields participate in matching, and a narrow shape keeps the
+ * comparison honest about what it actually inspects.
+ */
+export interface MarkdownNode {
   readonly alt?: string;
-  readonly children?: MarkdownAbstractSyntaxTreeNode[];
+  readonly children?: MarkdownNode[];
   readonly depth?: number;
   readonly lang?: string;
   readonly ordered?: boolean;
@@ -13,52 +50,4 @@ export interface MarkdownAbstractSyntaxTreeNode {
   readonly type: string;
   readonly url?: string;
   readonly value?: string;
-}
-
-// 🏷️ Types
-/** Internal helper. */
-export type MarkdownValidatorValidateArguments = Parameters<
-  ConformetryValidatorPlugin["validate"]
->[0];
-
-/** Internal helper. */
-export type MarkdownValidatorValidateResult = Awaited<
-  ReturnType<ConformetryValidatorPlugin["validate"]>
->;
-
-/** Internal helper. */
-export interface PickBestCandidateArguments {
-  readonly candidates: MarkdownAbstractSyntaxTreeNode[];
-  readonly templateGrandchildren: MarkdownAbstractSyntaxTreeNode[];
-}
-
-/** Internal helper. */
-export interface ProcessNodeArguments {
-  readonly instanceChildren: MarkdownAbstractSyntaxTreeNode[];
-  readonly lastMatchedInstanceNode: MarkdownAbstractSyntaxTreeNode | undefined;
-  readonly templateChild: MarkdownAbstractSyntaxTreeNode;
-}
-
-/** Internal helper. */
-export interface ProcessNodeResult {
-  readonly lastMatched: MarkdownAbstractSyntaxTreeNode | undefined;
-  readonly violations: string[];
-}
-
-/** Internal helper. */
-export interface ValidateMarkdownChildrenArguments {
-  readonly instanceChildren: MarkdownAbstractSyntaxTreeNode[];
-  readonly templateChildren: MarkdownAbstractSyntaxTreeNode[];
-}
-
-/** Internal helper. */
-export interface ValidateMarkdownDocumentArguments {
-  readonly instance: string;
-  readonly renderedTemplate: string;
-}
-
-/** Internal helper. */
-export interface ValidatePathExistenceArguments {
-  readonly filePaths: string[];
-  readonly workingDirectory: string;
 }

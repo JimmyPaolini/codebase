@@ -1,74 +1,54 @@
 import {
   ConfigurationModule,
-  ConfigurationService,
+  DiscoveryModule as TemplateDiscoveryModule,
 } from "@jimmypaolini/conformetry-configuration";
 import {
-  JsonValidatorModule,
-  JsonValidatorService,
-} from "@jimmypaolini/conformetry-json";
-import {
-  MarkdownValidatorModule,
-  MarkdownValidatorService,
-} from "@jimmypaolini/conformetry-markdown";
-import {
-  PythonValidatorModule,
-  PythonValidatorService,
-} from "@jimmypaolini/conformetry-python";
-import {
-  TextValidatorModule,
-  TextValidatorService,
-} from "@jimmypaolini/conformetry-text";
-import {
-  TypeScriptValidatorModule,
-  TypeScriptValidatorService,
-} from "@jimmypaolini/conformetry-typescript";
+  LanguageModule,
+  ReportingModule,
+} from "@jimmypaolini/conformetry-core";
+import { FilesModule } from "@jimmypaolini/conformetry-files";
+import { JsonValidatorModule } from "@jimmypaolini/conformetry-json";
+import { JupyterValidatorModule } from "@jimmypaolini/conformetry-jupyter";
+import { MarkdownValidatorModule } from "@jimmypaolini/conformetry-markdown";
+import { PythonValidatorModule } from "@jimmypaolini/conformetry-python";
+import { TextValidatorModule } from "@jimmypaolini/conformetry-text";
+import { TypescriptValidatorModule } from "@jimmypaolini/conformetry-typescript";
 import { Module } from "@nestjs/common";
 
+import { DiscoveryModule } from "../discovery/discovery.module";
+
+import { ValidationLanguagesService } from "./validation-languages.service";
+import { ValidationSelectionService } from "./validation-selection.service";
 import { ValidationService } from "./validation.service";
 
 /**
- * Provides the validation service.
+ * Orchestrates a validation run across every registered language validator.
+ *
+ * This is the only module that knows the full set of languages; each language
+ * package knows nothing about the others, and `conformetry-jupyter` composes
+ * three of them without going through here.
  */
 @Module({
   controllers: [],
   exports: [ValidationService],
   imports: [
     ConfigurationModule,
-    TypeScriptValidatorModule,
-    PythonValidatorModule,
-    MarkdownValidatorModule,
+    DiscoveryModule,
+    FilesModule,
     JsonValidatorModule,
+    JupyterValidatorModule,
+    LanguageModule,
+    MarkdownValidatorModule,
+    PythonValidatorModule,
+    ReportingModule,
+    TemplateDiscoveryModule,
     TextValidatorModule,
+    TypescriptValidatorModule,
   ],
   providers: [
-    {
-      inject: [
-        ConfigurationService,
-        TypeScriptValidatorService,
-        PythonValidatorService,
-        MarkdownValidatorService,
-        JsonValidatorService,
-        TextValidatorService,
-      ],
-      provide: ValidationService,
-      useFactory: (
-        configurationService: ConfigurationService,
-        typeScriptValidatorService: TypeScriptValidatorService,
-        pythonValidatorService: PythonValidatorService,
-        markdownValidatorService: MarkdownValidatorService,
-        jsonValidatorService: JsonValidatorService,
-        textValidatorService: TextValidatorService,
-      ): ValidationService => {
-        return new ValidationService(
-          configurationService,
-          typeScriptValidatorService,
-          pythonValidatorService,
-          markdownValidatorService,
-          jsonValidatorService,
-          textValidatorService,
-        );
-      },
-    },
+    ValidationLanguagesService,
+    ValidationSelectionService,
+    ValidationService,
   ],
 })
 export class ValidationModule {}

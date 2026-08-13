@@ -112,7 +112,7 @@ import conformetryPluginDefinition, {
   generateNestjsServicePackage,
   generateReactComponent,
   resolveTemplateRuleRouting,
-} from "./index.js";
+} from "./index";
 
 import type { Tree } from "@nx/devkit";
 

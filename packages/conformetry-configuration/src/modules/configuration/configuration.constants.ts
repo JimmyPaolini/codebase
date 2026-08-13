@@ -1,8 +1,8 @@
+// ♟️ Constants
+
 import { z } from "zod";
 
-/**
- * Raised when the configuration path points to an unsupported file type.
- */
+/** Raised when the configuration path points to an unsupported file type. */
 export class UnknownConfigurationFileTypeError extends Error {
   constructor(filePath: string) {
     super(`Unsupported configuration file type: ${filePath}`);
@@ -10,10 +10,22 @@ export class UnknownConfigurationFileTypeError extends Error {
   }
 }
 
+/** Config path used when the caller supplies none. */
+export const DEFAULT_CONFIGURATION_PATH = "configuration/conformetry.config.ts";
+
 /**
- * Supported configuration file extensions for conformetry config loading.
+ * Directory holding generator templates, relative to the workspace root.
+ *
+ * Used to derive `templateDirectoryPath` for a generator that does not declare
+ * one, by joining this with the generator's registry key.
  */
-export const supportedExtensions = new Set([
+export const DEFAULT_TEMPLATE_DIRECTORY = "configuration/conformetry-templates";
+
+/** Marks the workspace root during an upward search from the process cwd. */
+export const WORKSPACE_MANIFEST_FILENAME = "pnpm-workspace.yaml";
+
+/** Extensions the config loader can read. */
+export const SUPPORTED_CONFIGURATION_EXTENSIONS = new Set([
   ".cjs",
   ".cts",
   ".js",
@@ -24,24 +36,7 @@ export const supportedExtensions = new Set([
   ".ts",
 ]);
 
-export const DEFAULT_CONFIGURATION_PATH = "configuration/conformetry.config.ts";
-
-export const DEFAULT_GENERATED_OUTPUT_DIRECTORY = "generated";
-
-export const RESERVED_GENERATOR_OPTION_NAMES = new Set([
-  "config",
-  "description",
-  "help",
-  "name",
-  "targetDirectoryPath",
-]);
-
-export const TARGET_DIRECTORY_OPTION_KEYS = [
-  "targetDirectoryPath",
-  "outputDirectoryPath",
-  "outputPath",
-] as const;
-
+/** Any JSON value, used to accept arbitrary JSON Schema parameter fragments. */
 const jsonSchemaDefinitionSchema: z.ZodType = z.lazy(() => {
   return z.union([
     z.string(),
@@ -54,7 +49,11 @@ const jsonSchemaDefinitionSchema: z.ZodType = z.lazy(() => {
 });
 
 /**
- * Validates the declarative generator registry loaded from conformetry config files.
+ * Validates the declarative generator registry loaded from a config file.
+ *
+ * `templateDirectoryPath` is part of the schema deliberately: Zod strips
+ * unknown keys, so omitting it here would silently discard a path the author
+ * wrote in their config.
  */
 export const conformetryConfigurationSchema = z.object({
   generators: z.record(
@@ -69,7 +68,12 @@ export const conformetryConfigurationSchema = z.object({
         })
         .optional(),
       name: z.string(),
-      parameters: z.record(z.string(), jsonSchemaDefinitionSchema).optional(),
+      // Each parameter is a JSON Schema fragment, so it must be an object;
+      // its own fields may hold any JSON value.
+      parameters: z
+        .record(z.string(), z.record(z.string(), jsonSchemaDefinitionSchema))
+        .optional(),
+      templateDirectoryPath: z.string().optional(),
     }),
   ),
 });

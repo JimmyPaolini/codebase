@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import type { FormatterAdapter } from "./nx-adapter.types.js";
+import type { FormatterAdapter } from "./nx-adapter.types";
 
 /**
  * Provides a formatter adapter stub for Nx tree generation.

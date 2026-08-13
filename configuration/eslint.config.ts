@@ -320,25 +320,84 @@ export default [
               onlyDependOnLibsWithTags: ["type:package"],
               sourceTag: "type:application",
             },
+            // Conformetry package graph. `conformetry-core` is the leaf every
+            // other package may depend on; `conformetry-generation` owns
+            // template rendering, so configuration depends on it rather than
+            // the reverse.
             {
-              onlyDependOnLibsWithTags: [
-                "name:conformetry",
-                "name:conformetry-configuration",
-              ],
-              sourceTag: "name:conformetry-nx",
+              onlyDependOnLibsWithTags: [],
+              sourceTag: "name:conformetry-core",
+            },
+            {
+              onlyDependOnLibsWithTags: ["name:conformetry-core"],
+              sourceTag: "name:conformetry-generation",
             },
             {
               onlyDependOnLibsWithTags: [
-                "name:conformetry-configuration",
+                "name:conformetry-core",
                 "name:conformetry-generation",
-                "name:conformetry-validation",
               ],
-              sourceTag: "name:conformetry",
+              sourceTag: "name:conformetry-configuration",
             },
             {
               onlyDependOnLibsWithTags: [
                 "name:conformetry-configuration",
+                "name:conformetry-core",
+              ],
+              sourceTag: "name:conformetry-files",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:conformetry-configuration",
+                "name:conformetry-core",
+              ],
+              sourceTag: "name:conformetry-json",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:conformetry-configuration",
+                "name:conformetry-core",
+              ],
+              sourceTag: "name:conformetry-markdown",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:conformetry-configuration",
+                "name:conformetry-core",
+              ],
+              sourceTag: "name:conformetry-python",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:conformetry-configuration",
+                "name:conformetry-core",
+              ],
+              sourceTag: "name:conformetry-text",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:conformetry-configuration",
+                "name:conformetry-core",
+              ],
+              sourceTag: "name:conformetry-typescript",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:conformetry-configuration",
+                "name:conformetry-core",
                 "name:conformetry-json",
+                "name:conformetry-markdown",
+                "name:conformetry-python",
+              ],
+              sourceTag: "name:conformetry-jupyter",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:conformetry-configuration",
+                "name:conformetry-core",
+                "name:conformetry-files",
+                "name:conformetry-json",
+                "name:conformetry-jupyter",
                 "name:conformetry-markdown",
                 "name:conformetry-python",
                 "name:conformetry-text",
@@ -347,32 +406,22 @@ export default [
               sourceTag: "name:conformetry-validation",
             },
             {
-              onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
-              sourceTag: "name:conformetry-json",
+              onlyDependOnLibsWithTags: [
+                "name:conformetry-configuration",
+                "name:conformetry-core",
+                "name:conformetry-generation",
+                "name:conformetry-validation",
+              ],
+              sourceTag: "name:conformetry",
             },
             {
-              onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
-              sourceTag: "name:conformetry-markdown",
-            },
-            {
-              onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
-              sourceTag: "name:conformetry-python",
-            },
-            {
-              onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
-              sourceTag: "name:conformetry-text",
-            },
-            {
-              onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
-              sourceTag: "name:conformetry-typescript",
-            },
-            {
-              onlyDependOnLibsWithTags: [],
-              sourceTag: "name:conformetry-configuration",
-            },
-            {
-              onlyDependOnLibsWithTags: ["name:conformetry-configuration"],
-              sourceTag: "name:conformetry-generation",
+              onlyDependOnLibsWithTags: [
+                "name:conformetry",
+                "name:conformetry-configuration",
+                "name:conformetry-core",
+                "name:conformetry-generation",
+              ],
+              sourceTag: "name:conformetry-nx",
             },
             {
               notDependOnLibsWithTags: ["type:application"],

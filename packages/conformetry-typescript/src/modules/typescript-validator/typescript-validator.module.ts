@@ -1,14 +1,26 @@
 import { Module } from "@nestjs/common";
 
-import { TypeScriptValidatorService } from "./typescript-validator.service";
+import { TypescriptCommentsService } from "./typescript-comments.service";
+import { TypescriptNodesService } from "./typescript-nodes.service";
+import { TypescriptTreeService } from "./typescript-tree.service";
+import { TypescriptValidatorService } from "./typescript-validator.service";
 
 /**
- * Provides the TypeScript validator service.
+ * Provides the TypeScript language validator.
+ *
+ * Split into node keying, tree walking, and comment comparison so each concern
+ * stays independently testable — the same decomposition the previous
+ * conformance tool used.
  */
 @Module({
   controllers: [],
-  exports: [TypeScriptValidatorService],
+  exports: [TypescriptValidatorService],
   imports: [],
-  providers: [TypeScriptValidatorService],
+  providers: [
+    TypescriptCommentsService,
+    TypescriptNodesService,
+    TypescriptTreeService,
+    TypescriptValidatorService,
+  ],
 })
-export class TypeScriptValidatorModule {}
+export class TypescriptValidatorModule {}

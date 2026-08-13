@@ -1,0 +1,107 @@
+import fs from "node:fs";
+import path from "node:path";
+
+import { DiscoveryService } from "@jimmypaolini/conformetry-configuration";
+import { ErrorsService } from "@jimmypaolini/conformetry-core";
+import { Injectable } from "@nestjs/common";
+
+import { FILES_VALIDATOR_NAME } from "./files.constants";
+
+import type { CheckProjectFilesArguments } from "./files.types";
+import type { ValidationFileResult } from "@jimmypaolini/conformetry-core";
+
+/**
+ * Checks that every file a project's template declares actually exists.
+ *
+ * This runs before any language validator, and is the only check that covers
+ * *every* template file regardless of extension. A language validator only
+ * sees documents whose extension it claims, so files such as `.gitignore`,
+ * `.env.default`, and `pyproject.toml` were previously never checked at all —
+ * a project could delete them and still validate clean.
+ */
+@Injectable()
+export class FilesService {
+  // 🏗 Dependency Injection
+
+  constructor(
+    private readonly discoveryService: DiscoveryService,
+    private readonly errorsService: ErrorsService,
+  ) {}
+
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  /** The name file and directory findings are reported under. */
+  public readonly validatorName = FILES_VALIDATOR_NAME;
+
+  // 🔏 Private Methods
+
+  // 🌎 Public Methods
+
+  /**
+   * Reports a path as a missing directory when the template entry lives under
+   * a directory that does not exist, and as a missing file otherwise.
+   *
+   * Reporting the absent directory once is more useful than reporting each of
+   * the twenty files inside it.
+   */
+  private buildMissingResult(args: {
+    instanceFilePath: string;
+    templateFilePath: string;
+  }): ValidationFileResult {
+    const parentDirectoryPath = path.dirname(args.instanceFilePath);
+    const isMissingDirectory = !fs.existsSync(parentDirectoryPath);
+
+    return {
+      errors: [
+        isMissingDirectory
+          ? this.errorsService.buildMissingDirectoryError({
+              instanceDirectoryPath: parentDirectoryPath,
+              templateDirectoryPath: path.dirname(args.templateFilePath),
+            })
+          : this.errorsService.buildMissingFileError(args),
+      ],
+      filename: path.basename(args.instanceFilePath),
+      instanceFilePath: args.instanceFilePath,
+      templateFilePath: args.templateFilePath,
+    };
+  }
+
+  /**
+   * Reports every file a project's template requires but the project lacks.
+   *
+   * Missing directories are collapsed to one finding each, so deleting a whole
+   * module reports the directory rather than each file within it.
+   */
+  public async checkProjectFiles(
+    args: CheckProjectFilesArguments,
+  ): Promise<ValidationFileResult[]> {
+    const expectedFiles =
+      await this.discoveryService.resolveExpectedFiles(args);
+    const reportedDirectories = new Set<string>();
+    const fileResults: ValidationFileResult[] = [];
+
+    for (const expectedFile of expectedFiles) {
+      if (fs.existsSync(expectedFile.instanceFilePath)) {
+        continue;
+      }
+
+      const parentDirectoryPath = path.dirname(expectedFile.instanceFilePath);
+
+      if (reportedDirectories.has(parentDirectoryPath)) {
+        continue;
+      }
+
+      const result = this.buildMissingResult(expectedFile);
+
+      if (result.errors[0]?.errorType === "directory") {
+        reportedDirectories.add(parentDirectoryPath);
+      }
+
+      fileResults.push(result);
+    }
+
+    return fileResults;
+  }
+}

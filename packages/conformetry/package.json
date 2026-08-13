@@ -2,6 +2,7 @@
   "dependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@jimmypaolini/conformetry-configuration": "workspace:*",
+    "@jimmypaolini/conformetry-core": "workspace:*",
     "@jimmypaolini/conformetry-generation": "workspace:*",
     "@jimmypaolini/conformetry-validation": "workspace:*",
     "@nestjs/common": "catalog:",
@@ -16,6 +17,8 @@
   "devDependencies": {
     "@nestjs/testing": "catalog:",
     "@nx/eslint-plugin": "catalog:",
+    "@swc-node/register": "catalog:",
+    "@swc/core": "catalog:",
     "@swc/helpers": "catalog:",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",

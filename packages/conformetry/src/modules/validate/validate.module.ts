@@ -1,49 +1,19 @@
-import {
-  ConfigurationModule,
-  ConfigurationService,
-  InputModule,
-  InputService,
-} from "@jimmypaolini/conformetry-configuration";
-import {
-  ValidationModule,
-  ValidationService,
-} from "@jimmypaolini/conformetry-validation";
+import { InputModule } from "@jimmypaolini/conformetry-configuration";
+import { ReportingModule } from "@jimmypaolini/conformetry-core";
+import { ValidationModule } from "@jimmypaolini/conformetry-validation";
 import { Module } from "@nestjs/common";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerModule } from "../logger/logger.module";
 
 import { ValidateCommand } from "./validate.command";
 
 /**
- * Provides the validate command implementation.
+ * Provides the validate command.
  */
 @Module({
   controllers: [],
   exports: [ValidateCommand],
-  imports: [ConfigurationModule, InputModule, ValidationModule],
-  providers: [
-    {
-      inject: [
-        InputService,
-        ConfigurationService,
-        ValidationService,
-        LoggerService,
-      ],
-      provide: ValidateCommand,
-      useFactory: (
-        inputService: InputService,
-        configurationService: ConfigurationService,
-        validationService: ValidationService,
-        loggerService: LoggerService,
-      ): ValidateCommand => {
-        return new ValidateCommand(
-          inputService,
-          configurationService,
-          validationService,
-          loggerService,
-        );
-      },
-    },
-  ],
+  imports: [InputModule, LoggerModule, ReportingModule, ValidationModule],
+  providers: [ValidateCommand],
 })
 export class ValidateModule {}
