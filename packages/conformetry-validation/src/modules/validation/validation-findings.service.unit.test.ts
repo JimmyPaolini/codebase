@@ -99,6 +99,17 @@ describe(ValidationFindingsService, () => {
       expect(result?.templateFilePath).toBe("/w/configuration/templates");
     });
 
+    it("names no directory when there are no templates to share one", () => {
+      const [result] = service.buildUnmatchedResults({
+        templates: [],
+        unmatched: [
+          buildUnmatched({ candidateTemplateNames: [], reason: "no-match" }),
+        ],
+      });
+
+      expect(result?.templateFilePath).toBe("");
+    });
+
     it("returns nothing when every candidate matched", () => {
       expect(
         service.buildUnmatchedResults({ templates: TEMPLATES, unmatched: [] }),

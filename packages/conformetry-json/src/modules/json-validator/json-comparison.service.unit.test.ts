@@ -104,6 +104,33 @@ describe(JsonComparisonService, () => {
     expect(errors[0]?.language).toBe("python");
   });
 
+  it("prefers the instance entry with the fewest differences", () => {
+    // The second instance entry matches the template exactly, so the
+    // reduction has to keep looking past the first.
+    const errors = compare(
+      {
+        items: [
+          { id: 9, kind: "z" },
+          { id: 1, kind: "a" },
+        ],
+      },
+      { items: [{ id: 1, kind: "a" }] },
+    );
+
+    expect(errors).toHaveLength(2);
+  });
+
+  it("treats an explicit null as present rather than missing", () => {
+    expect(compare({ a: null }, { a: null })).toStrictEqual([]);
+  });
+
+  it("reports a null the template does not allow", () => {
+    const errors = compare({ a: null }, { a: 1 });
+
+    expect(errors).toHaveLength(1);
+    expect(errors[0]?.instancePath).toBe("a");
+  });
+
   it("carries an actionable fix", () => {
     const errors = compare({ a: 1 }, {});
 

@@ -97,6 +97,65 @@ describe(ConfigurationService, () => {
     });
   });
 
+  it("gives up on the workspace search outside any workspace", async () => {
+    const originalCwd = process.cwd();
+    const outside = await mkdtemp(path.join(tmpdir(), "conformetry-outside-"));
+
+    process.chdir(outside);
+
+    try {
+      // Walks to the filesystem root without finding a workspace manifest.
+      await expect(
+        service.loadConformetryConfiguration("nowhere/conformetry.config.json"),
+      ).rejects.toThrow("ENOENT");
+    } finally {
+      process.chdir(originalCwd);
+    }
+  });
+
+  it("reads no generators from a module that exports nothing usable", async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), "conformetry-config-"));
+    const configurationPath = path.join(directory, "conformetry.config.mjs");
+
+    await writeFile(configurationPath, "export default 42;\n", "utf8");
+
+    await expect(
+      service.loadConformetryConfiguration(configurationPath),
+    ).resolves.toStrictEqual([]);
+  });
+
+  it("reads a module whose default export holds the generators", async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), "conformetry-config-"));
+    const configurationPath = path.join(directory, "conformetry.config.mjs");
+
+    await writeFile(
+      configurationPath,
+      'export default [{ name: "example", templatePath: "templates/example" }];\n',
+      "utf8",
+    );
+
+    const configuration =
+      await service.loadConformetryConfiguration(configurationPath);
+
+    expect(configuration[0]?.name).toBe("example");
+  });
+
+  it("reads a JSONC configuration, comments and all", async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), "conformetry-config-"));
+    const configurationPath = path.join(directory, "conformetry.config.jsonc");
+
+    await writeFile(
+      configurationPath,
+      '// the workspace generators\n[{ "name": "example", "templatePath": "t" }]\n',
+      "utf8",
+    );
+
+    const configuration =
+      await service.loadConformetryConfiguration(configurationPath);
+
+    expect(configuration[0]?.templatePath).toBe("t");
+  });
+
   it("rejects a generator missing its name rather than validating nothing", async () => {
     const configurationPath = await writeConfiguration([
       { templatePath: "templates/example" },

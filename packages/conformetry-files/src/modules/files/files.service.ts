@@ -6,8 +6,12 @@ import { ErrorsService } from "@jimmypaolini/conformetry-core";
 import { Injectable } from "@nestjs/common";
 
 import type { CheckInstanceFilesArguments } from "./files.types";
-import type { ValidationFileResult } from "@jimmypaolini/conformetry-core";
+import type {
+  ConformanceError,
+  ValidationFileResult,
+} from "@jimmypaolini/conformetry-core";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Checks that every file a project's template declares actually exists.
  *
@@ -18,6 +22,7 @@ import type { ValidationFileResult } from "@jimmypaolini/conformetry-core";
  * a project could delete them and still validate clean.
  */
 @Injectable()
+/* v8 ignore stop */
 export class FilesService {
   // 🏗 Dependency Injection
 
@@ -41,26 +46,20 @@ export class FilesService {
    * Reporting the absent directory once is more useful than reporting each of
    * the twenty files inside it.
    */
-  private buildMissingResult(args: {
+  private buildMissingError(args: {
     instanceFilePath: string;
     templateFilePath: string;
-  }): ValidationFileResult {
+  }): ConformanceError {
     const parentDirectoryPath = path.dirname(args.instanceFilePath);
-    const isMissingDirectory = !fs.existsSync(parentDirectoryPath);
 
-    return {
-      errors: [
-        isMissingDirectory
-          ? this.errorsService.buildMissingDirectoryError({
-              instanceDirectoryPath: parentDirectoryPath,
-              templateDirectoryPath: path.dirname(args.templateFilePath),
-            })
-          : this.errorsService.buildMissingFileError(args),
-      ],
-      filename: path.basename(args.instanceFilePath),
-      instanceFilePath: args.instanceFilePath,
-      templateFilePath: args.templateFilePath,
-    };
+    if (fs.existsSync(parentDirectoryPath)) {
+      return this.errorsService.buildMissingFileError(args);
+    }
+
+    return this.errorsService.buildMissingDirectoryError({
+      instanceDirectoryPath: parentDirectoryPath,
+      templateDirectoryPath: path.dirname(args.templateFilePath),
+    });
   }
 
   /**
@@ -90,13 +89,18 @@ export class FilesService {
         continue;
       }
 
-      const result = this.buildMissingResult(expectedFile);
+      const error = this.buildMissingError(expectedFile);
 
-      if (result.errors[0]?.errorType === "directory") {
+      if (error.errorType === "directory") {
         reportedDirectories.add(parentDirectoryPath);
       }
 
-      fileResults.push(result);
+      fileResults.push({
+        errors: [error],
+        filename: path.basename(expectedFile.instanceFilePath),
+        instanceFilePath: expectedFile.instanceFilePath,
+        templateFilePath: expectedFile.templateFilePath,
+      });
     }
 
     return fileResults;

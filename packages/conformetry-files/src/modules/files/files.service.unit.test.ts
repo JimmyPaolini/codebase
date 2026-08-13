@@ -17,6 +17,28 @@ import type {
   TemplateDefinition,
 } from "@jimmypaolini/conformetry-configuration";
 
+/**
+ * Writes a template with one root file and two files in a nested folder, so a
+ * partially present instance leaves two files sharing one missing directory.
+ */
+async function createNestedTemplatePath(): Promise<string> {
+  const templatePath = path.join(
+    await mkdtemp(path.join(tmpdir(), "conformetry-files-nested-")),
+    "widget",
+  );
+
+  await mkdir(path.join(templatePath, "nested"), { recursive: true });
+  await writeFile(
+    path.join(templatePath, "{{nameKebabCase}}.service.ts"),
+    "",
+    "utf8",
+  );
+  await writeFile(path.join(templatePath, "nested", ".gitignore"), "", "utf8");
+  await writeFile(path.join(templatePath, "nested", "notes.md"), "", "utf8");
+
+  return templatePath;
+}
+
 /** Writes a flat two-file template and returns its folder. */
 async function createTemplatePath(): Promise<string> {
   const templatePath = path.join(
@@ -115,6 +137,32 @@ describe(FilesService, () => {
     ]);
     expect(results[0]?.errors[0]?.errorType).toBe("file");
     expect(results[0]?.errors[0]?.fix).toContain("Create the");
+  });
+
+  it("reports a missing directory once however many files it holds", async () => {
+    const nestedTemplate = discoveryService.collectTemplate({
+      name: "widget",
+      templatePath: await createNestedTemplatePath(),
+    });
+    const instancePath = await mkdtemp(
+      path.join(tmpdir(), "conformetry-files-nested-instance-"),
+    );
+
+    // Present, so the template matches; the nested folder is absent.
+    await writeFile(
+      path.join(instancePath, "my-widget.service.ts"),
+      "",
+      "utf8",
+    );
+
+    const { matched } = discoveryService.resolveInstances({
+      candidates: [{ instancePath, nameStem: "my-widget" }],
+      templates: [nestedTemplate],
+    });
+    const results = service.checkInstanceFiles({ instances: matched });
+
+    expect(results).toHaveLength(1);
+    expect(results[0]?.errors[0]?.errorType).toBe("directory");
   });
 
   it("collapses a missing directory into one finding", async () => {

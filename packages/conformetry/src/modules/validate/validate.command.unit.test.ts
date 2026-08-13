@@ -7,11 +7,38 @@ import {
 import { ReportingService } from "@jimmypaolini/conformetry-core";
 import { ValidationService } from "@jimmypaolini/conformetry-validation";
 import { Test } from "@nestjs/testing";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
 import { ValidateCommand } from "./validate.command";
+
+import type {
+  ConformetryConfiguration,
+  InstanceCandidate,
+  TemplateDefinition,
+} from "@jimmypaolini/conformetry-configuration";
+import type { RunValidationResult } from "@jimmypaolini/conformetry-validation";
+
+const CONFIGURATION: ConformetryConfiguration = [
+  {
+    inputs: {},
+    instances: [{ patterns: ["packages/*/src/modules/*"] }],
+    name: "widget",
+    templatePath: "configuration/templates/widget",
+  },
+];
+
+const CANDIDATE: InstanceCandidate = {
+  instancePath: "/w/packages/widgets/src/modules",
+  nameStem: "gears",
+};
+
+const TEMPLATE: TemplateDefinition = {
+  directoryPath: "/w/configuration/templates/widget",
+  filePaths: [],
+  name: "widget",
+};
 
 /**
  * Dependencies are mocked here; that the real graph wires is proven by
@@ -19,8 +46,16 @@ import { ValidateCommand } from "./validate.command";
  */
 describe(ValidateCommand, () => {
   let command: ValidateCommand;
+  let configurationService: ConfigurationService;
+  let discoveryService: DiscoveryService;
+  let logger: LoggerService;
+  let validationService: ValidationService;
 
-  beforeAll(async () => {
+  beforeAll(() => {
+    process.exitCode = undefined;
+  });
+
+  beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [
         ValidateCommand,
@@ -40,32 +75,120 @@ describe(ValidateCommand, () => {
     }).compile();
 
     command = await module.resolve(ValidateCommand);
+    configurationService = await module.resolve(ConfigurationService);
+    discoveryService = await module.resolve(DiscoveryService);
+    logger = await module.resolve(LoggerService);
+    validationService = await module.resolve(ValidationService);
+
+    vi.mocked(
+      configurationService.loadConformetryConfiguration,
+    ).mockResolvedValue(CONFIGURATION);
+    vi.mocked(discoveryService.resolveCandidates).mockReturnValue([CANDIDATE]);
+    vi.mocked(discoveryService.collectTemplate).mockReturnValue(TEMPLATE);
+    vi.mocked(validationService.validate).mockReturnValue({
+      checkedPaths: [],
+      fileResults: [],
+      ok: true,
+      unmatched: [],
+    } satisfies RunValidationResult);
   });
 
   it("is defined", () => {
     expect(command).toBeDefined();
   });
 
-  it("sets logger context", async () => {
-    const module = await Test.createTestingModule({
-      providers: [
-        ValidateCommand,
-        {
-          provide: ConfigurationService,
-          useValue: createMock<ConfigurationService>(),
-        },
-        { provide: DiscoveryService, useValue: createMock<DiscoveryService>() },
-        { provide: InputService, useValue: createMock<InputService>() },
-        { provide: LoggerService, useValue: createMock<LoggerService>() },
-        { provide: ReportingService, useValue: createMock<ReportingService>() },
-        {
-          provide: ValidationService,
-          useValue: createMock<ValidationService>(),
-        },
-      ],
-    }).compile();
-    const logger = await module.resolve(LoggerService);
-
+  it("sets logger context", () => {
     expect(logger.setContext).toHaveBeenCalledWith("ValidateCommand");
+  });
+
+  describe("run", () => {
+    it("validates the configured instances and reports the outcome", async () => {
+      await command.run([], {});
+
+      expect(discoveryService.resolveCandidates).toHaveBeenCalledWith(
+        expect.objectContaining({ patterns: ["packages/*/src/modules/*"] }),
+      );
+      expect(validationService.validate).toHaveBeenCalledWith(
+        expect.objectContaining({ candidates: [CANDIDATE] }),
+      );
+      expect(logger.log).toHaveBeenCalledTimes(1);
+    });
+
+    it("lets an explicit glob override the configured instances", async () => {
+      await command.run([], { instances: ["tools/*"] });
+
+      expect(discoveryService.resolveCandidates).toHaveBeenCalledWith(
+        expect.objectContaining({ patterns: ["tools/*"] }),
+      );
+    });
+
+    it("passes a group's substitutions to glob expansion", async () => {
+      vi.mocked(
+        configurationService.loadConformetryConfiguration,
+      ).mockResolvedValue([
+        {
+          inputs: {},
+          instances: [
+            {
+              patterns: ["packages/*"],
+              substitutions: { type: "packages" },
+            },
+          ],
+          name: "widget",
+          templatePath: "configuration/templates/widget",
+        },
+      ]);
+
+      await command.run([], {});
+
+      expect(discoveryService.resolveCandidates).toHaveBeenCalledWith(
+        expect.objectContaining({ substitutions: { type: "packages" } }),
+      );
+    });
+
+    it("passes a language filter through", async () => {
+      await command.run([], { languages: ["typescript"] });
+
+      expect(validationService.validate).toHaveBeenCalledWith(
+        expect.objectContaining({ languageNames: ["typescript"] }),
+      );
+    });
+
+    it("reads the configuration path the caller named", async () => {
+      await command.run([], { config: "custom/conformetry.config.ts" });
+
+      expect(
+        configurationService.loadConformetryConfiguration,
+      ).toHaveBeenCalledWith("custom/conformetry.config.ts");
+    });
+
+    it("fails the command when an instance does not conform", async () => {
+      vi.mocked(validationService.validate).mockReturnValue({
+        checkedPaths: [],
+        fileResults: [
+          {
+            errors: [],
+            filename: "gears.ts",
+            instanceFilePath: "/w/gears.ts",
+            templateFilePath: "/w/template.ts",
+          },
+        ],
+        ok: false,
+        unmatched: [],
+      });
+
+      await expect(command.run([], {})).rejects.toThrow("Validation failed");
+      expect(process.exitCode).toBe(1);
+
+      process.exitCode = undefined;
+    });
+  });
+
+  describe("option parsing", () => {
+    it("parses each option through the input service", () => {
+      expect(command.parseConfig("path")).toBeDefined();
+      expect(command.parseInstances("a,b")).toBeDefined();
+      expect(command.parseLanguages("typescript")).toBeDefined();
+    });
   });
 });
