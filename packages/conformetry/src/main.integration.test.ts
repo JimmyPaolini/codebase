@@ -4,19 +4,6 @@ vi.mock("@jimmypaolini/conformetry-configuration", () => {
   function MockConfigurationModule(): void {}
   function MockConfigurationService(): void {}
 
-  function parseCommaDelimitedOption(
-    value: string | undefined,
-  ): string[] | undefined {
-    if (value === undefined) {
-      return undefined;
-    }
-
-    return value
-      .split(",")
-      .map((entry) => entry.trim())
-      .filter((entry) => entry.length > 0);
-  }
-
   return {
     collectGeneratorInputsFromCommandArguments: vi.fn<
       () => Record<string, never>
@@ -25,7 +12,6 @@ vi.mock("@jimmypaolini/conformetry-configuration", () => {
     }),
     ConfigurationModule: MockConfigurationModule,
     ConfigurationService: MockConfigurationService,
-    parseCommaDelimitedOption,
   };
 });
 

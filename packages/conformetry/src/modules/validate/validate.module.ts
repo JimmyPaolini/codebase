@@ -1,6 +1,8 @@
 import {
   ConfigurationModule,
   ConfigurationService,
+  InputModule,
+  InputService,
 } from "@jimmypaolini/conformetry-configuration";
 import {
   ValidationModule,
@@ -18,17 +20,24 @@ import { ValidateCommand } from "./validate.command";
 @Module({
   controllers: [],
   exports: [ValidateCommand],
-  imports: [ConfigurationModule, ValidationModule],
+  imports: [ConfigurationModule, InputModule, ValidationModule],
   providers: [
     {
-      inject: [ConfigurationService, ValidationService, LoggerService],
+      inject: [
+        InputService,
+        ConfigurationService,
+        ValidationService,
+        LoggerService,
+      ],
       provide: ValidateCommand,
       useFactory: (
+        inputService: InputService,
         configurationService: ConfigurationService,
         validationService: ValidationService,
         loggerService: LoggerService,
       ): ValidateCommand => {
         return new ValidateCommand(
+          inputService,
           configurationService,
           validationService,
           loggerService,

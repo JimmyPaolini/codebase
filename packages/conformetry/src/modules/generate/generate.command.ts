@@ -1,6 +1,6 @@
 import {
-  collectGeneratorInputsFromCommandArguments,
   ConfigurationService,
+  InputService,
 } from "@jimmypaolini/conformetry-configuration";
 import { GenerationService } from "@jimmypaolini/conformetry-generation";
 import { Injectable } from "@nestjs/common";
@@ -21,6 +21,7 @@ import type { JsonSchemaDefinition } from "@jimmypaolini/conformetry-configurati
 @Injectable()
 export class GenerateCommand extends CommandRunner {
   constructor(
+    private readonly inputService: InputService,
     private readonly configurationService: ConfigurationService,
     private readonly generationService: GenerationService,
     private readonly logger: LoggerService,
@@ -37,8 +38,8 @@ export class GenerateCommand extends CommandRunner {
     flags: "--config [path]",
     required: true,
   })
-  parseConfig(value: string): string {
-    return value;
+  parseConfig(value: string | undefined): string | undefined {
+    return this.inputService.parseConfigurationPathOption(value);
   }
 
   /**
@@ -50,7 +51,7 @@ export class GenerateCommand extends CommandRunner {
     required: true,
   })
   parseName(value: string): string {
-    return value;
+    return this.inputService.parseGeneratorNameOption(value);
   }
 
   /**
@@ -61,7 +62,7 @@ export class GenerateCommand extends CommandRunner {
     flags: "--directory [path]",
   })
   parseTargetDirectoryPath(value: string | undefined): string | undefined {
-    return value;
+    return this.inputService.parseTargetDirectoryPathOption(value);
   }
 
   /**
@@ -88,7 +89,7 @@ export class GenerateCommand extends CommandRunner {
     const schema: JsonSchemaDefinition = {
       properties: generatorDefinition.parameters,
     };
-    const generatorInputs = collectGeneratorInputsFromCommandArguments({
+    const generatorInputs = await this.inputService.resolveGeneratorInputs({
       rawArguments: passedParameters,
       schema,
     });

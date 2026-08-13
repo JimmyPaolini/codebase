@@ -6,6 +6,7 @@
     "jsonc-parser": "catalog:",
     "lodash": "catalog:",
     "pino": "catalog:",
+    "prompts": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:",
     "zod": "catalog:"
@@ -15,6 +16,7 @@
     "@nx/eslint-plugin": "catalog:",
     "@swc/helpers": "catalog:",
     "@types/node": "catalog:",
+    "@types/prompts": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

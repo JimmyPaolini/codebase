@@ -34,7 +34,9 @@ export {
   buildNameSubstitutions,
   collectGeneratorInputsFromCommandArguments,
   normalizeRuntimeOptions,
-  parseCommaDelimitedOption,
   resolveConfigurationPath,
   resolveTargetDirectoryPath,
 } from "./modules/configuration/configuration.utilities";
+export { InputModule } from "./modules/input/input.module";
+export { InputService } from "./modules/input/input.service";
+export type { ResolveGeneratorInputsArguments } from "./modules/input/input.types";

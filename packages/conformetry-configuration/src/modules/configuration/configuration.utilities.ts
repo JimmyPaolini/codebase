@@ -75,22 +75,6 @@ export function normalizeRuntimeOptions(
 }
 
 /**
- * Parses comma-delimited CLI options into a trimmed string array.
- */
-export function parseCommaDelimitedOption(
-  value: string | undefined,
-): string[] | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
-
-  return value
-    .split(",")
-    .map((item) => item.trim())
-    .filter((item) => item.length > 0);
-}
-
-/**
  * Resolves configuration path precedence between runtime options, plugin options, and defaults.
  */
 export function resolveConfigurationPath(

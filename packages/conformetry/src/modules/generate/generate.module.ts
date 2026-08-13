@@ -1,6 +1,8 @@
 import {
   ConfigurationModule,
   ConfigurationService,
+  InputModule,
+  InputService,
 } from "@jimmypaolini/conformetry-configuration";
 import {
   GenerationModule,
@@ -18,17 +20,24 @@ import { GenerateCommand } from "./generate.command";
 @Module({
   controllers: [],
   exports: [GenerateCommand],
-  imports: [ConfigurationModule, GenerationModule],
+  imports: [ConfigurationModule, GenerationModule, InputModule],
   providers: [
     {
-      inject: [ConfigurationService, GenerationService, LoggerService],
+      inject: [
+        InputService,
+        ConfigurationService,
+        GenerationService,
+        LoggerService,
+      ],
       provide: GenerateCommand,
       useFactory: (
+        inputService: InputService,
         configurationService: ConfigurationService,
         generationService: GenerationService,
         loggerService: LoggerService,
       ): GenerateCommand => {
         return new GenerateCommand(
+          inputService,
           configurationService,
           generationService,
           loggerService,

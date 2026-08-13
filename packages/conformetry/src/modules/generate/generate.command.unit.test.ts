@@ -1,4 +1,7 @@
-import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
+import {
+  ConfigurationService,
+  InputService,
+} from "@jimmypaolini/conformetry-configuration";
 import { GenerationService } from "@jimmypaolini/conformetry-generation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -6,19 +9,27 @@ import type { LoggerService } from "../logger/logger.service";
 import type { TestingModule } from "@nestjs/testing";
 
 const {
-  mockCollectGeneratorInputsFromCommandArguments,
   mockLoadConformetryConfiguration,
   mockLoggerLog,
+  mockParseConfigurationPathOption,
+  mockParseGeneratorNameOption,
+  mockParseTargetDirectoryPathOption,
+  mockResolveGeneratorInputs,
   mockRunGenerator,
 } = vi.hoisted(() => {
   return {
-    mockCollectGeneratorInputsFromCommandArguments:
-      vi.fn<(args: unknown) => Record<string, string>>(),
     mockLoadConformetryConfiguration:
       vi.fn<
         (path: string) => Promise<{ generators: Record<string, unknown> }>
       >(),
     mockLoggerLog: vi.fn<(message: unknown) => void>(),
+    mockParseConfigurationPathOption:
+      vi.fn<(value: string | undefined) => string | undefined>(),
+    mockParseGeneratorNameOption: vi.fn<(value: string) => string>(),
+    mockParseTargetDirectoryPathOption:
+      vi.fn<(value: string | undefined) => string | undefined>(),
+    mockResolveGeneratorInputs:
+      vi.fn<(args: unknown) => Promise<Record<string, string>>>(),
     mockRunGenerator: vi.fn<(input: unknown) => Promise<unknown>>(),
   };
 });
@@ -26,13 +37,19 @@ const designParameterTypesMetadataKey = `design:${["param", "types"].join("")}`;
 
 vi.mock("@jimmypaolini/conformetry-configuration", () => {
   function MockConfigurationModule(): void {}
+  function MockInputModule(): void {}
 
   return {
-    collectGeneratorInputsFromCommandArguments:
-      mockCollectGeneratorInputsFromCommandArguments,
     ConfigurationModule: MockConfigurationModule,
     ConfigurationService: class ConfigurationService {
       loadConformetryConfiguration = mockLoadConformetryConfiguration;
+    },
+    InputModule: MockInputModule,
+    InputService: class InputService {
+      parseConfigurationPathOption = mockParseConfigurationPathOption;
+      parseGeneratorNameOption = mockParseGeneratorNameOption;
+      parseTargetDirectoryPathOption = mockParseTargetDirectoryPathOption;
+      resolveGeneratorInputs = mockResolveGeneratorInputs;
     },
   };
 });
@@ -71,9 +88,16 @@ describe("generateCommand", () => {
     return loggerService;
   }
 
+  function createInputService(): InputService {
+    return new InputService();
+  }
+
   beforeEach(() => {
     vi.clearAllMocks();
-    mockCollectGeneratorInputsFromCommandArguments.mockReturnValue({
+    mockParseConfigurationPathOption.mockImplementation((value) => value);
+    mockParseGeneratorNameOption.mockImplementation((value) => value);
+    mockParseTargetDirectoryPathOption.mockImplementation((value) => value);
+    mockResolveGeneratorInputs.mockResolvedValue({
       project: "lexico",
     });
     process.argv = ["node", "conformetry", "generate", "--project", "lexico"];
@@ -82,6 +106,7 @@ describe("generateCommand", () => {
   it("parses CLI option values", async () => {
     const { GenerateCommand } = await import("./generate.command");
     const command = new GenerateCommand(
+      createInputService(),
       new ConfigurationService(),
       new GenerationService(),
       createLoggerService(),
@@ -95,11 +120,22 @@ describe("generateCommand", () => {
       "packages/conformetry",
     );
     expect(command.parseTargetDirectoryPath(undefined)).toBeUndefined();
+    expect(mockParseConfigurationPathOption).toHaveBeenCalledWith(
+      "configuration/conformetry.config.ts",
+    );
+    expect(mockParseGeneratorNameOption).toHaveBeenCalledWith(
+      "react-component",
+    );
+    expect(mockParseTargetDirectoryPathOption).toHaveBeenCalledWith(
+      "packages/conformetry",
+    );
+    expect(mockParseTargetDirectoryPathOption).toHaveBeenCalledWith(undefined);
   });
 
   it("throws when required options are missing", async () => {
     const { GenerateCommand } = await import("./generate.command");
     const command = new GenerateCommand(
+      createInputService(),
       new ConfigurationService(),
       new GenerationService(),
       createLoggerService(),
@@ -120,6 +156,7 @@ describe("generateCommand", () => {
 
     const { GenerateCommand } = await import("./generate.command");
     const command = new GenerateCommand(
+      createInputService(),
       new ConfigurationService(),
       new GenerationService(),
       createLoggerService(),
@@ -134,7 +171,7 @@ describe("generateCommand", () => {
   });
 
   it("runs generator with schema-derived inputs and logs resulting file paths", async () => {
-    mockCollectGeneratorInputsFromCommandArguments.mockReturnValue({
+    mockResolveGeneratorInputs.mockResolvedValue({
       project: "lexico-components",
     });
 
@@ -157,6 +194,7 @@ describe("generateCommand", () => {
     });
     const { GenerateCommand } = await import("./generate.command");
     const command = new GenerateCommand(
+      createInputService(),
       new ConfigurationService(),
       new GenerationService(),
       createLoggerService(),
@@ -171,16 +209,14 @@ describe("generateCommand", () => {
     expect(mockLoadConformetryConfiguration).toHaveBeenCalledWith(
       "configuration/conformetry.config.ts",
     );
-    expect(mockCollectGeneratorInputsFromCommandArguments).toHaveBeenCalledWith(
-      {
-        rawArguments: ["--project", "lexico-components"],
-        schema: {
-          properties: {
-            project: { type: "string" },
-          },
+    expect(mockResolveGeneratorInputs).toHaveBeenCalledWith({
+      rawArguments: ["--project", "lexico-components"],
+      schema: {
+        properties: {
+          project: { type: "string" },
         },
       },
-    );
+    });
     expect(mockRunGenerator).toHaveBeenCalledWith(
       expect.objectContaining({
         inputs: {
@@ -221,6 +257,7 @@ describe("generateCommand", () => {
 
     const { GenerateCommand } = await import("./generate.command");
     const command = new GenerateCommand(
+      createInputService(),
       new ConfigurationService(),
       new GenerationService(),
       createLoggerService(),
@@ -280,22 +317,29 @@ describe("generateCommand", () => {
         providers: [
           {
             inject: [
+              "INPUT_SERVICE_TOKEN",
               ConfigurationService,
               GenerationService,
               "LOGGER_SERVICE_TOKEN",
             ],
             provide: ImportedGenerateCommand,
             useFactory: (
+              inputService: InputService,
               configurationService: ConfigurationService,
               generationService: GenerationService,
               loggerService: LoggerService,
             ): unknown => {
               return new ImportedGenerateCommand(
+                inputService,
                 configurationService,
                 generationService,
                 loggerService,
               );
             },
+          },
+          {
+            provide: "INPUT_SERVICE_TOKEN",
+            useValue: createInputService(),
           },
           {
             provide: ConfigurationService,
@@ -357,6 +401,7 @@ describe("generateCommand", () => {
       GenerateModule,
     ) as {
       useFactory: (
+        inputService: InputService,
         configurationService: ConfigurationService,
         generationService: GenerationService,
         loggerService: LoggerService,
@@ -367,6 +412,7 @@ describe("generateCommand", () => {
     expect(providerDefinitions).toHaveLength(1);
     expect(
       providerDefinitions[0]?.useFactory(
+        createInputService(),
         new ConfigurationService(),
         new GenerationService(),
         createLoggerService(),

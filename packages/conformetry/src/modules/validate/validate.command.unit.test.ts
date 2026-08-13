@@ -1,6 +1,7 @@
 import {
   ConfigurationService,
   type ConformetryConfiguration,
+  InputService,
   type RunValidationResult,
 } from "@jimmypaolini/conformetry-configuration";
 import { ValidationService } from "@jimmypaolini/conformetry-validation";
@@ -22,6 +23,22 @@ const mockValidateConfiguredSelection =
   >();
 const mockLoadConformetryConfiguration =
   vi.fn<(configurationPath: string) => Promise<ConformetryConfiguration>>();
+const mockParseConfigurationPathOption =
+  vi.fn<(value: string | undefined) => string | undefined>();
+const mockParseProjectFilterOption =
+  vi.fn<(value: string | undefined) => string[] | undefined>();
+const mockParseRuleFilterOption =
+  vi.fn<(value: string | undefined) => string[] | undefined>();
+const mockResolveInputsFromValues = vi.fn<
+  (args: {
+    promptWhenMissing?: boolean;
+    providedInputs: Record<string, string | undefined>;
+    schema: {
+      properties?: Record<string, unknown>;
+      required?: string[];
+    };
+  }) => Promise<Record<string, string>>
+>();
 const mockLoggerLog = vi.fn<(message: unknown) => void>();
 const designParameterTypesMetadataKey = `design:${["param", "types"].join("")}`;
 
@@ -38,26 +55,20 @@ vi.mock("@jimmypaolini/conformetry-validation", () => {
 
 vi.mock("@jimmypaolini/conformetry-configuration", () => {
   function MockConfigurationModule(): void {}
-
-  function parseCommaDelimitedOption(
-    value: string | undefined,
-  ): string[] | undefined {
-    if (value === undefined) {
-      return undefined;
-    }
-
-    return value
-      .split(",")
-      .map((entry) => entry.trim())
-      .filter((entry) => entry.length > 0);
-  }
+  function MockInputModule(): void {}
 
   return {
     ConfigurationModule: MockConfigurationModule,
     ConfigurationService: class ConfigurationService {
       loadConformetryConfiguration = mockLoadConformetryConfiguration;
     },
-    parseCommaDelimitedOption,
+    InputModule: MockInputModule,
+    InputService: class InputService {
+      parseConfigurationPathOption = mockParseConfigurationPathOption;
+      parseProjectFilterOption = mockParseProjectFilterOption;
+      parseRuleFilterOption = mockParseRuleFilterOption;
+      resolveInputsFromValues = mockResolveInputsFromValues;
+    },
   };
 });
 
@@ -65,6 +76,40 @@ describe("validateCommand", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.exitCode = 0;
+    mockParseConfigurationPathOption.mockImplementation((value) => value);
+    mockParseProjectFilterOption.mockImplementation((value) => {
+      if (value === undefined) {
+        return undefined;
+      }
+
+      return value
+        .split(",")
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0);
+    });
+    mockParseRuleFilterOption.mockImplementation((value) => {
+      if (value === undefined) {
+        return undefined;
+      }
+
+      return value
+        .split(",")
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0);
+    });
+    mockResolveInputsFromValues.mockImplementation(async (args) => {
+      return await Promise.resolve({
+        ...(args.providedInputs["config"] === undefined
+          ? { config: "configuration/conformetry.config.ts" }
+          : { config: args.providedInputs["config"] }),
+        ...(args.providedInputs["projects"] === undefined
+          ? {}
+          : { projects: args.providedInputs["projects"] }),
+        ...(args.providedInputs["rules"] === undefined
+          ? {}
+          : { rules: args.providedInputs["rules"] }),
+      });
+    });
   });
 
   function isConfigurationService(
@@ -109,6 +154,10 @@ describe("validateCommand", () => {
     return validationService;
   }
 
+  function createInputService(): InputService {
+    return new InputService();
+  }
+
   function isLoggerService(value: unknown): value is LoggerService {
     return (
       typeof value === "object" &&
@@ -133,6 +182,7 @@ describe("validateCommand", () => {
 
   function createCommand(): ValidateCommand {
     return new ValidateCommand(
+      createInputService(),
       createConfigurationService(),
       createValidationService(),
       createLoggerService(),
@@ -142,20 +192,61 @@ describe("validateCommand", () => {
   it("parses config, project, and rule options", () => {
     const command = createCommand();
 
-    expect(command.parseConfig("configuration/conformetry.config.ts")).toBe(
-      "configuration/conformetry.config.ts",
+    expect(command.parseConfig(" configuration/conformetry.config.ts ")).toBe(
+      " configuration/conformetry.config.ts ",
     );
     expect(command.parseConfig(undefined)).toBeUndefined();
+    expect(mockParseConfigurationPathOption).toHaveBeenCalledWith(
+      " configuration/conformetry.config.ts ",
+    );
+    expect(mockParseConfigurationPathOption).toHaveBeenCalledWith(undefined);
     expect(command.parseProjects("lexico, conformetry , ,")).toStrictEqual([
       "lexico",
       "conformetry",
     ]);
     expect(command.parseProjects(undefined)).toBeUndefined();
+    expect(mockParseProjectFilterOption).toHaveBeenCalledWith(
+      "lexico, conformetry , ,",
+    );
+    expect(mockParseProjectFilterOption).toHaveBeenCalledWith(undefined);
     expect(command.parseRules("typescript, markdown, ,")).toStrictEqual([
       "typescript",
       "markdown",
     ]);
     expect(command.parseRules(undefined)).toBeUndefined();
+    expect(mockParseRuleFilterOption).toHaveBeenCalledWith(
+      "typescript, markdown, ,",
+    );
+    expect(mockParseRuleFilterOption).toHaveBeenCalledWith(undefined);
+  });
+
+  it("prompts for missing validate options through InputService", async () => {
+    const command = createCommand();
+    mockResolveInputsFromValues.mockResolvedValue({
+      config: "configuration/custom.config.ts",
+      projects: "packages/conformetry,packages/conformetry-json",
+      rules: "json,typescript",
+    });
+    mockLoadConformetryConfiguration.mockResolvedValue({
+      generators: {},
+    });
+    mockValidateConfiguredSelection.mockResolvedValue({
+      ok: true,
+      pluginResults: [],
+    });
+
+    await command.run([], {});
+
+    expect(mockResolveInputsFromValues).toHaveBeenCalledTimes(1);
+    expect(mockValidateConfiguredSelection).toHaveBeenCalledWith({
+      configurationPath: "configuration/custom.config.ts",
+      requestedProjectPaths: [
+        "packages/conformetry",
+        "packages/conformetry-json",
+      ],
+      requestedRuleNames: ["json", "typescript"],
+      workingDirectory: process.cwd(),
+    });
   });
 
   it("delegates validation orchestration to ValidationService with defaults", async () => {
@@ -253,17 +344,20 @@ describe("validateCommand", () => {
         providers: [
           {
             inject: [
+              InputService,
               ConfigurationService,
               ValidationService,
               "LOGGER_SERVICE_TOKEN",
             ],
             provide: ValidateCommand,
             useFactory: (
+              inputService: InputService,
               configurationService: ConfigurationService,
               validationService: ValidationService,
               loggerService: LoggerService,
             ): ValidateCommand => {
               return new ValidateCommand(
+                inputService,
                 configurationService,
                 validationService,
                 loggerService,
@@ -273,6 +367,10 @@ describe("validateCommand", () => {
           {
             provide: ConfigurationService,
             useValue: configurationService,
+          },
+          {
+            provide: InputService,
+            useValue: createInputService(),
           },
           {
             provide: ValidationService,
@@ -322,6 +420,7 @@ describe("validateCommand", () => {
       ValidateModule,
     ) as {
       useFactory: (
+        inputService: InputService,
         configurationService: ConfigurationService,
         validationService: ValidationService,
         loggerService: LoggerService,
@@ -332,6 +431,7 @@ describe("validateCommand", () => {
     expect(providerDefinitions).toHaveLength(1);
     expect(
       providerDefinitions[0]?.useFactory(
+        createInputService(),
         new ConfigurationService(),
         createValidationService(),
         createLoggerService(),

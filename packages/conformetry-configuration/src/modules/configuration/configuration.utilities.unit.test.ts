@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import {
   collectGeneratorInputsFromCommandArguments,
   normalizeRuntimeOptions,
-  parseCommaDelimitedOption,
   resolveConfigurationPath,
   resolveTargetDirectoryPath,
 } from "./configuration.utilities";
@@ -181,18 +180,6 @@ describe("configuration utilities", () => {
       });
 
       expect(inputs).toStrictEqual({});
-    });
-  });
-
-  describe(parseCommaDelimitedOption, () => {
-    it("returns undefined for missing values", () => {
-      expect(parseCommaDelimitedOption(undefined)).toBeUndefined();
-    });
-
-    it("returns trimmed non-empty values", () => {
-      expect(
-        parseCommaDelimitedOption(" first-project, second-project ,, third "),
-      ).toStrictEqual(["first-project", "second-project", "third"]);
     });
   });
 });
