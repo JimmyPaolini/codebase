@@ -10,9 +10,6 @@ export class UnknownConfigurationFileTypeError extends Error {
   }
 }
 
-/** Config path used when the caller supplies none. */
-export const DEFAULT_CONFIGURATION_PATH = "configuration/conformetry.config.ts";
-
 /** Marks the workspace root during an upward search from the process cwd. */
 export const WORKSPACE_MANIFEST_FILENAME = "pnpm-workspace.yaml";
 

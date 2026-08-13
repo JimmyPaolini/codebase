@@ -482,9 +482,7 @@
       "options": {
         "cwd": "{workspaceRoot}"
       },
-      "outputs": [
-        "{workspaceRoot}/README.md"
-      ]
+      "outputs": ["{workspaceRoot}/README.md"]
     },
     "openwiki": {
       "cache": false,
@@ -558,10 +556,7 @@
       "defaultConfiguration": "check",
       "description": "Run Oxlint on workspace root files (config files, scripts, documentation, infrastructure)",
       "executor": "nx:run-commands",
-      "inputs": [
-        "{workspaceRoot}/configuration/oxlint.config.ts",
-        "default"
-      ],
+      "inputs": ["{workspaceRoot}/configuration/oxlint.config.ts", "default"],
       "options": {
         "cwd": "{projectRoot}"
       }
@@ -730,9 +725,7 @@
       "defaultConfiguration": "check",
       "description": "Lint codebase for consistent package.json conventions",
       "executor": "nx:run-commands",
-      "inputs": [
-        "{workspaceRoot}/**/package.json"
-      ],
+      "inputs": ["{workspaceRoot}/**/package.json"],
       "options": {
         "cwd": "{workspaceRoot}"
       }
@@ -834,9 +827,7 @@
       "defaultConfiguration": "write",
       "description": "Validate that VS Code Machine settings contain all workspace settings (check) or merge workspace settings into Machine settings (write)",
       "executor": "nx:run-commands",
-      "inputs": [
-        "{projectRoot}/.vscode/settings.json"
-      ],
+      "inputs": ["{projectRoot}/.vscode/settings.json"],
       "options": {
         "command": "tsx .devcontainer/scripts/sync-vscode-settings.ts"
       }
@@ -902,9 +893,7 @@
       "cache": false,
       "description": "Scan Terraform infrastructure code for misconfigurations using Trivy",
       "executor": "nx:run-commands",
-      "inputs": [
-        "{workspaceRoot}/infrastructure/terraform/**/*.tf"
-      ],
+      "inputs": ["{workspaceRoot}/infrastructure/terraform/**/*.tf"],
       "options": {
         "command": "trivy config infrastructure/terraform --severity CRITICAL,HIGH --exit-code 1 --ignorefile configuration/trivyignore",
         "cwd": "{projectRoot}"

@@ -209,6 +209,18 @@ const config: KnipConfig = {
       ],
       project: "src/**/*.ts",
     },
+    "packages/conformetry-core": {
+      entry: ["src/index.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      project: "src/**/*.ts",
+    },
+    "packages/conformetry-files": {
+      entry: ["src/index.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      project: "src/**/*.ts",
+    },
     "packages/conformetry-configuration": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
@@ -216,6 +228,12 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
     "packages/conformetry-generation": {
+      entry: ["src/index.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      project: "src/**/*.ts",
+    },
+    "packages/conformetry-jupyter": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],

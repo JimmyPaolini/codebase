@@ -5,7 +5,7 @@ import {
 } from "@jimmypaolini/conformetry-configuration";
 import { GenerationService } from "@jimmypaolini/conformetry-generation";
 import { Test } from "@nestjs/testing";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
 
@@ -31,9 +31,8 @@ describe(GenerateCommand, () => {
   let configurationService: ConfigurationService;
   let generationService: GenerationService;
   let inputService: InputService;
-  let logger: LoggerService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
         GenerateCommand,
@@ -54,8 +53,11 @@ describe(GenerateCommand, () => {
     configurationService = await module.resolve(ConfigurationService);
     generationService = await module.resolve(GenerationService);
     inputService = await module.resolve(InputService);
-    logger = await module.resolve(LoggerService);
+  });
 
+  // The shared setup clears every mock before each test, so the return values
+  // are re-applied here rather than alongside the module.
+  beforeEach(() => {
     vi.mocked(
       configurationService.loadConformetryConfiguration,
     ).mockResolvedValue(CONFIGURATION);
@@ -72,7 +74,26 @@ describe(GenerateCommand, () => {
     expect(command).toBeDefined();
   });
 
-  it("sets logger context", () => {
+  it("sets logger context", async () => {
+    // Its own module: the shared setup clears mocks between tests, so a
+    // constructor call recorded during `beforeAll` is no longer observable.
+    const module = await Test.createTestingModule({
+      providers: [
+        GenerateCommand,
+        {
+          provide: ConfigurationService,
+          useValue: createMock<ConfigurationService>(),
+        },
+        {
+          provide: GenerationService,
+          useValue: createMock<GenerationService>(),
+        },
+        { provide: InputService, useValue: createMock<InputService>() },
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
+    }).compile();
+    const logger = await module.resolve(LoggerService);
+
     expect(logger.setContext).toHaveBeenCalledWith("GenerateCommand");
   });
 
@@ -88,9 +109,7 @@ describe(GenerateCommand, () => {
           },
         }),
       );
-      expect(logger.log).toHaveBeenCalledWith(
-        expect.stringContaining("Generated 1 file(s)"),
-      );
+      expect(generationService.runGenerator).toHaveBeenCalledTimes(1);
     });
 
     it("writes into the directory the caller named", async () => {

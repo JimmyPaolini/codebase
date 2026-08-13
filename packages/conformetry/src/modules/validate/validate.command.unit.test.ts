@@ -48,14 +48,10 @@ describe(ValidateCommand, () => {
   let command: ValidateCommand;
   let configurationService: ConfigurationService;
   let discoveryService: DiscoveryService;
-  let logger: LoggerService;
+  let commandLogger: LoggerService;
   let validationService: ValidationService;
 
-  beforeAll(() => {
-    process.exitCode = undefined;
-  });
-
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
         ValidateCommand,
@@ -77,9 +73,14 @@ describe(ValidateCommand, () => {
     command = await module.resolve(ValidateCommand);
     configurationService = await module.resolve(ConfigurationService);
     discoveryService = await module.resolve(DiscoveryService);
-    logger = await module.resolve(LoggerService);
+    commandLogger = await module.resolve(LoggerService);
     validationService = await module.resolve(ValidationService);
+  });
 
+  // The shared setup clears every mock before each test, so the return values
+  // are re-applied here rather than alongside the module.
+  beforeEach(() => {
+    process.exitCode = undefined;
     vi.mocked(
       configurationService.loadConformetryConfiguration,
     ).mockResolvedValue(CONFIGURATION);
@@ -97,7 +98,28 @@ describe(ValidateCommand, () => {
     expect(command).toBeDefined();
   });
 
-  it("sets logger context", () => {
+  it("sets logger context", async () => {
+    // Its own module: the shared setup clears mocks between tests, so a
+    // constructor call recorded during `beforeAll` is no longer observable.
+    const module = await Test.createTestingModule({
+      providers: [
+        ValidateCommand,
+        {
+          provide: ConfigurationService,
+          useValue: createMock<ConfigurationService>(),
+        },
+        { provide: DiscoveryService, useValue: createMock<DiscoveryService>() },
+        { provide: InputService, useValue: createMock<InputService>() },
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+        { provide: ReportingService, useValue: createMock<ReportingService>() },
+        {
+          provide: ValidationService,
+          useValue: createMock<ValidationService>(),
+        },
+      ],
+    }).compile();
+    const logger = await module.resolve(LoggerService);
+
     expect(logger.setContext).toHaveBeenCalledWith("ValidateCommand");
   });
 
@@ -111,7 +133,7 @@ describe(ValidateCommand, () => {
       expect(validationService.validate).toHaveBeenCalledWith(
         expect.objectContaining({ candidates: [CANDIDATE] }),
       );
-      expect(logger.log).toHaveBeenCalledTimes(1);
+      expect(commandLogger.log).toHaveBeenCalledTimes(1);
     });
 
     it("lets an explicit glob override the configured instances", async () => {
