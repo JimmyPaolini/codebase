@@ -3,8 +3,6 @@
   // Projects extend this via their own tsconfig.json → { "extends": "../../configuration/tsconfig.json" }
   "compileOnSave": false,
   "compilerOptions": {
-    // 📦 Module System
-    "noEmit": true,
     // 🔒 Strict Safety
     // All strict flags are on; these additional flags catch more bugs:
     "allowUnreachableCode": false,
@@ -21,6 +19,8 @@
     "lib": ["ES2025"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    // 📦 Module System
+    "noEmit": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
@@ -36,10 +36,10 @@
       "@codebase/lexico-components": [
         "../packages/lexico-components/src/index.ts"
       ],
+      "codebase/configuration/*": ["./*"],
       "eslint-plugin-better-max-params": [
         "./types/eslint-plugin-better-max-params/index.d.ts"
-      ],
-      "codebase/configuration/*": ["./*"]
+      ]
     },
     "resolveJsonModule": true,
     "rootDir": "..",
