@@ -8,6 +8,7 @@ import {
 
 import type { ConformetryPluginOptions } from "./options.types";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Narrows the untyped options object Nx hands a plugin.
  *
@@ -17,6 +18,7 @@ import type { ConformetryPluginOptions } from "./options.types";
  * from being built.
  */
 @Injectable()
+/* v8 ignore stop */
 export class OptionsService {
   // 🏗 Dependency Injection
 

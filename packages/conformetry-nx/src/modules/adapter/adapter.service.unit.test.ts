@@ -137,6 +137,19 @@ describe(AdapterService, () => {
       ).resolves.toStrictEqual([{ isDirectory: false, name: "notes.md" }]);
     });
 
+    it("writes an absolute path unchanged when it sits outside the workspace", async () => {
+      const outsidePath = await mkdtemp(
+        path.join(tmpdir(), "conformetry-out-"),
+      );
+      const filePath = path.join(outsidePath, "notes.md");
+      const { tree, writes } = createFakeTree(workspaceRoot);
+      const { filesystem } = service.createAdapters({ tree, workspaceRoot });
+
+      await filesystem.writeFile(filePath, "# Notes\n");
+
+      expect(writes.get(filePath)).toBe("# Notes\n");
+    });
+
     it("hands formatting to Nx rather than doing its own", async () => {
       const { tree } = createFakeTree(workspaceRoot);
       const { formatter } = service.createAdapters({ tree, workspaceRoot });

@@ -20,6 +20,13 @@ async function createConfigurationPath(): Promise<string> {
   await writeFile(
     configurationPath,
     JSON.stringify([
+      // Declared out of order so the emitted manifest proves it sorts, and
+      // with neither aliases nor a description, which are both optional.
+      {
+        inputs: { name: { type: "string" } },
+        name: "react-component",
+        templatePath: "templates/react-component",
+      },
       {
         aliases: ["nsm"],
         description: "Generate a NestJS service module",
@@ -81,11 +88,14 @@ describe(GeneratorService, () => {
   });
 
   describe("emitPlugin", () => {
-    it("emits a manifest, a wrapper module, a schema, and a manifest package", () => {
+    it("emits a manifest, a wrapper module, a schema each, and a package", () => {
+      // Schemas come out sorted by generator name, not in the order the
+      // configuration happens to declare them.
       expect(files.map((file) => file.filePath)).toStrictEqual([
         "tools/generators/generators.json",
         "tools/generators/src/generators.ts",
         "tools/generators/src/schemas/nestjs-service-module.json",
+        "tools/generators/src/schemas/react-component.json",
         "tools/generators/package.json",
       ]);
     });

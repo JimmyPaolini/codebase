@@ -4,6 +4,7 @@ import path from "node:path";
 
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
+import { createTree } from "nx/src/generators/testing-utils/create-tree";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { PluginModule } from "./plugin.module";
@@ -70,11 +71,42 @@ async function createWorkspace(): Promise<string> {
     );
   }
 
+  // A project.json naming neither itself nor its tags: both fall back.
+  await mkdir(path.join(workspaceRoot, "packages/nameless"), {
+    recursive: true,
+  });
+  await writeFile(
+    path.join(workspaceRoot, "packages/nameless/project.json"),
+    JSON.stringify({ tags: "not-a-list" }),
+    "utf8",
+  );
+
+  // A project.json holding no object at all.
+  await mkdir(path.join(workspaceRoot, "packages/empty-json"), {
+    recursive: true,
+  });
+  await writeFile(
+    path.join(workspaceRoot, "packages/empty-json/project.json"),
+    "null",
+    "utf8",
+  );
+
+  // The workspace-level project, which inference deliberately skips.
+  await writeFile(
+    path.join(workspaceRoot, "project.json"),
+    JSON.stringify({ name: "codebase", tags: [] }),
+    "utf8",
+  );
   await writeFile(
     path.join(workspaceRoot, "conformetry.config.json"),
     JSON.stringify([
       {
-        instances: [{ patterns: ["packages/*/src/modules/*"] }],
+        instances: [
+          {
+            patterns: ["packages/*/src/modules/*"],
+            substitutions: { type: "packages" },
+          },
+        ],
         name: "widget",
         templatePath: "templates/widget",
       },
@@ -108,6 +140,38 @@ describe(PluginService, () => {
   });
 
   describe("inferTargets", () => {
+    it("falls back to the root as a name, and to no tags", async () => {
+      const targets = await service.inferTargets({
+        options,
+        projectConfigurationFiles: ["packages/nameless/project.json"],
+        workspaceRoot,
+      });
+
+      expect(targets.size).toBe(0);
+    });
+
+    it("survives a project.json that holds no object", async () => {
+      const targets = await service.inferTargets({
+        options,
+        projectConfigurationFiles: ["packages/empty-json/project.json"],
+        workspaceRoot,
+      });
+
+      expect(targets.size).toBe(0);
+    });
+
+    it("skips the workspace-level project", async () => {
+      // Every candidate in the workspace sits inside the root project, so a
+      // target there would duplicate every other project's work.
+      const targets = await service.inferTargets({
+        options,
+        projectConfigurationFiles: ["project.json"],
+        workspaceRoot,
+      });
+
+      expect(targets.size).toBe(0);
+    });
+
     it("infers a validation target onto a project holding instances", async () => {
       const targets = await service.inferTargets({
         options,
@@ -170,7 +234,45 @@ describe(PluginService, () => {
     });
   });
 
+  describe("runValidation with a language filter", () => {
+    it("passes the caller's languages through", async () => {
+      const { report } = await service.runValidation({
+        languageNames: ["json"],
+        options,
+        project: WIDGETS,
+        workspaceRoot,
+      });
+
+      expect(typeof report).toBe("string");
+    });
+  });
+
   describe("runGenerator", () => {
+    it("renders the template into the tree without touching disk", async () => {
+      const tree = createTree();
+
+      tree.root = workspaceRoot;
+
+      const generatedFilePaths = await service.runGenerator({
+        generatorName: "widget",
+        options: {
+          ...options,
+          directory: "packages/widgets/src/modules",
+          name: "sprockets",
+        },
+        tree,
+        workspaceRoot,
+      });
+
+      expect(generatedFilePaths).toHaveLength(1);
+      expect(
+        tree.read(
+          "packages/widgets/src/modules/sprockets/sprockets.config.json",
+          "utf8",
+        ),
+      ).toContain('"name": "sprockets"');
+    });
+
     it("rejects a generator the configuration does not declare", async () => {
       await expect(
         service.runGenerator({

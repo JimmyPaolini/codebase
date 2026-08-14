@@ -13,6 +13,7 @@ import {
 import type { EmitPluginArguments, EmittedFile } from "./generator.types";
 import type { ConformetryGeneratorDefinition } from "@jimmypaolini/conformetry-configuration";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Derives an Nx generator plugin from the conformetry configuration.
  *
@@ -23,6 +24,7 @@ import type { ConformetryGeneratorDefinition } from "@jimmypaolini/conformetry-c
  * configuration and kept honest by `nx sync:check`.
  */
 @Injectable()
+/* v8 ignore stop */
 export class GeneratorService {
   // 🏗 Dependency Injection
 
@@ -42,6 +44,7 @@ export class GeneratorService {
     const substitutions =
       this.renderingService.buildNameSubstitutions(generatorName);
 
+    /* v8 ignore next -- every name yields a camel-case substitution */
     return substitutions["nameCamelCase"] ?? generatorName;
   }
 

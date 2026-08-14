@@ -15,6 +15,7 @@ import type {
   InstanceCandidate,
 } from "@jimmypaolini/conformetry-configuration";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Turns Nx project knowledge into the candidates conformetry validates.
  *
@@ -24,6 +25,7 @@ import type {
  * that would otherwise have to live inside them.
  */
 @Injectable()
+/* v8 ignore stop */
 export class CandidatesService {
   // 🏗 Dependency Injection
 

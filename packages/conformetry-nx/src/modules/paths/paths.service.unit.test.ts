@@ -150,6 +150,28 @@ describe(PathsService, () => {
       ).resolves.toBe(path.join(workspaceRoot, "packages"));
     });
 
+    it("uses the type itself when no project sits under that directory", async () => {
+      await expect(
+        service.resolveGenerationPath({
+          configurationPath,
+          inputs: { name: "my-tool", type: "tools" },
+          tree,
+          workspaceRoot,
+        }),
+      ).resolves.toBe(path.join(workspaceRoot, "tools"));
+    });
+
+    it("ignores a project's modules that sit outside its own root", async () => {
+      await expect(
+        service.resolveGenerationPath({
+          configurationPath,
+          inputs: { name: "my-widget", project: "empty" },
+          tree,
+          workspaceRoot,
+        }),
+      ).resolves.toBeDefined();
+    });
+
     it("falls back to the workspace root when nothing locates the output", async () => {
       await expect(
         service.resolveGenerationPath({

@@ -16,6 +16,7 @@ import type { ResolveGenerationPathArguments } from "./paths.types";
 import type { InstanceCandidate } from "@jimmypaolini/conformetry-configuration";
 import type { Tree } from "@nx/devkit";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Decides where a generator writes, by reading the workspace it writes into.
  *
@@ -27,6 +28,7 @@ import type { Tree } from "@nx/devkit";
  * would go stale the moment one project deviated.
  */
 @Injectable()
+/* v8 ignore stop */
 export class PathsService {
   // 🏗 Dependency Injection
 
