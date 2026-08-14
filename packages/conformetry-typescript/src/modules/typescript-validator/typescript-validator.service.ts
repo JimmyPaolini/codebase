@@ -16,6 +16,7 @@ import type {
   PreparedValidationDocument,
 } from "@jimmypaolini/conformetry-core";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Checks that a TypeScript file declares everything its template requires.
  *
@@ -24,6 +25,7 @@ import type {
  * which verify the section markers appear in the prescribed order.
  */
 @Injectable()
+/* v8 ignore stop */
 export class TypescriptValidatorService implements ConformetryLanguageValidator {
   // 🏗 Dependency Injection
 

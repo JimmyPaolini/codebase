@@ -173,4 +173,113 @@ describe(TypescriptValidatorService, () => {
       ).toStrictEqual([]);
     });
   });
+
+  describe("how nodes are keyed", () => {
+    it("keys a called decorator by its callee", () => {
+      const source = "@Injectable()\nexport class Widget {}\n";
+
+      expect(validate(source, source)).toStrictEqual([]);
+    });
+
+    it("keys a bare decorator by its own name", () => {
+      const source = "@Injectable\nexport class Widget {}\n";
+
+      expect(validate(source, source)).toStrictEqual([]);
+    });
+
+    it("reports a decorator replaced by a different one", () => {
+      expect(
+        validate(
+          "@Injectable()\nexport class Widget {}\n",
+          "@Controller()\nexport class Widget {}\n",
+        ).length,
+      ).toBeGreaterThan(0);
+    });
+
+    it("keys a dotted callee by its whole path", () => {
+      const source = "@Nest.Injectable()\nexport class Widget {}\n";
+
+      expect(validate(source, source)).toStrictEqual([]);
+    });
+
+    it("ignores a callee that is not an identifier at all", () => {
+      const source = "getRunner()();\n";
+
+      expect(validate(source, source)).toStrictEqual([]);
+    });
+
+    it("ignores a decorator whose callee is not an identifier", () => {
+      const source = "@(factory())\nexport class Widget {}\n";
+
+      expect(validate(source, source)).toStrictEqual([]);
+    });
+
+    it("keys a call statement by a numeric first argument", () => {
+      expect(validate("retry(1);\n", "retry(2);\n").length).toBeGreaterThan(0);
+    });
+
+    it("keys a call statement whose argument is neither string nor number", () => {
+      const source = "run({ mode: 1 });\n";
+
+      expect(validate(source, source)).toStrictEqual([]);
+    });
+
+    it("keys a call statement whose argument is an identifier", () => {
+      const source = "const mode = 1;\nrun(mode);\n";
+
+      expect(validate(source, source)).toStrictEqual([]);
+    });
+
+    it("picks the closest of two equally plausible siblings", () => {
+      const source =
+        "export class Widget {\n" +
+        "  public alpha(): void {}\n\n" +
+        "  public beta(): void {}\n" +
+        "}\n";
+
+      expect(validate(source, source)).toStrictEqual([]);
+    });
+
+    it("keys a re-export by the module it names", () => {
+      const source = 'export { alpha } from "./alpha";\n';
+
+      expect(validate(source, source)).toStrictEqual([]);
+    });
+
+    it("reports a re-export of a different module", () => {
+      expect(
+        validate(
+          'export { alpha } from "./alpha";\n',
+          'export { alpha } from "./beta";\n',
+        ).length,
+      ).toBeGreaterThan(0);
+    });
+
+    it("ignores an export that names no module", () => {
+      const source = "const alpha = 1;\nexport { alpha };\n";
+
+      expect(validate(source, source)).toStrictEqual([]);
+    });
+
+    it("tells two call statements apart by their first argument", () => {
+      expect(
+        validate(
+          'describe("alpha", () => {});\n',
+          'describe("beta", () => {});\n',
+        ).length,
+      ).toBeGreaterThan(0);
+    });
+
+    it("keys a call statement with no literal argument by its callee alone", () => {
+      const source = "run();\n";
+
+      expect(validate(source, source)).toStrictEqual([]);
+    });
+
+    it("ignores a statement that is not a call at all", () => {
+      const source = "let counter = 0;\ncounter += 1;\n";
+
+      expect(validate(source, source)).toStrictEqual([]);
+    });
+  });
 });

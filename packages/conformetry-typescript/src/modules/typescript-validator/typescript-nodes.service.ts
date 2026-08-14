@@ -21,6 +21,7 @@ import {
   SyntaxKind,
 } from "typescript";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Derives a stable identity for a syntax node.
  *
@@ -31,6 +32,7 @@ import {
  * kind alone.
  */
 @Injectable()
+/* v8 ignore stop */
 export class TypescriptNodesService {
   // 🏗 Dependency Injection
 

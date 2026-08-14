@@ -8,6 +8,7 @@ import type {
 } from "./typescript-validator.types";
 import type { Node } from "typescript";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Walks two syntax trees in parallel and reports what the template requires
  * but the instance does not contain.
@@ -17,6 +18,7 @@ import type { Node } from "typescript";
  * anything and may order its members freely.
  */
 @Injectable()
+/* v8 ignore stop */
 export class TypescriptTreeService {
   // 🏗 Dependency Injection
 
