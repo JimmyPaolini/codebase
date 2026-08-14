@@ -221,6 +221,50 @@
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml,sql}",
           "shared-globals"
         ]
+      },
+      {
+        "cache": true,
+        "configurations": {
+          "check": {
+            "commands": [
+              "nx run {projectName}:clean:check",
+              "nx run {projectName}:dependency-cruiser",
+              "nx run {projectName}:format:check",
+              "nx run {projectName}:lint:check",
+              "nx run {projectName}:markdown-lint:check",
+              "nx run {projectName}:spell-check",
+              "nx run {projectName}:stylelint:check",
+              "nx run {projectName}:type-coverage",
+              "nx run {projectName}:typecheck",
+              "nx run {projectName}:yaml-lint"
+            ],
+            "parallel": true
+          },
+          "write": {
+            "commands": [
+              "nx run {projectName}:clean:write",
+              "nx run {projectName}:dependency-cruiser",
+              "nx run {projectName}:format:write",
+              "nx run {projectName}:lint:write",
+              "nx run {projectName}:markdown-lint:write",
+              "nx run {projectName}:spell-check",
+              "nx run {projectName}:stylelint:write",
+              "nx run {projectName}:type-coverage",
+              "nx run {projectName}:typecheck",
+              "nx run {projectName}:yaml-lint"
+            ],
+            "parallel": false
+          }
+        },
+        "defaultConfiguration": "check",
+        "executor": "nx:run-commands",
+        "filter": {
+          "projects": ["tag:framework:react"]
+        },
+        "inputs": [
+          "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml,sql}",
+          "shared-globals"
+        ]
       }
     ],
     "bandit": [
@@ -952,10 +996,10 @@
         "cache": true,
         "configurations": {
           "check": {
-            "command": "stylelint --config ../../configuration/stylelint.config.cjs 'src/**/*.css'"
+            "command": "stylelint --allow-empty-input --config ../../configuration/stylelint.config.cjs 'src/**/*.css'"
           },
           "write": {
-            "command": "stylelint --fix --config ../../configuration/stylelint.config.cjs 'src/**/*.css'"
+            "command": "stylelint --allow-empty-input --fix --config ../../configuration/stylelint.config.cjs 'src/**/*.css'"
           }
         },
         "defaultConfiguration": "check",
@@ -968,7 +1012,7 @@
           "{workspaceRoot}/configuration/stylelint.config.cjs"
         ],
         "options": {
-          "command": "stylelint --config ../../configuration/stylelint.config.cjs 'src/**/*.css'",
+          "command": "stylelint --allow-empty-input --config ../../configuration/stylelint.config.cjs 'src/**/*.css'",
           "cwd": "{projectRoot}"
         }
       }

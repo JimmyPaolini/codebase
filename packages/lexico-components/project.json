@@ -36,26 +36,7 @@
     "dependency-cruiser": {},
     "format": {},
     "knip": {},
-    "lint": {
-      "configurations": {
-        "check": {
-          "commands": [
-            "nx run {projectName}:eslint:check",
-            "nx run {projectName}:oxlint:check",
-            "nx run {projectName}:stylelint:check"
-          ],
-          "parallel": true
-        },
-        "write": {
-          "commands": [
-            "nx run {projectName}:eslint:write",
-            "nx run {projectName}:oxlint:write",
-            "nx run {projectName}:stylelint:write"
-          ],
-          "parallel": false
-        }
-      }
-    },
+    "lint": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
