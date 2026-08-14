@@ -135,7 +135,7 @@ export class ValidateCommand extends CommandRunner {
       await this.configurationService.loadConformetryConfiguration(
         options.config ?? DEFAULT_CONFIGURATION_PATH,
       );
-    const result = this.validationService.validate({
+    const result = await this.validationService.validate({
       candidates: this.resolveCandidates({
         groups:
           options.instances === undefined

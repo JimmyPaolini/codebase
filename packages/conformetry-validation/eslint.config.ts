@@ -15,7 +15,18 @@ export default [
           // test files, which are excluded from the build dependency check scope.
           // vitest: referenced via tsconfig "types" array; it's a devDependency and
           // the @nx/dependency-checks rule misidentifies it as a production dependency.
-          ignoredDependencies: ["@golevelup/ts-vitest", "vitest"],
+          // The language packages are named as strings in a registry and
+          // imported on demand, so no static import proves they are used.
+          ignoredDependencies: [
+            "@golevelup/ts-vitest",
+            "@jimmypaolini/conformetry-json",
+            "@jimmypaolini/conformetry-jupyter",
+            "@jimmypaolini/conformetry-markdown",
+            "@jimmypaolini/conformetry-python",
+            "@jimmypaolini/conformetry-text",
+            "@jimmypaolini/conformetry-typescript",
+            "vitest",
+          ],
           ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}"],
         },
       ],

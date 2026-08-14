@@ -18,7 +18,6 @@ import type {
   InstanceCandidate,
   TemplateDefinition,
 } from "@jimmypaolini/conformetry-configuration";
-import type { RunValidationResult } from "@jimmypaolini/conformetry-validation";
 
 const CONFIGURATION: ConformetryConfiguration = [
   {
@@ -86,12 +85,12 @@ describe(ValidateCommand, () => {
     ).mockResolvedValue(CONFIGURATION);
     vi.mocked(discoveryService.resolveCandidates).mockReturnValue([CANDIDATE]);
     vi.mocked(discoveryService.collectTemplate).mockReturnValue(TEMPLATE);
-    vi.mocked(validationService.validate).mockReturnValue({
+    vi.mocked(validationService.validate).mockResolvedValue({
       checkedPaths: [],
       fileResults: [],
       ok: true,
       unmatched: [],
-    } satisfies RunValidationResult);
+    });
   });
 
   it("is defined", () => {
@@ -185,7 +184,7 @@ describe(ValidateCommand, () => {
     });
 
     it("fails the command when an instance does not conform", async () => {
-      vi.mocked(validationService.validate).mockReturnValue({
+      vi.mocked(validationService.validate).mockResolvedValue({
         checkedPaths: [],
         fileResults: [
           {

@@ -4,13 +4,9 @@
     "@jimmypaolini/conformetry-configuration": "workspace:*",
     "@jimmypaolini/conformetry-core": "workspace:*",
     "@jimmypaolini/conformetry-files": "workspace:*",
-    "@jimmypaolini/conformetry-json": "workspace:*",
-    "@jimmypaolini/conformetry-jupyter": "workspace:*",
-    "@jimmypaolini/conformetry-markdown": "workspace:*",
-    "@jimmypaolini/conformetry-python": "workspace:*",
     "@jimmypaolini/conformetry-text": "workspace:*",
-    "@jimmypaolini/conformetry-typescript": "workspace:*",
     "@nestjs/common": "catalog:",
+    "@nestjs/core": "catalog:",
     "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:"
@@ -26,6 +22,30 @@
   },
   "main": "src/index.ts",
   "name": "@jimmypaolini/conformetry-validation",
+  "peerDependencies": {
+    "@jimmypaolini/conformetry-json": "workspace:*",
+    "@jimmypaolini/conformetry-jupyter": "workspace:*",
+    "@jimmypaolini/conformetry-markdown": "workspace:*",
+    "@jimmypaolini/conformetry-python": "workspace:*",
+    "@jimmypaolini/conformetry-typescript": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@jimmypaolini/conformetry-json": {
+      "optional": true
+    },
+    "@jimmypaolini/conformetry-jupyter": {
+      "optional": true
+    },
+    "@jimmypaolini/conformetry-markdown": {
+      "optional": true
+    },
+    "@jimmypaolini/conformetry-python": {
+      "optional": true
+    },
+    "@jimmypaolini/conformetry-typescript": {
+      "optional": true
+    }
+  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"

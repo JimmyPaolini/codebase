@@ -311,7 +311,21 @@ export default [
       perfectionist: perfectionistPlugin,
     },
     rules: {
-      "@nx/dependency-checks": "error",
+      "@nx/dependency-checks": [
+        "error",
+        {
+          // The language packages are named as strings in a registry and
+          // imported on demand, so no static import proves they are used.
+          ignoredDependencies: [
+            "@jimmypaolini/conformetry-json",
+            "@jimmypaolini/conformetry-jupyter",
+            "@jimmypaolini/conformetry-markdown",
+            "@jimmypaolini/conformetry-python",
+            "@jimmypaolini/conformetry-text",
+            "@jimmypaolini/conformetry-typescript",
+          ],
+        },
+      ],
       "@nx/enforce-module-boundaries": [
         "error",
         {
@@ -419,6 +433,12 @@ export default [
                 "name:conformetry-configuration",
                 "name:conformetry-core",
                 "name:conformetry-generation",
+                "name:conformetry-json",
+                "name:conformetry-jupyter",
+                "name:conformetry-markdown",
+                "name:conformetry-python",
+                "name:conformetry-text",
+                "name:conformetry-typescript",
                 "name:conformetry-validation",
               ],
               sourceTag: "name:conformetry-nx",
@@ -1201,7 +1221,21 @@ export default [
     ignores: ["projectStructure.cache.json"],
     rules: {
       // Keep Nx dependency checks enabled
-      "@nx/dependency-checks": "error",
+      "@nx/dependency-checks": [
+        "error",
+        {
+          // The language packages are named as strings in a registry and
+          // imported on demand, so no static import proves they are used.
+          ignoredDependencies: [
+            "@jimmypaolini/conformetry-json",
+            "@jimmypaolini/conformetry-jupyter",
+            "@jimmypaolini/conformetry-markdown",
+            "@jimmypaolini/conformetry-python",
+            "@jimmypaolini/conformetry-text",
+            "@jimmypaolini/conformetry-typescript",
+          ],
+        },
+      ],
       // JSONC style rules
       "jsonc/comma-dangle": ["error", "never"],
       "jsonc/indent": ["error", 2],

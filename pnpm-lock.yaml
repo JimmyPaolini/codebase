@@ -1503,6 +1503,24 @@ importers:
       '@jimmypaolini/conformetry-generation':
         specifier: workspace:*
         version: link:../conformetry-generation
+      '@jimmypaolini/conformetry-json':
+        specifier: workspace:*
+        version: link:../conformetry-json
+      '@jimmypaolini/conformetry-jupyter':
+        specifier: workspace:*
+        version: link:../conformetry-jupyter
+      '@jimmypaolini/conformetry-markdown':
+        specifier: workspace:*
+        version: link:../conformetry-markdown
+      '@jimmypaolini/conformetry-python':
+        specifier: workspace:*
+        version: link:../conformetry-python
+      '@jimmypaolini/conformetry-text':
+        specifier: workspace:*
+        version: link:../conformetry-text
+      '@jimmypaolini/conformetry-typescript':
+        specifier: workspace:*
+        version: link:../conformetry-typescript
       '@jimmypaolini/conformetry-validation':
         specifier: workspace:*
         version: link:../conformetry-validation
@@ -1714,6 +1732,9 @@ importers:
       '@nestjs/common':
         specifier: 'catalog:'
         version: 11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/core':
+        specifier: 'catalog:'
+        version: 11.1.28(@nestjs/common@11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)
       pino:
         specifier: 'catalog:'
         version: 10.3.1

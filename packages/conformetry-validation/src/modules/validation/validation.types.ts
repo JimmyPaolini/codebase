@@ -14,6 +14,27 @@ export interface InstanceFileResults {
   readonly instance: MatchedInstance;
 }
 
+/**
+ * Imports a language package by specifier.
+ *
+ * Supplied by the host rather than called here, because resolution depends on
+ * where the host installed its language packages: the CLI finds them through
+ * its own dependencies, an Nx plugin through the workspace it runs in.
+ */
+export type LanguageModuleLoader = (specifier: string) => Promise<unknown>;
+
+/** A language package conformetry can load on demand. */
+export interface LanguagePackage {
+  /** Extensions this package's validator claims. */
+  readonly extensions: string[];
+  /** Name of the NestJS module the package exports. */
+  readonly moduleExport: string;
+  /** Name of the validator service the package exports. */
+  readonly serviceExport: string;
+  /** Import specifier, resolved only when one of its extensions is in play. */
+  readonly specifier: string;
+}
+
 /** Arguments for one validation run. */
 export interface RunValidationArguments {
   /**
@@ -27,6 +48,11 @@ export interface RunValidationArguments {
    * language runs when this is absent or empty.
    */
   readonly languageNames?: string[];
+  /**
+   * How to import a language package. Defaults to a plain dynamic `import`,
+   * which resolves relative to this package.
+   */
+  readonly loadLanguageModule?: LanguageModuleLoader;
   /**
    * The templates candidates are matched against. Supplied rather than read
    * from a root directory, because a template's location is a property of the

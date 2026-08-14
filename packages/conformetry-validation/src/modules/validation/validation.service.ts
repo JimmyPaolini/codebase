@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import { DiscoveryService } from "@jimmypaolini/conformetry-configuration";
 import { LanguageService } from "@jimmypaolini/conformetry-core";
 import { FilesService } from "@jimmypaolini/conformetry-files";
@@ -45,18 +47,30 @@ export class ValidationService {
 
   // 🔏 Private Methods
 
-  /** Selects the validators a run should drive, honouring the name filter. */
-  private selectValidators(
-    languageNames: string[] | undefined,
-  ): ConformetryLanguageValidator[] {
-    const validators = this.validationLanguagesService.readValidators();
+  /** Every distinct file extension the matched templates declare. */
+  private readTemplateExtensions(instances: MatchedInstance[]): string[] {
+    return [
+      ...new Set(
+        instances.flatMap((instance) => {
+          return instance.template.filePaths.map((filePath) => {
+            return path.extname(filePath);
+          });
+        }),
+      ),
+    ];
+  }
 
-    if (languageNames === undefined || languageNames.length === 0) {
-      return validators;
+  /** Narrows the resolved validators to the names the caller asked for. */
+  private selectValidators(args: {
+    languageNames: string[] | undefined;
+    validators: ConformetryLanguageValidator[];
+  }): ConformetryLanguageValidator[] {
+    if (args.languageNames === undefined || args.languageNames.length === 0) {
+      return args.validators;
     }
 
-    return validators.filter((validator) => {
-      return languageNames.includes(validator.descriptor.name);
+    return args.validators.filter((validator) => {
+      return args.languageNames?.includes(validator.descriptor.name) ?? false;
     });
   }
 
@@ -99,12 +113,22 @@ export class ValidationService {
    * differences rather than skipped, so one report covers both "this file is
    * wrong" and "conformetry cannot tell what this path was generated from".
    */
-  public validate(args: RunValidationArguments): RunValidationResult {
+  public async validate(
+    args: RunValidationArguments,
+  ): Promise<RunValidationResult> {
     const { matched, unmatched } = this.discoveryService.resolveInstances({
       candidates: args.candidates,
       templates: args.templates,
     });
-    const validators = this.selectValidators(args.languageNames);
+    const validators = this.selectValidators({
+      languageNames: args.languageNames,
+      validators: await this.validationLanguagesService.resolveValidators({
+        extensions: this.readTemplateExtensions(matched),
+        ...(args.loadLanguageModule === undefined
+          ? {}
+          : { loadLanguageModule: args.loadLanguageModule }),
+      }),
+    });
     const groups: InstanceFileResults[] = matched.map((instance) => {
       return {
         fileResults: this.validateInstance({ instance, validators }),

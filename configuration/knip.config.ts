@@ -278,7 +278,12 @@ const config: KnipConfig = {
     "packages/conformetry-validation": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      ignoreDependencies: [
+        ...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES,
+        // Named as a string in the language registry and imported on demand,
+        // so no static import proves it is used.
+        "@jimmypaolini/conformetry-text",
+      ],
       project: "src/**/*.ts",
     },
   },

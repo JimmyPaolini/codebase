@@ -38,7 +38,6 @@ async function createInstance(args: {
 
   return instancePath;
 }
-
 /**
  * Writes a one-template root: a JSON file whose shape the instance must match,
  * plus a file the instance is required to have.
@@ -96,7 +95,7 @@ describe(ValidationService, () => {
         withNotes: true,
       });
 
-      const result = service.validate({
+      const result = await service.validate({
         candidates: [{ instancePath, nameStem: "my-widget" }],
         templates,
       });
@@ -112,7 +111,7 @@ describe(ValidationService, () => {
         withNotes: true,
       });
 
-      const result = service.validate({
+      const result = await service.validate({
         candidates: [{ instancePath, nameStem: "my-widget" }],
         templates,
       });
@@ -127,7 +126,7 @@ describe(ValidationService, () => {
         withNotes: false,
       });
 
-      const result = service.validate({
+      const result = await service.validate({
         candidates: [{ instancePath, nameStem: "my-widget" }],
         templates,
       });
@@ -142,7 +141,7 @@ describe(ValidationService, () => {
         withNotes: true,
       });
 
-      const result = service.validate({
+      const result = await service.validate({
         candidates: [{ instancePath, nameStem: "my-widget" }],
         languageNames: ["markdown"],
         templates,
@@ -157,7 +156,7 @@ describe(ValidationService, () => {
         path.join(tmpdir(), "conformetry-validate-empty-"),
       );
 
-      const result = service.validate({
+      const result = await service.validate({
         candidates: [{ instancePath, nameStem: "nothing" }],
         templates,
       });

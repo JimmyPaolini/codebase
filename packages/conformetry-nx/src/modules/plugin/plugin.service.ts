@@ -17,6 +17,7 @@ import { OptionsService } from "../options/options.service";
 import { PathsService } from "../paths/paths.service";
 
 import {
+  LANGUAGE_MODULE_LOADER,
   PROJECT_CONFIGURATION_FILENAME,
   WORKSPACE_PROJECT_ROOT,
 } from "./plugin.constants";
@@ -226,7 +227,7 @@ export class PluginService {
     const pluginOptions = this.optionsService.resolvePluginOptions(
       args.options,
     );
-    const result = this.validationService.validate({
+    const result = await this.validationService.validate({
       candidates: await this.candidatesService.resolveProjectCandidates({
         configurationPath: pluginOptions.configurationPath,
         project: args.project,
@@ -235,6 +236,7 @@ export class PluginService {
       ...(args.languageNames === undefined
         ? {}
         : { languageNames: args.languageNames }),
+      loadLanguageModule: LANGUAGE_MODULE_LOADER,
       templates: await this.resolveTemplates({
         configurationPath: pluginOptions.configurationPath,
         workspaceRoot: args.workspaceRoot,
