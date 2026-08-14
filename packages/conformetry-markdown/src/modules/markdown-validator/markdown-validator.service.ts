@@ -12,6 +12,7 @@ import type {
   PreparedValidationDocument,
 } from "@jimmypaolini/conformetry-core";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Checks that a markdown file contains every structure its template declares.
  *
@@ -20,6 +21,7 @@ import type {
  * does not fail validation while deleting a required section does.
  */
 @Injectable()
+/* v8 ignore stop */
 export class MarkdownValidatorService implements ConformetryLanguageValidator {
   // 🏗 Dependency Injection
 
