@@ -22,7 +22,6 @@
   },
   "main": "src/index.ts",
   "name": "@jimmypaolini/conformetry-validation",
-  "private": true,
   "peerDependencies": {
     "@jimmypaolini/conformetry-json": "workspace:*",
     "@jimmypaolini/conformetry-jupyter": "workspace:*",
@@ -47,6 +46,7 @@
       "optional": true
     }
   },
+  "private": true,
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"

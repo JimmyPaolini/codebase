@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -6,6 +6,12 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { createTree } from "nx/src/generators/testing-utils/create-tree";
 import { beforeAll, describe, expect, it } from "vitest";
+
+import {
+  DEFAULT_OUTPUT_PATH,
+  DEFAULT_PACKAGE_NAME,
+} from "../generator/generator.constants";
+import { GeneratorService } from "../generator/generator.service";
 
 import { PluginModule } from "./plugin.module";
 import { PluginService } from "./plugin.service";
@@ -133,6 +139,22 @@ describe(PluginService, () => {
     options = {
       configurationPath: path.join(workspaceRoot, "conformetry.config.json"),
     };
+
+    // The plugin refuses to run against a stale emitted plugin, so the
+    // fixture emits a current one the way `nx sync` would.
+    const generatorService = await module.resolve(GeneratorService);
+    const emittedFiles = await generatorService.emitPlugin({
+      configurationPath: options.configurationPath,
+      outputPath: DEFAULT_OUTPUT_PATH,
+      packageName: DEFAULT_PACKAGE_NAME,
+    });
+
+    for (const emittedFile of emittedFiles) {
+      const absolutePath = path.join(workspaceRoot, emittedFile.filePath);
+
+      await mkdir(path.dirname(absolutePath), { recursive: true });
+      await writeFile(absolutePath, emittedFile.content, "utf8");
+    }
   });
 
   it("is defined", () => {
@@ -282,6 +304,53 @@ describe(PluginService, () => {
           workspaceRoot,
         }),
       ).rejects.toThrow("Unknown conformetry generator: nope");
+    });
+  });
+
+  describe("failing fast on a stale setup", () => {
+    it("refuses to run when the emitted plugin is out of date", async () => {
+      const manifestPath = path.join(
+        workspaceRoot,
+        DEFAULT_OUTPUT_PATH,
+        "generators.json",
+      );
+      const original = await readFile(manifestPath, "utf8");
+
+      await writeFile(
+        manifestPath,
+        original.replace("widget", "widgets"),
+        "utf8",
+      );
+
+      await expect(
+        service.runValidation({ options, project: WIDGETS, workspaceRoot }),
+      ).rejects.toThrow("Run `nx sync`");
+
+      await writeFile(manifestPath, original, "utf8");
+    });
+
+    it("refuses to run when a generator names a template that is gone", async () => {
+      const configurationPath = path.join(workspaceRoot, "missing.config.json");
+
+      await writeFile(
+        configurationPath,
+        JSON.stringify([
+          {
+            instances: [{ patterns: ["packages/*/src/modules/*"] }],
+            name: "widget",
+            templatePath: "templates/not-there",
+          },
+        ]),
+        "utf8",
+      );
+
+      await expect(
+        service.runValidation({
+          options: { configurationPath },
+          project: WIDGETS,
+          workspaceRoot,
+        }),
+      ).rejects.toThrow("which does not exist");
     });
   });
 });

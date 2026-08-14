@@ -9,6 +9,7 @@ import { Module } from "@nestjs/common";
 
 import { AdapterModule } from "../adapter/adapter.module";
 import { CandidatesModule } from "../candidates/candidates.module";
+import { GeneratorModule } from "../generator/generator.module";
 import { OptionsModule } from "../options/options.module";
 import { PathsModule } from "../paths/paths.module";
 
@@ -27,6 +28,7 @@ import { PluginService } from "./plugin.service";
     AdapterModule,
     CandidatesModule,
     ConfigurationModule,
+    GeneratorModule,
     DiscoveryModule,
     GenerationModule,
     OptionsModule,
@@ -39,6 +41,7 @@ import { PluginService } from "./plugin.service";
     AdapterModule,
     CandidatesModule,
     ConfigurationModule,
+    GeneratorModule,
     DiscoveryModule,
     GenerationModule,
     OptionsModule,

@@ -28,10 +28,10 @@
   "generators": "../conformetry-nx/generators.json",
   "main": "src/index.ts",
   "name": "@jimmypaolini/conformetry",
-  "private": true,
   "nx": {
     "generators": "../conformetry-nx/generators.json"
   },
+  "private": true,
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"

@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import {
@@ -12,6 +12,11 @@ import { Injectable } from "@nestjs/common";
 
 import { AdapterService } from "../adapter/adapter.service";
 import { CandidatesService } from "../candidates/candidates.service";
+import {
+  DEFAULT_OUTPUT_PATH,
+  DEFAULT_PACKAGE_NAME,
+} from "../generator/generator.constants";
+import { GeneratorService } from "../generator/generator.service";
 import { CONFORMETRY_NX_PLUGIN_NAME } from "../options/options.constants";
 import { OptionsService } from "../options/options.service";
 import { PathsService } from "../paths/paths.service";
@@ -50,6 +55,7 @@ export class PluginService {
     private readonly candidatesService: CandidatesService,
     private readonly configurationService: ConfigurationService,
     private readonly discoveryService: DiscoveryService,
+    private readonly generatorService: GeneratorService,
     private readonly generationService: GenerationService,
     private readonly optionsService: OptionsService,
     private readonly pathsService: PathsService,
@@ -62,6 +68,82 @@ export class PluginService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /**
+   * Fails when the emitted Nx plugin no longer matches the configuration.
+   *
+   * `generators.json` and its schemas are derived from `conformetry.config.ts`,
+   * so an edit to the configuration that is not followed by `nx sync` leaves Nx
+   * offering generators that no longer exist, or hiding ones that do. Comparing
+   * here rather than trusting `nx sync:check` means the plugin's own commands
+   * cannot run against a stale plugin.
+   */
+  private async assertEmittedPluginCurrent(args: {
+    configurationPath: string;
+    workspaceRoot: string;
+  }): Promise<void> {
+    const emittedFiles = await this.generatorService.emitPlugin({
+      configurationPath: args.configurationPath,
+      outputPath: DEFAULT_OUTPUT_PATH,
+      packageName: DEFAULT_PACKAGE_NAME,
+    });
+
+    for (const emittedFile of emittedFiles) {
+      const absolutePath = path.resolve(
+        args.workspaceRoot,
+        emittedFile.filePath,
+      );
+      const onDisk = existsSync(absolutePath)
+        ? readFileSync(absolutePath, "utf8")
+        : undefined;
+
+      if (onDisk !== emittedFile.content) {
+        throw new Error(
+          `${emittedFile.filePath} is out of date with ${args.configurationPath}. Run \`nx sync\` to regenerate the conformetry generator plugin.`,
+        );
+      }
+    }
+  }
+
+  /** Fails fast when the plugin would run against a stale or broken setup. */
+  private async assertPluginInSync(args: {
+    configurationPath: string;
+    workspaceRoot: string;
+  }): Promise<void> {
+    await this.assertTemplatesExist(args);
+    await this.assertEmittedPluginCurrent(args);
+  }
+
+  /**
+   * Fails when a configured generator points at a template that is not there.
+   *
+   * Template contents never reach `generators.json`, so a missing template
+   * directory is invisible to the drift check above: the emitted plugin still
+   * matches the configuration, and the failure only surfaces later as an empty
+   * generation or an instance matching nothing.
+   */
+  private async assertTemplatesExist(args: {
+    configurationPath: string;
+    workspaceRoot: string;
+  }): Promise<void> {
+    const configuration =
+      await this.configurationService.loadConformetryConfiguration(
+        args.configurationPath,
+      );
+
+    for (const generator of configuration) {
+      const templateDirectoryPath = path.resolve(
+        args.workspaceRoot,
+        generator.templatePath,
+      );
+
+      if (!existsSync(templateDirectoryPath)) {
+        throw new Error(
+          `Generator ${generator.name} names a template at ${generator.templatePath}, which does not exist.`,
+        );
+      }
+    }
+  }
 
   /** Narrows an untrusted value to an array without widening it to `any`. */
   private isUnknownArray(value: unknown): value is unknown[] {
@@ -184,6 +266,11 @@ export class PluginService {
     const pluginOptions = this.optionsService.resolvePluginOptions(
       args.options,
     );
+    await this.assertPluginInSync({
+      configurationPath: pluginOptions.configurationPath,
+      workspaceRoot: args.workspaceRoot,
+    });
+
     const configuration =
       await this.configurationService.loadConformetryConfiguration(
         pluginOptions.configurationPath,
@@ -232,6 +319,11 @@ export class PluginService {
     const pluginOptions = this.optionsService.resolvePluginOptions(
       args.options,
     );
+    await this.assertPluginInSync({
+      configurationPath: pluginOptions.configurationPath,
+      workspaceRoot: args.workspaceRoot,
+    });
+
     const result = await this.validationService.validate({
       candidates: await this.candidatesService.resolveProjectCandidates({
         configurationPath: pluginOptions.configurationPath,
