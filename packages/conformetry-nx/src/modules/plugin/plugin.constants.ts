@@ -1,13 +1,13 @@
 // ♟️ Constants
 
-import * as jsonPackage from "@jimmypaolini/conformetry-json";
-import * as jupyterPackage from "@jimmypaolini/conformetry-jupyter";
-import * as markdownPackage from "@jimmypaolini/conformetry-markdown";
-import * as pythonPackage from "@jimmypaolini/conformetry-python";
-import * as textPackage from "@jimmypaolini/conformetry-text";
-import * as typescriptPackage from "@jimmypaolini/conformetry-typescript";
+import * as jsonPackage from "@conformetry/json";
+import * as jupyterPackage from "@conformetry/jupyter";
+import * as markdownPackage from "@conformetry/markdown";
+import * as pythonPackage from "@conformetry/python";
+import * as textPackage from "@conformetry/text";
+import * as typescriptPackage from "@conformetry/typescript";
 
-import type { LanguageModuleLoader } from "@jimmypaolini/conformetry-validation";
+import type { LanguageModuleLoader } from "@conformetry/validation";
 
 /**
  * The language packages, imported statically and handed to the validator.
@@ -21,12 +21,12 @@ import type { LanguageModuleLoader } from "@jimmypaolini/conformetry-validation"
  * the ones it uses; a library consumer still gets the on-demand behavior.
  */
 export const LANGUAGE_MODULE_NAMESPACES: Record<string, unknown> = {
-  "@jimmypaolini/conformetry-json": jsonPackage,
-  "@jimmypaolini/conformetry-jupyter": jupyterPackage,
-  "@jimmypaolini/conformetry-markdown": markdownPackage,
-  "@jimmypaolini/conformetry-python": pythonPackage,
-  "@jimmypaolini/conformetry-text": textPackage,
-  "@jimmypaolini/conformetry-typescript": typescriptPackage,
+  "@conformetry/json": jsonPackage,
+  "@conformetry/jupyter": jupyterPackage,
+  "@conformetry/markdown": markdownPackage,
+  "@conformetry/python": pythonPackage,
+  "@conformetry/text": textPackage,
+  "@conformetry/typescript": typescriptPackage,
 };
 
 /**

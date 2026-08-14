@@ -204,7 +204,7 @@ describe(PluginService, () => {
       expect(targets.get("packages/widgets")).toStrictEqual({
         "conformetry-validate": {
           cache: true,
-          executor: "@jimmypaolini/conformetry-nx:validate",
+          executor: "@conformetry/nx:validate",
           // The configuration and emitted plugin invalidate the cache, so a
           // cache hit cannot skip the drift check the executor performs.
           inputs: [
@@ -382,7 +382,7 @@ describe(PluginService, () => {
           plugins: [
             {
               options: { configurationPath: registeredPath },
-              plugin: "@jimmypaolini/conformetry-nx",
+              plugin: "@conformetry/nx",
             },
           ],
         }),

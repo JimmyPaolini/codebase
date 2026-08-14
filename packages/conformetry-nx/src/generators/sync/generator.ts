@@ -33,7 +33,10 @@ export default async function syncGenerator(
     // options, so the workspace's own registration is read for the path.
     configurationPath:
       options?.configurationPath ??
-      optionsService.resolveConfigurationPath(readNxConfiguration(tree)),
+      optionsService.resolveConfigurationPath({
+        exists: (candidatePath) => tree.exists(candidatePath),
+        nxConfiguration: readNxConfiguration(tree),
+      }),
     outputPath: options?.outputPath ?? DEFAULT_OUTPUT_PATH,
     packageName: options?.packageName ?? DEFAULT_PACKAGE_NAME,
   });

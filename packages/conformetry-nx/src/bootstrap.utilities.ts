@@ -5,6 +5,7 @@ import {
   lstatSync,
   mkdirSync,
   readFileSync,
+  realpathSync,
   rmSync,
   symlinkSync,
   writeFileSync,
@@ -41,9 +42,12 @@ export async function bootstrapPlugin(
   const files = await generatorService.emitPlugin({
     // Taken from the workspace's own plugin registration rather than assumed:
     // this runs from a `postinstall`, where Nx passes nothing.
-    configurationPath: optionsService.resolveConfigurationPath(
-      readNxConfiguration(workspaceRoot),
-    ),
+    configurationPath: optionsService.resolveConfigurationPath({
+      exists: (candidatePath) => {
+        return existsSync(path.resolve(workspaceRoot, candidatePath));
+      },
+      nxConfiguration: readNxConfiguration(workspaceRoot),
+    }),
     outputPath: DEFAULT_OUTPUT_PATH,
     packageName: DEFAULT_PACKAGE_NAME,
   });
@@ -77,6 +81,20 @@ export async function runBootstrapCli(workspaceRoot: string): Promise<void> {
 }
 
 /**
+ * Whether a path resolves to the emitted plugin, and so is ours to replace.
+ *
+ * A link this bootstrap left behind but whose target has since been deleted
+ * counts: it resolves to nothing, which no installed package ever does.
+ */
+function leadsTo(args: { linkPath: string; outputPath: string }): boolean {
+  try {
+    return realpathSync(args.linkPath) === realpathSync(args.outputPath);
+  } catch {
+    return !existsSync(args.linkPath);
+  }
+}
+
+/**
  * Links the emitted plugin into the workspace's root `node_modules`.
  *
  * Nx resolves `nx g <package>:<generator>` by requiring the package by name,
@@ -93,15 +111,20 @@ function linkPlugin(workspaceRoot: string): void {
     "node_modules",
     DEFAULT_PACKAGE_NAME,
   );
+  const outputPath = path.resolve(workspaceRoot, DEFAULT_OUTPUT_PATH);
 
   mkdirSync(path.dirname(linkPath), { recursive: true });
 
   // The plugin's name is unscoped, so this path is one an installed dependency
   // could legitimately occupy. Refuse it rather than deleting someone's
   // package: the emitted plugin is replaceable, an installed one is not.
-  const existing = lstatSync(linkPath, { throwIfNoEntry: false });
-
-  if (existing !== undefined && !existing.isSymbolicLink()) {
+  // Checked by where the path leads rather than by whether it is a link, since
+  // pnpm installs packages as symlinks into its store and a link is therefore
+  // no evidence that this one is ours.
+  if (
+    lstatSync(linkPath, { throwIfNoEntry: false }) !== undefined &&
+    !leadsTo({ linkPath, outputPath })
+  ) {
     throw new Error(
       `node_modules/${DEFAULT_PACKAGE_NAME} is an installed package, not a link to ${DEFAULT_OUTPUT_PATH}. Rename the emitted plugin via the sync generator's packageName option.`,
     );
@@ -112,10 +135,7 @@ function linkPlugin(workspaceRoot: string): void {
   // directory.
   rmSync(linkPath, { force: true, recursive: true });
   symlinkSync(
-    path.relative(
-      path.dirname(linkPath),
-      path.resolve(workspaceRoot, DEFAULT_OUTPUT_PATH),
-    ),
+    path.relative(path.dirname(linkPath), outputPath),
     linkPath,
     "dir",
   );

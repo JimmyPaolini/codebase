@@ -4,10 +4,10 @@ import path from "node:path";
 import {
   ConfigurationService,
   DiscoveryService,
-} from "@jimmypaolini/conformetry-configuration";
-import { ReportingService } from "@jimmypaolini/conformetry-core";
-import { GenerationService } from "@jimmypaolini/conformetry-generation";
-import { ValidationService } from "@jimmypaolini/conformetry-validation";
+} from "@conformetry/configuration";
+import { ReportingService } from "@conformetry/core";
+import { GenerationService } from "@conformetry/generation";
+import { ValidationService } from "@conformetry/validation";
 import { Injectable } from "@nestjs/common";
 
 import { AdapterService } from "../adapter/adapter.service";
@@ -39,7 +39,7 @@ import type {
   RunValidationArguments,
   RunValidationResult,
 } from "./plugin.types";
-import type { TemplateDefinition } from "@jimmypaolini/conformetry-configuration";
+import type { TemplateDefinition } from "@conformetry/configuration";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
@@ -218,9 +218,12 @@ export class PluginService {
     options: unknown;
     workspaceRoot: string;
   }): ConformetryPluginOptions {
-    const registered = this.optionsService.resolveConfigurationPath(
-      this.readNxConfiguration(args.workspaceRoot),
-    );
+    const registered = this.optionsService.resolveConfigurationPath({
+      exists: (candidatePath) => {
+        return existsSync(path.resolve(args.workspaceRoot, candidatePath));
+      },
+      nxConfiguration: this.readNxConfiguration(args.workspaceRoot),
+    });
     const passed: Record<string, unknown> =
       typeof args.options === "object" && args.options !== null
         ? { ...args.options }

@@ -125,4 +125,6 @@ overrides:
   - filename: "**/lexico-ingestion/data/**"
     enabled: false
 words:
+  # The rc-style conformetry config filenames the Nx plugin looks for.
+  - conformetryrc
   - openwiki

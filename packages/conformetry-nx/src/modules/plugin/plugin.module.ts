@@ -1,10 +1,10 @@
 import {
   ConfigurationModule,
   DiscoveryModule,
-} from "@jimmypaolini/conformetry-configuration";
-import { ReportingModule } from "@jimmypaolini/conformetry-core";
-import { GenerationModule } from "@jimmypaolini/conformetry-generation";
-import { ValidationModule } from "@jimmypaolini/conformetry-validation";
+} from "@conformetry/configuration";
+import { ReportingModule } from "@conformetry/core";
+import { GenerationModule } from "@conformetry/generation";
+import { ValidationModule } from "@conformetry/validation";
 import { Module } from "@nestjs/common";
 
 import { AdapterModule } from "../adapter/adapter.module";

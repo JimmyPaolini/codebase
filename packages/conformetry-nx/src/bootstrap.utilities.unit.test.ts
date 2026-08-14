@@ -3,6 +3,7 @@ import {
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  symlinkSync,
   writeFileSync,
 } from "node:fs";
 import { lstat, readlink } from "node:fs/promises";
@@ -26,7 +27,13 @@ vi.mock("./plugin-context.utilities", () => ({
 }));
 
 const emitPlugin = vi.fn();
-const resolveConfigurationPath = vi.fn();
+const resolveConfigurationPath =
+  vi.fn<
+    (args: {
+      exists: (candidatePath: string) => boolean;
+      nxConfiguration: unknown;
+    }) => string
+  >();
 
 describe("bootstrap utilities", () => {
   let workspaceRoot: string;
@@ -118,6 +125,24 @@ describe("bootstrap utilities", () => {
       );
     });
 
+    it("refuses a link to somewhere other than the emitted plugin", async () => {
+      // pnpm installs packages as symlinks into its store, so being a link is
+      // no evidence the link is this bootstrap's.
+      const installedPath = path.join(workspaceRoot, "store/conformetry");
+
+      mkdirSync(installedPath, { recursive: true });
+      mkdirSync(path.join(workspaceRoot, "node_modules"), { recursive: true });
+      symlinkSync(
+        installedPath,
+        path.join(workspaceRoot, "node_modules/conformetry"),
+        "dir",
+      );
+
+      await expect(bootstrapPlugin(workspaceRoot)).rejects.toThrow(
+        "is an installed package",
+      );
+    });
+
     it("returns the files it emitted", async () => {
       await expect(bootstrapPlugin(workspaceRoot)).resolves.toHaveLength(2);
     });
@@ -127,7 +152,7 @@ describe("bootstrap utilities", () => {
         plugins: [
           {
             options: { configurationPath: "elsewhere/conformetry.config.ts" },
-            plugin: "@jimmypaolini/conformetry-nx",
+            plugin: "@conformetry/nx",
           },
         ],
       };
@@ -144,7 +169,9 @@ describe("bootstrap utilities", () => {
       await bootstrapPlugin(workspaceRoot);
 
       // A postinstall gets no options from Nx, so the registration is read.
-      expect(resolveConfigurationPath).toHaveBeenCalledWith(nxConfiguration);
+      expect(resolveConfigurationPath).toHaveBeenCalledWith(
+        expect.objectContaining({ nxConfiguration }),
+      );
       expect(emitPlugin).toHaveBeenCalledWith({
         configurationPath: "elsewhere/conformetry.config.ts",
         outputPath: DEFAULT_OUTPUT_PATH,
@@ -152,10 +179,28 @@ describe("bootstrap utilities", () => {
       });
     });
 
-    it("emits from the default when the workspace has no nx.json", async () => {
+    it("discovers a root config file when the workspace has no nx.json", async () => {
+      writeFileSync(
+        path.join(workspaceRoot, "conformetry.json"),
+        "[]\n",
+        "utf8",
+      );
+      // Stands in for the real candidate walk, so what is asserted is that the
+      // bootstrap hands over a predicate answering about its own workspace.
+      resolveConfigurationPath.mockImplementation((args) => {
+        return args.exists("conformetry.json")
+          ? "conformetry.json"
+          : "conformetry.config.ts";
+      });
+
       await bootstrapPlugin(workspaceRoot);
 
-      expect(resolveConfigurationPath).toHaveBeenCalledWith(undefined);
+      expect(resolveConfigurationPath).toHaveBeenCalledWith(
+        expect.objectContaining({ nxConfiguration: undefined }),
+      );
+      expect(emitPlugin).toHaveBeenCalledWith(
+        expect.objectContaining({ configurationPath: "conformetry.json" }),
+      );
     });
   });
 
