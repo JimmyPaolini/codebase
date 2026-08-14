@@ -1,4 +1,4 @@
-import { ErrorsModule } from "@jimmypaolini/conformetry-core";
+import { ErrorsModule } from "@conformetry/core";
 import { Module } from "@nestjs/common";
 
 import { PythonBridgeService } from "./python-bridge.service";

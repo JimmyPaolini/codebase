@@ -2,11 +2,8 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import {
-  DiscoveryModule,
-  DiscoveryService,
-} from "@jimmypaolini/conformetry-configuration";
-import { ErrorsModule } from "@jimmypaolini/conformetry-core";
+import { DiscoveryModule, DiscoveryService } from "@conformetry/configuration";
+import { ErrorsModule } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -15,7 +12,7 @@ import { FilesService } from "./files.service";
 import type {
   MatchedInstance,
   TemplateDefinition,
-} from "@jimmypaolini/conformetry-configuration";
+} from "@conformetry/configuration";
 
 /**
  * Writes a template with one root file and two files in a nested folder, so a

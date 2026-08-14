@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 
-import { ErrorsModule } from "@jimmypaolini/conformetry-core";
+import { ErrorsModule } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 

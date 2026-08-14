@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "@jimmypaolini/conformetry-configuration": "workspace:*",
-    "@jimmypaolini/conformetry-core": "workspace:*",
+    "@conformetry/configuration": "workspace:*",
+    "@conformetry/core": "workspace:*",
     "@nestjs/common": "catalog:",
     "pino": "catalog:",
     "reflect-metadata": "catalog:",
@@ -21,7 +21,7 @@
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
-  "name": "@jimmypaolini/conformetry-files",
+  "name": "@conformetry/files",
   "private": true,
   "publishConfig": {
     "access": "public",

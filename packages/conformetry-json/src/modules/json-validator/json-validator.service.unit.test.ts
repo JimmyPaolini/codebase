@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { JsonComparisonService } from "./json-comparison.service";
 import { JsonValidatorService } from "./json-validator.service";
 
-import type { PreparedValidationDocument } from "@jimmypaolini/conformetry-core";
+import type { PreparedValidationDocument } from "@conformetry/core";
 
 function createDocument(args: {
   instance: string;

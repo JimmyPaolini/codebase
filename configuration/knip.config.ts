@@ -37,7 +37,7 @@ const config: KnipConfig = {
     "squawk",
     "gh", // GitHub CLI, used by scripts/orchestrate-agents.ts to run Copilot sessions
     "openwiki",
-    "@jimmypaolini/conformetry-nx", // Referenced in nx.json plugin configuration
+    "@conformetry/nx", // Referenced in nx.json plugin configuration
   ],
 
   // devDependencies used via npx, CLI, or ESLint config (not directly imported)
@@ -282,7 +282,7 @@ const config: KnipConfig = {
         ...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES,
         // Named as a string in the language registry and imported on demand,
         // so no static import proves it is used.
-        "@jimmypaolini/conformetry-text",
+        "@conformetry/text",
       ],
       project: "src/**/*.ts",
     },

@@ -8,7 +8,7 @@ import {
 import { MissingLanguagePackageError } from "./validation.errors";
 
 import type { LanguageModuleLoader, LanguagePackage } from "./validation.types";
-import type { ConformetryLanguageValidator } from "@jimmypaolini/conformetry-core";
+import type { ConformetryLanguageValidator } from "@conformetry/core";
 import type { Type } from "@nestjs/common";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */

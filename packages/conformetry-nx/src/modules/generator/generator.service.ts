@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
+import { ConfigurationService } from "@conformetry/configuration";
 import { Injectable } from "@nestjs/common";
 
 import {
@@ -10,7 +10,7 @@ import {
 } from "./generator.constants";
 
 import type { EmitPluginArguments, EmittedFile } from "./generator.types";
-import type { ConformetryGeneratorDefinition } from "@jimmypaolini/conformetry-configuration";
+import type { ConformetryGeneratorDefinition } from "@conformetry/configuration";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
@@ -50,7 +50,7 @@ export class GeneratorService {
     return [
       GENERATED_FILE_NOTICE,
       "",
-      'import { runConformetryGenerator } from "@jimmypaolini/conformetry-nx";',
+      'import { runConformetryGenerator } from "@conformetry/nx";',
       "",
       'import type { Tree } from "@nx/devkit";',
       "",
@@ -186,7 +186,7 @@ export class GeneratorService {
         // missing install.
         content: this.stringify({
           dependencies: {
-            "@jimmypaolini/conformetry-nx": "workspace:*",
+            "@conformetry/nx": "workspace:*",
             "@nx/devkit": "catalog:",
           },
           generators: "./generators.json",

@@ -309,12 +309,12 @@ export default [
           // The language packages are named as strings in a registry and
           // imported on demand, so no static import proves they are used.
           ignoredDependencies: [
-            "@jimmypaolini/conformetry-json",
-            "@jimmypaolini/conformetry-jupyter",
-            "@jimmypaolini/conformetry-markdown",
-            "@jimmypaolini/conformetry-python",
-            "@jimmypaolini/conformetry-text",
-            "@jimmypaolini/conformetry-typescript",
+            "@conformetry/json",
+            "@conformetry/jupyter",
+            "@conformetry/markdown",
+            "@conformetry/python",
+            "@conformetry/text",
+            "@conformetry/typescript",
           ],
         },
       ],
@@ -1218,12 +1218,12 @@ export default [
           // The language packages are named as strings in a registry and
           // imported on demand, so no static import proves they are used.
           ignoredDependencies: [
-            "@jimmypaolini/conformetry-json",
-            "@jimmypaolini/conformetry-jupyter",
-            "@jimmypaolini/conformetry-markdown",
-            "@jimmypaolini/conformetry-python",
-            "@jimmypaolini/conformetry-text",
-            "@jimmypaolini/conformetry-typescript",
+            "@conformetry/json",
+            "@conformetry/jupyter",
+            "@conformetry/markdown",
+            "@conformetry/python",
+            "@conformetry/text",
+            "@conformetry/typescript",
           ],
         },
       ],

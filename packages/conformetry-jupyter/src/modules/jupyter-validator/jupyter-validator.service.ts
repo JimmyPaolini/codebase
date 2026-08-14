@@ -1,6 +1,6 @@
-import { JsonComparisonService } from "@jimmypaolini/conformetry-json";
-import { MarkdownValidatorService } from "@jimmypaolini/conformetry-markdown";
-import { PythonBridgeService } from "@jimmypaolini/conformetry-python";
+import { JsonComparisonService } from "@conformetry/json";
+import { MarkdownValidatorService } from "@conformetry/markdown";
+import { PythonBridgeService } from "@conformetry/python";
 import { Injectable } from "@nestjs/common";
 import { parse } from "jsonc-parser";
 
@@ -15,8 +15,8 @@ import type {
   ConformanceError,
   ConformetryLanguageValidator,
   PreparedValidationDocument,
-} from "@jimmypaolini/conformetry-core";
-import type { JsonValue } from "@jimmypaolini/conformetry-json";
+} from "@conformetry/core";
+import type { JsonValue } from "@conformetry/json";
 
 /**
  * Checks that a Jupyter notebook conforms to its template.

@@ -70,7 +70,7 @@
     "@caelundas/testing",
     "@commitlint/config-conventional",
     "@golevelup/ts-vitest",
-    "@jimmypaolini/conformetry-nx",
+    "@conformetry/nx",
     "@nx/eslint-plugin",
     "@nx/js",
     "@nx/vitest",

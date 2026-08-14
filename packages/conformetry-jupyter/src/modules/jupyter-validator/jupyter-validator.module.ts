@@ -1,6 +1,6 @@
-import { JsonValidatorModule } from "@jimmypaolini/conformetry-json";
-import { MarkdownValidatorModule } from "@jimmypaolini/conformetry-markdown";
-import { PythonValidatorModule } from "@jimmypaolini/conformetry-python";
+import { JsonValidatorModule } from "@conformetry/json";
+import { MarkdownValidatorModule } from "@conformetry/markdown";
+import { PythonValidatorModule } from "@conformetry/python";
 import { Module } from "@nestjs/common";
 
 import { JupyterNotebookService } from "./jupyter-notebook.service";

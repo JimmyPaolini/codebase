@@ -563,6 +563,15 @@ importers:
       '@commitlint/types':
         specifier: 'catalog:'
         version: 21.2.0
+      '@conformetry/cli':
+        specifier: workspace:*
+        version: link:packages/conformetry
+      '@conformetry/configuration':
+        specifier: workspace:*
+        version: link:packages/conformetry-configuration
+      '@conformetry/nx':
+        specifier: workspace:*
+        version: link:packages/conformetry-nx
       '@eslint-react/eslint-plugin':
         specifier: 'catalog:'
         version: 5.18.0(eslint@10.8.0(jiti@2.7.0))(typescript@6.0.3)
@@ -572,12 +581,6 @@ importers:
       '@eslint/markdown':
         specifier: 'catalog:'
         version: 8.0.3
-      '@jimmypaolini/conformetry-configuration':
-        specifier: workspace:*
-        version: link:packages/conformetry-configuration
-      '@jimmypaolini/conformetry-nx':
-        specifier: workspace:*
-        version: link:packages/conformetry-nx
       '@nx/eslint':
         specifier: 'catalog:'
         version: 23.1.0(@babel/traverse@7.29.7)(@swc-node/register@1.12.1(@swc/core@1.15.46(@swc/helpers@0.5.23))(@swc/types@0.1.27)(typescript@6.0.3))(@swc/core@1.15.46(@swc/helpers@0.5.23))(@zkochan/js-yaml@0.0.7)(eslint@10.8.0(jiti@2.7.0))(nx@23.1.0(@swc-node/register@1.12.1(@swc/core@1.15.46(@swc/helpers@0.5.23))(@swc/types@0.1.27)(typescript@6.0.3))(@swc/core@1.15.46(@swc/helpers@0.5.23)))
@@ -1075,16 +1078,16 @@ importers:
 
   packages/conformetry:
     dependencies:
-      '@jimmypaolini/conformetry-configuration':
+      '@conformetry/configuration':
         specifier: workspace:*
         version: link:../conformetry-configuration
-      '@jimmypaolini/conformetry-core':
+      '@conformetry/core':
         specifier: workspace:*
         version: link:../conformetry-core
-      '@jimmypaolini/conformetry-generation':
+      '@conformetry/generation':
         specifier: workspace:*
         version: link:../conformetry-generation
-      '@jimmypaolini/conformetry-validation':
+      '@conformetry/validation':
         specifier: workspace:*
         version: link:../conformetry-validation
       '@nestjs/common':
@@ -1145,10 +1148,10 @@ importers:
 
   packages/conformetry-configuration:
     dependencies:
-      '@jimmypaolini/conformetry-core':
+      '@conformetry/core':
         specifier: workspace:*
         version: link:../conformetry-core
-      '@jimmypaolini/conformetry-generation':
+      '@conformetry/generation':
         specifier: workspace:*
         version: link:../conformetry-generation
       '@nestjs/common':
@@ -1246,10 +1249,10 @@ importers:
 
   packages/conformetry-files:
     dependencies:
-      '@jimmypaolini/conformetry-configuration':
+      '@conformetry/configuration':
         specifier: workspace:*
         version: link:../conformetry-configuration
-      '@jimmypaolini/conformetry-core':
+      '@conformetry/core':
         specifier: workspace:*
         version: link:../conformetry-core
       '@nestjs/common':
@@ -1341,7 +1344,7 @@ importers:
 
   packages/conformetry-json:
     dependencies:
-      '@jimmypaolini/conformetry-core':
+      '@conformetry/core':
         specifier: workspace:*
         version: link:../conformetry-core
       '@nestjs/common':
@@ -1387,16 +1390,16 @@ importers:
 
   packages/conformetry-jupyter:
     dependencies:
-      '@jimmypaolini/conformetry-core':
+      '@conformetry/core':
         specifier: workspace:*
         version: link:../conformetry-core
-      '@jimmypaolini/conformetry-json':
+      '@conformetry/json':
         specifier: workspace:*
         version: link:../conformetry-json
-      '@jimmypaolini/conformetry-markdown':
+      '@conformetry/markdown':
         specifier: workspace:*
         version: link:../conformetry-markdown
-      '@jimmypaolini/conformetry-python':
+      '@conformetry/python':
         specifier: workspace:*
         version: link:../conformetry-python
       '@nestjs/common':
@@ -1439,7 +1442,7 @@ importers:
 
   packages/conformetry-markdown:
     dependencies:
-      '@jimmypaolini/conformetry-core':
+      '@conformetry/core':
         specifier: workspace:*
         version: link:../conformetry-core
       '@nestjs/common':
@@ -1491,34 +1494,34 @@ importers:
 
   packages/conformetry-nx:
     dependencies:
-      '@jimmypaolini/conformetry-configuration':
+      '@conformetry/configuration':
         specifier: workspace:*
         version: link:../conformetry-configuration
-      '@jimmypaolini/conformetry-core':
+      '@conformetry/core':
         specifier: workspace:*
         version: link:../conformetry-core
-      '@jimmypaolini/conformetry-generation':
+      '@conformetry/generation':
         specifier: workspace:*
         version: link:../conformetry-generation
-      '@jimmypaolini/conformetry-json':
+      '@conformetry/json':
         specifier: workspace:*
         version: link:../conformetry-json
-      '@jimmypaolini/conformetry-jupyter':
+      '@conformetry/jupyter':
         specifier: workspace:*
         version: link:../conformetry-jupyter
-      '@jimmypaolini/conformetry-markdown':
+      '@conformetry/markdown':
         specifier: workspace:*
         version: link:../conformetry-markdown
-      '@jimmypaolini/conformetry-python':
+      '@conformetry/python':
         specifier: workspace:*
         version: link:../conformetry-python
-      '@jimmypaolini/conformetry-text':
+      '@conformetry/text':
         specifier: workspace:*
         version: link:../conformetry-text
-      '@jimmypaolini/conformetry-typescript':
+      '@conformetry/typescript':
         specifier: workspace:*
         version: link:../conformetry-typescript
-      '@jimmypaolini/conformetry-validation':
+      '@conformetry/validation':
         specifier: workspace:*
         version: link:../conformetry-validation
       '@nestjs/common':
@@ -1570,7 +1573,7 @@ importers:
 
   packages/conformetry-python:
     dependencies:
-      '@jimmypaolini/conformetry-core':
+      '@conformetry/core':
         specifier: workspace:*
         version: link:../conformetry-core
       '@nestjs/common':
@@ -1613,7 +1616,7 @@ importers:
 
   packages/conformetry-text:
     dependencies:
-      '@jimmypaolini/conformetry-core':
+      '@conformetry/core':
         specifier: workspace:*
         version: link:../conformetry-core
       '@nestjs/common':
@@ -1656,7 +1659,7 @@ importers:
 
   packages/conformetry-typescript:
     dependencies:
-      '@jimmypaolini/conformetry-core':
+      '@conformetry/core':
         specifier: workspace:*
         version: link:../conformetry-core
       '@nestjs/common':
@@ -1699,31 +1702,31 @@ importers:
 
   packages/conformetry-validation:
     dependencies:
-      '@jimmypaolini/conformetry-configuration':
+      '@conformetry/configuration':
         specifier: workspace:*
         version: link:../conformetry-configuration
-      '@jimmypaolini/conformetry-core':
+      '@conformetry/core':
         specifier: workspace:*
         version: link:../conformetry-core
-      '@jimmypaolini/conformetry-files':
+      '@conformetry/files':
         specifier: workspace:*
         version: link:../conformetry-files
-      '@jimmypaolini/conformetry-json':
+      '@conformetry/json':
         specifier: workspace:*
         version: link:../conformetry-json
-      '@jimmypaolini/conformetry-jupyter':
+      '@conformetry/jupyter':
         specifier: workspace:*
         version: link:../conformetry-jupyter
-      '@jimmypaolini/conformetry-markdown':
+      '@conformetry/markdown':
         specifier: workspace:*
         version: link:../conformetry-markdown
-      '@jimmypaolini/conformetry-python':
+      '@conformetry/python':
         specifier: workspace:*
         version: link:../conformetry-python
-      '@jimmypaolini/conformetry-text':
+      '@conformetry/text':
         specifier: workspace:*
         version: link:../conformetry-text
-      '@jimmypaolini/conformetry-typescript':
+      '@conformetry/typescript':
         specifier: workspace:*
         version: link:../conformetry-typescript
       '@nestjs/common':
@@ -1999,7 +2002,7 @@ importers:
 
   tools/synchronization:
     dependencies:
-      '@jimmypaolini/conformetry-configuration':
+      '@conformetry/configuration':
         specifier: workspace:*
         version: link:../../packages/conformetry-configuration
       '@nestjs/common':

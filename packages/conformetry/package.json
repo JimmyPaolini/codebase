@@ -1,9 +1,12 @@
 {
+  "bin": {
+    "conformetry": "./src/main.mjs"
+  },
   "dependencies": {
-    "@jimmypaolini/conformetry-configuration": "workspace:*",
-    "@jimmypaolini/conformetry-core": "workspace:*",
-    "@jimmypaolini/conformetry-generation": "workspace:*",
-    "@jimmypaolini/conformetry-validation": "workspace:*",
+    "@conformetry/configuration": "workspace:*",
+    "@conformetry/core": "workspace:*",
+    "@conformetry/generation": "workspace:*",
+    "@conformetry/validation": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
@@ -30,7 +33,7 @@
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
-  "name": "@jimmypaolini/conformetry",
+  "name": "@conformetry/cli",
   "private": true,
   "publishConfig": {
     "access": "public",

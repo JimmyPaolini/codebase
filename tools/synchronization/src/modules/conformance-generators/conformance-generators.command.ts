@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
+import { ConfigurationService } from "@conformetry/configuration";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 

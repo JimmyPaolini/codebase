@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "@jimmypaolini/conformetry-core": "workspace:*",
-    "@jimmypaolini/conformetry-json": "workspace:*",
-    "@jimmypaolini/conformetry-markdown": "workspace:*",
-    "@jimmypaolini/conformetry-python": "workspace:*",
+    "@conformetry/core": "workspace:*",
+    "@conformetry/json": "workspace:*",
+    "@conformetry/markdown": "workspace:*",
+    "@conformetry/python": "workspace:*",
     "@nestjs/common": "catalog:",
     "jsonc-parser": "catalog:",
     "pino": "catalog:",
@@ -24,7 +24,7 @@
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
-  "name": "@jimmypaolini/conformetry-jupyter",
+  "name": "@conformetry/jupyter",
   "private": true,
   "publishConfig": {
     "access": "public",

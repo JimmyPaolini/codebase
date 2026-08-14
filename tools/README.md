@@ -4,7 +4,7 @@ This directory contains Nx plugins and workspace helpers for the codebase.
 
 ## Available Generators
 
-### Conformetry (`@jimmypaolini/conformetry-nx`)
+### Conformetry (`@conformetry/nx`)
 
 **Purpose:** Generate React components and other scaffolded modules with the conformetry package ecosystem.
 

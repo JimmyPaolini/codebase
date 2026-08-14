@@ -9,7 +9,7 @@ import { TypescriptValidatorService } from "./typescript-validator.service";
 import type {
   ConformanceError,
   PreparedValidationDocument,
-} from "@jimmypaolini/conformetry-core";
+} from "@conformetry/core";
 
 function createDocument(args: {
   filename?: string;

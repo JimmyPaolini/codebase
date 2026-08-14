@@ -80,7 +80,7 @@
         "configurationPath": "configuration/conformetry.config.ts",
         "validateTargetName": "conformetry-validate"
       },
-      "plugin": "@jimmypaolini/conformetry-nx"
+      "plugin": "@conformetry/nx"
     }
   ],
   "projects": {
@@ -92,7 +92,7 @@
     }
   },
   "sync": {
-    "globalGenerators": ["@jimmypaolini/conformetry-nx:sync"]
+    "globalGenerators": ["@conformetry/nx:sync"]
   },
   "targetDefaults": {
     "analyze-code": [

@@ -1,8 +1,8 @@
 import path from "node:path";
 
-import { DiscoveryService } from "@jimmypaolini/conformetry-configuration";
-import { LanguageService } from "@jimmypaolini/conformetry-core";
-import { FilesService } from "@jimmypaolini/conformetry-files";
+import { DiscoveryService } from "@conformetry/configuration";
+import { LanguageService } from "@conformetry/core";
+import { FilesService } from "@conformetry/files";
 import { Injectable } from "@nestjs/common";
 
 import { ValidationDeduplicationService } from "./validation-deduplication.service";
@@ -14,11 +14,11 @@ import type {
   RunValidationArguments,
   RunValidationResult,
 } from "./validation.types";
-import type { MatchedInstance } from "@jimmypaolini/conformetry-configuration";
+import type { MatchedInstance } from "@conformetry/configuration";
 import type {
   ConformetryLanguageValidator,
   ValidationFileResult,
-} from "@jimmypaolini/conformetry-core";
+} from "@conformetry/core";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**

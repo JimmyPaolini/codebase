@@ -1,6 +1,6 @@
 // ♟️ Constants
 
-import type { LanguageValidatorDescriptor } from "@jimmypaolini/conformetry-core";
+import type { LanguageValidatorDescriptor } from "@conformetry/core";
 
 /** Extensions the Jupyter validator claims. */
 export const JUPYTER_VALIDATOR_FILE_EXTENSIONS = [".ipynb"];

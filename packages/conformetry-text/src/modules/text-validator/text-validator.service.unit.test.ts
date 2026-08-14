@@ -3,7 +3,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { TextValidatorService } from "./text-validator.service";
 
-import type { PreparedValidationDocument } from "@jimmypaolini/conformetry-core";
+import type { PreparedValidationDocument } from "@conformetry/core";
 
 function createDocument(args: {
   instance: string;

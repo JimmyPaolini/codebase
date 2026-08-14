@@ -4,9 +4,9 @@ import {
   ConfigurationService,
   DiscoveryService,
   InputService,
-} from "@jimmypaolini/conformetry-configuration";
-import { ReportingService } from "@jimmypaolini/conformetry-core";
-import { ValidationService } from "@jimmypaolini/conformetry-validation";
+} from "@conformetry/configuration";
+import { ReportingService } from "@conformetry/core";
+import { ValidationService } from "@conformetry/validation";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
@@ -20,7 +20,7 @@ import type {
   ConformetryInstanceGroup,
   InstanceCandidate,
   TemplateDefinition,
-} from "@jimmypaolini/conformetry-configuration";
+} from "@conformetry/configuration";
 
 /**
  * Validates instances against their conformetry templates.

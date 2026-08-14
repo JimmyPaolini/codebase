@@ -7,7 +7,7 @@ import type {
   ConformanceError,
   ConformetryLanguageValidator,
   PreparedValidationDocument,
-} from "@jimmypaolini/conformetry-core";
+} from "@conformetry/core";
 
 /**
  * Checks that a text file contains every line its template requires.

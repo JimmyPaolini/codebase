@@ -8,7 +8,7 @@ import type { LanguageModuleLoader } from "./validation.types";
 import type {
   ConformetryLanguageValidator,
   PreparedValidationDocument,
-} from "@jimmypaolini/conformetry-core";
+} from "@conformetry/core";
 import type { Type } from "@nestjs/common";
 
 /** A package namespace shaped the way the real language packages are. */
@@ -61,13 +61,13 @@ const DOCUMENT: PreparedValidationDocument = {
 };
 
 const NAMESPACES: Record<string, Record<string, unknown>> = {
-  "@jimmypaolini/conformetry-text": buildNamespace({
+  "@conformetry/text": buildNamespace({
     extensions: [".txt"],
     moduleExport: "TextValidatorModule",
     name: "text",
     serviceExport: "TextValidatorService",
   }),
-  "@jimmypaolini/conformetry-typescript": buildNamespace({
+  "@conformetry/typescript": buildNamespace({
     extensions: [".ts", ".tsx"],
     moduleExport: "TypescriptValidatorModule",
     name: "typescript",
@@ -164,9 +164,7 @@ describe(ValidationLanguagesService, () => {
           extensions: [".py"],
           loadLanguageModule,
         }),
-      ).rejects.toThrow(
-        /Validating \.py needs @jimmypaolini\/conformetry-python/,
-      );
+      ).rejects.toThrow(/Validating \.py needs @conformetry\/python/);
     });
 
     it("reports a package that loads but exports the wrong shape", async () => {

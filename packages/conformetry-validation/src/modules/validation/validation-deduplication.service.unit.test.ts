@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { ValidationDeduplicationService } from "./validation-deduplication.service";
 
 import type { InstanceFileResults } from "./validation.types";
-import type { MatchedInstance } from "@jimmypaolini/conformetry-configuration";
+import type { MatchedInstance } from "@conformetry/configuration";
 
 const INSTANCE_FILE_PATH =
   "/w/packages/widgets/src/modules/logger/logger.service.ts";

@@ -1,15 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { DiscoveryService } from "@jimmypaolini/conformetry-configuration";
-import { ErrorsService } from "@jimmypaolini/conformetry-core";
+import { DiscoveryService } from "@conformetry/configuration";
+import { ErrorsService } from "@conformetry/core";
 import { Injectable } from "@nestjs/common";
 
 import type { CheckInstanceFilesArguments } from "./files.types";
-import type {
-  ConformanceError,
-  ValidationFileResult,
-} from "@jimmypaolini/conformetry-core";
+import type { ConformanceError, ValidationFileResult } from "@conformetry/core";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**

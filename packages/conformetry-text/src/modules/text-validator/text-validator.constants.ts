@@ -1,6 +1,6 @@
 // ♟️ Constants
 
-import type { LanguageValidatorDescriptor } from "@jimmypaolini/conformetry-core";
+import type { LanguageValidatorDescriptor } from "@conformetry/core";
 
 /** Extensions the text validator claims. */
 export const TEXT_VALIDATOR_FILE_EXTENSIONS = [".txt"];

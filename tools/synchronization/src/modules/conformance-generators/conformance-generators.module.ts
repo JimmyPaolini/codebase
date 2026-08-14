@@ -1,4 +1,4 @@
-import { ConfigurationModule } from "@jimmypaolini/conformetry-configuration";
+import { ConfigurationModule } from "@conformetry/configuration";
 import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "../logger/logger.module";

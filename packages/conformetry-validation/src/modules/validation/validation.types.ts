@@ -5,8 +5,8 @@ import type {
   MatchedInstance,
   TemplateDefinition,
   UnmatchedInstance,
-} from "@jimmypaolini/conformetry-configuration";
-import type { ValidationFileResult } from "@jimmypaolini/conformetry-core";
+} from "@conformetry/configuration";
+import type { ValidationFileResult } from "@conformetry/core";
 
 /** Every finding one matched instance produced, kept with the instance. */
 export interface InstanceFileResults {

@@ -1,4 +1,4 @@
-import { RenderingService } from "@jimmypaolini/conformetry-generation";
+import { RenderingService } from "@conformetry/generation";
 import { Injectable } from "@nestjs/common";
 
 import { DiscoveryTemplatesService } from "./discovery-templates.service";
@@ -14,7 +14,7 @@ import type {
   ScoredTemplate,
   TemplateDefinition,
 } from "./discovery.types";
-import type { Substitutions } from "@jimmypaolini/conformetry-generation";
+import type { Substitutions } from "@conformetry/generation";
 
 /**
  * Decides which template a candidate directory is an instance of.

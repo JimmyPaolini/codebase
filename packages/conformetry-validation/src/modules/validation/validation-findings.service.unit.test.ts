@@ -6,7 +6,7 @@ import { ValidationFindingsService } from "./validation-findings.service";
 import type {
   TemplateDefinition,
   UnmatchedInstance,
-} from "@jimmypaolini/conformetry-configuration";
+} from "@conformetry/configuration";
 
 const TEMPLATES: TemplateDefinition[] = [
   {

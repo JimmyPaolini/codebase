@@ -1,9 +1,6 @@
-import { DiscoveryModule } from "@jimmypaolini/conformetry-configuration";
-import {
-  LanguageModule,
-  ReportingModule,
-} from "@jimmypaolini/conformetry-core";
-import { FilesModule } from "@jimmypaolini/conformetry-files";
+import { DiscoveryModule } from "@conformetry/configuration";
+import { LanguageModule, ReportingModule } from "@conformetry/core";
+import { FilesModule } from "@conformetry/files";
 import { Module } from "@nestjs/common";
 
 import { ValidationDeduplicationService } from "./validation-deduplication.service";

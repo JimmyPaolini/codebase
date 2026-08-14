@@ -3,7 +3,7 @@
 import type {
   FileSystemAdapter,
   FormatterAdapter,
-} from "@jimmypaolini/conformetry-generation";
+} from "@conformetry/generation";
 import type { Tree } from "@nx/devkit";
 
 /** Arguments for building the adapters that back one generator run. */

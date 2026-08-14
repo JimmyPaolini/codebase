@@ -5,7 +5,7 @@ import path from "node:path";
 import {
   ConfigurationModule,
   DiscoveryModule,
-} from "@jimmypaolini/conformetry-configuration";
+} from "@conformetry/configuration";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 

@@ -152,7 +152,7 @@ describe(GeneratorService, () => {
       );
 
       expect(manifest).toMatchObject({
-        dependencies: { "@jimmypaolini/conformetry-nx": "workspace:*" },
+        dependencies: { "@conformetry/nx": "workspace:*" },
         name: "@scope/generators",
       });
     });

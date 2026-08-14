@@ -2,14 +2,14 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { DiscoveryService } from "@jimmypaolini/conformetry-configuration";
+import { DiscoveryService } from "@conformetry/configuration";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { ValidationModule } from "./validation.module";
 import { ValidationService } from "./validation.service";
 
-import type { TemplateDefinition } from "@jimmypaolini/conformetry-configuration";
+import type { TemplateDefinition } from "@conformetry/configuration";
 
 /** Writes an instance directory, optionally dropping the markdown file. */
 async function createInstance(args: {

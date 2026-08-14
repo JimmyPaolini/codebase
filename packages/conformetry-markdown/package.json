@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@jimmypaolini/conformetry-core": "workspace:*",
+    "@conformetry/core": "workspace:*",
     "@nestjs/common": "catalog:",
     "mdast-util-to-string": "catalog:",
     "pino": "catalog:",
@@ -24,7 +24,7 @@
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
-  "name": "@jimmypaolini/conformetry-markdown",
+  "name": "@conformetry/markdown",
   "private": true,
   "publishConfig": {
     "access": "public",

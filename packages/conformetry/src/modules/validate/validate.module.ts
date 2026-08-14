@@ -2,9 +2,9 @@ import {
   ConfigurationModule,
   DiscoveryModule,
   InputModule,
-} from "@jimmypaolini/conformetry-configuration";
-import { ReportingModule } from "@jimmypaolini/conformetry-core";
-import { ValidationModule } from "@jimmypaolini/conformetry-validation";
+} from "@conformetry/configuration";
+import { ReportingModule } from "@conformetry/core";
+import { ValidationModule } from "@conformetry/validation";
 import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "../logger/logger.module";

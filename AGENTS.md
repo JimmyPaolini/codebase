@@ -69,7 +69,7 @@ The conformetry toolchain provides two workflows that should be used together:
 
 ### Generation
 
-Conformetry generators are declared in `configuration/conformetry.config.ts` and executed through the `@jimmypaolini/conformetry-nx` Nx plugin.
+Conformetry generators are declared in `configuration/conformetry.config.ts` and executed through the `@conformetry/nx` Nx plugin.
 
 Use generators when creating new applications/modules/components so the initial file set, naming, and conventions are correct from the start.
 

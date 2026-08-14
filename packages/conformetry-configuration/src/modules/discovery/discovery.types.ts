@@ -1,7 +1,7 @@
 // 🏷️ Types
 
-import type { PreparedValidationDocument } from "@jimmypaolini/conformetry-core";
-import type { Substitutions } from "@jimmypaolini/conformetry-generation";
+import type { PreparedValidationDocument } from "@conformetry/core";
+import type { Substitutions } from "@conformetry/generation";
 
 /**
  * A place a template's tree is rendered into, plus the name it renders with.

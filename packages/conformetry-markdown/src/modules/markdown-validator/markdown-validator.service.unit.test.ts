@@ -8,7 +8,7 @@ import { MarkdownValidatorService } from "./markdown-validator.service";
 import type {
   ConformanceError,
   PreparedValidationDocument,
-} from "@jimmypaolini/conformetry-core";
+} from "@conformetry/core";
 
 function createDocument(args: {
   instance: string;

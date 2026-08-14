@@ -1,11 +1,11 @@
-import { createMock } from "@golevelup/ts-vitest";
 import {
   ConfigurationService,
   DiscoveryService,
   InputService,
-} from "@jimmypaolini/conformetry-configuration";
-import { ReportingService } from "@jimmypaolini/conformetry-core";
-import { ValidationService } from "@jimmypaolini/conformetry-validation";
+} from "@conformetry/configuration";
+import { ReportingService } from "@conformetry/core";
+import { ValidationService } from "@conformetry/validation";
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -17,7 +17,7 @@ import type {
   ConformetryConfiguration,
   InstanceCandidate,
   TemplateDefinition,
-} from "@jimmypaolini/conformetry-configuration";
+} from "@conformetry/configuration";
 
 const CONFIGURATION: ConformetryConfiguration = [
   {

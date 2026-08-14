@@ -1,6 +1,6 @@
 // ♟️ Constants
 
-import type { LanguageValidatorDescriptor } from "@jimmypaolini/conformetry-core";
+import type { LanguageValidatorDescriptor } from "@conformetry/core";
 
 /** Extensions the JSON validator claims. */
 export const JSON_VALIDATOR_FILE_EXTENSIONS = [".json", ".jsonc"];

@@ -3,8 +3,8 @@ import { Injectable } from "@nestjs/common";
 import { FINDING_KEY_SEPARATOR } from "./validation.constants";
 
 import type { InstanceFileResults } from "./validation.types";
-import type { MatchedInstance } from "@jimmypaolini/conformetry-configuration";
-import type { ValidationFileResult } from "@jimmypaolini/conformetry-core";
+import type { MatchedInstance } from "@conformetry/configuration";
+import type { ValidationFileResult } from "@conformetry/core";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**

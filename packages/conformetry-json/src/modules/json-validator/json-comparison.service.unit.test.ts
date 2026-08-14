@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { JsonComparisonService } from "./json-comparison.service";
 
 import type { JsonValue } from "./json-validator.types";
-import type { ConformanceError } from "@jimmypaolini/conformetry-core";
+import type { ConformanceError } from "@conformetry/core";
 
 describe(JsonComparisonService, () => {
   let service: JsonComparisonService;

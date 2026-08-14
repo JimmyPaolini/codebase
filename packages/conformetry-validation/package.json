@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "@jimmypaolini/conformetry-configuration": "workspace:*",
-    "@jimmypaolini/conformetry-core": "workspace:*",
-    "@jimmypaolini/conformetry-files": "workspace:*",
-    "@jimmypaolini/conformetry-text": "workspace:*",
+    "@conformetry/configuration": "workspace:*",
+    "@conformetry/core": "workspace:*",
+    "@conformetry/files": "workspace:*",
+    "@conformetry/text": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/core": "catalog:",
     "pino": "catalog:",
@@ -25,28 +25,28 @@
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
-  "name": "@jimmypaolini/conformetry-validation",
+  "name": "@conformetry/validation",
   "peerDependencies": {
-    "@jimmypaolini/conformetry-json": "workspace:*",
-    "@jimmypaolini/conformetry-jupyter": "workspace:*",
-    "@jimmypaolini/conformetry-markdown": "workspace:*",
-    "@jimmypaolini/conformetry-python": "workspace:*",
-    "@jimmypaolini/conformetry-typescript": "workspace:*"
+    "@conformetry/json": "workspace:*",
+    "@conformetry/jupyter": "workspace:*",
+    "@conformetry/markdown": "workspace:*",
+    "@conformetry/python": "workspace:*",
+    "@conformetry/typescript": "workspace:*"
   },
   "peerDependenciesMeta": {
-    "@jimmypaolini/conformetry-json": {
+    "@conformetry/json": {
       "optional": true
     },
-    "@jimmypaolini/conformetry-jupyter": {
+    "@conformetry/jupyter": {
       "optional": true
     },
-    "@jimmypaolini/conformetry-markdown": {
+    "@conformetry/markdown": {
       "optional": true
     },
-    "@jimmypaolini/conformetry-python": {
+    "@conformetry/python": {
       "optional": true
     },
-    "@jimmypaolini/conformetry-typescript": {
+    "@conformetry/typescript": {
       "optional": true
     }
   },

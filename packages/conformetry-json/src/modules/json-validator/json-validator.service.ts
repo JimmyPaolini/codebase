@@ -9,7 +9,7 @@ import type {
   ConformanceError,
   ConformetryLanguageValidator,
   PreparedValidationDocument,
-} from "@jimmypaolini/conformetry-core";
+} from "@conformetry/core";
 
 /**
  * Checks that a JSON or JSONC file contains everything its template declares.

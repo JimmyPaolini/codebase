@@ -1,6 +1,6 @@
 // ♟️ Constants
 
-import type { LanguageValidatorDescriptor } from "@jimmypaolini/conformetry-core";
+import type { LanguageValidatorDescriptor } from "@conformetry/core";
 
 /** Extensions the markdown validator claims. */
 export const MARKDOWN_VALIDATOR_FILE_EXTENSIONS = [".md"];

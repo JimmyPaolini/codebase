@@ -1,6 +1,6 @@
 // ♟️ Constants
 
-import type { LanguageValidatorDescriptor } from "@jimmypaolini/conformetry-core";
+import type { LanguageValidatorDescriptor } from "@conformetry/core";
 
 /** Extensions the TypeScript validator claims. */
 export const TYPESCRIPT_VALIDATOR_FILE_EXTENSIONS = [".ts", ".tsx"];

@@ -3,7 +3,7 @@ import { z } from "zod";
 import type {
   ConformetryConfiguration,
   ConformetryGeneratorInputDefinition,
-} from "@jimmypaolini/conformetry-configuration";
+} from "@conformetry/configuration";
 
 export const CONFORMETRY_PATTERNS = [
   "configuration/conformetry.config.ts",

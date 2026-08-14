@@ -1,4 +1,4 @@
-import { ErrorsService } from "@jimmypaolini/conformetry-core";
+import { ErrorsService } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -8,7 +8,7 @@ import { PythonValidatorService } from "./python-validator.service";
 import type {
   ConformanceError,
   PreparedValidationDocument,
-} from "@jimmypaolini/conformetry-core";
+} from "@conformetry/core";
 
 const TEMPLATE = [
   "import os",

@@ -1,12 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { RenderingService } from "@jimmypaolini/conformetry-generation";
+import { RenderingService } from "@conformetry/generation";
 import { Injectable } from "@nestjs/common";
 
 import type { TemplateDefinition } from "./discovery.types";
-import type { PreparedValidationDocument } from "@jimmypaolini/conformetry-core";
-import type { Substitutions } from "@jimmypaolini/conformetry-generation";
+import type { PreparedValidationDocument } from "@conformetry/core";
+import type { Substitutions } from "@conformetry/generation";
 
 /**
  * Reads template folders and maps their files onto instance files.

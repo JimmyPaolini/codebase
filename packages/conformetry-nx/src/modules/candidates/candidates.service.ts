@@ -3,7 +3,7 @@ import path from "node:path";
 import {
   ConfigurationService,
   DiscoveryService,
-} from "@jimmypaolini/conformetry-configuration";
+} from "@conformetry/configuration";
 import { Injectable } from "@nestjs/common";
 
 import type {
@@ -13,7 +13,7 @@ import type {
 import type {
   ConformetryInstanceGroup,
   InstanceCandidate,
-} from "@jimmypaolini/conformetry-configuration";
+} from "@conformetry/configuration";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**

@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "@jimmypaolini/conformetry-core": "workspace:*",
-    "@jimmypaolini/conformetry-generation": "workspace:*",
+    "@conformetry/core": "workspace:*",
+    "@conformetry/generation": "workspace:*",
     "@nestjs/common": "catalog:",
     "jiti": "catalog:",
     "jsonc-parser": "catalog:",
@@ -28,7 +28,7 @@
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
-  "name": "@jimmypaolini/conformetry-configuration",
+  "name": "@conformetry/configuration",
   "private": true,
   "publishConfig": {
     "access": "public",

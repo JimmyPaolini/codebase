@@ -1,8 +1,8 @@
 import { writeFileSync } from "node:fs";
 import path from "node:path";
 
+import { ConfigurationService } from "@conformetry/configuration";
 import { createMock } from "@golevelup/ts-vitest";
-import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -22,7 +22,7 @@ type ConformetryTestConfiguration = {
 let currentConformetryConfiguration: ConformetryTestConfiguration = [];
 let loadConformetryConfigurationError: Error | undefined;
 
-vi.mock("@jimmypaolini/conformetry-configuration", () => {
+vi.mock("@conformetry/configuration", () => {
   return {
     ConfigurationService: class {
       async loadConformetryConfiguration(): Promise<ConformetryTestConfiguration> {

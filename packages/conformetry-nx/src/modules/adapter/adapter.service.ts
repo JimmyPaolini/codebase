@@ -7,7 +7,7 @@ import { formatFiles } from "@nx/devkit";
 import { FILE_ENCODING } from "./adapter.constants";
 
 import type { CreateAdaptersArguments, TreeAdapters } from "./adapter.types";
-import type { DirectoryEntry } from "@jimmypaolini/conformetry-generation";
+import type { DirectoryEntry } from "@conformetry/generation";
 import type { Tree } from "@nx/devkit";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */

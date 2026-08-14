@@ -1,4 +1,4 @@
-import { RenderingModule } from "@jimmypaolini/conformetry-generation";
+import { RenderingModule } from "@conformetry/generation";
 import { Module } from "@nestjs/common";
 
 import { DiscoveryCandidatesService } from "./discovery-candidates.service";

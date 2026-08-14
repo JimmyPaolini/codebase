@@ -21,31 +21,31 @@ export const LANGUAGE_PACKAGES: LanguagePackage[] = [
     extensions: [".json", ".jsonc"],
     moduleExport: "JsonValidatorModule",
     serviceExport: "JsonValidatorService",
-    specifier: "@jimmypaolini/conformetry-json",
+    specifier: "@conformetry/json",
   },
   {
     extensions: [".ipynb"],
     moduleExport: "JupyterValidatorModule",
     serviceExport: "JupyterValidatorService",
-    specifier: "@jimmypaolini/conformetry-jupyter",
+    specifier: "@conformetry/jupyter",
   },
   {
     extensions: [".md"],
     moduleExport: "MarkdownValidatorModule",
     serviceExport: "MarkdownValidatorService",
-    specifier: "@jimmypaolini/conformetry-markdown",
+    specifier: "@conformetry/markdown",
   },
   {
     extensions: [".py"],
     moduleExport: "PythonValidatorModule",
     serviceExport: "PythonValidatorService",
-    specifier: "@jimmypaolini/conformetry-python",
+    specifier: "@conformetry/python",
   },
   {
     extensions: [".ts", ".tsx"],
     moduleExport: "TypescriptValidatorModule",
     serviceExport: "TypescriptValidatorService",
-    specifier: "@jimmypaolini/conformetry-typescript",
+    specifier: "@conformetry/typescript",
   },
 ];
 
@@ -60,5 +60,5 @@ export const TEXT_LANGUAGE_PACKAGE: LanguagePackage = {
   extensions: [".txt"],
   moduleExport: "TextValidatorModule",
   serviceExport: "TextValidatorService",
-  specifier: "@jimmypaolini/conformetry-text",
+  specifier: "@conformetry/text",
 };

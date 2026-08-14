@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { ErrorsService } from "@jimmypaolini/conformetry-core";
+import { ErrorsService } from "@conformetry/core";
 import { Injectable } from "@nestjs/common";
 
 import {
@@ -16,7 +16,7 @@ import type {
   PythonBridgeResponse,
   RunPythonBridgeArguments,
 } from "./python-validator.types";
-import type { ConformanceError } from "@jimmypaolini/conformetry-core";
+import type { ConformanceError } from "@conformetry/core";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**

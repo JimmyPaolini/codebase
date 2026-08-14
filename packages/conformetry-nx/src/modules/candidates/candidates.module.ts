@@ -1,7 +1,7 @@
 import {
   ConfigurationModule,
   DiscoveryModule,
-} from "@jimmypaolini/conformetry-configuration";
+} from "@conformetry/configuration";
 import { Module } from "@nestjs/common";
 
 import { CandidatesService } from "./candidates.service";

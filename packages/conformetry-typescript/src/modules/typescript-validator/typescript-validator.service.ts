@@ -14,7 +14,7 @@ import type {
   ConformanceError,
   ConformetryLanguageValidator,
   PreparedValidationDocument,
-} from "@jimmypaolini/conformetry-core";
+} from "@conformetry/core";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**

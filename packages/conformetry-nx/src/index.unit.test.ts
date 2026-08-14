@@ -19,7 +19,7 @@ const runGenerator = vi.fn();
 const TARGET = {
   "conformetry-validate": {
     cache: true,
-    executor: "@jimmypaolini/conformetry-nx:validate",
+    executor: "@conformetry/nx:validate",
     options: {},
   },
 };
@@ -52,7 +52,7 @@ describe("conformetryPlugin", () => {
   });
 
   it("names itself the way the package is named", () => {
-    expect(conformetryPlugin.name).toBe("@jimmypaolini/conformetry-nx");
+    expect(conformetryPlugin.name).toBe("@conformetry/nx");
   });
 
   describe("createNodes", () => {

@@ -6,8 +6,8 @@ import type {
   TemplateDefinition,
   UnmatchedInstance,
   UnmatchedReason,
-} from "@jimmypaolini/conformetry-configuration";
-import type { ValidationFileResult } from "@jimmypaolini/conformetry-core";
+} from "@conformetry/configuration";
+import type { ValidationFileResult } from "@conformetry/core";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**

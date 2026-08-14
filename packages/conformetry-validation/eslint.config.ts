@@ -19,12 +19,12 @@ export default [
           // imported on demand, so no static import proves they are used.
           ignoredDependencies: [
             "@golevelup/ts-vitest",
-            "@jimmypaolini/conformetry-json",
-            "@jimmypaolini/conformetry-jupyter",
-            "@jimmypaolini/conformetry-markdown",
-            "@jimmypaolini/conformetry-python",
-            "@jimmypaolini/conformetry-text",
-            "@jimmypaolini/conformetry-typescript",
+            "@conformetry/json",
+            "@conformetry/jupyter",
+            "@conformetry/markdown",
+            "@conformetry/python",
+            "@conformetry/text",
+            "@conformetry/typescript",
             "vitest",
           ],
           ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}"],

@@ -1,11 +1,11 @@
-import { ErrorsService } from "@jimmypaolini/conformetry-core";
-import { JsonComparisonService } from "@jimmypaolini/conformetry-json";
+import { ErrorsService } from "@conformetry/core";
+import { JsonComparisonService } from "@conformetry/json";
 import {
   MarkdownNodesService,
   MarkdownTreeService,
   MarkdownValidatorService,
-} from "@jimmypaolini/conformetry-markdown";
-import { PythonBridgeService } from "@jimmypaolini/conformetry-python";
+} from "@conformetry/markdown";
+import { PythonBridgeService } from "@conformetry/python";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -15,7 +15,7 @@ import { JupyterValidatorService } from "./jupyter-validator.service";
 import type {
   ConformanceError,
   PreparedValidationDocument,
-} from "@jimmypaolini/conformetry-core";
+} from "@conformetry/core";
 
 interface CellSpec {
   kind: "code" | "markdown";

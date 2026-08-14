@@ -19,7 +19,7 @@
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
-  "name": "@jimmypaolini/conformetry-core",
+  "name": "@conformetry/core",
   "private": true,
   "publishConfig": {
     "access": "public",

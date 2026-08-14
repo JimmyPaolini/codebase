@@ -6,7 +6,7 @@ import type {
   JsonPathSegment,
   JsonValue,
 } from "./json-validator.types";
-import type { ConformanceError } from "@jimmypaolini/conformetry-core";
+import type { ConformanceError } from "@conformetry/core";
 
 /**
  * Structurally compares two JSON documents.

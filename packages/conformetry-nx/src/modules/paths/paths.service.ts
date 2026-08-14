@@ -13,7 +13,7 @@ import {
 } from "./paths.constants";
 
 import type { ResolveGenerationPathArguments } from "./paths.types";
-import type { InstanceCandidate } from "@jimmypaolini/conformetry-configuration";
+import type { InstanceCandidate } from "@conformetry/configuration";
 import type { Tree } from "@nx/devkit";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */

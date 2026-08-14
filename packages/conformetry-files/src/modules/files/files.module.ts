@@ -1,5 +1,5 @@
-import { DiscoveryModule } from "@jimmypaolini/conformetry-configuration";
-import { ErrorsModule } from "@jimmypaolini/conformetry-core";
+import { DiscoveryModule } from "@conformetry/configuration";
+import { ErrorsModule } from "@conformetry/core";
 import { Module } from "@nestjs/common";
 
 import { FilesService } from "./files.service";
