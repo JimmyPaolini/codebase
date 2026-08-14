@@ -16,6 +16,27 @@ The package uses a NestJS-backed `nx-adapter` module/service layer for Nx plugin
 - `*.constants.ts`
 - `*.utilities.ts` for top-level helper functions
 
+## Bootstrap
+
+Which generators a workspace has is a property of its conformetry
+configuration, so the Nx plugin exposing them is emitted rather than written.
+`conformetry-nx-bootstrap` derives that plugin from
+`configuration/conformetry.config.ts`, writes it to `.conformetry/nx-generators`
+(gitignore this directory — it is a build artifact), and links it into the root
+`node_modules` so `nx g @conformetry/nx-generators:<generator>` resolves.
+
+Consumers wire it into their root manifest so the plugin is rebuilt whenever
+dependencies are installed:
+
+```json
+{ "scripts": { "postinstall": "conformetry-nx-bootstrap" } }
+```
+
+It warns rather than exiting non-zero when the configuration cannot be read, so
+a configuration mid-edit never blocks an unrelated `pnpm install`. Drift is
+caught where it matters instead: every conformetry command compares the emitted
+plugin against the configuration and refuses to run against a stale one.
+
 ## Start
 
 ```bash

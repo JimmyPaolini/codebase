@@ -37,6 +37,11 @@ crash.log
 .nx/cache
 .nx/workspace-data
 
+# Conformetry 📐
+# The Nx generator plugin is emitted from configuration/conformetry.config.ts by
+# the postinstall bootstrap, so it is a build artifact rather than source.
+.conformetry
+
 # Output 🛢️
 *.db
 *.ics

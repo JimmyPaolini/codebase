@@ -74,10 +74,14 @@ Conformetry generators are declared in `configuration/conformetry.config.ts` and
 Use generators when creating new applications/modules/components so the initial file set, naming, and conventions are correct from the start.
 
 ```bash
-nx generate conformetry:<generator-name> [options]
+nx generate @conformetry/nx-generators:<generator-name> [options]
 # or
-nx g conformetry:<generator-name> [options]
+nx g @conformetry/nx-generators:<generator-name> [options]
 ```
+
+`@conformetry/nx-generators` is emitted from the configuration into the
+gitignored `.conformetry/` directory on `pnpm install`, so it is never
+committed. If Nx reports it is not installed, run `pnpm install` again.
 
 Prefer generator aliases for speed when you already know them (for example, `nsm`, `ngm`, `c`).
 After scaffolding, implement domain-specific logic in the generated files rather than hand-crafting parallel structures.
@@ -85,18 +89,20 @@ After scaffolding, implement domain-specific logic in the generated files rather
 The table below reflects the conformetry generator registry in `configuration/conformetry.config.ts`.
 
 <!-- conformetry-generators-table start -->
-| Generator | Alias | Description |
-| --------- | ----- | ----------- |
-| `jupyter-notebook-application` | `jna` | Generate a Python Jupyter notebook application |
-| `nestjs-command-module` | `ncm` | Generate a NestJS command module with command, module, and unit test files |
-| `nestjs-command-project` | `nca` | Generate a NestJS command-line application using nest-commander |
-| `nestjs-dataloader-module` | `ndm` | Generate a NestJS dataloader module with dataloader, types, and unit test files |
-| `nestjs-graphql-application` | `nga` | Generate a NestJS GraphQL API application |
-| `nestjs-graphql-module` | `ngm` | Generate a NestJS GraphQL module with resolver, entities, inputs, args, factories, service, types, constants, and unit test files |
-| `nestjs-service-file` | `nsf` | Generate NestJS service and unit test files |
-| `nestjs-service-module` | `nsm` | Generate a NestJS service module with module, service, types, constants, and unit test files |
-| `nestjs-service-project` | `nsp` | Generate a NestJS service package template for internal workspace libraries |
-| `react-component` | `c` | Generate a React component with test file |
+
+| Generator                      | Alias | Description                                                                                                                       |
+| ------------------------------ | ----- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `jupyter-notebook-application` | `jna` | Generate a Python Jupyter notebook application                                                                                    |
+| `nestjs-command-module`        | `ncm` | Generate a NestJS command module with command, module, and unit test files                                                        |
+| `nestjs-command-project`       | `nca` | Generate a NestJS command-line application using nest-commander                                                                   |
+| `nestjs-dataloader-module`     | `ndm` | Generate a NestJS dataloader module with dataloader, types, and unit test files                                                   |
+| `nestjs-graphql-application`   | `nga` | Generate a NestJS GraphQL API application                                                                                         |
+| `nestjs-graphql-module`        | `ngm` | Generate a NestJS GraphQL module with resolver, entities, inputs, args, factories, service, types, constants, and unit test files |
+| `nestjs-service-file`          | `nsf` | Generate NestJS service and unit test files                                                                                       |
+| `nestjs-service-module`        | `nsm` | Generate a NestJS service module with module, service, types, constants, and unit test files                                      |
+| `nestjs-service-project`       | `nsp` | Generate a NestJS service package template for internal workspace libraries                                                       |
+| `react-component`              | `c`   | Generate a React component with test file                                                                                         |
+
 <!-- conformetry-generators-table end -->
 
 ### Validation
@@ -161,25 +167,25 @@ See the [validate-code skill](.agents/skills/validate-code/SKILL.md) for the ful
 
 ### Quality Tools
 
-| Tool | Description | Config | Docs |
-| --- | --- | --- | --- |
-| `oxfmt` | Formats TS/JS/JSON/MD files | `configuration/oxfmt.config.ts` | [docs](https://oxc.rs/docs/guide/usage/formatter.html) |
-| `sqlfluff` | Formats and lints SQL files | `configuration/pyproject.toml` | [docs](https://docs.sqlfluff.com/) |
-| `prettier` | Supplementary formatter for manual or non-default use | `configuration/prettier.config.ts` | [docs](https://prettier.io/docs/) |
-| `eslint` | Lints TS/JS and markdown with workspace rules | project `eslint.config.ts` | [docs](https://eslint.org/docs/latest/) |
-| `oxlint` | Fast TS/JS linting for workspace files | `configuration/oxlint.config.ts` | [docs](https://oxc.rs/docs/guide/usage/linter.html) |
-| `ruff` | Formats and lints Python files | `configuration/pyproject.toml` | [docs](https://docs.astral.sh/ruff/) |
-| `tsc` | Type-checks TypeScript | project `tsconfig.json` | [docs](https://www.typescriptlang.org/docs/) |
-| `type-coverage` | Enforces TypeScript type-coverage gates | root `tsconfig.json` | [docs](https://github.com/plantain-00/type-coverage) |
-| `pyright` | Performs static Python type checking | `configuration/pyproject.toml` | [docs](https://github.com/microsoft/pyright) |
-| `ty` | Performs additional Python type checking | `configuration/pyproject.toml` | [docs](https://docs.astral.sh/ty/) |
-| `knip` | Finds unused TS/JS files, exports, and dependencies | `configuration/knip.config.ts` | [docs](https://knip.dev/) |
-| `vulture` | Finds unused Python code | `configuration/vulture_whitelist.py` | [docs](https://github.com/jendrikseipp/vulture) |
-| `fallow` | Analyzes dead code, duplication, and code health | `configuration/fallow.config.jsonc` | [docs](https://docs.fallow.tools/) |
-| `jscpd` | Detects duplicated code and copy-paste patterns | `configuration/jscpd.config.json` | [docs](https://jscpd.dev/) |
-| `cspell` | Checks spelling across code and documentation | `configuration/cspell.config.yaml` | [docs](https://cspell.org/) |
-| `markdownlint` | Lints markdown files | `configuration/.markdownlint-cli2.jsonc` | [docs](https://github.com/DavidAnson/markdownlint-cli2) |
-| `yamllint` | Lints YAML files | `configuration/yamllint.yaml` | [docs](https://yamllint.readthedocs.io/) |
+| Tool            | Description                                           | Config                                   | Docs                                                    |
+| --------------- | ----------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------- |
+| `oxfmt`         | Formats TS/JS/JSON/MD files                           | `configuration/oxfmt.config.ts`          | [docs](https://oxc.rs/docs/guide/usage/formatter.html)  |
+| `sqlfluff`      | Formats and lints SQL files                           | `configuration/pyproject.toml`           | [docs](https://docs.sqlfluff.com/)                      |
+| `prettier`      | Supplementary formatter for manual or non-default use | `configuration/prettier.config.ts`       | [docs](https://prettier.io/docs/)                       |
+| `eslint`        | Lints TS/JS and markdown with workspace rules         | project `eslint.config.ts`               | [docs](https://eslint.org/docs/latest/)                 |
+| `oxlint`        | Fast TS/JS linting for workspace files                | `configuration/oxlint.config.ts`         | [docs](https://oxc.rs/docs/guide/usage/linter.html)     |
+| `ruff`          | Formats and lints Python files                        | `configuration/pyproject.toml`           | [docs](https://docs.astral.sh/ruff/)                    |
+| `tsc`           | Type-checks TypeScript                                | project `tsconfig.json`                  | [docs](https://www.typescriptlang.org/docs/)            |
+| `type-coverage` | Enforces TypeScript type-coverage gates               | root `tsconfig.json`                     | [docs](https://github.com/plantain-00/type-coverage)    |
+| `pyright`       | Performs static Python type checking                  | `configuration/pyproject.toml`           | [docs](https://github.com/microsoft/pyright)            |
+| `ty`            | Performs additional Python type checking              | `configuration/pyproject.toml`           | [docs](https://docs.astral.sh/ty/)                      |
+| `knip`          | Finds unused TS/JS files, exports, and dependencies   | `configuration/knip.config.ts`           | [docs](https://knip.dev/)                               |
+| `vulture`       | Finds unused Python code                              | `configuration/vulture_whitelist.py`     | [docs](https://github.com/jendrikseipp/vulture)         |
+| `fallow`        | Analyzes dead code, duplication, and code health      | `configuration/fallow.config.jsonc`      | [docs](https://docs.fallow.tools/)                      |
+| `jscpd`         | Detects duplicated code and copy-paste patterns       | `configuration/jscpd.config.json`        | [docs](https://jscpd.dev/)                              |
+| `cspell`        | Checks spelling across code and documentation         | `configuration/cspell.config.yaml`       | [docs](https://cspell.org/)                             |
+| `markdownlint`  | Lints markdown files                                  | `configuration/.markdownlint-cli2.jsonc` | [docs](https://github.com/DavidAnson/markdownlint-cli2) |
+| `yamllint`      | Lints YAML files                                      | `configuration/yamllint.yaml`            | [docs](https://yamllint.readthedocs.io/)                |
 
 ## Git Workflow
 
@@ -255,19 +261,19 @@ PR description template:
 
 <!-- types-start -->
 
-| Type | Description |
-| ---- | ----------- |
-| `feat` | A new feature or capability that adds value for users |
-| `fix` | A bug fix that addresses a specific issue or problem |
-| `docs` | Documentation, AGENTS.md, SKILL.md, README, and planning files |
-| `test` | Adding or correcting unit, integration, or end-to-end tests |
-| `refactor` | Code restructuring that neither fixes a bug nor adds a feature |
-| `style` | Formatting, whitespace, or code structure changes with no semantic effect |
-| `perf` | A code change that improves performance (caching, query optimization, etc.) |
-| `chore` | Housekeeping that doesn't modify src or test files (gitignore, editor config, etc.) |
-| `ci` | GitHub Actions workflows, composite actions, and CI/CD scripts |
-| `build` | Build system, Vite/Docker/Helm config, or external dependency integration |
-| `revert` | Reverts a previous commit |
+| Type       | Description                                                                         |
+| ---------- | ----------------------------------------------------------------------------------- |
+| `feat`     | A new feature or capability that adds value for users                               |
+| `fix`      | A bug fix that addresses a specific issue or problem                                |
+| `docs`     | Documentation, AGENTS.md, SKILL.md, README, and planning files                      |
+| `test`     | Adding or correcting unit, integration, or end-to-end tests                         |
+| `refactor` | Code restructuring that neither fixes a bug nor adds a feature                      |
+| `style`    | Formatting, whitespace, or code structure changes with no semantic effect           |
+| `perf`     | A code change that improves performance (caching, query optimization, etc.)         |
+| `chore`    | Housekeeping that doesn't modify src or test files (gitignore, editor config, etc.) |
+| `ci`       | GitHub Actions workflows, composite actions, and CI/CD scripts                      |
+| `build`    | Build system, Vite/Docker/Helm config, or external dependency integration           |
+| `revert`   | Reverts a previous commit                                                           |
 
 <!-- types-end -->
 
@@ -275,31 +281,31 @@ PR description template:
 
 <!-- scopes-start -->
 
-| Scope | Description |
-| ----- | ----------- |
-| `affirmations` | Python Jupyter notebook application for LangGraph affirmation generation |
-| `applications` | Changes spanning multiple applications in applications/ (e.g. lexico, caelundas, etc.) |
-| `caelundas` | Node.js CLI for astronomical calendar generation (NASA JPL ephemeris) |
-| `configuration` | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.) |
-| `conformetry` | Code generator templates and validation tests for generated instances |
-| `dependencies` | Dependency version changes (upgrades, additions, removals via pnpm) |
-| `deps` | Dependency version changes (upgrades, additions, removals via pnpm) |
-| `deployments` | GitHub Actions workflows and CI/CD pipeline configuration |
-| `documentation` | Markdown docs, skills, planning files, and AGENTS.md files |
-| `infrastructure` | Helm charts, Terraform configs, and Kubernetes resources |
-| `JimmyPaolini` | Static GitHub profile README project (markdown and assets) |
-| `lexico` | TanStack Start SSR Latin dictionary web app with Supabase backend |
-| `lexico-components` | Shared React/shadcn component library |
-| `lexico-entities` | Shared TypeORM entities and GraphQL types |
-| `lexico-ingestion` | Data ingestion scripts for Lexico |
-| `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
-| `no-release` | Escape hatch: suppress semantic-release for any commit type |
-| `packages` | Changes spanning multiple shared packages in packages/ |
-| `release` | Version bumps and release commits generated by semantic-release |
-| `scripts` | Shell and TypeScript scripts in scripts/ (sync, setup, utilities) |
-| `testing` | Vitest configuration, shared test utilities, and coverage setup |
-| `tools` | Changes spanning multiple tool projects in tools/ |
-| `synchronization` | Synchronization application and commands for automating workflows |
+| Scope               | Description                                                                            |
+| ------------------- | -------------------------------------------------------------------------------------- |
+| `affirmations`      | Python Jupyter notebook application for LangGraph affirmation generation               |
+| `applications`      | Changes spanning multiple applications in applications/ (e.g. lexico, caelundas, etc.) |
+| `caelundas`         | Node.js CLI for astronomical calendar generation (NASA JPL ephemeris)                  |
+| `configuration`     | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.)                  |
+| `conformetry`       | Code generator templates and validation tests for generated instances                  |
+| `dependencies`      | Dependency version changes (upgrades, additions, removals via pnpm)                    |
+| `deps`              | Dependency version changes (upgrades, additions, removals via pnpm)                    |
+| `deployments`       | GitHub Actions workflows and CI/CD pipeline configuration                              |
+| `documentation`     | Markdown docs, skills, planning files, and AGENTS.md files                             |
+| `infrastructure`    | Helm charts, Terraform configs, and Kubernetes resources                               |
+| `JimmyPaolini`      | Static GitHub profile README project (markdown and assets)                             |
+| `lexico`            | TanStack Start SSR Latin dictionary web app with Supabase backend                      |
+| `lexico-components` | Shared React/shadcn component library                                                  |
+| `lexico-entities`   | Shared TypeORM entities and GraphQL types                                              |
+| `lexico-ingestion`  | Data ingestion scripts for Lexico                                                      |
+| `codebase`          | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration)          |
+| `no-release`        | Escape hatch: suppress semantic-release for any commit type                            |
+| `packages`          | Changes spanning multiple shared packages in packages/                                 |
+| `release`           | Version bumps and release commits generated by semantic-release                        |
+| `scripts`           | Shell and TypeScript scripts in scripts/ (sync, setup, utilities)                      |
+| `testing`           | Vitest configuration, shared test utilities, and coverage setup                        |
+| `tools`             | Changes spanning multiple tool projects in tools/                                      |
+| `synchronization`   | Synchronization application and commands for automating workflows                      |
 
 <!-- scopes-end -->
 
@@ -381,6 +387,7 @@ Guidelines for creating custom instruction files, skills, agents, and prompts fo
 Specialized domain knowledge for working on specific systems or patterns:
 
 <!-- agent-skills-table-of-contents start -->
+
 - **[backup-code](.agents/skills/backup-code/SKILL.md)**: "Create a safety backup before potentially destructive actions. Use when running risky git commands (reset, rebase, clean, restore, checkout with overwrite, force push), applying large sweeping edits, mass refactors, broad search-and-replace, generator rewrites, or any operation that may be hard to undo. Produces a recoverable snapshot via backup branch, stash, or both, and verifies recovery commands."
 - **[brainstorming](.agents/skills/brainstorming/SKILL.md)**: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
 - **[checkout-branch](.agents/skills/checkout-branch/SKILL.md)**: Create and validate Git branch names following this codebase's Conventional Commits naming convention. Use this skill when creating branches, renaming branches, or when asked about branch naming rules and validation.
@@ -398,7 +405,7 @@ Specialized domain knowledge for working on specific systems or patterns:
 - **[handle-errors](.agents/skills/handle-errors/SKILL.md)**: "Apply codebase error handling patterns: Zod validation at boundaries, typed errors, early returns, and retry/backoff. Use when implementing error handling or input validation."
 - **[impeccable](.agents/skills/impeccable/SKILL.md)**: Use when the user wants to design, redesign, shape, critique, audit, polish, clarify, distill, harden, optimize, adapt, animate, colorize, extract, or otherwise improve a frontend interface. Covers websites, landing pages, dashboards, product UI, app shells, components, forms, settings, onboarding, and empty states. Handles UX review, visual hierarchy, information architecture, cognitive load, accessibility, performance, responsive behavior, theming, anti-patterns, typography, fonts, spacing, layout, alignment, color, motion, micro-interactions, UX copy, error states, edge cases, i18n, and reusable design systems or tokens. Also use for bland designs that need to become bolder or more delightful, loud designs that should become quieter, live browser iteration on UI elements, or ambitious visual effects that should feel technically extraordinary. Not for backend-only or non-UI tasks.
 - **[learn-lessons](.agents/skills/learn-lessons/SKILL.md)**: 'Retrospective skill that analyzes a coding agent session, a set of local changes, or a branch/pull request, then extracts reusable coding patterns, architectural decisions, and best practices — and writes them into skills and AGENTS.md so future agents apply the same patterns automatically. Primary use: capturing HOW code was written (naming, structure, TypeScript idioms, module patterns, error handling), not just what the agent did. Use when asked to "learn from this session", "capture patterns from this PR", "remember how we did this", "document this approach", "improve skills from this work", or "make sure future agents do it this way".'
-- **[link-workspace-packages](.agents/skills/link-workspace-packages/SKILL.md)**: 'Link workspace packages in codebases (npm, yarn, pnpm, bun). USE WHEN: (1) you just created or generated new packages and need to wire up their dependencies, (2) user imports from a sibling package and needs to add it as a dependency, (3) you get resolution errors for workspace packages (@org/*) like "cannot find module", "failed to resolve import", "TS2307", or "cannot resolve". DO NOT patch around with tsconfig paths or manual package.json edits - use the package manager''s workspace commands to fix actual linking.'
+- **[link-workspace-packages](.agents/skills/link-workspace-packages/SKILL.md)**: 'Link workspace packages in codebases (npm, yarn, pnpm, bun). USE WHEN: (1) you just created or generated new packages and need to wire up their dependencies, (2) user imports from a sibling package and needs to add it as a dependency, (3) you get resolution errors for workspace packages (@org/\*) like "cannot find module", "failed to resolve import", "TS2307", or "cannot resolve". DO NOT patch around with tsconfig paths or manual package.json edits - use the package manager''s workspace commands to fix actual linking.'
 - **[monitor-ci](.agents/skills/monitor-ci/SKILL.md)**: Monitor Nx Cloud CI pipeline and handle self-healing fixes. USE WHEN user says "monitor ci", "watch ci", "ci monitor", "watch ci for this branch", "track ci", "check ci status", wants to track CI status, or needs help with self-healing CI fixes. Prefer this skill over native CI provider tools (gh, glab, etc.) for CI monitoring — it integrates with Nx Cloud self-healing which those tools cannot access.
 - **[nx-generate](.agents/skills/nx-generate/SKILL.md)**: Generate code using nx generators. INVOKE IMMEDIATELY when user mentions scaffolding, setup, structure, creating apps/libs, or setting up project structure. Trigger words - scaffold, setup, create a new app, create a new lib, project structure, generate, add a new project. ALWAYS use this BEFORE calling nx_docs or exploring - this skill handles discovery internally.
 - **[nx-import](.agents/skills/nx-import/SKILL.md)**: Import, merge, or combine repositories into an Nx workspace using nx import. USE WHEN the user asks to adopt Nx across repos, move projects into a codebase, or bring code/history from another repository.
@@ -442,6 +449,7 @@ Specialized domain knowledge for working on specific systems or patterns:
 ### Agents
 
 <!-- custom-agents-table-of-contents start -->
+
 - **[ci-monitor-subagent](.github/agents/ci-monitor-subagent.agent.md)**: CI helper for /monitor-ci. Fetches CI status, retrieves fix details, or updates self-healing fixes. Executes one MCP tool call and returns the result.
 - **[explore-codebase](.github/agents/explore-codebase.agent.md)**: Explore codebase files, patterns, and structure for a given topic. USE WHEN gathering implementation context before planning or executing tasks, when asked to research the codebase, or when a planning agent needs a Sub-Agent A (Codebase Research). Returns a Codebase Research Summary with relevant files, existing patterns, affected Nx projects, reusable code, related plans, constraints, and open questions.
 - **[explore-internet](.github/agents/explore-internet.agent.md)**: Gather external documentation, changelogs, and release notes for libraries, frameworks, and APIs. USE WHEN a plan involves external dependencies, package upgrades, migrations, new frameworks, or technologies requiring documentation lookup. Skip for purely internal refactoring. Returns an External Research Summary with breaking changes, migration guidance, known issues, and documentation links.

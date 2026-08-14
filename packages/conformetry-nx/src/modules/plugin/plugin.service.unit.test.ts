@@ -210,7 +210,7 @@ describe(PluginService, () => {
           inputs: [
             "default",
             `{workspaceRoot}/${options.configurationPath}`,
-            "{workspaceRoot}/tools/conformetry-generators/**/*",
+            "{workspaceRoot}/.conformetry/nx-generators/**/*",
           ],
           options: {},
         },

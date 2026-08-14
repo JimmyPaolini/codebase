@@ -11,6 +11,7 @@ import type {
   Tree,
 } from "@nx/devkit";
 
+export { bootstrapPlugin, runBootstrapCli } from "./bootstrap.utilities";
 export { MainModule } from "./main.module";
 export { AdapterModule } from "./modules/adapter/adapter.module";
 export { AdapterService } from "./modules/adapter/adapter.service";

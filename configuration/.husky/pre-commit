@@ -18,11 +18,10 @@ git restore --staged notepads/notepad.ts || true
 
 EXIT_CODE=0
 
-# 🔄 Check the workspace is in sync
-# NX_DAEMON=false because the daemon caches sync-generator results and does not
-# invalidate them when conformetry.config.ts changes, so a stale "up to date"
-# would let a drifted generator plugin through.
-NX_DAEMON=false nx sync:check --outputStyle=static || EXIT_CODE=$?
+# `nx sync:check` used to run here. The generator plugin it checked is no longer
+# committed — it is emitted into .conformetry on install — so no commit can
+# stage it out of date. Every conformetry command re-checks the emitted plugin
+# against the configuration and refuses to run against a stale one instead.
 
 # 📏 Measure code
 nx run codebase:measure-code:write || EXIT_CODE=$?

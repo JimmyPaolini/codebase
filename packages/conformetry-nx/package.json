@@ -1,4 +1,7 @@
 {
+  "bin": {
+    "conformetry-nx-bootstrap": "./src/bootstrap.mjs"
+  },
   "dependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@jimmypaolini/conformetry-configuration": "workspace:*",
