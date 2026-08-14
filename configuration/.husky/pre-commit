@@ -37,6 +37,17 @@ git add README.md
 # natively.
 NX_PERF_LOGGING=false lint-staged --config configuration/lint-staged.config.ts --continue-on-error > last-lint-staged-output.log 2>&1 || EXIT_CODE=$?
 
+# 💀 Explain a kill rather than leaving lint-staged's misleading wording
+# Exit 137 is SIGKILL. lint-staged reports it as "Task failed to spawn:
+# undefined", which sends you looking at PATH and argument length; the real
+# cause is the operating system reclaiming memory from the analysis run.
+if [ "${EXIT_CODE}" = "137" ] || grep -q "Task failed to spawn" last-lint-staged-output.log 2>/dev/null; then
+  printf '\n⚠️  A check was killed rather than failing.\n'
+  printf '   This is the operating system reclaiming memory, not a spawn error.\n'
+  printf '   Free some memory and commit again, or run the analysis directly:\n'
+  printf '   nx affected --target=analyze-code --configuration=check --parallel=1 --files=<staged paths>\n\n'
+fi
+
 # 🖨️ Log output
 LAST_LINT_STAGED_OUTPUT=$(cat last-lint-staged-output.log \
   | grep -vE '\(node:[0-9]+\) Warning: The .NO_COLOR' \
