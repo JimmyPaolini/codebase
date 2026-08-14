@@ -1,8 +1,8 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "name": "conformetry",
+  "name": "conformetry-cli",
   "projectType": "library",
-  "sourceRoot": "packages/conformetry",
+  "sourceRoot": "packages/conformetry-cli",
   "tags": [
     "framework:nest-commander",
     "framework:nestjs",
@@ -19,13 +19,13 @@
         "assets": [
           {
             "glob": "README.md",
-            "input": "packages/conformetry",
+            "input": "packages/conformetry-cli",
             "output": "."
           }
         ],
-        "main": "packages/conformetry/src/main.ts",
-        "outputPath": "dist/packages/conformetry",
-        "tsConfig": "packages/conformetry/tsconfig.json"
+        "main": "packages/conformetry-cli/src/main.ts",
+        "outputPath": "dist/packages/conformetry-cli",
+        "tsConfig": "packages/conformetry-cli/tsconfig.json"
       },
       "outputs": ["{options.outputPath}"]
     },
@@ -43,10 +43,10 @@
       "cache": false,
       "executor": "nx:run-commands",
       "options": {
-        "command": "node --import @swc-node/register/esm-register packages/conformetry/src/main.ts",
+        "command": "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts",
         "cwd": "{workspaceRoot}",
         "env": {
-          "SWC_NODE_PROJECT": "packages/conformetry/tsconfig.json"
+          "SWC_NODE_PROJECT": "packages/conformetry-cli/tsconfig.json"
         }
       }
     },

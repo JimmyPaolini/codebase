@@ -565,7 +565,7 @@ importers:
         version: 21.2.0
       '@conformetry/cli':
         specifier: workspace:*
-        version: link:packages/conformetry
+        version: link:packages/conformetry-cli
       '@conformetry/configuration':
         specifier: workspace:*
         version: link:packages/conformetry-configuration
@@ -1076,7 +1076,7 @@ importers:
         specifier: 'catalog:'
         version: 6.0.3
 
-  packages/conformetry:
+  packages/conformetry-cli:
     dependencies:
       '@conformetry/configuration':
         specifier: workspace:*

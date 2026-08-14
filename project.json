@@ -136,7 +136,7 @@
       "description": "Run the conformetry generate command from the workspace root",
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec nx run conformetry:start -- generate {args}",
+        "command": "pnpm exec nx run conformetry-cli:start -- generate {args}",
         "cwd": "{workspaceRoot}"
       }
     },

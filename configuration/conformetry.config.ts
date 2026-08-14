@@ -98,7 +98,7 @@ const conformetryConfiguration: ConformetryConfiguration = [
         substitutions: { type: "applications" },
       },
       {
-        patterns: ["packages/conformetry"],
+        patterns: ["packages/conformetry-cli"],
         substitutions: { type: "packages" },
       },
       {

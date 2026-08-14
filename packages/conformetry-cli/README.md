@@ -1,4 +1,4 @@
-# Conformetry
+# ConformetryCli
 
 NestJS command-line application scaffold generated with `conformetry:nestjs-command-project`.
 
@@ -17,11 +17,11 @@ and validation workflows.
 ## Start
 
 ```bash
-nx run conformetry:start
+nx run conformetry-cli:start
 ```
 
 ## Test
 
 ```bash
-nx run conformetry:test
+nx run conformetry-cli:test
 ```

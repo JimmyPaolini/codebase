@@ -56,7 +56,7 @@ selection guidance.
 
 ### Tools
 
-- **[conformetry](packages/conformetry)**: Command-line package for code generation and validation
+- **[conformetry-cli](packages/conformetry-cli)**: Command-line host for code generation and validation
 - **[conformetry-nx](packages/conformetry-nx)**: Nx plugin that exposes the conformetry generator namespace
 - **[synchronization](tools/synchronization)**: NestJS CLI for synchronizing codebase configuration and documentation artifacts
 
@@ -81,9 +81,9 @@ nx g conformetry:<generator-name> [options]
 
 The `conformetry` generator namespace is emitted from the configuration into
 the gitignored `.conformetry/` directory on `pnpm install`, so it is never
-committed. If Nx reports it is not installed, run `pnpm install` again. It is a
-package name, not the `conformetry` Nx project — `nx run conformetry:<target>`
-still addresses the command-line package in `packages/conformetry`.
+committed. If Nx reports it is not installed, run `pnpm install` again. No
+project is called `conformetry` — the name means the generator namespace and
+nothing else, and the command-line host is `conformetry-cli`.
 
 Prefer generator aliases for speed when you already know them (for example, `nsm`, `ngm`, `c`).
 After scaffolding, implement domain-specific logic in the generated files rather than hand-crafting parallel structures.

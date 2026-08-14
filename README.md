@@ -9,10 +9,10 @@
 [![Jupyter](https://img.shields.io/badge/Jupyter-1.1-F37626?logo=jupyter&logoColor=white)](https://jupyter.org/)
 
 <!-- CODE_STATISTICS_START -->
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-208690-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-208708-22c55e?style=flat-square)
 ![Repo Size](https://img.shields.io/badge/Repo_Size-153.7_MiB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-605-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-1178-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-1179-3178c6?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-254-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-151-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-369-7c3aed?style=flat-square)
@@ -23,7 +23,7 @@
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-29-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-16950-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-4869-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-4870-0284c7?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-734-db2777?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-1588-ea580c?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-50-ca8a04?style=flat-square)
@@ -85,7 +85,7 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
 
 - **[affirmations](applications/affirmations)** - Python LangChain + Ollama affirmation generator (LangGraph ReAct agent, SearxNG)
 - **[caelundas](applications/caelundas)** - CLI ephemeris calendar generator with astronomical calculations
-- **[conformetry](packages/conformetry)** - Command-line code generation and validation toolchain
+- **[conformetry-cli](packages/conformetry-cli)** - Command-line code generation and validation toolchain
 - **[infrastructure](infrastructure)** - Helm charts, Terraform, Kubernetes infrastructure
 - **[JimmyPaolini](applications/JimmyPaolini)** - GitHub profile site
 - **[lexico](applications/lexico)** - TanStack Start dictionary web application

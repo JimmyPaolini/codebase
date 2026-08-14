@@ -198,7 +198,7 @@ const config: KnipConfig = {
     },
 
     // conformetry packages: NestJS service/command application scaffolds
-    "packages/conformetry": {
+    "packages/conformetry-cli": {
       entry: ["src/main.ts", "src/repl.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       ignoreDependencies: [

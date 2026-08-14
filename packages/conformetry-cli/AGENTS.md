@@ -1,4 +1,4 @@
-# Conformetry: NestJS Command-Line Application
+# ConformetryCli: NestJS Command-Line Application
 
 ## Quick Start
 
@@ -10,7 +10,7 @@
 
 ```bash
 cp .env.default .env  # Fill in required environment variables
-nx run conformetry:develop
+nx run conformetry-cli:develop
 ```
 
 ## Architecture Overview
@@ -78,11 +78,11 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run conformetry:develop        # Run CLI (tsx, watch mode)
-nx run conformetry:lint           # ESLint
-nx run conformetry:typecheck      # tsc --noEmit
-nx run conformetry:format         # oxfmt formatting
-nx run conformetry:build          # Compile for production
+nx run conformetry-cli:develop        # Run CLI (tsx, watch mode)
+nx run conformetry-cli:lint           # ESLint
+nx run conformetry-cli:typecheck      # tsc --noEmit
+nx run conformetry-cli:format         # oxfmt formatting
+nx run conformetry-cli:build          # Compile for production
 ```
 
 ### Testing
@@ -90,16 +90,16 @@ nx run conformetry:build          # Compile for production
 Follow the codebase's strict three-tier testing strategy. Co-locate test files with the source they test.
 
 ```bash
-nx run conformetry:test:unit          # Fast (<100ms) — pure logic, mocked DI
-nx run conformetry:test:integration   # Moderate (1-2s) — real DB/API I/O
-nx run conformetry:test:end-to-end    # Slow (30-60s) — full CLI execution
+nx run conformetry-cli:test:unit          # Fast (<100ms) — pure logic, mocked DI
+nx run conformetry-cli:test:integration   # Moderate (1-2s) — real DB/API I/O
+nx run conformetry-cli:test:end-to-end    # Slow (30-60s) — full CLI execution
 ```
 
-| Tier | File pattern | What to test |
-| ---- | ------------ | ------------ |
-| Unit | `*.unit.test.ts` | Pure functions, service methods with mocked deps |
-| Integration | `*.integration.test.ts` | Database queries, external API clients |
-| End-to-end | `*.end-to-end.test.ts` | Full `CommandFactory.run()` execution |
+| Tier        | File pattern            | What to test                                     |
+| ----------- | ----------------------- | ------------------------------------------------ |
+| Unit        | `*.unit.test.ts`        | Pure functions, service methods with mocked deps |
+| Integration | `*.integration.test.ts` | Database queries, external API clients           |
+| End-to-end  | `*.end-to-end.test.ts`  | Full `CommandFactory.run()` execution            |
 
 See [Testing Strategy](../../documentation/code-quality/testing-strategy.md) for patterns and mock conventions.
 
@@ -113,12 +113,12 @@ nx g conformetry:nestjs-service-module --name=<domain>
 
 This creates five files in `src/modules/<domain>/`:
 
-| File | Purpose |
-| ---- | ------- |
-| `<domain>.module.ts` | Declares providers, imports, and exports |
-| `<domain>.service.ts` | Business logic — the only place you write domain code |
-| `<domain>.constants.ts` | Regex, enums, static config — never inline magic values |
-| `<domain>.types.ts` | TypeScript types scoped to this module |
+| File                            | Purpose                                                 |
+| ------------------------------- | ------------------------------------------------------- |
+| `<domain>.module.ts`            | Declares providers, imports, and exports                |
+| `<domain>.service.ts`           | Business logic — the only place you write domain code   |
+| `<domain>.constants.ts`         | Regex, enums, static config — never inline magic values |
+| `<domain>.types.ts`             | TypeScript types scoped to this module                  |
 | `<domain>.service.unit.test.ts` | Unit tests bootstrapped with `Test.createTestingModule` |
 
 ### Module file
