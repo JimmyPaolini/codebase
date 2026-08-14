@@ -69,6 +69,5 @@
     "packages/lexico-components/src/hooks/use-mobile.tsx",
     "packages/lexico-components/src/lib/utils.ts",
     "pnpm-lock.yaml",
-    "tools/conformance",
   ],
 }

@@ -62,4 +62,3 @@ projectStructure.cache.json
 **/.terraform/**
 
 # TODO: remove
-**/tools/conformance

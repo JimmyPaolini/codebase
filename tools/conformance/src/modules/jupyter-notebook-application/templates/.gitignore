@@ -1,9 +1,0 @@
-# Python virtual environment
-.venv/
-
-# Generated output
-output/*
-!output/.gitkeep
-
-# Jupyter checkpoints
-.ipynb_checkpoints/

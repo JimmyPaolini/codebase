@@ -18,6 +18,7 @@
   },
   "main": "src/index.ts",
   "name": "@jimmypaolini/conformetry-python",
+  "private": true,
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"

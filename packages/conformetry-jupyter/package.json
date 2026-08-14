@@ -21,6 +21,7 @@
   },
   "main": "src/index.ts",
   "name": "@jimmypaolini/conformetry-jupyter",
+  "private": true,
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"

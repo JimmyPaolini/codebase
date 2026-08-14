@@ -19,6 +19,7 @@
   },
   "main": "src/index.ts",
   "name": "@jimmypaolini/conformetry-json",
+  "private": true,
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"

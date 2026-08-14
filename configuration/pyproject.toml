@@ -16,7 +16,7 @@ dev = ["sqlfluff>=3.0", "yamllint>=1.35"]
 target-version = "py314"
 line-length = 100
 
-exclude = ["tools/conformance/src/generators/**/templates/**"]
+exclude = ["configuration/conformetry-templates/**"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "TCH"]

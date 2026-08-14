@@ -66,7 +66,6 @@ export default [
       "**/applications/lexico-ingestion/src/modules/library/library.constants.ts",
       "**/library.json",
       // TODO: remove
-      "**/tools/conformance",
     ],
   },
 
@@ -75,7 +74,6 @@ export default [
   {
     ignores: [
       // TODO: remove
-      "**/tools/conformance",
     ],
     plugins: {
       "project-structure": projectStructurePlugin,
@@ -855,7 +853,6 @@ export default [
       "**/applications/lexico-ingestion/src/modules/manual/manual.constants.ts",
       "**/applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.constants.ts",
       "**/packages/lexico-entities/src/modules/database/database.constants.ts",
-      "**/tools/conformance",
       "**/src/modules/caelundas/caelundas.constants.ts",
       "**/src/modules/database/database.constants.ts",
       "**/src/modules/ephemeris/ephemeris.constants.ts",

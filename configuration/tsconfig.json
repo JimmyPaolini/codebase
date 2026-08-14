@@ -32,7 +32,6 @@
     // 🗺️ Codebase Path Aliases
     // Enables `import { Button } from "@codebase/lexico-components"` across projects
     "paths": {
-      "@codebase/conformance/*": ["../tools/conformance/*"],
       "@codebase/lexico-components": [
         "../packages/lexico-components/src/index.ts"
       ],

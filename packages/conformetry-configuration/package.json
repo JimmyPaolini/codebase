@@ -25,6 +25,7 @@
   },
   "main": "src/index.ts",
   "name": "@jimmypaolini/conformetry-configuration",
+  "private": true,
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"

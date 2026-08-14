@@ -28,6 +28,7 @@
   "generators": "../conformetry-nx/generators.json",
   "main": "src/index.ts",
   "name": "@jimmypaolini/conformetry",
+  "private": true,
   "nx": {
     "generators": "../conformetry-nx/generators.json"
   },

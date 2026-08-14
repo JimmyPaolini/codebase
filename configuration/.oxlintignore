@@ -40,4 +40,3 @@ lint-staged.config.ts
 **/documentation/skills/**
 
 # TODO: remove
-**/tools/conformance

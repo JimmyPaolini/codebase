@@ -50,4 +50,3 @@ tmp
 **/data/wiktionary
 yarn.lock
 # TODO: remove
-**/tools/conformance
