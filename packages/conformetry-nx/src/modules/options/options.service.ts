@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import {
+  CONFORMETRY_NX_PLUGIN_NAME,
   DEFAULT_CONFIGURATION_PATH,
   DEFAULT_VALIDATE_TARGET_NAME,
   PLUGIN_OPTION_NAMES,
@@ -30,6 +31,11 @@ export class OptionsService {
 
   // 🔏 Private Methods
 
+  /** Narrows an untrusted value to an array without widening it to `any`. */
+  private isUnknownArray(value: unknown): value is unknown[] {
+    return Array.isArray(value);
+  }
+
   /** Reads a string field from an untrusted record, or `undefined`. */
   private readString(args: {
     key: string;
@@ -41,6 +47,43 @@ export class OptionsService {
   }
 
   // 🌎 Public Methods
+
+  /**
+   * Reads this plugin's configured path out of a workspace's `nx.json`.
+   *
+   * Nx passes plugin options to `createNodes` and to executors, but not to a
+   * global sync generator or to anything run outside Nx entirely, such as the
+   * install-time bootstrap. Those read the registration themselves rather than
+   * assuming the default, so a workspace that keeps its configuration
+   * somewhere other than the root is not silently emitted from nothing.
+   */
+  public resolveConfigurationPath(nxConfiguration: unknown): string {
+    if (typeof nxConfiguration !== "object" || nxConfiguration === null) {
+      return DEFAULT_CONFIGURATION_PATH;
+    }
+
+    const { plugins }: { plugins?: unknown } = { ...nxConfiguration };
+
+    if (!this.isUnknownArray(plugins)) {
+      return DEFAULT_CONFIGURATION_PATH;
+    }
+
+    for (const entry of plugins) {
+      if (typeof entry !== "object" || entry === null) {
+        continue;
+      }
+
+      const { options, plugin }: { options?: unknown; plugin?: unknown } = {
+        ...entry,
+      };
+
+      if (plugin === CONFORMETRY_NX_PLUGIN_NAME) {
+        return this.resolvePluginOptions(options).configurationPath;
+      }
+    }
+
+    return DEFAULT_CONFIGURATION_PATH;
+  }
 
   /**
    * Extracts the generator inputs from an Nx options object.

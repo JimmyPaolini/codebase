@@ -76,4 +76,40 @@ describe(OptionsService, () => {
       expect(service.resolveGeneratorInputs("nope")).toStrictEqual({});
     });
   });
+
+  describe("resolveConfigurationPath", () => {
+    it("reads the path out of this plugin's registration", () => {
+      expect(
+        service.resolveConfigurationPath({
+          plugins: [
+            { options: { targetName: "eslint" }, plugin: "@nx/eslint/plugin" },
+            {
+              options: { configurationPath: "configuration/conformetry.ts" },
+              plugin: "@jimmypaolini/conformetry-nx",
+            },
+          ],
+        }),
+      ).toBe("configuration/conformetry.ts");
+    });
+
+    it("falls back when the plugin is registered without options", () => {
+      expect(
+        service.resolveConfigurationPath({
+          plugins: [{ plugin: "@jimmypaolini/conformetry-nx" }],
+        }),
+      ).toBe(DEFAULT_CONFIGURATION_PATH);
+    });
+
+    it.each([
+      ["no configuration at all", undefined],
+      ["a configuration that is not an object", "nx.json"],
+      ["a configuration with no plugins", {}],
+      ["plugins that are not a list", { plugins: "@nx/eslint/plugin" }],
+      ["a list holding no entry for this plugin", { plugins: ["@nx/vite"] }],
+    ])("falls back given %s", (_description, nxConfiguration) => {
+      expect(service.resolveConfigurationPath(nxConfiguration)).toBe(
+        DEFAULT_CONFIGURATION_PATH,
+      );
+    });
+  });
 });

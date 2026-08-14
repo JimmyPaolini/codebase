@@ -13,15 +13,20 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { bootstrapPlugin, runBootstrapCli } from "./bootstrap.utilities";
 import { DEFAULT_OUTPUT_PATH } from "./modules/generator/generator.constants";
-import { resolveGeneratorService } from "./plugin-context.utilities";
+import {
+  resolveGeneratorService,
+  resolveOptionsService,
+} from "./plugin-context.utilities";
 
 // What the emitted files contain is the generator service's business and is
 // tested there; what these functions own is putting them where Nx looks.
 vi.mock("./plugin-context.utilities", () => ({
   resolveGeneratorService: vi.fn(),
+  resolveOptionsService: vi.fn(),
 }));
 
 const emitPlugin = vi.fn();
+const resolveConfigurationPath = vi.fn();
 
 describe("bootstrap utilities", () => {
   let workspaceRoot: string;
@@ -42,6 +47,11 @@ describe("bootstrap utilities", () => {
     vi.mocked(resolveGeneratorService).mockResolvedValue({
       emitPlugin,
     } as unknown as Awaited<ReturnType<typeof resolveGeneratorService>>);
+    resolveConfigurationPath.mockReturnValue("conformetry.config.ts");
+    // type-coverage:ignore-next-line -- a deliberate stand-in for the service
+    vi.mocked(resolveOptionsService).mockResolvedValue({
+      resolveConfigurationPath,
+    } as unknown as Awaited<ReturnType<typeof resolveOptionsService>>);
   });
 
   afterEach(() => {
@@ -110,6 +120,42 @@ describe("bootstrap utilities", () => {
 
     it("returns the files it emitted", async () => {
       await expect(bootstrapPlugin(workspaceRoot)).resolves.toHaveLength(2);
+    });
+
+    it("emits from the path the workspace registered the plugin with", async () => {
+      const nxConfiguration = {
+        plugins: [
+          {
+            options: { configurationPath: "elsewhere/conformetry.config.ts" },
+            plugin: "@jimmypaolini/conformetry-nx",
+          },
+        ],
+      };
+
+      writeFileSync(
+        path.join(workspaceRoot, "nx.json"),
+        JSON.stringify(nxConfiguration),
+        "utf8",
+      );
+      resolveConfigurationPath.mockReturnValue(
+        "elsewhere/conformetry.config.ts",
+      );
+
+      await bootstrapPlugin(workspaceRoot);
+
+      // A postinstall gets no options from Nx, so the registration is read.
+      expect(resolveConfigurationPath).toHaveBeenCalledWith(nxConfiguration);
+      expect(emitPlugin).toHaveBeenCalledWith({
+        configurationPath: "elsewhere/conformetry.config.ts",
+        outputPath: DEFAULT_OUTPUT_PATH,
+        packageName: "conformetry",
+      });
+    });
+
+    it("emits from the default when the workspace has no nx.json", async () => {
+      await bootstrapPlugin(workspaceRoot);
+
+      expect(resolveConfigurationPath).toHaveBeenCalledWith(undefined);
     });
   });
 

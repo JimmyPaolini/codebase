@@ -2,10 +2,12 @@ import { NestFactory } from "@nestjs/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { GeneratorService } from "./modules/generator/generator.service";
+import { OptionsService } from "./modules/options/options.service";
 import { PLUGIN_CONTEXT_GLOBAL_KEY } from "./modules/plugin/plugin.constants";
 import { PluginService } from "./modules/plugin/plugin.service";
 import {
   resolveGeneratorService,
+  resolveOptionsService,
   resolvePluginService,
 } from "./plugin-context.utilities";
 
@@ -23,7 +25,14 @@ vi.mock("@nestjs/core", async (importOriginal) => {
 });
 
 const GENERATOR_SERVICE = { emitPlugin: vi.fn() };
+const OPTIONS_SERVICE = { resolveConfigurationPath: vi.fn() };
 const PLUGIN_SERVICE = { runValidation: vi.fn() };
+
+const SERVICES_BY_TOKEN = new Map<unknown, unknown>([
+  [GeneratorService, GENERATOR_SERVICE],
+  [OptionsService, OPTIONS_SERVICE],
+  [PluginService, PLUGIN_SERVICE],
+]);
 
 const createApplicationContext = vi.mocked(
   NestFactory.createApplicationContext,
@@ -40,8 +49,7 @@ describe("plugin context", () => {
     createApplicationContext.mockReset();
     // type-coverage:ignore-next-line -- a deliberate stand-in for the context
     createApplicationContext.mockResolvedValue({
-      get: (token: unknown) =>
-        token === GeneratorService ? GENERATOR_SERVICE : PLUGIN_SERVICE,
+      get: (token: unknown) => SERVICES_BY_TOKEN.get(token),
     } as unknown as Awaited<
       ReturnType<typeof NestFactory.createApplicationContext>
     >);
@@ -53,6 +61,10 @@ describe("plugin context", () => {
 
   it("resolves the plugin service", async () => {
     await expect(resolvePluginService()).resolves.toBe(PLUGIN_SERVICE);
+  });
+
+  it("resolves the options service", async () => {
+    await expect(resolveOptionsService()).resolves.toBe(OPTIONS_SERVICE);
   });
 
   it("builds one context however many services are asked for", async () => {

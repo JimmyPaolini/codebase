@@ -5,6 +5,7 @@ import { NestFactory } from "@nestjs/core";
 
 import { MainModule } from "./main.module";
 import { GeneratorService } from "./modules/generator/generator.service";
+import { OptionsService } from "./modules/options/options.service";
 import { PLUGIN_CONTEXT_GLOBAL_KEY } from "./modules/plugin/plugin.constants";
 import { PluginService } from "./modules/plugin/plugin.service";
 
@@ -16,6 +17,13 @@ export async function resolveGeneratorService(): Promise<GeneratorService> {
   const context = await resolvePluginContext();
 
   return context.get(GeneratorService);
+}
+
+/** Resolves the service that reads this plugin's registration in `nx.json`. */
+export async function resolveOptionsService(): Promise<OptionsService> {
+  const context = await resolvePluginContext();
+
+  return context.get(OptionsService);
 }
 
 /** Resolves the service backing target inference, generation, and validation. */

@@ -359,5 +359,43 @@ describe(PluginService, () => {
         }),
       ).rejects.toThrow("which does not exist");
     });
+
+    it("falls back to the path the workspace registered the plugin with", async () => {
+      const registeredPath = path.join(workspaceRoot, "registered.config.json");
+
+      await writeFile(
+        registeredPath,
+        JSON.stringify([
+          {
+            instances: [{ patterns: ["packages/*/src/modules/*"] }],
+            name: "widget",
+            templatePath: "templates/also-not-there",
+          },
+        ]),
+        "utf8",
+      );
+      // Nx hands an inferred target's executor no plugin options, so without
+      // reading `nx.json` this would look for the conventional path instead.
+      await writeFile(
+        path.join(workspaceRoot, "nx.json"),
+        JSON.stringify({
+          plugins: [
+            {
+              options: { configurationPath: registeredPath },
+              plugin: "@jimmypaolini/conformetry-nx",
+            },
+          ],
+        }),
+        "utf8",
+      );
+
+      await expect(
+        service.runValidation({
+          options: {},
+          project: WIDGETS,
+          workspaceRoot,
+        }),
+      ).rejects.toThrow("which does not exist");
+    });
   });
 });

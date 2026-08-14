@@ -17,7 +17,10 @@ import {
   DEFAULT_PACKAGE_NAME,
 } from "../generator/generator.constants";
 import { GeneratorService } from "../generator/generator.service";
-import { CONFORMETRY_NX_PLUGIN_NAME } from "../options/options.constants";
+import {
+  CONFORMETRY_NX_PLUGIN_NAME,
+  NX_CONFIGURATION_FILENAME,
+} from "../options/options.constants";
 import { OptionsService } from "../options/options.service";
 import { PathsService } from "../paths/paths.service";
 
@@ -28,6 +31,7 @@ import {
 } from "./plugin.constants";
 
 import type { ProjectScope } from "../candidates/candidates.types";
+import type { ConformetryPluginOptions } from "../options/options.types";
 import type {
   InferredTargets,
   InferTargetsArguments,
@@ -150,6 +154,24 @@ export class PluginService {
     return Array.isArray(value);
   }
 
+  /** Reads the workspace's `nx.json`, or nothing when there is none. */
+  private readNxConfiguration(workspaceRoot: string): unknown {
+    const nxConfigurationPath = path.resolve(
+      workspaceRoot,
+      NX_CONFIGURATION_FILENAME,
+    );
+
+    if (!existsSync(nxConfigurationPath)) {
+      return undefined;
+    }
+
+    const parsed: unknown = JSON.parse(
+      readFileSync(nxConfigurationPath, "utf8"),
+    );
+
+    return parsed;
+  }
+
   /**
    * Reads one project's name, root, and tags from its `project.json`.
    *
@@ -181,6 +203,33 @@ export class PluginService {
       root,
       tags: tags.filter((tag) => typeof tag === "string"),
     };
+  }
+
+  /**
+   * Resolves this plugin's options against the workspace's registration.
+   *
+   * Nx passes plugin options to `createNodes` but not to a generator or to an
+   * inferred target's executor, which see only what the caller typed. Reading
+   * `nx.json` here rather than trusting a default is what lets a workspace keep
+   * its configuration somewhere other than the conventional path: the
+   * registration is the base, and anything Nx did pass wins over it.
+   */
+  private resolveOptions(args: {
+    options: unknown;
+    workspaceRoot: string;
+  }): ConformetryPluginOptions {
+    const registered = this.optionsService.resolveConfigurationPath(
+      this.readNxConfiguration(args.workspaceRoot),
+    );
+    const passed: Record<string, unknown> =
+      typeof args.options === "object" && args.options !== null
+        ? { ...args.options }
+        : {};
+
+    return this.optionsService.resolvePluginOptions({
+      configurationPath: registered,
+      ...passed,
+    });
   }
 
   /** Reads every configured generator's template folder. */
@@ -215,9 +264,10 @@ export class PluginService {
   public async inferTargets(
     args: InferTargetsArguments,
   ): Promise<Map<string, InferredTargets>> {
-    const pluginOptions = this.optionsService.resolvePluginOptions(
-      args.options,
-    );
+    const pluginOptions = this.resolveOptions({
+      options: args.options,
+      workspaceRoot: args.workspaceRoot,
+    });
     const targetsByProjectRoot = new Map<string, InferredTargets>();
 
     for (const projectConfigurationFile of args.projectConfigurationFiles.filter(
@@ -271,9 +321,10 @@ export class PluginService {
    * decides whether to flush them, which is what makes `--dry-run` honest.
    */
   public async runGenerator(args: RunGeneratorArguments): Promise<string[]> {
-    const pluginOptions = this.optionsService.resolvePluginOptions(
-      args.options,
-    );
+    const pluginOptions = this.resolveOptions({
+      options: args.options,
+      workspaceRoot: args.workspaceRoot,
+    });
     await this.assertPluginInSync({
       configurationPath: pluginOptions.configurationPath,
       workspaceRoot: args.workspaceRoot,
@@ -324,9 +375,10 @@ export class PluginService {
   public async runValidation(
     args: RunValidationArguments,
   ): Promise<RunValidationResult> {
-    const pluginOptions = this.optionsService.resolvePluginOptions(
-      args.options,
-    );
+    const pluginOptions = this.resolveOptions({
+      options: args.options,
+      workspaceRoot: args.workspaceRoot,
+    });
     await this.assertPluginInSync({
       configurationPath: pluginOptions.configurationPath,
       workspaceRoot: args.workspaceRoot,

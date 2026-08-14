@@ -1,8 +1,10 @@
 // 🛠️ Utilities
 
 import {
+  existsSync,
   lstatSync,
   mkdirSync,
+  readFileSync,
   rmSync,
   symlinkSync,
   writeFileSync,
@@ -13,8 +15,11 @@ import {
   DEFAULT_OUTPUT_PATH,
   DEFAULT_PACKAGE_NAME,
 } from "./modules/generator/generator.constants";
-import { DEFAULT_CONFIGURATION_PATH } from "./modules/options/options.constants";
-import { resolveGeneratorService } from "./plugin-context.utilities";
+import { NX_CONFIGURATION_FILENAME } from "./modules/options/options.constants";
+import {
+  resolveGeneratorService,
+  resolveOptionsService,
+} from "./plugin-context.utilities";
 
 import type { EmittedFile } from "./modules/generator/generator.types";
 
@@ -32,8 +37,13 @@ export async function bootstrapPlugin(
   workspaceRoot: string,
 ): Promise<EmittedFile[]> {
   const generatorService = await resolveGeneratorService();
+  const optionsService = await resolveOptionsService();
   const files = await generatorService.emitPlugin({
-    configurationPath: DEFAULT_CONFIGURATION_PATH,
+    // Taken from the workspace's own plugin registration rather than assumed:
+    // this runs from a `postinstall`, where Nx passes nothing.
+    configurationPath: optionsService.resolveConfigurationPath(
+      readNxConfiguration(workspaceRoot),
+    ),
     outputPath: DEFAULT_OUTPUT_PATH,
     packageName: DEFAULT_PACKAGE_NAME,
   });
@@ -61,9 +71,7 @@ export async function runBootstrapCli(workspaceRoot: string): Promise<void> {
       `Emitted ${files.length} files of the conformetry generator plugin to ${DEFAULT_OUTPUT_PATH}.`,
     );
   } catch (error) {
-    console.warn(
-      `Could not emit the conformetry generator plugin from ${DEFAULT_CONFIGURATION_PATH}:`,
-    );
+    console.warn("Could not emit the conformetry generator plugin:");
     console.warn(error instanceof Error ? error.message : error);
   }
 }
@@ -111,6 +119,28 @@ function linkPlugin(workspaceRoot: string): void {
     linkPath,
     "dir",
   );
+}
+
+/**
+ * Reads the workspace's `nx.json`, or nothing when there is none.
+ *
+ * A missing or unreadable file is not an error here — every field it would
+ * supply has a default, and failing the install over it would be worse than
+ * emitting from the conventional path.
+ */
+function readNxConfiguration(workspaceRoot: string): unknown {
+  const nxConfigurationPath = path.resolve(
+    workspaceRoot,
+    NX_CONFIGURATION_FILENAME,
+  );
+
+  if (!existsSync(nxConfigurationPath)) {
+    return undefined;
+  }
+
+  const parsed: unknown = JSON.parse(readFileSync(nxConfigurationPath, "utf8"));
+
+  return parsed;
 }
 
 /**

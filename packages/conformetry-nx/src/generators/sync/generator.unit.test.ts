@@ -1,7 +1,10 @@
 import { createTree } from "nx/src/generators/testing-utils/create-tree";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { resolveGeneratorService } from "../../plugin-context.utilities";
+import {
+  resolveGeneratorService,
+  resolveOptionsService,
+} from "../../plugin-context.utilities";
 
 import syncGenerator from "./generator";
 
@@ -11,9 +14,11 @@ import type { Tree } from "@nx/devkit";
 // what this entry point owns is writing the result through the tree.
 vi.mock("../../plugin-context.utilities", () => ({
   resolveGeneratorService: vi.fn(),
+  resolveOptionsService: vi.fn(),
 }));
 
 const emitPlugin = vi.fn();
+const resolveConfigurationPath = vi.fn();
 
 describe(syncGenerator, () => {
   let tree: Tree;
@@ -27,6 +32,11 @@ describe(syncGenerator, () => {
     vi.mocked(resolveGeneratorService).mockResolvedValue({
       emitPlugin,
     } as unknown as Awaited<ReturnType<typeof resolveGeneratorService>>);
+    resolveConfigurationPath.mockReturnValue("conformetry.config.ts");
+    // type-coverage:ignore-next-line -- a deliberate stand-in for the service
+    vi.mocked(resolveOptionsService).mockResolvedValue({
+      resolveConfigurationPath,
+    } as unknown as Awaited<ReturnType<typeof resolveOptionsService>>);
   });
 
   it("writes every emitted file into the tree rather than to disk", async () => {
