@@ -8,8 +8,9 @@ import { InputService } from "./input.service";
 /**
  * Owns command-line argument parsing and interactive input resolution.
  *
- * `InputOptionsService` is exported as well as `InputService` because the Nx
- * integration needs option normalization without the prompting machinery.
+ * `InputOptionsService` is exported as well as `InputService` because a
+ * non-interactive host needs option normalization without the prompting
+ * machinery, which has nowhere to prompt.
  */
 @Module({
   controllers: [],

@@ -111,7 +111,7 @@ See [Testing Strategy](../../documentation/code-quality/testing-strategy.md) for
 Use the generator to scaffold new domain modules, then implement the service:
 
 ```bash
-nx g conformance:nestjs-service-module --name=<domain>
+nx g conformetry:nestjs-service-module --name=<domain>
 ```
 
 This creates five files in `src/modules/<domain>/`:

@@ -15,8 +15,8 @@ export default [
       "@nx/dependency-checks": [
         "error",
         {
-          // @golevelup/ts-vitest: required by the conformance template but only used in
-          // test files, which are excluded from the build dependency check scope.
+          // @golevelup/ts-vitest: a devDependency used only in test files, which
+          // are outside the build dependency check's scope.
           // vitest: referenced via tsconfig "types" array; it's a devDependency and
           // the @nx/dependency-checks rule misidentifies it as a production dependency.
           ignoredDependencies: ["@golevelup/ts-vitest", "vitest"],

@@ -3,7 +3,6 @@
     "conformetry-nx-bootstrap": "./src/bootstrap.mjs"
   },
   "dependencies": {
-    "@golevelup/ts-vitest": "catalog:",
     "@jimmypaolini/conformetry-configuration": "workspace:*",
     "@jimmypaolini/conformetry-core": "workspace:*",
     "@jimmypaolini/conformetry-generation": "workspace:*",
@@ -23,6 +22,7 @@
     "tslib": "catalog:"
   },
   "devDependencies": {
+    "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
     "@nx/eslint-plugin": "catalog:",
     "@swc/helpers": "catalog:",

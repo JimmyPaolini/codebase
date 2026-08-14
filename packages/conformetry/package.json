@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@golevelup/ts-vitest": "catalog:",
     "@jimmypaolini/conformetry-configuration": "workspace:*",
     "@jimmypaolini/conformetry-core": "workspace:*",
     "@jimmypaolini/conformetry-generation": "workspace:*",
@@ -15,6 +14,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
     "@nx/eslint-plugin": "catalog:",
     "@swc-node/register": "catalog:",
@@ -24,6 +24,10 @@
     "@vitest/coverage-v8": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "main": "src/index.ts",
   "name": "@jimmypaolini/conformetry",

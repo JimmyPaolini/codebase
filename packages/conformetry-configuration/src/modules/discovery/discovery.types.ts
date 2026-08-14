@@ -7,8 +7,8 @@ import type { Substitutions } from "@jimmypaolini/conformetry-generation";
  * A place a template's tree is rendered into, plus the name it renders with.
  *
  * Candidates come from the caller's glob expansion. Nothing here knows how
- * they were found — that is the Nx plugin's job, because globbing a workspace
- * and reading project tags is workspace knowledge, not template knowledge.
+ * they were found — that is the host's job, because globbing a workspace and
+ * reading project labels is workspace knowledge, not template knowledge.
  */
 export interface InstanceCandidate {
   /**

@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@golevelup/ts-vitest": "catalog:",
     "@jimmypaolini/conformetry-configuration": "workspace:*",
     "@jimmypaolini/conformetry-core": "workspace:*",
     "@nestjs/common": "catalog:",
@@ -9,12 +8,17 @@
     "tslib": "catalog:"
   },
   "devDependencies": {
+    "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
     "@nx/eslint-plugin": "catalog:",
     "@swc/helpers": "catalog:",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "vitest": "catalog:"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "main": "src/index.ts",
   "name": "@jimmypaolini/conformetry-files",
