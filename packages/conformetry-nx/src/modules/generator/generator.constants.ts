@@ -28,11 +28,12 @@ export const JSON_INDENT = 2;
 /**
  * Package name the emitted plugin is addressed by in `nx g <name>:<gen>`.
  *
- * Scoped to conformetry rather than to any one author: every consumer emits
- * this package, so a personal scope would put someone else's name in the
- * command they type.
+ * Unscoped and short, because this name is typed on every generator
+ * invocation: `nx g conformetry:nestjs-service-module`. Nx resolves that
+ * prefix by requiring the package by name, never by matching an Nx project, so
+ * it does not collide with the `conformetry` project in this workspace.
  */
-export const DEFAULT_PACKAGE_NAME = "@conformetry/nx-generators";
+export const DEFAULT_PACKAGE_NAME = "conformetry";
 
 /** The JSON schema editors validate an emitted `generators.json` against. */
 export const GENERATORS_SCHEMA_PATH =

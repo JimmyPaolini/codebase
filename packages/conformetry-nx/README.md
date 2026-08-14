@@ -23,7 +23,9 @@ configuration, so the Nx plugin exposing them is emitted rather than written.
 `conformetry-nx-bootstrap` derives that plugin from
 `configuration/conformetry.config.ts`, writes it to `.conformetry/nx-generators`
 (gitignore this directory — it is a build artifact), and links it into the root
-`node_modules` so `nx g @conformetry/nx-generators:<generator>` resolves.
+`node_modules` so `nx g conformetry:<generator>` resolves. The link is what
+makes the plugin addressable, since Nx resolves a generator's package prefix by
+requiring it by name rather than by matching an Nx project.
 
 Consumers wire it into their root manifest so the plugin is rebuilt whenever
 dependencies are installed:

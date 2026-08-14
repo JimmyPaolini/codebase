@@ -1,6 +1,12 @@
 // 🛠️ Utilities
 
-import { mkdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import {
+  lstatSync,
+  mkdirSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import path from "node:path";
 
 import {
@@ -81,6 +87,18 @@ function linkPlugin(workspaceRoot: string): void {
   );
 
   mkdirSync(path.dirname(linkPath), { recursive: true });
+
+  // The plugin's name is unscoped, so this path is one an installed dependency
+  // could legitimately occupy. Refuse it rather than deleting someone's
+  // package: the emitted plugin is replaceable, an installed one is not.
+  const existing = lstatSync(linkPath, { throwIfNoEntry: false });
+
+  if (existing !== undefined && !existing.isSymbolicLink()) {
+    throw new Error(
+      `node_modules/${DEFAULT_PACKAGE_NAME} is an installed package, not a link to ${DEFAULT_OUTPUT_PATH}. Rename the emitted plugin via the sync generator's packageName option.`,
+    );
+  }
+
   // `rmSync` on a symlink removes the link, never what it points at, so a
   // re-run replaces the link rather than writing through into the emitted
   // directory.

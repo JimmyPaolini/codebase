@@ -74,14 +74,16 @@ Conformetry generators are declared in `configuration/conformetry.config.ts` and
 Use generators when creating new applications/modules/components so the initial file set, naming, and conventions are correct from the start.
 
 ```bash
-nx generate @conformetry/nx-generators:<generator-name> [options]
+nx generate conformetry:<generator-name> [options]
 # or
-nx g @conformetry/nx-generators:<generator-name> [options]
+nx g conformetry:<generator-name> [options]
 ```
 
-`@conformetry/nx-generators` is emitted from the configuration into the
-gitignored `.conformetry/` directory on `pnpm install`, so it is never
-committed. If Nx reports it is not installed, run `pnpm install` again.
+The `conformetry` generator namespace is emitted from the configuration into
+the gitignored `.conformetry/` directory on `pnpm install`, so it is never
+committed. If Nx reports it is not installed, run `pnpm install` again. It is a
+package name, not the `conformetry` Nx project — `nx run conformetry:<target>`
+still addresses the command-line package in `packages/conformetry`.
 
 Prefer generator aliases for speed when you already know them (for example, `nsm`, `ngm`, `c`).
 After scaffolding, implement domain-specific logic in the generated files rather than hand-crafting parallel structures.

@@ -79,11 +79,7 @@ describe("bootstrap utilities", () => {
     it("links the emitted plugin into the root node_modules", async () => {
       await bootstrapPlugin(workspaceRoot);
 
-      const linkPath = path.join(
-        workspaceRoot,
-        "node_modules/@conformetry/nx-generators",
-      );
-
+      const linkPath = path.join(workspaceRoot, "node_modules/conformetry");
       const linkStatistics = await lstat(linkPath);
 
       expect(linkStatistics.isSymbolicLink()).toBe(true);
@@ -98,6 +94,18 @@ describe("bootstrap utilities", () => {
       await bootstrapPlugin(workspaceRoot);
 
       await expect(bootstrapPlugin(workspaceRoot)).resolves.toHaveLength(2);
+    });
+
+    it("refuses to overwrite an installed package of the same name", async () => {
+      // The plugin's name is unscoped, so an unrelated dependency could hold
+      // this path; deleting it would be worse than failing to link.
+      mkdirSync(path.join(workspaceRoot, "node_modules/conformetry"), {
+        recursive: true,
+      });
+
+      await expect(bootstrapPlugin(workspaceRoot)).rejects.toThrow(
+        "is an installed package",
+      );
     });
 
     it("returns the files it emitted", async () => {
