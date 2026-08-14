@@ -39,4 +39,3 @@ lint-staged.config.ts
 **/.github/skills/**
 **/documentation/skills/**
 
-# TODO: remove

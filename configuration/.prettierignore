@@ -55,10 +55,8 @@ projectStructure.cache.json
 **/packages/lexico-components/src/components/**
 **/packages/lexico-components/src/lib/**
 **/packages/lexico-components/src/hooks/**
-**/conformance/**/templates/**
 
 # 🏗 Infrastructure templates
 **/helm/**/templates/**
 **/.terraform/**
 
-# TODO: remove
