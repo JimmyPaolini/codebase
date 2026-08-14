@@ -113,4 +113,15 @@ describe(DiscoveryService, () => {
       ).toStrictEqual([".gitignore", "alpha.service.ts"]);
     });
   });
+
+  describe("resolveCandidates", () => {
+    it("expands a glob into the candidates it matches", () => {
+      const candidates = service.resolveCandidates({
+        patterns: ["src/modules/*"],
+        workingDirectory: process.cwd(),
+      });
+
+      expect(candidates.length).toBeGreaterThan(0);
+    });
+  });
 });

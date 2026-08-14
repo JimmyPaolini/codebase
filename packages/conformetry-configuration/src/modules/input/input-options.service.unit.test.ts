@@ -142,4 +142,48 @@ describe(InputOptionsService, () => {
       ).toBe(path.join("generated", "example"));
     });
   });
+
+  describe("resolveTargetDirectoryPath fallbacks", () => {
+    it("uses the project root a caller resolves", () => {
+      expect(
+        service.resolveTargetDirectoryPath({
+          generatorName: "nestjs-service-module",
+          options: { project: "widgets" },
+          resolveProjectRootPath: () => "packages/widgets",
+        }),
+      ).toBe("packages/widgets");
+    });
+
+    it("falls back to a generator-named directory when the project is unknown", () => {
+      expect(
+        service.resolveTargetDirectoryPath({
+          defaultGeneratedOutputDirectory: "generated",
+          generatorName: "nestjs-service-module",
+          options: { project: "widgets" },
+          resolveProjectRootPath: () => undefined,
+        }),
+      ).toBe("generated/nestjs-service-module");
+    });
+
+    it("falls back when no resolver is supplied at all", () => {
+      expect(
+        service.resolveTargetDirectoryPath({
+          defaultGeneratedOutputDirectory: "generated",
+          generatorName: "nestjs-service-module",
+          options: { project: "widgets" },
+        }),
+      ).toBe("generated/nestjs-service-module");
+    });
+  });
+
+  describe("collectGeneratorInputs edge cases", () => {
+    it("collects nothing from a schema that declares no properties", () => {
+      expect(
+        service.collectGeneratorInputs({
+          rawArguments: ["--name", "my-widget"],
+          schema: {},
+        }),
+      ).toStrictEqual({});
+    });
+  });
 });

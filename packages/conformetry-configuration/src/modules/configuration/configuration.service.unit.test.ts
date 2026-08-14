@@ -17,6 +17,17 @@ async function writeConfiguration(configuration: unknown): Promise<string> {
 
   return configurationPath;
 }
+/** Writes a TypeScript config whose default export is the given source. */
+async function writeTypescriptConfiguration(source: string): Promise<string> {
+  const directory = await mkdtemp(
+    path.join(tmpdir(), "conformetry-config-ts-"),
+  );
+  const configurationPath = path.join(directory, "conformetry.config.ts");
+
+  await writeFile(configurationPath, source, "utf8");
+
+  return configurationPath;
+}
 
 describe(ConfigurationService, () => {
   let service: ConfigurationService;
@@ -172,5 +183,26 @@ describe(ConfigurationService, () => {
     await expect(
       service.loadConformetryConfiguration(configurationPath),
     ).rejects.toThrow("templatePath");
+  });
+
+  describe("typeScript configuration files", () => {
+    it("reads a configuration exported from a module", async () => {
+      const configurationPath = await writeTypescriptConfiguration(
+        `export default [
+          {
+            inputs: {},
+            instances: [{ patterns: ["packages/*"] }],
+            name: "widget",
+            templatePath: "configuration/templates/widget",
+          },
+        ];
+`,
+      );
+
+      const configuration =
+        await service.loadConformetryConfiguration(configurationPath);
+
+      expect(configuration[0]?.name).toBe("widget");
+    });
   });
 });

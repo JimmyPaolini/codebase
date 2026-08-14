@@ -1,10 +1,17 @@
 import { Test } from "@nestjs/testing";
-import { beforeAll, describe, expect, it } from "vitest";
+import prompts from "prompts";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { InputOptionsService } from "./input-options.service";
 import { InputPromptingService } from "./input-prompting.service";
 import { InputSchemaService } from "./input-schema.service";
 import { InputService } from "./input.service";
+
+// Mocked at the module boundary so the interactive path is exercised without
+// a terminal.
+vi.mock("prompts", () => ({ default: vi.fn() }));
+
+const promptRunner = vi.mocked(prompts);
 
 const REQUIRED_NAME_SCHEMA = {
   properties: { name: { description: "Module name", type: "string" } },
@@ -25,6 +32,10 @@ describe(InputService, () => {
     }).compile();
 
     service = await module.resolve(InputService);
+  });
+
+  beforeEach(() => {
+    promptRunner.mockReset();
   });
 
   it("is defined", () => {
@@ -93,6 +104,45 @@ describe(InputService, () => {
       });
 
       expect(inputs).toStrictEqual({});
+    });
+
+    it("prompts for a missing required value when interactive", async () => {
+      promptRunner.mockResolvedValue({ value: "my-widget" });
+
+      const inputs = await service.resolveGeneratorInputs({
+        promptWhenMissing: true,
+        rawArguments: [],
+        schema: REQUIRED_NAME_SCHEMA,
+      });
+
+      expect(inputs).toStrictEqual({ name: "my-widget" });
+    });
+
+    it("drops a prompted value the caller left blank", async () => {
+      promptRunner.mockResolvedValue({ value: "   " });
+
+      const inputs = await service.resolveGeneratorInputs({
+        promptWhenMissing: true,
+        rawArguments: [],
+        schema: { properties: { note: { type: "string" } } },
+      });
+
+      expect(inputs).toStrictEqual({});
+    });
+
+    it("rejects a prompted value the schema refuses", async () => {
+      promptRunner.mockResolvedValue({ value: "nope" });
+
+      await expect(
+        service.resolveGeneratorInputs({
+          promptWhenMissing: true,
+          rawArguments: [],
+          schema: {
+            properties: { type: { enum: ["packages", "applications"] } },
+            required: ["type"],
+          },
+        }),
+      ).rejects.toThrow("type must be one of: packages, applications");
     });
 
     it("rejects a value outside the schema enum", async () => {
