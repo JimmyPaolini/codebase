@@ -9,6 +9,7 @@ import type {
   PreparedValidationDocument,
 } from "@jimmypaolini/conformetry-core";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Checks that a Python file declares everything its template requires.
  *
@@ -17,6 +18,7 @@ import type {
  * deleting a required class or function does.
  */
 @Injectable()
+/* v8 ignore stop */
 export class PythonValidatorService implements ConformetryLanguageValidator {
   // 🏗 Dependency Injection
 

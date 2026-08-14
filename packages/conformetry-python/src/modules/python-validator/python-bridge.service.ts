@@ -18,6 +18,7 @@ import type {
 } from "./python-validator.types";
 import type { ConformanceError } from "@jimmypaolini/conformetry-core";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Runs Python conformance checks through the Python interpreter.
  *
@@ -28,6 +29,7 @@ import type { ConformanceError } from "@jimmypaolini/conformetry-core";
  * overlap with.
  */
 @Injectable()
+/* v8 ignore stop */
 export class PythonBridgeService {
   // 🏗 Dependency Injection
 
