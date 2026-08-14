@@ -248,6 +248,14 @@ export class PluginService {
         [pluginOptions.validateTargetName]: {
           cache: true,
           executor: `${CONFORMETRY_NX_PLUGIN_NAME}:validate`,
+          // The executor refuses to run against a drifted plugin, so the
+          // configuration and the emitted plugin are inputs: without them a
+          // cache hit would skip that check entirely.
+          inputs: [
+            "default",
+            `{workspaceRoot}/${pluginOptions.configurationPath}`,
+            `{workspaceRoot}/${DEFAULT_OUTPUT_PATH}/**/*`,
+          ],
           options: {},
         },
       });

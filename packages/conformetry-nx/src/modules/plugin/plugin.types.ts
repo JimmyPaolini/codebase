@@ -9,6 +9,8 @@ import type { Tree } from "@nx/devkit";
 export interface InferredTarget {
   readonly cache: boolean;
   readonly executor: string;
+  /** Files whose change must invalidate the cached result. */
+  readonly inputs?: string[];
   readonly options: Record<string, unknown>;
 }
 
