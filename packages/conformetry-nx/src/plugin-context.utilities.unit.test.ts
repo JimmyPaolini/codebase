@@ -1,0 +1,84 @@
+import { NestFactory } from "@nestjs/core";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { GeneratorService } from "./modules/generator/generator.service";
+import { PLUGIN_CONTEXT_GLOBAL_KEY } from "./modules/plugin/plugin.constants";
+import { PluginService } from "./modules/plugin/plugin.service";
+import {
+  resolveGeneratorService,
+  resolvePluginService,
+} from "./plugin-context.utilities";
+
+import type nestCore from "@nestjs/core";
+
+// Compiling the real graph is the integration test's job; what these
+// functions own is bootstrapping once and handing back the right service.
+vi.mock("@nestjs/core", async (importOriginal) => {
+  const actual = await importOriginal<typeof nestCore>();
+
+  return {
+    ...actual,
+    NestFactory: { createApplicationContext: vi.fn() },
+  };
+});
+
+const GENERATOR_SERVICE = { emitPlugin: vi.fn() };
+const PLUGIN_SERVICE = { runValidation: vi.fn() };
+
+const createApplicationContext = vi.mocked(
+  NestFactory.createApplicationContext,
+);
+
+describe("plugin context", () => {
+  beforeEach(() => {
+    const globalScope: Record<string, unknown> = globalThis;
+
+    // The context is cached for the life of the process, so each test starts
+    // by forgetting the one its predecessor built. `??=` in the source treats
+    // undefined as absent, so clearing it is enough.
+    globalScope[PLUGIN_CONTEXT_GLOBAL_KEY] = undefined;
+    createApplicationContext.mockReset();
+    // type-coverage:ignore-next-line -- a deliberate stand-in for the context
+    createApplicationContext.mockResolvedValue({
+      get: (token: unknown) =>
+        token === GeneratorService ? GENERATOR_SERVICE : PLUGIN_SERVICE,
+    } as unknown as Awaited<
+      ReturnType<typeof NestFactory.createApplicationContext>
+    >);
+  });
+
+  it("resolves the generator service", async () => {
+    await expect(resolveGeneratorService()).resolves.toBe(GENERATOR_SERVICE);
+  });
+
+  it("resolves the plugin service", async () => {
+    await expect(resolvePluginService()).resolves.toBe(PLUGIN_SERVICE);
+  });
+
+  it("builds one context however many services are asked for", async () => {
+    await resolvePluginService();
+    await resolveGeneratorService();
+
+    expect(createApplicationContext).toHaveBeenCalledTimes(1);
+  });
+
+  it("shares one bootstrap between concurrent callers", async () => {
+    await Promise.all([resolvePluginService(), resolveGeneratorService()]);
+
+    expect(createApplicationContext).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps the daemon quiet and lets errors surface", async () => {
+    await resolvePluginService();
+
+    expect(createApplicationContext).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ abortOnError: false, logger: false }),
+    );
+  });
+
+  it("returns the service the token names", async () => {
+    await expect(resolvePluginService()).resolves.not.toBe(GENERATOR_SERVICE);
+    expect(PluginService).toBeDefined();
+  });
+});
