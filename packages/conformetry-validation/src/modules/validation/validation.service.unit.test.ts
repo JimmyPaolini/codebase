@@ -166,4 +166,58 @@ describe(ValidationService, () => {
       expect(result.checkedPaths).toStrictEqual([]);
     });
   });
+
+  describe("caller-supplied options", () => {
+    it("runs only the languages the caller named", async () => {
+      const instancePath = await createInstance({
+        configuration: "{}\n",
+        withNotes: true,
+      });
+      const result = await service.validate({
+        candidates: [{ instancePath, nameStem: "my-widget" }],
+        languageNames: ["markdown"],
+        templates,
+      });
+
+      expect(result.ok).toBe(true);
+    });
+
+    it("runs every language when the filter is empty", async () => {
+      const instancePath = await createInstance({
+        configuration: "{}\n",
+        withNotes: true,
+      });
+      const candidates = [{ instancePath, nameStem: "my-widget" }];
+      const filtered = await service.validate({
+        candidates,
+        languageNames: [],
+        templates,
+      });
+      const unfiltered = await service.validate({ candidates, templates });
+
+      // An empty filter means "everything", not "nothing" — the two calls
+      // must reach the same verdict.
+      expect(filtered.fileResults).toStrictEqual(unfiltered.fileResults);
+    });
+
+    it("imports language packages through a loader the caller supplies", async () => {
+      const instancePath = await createInstance({
+        configuration: "{}\n",
+        withNotes: true,
+      });
+      const loaded: string[] = [];
+      const result = await service.validate({
+        candidates: [{ instancePath, nameStem: "my-widget" }],
+        loadLanguageModule: async (specifier) => {
+          loaded.push(specifier);
+
+          return import(specifier);
+        },
+        templates,
+      });
+
+      expect(loaded.length).toBeGreaterThan(0);
+      expect(result.checkedPaths.length).toBeGreaterThan(0);
+    });
+  });
 });

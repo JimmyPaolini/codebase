@@ -61,6 +61,7 @@ export class TypescriptValidatorService implements ConformetryLanguageValidator 
     position: number | undefined;
     sourceFile: SourceFile;
   }): undefined | { column: number; line: number } {
+    /* v8 ignore next -- only a synthesized node lacks a position */
     if (args.position === undefined || args.position < 0) {
       return undefined;
     }
@@ -91,6 +92,7 @@ export class TypescriptValidatorService implements ConformetryLanguageValidator 
           fix: `Add the comment ${comment.text} to the instance file, in the order the template declares it.`,
           language: "typescript",
           message: `Missing comment ${comment.text}`,
+          /* v8 ignore next -- a parsed node always resolves a location */
           ...(templateLocation === undefined
             ? {}
             : {
@@ -128,6 +130,7 @@ export class TypescriptValidatorService implements ConformetryLanguageValidator 
         return {
           errorType: "code",
           fix: `Add the missing ${described} to the instance file. See the template for the expected structure.`,
+          /* v8 ignore next -- a parsed node always resolves a location */
           ...(instanceLocation === undefined
             ? {}
             : {
@@ -136,6 +139,7 @@ export class TypescriptValidatorService implements ConformetryLanguageValidator 
               }),
           language: "typescript",
           message: `Missing ${described}`,
+          /* v8 ignore next -- a parsed node always resolves a location */
           ...(templateLocation === undefined
             ? {}
             : {

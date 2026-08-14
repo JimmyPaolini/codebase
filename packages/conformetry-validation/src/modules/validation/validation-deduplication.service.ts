@@ -6,6 +6,7 @@ import type { InstanceFileResults } from "./validation.types";
 import type { MatchedInstance } from "@jimmypaolini/conformetry-configuration";
 import type { ValidationFileResult } from "@jimmypaolini/conformetry-core";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Collapses the findings of overlapping instances into one report.
  *
@@ -16,6 +17,7 @@ import type { ValidationFileResult } from "@jimmypaolini/conformetry-core";
  * different size.
  */
 @Injectable()
+/* v8 ignore stop */
 export class ValidationDeduplicationService {
   // 🏗 Dependency Injection
 

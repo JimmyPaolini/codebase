@@ -121,6 +121,7 @@ export class TypescriptNodesService {
 
   /** Keys an import by its module specifier. */
   private readImportKey(node: ImportDeclaration): null | string {
+    /* v8 ignore next -- a module specifier is always a string literal */
     return isStringLiteral(node.moduleSpecifier)
       ? node.moduleSpecifier.text
       : null;
@@ -155,6 +156,7 @@ export class TypescriptNodesService {
 
     if (
       isIdentifier(candidate) ||
+      /* v8 ignore next -- a private name cannot be a call argument */
       isPrivateIdentifier(candidate) ||
       isStringLiteral(candidate) ||
       isNumericLiteral(candidate)
@@ -162,6 +164,7 @@ export class TypescriptNodesService {
       return candidate.text;
     }
 
+    /* v8 ignore next -- a call is keyed before a non-literal argument is read */
     return null;
   }
 

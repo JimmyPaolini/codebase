@@ -214,6 +214,16 @@ describe(TypescriptValidatorService, () => {
       expect(validate(source, source)).toStrictEqual([]);
     });
 
+    it("keys a member declared with a string or numeric name", () => {
+      const source =
+        "export class Widget {\n" +
+        '  public "with-dashes"(): void {}\n\n' +
+        "  public 42(): void {}\n" +
+        "}\n";
+
+      expect(validate(source, source)).toStrictEqual([]);
+    });
+
     it("keys a call statement by a numeric first argument", () => {
       expect(validate("retry(1);\n", "retry(2);\n").length).toBeGreaterThan(0);
     });
@@ -222,6 +232,29 @@ describe(TypescriptValidatorService, () => {
       const source = "run({ mode: 1 });\n";
 
       expect(validate(source, source)).toStrictEqual([]);
+    });
+
+    it("keys a call statement whose first argument is not a literal", () => {
+      const source = "run(() => 1);\n";
+
+      expect(validate(source, source)).toStrictEqual([]);
+    });
+
+    it("keys a call statement whose argument is not a node", () => {
+      const source = "run(...items);\n";
+
+      expect(validate(source, source)).toStrictEqual([]);
+    });
+
+    it("keeps the first of two equally distant candidates", () => {
+      const template = "export class Widget {\n  public alpha(): void {}\n}\n";
+      const instance =
+        "export class Widget {\n" +
+        "  public beta(): void {}\n\n" +
+        "  public gamma(): void {}\n" +
+        "}\n";
+
+      expect(validate(template, instance).length).toBeGreaterThan(0);
     });
 
     it("keys a call statement whose argument is an identifier", () => {
@@ -278,6 +311,59 @@ describe(TypescriptValidatorService, () => {
 
     it("ignores a statement that is not a call at all", () => {
       const source = "let counter = 0;\ncounter += 1;\n";
+
+      expect(validate(source, source)).toStrictEqual([]);
+    });
+  });
+
+  describe("other file shapes", () => {
+    it("parses a .tsx file as TSX rather than TS", () => {
+      const source = "export const Widget = () => <div />;\n";
+
+      expect(
+        service.validateDocument(
+          createDocument({
+            filename: "widget.tsx",
+            instance: source,
+            renderedTemplate: source,
+          }),
+        ),
+      ).toStrictEqual([]);
+    });
+
+    it("keys an import by the module it names", () => {
+      const source = 'import { alpha } from "./alpha";\n';
+
+      expect(validate(source, source)).toStrictEqual([]);
+    });
+
+    it("reports an import of a different module", () => {
+      expect(
+        validate(
+          'import { alpha } from "./alpha";\n',
+          'import { alpha } from "./beta";\n',
+        ).length,
+      ).toBeGreaterThan(0);
+    });
+
+    it("describes a missing node that carries no key", () => {
+      expect(
+        validate("if (ready) {\n  start();\n}\n", "const other = 1;\n").length,
+      ).toBeGreaterThan(0);
+    });
+
+    it("keys a member declared with a string or numeric name", () => {
+      const source =
+        "export class Widget {\n" +
+        '  public "with-dashes"(): void {}\n\n' +
+        "  public 42(): void {}\n" +
+        "}\n";
+
+      expect(validate(source, source)).toStrictEqual([]);
+    });
+
+    it("keys a call statement by a numeric first argument", () => {
+      const source = "run(42);\n";
 
       expect(validate(source, source)).toStrictEqual([]);
     });

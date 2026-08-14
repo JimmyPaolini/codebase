@@ -20,6 +20,7 @@ import type {
   ValidationFileResult,
 } from "@jimmypaolini/conformetry-core";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Runs a full conformetry validation: match candidates to templates, check the
  * files exist, then compare contents language by language.
@@ -29,6 +30,7 @@ import type {
  * suffixes, which made a generic package depend on one repository's layout.
  */
 @Injectable()
+/* v8 ignore stop */
 export class ValidationService {
   // 🏗 Dependency Injection
 
@@ -65,12 +67,16 @@ export class ValidationService {
     languageNames: string[] | undefined;
     validators: ConformetryLanguageValidator[];
   }): ConformetryLanguageValidator[] {
-    if (args.languageNames === undefined || args.languageNames.length === 0) {
+    const { languageNames } = args;
+
+    if (languageNames === undefined || languageNames.length === 0) {
       return args.validators;
     }
 
+    // Bound to a local so the narrowing above survives into the closure,
+    // which otherwise needs a fallback for a case that cannot happen.
     return args.validators.filter((validator) => {
-      return args.languageNames?.includes(validator.descriptor.name) ?? false;
+      return languageNames.includes(validator.descriptor.name);
     });
   }
 

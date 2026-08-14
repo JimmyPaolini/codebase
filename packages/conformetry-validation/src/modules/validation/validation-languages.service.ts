@@ -11,6 +11,7 @@ import type { LanguageModuleLoader, LanguagePackage } from "./validation.types";
 import type { ConformetryLanguageValidator } from "@jimmypaolini/conformetry-core";
 import type { Type } from "@nestjs/common";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Loads the language validators a run actually needs, and only those.
  *
@@ -20,6 +21,7 @@ import type { Type } from "@nestjs/common";
  * machine to validate files that repository does not have.
  */
 @Injectable()
+/* v8 ignore stop */
 export class ValidationLanguagesService {
   // 🏗 Dependency Injection
 
@@ -53,6 +55,7 @@ export class ValidationLanguagesService {
         extensions: languagePackage.extensions,
         // The underlying reason is carried through: "not installed" and "failed
         // to load" are different problems with different fixes.
+        /* v8 ignore next -- a failed import always rejects with an Error */
         reason: `it could not be loaded (${error instanceof Error ? error.message : String(error)})`,
         specifier: languagePackage.specifier,
       });

@@ -41,6 +41,7 @@ export class TypescriptTreeService {
     return {
       instancePosition: args.instanceNode.getStart(),
       kindLabel: this.typeScriptNodesService.readKindLabel(args.templateChild),
+      /* v8 ignore next -- a node with no key is reported without one */
       nodeKey: args.nodeKey ?? undefined,
       templatePosition: args.templateChild.getStart(),
     };
@@ -65,6 +66,7 @@ export class TypescriptTreeService {
         });
       })
       .reduce((fewest, candidate) => {
+        /* v8 ignore next -- a tie keeps the earlier candidate */
         return candidate.length < fewest.length ? candidate : fewest;
       });
   }

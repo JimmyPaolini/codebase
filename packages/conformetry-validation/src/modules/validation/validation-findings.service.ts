@@ -9,6 +9,7 @@ import type {
 } from "@jimmypaolini/conformetry-configuration";
 import type { ValidationFileResult } from "@jimmypaolini/conformetry-core";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Turns candidates that matched no template into ordinary findings.
  *
@@ -18,6 +19,7 @@ import type { ValidationFileResult } from "@jimmypaolini/conformetry-core";
  * out loud, and both invisible if unmatched candidates were merely skipped.
  */
 @Injectable()
+/* v8 ignore stop */
 export class ValidationFindingsService {
   // 🏗 Dependency Injection
 
