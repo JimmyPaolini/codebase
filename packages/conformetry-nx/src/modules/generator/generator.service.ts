@@ -1,7 +1,6 @@
 import path from "node:path";
 
 import { ConfigurationService } from "@jimmypaolini/conformetry-configuration";
-import { RenderingService } from "@jimmypaolini/conformetry-generation";
 import { Injectable } from "@nestjs/common";
 
 import {
@@ -28,10 +27,7 @@ import type { ConformetryGeneratorDefinition } from "@jimmypaolini/conformetry-c
 export class GeneratorService {
   // 🏗 Dependency Injection
 
-  constructor(
-    private readonly configurationService: ConfigurationService,
-    private readonly renderingService: RenderingService,
-  ) {}
+  constructor(private readonly configurationService: ConfigurationService) {}
 
   // 🔐 Private Fields
 
@@ -39,13 +35,40 @@ export class GeneratorService {
 
   // 🔏 Private Methods
 
-  /** The exported factory name for one generator, e.g. `nestjsServiceModule`. */
-  private buildFactoryName(generatorName: string): string {
-    const substitutions =
-      this.renderingService.buildNameSubstitutions(generatorName);
-
-    /* v8 ignore next -- every name yields a camel-case substitution */
-    return substitutions["nameCamelCase"] ?? generatorName;
+  /**
+   * Builds the module Nx calls into for one generator.
+   *
+   * One file per generator, each exporting a single `generate`, because Nx
+   * does not pass a generator its own name — the name has to be bound at the
+   * call site. Binding it per file rather than per export in a shared module
+   * means a generator's factory sits next to the schema of the same name, and
+   * removing a generator removes a file rather than editing one.
+   */
+  private buildGeneratorModule(
+    definition: ConformetryGeneratorDefinition,
+  ): string {
+    return [
+      GENERATED_FILE_NOTICE,
+      "",
+      'import { runConformetryGenerator } from "@jimmypaolini/conformetry-nx";',
+      "",
+      'import type { Tree } from "@nx/devkit";',
+      "",
+      "/**",
+      ` * Runs the \`${definition.name}\` conformetry generator.`,
+      " */",
+      "export async function generate(",
+      "  tree: Tree,",
+      "  options?: Record<string, unknown>,",
+      "): Promise<void> {",
+      "  await runConformetryGenerator({",
+      `    generatorName: "${definition.name}",`,
+      "    ...(options === undefined ? {} : { options }),",
+      "    tree,",
+      "  });",
+      "}",
+      "",
+    ].join("\n");
   }
 
   /**
@@ -69,7 +92,7 @@ export class GeneratorService {
         ...(definition.description === undefined
           ? {}
           : { description: definition.description }),
-        factory: `./src/generators#${this.buildFactoryName(definition.name)}`,
+        factory: `./src/generators/${definition.name}#generate`,
         schema: `./src/schemas/${definition.name}.json`,
       };
     }
@@ -85,45 +108,6 @@ export class GeneratorService {
         .join("/"),
       generators,
     });
-  }
-
-  /**
-   * Builds the wrapper module Nx calls into.
-   *
-   * One thin export per generator, because Nx does not pass the generator's
-   * own name to its factory — the name has to be bound at the call site, so
-   * the wrappers cannot be collapsed into a single function.
-   */
-  private buildGeneratorsModule(args: {
-    definitions: ConformetryGeneratorDefinition[];
-  }): string {
-    const wrappers = args.definitions.map((definition) => {
-      return [
-        "/**",
-        ` * Runs the \`${definition.name}\` conformetry generator.`,
-        " */",
-        `export async function ${this.buildFactoryName(definition.name)}(`,
-        "  tree: Tree,",
-        "  options?: Record<string, unknown>,",
-        "): Promise<void> {",
-        "  await runConformetryGenerator({",
-        `    generatorName: "${definition.name}",`,
-        "    ...(options === undefined ? {} : { options }),",
-        "    tree,",
-        "  });",
-        "}",
-      ].join("\n");
-    });
-
-    return [
-      GENERATED_FILE_NOTICE,
-      "",
-      'import { runConformetryGenerator } from "@jimmypaolini/conformetry-nx";',
-      "",
-      'import type { Tree } from "@nx/devkit";',
-      "",
-      ...wrappers.flatMap((wrapper) => [wrapper, ""]),
-    ].join("\n");
   }
 
   /**
@@ -177,10 +161,15 @@ export class GeneratorService {
         }),
         filePath: path.join(args.outputPath, "generators.json"),
       },
-      {
-        content: this.buildGeneratorsModule({ definitions }),
-        filePath: path.join(args.outputPath, "src/generators.ts"),
-      },
+      ...definitions.map((definition) => {
+        return {
+          content: this.buildGeneratorModule(definition),
+          filePath: path.join(
+            args.outputPath,
+            `src/generators/${definition.name}.ts`,
+          ),
+        };
+      }),
       ...definitions.map((definition) => {
         return {
           content: this.buildSchema(definition),

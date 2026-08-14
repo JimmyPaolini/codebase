@@ -88,12 +88,13 @@ describe(GeneratorService, () => {
   });
 
   describe("emitPlugin", () => {
-    it("emits a manifest, a wrapper module, a schema each, and a package", () => {
-      // Schemas come out sorted by generator name, not in the order the
+    it("emits a manifest, a module and schema each, and a package", () => {
+      // Files come out sorted by generator name, not in the order the
       // configuration happens to declare them.
       expect(files.map((file) => file.filePath)).toStrictEqual([
         "tools/generators/generators.json",
-        "tools/generators/src/generators.ts",
+        "tools/generators/src/generators/nestjs-service-module.ts",
+        "tools/generators/src/generators/react-component.ts",
         "tools/generators/src/schemas/nestjs-service-module.json",
         "tools/generators/src/schemas/react-component.json",
         "tools/generators/package.json",
@@ -116,13 +117,22 @@ describe(GeneratorService, () => {
       );
     });
 
-    it("names the factory after the generator", () => {
+    it("points each factory at the module named after its generator", () => {
       expect(findFile(files, "generators.json").content).toContain(
-        "./src/generators#nestjsServiceModule",
+        "./src/generators/nestjs-service-module#generate",
       );
-      expect(findFile(files, "src/generators.ts").content).toContain(
-        "export async function nestjsServiceModule(",
-      );
+    });
+
+    it("gives every generator module the same single export", () => {
+      const module = findFile(
+        files,
+        "src/generators/nestjs-service-module.ts",
+      ).content;
+
+      expect(module).toContain("export async function generate(");
+      // The generator's own name is bound here because Nx never passes it.
+      expect(module).toContain('generatorName: "nestjs-service-module"');
+      expect(module.match(/export /g)).toHaveLength(1);
     });
 
     it("requires every configured parameter", () => {

@@ -1,5 +1,4 @@
 import { ConfigurationModule } from "@jimmypaolini/conformetry-configuration";
-import { RenderingModule } from "@jimmypaolini/conformetry-generation";
 import { Module } from "@nestjs/common";
 
 import { GeneratorService } from "./generator.service";
@@ -7,13 +6,13 @@ import { GeneratorService } from "./generator.service";
 /**
  * Provides derivation of the consumer's Nx generator plugin.
  *
- * Depends on rendering only for its name-case helpers, so a factory name is
- * derived by the same rules a template placeholder is.
+ * Depends on nothing but the configuration: every emitted file is named after
+ * a generator declared there, so no name-case rendering is involved.
  */
 @Module({
   controllers: [],
-  exports: [ConfigurationModule, GeneratorService, RenderingModule],
-  imports: [ConfigurationModule, RenderingModule],
+  exports: [ConfigurationModule, GeneratorService],
+  imports: [ConfigurationModule],
   providers: [GeneratorService],
 })
 export class GeneratorModule {}
