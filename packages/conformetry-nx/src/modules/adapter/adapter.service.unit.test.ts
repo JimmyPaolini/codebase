@@ -4,11 +4,16 @@ import path from "node:path";
 
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
-import { beforeAll, describe, expect, it } from "vitest";
+import { formatFiles } from "@nx/devkit";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { AdapterService } from "./adapter.service";
 
 import type { Tree } from "@nx/devkit";
+
+// Formatting defers to the workspace's own configuration, which is Nx's job
+// rather than this adapter's.
+vi.mock("@nx/devkit", () => ({ formatFiles: vi.fn() }));
 
 /** The subset of `Tree` the adapter uses, recording every write. */
 function createFakeTree(root: string): {
@@ -101,6 +106,44 @@ describe(AdapterService, () => {
       await filesystem.makeDirectory(path.join(workspaceRoot, "packages"));
 
       expect(writes.size).toBe(0);
+    });
+
+    it("lists a directory through the tree when it sits in the workspace", async () => {
+      const { tree } = createFakeTree(workspaceRoot);
+      const { filesystem } = service.createAdapters({ tree, workspaceRoot });
+
+      await filesystem.writeFile(
+        path.join(workspaceRoot, "widgets/gears.ts"),
+        "export const gears = 1;\n",
+      );
+
+      await expect(
+        filesystem.listDirectory(path.join(workspaceRoot, "widgets")),
+      ).resolves.toStrictEqual([{ isDirectory: false, name: "gears.ts" }]);
+    });
+
+    it("lists a directory through the filesystem when it sits outside", async () => {
+      const outsidePath = await mkdtemp(
+        path.join(tmpdir(), "conformetry-out-"),
+      );
+
+      await writeFile(path.join(outsidePath, "notes.md"), "# Notes\n", "utf8");
+
+      const { tree } = createFakeTree(workspaceRoot);
+      const { filesystem } = service.createAdapters({ tree, workspaceRoot });
+
+      await expect(
+        filesystem.listDirectory(outsidePath),
+      ).resolves.toStrictEqual([{ isDirectory: false, name: "notes.md" }]);
+    });
+
+    it("hands formatting to Nx rather than doing its own", async () => {
+      const { tree } = createFakeTree(workspaceRoot);
+      const { formatter } = service.createAdapters({ tree, workspaceRoot });
+
+      await formatter.formatFiles([]);
+
+      expect(formatFiles).toHaveBeenCalledWith(tree);
     });
   });
 });
