@@ -13,7 +13,7 @@ import { JupyterNotebookService } from "./jupyter-notebook.service";
 import { JupyterValidatorService } from "./jupyter-validator.service";
 
 import type {
-  ConformanceError,
+  ConformetryError,
   PreparedValidationDocument,
 } from "@conformetry/core";
 
@@ -56,7 +56,7 @@ const TEMPLATE_CELLS: CellSpec[] = [
 describe(JupyterValidatorService, () => {
   let service: JupyterValidatorService;
 
-  function validate(instanceCells: CellSpec[]): ConformanceError[] {
+  function validate(instanceCells: CellSpec[]): ConformetryError[] {
     return service.validateDocument(
       createDocument({
         instance: buildNotebook(instanceCells),

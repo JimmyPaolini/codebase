@@ -2,9 +2,9 @@
 export { ErrorsModule } from "./modules/errors/errors.module";
 export { ErrorsService } from "./modules/errors/errors.service";
 export type {
-  ConformanceError,
-  ConformanceErrorLanguage,
-  ConformanceErrorType,
+  ConformetryError,
+  ConformetryErrorLanguage,
+  ConformetryErrorType,
 } from "./modules/errors/errors.types";
 export { LanguageModule } from "./modules/language/language.module";
 export { LanguageService } from "./modules/language/language.service";

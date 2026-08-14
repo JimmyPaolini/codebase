@@ -3,8 +3,8 @@
 from dataclasses import dataclass
 from typing import Literal
 
-ConformanceErrorType = Literal["comment", "directory", "file", "code"]
-ConformanceErrorLanguage = Literal["javascript", "json", "markdown", "python", "text"]
+ConformetryErrorType = Literal["comment", "directory", "file", "code"]
+ConformetryErrorLanguage = Literal["javascript", "json", "markdown", "python", "text"]
 
 StringCaseValue = Literal["CAMEL_CASE", "KEBAB_CASE", "PASCAL_CASE", "SNAKE_CASE"]
 
@@ -17,13 +17,13 @@ class StringCase:
 
 
 @dataclass
-class ConformanceError:
+class ConformetryError:
     """A structured conformance error produced by any Python validator."""
 
-    error_type: ConformanceErrorType
+    error_type: ConformetryErrorType
     fix: str
     message: str
-    language: ConformanceErrorLanguage | None = None
+    language: ConformetryErrorLanguage | None = None
     instance_line: int | None = None
     instance_column: int | None = None
     instance_path: str | None = None

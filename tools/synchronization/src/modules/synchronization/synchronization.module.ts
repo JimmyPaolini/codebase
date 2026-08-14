@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { AgentSkillsModule } from "../agent-skills/agent-skills.module";
-import { ConformanceGeneratorsModule } from "../conformance-generators/conformance-generators.module";
+import { ConformetryGeneratorsModule } from "../conformetry-generators/conformetry-generators.module";
 import { ConventionalConfigModule } from "../conventional-config/conventional-config.module";
 import { DevcontainerConfigurationModule } from "../devcontainer-configuration/devcontainer-configuration.module";
 import { LoggerModule } from "../logger/logger.module";
@@ -18,7 +18,7 @@ import { SynchronizationService } from "./synchronization.service";
   imports: [
     LoggerModule,
     AgentSkillsModule,
-    ConformanceGeneratorsModule,
+    ConformetryGeneratorsModule,
     ConventionalConfigModule,
     DevcontainerConfigurationModule,
     PullRequestTemplateModule,

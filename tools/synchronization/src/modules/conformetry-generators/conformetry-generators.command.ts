@@ -8,7 +8,7 @@ import { Command, CommandRunner } from "nest-commander";
 import { LoggerService } from "../logger/logger.service";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
-import type { ConformanceGeneratorMetadata } from "./conformance-generators.types";
+import type { ConformetryGeneratorMetadata } from "./conformetry-generators.types";
 
 /**
  * CLI command that syncs the conformetry generators table into AGENTS.md.
@@ -16,11 +16,11 @@ import type { ConformanceGeneratorMetadata } from "./conformance-generators.type
  * between marker comments.
  */
 @Command({
-  description: "Run the conformance-generators command",
-  name: "conformance-generators",
+  description: "Run the conformetry-generators command",
+  name: "conformetry-generators",
 })
 @Injectable()
-export class ConformanceGeneratorsCommand extends CommandRunner {
+export class ConformetryGeneratorsCommand extends CommandRunner {
   // 🏗 Dependency Injection
 
   constructor(
@@ -29,7 +29,7 @@ export class ConformanceGeneratorsCommand extends CommandRunner {
     private readonly synchronizationModeService: SynchronizationService,
   ) {
     super();
-    this.logger.setContext(ConformanceGeneratorsCommand.name);
+    this.logger.setContext(ConformetryGeneratorsCommand.name);
   }
 
   // 🔐 Private Fields
@@ -41,7 +41,7 @@ export class ConformanceGeneratorsCommand extends CommandRunner {
   /**
    * Compares the generated generators table against the stored content in AGENTS.md and reports any differences.
    */
-  private checkSync(generators: ConformanceGeneratorMetadata[]): boolean {
+  private checkSync(generators: ConformetryGeneratorMetadata[]): boolean {
     const generatedTable = this.generateGeneratorsTable(generators);
     const existingContent = this.readAgentsFile();
 
@@ -50,20 +50,20 @@ export class ConformanceGeneratorsCommand extends CommandRunner {
 
     if (generated !== existing) {
       this.logger.log(
-        "❌ Conformance generators table in AGENTS.md is out of sync\n",
+        "❌ Conformetry generators table in AGENTS.md is out of sync\n",
       );
       this.logger.log(
         "  Found generators in configuration/conformetry.config.ts",
       );
       this.logger.log("  Generated content doesn't match stored content");
       this.logger.log(
-        "💡 Run 'pnpm exec nx run synchronization:start:conformance-generators-write' to sync\n",
+        "💡 Run 'pnpm exec nx run synchronization:start:conformetry-generators-write' to sync\n",
       );
       return false;
     }
 
     this.logger.log(
-      `✅ Conformance generators table is in sync (${generators.length} generators)`,
+      `✅ Conformetry generators table is in sync (${generators.length} generators)`,
     );
     return true;
   }
@@ -72,7 +72,7 @@ export class ConformanceGeneratorsCommand extends CommandRunner {
    * Renders the list of generators as a markdown table for injection into AGENTS.md.
    */
   private generateGeneratorsTable(
-    generators: ConformanceGeneratorMetadata[],
+    generators: ConformetryGeneratorMetadata[],
   ): string {
     const header =
       "| Generator | Alias | Description |\n| --------- | ----- | ----------- |";
@@ -84,7 +84,7 @@ export class ConformanceGeneratorsCommand extends CommandRunner {
   }
 
   /**
-   * Reads AGENTS.md and splits it around the conformance generators table markers.
+   * Reads AGENTS.md and splits it around the conformetry generators table markers.
    */
   private readAgentsFile(): {
     afterMarker: string;
@@ -121,7 +121,7 @@ export class ConformanceGeneratorsCommand extends CommandRunner {
   /**
    * Reads configuration/conformetry.config.ts and returns the list of generator metadata.
    */
-  private async readGenerators(): Promise<ConformanceGeneratorMetadata[]> {
+  private async readGenerators(): Promise<ConformetryGeneratorMetadata[]> {
     const configurationPath = path.join(
       process.cwd(),
       "configuration/conformetry.config.ts",
@@ -142,9 +142,9 @@ export class ConformanceGeneratorsCommand extends CommandRunner {
   /**
    * Writes the generated generators table into AGENTS.md between the marker comments.
    */
-  private writeSync(generators: ConformanceGeneratorMetadata[]): void {
+  private writeSync(generators: ConformetryGeneratorMetadata[]): void {
     const agentsFile = path.join(process.cwd(), "AGENTS.md");
-    this.logger.log("🔄 Generating conformance generators table...");
+    this.logger.log("🔄 Generating conformetry generators table...");
     const generatedTable = this.generateGeneratorsTable(generators);
     const { afterMarker, beforeMarker } = this.readAgentsFile();
 
@@ -159,7 +159,7 @@ export class ConformanceGeneratorsCommand extends CommandRunner {
   // 🌎 Public Methods
 
   /**
-   * Runs the conformance-generators sync command in check or write mode.
+   * Runs the conformetry-generators sync command in check or write mode.
    */
   async run(
     passedParameters: string[],

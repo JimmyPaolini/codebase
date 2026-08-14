@@ -23,11 +23,11 @@ export interface BuildMissingFileErrorArguments {
  * separate action field. Consumers render these through `ReportingService`
  * rather than formatting them ad hoc, so every validator reports identically.
  */
-export interface ConformanceError {
+export interface ConformetryError {
   /** Actual value found in the instance (populated for value-mismatch errors). */
   readonly actual?: string;
   /** Category of missing element. */
-  readonly errorType: ConformanceErrorType;
+  readonly errorType: ConformetryErrorType;
   /** Snippet of the template content that should be present in the instance. */
   readonly expected?: string;
   /** One-line actionable suggestion for the reader (human or coding agent). */
@@ -42,7 +42,7 @@ export interface ConformanceError {
    * File format of the validator that produced this error.
    * Absent for `"file"` and `"directory"` errors.
    */
-  readonly language?: ConformanceErrorLanguage;
+  readonly language?: ConformetryErrorLanguage;
   /** Short human-readable description of what is missing. */
   readonly message: string;
   /** 1-based column number in the rendered template that defines the requirement. */
@@ -58,7 +58,7 @@ export interface ConformanceError {
  * error. Absent for `"file"` and `"directory"` errors, which are language
  * agnostic and raised by `conformetry-files`.
  */
-export type ConformanceErrorLanguage =
+export type ConformetryErrorLanguage =
   | "javascript"
   | "json"
   | "markdown"
@@ -73,7 +73,7 @@ export type ConformanceErrorLanguage =
  * file but a directory or file the caller declared to be generated code, which
  * conformetry could not attribute to any single template.
  */
-export type ConformanceErrorType =
+export type ConformetryErrorType =
   | "code"
   | "comment"
   | "directory"

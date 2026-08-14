@@ -32,11 +32,11 @@
         "agent-skills-write": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts agent-skills write"
         },
-        "conformance-generators-check": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts conformance-generators check"
+        "conformetry-generators-check": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts conformetry-generators check"
         },
-        "conformance-generators-write": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts conformance-generators write"
+        "conformetry-generators-write": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts conformetry-generators write"
         },
         "conventional-config-check": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts conventional-config check"

@@ -11,7 +11,7 @@ import { TypescriptTreeService } from "./typescript-tree.service";
 import { TYPESCRIPT_VALIDATOR_DESCRIPTOR } from "./typescript-validator.constants";
 
 import type {
-  ConformanceError,
+  ConformetryError,
   ConformetryLanguageValidator,
   PreparedValidationDocument,
 } from "@conformetry/core";
@@ -77,7 +77,7 @@ export class TypescriptValidatorService implements ConformetryLanguageValidator 
   private validateComments(args: {
     instanceSourceFile: SourceFile;
     templateSourceFile: SourceFile;
-  }): ConformanceError[] {
+  }): ConformetryError[] {
     return this.typeScriptCommentsService
       .compareComments(args)
       .map((comment) => {
@@ -107,7 +107,7 @@ export class TypescriptValidatorService implements ConformetryLanguageValidator 
   private validateStructure(args: {
     instanceSourceFile: SourceFile;
     templateSourceFile: SourceFile;
-  }): ConformanceError[] {
+  }): ConformetryError[] {
     return this.typeScriptTreeService
       .compareTree({
         instanceNode: args.instanceSourceFile,
@@ -155,7 +155,7 @@ export class TypescriptValidatorService implements ConformetryLanguageValidator 
   /** Reports every declaration and comment the template requires. */
   public validateDocument(
     document: PreparedValidationDocument,
-  ): ConformanceError[] {
+  ): ConformetryError[] {
     const sourceFiles = {
       instanceSourceFile: this.parseSourceFile({
         content: document.instance,

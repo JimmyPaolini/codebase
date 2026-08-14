@@ -6,7 +6,7 @@ import type {
   JsonPathSegment,
   JsonValue,
 } from "./json-validator.types";
-import type { ConformanceError } from "@conformetry/core";
+import type { ConformetryError } from "@conformetry/core";
 
 /**
  * Structurally compares two JSON documents.
@@ -39,7 +39,7 @@ export class JsonComparisonService {
     language: JsonComparisonLanguage;
     message: string;
     pathValue: string;
-  }): ConformanceError {
+  }): ConformetryError {
     return {
       ...(args.actual === undefined ? {} : { actual: args.actual }),
       errorType: "code",
@@ -65,7 +65,7 @@ export class JsonComparisonService {
     language: JsonComparisonLanguage;
     pathSegments: JsonPathSegment[];
     templateArray: JsonValue[];
-  }): ConformanceError[] {
+  }): ConformetryError[] {
     return args.templateArray.flatMap((templateItem) => {
       const pathValue = this.formatPath(args.pathSegments);
 
@@ -113,7 +113,7 @@ export class JsonComparisonService {
     language: JsonComparisonLanguage;
     pathSegments: JsonPathSegment[];
     templateObject: Record<string, JsonValue>;
-  }): ConformanceError[] {
+  }): ConformetryError[] {
     return Object.keys(args.templateObject).flatMap((key) => {
       const pathSegments = [...args.pathSegments, key];
       const pathValue = this.formatPath(pathSegments);
@@ -164,8 +164,8 @@ export class JsonComparisonService {
 
   /** Picks the candidate comparison that produced the fewest errors. */
   private pickClosestMatch(
-    candidates: ConformanceError[][],
-  ): ConformanceError[] {
+    candidates: ConformetryError[][],
+  ): ConformetryError[] {
     return candidates.reduce((fewest, candidate) => {
       return candidate.length < fewest.length ? candidate : fewest;
     });
@@ -177,7 +177,7 @@ export class JsonComparisonService {
    * Compares a template value against an instance value, returning every way
    * the instance fails to contain what the template requires.
    */
-  public compare(args: CompareJsonArguments): ConformanceError[] {
+  public compare(args: CompareJsonArguments): ConformetryError[] {
     const pathSegments = args.pathSegments ?? [];
 
     if (

@@ -4,15 +4,15 @@ import { Module } from "@nestjs/common";
 import { LoggerModule } from "../logger/logger.module";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
-import { ConformanceGeneratorsCommand } from "./conformance-generators.command";
+import { ConformetryGeneratorsCommand } from "./conformetry-generators.command";
 
 /**
- * TODO: Document the conformanceGenerators module.
+ * TODO: Document the conformetryGenerators module.
  */
 @Module({
   controllers: [],
-  exports: [ConformanceGeneratorsCommand],
+  exports: [ConformetryGeneratorsCommand],
   imports: [ConfigurationModule, LoggerModule],
-  providers: [ConformanceGeneratorsCommand, SynchronizationService],
+  providers: [ConformetryGeneratorsCommand, SynchronizationService],
 })
-export class ConformanceGeneratorsModule {}
+export class ConformetryGeneratorsModule {}

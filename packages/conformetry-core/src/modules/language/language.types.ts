@@ -1,6 +1,6 @@
 // 🏷️ Types
 
-import type { ConformanceError } from "../errors/errors.types";
+import type { ConformetryError } from "../errors/errors.types";
 
 /**
  * A validator for one language or file format.
@@ -19,7 +19,7 @@ export interface ConformetryLanguageValidator {
    * every difference. Called only for documents whose extension this validator
    * claims, so implementations never need to re-check the extension.
    */
-  validateDocument(document: PreparedValidationDocument): ConformanceError[];
+  validateDocument(document: PreparedValidationDocument): ConformetryError[];
 }
 
 /** Identifies a language validator and declares which files it claims. */
@@ -79,7 +79,7 @@ export interface RunLanguageValidatorArguments {
  * print a per-file heading with its originating template.
  */
 export interface ValidationFileResult {
-  readonly errors: ConformanceError[];
+  readonly errors: ConformetryError[];
   readonly filename: string;
   readonly instanceFilePath: string;
   readonly templateFilePath: string;

@@ -6,7 +6,7 @@ import { PythonBridgeService } from "./python-bridge.service";
 import { PythonValidatorService } from "./python-validator.service";
 
 import type {
-  ConformanceError,
+  ConformetryError,
   PreparedValidationDocument,
 } from "@conformetry/core";
 
@@ -36,7 +36,7 @@ function createDocument(args: {
 describe(PythonValidatorService, () => {
   let service: PythonValidatorService;
 
-  function validate(instance: string): ConformanceError[] {
+  function validate(instance: string): ConformetryError[] {
     return service.validateDocument(
       createDocument({ instance, renderedTemplate: TEMPLATE }),
     );

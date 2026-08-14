@@ -16,7 +16,7 @@ import type {
   PythonBridgeResponse,
   RunPythonBridgeArguments,
 } from "./python-validator.types";
-import type { ConformanceError } from "@conformetry/core";
+import type { ConformetryError } from "@conformetry/core";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
@@ -53,7 +53,7 @@ export class PythonBridgeService {
   // 🔏 Private Methods
 
   /** Wraps a bridge failure as a reportable error rather than throwing. */
-  private buildBridgeError(message: string): ConformanceError[] {
+  private buildBridgeError(message: string): ConformetryError[] {
     return [
       {
         errorType: "code",
@@ -65,7 +65,7 @@ export class PythonBridgeService {
   }
 
   /** Reads the optional location fields, omitting any the bridge left out. */
-  private readLocations(error: PythonBridgeError): Partial<ConformanceError> {
+  private readLocations(error: PythonBridgeError): Partial<ConformetryError> {
     const instanceColumn = this.readNumber(error, "instance_column");
     const instanceLine = this.readNumber(error, "instance_line");
     const templateColumn = this.readNumber(error, "template_column");
@@ -100,7 +100,7 @@ export class PythonBridgeService {
   }
 
   /** Reads the optional expected and actual values. */
-  private readValues(error: PythonBridgeError): Partial<ConformanceError> {
+  private readValues(error: PythonBridgeError): Partial<ConformetryError> {
     const actual = this.readString(error, "actual");
     const expected = this.readString(error, "expected");
 
@@ -111,7 +111,7 @@ export class PythonBridgeService {
   }
 
   /** Maps one snake_case bridge error onto the shared error shape. */
-  private toConformanceError(error: PythonBridgeError): ConformanceError {
+  private toConformetryError(error: PythonBridgeError): ConformetryError {
     return {
       ...this.readValues(error),
       ...this.readLocations(error),
@@ -136,7 +136,7 @@ export class PythonBridgeService {
    */
   public validatePythonSource(
     args: RunPythonBridgeArguments,
-  ): ConformanceError[] {
+  ): ConformetryError[] {
     const result = spawnSync(PYTHON_EXECUTABLE, ["-m", PYTHON_BRIDGE_MODULE], {
       cwd: this.pythonRootPath,
       encoding: "utf8",
@@ -160,7 +160,7 @@ export class PythonBridgeService {
     try {
       const payload = JSON.parse(result.stdout) as PythonBridgeResponse;
 
-      return payload.errors.map((error) => this.toConformanceError(error));
+      return payload.errors.map((error) => this.toConformetryError(error));
     } catch {
       return this.buildBridgeError(
         "Python validator returned output that could not be parsed.",

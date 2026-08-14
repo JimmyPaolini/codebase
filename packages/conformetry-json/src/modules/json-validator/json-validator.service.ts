@@ -6,7 +6,7 @@ import { JSON_VALIDATOR_DESCRIPTOR } from "./json-validator.constants";
 
 import type { JsonValue } from "./json-validator.types";
 import type {
-  ConformanceError,
+  ConformetryError,
   ConformetryLanguageValidator,
   PreparedValidationDocument,
 } from "@conformetry/core";
@@ -36,7 +36,7 @@ export class JsonValidatorService implements ConformetryLanguageValidator {
   /** Reports every key or value the template requires and the instance lacks. */
   public validateDocument(
     document: PreparedValidationDocument,
-  ): ConformanceError[] {
+  ): ConformetryError[] {
     return this.jsonComparisonService.compare({
       instanceValue: parse(document.instance) as JsonValue,
       language: "json",

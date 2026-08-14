@@ -10,7 +10,7 @@
 import path from "node:path";
 
 import { SYNC_AGENT_SKILLS_FILES } from "../tools/synchronization/src/modules/agent-skills/agent-skills.constants.ts";
-import { SYNC_CONFORMANCE_GENERATORS_FILES } from "../tools/synchronization/src/modules/conformance-generators/conformance-generators.constants.ts";
+import { SYNC_CONFORMETRY_GENERATORS_FILES } from "../tools/synchronization/src/modules/conformetry-generators/conformetry-generators.constants.ts";
 import { SYNC_CONVENTIONAL_CONFIG_FILES } from "../tools/synchronization/src/modules/conventional-config/conventional-config.constants.ts";
 import { SYNC_PULL_REQUEST_TEMPLATE_FILES } from "../tools/synchronization/src/modules/pull-request-template/pull-request-template.constants.ts";
 
@@ -81,9 +81,9 @@ const config = {
     "pnpm exec nx run synchronization:start:agent-skills-check --outputStyle=static",
   ],
 
-  // Keep conformance generators table in sync in AGENTS.md
-  [`{${SYNC_CONFORMANCE_GENERATORS_FILES.join(",")}}`]: (): string[] => [
-    "pnpm exec nx run synchronization:start:conformance-generators-check --outputStyle=static",
+  // Keep conformetry generators table in sync in AGENTS.md
+  [`{${SYNC_CONFORMETRY_GENERATORS_FILES.join(",")}}`]: (): string[] => [
+    "pnpm exec nx run synchronization:start:conformetry-generators-check --outputStyle=static",
   ],
 
   // 🔬 Static analysis and conformetry validation

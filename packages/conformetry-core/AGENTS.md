@@ -7,7 +7,7 @@
 **Purpose**: <!-- Briefly describe the specific purpose of this service application -->
 
 The shared contract every other conformetry package depends on: the structured
-`ConformanceError` shape, the validator plugin interface plus its shared
+`ConformetryError` shape, the validator plugin interface plus its shared
 execution envelope, and error reporting. This package is a graph leaf — it must
 never import another conformetry package, or it would create a cycle.
 

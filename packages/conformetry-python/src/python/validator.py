@@ -4,12 +4,12 @@ import ast
 
 from python.abstract_syntax_tree import validate_depth_first_search
 from python.comments import validate_comments
-from python.types import ConformanceError
+from python.types import ConformetryError
 
 
-def _syntax_error(*, source: str, error: SyntaxError) -> ConformanceError:
+def _syntax_error(*, source: str, error: SyntaxError) -> ConformetryError:
     """Describes a file that could not be parsed at all."""
-    return ConformanceError(
+    return ConformetryError(
         error_type="code",
         language="python",
         message=f"{source} syntax error: {error}",
@@ -17,7 +17,7 @@ def _syntax_error(*, source: str, error: SyntaxError) -> ConformanceError:
     )
 
 
-def validate_python_conformance(*, filename: str, instance: str, template: str) -> dict:
+def validate_python_conformetry(*, filename: str, instance: str, template: str) -> dict:
     """Validates that a Python file is a structural superset of its template.
 
     The template arrives already rendered — substitution happens in TypeScript,

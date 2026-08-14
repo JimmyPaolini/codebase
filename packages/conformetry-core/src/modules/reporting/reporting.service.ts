@@ -9,7 +9,7 @@ import {
   REPORT_SUCCESS_MESSAGE,
 } from "./reporting.constants";
 
-import type { ConformanceError } from "../errors/errors.types";
+import type { ConformetryError } from "../errors/errors.types";
 import type { ValidationFileResult } from "../language/language.types";
 import type {
   FormatLocationArguments,
@@ -41,7 +41,7 @@ export class ReportingService {
    * and the template, the expected and actual values when known, and the fix.
    */
   private formatError(args: {
-    error: ConformanceError;
+    error: ConformetryError;
     index: number;
   }): string[] {
     const { error } = args;

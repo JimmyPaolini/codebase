@@ -6,7 +6,7 @@ import { MarkdownTreeService } from "./markdown-tree.service";
 import { MarkdownValidatorService } from "./markdown-validator.service";
 
 import type {
-  ConformanceError,
+  ConformetryError,
   PreparedValidationDocument,
 } from "@conformetry/core";
 
@@ -29,7 +29,7 @@ describe(MarkdownValidatorService, () => {
   function validate(
     renderedTemplate: string,
     instance: string,
-  ): ConformanceError[] {
+  ): ConformetryError[] {
     return service.validateDocument(
       createDocument({ instance, renderedTemplate }),
     );

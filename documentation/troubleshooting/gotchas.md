@@ -230,11 +230,11 @@ See [Git Workflow Rules](../../AGENTS.md#git-workflow-rules) for hook enforcemen
 
 There are three hooks:
 
-| Hook | What it runs |
-| ---- | ------------ |
+| Hook         | What it runs                                                                       |
+| ------------ | ---------------------------------------------------------------------------------- |
 | `pre-commit` | `nx run codebase:lint-staged` — runs format, lint, typecheck, etc. on staged files |
-| `commit-msg` | `nx run codebase:commitlint` — validates commit message format |
-| `pre-push` | `nx run codebase:validate-branch-name` — validates branch name pattern |
+| `commit-msg` | `nx run codebase:commitlint` — validates commit message format                     |
+| `pre-push`   | `nx run codebase:validate-branch-name` — validates branch name pattern             |
 
 **Reading the last pre-commit failure**: Output is always written to `last-lint-staged-output.log` at the workspace root. Read it without re-running the hook:
 
@@ -249,10 +249,12 @@ cat last-lint-staged-output.log
 pnpm exec nx affected --target=format --configuration=check --files=<staged-files>
 ```
 
-**`sync-conformance-generators` fires** on `AGENTS.md` and `tools/conformance/generators.json` changes. Fix stale generated output by running:
+**The conformetry generators check fires** on `AGENTS.md` and
+`configuration/conformetry.config.ts` changes. Fix stale generated output by
+running:
 
 ```bash
-pnpm exec nx run synchronization:start:conformance-generators-write
+pnpm exec nx run synchronization:start:conformetry-generators-write
 ```
 
 See [triage-submission skill](../skills/triage-submission/SKILL.md) for the full hook triage procedure.

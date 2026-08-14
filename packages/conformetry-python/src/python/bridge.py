@@ -15,9 +15,9 @@ def main() -> None:
     payload = json.loads(sys.stdin.read())
 
     try:
-        from python.validator import validate_python_conformance
+        from python.validator import validate_python_conformetry
 
-        result = validate_python_conformance(
+        result = validate_python_conformetry(
             filename=payload["filename"],
             instance=payload["instance"],
             template=payload["template"],

@@ -10,7 +10,7 @@ import { expectProcessExitOne, mockProcessExit } from "../../../testing/mocks";
 import { LoggerService } from "../logger/logger.service";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
-import { ConformanceGeneratorsCommand } from "./conformance-generators.command";
+import { ConformetryGeneratorsCommand } from "./conformetry-generators.command";
 
 const fileContents = new Map<string, string>();
 type ConformetryTestConfiguration = {
@@ -53,8 +53,8 @@ vi.mock("node:fs", () => {
   };
 });
 
-describe(ConformanceGeneratorsCommand, () => {
-  let command: ConformanceGeneratorsCommand;
+describe(ConformetryGeneratorsCommand, () => {
+  let command: ConformetryGeneratorsCommand;
   let logger: LoggerService;
 
   const workspaceRoot = process.cwd();
@@ -63,7 +63,7 @@ describe(ConformanceGeneratorsCommand, () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        ConformanceGeneratorsCommand,
+        ConformetryGeneratorsCommand,
         ConfigurationService,
         SynchronizationService,
         {
@@ -73,7 +73,7 @@ describe(ConformanceGeneratorsCommand, () => {
       ],
     }).compile();
 
-    command = await module.resolve(ConformanceGeneratorsCommand);
+    command = await module.resolve(ConformetryGeneratorsCommand);
     logger = await module.resolve(LoggerService);
   });
 
@@ -91,7 +91,7 @@ describe(ConformanceGeneratorsCommand, () => {
   it("sets logger context", async () => {
     const module = await Test.createTestingModule({
       providers: [
-        ConformanceGeneratorsCommand,
+        ConformetryGeneratorsCommand,
         ConfigurationService,
         SynchronizationService,
         {
@@ -104,7 +104,7 @@ describe(ConformanceGeneratorsCommand, () => {
     const logger = await module.resolve(LoggerService);
 
     expect(logger.setContext).toHaveBeenCalledWith(
-      "ConformanceGeneratorsCommand",
+      "ConformetryGeneratorsCommand",
     );
   });
 
@@ -120,7 +120,7 @@ describe(ConformanceGeneratorsCommand, () => {
         "<!-- conformetry-generators-table end -->",
       ].join("\n"),
       expectedLogMessage:
-        "✅ Conformance generators table is in sync (2 generators)",
+        "✅ Conformetry generators table is in sync (2 generators)",
       generators: [
         { aliases: ["a"], description: "first", name: "alpha" },
         { aliases: ["b"], description: "second", name: "beta" },
@@ -139,7 +139,7 @@ describe(ConformanceGeneratorsCommand, () => {
         "<!-- conformetry-generators-table end -->",
       ].join("\n"),
       expectedLogMessage:
-        "✅ Conformance generators table is in sync (1 generators)",
+        "✅ Conformetry generators table is in sync (1 generators)",
       generators: [{ description: "first", name: "alpha" }],
       modeArguments: [],
       scenarioName: "defaults to check mode when no mode is provided",
@@ -222,10 +222,10 @@ describe(ConformanceGeneratorsCommand, () => {
     {
       assertLogs: (loggerService: LoggerService): void => {
         expect(loggerService.log).toHaveBeenCalledWith(
-          "❌ Conformance generators table in AGENTS.md is out of sync\n",
+          "❌ Conformetry generators table in AGENTS.md is out of sync\n",
         );
         expect(loggerService.log).toHaveBeenCalledWith(
-          "💡 Run 'pnpm exec nx run synchronization:start:conformance-generators-write' to sync\n",
+          "💡 Run 'pnpm exec nx run synchronization:start:conformetry-generators-write' to sync\n",
         );
       },
       modeArguments: ["check"],

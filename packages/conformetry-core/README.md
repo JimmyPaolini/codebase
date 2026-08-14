@@ -22,11 +22,11 @@ other package can depend on it without introducing a cycle.
 
 It owns three things:
 
-| Module | Responsibility |
-| ------ | -------------- |
-| `errors` | The structured `ConformanceError` shape, plus builders and guards for it |
-| `language` | The language validator contract and the shared execution envelope |
-| `reporting` | Rendering conformance errors as readable, actionable text |
+| Module      | Responsibility                                                           |
+| ----------- | ------------------------------------------------------------------------ |
+| `errors`    | The structured `ConformetryError` shape, plus builders and guards for it |
+| `language`  | The language validator contract and the shared execution envelope        |
+| `reporting` | Rendering conformance errors as readable, actionable text                |
 
 "Language" here means a validator for one file format — TypeScript, JSON,
 Markdown, Python. The word "plugin" is reserved for the Nx plugin in
@@ -46,7 +46,7 @@ export class ExampleValidatorService implements ConformetryLanguageValidator {
 
   public validateDocument(
     document: PreparedValidationDocument,
-  ): ConformanceError[] {
+  ): ConformetryError[] {
     // compare document.renderedTemplate against document.instance
   }
 }

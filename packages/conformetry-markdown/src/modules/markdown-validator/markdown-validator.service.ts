@@ -7,7 +7,7 @@ import { MarkdownTreeService } from "./markdown-tree.service";
 import { MARKDOWN_VALIDATOR_DESCRIPTOR } from "./markdown-validator.constants";
 
 import type {
-  ConformanceError,
+  ConformetryError,
   ConformetryLanguageValidator,
   PreparedValidationDocument,
 } from "@conformetry/core";
@@ -46,7 +46,7 @@ export class MarkdownValidatorService implements ConformetryLanguageValidator {
   /** Reports every markdown structure the template requires and the file lacks. */
   public validateDocument(
     document: PreparedValidationDocument,
-  ): ConformanceError[] {
+  ): ConformetryError[] {
     const templateTree = this.processor.parse(document.renderedTemplate);
     const instanceTree = this.processor.parse(document.instance);
 

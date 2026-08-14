@@ -6,7 +6,7 @@ import { ErrorsService } from "@conformetry/core";
 import { Injectable } from "@nestjs/common";
 
 import type { CheckInstanceFilesArguments } from "./files.types";
-import type { ConformanceError, ValidationFileResult } from "@conformetry/core";
+import type { ConformetryError, ValidationFileResult } from "@conformetry/core";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
@@ -46,7 +46,7 @@ export class FilesService {
   private buildMissingError(args: {
     instanceFilePath: string;
     templateFilePath: string;
-  }): ConformanceError {
+  }): ConformetryError {
     const parentDirectoryPath = path.dirname(args.instanceFilePath);
 
     if (fs.existsSync(parentDirectoryPath)) {

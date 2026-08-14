@@ -4,7 +4,7 @@ import { TEXT_VALIDATOR_DESCRIPTOR } from "./text-validator.constants";
 
 import type { MissingLine } from "./text-validator.types";
 import type {
-  ConformanceError,
+  ConformetryError,
   ConformetryLanguageValidator,
   PreparedValidationDocument,
 } from "@conformetry/core";
@@ -68,7 +68,7 @@ export class TextValidatorService implements ConformetryLanguageValidator {
   /** Reports every template line missing from the instance. */
   public validateDocument(
     document: PreparedValidationDocument,
-  ): ConformanceError[] {
+  ): ConformetryError[] {
     return this.findMissingLines(document).map((missingLine) => {
       return {
         errorType: "code",

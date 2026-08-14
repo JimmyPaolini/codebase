@@ -8,7 +8,7 @@ from python.nodes import (
     get_children,
     get_key,
 )
-from python.types import ConformanceError
+from python.types import ConformetryError
 
 
 def _get_node_location(node: ast.AST) -> tuple[int | None, int | None]:
@@ -19,13 +19,13 @@ def _get_node_location(node: ast.AST) -> tuple[int | None, int | None]:
 
 def _build_error(
     template_child: ast.AST, instance_node: ast.AST, filename: str
-) -> ConformanceError:
+) -> ConformetryError:
     kind = type(template_child).__name__
     key = get_key(template_child)
     breadcrumb = f'{kind} "{key}"' if key is not None else kind
     instance_line, instance_col = _get_node_location(instance_node)
     template_line, template_col = _get_node_location(template_child)
-    return ConformanceError(
+    return ConformetryError(
         error_type="code",
         language="python",
         message=f"Missing {breadcrumb}",
@@ -43,8 +43,8 @@ def validate_depth_first_search(
     template_source: str,
     instance_source: str,
     filename: str,
-) -> list[ConformanceError]:
-    errors: list[ConformanceError] = []
+) -> list[ConformetryError]:
+    errors: list[ConformetryError] = []
     instance_children = get_children(instance_node)
     template_children = get_children(template_node)
     for template_child in template_children:

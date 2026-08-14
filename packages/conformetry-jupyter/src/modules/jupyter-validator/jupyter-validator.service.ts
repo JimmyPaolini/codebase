@@ -12,7 +12,7 @@ import {
 
 import type { PairedCells } from "./jupyter-validator.types";
 import type {
-  ConformanceError,
+  ConformetryError,
   ConformetryLanguageValidator,
   PreparedValidationDocument,
 } from "@conformetry/core";
@@ -49,8 +49,8 @@ export class JupyterValidatorService implements ConformetryLanguageValidator {
   /** Prefixes an error's message so a reader knows which cell it came from. */
   private attributeToCell(args: {
     cell: PairedCells;
-    errors: ConformanceError[];
-  }): ConformanceError[] {
+    errors: ConformetryError[];
+  }): ConformetryError[] {
     return args.errors.map((error) => {
       return {
         ...error,
@@ -88,7 +88,7 @@ export class JupyterValidatorService implements ConformetryLanguageValidator {
   private validateCell(args: {
     cell: PairedCells;
     document: PreparedValidationDocument;
-  }): ConformanceError[] {
+  }): ConformetryError[] {
     const { cell } = args;
 
     if (cell.kind === "markdown") {
@@ -121,7 +121,7 @@ export class JupyterValidatorService implements ConformetryLanguageValidator {
   /** Reports every notebook difference: envelope, missing cells, cell contents. */
   public validateDocument(
     document: PreparedValidationDocument,
-  ): ConformanceError[] {
+  ): ConformetryError[] {
     const templateNotebook = this.jupyterNotebookService.parseNotebook(
       document.renderedTemplate,
     );

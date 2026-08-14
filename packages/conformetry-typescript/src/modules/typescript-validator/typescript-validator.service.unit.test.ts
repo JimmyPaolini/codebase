@@ -7,7 +7,7 @@ import { TypescriptTreeService } from "./typescript-tree.service";
 import { TypescriptValidatorService } from "./typescript-validator.service";
 
 import type {
-  ConformanceError,
+  ConformetryError,
   PreparedValidationDocument,
 } from "@conformetry/core";
 
@@ -33,7 +33,7 @@ describe(TypescriptValidatorService, () => {
   function validate(
     renderedTemplate: string,
     instance: string,
-  ): ConformanceError[] {
+  ): ConformetryError[] {
     return service.validateDocument(
       createDocument({ instance, renderedTemplate }),
     );

@@ -1,17 +1,17 @@
 import { Injectable } from "@nestjs/common";
 
 import {
-  CONFORMANCE_ERROR_LANGUAGES,
-  CONFORMANCE_ERROR_TYPES,
-  DEFAULT_CONFORMANCE_ERROR_TYPE,
+  CONFORMETRY_ERROR_LANGUAGES,
+  CONFORMETRY_ERROR_TYPES,
+  DEFAULT_CONFORMETRY_ERROR_TYPE,
 } from "./errors.constants";
 
 import type {
   BuildMissingDirectoryErrorArguments,
   BuildMissingFileErrorArguments,
-  ConformanceError,
-  ConformanceErrorLanguage,
-  ConformanceErrorType,
+  ConformetryError,
+  ConformetryErrorLanguage,
+  ConformetryErrorType,
 } from "./errors.types";
 
 /**
@@ -44,7 +44,7 @@ export class ErrorsService {
    */
   public buildMissingDirectoryError(
     args: BuildMissingDirectoryErrorArguments,
-  ): ConformanceError {
+  ): ConformetryError {
     return {
       errorType: "directory",
       fix: `Create the directory ${args.instanceDirectoryPath} to match the template at ${args.templateDirectoryPath}.`,
@@ -60,7 +60,7 @@ export class ErrorsService {
    */
   public buildMissingFileError(
     args: BuildMissingFileErrorArguments,
-  ): ConformanceError {
+  ): ConformetryError {
     return {
       errorType: "file",
       fix: `Create the file using the generator, or manually from the template at ${args.templateFilePath}.`,
@@ -75,8 +75,8 @@ export class ErrorsService {
    */
   public resolveErrorLanguage(
     value: unknown,
-  ): ConformanceErrorLanguage | undefined {
-    return CONFORMANCE_ERROR_LANGUAGES.find((language) => language === value);
+  ): ConformetryErrorLanguage | undefined {
+    return CONFORMETRY_ERROR_LANGUAGES.find((language) => language === value);
   }
 
   /**
@@ -84,10 +84,10 @@ export class ErrorsService {
    * `"code"`. Falling back rather than throwing keeps one malformed error from
    * failing an entire validation run.
    */
-  public resolveErrorType(value: unknown): ConformanceErrorType {
+  public resolveErrorType(value: unknown): ConformetryErrorType {
     return (
-      CONFORMANCE_ERROR_TYPES.find((errorType) => errorType === value) ??
-      DEFAULT_CONFORMANCE_ERROR_TYPE
+      CONFORMETRY_ERROR_TYPES.find((errorType) => errorType === value) ??
+      DEFAULT_CONFORMETRY_ERROR_TYPE
     );
   }
 }

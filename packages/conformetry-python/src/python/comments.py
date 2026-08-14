@@ -4,7 +4,7 @@ import io
 import tokenize
 
 from python.constants import TODO_LINE_REGEX
-from python.types import ConformanceError
+from python.types import ConformetryError
 
 
 def extract_comments(source: str) -> list[tuple[str, int, int]]:
@@ -20,7 +20,7 @@ def extract_comments(source: str) -> list[tuple[str, int, int]]:
     return comments
 
 
-def validate_comments(template_source: str, instance_source: str) -> list[ConformanceError]:
+def validate_comments(template_source: str, instance_source: str) -> list[ConformetryError]:
     template_comments = extract_comments(template_source)
     instance_comment_texts = [c[0] for c in extract_comments(instance_source)]
     errors = []
@@ -37,7 +37,7 @@ def validate_comments(template_source: str, instance_source: str) -> list[Confor
         )
         if idx == -1:
             errors.append(
-                ConformanceError(
+                ConformetryError(
                     error_type="comment",
                     language="python",
                     message=f'Missing comment: "{comment_text}"',
