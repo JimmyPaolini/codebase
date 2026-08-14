@@ -36,9 +36,49 @@ describe(JupyterNotebookService, () => {
     it("reports no cells for a malformed notebook rather than throwing", () => {
       expect(service.parseNotebook("not json at all").cells).toStrictEqual([]);
     });
+
+    it("reports no cells when `cells` is not an array", () => {
+      expect(
+        service.parseNotebook(JSON.stringify({ cells: "nope" })).cells,
+      ).toStrictEqual([]);
+    });
   });
 
   describe("pairCells", () => {
+    it("treats an unrecognized cell type as raw", () => {
+      const raw = JSON.stringify({
+        cells: [{ cell_type: "heading", source: ["hi"] }],
+      });
+      const { pairedCells } = service.pairCells({
+        instanceNotebook: service.parseNotebook(raw),
+        templateNotebook: service.parseNotebook(raw),
+      });
+
+      expect(pairedCells.map((cell) => cell.kind)).toStrictEqual(["raw"]);
+    });
+
+    it("accepts a cell whose source is already one string", () => {
+      const inline = JSON.stringify({
+        cells: [{ cell_type: "code", source: "print(1)\n" }],
+      });
+      const { pairedCells } = service.pairCells({
+        instanceNotebook: service.parseNotebook(inline),
+        templateNotebook: service.parseNotebook(inline),
+      });
+
+      expect(pairedCells[0]?.instanceSource).toBe("print(1)\n");
+    });
+
+    it("reads an empty source when the cell declares none", () => {
+      const sourceless = JSON.stringify({ cells: [{ cell_type: "code" }] });
+      const { pairedCells } = service.pairCells({
+        instanceNotebook: service.parseNotebook(sourceless),
+        templateNotebook: service.parseNotebook(sourceless),
+      });
+
+      expect(pairedCells[0]?.instanceSource).toBe("");
+    });
+
     it("pairs cells of the same kind in order", () => {
       const { missingCells, pairedCells } = service.pairCells({
         instanceNotebook: service.parseNotebook(

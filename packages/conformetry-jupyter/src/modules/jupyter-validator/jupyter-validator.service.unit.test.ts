@@ -151,4 +151,28 @@ describe(JupyterValidatorService, () => {
       true,
     );
   });
+
+  describe("malformed and unrecognized notebooks", () => {
+    it("compares an empty envelope when a notebook is not an object", () => {
+      const errors = service.validateDocument(
+        createDocument({
+          instance: JSON.stringify([]),
+          renderedTemplate: JSON.stringify([]),
+        }),
+      );
+
+      expect(errors).toStrictEqual([]);
+    });
+
+    it("raises nothing for a cell kind no validator owns", () => {
+      const raw = JSON.stringify({
+        cells: [{ cell_type: "heading", source: ["hi\n"] }],
+      });
+      const errors = service.validateDocument(
+        createDocument({ instance: raw, renderedTemplate: raw }),
+      );
+
+      expect(errors).toStrictEqual([]);
+    });
+  });
 });
