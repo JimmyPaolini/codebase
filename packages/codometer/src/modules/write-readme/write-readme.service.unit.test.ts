@@ -90,6 +90,54 @@ describe(WriteReadmeService, () => {
     expect(service).toBeDefined();
   });
 
+  it("groups the badges by the language each was measured from", () => {
+    const block = service.buildBadgeBlock(sampleStatistics);
+
+    expect(block).toContain("**Repository**");
+    expect(block).toContain("**TypeScript & JavaScript**");
+    expect(block).toContain("**Python**");
+    expect(block).toContain("**JSON**");
+  });
+
+  it("renders one badge for every measured statistic", () => {
+    const block = service.buildBadgeBlock(sampleStatistics);
+    const badgeCount = (block.match(/^!\[/gmu) ?? []).length;
+    const measuredCount =
+      Object.keys(sampleStatistics).length -
+      // The four grouped buckets are replaced by the counters they hold.
+      4 +
+      Object.keys(sampleStatistics.javascript).length +
+      Object.keys(sampleStatistics.json).length +
+      Object.keys(sampleStatistics.python).length +
+      Object.keys(sampleStatistics.typescript).length;
+
+    expect(badgeCount).toBe(measuredCount);
+  });
+
+  it("reports each language's counters separately rather than summed", () => {
+    const block = service.buildBadgeBlock(sampleStatistics);
+
+    // Classes are 2 in TypeScript and 33 in Python; neither is the sum, 35.
+    expect(block).toContain(
+      "![Classes](https://img.shields.io/badge/Classes-2-",
+    );
+    expect(block).toContain(
+      "![Python Classes](https://img.shields.io/badge/Python_Classes-33-",
+    );
+    expect(block).not.toContain("/badge/Classes-35-");
+  });
+
+  it("renders the JSON statistics the badge block previously dropped", () => {
+    const block = service.buildBadgeBlock(sampleStatistics);
+
+    expect(block).toContain(
+      "![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-24-",
+    );
+    expect(block).toContain(
+      "![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-30-",
+    );
+  });
+
   it("replaces the badge block in an existing README", () => {
     const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
     temporaryDirectories.push(temporaryDirectory);
