@@ -24,7 +24,7 @@ EXIT_CODE=0
 # against the configuration and refuses to run against a stale one instead.
 
 # 📏 Measure code
-nx run codebase:measure-code:write || EXIT_CODE=$?
+nx run codebase:codometer:write || EXIT_CODE=$?
 git add README.md
 
 # 🧹 Check staged files

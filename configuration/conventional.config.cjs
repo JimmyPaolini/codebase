@@ -164,6 +164,11 @@ const scopes = [
   },
   {
     description:
+      "NestJS command-line application for codometer metric collection and reporting",
+    name: "codometer",
+  },
+  {
+    description:
       "Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration)",
     name: "codebase",
   },

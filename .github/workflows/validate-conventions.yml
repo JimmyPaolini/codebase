@@ -93,4 +93,4 @@ jobs:
         run: pnpm exec nx run codebase:conformetry-validate
 
       - name: 📊 Validate Code Statistics
-        run: pnpm exec nx run codebase:measure-code:check
+        run: pnpm exec nx run codebase:codometer:check
