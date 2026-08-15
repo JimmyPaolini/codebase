@@ -4,10 +4,7 @@ import {
   aspectBodies as minorAspectBodies,
   minorAspects,
 } from "../caelundas/caelundas.constants";
-import {
-  isBody,
-  isMinorAspect,
-} from "../caelundas/caelundas.types";
+import { isBody, isMinorAspect } from "../caelundas/caelundas.types";
 import {
   symbolByBody,
   symbolByMinorAspect,
@@ -15,10 +12,7 @@ import {
 import { ProgressiveAspectService } from "../progressive/progressive-aspect.service";
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
-import type {
-  Body,
-  MinorAspect,
-} from "../caelundas/caelundas.types";
+import type { Body, MinorAspect } from "../caelundas/caelundas.types";
 import type { Event } from "../calendar/calendar.types";
 
 /**

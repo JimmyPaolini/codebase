@@ -4,10 +4,7 @@ import _ from "lodash";
 import { capitalize } from "../caelundas/caelundas.types";
 import { symbolByBody } from "../caelundas/symbol-caelundas.constants";
 
-import type {
-  AspectPhase,
-  Body,
-} from "../caelundas/caelundas.types";
+import type { AspectPhase, Body } from "../caelundas/caelundas.types";
 import type { Event } from "../calendar/calendar.types";
 import type { Moment } from "moment-timezone";
 

@@ -5,10 +5,7 @@ import {
   aspectBodies as specialtyAspectBodies,
   specialtyAspects,
 } from "../caelundas/caelundas.constants";
-import {
-  isBody,
-  isSpecialtyAspect,
-} from "../caelundas/caelundas.types";
+import { isBody, isSpecialtyAspect } from "../caelundas/caelundas.types";
 import {
   symbolByBody,
   symbolBySpecialtyAspect,

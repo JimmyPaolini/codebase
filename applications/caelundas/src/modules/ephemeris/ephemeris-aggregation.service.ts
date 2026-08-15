@@ -8,10 +8,7 @@ import { EphemerisHorizonService } from "./ephemeris-horizon.service";
 import { EphemerisPhenomenaService } from "./ephemeris-phenomena.service";
 import { EphemerisTimeService } from "./ephemeris-time.service";
 
-import type {
-  Body,
-  Node,
-} from "../caelundas/caelundas.types";
+import type { Body, Node } from "../caelundas/caelundas.types";
 import type {
   AzimuthElevationEphemeris,
   AzimuthElevationEphemerisBody,

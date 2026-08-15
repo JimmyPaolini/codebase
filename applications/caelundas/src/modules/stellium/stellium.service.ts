@@ -12,11 +12,7 @@ import {
 } from "../caelundas/symbol-caelundas.constants";
 
 import type { AspectBodies } from "../aspects/aspects.types";
-import type {
-  Aspect,
-  AspectPhase,
-  Body,
-} from "../caelundas/caelundas.types";
+import type { Aspect, AspectPhase, Body } from "../caelundas/caelundas.types";
 import type { Event } from "../calendar/calendar.types";
 import type { Moment } from "moment-timezone";
 

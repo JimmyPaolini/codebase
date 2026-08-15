@@ -4,10 +4,7 @@ import {
   aspectBodies as specialtyAspectBodies,
   specialtyAspects,
 } from "../caelundas/caelundas.constants";
-import {
-  isBody,
-  isSpecialtyAspect,
-} from "../caelundas/caelundas.types";
+import { isBody, isSpecialtyAspect } from "../caelundas/caelundas.types";
 import {
   symbolByBody,
   symbolBySpecialtyAspect,
@@ -15,10 +12,7 @@ import {
 import { ProgressiveAspectService } from "../progressive/progressive-aspect.service";
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
-import type {
-  Body,
-  SpecialtyAspect,
-} from "../caelundas/caelundas.types";
+import type { Body, SpecialtyAspect } from "../caelundas/caelundas.types";
 import type { Event } from "../calendar/calendar.types";
 
 /**

@@ -20,11 +20,7 @@ import {
 import { EphemerisService } from "../ephemeris/ephemeris.service";
 import { LoggerService } from "../logger/logger.service";
 
-import type {
-  Body,
-  Decan,
-  Sign,
-} from "../caelundas/caelundas.types";
+import type { Body, Decan, Sign } from "../caelundas/caelundas.types";
 import type { Event } from "../calendar/calendar.types";
 import type { CoordinateEphemeris } from "../ephemeris/ephemeris.types";
 import type { Moment } from "moment-timezone";
