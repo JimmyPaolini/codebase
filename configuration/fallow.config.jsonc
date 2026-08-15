@@ -204,7 +204,7 @@
   "usedClassMembers": [
     {
       "extends": "CommandRunner",
-      "members": ["run"],
+      "members": ["parseDirectory", "parseReadme", "run"],
     },
     {
       "extends": "ConsoleLogger",

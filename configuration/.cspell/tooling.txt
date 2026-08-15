@@ -20,6 +20,7 @@ cmdk
 codebase
 codemod
 codemods
+codometer
 commitlint
 conformetry
 context7
@@ -33,6 +34,8 @@ deps
 devdeps
 devkit
 disambiguator
+docstring
+docstrings
 domcontentloaded
 dunder
 effectful
