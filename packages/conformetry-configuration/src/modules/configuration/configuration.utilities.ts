@@ -2,7 +2,6 @@
 
 import path from "node:path";
 
-import type { ParsedGeneratorEntry } from "./configuration.types";
 import type { z } from "zod";
 
 /**
@@ -18,9 +17,18 @@ import type { z } from "zod";
  * Reported through Zod rather than thrown, so every collision in a
  * configuration surfaces in one pass and each one carries the index of the
  * entry it came from.
+ *
+ * A generator is described structurally rather than taken as
+ * `ParsedGeneratorEntry`, which is inferred from the very schema these checks
+ * are attached to: naming it would make the schema depend on this file and
+ * this file on the schema.
  */
 export function assertNoCollisions(
-  definitions: ParsedGeneratorEntry[],
+  definitions: {
+    readonly aliases?: string[] | undefined;
+    readonly name: string;
+    readonly templatePath: string;
+  }[],
   context: z.RefinementCtx,
 ): void {
   const issues = [
@@ -56,10 +64,10 @@ export function assertNoCollisions(
 }
 
 /** Reports every key more than one generator claims. */
-function findDuplicates(args: {
-  definitions: ParsedGeneratorEntry[];
+function findDuplicates<Definition extends { name: string }>(args: {
+  definitions: Definition[];
   describe: (key: string, owners: string[]) => string;
-  keysOf: (definition: ParsedGeneratorEntry) => string[];
+  keysOf: (definition: Definition) => string[];
 }): { message: string; path: (number | string)[] }[] {
   const ownersByKey = new Map<string, { lastIndex: number; names: string[] }>();
 
@@ -86,7 +94,10 @@ function findDuplicates(args: {
 
 /** Reports names and aliases that could not be addressed or emitted. */
 function findUnusableHandles(
-  definitions: ParsedGeneratorEntry[],
+  definitions: {
+    readonly aliases?: string[] | undefined;
+    readonly name: string;
+  }[],
 ): { message: string; path: (number | string)[] }[] {
   return definitions.flatMap((definition, index) => {
     return [definition.name, ...(definition.aliases ?? [])]
