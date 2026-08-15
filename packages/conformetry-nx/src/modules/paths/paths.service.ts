@@ -1,9 +1,11 @@
 import path from "node:path";
 
+import { ConfigurationService } from "@conformetry/configuration";
 import { Injectable } from "@nestjs/common";
 import { getProjects, readProjectConfiguration } from "@nx/devkit";
 
 import { CandidatesService } from "../candidates/candidates.service";
+import { ScopeService } from "../scope/scope.service";
 
 import {
   DIRECTORY_INPUT_NAME,
@@ -32,7 +34,11 @@ import type { Tree } from "@nx/devkit";
 export class PathsService {
   // 🏗 Dependency Injection
 
-  constructor(private readonly candidatesService: CandidatesService) {}
+  constructor(
+    private readonly candidatesService: CandidatesService,
+    private readonly configurationService: ConfigurationService,
+    private readonly scopeService: ScopeService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -116,6 +122,46 @@ export class PathsService {
     );
   }
 
+  /** The directories a generator's scope confines it to, if it names any. */
+  private async resolveScopedDirectories(args: {
+    configurationPath: string;
+    generatorName: string | undefined;
+  }): Promise<string[] | undefined> {
+    if (args.generatorName === undefined) {
+      return undefined;
+    }
+
+    const configuration =
+      await this.configurationService.loadConformetryConfiguration(
+        args.configurationPath,
+      );
+    const definition = configuration.find((generator) => {
+      return generator.name === args.generatorName;
+    });
+
+    return this.scopeService.readScope(definition)?.directories;
+  }
+
+  /**
+   * Places a new instance in the folder the generator's scope names.
+   *
+   * Preferred over inferring from existing instances, because a scope is the
+   * author stating where instances belong — inference only guesses it, and
+   * guesses nothing at all in a project that has none yet.
+   */
+  private resolveScopedDirectoryPath(args: {
+    configurationPath: string;
+    generatorName: string | undefined;
+    projectRootPath: string;
+    scopedDirectories: string[] | undefined;
+  }): string | undefined {
+    const [directory] = args.scopedDirectories ?? [];
+
+    return directory === undefined
+      ? undefined
+      : path.join(args.projectRootPath, directory);
+  }
+
   /**
    * Infers the workspace directory a new project of a given type belongs in,
    * from where projects of that type already live.
@@ -188,6 +234,15 @@ export class PathsService {
     }
 
     return (
+      this.resolveScopedDirectoryPath({
+        configurationPath: args.configurationPath,
+        generatorName: args.generatorName,
+        projectRootPath,
+        scopedDirectories: await this.resolveScopedDirectories({
+          configurationPath: args.configurationPath,
+          generatorName: args.generatorName,
+        }),
+      }) ??
       this.resolveModuleParentPath({ candidates, projectRootPath }) ??
       projectRootPath
     );

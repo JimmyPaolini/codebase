@@ -4,6 +4,8 @@ import {
 } from "@conformetry/configuration";
 import { Module } from "@nestjs/common";
 
+import { ScopeModule } from "../scope/scope.module";
+
 import { CandidatesService } from "./candidates.service";
 
 /**
@@ -14,8 +16,8 @@ import { CandidatesService } from "./candidates.service";
  */
 @Module({
   controllers: [],
-  exports: [CandidatesService],
-  imports: [ConfigurationModule, DiscoveryModule],
+  exports: [CandidatesService, ScopeModule],
+  imports: [ConfigurationModule, DiscoveryModule, ScopeModule],
   providers: [CandidatesService],
 })
 export class CandidatesModule {}

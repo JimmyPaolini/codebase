@@ -40,12 +40,15 @@ const jsonSchemaDefinitionSchema: z.ZodType = z.lazy(() => {
 /**
  * Validates the generator list loaded from a config file.
  *
- * Every field a generator needs is declared here deliberately: Zod strips
- * unknown keys, so anything omitted would be silently discarded rather than
- * rejected. `tags` is carried uninterpreted for whichever host reads it.
+ * Every field this package reads is declared here deliberately, so a field it
+ * needs can never be quietly absent. The entry is loose rather than strict
+ * because a host extends the configuration with its own vocabulary — the Nx
+ * plugin adds the project scope it selects generators by — and a strict object
+ * would strip those keys before the host ever saw them. `tags` is likewise
+ * carried uninterpreted for whichever host reads it.
  */
 export const conformetryConfigurationSchema = z.array(
-  z.object({
+  z.looseObject({
     aliases: z.array(z.string()).optional(),
     description: z.string().optional(),
     // Each input is a JSON Schema fragment, so it must be an object; its own

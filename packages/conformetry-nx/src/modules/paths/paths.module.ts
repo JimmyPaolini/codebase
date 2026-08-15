@@ -1,6 +1,8 @@
+import { ConfigurationModule } from "@conformetry/configuration";
 import { Module } from "@nestjs/common";
 
 import { CandidatesModule } from "../candidates/candidates.module";
+import { ScopeModule } from "../scope/scope.module";
 
 import { PathsService } from "./paths.service";
 
@@ -13,8 +15,8 @@ import { PathsService } from "./paths.service";
  */
 @Module({
   controllers: [],
-  exports: [CandidatesModule, PathsService],
-  imports: [CandidatesModule],
+  exports: [CandidatesModule, ConfigurationModule, PathsService, ScopeModule],
+  imports: [CandidatesModule, ConfigurationModule, ScopeModule],
   providers: [PathsService],
 })
 export class PathsModule {}

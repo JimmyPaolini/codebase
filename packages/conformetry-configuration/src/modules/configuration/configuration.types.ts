@@ -11,7 +11,14 @@ import type { z } from "zod";
  */
 export type ConformetryConfiguration = ConformetryGeneratorDefinition[];
 
-/** One generator, with the template it renders and the instances it governs. */
+/**
+ * One generator, with the template it renders and the instances it governs.
+ *
+ * A host may extend this with its own fields — see
+ * `ConformetryNxGeneratorDefinition` in `@conformetry/nx`, which adds the
+ * project scope it selects generators by. Those fields survive loading but are
+ * never read here, so this package stays ignorant of any one host.
+ */
 export interface ConformetryGeneratorDefinition {
   aliases?: string[];
   description?: string;

@@ -17,6 +17,7 @@ import { DEFAULT_OUTPUT_PATH } from "./modules/generator/generator.constants";
 import {
   resolveGeneratorService,
   resolveOptionsService,
+  resolvePluginService,
 } from "./plugin-context.utilities";
 
 // What the emitted files contain is the generator service's business and is
@@ -24,6 +25,7 @@ import {
 vi.mock("./plugin-context.utilities", () => ({
   resolveGeneratorService: vi.fn(),
   resolveOptionsService: vi.fn(),
+  resolvePluginService: vi.fn(),
 }));
 
 const emitPlugin = vi.fn();
@@ -59,6 +61,10 @@ describe("bootstrap utilities", () => {
     vi.mocked(resolveOptionsService).mockResolvedValue({
       resolveConfigurationPath,
     } as unknown as Awaited<ReturnType<typeof resolveOptionsService>>);
+    // type-coverage:ignore-next-line -- a deliberate stand-in for the service
+    vi.mocked(resolvePluginService).mockResolvedValue({
+      listWorkspaceProjects: () => [],
+    } as unknown as Awaited<ReturnType<typeof resolvePluginService>>);
   });
 
   afterEach(() => {
@@ -176,6 +182,7 @@ describe("bootstrap utilities", () => {
         configurationPath: "elsewhere/conformetry.config.ts",
         outputPath: DEFAULT_OUTPUT_PATH,
         packageName: "conformetry",
+        projects: [],
       });
     });
 

@@ -1,9 +1,7 @@
 import { z } from "zod";
 
-import type {
-  ConformetryConfiguration,
-  ConformetryGeneratorInputDefinition,
-} from "@conformetry/configuration";
+import type { ConformetryGeneratorInputDefinition } from "@conformetry/configuration";
+import type { ConformetryNxConfiguration } from "@conformetry/nx";
 
 export const CONFORMETRY_PATTERNS = [
   "configuration/conformetry.config.ts",
@@ -52,7 +50,7 @@ const GENERATED_SERVICE_FILE_PATTERNS = [
   "tools/synchronization/src/modules/*/*.service.unit.test.ts",
 ];
 
-const conformetryConfiguration: ConformetryConfiguration = [
+const conformetryConfiguration: ConformetryNxConfiguration = [
   {
     aliases: ["jna"],
     description: "Generate a Python Jupyter notebook application",
@@ -67,6 +65,7 @@ const conformetryConfiguration: ConformetryConfiguration = [
       },
     ],
     name: "jupyter-notebook-application",
+    scope: { tags: ["language:python"] },
     templatePath:
       "configuration/conformetry-templates/jupyter-notebook-application",
   },
@@ -80,6 +79,7 @@ const conformetryConfiguration: ConformetryConfiguration = [
     }),
     instances: [{ patterns: GENERATED_MODULE_PATTERNS }],
     name: "nestjs-command-module",
+    scope: { directories: ["src/modules"], tags: ["framework:nest-commander"] },
     templatePath: "configuration/conformetry-templates/nestjs-command-module",
   },
   {
@@ -107,6 +107,7 @@ const conformetryConfiguration: ConformetryConfiguration = [
       },
     ],
     name: "nestjs-command-project",
+    scope: { tags: ["framework:nest-commander"] },
     templatePath: "configuration/conformetry-templates/nestjs-command-project",
   },
   {
@@ -119,6 +120,7 @@ const conformetryConfiguration: ConformetryConfiguration = [
     }),
     instances: [{ patterns: GENERATED_MODULE_PATTERNS }],
     name: "nestjs-dataloader-module",
+    scope: { directories: ["src/modules"], tags: ["framework:nestjs"] },
     templatePath:
       "configuration/conformetry-templates/nestjs-dataloader-module",
   },
@@ -143,6 +145,7 @@ const conformetryConfiguration: ConformetryConfiguration = [
     }),
     instances: [{ patterns: GENERATED_MODULE_PATTERNS }],
     name: "nestjs-graphql-module",
+    scope: { directories: ["src/modules"], tags: ["framework:nestjs"] },
     templatePath: "configuration/conformetry-templates/nestjs-graphql-module",
   },
   {
@@ -155,6 +158,7 @@ const conformetryConfiguration: ConformetryConfiguration = [
     }),
     instances: [{ patterns: GENERATED_SERVICE_FILE_PATTERNS }],
     name: "nestjs-service-file",
+    scope: { directories: ["src/modules"], tags: ["framework:nestjs"] },
     templatePath: "configuration/conformetry-templates/nestjs-service-file",
   },
   {
@@ -167,6 +171,7 @@ const conformetryConfiguration: ConformetryConfiguration = [
     }),
     instances: [{ patterns: GENERATED_MODULE_PATTERNS }],
     name: "nestjs-service-module",
+    scope: { directories: ["src/modules"], tags: ["framework:nestjs"] },
     templatePath: "configuration/conformetry-templates/nestjs-service-module",
   },
   {
@@ -186,6 +191,7 @@ const conformetryConfiguration: ConformetryConfiguration = [
       },
     ],
     name: "nestjs-service-project",
+    scope: { tags: ["framework:nestjs"] },
     templatePath: "configuration/conformetry-templates/nestjs-service-project",
   },
   {
@@ -197,6 +203,7 @@ const conformetryConfiguration: ConformetryConfiguration = [
     }),
     instances: [],
     name: "react-component",
+    scope: { directories: ["src/components"], tags: ["framework:react"] },
     templatePath: "configuration/conformetry-templates/react-component",
   },
 ];

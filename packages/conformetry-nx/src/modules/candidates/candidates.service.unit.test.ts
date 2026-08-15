@@ -9,6 +9,8 @@ import {
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { ScopeModule } from "../scope/scope.module";
+
 import { CandidatesService } from "./candidates.service";
 
 import type { ProjectScope } from "./candidates.types";
@@ -64,7 +66,7 @@ describe(CandidatesService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [ConfigurationModule, DiscoveryModule],
+      imports: [ConfigurationModule, DiscoveryModule, ScopeModule],
       providers: [CandidatesService],
     }).compile();
 

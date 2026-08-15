@@ -3,12 +3,16 @@ import path from "node:path";
 import { ConfigurationService } from "@conformetry/configuration";
 import { Injectable } from "@nestjs/common";
 
+import { PROJECT_INPUT_NAME } from "../paths/paths.constants";
+import { ScopeService } from "../scope/scope.service";
+
 import {
   GENERATED_FILE_NOTICE,
   GENERATORS_SCHEMA_PATH,
   JSON_INDENT,
 } from "./generator.constants";
 
+import type { ProjectScope } from "../candidates/candidates.types";
 import type { EmitPluginArguments, EmittedFile } from "./generator.types";
 import type { ConformetryGeneratorDefinition } from "@conformetry/configuration";
 
@@ -27,7 +31,10 @@ import type { ConformetryGeneratorDefinition } from "@conformetry/configuration"
 export class GeneratorService {
   // 🏗 Dependency Injection
 
-  constructor(private readonly configurationService: ConfigurationService) {}
+  constructor(
+    private readonly configurationService: ConfigurationService,
+    private readonly scopeService: ScopeService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -117,16 +124,79 @@ export class GeneratorService {
    * placeholders, and mustache renders a missing one as empty rather than
    * failing, so an optional input would silently produce a hole.
    */
-  private buildSchema(definition: ConformetryGeneratorDefinition): string {
+  private buildSchema(args: {
+    definition: ConformetryGeneratorDefinition;
+    scopedProjectNames: string[] | undefined;
+  }): string {
     return this.stringify({
       $schema: "http://json-schema.org/schema",
-      ...(definition.description === undefined
+      ...(args.definition.description === undefined
         ? {}
-        : { description: definition.description }),
-      properties: definition.inputs,
-      required: Object.keys(definition.inputs),
-      title: definition.name,
+        : { description: args.definition.description }),
+      properties: this.buildSchemaProperties(args),
+      required: Object.keys(args.definition.inputs),
+      title: args.definition.name,
       type: "object",
+    });
+  }
+
+  /**
+   * Builds the schema's properties, narrowing the project input to the scope.
+   *
+   * An `enum` is what makes `nx g` offer only the projects a generator suits,
+   * and what makes it reject one it does not — Nx builds its prompt from the
+   * schema, so constraining the schema constrains the prompt. Left untouched
+   * when the generator names no scope, or when the scope matches nothing: an
+   * empty `enum` would leave the prompt with nothing to pick and read as a
+   * broken generator rather than an unscoped one.
+   */
+  private buildSchemaProperties(args: {
+    definition: ConformetryGeneratorDefinition;
+    scopedProjectNames: string[] | undefined;
+  }): Record<string, unknown> {
+    const projectInput = args.definition.inputs[PROJECT_INPUT_NAME];
+
+    if (
+      projectInput === undefined ||
+      args.scopedProjectNames === undefined ||
+      args.scopedProjectNames.length === 0
+    ) {
+      return args.definition.inputs;
+    }
+
+    return {
+      ...args.definition.inputs,
+      [PROJECT_INPUT_NAME]: {
+        ...projectInput,
+        enum: args.scopedProjectNames,
+        "x-prompt": {
+          items: args.scopedProjectNames,
+          message: `Which project should this ${args.definition.name} go in?`,
+          type: "list",
+        },
+      },
+    };
+  }
+
+  /**
+   * The projects a generator's scope admits, or nothing when it has no scope.
+   *
+   * Distinguishing "no scope" from "a scope matching nothing" is the point:
+   * only the former should leave the schema unconstrained.
+   */
+  private resolveScopedProjectNames(args: {
+    definition: ConformetryGeneratorDefinition;
+    projects: readonly ProjectScope[] | undefined;
+  }): string[] | undefined {
+    const scope = this.scopeService.readScope(args.definition);
+
+    if (scope === undefined || args.projects === undefined) {
+      return undefined;
+    }
+
+    return this.scopeService.resolveScopedProjectNames({
+      projects: [...args.projects],
+      scope,
     });
   }
 
@@ -172,7 +242,13 @@ export class GeneratorService {
       }),
       ...definitions.map((definition) => {
         return {
-          content: this.buildSchema(definition),
+          content: this.buildSchema({
+            definition,
+            scopedProjectNames: this.resolveScopedProjectNames({
+              definition,
+              projects: args.projects,
+            }),
+          }),
           filePath: path.join(
             args.outputPath,
             `src/schemas/${definition.name}.json`,

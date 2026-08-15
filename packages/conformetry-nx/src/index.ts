@@ -23,6 +23,13 @@ export { OptionsService } from "./modules/options/options.service";
 export type { ConformetryPluginOptions } from "./modules/options/options.types";
 export { PluginModule } from "./modules/plugin/plugin.module";
 export { PluginService } from "./modules/plugin/plugin.service";
+export { ScopeModule } from "./modules/scope/scope.module";
+export { ScopeService } from "./modules/scope/scope.service";
+export type {
+  ConformetryNxConfiguration,
+  ConformetryNxGeneratorDefinition,
+  ConformetryNxProjectScope,
+} from "./modules/scope/scope.types";
 export { resolvePluginService } from "./plugin-context.utilities";
 
 /**

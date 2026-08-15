@@ -20,6 +20,7 @@ import { NX_CONFIGURATION_FILENAME } from "./modules/options/options.constants";
 import {
   resolveGeneratorService,
   resolveOptionsService,
+  resolvePluginService,
 } from "./plugin-context.utilities";
 
 import type { EmittedFile } from "./modules/generator/generator.types";
@@ -39,6 +40,7 @@ export async function bootstrapPlugin(
 ): Promise<EmittedFile[]> {
   const generatorService = await resolveGeneratorService();
   const optionsService = await resolveOptionsService();
+  const pluginService = await resolvePluginService();
   const files = await generatorService.emitPlugin({
     // Taken from the workspace's own plugin registration rather than assumed:
     // this runs from a `postinstall`, where Nx passes nothing.
@@ -50,6 +52,7 @@ export async function bootstrapPlugin(
     }),
     outputPath: DEFAULT_OUTPUT_PATH,
     packageName: DEFAULT_PACKAGE_NAME,
+    projects: pluginService.listWorkspaceProjects(workspaceRoot),
   });
 
   writePlugin({ files, workspaceRoot });

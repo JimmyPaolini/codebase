@@ -6,6 +6,8 @@ import {
 } from "@conformetry/configuration";
 import { Injectable } from "@nestjs/common";
 
+import { ScopeService } from "../scope/scope.service";
+
 import type {
   ProjectScope,
   ResolveProjectCandidatesArguments,
@@ -32,6 +34,7 @@ export class CandidatesService {
   constructor(
     private readonly configurationService: ConfigurationService,
     private readonly discoveryService: DiscoveryService,
+    private readonly scopeService: ScopeService,
   ) {}
 
   // 🔐 Private Fields
@@ -102,18 +105,40 @@ export class CandidatesService {
     const projectRootPath = path.resolve(args.workspaceRoot, args.project.root);
 
     return configuration
-      .flatMap((generator) => generator.instances)
-      .filter((group) => {
-        return this.appliesToProject({ group, project: args.project });
-      })
-      .flatMap((group) => {
-        return this.discoveryService.resolveCandidates({
-          patterns: group.patterns,
-          ...(group.substitutions === undefined
-            ? {}
-            : { substitutions: group.substitutions }),
-          workingDirectory: args.workspaceRoot,
+      .filter((generator) => {
+        // A generator confined to other kinds of project has nothing to say
+        // about this one, so its instances are not even expanded.
+        return this.scopeService.matchesProject({
+          project: args.project,
+          scope: this.scopeService.readScope(generator),
         });
+      })
+      .flatMap((generator) => {
+        const scope = this.scopeService.readScope(generator);
+
+        return generator.instances
+          .filter((group) => {
+            return this.appliesToProject({ group, project: args.project });
+          })
+          .flatMap((group) => {
+            return this.discoveryService.resolveCandidates({
+              patterns: group.patterns,
+              ...(group.substitutions === undefined
+                ? {}
+                : { substitutions: group.substitutions }),
+              workingDirectory: args.workspaceRoot,
+            });
+          })
+          .filter((candidate) => {
+            return this.scopeService.isInScopedDirectory({
+              projectRoot: args.project.root,
+              relativePath: path
+                .relative(args.workspaceRoot, candidate.instancePath)
+                .split(path.sep)
+                .join("/"),
+              scope,
+            });
+          });
       })
       .filter((candidate) => {
         return this.isInsideProject({ candidate, projectRootPath });

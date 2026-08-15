@@ -48,15 +48,20 @@ export class ConfigurationService {
   private applyGeneratorDefaults(
     definition: ParsedGeneratorEntry,
   ): ConformetryGeneratorDefinition {
+    // Every field this package reads is destructured out, so what remains is
+    // exactly the host's own vocabulary. Spread rather than dropped: rebuilding
+    // the entry field by field would discard those keys just as surely as a
+    // strict schema would. The known fields cannot be spread along with them,
+    // because an optional one present but `undefined` is not the same as absent.
+    const { aliases, description, inputs, instances, ...hostFields } =
+      definition;
+
     return {
-      ...(definition.aliases === undefined
-        ? {}
-        : { aliases: definition.aliases }),
-      ...(definition.description === undefined
-        ? {}
-        : { description: definition.description }),
-      inputs: definition.inputs ?? {},
-      instances: definition.instances ?? [],
+      ...hostFields,
+      ...(aliases === undefined ? {} : { aliases }),
+      ...(description === undefined ? {} : { description }),
+      inputs: inputs ?? {},
+      instances: instances ?? [],
       name: definition.name,
       templatePath: definition.templatePath,
     };

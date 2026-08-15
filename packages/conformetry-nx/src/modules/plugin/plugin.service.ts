@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import {
@@ -20,6 +20,7 @@ import { GeneratorService } from "../generator/generator.service";
 import {
   CONFORMETRY_NX_PLUGIN_NAME,
   NX_CONFIGURATION_FILENAME,
+  NX_IGNORE_FILENAME,
 } from "../options/options.constants";
 import { OptionsService } from "../options/options.service";
 import { PathsService } from "../paths/paths.service";
@@ -90,6 +91,7 @@ export class PluginService {
       configurationPath: args.configurationPath,
       outputPath: DEFAULT_OUTPUT_PATH,
       packageName: DEFAULT_PACKAGE_NAME,
+      projects: this.listWorkspaceProjects(args.workspaceRoot),
     });
 
     for (const emittedFile of emittedFiles) {
@@ -152,6 +154,75 @@ export class PluginService {
   /** Narrows an untrusted value to an array without widening it to `any`. */
   private isUnknownArray(value: unknown): value is unknown[] {
     return Array.isArray(value);
+  }
+
+  /**
+   * Walks the workspace for `project.json` files.
+   *
+   * A walk rather than a glob because this runs from the install-time
+   * bootstrap too, where there is no Nx to ask and no project graph to read.
+   * Hidden directories and `node_modules` are skipped: the emitted plugin
+   * lives in one of them, and walking dependencies would take far longer than
+   * the whole emit.
+   */
+  private listProjectConfigurationFiles(args: {
+    directoryPath: string;
+    ignoredPaths: string[];
+    workspaceRoot: string;
+  }): string[] {
+    const entries = readdirSync(args.directoryPath, { withFileTypes: true });
+    const filePaths: string[] = [];
+
+    for (const entry of entries) {
+      const entryPath = path.join(args.directoryPath, entry.name);
+      const relativePath = path
+        .relative(args.workspaceRoot, entryPath)
+        .split(path.sep)
+        .join("/");
+
+      if (entry.isFile() && entry.name === PROJECT_CONFIGURATION_FILENAME) {
+        filePaths.push(relativePath);
+        continue;
+      }
+
+      if (
+        entry.isDirectory() &&
+        !entry.name.startsWith(".") &&
+        entry.name !== "node_modules" &&
+        !args.ignoredPaths.includes(relativePath)
+      ) {
+        filePaths.push(
+          ...this.listProjectConfigurationFiles({
+            directoryPath: entryPath,
+            ignoredPaths: args.ignoredPaths,
+            workspaceRoot: args.workspaceRoot,
+          }),
+        );
+      }
+    }
+
+    return filePaths;
+  }
+
+  /**
+   * Reads the paths `.nxignore` excludes from project discovery.
+   *
+   * Honored because a `project.json` inside a generator template is not a
+   * project — it is a file the template will one day render — and `.nxignore`
+   * is where a workspace already says so. Reading it here keeps this walk
+   * agreeing with the graph Nx itself builds.
+   */
+  private readIgnoredPaths(workspaceRoot: string): string[] {
+    const ignoreFilePath = path.resolve(workspaceRoot, NX_IGNORE_FILENAME);
+
+    if (!existsSync(ignoreFilePath)) {
+      return [];
+    }
+
+    return readFileSync(ignoreFilePath, "utf8")
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line !== "" && !line.startsWith("#"));
   }
 
   /** Reads the workspace's `nx.json`, or nothing when there is none. */
@@ -318,6 +389,27 @@ export class PluginService {
   }
 
   /**
+   * Every project in the workspace, as a scope a generator can be matched to.
+   *
+   * The single answer all three emit paths use — the graph, `nx sync`, and the
+   * bootstrap — so the bytes they emit agree and the drift check stays honest.
+   */
+  public listWorkspaceProjects(workspaceRoot: string): ProjectScope[] {
+    return this.listProjectConfigurationFiles({
+      directoryPath: workspaceRoot,
+      ignoredPaths: this.readIgnoredPaths(workspaceRoot),
+      workspaceRoot,
+    })
+      .map((projectConfigurationFile) => {
+        return this.readProjectScope({
+          projectConfigurationFile,
+          workspaceRoot,
+        });
+      })
+      .toSorted((left, right) => left.name.localeCompare(right.name));
+  }
+
+  /**
    * Runs one configured generator against an Nx tree.
    *
    * Nothing is written to disk here — the tree records the writes and Nx
@@ -365,6 +457,7 @@ export class PluginService {
       inputs,
       instancePath: await this.pathsService.resolveGenerationPath({
         configurationPath: pluginOptions.configurationPath,
+        generatorName: args.generatorName,
         inputs,
         tree: args.tree,
         workspaceRoot: args.workspaceRoot,
