@@ -28,29 +28,46 @@ if [[ "${SKIP_GPG_SIGNING_SMOKE_TEST:-}" == "true" ]]; then
   exit 0
 fi
 
-# The smoke test can trigger interactive pinentry prompts. Keep it enabled for
-# local sessions, but skip it in CI/headless execution contexts.
+# The smoke test signs a throwaway commit object. It runs in CI too, so that a
+# key whose passphrase the agent cannot supply fails here in seconds rather than
+# minutes later, when semantic-release writes the release commit and the whole
+# release silently does not ship.
+#
+# Interactive pinentry cannot work on a headless runner, so in CI gpg is routed
+# through a loopback wrapper: it still uses a passphrase the agent has cached,
+# but fails immediately instead of trying to prompt for one.
+git_options=()
+
 if [[ -n "${CI:-}" || -n "${GITHUB_ACTIONS:-}" ]]; then
-  exit 0
+  gpg_wrapper="$(mktemp)"
+  trap 'rm -f "$gpg_wrapper"' EXIT
+  cat > "$gpg_wrapper" << 'GPG_WRAPPER'
+#!/usr/bin/env bash
+exec gpg --batch --no-tty --pinentry-mode loopback "$@"
+GPG_WRAPPER
+  chmod +x "$gpg_wrapper"
+  git_options+=(-c "gpg.program=$gpg_wrapper")
 fi
 
 tree_hash="$(git write-tree)"
 test_commit_message='commit-signing-smoke-test'
 
-if git rev-parse --verify HEAD >/dev/null 2>&1; then
-  parent_commit_hash="$(git rev-parse HEAD)"
-  test_commit_hash="$(
-    printf '%s' "$test_commit_message" | \
-      git commit-tree "$tree_hash" -p "$parent_commit_hash" -S
-  )"
-else
-  test_commit_hash="$(
-    printf '%s' "$test_commit_message" | \
-      git commit-tree "$tree_hash" -S
-  )"
+parent_options=()
+if git rev-parse --verify HEAD > /dev/null 2>&1; then
+  parent_options+=(-p "$(git rev-parse HEAD)")
 fi
 
-if ! git verify-commit "$test_commit_hash" > /dev/null 2>&1; then
-  echo '❌ Git commit signing smoke test failed (git commit-tree -S / git verify-commit).' >&2
+# gpg's own stderr is left visible on purpose: it names the actual failure.
+if ! test_commit_hash="$(
+  printf '%s' "$test_commit_message" | \
+    git "${git_options[@]}" commit-tree "$tree_hash" "${parent_options[@]}" -S
+)"; then
+  echo "❌ Git commit signing smoke test failed: gpg could not sign with user.signingkey=$signing_key." >&2
+  echo '   Verify the GPG key and its passphrase match (GPG_PRIVATE_KEY / GPG_PASSPHRASE in CI).' >&2
+  exit 1
+fi
+
+if ! git "${git_options[@]}" verify-commit "$test_commit_hash" > /dev/null 2>&1; then
+  echo '❌ Git commit signing smoke test failed: the test signature did not verify.' >&2
   exit 1
 fi
