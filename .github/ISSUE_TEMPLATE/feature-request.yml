@@ -30,6 +30,7 @@ body:
         - lexico-components
         - lexico-entities
         - lexico-ingestion
+        - codometer
         - codebase
         - no-release
         - packages

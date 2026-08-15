@@ -27,7 +27,7 @@
         "write": {
           "commands": [
             "nx run {projectName}:check-catalog-manifests",
-            "nx run {projectName}:measure-code:write",
+            "nx run {projectName}:codometer:write",
             "nx run synchronization:start:agent-skills-write",
             "nx run synchronization:start:conventional-config-write",
             "nx run synchronization:start:pull-request-template-write",
@@ -112,6 +112,24 @@
       "description": "Run unused-code analysis for workspace-root files only across JavaScript, TypeScript, and Python",
       "executor": "nx:run-commands",
       "options": {}
+    },
+    "codometer": {
+      "cache": false,
+      "configurations": {
+        "check": {
+          "command": "node --import @swc-node/register/esm-register packages/codometer/src/main.ts codometer --directory . --readme README.md --check"
+        },
+        "write": {
+          "command": "node --import @swc-node/register/esm-register packages/codometer/src/main.ts codometer --directory . --readme README.md"
+        }
+      },
+      "defaultConfiguration": "write",
+      "description": "Analyze codebase and write README.md statistics badges",
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{workspaceRoot}"
+      },
+      "outputs": ["{workspaceRoot}/README.md"]
     },
     "commit-msg": {
       "cache": false,
@@ -465,24 +483,6 @@
       "options": {
         "cwd": "{projectRoot}"
       }
-    },
-    "measure-code": {
-      "cache": false,
-      "configurations": {
-        "check": {
-          "command": "tsx scripts/measure-code.ts --check"
-        },
-        "write": {
-          "command": "tsx scripts/measure-code.ts"
-        }
-      },
-      "defaultConfiguration": "write",
-      "description": "Analyze codebase and write README.md statistics badges",
-      "executor": "nx:run-commands",
-      "options": {
-        "cwd": "{workspaceRoot}"
-      },
-      "outputs": ["{workspaceRoot}/README.md"]
     },
     "openwiki": {
       "cache": false,
