@@ -44,4 +44,8 @@ jobs:
       - name: 🦸 Release Version
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          # Tells the pre-commit hook this is the release commit, so it skips
+          # the analysis suite the other workflows already ran. See
+          # configuration/.husky/pre-commit for why.
+          RELEASE_COMMIT: "true"
         run: pnpm semantic-release

@@ -8,6 +8,23 @@ printf '[%s] pre-commit\n' "$TIMESTAMP"
 REPOSITORY_ROOT="$(git rev-parse --show-toplevel)"
 "$REPOSITORY_ROOT/scripts/git/check-commit-signing-configuration.sh"
 
+# 🦸 Skip the analysis suite for the semantic-release commit
+# That commit stages only CHANGELOG.md, package.json and pnpm-lock.yaml, all
+# machine-generated, and every source commit behind the release already passed
+# these same checks: analyze-code in 🧑‍💻 Analyze Code, conformetry-validate in
+# 🧑‍⚖️ Validate Conventions, and lockfile integrity in 👷 Build Projects via
+# `pnpm install --frozen-lockfile`. Re-running them here only duplicates that
+# work — and because package.json belongs to the root project, `nx affected`
+# expands to every project at once, which exhausts the runner's memory and
+# terminates the release (see the note on exit 137 below).
+#
+# Signing is still checked above, and the commit-msg hook still runs commitlint
+# on the release message, which is the only guard on that message's format.
+if [ "${RELEASE_COMMIT:-}" = "true" ]; then
+  printf '[%s] pre-commit — release commit, skipping analysis\n' "$TIMESTAMP"
+  exit 0
+fi
+
 # 🗒️ Clear notepads
 git restore --staged notepads/notepad.jsonc || true
 git restore --staged notepads/notepad.md || true
