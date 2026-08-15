@@ -102,7 +102,7 @@ This plan defines a repository-wide Nx local caching optimization to reduce redu
 | `project.json` | `monorepo` | `lint` | true | `["{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,md,mdx,css}","{workspaceRoot}/configuration/eslint.config.ts","{workspaceRoot}/configuration/oxlint.config.ts","sharedGlobals"]` | — | — | `nx:run-commands` | conditional (write/fix configuration mutates files) |
 | `project.json` | `monorepo` | `lint-staged` | false | — | — | — | `nx:run-commands` | uncached (reason not documented in config) |
 | `project.json` | `monorepo` | `markdown-lint` | true | `["{projectRoot}/*.md","{projectRoot}/documentation/**/*.md","{projectRoot}/infrastructure/**/*.md","{projectRoot}/scripts/**/*.md","{workspaceRoot}/configuration/.markdownlint-cli2.jsonc","default"]` | — | — | `nx:run-commands` | conditional (write/fix configuration mutates files) |
-| `project.json` | `monorepo` | `codometer` | false | — | `["{workspaceRoot}/README.md"]` | — | `nx:run-commands` | conditional (write/fix configuration mutates files) |
+| `project.json` | `monorepo` | `measure-code` | false | — | `["{workspaceRoot}/README.md"]` | — | `nx:run-commands` | conditional (write/fix configuration mutates files) |
 | `project.json` | `monorepo` | `orchestrate-agents` | false | — | — | — | `nx:run-commands` | uncached (reason not documented in config) |
 | `project.json` | `monorepo` | `oxfmt` | true | `["{workspaceRoot}/configuration/oxfmt.config.ts","default"]` | — | — | `nx:run-commands` | conditional (write/fix configuration mutates files) |
 | `project.json` | `monorepo` | `oxlint` | true | `["{workspaceRoot}/configuration/oxlint.config.ts","default"]` | — | — | `nx:run-commands` | conditional (write/fix configuration mutates files) |
@@ -331,7 +331,7 @@ This plan defines a repository-wide Nx local caching optimization to reduce redu
 | `project.json` | `fallow-audit` | `conditionally-cache-safe` | Candidate for caching in `check`-only mode with explicit inputs and pinned toolchain. | As configured (`\|\| true` and audit semantics), stale replay can hide newly introduced regression signals. |
 | `project.json` | `fallow-fix` | `must-remain-uncached` | `write` configuration mutates source files and should always execute when requested. | Cache replay would skip required code modifications and produce false-success runs. |
 | `project.json` | `lint-staged` | `must-remain-uncached` | Operates on dynamic staged-file set in developer git state. | Staged snapshot is not represented in Nx file inputs; cached output could be invalid. |
-| `project.json` | `codometer` | `conditionally-cache-safe` | `check` mode is deterministic from repository content and can be cached if split from mutating mode. | Default `write` mode edits `README.md`; cache replay could skip required badge/stat updates. |
+| `project.json` | `measure-code` | `conditionally-cache-safe` | `check` mode is deterministic from repository content and can be cached if split from mutating mode. | Default `write` mode edits `README.md`; cache replay could skip required badge/stat updates. |
 | `project.json` | `orchestrate-agents` | `must-remain-uncached` | Runs LLM orchestration workflow with non-deterministic external responses. | Cached replay could mask live orchestration failures or stale AI-generated plans. |
 | `project.json` | `pnpm-audit` | `must-remain-uncached` | Security audit depends on external vulnerability feed state and live registry metadata. | Replaying cache can hide newly published vulnerabilities. |
 | `project.json` | `pre-commit` | `must-remain-uncached` | Hook behavior depends on current staged files and repository state. | Cached success may bypass real pre-commit validation on changed staged content. |
@@ -399,8 +399,8 @@ This plan defines a repository-wide Nx local caching optimization to reduce redu
   - Tightened `production` exclusions for tests/docs and adjusted `test` target inputs.
   - Updated `analyze-code` default inputs to use `default` plus explicit workspace config inputs.
 - Root `project.json` updates:
-  - Converted `codometer` into cached check mode.
-  - Added uncached `codometer-write` target and routed `analyze-code:write` to it.
+  - Converted `measure-code` into cached check mode.
+  - Added uncached `measure-code-write` target and routed `analyze-code:write` to it.
   - Added explicit uncached rationale text to retained uncached root targets.
   - Routed write synchronization to uncached `synchronization:agent-skills-write`.
 - Project-level updates:
