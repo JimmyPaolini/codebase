@@ -36,6 +36,12 @@ export class PhasesService {
     this.logger.setContext(PhasesService.name);
   }
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   // 🌎 Public Methods
 
   /**

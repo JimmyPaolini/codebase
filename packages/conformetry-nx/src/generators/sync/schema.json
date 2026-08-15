@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "description": "Regenerate the workspace's conformetry generator plugin from the conformetry configuration.",
+  "properties": {
+    "configurationPath": {
+      "description": "Path to the conformetry configuration file, relative to the workspace root.",
+      "type": "string"
+    },
+    "outputPath": {
+      "description": "Directory the generator plugin is emitted into.",
+      "type": "string"
+    },
+    "packageName": {
+      "description": "Package name the emitted plugin is addressed by in `nx g <name>:<generator>`.",
+      "type": "string"
+    }
+  },
+  "required": [],
+  "title": "Conformetry sync",
+  "type": "object"
+}

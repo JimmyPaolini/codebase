@@ -66,6 +66,7 @@
         "cwd": "applications/lexico"
       }
     },
+    "stylelint": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {}

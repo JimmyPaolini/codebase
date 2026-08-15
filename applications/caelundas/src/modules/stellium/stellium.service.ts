@@ -2,11 +2,11 @@ import { AspectGraphService } from "@caelundas/src/modules/aspects/aspect-graph.
 import { CompoundPhaseService } from "@caelundas/src/modules/aspects/compound-phase.service";
 import { ProgressiveCompoundEventService } from "@caelundas/src/modules/aspects/progressive-compound-event.service";
 import { aspectBodies as stelliumBodies } from "@caelundas/src/modules/caelundas/caelundas.constants";
+import { isKeyOf } from "@caelundas/src/modules/caelundas/caelundas.types";
 import {
   symbolByBody,
   symbolByStellium,
-} from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
-import { isKeyOf } from "@caelundas/src/modules/caelundas/caelundas.types";
+} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 

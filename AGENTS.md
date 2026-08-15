@@ -56,63 +56,70 @@ selection guidance.
 
 ### Tools
 
-- **[conformance](tools/conformance)**: Nx generators for scaffolding code
+- **[conformetry-cli](packages/conformetry-cli)**: Command-line host for code generation and validation
+- **[conformetry-nx](packages/conformetry-nx)**: Nx plugin that exposes the conformetry generator namespace
 - **[synchronization](tools/synchronization)**: NestJS CLI for synchronizing codebase configuration and documentation artifacts
 
-## Conformance
+## Conformetry
 
-The [conformance](tools/conformance/AGENTS.md) tool provides two workflows that should be used together:
+The conformetry toolchain provides two workflows that should be used together:
 
 - **Generators** create standardized project and module scaffolding from templates.
 - **Validation** checks generated (and manually edited) files against those templates to keep structure and conventions consistent.
 
 ### Generation
 
-Conformance generators are declared in `tools/conformance/generators.json` and executed through the `conformance` Nx plugin.
+Conformetry generators are declared in `configuration/conformetry.config.ts` and executed through the `@conformetry/nx` Nx plugin.
 
 Use generators when creating new applications/modules/components so the initial file set, naming, and conventions are correct from the start.
 
 ```bash
-nx generate conformance:<generator-name> [options]
+nx generate conformetry:<generator-name> [options]
 # or
-nx g conformance:<generator-name> [options]
+nx g conformetry:<generator-name> [options]
 ```
+
+The `conformetry` generator namespace is emitted from the configuration into
+the gitignored `.conformetry/` directory on `pnpm install`, so it is never
+committed. If Nx reports it is not installed, run `pnpm install` again. No
+project is called `conformetry` — the name means the generator namespace and
+nothing else, and the command-line host is `conformetry-cli`.
 
 Prefer generator aliases for speed when you already know them (for example, `nsm`, `ngm`, `c`).
 After scaffolding, implement domain-specific logic in the generated files rather than hand-crafting parallel structures.
 
-The table below is synchronized from `tools/conformance/generators.json`.
-Keep the marker comments unchanged so synchronization commands can update it automatically.
+The table below reflects the conformetry generator registry in `configuration/conformetry.config.ts`.
 
-<!-- conformance-generators-table start -->
+<!-- conformetry-generators-table start -->
 | Generator | Alias | Description |
 | --------- | ----- | ----------- |
 | `jupyter-notebook-application` | `jna` | Generate a Python Jupyter notebook application |
-| `nestjs-command-application` | `nca` | Generate a NestJS command-line application using nest-commander |
-| `nestjs-command-module` | `ncm` | Generate a NestJS command module with command, module, types, constants, and unit test files |
-| `nestjs-dataloader-module` | `ndm` | Generate a NestJS DataLoader module with dataloader, types, and unit test files |
+| `nestjs-command-project` | `nca` | Generate a NestJS command-line application using nest-commander |
 | `nestjs-graphql-application` | `nga` | Generate a NestJS GraphQL API application |
+| `nestjs-service-project` | `nsp` | Generate a NestJS service package template for internal workspace libraries |
+| `nestjs-command-module` | `ncm` | Generate a NestJS command module with command, module, and unit test files |
+| `nestjs-dataloader-module` | `ndm` | Generate a NestJS dataloader module with dataloader, types, and unit test files |
 | `nestjs-graphql-module` | `ngm` | Generate a NestJS GraphQL module with resolver, entities, inputs, args, factories, service, types, constants, and unit test files |
 | `nestjs-service-file` | `nsf` | Generate NestJS service and unit test files |
 | `nestjs-service-module` | `nsm` | Generate a NestJS service module with module, service, types, constants, and unit test files |
 | `react-component` | `c` | Generate a React component with test file |
-<!-- conformance-generators-table end -->
+<!-- conformetry-generators-table end -->
 
 ### Validation
 
-Conformance validation is run with the `validator` command and returns a JSON result summary.
-It evaluates selected projects against conformance rules derived from generator templates.
+Conformetry validation is run via the workspace wrapper target and returns a JSON result summary.
+It evaluates selected projects against validator rules derived from the conformetry configuration.
 
 ```bash
-nx run conformance:start:validator
+pnpm nx run codebase:conformetry-validate
 ```
 
 Use filters when you want targeted checks:
 
 ```bash
-nx run conformance:start:validator -- --projects=<project-a>,<project-b>
-nx run conformance:start:validator -- --rules=<rule-a>,<rule-b>
-nx run conformance:start:validator -- --projects=<project> --rules=<rule>
+pnpm nx run codebase:conformetry-validate -- --projects=<project-a>,<project-b>
+pnpm nx run codebase:conformetry-validate -- --rules=<rule-a>,<rule-b>
+pnpm nx run codebase:conformetry-validate -- --projects=<project> --rules=<rule>
 ```
 
 How validation works:
@@ -122,7 +129,7 @@ How validation works:
 - A rule runs only where applicable based on project tags and discovered file patterns.
 - Any failed rule causes the validator command to fail, which is intended for CI and pre-merge quality gates.
 
-Use this flow for best results: generate with conformance first, then run validator after custom edits to confirm the result still matches the repository's conformance standards.
+Use this flow for best results: generate with conformetry first, then run validation after custom edits to confirm the result still matches the repository's conformetry standards.
 
 ## Work Scope
 
@@ -160,25 +167,25 @@ See the [validate-code skill](.agents/skills/validate-code/SKILL.md) for the ful
 
 ### Quality Tools
 
-| Tool | Description | Config | Docs |
-| --- | --- | --- | --- |
-| `oxfmt` | Formats TS/JS/JSON/MD files | `configuration/oxfmt.config.ts` | [docs](https://oxc.rs/docs/guide/usage/formatter.html) |
-| `sqlfluff` | Formats and lints SQL files | `configuration/pyproject.toml` | [docs](https://docs.sqlfluff.com/) |
-| `prettier` | Supplementary formatter for manual or non-default use | `configuration/prettier.config.ts` | [docs](https://prettier.io/docs/) |
-| `eslint` | Lints TS/JS and markdown with workspace rules | project `eslint.config.ts` | [docs](https://eslint.org/docs/latest/) |
-| `oxlint` | Fast TS/JS linting for workspace files | `configuration/oxlint.config.ts` | [docs](https://oxc.rs/docs/guide/usage/linter.html) |
-| `ruff` | Formats and lints Python files | `configuration/pyproject.toml` | [docs](https://docs.astral.sh/ruff/) |
-| `tsc` | Type-checks TypeScript | project `tsconfig.json` | [docs](https://www.typescriptlang.org/docs/) |
-| `type-coverage` | Enforces TypeScript type-coverage gates | root `tsconfig.json` | [docs](https://github.com/plantain-00/type-coverage) |
-| `pyright` | Performs static Python type checking | `configuration/pyproject.toml` | [docs](https://github.com/microsoft/pyright) |
-| `ty` | Performs additional Python type checking | `configuration/pyproject.toml` | [docs](https://docs.astral.sh/ty/) |
-| `knip` | Finds unused TS/JS files, exports, and dependencies | `configuration/knip.config.ts` | [docs](https://knip.dev/) |
-| `vulture` | Finds unused Python code | `configuration/vulture_whitelist.py` | [docs](https://github.com/jendrikseipp/vulture) |
-| `fallow` | Analyzes dead code, duplication, and code health | `configuration/fallow.config.jsonc` | [docs](https://docs.fallow.tools/) |
-| `jscpd` | Detects duplicated code and copy-paste patterns | `configuration/jscpd.config.json` | [docs](https://jscpd.dev/) |
-| `cspell` | Checks spelling across code and documentation | `configuration/cspell.config.yaml` | [docs](https://cspell.org/) |
-| `markdownlint` | Lints markdown files | `configuration/.markdownlint-cli2.jsonc` | [docs](https://github.com/DavidAnson/markdownlint-cli2) |
-| `yamllint` | Lints YAML files | `configuration/yamllint.yaml` | [docs](https://yamllint.readthedocs.io/) |
+| Tool            | Description                                           | Config                                   | Docs                                                    |
+| --------------- | ----------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------- |
+| `oxfmt`         | Formats TS/JS/JSON/MD files                           | `configuration/oxfmt.config.ts`          | [docs](https://oxc.rs/docs/guide/usage/formatter.html)  |
+| `sqlfluff`      | Formats and lints SQL files                           | `configuration/pyproject.toml`           | [docs](https://docs.sqlfluff.com/)                      |
+| `prettier`      | Supplementary formatter for manual or non-default use | `configuration/prettier.config.ts`       | [docs](https://prettier.io/docs/)                       |
+| `eslint`        | Lints TS/JS and markdown with workspace rules         | project `eslint.config.ts`               | [docs](https://eslint.org/docs/latest/)                 |
+| `oxlint`        | Fast TS/JS linting for workspace files                | `configuration/oxlint.config.ts`         | [docs](https://oxc.rs/docs/guide/usage/linter.html)     |
+| `ruff`          | Formats and lints Python files                        | `configuration/pyproject.toml`           | [docs](https://docs.astral.sh/ruff/)                    |
+| `tsc`           | Type-checks TypeScript                                | project `tsconfig.json`                  | [docs](https://www.typescriptlang.org/docs/)            |
+| `type-coverage` | Enforces TypeScript type-coverage gates               | root `tsconfig.json`                     | [docs](https://github.com/plantain-00/type-coverage)    |
+| `pyright`       | Performs static Python type checking                  | `configuration/pyproject.toml`           | [docs](https://github.com/microsoft/pyright)            |
+| `ty`            | Performs additional Python type checking              | `configuration/pyproject.toml`           | [docs](https://docs.astral.sh/ty/)                      |
+| `knip`          | Finds unused TS/JS files, exports, and dependencies   | `configuration/knip.config.ts`           | [docs](https://knip.dev/)                               |
+| `vulture`       | Finds unused Python code                              | `configuration/vulture_whitelist.py`     | [docs](https://github.com/jendrikseipp/vulture)         |
+| `fallow`        | Analyzes dead code, duplication, and code health      | `configuration/fallow.config.jsonc`      | [docs](https://docs.fallow.tools/)                      |
+| `jscpd`         | Detects duplicated code and copy-paste patterns       | `configuration/jscpd.config.json`        | [docs](https://jscpd.dev/)                              |
+| `cspell`        | Checks spelling across code and documentation         | `configuration/cspell.config.yaml`       | [docs](https://cspell.org/)                             |
+| `markdownlint`  | Lints markdown files                                  | `configuration/.markdownlint-cli2.jsonc` | [docs](https://github.com/DavidAnson/markdownlint-cli2) |
+| `yamllint`      | Lints YAML files                                      | `configuration/yamllint.yaml`            | [docs](https://yamllint.readthedocs.io/)                |
 
 ## Git Workflow
 
@@ -280,7 +287,7 @@ PR description template:
 | `applications` | Changes spanning multiple applications in applications/ (e.g. lexico, caelundas, etc.) |
 | `caelundas` | Node.js CLI for astronomical calendar generation (NASA JPL ephemeris) |
 | `configuration` | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.) |
-| `conformance` | Code generator templates and conformance validation tests for generated instances |
+| `conformetry` | Code generator templates and validation tests for generated instances |
 | `dependencies` | Dependency version changes (upgrades, additions, removals via pnpm) |
 | `deps` | Dependency version changes (upgrades, additions, removals via pnpm) |
 | `deployments` | GitHub Actions workflows and CI/CD pipeline configuration |
@@ -312,9 +319,15 @@ PR description template:
 - **Exceptions**: Abbreviations are acceptable when avoiding language reserved word collisions (e.g., using `args` instead of `arguments`, `str` instead of `string`).
 - Abbreviation rules are enforced by ESLint (`unicorn/prevent-abbreviations`) and CSpell (`flagWords`).
 
+### File Naming
+
+- **Kebab-case**: All file names must be lowercase with hyphens separating words (e.g., `my-file-name.ts`).
+- **Always** prefer service files `*.service.ts` over `*.ts` or `*.utilities.ts` for NestJS service classes.
+- Only use utilities files `*.utilities.ts` in cases where a top level function is needed, and only use them to invoke service class methods or to compose multiple service class methods together. Never use utilities files to implement business logic directly.
+
 ### Project Tags
 
-- **`language:typescript`** — applied to all TypeScript projects (caelundas, lexico, lexico-components, conformance, codebase)
+- **`language:typescript`** — applied to all TypeScript projects (caelundas, lexico, lexico-components, conformetry packages, codebase)
 - **`language:python`** — applied to all Python projects (affirmations)
 
 These tags enable conditional sub-target composition in composite targets (`format`, `lint`, `typecheck`, `test`). Python projects override the TS-default composite targets to compose Python sub-targets (`ruff-format`, `ruff-lint`, `pyright`, `pytest`) instead of TS ones.
@@ -417,7 +430,6 @@ Specialized domain knowledge for working on specific systems or patterns:
 - **[test-driven-development](.agents/skills/test-driven-development/SKILL.md)**: Use when implementing any feature or bugfix, before writing implementation code
 - **[testing-mocks](.agents/skills/testing-mocks/SKILL.md)**: Create and structure mocks for tests using createMock, vi.mock, and NestJS DI patterns. USE WHEN writing unit or integration tests with mocked dependencies, when asked about mocking services or repositories, or when setting up test environments with injected dependencies.
 - **[testing-strategy](.agents/skills/testing-strategy/SKILL.md)**: "Use codebase testing conventions: unit, integration, end-to-end test naming and Nx commands. Use when adding tests or recommending test coverage."
-- **[tool-execution-model](.agents/skills/tool-execution-model/SKILL.md)**: Decide when to use Nx tasks versus direct tooling in this codebase. Use when asked about build, lint, test, typecheck, formatting, Docker, kubectl, Helm, Supabase CLI, Git, or pnpm commands.
 - **[triage-deployment](.agents/skills/triage-deployment/SKILL.md)**: "Diagnose and fix failing GitHub Actions CI workflows in this codebase. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: analyze-code (typecheck, lint, format, spell-check, knip, markdown-lint, yaml-lint), test-coverage, validate-conventions (branch name, PR title/body, config sync), audit-security (gitleaks, bandit, scan-dependencies, trivy), and make-devcontainer (VSCode extensions sync, Docker build, devcontainer test)."
 - **[triage-submission](.agents/skills/triage-submission/SKILL.md)**: "Triage and fix git submission failures for both commits and pushes. Use when a git commit or push is rejected, when lint-staged errors occur, when pre-commit or pre-push hooks fail, when a branch name is invalid on push, or when you see errors from husky, commitlint, validate-branch-name, ESLint, oxfmt, prettier, typecheck, knip, cspell, markdownlint, or yamllint during a commit or push attempt. Reads the error output, identifies the failing hook and checks, reads the relevant configuration, and applies targeted fixes."
 - **[update-pull-request](.agents/skills/update-pull-request/SKILL.md)**: Update an existing pull request's title and description to accurately reflect the implemented changes. Use this skill when asked to update, refresh, or rewrite a PR title or description, sync a PR with the latest changes, or when the PR description no longer matches the implementation.

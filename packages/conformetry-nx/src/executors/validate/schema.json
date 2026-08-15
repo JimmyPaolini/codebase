@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "description": "Validate a project's conformetry instances against their templates.",
+  "properties": {
+    "configurationPath": {
+      "description": "Path to the conformetry configuration file, relative to the workspace root.",
+      "type": "string"
+    },
+    "languages": {
+      "description": "Language names to restrict the run to. Every language runs when omitted.",
+      "items": { "type": "string" },
+      "type": "array"
+    }
+  },
+  "required": [],
+  "title": "Conformetry validate",
+  "type": "object"
+}

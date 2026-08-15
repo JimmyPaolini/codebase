@@ -30,6 +30,12 @@ export class EclipsesService {
     this.logger.setContext(EclipsesService.name);
   }
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   // 🌎 Public Methods
 
   /**

@@ -31,6 +31,12 @@ export class PronunciationClassifierService {
     private readonly ecclesiasticalService: PronunciationEcclesiasticalService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   /**
    * Parses phonics during pronunciation parsing.
    */
@@ -72,6 +78,8 @@ export class PronunciationClassifierService {
       _.assign(vulgar, this.parsePhonics(pronunciationsText));
     }
   }
+
+  // 🌎 Public Methods
 
   /**
    * Applies Wiktionary IPA pronunciations onto pronunciation variants.

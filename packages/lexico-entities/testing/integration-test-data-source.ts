@@ -7,7 +7,7 @@ import { DataSource, type DataSourceOptions } from "typeorm";
 import {
   LEXICO_DATABASE_ENTITIES,
   lexicoDataSource,
-} from "../src/modules/database/data-source";
+} from "../src/modules/database/data-source.constants";
 
 /** Represents the integration database resources needed by test suites. */
 export interface IntegrationTestDatabaseResources {

@@ -42,7 +42,11 @@ package-lock.json
 **/library.json
 pnpm-lock.yaml
 tmp
-**/conformance/**/templates/**
+**/conformetry-templates/**
+# Emitted from the conformetry configuration; the emitter's output is
+# authoritative, and reformatting it makes every conformetry command fail the
+# drift check after a `format` run.
+**/.conformetry/**
 **/data/wikipedia
 **/data/wiktionary
 yarn.lock

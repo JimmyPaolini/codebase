@@ -16,7 +16,7 @@ import {
 import {
   LEXICO_DATABASE_ENTITIES,
   lexicoDataSource,
-} from "../database/data-source";
+} from "../database/data-source.constants";
 import {
   adjectiveDegreeValues,
   adverbDegrees,

@@ -2,7 +2,7 @@ import { AspectEphemerisService } from "@caelundas/src/modules/aspects/aspect-ep
 import { AspectEventFormattingService } from "@caelundas/src/modules/aspects/aspect-event-formatting.service";
 import { AspectsUtilitiesService } from "@caelundas/src/modules/aspects/aspects-utilities.service";
 import { minorAspects } from "@caelundas/src/modules/caelundas/caelundas.constants";
-import { symbolByMinorAspect } from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
+import { symbolByMinorAspect } from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "../logger/logger.service";
@@ -31,6 +31,12 @@ export class MinorAspectsEventService {
   ) {
     this.logger.setContext(MinorAspectsEventService.name);
   }
+
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
 
   // 🌎 Public Methods
 

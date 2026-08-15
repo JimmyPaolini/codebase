@@ -35,7 +35,9 @@ export class FormsService {
     private readonly transientWordsService: FormsTransientWordsService,
   ) {}
 
-  // 🌎 Public Methods
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
 
   /**
    * Builds structured data used during form persistence.
@@ -115,6 +117,8 @@ export class FormsService {
     }
     return this.formRepository.save(forms);
   }
+
+  // 🌎 Public Methods
 
   /**
    * Builds Form entities from the raw parsed forms object for a given POS.

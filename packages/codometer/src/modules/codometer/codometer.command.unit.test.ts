@@ -62,7 +62,7 @@ describe(CodometerCommand, () => {
       lines: 0,
       protocols: 0,
     },
-    repoSizeMiB: "0",
+    repoSizeMiB: 0,
     sourceFiles: 0,
     typescript: {
       decorators: 0,

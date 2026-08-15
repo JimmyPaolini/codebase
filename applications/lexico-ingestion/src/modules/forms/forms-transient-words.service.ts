@@ -11,7 +11,15 @@ export class FormsTransientWordsService {
 
   constructor() {}
 
+  // 🔐 Private Fields
+
   private readonly transientWordsByForm = new WeakMap<Form, string[]>();
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
+  // 🌎 Public Methods
 
   /**
    * Retrieves the transient words associated with a given Form entity.

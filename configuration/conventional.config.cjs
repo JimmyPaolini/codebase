@@ -116,8 +116,8 @@ const scopes = [
   },
   {
     description:
-      "Code generator templates and conformance validation tests for generated instances",
-    name: "conformance",
+      "Code generator templates and validation tests for generated instances",
+    name: "conformetry",
   },
   {
     description:

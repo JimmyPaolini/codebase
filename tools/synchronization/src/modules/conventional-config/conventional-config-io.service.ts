@@ -48,6 +48,8 @@ export class ConventionalConfigIoService {
     ".vscode/settings.json",
   );
 
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
 
   /** Capitalizes the first character of a string. */

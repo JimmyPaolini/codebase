@@ -1,4 +1,4 @@
-import baseConfig from "../../configuration/eslint.config.ts";
+import baseConfig from "../../configuration/eslint.config";
 
 export default [
   // 🛠️ Base Config
@@ -17,7 +17,10 @@ export default [
       "@nx/dependency-checks": [
         "error",
         {
-          ignoredDependencies: ["pg", "vitest"],
+          // @golevelup/ts-vitest: a devDependency, imported by the harnesses in
+          // `testing/`, which the build dependency check counts as source
+          // because they are not `*.test.ts` themselves.
+          ignoredDependencies: ["@golevelup/ts-vitest", "pg", "vitest"],
           ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}"],
         },
       ],

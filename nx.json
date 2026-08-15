@@ -5,7 +5,6 @@
   "cacheDirectory": ".nx/cache",
   "defaultBase": "main",
   "defaultProject": "codebase",
-  "excludedGlobs": ["**/tools/conformance/src/modules/*/templates/**"],
   "generators": {
     "@nx/react": {
       "application": {
@@ -54,7 +53,6 @@
   "parallel": 3,
   "plugins": [
     {
-      "exclude": ["**/tools/conformance/src/modules/*/templates/**"],
       "options": {
         "buildDepsTargetName": false,
         "buildTargetName": "build",
@@ -69,15 +67,20 @@
       "plugin": "@nx/vite/plugin"
     },
     {
-      "exclude": ["**/tools/conformance/src/modules/*/templates/**"],
       "options": {
         "targetName": "eslint"
       },
       "plugin": "@nx/eslint/plugin"
     },
     {
-      "exclude": ["**/tools/conformance/src/modules/*/templates/**"],
       "plugin": "@nx/vitest"
+    },
+    {
+      "options": {
+        "configurationPath": "configuration/conformetry.config.ts",
+        "validateTargetName": "conformetry-validate"
+      },
+      "plugin": "@conformetry/nx"
     }
   ],
   "projects": {
@@ -87,6 +90,9 @@
     "codebase": {
       "tags": ["language:typescript", "type:tool"]
     }
+  },
+  "sync": {
+    "globalGenerators": ["@conformetry/nx:sync"]
   },
   "targetDefaults": {
     "analyze-code": [
@@ -210,6 +216,50 @@
         "executor": "nx:run-commands",
         "filter": {
           "projects": ["tag:language:typescript"]
+        },
+        "inputs": [
+          "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml,sql}",
+          "shared-globals"
+        ]
+      },
+      {
+        "cache": true,
+        "configurations": {
+          "check": {
+            "commands": [
+              "nx run {projectName}:clean:check",
+              "nx run {projectName}:dependency-cruiser",
+              "nx run {projectName}:format:check",
+              "nx run {projectName}:lint:check",
+              "nx run {projectName}:markdown-lint:check",
+              "nx run {projectName}:spell-check",
+              "nx run {projectName}:stylelint:check",
+              "nx run {projectName}:type-coverage",
+              "nx run {projectName}:typecheck",
+              "nx run {projectName}:yaml-lint"
+            ],
+            "parallel": true
+          },
+          "write": {
+            "commands": [
+              "nx run {projectName}:clean:write",
+              "nx run {projectName}:dependency-cruiser",
+              "nx run {projectName}:format:write",
+              "nx run {projectName}:lint:write",
+              "nx run {projectName}:markdown-lint:write",
+              "nx run {projectName}:spell-check",
+              "nx run {projectName}:stylelint:write",
+              "nx run {projectName}:type-coverage",
+              "nx run {projectName}:typecheck",
+              "nx run {projectName}:yaml-lint"
+            ],
+            "parallel": false
+          }
+        },
+        "defaultConfiguration": "check",
+        "executor": "nx:run-commands",
+        "filter": {
+          "projects": ["tag:framework:react"]
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml,sql}",
@@ -946,10 +996,10 @@
         "cache": true,
         "configurations": {
           "check": {
-            "command": "stylelint --config ../../configuration/stylelint.config.cjs 'src/**/*.css'"
+            "command": "stylelint --allow-empty-input --config ../../configuration/stylelint.config.cjs 'src/**/*.css'"
           },
           "write": {
-            "command": "stylelint --fix --config ../../configuration/stylelint.config.cjs 'src/**/*.css'"
+            "command": "stylelint --allow-empty-input --fix --config ../../configuration/stylelint.config.cjs 'src/**/*.css'"
           }
         },
         "defaultConfiguration": "check",
@@ -962,7 +1012,7 @@
           "{workspaceRoot}/configuration/stylelint.config.cjs"
         ],
         "options": {
-          "command": "stylelint --config ../../configuration/stylelint.config.cjs 'src/**/*.css'",
+          "command": "stylelint --allow-empty-input --config ../../configuration/stylelint.config.cjs 'src/**/*.css'",
           "cwd": "{projectRoot}"
         }
       }
@@ -1001,16 +1051,16 @@
         "cache": true,
         "configurations": {
           "coverage": {
-            "command": "vitest run --coverage"
+            "command": "pnpm exec vitest run --coverage --coverage.provider=v8"
           },
           "integration": {
-            "command": "vitest run integration.test.ts"
+            "command": "pnpm exec vitest run integration.test.ts"
           },
           "unit": {
-            "command": "vitest run unit.test.ts"
+            "command": "pnpm exec vitest run unit.test.ts"
           },
           "watch": {
-            "command": "vitest"
+            "command": "pnpm exec vitest"
           }
         },
         "executor": "nx:run-commands",
@@ -1024,7 +1074,7 @@
           "shared-globals"
         ],
         "options": {
-          "command": "vitest run",
+          "command": "pnpm exec vitest run",
           "cwd": "{projectRoot}"
         }
       },
@@ -1032,19 +1082,19 @@
         "cache": true,
         "configurations": {
           "coverage": {
-            "command": "vitest run --coverage"
+            "command": "pnpm exec vitest run --coverage --coverage.provider=v8"
           },
           "end-to-end": {
-            "command": "vitest run end-to-end.test.ts"
+            "command": "pnpm exec vitest run end-to-end.test.ts"
           },
           "integration": {
-            "command": "vitest run integration.test.ts"
+            "command": "pnpm exec vitest run integration.test.ts"
           },
           "unit": {
-            "command": "vitest run unit.test.ts"
+            "command": "pnpm exec vitest run unit.test.ts"
           },
           "watch": {
-            "command": "vitest"
+            "command": "pnpm exec vitest"
           }
         },
         "executor": "nx:run-commands",
@@ -1053,7 +1103,7 @@
         },
         "inputs": ["^production", "default"],
         "options": {
-          "command": "vitest run",
+          "command": "pnpm exec vitest run",
           "cwd": "{projectRoot}"
         }
       }

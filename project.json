@@ -149,6 +149,24 @@
         "cwd": "{projectRoot}"
       }
     },
+    "conformetry-generate": {
+      "cache": false,
+      "description": "Run the conformetry generate command from the workspace root",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec nx run conformetry-cli:start -- generate {args}",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "conformetry-validate": {
+      "cache": false,
+      "description": "Run every project's inferred conformetry validation target",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec nx run-many -t conformetry-validate --exclude=codebase {args}",
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "eslint": {
       "cache": true,
       "configurations": {

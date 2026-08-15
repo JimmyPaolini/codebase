@@ -4,7 +4,9 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { environmentSchema, inputSchema } from "./input.constants";
+import { environmentSchema } from "../../constants";
+
+import { inputSchema } from "./input.constants";
 import { InputService } from "./input.service";
 
 import type { Environment } from "./input.types";
@@ -398,6 +400,135 @@ describe(InputService, () => {
 
         expect(typeof result.latitude).toBe("number");
         expect(typeof result.longitude).toBe("number");
+      });
+    });
+
+    describe("start date validation refinements", () => {
+      it("rejects start date before minimum date", () => {
+        expect(() =>
+          inputSchema.parse({
+            endDate: "1900-01-02",
+            latitude: "40",
+            longitude: "-74",
+            startDate: "1899-12-31",
+          }),
+        ).toThrow(/Start date must be on or after 1900-01-01/i);
+      });
+
+      it("accepts start date exactly at minimum date boundary", () => {
+        const result = inputSchema.parse({
+          endDate: "1900-01-02",
+          latitude: "40",
+          longitude: "-74",
+          startDate: "1900-01-01",
+        });
+
+        expect(result.start.format("YYYY-MM-DD")).toBe("1900-01-01");
+      });
+
+      it("rejects start date after maximum date", () => {
+        expect(() =>
+          inputSchema.parse({
+            endDate: "2100-12-31",
+            latitude: "40",
+            longitude: "-74",
+            startDate: "2101-01-01",
+          }),
+        ).toThrow(/Start date must be on or before 2100-12-31/i);
+      });
+
+      it("rejects start date exactly at maximum date boundary when end date is not later", () => {
+        expect(() =>
+          inputSchema.parse({
+            endDate: "2100-12-31",
+            latitude: "40",
+            longitude: "-74",
+            startDate: "2100-12-31",
+          }),
+        ).toThrow(/End date must be after start date/i);
+      });
+    });
+
+    describe("end date validation refinements", () => {
+      it("rejects end date before minimum date", () => {
+        expect(() =>
+          inputSchema.parse({
+            endDate: "1899-12-31",
+            latitude: "40",
+            longitude: "-74",
+            startDate: "1900-01-01",
+          }),
+        ).toThrow(/End date must be on or after 1900-01-01/i);
+      });
+
+      it("rejects end date exactly at minimum date boundary when it is not after start date", () => {
+        expect(() =>
+          inputSchema.parse({
+            endDate: "1900-01-01",
+            latitude: "40",
+            longitude: "-74",
+            startDate: "1900-01-01",
+          }),
+        ).toThrow(/End date must be after start date/i);
+      });
+
+      it("rejects end date after maximum date", () => {
+        expect(() =>
+          inputSchema.parse({
+            endDate: "2101-01-01",
+            latitude: "40",
+            longitude: "-74",
+            startDate: "2100-12-30",
+          }),
+        ).toThrow(/End date must be on or before 2100-12-31/i);
+      });
+
+      it("accepts end date exactly at maximum date boundary", () => {
+        const result = inputSchema.parse({
+          endDate: "2100-12-31",
+          latitude: "40",
+          longitude: "-74",
+          startDate: "2100-01-01",
+        });
+
+        expect(result.end.format("YYYY-MM-DD")).toBe("2100-12-31");
+      });
+    });
+
+    describe("timezone handling for various regions", () => {
+      it("handles southern hemisphere coordinates", () => {
+        const sydneyResult = inputSchema.parse({
+          endDate: "2025-01-02",
+          latitude: "-33.8688",
+          longitude: "151.2093",
+          startDate: "2025-01-01",
+        });
+
+        expect(sydneyResult.timezone).toBe("Australia/Sydney");
+      });
+
+      it("handles equatorial coordinates", () => {
+        const result = inputSchema.parse({
+          endDate: "2025-01-02",
+          latitude: "0",
+          longitude: "0",
+          startDate: "2025-01-01",
+        });
+
+        // Prime meridian, equator - should resolve to a valid timezone
+        expect(result.timezone).toBeDefined();
+        expect(typeof result.timezone).toBe("string");
+      });
+
+      it("handles opposite side of prime meridian", () => {
+        const tokyoResult = inputSchema.parse({
+          endDate: "2025-01-02",
+          latitude: "35.6762",
+          longitude: "139.6503",
+          startDate: "2025-01-01",
+        });
+
+        expect(tokyoResult.timezone).toBe("Asia/Tokyo");
       });
     });
   });

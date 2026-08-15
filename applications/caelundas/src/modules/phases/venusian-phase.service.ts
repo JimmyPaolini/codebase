@@ -1,4 +1,4 @@
-import { symbolByVenusianPhase } from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
+import { symbolByVenusianPhase } from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
@@ -49,6 +49,8 @@ export class VenusianPhaseService {
   // 🔐 Private Fields
 
   private static readonly categories = PHASE_EVENT_BASE_CATEGORIES;
+
+  // 🔑 Public Fields
 
   // 🔏 Private Methods
 

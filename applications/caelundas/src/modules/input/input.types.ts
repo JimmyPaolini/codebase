@@ -1,5 +1,6 @@
 // 🏷️ Types
-import type { environmentSchema, inputSchema } from "./input.constants";
+import type { environmentSchema } from "../../constants";
+import type { inputSchema } from "./input.constants";
 import type { z } from "zod";
 
 /**

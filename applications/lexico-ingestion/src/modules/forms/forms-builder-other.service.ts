@@ -43,6 +43,12 @@ export class FormsBuilderOtherService {
     private readonly transientWordsService: FormsTransientWordsService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   // 🔑 Public Methods
 
   /**
@@ -99,8 +105,6 @@ export class FormsBuilderOtherService {
 
     return forms;
   }
-
-  // 🔏 Private Methods
 
   /** Builds structured data used during form entity building. */
   private buildAdjectivalNumberForms(args: {
@@ -466,6 +470,8 @@ export class FormsBuilderOtherService {
     this.transientWordsService.setTransientWords(form, args.words);
     return form;
   }
+
+  // 🌎 Public Methods
 
   /**
    * Builds Form entities for a given part-of-speech category.

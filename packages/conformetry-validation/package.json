@@ -1,0 +1,65 @@
+{
+  "dependencies": {
+    "@conformetry/configuration": "workspace:*",
+    "@conformetry/core": "workspace:*",
+    "@conformetry/files": "workspace:*",
+    "@conformetry/text": "workspace:*",
+    "@nestjs/common": "catalog:",
+    "@nestjs/core": "catalog:",
+    "pino": "catalog:",
+    "reflect-metadata": "catalog:",
+    "tslib": "catalog:"
+  },
+  "devDependencies": {
+    "@golevelup/ts-vitest": "catalog:",
+    "@nestjs/testing": "catalog:",
+    "@nx/eslint-plugin": "catalog:",
+    "@swc/helpers": "catalog:",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "name": "@conformetry/validation",
+  "peerDependencies": {
+    "@conformetry/json": "workspace:*",
+    "@conformetry/jupyter": "workspace:*",
+    "@conformetry/markdown": "workspace:*",
+    "@conformetry/python": "workspace:*",
+    "@conformetry/typescript": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@conformetry/json": {
+      "optional": true
+    },
+    "@conformetry/jupyter": {
+      "optional": true
+    },
+    "@conformetry/markdown": {
+      "optional": true
+    },
+    "@conformetry/python": {
+      "optional": true
+    },
+    "@conformetry/typescript": {
+      "optional": true
+    }
+  },
+  "private": true,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "type": "module",
+  "typeCoverage": {
+    "atLeast": 100,
+    "strict": true
+  },
+  "types": "src/index.ts",
+  "version": "0.0.1"
+}

@@ -37,6 +37,9 @@ crash.log
 .nx/cache
 .nx/workspace-data
 
+# Conformetry 👔
+.conformetry
+
 # Output 🛢️
 *.db
 *.ics

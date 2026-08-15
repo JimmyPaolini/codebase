@@ -8,7 +8,7 @@ import {
   signs,
   specialtyAspects,
 } from "./caelundas.constants";
-import { symbolByDecan } from "./caelundas.symbol-constants";
+import { symbolByDecan } from "./symbol-caelundas.constants";
 
 import type {
   aspectPhases,
@@ -33,7 +33,7 @@ import type {
   symbolBySpecialtyAspect,
   symbolByTripleAspect,
   symbolByVenusianPhase,
-} from "./caelundas.symbol-constants";
+} from "./symbol-caelundas.constants";
 /**
  * Union of all two-body aspect types (major, minor, and specialty).
  */

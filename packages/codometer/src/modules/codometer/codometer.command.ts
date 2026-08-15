@@ -10,7 +10,7 @@ import { WriteReadmeService } from "../write-readme/write-readme.service";
 
 import { CodometerService } from "./codometer.service";
 
-import type { CodometerCommandOptions } from "./codometer.command.types";
+import type { CodometerCommandOptions } from "./codometer.types";
 
 /**
  * CLI entry point for the repository measurement workflow.

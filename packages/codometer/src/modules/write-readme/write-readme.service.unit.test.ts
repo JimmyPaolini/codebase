@@ -74,7 +74,7 @@ describe(WriteReadmeService, () => {
       lines: 39,
       protocols: 40,
     },
-    repoSizeMiB: "1.5",
+    repoSizeMiB: 2,
     sourceFiles: 41,
     typescript: {
       decorators: 6,

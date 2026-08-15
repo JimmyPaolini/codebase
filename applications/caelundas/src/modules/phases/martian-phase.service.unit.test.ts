@@ -1,4 +1,4 @@
-import { symbolByMartianPhase } from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
+import { symbolByMartianPhase } from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
@@ -153,6 +153,149 @@ describe(MartianPhaseService, () => {
           "Mars Evening Rise",
           "Mars Evening Set",
         ]),
+      );
+    });
+
+    it("emits only morning rise when morning rise is true and others are false", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(true);
+      phaseCalculationService.isMorningSet.mockReturnValue(false);
+      phaseCalculationService.isEveningRise.mockReturnValue(false);
+      phaseCalculationService.isEveningSet.mockReturnValue(false);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getMartianPhaseEvents({
+        marsCoordinateEphemeris: {},
+        marsDistanceEphemeris: {},
+        marsIlluminationEphemeris: {},
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+      });
+
+      expect(events).toHaveLength(1);
+      expect(events[0]?.description).toBe("Mars Morning Rise");
+    });
+
+    it("emits only morning set when morning set is true and others are false", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(false);
+      phaseCalculationService.isMorningSet.mockReturnValue(true);
+      phaseCalculationService.isEveningRise.mockReturnValue(false);
+      phaseCalculationService.isEveningSet.mockReturnValue(false);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getMartianPhaseEvents({
+        marsCoordinateEphemeris: {},
+        marsDistanceEphemeris: {},
+        marsIlluminationEphemeris: {},
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+      });
+
+      expect(events).toHaveLength(1);
+      expect(events[0]?.description).toBe("Mars Morning Set");
+    });
+
+    it("emits only evening rise when evening rise is true and others are false", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(false);
+      phaseCalculationService.isMorningSet.mockReturnValue(false);
+      phaseCalculationService.isEveningRise.mockReturnValue(true);
+      phaseCalculationService.isEveningSet.mockReturnValue(false);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getMartianPhaseEvents({
+        marsCoordinateEphemeris: {},
+        marsDistanceEphemeris: {},
+        marsIlluminationEphemeris: {},
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+      });
+
+      expect(events).toHaveLength(1);
+      expect(events[0]?.description).toBe("Mars Evening Rise");
+    });
+
+    it("emits only evening set when evening set is true and others are false", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(false);
+      phaseCalculationService.isMorningSet.mockReturnValue(false);
+      phaseCalculationService.isEveningRise.mockReturnValue(false);
+      phaseCalculationService.isEveningSet.mockReturnValue(true);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getMartianPhaseEvents({
+        marsCoordinateEphemeris: {},
+        marsDistanceEphemeris: {},
+        marsIlluminationEphemeris: {},
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+      });
+
+      expect(events).toHaveLength(1);
+      expect(events[0]?.description).toBe("Mars Evening Set");
+    });
+
+    it("emits no events when all visibility checks are false", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(false);
+      phaseCalculationService.isMorningSet.mockReturnValue(false);
+      phaseCalculationService.isEveningRise.mockReturnValue(false);
+      phaseCalculationService.isEveningSet.mockReturnValue(false);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getMartianPhaseEvents({
+        marsCoordinateEphemeris: {},
+        marsDistanceEphemeris: {},
+        marsIlluminationEphemeris: {},
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+      });
+
+      expect(events).toHaveLength(0);
+    });
+
+    it("emits morning rise and set when both are true and evening is false", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(true);
+      phaseCalculationService.isMorningSet.mockReturnValue(true);
+      phaseCalculationService.isEveningRise.mockReturnValue(false);
+      phaseCalculationService.isEveningSet.mockReturnValue(false);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getMartianPhaseEvents({
+        marsCoordinateEphemeris: {},
+        marsDistanceEphemeris: {},
+        marsIlluminationEphemeris: {},
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+      });
+
+      expect(events).toHaveLength(2);
+      expect(events.map((event) => event.description)).toStrictEqual(
+        expect.arrayContaining(["Mars Morning Rise", "Mars Morning Set"]),
+      );
+    });
+
+    it("emits evening rise and set when both are true and morning is false", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(false);
+      phaseCalculationService.isMorningSet.mockReturnValue(false);
+      phaseCalculationService.isEveningRise.mockReturnValue(true);
+      phaseCalculationService.isEveningSet.mockReturnValue(true);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getMartianPhaseEvents({
+        marsCoordinateEphemeris: {},
+        marsDistanceEphemeris: {},
+        marsIlluminationEphemeris: {},
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+      });
+
+      expect(events).toHaveLength(2);
+      expect(events.map((event) => event.description)).toStrictEqual(
+        expect.arrayContaining(["Mars Evening Rise", "Mars Evening Set"]),
       );
     });
   });

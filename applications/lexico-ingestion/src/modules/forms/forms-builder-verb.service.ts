@@ -29,6 +29,12 @@ export class FormsBuilderVerbService {
     private readonly transientWordsService: FormsTransientWordsService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   /**
    * Applies the given tense to all forms in the array that are instances of ParticipleForm.
    */
@@ -106,6 +112,8 @@ export class FormsBuilderVerbService {
 
     return formsForTense;
   }
+
+  // 🌎 Public Methods
 
   /**
    * Builds finite verb forms for specific persons based on the provided arguments, including lexeme, mood, number, tense, voice, and associated raw words. The built forms are returned with transient words set for later association during persistence.

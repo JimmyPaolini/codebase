@@ -1,4 +1,4 @@
-export { lexicoDataSource } from "./modules/database/data-source";
+export { lexicoDataSource } from "./modules/database/data-source.constants";
 export {
   adjectiveDeclensionValues,
   adjectiveDegreeValues,

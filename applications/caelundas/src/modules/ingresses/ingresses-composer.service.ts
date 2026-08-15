@@ -3,17 +3,17 @@ import {
   signs,
 } from "@caelundas/src/modules/caelundas/caelundas.constants";
 import {
-  symbolByBody,
-  symbolByDecan,
-  symbolBySign,
-} from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
-import {
   capitalize,
   isBody,
   isDecan,
   isSign,
   objectEntries,
 } from "@caelundas/src/modules/caelundas/caelundas.types";
+import {
+  symbolByBody,
+  symbolByDecan,
+  symbolBySign,
+} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { EphemerisService } from "@caelundas/src/modules/ephemeris/ephemeris.service";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
@@ -66,6 +66,8 @@ export class IngressesComposerService {
     "Ingress",
   ];
 
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
 
   /**
@@ -82,6 +84,8 @@ export class IngressesComposerService {
     }
     return signDegreeRangeEntry[0];
   }
+
+  // 🌎 Public Methods
 
   /**
    * Creates a decan ingress calendar event.

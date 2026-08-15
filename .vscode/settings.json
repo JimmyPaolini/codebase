@@ -191,7 +191,7 @@
     "applications", // Changes spanning multiple applications in applications/ (e.g. lexico, caelundas, etc.)
     "caelundas", // Node.js CLI for astronomical calendar generation (NASA JPL ephemeris)
     "configuration", // Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.)
-    "conformance", // Code generator templates and conformance validation tests for generated instances
+    "conformetry", // Code generator templates and validation tests for generated instances
     "dependencies", // Dependency version changes (upgrades, additions, removals via pnpm)
     "deps", // Dependency version changes (upgrades, additions, removals via pnpm)
     "deployments", // GitHub Actions workflows and CI/CD pipeline configuration
@@ -486,7 +486,9 @@
   "github.copilot.chat.anthropic.thinking.budgetTokens": 2048,
   "github.copilot.chat.anthropic.tools.websearch.maxUses": 12,
   "github.copilot.chat.anthropic.toolSearchTool.enabled": true,
+  "github.copilot.chat.autoMode.v2.enabled": true,
   "github.copilot.chat.backgroundCompaction": true,
+  "github.copilot.chat.claudeAgent.allowAutoPermissions": true,
   "github.copilot.chat.cli.branchSupport.enabled": true,
   "github.copilot.chat.cli.isolationOption.enabled": true,
   "github.copilot.chat.cli.mcp.enabled": true,
@@ -495,7 +497,7 @@
   "github.copilot.chat.codesearch.enabled": true,
   "github.copilot.chat.commitMessageGeneration.instructions": [
     {
-      "file": "./documentation/skills/commit-code/SKILL.md"
+      "file": "./agents/skills/commit-code/SKILL.md"
     }
   ],
   "github.copilot.chat.completionsFetcher": "node-fetch",
@@ -503,6 +505,7 @@
   "github.copilot.chat.customInstructionsInSystemMessage": true,
   "github.copilot.chat.editRecording.enabled": true,
   "github.copilot.chat.enableUserPreferences": true,
+  "github.copilot.chat.executionSubagent.enabled": true,
   "github.copilot.chat.generateTests.codeLens": true,
   "github.copilot.chat.githubMcpServer.enabled": true,
   "github.copilot.chat.implementAgent.model": "Auto (copilot)",
@@ -620,7 +623,7 @@
     "commits": false,
     "contributors": false,
     "fileHistory": false,
-    "launchpad": false,
+    "launchpad": true,
     "remotes": false,
     "repositories": false,
     "searchAndCompare": false,
@@ -632,12 +635,12 @@
     "branches": true,
     "commits": true,
     "contributors": true,
-    "fileHistory": false,
+    "fileHistory": true,
     "launchpad": false,
     "remotes": true,
     "repositories": true,
-    "searchAndCompare": false,
-    "stashes": false,
+    "searchAndCompare": true,
+    "stashes": true,
     "tags": true,
     "worktrees": true
   },
@@ -841,9 +844,10 @@
       "onAutoForward": "notify"
     }
   },
-  "ruff.interpreter": [
-    "${workspaceFolder}/applications/affirmations/.venv/bin/python"
-  ],
+  "ruff.configuration": "${workspaceFolder}/configuration/pyproject.toml",
+  "ruff.configurationPreference": "editorOnly",
+  "ruff.exclude": ["configuration/conformetry-templates/**"],
+  "ruff.interpreter": ["${workspaceFolder}/.venv/bin/python"],
   "ruff.nativeServer": "auto",
   "ruff.organizeImports": true,
   "scm.alwaysShowActions": true,
@@ -921,23 +925,53 @@
   "workbench.browser.openLocalhostLinks": true,
   "workbench.colorCustomizations": {
     "activityBar.activeBackground": "#2f7c47",
-    "activityBar.background": "#2f7c47",
     "activityBar.foreground": "#e7e7e7",
     "activityBar.inactiveForeground": "#e7e7e799",
-    "activityBarBadge.background": "#422c74",
     "activityBarBadge.foreground": "#e7e7e7",
+    "activityBarTop.activeBackground": "#2f7c47",
+    "activityBarTop.foreground": "#e7e7e7",
+    "activityBarTop.inactiveForeground": "#e7e7e799",
     "commandCenter.border": "#e7e7e799",
+    "commandCenter.foreground": "#e7e7e7",
     "editorRuler.foreground": "#282828",
     "sash.hoverBorder": "#2f7c47",
     "statusBar.background": "#215732",
+    "statusBar.debuggingBackground": "#215732",
+    "statusBar.debuggingForeground": "#e7e7e7",
     "statusBar.foreground": "#e7e7e7",
     "statusBarItem.hoverBackground": "#2f7c47",
-    "statusBarItem.remoteBackground": "#215732",
+    "statusBarItem.remoteBackground": "#1b122e",
     "statusBarItem.remoteForeground": "#e7e7e7",
     "titleBar.activeBackground": "#215732",
     "titleBar.activeForeground": "#e7e7e7",
     "titleBar.inactiveBackground": "#21573299",
-    "titleBar.inactiveForeground": "#e7e7e799"
+    "titleBar.inactiveForeground": "#e7e7e799",
+    "workbench.colorCustomizations": {
+      "activityBar.activeBackground": "#2f7c47",
+      "activityBar.background": "#2f7c47",
+      "activityBar.foreground": "#e7e7e7",
+      "activityBar.inactiveForeground": "#e7e7e799",
+      "activityBarBadge.background": "#422c74",
+      "activityBarBadge.foreground": "#e7e7e7",
+      "activityBarTop.activeBackground": "#2f7c47",
+      "activityBarTop.foreground": "#e7e7e7",
+      "activityBarTop.inactiveForeground": "#e7e7e799",
+      "commandCenter.border": "#e7e7e799",
+      "commandCenter.foreground": "#e7e7e7",
+      "editorRuler.foreground": "#282828",
+      "sash.hoverBorder": "#2f7c47",
+      "statusBar.background": "#215732",
+      "statusBar.debuggingBackground": "#215732",
+      "statusBar.debuggingForeground": "#e7e7e7",
+      "statusBar.foreground": "#e7e7e7",
+      "statusBarItem.hoverBackground": "#2f7c47",
+      "statusBarItem.remoteBackground": "#1b122e",
+      "statusBarItem.remoteForeground": "#e7e7e7",
+      "titleBar.activeBackground": "#215732",
+      "titleBar.activeForeground": "#e7e7e7",
+      "titleBar.inactiveBackground": "#21573299",
+      "titleBar.inactiveForeground": "#e7e7e799"
+    }
   },
   "workbench.editor.alwaysShowEditorActions": true,
   "workbench.editor.editorActionsLocation": "titleBar",

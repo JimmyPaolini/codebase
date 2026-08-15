@@ -1,0 +1,44 @@
+{
+  "dependencies": {
+    "@conformetry/core": "workspace:*",
+    "@conformetry/generation": "workspace:*",
+    "@nestjs/common": "catalog:",
+    "jiti": "catalog:",
+    "jsonc-parser": "catalog:",
+    "lodash": "catalog:",
+    "pino": "catalog:",
+    "prompts": "catalog:",
+    "reflect-metadata": "catalog:",
+    "tslib": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@golevelup/ts-vitest": "catalog:",
+    "@nestjs/testing": "catalog:",
+    "@nx/eslint-plugin": "catalog:",
+    "@swc/helpers": "catalog:",
+    "@types/node": "catalog:",
+    "@types/prompts": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "name": "@conformetry/configuration",
+  "private": true,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "type": "module",
+  "typeCoverage": {
+    "atLeast": 100,
+    "strict": true
+  },
+  "types": "src/index.ts",
+  "version": "0.0.1"
+}

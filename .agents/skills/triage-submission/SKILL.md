@@ -347,7 +347,7 @@ Read `configuration/commitlint.config.ts` for the full rule set before amending.
 | `applications` | Changes spanning multiple applications in applications/ (e.g. lexico, caelundas, etc.) |
 | `caelundas` | Node.js CLI for astronomical calendar generation (NASA JPL ephemeris) |
 | `configuration` | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.) |
-| `conformance` | Code generator templates and conformance validation tests for generated instances |
+| `conformetry` | Code generator templates and validation tests for generated instances |
 | `dependencies` | Dependency version changes (upgrades, additions, removals via pnpm) |
 | `deps` | Dependency version changes (upgrades, additions, removals via pnpm) |
 | `deployments` | GitHub Actions workflows and CI/CD pipeline configuration |

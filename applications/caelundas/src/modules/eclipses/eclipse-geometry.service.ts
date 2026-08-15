@@ -27,6 +27,10 @@ export class EclipseGeometryService {
     this.logger.setContext(EclipseGeometryService.name);
   }
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
 
   /**

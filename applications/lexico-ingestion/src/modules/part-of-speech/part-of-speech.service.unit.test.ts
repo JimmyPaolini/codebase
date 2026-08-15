@@ -11,6 +11,8 @@ import {
   VerbInflection,
 } from "@codebase/lexico-entities";
 
+import { PartOfSpeechFormsService } from "./part-of-speech-forms.service";
+import { PartOfSpeechModule } from "./part-of-speech.module";
 import { PartOfSpeechService } from "./part-of-speech.service";
 
 import type { Lexeme, PrincipalPart } from "@codebase/lexico-entities";
@@ -40,7 +42,9 @@ describe(PartOfSpeechService, () => {
       const { PartOfSpeechService: PartOfSpeechServiceForBootstrap } =
         await import("./part-of-speech.service");
 
-      const partOfSpeechService = new PartOfSpeechServiceForBootstrap();
+      const partOfSpeechService = new PartOfSpeechServiceForBootstrap(
+        new PartOfSpeechFormsService(),
+      );
 
       expect(partOfSpeechService).toBeDefined();
     });
@@ -57,7 +61,9 @@ describe(PartOfSpeechService, () => {
 
       const { PartOfSpeechService: PartOfSpeechServiceForNormalization } =
         await import("./part-of-speech.service");
-      const partOfSpeechService = new PartOfSpeechServiceForNormalization();
+      const partOfSpeechService = new PartOfSpeechServiceForNormalization(
+        new PartOfSpeechFormsService(),
+      );
 
       expect(partOfSpeechService).toBeDefined();
     });
@@ -74,7 +80,9 @@ describe(PartOfSpeechService, () => {
 
       const { PartOfSpeechService: PartOfSpeechServiceForNormalization } =
         await import("./part-of-speech.service");
-      const partOfSpeechService = new PartOfSpeechServiceForNormalization();
+      const partOfSpeechService = new PartOfSpeechServiceForNormalization(
+        new PartOfSpeechFormsService(),
+      );
 
       const $ = cheerio.load(`
         <div class="mw-heading"><h3>Noun[edit]</h3></div>
@@ -92,11 +100,29 @@ describe(PartOfSpeechService, () => {
 
       expect(partOfSpeech).toBe("noun");
     });
+
+    it("wires the forms service through Nest dependency injection", async () => {
+      const module = await Test.createTestingModule({
+        imports: [PartOfSpeechModule],
+      }).compile();
+
+      const partOfSpeechService = await module.resolve(PartOfSpeechService);
+      const partOfSpeechFormsService = await module.resolve(
+        PartOfSpeechFormsService,
+      );
+      const serviceWithDependency = partOfSpeechService as unknown as {
+        partOfSpeechFormsService: PartOfSpeechFormsService;
+      };
+
+      expect(serviceWithDependency.partOfSpeechFormsService).toBe(
+        partOfSpeechFormsService,
+      );
+    });
   });
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [PartOfSpeechService],
+      providers: [PartOfSpeechFormsService, PartOfSpeechService],
     }).compile();
 
     service = await module.resolve(PartOfSpeechService);
@@ -820,7 +846,7 @@ describe(PartOfSpeechService, () => {
 
     it("dispatches generic forms parsing", () => {
       const serviceWithParser = service as unknown as {
-        formsParser: {
+        partOfSpeechFormsService: {
           parseGenericForms: (args: {
             $: cheerio.CheerioAPI;
             elt: AnyNode;
@@ -833,7 +859,7 @@ describe(PartOfSpeechService, () => {
         };
       };
       const parseGenericFormsSpy = vi
-        .spyOn(serviceWithParser.formsParser, "parseGenericForms")
+        .spyOn(serviceWithParser.partOfSpeechFormsService, "parseGenericForms")
         .mockReturnValue({ noun: ["word"] });
 
       const $ = cheerio.load('<p id="entry">word</p>');
@@ -855,7 +881,7 @@ describe(PartOfSpeechService, () => {
 
     it("dispatches verb forms parsing", () => {
       const serviceWithParser = service as unknown as {
-        formsParser: {
+        partOfSpeechFormsService: {
           parseGenericForms: (args: {
             $: cheerio.CheerioAPI;
             elt: AnyNode;
@@ -868,7 +894,7 @@ describe(PartOfSpeechService, () => {
         };
       };
       const parseVerbFormsSpy = vi
-        .spyOn(serviceWithParser.formsParser, "parseVerbForms")
+        .spyOn(serviceWithParser.partOfSpeechFormsService, "parseVerbForms")
         .mockReturnValue({ indicative: ["amō"] });
 
       const $ = cheerio.load('<p id="entry">amō</p>');
@@ -909,7 +935,7 @@ describe(PartOfSpeechService, () => {
 
     it("dispatches generic forms for all generic parts of speech", () => {
       const serviceWithParser = service as unknown as {
-        formsParser: {
+        partOfSpeechFormsService: {
           parseGenericForms: (args: {
             $: cheerio.CheerioAPI;
             elt: AnyNode;
@@ -919,7 +945,7 @@ describe(PartOfSpeechService, () => {
       };
 
       const parseGenericFormsSpy = vi
-        .spyOn(serviceWithParser.formsParser, "parseGenericForms")
+        .spyOn(serviceWithParser.partOfSpeechFormsService, "parseGenericForms")
         .mockReturnValue({ generic: ["word"] });
       const initialCallCount = parseGenericFormsSpy.mock.calls.length;
 

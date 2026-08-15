@@ -1,0 +1,170 @@
+import { Test } from "@nestjs/testing";
+import { beforeAll, describe, expect, it } from "vitest";
+
+import { MarkdownNodesService } from "./markdown-nodes.service";
+import { MarkdownTreeService } from "./markdown-tree.service";
+import { MarkdownValidatorService } from "./markdown-validator.service";
+
+import type {
+  ConformetryError,
+  PreparedValidationDocument,
+} from "@conformetry/core";
+
+function createDocument(args: {
+  instance: string;
+  renderedTemplate: string;
+}): PreparedValidationDocument {
+  return {
+    filename: "README.md",
+    instance: args.instance,
+    instanceFilePath: "/project/README.md",
+    renderedTemplate: args.renderedTemplate,
+    templateFilePath: "/templates/README.md",
+  };
+}
+
+describe(MarkdownValidatorService, () => {
+  let service: MarkdownValidatorService;
+
+  function validate(
+    renderedTemplate: string,
+    instance: string,
+  ): ConformetryError[] {
+    return service.validateDocument(
+      createDocument({ instance, renderedTemplate }),
+    );
+  }
+
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
+      providers: [
+        MarkdownNodesService,
+        MarkdownTreeService,
+        MarkdownValidatorService,
+      ],
+    }).compile();
+
+    service = await module.resolve(MarkdownValidatorService);
+  });
+
+  it("is defined", () => {
+    expect(service).toBeDefined();
+  });
+
+  it("claims markdown files", () => {
+    expect(service.descriptor.fileExtensions).toStrictEqual([".md"]);
+    expect(service.descriptor.name).toBe("markdown");
+  });
+
+  it("accepts a document containing every required heading", () => {
+    expect(
+      validate("# Title\n\n## Usage\n", "# Title\n\n## Usage\n"),
+    ).toStrictEqual([]);
+  });
+
+  it("accepts extra sections the template does not declare", () => {
+    expect(
+      validate("# Title\n", "# Title\n\n## Extra\n\nSome prose.\n"),
+    ).toStrictEqual([]);
+  });
+
+  it("accepts reflowed prose, since matching is structural", () => {
+    expect(
+      validate("# Title\n\nOne two three\n", "# Title\n\nOne two three\n"),
+    ).toStrictEqual([]);
+  });
+
+  it("reports a missing heading", () => {
+    const errors = validate("# Title\n\n## Usage\n", "# Title\n");
+
+    expect(errors).toHaveLength(1);
+    expect(errors[0]?.message).toBe('Missing markdown heading: "Usage"');
+    expect(errors[0]?.language).toBe("markdown");
+  });
+
+  it("distinguishes heading depth", () => {
+    const errors = validate("## Usage\n", "# Usage\n");
+
+    expect(errors).toHaveLength(1);
+  });
+
+  it("reports a missing fenced code block", () => {
+    const errors = validate(
+      "```bash\nnx run build\n```\n",
+      "```bash\nnx run test\n```\n",
+    );
+
+    expect(errors).toHaveLength(1);
+    expect(errors[0]?.message).toContain("Missing markdown code");
+  });
+
+  it("anchors an error to the line after the last match", () => {
+    const errors = validate("# Title\n\n## Usage\n", "# Title\n");
+
+    expect(errors[0]?.instanceLine).toBe(2);
+  });
+
+  it("carries an actionable fix", () => {
+    const errors = validate("# Title\n\n## Usage\n", "# Title\n");
+
+    expect(errors[0]?.fix).toBe(
+      'Add the heading "Usage" to the instance file.',
+    );
+  });
+
+  it("requires a table to keep its column count", () => {
+    const template = "| a | b |\n| - | - |\n| 1 | 2 |\n";
+    const instance = "| a |\n| - |\n| 1 |\n";
+
+    expect(validate(template, instance).length).toBeGreaterThan(0);
+  });
+
+  describe("node kinds", () => {
+    /** Each kind, with markdown that matches and markdown that does not. */
+    const KINDS: { differs?: string; kind: string; same: string }[] = [
+      { differs: "## Title", kind: "heading", same: "# Title" },
+      {
+        differs: "<div>other</div>",
+        kind: "html",
+        same: "<div>same</div>",
+      },
+      {
+        differs: "![other](same.png)",
+        kind: "image",
+        same: "![alt](same.png)",
+      },
+      { differs: "`other`", kind: "inlineCode", same: "`same`" },
+      {
+        differs: "[other](https://same.example)",
+        kind: "link",
+        same: "[text](https://same.example)",
+      },
+      { differs: "1. one", kind: "list", same: "- one" },
+      {
+        differs: "| a |\n| - |\n| 1 |",
+        kind: "table",
+        same: "| a | b |\n| - | - |\n| 1 | 2 |",
+      },
+      { differs: "other", kind: "text", same: "same" },
+      // A thematic break carries no content, so there is nothing to drift.
+      { kind: "thematicBreak", same: "---" },
+    ];
+
+    it.each(KINDS)("accepts a matching $kind", ({ same }) => {
+      expect(validate(same, same)).toStrictEqual([]);
+    });
+
+    it.each(KINDS.filter((entry) => entry.differs !== undefined))(
+      "reports a $kind that drifted",
+      ({ differs, same }) => {
+        expect(validate(same, differs ?? same).length).toBeGreaterThan(0);
+      },
+    );
+  });
+
+  describe("leaf template nodes", () => {
+    it("stops descending once a leaf node has matched", () => {
+      expect(validate("---\n\n---\n", "---\n\n---\n")).toStrictEqual([]);
+    });
+  });
+});

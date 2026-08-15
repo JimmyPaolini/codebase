@@ -10,9 +10,18 @@ export interface CodeStatisticsResult {
   json: JsonStatistics;
   linesOfCode: number;
   python: PythonStatistics;
-  repoSizeMiB: string;
+  repoSizeMiB: number;
   sourceFiles: number;
   typescript: TypescriptStatistics;
+}
+
+/**
+ * Options accepted by the codometer command.
+ */
+export interface CodometerCommandOptions {
+  check?: boolean;
+  directory?: string;
+  readme?: string;
 }
 
 /**

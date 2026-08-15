@@ -1,4 +1,4 @@
-import { AspectsUtilitiesModule } from "@caelundas/src/modules/aspects/aspects.utilities.module";
+import { AspectsUtilitiesModule } from "@caelundas/src/modules/aspects/aspects-utilities.module";
 import { Module } from "@nestjs/common";
 
 import { StelliumService } from "./stellium.service";

@@ -12,4 +12,11 @@ export class AspectPhaseEmojiService extends AspectEventFormattingService {
   constructor() {
     super();
   }
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
+  // 🌎 Public Methods
 }

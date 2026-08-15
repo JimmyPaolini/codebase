@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 
+import { PartOfSpeechFormsService } from "./part-of-speech-forms.service";
 import { PartOfSpeechService } from "./part-of-speech.service";
 
 /**
@@ -9,6 +10,6 @@ import { PartOfSpeechService } from "./part-of-speech.service";
   controllers: [],
   exports: [PartOfSpeechService],
   imports: [],
-  providers: [PartOfSpeechService],
+  providers: [PartOfSpeechFormsService, PartOfSpeechService],
 })
 export class PartOfSpeechModule {}
