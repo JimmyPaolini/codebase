@@ -32,7 +32,8 @@
     "python-source": [
       "{projectRoot}/**/*.ipynb",
       "{projectRoot}/**/*.py",
-      "{projectRoot}/pyproject.toml"
+      "{projectRoot}/pyproject.toml",
+      "{workspaceRoot}/uv.lock"
     ],
     "python-tests": ["{projectRoot}/testing/**/*.py"],
     "shared-globals": [
@@ -924,10 +925,11 @@
         "inputs": [
           "{projectRoot}/**/*.sql",
           "{workspaceRoot}/configuration/pyproject.toml",
+          "{workspaceRoot}/uv.lock",
           "shared-globals"
         ],
         "options": {
-          "command": "uv run --project configuration sqlfluff {args} --config configuration/pyproject.toml {projectRoot}",
+          "command": "uv run sqlfluff {args} --config configuration/pyproject.toml {projectRoot}",
           "cwd": "{workspaceRoot}"
         }
       }
@@ -951,10 +953,11 @@
         "inputs": [
           "{projectRoot}/**/*.sql",
           "{workspaceRoot}/configuration/pyproject.toml",
+          "{workspaceRoot}/uv.lock",
           "shared-globals"
         ],
         "options": {
-          "command": "uv run --project configuration sqlfluff {args} --config configuration/pyproject.toml {projectRoot}",
+          "command": "uv run sqlfluff {args} --config configuration/pyproject.toml {projectRoot}",
           "cwd": "{workspaceRoot}"
         }
       }
@@ -1213,10 +1216,11 @@
         "inputs": [
           "{projectRoot}/**/*.{yaml,yml}",
           "{workspaceRoot}/configuration/yamllint.yaml",
+          "{workspaceRoot}/uv.lock",
           "shared-globals"
         ],
         "options": {
-          "command": "uv run --project configuration yamllint -c configuration/yamllint.yaml '{projectRoot}'",
+          "command": "uv run yamllint -c configuration/yamllint.yaml '{projectRoot}'",
           "cwd": "{workspaceRoot}"
         }
       }

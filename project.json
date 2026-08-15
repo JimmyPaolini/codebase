@@ -763,10 +763,11 @@
       "inputs": [
         "{projectRoot}/notepads/*.sql",
         "{workspaceRoot}/configuration/pyproject.toml",
+        "{workspaceRoot}/uv.lock",
         "shared-globals"
       ],
       "options": {
-        "command": "uv run --project configuration sqlfluff {args} --config configuration/pyproject.toml notepads",
+        "command": "uv run sqlfluff {args} --config configuration/pyproject.toml notepads",
         "cwd": "{workspaceRoot}"
       }
     },
@@ -785,10 +786,11 @@
       "inputs": [
         "{projectRoot}/notepads/*.sql",
         "{workspaceRoot}/configuration/pyproject.toml",
+        "{workspaceRoot}/uv.lock",
         "shared-globals"
       ],
       "options": {
-        "command": "uv run --project configuration sqlfluff {args} --config configuration/pyproject.toml notepads",
+        "command": "uv run sqlfluff {args} --config configuration/pyproject.toml notepads",
         "cwd": "{workspaceRoot}"
       }
     },
@@ -962,7 +964,7 @@
         "default"
       ],
       "options": {
-        "command": "uv run --project applications/affirmations vulture . configuration/vulture_whitelist.py --min-confidence 80 --exclude '*/applications/*,*/packages/*,*/tools/*,*/node_modules/*,*/dist/*,*/coverage/*,*/.venv/*'",
+        "command": "uv run vulture . configuration/vulture_whitelist.py --min-confidence 80 --exclude '*/applications/*,*/packages/*,*/tools/*,*/node_modules/*,*/dist/*,*/coverage/*,*/.venv/*'",
         "cwd": "{projectRoot}"
       }
     },

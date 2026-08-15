@@ -1,5 +1,8 @@
-# Root pyproject.toml — shared Python tool configuration and workspace-level dev tools.
-# Mirrors tsconfig.base.json / eslint.config.ts pattern.
+# Shared Python tool configuration and the workspace-root dev tools.
+# Mirrors tsconfig.json / eslint.config.ts pattern.
+#
+# This is a member of the uv workspace declared in the root `pyproject.toml`;
+# every member shares the single `uv.lock` and `.venv` at the repository root.
 #
 # Python projects extend this via [tool.ruff] extend = "../../configuration/pyproject.toml"
 
@@ -9,8 +12,9 @@ version = "0.0.0"
 requires-python = ">=3.14"
 dependencies = []
 
+# Tools the workspace-root Nx targets invoke, over files outside any project.
 [dependency-groups]
-dev = ["sqlfluff>=3.0", "yamllint>=1.35"]
+dev = ["sqlfluff>=3.0", "vulture>=2.14", "yamllint>=1.35"]
 
 [tool.ruff]
 target-version = "py314"

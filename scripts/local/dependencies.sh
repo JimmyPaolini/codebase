@@ -4,7 +4,7 @@
 # Responsibilities:
 #   - Install Node.js workspace dependencies (pnpm install)
 #   - Reset the Nx computation cache (ensures a clean local cache after setup)
-#   - Create the Python virtual environment for the affirmations application
+#   - Create the shared Python virtual environment for the uv workspace
 #   - Initialize Terraform providers and backend
 #   - Write kubeconfig for the LKE cluster (skipped if env vars are missing)
 #
@@ -21,14 +21,12 @@ echo "🔄 Resetting Nx cache..."
 nx reset
 echo "✅ Nx cache reset"
 
-# `uv sync` reads pyproject.toml to create/update the venv and install all
-# locked dependencies. The venv lives at applications/affirmations/.venv and
-# is activated automatically by Nx tasks via the `uv run` prefix.
-echo "🐍 Setting up Python virtual environment for affirmations..."
-pushd applications/affirmations > /dev/null
+# `uv sync` reads the workspace root pyproject.toml to create/update the venv
+# and install the locked dependencies of every workspace member. The venv lives
+# at .venv and is activated automatically by Nx tasks via the `uv run` prefix.
+echo "🐍 Setting up Python virtual environment..."
 uv sync
-echo "✅ Python dependencies installed (applications/affirmations/.venv)"
-popd > /dev/null
+echo "✅ Python dependencies installed (.venv)"
 
 # `terraform init` downloads the required providers (linode) and configures the
 # backend. This must run before any `terraform plan/apply` or state imports.

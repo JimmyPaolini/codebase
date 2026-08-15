@@ -40,8 +40,9 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel"]
 
 [tool.pyright]
 # Venv settings are project-specific; base config (pythonVersion, typeCheckingMode)
-# is in root pyproject.toml
-venvPath = "."
+# is in configuration/pyproject.toml
+# The venv is the shared uv workspace venv at the repository root
+venvPath = "../.."
 venv = ".venv"
 
 [tool.pytest.ini_options]

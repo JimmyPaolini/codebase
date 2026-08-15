@@ -1,0 +1,13 @@
+# uv workspace root — the only Python file at the repository root.
+#
+# Shared Python tool configuration lives in `configuration/pyproject.toml`
+# (mirroring tsconfig.json / eslint.config.ts), which participates here as a
+# workspace member. This file exists solely because uv resolves a workspace
+# from the directory that contains its members, so the root must sit here.
+#
+# Members are listed explicitly: a glob such as `applications/*` fails on the
+# TypeScript projects, which have no `pyproject.toml`. Add every new Python
+# project to this list.
+
+[tool.uv.workspace]
+members = ["applications/affirmations", "configuration"]

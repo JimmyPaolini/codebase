@@ -57,9 +57,10 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel"]
 
 [tool.pyright]
 # Venv settings are project-specific; base config (pythonVersion, typeCheckingMode)
-# is in root pyproject.toml
+# is in configuration/pyproject.toml
+# The venv is the shared uv workspace venv at the repository root
 # LangChain/LangGraph suppressions are project-specific
-venvPath = "."
+venvPath = "../.."
 venv = ".venv"
 # LangChain/LangGraph packages don't ship complete type stubs; suppress false positives
 reportMissingTypeStubs = "none"

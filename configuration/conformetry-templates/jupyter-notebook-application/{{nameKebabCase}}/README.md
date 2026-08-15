@@ -9,8 +9,12 @@ A Python + Jupyter notebook application scaffold in this codebase.
 
 ## Setup
 
+This application is a member of the uv workspace declared in the root
+`pyproject.toml`, sharing the root `uv.lock` and `.venv`. Sync from the
+repository root — running `uv sync` inside this directory prunes the other
+members out of the shared venv.
+
 ```bash
-cd applications/{{nameKebabCase}}
 uv sync
 ```
 
