@@ -20,6 +20,7 @@ cmdk
 codebase
 codemod
 codemods
+codometer
 commitlint
 conformetry
 context7
@@ -33,6 +34,8 @@ deps
 devdeps
 devkit
 disambiguator
+docstring
+docstrings
 domcontentloaded
 dunder
 effectful
@@ -94,8 +97,6 @@ maplibre
 materialui
 mcp
 metatype
-codometer
-metitur
 middlewares
 multiset
 multivalued
@@ -229,5 +230,3 @@ windsurfrules
 workspaces
 worktree
 worktrees
-docstring
-docstrings
