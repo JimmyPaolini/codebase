@@ -24,7 +24,11 @@ export class EphemerisPhenomenaService {
     private readonly time: EphemerisTimeService,
   ) {}
 
-  // 🌎 Public Methods
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
 
   /**
    * Computes pheno for the Sun at a specific moment.
@@ -65,6 +69,8 @@ export class EphemerisPhenomenaService {
       diameterEphemeris[timestamp] = { diameter: result.data[3] };
     }
   }
+
+  // 🌎 Public Methods
 
   /**
    * Computes minute-by-minute apparent angular diameter for a single body.
@@ -174,8 +180,6 @@ export class EphemerisPhenomenaService {
     if (needsDiameter)
       diameterEphemeris[timestamp] = { diameter: result.data[3] };
   }
-
-  // 🔏 Private Methods
 
   /**
    * Computes pheno for any body (Sun or non-Sun).

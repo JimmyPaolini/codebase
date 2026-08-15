@@ -9,7 +9,7 @@ type ConfigOptions =
     };
 
 describe("caelundas module", () => {
-  let caelundasModule: unknown;
+  let mainModule: unknown;
   let configOptions: ConfigOptions;
 
   beforeAll(async () => {
@@ -17,13 +17,13 @@ describe("caelundas module", () => {
     const importedConfigModule = await import("@nestjs/config");
     const forRootSpy = vi.spyOn(importedConfigModule.ConfigModule, "forRoot");
 
-    const importedModule = await import("./caelundas.module");
-    caelundasModule = importedModule.CaelundasModule;
+    const importedModule = await import("../../main.module");
+    mainModule = importedModule.MainModule;
     configOptions = forRootSpy.mock.calls[0]?.[0];
   });
 
   it("configures the global env validator", () => {
-    expect(caelundasModule).toBeDefined();
+    expect(mainModule).toBeDefined();
 
     const options = configOptions;
 

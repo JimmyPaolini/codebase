@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { AspectsUtilitiesModule } from "../aspects/aspects.utilities.module";
+import { AspectsUtilitiesModule } from "../aspects/aspects-utilities.module";
 
 import { TripleAspectsComposerService } from "./triple-aspects-composer.service";
 import { TripleAspectsDetectorService } from "./triple-aspects-detector.service";

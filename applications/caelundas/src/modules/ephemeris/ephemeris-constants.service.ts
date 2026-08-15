@@ -22,6 +22,10 @@ export class EphemerisConstantsService {
 
   private readonly nodeSet: ReadonlySet<string> = new Set<string>(nodes);
 
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   // 🌎 Public Methods
 
   /**

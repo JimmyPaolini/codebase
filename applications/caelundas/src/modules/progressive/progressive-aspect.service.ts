@@ -13,7 +13,13 @@ export class ProgressiveAspectService {
 
   constructor() {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
+
+  // 🌎 Public Methods
 
   /**
    * Create a stable group key from sorted body labels and aspect label.

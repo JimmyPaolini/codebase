@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { AspectsUtilitiesModule } from "../aspects/aspects.utilities.module";
+import { AspectsUtilitiesModule } from "../aspects/aspects-utilities.module";
 
 import { QuadrupleAspectsBaseService } from "./quadruple-aspects-base.service";
 import { QuadrupleAspectsComposerService } from "./quadruple-aspects-composer.service";

@@ -4,11 +4,11 @@ import _ from "lodash";
 import { AspectPhaseEmojiService } from "../aspects/aspect-phase-emoji.service";
 import { ProgressiveCompoundEventService } from "../aspects/progressive-compound-event.service";
 import { aspectBodies as sextupleAspectBodies } from "../caelundas/caelundas.constants";
+import { groupByToMap } from "../caelundas/caelundas.types";
 import {
   symbolByBody,
   symbolBySextupleAspect,
-} from "../caelundas/caelundas.symbol-constants";
-import { groupByToMap } from "../caelundas/caelundas.types";
+} from "../caelundas/symbol-caelundas.constants";
 
 import type { AspectBodies } from "../aspects/aspects.types";
 import type {
@@ -36,7 +36,13 @@ export class SextupleAspectsComposerService {
     private readonly progressiveCompoundEventService: ProgressiveCompoundEventService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
+
+  // 🌎 Public Methods
 
   /**
    * Adds connection.

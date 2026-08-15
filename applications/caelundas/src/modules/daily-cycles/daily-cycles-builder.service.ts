@@ -39,7 +39,11 @@ export class DailyCyclesBuilderService {
   private static readonly sunRadiusDegrees =
     16 / MathService.arcminutesPerDegree;
 
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
+
+  // 🌎 Public Methods
 
   /**
    * Creates a lunar nadir calendar event.

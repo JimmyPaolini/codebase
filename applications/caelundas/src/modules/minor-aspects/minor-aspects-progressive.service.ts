@@ -5,14 +5,20 @@ import {
   minorAspects,
 } from "../caelundas/caelundas.constants";
 import {
+  isBody,
+  isMinorAspect,
+} from "../caelundas/caelundas.types";
+import {
   symbolByBody,
   symbolByMinorAspect,
-} from "../caelundas/caelundas.symbol-constants";
-import { isBody, isMinorAspect } from "../caelundas/caelundas.types";
+} from "../caelundas/symbol-caelundas.constants";
 import { ProgressiveAspectService } from "../progressive/progressive-aspect.service";
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
-import type { Body, MinorAspect } from "../caelundas/caelundas.types";
+import type {
+  Body,
+  MinorAspect,
+} from "../caelundas/caelundas.types";
 import type { Event } from "../calendar/calendar.types";
 
 /**
@@ -27,6 +33,14 @@ export class MinorAspectsProgressiveService {
     private readonly progressiveUtilitiesService: ProgressiveUtilitiesService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
+  // 🌎 Public Methods
+
   /**
    * Builds a stable grouping key from sorted bodies plus aspect name for pairing.
    */
@@ -37,8 +51,6 @@ export class MinorAspectsProgressiveService {
       categories: event.categories,
     });
   }
-
-  // 🔏 Private Methods
 
   /**
    * Backward-compatible wrapper retained for existing unit tests.

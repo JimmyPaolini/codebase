@@ -4,8 +4,8 @@ import moment, { type Moment } from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { MARGIN_MINUTES } from "../caelundas/caelundas.constants";
-import { symbolByLunarPhase } from "../caelundas/caelundas.symbol-constants";
 import * as CaelundasTypes from "../caelundas/caelundas.types";
+import { symbolByLunarPhase } from "../caelundas/symbol-caelundas.constants";
 import { CalendarService } from "../calendar/calendar.service";
 import { EphemerisModule } from "../ephemeris/ephemeris.module";
 import { LoggerService } from "../logger/logger.service";

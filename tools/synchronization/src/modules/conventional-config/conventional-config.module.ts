@@ -14,7 +14,7 @@ import { ConventionalConfigService } from "./conventional-config.service";
  */
 @Module({
   controllers: [],
-  exports: [ConventionalConfigCommand],
+  exports: [ConventionalConfigCommand, ConventionalConfigService],
   imports: [LoggerModule],
   providers: [
     ConventionalConfigCommand,

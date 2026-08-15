@@ -7,14 +7,14 @@ import {
   minorAspects,
 } from "../caelundas/caelundas.constants";
 import {
-  symbolByBody,
-  symbolByMinorAspect,
-} from "../caelundas/caelundas.symbol-constants";
-import {
   capitalize,
   isBody,
   isMinorAspect,
 } from "../caelundas/caelundas.types";
+import {
+  symbolByBody,
+  symbolByMinorAspect,
+} from "../caelundas/symbol-caelundas.constants";
 import { LoggerService } from "../logger/logger.service";
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
@@ -44,7 +44,13 @@ export class MinorAspectsComposerService {
     this.logger.setContext(MinorAspectsComposerService.name);
   }
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
+
+  // 🌎 Public Methods
 
   /**
    * Assembles minor aspect event.

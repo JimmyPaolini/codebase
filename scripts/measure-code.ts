@@ -324,7 +324,10 @@ for (const trackedFile of measuredTrackedFiles) {
     /* ignore */
   }
 }
-const repoSizeMiB = (repoBytes / 1024 / 1024).toFixed(1);
+// Rounded to a whole MiB on purpose. At one decimal place the total sat
+// 7 KiB from a rounding boundary, so an ordinary commit flipped the badge and
+// CI disagreed with whichever machine wrote it last.
+const repoSizeMiB = Math.round(repoBytes / 1024 / 1024);
 
 // 📂 Folder count
 

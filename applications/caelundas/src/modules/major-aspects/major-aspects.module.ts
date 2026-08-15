@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { AspectsUtilitiesModule } from "../aspects/aspects.utilities.module";
+import { AspectsUtilitiesModule } from "../aspects/aspects-utilities.module";
 import { EphemerisModule } from "../ephemeris/ephemeris.module";
 import { ProgressiveUtilitiesModule } from "../progressive/progressive-utilities.module";
 

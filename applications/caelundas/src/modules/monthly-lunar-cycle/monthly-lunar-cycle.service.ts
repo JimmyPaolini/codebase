@@ -1,9 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
-import { lunarPhases, MARGIN_MINUTES } from "../caelundas/caelundas.constants";
-import { symbolByLunarPhase } from "../caelundas/caelundas.symbol-constants";
+import {
+  lunarPhases,
+  MARGIN_MINUTES,
+} from "../caelundas/caelundas.constants";
 import { isLunarPhase } from "../caelundas/caelundas.types";
+import { symbolByLunarPhase } from "../caelundas/symbol-caelundas.constants";
 import { CalendarService } from "../calendar/calendar.service";
 import { EphemerisService } from "../ephemeris/ephemeris.service";
 import { LoggerService } from "../logger/logger.service";

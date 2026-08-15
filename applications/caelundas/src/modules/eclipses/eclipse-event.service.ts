@@ -26,6 +26,8 @@ export class EclipseEventService {
 
   private readonly categories = ["Astronomy", "Astrology", "Eclipse"];
 
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
 
   /**

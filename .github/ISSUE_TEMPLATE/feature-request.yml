@@ -19,7 +19,7 @@ body:
         - applications
         - caelundas
         - configuration
-        - conformance
+        - conformetry
         - dependencies
         - deps
         - deployments
@@ -38,6 +38,7 @@ body:
         - testing
         - tools
         - synchronization
+
 
 
     validations:

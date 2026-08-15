@@ -12,4 +12,11 @@ export class ProgressiveCompoundEventService extends AspectEventFormattingServic
   constructor() {
     super();
   }
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
+  // 🌎 Public Methods
 }

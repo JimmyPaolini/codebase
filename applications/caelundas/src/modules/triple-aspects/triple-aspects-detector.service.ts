@@ -24,6 +24,12 @@ export class TripleAspectsDetectorService {
     private readonly tripleAspectsComposerService: TripleAspectsComposerService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   /**
    * Handles check grand trine triplet.
    */
@@ -308,6 +314,8 @@ export class TripleAspectsDetectorService {
       })
     );
   }
+
+  // 🌎 Public Methods
 
   /**
    * Detects grand trines by evaluating all unique body triplets connected by trines.

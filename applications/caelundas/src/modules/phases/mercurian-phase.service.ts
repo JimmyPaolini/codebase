@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
-import { symbolByMercurianPhase } from "../caelundas/caelundas.symbol-constants";
+import { symbolByMercurianPhase } from "../caelundas/symbol-caelundas.constants";
 import { LoggerService } from "../logger/logger.service";
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
@@ -49,6 +49,8 @@ export class MercurianPhaseService {
   // 🔐 Private Fields
 
   private static readonly categories = PHASE_EVENT_BASE_CATEGORIES;
+
+  // 🔑 Public Fields
 
   // 🔏 Private Methods
 

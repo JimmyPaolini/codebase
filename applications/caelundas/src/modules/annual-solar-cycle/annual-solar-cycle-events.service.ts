@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { LoggerService } from "../logger/logger.service.js";
+import { LoggerService } from "../logger/logger.service";
 
 import {
   ANNUAL_SOLAR_CYCLE_BASE_CATEGORIES,
@@ -8,13 +8,13 @@ import {
   PERIHELION_CATEGORY,
   SOLAR_CYCLE_EVENT_TIMEZONE,
   SOLAR_CYCLE_LONGITUDE_THRESHOLDS,
-} from "./annual-solar-cycle.constants.js";
+} from "./annual-solar-cycle.constants";
 
 import type { Event } from "../calendar/calendar.types";
 import type {
   BuildSolarCycleEventArguments,
   SolarCycleLongitudes,
-} from "./annual-solar-cycle.types.js";
+} from "./annual-solar-cycle.types";
 import type { Moment } from "moment-timezone";
 
 /**
@@ -29,6 +29,10 @@ export class AnnualSolarCycleEventsService {
   }
 
   // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
 
   /** Builds a calendar event anchored at a single minute. */
   private buildSolarCycleEvent(args: BuildSolarCycleEventArguments): Event {
@@ -46,8 +50,6 @@ export class AnnualSolarCycleEventsService {
       summary,
     };
   }
-
-  // 🌎 Public Methods
 
   /** Collects autumn events for the detected longitude crossing. */
   private getAutumnEvents(
@@ -141,6 +143,8 @@ export class AnnualSolarCycleEventsService {
     const { currentLongitude, previousLongitude } = args;
     return currentLongitude >= threshold && previousLongitude < threshold;
   }
+
+  // 🌎 Public Methods
 
   /** Builds the solar aphelion event. */
   buildAphelionEvent(date: Moment): Event {

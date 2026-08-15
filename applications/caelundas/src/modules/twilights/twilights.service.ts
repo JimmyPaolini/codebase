@@ -28,6 +28,8 @@ export class TwilightsService {
     private readonly twilightsDetectorService: TwilightsDetectorService,
   ) {}
 
+  // 🔐 Private Fields
+
   // 🔑 Public Fields
 
   static readonly degreesByTwilight: Record<Twilight, number> = {
@@ -42,6 +44,8 @@ export class TwilightsService {
     "nautical",
     "astronomical",
   ] as const satisfies readonly Twilight[];
+
+  // 🔏 Private Methods
 
   // 🌎 Public Methods
 

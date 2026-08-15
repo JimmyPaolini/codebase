@@ -5,14 +5,18 @@ import { AspectGraphService } from "../aspects/aspect-graph.service";
 import { CompoundPhaseService } from "../aspects/compound-phase.service";
 import { ProgressiveCompoundEventService } from "../aspects/progressive-compound-event.service";
 import { aspectBodies as stelliumBodies } from "../caelundas/caelundas.constants";
+import { isKeyOf } from "../caelundas/caelundas.types";
 import {
   symbolByBody,
   symbolByStellium,
-} from "../caelundas/caelundas.symbol-constants";
-import { isKeyOf } from "../caelundas/caelundas.types";
+} from "../caelundas/symbol-caelundas.constants";
 
 import type { AspectBodies } from "../aspects/aspects.types";
-import type { Aspect, AspectPhase, Body } from "../caelundas/caelundas.types";
+import type {
+  Aspect,
+  AspectPhase,
+  Body,
+} from "../caelundas/caelundas.types";
 import type { Event } from "../calendar/calendar.types";
 import type { Moment } from "moment-timezone";
 

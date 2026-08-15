@@ -41,6 +41,8 @@ export class PhaseCalculationService {
 
   private readonly riseSetThreshold = TwilightsService.degreesByTwilight.civil;
 
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
 
   /**

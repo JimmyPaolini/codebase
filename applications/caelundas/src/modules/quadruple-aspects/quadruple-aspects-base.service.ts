@@ -7,7 +7,7 @@ import { aspectBodies as quadrupleAspectBodies } from "../caelundas/caelundas.co
 import {
   symbolByBody,
   symbolByQuadrupleAspect,
-} from "../caelundas/caelundas.symbol-constants";
+} from "../caelundas/symbol-caelundas.constants";
 
 import type { AspectBodies } from "../aspects/aspects.types";
 import type {
@@ -29,7 +29,13 @@ export class QuadrupleAspectsBaseService {
     private readonly aspectPhaseEmojiService: AspectPhaseEmojiService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
+
+  // 🌎 Public Methods
 
   /**
    * Creates a bidirectional lookup of each opposition endpoint to its opposite body.

@@ -22,6 +22,13 @@ export class TripleAspectsService {
     private readonly tripleAspectsComposerService: TripleAspectsComposerService,
     private readonly tripleAspectsDetectorService: TripleAspectsDetectorService,
   ) {}
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
+  // 🌎 Public Methods
 
   /**
    * Backward-compatible static utility retained for existing unit tests.

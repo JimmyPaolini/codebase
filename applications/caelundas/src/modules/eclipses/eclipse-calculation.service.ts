@@ -34,6 +34,12 @@ export class EclipseCalculationService {
     this.logger.setContext(EclipseCalculationService.name);
   }
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   /**
    * Creates geocentric event payloads for detected eclipse phases.
    */
@@ -194,6 +200,8 @@ export class EclipseCalculationService {
       args.currentLongitudeAngle <= threshold
     );
   }
+
+  // 🌎 Public Methods
 
   /**
    * Samples previous/current/next coordinates used by phase classification.

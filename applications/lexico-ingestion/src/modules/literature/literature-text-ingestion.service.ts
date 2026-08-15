@@ -16,6 +16,12 @@ export class LiteratureTextIngestionService {
     this.logger.setContext(LiteratureTextIngestionService.name);
   }
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   /**
    * Builds hierarchy prefix for literature ingestion.
    */
@@ -44,6 +50,8 @@ export class LiteratureTextIngestionService {
     const currentPath = [authorSlug, ...textEntry.pathParts].join("/");
     return parentTexts.get(currentPath);
   }
+
+  // 🌎 Public Methods
 
   /** Runs ingestion for one text entry with standardized start, error, and completion logs. */
   public async ingestTextWithLogging(

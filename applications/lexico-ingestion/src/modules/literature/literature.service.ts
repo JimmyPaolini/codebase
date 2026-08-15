@@ -18,10 +18,9 @@ import { NumeralsService } from "../numerals/numerals.service";
 
 import { LiteratureLibraryScanService } from "./literature-library-scan.service";
 import { LiteratureTextIngestionService } from "./literature-text-ingestion.service";
+import { LiteratureWordNormalizationService } from "./literature-word-normalization.service";
 import {
   authorIdToName,
-  CAPITAL_LETTER_PATTERN,
-  COMBINING_MARKS_PATTERN,
   DEFAULT_LINE_CHUNK_SIZE,
   DEFAULT_TEXT_CHUNK_SIZE,
   DEFAULT_TOKEN_CHUNK_SIZE,
@@ -60,6 +59,7 @@ export class LiteratureService {
     private readonly wordRepository: Repository<Word>,
     private readonly literatureLibraryScanService: LiteratureLibraryScanService,
     private readonly literatureTextIngestionService: LiteratureTextIngestionService,
+    private readonly literatureWordNormalizationService: LiteratureWordNormalizationService,
     private readonly logger: LoggerService,
   ) {
     this.logger.setContext(LiteratureService.name);
@@ -74,10 +74,16 @@ export class LiteratureService {
     );
   }
 
+  // 🔐 Private Fields
+
   private readonly logFilePath: string;
 
   private readonly memoizedWordCache = new Map<string, null | string>();
   private wordsCache: Map<string, string> | null = null;
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
 
   /**
    * Builds line entity from paragraph for literature ingestion.
@@ -141,15 +147,6 @@ export class LiteratureService {
     return parentTexts;
   }
   /**
-   * Escape capitals for literature ingestion.
-   */
-  private escapeCapitals(word: string): string {
-    return word.replaceAll(
-      CAPITAL_LETTER_PATTERN,
-      (character) => `_${character.toLowerCase()}`,
-    );
-  }
-  /**
    * Extracts tokens from line from literature ingestion input.
    */
   private extractTokensFromLine(
@@ -164,7 +161,10 @@ export class LiteratureService {
       if (!isPunctuation) {
         wordId = this.memoizedWordCache.get(data) || null;
         if (!wordId) {
-          const normalized = this.escapeCapitals(this.normalize(data));
+          const normalized =
+            this.literatureWordNormalizationService.escapeCapitals(
+              this.literatureWordNormalizationService.normalize(data),
+            );
           wordId = wordMap.get(normalized) || null;
           this.memoizedWordCache.set(data, wordId);
         }
@@ -327,16 +327,6 @@ export class LiteratureService {
     return typeof value === "object" && value !== null && !Array.isArray(value);
   }
   /**
-   * Normalizes input values used by literature ingestion.
-   */
-  private normalize(str: string): string {
-    return str
-      .normalize("NFD")
-      .replaceAll(COMBINING_MARKS_PATTERN, "")
-      .toLowerCase()
-      .trim();
-  }
-  /**
    * Parses frontmatter during literature ingestion.
    */
   private parseFrontmatter(ast: Root): Record<string, unknown> {
@@ -486,6 +476,8 @@ export class LiteratureService {
       ),
     );
   }
+  // 🌎 Public Methods
+
   /** Ingests all selected texts grouped by author. */
   public async ingestAllAuthors(textsToIngest: LibraryEntry[]): Promise<void> {
     const grouped = _.groupBy(textsToIngest, "authorSlug");

@@ -6,10 +6,13 @@ import {
   specialtyAspects,
 } from "../caelundas/caelundas.constants";
 import {
+  isBody,
+  isSpecialtyAspect,
+} from "../caelundas/caelundas.types";
+import {
   symbolByBody,
   symbolBySpecialtyAspect,
-} from "../caelundas/caelundas.symbol-constants";
-import { isBody, isSpecialtyAspect } from "../caelundas/caelundas.types";
+} from "../caelundas/symbol-caelundas.constants";
 import { EphemerisService } from "../ephemeris/ephemeris.service";
 import { LoggerService } from "../logger/logger.service";
 
@@ -37,7 +40,13 @@ export class SpecialtyAspectsComposerService {
     this.logger.setContext(SpecialtyAspectsComposerService.name);
   }
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
+
+  // 🌎 Public Methods
 
   /**
    * Builds and logs one specialty-aspect boundary event from pre-resolved display parts.

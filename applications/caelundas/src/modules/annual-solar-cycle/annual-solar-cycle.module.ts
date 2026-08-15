@@ -4,7 +4,7 @@ import { EphemerisModule } from "../ephemeris/ephemeris.module";
 import { MathModule } from "../math/math.module";
 import { ProgressiveUtilitiesModule } from "../progressive/progressive-utilities.module";
 
-import { AnnualSolarCycleEventsService } from "./annual-solar-cycle-events.service.js";
+import { AnnualSolarCycleEventsService } from "./annual-solar-cycle-events.service";
 import { AnnualSolarCycleService } from "./annual-solar-cycle.service";
 
 /**

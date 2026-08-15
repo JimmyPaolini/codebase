@@ -4,11 +4,11 @@ import {
   MARGIN_MINUTES,
   retrogradeBodies,
 } from "../caelundas/caelundas.constants";
+import { capitalize } from "../caelundas/caelundas.types";
 import {
   symbolByBody,
   symbolByOrbitalDirection,
-} from "../caelundas/caelundas.symbol-constants";
-import { capitalize } from "../caelundas/caelundas.types";
+} from "../caelundas/symbol-caelundas.constants";
 import { EphemerisService } from "../ephemeris/ephemeris.service";
 import { LoggerService } from "../logger/logger.service";
 import { MathService } from "../math/math.service";

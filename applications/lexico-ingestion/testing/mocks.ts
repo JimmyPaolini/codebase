@@ -9,6 +9,10 @@ import { afterEach, beforeEach, vi } from "vitest";
 
 import type { AnyNode } from "domhandler";
 import type { ObjectLiteral, QueryBuilder, Repository } from "typeorm";
+
+/**
+ * Default test date used across time-sensitive tests.
+ */
 export const DEFAULT_TEST_DATE = new Date("2025-03-20T14:46:00Z");
 
 // 🧪 Prompts Helpers
@@ -25,7 +29,7 @@ export type PromptsMock<Response extends Record<string, unknown>> = ReturnType<
  * Sets up fake timers with a fixed system time before each test
  * and restores real timers after each test.
  *
- * Usage in test files:.
+ * Usage in test files:
  * ```ts
  * import { mockDates } from '../testing/mocks'
  *

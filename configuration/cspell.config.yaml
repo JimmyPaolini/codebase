@@ -5,6 +5,7 @@ $schema: https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell
 ignorePaths:
   - ./.devcontainer/devcontainer.json
   - .git
+  - .conformetry
   - .nx
   - "*.eot"
   - "*.gif"
@@ -125,4 +126,8 @@ overrides:
   - filename: "**/lexico-ingestion/data/**"
     enabled: false
 words:
+  # The rc-style conformetry config filenames the Nx plugin looks for.
+  - conformetryrc
+  # Nx's project-discovery ignore file, read when listing a workspace's projects.
+  - nxignore
   - openwiki

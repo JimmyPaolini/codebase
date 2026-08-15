@@ -3,11 +3,11 @@ import _ from "lodash";
 
 import { AspectsUtilitiesService } from "../aspects/aspects-utilities.service";
 import { majorAspects } from "../caelundas/caelundas.constants";
+import { capitalize } from "../caelundas/caelundas.types";
 import {
   symbolByBody,
   symbolByMajorAspect,
-} from "../caelundas/caelundas.symbol-constants";
-import { capitalize } from "../caelundas/caelundas.types";
+} from "../caelundas/symbol-caelundas.constants";
 import { LoggerService } from "../logger/logger.service";
 
 import type {
@@ -42,6 +42,8 @@ export class MajorAspectEventService {
     AspectPhase,
     { emoji: string; label: string; verb: string }
   >;
+
+  // 🔑 Public Fields
 
   // 🔏 Private Methods
 

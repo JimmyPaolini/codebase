@@ -13,17 +13,17 @@ import { EphemerisService } from "./ephemeris.service";
 
 import type * as EphemerisConstantsModule from "./ephemeris.constants";
 import type {
-  EphemerisEntries,
-  EphemerisFeatureSets,
-  JulianDays,
-} from "./ephemeris.internal.types";
-import type {
   AzimuthElevationEphemeris,
   CoordinateEphemeris,
   DiameterEphemeris,
   DistanceEphemeris,
   IlluminationEphemeris,
 } from "./ephemeris.types";
+import type {
+  EphemerisEntries,
+  EphemerisFeatureSets,
+  JulianDays,
+} from "./internal-ephemeris.types";
 import type { Moment } from "moment-timezone";
 
 vi.mock("./ephemeris.constants", async (importOriginal) => {

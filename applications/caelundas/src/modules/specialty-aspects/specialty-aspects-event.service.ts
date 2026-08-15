@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { AspectEventFormattingService } from "../aspects/aspect-event-formatting.service";
 import { AspectsUtilitiesService } from "../aspects/aspects-utilities.service";
 import { specialtyAspects } from "../caelundas/caelundas.constants";
-import { symbolBySpecialtyAspect } from "../caelundas/caelundas.symbol-constants";
+import { symbolBySpecialtyAspect } from "../caelundas/symbol-caelundas.constants";
 import { EphemerisService } from "../ephemeris/ephemeris.service";
 import { LoggerService } from "../logger/logger.service";
 
@@ -31,6 +31,12 @@ export class SpecialtyAspectsEventService {
   ) {
     this.logger.setContext(SpecialtyAspectsEventService.name);
   }
+
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
 
   // 🌎 Public Methods
 

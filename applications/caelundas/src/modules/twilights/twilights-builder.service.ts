@@ -16,11 +16,17 @@ export class TwilightsBuilderService {
     this.logger.setContext(TwilightsBuilderService.name);
   }
 
+  // 🔐 Private Fields
+
   private static readonly twilightBaseCategories = [
     "Astronomy",
     "Astrology",
     "Twilight",
   ];
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
 
   /** Creates a timestamped twilight transition event and logs the detected boundary. */
   private buildTransitionEvent(
@@ -43,6 +49,8 @@ export class TwilightsBuilderService {
       summary,
     };
   }
+
+  // 🌎 Public Methods
 
   /**
    * Builds the instant when Sun crosses -18 degrees upward.

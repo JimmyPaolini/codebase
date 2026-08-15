@@ -25,6 +25,10 @@ export class SextupleAspectsService {
     private readonly compoundPhaseService: CompoundPhaseService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
 
   /** Builds sextuple-aspect hexagram events from trine and sextile edge snapshots. */

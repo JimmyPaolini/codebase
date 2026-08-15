@@ -1,4 +1,8 @@
+import { createMock } from "@golevelup/ts-vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import type { LoggerService } from "./modules/logger/logger.service";
+import type { SynchronizationModule } from "./modules/synchronization/synchronization.module";
 
 type CommandFactoryRun = (
   module: unknown,
@@ -6,7 +10,8 @@ type CommandFactoryRun = (
 ) => Promise<void>;
 
 const run = vi.fn<CommandFactoryRun>().mockResolvedValue(undefined);
-const setContext = vi.fn<(context: string) => void>();
+const loggerServiceMock = createMock<LoggerService>();
+const synchronizationModuleMock = createMock<SynchronizationModule>();
 
 vi.mock("nest-commander", () => ({
   CommandFactory: {
@@ -15,28 +20,28 @@ vi.mock("nest-commander", () => ({
 }));
 
 vi.mock("./modules/logger/logger.service", () => ({
-  LoggerService: class {
-    setContext = setContext;
+  LoggerService: function LoggerService() {
+    return loggerServiceMock;
   },
 }));
 
 vi.mock("./modules/synchronization/synchronization.module", () => ({
-  SynchronizationModule: class {
-    readonly moduleName = "SynchronizationModuleMock";
+  SynchronizationModule: function SynchronizationModule() {
+    return synchronizationModuleMock;
   },
 }));
 
 describe("main bootstrap", () => {
   beforeEach(() => {
     run.mockClear();
-    setContext.mockClear();
+    loggerServiceMock.setContext.mockClear();
     vi.resetModules();
   });
 
   it("runs the synchronization command factory with a configured logger", async () => {
     await import("./main");
 
-    expect(setContext).toHaveBeenCalledWith("CommandFactory");
+    expect(loggerServiceMock.setContext).toHaveBeenCalledWith("CommandFactory");
     expect(run).toHaveBeenCalledTimes(1);
 
     const firstCall = run.mock.calls[0];

@@ -7,7 +7,7 @@ import { aspectBodies as tripleAspectBodies } from "../caelundas/caelundas.const
 import {
   symbolByBody,
   symbolByTripleAspect,
-} from "../caelundas/caelundas.symbol-constants";
+} from "../caelundas/symbol-caelundas.constants";
 import { LoggerService } from "../logger/logger.service";
 
 import type { AspectBodies } from "../aspects/aspects.types";
@@ -35,6 +35,12 @@ export class TripleAspectsComposerService {
   ) {
     this.logger.setContext(TripleAspectsComposerService.name);
   }
+
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
 
   /**
    * Builds progressive bodies meta.
@@ -257,6 +263,8 @@ export class TripleAspectsComposerService {
       body3Capitalized,
     };
   }
+
+  // 🌎 Public Methods
 
   /**
    * Builds one triple-aspect duration event from a forming/dissolving pair.

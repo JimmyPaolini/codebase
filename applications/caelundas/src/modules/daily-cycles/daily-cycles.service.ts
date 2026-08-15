@@ -23,9 +23,13 @@ export class DailyCyclesService {
     private readonly dailyCyclesBuilderService: DailyCyclesBuilderService,
   ) {}
 
+  // 🔐 Private Fields
+
   // 🔑 Public Fields
 
   static readonly sunRadiusDegrees = 16 / MathService.arcminutesPerDegree;
+
+  // 🔏 Private Methods
 
   // 🌎 Public Methods
 

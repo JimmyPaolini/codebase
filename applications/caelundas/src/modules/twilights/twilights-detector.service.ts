@@ -21,11 +21,19 @@ export class TwilightsDetectorService {
     private readonly ephemerisService: EphemerisService,
   ) {}
 
+  // 🔐 Private Fields
+
   private static readonly degreesByTwilight: Record<Twilight, number> = {
     astronomical: 18,
     civil: 6,
     nautical: 12,
   };
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
+  // 🌎 Public Methods
 
   /**
    * Evaluates all twilight predicates for one minute and returns matching transition events.

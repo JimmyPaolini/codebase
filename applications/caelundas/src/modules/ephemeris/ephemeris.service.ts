@@ -54,6 +54,10 @@ export class EphemerisService {
     initializeSwissEphemeris();
   }
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
 
   /**

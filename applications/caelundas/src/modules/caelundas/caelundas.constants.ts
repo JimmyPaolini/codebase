@@ -1,3 +1,4 @@
+import { typedObjectKeys } from "./caelundas.utilities";
 import {
   symbolByBody,
   symbolByLunarPhase,
@@ -6,8 +7,7 @@ import {
   symbolByNode,
   symbolBySign,
   symbolBySpecialtyAspect,
-  typedObjectKeys,
-} from "./caelundas.symbol-constants";
+} from "./symbol-caelundas.constants";
 
 // ♟️ Constants
 

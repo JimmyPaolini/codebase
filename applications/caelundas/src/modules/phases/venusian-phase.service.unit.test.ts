@@ -3,7 +3,7 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { symbolByVenusianPhase } from "../caelundas/caelundas.symbol-constants";
+import { symbolByVenusianPhase } from "../caelundas/symbol-caelundas.constants";
 import { LoggerService } from "../logger/logger.service";
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
@@ -160,6 +160,170 @@ describe(VenusianPhaseService, () => {
           "Venus Western Brightest",
           "Venus Western Elongation",
           "Venus Morning Set",
+          "Venus Evening Rise",
+          "Venus Eastern Elongation",
+          "Venus Eastern Brightest",
+          "Venus Evening Set",
+        ]),
+      );
+    });
+
+    it("emits only morning rise when only morning rise is true", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(true);
+      phaseCalculationService.isWesternBrightest.mockReturnValue(false);
+      phaseCalculationService.isWesternElongation.mockReturnValue(false);
+      phaseCalculationService.isMorningSet.mockReturnValue(false);
+      phaseCalculationService.isEveningRise.mockReturnValue(false);
+      phaseCalculationService.isEasternElongation.mockReturnValue(false);
+      phaseCalculationService.isEasternBrightest.mockReturnValue(false);
+      phaseCalculationService.isEveningSet.mockReturnValue(false);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getVenusianPhaseEvents({
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+        venusCoordinateEphemeris: {},
+        venusDistanceEphemeris: {},
+        venusIlluminationEphemeris: {},
+      });
+
+      expect(events).toHaveLength(1);
+      expect(events[0]?.description).toBe("Venus Morning Rise");
+    });
+
+    it("emits only western brightest when only western brightest is true", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(false);
+      phaseCalculationService.isWesternBrightest.mockReturnValue(true);
+      phaseCalculationService.isWesternElongation.mockReturnValue(false);
+      phaseCalculationService.isMorningSet.mockReturnValue(false);
+      phaseCalculationService.isEveningRise.mockReturnValue(false);
+      phaseCalculationService.isEasternElongation.mockReturnValue(false);
+      phaseCalculationService.isEasternBrightest.mockReturnValue(false);
+      phaseCalculationService.isEveningSet.mockReturnValue(false);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getVenusianPhaseEvents({
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+        venusCoordinateEphemeris: {},
+        venusDistanceEphemeris: {},
+        venusIlluminationEphemeris: {},
+      });
+
+      expect(events).toHaveLength(1);
+      expect(events[0]?.description).toBe("Venus Western Brightest");
+    });
+
+    it("emits only evening events when only evening conditions are true", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(false);
+      phaseCalculationService.isWesternBrightest.mockReturnValue(false);
+      phaseCalculationService.isWesternElongation.mockReturnValue(false);
+      phaseCalculationService.isMorningSet.mockReturnValue(false);
+      phaseCalculationService.isEveningRise.mockReturnValue(true);
+      phaseCalculationService.isEasternElongation.mockReturnValue(true);
+      phaseCalculationService.isEasternBrightest.mockReturnValue(true);
+      phaseCalculationService.isEveningSet.mockReturnValue(true);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getVenusianPhaseEvents({
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+        venusCoordinateEphemeris: {},
+        venusDistanceEphemeris: {},
+        venusIlluminationEphemeris: {},
+      });
+
+      expect(events).toHaveLength(4);
+      expect(events.map((event) => event.description)).toStrictEqual(
+        expect.arrayContaining([
+          "Venus Evening Rise",
+          "Venus Eastern Elongation",
+          "Venus Eastern Brightest",
+          "Venus Evening Set",
+        ]),
+      );
+    });
+
+    it("emits no events when all visibility checks are false", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(false);
+      phaseCalculationService.isWesternBrightest.mockReturnValue(false);
+      phaseCalculationService.isWesternElongation.mockReturnValue(false);
+      phaseCalculationService.isMorningSet.mockReturnValue(false);
+      phaseCalculationService.isEveningRise.mockReturnValue(false);
+      phaseCalculationService.isEasternElongation.mockReturnValue(false);
+      phaseCalculationService.isEasternBrightest.mockReturnValue(false);
+      phaseCalculationService.isEveningSet.mockReturnValue(false);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getVenusianPhaseEvents({
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+        venusCoordinateEphemeris: {},
+        venusDistanceEphemeris: {},
+        venusIlluminationEphemeris: {},
+      });
+
+      expect(events).toHaveLength(0);
+    });
+
+    it("emits western sequence when all western events are true", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(true);
+      phaseCalculationService.isWesternBrightest.mockReturnValue(true);
+      phaseCalculationService.isWesternElongation.mockReturnValue(true);
+      phaseCalculationService.isMorningSet.mockReturnValue(true);
+      phaseCalculationService.isEveningRise.mockReturnValue(false);
+      phaseCalculationService.isEasternElongation.mockReturnValue(false);
+      phaseCalculationService.isEasternBrightest.mockReturnValue(false);
+      phaseCalculationService.isEveningSet.mockReturnValue(false);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getVenusianPhaseEvents({
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+        venusCoordinateEphemeris: {},
+        venusDistanceEphemeris: {},
+        venusIlluminationEphemeris: {},
+      });
+
+      expect(events).toHaveLength(4);
+      expect(events.map((event) => event.description)).toStrictEqual(
+        expect.arrayContaining([
+          "Venus Morning Rise",
+          "Venus Western Brightest",
+          "Venus Western Elongation",
+          "Venus Morning Set",
+        ]),
+      );
+    });
+
+    it("emits eastern sequence when all eastern events are true", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(false);
+      phaseCalculationService.isWesternBrightest.mockReturnValue(false);
+      phaseCalculationService.isWesternElongation.mockReturnValue(false);
+      phaseCalculationService.isMorningSet.mockReturnValue(false);
+      phaseCalculationService.isEveningRise.mockReturnValue(true);
+      phaseCalculationService.isEasternElongation.mockReturnValue(true);
+      phaseCalculationService.isEasternBrightest.mockReturnValue(true);
+      phaseCalculationService.isEveningSet.mockReturnValue(true);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getVenusianPhaseEvents({
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+        venusCoordinateEphemeris: {},
+        venusDistanceEphemeris: {},
+        venusIlluminationEphemeris: {},
+      });
+
+      expect(events).toHaveLength(4);
+      expect(events.map((event) => event.description)).toStrictEqual(
+        expect.arrayContaining([
           "Venus Evening Rise",
           "Venus Eastern Elongation",
           "Venus Eastern Brightest",

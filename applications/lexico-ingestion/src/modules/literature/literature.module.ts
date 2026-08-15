@@ -15,6 +15,7 @@ import { NumeralsModule } from "../numerals/numerals.module";
 
 import { LiteratureLibraryScanService } from "./literature-library-scan.service";
 import { LiteratureTextIngestionService } from "./literature-text-ingestion.service";
+import { LiteratureWordNormalizationService } from "./literature-word-normalization.service";
 import { LiteratureCommand } from "./literature.command";
 import { LiteratureService } from "./literature.service";
 
@@ -23,7 +24,7 @@ import { LiteratureService } from "./literature.service";
  */
 @Module({
   controllers: [],
-  exports: [LiteratureCommand],
+  exports: [LiteratureCommand, LiteratureService],
   imports: [
     DatabaseModule,
     TypeOrmModule.forFeature([Author, Text, Line, Token, Word]),
@@ -35,6 +36,7 @@ import { LiteratureService } from "./literature.service";
     LiteratureLibraryScanService,
     LiteratureService,
     LiteratureTextIngestionService,
+    LiteratureWordNormalizationService,
   ],
 })
 export class LiteratureModule {}

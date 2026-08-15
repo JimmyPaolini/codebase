@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 
 import { EphemerisService } from "../ephemeris/ephemeris.service";
-import { LoggerService } from "../logger/logger.service.js";
+import { LoggerService } from "../logger/logger.service";
 import { MathService } from "../math/math.service";
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
-import { AnnualSolarCycleEventsService } from "./annual-solar-cycle-events.service.js";
+import { AnnualSolarCycleEventsService } from "./annual-solar-cycle-events.service";
 import {
   ANNUAL_SOLAR_CYCLE_BASE_CATEGORIES,
   APHELION_CATEGORY,
@@ -16,7 +16,7 @@ import {
   SOLAR_RETREATING_CATEGORY,
   SOLAR_RETREATING_DESCRIPTION,
   SOLAR_RETREATING_SUMMARY,
-} from "./annual-solar-cycle.constants.js";
+} from "./annual-solar-cycle.constants";
 
 import type { Event } from "../calendar/calendar.types";
 import type { DistanceEphemeris } from "../ephemeris/ephemeris.types";
@@ -26,7 +26,7 @@ import type {
   DetectSolarApsisEventsArguments,
   SolarCycleLongitudes,
   SolarDistanceSample,
-} from "./annual-solar-cycle.types.js";
+} from "./annual-solar-cycle.types";
 import type { Moment } from "moment-timezone";
 
 /**

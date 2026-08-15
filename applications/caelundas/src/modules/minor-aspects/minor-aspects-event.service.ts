@@ -4,7 +4,7 @@ import { AspectEphemerisService } from "../aspects/aspect-ephemeris.service";
 import { AspectEventFormattingService } from "../aspects/aspect-event-formatting.service";
 import { AspectsUtilitiesService } from "../aspects/aspects-utilities.service";
 import { minorAspects } from "../caelundas/caelundas.constants";
-import { symbolByMinorAspect } from "../caelundas/caelundas.symbol-constants";
+import { symbolByMinorAspect } from "../caelundas/symbol-caelundas.constants";
 import { LoggerService } from "../logger/logger.service";
 
 import type {
@@ -31,6 +31,12 @@ export class MinorAspectsEventService {
   ) {
     this.logger.setContext(MinorAspectsEventService.name);
   }
+
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
 
   // 🌎 Public Methods
 
