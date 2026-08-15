@@ -68,6 +68,28 @@ describe(DiscoveryCandidatesService, () => {
       expect(candidates[0]?.fileScope).toBeUndefined();
     });
 
+    it("derives the type a candidate's own location answers", () => {
+      // The template's `project.json` renders `{{type}}/{{nameKebabCase}}`
+      // into its paths, and where the instance sits already says which.
+      expect(
+        service.resolveCandidates({
+          patterns: ["packages/*"],
+          workingDirectory,
+        })[0]?.substitutions,
+      ).toStrictEqual({ type: "packages" });
+    });
+
+    it("lets a configured substitution win over the derived one", () => {
+      // What a workspace nesting its projects deeper needs.
+      expect(
+        service.resolveCandidates({
+          patterns: ["packages/*"],
+          substitutions: { type: "libraries" },
+          workingDirectory,
+        })[0]?.substitutions,
+      ).toStrictEqual({ type: "libraries" });
+    });
+
     it("collapses file matches sharing a name into one scoped candidate", () => {
       const candidates = service.resolveCandidates({
         patterns: [

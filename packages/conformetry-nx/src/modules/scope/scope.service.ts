@@ -90,15 +90,6 @@ export class ScopeService {
         patterns: patterns.map((pattern) => {
           return path.posix.join(args.project.root, pattern);
         }),
-        substitutions: {
-          // The workspace directory a project sits in is what a project
-          // template substitutes as `type`, and is already how the paths
-          // service places a new project. Derived so a group does not have to
-          // restate per project what its root already says; an authored value
-          // still wins.
-          type: args.project.root.split("/")[0] ?? "",
-          ...args.group.substitutions,
-        },
       },
     ];
   }

@@ -73,7 +73,6 @@ describe(ScopeService, () => {
       ).toStrictEqual([
         {
           patterns: ["packages/widgets/src/modules/*"],
-          substitutions: { type: "packages" },
           tags: ["framework:nestjs"],
         },
       ]);
@@ -88,7 +87,9 @@ describe(ScopeService, () => {
       ).toStrictEqual(["packages/widgets"]);
     });
 
-    it("lets an authored substitution win over the derived one", () => {
+    it("carries an authored substitution through untouched", () => {
+      // Where a candidate sits is derived once, by the base package, for every
+      // group; this only has to not lose what the author wrote.
       expect(
         service.resolveGroup({
           group: {

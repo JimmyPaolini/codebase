@@ -34,6 +34,34 @@ export class DiscoveryCandidatesService {
   // 🔏 Private Methods
 
   /**
+   * Derives the substitutions a candidate's own location answers.
+   *
+   * `type` is the top-level directory the instance sits in — `packages` for
+   * `packages/widgets` — because that is what a project template's own
+   * `project.json` renders into its paths. Derived rather than configured for
+   * the same reason the name variants are: it is a fact about where the
+   * instance is, and restating it per glob is how the two drift apart. A
+   * configured value still wins, which is what a workspace nesting its
+   * projects deeper needs.
+   */
+  private deriveLocationSubstitutions(args: {
+    instancePath: string;
+    nameStem: string;
+    workingDirectory: string;
+  }): Record<string, string> {
+    const [type] = path
+      .relative(
+        args.workingDirectory,
+        path.join(args.instancePath, args.nameStem),
+      )
+      .split(path.sep);
+
+    return type === undefined || type === "" || type.startsWith("..")
+      ? {}
+      : { type };
+  }
+
+  /**
    * Returns the literal filename suffix a pattern ends with, such as
    * `.service.ts` for `**\/*.service.ts`, or `""` when the pattern's last
    * segment holds no wildcard.
@@ -143,9 +171,14 @@ export class DiscoveryCandidatesService {
             ? {}
             : { fileScope: [...fileScope].toSorted() }),
           nameStem,
-          ...(args.substitutions === undefined
-            ? {}
-            : { substitutions: args.substitutions }),
+          substitutions: {
+            ...this.deriveLocationSubstitutions({
+              instancePath,
+              nameStem,
+              workingDirectory: args.workingDirectory,
+            }),
+            ...args.substitutions,
+          },
         };
       });
   }

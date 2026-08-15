@@ -44,12 +44,7 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       description: z.string().describe("Application description"),
       name: z.string().describe("Application name in kebab-case"),
     }),
-    instances: [
-      {
-        patterns: ["applications/affirmations"],
-        substitutions: { type: "applications" },
-      },
-    ],
+    instances: [{ patterns: ["applications/affirmations"] }],
     name: "jupyter-notebook-application",
     templatePath:
       "configuration/conformetry-templates/jupyter-notebook-application",
@@ -66,16 +61,11 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
     }),
     instances: [
       {
-        patterns: ["applications/{caelundas,lexico-ingestion}"],
-        substitutions: { type: "applications" },
-      },
-      {
-        patterns: ["packages/conformetry-cli"],
-        substitutions: { type: "packages" },
-      },
-      {
-        patterns: ["tools/synchronization"],
-        substitutions: { type: "tools" },
+        patterns: [
+          "applications/{caelundas,lexico-ingestion}",
+          "packages/conformetry-cli",
+          "tools/synchronization",
+        ],
       },
     ],
     name: "nestjs-command-project",
@@ -107,7 +97,6 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
         patterns: [
           "packages/conformetry-{configuration,core,files,generation,json,jupyter,markdown,python,text,typescript,validation,nx}",
         ],
-        substitutions: { type: "packages" },
       },
     ],
     name: "nestjs-service-project",
