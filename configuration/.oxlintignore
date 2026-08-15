@@ -3,6 +3,7 @@
 
 # Build artifacts and tooling caches
 **/*.min.js
+**/.conformetry
 **/.nx
 **/.venv
 **/build

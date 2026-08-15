@@ -16,6 +16,7 @@ const config: KnipConfig = {
     "**/*.spec.ts",
     "**/dist/**",
     "**/node_modules/**",
+    "**/.conformetry/**",
     "**/.nx/**",
     "**/coverage/**",
     "notepads/**",
@@ -42,6 +43,10 @@ const config: KnipConfig = {
 
   // devDependencies used via npx, CLI, or ESLint config (not directly imported)
   ignoreDependencies: [
+    // Depended on so that pnpm links its `conformetry` bin into
+    // node_modules/.bin, which it does only for root dependencies. Nothing
+    // imports it.
+    "@conformetry/cli",
     "@commitlint/config-conventional", // commitlint preset, referenced as string in extends array
     "@nx/eslint-plugin", // Loaded dynamically by Nx ESLint integration
     "@nx/js", // Nx JavaScript/TypeScript plugin (auto-detected by Nx)

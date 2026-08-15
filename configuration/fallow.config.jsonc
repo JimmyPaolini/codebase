@@ -43,6 +43,7 @@
     "crapRefactorBand": 3,
     "ignore": [
       "**/__generated__/**",
+      "**/.conformetry/**",
       "**/coverage/**",
       "**/dist/**",
       "**/src/lib/database.types.ts",
@@ -150,6 +151,7 @@
     "**/.agents/skills/**/scripts/**",
     "**/.agents/skills/**/scripts/**",
     "**/.claude/skills/**/scripts/**",
+    "**/.conformetry/**",
     "**/.github/skills/**/scripts/**",
     "**/.nx/**",
     "**/.opencode/skills/**/scripts/**",

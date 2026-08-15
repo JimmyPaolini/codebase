@@ -43,9 +43,10 @@ package-lock.json
 pnpm-lock.yaml
 tmp
 **/conformetry-templates/**
-# Emitted by `nx sync`; the emitter's output is authoritative, and reformatting
-# it would make `nx sync:check` fail after every `format` run.
-**/conformetry-generators/**
+# Emitted from the conformetry configuration; the emitter's output is
+# authoritative, and reformatting it makes every conformetry command fail the
+# drift check after a `format` run.
+**/.conformetry/**
 **/data/wikipedia
 **/data/wiktionary
 yarn.lock

@@ -35,6 +35,7 @@ export default [
       "**/node_modules",
       "**/.venv",
       "**/coverage",
+      "**/.conformetry",
       "**/.nx",
       "**/build",
       "**/tmp",

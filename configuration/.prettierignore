@@ -12,6 +12,7 @@ yarn.lock
 .git
 
 # 💾 Nx cache
+**/.conformetry
 **/.nx
 
 # 🏗 Build outputs

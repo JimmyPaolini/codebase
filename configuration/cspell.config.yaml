@@ -5,6 +5,7 @@ $schema: https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell
 ignorePaths:
   - ./.devcontainer/devcontainer.json
   - .git
+  - .conformetry
   - .nx
   - "*.eot"
   - "*.gif"
