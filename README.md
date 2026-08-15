@@ -9,24 +9,24 @@
 [![Jupyter](https://img.shields.io/badge/Jupyter-1.1-F37626?logo=jupyter&logoColor=white)](https://jupyter.org/)
 
 <!-- CODE_STATISTICS_START -->
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-197839-22c55e?style=flat-square)
-![Repo Size](https://img.shields.io/badge/Repo_Size-153.2_MiB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-497-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-882-3178c6?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-185-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-137-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-287-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-10992-16a34a?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-9741-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-1131-059669?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-261-0ea5e9?style=flat-square)
-![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-28-0369a1?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-210056-22c55e?style=flat-square)
+![Repo Size](https://img.shields.io/badge/Repo_Size-154_MiB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-607-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-1190-3178c6?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-256-10b981?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-152-8b5cf6?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-373-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-11935-16a34a?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-10553-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-1292-059669?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-329-0ea5e9?style=flat-square)
+![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-30-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-16490-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-4237-0284c7?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-668-db2777?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-1354-ea580c?style=flat-square)
-![TODO Comments](https://img.shields.io/badge/TODO_Comments-36-ca8a04?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-16992-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-4916-0284c7?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-738-db2777?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-1605-ea580c?style=flat-square)
+![TODO Comments](https://img.shields.io/badge/TODO_Comments-50-ca8a04?style=flat-square)
 <!-- CODE_STATISTICS_END -->
 
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev/)
@@ -85,7 +85,7 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
 
 - **[affirmations](applications/affirmations)** - Python LangChain + Ollama affirmation generator (LangGraph ReAct agent, SearxNG)
 - **[caelundas](applications/caelundas)** - CLI ephemeris calendar generator with astronomical calculations
-- **[conformance](tools/conformance)** - Nx generators for scaffolding code
+- **[conformetry-cli](packages/conformetry-cli)** - Command-line code generation and validation toolchain
 - **[infrastructure](infrastructure)** - Helm charts, Terraform, Kubernetes infrastructure
 - **[JimmyPaolini](applications/JimmyPaolini)** - GitHub profile site
 - **[lexico](applications/lexico)** - TanStack Start dictionary web application
@@ -106,7 +106,6 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
 ### Architecture & Systems
 
 - [CI/CD Pipeline](documentation/github-actions.md) - GitHub Actions workflows
-- [Conformance Generators](documentation/development/conformance.md) - Scaffolding code using Nx generators
 - [Static Analysis & Code Quality](documentation/code-quality/static-analysis.md) - Linting, formatting, and tests
 - [Deployment Models](documentation/architecture/deployment-models.md) - Kubernetes, Helm, and infrastructure architecture
 - [Framework Guides](documentation/frameworks/) - References for [Kubernetes](documentation/frameworks/kubernetes.md), [NestJS](documentation/frameworks/nestjs.md), and [LangChain Python](documentation/frameworks/langchain-python.md)

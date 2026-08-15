@@ -14,6 +14,12 @@ export class PronunciationEcclesiasticalService {
 
   constructor(private readonly phonemesService: PronunciationPhonemesService) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   /**
    * Checks whether between vowels in pronunciation parsing logic.
    */
@@ -105,6 +111,8 @@ export class PronunciationEcclesiasticalService {
       ["ce", "ci"].includes((word[index + 1] ?? "") + (word[index + 2] ?? ""))
     );
   }
+
+  // 🌎 Public Methods
 
   /**
    * Classifies ecclesiastical c for pronunciation parsing.

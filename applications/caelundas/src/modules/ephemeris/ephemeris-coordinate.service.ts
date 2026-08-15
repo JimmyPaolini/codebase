@@ -30,7 +30,11 @@ export class EphemerisCoordinateService {
     private readonly mathService: MathService,
   ) {}
 
-  // 🌎 Public Methods
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
 
   /**
    * Computes body ecliptic coordinates (longitude, latitude, distance).
@@ -122,7 +126,7 @@ export class EphemerisCoordinateService {
     return { latitude: 0, longitude };
   }
 
-  // 🔏 Private Methods
+  // 🌎 Public Methods
 
   /**
    * Computes single body coordinate at a specific Julian Day ephemeris time.

@@ -1,10 +1,10 @@
 import { AspectsUtilitiesService } from "@caelundas/src/modules/aspects/aspects-utilities.service";
 import { majorAspects } from "@caelundas/src/modules/caelundas/caelundas.constants";
+import { capitalize } from "@caelundas/src/modules/caelundas/caelundas.types";
 import {
   symbolByBody,
   symbolByMajorAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
-import { capitalize } from "@caelundas/src/modules/caelundas/caelundas.types";
+} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
@@ -42,6 +42,8 @@ export class MajorAspectEventService {
     AspectPhase,
     { emoji: string; label: string; verb: string }
   >;
+
+  // 🔑 Public Fields
 
   // 🔏 Private Methods
 

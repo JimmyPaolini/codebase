@@ -35,7 +35,7 @@ jobs:
         uses: ./.github/actions/setup-codebase
 
       - name: 🧩 Check VSCode Extensions
-        run: npx nx run codebase:sync-vscode-extensions:check
+        run: pnpm exec nx run codebase:sync-vscode-extensions:check
 
       - name: 🗂️ Setup Environment File
         run: |

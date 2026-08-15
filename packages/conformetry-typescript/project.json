@@ -1,0 +1,46 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "conformetry-typescript",
+  "projectType": "library",
+  "sourceRoot": "packages/conformetry-typescript",
+  "tags": [
+    "framework:nestjs",
+    "generator:nestjs-service-project",
+    "language:typescript",
+    "name:conformetry-typescript",
+    "type:package"
+  ],
+  "targets": {
+    "analyze-code": {},
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "packages/conformetry-typescript",
+            "output": "."
+          }
+        ],
+        "main": "packages/conformetry-typescript/src/index.ts",
+        "outputPath": "dist/packages/conformetry-typescript",
+        "tsConfig": "packages/conformetry-typescript/tsconfig.json"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "clean": {},
+    "dependency-cruiser": {},
+    "format": {},
+    "knip": {},
+    "lint": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "oxlint": {},
+    "prettier": {},
+    "spell-check": {},
+    "test": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}

@@ -3,13 +3,13 @@ import {
   specialtyAspects,
 } from "@caelundas/src/modules/caelundas/caelundas.constants";
 import {
-  symbolByBody,
-  symbolBySpecialtyAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
-import {
   isBody,
   isSpecialtyAspect,
 } from "@caelundas/src/modules/caelundas/caelundas.types";
+import {
+  symbolByBody,
+  symbolBySpecialtyAspect,
+} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { EphemerisService } from "@caelundas/src/modules/ephemeris/ephemeris.service";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
@@ -40,7 +40,13 @@ export class SpecialtyAspectsComposerService {
     this.logger.setContext(SpecialtyAspectsComposerService.name);
   }
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
+
+  // 🌎 Public Methods
 
   /**
    * Builds and logs one specialty-aspect boundary event from pre-resolved display parts.

@@ -1,0 +1,53 @@
+// 🛠️ Utilities
+
+import { resolvePluginService } from "../../plugin-context.utilities";
+
+import type { ValidateExecutorOptions } from "./executor.types";
+import type { ExecutorContext } from "@nx/devkit";
+
+/**
+ * Validates one project's instances against their conformetry templates.
+ *
+ * Inferred onto every project holding at least one instance, so
+ * `nx run-many -t conformetry-validate` covers the workspace and
+ * `nx affected -t conformetry-validate` covers only what changed — which the
+ * single workspace-wide command it replaces could not do.
+ */
+export default async function validateExecutor(
+  options: ValidateExecutorOptions,
+  context: ExecutorContext,
+): Promise<{ success: boolean }> {
+  const projectName = context.projectName;
+
+  if (projectName === undefined) {
+    throw new Error(
+      "The conformetry validate executor must be run against a project.",
+    );
+  }
+
+  const projectConfiguration =
+    context.projectsConfigurations.projects[projectName];
+
+  if (projectConfiguration === undefined) {
+    throw new Error(`Unknown project: ${projectName}.`);
+  }
+
+  const pluginService = await resolvePluginService();
+  const result = await pluginService.runValidation({
+    ...(options.languages === undefined
+      ? {}
+      : { languageNames: options.languages }),
+    options,
+    project: {
+      name: projectName,
+      root: projectConfiguration.root,
+      tags: projectConfiguration.tags ?? [],
+    },
+    workspaceRoot: context.root,
+  });
+
+  // eslint-disable-next-line no-console -- an executor's report is its output
+  console.log(result.report);
+
+  return { success: result.ok };
+}

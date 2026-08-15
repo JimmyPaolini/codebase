@@ -27,6 +27,12 @@ export class EphemerisHorizonService {
     private readonly time: EphemerisTimeService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   // 🌎 Public Methods
 
   /**

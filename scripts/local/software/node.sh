@@ -19,11 +19,14 @@ else
   fi
 fi
 
-# Source nvm into the current shell so subsequent commands (nvm install, node)
-# are available for the rest of this setup session.
+# Prepare nvm and pre-install the .nvmrc version before use.
+# nvm is a shell function, so source once in no-auto-use mode and then run
+# install/use explicitly.
 export NVM_DIR="$HOME/.nvm"
 mkdir -p "$NVM_DIR"
-. "$(brew --prefix nvm)/nvm.sh"
+NVM_SCRIPT_PATH="$(brew --prefix nvm)/nvm.sh"
+
+. "$NVM_SCRIPT_PATH" --no-use
 
 # ── Node.js version from .nvmrc ───────────────────────────────────────────────
 echo "🔍 Installing Node.js from .nvmrc..."

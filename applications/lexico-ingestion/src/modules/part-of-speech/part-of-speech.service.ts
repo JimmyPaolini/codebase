@@ -21,6 +21,7 @@ import {
   VerbInflection,
 } from "@codebase/lexico-entities";
 
+import { PartOfSpeechFormsService } from "./part-of-speech-forms.service";
 import {
   adjectiveDeclensionRegex,
   adjectiveDegreeRegex,
@@ -30,7 +31,6 @@ import {
   prepositionCaseRegex,
   verbConjugationRegex,
 } from "./part-of-speech.constants";
-import { PartOfSpeechFormsParser } from "./part-of-speech.forms-parser";
 
 import type { AnyNode } from "domhandler";
 
@@ -43,7 +43,9 @@ import type { AnyNode } from "domhandler";
 export class PartOfSpeechService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    private readonly partOfSpeechFormsService: PartOfSpeechFormsService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -118,8 +120,6 @@ export class PartOfSpeechService {
   );
   private static readonly prepositionCaseValueList = prepositionCases;
   private static readonly verbConjugationValueList = verbConjugationValues;
-
-  private readonly formsParser = new PartOfSpeechFormsParser();
 
   // 🔑 Public Fields
 
@@ -442,8 +442,9 @@ export class PartOfSpeechService {
     const group = PartOfSpeechService.FORMS_GROUP[pos];
     const handlers: Record<string, () => unknown> = {
       adverb: () => this.ingestAdverbForms(principalParts),
-      generic: () => this.formsParser.parseGenericForms({ $, elt, lexeme }),
-      verb: () => this.formsParser.parseVerbForms({ $, elt }),
+      generic: () =>
+        this.partOfSpeechFormsService.parseGenericForms({ $, elt, lexeme }),
+      verb: () => this.partOfSpeechFormsService.parseVerbForms({ $, elt }),
     };
     return (handlers[group] ?? (() => null))();
   }

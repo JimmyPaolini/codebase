@@ -14,34 +14,6 @@ export const minimumDate = "1900-01-01";
 export const maximumDate = "2100-12-31";
 
 /**
- * Zod schema for raw environment variable validation.
- *
- * Validates the shape and format of env vars at application startup via
- * {@link ConfigModule.forRoot} `validate` option. Business-logic validation
- * (date ranges, end-after-start) is handled downstream in {@link inputSchema}.
- *
- * **Variables:**
- * - `LATITUDE` — Observer latitude in decimal degrees (-90 to 90)
- * - `LONGITUDE` — Observer longitude in decimal degrees (-180 to 180)
- * - `START_DATE` — Ephemeris start date in `YYYY-MM-DD` format
- * - `END_DATE` — Ephemeris end date in `YYYY-MM-DD` format
- * - `OUTPUT_DIRECTORY` — Directory path for generated calendar files (default: `./output`).
- */
-export const environmentSchema = z.object({
-  END_DATE: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "END_DATE must be in YYYY-MM-DD format")
-    .optional(),
-  LATITUDE: z.coerce.number().min(-90).max(90).optional(),
-  LONGITUDE: z.coerce.number().min(-180).max(180).optional(),
-  OUTPUT_DIRECTORY: z.string().optional().default("./output"),
-  START_DATE: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "START_DATE must be in YYYY-MM-DD format")
-    .optional(),
-});
-
-/**
  * Zod schema for validating and transforming user input for ephemeris calculations.
  *
  * Validates geographic coordinates and date ranges, automatically determines timezone
@@ -92,16 +64,16 @@ export const inputSchema = z
       timezone,
     };
   })
-  .refine((data) => data.start.isSameOrAfter(moment(minimumDate)), {
+  .refine((data) => data.start.format("YYYY-MM-DD") >= minimumDate, {
     message: `Start date must be on or after ${minimumDate}`,
   })
-  .refine((data) => data.start.isSameOrBefore(moment(maximumDate)), {
+  .refine((data) => data.start.format("YYYY-MM-DD") <= maximumDate, {
     message: `Start date must be on or before ${maximumDate}`,
   })
-  .refine((data) => data.end.isSameOrAfter(moment(minimumDate)), {
+  .refine((data) => data.end.format("YYYY-MM-DD") >= minimumDate, {
     message: `End date must be on or after ${minimumDate}`,
   })
-  .refine((data) => data.end.isSameOrBefore(moment(maximumDate)), {
+  .refine((data) => data.end.format("YYYY-MM-DD") <= maximumDate, {
     message: `End date must be on or before ${maximumDate}`,
   })
   .refine((data) => data.end.isAfter(data.start), {

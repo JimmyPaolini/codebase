@@ -11,6 +11,7 @@ import { NumeralsService } from "../numerals/numerals.service";
 
 import { LiteratureLibraryScanService } from "./literature-library-scan.service";
 import { LiteratureTextIngestionService } from "./literature-text-ingestion.service";
+import { LiteratureWordNormalizationService } from "./literature-word-normalization.service";
 import { LiteratureService } from "./literature.service";
 
 import type { IngestTextArguments, LibraryEntry } from "./literature.types";
@@ -83,6 +84,8 @@ describe(LiteratureService, () => {
 
   const literatureTextIngestionService =
     createMock<LiteratureTextIngestionService>();
+  const literatureWordNormalizationService =
+    new LiteratureWordNormalizationService();
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -119,6 +122,10 @@ describe(LiteratureService, () => {
         {
           provide: LiteratureTextIngestionService,
           useValue: literatureTextIngestionService,
+        },
+        {
+          provide: LiteratureWordNormalizationService,
+          useValue: literatureWordNormalizationService,
         },
         {
           provide: LoggerService,
@@ -215,6 +222,7 @@ describe(LiteratureService, () => {
       wordRepository,
       literatureLibraryScanService,
       literatureTextIngestionService,
+      literatureWordNormalizationService,
       logger,
     );
 
@@ -241,6 +249,10 @@ describe(LiteratureService, () => {
         {
           provide: LiteratureTextIngestionService,
           useValue: literatureTextIngestionService,
+        },
+        {
+          provide: LiteratureWordNormalizationService,
+          useValue: literatureWordNormalizationService,
         },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
@@ -770,16 +782,6 @@ describe(LiteratureService, () => {
     );
 
     expect(tokens[0]?.word).toStrictEqual({ id: "word-9" });
-  });
-
-  it("should escape capitals using underscore notation", () => {
-    const escaped = (
-      service as unknown as {
-        escapeCapitals: (word: string) => string;
-      }
-    ).escapeCapitals("Amo");
-
-    expect(escaped).toBe("_amo");
   });
 
   it("should memoize token lookup results across repeated token extraction", () => {

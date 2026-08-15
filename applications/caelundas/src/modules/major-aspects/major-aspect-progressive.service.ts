@@ -3,13 +3,13 @@ import {
   majorAspects,
 } from "@caelundas/src/modules/caelundas/caelundas.constants";
 import {
-  symbolByBody,
-  symbolByMajorAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
-import {
   isBody,
   isMajorAspect,
 } from "@caelundas/src/modules/caelundas/caelundas.types";
+import {
+  symbolByBody,
+  symbolByMajorAspect,
+} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { ProgressiveAspectService } from "@caelundas/src/modules/progressive/progressive-aspect.service";
 import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { Injectable } from "@nestjs/common";
@@ -32,6 +32,12 @@ export class MajorAspectProgressiveService {
     private readonly progressiveUtilitiesService: ProgressiveUtilitiesService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   /**
    * Builds a stable grouping key from sorted bodies plus major-aspect label.
    */
@@ -42,8 +48,6 @@ export class MajorAspectProgressiveService {
       categories: event.categories,
     });
   }
-
-  // 🔏 Private Methods
 
   /**
    * Builds one progressive duration event from a forming/dissolving pair.
@@ -64,6 +68,8 @@ export class MajorAspectProgressiveService {
       symbolByBody,
     });
   }
+
+  // 🌎 Public Methods
 
   /**
    * Backward-compatible wrapper retained for existing unit tests.
@@ -112,8 +118,6 @@ export class MajorAspectProgressiveService {
       },
     );
   }
-
-  // 🌎 Public Methods
 
   /**
    * Pairs forming and dissolving events for one grouped body-pair/aspect key.

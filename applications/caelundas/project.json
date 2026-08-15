@@ -7,7 +7,7 @@
     "domain:caelundas",
     "framework:nest-commander",
     "framework:nestjs",
-    "generator:nestjs-command-application",
+    "generator:nestjs-command-project",
     "language:typescript",
     "type:application"
   ],
@@ -31,6 +31,15 @@
     "oxfmt": {},
     "oxlint": {},
     "prettier": {},
+    "repl": {
+      "cache": false,
+      "description": "Start an interactive NestJS REPL for Caelundas services",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node --import @swc-node/register/esm-register src/repl.ts",
+        "cwd": "{projectRoot}"
+      }
+    },
     "spell-check": {},
     "start": {
       "cache": false,

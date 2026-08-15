@@ -1,5 +1,4 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
 
 import { DatabaseModule } from "@codebase/lexico-entities";
 
@@ -17,7 +16,6 @@ import { WiktionaryModule } from "../wiktionary/wiktionary.module";
 import { WordsModule } from "../words/words.module";
 
 import { LexicoIngestionCommand } from "./lexico-ingestion.command";
-import { environmentSchema } from "./lexico-ingestion.constants";
 
 /**
  * Root application module for lexicoIngestion.
@@ -28,12 +26,6 @@ import { environmentSchema } from "./lexico-ingestion.constants";
   exports: [LexicoIngestionCommand],
   imports: [
     ClearModule,
-    ConfigModule.forRoot({
-      envFilePath: ".env",
-      isGlobal: true,
-      validate: (config: Record<string, unknown>) =>
-        environmentSchema.parse(config),
-    }),
     CorpusScriptorumEcclesiasticorumLatinorumModule,
     DictionaryModule,
     EpigraphikDatenbankClaussSlabyModule,

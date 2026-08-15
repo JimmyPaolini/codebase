@@ -36,7 +36,7 @@ jobs:
       - name: 🧪 Test Coverage
         env:
           NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
-        run: npx nx affected --target=test --parallel=3 --configuration=coverage
+        run: pnpm exec nx affected --target=test --parallel=3 --configuration=coverage
 
       - name: 📊 Upload Test Coverage
         uses: actions/upload-artifact@v4

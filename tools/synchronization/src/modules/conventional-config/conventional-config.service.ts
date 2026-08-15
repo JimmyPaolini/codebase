@@ -65,6 +65,8 @@ export class ConventionalConfigService {
     (file) => path.join(this.workspaceRoot, file),
   );
 
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
 
   /** Loads release.config.cjs as a CommonJS module. */

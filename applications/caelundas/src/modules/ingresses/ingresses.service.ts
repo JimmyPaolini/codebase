@@ -30,6 +30,8 @@ export class IngressesService {
     private readonly ingressesComposerService: IngressesComposerService,
   ) {}
 
+  // 🔐 Private Fields
+
   // 🔑 Public Fields
 
   /**
@@ -75,6 +77,8 @@ export class IngressesService {
     }
     return signDegreeRangeEntry[0];
   }
+
+  // 🔏 Private Methods
 
   // 🌎 Public Methods
 

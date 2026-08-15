@@ -1,0 +1,46 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "conformetry-markdown",
+  "projectType": "library",
+  "sourceRoot": "packages/conformetry-markdown",
+  "tags": [
+    "framework:nestjs",
+    "generator:nestjs-service-project",
+    "language:typescript",
+    "name:conformetry-markdown",
+    "type:package"
+  ],
+  "targets": {
+    "analyze-code": {},
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "packages/conformetry-markdown",
+            "output": "."
+          }
+        ],
+        "main": "packages/conformetry-markdown/src/index.ts",
+        "outputPath": "dist/packages/conformetry-markdown",
+        "tsConfig": "packages/conformetry-markdown/tsconfig.json"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "clean": {},
+    "dependency-cruiser": {},
+    "format": {},
+    "knip": {},
+    "lint": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "oxlint": {},
+    "prettier": {},
+    "spell-check": {},
+    "test": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}

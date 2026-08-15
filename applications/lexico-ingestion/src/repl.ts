@@ -1,11 +1,11 @@
 import "reflect-metadata";
 import { repl } from "@nestjs/core";
 
-import { LexicoIngestionModule } from "./modules/lexico-ingestion/lexico-ingestion.module";
+import { MainModule } from "./main.module";
 
 /** Starts an interactive NestJS REPL session for the ingestion module — useful for ad-hoc service calls during development. */
 async function bootstrap(): Promise<void> {
-  await repl(LexicoIngestionModule);
+  await repl(MainModule);
 }
 
 void bootstrap();

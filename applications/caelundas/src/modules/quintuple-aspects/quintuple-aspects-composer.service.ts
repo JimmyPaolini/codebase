@@ -2,11 +2,11 @@ import { AspectPhaseEmojiService } from "@caelundas/src/modules/aspects/aspect-p
 import { CompoundPhaseService } from "@caelundas/src/modules/aspects/compound-phase.service";
 import { ProgressiveCompoundEventService } from "@caelundas/src/modules/aspects/progressive-compound-event.service";
 import { aspectBodies as quintupleAspectBodies } from "@caelundas/src/modules/caelundas/caelundas.constants";
+import { groupByToMap } from "@caelundas/src/modules/caelundas/caelundas.types";
 import {
   symbolByBody,
   symbolByQuintupleAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
-import { groupByToMap } from "@caelundas/src/modules/caelundas/caelundas.types";
+} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { MathService } from "@caelundas/src/modules/math/math.service";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
@@ -38,7 +38,13 @@ export class QuintupleAspectsComposerService {
     private readonly progressiveCompoundEventService: ProgressiveCompoundEventService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
+
+  // 🌎 Public Methods
 
   /**
    * Emits a pentagram boundary event when exactly five ordered bodies are available.

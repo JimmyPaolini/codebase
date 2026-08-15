@@ -3,7 +3,7 @@ import { MathModule } from "@caelundas/src/modules/math/math.module";
 import { ProgressiveUtilitiesModule } from "@caelundas/src/modules/progressive/progressive-utilities.module";
 import { Module } from "@nestjs/common";
 
-import { AnnualSolarCycleEventsService } from "./annual-solar-cycle-events.service.js";
+import { AnnualSolarCycleEventsService } from "./annual-solar-cycle-events.service";
 import { AnnualSolarCycleService } from "./annual-solar-cycle.service";
 
 /**

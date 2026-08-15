@@ -131,6 +131,24 @@
         "cwd": "{projectRoot}"
       }
     },
+    "conformetry-generate": {
+      "cache": false,
+      "description": "Run the conformetry generate command from the workspace root",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec nx run conformetry-cli:start -- generate {args}",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "conformetry-validate": {
+      "cache": false,
+      "description": "Run every project's inferred conformetry validation target",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec nx run-many -t conformetry-validate --exclude=codebase {args}",
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "eslint": {
       "cache": true,
       "configurations": {
@@ -186,7 +204,7 @@
           "command": "fallow audit --config configuration/fallow.config.jsonc --format=pr-comment-github"
         }
       },
-      "description": "Fallow audit gate (new-only regression check on changed code) — advisory",
+      "description": "Fallow audit gate (new-only regression check on changed code) \u2014 advisory",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
@@ -211,7 +229,7 @@
           "command": "fallow dead-code --config configuration/fallow.config.jsonc --format=pr-comment-github"
         }
       },
-      "description": "Fallow dead-code analysis (unused files, exports, deps, circular deps) — advisory",
+      "description": "Fallow dead-code analysis (unused files, exports, deps, circular deps) \u2014 advisory",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
@@ -259,7 +277,7 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "⚠️  MANUAL-ONLY (write config): removes unused exports/deps from source files — never include in automated pipelines. Use check config for safe dry-run preview.",
+      "description": "\u26a0\ufe0f  MANUAL-ONLY (write config): removes unused exports/deps from source files \u2014 never include in automated pipelines. Use check config for safe dry-run preview.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
@@ -283,7 +301,7 @@
           "command": "fallow health --config configuration/fallow.config.jsonc --format=pr-comment-github || true"
         }
       },
-      "description": "Fallow code health analysis (complexity, hotspots, maintainability) — advisory",
+      "description": "Fallow code health analysis (complexity, hotspots, maintainability) \u2014 advisory",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",

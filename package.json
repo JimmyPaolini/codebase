@@ -8,6 +8,9 @@
     "@commitlint/cli": "catalog:",
     "@commitlint/config-conventional": "catalog:",
     "@commitlint/types": "catalog:",
+    "@conformetry/cli": "workspace:*",
+    "@conformetry/configuration": "workspace:*",
+    "@conformetry/nx": "workspace:*",
     "@eslint-react/eslint-plugin": "catalog:",
     "@eslint/js": "catalog:",
     "@eslint/markdown": "catalog:",
@@ -97,6 +100,7 @@
   "packageManager": "pnpm@11.2.2",
   "repository": "JimmyPaolini/codebase.git",
   "scripts": {
+    "postinstall": "conformetry-nx-bootstrap",
     "prepare": "husky configuration/.husky",
     "semantic-release": "semantic-release",
     "semantic-release:dry-run": "semantic-release --dry-run"

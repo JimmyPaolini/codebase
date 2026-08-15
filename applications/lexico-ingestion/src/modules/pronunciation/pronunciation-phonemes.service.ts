@@ -11,6 +11,14 @@ export class PronunciationPhonemesService {
 
   constructor() {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
+  // 🌎 Public Methods
+
   /**
    * Gets a string phoneme from a mixed phoneme map or returns an empty string.
    */

@@ -4,7 +4,7 @@ import { aspectBodies as tripleAspectBodies } from "@caelundas/src/modules/caelu
 import {
   symbolByBody,
   symbolByTripleAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
+} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
@@ -35,6 +35,12 @@ export class TripleAspectsComposerService {
   ) {
     this.logger.setContext(TripleAspectsComposerService.name);
   }
+
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
 
   /**
    * Builds progressive bodies meta.
@@ -257,6 +263,8 @@ export class TripleAspectsComposerService {
       body3Capitalized,
     };
   }
+
+  // 🌎 Public Methods
 
   /**
    * Builds one triple-aspect duration event from a forming/dissolving pair.

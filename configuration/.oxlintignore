@@ -3,6 +3,7 @@
 
 # Build artifacts and tooling caches
 **/*.min.js
+**/.conformetry
 **/.nx
 **/.venv
 **/build
@@ -38,3 +39,4 @@ lint-staged.config.ts
 **/.agents/skills/**
 **/.github/skills/**
 **/documentation/skills/**
+

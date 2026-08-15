@@ -1,4 +1,4 @@
-import { symbolByMercurianPhase } from "@caelundas/src/modules/caelundas/caelundas.symbol-constants";
+import { symbolByMercurianPhase } from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
@@ -160,6 +160,170 @@ describe(MercurianPhaseService, () => {
           "Mercury Western Brightest",
           "Mercury Western Elongation",
           "Mercury Morning Set",
+          "Mercury Evening Rise",
+          "Mercury Eastern Elongation",
+          "Mercury Eastern Brightest",
+          "Mercury Evening Set",
+        ]),
+      );
+    });
+
+    it("emits only morning rise when only morning rise is true", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(true);
+      phaseCalculationService.isWesternBrightest.mockReturnValue(false);
+      phaseCalculationService.isWesternElongation.mockReturnValue(false);
+      phaseCalculationService.isMorningSet.mockReturnValue(false);
+      phaseCalculationService.isEveningRise.mockReturnValue(false);
+      phaseCalculationService.isEasternElongation.mockReturnValue(false);
+      phaseCalculationService.isEasternBrightest.mockReturnValue(false);
+      phaseCalculationService.isEveningSet.mockReturnValue(false);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getMercurianPhaseEvents({
+        mercuryCoordinateEphemeris: {},
+        mercuryDistanceEphemeris: {},
+        mercuryIlluminationEphemeris: {},
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+      });
+
+      expect(events).toHaveLength(1);
+      expect(events[0]?.description).toBe("Mercury Morning Rise");
+    });
+
+    it("emits only western brightest when only western brightest is true", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(false);
+      phaseCalculationService.isWesternBrightest.mockReturnValue(true);
+      phaseCalculationService.isWesternElongation.mockReturnValue(false);
+      phaseCalculationService.isMorningSet.mockReturnValue(false);
+      phaseCalculationService.isEveningRise.mockReturnValue(false);
+      phaseCalculationService.isEasternElongation.mockReturnValue(false);
+      phaseCalculationService.isEasternBrightest.mockReturnValue(false);
+      phaseCalculationService.isEveningSet.mockReturnValue(false);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getMercurianPhaseEvents({
+        mercuryCoordinateEphemeris: {},
+        mercuryDistanceEphemeris: {},
+        mercuryIlluminationEphemeris: {},
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+      });
+
+      expect(events).toHaveLength(1);
+      expect(events[0]?.description).toBe("Mercury Western Brightest");
+    });
+
+    it("emits only evening events when only evening conditions are true", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(false);
+      phaseCalculationService.isWesternBrightest.mockReturnValue(false);
+      phaseCalculationService.isWesternElongation.mockReturnValue(false);
+      phaseCalculationService.isMorningSet.mockReturnValue(false);
+      phaseCalculationService.isEveningRise.mockReturnValue(true);
+      phaseCalculationService.isEasternElongation.mockReturnValue(true);
+      phaseCalculationService.isEasternBrightest.mockReturnValue(true);
+      phaseCalculationService.isEveningSet.mockReturnValue(true);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getMercurianPhaseEvents({
+        mercuryCoordinateEphemeris: {},
+        mercuryDistanceEphemeris: {},
+        mercuryIlluminationEphemeris: {},
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+      });
+
+      expect(events).toHaveLength(4);
+      expect(events.map((event) => event.description)).toStrictEqual(
+        expect.arrayContaining([
+          "Mercury Evening Rise",
+          "Mercury Eastern Elongation",
+          "Mercury Eastern Brightest",
+          "Mercury Evening Set",
+        ]),
+      );
+    });
+
+    it("emits no events when all visibility checks are false", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(false);
+      phaseCalculationService.isWesternBrightest.mockReturnValue(false);
+      phaseCalculationService.isWesternElongation.mockReturnValue(false);
+      phaseCalculationService.isMorningSet.mockReturnValue(false);
+      phaseCalculationService.isEveningRise.mockReturnValue(false);
+      phaseCalculationService.isEasternElongation.mockReturnValue(false);
+      phaseCalculationService.isEasternBrightest.mockReturnValue(false);
+      phaseCalculationService.isEveningSet.mockReturnValue(false);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getMercurianPhaseEvents({
+        mercuryCoordinateEphemeris: {},
+        mercuryDistanceEphemeris: {},
+        mercuryIlluminationEphemeris: {},
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+      });
+
+      expect(events).toHaveLength(0);
+    });
+
+    it("emits western sequence when all western events are true", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(true);
+      phaseCalculationService.isWesternBrightest.mockReturnValue(true);
+      phaseCalculationService.isWesternElongation.mockReturnValue(true);
+      phaseCalculationService.isMorningSet.mockReturnValue(true);
+      phaseCalculationService.isEveningRise.mockReturnValue(false);
+      phaseCalculationService.isEasternElongation.mockReturnValue(false);
+      phaseCalculationService.isEasternBrightest.mockReturnValue(false);
+      phaseCalculationService.isEveningSet.mockReturnValue(false);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getMercurianPhaseEvents({
+        mercuryCoordinateEphemeris: {},
+        mercuryDistanceEphemeris: {},
+        mercuryIlluminationEphemeris: {},
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+      });
+
+      expect(events).toHaveLength(4);
+      expect(events.map((event) => event.description)).toStrictEqual(
+        expect.arrayContaining([
+          "Mercury Morning Rise",
+          "Mercury Western Brightest",
+          "Mercury Western Elongation",
+          "Mercury Morning Set",
+        ]),
+      );
+    });
+
+    it("emits eastern sequence when all eastern events are true", () => {
+      phaseCalculationService.isMorningRise.mockReturnValue(false);
+      phaseCalculationService.isWesternBrightest.mockReturnValue(false);
+      phaseCalculationService.isWesternElongation.mockReturnValue(false);
+      phaseCalculationService.isMorningSet.mockReturnValue(false);
+      phaseCalculationService.isEveningRise.mockReturnValue(true);
+      phaseCalculationService.isEasternElongation.mockReturnValue(true);
+      phaseCalculationService.isEasternBrightest.mockReturnValue(true);
+      phaseCalculationService.isEveningSet.mockReturnValue(true);
+
+      const timestamp = createTimestamp();
+
+      const events = service.getMercurianPhaseEvents({
+        mercuryCoordinateEphemeris: {},
+        mercuryDistanceEphemeris: {},
+        mercuryIlluminationEphemeris: {},
+        minute: timestamp,
+        sunCoordinateEphemeris: {},
+      });
+
+      expect(events).toHaveLength(4);
+      expect(events.map((event) => event.description)).toStrictEqual(
+        expect.arrayContaining([
           "Mercury Evening Rise",
           "Mercury Eastern Elongation",
           "Mercury Eastern Brightest",

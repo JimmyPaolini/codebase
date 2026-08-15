@@ -1,0 +1,67 @@
+{
+  "bin": {
+    "conformetry-nx-bootstrap": "./src/bootstrap.mjs"
+  },
+  "dependencies": {
+    "@conformetry/configuration": "workspace:*",
+    "@conformetry/core": "workspace:*",
+    "@conformetry/generation": "workspace:*",
+    "@conformetry/json": "workspace:*",
+    "@conformetry/jupyter": "workspace:*",
+    "@conformetry/markdown": "workspace:*",
+    "@conformetry/python": "workspace:*",
+    "@conformetry/text": "workspace:*",
+    "@conformetry/typescript": "workspace:*",
+    "@conformetry/validation": "workspace:*",
+    "@nestjs/common": "catalog:",
+    "@nestjs/core": "catalog:",
+    "@nx/devkit": "catalog:",
+    "@swc-node/register": "catalog:",
+    "pino": "catalog:",
+    "reflect-metadata": "catalog:",
+    "tslib": "catalog:"
+  },
+  "devDependencies": {
+    "@golevelup/ts-vitest": "catalog:",
+    "@nestjs/testing": "catalog:",
+    "@nx/eslint-plugin": "catalog:",
+    "@swc/helpers": "catalog:",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "executors": "./executors.json",
+  "exports": {
+    ".": {
+      "default": "./src/index.cjs",
+      "import": "./src/index.cjs",
+      "require": "./src/index.cjs",
+      "types": "./src/index.ts"
+    },
+    "./executors.json": "./executors.json",
+    "./generators.json": "./generators.json",
+    "./package.json": "./package.json",
+    "./src/executors/*": "./src/executors/*",
+    "./src/generators/*": "./src/generators/*"
+  },
+  "generators": "./generators.json",
+  "main": "src/index.ts",
+  "name": "@conformetry/nx",
+  "nx": {
+    "executors": "./executors.json",
+    "generators": "./generators.json"
+  },
+  "private": true,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "type": "module",
+  "typeCoverage": {
+    "atLeast": 100,
+    "strict": true
+  },
+  "types": "src/index.ts",
+  "version": "0.0.1"
+}

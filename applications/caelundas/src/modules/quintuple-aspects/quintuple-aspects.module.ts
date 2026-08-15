@@ -1,4 +1,4 @@
-import { AspectsUtilitiesModule } from "@caelundas/src/modules/aspects/aspects.utilities.module";
+import { AspectsUtilitiesModule } from "@caelundas/src/modules/aspects/aspects-utilities.module";
 import { MathModule } from "@caelundas/src/modules/math/math.module";
 import { Module } from "@nestjs/common";
 

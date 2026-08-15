@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { AgentSkillsModule } from "../agent-skills/agent-skills.module";
-import { ConformanceGeneratorsModule } from "../conformance-generators/conformance-generators.module";
+import { ConformetryGeneratorsModule } from "../conformetry-generators/conformetry-generators.module";
 import { ConventionalConfigModule } from "../conventional-config/conventional-config.module";
 import { DevcontainerConfigurationModule } from "../devcontainer-configuration/devcontainer-configuration.module";
 import { LoggerModule } from "../logger/logger.module";
@@ -23,7 +23,7 @@ describe(SynchronizationModule, () => {
     expect(imports).toBeDefined();
     expect(imports).toContain(LoggerModule);
     expect(imports).toContain(AgentSkillsModule);
-    expect(imports).toContain(ConformanceGeneratorsModule);
+    expect(imports).toContain(ConformetryGeneratorsModule);
     expect(imports).toContain(ConventionalConfigModule);
     expect(imports).toContain(DevcontainerConfigurationModule);
     expect(imports).toContain(PullRequestTemplateModule);

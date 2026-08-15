@@ -1,5 +1,4 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
 
 import { AnnualSolarCycleModule } from "../annual-solar-cycle/annual-solar-cycle.module";
 import { AspectsModule } from "../aspects/aspects.module";
@@ -8,7 +7,6 @@ import { DailyCyclesModule } from "../daily-cycles/daily-cycles.module";
 import { EclipsesModule } from "../eclipses/eclipses.module";
 import { EphemerisModule } from "../ephemeris/ephemeris.module";
 import { IngressesModule } from "../ingresses/ingresses.module";
-import { environmentSchema } from "../input/input.constants";
 import { InputModule } from "../input/input.module";
 import { LoggerModule } from "../logger/logger.module";
 import { MajorAspectsModule } from "../major-aspects/major-aspects.module";
@@ -39,12 +37,6 @@ import { CaelundasCommand } from "./caelundas.command";
   controllers: [],
   exports: [CaelundasCommand],
   imports: [
-    ConfigModule.forRoot({
-      envFilePath: ".env",
-      isGlobal: true,
-      validate: (config: Record<string, unknown>) =>
-        environmentSchema.parse(config),
-    }),
     LoggerModule,
     InputModule,
     MathModule,

@@ -19,6 +19,12 @@ export class PronunciationClassicalService {
 
   constructor() {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   /**
    * Classifies and adds the classical H phoneme based on surrounding vowels.
    */
@@ -125,6 +131,8 @@ export class PronunciationClassicalService {
     phonemes.push(classicalPhonemes[ch] ?? "");
     return index;
   }
+
+  // 🌎 Public Methods
 
   /**
    * Processes one classical-character position and returns the next index.
