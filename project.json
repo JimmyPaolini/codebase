@@ -744,7 +744,7 @@
         "default"
       ],
       "options": {
-        "command": "cspell --config configuration/cspell.config.yaml '*.{ts,tsx,js,jsx,md,yaml,yml,json}' 'scripts/**' 'documentation/**' 'infrastructure/**' 'planning/**' --no-progress --gitignore",
+        "command": "cspell --config configuration/cspell.config.yaml '*.{ts,tsx,js,jsx,md,yaml,yml,json}' 'scripts/**' 'documentation/**' 'infrastructure/**' 'planning/**' --no-progress --gitignore --gitignore-root .",
         "cwd": "{projectRoot}"
       }
     },
