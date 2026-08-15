@@ -1248,6 +1248,31 @@ export default [
     },
   },
 
+  // 🧭 tsconfig.json path aliases
+  // Local modules are imported with relative paths; path aliases are reserved
+  // for cross-project mappings. A self-referential alias (one pointing back
+  // into the project's own directory) adds indirection, hides dependency
+  // cycles from dependency-cruiser, and breaks when files move.
+  //
+  // Deliberately NOT flagged:
+  // - `./node_modules/...` entries, which are type shims for real packages
+  // - `../`-style entries, which are the cross-project mappings we want
+  // - non-`@`/`~` keys such as `codebase/configuration/*`
+  {
+    files: ["**/tsconfig.json", "tsconfig.json"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          message:
+            "Self-referential tsconfig path alias. Import local files with a relative path instead; reserve path aliases for cross-project mappings.",
+          selector:
+            "JSONProperty[key.value=/^[@~]/] > JSONArrayExpression > JSONLiteral[value=/^\\.\\//]:not([value=/node_modules/])",
+        },
+      ],
+    },
+  },
+
   // 📦 JSONC Files
   // JSONC files support trailing commas; align with Prettier's trailingComma: "all" + jsonc parser
   {
