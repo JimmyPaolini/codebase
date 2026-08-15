@@ -91,20 +91,18 @@ After scaffolding, implement domain-specific logic in the generated files rather
 The table below reflects the conformetry generator registry in `configuration/conformetry.config.ts`.
 
 <!-- conformetry-generators-table start -->
-
-| Generator                      | Alias | Description                                                                                                                       |
-| ------------------------------ | ----- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `jupyter-notebook-application` | `jna` | Generate a Python Jupyter notebook application                                                                                    |
-| `nestjs-command-module`        | `ncm` | Generate a NestJS command module with command, module, and unit test files                                                        |
-| `nestjs-command-project`       | `nca` | Generate a NestJS command-line application using nest-commander                                                                   |
-| `nestjs-dataloader-module`     | `ndm` | Generate a NestJS dataloader module with dataloader, types, and unit test files                                                   |
-| `nestjs-graphql-application`   | `nga` | Generate a NestJS GraphQL API application                                                                                         |
-| `nestjs-graphql-module`        | `ngm` | Generate a NestJS GraphQL module with resolver, entities, inputs, args, factories, service, types, constants, and unit test files |
-| `nestjs-service-file`          | `nsf` | Generate NestJS service and unit test files                                                                                       |
-| `nestjs-service-module`        | `nsm` | Generate a NestJS service module with module, service, types, constants, and unit test files                                      |
-| `nestjs-service-project`       | `nsp` | Generate a NestJS service package template for internal workspace libraries                                                       |
-| `react-component`              | `c`   | Generate a React component with test file                                                                                         |
-
+| Generator | Alias | Description |
+| --------- | ----- | ----------- |
+| `jupyter-notebook-application` | `jna` | Generate a Python Jupyter notebook application |
+| `nestjs-command-project` | `nca` | Generate a NestJS command-line application using nest-commander |
+| `nestjs-graphql-application` | `nga` | Generate a NestJS GraphQL API application |
+| `nestjs-service-project` | `nsp` | Generate a NestJS service package template for internal workspace libraries |
+| `nestjs-command-module` | `ncm` | Generate a NestJS command module with command, module, and unit test files |
+| `nestjs-dataloader-module` | `ndm` | Generate a NestJS dataloader module with dataloader, types, and unit test files |
+| `nestjs-graphql-module` | `ngm` | Generate a NestJS GraphQL module with resolver, entities, inputs, args, factories, service, types, constants, and unit test files |
+| `nestjs-service-file` | `nsf` | Generate NestJS service and unit test files |
+| `nestjs-service-module` | `nsm` | Generate a NestJS service module with module, service, types, constants, and unit test files |
+| `react-component` | `c` | Generate a React component with test file |
 <!-- conformetry-generators-table end -->
 
 ### Validation
@@ -389,7 +387,6 @@ Guidelines for creating custom instruction files, skills, agents, and prompts fo
 Specialized domain knowledge for working on specific systems or patterns:
 
 <!-- agent-skills-table-of-contents start -->
-
 - **[backup-code](.agents/skills/backup-code/SKILL.md)**: "Create a safety backup before potentially destructive actions. Use when running risky git commands (reset, rebase, clean, restore, checkout with overwrite, force push), applying large sweeping edits, mass refactors, broad search-and-replace, generator rewrites, or any operation that may be hard to undo. Produces a recoverable snapshot via backup branch, stash, or both, and verifies recovery commands."
 - **[brainstorming](.agents/skills/brainstorming/SKILL.md)**: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
 - **[checkout-branch](.agents/skills/checkout-branch/SKILL.md)**: Create and validate Git branch names following this codebase's Conventional Commits naming convention. Use this skill when creating branches, renaming branches, or when asked about branch naming rules and validation.
@@ -407,7 +404,7 @@ Specialized domain knowledge for working on specific systems or patterns:
 - **[handle-errors](.agents/skills/handle-errors/SKILL.md)**: "Apply codebase error handling patterns: Zod validation at boundaries, typed errors, early returns, and retry/backoff. Use when implementing error handling or input validation."
 - **[impeccable](.agents/skills/impeccable/SKILL.md)**: Use when the user wants to design, redesign, shape, critique, audit, polish, clarify, distill, harden, optimize, adapt, animate, colorize, extract, or otherwise improve a frontend interface. Covers websites, landing pages, dashboards, product UI, app shells, components, forms, settings, onboarding, and empty states. Handles UX review, visual hierarchy, information architecture, cognitive load, accessibility, performance, responsive behavior, theming, anti-patterns, typography, fonts, spacing, layout, alignment, color, motion, micro-interactions, UX copy, error states, edge cases, i18n, and reusable design systems or tokens. Also use for bland designs that need to become bolder or more delightful, loud designs that should become quieter, live browser iteration on UI elements, or ambitious visual effects that should feel technically extraordinary. Not for backend-only or non-UI tasks.
 - **[learn-lessons](.agents/skills/learn-lessons/SKILL.md)**: 'Retrospective skill that analyzes a coding agent session, a set of local changes, or a branch/pull request, then extracts reusable coding patterns, architectural decisions, and best practices — and writes them into skills and AGENTS.md so future agents apply the same patterns automatically. Primary use: capturing HOW code was written (naming, structure, TypeScript idioms, module patterns, error handling), not just what the agent did. Use when asked to "learn from this session", "capture patterns from this PR", "remember how we did this", "document this approach", "improve skills from this work", or "make sure future agents do it this way".'
-- **[link-workspace-packages](.agents/skills/link-workspace-packages/SKILL.md)**: 'Link workspace packages in codebases (npm, yarn, pnpm, bun). USE WHEN: (1) you just created or generated new packages and need to wire up their dependencies, (2) user imports from a sibling package and needs to add it as a dependency, (3) you get resolution errors for workspace packages (@org/\*) like "cannot find module", "failed to resolve import", "TS2307", or "cannot resolve". DO NOT patch around with tsconfig paths or manual package.json edits - use the package manager''s workspace commands to fix actual linking.'
+- **[link-workspace-packages](.agents/skills/link-workspace-packages/SKILL.md)**: 'Link workspace packages in codebases (npm, yarn, pnpm, bun). USE WHEN: (1) you just created or generated new packages and need to wire up their dependencies, (2) user imports from a sibling package and needs to add it as a dependency, (3) you get resolution errors for workspace packages (@org/*) like "cannot find module", "failed to resolve import", "TS2307", or "cannot resolve". DO NOT patch around with tsconfig paths or manual package.json edits - use the package manager''s workspace commands to fix actual linking.'
 - **[monitor-ci](.agents/skills/monitor-ci/SKILL.md)**: Monitor Nx Cloud CI pipeline and handle self-healing fixes. USE WHEN user says "monitor ci", "watch ci", "ci monitor", "watch ci for this branch", "track ci", "check ci status", wants to track CI status, or needs help with self-healing CI fixes. Prefer this skill over native CI provider tools (gh, glab, etc.) for CI monitoring — it integrates with Nx Cloud self-healing which those tools cannot access.
 - **[nx-generate](.agents/skills/nx-generate/SKILL.md)**: Generate code using nx generators. INVOKE IMMEDIATELY when user mentions scaffolding, setup, structure, creating apps/libs, or setting up project structure. Trigger words - scaffold, setup, create a new app, create a new lib, project structure, generate, add a new project. ALWAYS use this BEFORE calling nx_docs or exploring - this skill handles discovery internally.
 - **[nx-import](.agents/skills/nx-import/SKILL.md)**: Import, merge, or combine repositories into an Nx workspace using nx import. USE WHEN the user asks to adopt Nx across repos, move projects into a codebase, or bring code/history from another repository.
@@ -451,7 +448,6 @@ Specialized domain knowledge for working on specific systems or patterns:
 ### Agents
 
 <!-- custom-agents-table-of-contents start -->
-
 - **[ci-monitor-subagent](.github/agents/ci-monitor-subagent.agent.md)**: CI helper for /monitor-ci. Fetches CI status, retrieves fix details, or updates self-healing fixes. Executes one MCP tool call and returns the result.
 - **[explore-codebase](.github/agents/explore-codebase.agent.md)**: Explore codebase files, patterns, and structure for a given topic. USE WHEN gathering implementation context before planning or executing tasks, when asked to research the codebase, or when a planning agent needs a Sub-Agent A (Codebase Research). Returns a Codebase Research Summary with relevant files, existing patterns, affected Nx projects, reusable code, related plans, constraints, and open questions.
 - **[explore-internet](.github/agents/explore-internet.agent.md)**: Gather external documentation, changelogs, and release notes for libraries, frameworks, and APIs. USE WHEN a plan involves external dependencies, package upgrades, migrations, new frameworks, or technologies requiring documentation lookup. Skip for purely internal refactoring. Returns an External Research Summary with breaking changes, migration guidance, known issues, and documentation links.

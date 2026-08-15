@@ -79,6 +79,15 @@ describe(DiscoveryCandidatesService, () => {
       ).toStrictEqual({ type: "packages" });
     });
 
+    it("derives no type for an instance outside the working directory", () => {
+      expect(
+        service.resolveCandidates({
+          patterns: ["../*"],
+          workingDirectory: path.join(workingDirectory, "packages"),
+        })[0]?.substitutions,
+      ).toStrictEqual({});
+    });
+
     it("lets a configured substitution win over the derived one", () => {
       // What a workspace nesting its projects deeper needs.
       expect(

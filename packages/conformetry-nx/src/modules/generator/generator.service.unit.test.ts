@@ -157,6 +157,63 @@ describe(GeneratorService, () => {
       });
     });
 
+    it("offers only the projects a tagged group selects", async () => {
+      const scopedPath = path.join(
+        path.dirname(await createConfigurationPath()),
+        "scoped.config.json",
+      );
+
+      await writeFile(
+        scopedPath,
+        JSON.stringify([
+          {
+            inputs: { project: { type: "string" } },
+            instances: [
+              { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
+            ],
+            name: "nestjs-service-module",
+            templatePath: "templates/module",
+          },
+        ]),
+        "utf8",
+      );
+
+      const scopedFiles = await service.emitPlugin({
+        configurationPath: scopedPath,
+        outputPath: "tools/generators",
+        packageName: "@scope/generators",
+        projects: [
+          {
+            name: "widgets",
+            root: "packages/widgets",
+            tags: ["framework:nestjs"],
+          },
+          {
+            name: "storefront",
+            root: "applications/storefront",
+            tags: ["framework:react"],
+          },
+        ],
+      });
+      const schema: unknown = JSON.parse(
+        findFile(scopedFiles, "schemas/nestjs-service-module.json").content,
+      );
+
+      // Nx builds its prompt from the schema, so constraining one constrains
+      // the other.
+      expect(schema).toMatchObject({
+        properties: { project: { enum: ["widgets"] } },
+      });
+    });
+
+    it("leaves the project input alone when no group is tagged", () => {
+      // The fixture's generators declare no instances at all, so nothing
+      // should constrain what `nx g` offers.
+      expect(
+        findFile(files, "schemas/nestjs-service-module.json").content,
+      ).not.toContain('"enum"');
+    });
+
     it("emits the same bytes for the same configuration", async () => {
       const configurationPath = await createConfigurationPath();
 

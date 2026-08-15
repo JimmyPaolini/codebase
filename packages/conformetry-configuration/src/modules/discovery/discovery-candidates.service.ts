@@ -49,16 +49,17 @@ export class DiscoveryCandidatesService {
     nameStem: string;
     workingDirectory: string;
   }): Record<string, string> {
-    const [type] = path
+    const [type = ""] = path
       .relative(
         args.workingDirectory,
         path.join(args.instancePath, args.nameStem),
       )
       .split(path.sep);
 
-    return type === undefined || type === "" || type.startsWith("..")
-      ? {}
-      : { type };
+    // An instance at the working directory itself, or outside it, has no
+    // top-level directory to answer with; the template's own default or a
+    // configured value takes over rather than a nonsense one being invented.
+    return type === "" || type === ".." ? {} : { type };
   }
 
   /**

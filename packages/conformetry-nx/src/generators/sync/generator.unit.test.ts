@@ -20,7 +20,13 @@ vi.mock("../../plugin-context.utilities", () => ({
 }));
 
 const emitPlugin = vi.fn();
-const resolveConfigurationPath = vi.fn();
+const resolveConfigurationPath =
+  vi.fn<
+    (args: {
+      exists: (candidatePath: string) => boolean;
+      nxConfiguration: unknown;
+    }) => string
+  >();
 
 describe(syncGenerator, () => {
   let tree: Tree;
@@ -63,6 +69,27 @@ describe(syncGenerator, () => {
     // The defaults themselves are constants; what matters here is that the
     // generator supplies all three rather than passing undefined through.
     expect(emitPlugin).toHaveBeenCalledTimes(1);
+  });
+
+  it("reads the plugin registration out of the workspace's nx.json", async () => {
+    const nxConfiguration = {
+      plugins: [
+        {
+          options: { configurationPath: "elsewhere/conformetry.config.ts" },
+          plugin: "@conformetry/nx",
+        },
+      ],
+    };
+
+    tree.write("nx.json", JSON.stringify(nxConfiguration));
+
+    await syncGenerator(tree);
+
+    // A global sync generator receives no plugin options, so the registration
+    // is what it has to go on.
+    const [call] = resolveConfigurationPath.mock.calls;
+
+    expect(call?.[0].nxConfiguration).toStrictEqual(nxConfiguration);
   });
 
   it("honors the paths a caller names", async () => {

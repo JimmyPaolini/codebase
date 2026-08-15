@@ -115,6 +115,60 @@ describe(PathsService, () => {
       ).resolves.toBe(path.join(workspaceRoot, "packages/widgets/src/modules"));
     });
 
+    it("places a new instance in the folder a tagged group names", async () => {
+      // A group stating where instances belong beats inferring it from where
+      // they already are — inference answers nothing in an empty project.
+      const scopedPath = path.join(workspaceRoot, "scoped.config.json");
+
+      await writeFile(
+        scopedPath,
+        JSON.stringify([
+          {
+            instances: [
+              { patterns: ["src/widgets/*"], tags: ["type:package"] },
+            ],
+            name: "widget",
+            templatePath: "templates/widget",
+          },
+        ]),
+        "utf8",
+      );
+
+      await expect(
+        service.resolveGenerationPath({
+          configurationPath: scopedPath,
+          generatorName: "widget",
+          inputs: { name: "my-widget", project: "widgets" },
+          tree,
+          workspaceRoot,
+        }),
+      ).resolves.toBe(path.join(workspaceRoot, "packages/widgets/src/widgets"));
+    });
+
+    it("infers the folder when the named generator has no tagged group", async () => {
+      await expect(
+        service.resolveGenerationPath({
+          configurationPath,
+          generatorName: "widget",
+          inputs: { name: "my-widget", project: "widgets" },
+          tree,
+          workspaceRoot,
+        }),
+      ).resolves.toBe(path.join(workspaceRoot, "packages/widgets/src/modules"));
+    });
+
+    it("infers the folder when no generator by that name exists", async () => {
+      await expect(
+        service.resolveGenerationPath({
+          configurationPath,
+          generatorName: "not-a-generator",
+          inputs: { name: "my-widget", project: "widgets" },
+          tree,
+          workspaceRoot,
+        }),
+      ).resolves.toBe(path.join(workspaceRoot, "packages/widgets/src/modules"));
+    });
+
     it("writes into an existing module when one is named", async () => {
       await expect(
         service.resolveGenerationPath({
