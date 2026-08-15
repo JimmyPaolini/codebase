@@ -59,6 +59,8 @@ dictionaryDefinitions:
   - name: tooling
     path: .cspell/tooling.txt
     addWords: true
+  - name: editor
+    path: .cspell/editor.txt
 # Abbreviations banned everywhere — prose, comments, and identifiers alike. This is the
 # text-level counterpart to ESLint's `unicorn/prevent-abbreviations`, which only sees
 # TypeScript and JavaScript identifiers; these entries extend the same ban to Markdown,
@@ -128,6 +130,7 @@ dictionaries:
   - python
   - infrastructure
   - tooling
+  - editor
 patterns:
   - name: notebook-outputs
     pattern: /"outputs"\s*:\s*\[(?:[^\[\]]*|\[(?:[^\[\]]*|\[(?:[^\[\]]*|\[[^\[\]]*\])*[^\[\]]*\])*[^\[\]]*\])*[^\[\]]*\]/g
@@ -161,10 +164,18 @@ patterns:
   - name: lint-rule-name
     pattern: /\bno-(?:param-reassign|obj-calls|hex-escape|children-prop)\b|\bban-char-field\b|\bprop-drilling\b/g
   # External identifiers that embed a banned abbreviation and cannot be renamed: the
-  # `mdast-util-*` packages, Zod's `RefinementCtx` type, pytest's `tmp_path` fixture, the
-  # `git config --bool` flag, and the Universal Dependencies `NUM` part-of-speech tag.
+  # `mdast-util-*` packages, Zod's `RefinementCtx` type, pytest's `tmp_path` fixture,
+  # Python's `secrets.token_hex()`, the `git config --bool` flag, and the Universal
+  # Dependencies `NUM` part-of-speech tag.
   - name: external-identifier
-    pattern: /\bmdast-util-[\w-]+|\bRefinementCtx\b|\btmp_path\b|--bool\b|(?<=")NUM(?=")/g
+    pattern: /\bmdast-util-[\w-]+|\bRefinementCtx\b|\btmp_path\b|\btoken_hex\b|--bool\b|(?<=")NUM(?=")/g
+  # Quoted dotted identifiers in editor configuration: VS Code extension IDs
+  # (`esbenp.prettier-vscode`), setting keys (`git.autofetch`), and command IDs
+  # (`workbench.action.terminal.new`). Publisher handles are not English words, and the
+  # keys are VS Code's vocabulary rather than this workspace's. Only applied to the editor
+  # config files in `overrides` — plain strings in those files stay checked.
+  - name: editor-configuration-identifier
+    pattern: /"[a-z\d][\w-]*(?:\.[\w-]+)+"/gi
   # cspell:enable
 ignoreRegExpList:
   - temporary-directory-path
@@ -191,6 +202,13 @@ overrides:
       - "**/*.ipynb"
     ignoreRegExpList:
       - /\bbool\b|\bcol_offset\b|\bnum_results\b/g
+  # VS Code and devcontainer configuration is written in VS Code's own vocabulary — the
+  # extension recommendation lists are nothing but third-party publisher handles.
+  - filename:
+      - "**/.vscode/**/*.json"
+      - "**/.devcontainer/**/*.json"
+    ignoreRegExpList:
+      - editor-configuration-identifier
   # The folder-naming rules necessarily spell out the folder names they ban.
   - filename: "**/configuration/project-structure.json"
     ignoreRegExpList:

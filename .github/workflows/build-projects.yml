@@ -106,12 +106,12 @@ jobs:
               const status = !pr.passed ? '❌' :
                 diff === null ? '🆕' :
                 diff > 0 ? (pct > 5 ? '📈' : '⚠️') : '✅';
-              const diffCol = diff !== null ?
+              const diffColumn = diff !== null ?
                 `${sign(diff)}${toKB(diff)} kB` : '—';
-              const baseCol = base != null ?
+              const baseColumn = base != null ?
                 `${toKB(base.size)} kB` : '—';
               return `| ${status} | ${pr.name} | ${toKB(pr.size)} kB | ` +
-                `${baseCol} | ${diffCol} | ${toKB(pr.sizeLimit)} kB |`;
+                `${baseColumn} | ${diffColumn} | ${toKB(pr.sizeLimit)} kB |`;
             });
 
             const totalPR = prData.reduce((s, e) => s + e.size, 0);
