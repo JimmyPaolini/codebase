@@ -1,11 +1,12 @@
-import { AspectPhaseEmojiService } from "@caelundas/src/modules/aspects/aspect-phase-emoji.service";
-import { ProgressiveCompoundEventService } from "@caelundas/src/modules/aspects/progressive-compound-event.service";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { AspectPhaseEmojiService } from "../aspects/aspect-phase-emoji.service";
+import { ProgressiveCompoundEventService } from "../aspects/progressive-compound-event.service";
+
 import { SextupleAspectsComposerService } from "./sextuple-aspects-composer.service";
 
-import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
+import type { Body } from "../caelundas/caelundas.types";
 
 describe(SextupleAspectsComposerService, () => {
   let service: SextupleAspectsComposerService;

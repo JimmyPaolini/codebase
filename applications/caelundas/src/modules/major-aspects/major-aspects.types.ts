@@ -1,6 +1,6 @@
 // 🏷️ Types
-import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { CoordinateEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
+import type { Body } from "../caelundas/caelundas.types";
+import type { CoordinateEphemeris } from "../ephemeris/ephemeris.types";
 import type { Moment } from "moment-timezone";
 
 /**

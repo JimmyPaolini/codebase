@@ -1,13 +1,14 @@
-import { MathService } from "@caelundas/src/modules/math/math.service";
 import { Injectable } from "@nestjs/common";
+
+import { MathService } from "../math/math.service";
 
 import { TwilightsBuilderService } from "./twilights-builder.service";
 import { TwilightsComposerService } from "./twilights-composer.service";
 import { TwilightsDetectorService } from "./twilights-detector.service";
 
+import type { Event } from "../calendar/calendar.types";
+import type { AzimuthElevationEphemeris } from "../ephemeris/ephemeris.types";
 import type { Twilight } from "./twilights.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
-import type { AzimuthElevationEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
 import type { Moment } from "moment-timezone";
 
 /**

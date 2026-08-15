@@ -17,8 +17,7 @@
       "codebase/configuration/*": ["../../configuration/*"],
       "eslint-plugin-better-max-params": [
         "../../configuration/types/eslint-plugin-better-max-params/index.d.ts"
-      ],
-      "~/*": ["./src/*"]
+      ]
     },
     "strict": true,
     "target": "ES2022",

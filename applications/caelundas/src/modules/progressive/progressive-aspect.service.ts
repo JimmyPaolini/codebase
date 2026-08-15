@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import type { Event } from "../calendar/calendar.types";
 import type { TypedAspectParts } from "./progressive.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 
 /**
  * Shared helper service for building progressive aspect events.

@@ -1,7 +1,8 @@
-import { CalendarModule } from "@caelundas/src/modules/calendar/calendar.module";
-import { EphemerisModule } from "@caelundas/src/modules/ephemeris/ephemeris.module";
-import { MathModule } from "@caelundas/src/modules/math/math.module";
 import { Module } from "@nestjs/common";
+
+import { CalendarModule } from "../calendar/calendar.module";
+import { EphemerisModule } from "../ephemeris/ephemeris.module";
+import { MathModule } from "../math/math.module";
 
 import { DailyCyclesBuilderService } from "./daily-cycles-builder.service";
 import { DailyCyclesService } from "./daily-cycles.service";

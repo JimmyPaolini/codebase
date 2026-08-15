@@ -1,9 +1,10 @@
-import { bodies } from "@caelundas/src/modules/caelundas/caelundas.constants";
 import moment, { type Moment } from "moment-timezone";
 
-import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
-import type { CoordinateEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
+import { bodies } from "../src/modules/caelundas/caelundas.constants";
+
+import type { Body } from "../src/modules/caelundas/caelundas.types";
+import type { Event } from "../src/modules/calendar/calendar.types";
+import type { CoordinateEphemeris } from "../src/modules/ephemeris/ephemeris.types";
 
 /**
  * Canonical minute fixture frequently used by aspect detection tests.

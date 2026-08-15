@@ -7,15 +7,12 @@ import moment from "moment-timezone";
 
 import { LoggerService } from "../logger/logger.service";
 
+import type { Environment, Input } from "../input/input.types";
 import type {
   BuildCalendarFileContentParameters,
   BuildInstantEventArguments,
   Event,
 } from "./calendar.types";
-import type {
-  Environment,
-  Input,
-} from "@caelundas/src/modules/input/input.types";
 
 /**
  * NestJS service responsible for building and writing astronomical event calendars.

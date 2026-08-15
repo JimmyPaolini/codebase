@@ -1,15 +1,16 @@
-import { CalendarService } from "@caelundas/src/modules/calendar/calendar.service";
-import { EphemerisModule } from "@caelundas/src/modules/ephemeris/ephemeris.module";
-import { LoggerService } from "@caelundas/src/modules/logger/logger.service";
-import { MathService } from "@caelundas/src/modules/math/math.service";
 import { Test } from "@nestjs/testing";
 import moment, { type Moment } from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { CalendarService } from "../calendar/calendar.service";
+import { EphemerisModule } from "../ephemeris/ephemeris.module";
+import { LoggerService } from "../logger/logger.service";
+import { MathService } from "../math/math.service";
+
 import { DailyCyclesBuilderService } from "./daily-cycles-builder.service";
 import { DailyCyclesService } from "./daily-cycles.service";
 
-import type { AzimuthElevationEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
+import type { AzimuthElevationEphemeris } from "../ephemeris/ephemeris.types";
 
 vi.mock("fs", () => ({
   default: {

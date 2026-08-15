@@ -1,14 +1,15 @@
-import { ProgressiveAspectService } from "@caelundas/src/modules/progressive/progressive-aspect.service";
-import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import _ from "lodash";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { ProgressiveAspectService } from "../progressive/progressive-aspect.service";
+import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
+
 import { SpecialtyAspectsProgressiveService } from "./specialty-aspects-progressive.service";
 
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import type { Event } from "../calendar/calendar.types";
 
 describe(SpecialtyAspectsProgressiveService, () => {
   let service: SpecialtyAspectsProgressiveService;

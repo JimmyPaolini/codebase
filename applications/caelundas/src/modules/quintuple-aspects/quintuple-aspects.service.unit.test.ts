@@ -1,17 +1,18 @@
-import { AspectPhaseEmojiService } from "@caelundas/src/modules/aspects/aspect-phase-emoji.service";
-import { CompoundPhaseService } from "@caelundas/src/modules/aspects/compound-phase.service";
-import { ProgressiveCompoundEventService } from "@caelundas/src/modules/aspects/progressive-compound-event.service";
-import { MathService } from "@caelundas/src/modules/math/math.service";
-import { QuintupleAspectsComposerService } from "@caelundas/src/modules/quintuple-aspects/quintuple-aspects-composer.service";
 import { Test } from "@nestjs/testing";
 import _ from "lodash";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { AspectPhaseEmojiService } from "../aspects/aspect-phase-emoji.service";
+import { CompoundPhaseService } from "../aspects/compound-phase.service";
+import { ProgressiveCompoundEventService } from "../aspects/progressive-compound-event.service";
+import { MathService } from "../math/math.service";
+
+import { QuintupleAspectsComposerService } from "./quintuple-aspects-composer.service";
 import { QuintupleAspectsService } from "./quintuple-aspects.service";
 
-import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import type { AspectBodies } from "../aspects/aspects.types";
+import type { Event } from "../calendar/calendar.types";
 
 describe(QuintupleAspectsService, () => {
   let service: QuintupleAspectsService;

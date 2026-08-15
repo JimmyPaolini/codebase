@@ -1,15 +1,9 @@
-import {
-  angleByAspect,
-  orbByAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.constants";
-import { MathService } from "@caelundas/src/modules/math/math.service";
 import { Injectable } from "@nestjs/common";
 
-import type {
-  Aspect,
-  AspectPhase,
-  Body,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
+import { angleByAspect, orbByAspect } from "../caelundas/caelundas.constants";
+import { MathService } from "../math/math.service";
+
+import type { Aspect, AspectPhase, Body } from "../caelundas/caelundas.types";
 import type { Moment } from "moment-timezone";
 
 /**

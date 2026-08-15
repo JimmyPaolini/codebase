@@ -1,20 +1,20 @@
-import { MathService } from "@caelundas/src/modules/math/math.service";
 import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "../logger/logger.service";
+import { MathService } from "../math/math.service";
 
 import { EclipseEventService } from "./eclipse-event.service";
 import { EclipseGeometryService } from "./eclipse-geometry.service";
 import { EclipseTopocentricService } from "./eclipse-topocentric.service";
 
-import type { EclipseCoordinates } from "./eclipses.types";
-import type { EclipsePhase } from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import type { EclipsePhase } from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
 import type {
   AzimuthElevationEphemeris,
   CoordinateEphemeris,
   DiameterEphemeris,
-} from "@caelundas/src/modules/ephemeris/ephemeris.types";
+} from "../ephemeris/ephemeris.types";
+import type { EclipseCoordinates } from "./eclipses.types";
 import type { Moment } from "moment-timezone";
 
 /**

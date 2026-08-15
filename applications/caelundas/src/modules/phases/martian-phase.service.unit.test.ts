@@ -1,11 +1,11 @@
-import { symbolByMartianPhase } from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
-import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { symbolByMartianPhase } from "../caelundas/symbol-caelundas.constants";
 import { LoggerService } from "../logger/logger.service";
+import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
 import { MartianPhaseService } from "./martian-phase.service";
 import { PhaseCalculationService } from "./phase-calculation.service";
@@ -14,8 +14,8 @@ import {
   MARS_MORNING_VISIBILITY_DESCRIPTION,
 } from "./phases.constants";
 
+import type { Event } from "../calendar/calendar.types";
 import type { PhaseParameters } from "./phases.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 
 const createTimestamp = (): moment.Moment =>
   moment.utc("2024-06-01T06:00:00.000Z");

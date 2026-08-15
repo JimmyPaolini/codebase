@@ -1,34 +1,34 @@
-import { AspectEphemerisService } from "@caelundas/src/modules/aspects/aspect-ephemeris.service";
+import { Injectable } from "@nestjs/common";
+import _ from "lodash";
+
+import { AspectEphemerisService } from "../aspects/aspect-ephemeris.service";
 import {
   aspectBodies as minorAspectBodies,
   minorAspects,
-} from "@caelundas/src/modules/caelundas/caelundas.constants";
+} from "../caelundas/caelundas.constants";
 import {
   capitalize,
   isBody,
   isMinorAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
+} from "../caelundas/caelundas.types";
 import {
   symbolByBody,
   symbolByMinorAspect,
-} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
-import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
-import { Injectable } from "@nestjs/common";
-import _ from "lodash";
-
+} from "../caelundas/symbol-caelundas.constants";
 import { LoggerService } from "../logger/logger.service";
+import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
-import type {
-  AssembleMinorAspectEventArguments,
-  ExtractAspectComponentsResult,
-} from "./minor-aspects.types";
 import type {
   AspectPhase,
   Body,
   MinorAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
-import type { CoordinateEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
+} from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
+import type { CoordinateEphemeris } from "../ephemeris/ephemeris.types";
+import type {
+  AssembleMinorAspectEventArguments,
+  ExtractAspectComponentsResult,
+} from "./minor-aspects.types";
 import type { Moment } from "moment-timezone";
 
 /** Event building and grouping helpers for {@link MinorAspectsService}. */

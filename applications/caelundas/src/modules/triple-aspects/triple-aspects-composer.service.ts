@@ -1,24 +1,24 @@
-import { AspectGraphService } from "@caelundas/src/modules/aspects/aspect-graph.service";
-import { AspectPhaseEmojiService } from "@caelundas/src/modules/aspects/aspect-phase-emoji.service";
-import { aspectBodies as tripleAspectBodies } from "@caelundas/src/modules/caelundas/caelundas.constants";
-import {
-  symbolByBody,
-  symbolByTripleAspect,
-} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { AspectGraphService } from "../aspects/aspect-graph.service";
+import { AspectPhaseEmojiService } from "../aspects/aspect-phase-emoji.service";
+import { aspectBodies as tripleAspectBodies } from "../caelundas/caelundas.constants";
+import {
+  symbolByBody,
+  symbolByTripleAspect,
+} from "../caelundas/symbol-caelundas.constants";
 import { LoggerService } from "../logger/logger.service";
 
-import type { ProgressiveBodiesMeta } from "./triple-aspects.types";
-import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
+import type { AspectBodies } from "../aspects/aspects.types";
 import type {
   Aspect,
   AspectPhase,
   Body,
   TripleAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+} from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
+import type { ProgressiveBodiesMeta } from "./triple-aspects.types";
 import type { Moment } from "moment-timezone";
 
 /**

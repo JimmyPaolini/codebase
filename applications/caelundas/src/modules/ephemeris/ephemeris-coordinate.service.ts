@@ -1,6 +1,7 @@
-import { MathService } from "@caelundas/src/modules/math/math.service";
 import { Injectable } from "@nestjs/common";
 import { calc, constants, nod_aps_ut } from "sweph";
+
+import { MathService } from "../math/math.service";
 
 import { EphemerisConstantsService } from "./ephemeris-constants.service";
 import { EphemerisTimeService } from "./ephemeris-time.service";
@@ -10,11 +11,8 @@ import {
   swissEphemerisConstantByNode,
 } from "./ephemeris.constants";
 
+import type { Body, Node } from "../caelundas/caelundas.types";
 import type { CoordinateEphemeris, DistanceEphemeris } from "./ephemeris.types";
-import type {
-  Body,
-  Node,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
 import type { Moment } from "moment-timezone";
 
 /**

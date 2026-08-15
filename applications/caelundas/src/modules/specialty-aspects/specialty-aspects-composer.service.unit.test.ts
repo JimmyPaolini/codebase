@@ -1,10 +1,10 @@
-import { EphemerisService } from "@caelundas/src/modules/ephemeris/ephemeris.service";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import _ from "lodash";
 import moment from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { EphemerisService } from "../ephemeris/ephemeris.service";
 import { LoggerService } from "../logger/logger.service";
 
 import { SpecialtyAspectsComposerService } from "./specialty-aspects-composer.service";
