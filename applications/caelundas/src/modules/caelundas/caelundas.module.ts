@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 
+import { LoggerModule } from "@codebase/logger";
+
 import { AnnualSolarCycleModule } from "../annual-solar-cycle/annual-solar-cycle.module";
 import { AspectsModule } from "../aspects/aspects.module";
 import { CalendarModule } from "../calendar/calendar.module";
@@ -8,7 +10,6 @@ import { EclipsesModule } from "../eclipses/eclipses.module";
 import { EphemerisModule } from "../ephemeris/ephemeris.module";
 import { IngressesModule } from "../ingresses/ingresses.module";
 import { InputModule } from "../input/input.module";
-import { LoggerModule } from "../logger/logger.module";
 import { MajorAspectsModule } from "../major-aspects/major-aspects.module";
 import { MathModule } from "../math/math.module";
 import { MinorAspectsModule } from "../minor-aspects/minor-aspects.module";

@@ -4,8 +4,9 @@ import _ from "lodash";
 import moment from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { EphemerisService } from "../ephemeris/ephemeris.service";
-import { LoggerService } from "../logger/logger.service";
 
 import { SpecialtyAspectsComposerService } from "./specialty-aspects-composer.service";
 

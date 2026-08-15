@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import { AspectEphemerisService } from "../aspects/aspect-ephemeris.service";
 import { AspectEventFormattingService } from "../aspects/aspect-event-formatting.service";
 import { AspectsUtilitiesService } from "../aspects/aspects-utilities.service";
 import { minorAspects } from "../caelundas/caelundas.constants";
 import { symbolByMinorAspect } from "../caelundas/symbol-caelundas.constants";
-import { LoggerService } from "../logger/logger.service";
 
 import type {
   AspectPhase,

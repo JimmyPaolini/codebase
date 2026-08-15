@@ -2,11 +2,12 @@ import { createMock, type DeepMocked } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import {
   createCommandTestHarness,
   resetCommandTestHarness,
 } from "../../../testing/command-harness";
-import { LoggerService } from "../logger/logger.service";
 
 import { EpigraphikDatenbankClaussSlabyCommand } from "./epigraphik-datenbank-clauss-slaby.command";
 

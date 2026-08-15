@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { LoggerService } from "@codebase/logger";
+
 import { AspectGraphService } from "../aspects/aspect-graph.service";
 import { AspectPhaseEmojiService } from "../aspects/aspect-phase-emoji.service";
 import { aspectBodies as tripleAspectBodies } from "../caelundas/caelundas.constants";
@@ -8,7 +10,6 @@ import {
   symbolByBody,
   symbolByTripleAspect,
 } from "../caelundas/symbol-caelundas.constants";
-import { LoggerService } from "../logger/logger.service";
 
 import type { AspectBodies } from "../aspects/aspects.types";
 import type {

@@ -2,7 +2,8 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
+
 import { WriteReadmeService } from "../write-readme/write-readme.service";
 
 import { CodometerCommand } from "./codometer.command";

@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { LoggerService } from "@codebase/logger";
+
 import { AspectsUtilitiesService } from "../aspects/aspects-utilities.service";
 import { majorAspects } from "../caelundas/caelundas.constants";
 import { capitalize } from "../caelundas/caelundas.types";
@@ -8,7 +10,6 @@ import {
   symbolByBody,
   symbolByMajorAspect,
 } from "../caelundas/symbol-caelundas.constants";
-import { LoggerService } from "../logger/logger.service";
 
 import type {
   AspectPhase,

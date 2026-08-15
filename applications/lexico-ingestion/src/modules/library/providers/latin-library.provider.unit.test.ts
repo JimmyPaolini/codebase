@@ -6,8 +6,8 @@ import { Author, Text } from "@codebase/lexico-entities";
 
 import { LatinLibraryProvider } from "./latin-library.provider";
 
-import type { LoggerService } from "../../logger/logger.service";
 import type { LatinLibraryBuilder } from "./latin-library.builder";
+import type { LoggerService } from "@codebase/logger";
 import type { AnyNode } from "domhandler";
 
 const { mkdirMock, readFileMock, writeFileMock } = vi.hoisted(() => ({

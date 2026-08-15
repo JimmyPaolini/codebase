@@ -4,9 +4,9 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Author, Line, Text, Token, Word } from "@codebase/lexico-entities";
+import { LoggerService } from "@codebase/logger";
 
 import { createRepositoryMock } from "../../../testing/mocks";
-import { LoggerService } from "../logger/logger.service";
 import { NumeralsService } from "../numerals/numerals.service";
 
 import { LiteratureLibraryScanService } from "./literature-library-scan.service";

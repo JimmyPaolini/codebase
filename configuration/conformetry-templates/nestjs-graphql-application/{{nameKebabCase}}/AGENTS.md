@@ -23,7 +23,7 @@ nx run {{nameKebabCase}}:start
 - **Pagination**: Relay connections via `nestjs-graphql-connection`
 - **Dataloaders**: `dataloader` (request-scoped, prevents N+1 queries)
 - **Env validation**: `@nestjs/config` + `zod` (`environmentSchema` in `.constants.ts`)
-- **Logging**: `pino`-backed `LoggerService` (`Scope.TRANSIENT`)
+- **Logging**: `@codebase/logger` — a `pino`-backed `LoggerService` (`Scope.TRANSIENT`)
 - **Language**: Strict TypeScript
 
 ### Execution Flow
@@ -46,9 +46,6 @@ src/
       {{nameKebabCase}}.module.ts     # Root NestJS module (imports GraphQLModule, LoggerModule)
       {{nameKebabCase}}.constants.ts  # Zod environmentSchema for env validation
       {{nameKebabCase}}.types.ts      # Module-scoped TypeScript types
-    logger/
-      logger.service.ts               # Transient pino LoggerService
-      logger.module.ts                # LoggerModule (exports LoggerService)
     sample/                           # Example GraphQL module — replace with your domain
       sample.module.ts
       sample.resolver.ts
@@ -108,6 +105,8 @@ This creates 13 files in `src/modules/<domain>/`. After generation:
 5. **Define entities** — add GraphQL object types in `<domain>.entities.ts`.
 
 ### Logging
+
+`LoggerService` and `LoggerModule` come from `@codebase/logger` — this project does not define its own logger. Add `"@codebase/logger": "workspace:*"` to `dependencies`, then import `LoggerModule` once in the root module; it is `@Global()`, so feature modules inject `LoggerService` without importing it.
 
 `LoggerService` is `Scope.TRANSIENT` — each injecting class gets its own instance. Always call `setContext` in the constructor:
 
@@ -284,7 +283,7 @@ See [Common Gotchas](../../documentation/troubleshooting/gotchas.md) for workspa
 - [src/main.ts](src/main.ts): Application bootstrap
 - [src/modules/{{nameKebabCase}}/{{nameKebabCase}}.module.ts](src/modules/{{nameKebabCase}}/{{nameKebabCase}}.module.ts): Root NestJS module
 - [src/modules/{{nameKebabCase}}/{{nameKebabCase}}.constants.ts](src/modules/{{nameKebabCase}}/{{nameKebabCase}}.constants.ts): `environmentSchema` (Zod)
-- [src/modules/logger/logger.service.ts](src/modules/logger/logger.service.ts): pino-backed logger
+- `@codebase/logger` (`packages/logger`): shared pino-backed `LoggerService` and `LoggerModule`
 - [src/modules/sample/sample.module.ts](src/modules/sample/sample.module.ts): Example GraphQL module
 - [project.json](project.json): Nx targets (`start`, `test`, `lint`, `typecheck`, `format`)
 - [.env.default](.env.default): Environment variable template

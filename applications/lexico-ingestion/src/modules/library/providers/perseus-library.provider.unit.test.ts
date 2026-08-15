@@ -6,11 +6,11 @@ import { Author } from "@codebase/lexico-entities";
 
 import { PerseusLibraryProvider } from "./perseus-library.provider";
 
-import type { LoggerService } from "../../logger/logger.service";
 import type {
   PerseusLibraryTextExtractionProvider,
   PerseusMarkdownFile,
 } from "./perseus-library-text-extraction.provider";
+import type { LoggerService } from "@codebase/logger";
 import type { AnyNode } from "domhandler";
 
 const { mkdirMock, readdirMock, readFileMock, writeFileMock } = vi.hoisted(

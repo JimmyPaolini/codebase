@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { LoggerService } from "@codebase/logger";
+
 import {
   aspectBodies as specialtyAspectBodies,
   specialtyAspects,
@@ -11,7 +13,6 @@ import {
   symbolBySpecialtyAspect,
 } from "../caelundas/symbol-caelundas.constants";
 import { EphemerisService } from "../ephemeris/ephemeris.service";
-import { LoggerService } from "../logger/logger.service";
 
 import type {
   AspectPhase,

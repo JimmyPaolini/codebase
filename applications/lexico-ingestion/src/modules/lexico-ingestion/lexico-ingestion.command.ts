@@ -2,13 +2,14 @@ import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 import prompts from "prompts";
 
+import { LoggerService } from "@codebase/logger";
+
 import { CorpusScriptorumEcclesiasticorumLatinorumCommand } from "../corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command";
 import { DictionaryCommand } from "../dictionary/dictionary.command";
 import { EpigraphikDatenbankClaussSlabyCommand } from "../epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command";
 import { LatinLibraryCommand } from "../latin-library/latin-library.command";
 import { LibraryCommand } from "../library/library.command";
 import { LiteratureCommand } from "../literature/literature.command";
-import { LoggerService } from "../logger/logger.service";
 import { PerseusCommand } from "../perseus/perseus.command";
 import { WiktionaryCommand } from "../wiktionary/wiktionary.command";
 

@@ -2,7 +2,6 @@
   "dependencies": {
     "@conformetry/core": "workspace:*",
     "@nestjs/common": "catalog:",
-    "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:"
   },

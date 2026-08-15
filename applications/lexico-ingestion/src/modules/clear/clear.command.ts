@@ -13,8 +13,7 @@ import {
   Translation,
   Word,
 } from "@codebase/lexico-entities";
-
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import type { ClearCommandOptions, ClearPromptResponse } from "./clear.types";
 

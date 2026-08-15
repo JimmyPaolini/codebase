@@ -9,23 +9,23 @@
 [![Jupyter](https://img.shields.io/badge/Jupyter-1.1-F37626?logo=jupyter&logoColor=white)](https://jupyter.org/)
 
 <!-- CODE_STATISTICS_START -->
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-213351-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-208105-22c55e?style=flat-square)
 ![Repo Size](https://img.shields.io/badge/Repo_Size-154_MiB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-618-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-1236-3178c6?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-266-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-149-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-389-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-12110-16a34a?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-10709-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-1310-059669?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-342-0ea5e9?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-600-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-1134-3178c6?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-235-10b981?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-150-8b5cf6?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-351-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-11750-16a34a?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-10430-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-1229-059669?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-313-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-30-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-17140-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-5057-0284c7?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-759-db2777?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-1650-ea580c?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-16841-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-4882-0284c7?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-702-db2777?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-1614-ea580c?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-53-ca8a04?style=flat-square)
 <!-- CODE_STATISTICS_END -->
 
@@ -92,6 +92,7 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
 - **[lexico-components](packages/lexico-components)** - Shared React component library using shadcn/ui
 - **[lexico-entities](packages/lexico-entities)** - Shared TypeORM entities and GraphQL types package
 - **[lexico-ingestion](applications/lexico-ingestion)** - NestJS CLI app for Latin dictionary data ingestion
+- **[logger](packages/logger)** - Shared pino-backed NestJS `LoggerService` and `LoggerModule`
 - **[synchronization](tools/synchronization)** - NestJS CLI app for synchronizing codebase configuration and documentation artifacts
 
 ## 📖 Documentation

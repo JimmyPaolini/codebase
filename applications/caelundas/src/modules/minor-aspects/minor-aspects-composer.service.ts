@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { LoggerService } from "@codebase/logger";
+
 import { AspectEphemerisService } from "../aspects/aspect-ephemeris.service";
 import {
   aspectBodies as minorAspectBodies,
@@ -15,7 +17,6 @@ import {
   symbolByBody,
   symbolByMinorAspect,
 } from "../caelundas/symbol-caelundas.constants";
-import { LoggerService } from "../logger/logger.service";
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
 import type {

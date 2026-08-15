@@ -8,7 +8,7 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import { ConventionalConfigIoService } from "./conventional-config-io.service";
 import { RELEASE_RULES_SPECIAL_TYPES } from "./conventional-config.constants";

@@ -1,12 +1,13 @@
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import { AspectEphemerisService } from "../aspects/aspect-ephemeris.service";
 import { AspectsUtilitiesService } from "../aspects/aspects-utilities.service";
 import {
   aspectBodies as majorAspectBodies,
   majorAspects,
 } from "../caelundas/caelundas.constants";
-import { LoggerService } from "../logger/logger.service";
 
 import { MajorAspectEventService } from "./major-aspect-event.service";
 import { MajorAspectProgressiveService } from "./major-aspect-progressive.service";

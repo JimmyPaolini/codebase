@@ -10,8 +10,9 @@ import {
   vi,
 } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { resetCommandTestHarness } from "../../../testing/command-harness";
-import { LoggerService } from "../logger/logger.service";
 
 import { LatinLibraryCommand } from "./latin-library.command";
 

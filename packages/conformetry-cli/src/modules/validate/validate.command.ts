@@ -10,7 +10,7 @@ import { ValidationService } from "@conformetry/validation";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import { DEFAULT_CONFIGURATION_PATH } from "./validate.constants";
 

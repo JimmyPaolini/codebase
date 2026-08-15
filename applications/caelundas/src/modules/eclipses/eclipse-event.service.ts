@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
+
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
 import type { EclipsePhase } from "../caelundas/caelundas.types";

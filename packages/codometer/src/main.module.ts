@@ -2,10 +2,11 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { DiscoveryModule } from "@nestjs/core";
 
+import { LoggerModule } from "@codebase/logger";
+
 import { environmentSchema } from "./constants";
 import { CodometerModule } from "./modules/codometer/codometer.module";
 import { DiscoverFilesModule } from "./modules/discover-files/discover-files.module";
-import { LoggerModule } from "./modules/logger/logger.module";
 import { MeasureJsonModule } from "./modules/measure-json/measure-json.module";
 import { MeasurePythonModule } from "./modules/measure-python/measure-python.module";
 import { MeasureTypescriptModule } from "./modules/measure-typescript/measure-typescript.module";

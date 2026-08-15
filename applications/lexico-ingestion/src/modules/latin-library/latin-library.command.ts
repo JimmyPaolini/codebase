@@ -6,7 +6,7 @@ import * as cheerio from "cheerio";
 import cheerioTableParser from "cheerio-tableparser";
 import { Command, CommandRunner } from "nest-commander";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 /**
  * Crawls The Latin Library and stores source HTML pages under `data/latin-library-source`.

@@ -2,7 +2,7 @@ import "reflect-metadata";
 
 import { CommandFactory } from "nest-commander";
 
-import { LoggerService } from "./modules/logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 import { MainModule } from "./main.module";
 
 async function main(): Promise<void> {

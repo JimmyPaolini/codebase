@@ -1,8 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
+import { LoggerService } from "@codebase/logger";
+
 import { DiscoverFilesService } from "../discover-files/discover-files.service";
-import { LoggerService } from "../logger/logger.service";
 import { MeasureJsonService } from "../measure-json/measure-json.service";
 import { MeasurePythonService } from "../measure-python/measure-python.service";
 import { MeasureTypescriptService } from "../measure-typescript/measure-typescript.service";

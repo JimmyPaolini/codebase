@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import { AspectsUtilitiesService } from "../aspects/aspects-utilities.service";
 import {
   aspectBodies as specialtyAspectBodies,
   specialtyAspects,
 } from "../caelundas/caelundas.constants";
-import { LoggerService } from "../logger/logger.service";
 
 import { SpecialtyAspectsEventService } from "./specialty-aspects-event.service";
 import { SpecialtyAspectsProgressiveService } from "./specialty-aspects-progressive.service";

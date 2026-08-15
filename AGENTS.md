@@ -53,6 +53,7 @@ selection guidance.
 
 - **[lexico-components](packages/lexico-components)**: Shared React component library (shadcn/ui, Radix UI)
 - **[lexico-entities](packages/lexico-entities)**: Shared TypeORM entities and GraphQL types package
+- **[logger](packages/logger)**: Shared pino-backed NestJS `LoggerService` and `LoggerModule`
 
 ### Tools
 

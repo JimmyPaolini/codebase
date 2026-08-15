@@ -3,8 +3,9 @@ import { Test } from "@nestjs/testing";
 import * as cheerio from "cheerio";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { resetCommandTestHarness } from "../../../testing/command-harness";
-import { LoggerService } from "../logger/logger.service";
 
 import { WiktionaryCommand } from "./wiktionary.command";
 

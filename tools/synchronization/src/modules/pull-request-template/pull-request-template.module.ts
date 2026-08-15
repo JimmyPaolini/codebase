@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 
-import { LoggerModule } from "../logger/logger.module";
+import { LoggerModule } from "@codebase/logger";
+
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import { PullRequestTemplateCommand } from "./pull-request-template.command";

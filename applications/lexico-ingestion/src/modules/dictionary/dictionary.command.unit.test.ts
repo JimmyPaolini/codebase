@@ -3,6 +3,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Lexeme, Translation } from "@codebase/lexico-entities";
+import { LoggerService } from "@codebase/logger";
 
 import {
   createCommandTestHarness,
@@ -10,7 +11,6 @@ import {
 } from "../../../testing/command-harness";
 import { setPromptsMockResponse } from "../../../testing/mocks";
 import { LexemesService } from "../lexemes/lexemes.service";
-import { LoggerService } from "../logger/logger.service";
 import { ManualService } from "../manual/manual.service";
 import { TranslationsService } from "../translations/translations.service";
 

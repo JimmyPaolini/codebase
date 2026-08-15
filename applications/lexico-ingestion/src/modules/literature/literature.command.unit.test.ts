@@ -2,9 +2,10 @@ import { createMock, type DeepMocked } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { resetCommandTestHarness } from "../../../testing/command-harness";
 import { setPromptsMockResponse } from "../../../testing/mocks";
-import { LoggerService } from "../logger/logger.service";
 
 import { LiteratureCommand } from "./literature.command";
 import { LiteratureService } from "./literature.service";

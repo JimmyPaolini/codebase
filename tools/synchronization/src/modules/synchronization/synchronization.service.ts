@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 
-import type { LoggerService } from "../logger/logger.service";
 import type {
   SynchronizationMode,
   SynchronizationModeResolutionOptions,
   SynchronizationModeResolutionResult,
 } from "./synchronization.types";
+import type { LoggerService } from "@codebase/logger";
 
 /** Shared service for resolving and validating synchronization command modes. */
 @Injectable()

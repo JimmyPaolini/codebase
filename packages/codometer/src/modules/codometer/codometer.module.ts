@@ -1,7 +1,8 @@
 import { Module } from "@nestjs/common";
 
+import { LoggerModule } from "@codebase/logger";
+
 import { DiscoverFilesModule } from "../discover-files/discover-files.module";
-import { LoggerModule } from "../logger/logger.module";
 import { MeasureJsonModule } from "../measure-json/measure-json.module";
 import { MeasurePythonModule } from "../measure-python/measure-python.module";
 import { MeasureTypescriptModule } from "../measure-typescript/measure-typescript.module";

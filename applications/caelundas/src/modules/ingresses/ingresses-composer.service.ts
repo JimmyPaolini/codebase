@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { LoggerService } from "@codebase/logger";
+
 import {
   ingressBodies as signIngressBodies,
   signs,
@@ -18,7 +20,6 @@ import {
   symbolBySign,
 } from "../caelundas/symbol-caelundas.constants";
 import { EphemerisService } from "../ephemeris/ephemeris.service";
-import { LoggerService } from "../logger/logger.service";
 
 import type { Body, Decan, Sign } from "../caelundas/caelundas.types";
 import type { Event } from "../calendar/calendar.types";

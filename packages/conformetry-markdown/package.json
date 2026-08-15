@@ -3,7 +3,6 @@
     "@conformetry/core": "workspace:*",
     "@nestjs/common": "catalog:",
     "mdast-util-to-string": "catalog:",
-    "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "remark": "catalog:",
     "remark-gfm": "catalog:",

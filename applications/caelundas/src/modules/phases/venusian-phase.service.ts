@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { LoggerService } from "@codebase/logger";
+
 import { symbolByVenusianPhase } from "../caelundas/symbol-caelundas.constants";
-import { LoggerService } from "../logger/logger.service";
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
 import { PhaseCalculationService } from "./phase-calculation.service";

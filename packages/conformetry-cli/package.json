@@ -3,6 +3,7 @@
     "conformetry": "./src/main.mjs"
   },
   "dependencies": {
+    "@codebase/logger": "workspace:*",
     "@conformetry/configuration": "workspace:*",
     "@conformetry/core": "workspace:*",
     "@conformetry/generation": "workspace:*",
@@ -11,7 +12,6 @@
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
     "nest-commander": "catalog:",
-    "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:",
     "zod": "catalog:"

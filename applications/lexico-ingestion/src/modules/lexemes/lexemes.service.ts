@@ -4,11 +4,11 @@ import * as cheerio from "cheerio";
 import { Repository } from "typeorm";
 
 import { Lexeme } from "@codebase/lexico-entities";
+import { LoggerService } from "@codebase/logger";
 
 import { EtymologyService } from "../etymology/etymology.service";
 import { FormsService } from "../forms/forms.service";
 import { LEXICO_INGESTION_BY_ID } from "../lexico-ingestion/lexico-ingestion.constants";
-import { LoggerService } from "../logger/logger.service";
 import { PartOfSpeechService } from "../part-of-speech/part-of-speech.service";
 import { PrincipalPartsService } from "../principal-parts/principal-parts.service";
 import { PronunciationService } from "../pronunciation/pronunciation.service";
