@@ -50,8 +50,11 @@ jobs:
         run: pnpm exec nx run codebase:upgrade-dependencies:write
 
       - name: 📦 Upgrade Python Dependencies
+        # Both projects are named explicitly: the shared Python configuration
+        # lives in configuration/, not at the repository root, so a bare
+        # `uv lock` here fails with "No `pyproject.toml` found".
         run: |
-          uv lock --upgrade
+          uv lock --upgrade --project configuration
           uv lock --upgrade --project applications/affirmations
 
       - name: 🤹 Upgrade Skills
