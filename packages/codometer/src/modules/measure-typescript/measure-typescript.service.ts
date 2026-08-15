@@ -63,6 +63,8 @@ export class MeasureTypescriptService {
       this.handleVariable(node, stats),
   };
 
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
 
   /** Count a discovered comment and update the appropriate metrics. */

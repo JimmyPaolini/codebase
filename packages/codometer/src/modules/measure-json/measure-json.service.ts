@@ -18,6 +18,10 @@ export class MeasureJsonService {
 
   constructor() {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
 
   /** Consume a character that is not inside a comment or string. */

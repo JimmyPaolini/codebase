@@ -15,12 +15,18 @@ export class LoggerService extends ConsoleLogger {
     super();
   }
 
+  // 🔐 Private Fields
+
   private static readonly isProduction =
     process.env["NODE_ENV"] === "production";
 
   private static readonly root = pino(LoggerService.createPinoOptions());
 
   private child: pino.Logger = LoggerService.root;
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
 
   /** Build pino options for production or local development output modes. */
   private static createPinoOptions(): pino.LoggerOptions {
@@ -36,6 +42,8 @@ export class LoggerService extends ConsoleLogger {
       },
     };
   }
+
+  // 🌎 Public Methods
 
   /** Logs a debug message at the `debug` level. */
   override debug(message: unknown, context?: string): void {

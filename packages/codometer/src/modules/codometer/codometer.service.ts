@@ -24,6 +24,12 @@ export class CodometerService {
     private readonly measureJsonService: MeasureJsonService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   /**
    * Count the unique folders represented by the tracked files.
    */
@@ -60,6 +66,8 @@ export class CodometerService {
 
     return repositoryBytes;
   }
+
+  // 🌎 Public Methods
 
   /**
    * Measure aggregated repository statistics for the provided directory.

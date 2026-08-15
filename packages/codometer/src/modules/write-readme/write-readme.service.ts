@@ -20,6 +20,10 @@ export class WriteReadmeService {
 
   constructor() {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
   // 🔏 Private Methods
 
   /**

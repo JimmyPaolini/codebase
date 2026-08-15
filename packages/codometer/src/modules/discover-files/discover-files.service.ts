@@ -20,6 +20,12 @@ export class DiscoverFilesService {
 
   constructor() {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
   // 🌎 Public Methods
 
   /** Returns categorized file path lists for the given codebase root. */

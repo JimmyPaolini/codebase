@@ -17,11 +17,19 @@ export class MeasurePythonService {
 
   constructor() {}
 
+  // 🔐 Private Fields
+
   private readonly logger = new Logger(MeasurePythonService.name);
   private readonly scriptPath = path.resolve(
     path.dirname(fileURLToPath(import.meta.url)),
     "measure-python.service.py",
   );
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
+  // 🌎 Public Methods
 
   /**
    * Analyze Python files within the provided directory.
