@@ -47,6 +47,32 @@ export class PathsService {
   // 🔏 Private Methods
 
   /**
+   * Locates a named module, refusing one the project does not have.
+   *
+   * Naming a module means writing into one that exists. Placing the files at a
+   * made-up path instead scattered a stray directory across the project root
+   * and reported success, which reads as the generator having worked.
+   */
+  private requireModulePath(args: {
+    candidates: InstanceCandidate[];
+    moduleName: string;
+    projectName: string;
+  }): string {
+    const modulePath = this.resolveModulePath({
+      candidates: args.candidates,
+      moduleName: args.moduleName,
+    });
+
+    if (modulePath === undefined) {
+      throw new Error(
+        `Project ${args.projectName} has no module named ${args.moduleName}. Generate the module first, or name one of its existing modules.`,
+      );
+    }
+
+    return modulePath;
+  }
+
+  /**
    * Infers where a project keeps its modules, from where its modules already
    * are.
    *
@@ -215,10 +241,11 @@ export class PathsService {
     const moduleName = args.inputs[MODULE_INPUT_NAME];
 
     if (moduleName !== undefined) {
-      return (
-        this.resolveModulePath({ candidates, moduleName }) ??
-        path.join(projectRootPath, moduleName)
-      );
+      return this.requireModulePath({
+        candidates,
+        moduleName,
+        projectName: args.inputs[PROJECT_INPUT_NAME] ?? "",
+      });
     }
 
     const scopedDirectory = await this.resolveScopedDirectory({

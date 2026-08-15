@@ -182,6 +182,23 @@ describe(PathsService, () => {
       );
     });
 
+    it("refuses a module the project does not have", async () => {
+      // Placing the files at a made-up path instead scattered a stray
+      // directory across the project root and reported success.
+      await expect(
+        service.resolveGenerationPath({
+          configurationPath,
+          inputs: {
+            module: "no-such-module",
+            name: "my-service",
+            project: "widgets",
+          },
+          tree,
+          workspaceRoot,
+        }),
+      ).rejects.toThrow("has no module named no-such-module");
+    });
+
     it("falls back to the project root when it has no modules yet", async () => {
       await expect(
         service.resolveGenerationPath({

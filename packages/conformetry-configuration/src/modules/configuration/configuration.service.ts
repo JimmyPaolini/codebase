@@ -63,6 +63,75 @@ export class ConfigurationService {
   }
 
   /**
+   * Fails when two generators would answer to the same thing.
+   *
+   * A host resolves `<name-or-alias>` by taking the *first* generator whose
+   * name or alias matches, so a collision does not error there — it silently
+   * shadows, and the losing generator becomes unreachable while still
+   * appearing in the configuration. Two generators sharing a template collide
+   * differently: validation then finds candidates that fit both equally and
+   * reports them as matching nothing.
+   */
+  private assertNoCollisions(definitions: ConformetryConfiguration): void {
+    const problems = [
+      ...this.findDuplicates({
+        definitions,
+        // Names and aliases share one namespace because a host searches both
+        // at once: an alias equal to another generator's name is as ambiguous
+        // as two equal names. A generator aliasing its own name is redundant
+        // rather than ambiguous, so it counts once.
+        describe: (key, owners) =>
+          `"${key}" is the name or alias of more than one generator: ${owners.join(", ")}. A host resolves the first match, leaving the others unreachable.`,
+        keysOf: (definition) => [
+          ...new Set([definition.name, ...(definition.aliases ?? [])]),
+        ],
+      }),
+      ...this.findDuplicates({
+        definitions,
+        describe: (key, owners) =>
+          `${key} is the template of more than one generator: ${owners.join(", ")}. Validation cannot tell which one a matching instance belongs to.`,
+        keysOf: (definition) => [definition.templatePath],
+      }),
+      ...this.findUnusableHandles(definitions),
+    ];
+
+    if (problems.length > 0) {
+      throw new Error(problems.join("\n"));
+    }
+  }
+
+  /** Reports every key more than one generator claims. */
+  private findDuplicates(args: {
+    definitions: ConformetryConfiguration;
+    describe: (key: string, owners: string[]) => string;
+    keysOf: (definition: ConformetryGeneratorDefinition) => string[];
+  }): string[] {
+    const owners = new Map<string, string[]>();
+
+    for (const definition of args.definitions) {
+      for (const key of args.keysOf(definition)) {
+        owners.set(key, [...(owners.get(key) ?? []), definition.name]);
+      }
+    }
+
+    return [...owners.entries()]
+      .filter(([, names]) => names.length > 1)
+      .map(([key, names]) => args.describe(key, names));
+  }
+
+  /** Reports names and aliases that could not be addressed or emitted. */
+  private findUnusableHandles(definitions: ConformetryConfiguration): string[] {
+    return definitions.flatMap((definition) => {
+      return [definition.name, ...(definition.aliases ?? [])]
+        .filter((handle) => handle === "" || handle !== path.basename(handle))
+        .map(
+          (handle) =>
+            `Generator ${definition.name} uses "${handle}" as a name or alias. A generator is addressed by that text and emitted to a file named after it, so it cannot contain a path separator.`,
+        );
+    });
+  }
+
+  /**
    * Walks upward from the process cwd looking for the workspace manifest.
    *
    * Used to resolve a config path given relative to the workspace root even
@@ -177,8 +246,12 @@ export class ConfigurationService {
       configurationPath: resolvedPath,
       extension,
     });
-    return conformetryConfigurationSchema
+    const definitions = conformetryConfigurationSchema
       .parse(configurationModule)
       .map((definition) => this.applyGeneratorDefaults(definition));
+
+    this.assertNoCollisions(definitions);
+
+    return definitions;
   }
 }

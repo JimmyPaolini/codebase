@@ -8,6 +8,8 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { UnknownConfigurationFileTypeError } from "./configuration.constants";
 import { ConfigurationService } from "./configuration.service";
 
+import type { ConformetryConfiguration } from "./configuration.types";
+
 /** Writes a JSON config holding whatever the caller passes. */
 async function writeConfiguration(configuration: unknown): Promise<string> {
   const directory = await mkdtemp(path.join(tmpdir(), "conformetry-config-"));
@@ -203,6 +205,72 @@ describe(ConfigurationService, () => {
         await service.loadConformetryConfiguration(configurationPath);
 
       expect(configuration[0]?.name).toBe("widget");
+    });
+  });
+
+  describe("collisions", () => {
+    /** Writes a config and returns the promise of loading it. */
+    async function load(
+      definitions: unknown[],
+    ): Promise<ConformetryConfiguration> {
+      const configurationPath = path.join(
+        await mkdtemp(path.join(tmpdir(), "conformetry-collision-")),
+        "conformetry.config.json",
+      );
+
+      await writeFile(configurationPath, JSON.stringify(definitions), "utf8");
+
+      return service.loadConformetryConfiguration(configurationPath);
+    }
+
+    it.each([
+      [
+        "two generators of the same name",
+        [
+          { name: "widget", templatePath: "t/1" },
+          { name: "widget", templatePath: "t/2" },
+        ],
+        "name or alias of more than one generator",
+      ],
+      [
+        "an alias shared by two generators",
+        [
+          { aliases: ["w"], name: "widget", templatePath: "t/1" },
+          { aliases: ["w"], name: "gadget", templatePath: "t/2" },
+        ],
+        "name or alias of more than one generator",
+      ],
+      [
+        "an alias equal to another generator's name",
+        [
+          { name: "widget", templatePath: "t/1" },
+          { aliases: ["widget"], name: "gadget", templatePath: "t/2" },
+        ],
+        "name or alias of more than one generator",
+      ],
+      [
+        "a template shared by two generators",
+        [
+          { name: "widget", templatePath: "t/1" },
+          { name: "gadget", templatePath: "t/1" },
+        ],
+        "template of more than one generator",
+      ],
+      [
+        "a name that would escape the emitted plugin",
+        [{ name: "../escape", templatePath: "t/1" }],
+        "cannot contain a path separator",
+      ],
+    ])("refuses %s", async (_description, definitions, message) => {
+      // A host resolves the first match, so a collision shadows silently
+      // rather than erroring where it is used.
+      await expect(load(definitions)).rejects.toThrow(message);
+    });
+
+    it("allows a generator to alias its own name", async () => {
+      await expect(
+        load([{ aliases: ["widget"], name: "widget", templatePath: "t/1" }]),
+      ).resolves.toHaveLength(1);
     });
   });
 });
