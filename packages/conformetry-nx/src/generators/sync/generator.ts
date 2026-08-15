@@ -9,7 +9,7 @@ import { NX_CONFIGURATION_FILENAME } from "../../modules/options/options.constan
 import {
   resolveGeneratorService,
   resolveOptionsService,
-  resolvePluginService,
+  resolveProjectsService,
 } from "../../plugin-context.utilities";
 
 import type { SyncGeneratorOptions } from "./generator.types";
@@ -29,7 +29,7 @@ export default async function syncGenerator(
 ): Promise<{ outOfSyncMessage: string }> {
   const generatorService = await resolveGeneratorService();
   const optionsService = await resolveOptionsService();
-  const pluginService = await resolvePluginService();
+  const projectsService = await resolveProjectsService();
   const files = await generatorService.emitPlugin({
     // Nx registers this as a global sync generator, which receives no plugin
     // options, so the workspace's own registration is read for the path.
@@ -41,7 +41,7 @@ export default async function syncGenerator(
       }),
     outputPath: options?.outputPath ?? DEFAULT_OUTPUT_PATH,
     packageName: options?.packageName ?? DEFAULT_PACKAGE_NAME,
-    projects: pluginService.listWorkspaceProjects(tree.root),
+    projects: projectsService.listWorkspaceProjects(tree.root),
   });
 
   for (const file of files) {

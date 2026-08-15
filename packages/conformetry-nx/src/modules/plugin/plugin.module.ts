@@ -12,6 +12,8 @@ import { CandidatesModule } from "../candidates/candidates.module";
 import { GeneratorModule } from "../generator/generator.module";
 import { OptionsModule } from "../options/options.module";
 import { PathsModule } from "../paths/paths.module";
+import { ProjectsModule } from "../projects/projects.module";
+import { ScopeModule } from "../scope/scope.module";
 
 import { PluginService } from "./plugin.service";
 
@@ -34,7 +36,9 @@ import { PluginService } from "./plugin.service";
     OptionsModule,
     PathsModule,
     PluginService,
+    ProjectsModule,
     ReportingModule,
+    ScopeModule,
     ValidationModule,
   ],
   imports: [
@@ -46,7 +50,9 @@ import { PluginService } from "./plugin.service";
     GenerationModule,
     OptionsModule,
     PathsModule,
+    ProjectsModule,
     ReportingModule,
+    ScopeModule,
     ValidationModule,
   ],
   providers: [PluginService],

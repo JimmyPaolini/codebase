@@ -33,24 +33,10 @@ function defineInputs(
   return inputs;
 }
 
-/** Where those projects keep their modules. */
-const GENERATED_MODULE_PATTERNS = [
-  "applications/{affirmations,caelundas,lexico-ingestion}/src/modules/*",
-  "packages/conformetry*/src/modules/*",
-  "tools/synchronization/src/modules/*",
-];
-
-/** Every service file inside those modules. */
-const GENERATED_SERVICE_FILE_PATTERNS = [
-  "applications/{affirmations,caelundas,lexico-ingestion}/src/modules/*/*.service.ts",
-  "applications/{affirmations,caelundas,lexico-ingestion}/src/modules/*/*.service.unit.test.ts",
-  "packages/conformetry*/src/modules/*/*.service.ts",
-  "packages/conformetry*/src/modules/*/*.service.unit.test.ts",
-  "tools/synchronization/src/modules/*/*.service.ts",
-  "tools/synchronization/src/modules/*/*.service.unit.test.ts",
-];
-
 const conformetryConfiguration: ConformetryNxConfiguration = [
+  // Project-level generators keep hand-written globs. They take no `project`
+  // input, so a scope would constrain no prompt, and the set of projects each
+  // one governs is not a shape derivable from a tag.
   {
     aliases: ["jna"],
     description: "Generate a Python Jupyter notebook application",
@@ -65,22 +51,8 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       },
     ],
     name: "jupyter-notebook-application",
-    scope: { tags: ["language:python"] },
     templatePath:
       "configuration/conformetry-templates/jupyter-notebook-application",
-  },
-  {
-    aliases: ["ncm"],
-    description:
-      "Generate a NestJS command module with command, module, and unit test files",
-    inputs: defineInputs({
-      name: z.string().describe("Module name in kebab-case"),
-      project: z.string().describe("Parent project name in kebab-case"),
-    }),
-    instances: [{ patterns: GENERATED_MODULE_PATTERNS }],
-    name: "nestjs-command-module",
-    scope: { directories: ["src/modules"], tags: ["framework:nest-commander"] },
-    templatePath: "configuration/conformetry-templates/nestjs-command-module",
   },
   {
     aliases: ["nca"],
@@ -107,22 +79,7 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       },
     ],
     name: "nestjs-command-project",
-    scope: { tags: ["framework:nest-commander"] },
     templatePath: "configuration/conformetry-templates/nestjs-command-project",
-  },
-  {
-    aliases: ["ndm"],
-    description:
-      "Generate a NestJS dataloader module with dataloader, types, and unit test files",
-    inputs: defineInputs({
-      name: z.string().describe("Module name in kebab-case"),
-      project: z.string().describe("Parent project name in kebab-case"),
-    }),
-    instances: [{ patterns: GENERATED_MODULE_PATTERNS }],
-    name: "nestjs-dataloader-module",
-    scope: { directories: ["src/modules"], tags: ["framework:nestjs"] },
-    templatePath:
-      "configuration/conformetry-templates/nestjs-dataloader-module",
   },
   {
     aliases: ["nga"],
@@ -136,45 +93,6 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       "configuration/conformetry-templates/nestjs-graphql-application",
   },
   {
-    aliases: ["ngm"],
-    description:
-      "Generate a NestJS GraphQL module with resolver, entities, inputs, args, factories, service, types, constants, and unit test files",
-    inputs: defineInputs({
-      name: z.string().describe("Module name in kebab-case"),
-      project: z.string().describe("Parent project name in kebab-case"),
-    }),
-    instances: [{ patterns: GENERATED_MODULE_PATTERNS }],
-    name: "nestjs-graphql-module",
-    scope: { directories: ["src/modules"], tags: ["framework:nestjs"] },
-    templatePath: "configuration/conformetry-templates/nestjs-graphql-module",
-  },
-  {
-    aliases: ["nsf"],
-    description: "Generate NestJS service and unit test files",
-    inputs: defineInputs({
-      module: z.string().describe("Target module name in kebab-case"),
-      name: z.string().describe("Service name in kebab-case"),
-      project: z.string().describe("Parent project name in kebab-case"),
-    }),
-    instances: [{ patterns: GENERATED_SERVICE_FILE_PATTERNS }],
-    name: "nestjs-service-file",
-    scope: { directories: ["src/modules"], tags: ["framework:nestjs"] },
-    templatePath: "configuration/conformetry-templates/nestjs-service-file",
-  },
-  {
-    aliases: ["nsm"],
-    description:
-      "Generate a NestJS service module with module, service, types, constants, and unit test files",
-    inputs: defineInputs({
-      name: z.string().describe("Module name in kebab-case"),
-      project: z.string().describe("Parent project name in kebab-case"),
-    }),
-    instances: [{ patterns: GENERATED_MODULE_PATTERNS }],
-    name: "nestjs-service-module",
-    scope: { directories: ["src/modules"], tags: ["framework:nestjs"] },
-    templatePath: "configuration/conformetry-templates/nestjs-service-module",
-  },
-  {
     aliases: ["nsp"],
     description:
       "Generate a NestJS service package template for internal workspace libraries",
@@ -186,13 +104,89 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
     }),
     instances: [
       {
-        patterns: ["packages/conformetry*"],
+        patterns: [
+          "packages/conformetry-{configuration,core,files,generation,json,jupyter,markdown,python,text,typescript,validation,nx}",
+        ],
         substitutions: { type: "packages" },
       },
     ],
     name: "nestjs-service-project",
-    scope: { tags: ["framework:nestjs"] },
     templatePath: "configuration/conformetry-templates/nestjs-service-project",
+  },
+
+  // Module and file generators are scoped instead. The tags pick the projects
+  // the template suits — which is what `nx g` prompts with — and the patterns
+  // pick what inside them, so the instances validation checks are derived from
+  // the same statement rather than restated as a parallel list of globs.
+  {
+    aliases: ["ncm"],
+    description:
+      "Generate a NestJS command module with command, module, and unit test files",
+    inputs: defineInputs({
+      name: z.string().describe("Module name in kebab-case"),
+      project: z.string().describe("Parent project name in kebab-case"),
+    }),
+    name: "nestjs-command-module",
+    scope: {
+      patterns: ["src/modules/*"],
+      tags: ["framework:nest-commander"],
+    },
+    templatePath: "configuration/conformetry-templates/nestjs-command-module",
+  },
+  {
+    aliases: ["ndm"],
+    description:
+      "Generate a NestJS dataloader module with dataloader, types, and unit test files",
+    inputs: defineInputs({
+      name: z.string().describe("Module name in kebab-case"),
+      project: z.string().describe("Parent project name in kebab-case"),
+    }),
+    name: "nestjs-dataloader-module",
+    scope: { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
+    templatePath:
+      "configuration/conformetry-templates/nestjs-dataloader-module",
+  },
+  {
+    aliases: ["ngm"],
+    description:
+      "Generate a NestJS GraphQL module with resolver, entities, inputs, args, factories, service, types, constants, and unit test files",
+    inputs: defineInputs({
+      name: z.string().describe("Module name in kebab-case"),
+      project: z.string().describe("Parent project name in kebab-case"),
+    }),
+    name: "nestjs-graphql-module",
+    scope: { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
+    templatePath: "configuration/conformetry-templates/nestjs-graphql-module",
+  },
+  {
+    aliases: ["nsf"],
+    description: "Generate NestJS service and unit test files",
+    inputs: defineInputs({
+      module: z.string().describe("Target module name in kebab-case"),
+      name: z.string().describe("Service name in kebab-case"),
+      project: z.string().describe("Parent project name in kebab-case"),
+    }),
+    name: "nestjs-service-file",
+    scope: {
+      patterns: [
+        "src/modules/*/*.service.ts",
+        "src/modules/*/*.service.unit.test.ts",
+      ],
+      tags: ["framework:nestjs"],
+    },
+    templatePath: "configuration/conformetry-templates/nestjs-service-file",
+  },
+  {
+    aliases: ["nsm"],
+    description:
+      "Generate a NestJS service module with module, service, types, constants, and unit test files",
+    inputs: defineInputs({
+      name: z.string().describe("Module name in kebab-case"),
+      project: z.string().describe("Parent project name in kebab-case"),
+    }),
+    name: "nestjs-service-module",
+    scope: { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
+    templatePath: "configuration/conformetry-templates/nestjs-service-module",
   },
   {
     aliases: ["c"],
@@ -201,9 +195,10 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       name: z.string().describe("Component name in kebab-case"),
       project: z.string().describe("Parent project name in kebab-case"),
     }),
-    instances: [],
     name: "react-component",
-    scope: { directories: ["src/components"], tags: ["framework:react"] },
+    // Tags but no patterns: the prompt is confined to the React projects,
+    // while nothing is claimed to be a validated instance yet.
+    scope: { tags: ["framework:react"] },
     templatePath: "configuration/conformetry-templates/react-component",
   },
 ];

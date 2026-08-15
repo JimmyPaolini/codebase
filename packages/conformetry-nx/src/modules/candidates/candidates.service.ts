@@ -115,8 +115,18 @@ export class CandidatesService {
       })
       .flatMap((generator) => {
         const scope = this.scopeService.readScope(generator);
+        // A scope derives its own globs from the project it is being matched
+        // against; a generator without one keeps the globs its author wrote,
+        // which is how a host with no project graph configures conformetry.
+        const groups =
+          scope === undefined
+            ? generator.instances
+            : this.scopeService.deriveInstanceGroups({
+                project: args.project,
+                scope,
+              });
 
-        return generator.instances
+        return groups
           .filter((group) => {
             return this.appliesToProject({ group, project: args.project });
           })
@@ -127,16 +137,6 @@ export class CandidatesService {
                 ? {}
                 : { substitutions: group.substitutions }),
               workingDirectory: args.workspaceRoot,
-            });
-          })
-          .filter((candidate) => {
-            return this.scopeService.isInScopedDirectory({
-              projectRoot: args.project.root,
-              relativePath: path
-                .relative(args.workspaceRoot, candidate.instancePath)
-                .split(path.sep)
-                .join("/"),
-              scope,
             });
           });
       })

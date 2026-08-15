@@ -122,11 +122,17 @@ export class PathsService {
     );
   }
 
-  /** The directories a generator's scope confines it to, if it names any. */
-  private async resolveScopedDirectories(args: {
+  /**
+   * The folder a generator's scope places new instances in, if it names one.
+   *
+   * Preferred over inferring from existing instances, because a scope is the
+   * author stating where instances belong — inference only guesses it, and
+   * guesses nothing at all in a project that has none yet.
+   */
+  private async resolveScopedDirectory(args: {
     configurationPath: string;
     generatorName: string | undefined;
-  }): Promise<string[] | undefined> {
+  }): Promise<string | undefined> {
     if (args.generatorName === undefined) {
       return undefined;
     }
@@ -139,27 +145,9 @@ export class PathsService {
       return generator.name === args.generatorName;
     });
 
-    return this.scopeService.readScope(definition)?.directories;
-  }
-
-  /**
-   * Places a new instance in the folder the generator's scope names.
-   *
-   * Preferred over inferring from existing instances, because a scope is the
-   * author stating where instances belong — inference only guesses it, and
-   * guesses nothing at all in a project that has none yet.
-   */
-  private resolveScopedDirectoryPath(args: {
-    configurationPath: string;
-    generatorName: string | undefined;
-    projectRootPath: string;
-    scopedDirectories: string[] | undefined;
-  }): string | undefined {
-    const [directory] = args.scopedDirectories ?? [];
-
-    return directory === undefined
-      ? undefined
-      : path.join(args.projectRootPath, directory);
+    return this.scopeService.resolveScopedDirectory(
+      this.scopeService.readScope(definition),
+    );
   }
 
   /**
@@ -233,16 +221,16 @@ export class PathsService {
       );
     }
 
+    const scopedDirectory = await this.resolveScopedDirectory({
+      configurationPath: args.configurationPath,
+      generatorName: args.generatorName,
+    });
+
+    if (scopedDirectory !== undefined) {
+      return path.join(projectRootPath, scopedDirectory);
+    }
+
     return (
-      this.resolveScopedDirectoryPath({
-        configurationPath: args.configurationPath,
-        generatorName: args.generatorName,
-        projectRootPath,
-        scopedDirectories: await this.resolveScopedDirectories({
-          configurationPath: args.configurationPath,
-          generatorName: args.generatorName,
-        }),
-      }) ??
       this.resolveModuleParentPath({ candidates, projectRootPath }) ??
       projectRootPath
     );

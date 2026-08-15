@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import {
@@ -20,10 +20,11 @@ import { GeneratorService } from "../generator/generator.service";
 import {
   CONFORMETRY_NX_PLUGIN_NAME,
   NX_CONFIGURATION_FILENAME,
-  NX_IGNORE_FILENAME,
 } from "../options/options.constants";
 import { OptionsService } from "../options/options.service";
 import { PathsService } from "../paths/paths.service";
+import { ProjectsService } from "../projects/projects.service";
+import { ScopeService } from "../scope/scope.service";
 
 import {
   LANGUAGE_MODULE_LOADER,
@@ -31,7 +32,6 @@ import {
   WORKSPACE_PROJECT_ROOT,
 } from "./plugin.constants";
 
-import type { ProjectScope } from "../candidates/candidates.types";
 import type { ConformetryPluginOptions } from "../options/options.types";
 import type {
   InferredTargets,
@@ -64,7 +64,9 @@ export class PluginService {
     private readonly generationService: GenerationService,
     private readonly optionsService: OptionsService,
     private readonly pathsService: PathsService,
+    private readonly projectsService: ProjectsService,
     private readonly reportingService: ReportingService,
+    private readonly scopeService: ScopeService,
     private readonly validationService: ValidationService,
   ) {}
 
@@ -91,7 +93,7 @@ export class PluginService {
       configurationPath: args.configurationPath,
       outputPath: DEFAULT_OUTPUT_PATH,
       packageName: DEFAULT_PACKAGE_NAME,
-      projects: this.listWorkspaceProjects(args.workspaceRoot),
+      projects: this.projectsService.listWorkspaceProjects(args.workspaceRoot),
     });
 
     for (const emittedFile of emittedFiles) {
@@ -116,8 +118,30 @@ export class PluginService {
     configurationPath: string;
     workspaceRoot: string;
   }): Promise<void> {
+    await this.assertScopesUnambiguous(args);
     await this.assertTemplatesExist(args);
     await this.assertEmittedPluginCurrent(args);
+  }
+
+  /**
+   * Fails when a generator declares both a scope and instance globs.
+   *
+   * Checked here rather than while the graph is built, because refusing to
+   * build a graph over a configuration mistake would leave every Nx command
+   * unusable; failing when a conformetry command runs is loud enough and
+   * leaves the workspace navigable.
+   */
+  private async assertScopesUnambiguous(args: {
+    configurationPath: string;
+  }): Promise<void> {
+    const configuration =
+      await this.configurationService.loadConformetryConfiguration(
+        args.configurationPath,
+      );
+
+    for (const generator of configuration) {
+      this.scopeService.assertScopeAndInstancesExclusive(generator);
+    }
   }
 
   /**
@@ -151,80 +175,6 @@ export class PluginService {
     }
   }
 
-  /** Narrows an untrusted value to an array without widening it to `any`. */
-  private isUnknownArray(value: unknown): value is unknown[] {
-    return Array.isArray(value);
-  }
-
-  /**
-   * Walks the workspace for `project.json` files.
-   *
-   * A walk rather than a glob because this runs from the install-time
-   * bootstrap too, where there is no Nx to ask and no project graph to read.
-   * Hidden directories and `node_modules` are skipped: the emitted plugin
-   * lives in one of them, and walking dependencies would take far longer than
-   * the whole emit.
-   */
-  private listProjectConfigurationFiles(args: {
-    directoryPath: string;
-    ignoredPaths: string[];
-    workspaceRoot: string;
-  }): string[] {
-    const entries = readdirSync(args.directoryPath, { withFileTypes: true });
-    const filePaths: string[] = [];
-
-    for (const entry of entries) {
-      const entryPath = path.join(args.directoryPath, entry.name);
-      const relativePath = path
-        .relative(args.workspaceRoot, entryPath)
-        .split(path.sep)
-        .join("/");
-
-      if (entry.isFile() && entry.name === PROJECT_CONFIGURATION_FILENAME) {
-        filePaths.push(relativePath);
-        continue;
-      }
-
-      if (
-        entry.isDirectory() &&
-        !entry.name.startsWith(".") &&
-        entry.name !== "node_modules" &&
-        !args.ignoredPaths.includes(relativePath)
-      ) {
-        filePaths.push(
-          ...this.listProjectConfigurationFiles({
-            directoryPath: entryPath,
-            ignoredPaths: args.ignoredPaths,
-            workspaceRoot: args.workspaceRoot,
-          }),
-        );
-      }
-    }
-
-    return filePaths;
-  }
-
-  /**
-   * Reads the paths `.nxignore` excludes from project discovery.
-   *
-   * Honored because a `project.json` inside a generator template is not a
-   * project — it is a file the template will one day render — and `.nxignore`
-   * is where a workspace already says so. Reading it here keeps this walk
-   * agreeing with the graph Nx itself builds.
-   */
-  private readIgnoredPaths(workspaceRoot: string): string[] {
-    const ignoreFilePath = path.resolve(workspaceRoot, NX_IGNORE_FILENAME);
-
-    if (!existsSync(ignoreFilePath)) {
-      return [];
-    }
-
-    return readFileSync(ignoreFilePath, "utf8")
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line !== "" && !line.startsWith("#"));
-  }
-
   /** Reads the workspace's `nx.json`, or nothing when there is none. */
   private readNxConfiguration(workspaceRoot: string): unknown {
     const nxConfigurationPath = path.resolve(
@@ -241,39 +191,6 @@ export class PluginService {
     );
 
     return parsed;
-  }
-
-  /**
-   * Reads one project's name, root, and tags from its `project.json`.
-   *
-   * Read directly rather than taken from the project graph, because inferring
-   * targets is part of *building* that graph — it does not exist yet.
-   */
-  private readProjectScope(args: {
-    projectConfigurationFile: string;
-    workspaceRoot: string;
-  }): ProjectScope {
-    const root = path.dirname(args.projectConfigurationFile);
-    const parsed: unknown = JSON.parse(
-      readFileSync(
-        path.resolve(args.workspaceRoot, args.projectConfigurationFile),
-        "utf8",
-      ),
-    );
-    // `parsed === null` rather than `!== null` was the original test, which
-    // could never hold; spreading null happened to yield `{}` anyway, so the
-    // bug was invisible.
-    const configuration: { name?: unknown; tags?: unknown } =
-      typeof parsed === "object" && parsed !== null ? { ...parsed } : {};
-    const tags = this.isUnknownArray(configuration.tags)
-      ? configuration.tags
-      : [];
-
-    return {
-      name: typeof configuration.name === "string" ? configuration.name : root,
-      root,
-      tags: tags.filter((tag) => typeof tag === "string"),
-    };
   }
 
   /**
@@ -349,7 +266,7 @@ export class PluginService {
         return path.basename(filePath) === PROJECT_CONFIGURATION_FILENAME;
       },
     )) {
-      const project = this.readProjectScope({
+      const project = this.projectsService.readProjectScope({
         projectConfigurationFile,
         workspaceRoot: args.workspaceRoot,
       });
@@ -386,27 +303,6 @@ export class PluginService {
     }
 
     return targetsByProjectRoot;
-  }
-
-  /**
-   * Every project in the workspace, as a scope a generator can be matched to.
-   *
-   * The single answer all three emit paths use — the graph, `nx sync`, and the
-   * bootstrap — so the bytes they emit agree and the drift check stays honest.
-   */
-  public listWorkspaceProjects(workspaceRoot: string): ProjectScope[] {
-    return this.listProjectConfigurationFiles({
-      directoryPath: workspaceRoot,
-      ignoredPaths: this.readIgnoredPaths(workspaceRoot),
-      workspaceRoot,
-    })
-      .map((projectConfigurationFile) => {
-        return this.readProjectScope({
-          projectConfigurationFile,
-          workspaceRoot,
-        });
-      })
-      .toSorted((left, right) => left.name.localeCompare(right.name));
   }
 
   /**

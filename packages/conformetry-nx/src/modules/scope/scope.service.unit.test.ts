@@ -37,10 +37,10 @@ describe(ScopeService, () => {
       expect(
         service.readScope({
           name: "nestjs-service-module",
-          scope: { directories: ["src/modules"], tags: ["framework:nestjs"] },
+          scope: { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
         }),
       ).toStrictEqual({
-        directories: ["src/modules"],
+        patterns: ["src/modules/*"],
         tags: ["framework:nestjs"],
       });
     });
@@ -87,39 +87,106 @@ describe(ScopeService, () => {
     });
   });
 
-  describe("isInScopedDirectory", () => {
-    it("admits a path inside a scoped directory", () => {
+  describe("deriveInstanceGroups", () => {
+    it("derives a workspace-relative glob per scope pattern", () => {
       expect(
-        service.isInScopedDirectory({
-          projectRoot: "packages/widgets",
-          relativePath: "packages/widgets/src/modules",
-          scope: { directories: ["src/modules"] },
+        service.deriveInstanceGroups({
+          project: NESTJS,
+          scope: { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
         }),
-      ).toBe(true);
+      ).toStrictEqual([
+        {
+          patterns: ["packages/widgets/src/modules/*"],
+          substitutions: { type: "packages" },
+        },
+      ]);
     });
 
-    it("refuses a path outside every scoped directory", () => {
+    it("derives the project itself for the root pattern", () => {
       expect(
-        service.isInScopedDirectory({
-          projectRoot: "packages/widgets",
-          relativePath: "packages/widgets/src/components",
-          scope: { directories: ["src/modules"] },
+        service.deriveInstanceGroups({
+          project: NESTJS,
+          scope: { patterns: ["."], tags: ["framework:nestjs"] },
+        })[0]?.patterns,
+      ).toStrictEqual(["packages/widgets"]);
+    });
+
+    it("derives nothing for a project the scope does not match", () => {
+      expect(
+        service.deriveInstanceGroups({
+          project: REACT,
+          scope: { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
         }),
-      ).toBe(false);
+      ).toStrictEqual([]);
+    });
+
+    it("derives nothing from a scope naming no pattern", () => {
+      // Tags alone confine the prompt without claiming anything is validated.
+      expect(
+        service.deriveInstanceGroups({
+          project: REACT,
+          scope: { tags: ["framework:react"] },
+        }),
+      ).toStrictEqual([]);
+    });
+  });
+
+  describe("resolveScopedDirectory", () => {
+    it.each([
+      ["src/modules/*", "src/modules"],
+      ["src/modules/*/*.service.ts", "src/modules"],
+      ["src/components", "src/components"],
+    ])("trims %s to %s", (pattern, expected) => {
+      expect(service.resolveScopedDirectory({ patterns: [pattern] })).toBe(
+        expected,
+      );
     });
 
     it.each([
+      ["the root pattern", { patterns: ["."] }],
+      ["a pattern that is all glob", { patterns: ["*"] }],
+      ["a scope naming no pattern", { tags: ["framework:nestjs"] }],
       ["no scope", undefined],
-      ["a scope naming no directory", { tags: ["framework:nestjs"] }],
-      ["a scope with an empty directory list", { directories: [] }],
-    ])("admits the whole project given %s", (_description, scope) => {
-      expect(
-        service.isInScopedDirectory({
-          projectRoot: "packages/widgets",
-          relativePath: "packages/widgets/anywhere",
-          scope,
-        }),
-      ).toBe(true);
+    ])("names no directory for %s", (_description, scope) => {
+      expect(service.resolveScopedDirectory(scope)).toBeUndefined();
+    });
+  });
+
+  describe("assertScopeAndInstancesExclusive", () => {
+    it("refuses a generator declaring both", () => {
+      expect(() => {
+        service.assertScopeAndInstancesExclusive({
+          inputs: {},
+          instances: [{ patterns: ["packages/*/src/modules/*"] }],
+          name: "nestjs-service-module",
+          scope: { tags: ["framework:nestjs"] },
+          templatePath: "templates/module",
+        });
+      }).toThrow("declares both a scope and instances");
+    });
+
+    it.each([
+      [
+        "a scope alone",
+        {
+          instances: [],
+          scope: { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
+        },
+      ],
+      [
+        "instances alone",
+        { instances: [{ patterns: ["packages/*/src/modules/*"] }] },
+      ],
+      ["neither", { instances: [] }],
+    ])("allows %s", (_description, fields) => {
+      expect(() => {
+        service.assertScopeAndInstancesExclusive({
+          inputs: {},
+          name: "nestjs-service-module",
+          templatePath: "templates/module",
+          ...fields,
+        });
+      }).not.toThrow();
     });
   });
 

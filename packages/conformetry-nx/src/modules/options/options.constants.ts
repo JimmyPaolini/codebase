@@ -38,9 +38,6 @@ export const DEFAULT_CONFIGURATION_PATHS = [
 /** Filename the workspace's Nx configuration is read from. */
 export const NX_CONFIGURATION_FILENAME = "nx.json";
 
-/** Filename listing the paths Nx excludes from project discovery. */
-export const NX_IGNORE_FILENAME = ".nxignore";
-
 /** Name of the validation target inferred onto every in-scope project. */
 export const DEFAULT_VALIDATE_TARGET_NAME = "conformetry-validate";
 

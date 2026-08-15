@@ -13,6 +13,9 @@ export const SCOPE_FIELD_NAME = "scope";
  * knowing what is in it, and this is where it acquires meaning.
  */
 export const conformetryNxProjectScopeSchema = z.object({
-  directories: z.array(z.string()).optional(),
+  patterns: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
 });
+
+/** Scope pattern naming the project directory itself rather than a path in it. */
+export const PROJECT_ROOT_PATTERN = ".";

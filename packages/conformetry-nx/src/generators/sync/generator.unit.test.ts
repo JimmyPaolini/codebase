@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   resolveGeneratorService,
   resolveOptionsService,
-  resolvePluginService,
+  resolveProjectsService,
 } from "../../plugin-context.utilities";
 
 import syncGenerator from "./generator";
@@ -16,7 +16,7 @@ import type { Tree } from "@nx/devkit";
 vi.mock("../../plugin-context.utilities", () => ({
   resolveGeneratorService: vi.fn(),
   resolveOptionsService: vi.fn(),
-  resolvePluginService: vi.fn(),
+  resolveProjectsService: vi.fn(),
 }));
 
 const emitPlugin = vi.fn();
@@ -40,9 +40,9 @@ describe(syncGenerator, () => {
       resolveConfigurationPath,
     } as unknown as Awaited<ReturnType<typeof resolveOptionsService>>);
     // type-coverage:ignore-next-line -- a deliberate stand-in for the service
-    vi.mocked(resolvePluginService).mockResolvedValue({
+    vi.mocked(resolveProjectsService).mockResolvedValue({
       listWorkspaceProjects: () => [],
-    } as unknown as Awaited<ReturnType<typeof resolvePluginService>>);
+    } as unknown as Awaited<ReturnType<typeof resolveProjectsService>>);
   });
 
   it("writes every emitted file into the tree rather than to disk", async () => {

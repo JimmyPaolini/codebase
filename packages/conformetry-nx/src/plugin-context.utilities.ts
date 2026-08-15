@@ -8,6 +8,7 @@ import { GeneratorService } from "./modules/generator/generator.service";
 import { OptionsService } from "./modules/options/options.service";
 import { PLUGIN_CONTEXT_GLOBAL_KEY } from "./modules/plugin/plugin.constants";
 import { PluginService } from "./modules/plugin/plugin.service";
+import { ProjectsService } from "./modules/projects/projects.service";
 
 import type { PluginContextGlobal } from "./modules/plugin/plugin.types";
 import type { INestApplicationContext } from "@nestjs/common";
@@ -31,6 +32,13 @@ export async function resolvePluginService(): Promise<PluginService> {
   const context = await resolvePluginContext();
 
   return context.get(PluginService);
+}
+
+/** Resolves the service that lists the workspace's projects. */
+export async function resolveProjectsService(): Promise<ProjectsService> {
+  const context = await resolvePluginContext();
+
+  return context.get(ProjectsService);
 }
 
 /**

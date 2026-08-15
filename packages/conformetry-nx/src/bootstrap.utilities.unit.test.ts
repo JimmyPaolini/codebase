@@ -17,7 +17,7 @@ import { DEFAULT_OUTPUT_PATH } from "./modules/generator/generator.constants";
 import {
   resolveGeneratorService,
   resolveOptionsService,
-  resolvePluginService,
+  resolveProjectsService,
 } from "./plugin-context.utilities";
 
 // What the emitted files contain is the generator service's business and is
@@ -25,7 +25,7 @@ import {
 vi.mock("./plugin-context.utilities", () => ({
   resolveGeneratorService: vi.fn(),
   resolveOptionsService: vi.fn(),
-  resolvePluginService: vi.fn(),
+  resolveProjectsService: vi.fn(),
 }));
 
 const emitPlugin = vi.fn();
@@ -62,9 +62,9 @@ describe("bootstrap utilities", () => {
       resolveConfigurationPath,
     } as unknown as Awaited<ReturnType<typeof resolveOptionsService>>);
     // type-coverage:ignore-next-line -- a deliberate stand-in for the service
-    vi.mocked(resolvePluginService).mockResolvedValue({
+    vi.mocked(resolveProjectsService).mockResolvedValue({
       listWorkspaceProjects: () => [],
-    } as unknown as Awaited<ReturnType<typeof resolvePluginService>>);
+    } as unknown as Awaited<ReturnType<typeof resolveProjectsService>>);
   });
 
   afterEach(() => {
