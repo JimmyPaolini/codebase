@@ -13,8 +13,8 @@ from python.types import ConformetryError
 
 def _get_node_location(node: ast.AST) -> tuple[int | None, int | None]:
     line = getattr(node, "lineno", None)
-    col = getattr(node, "col_offset", None)
-    return line, (col + 1 if col is not None else None)
+    column = getattr(node, "col_offset", None)
+    return line, (column + 1 if column is not None else None)
 
 
 def _build_error(
@@ -23,16 +23,16 @@ def _build_error(
     kind = type(template_child).__name__
     key = get_key(template_child)
     breadcrumb = f'{kind} "{key}"' if key is not None else kind
-    instance_line, instance_col = _get_node_location(instance_node)
-    template_line, template_col = _get_node_location(template_child)
+    instance_line, instance_column = _get_node_location(instance_node)
+    template_line, template_column = _get_node_location(template_child)
     return ConformetryError(
         error_type="code",
         language="python",
         message=f"Missing {breadcrumb}",
         instance_line=instance_line,
-        instance_column=instance_col,
+        instance_column=instance_column,
         template_line=template_line,
-        template_column=template_col,
+        template_column=template_column,
         fix=f"Add the missing {breadcrumb} to the instance file. See the template for the expected structure.",
     )
 

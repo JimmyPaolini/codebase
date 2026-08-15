@@ -587,7 +587,7 @@ export default defineConfig({
       rules: {
         "@typescript-eslint/adjacent-overload-signatures": "error",
         "@typescript-eslint/array-type": "error",
-        // Stricter ban-ts-comment — require 10+ char justification
+        // Stricter ban-ts-comment — require 10+ character justification
         "@typescript-eslint/ban-ts-comment": [
           "error",
           {

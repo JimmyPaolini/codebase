@@ -568,7 +568,7 @@
           "command": "pnpm audit --audit-level=moderate --ignore-unfixable"
         },
         "write": {
-          "command": "jq 'del(.pnpm.overrides)' package.json > package.tmp.json && mv package.tmp.json package.json && pnpm update --no-frozen-lockfile && pnpm audit --fix --ignore-unfixable; pnpm install --no-frozen-lockfile"
+          "command": "jq 'del(.pnpm.overrides)' package.json > package.temporary.json && mv package.temporary.json package.json && pnpm update --no-frozen-lockfile && pnpm audit --fix --ignore-unfixable; pnpm install --no-frozen-lockfile"
         }
       },
       "defaultConfiguration": "check",
