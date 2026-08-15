@@ -2,27 +2,20 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import {
-  conformetryNxProjectScopeSchema,
-  PROJECT_ROOT_PATTERN,
-  SCOPE_FIELD_NAME,
-} from "./scope.constants";
+import { PROJECT_ROOT_PATTERN } from "./scope.constants";
 
 import type { ProjectScope } from "../candidates/candidates.types";
-import type {
-  ConformetryNxGeneratorDefinition,
-  ConformetryNxProjectScope,
-} from "./scope.types";
 import type { ConformetryInstanceGroup } from "@conformetry/configuration";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
- * Answers which projects and folders a generator is confined to.
+ * Reads an instance group as Nx resolves it.
  *
- * The one place that turns a configured scope into a decision, so generation,
- * validation, and the emitted schema cannot disagree about where a template
- * belongs — the prompt offering a project that validation would then reject is
- * exactly the inconsistency this prevents.
+ * A group carrying `tags` selects projects and reads its globs inside each
+ * one; a group without them is a workspace glob, which is what a host with no
+ * project graph writes. Telling the two apart by a field the group already has
+ * is what keeps a generator's location stated once — nothing else can
+ * contradict it, and so nothing can silently narrow it.
  */
 @Injectable()
 /* v8 ignore stop */
@@ -37,123 +30,90 @@ export class ScopeService {
 
   // 🔏 Private Methods
 
+  /** Whether a group locates its instances by project tag. */
+  private isProjectGroup(group: ConformetryInstanceGroup): boolean {
+    return group.tags !== undefined && group.tags.length > 0;
+  }
+
   // 🌎 Public Methods
 
   /**
-   * Fails when a generator declares both a scope and instance globs.
+   * Returns whether a group applies to a project.
    *
-   * The two answer the same question, and letting both stand made the narrower
-   * silently win: a scope excluding a project the globs reached simply stopped
-   * validating it, and validation cannot notice candidates that were never
-   * offered. Refusing the ambiguity is the only way that stays visible.
+   * A group with no tags applies everywhere — tags narrow a group, they do not
+   * opt it in, so a configuration that never mentions them still reaches every
+   * project.
    */
-  public assertScopeAndInstancesExclusive(
-    definition: ConformetryNxGeneratorDefinition,
-  ): void {
-    if (
-      this.readScope(definition) !== undefined &&
-      (definition.instances ?? []).length > 0
-    ) {
-      throw new Error(
-        `Generator ${definition.name} declares both a scope and instances. A scope derives its own instance globs from the workspace's projects, so remove one: keep instances for globs a scope cannot express, and keep the scope otherwise.`,
-      );
+  public matchesProject(args: {
+    group: ConformetryInstanceGroup;
+    project: ProjectScope;
+  }): boolean {
+    if (!this.isProjectGroup(args.group)) {
+      return true;
     }
+
+    return (args.group.tags ?? []).some((tag) => {
+      return args.project.tags.includes(tag);
+    });
   }
 
   /**
-   * Expands a scope into the instance globs it stands for, for one project.
+   * Resolves one group against a project, into workspace-relative globs.
    *
-   * The globs are workspace-relative, exactly as hand-written ones are, so
-   * everything downstream — discovery, validation, layout inference — cannot
-   * tell a derived group from an authored one.
-   *
-   * A scope naming no pattern derives nothing. That is what lets a scope
-   * constrain which projects a generator may be run against without also
-   * claiming that its output is validated: a template nobody has instances of
-   * yet still wants the first half.
+   * A tagged group's globs are read inside the project, so `src/modules/*`
+   * means the same thing in every project it selects. An untagged group is
+   * returned as written, which is how a host with no projects resolves it.
+   * Either way the result is indistinguishable downstream from a hand-written
+   * glob — discovery, validation, and layout inference need know nothing.
    */
-  public deriveInstanceGroups(args: {
+  public resolveGroup(args: {
+    group: ConformetryInstanceGroup;
     project: ProjectScope;
-    scope: ConformetryNxProjectScope | undefined;
   }): ConformetryInstanceGroup[] {
-    const patterns = args.scope?.patterns;
+    const patterns = args.group.patterns;
 
     if (
+      !this.matchesProject(args) ||
       patterns === undefined ||
-      patterns.length === 0 ||
-      !this.matchesProject({ project: args.project, scope: args.scope })
+      patterns.length === 0
     ) {
       return [];
     }
 
+    if (!this.isProjectGroup(args.group)) {
+      return [args.group];
+    }
+
     return [
       {
+        ...args.group,
         patterns: patterns.map((pattern) => {
           return path.posix.join(args.project.root, pattern);
         }),
-        // The workspace directory a project sits in is what this repository's
-        // project templates substitute as `type`, and it is already how the
-        // paths service places a new project. Derived here so a scope does not
-        // have to restate per project what its root already says.
-        substitutions: { type: args.project.root.split("/")[0] ?? "" },
+        substitutions: {
+          // The workspace directory a project sits in is what a project
+          // template substitutes as `type`, and is already how the paths
+          // service places a new project. Derived so a group does not have to
+          // restate per project what its root already says; an authored value
+          // still wins.
+          type: args.project.root.split("/")[0] ?? "",
+          ...args.group.substitutions,
+        },
       },
     ];
   }
 
   /**
-   * Returns whether a generator applies to a project.
+   * The folder a group's first glob points at, with any wildcard trimmed off.
    *
-   * A scope with no tags applies everywhere — tags narrow a generator, they do
-   * not opt it in, so an unscoped configuration still reaches every project.
-   */
-  public matchesProject(args: {
-    project: ProjectScope;
-    scope: ConformetryNxProjectScope | undefined;
-  }): boolean {
-    const tags = args.scope?.tags;
-
-    if (tags === undefined || tags.length === 0) {
-      return true;
-    }
-
-    return tags.some((tag) => args.project.tags.includes(tag));
-  }
-
-  /**
-   * Reads the scope off a generator, or nothing when it declares none.
-   *
-   * Takes the definition as `unknown` because the base package's type does not
-   * know this field exists; a malformed scope is treated as absent rather than
-   * thrown on, so one bad entry cannot stop the project graph from building.
-   */
-  public readScope(definition: unknown): ConformetryNxProjectScope | undefined {
-    if (typeof definition !== "object" || definition === null) {
-      return undefined;
-    }
-
-    const { [SCOPE_FIELD_NAME]: scope }: { scope?: unknown } = {
-      ...definition,
-    };
-
-    if (scope === undefined) {
-      return undefined;
-    }
-
-    const parsed = conformetryNxProjectScopeSchema.safeParse(scope);
-
-    return parsed.success ? parsed.data : undefined;
-  }
-
-  /**
-   * The folder a scope's first pattern points at, with any glob trimmed off.
-   *
-   * `src/modules/*` places a new module in `src/modules`; a pattern that is
-   * all glob places nothing, and layout falls back to being inferred.
+   * `src/modules/*` places a new module in `src/modules`; a glob that starts
+   * with a wildcard places nothing, and layout falls back to being inferred.
    */
   public resolveScopedDirectory(
-    scope: ConformetryNxProjectScope | undefined,
+    groups: ConformetryInstanceGroup[],
   ): string | undefined {
-    const [pattern] = scope?.patterns ?? [];
+    const group = groups.find((entry) => this.isProjectGroup(entry));
+    const [pattern] = group?.patterns ?? [];
 
     if (pattern === undefined || pattern === PROJECT_ROOT_PATTERN) {
       return undefined;
@@ -167,14 +127,31 @@ export class ScopeService {
     return staticSegments.length === 0 ? undefined : staticSegments.join("/");
   }
 
-  /** The projects a generator's scope admits, by name and in workspace order. */
+  /**
+   * The projects a generator's groups admit, by name and sorted.
+   *
+   * Sorted because the emitted schema is compared byte for byte by the drift
+   * check, and an unstable order would report drift on every re-emit. A
+   * generator with no tagged group admits nothing here, which the caller reads
+   * as "do not constrain the prompt at all".
+   */
   public resolveScopedProjectNames(args: {
+    groups: ConformetryInstanceGroup[];
     projects: ProjectScope[];
-    scope: ConformetryNxProjectScope | undefined;
   }): string[] {
+    const taggedGroups = args.groups.filter((group) => {
+      return this.isProjectGroup(group);
+    });
+
+    if (taggedGroups.length === 0) {
+      return [];
+    }
+
     return args.projects
       .filter((project) => {
-        return this.matchesProject({ project, scope: args.scope });
+        return taggedGroups.some((group) => {
+          return this.matchesProject({ group, project });
+        });
       })
       .map((project) => project.name)
       .toSorted((left, right) => left.localeCompare(right));

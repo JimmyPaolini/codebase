@@ -24,7 +24,6 @@ import {
 import { OptionsService } from "../options/options.service";
 import { PathsService } from "../paths/paths.service";
 import { ProjectsService } from "../projects/projects.service";
-import { ScopeService } from "../scope/scope.service";
 
 import {
   LANGUAGE_MODULE_LOADER,
@@ -66,7 +65,6 @@ export class PluginService {
     private readonly pathsService: PathsService,
     private readonly projectsService: ProjectsService,
     private readonly reportingService: ReportingService,
-    private readonly scopeService: ScopeService,
     private readonly validationService: ValidationService,
   ) {}
 
@@ -118,30 +116,8 @@ export class PluginService {
     configurationPath: string;
     workspaceRoot: string;
   }): Promise<void> {
-    await this.assertScopesUnambiguous(args);
     await this.assertTemplatesExist(args);
     await this.assertEmittedPluginCurrent(args);
-  }
-
-  /**
-   * Fails when a generator declares both a scope and instance globs.
-   *
-   * Checked here rather than while the graph is built, because refusing to
-   * build a graph over a configuration mistake would leave every Nx command
-   * unusable; failing when a conformetry command runs is loud enough and
-   * leaves the workspace navigable.
-   */
-  private async assertScopesUnambiguous(args: {
-    configurationPath: string;
-  }): Promise<void> {
-    const configuration =
-      await this.configurationService.loadConformetryConfiguration(
-        args.configurationPath,
-      );
-
-    for (const generator of configuration) {
-      this.scopeService.assertScopeAndInstancesExclusive(generator);
-    }
   }
 
   /**

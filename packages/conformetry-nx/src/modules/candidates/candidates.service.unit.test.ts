@@ -47,7 +47,8 @@ async function createWorkspace(): Promise<string> {
     JSON.stringify([
       {
         instances: [
-          { patterns: ["packages/*/src/modules/*"], tags: ["type:package"] },
+          // A tagged group's globs are read inside each selected project.
+          { patterns: ["src/modules/*"], tags: ["type:package"] },
           { patterns: ["nowhere/*"], tags: ["type:application"] },
         ],
         name: "widget",
@@ -78,26 +79,6 @@ describe(CandidatesService, () => {
     expect(service).toBeDefined();
   });
 
-  describe("appliesToProject", () => {
-    it("applies an untagged group to every project", () => {
-      expect(
-        service.appliesToProject({
-          group: { patterns: ["packages/*"] },
-          project: PROJECT,
-        }),
-      ).toBe(true);
-    });
-
-    it("applies a tagged group only to matching projects", () => {
-      expect(
-        service.appliesToProject({
-          group: { patterns: ["packages/*"], tags: ["type:application"] },
-          project: PROJECT,
-        }),
-      ).toBe(false);
-    });
-  });
-
   describe("resolveProjectCandidates", () => {
     it("keeps only the candidates inside the project", async () => {
       const candidates = await service.resolveProjectCandidates({
@@ -110,6 +91,31 @@ describe(CandidatesService, () => {
       expect(candidates[0]?.instancePath).toContain(
         "packages/widgets/src/modules",
       );
+      expect(candidates[0]?.nameStem).toBe("errors");
+    });
+
+    it("resolves an untagged group as a workspace glob", async () => {
+      // The form a host with no project graph writes: taken as authored, then
+      // kept only where it lands inside the project being validated.
+      await writeFile(
+        path.join(workspaceRoot, "workspace.config.json"),
+        JSON.stringify([
+          {
+            instances: [{ patterns: ["packages/*/src/modules/*"] }],
+            name: "widget",
+            templatePath: "templates/widget",
+          },
+        ]),
+        "utf8",
+      );
+
+      const candidates = await service.resolveProjectCandidates({
+        configurationPath: path.join(workspaceRoot, "workspace.config.json"),
+        project: PROJECT,
+        workspaceRoot,
+      });
+
+      expect(candidates).toHaveLength(1);
       expect(candidates[0]?.nameStem).toBe("errors");
     });
 

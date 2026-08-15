@@ -32,38 +32,12 @@ describe(ScopeService, () => {
     expect(service).toBeDefined();
   });
 
-  describe("readScope", () => {
-    it("reads the scope a generator declares", () => {
-      expect(
-        service.readScope({
-          name: "nestjs-service-module",
-          scope: { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
-        }),
-      ).toStrictEqual({
-        patterns: ["src/modules/*"],
-        tags: ["framework:nestjs"],
-      });
-    });
-
-    it.each([
-      ["a generator declaring none", { name: "react-component" }],
-      ["a malformed scope", { scope: { tags: "framework:nestjs" } }],
-      ["a scope that is not an object", { scope: 7 }],
-      ["a definition that is not an object", "nestjs-service-module"],
-      ["nothing at all", undefined],
-    ])("reads nothing from %s", (_description, definition) => {
-      // Treated as absent rather than thrown on: one malformed entry must not
-      // stop the project graph from building.
-      expect(service.readScope(definition)).toBeUndefined();
-    });
-  });
-
   describe("matchesProject", () => {
-    it("matches a project carrying one of the scope's tags", () => {
+    it("matches a project carrying one of the group's tags", () => {
       expect(
         service.matchesProject({
+          group: { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
           project: NESTJS,
-          scope: { tags: ["framework:nestjs"] },
         }),
       ).toBe(true);
     });
@@ -71,63 +45,81 @@ describe(ScopeService, () => {
     it("does not match a project carrying none of them", () => {
       expect(
         service.matchesProject({
+          group: { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
           project: REACT,
-          scope: { tags: ["framework:nestjs"] },
         }),
       ).toBe(false);
     });
 
     it.each([
-      ["no scope", undefined],
-      ["a scope with no tags", {}],
-      ["a scope with an empty tag list", { tags: [] }],
-    ])("matches every project given %s", (_description, scope) => {
-      // Tags narrow a generator; they do not opt it in.
-      expect(service.matchesProject({ project: REACT, scope })).toBe(true);
+      ["a group with no tags", { patterns: ["packages/*"] }],
+      [
+        "a group with an empty tag list",
+        { patterns: ["packages/*"], tags: [] },
+      ],
+    ])("matches every project given %s", (_description, group) => {
+      // Tags narrow a group; they do not opt it in.
+      expect(service.matchesProject({ group, project: REACT })).toBe(true);
     });
   });
 
-  describe("deriveInstanceGroups", () => {
-    it("derives a workspace-relative glob per scope pattern", () => {
+  describe("resolveGroup", () => {
+    it("reads a tagged group's globs inside the project", () => {
       expect(
-        service.deriveInstanceGroups({
+        service.resolveGroup({
+          group: { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
           project: NESTJS,
-          scope: { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
         }),
       ).toStrictEqual([
         {
           patterns: ["packages/widgets/src/modules/*"],
           substitutions: { type: "packages" },
+          tags: ["framework:nestjs"],
         },
       ]);
     });
 
-    it("derives the project itself for the root pattern", () => {
+    it("reads the root pattern as the project itself", () => {
       expect(
-        service.deriveInstanceGroups({
+        service.resolveGroup({
+          group: { patterns: ["."], tags: ["framework:nestjs"] },
           project: NESTJS,
-          scope: { patterns: ["."], tags: ["framework:nestjs"] },
         })[0]?.patterns,
       ).toStrictEqual(["packages/widgets"]);
     });
 
-    it("derives nothing for a project the scope does not match", () => {
+    it("lets an authored substitution win over the derived one", () => {
       expect(
-        service.deriveInstanceGroups({
-          project: REACT,
-          scope: { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
-        }),
-      ).toStrictEqual([]);
+        service.resolveGroup({
+          group: {
+            patterns: ["."],
+            substitutions: { type: "tools" },
+            tags: ["framework:nestjs"],
+          },
+          project: NESTJS,
+        })[0]?.substitutions,
+      ).toStrictEqual({ type: "tools" });
     });
 
-    it("derives nothing from a scope naming no pattern", () => {
-      // Tags alone confine the prompt without claiming anything is validated.
-      expect(
-        service.deriveInstanceGroups({
-          project: REACT,
-          scope: { tags: ["framework:react"] },
-        }),
-      ).toStrictEqual([]);
+    it("returns an untagged group exactly as written", () => {
+      // The workspace-glob form, which a host with no project graph resolves.
+      const group = { patterns: ["packages/*/src/modules/*"] };
+
+      expect(service.resolveGroup({ group, project: NESTJS })).toStrictEqual([
+        group,
+      ]);
+    });
+
+    it.each([
+      [
+        "a project the tags do not select",
+        { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
+        REACT,
+      ],
+      ["a group naming no pattern", { tags: ["framework:react"] }, REACT],
+      ["a group with an empty pattern list", { patterns: [], tags: [] }, REACT],
+    ])("resolves nothing for %s", (_description, group, project) => {
+      expect(service.resolveGroup({ group, project })).toStrictEqual([]);
     });
   });
 
@@ -137,56 +129,21 @@ describe(ScopeService, () => {
       ["src/modules/*/*.service.ts", "src/modules"],
       ["src/components", "src/components"],
     ])("trims %s to %s", (pattern, expected) => {
-      expect(service.resolveScopedDirectory({ patterns: [pattern] })).toBe(
-        expected,
-      );
+      expect(
+        service.resolveScopedDirectory([
+          { patterns: [pattern], tags: ["framework:nestjs"] },
+        ]),
+      ).toBe(expected);
     });
 
     it.each([
-      ["the root pattern", { patterns: ["."] }],
-      ["a pattern that is all glob", { patterns: ["*"] }],
-      ["a scope naming no pattern", { tags: ["framework:nestjs"] }],
-      ["no scope", undefined],
-    ])("names no directory for %s", (_description, scope) => {
-      expect(service.resolveScopedDirectory(scope)).toBeUndefined();
-    });
-  });
-
-  describe("assertScopeAndInstancesExclusive", () => {
-    it("refuses a generator declaring both", () => {
-      expect(() => {
-        service.assertScopeAndInstancesExclusive({
-          inputs: {},
-          instances: [{ patterns: ["packages/*/src/modules/*"] }],
-          name: "nestjs-service-module",
-          scope: { tags: ["framework:nestjs"] },
-          templatePath: "templates/module",
-        });
-      }).toThrow("declares both a scope and instances");
-    });
-
-    it.each([
-      [
-        "a scope alone",
-        {
-          instances: [],
-          scope: { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
-        },
-      ],
-      [
-        "instances alone",
-        { instances: [{ patterns: ["packages/*/src/modules/*"] }] },
-      ],
-      ["neither", { instances: [] }],
-    ])("allows %s", (_description, fields) => {
-      expect(() => {
-        service.assertScopeAndInstancesExclusive({
-          inputs: {},
-          name: "nestjs-service-module",
-          templatePath: "templates/module",
-          ...fields,
-        });
-      }).not.toThrow();
+      ["the root pattern", [{ patterns: ["."], tags: ["framework:nestjs"] }]],
+      ["a pattern that is all glob", [{ patterns: ["*"], tags: ["x"] }]],
+      ["a group naming no pattern", [{ tags: ["framework:nestjs"] }]],
+      ["only untagged groups", [{ patterns: ["packages/*/src/modules/*"] }]],
+      ["no groups at all", []],
+    ])("names no directory for %s", (_description, groups) => {
+      expect(service.resolveScopedDirectory(groups)).toBeUndefined();
     });
   });
 
@@ -196,17 +153,31 @@ describe(ScopeService, () => {
       // unstable order would report drift on every re-emit.
       expect(
         service.resolveScopedProjectNames({
+          groups: [
+            { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
+            { patterns: ["src/components/*"], tags: ["framework:react"] },
+          ],
           projects: [REACT, NESTJS],
-          scope: { tags: ["framework:react", "framework:nestjs"] },
         }),
       ).toStrictEqual(["storefront", "widgets"]);
     });
 
-    it("names nothing when the scope matches no project", () => {
+    it("names nothing when no group is tagged", () => {
+      // Read by the caller as "say nothing about the prompt", rather than as
+      // "offer no project at all".
       expect(
         service.resolveScopedProjectNames({
+          groups: [{ patterns: ["packages/*/src/modules/*"] }],
+          projects: [REACT, NESTJS],
+        }),
+      ).toStrictEqual([]);
+    });
+
+    it("names nothing when the tags match no project", () => {
+      expect(
+        service.resolveScopedProjectNames({
+          groups: [{ tags: ["framework:nestjs"] }],
           projects: [REACT],
-          scope: { tags: ["framework:nestjs"] },
         }),
       ).toStrictEqual([]);
     });

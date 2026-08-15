@@ -8,14 +8,8 @@ import { Injectable } from "@nestjs/common";
 
 import { ScopeService } from "../scope/scope.service";
 
-import type {
-  ProjectScope,
-  ResolveProjectCandidatesArguments,
-} from "./candidates.types";
-import type {
-  ConformetryInstanceGroup,
-  InstanceCandidate,
-} from "@conformetry/configuration";
+import type { ResolveProjectCandidatesArguments } from "./candidates.types";
+import type { InstanceCandidate } from "@conformetry/configuration";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
@@ -70,24 +64,6 @@ export class CandidatesService {
   // 🌎 Public Methods
 
   /**
-   * Returns whether an instance group applies to a project.
-   *
-   * A group with no tags applies everywhere — tags narrow a group, they do not
-   * opt it in, so a configuration that never mentions tags still validates the
-   * whole workspace.
-   */
-  public appliesToProject(args: {
-    group: ConformetryInstanceGroup;
-    project: ProjectScope;
-  }): boolean {
-    if (args.group.tags === undefined || args.group.tags.length === 0) {
-      return true;
-    }
-
-    return args.group.tags.some((tag) => args.project.tags.includes(tag));
-  }
-
-  /**
    * Expands every instance group that applies to a project, keeping only the
    * candidates that live inside it.
    *
@@ -105,40 +81,20 @@ export class CandidatesService {
     const projectRootPath = path.resolve(args.workspaceRoot, args.project.root);
 
     return configuration
-      .filter((generator) => {
-        // A generator confined to other kinds of project has nothing to say
-        // about this one, so its instances are not even expanded.
-        return this.scopeService.matchesProject({
-          project: args.project,
-          scope: this.scopeService.readScope(generator),
-        });
+      .flatMap((generator) => generator.instances)
+      .flatMap((group) => {
+        // A tagged group is read inside the project; an untagged one is the
+        // workspace glob any host resolves. Both come back as globs.
+        return this.scopeService.resolveGroup({ group, project: args.project });
       })
-      .flatMap((generator) => {
-        const scope = this.scopeService.readScope(generator);
-        // A scope derives its own globs from the project it is being matched
-        // against; a generator without one keeps the globs its author wrote,
-        // which is how a host with no project graph configures conformetry.
-        const groups =
-          scope === undefined
-            ? generator.instances
-            : this.scopeService.deriveInstanceGroups({
-                project: args.project,
-                scope,
-              });
-
-        return groups
-          .filter((group) => {
-            return this.appliesToProject({ group, project: args.project });
-          })
-          .flatMap((group) => {
-            return this.discoveryService.resolveCandidates({
-              patterns: group.patterns,
-              ...(group.substitutions === undefined
-                ? {}
-                : { substitutions: group.substitutions }),
-              workingDirectory: args.workspaceRoot,
-            });
-          });
+      .flatMap((group) => {
+        return this.discoveryService.resolveCandidates({
+          patterns: group.patterns ?? [],
+          ...(group.substitutions === undefined
+            ? {}
+            : { substitutions: group.substitutions }),
+          workingDirectory: args.workspaceRoot,
+        });
       })
       .filter((candidate) => {
         return this.isInsideProject({ candidate, projectRootPath });

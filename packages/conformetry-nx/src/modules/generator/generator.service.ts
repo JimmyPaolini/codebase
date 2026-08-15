@@ -179,25 +179,25 @@ export class GeneratorService {
   }
 
   /**
-   * The projects a generator's scope admits, or nothing when it has no scope.
-   *
-   * Distinguishing "no scope" from "a scope matching nothing" is the point:
-   * only the former should leave the schema unconstrained.
+   * The projects a generator's tagged groups admit, or nothing when it has
+   * none.
    */
   private resolveScopedProjectNames(args: {
     definition: ConformetryGeneratorDefinition;
     projects: readonly ProjectScope[] | undefined;
   }): string[] | undefined {
-    const scope = this.scopeService.readScope(args.definition);
-
-    if (scope === undefined || args.projects === undefined) {
+    if (args.projects === undefined) {
       return undefined;
     }
 
-    return this.scopeService.resolveScopedProjectNames({
+    const scopedProjectNames = this.scopeService.resolveScopedProjectNames({
+      groups: args.definition.instances,
       projects: [...args.projects],
-      scope,
     });
+
+    // No tagged group means the generator says nothing about where it belongs,
+    // so the prompt is left alone rather than emptied.
+    return scopedProjectNames.length === 0 ? undefined : scopedProjectNames;
   }
 
   /** Serializes emitted JSON the way the workspace formatter would. */

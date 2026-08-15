@@ -145,9 +145,9 @@ export class PathsService {
       return generator.name === args.generatorName;
     });
 
-    return this.scopeService.resolveScopedDirectory(
-      this.scopeService.readScope(definition),
-    );
+    return definition === undefined
+      ? undefined
+      : this.scopeService.resolveScopedDirectory(definition.instances);
   }
 
   /**

@@ -1545,9 +1545,6 @@ importers:
       tslib:
         specifier: 'catalog:'
         version: 2.8.1
-      zod:
-        specifier: 'catalog:'
-        version: 4.4.3
     devDependencies:
       '@golevelup/ts-vitest':
         specifier: 'catalog:'

@@ -34,9 +34,9 @@ function defineInputs(
 }
 
 const conformetryConfiguration: ConformetryNxConfiguration = [
-  // Project-level generators keep hand-written globs. They take no `project`
-  // input, so a scope would constrain no prompt, and the set of projects each
-  // one governs is not a shape derivable from a tag.
+  // Groups without tags are plain workspace globs — the form a host with no
+  // project graph writes, and the right one where the set of projects is not a
+  // shape a tag describes.
   {
     aliases: ["jna"],
     description: "Generate a Python Jupyter notebook application",
@@ -114,10 +114,9 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
     templatePath: "configuration/conformetry-templates/nestjs-service-project",
   },
 
-  // Module and file generators are scoped instead. The tags pick the projects
-  // the template suits — which is what `nx g` prompts with — and the patterns
-  // pick what inside them, so the instances validation checks are derived from
-  // the same statement rather than restated as a parallel list of globs.
+  // Groups with tags pick the projects the template suits — which is what
+  // `nx g` prompts with — and read their globs inside each one, so where a
+  // generator belongs is stated exactly once.
   {
     aliases: ["ncm"],
     description:
@@ -126,11 +125,10 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       name: z.string().describe("Module name in kebab-case"),
       project: z.string().describe("Parent project name in kebab-case"),
     }),
+    instances: [
+      { patterns: ["src/modules/*"], tags: ["framework:nest-commander"] },
+    ],
     name: "nestjs-command-module",
-    scope: {
-      patterns: ["src/modules/*"],
-      tags: ["framework:nest-commander"],
-    },
     templatePath: "configuration/conformetry-templates/nestjs-command-module",
   },
   {
@@ -141,8 +139,8 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       name: z.string().describe("Module name in kebab-case"),
       project: z.string().describe("Parent project name in kebab-case"),
     }),
+    instances: [{ patterns: ["src/modules/*"], tags: ["framework:nestjs"] }],
     name: "nestjs-dataloader-module",
-    scope: { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
     templatePath:
       "configuration/conformetry-templates/nestjs-dataloader-module",
   },
@@ -154,8 +152,8 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       name: z.string().describe("Module name in kebab-case"),
       project: z.string().describe("Parent project name in kebab-case"),
     }),
+    instances: [{ patterns: ["src/modules/*"], tags: ["framework:nestjs"] }],
     name: "nestjs-graphql-module",
-    scope: { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
     templatePath: "configuration/conformetry-templates/nestjs-graphql-module",
   },
   {
@@ -166,14 +164,16 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       name: z.string().describe("Service name in kebab-case"),
       project: z.string().describe("Parent project name in kebab-case"),
     }),
+    instances: [
+      {
+        patterns: [
+          "src/modules/*/*.service.ts",
+          "src/modules/*/*.service.unit.test.ts",
+        ],
+        tags: ["framework:nestjs"],
+      },
+    ],
     name: "nestjs-service-file",
-    scope: {
-      patterns: [
-        "src/modules/*/*.service.ts",
-        "src/modules/*/*.service.unit.test.ts",
-      ],
-      tags: ["framework:nestjs"],
-    },
     templatePath: "configuration/conformetry-templates/nestjs-service-file",
   },
   {
@@ -184,8 +184,8 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       name: z.string().describe("Module name in kebab-case"),
       project: z.string().describe("Parent project name in kebab-case"),
     }),
+    instances: [{ patterns: ["src/modules/*"], tags: ["framework:nestjs"] }],
     name: "nestjs-service-module",
-    scope: { patterns: ["src/modules/*"], tags: ["framework:nestjs"] },
     templatePath: "configuration/conformetry-templates/nestjs-service-module",
   },
   {
@@ -195,10 +195,8 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       name: z.string().describe("Component name in kebab-case"),
       project: z.string().describe("Parent project name in kebab-case"),
     }),
+    instances: [{ tags: ["framework:react"] }],
     name: "react-component",
-    // Tags but no patterns: the prompt is confined to the React projects,
-    // while nothing is claimed to be a validated instance yet.
-    scope: { tags: ["framework:react"] },
     templatePath: "configuration/conformetry-templates/react-component",
   },
 ];

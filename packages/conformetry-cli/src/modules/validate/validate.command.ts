@@ -70,7 +70,9 @@ export class ValidateCommand extends CommandRunner {
   }): InstanceCandidate[] {
     return args.groups.flatMap((group) => {
       return this.discoveryService.resolveCandidates({
-        patterns: group.patterns,
+        // A group may name only labels, which this host has nothing to match
+        // them against — it locates instances by glob alone.
+        patterns: group.patterns ?? [],
         ...(group.substitutions === undefined
           ? {}
           : { substitutions: group.substitutions }),

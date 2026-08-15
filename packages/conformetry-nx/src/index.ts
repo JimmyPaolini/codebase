@@ -28,7 +28,9 @@ export { ScopeService } from "./modules/scope/scope.service";
 export type {
   ConformetryNxConfiguration,
   ConformetryNxGeneratorDefinition,
-  ConformetryNxProjectScope,
+  ConformetryNxInstanceGroup,
+  ConformetryNxProjectInstanceGroup,
+  ConformetryNxWorkspaceInstanceGroup,
 } from "./modules/scope/scope.types";
 export { resolvePluginService } from "./plugin-context.utilities";
 

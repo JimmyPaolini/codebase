@@ -11,14 +11,7 @@ import type { z } from "zod";
  */
 export type ConformetryConfiguration = ConformetryGeneratorDefinition[];
 
-/**
- * One generator, with the template it renders and the instances it governs.
- *
- * A host may extend this with its own fields — see
- * `ConformetryNxGeneratorDefinition` in `@conformetry/nx`, which adds the
- * project scope it selects generators by. Those fields survive loading but are
- * never read here, so this package stays ignorant of any one host.
- */
+/** One generator, with the template it renders and the instances it governs. */
 export interface ConformetryGeneratorDefinition {
   aliases?: string[];
   description?: string;
@@ -49,7 +42,15 @@ export type ConformetryGeneratorInputDefinition = Record<string, unknown>;
  * `InstanceCandidate.instancePath`.
  */
 export interface ConformetryInstanceGroup {
-  patterns: string[];
+  /**
+   * Globs locating this group's instances.
+   *
+   * Workspace-relative on their own. A host that resolves `tags` may instead
+   * read them relative to each labelled host it selects — see
+   * `ConformetryNxInstanceGroup` in `@conformetry/nx` — which is why a group
+   * naming only tags is legal: it selects without locating.
+   */
+  patterns?: string[] | undefined;
   /**
    * Values every placeholder this generator's template uses must be given.
    * Mustache renders an unknown placeholder as empty, so a missing entry shows
@@ -57,9 +58,12 @@ export interface ConformetryInstanceGroup {
    */
   substitutions?: Record<string, string> | undefined;
   /**
-   * Labels a host must carry for this group to apply. The base configuration
-   * carries them uninterpreted; `conformetry-nx` reads them as Nx project
-   * tags, and another host is free to read them as something else.
+   * Labels selecting the hosts this group applies to.
+   *
+   * The base configuration carries them uninterpreted, because it has no
+   * notion of a host to match them against; `conformetry-nx` reads them as Nx
+   * project tags, and another host is free to read them as something else. A
+   * group with no tags applies everywhere.
    */
   tags?: string[] | undefined;
 }

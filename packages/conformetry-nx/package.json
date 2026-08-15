@@ -19,8 +19,7 @@
     "@swc-node/register": "catalog:",
     "pino": "catalog:",
     "reflect-metadata": "catalog:",
-    "tslib": "catalog:",
-    "zod": "catalog:"
+    "tslib": "catalog:"
   },
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
