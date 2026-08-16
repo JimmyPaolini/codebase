@@ -74,40 +74,12 @@ export class LoggerService extends ConsoleLogger {
   }
 
   /**
-   * Whether a word is a verb in one of the two tenses the convention allows.
-   *
-   * Present progressive means the operation is under way; past means it
-   * finished. Regular morphology covers both, so a new verb needs no
-   * registration anywhere — only irregular pasts are enumerated.
-   */
-  private static isConventionalVerb(word: string): boolean {
-    const lowercased = word.toLowerCase();
-
-    return (
-      lowercased.endsWith("ing") ||
-      lowercased.endsWith("ed") ||
-      IRREGULAR_PAST_VERBS.has(lowercased)
-    );
-  }
-
-  /** Splits a leading emoji off a message, leaving prose behind. */
-  private static parseMessage(message: unknown): ParsedLogMessage {
-    const text = String(message);
-    const match = LEADING_EMOJI_PATTERN.exec(text);
-    const emoji = match?.[1];
-
-    return emoji === undefined
-      ? { emoji: undefined, text }
-      : { emoji, text: text.slice(match?.[0].length) };
-  }
-
-  /**
    * Fails a malformed message in development, and never in production.
    *
    * A logger that throws in production turns an observability call into an
    * outage, so the check runs only where a developer is present to fix it.
    */
-  private static assertConventionalMessage(args: {
+  private assertConventionalMessage(args: {
     context: string | undefined;
     parsed: ParsedLogMessage;
   }): void {
@@ -132,10 +104,7 @@ export class LoggerService extends ConsoleLogger {
 
     const firstWord = FIRST_WORD_PATTERN.exec(text)?.[1];
 
-    if (
-      firstWord === undefined ||
-      !LoggerService.isConventionalVerb(firstWord)
-    ) {
+    if (firstWord === undefined || !this.isConventionalVerb(firstWord)) {
       throw new Error(
         `Log message must begin with a verb in present progressive or past tense, got "${firstWord ?? ""}": "${emoji} ${text}"`,
       );
@@ -148,7 +117,7 @@ export class LoggerService extends ConsoleLogger {
     data: LogData | undefined;
     parsed: ParsedLogMessage;
   }): Record<string, unknown> {
-    LoggerService.assertConventionalMessage({
+    this.assertConventionalMessage({
       context: args.context,
       parsed: args.parsed,
     });
@@ -159,6 +128,34 @@ export class LoggerService extends ConsoleLogger {
       // Telemetry gets prose; only the console-bound transport reads this.
       ...(LoggerService.isProduction ? {} : { emoji: args.parsed.emoji }),
     };
+  }
+
+  /**
+   * Whether a word is a verb in one of the two tenses the convention allows.
+   *
+   * Present progressive means the operation is under way; past means it
+   * finished. Regular morphology covers both, so a new verb needs no
+   * registration anywhere — only irregular pasts are enumerated.
+   */
+  private isConventionalVerb(word: string): boolean {
+    const lowercased = word.toLowerCase();
+
+    return (
+      lowercased.endsWith("ing") ||
+      lowercased.endsWith("ed") ||
+      IRREGULAR_PAST_VERBS.has(lowercased)
+    );
+  }
+
+  /** Splits a leading emoji off a message, leaving prose behind. */
+  private parseMessage(message: unknown): ParsedLogMessage {
+    const text = String(message);
+    const match = LEADING_EMOJI_PATTERN.exec(text);
+    const emoji = match?.[1];
+
+    return emoji === undefined
+      ? { emoji: undefined, text }
+      : { emoji, text: text.slice(match?.[0].length) };
   }
 
   // 🌎 Public Methods
@@ -192,7 +189,7 @@ export class LoggerService extends ConsoleLogger {
 
   /** Logs a debug message at the `debug` level. */
   override debug(message: unknown, context?: string, data?: LogData): void {
-    const parsed = LoggerService.parseMessage(message);
+    const parsed = this.parseMessage(message);
     this.child.debug(
       this.buildBindings({ context: context ?? this.context, data, parsed }),
       parsed.text,
@@ -211,7 +208,7 @@ export class LoggerService extends ConsoleLogger {
     stackOrContext?: string,
     contextOrData?: LogData | string,
   ): void {
-    const parsed = LoggerService.parseMessage(message);
+    const parsed = this.parseMessage(message);
     const data = typeof contextOrData === "object" ? contextOrData : undefined;
     const context =
       typeof contextOrData === "string" ? contextOrData : this.context;
@@ -227,7 +224,7 @@ export class LoggerService extends ConsoleLogger {
 
   /** Logs an informational message at the `info` level. */
   override log(message: unknown, context?: string, data?: LogData): void {
-    const parsed = LoggerService.parseMessage(message);
+    const parsed = this.parseMessage(message);
     this.child.info(
       this.buildBindings({ context: context ?? this.context, data, parsed }),
       parsed.text,
@@ -242,7 +239,7 @@ export class LoggerService extends ConsoleLogger {
 
   /** Logs a verbose message at the `trace` level. */
   override verbose(message: unknown, context?: string, data?: LogData): void {
-    const parsed = LoggerService.parseMessage(message);
+    const parsed = this.parseMessage(message);
     this.child.trace(
       this.buildBindings({ context: context ?? this.context, data, parsed }),
       parsed.text,
@@ -251,7 +248,7 @@ export class LoggerService extends ConsoleLogger {
 
   /** Logs a warning message at the `warn` level. */
   override warn(message: unknown, context?: string, data?: LogData): void {
-    const parsed = LoggerService.parseMessage(message);
+    const parsed = this.parseMessage(message);
     this.child.warn(
       this.buildBindings({ context: context ?? this.context, data, parsed }),
       parsed.text,
