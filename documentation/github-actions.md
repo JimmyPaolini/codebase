@@ -89,23 +89,45 @@ configuration down `dependsOn`, but never a `defaultConfiguration`.
 
 **Jobs:**
 
-- **detect-changes** - `dorny/paths-filter` job that reports whether `.devcontainer/**` changed, since `on.paths` cannot be scoped to a single job
 - **make-projects** - Runs `pnpm exec nx affected --target=make-projects --parallel=4` (build plus bundlesize). On `main` it uploads every `size-limit-report.json` as the `bundle-sizes-main` artifact; on pull requests it downloads that artifact, renders a per-project table with `scripts/report-bundle-sizes.ts`, and upserts one PR comment (✅ decrease / ⚠️ increase under 5% / 📈 5% or more / 🆕 no baseline / ❌ over limit)
-- **make-devcontainer** (only when `.devcontainer/**` changed) - Builds the dev container image with `devcontainers/ci@v0.3`, pushes to GHCR (`ghcr.io/jimmypaolini/codebase-devcontainer`) only on push to `main`, then runs `.devcontainer/scripts/test-devcontainer.sh` inside the container
 
 The baseline comes from an artifact rather than a second build: this job used to
 check out `main`, install it, and build it again on every pull request purely to
 size the base branch.
 
-**Permissions:** `contents: read`, `pull-requests: write`; the devcontainer job adds `packages: write`
+**Permissions:** `contents: read`, `pull-requests: write`
 
 **Concurrency:** Cancels in-progress runs for the same branch
 
 ---
 
+#### 4. Make Devcontainer (`make-devcontainer.yml`)
+
+**Name:** 🧑‍🔧 Make Devcontainer
+
+**Triggers:**
+
+- Push to `main` (only `.devcontainer/**` changes)
+- Pull requests (only `.devcontainer/**` or `make-devcontainer.yml` changes)
+- Manual dispatch
+
+**Jobs:**
+
+- **make-devcontainer** - Builds the dev container image with `devcontainers/ci@v0.3`, pushes to GHCR (`ghcr.io/jimmypaolini/codebase-devcontainer`) only on push to `main`, then runs `.devcontainer/scripts/test-devcontainer.sh` inside the container
+
+Gated by GitHub's native `on.paths`. It briefly lived as a job inside Make
+Projects behind `dorny/paths-filter`, which needed an extra job, a `needs:`, an
+`outputs:` block and a third-party action to say what four lines of `paths`
+say here — and reported a pass rather than a skip when nothing had changed.
+It runs no Nx, so it skips `setup-codebase` entirely.
+
+**Permissions:** `contents: read`, `packages: write`
+
+---
+
 ### On PRs + Push to Main (Security)
 
-#### 4. Scan Security (`scan-security.yml`)
+#### 5. Scan Security (`scan-security.yml`)
 
 **Name:** 🕵️ Scan Security
 
@@ -129,7 +151,7 @@ exactly. Its `inputs` cover the Terraform tree, which replaces the previous
 
 ### On PRs Only
 
-#### 5. Validate Conventions (`validate-conventions.yml`)
+#### 6. Validate Conventions (`validate-conventions.yml`)
 
 **Name:** 🧑‍⚖️ Validate Conventions
 
@@ -156,7 +178,7 @@ synchronizations in one process. This workflow deliberately skips
 
 ### Automated (Push to Main)
 
-#### 6. Release Version (`release-version.yml`)
+#### 7. Release Version (`release-version.yml`)
 
 **Name:** 🦸 Release Version
 
@@ -174,7 +196,7 @@ synchronizations in one process. This workflow deliberately skips
 
 ### Automated (Manual / Path-Filtered)
 
-#### 7. Setup Copilot (`copilot-setup-steps.yml`)
+#### 8. Setup Copilot (`copilot-setup-steps.yml`)
 
 **Name:** 🤖 Setup Copilot
 
@@ -202,7 +224,7 @@ synchronizations in one process. This workflow deliberately skips
 
 ### Scheduled (Weekly)
 
-#### 8. Remove Deprecations (`remove-deprecations.yml`)
+#### 9. Remove Deprecations (`remove-deprecations.yml`)
 
 **Name:** ✂️ Remove Deprecations
 
@@ -218,7 +240,7 @@ synchronizations in one process. This workflow deliberately skips
 
 ---
 
-#### 9. Refresh Documentation (`refresh-documentation.yml`)
+#### 10. Refresh Documentation (`refresh-documentation.yml`)
 
 **Name:** 🧑‍🏫 Refresh Documentation
 
@@ -247,7 +269,7 @@ synchronizations in one process. This workflow deliberately skips
 
 ---
 
-#### 10. Upgrade Dependencies (`upgrade-dependencies.yml`)
+#### 11. Upgrade Dependencies (`upgrade-dependencies.yml`)
 
 **Name:** 🧑‍🚒 Upgrade Dependencies
 

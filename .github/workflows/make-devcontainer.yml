@@ -1,0 +1,90 @@
+name: 🧑‍🔧 Make Devcontainer
+
+# Its own workflow so GitHub's native `on.paths` does the filtering. This lived
+# as a job inside Make Projects for a while, gated by `dorny/paths-filter`,
+# because `on.paths` cannot be scoped to a single job — that needed an extra
+# job, a `needs:`, an `outputs:` block and a third-party action to express what
+# four lines of `paths` say here, and it reported a pass rather than a skip.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .devcontainer/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .devcontainer/**
+      - .github/workflows/make-devcontainer.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  make-devcontainer:
+    name: 🧑‍🔧 Make Devcontainer
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v7
+
+      # No `setup-codebase`: nothing here runs Nx. The VS Code extension sync
+      # check that used to justify it is a `lint-codebase` leaf now.
+      - name: 🗂️ Setup Environment File
+        run: |
+          cp .env.default .env
+          echo "LOCAL_WORKSPACE_FOLDER=$GITHUB_WORKSPACE" >> .env
+
+      - name: 🔧 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: 🔐 Login to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐳 Make Devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          configFile: .devcontainer/cloud/devcontainer.json
+          imageName: ghcr.io/jimmypaolini/codebase-devcontainer
+          cacheFrom: |
+            type=gha,scope=devcontainer
+            ghcr.io/jimmypaolini/codebase-devcontainer
+          push: filter
+          eventFilterForPush: |
+            push:
+              branches:
+                - main
+          env: |
+            CI=true
+            GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
+            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔬 Test Devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          configFile: .devcontainer/cloud/devcontainer.json
+          imageName: ghcr.io/jimmypaolini/codebase-devcontainer
+          cacheFrom: |
+            type=gha,scope=devcontainer
+            ghcr.io/jimmypaolini/codebase-devcontainer
+          push: never
+          env: |
+            CI=true
+            GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
+            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          runCmd: |
+            bash .devcontainer/scripts/test-devcontainer.sh
