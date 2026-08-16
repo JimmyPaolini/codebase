@@ -34,6 +34,7 @@ jobs:
         uses: ./.github/actions/setup-codebase
         with:
           nx-shas: "false"
+          python-dependencies: "false"
           uv: "false"
 
       - name: 🧑‍🏫 Refresh Documentation

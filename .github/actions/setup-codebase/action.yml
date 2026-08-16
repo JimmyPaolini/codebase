@@ -119,8 +119,11 @@ runs:
         cache-dependency-glob: uv.lock
         add-problem-matchers: "false"
 
+    # Guarded on `uv` as well as its own input: `python-dependencies` defaults
+    # on, so a job that opts out of installing uv would otherwise inherit a sync
+    # it has no binary to run.
     - name: 🐍 Install Python Dependencies
-      if: inputs.python-dependencies == 'true'
+      if: inputs.uv == 'true' && inputs.python-dependencies == 'true'
       # Syncs every uv workspace member into the shared root `.venv`. Scoping
       # this to a single project (`--project`) would prune the other members'
       # tools out of that shared environment.

@@ -36,6 +36,7 @@ jobs:
           nx-cache: "false"
           nx-graph-cache: "false"
           nx-shas: "false"
+          python-dependencies: "false"
           uv: "false"
 
       - name: 🔐 Import GPG Key
