@@ -13,7 +13,10 @@ import type {
   SyncMarkdownArguments,
   WrapInAnchorsArguments,
 } from "./output-markdown.types";
-import type { MarkdownAnchorHelpers } from "@codometer/configuration";
+import type {
+  CodeStatisticsResult,
+  MarkdownAnchorHelpers,
+} from "@codometer/configuration";
 
 /**
  * Writes generated code statistics badges into a markdown file.
@@ -89,6 +92,159 @@ export class OutputMarkdownService {
     // section, so `###` is the level that continues the document's outline
     // instead of imitating one, which is what markdownlint's MD036 rejects.
     return `### ${label}\n\n${badges.join("\n")}`;
+  }
+
+  /** Renders the JSON badge group. */
+  private buildJsonGroup(statistics: CodeStatisticsResult): string {
+    const { json } = statistics;
+
+    return this.buildGroup("JSON", [
+      this.buildBadge("JSON Files", json.files, "a16207"),
+      this.buildBadge("JSON Lines", json.lines, "ca8a04"),
+      this.buildBadge("JSON Objects", json.objects, "7c3aed"),
+      this.buildBadge("JSON Arrays", json.arrays, "8b5cf6"),
+      this.buildBadge("JSON Properties", json.properties, "0284c7"),
+      this.buildBadge("JSON Strings", json.strings, "16a34a"),
+      this.buildBadge("JSON Numbers", json.numbers, "059669"),
+      this.buildBadge("JSON Booleans", json.booleans, "0ea5e9"),
+      this.buildBadge("JSON Nulls", json.nulls, "64748b"),
+      this.buildBadge("JSON Items", json.items, "475569"),
+      this.buildBadge("JSON Nodes", json.totalNodes, "dc2626"),
+      this.buildBadge("JSON Max Depth", json.maxDepth, "ea580c"),
+    ]);
+  }
+
+  /** Renders the Jupyter badge group. */
+  private buildJupyterGroup(statistics: CodeStatisticsResult): string {
+    const { jupyter: nb } = statistics;
+
+    return this.buildGroup("Jupyter", [
+      this.buildBadge("Notebooks", nb.files, "f37626"),
+      this.buildBadge("Notebook Cells", nb.cells, "e8a33d"),
+      this.buildBadge("Code Cells", nb.codeCells, "3776ab"),
+      this.buildBadge("Markdown Cells", nb.markdownCells, "083fa1"),
+      this.buildBadge("Raw Cells", nb.rawCells, "9ca3af"),
+      this.buildBadge("Executed Cells", nb.executedCells, "16a34a"),
+      this.buildBadge("Cell Outputs", nb.outputs, "059669"),
+      this.buildBadge("Notebook Code Lines", nb.codeLines, "4b8bbe"),
+      this.buildBadge("Notebook Classes", nb.classes, "7c3aed"),
+      this.buildBadge("Notebook Functions", nb.functions, "22c55e"),
+      this.buildBadge("Notebook Imports", nb.imports, "0284c7"),
+      this.buildBadge("Notebook Decorators", nb.decorators, "db2777"),
+      this.buildBadge("Notebook Prose Lines", nb.markdownLines, "1f6feb"),
+      this.buildBadge("Notebook Headings", nb.headings, "a78bfa"),
+      this.buildBadge("Notebook Links", nb.links, "10b981"),
+      this.buildBadge("Notebook Images", nb.images, "34d399"),
+      this.buildBadge("Notebook Code Blocks", nb.codeBlocks, "dc2626"),
+      this.buildBadge("Notebook Properties", nb.properties, "ca8a04"),
+      this.buildBadge("Notebook Nodes", nb.totalNodes, "a16207"),
+      this.buildBadge("Notebook Max Depth", nb.maxDepth, "ea580c"),
+    ]);
+  }
+
+  /** Renders the Markdown badge group. */
+  private buildMarkdownGroup(statistics: CodeStatisticsResult): string {
+    const { markdown: md } = statistics;
+
+    return this.buildGroup("Markdown", [
+      this.buildBadge("Markdown Files", md.files, "083fa1"),
+      this.buildBadge("Markdown Lines", md.lines, "1f6feb"),
+      this.buildBadge("H1", md.headingLevel1, "7c3aed"),
+      this.buildBadge("H2", md.headingLevel2, "8b5cf6"),
+      this.buildBadge("H3", md.headingLevel3, "a78bfa"),
+      this.buildBadge("H4", md.headingLevel4, "c4b5fd"),
+      this.buildBadge("H5", md.headingLevel5, "ddd6fe"),
+      this.buildBadge("H6", md.headingLevel6, "ede9fe"),
+      this.buildBadge("Paragraphs", md.paragraphs, "64748b"),
+      this.buildBadge("Lists", md.lists, "16a34a"),
+      this.buildBadge("List Items", md.listItems, "22c55e"),
+      this.buildBadge("Task List Items", md.taskListItems, "4ade80"),
+      this.buildBadge("Tables", md.tables, "0284c7"),
+      this.buildBadge("Table Rows", md.tableRows, "0ea5e9"),
+      this.buildBadge("Links", md.links, "059669"),
+      this.buildBadge("Images", md.images, "10b981"),
+      this.buildBadge("Code Blocks", md.codeBlocks, "dc2626"),
+      this.buildBadge("Inline Code", md.inlineCode, "ef4444"),
+      this.buildBadge("Block Quotes", md.blockQuotes, "ca8a04"),
+      this.buildBadge("Thematic Breaks", md.thematicBreaks, "a16207"),
+    ]);
+  }
+
+  /** Renders the Python badge group. */
+  private buildPythonGroup(statistics: CodeStatisticsResult): string {
+    const { python: py } = statistics;
+
+    return this.buildGroup("Python", [
+      this.buildBadge("Python Files", py.files, "3776ab"),
+      this.buildBadge("Python Lines", py.lines, "4b8bbe"),
+      this.buildBadge("Python Classes", py.classes, "7c3aed"),
+      this.buildBadge("Python Functions", py.functions, "16a34a"),
+      this.buildBadge("Python Protocols", py.protocols, "0ea5e9"),
+      this.buildBadge("Python Constants", py.constants, "dc2626"),
+      this.buildBadge("Python Imports", py.imports, "0284c7"),
+      this.buildBadge("Python Decorators", py.decorators, "db2777"),
+      this.buildBadge("Docstrings", py.docstrings, "6366f1"),
+      this.buildBadge("Docstring Lines", py.docstringLines, "818cf8"),
+      this.buildBadge("Python Comments", py.comments, "64748b"),
+      this.buildBadge("Python Comment Lines", py.commentLines, "475569"),
+    ]);
+  }
+
+  /** Renders the Repository badge group. */
+  private buildRepositoryGroup(statistics: CodeStatisticsResult): string {
+    return this.buildGroup("Repository", [
+      this.buildBadge("Lines of Code", statistics.linesOfCode, "22c55e"),
+      this.buildBadge("Repo Size", `${statistics.repoSizeMiB} MiB`, "6b7280"),
+      this.buildBadge("Folders", statistics.folders, "4a4a4a"),
+      this.buildBadge("Source Files", statistics.sourceFiles, "3178c6"),
+    ]);
+  }
+
+  /** Renders the TypeScript & JavaScript badge group. */
+  private buildTypescriptGroup(statistics: CodeStatisticsResult): string {
+    const { javascript: js, typescript: ts } = statistics;
+
+    return this.buildGroup("TypeScript & JavaScript", [
+      this.buildBadge("TypeScript Files", ts.files, "3178c6"),
+      this.buildBadge("JavaScript Files", js.files, "f7df1e"),
+      this.buildBadge("Test Files", js.testFiles, "10b981"),
+      this.buildBadge("External Packages", js.externalPackages, "8b5cf6"),
+      this.buildBadge("Classes", js.classes, "7c3aed"),
+      this.buildBadge("Functions", js.functions, "16a34a"),
+      this.buildBadge("Methods", js.methods, "15803d"),
+      this.buildBadge("Sync Functions", js.syncFunctions, "4ade80"),
+      this.buildBadge("Async Functions", js.asyncFunctions, "059669"),
+      this.buildBadge("Interfaces", ts.interfaces, "0ea5e9"),
+      this.buildBadge("Generic Declarations", ts.genericDeclarations, "0369a1"),
+      this.buildBadge("Enums", ts.enums, "f97316"),
+      this.buildBadge("Constants", js.constants, "dc2626"),
+      this.buildBadge("Imports", js.imports, "0284c7"),
+      this.buildBadge("Decorators", ts.decorators, "db2777"),
+      this.buildBadge("Exported Symbols", js.exported, "ea580c"),
+      this.buildBadge("Doc Comments", ts.docComments, "6366f1"),
+      this.buildBadge("Comments", js.comments, "64748b"),
+      this.buildBadge("Comment Lines", js.commentLines, "475569"),
+      this.buildBadge("TODO Comments", js.todos, "ca8a04"),
+    ]);
+  }
+
+  /** Renders the YAML badge group. */
+  private buildYamlGroup(statistics: CodeStatisticsResult): string {
+    const { yaml } = statistics;
+
+    return this.buildGroup("YAML", [
+      this.buildBadge("YAML Files", yaml.files, "cb171e"),
+      this.buildBadge("YAML Lines", yaml.lines, "e34c26"),
+      this.buildBadge("YAML Documents", yaml.documents, "f97316"),
+      this.buildBadge("YAML Mappings", yaml.mappings, "7c3aed"),
+      this.buildBadge("YAML Sequences", yaml.sequences, "8b5cf6"),
+      this.buildBadge("YAML Keys", yaml.keys, "0284c7"),
+      this.buildBadge("YAML Scalars", yaml.scalars, "16a34a"),
+      this.buildBadge("YAML Anchors", yaml.anchors, "059669"),
+      this.buildBadge("YAML Aliases", yaml.aliases, "10b981"),
+      this.buildBadge("YAML Comments", yaml.comments, "64748b"),
+      this.buildBadge("YAML Max Depth", yaml.maxDepth, "ea580c"),
+    ]);
   }
 
   /**
@@ -184,119 +340,14 @@ export class OutputMarkdownService {
    */
   renderBadges(args: RenderBadgesArguments): string {
     const { statistics } = args;
-    const {
-      javascript: js,
-      json,
-      jupyter: nb,
-      markdown: md,
-      python: py,
-      typescript: ts,
-    } = statistics;
     const groups = [
-      this.buildGroup("Repository", [
-        this.buildBadge("Lines of Code", statistics.linesOfCode, "22c55e"),
-        this.buildBadge("Repo Size", `${statistics.repoSizeMiB} MiB`, "6b7280"),
-        this.buildBadge("Folders", statistics.folders, "4a4a4a"),
-        this.buildBadge("Source Files", statistics.sourceFiles, "3178c6"),
-      ]),
-      this.buildGroup("TypeScript & JavaScript", [
-        this.buildBadge("TypeScript Files", ts.files, "3178c6"),
-        this.buildBadge("JavaScript Files", js.files, "f7df1e"),
-        this.buildBadge("Test Files", js.testFiles, "10b981"),
-        this.buildBadge("External Packages", js.externalPackages, "8b5cf6"),
-        this.buildBadge("Classes", js.classes, "7c3aed"),
-        this.buildBadge("Functions", js.functions, "16a34a"),
-        this.buildBadge("Methods", js.methods, "15803d"),
-        this.buildBadge("Sync Functions", js.syncFunctions, "4ade80"),
-        this.buildBadge("Async Functions", js.asyncFunctions, "059669"),
-        this.buildBadge("Interfaces", ts.interfaces, "0ea5e9"),
-        this.buildBadge(
-          "Generic Declarations",
-          ts.genericDeclarations,
-          "0369a1",
-        ),
-        this.buildBadge("Enums", ts.enums, "f97316"),
-        this.buildBadge("Constants", js.constants, "dc2626"),
-        this.buildBadge("Imports", js.imports, "0284c7"),
-        this.buildBadge("Decorators", ts.decorators, "db2777"),
-        this.buildBadge("Exported Symbols", js.exported, "ea580c"),
-        this.buildBadge("Doc Comments", ts.docComments, "6366f1"),
-        this.buildBadge("Comments", js.comments, "64748b"),
-        this.buildBadge("Comment Lines", js.commentLines, "475569"),
-        this.buildBadge("TODO Comments", js.todos, "ca8a04"),
-      ]),
-      this.buildGroup("Python", [
-        this.buildBadge("Python Files", py.files, "3776ab"),
-        this.buildBadge("Python Lines", py.lines, "4b8bbe"),
-        this.buildBadge("Python Classes", py.classes, "7c3aed"),
-        this.buildBadge("Python Functions", py.functions, "16a34a"),
-        this.buildBadge("Python Protocols", py.protocols, "0ea5e9"),
-        this.buildBadge("Python Constants", py.constants, "dc2626"),
-        this.buildBadge("Python Imports", py.imports, "0284c7"),
-        this.buildBadge("Python Decorators", py.decorators, "db2777"),
-        this.buildBadge("Docstrings", py.docstrings, "6366f1"),
-        this.buildBadge("Docstring Lines", py.docstringLines, "818cf8"),
-        this.buildBadge("Python Comments", py.comments, "64748b"),
-        this.buildBadge("Python Comment Lines", py.commentLines, "475569"),
-      ]),
-      this.buildGroup("JSON", [
-        this.buildBadge("JSON Files", json.files, "a16207"),
-        this.buildBadge("JSON Lines", json.lines, "ca8a04"),
-        this.buildBadge("JSON Objects", json.objects, "7c3aed"),
-        this.buildBadge("JSON Arrays", json.arrays, "8b5cf6"),
-        this.buildBadge("JSON Properties", json.properties, "0284c7"),
-        this.buildBadge("JSON Strings", json.strings, "16a34a"),
-        this.buildBadge("JSON Numbers", json.numbers, "059669"),
-        this.buildBadge("JSON Booleans", json.booleans, "0ea5e9"),
-        this.buildBadge("JSON Nulls", json.nulls, "64748b"),
-        this.buildBadge("JSON Items", json.items, "475569"),
-        this.buildBadge("JSON Nodes", json.totalNodes, "dc2626"),
-        this.buildBadge("JSON Max Depth", json.maxDepth, "ea580c"),
-      ]),
-      this.buildGroup("Jupyter", [
-        this.buildBadge("Notebooks", nb.files, "f37626"),
-        this.buildBadge("Notebook Cells", nb.cells, "e8a33d"),
-        this.buildBadge("Code Cells", nb.codeCells, "3776ab"),
-        this.buildBadge("Markdown Cells", nb.markdownCells, "083fa1"),
-        this.buildBadge("Raw Cells", nb.rawCells, "9ca3af"),
-        this.buildBadge("Executed Cells", nb.executedCells, "16a34a"),
-        this.buildBadge("Cell Outputs", nb.outputs, "059669"),
-        this.buildBadge("Notebook Code Lines", nb.codeLines, "4b8bbe"),
-        this.buildBadge("Notebook Classes", nb.classes, "7c3aed"),
-        this.buildBadge("Notebook Functions", nb.functions, "22c55e"),
-        this.buildBadge("Notebook Imports", nb.imports, "0284c7"),
-        this.buildBadge("Notebook Decorators", nb.decorators, "db2777"),
-        this.buildBadge("Notebook Prose Lines", nb.markdownLines, "1f6feb"),
-        this.buildBadge("Notebook Headings", nb.headings, "a78bfa"),
-        this.buildBadge("Notebook Links", nb.links, "10b981"),
-        this.buildBadge("Notebook Images", nb.images, "34d399"),
-        this.buildBadge("Notebook Code Blocks", nb.codeBlocks, "dc2626"),
-        this.buildBadge("Notebook Properties", nb.properties, "ca8a04"),
-        this.buildBadge("Notebook Nodes", nb.totalNodes, "a16207"),
-        this.buildBadge("Notebook Max Depth", nb.maxDepth, "ea580c"),
-      ]),
-      this.buildGroup("Markdown", [
-        this.buildBadge("Markdown Files", md.files, "083fa1"),
-        this.buildBadge("Markdown Lines", md.lines, "1f6feb"),
-        this.buildBadge("H1", md.headingLevel1, "7c3aed"),
-        this.buildBadge("H2", md.headingLevel2, "8b5cf6"),
-        this.buildBadge("H3", md.headingLevel3, "a78bfa"),
-        this.buildBadge("H4", md.headingLevel4, "c4b5fd"),
-        this.buildBadge("H5", md.headingLevel5, "ddd6fe"),
-        this.buildBadge("H6", md.headingLevel6, "ede9fe"),
-        this.buildBadge("Paragraphs", md.paragraphs, "64748b"),
-        this.buildBadge("Lists", md.lists, "16a34a"),
-        this.buildBadge("List Items", md.listItems, "22c55e"),
-        this.buildBadge("Task List Items", md.taskListItems, "4ade80"),
-        this.buildBadge("Tables", md.tables, "0284c7"),
-        this.buildBadge("Table Rows", md.tableRows, "0ea5e9"),
-        this.buildBadge("Links", md.links, "059669"),
-        this.buildBadge("Images", md.images, "10b981"),
-        this.buildBadge("Code Blocks", md.codeBlocks, "dc2626"),
-        this.buildBadge("Inline Code", md.inlineCode, "ef4444"),
-        this.buildBadge("Block Quotes", md.blockQuotes, "ca8a04"),
-        this.buildBadge("Thematic Breaks", md.thematicBreaks, "a16207"),
-      ]),
+      this.buildRepositoryGroup(statistics),
+      this.buildTypescriptGroup(statistics),
+      this.buildPythonGroup(statistics),
+      this.buildJsonGroup(statistics),
+      this.buildYamlGroup(statistics),
+      this.buildJupyterGroup(statistics),
+      this.buildMarkdownGroup(statistics),
     ].join("\n\n");
     const { description } = args.destination;
 

@@ -19,6 +19,7 @@ export interface CodeStatisticsResult {
   repoSizeMiB: number;
   sourceFiles: number;
   typescript: TypescriptStatistics;
+  yaml: YamlStatistics;
 }
 
 /**
@@ -313,3 +314,23 @@ export interface WriteMarkdownArguments {
  * what fails the command. Anything else counts as up to date.
  */
 export type WriteMarkdownOutput = (args: WriteMarkdownArguments) => boolean;
+
+/**
+ * Structural statistics specific to YAML documents.
+ *
+ * A YAML file is a stream rather than a single value: one file can hold
+ * several documents, which is why `documents` is counted apart from `files`.
+ */
+export interface YamlStatistics {
+  aliases: number;
+  anchors: number;
+  comments: number;
+  documents: number;
+  files: number;
+  keys: number;
+  lines: number;
+  mappings: number;
+  maxDepth: number;
+  scalars: number;
+  sequences: number;
+}

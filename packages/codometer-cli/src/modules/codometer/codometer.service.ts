@@ -9,6 +9,7 @@ import { JupyterService } from "../jupyter/jupyter.service";
 import { MarkdownService } from "../markdown/markdown.service";
 import { PythonService } from "../python/python.service";
 import { TypescriptService } from "../typescript/typescript.service";
+import { YamlService } from "../yaml/yaml.service";
 
 import type { TypescriptResult } from "../typescript/typescript.types";
 import type { MeasureArguments } from "./codometer.types";
@@ -32,6 +33,7 @@ export class CodometerService {
     private readonly jsonService: JsonService,
     private readonly markdownService: MarkdownService,
     private readonly jupyterService: JupyterService,
+    private readonly yamlService: YamlService,
   ) {}
 
   // 🔐 Private Fields
@@ -142,6 +144,10 @@ export class CodometerService {
       markdownFiles: discoveredFiles.markdownFiles,
       workingDirectory: directory,
     });
+    const yamlStatsResult = this.yamlService.analyze({
+      workingDirectory: directory,
+      yamlFiles: discoveredFiles.yamlFiles,
+    });
     const jupyterStatsResult = this.jupyterService.analyze({
       notebookFiles: discoveredFiles.notebookFiles,
       pythonCommand: args.configuration.python.command,
@@ -177,6 +183,7 @@ export class CodometerService {
         typescriptStats.jsFiles +
         pythonStatsResult.files,
       typescript: this.buildTypescriptStatistics(typescriptStats),
+      yaml: { ...yamlStatsResult },
     };
   }
 }

@@ -16,3 +16,5 @@ export { OutputJsonModule } from "./modules/output-json/output-json.module";
 export { OutputJsonService } from "./modules/output-json/output-json.service";
 export { OutputMarkdownModule } from "./modules/output-markdown/output-markdown.module";
 export { OutputMarkdownService } from "./modules/output-markdown/output-markdown.service";
+export { YamlModule } from "./modules/yaml/yaml.module";
+export { YamlService } from "./modules/yaml/yaml.service";

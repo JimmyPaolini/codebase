@@ -11,6 +11,7 @@ import {
   NOTEBOOK_EXTENSIONS,
   TEST_FILE_REGEX,
   TS_EXTENSIONS,
+  YAML_EXTENSIONS,
 } from "./discovery.constants";
 
 import type {
@@ -140,6 +141,9 @@ export class DiscoveryService {
       trackedFiles,
       tsFiles: sourceFiles.filter((filePath) =>
         TS_EXTENSIONS.has(path.extname(filePath)),
+      ),
+      yamlFiles: trackedFiles.filter((filePath) =>
+        YAML_EXTENSIONS.has(path.extname(filePath).toLowerCase()),
       ),
     };
   }

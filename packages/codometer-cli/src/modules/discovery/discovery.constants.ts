@@ -18,6 +18,9 @@ export const MARKDOWN_EXTENSIONS = new Set([".markdown", ".md", ".mdx"]);
  */
 export const JSON_EXTENSIONS = new Set([".json", ".jsonc", ".jsonl"]);
 
+/** File extensions treated as YAML documents. */
+export const YAML_EXTENSIONS = new Set([".yaml", ".yml"]);
+
 /** File extensions treated as Jupyter notebooks. */
 export const NOTEBOOK_EXTENSIONS = new Set([".ipynb"]);
 

@@ -10,6 +10,7 @@ import { JupyterService } from "../jupyter/jupyter.service";
 import { MarkdownService } from "../markdown/markdown.service";
 import { PythonService } from "../python/python.service";
 import { TypescriptService } from "../typescript/typescript.service";
+import { YamlService } from "../yaml/yaml.service";
 
 import { CodometerService } from "./codometer.service";
 
@@ -30,6 +31,7 @@ describe(CodometerService, () => {
   let markdownService: MarkdownService;
   let pythonService: PythonService;
   let typescriptService: TypescriptService;
+  let yamlService: YamlService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -41,6 +43,7 @@ describe(CodometerService, () => {
         MarkdownService,
         PythonService,
         TypescriptService,
+        YamlService,
       ],
     }).compile();
 
@@ -58,6 +61,7 @@ describe(CodometerService, () => {
       pythonService,
     );
     typescriptService = new TypescriptService();
+    yamlService = new YamlService();
 
     vi.spyOn(discoveryService, "discoverFiles").mockReturnValue({
       jsFiles: ["src/app.js"],
@@ -69,6 +73,7 @@ describe(CodometerService, () => {
       testFiles: [],
       trackedFiles: ["src/app.ts", "scripts/check.py"],
       tsFiles: ["src/app.ts"],
+      yamlFiles: [".github/workflows/ci.yml"],
     });
     vi.spyOn(jsonService, "analyze").mockReturnValue({
       arrays: 1,
@@ -119,6 +124,19 @@ describe(CodometerService, () => {
       tables: 18,
       taskListItems: 19,
       thematicBreaks: 20,
+    });
+    vi.spyOn(yamlService, "analyze").mockReturnValue({
+      aliases: 1,
+      anchors: 2,
+      comments: 3,
+      documents: 4,
+      files: 5,
+      keys: 6,
+      lines: 7,
+      mappings: 8,
+      maxDepth: 9,
+      scalars: 10,
+      sequences: 11,
     });
     vi.spyOn(jupyterService, "analyze").mockReturnValue({
       cells: 7,
@@ -182,6 +200,7 @@ describe(CodometerService, () => {
       jsonService,
       markdownService,
       jupyterService,
+      yamlService,
     );
     const result = codometerService.measure({
       configuration,
@@ -231,6 +250,12 @@ describe(CodometerService, () => {
       pythonCommand: "uv run python",
       workingDirectory: "/repo",
     });
+    expect(yamlService.analyze).toHaveBeenCalledWith({
+      workingDirectory: "/repo",
+      yamlFiles: [".github/workflows/ci.yml"],
+    });
+    expect(result.yaml.documents).toBe(4);
+    expect(result.yaml.keys).toBe(6);
     expect(result.jupyter.cells).toBe(7);
     expect(result.jupyter.codeCells).toBe(6);
     expect(result.jupyter.markdownLines).toBe(10);
