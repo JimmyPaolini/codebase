@@ -1,0 +1,125 @@
+import { afterEach, beforeEach, vi } from "vitest";
+
+import type { CodeStatisticsResult } from "@codometer/configuration";
+
+/**
+ * Default test date used across time-sensitive tests.
+ */
+export const DEFAULT_TEST_DATE = new Date("2025-03-20T14:46:00Z");
+
+/**
+ * Builds a zeroed statistics report for tests that only pass one through.
+ *
+ * Every counter the pipeline produces is present, so a test asserting on the
+ * whole report keeps working when a new statistic is added.
+ */
+export function buildCodeStatistics(
+  overrides: Partial<CodeStatisticsResult> = {},
+): CodeStatisticsResult {
+  return {
+    folders: 0,
+    javascript: {
+      asyncFunctions: 0,
+      classes: 0,
+      commentLines: 0,
+      comments: 0,
+      constants: 0,
+      exported: 0,
+      externalPackages: 0,
+      files: 0,
+      functions: 0,
+      imports: 0,
+      methods: 0,
+      syncFunctions: 0,
+      testFiles: 0,
+      todos: 0,
+    },
+    json: {
+      arrays: 0,
+      booleans: 0,
+      files: 0,
+      items: 0,
+      lines: 0,
+      maxDepth: 0,
+      nulls: 0,
+      numbers: 0,
+      objects: 0,
+      properties: 0,
+      strings: 0,
+      totalNodes: 0,
+    },
+    linesOfCode: 0,
+    markdown: {
+      blockQuotes: 0,
+      codeBlocks: 0,
+      files: 0,
+      headingLevel1: 0,
+      headingLevel2: 0,
+      headingLevel3: 0,
+      headingLevel4: 0,
+      headingLevel5: 0,
+      headingLevel6: 0,
+      images: 0,
+      inlineCode: 0,
+      lines: 0,
+      links: 0,
+      listItems: 0,
+      lists: 0,
+      paragraphs: 0,
+      tableRows: 0,
+      tables: 0,
+      taskListItems: 0,
+      thematicBreaks: 0,
+    },
+    python: {
+      classes: 0,
+      commentLines: 0,
+      comments: 0,
+      constants: 0,
+      decorators: 0,
+      docstringLines: 0,
+      docstrings: 0,
+      files: 0,
+      functions: 0,
+      imports: 0,
+      lines: 0,
+      protocols: 0,
+    },
+    repoSizeMiB: 0,
+    sourceFiles: 0,
+    typescript: {
+      decorators: 0,
+      docComments: 0,
+      enums: 0,
+      files: 0,
+      genericDeclarations: 0,
+      interfaces: 0,
+    },
+    ...overrides,
+  };
+}
+
+/**
+ * Sets up fake timers with a fixed system time before each test
+ * and restores real timers after each test.
+ *
+ * Usage in test files:
+ * ```ts
+ * import { mockDates } from '../testing/mocks'
+ *
+ * describe('my suite', () => {
+ *   mockDates()
+ *   // your tests here
+ * })
+ * ```
+ */
+export function mockDates(date: Date = DEFAULT_TEST_DATE): void {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(date);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+}

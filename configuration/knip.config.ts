@@ -1,6 +1,7 @@
 import type { KnipConfig } from "knip";
 
-const CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES = [
+// Shared by every NestJS service/command package (conformetry and codometer).
+const NESTJS_PACKAGE_IGNORE_DEPENDENCIES = [
   "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
   "@nestjs/testing",
   "pino-pretty",
@@ -209,6 +210,24 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
 
+    // codometer packages: the measurement CLI and the configuration it reads
+    "packages/codometer-cli": {
+      entry: ["src/main.mjs", "src/main.ts", "src/repl.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [
+        ...NESTJS_PACKAGE_IGNORE_DEPENDENCIES,
+        "@swc-node/register", // Registered by src/main.mjs as a string, and used in Nx run-commands strings
+        "@swc/core", // Required peer/runtime for @swc-node/register loaded via CLI string command
+      ],
+      project: "src/**/*.ts",
+    },
+    "packages/codometer-configuration": {
+      entry: ["src/index.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
+      project: "src/**/*.ts",
+    },
+
     // conformetry packages: NestJS service/command application scaffolds
     "packages/conformetry-cli": {
       entry: ["src/main.ts", "src/repl.ts"],
@@ -224,74 +243,74 @@ const config: KnipConfig = {
     "packages/conformetry-core": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-files": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-configuration": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-generation": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-jupyter": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-json": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-markdown": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-nx": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "src/**/templates/**", "testing/**"],
-      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-python": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-text": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-typescript": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES],
+      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-validation": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       ignoreDependencies: [
-        ...CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES,
+        ...NESTJS_PACKAGE_IGNORE_DEPENDENCIES,
         // Named as a string in the language registry and imported on demand,
         // so no static import proves it is used.
         "@conformetry/text",

@@ -1,0 +1,64 @@
+import { execSync } from "node:child_process";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { Injectable, Logger } from "@nestjs/common";
+
+import { EMPTY_PYTHON_RESULT } from "./python.constants";
+
+import type { AnalyzePythonArguments, PythonResult } from "./python.types";
+
+/**
+ * Executes the Python analysis script and returns aggregated metrics.
+ */
+@Injectable()
+export class PythonService {
+  // 🏗 Dependency Injection
+
+  constructor() {}
+
+  // 🔐 Private Fields
+
+  private readonly logger = new Logger(PythonService.name);
+  private readonly scriptPath = path.resolve(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "python.service.py",
+  );
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
+  // 🌎 Public Methods
+
+  /**
+   * Analyze the given Python files, resolved relative to the directory.
+   *
+   * The interpreter comes from the configuration because reaching Python is a
+   * property of the repository, not of the analysis: a managed environment is
+   * entered with `uv run python` or `poetry run python`, and a plain one with
+   * `python3`.
+   *
+   * The paths travel over stdin rather than argv so that a repository with
+   * thousands of Python files cannot overflow the command-line length limit.
+   */
+  analyze(args: AnalyzePythonArguments): PythonResult {
+    if (args.pythonFiles.length === 0) {
+      return { ...EMPTY_PYTHON_RESULT };
+    }
+
+    try {
+      const output = execSync(`${args.command} "${this.scriptPath}"`, {
+        cwd: args.workingDirectory,
+        encoding: "utf8",
+        input: args.pythonFiles.join("\n"),
+      });
+
+      return JSON.parse(output.trim()) as PythonResult;
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.warn(`Python analysis skipped: ${message}`);
+      return { ...EMPTY_PYTHON_RESULT };
+    }
+  }
+}

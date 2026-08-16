@@ -95,6 +95,7 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
     instances: [
       {
         patterns: [
+          "packages/codometer-configuration",
           "packages/conformetry-{configuration,core,files,generation,json,jupyter,markdown,python,text,typescript,validation,nx}",
         ],
       },
