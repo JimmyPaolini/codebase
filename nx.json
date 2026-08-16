@@ -55,15 +55,9 @@
   "plugins": [
     {
       "options": {
-        "buildDepsTargetName": false,
         "buildTargetName": "build",
         "devTargetName": "develop",
-        "e2eTestTargetName": false,
-        "previewTargetName": false,
-        "serveStaticTargetName": false,
-        "serveTargetName": false,
-        "typecheckTargetName": "typecheck",
-        "watchDepsTargetName": false
+        "typecheckTargetName": "typecheck"
       },
       "plugin": "@nx/vite/plugin"
     },
@@ -74,6 +68,10 @@
       "plugin": "@nx/eslint/plugin"
     },
     {
+      "options": {
+        "testMode": "run",
+        "testTargetName": "vitest"
+      },
       "plugin": "@nx/vitest"
     },
     {
@@ -96,178 +94,6 @@
     "globalGenerators": ["@conformetry/nx:sync"]
   },
   "targetDefaults": {
-    "analyze-code": [
-      {
-        "cache": true,
-        "configurations": {
-          "check": {
-            "commands": [
-              "nx run {projectName}:clean:check",
-              "nx run {projectName}:format:check",
-              "nx run {projectName}:lint:check",
-              "nx run {projectName}:markdown-lint:check",
-              "nx run {projectName}:nbstripout:check",
-              "nx run {projectName}:spell-check",
-              "nx run {projectName}:typecheck",
-              "nx run {projectName}:yaml-lint"
-            ],
-            "parallel": true
-          },
-          "write": {
-            "commands": [
-              "nx run {projectName}:clean:write",
-              "nx run {projectName}:format:write",
-              "nx run {projectName}:lint:write",
-              "nx run {projectName}:markdown-lint:write",
-              "nx run {projectName}:nbstripout:write",
-              "nx run {projectName}:spell-check",
-              "nx run {projectName}:typecheck",
-              "nx run {projectName}:yaml-lint"
-            ],
-            "parallel": false
-          }
-        },
-        "defaultConfiguration": "check",
-        "executor": "nx:run-commands",
-        "filter": {
-          "projects": ["tag:language:python"]
-        },
-        "inputs": [
-          "{projectRoot}/**/*.{py,ipynb,md,yaml,yml,json}",
-          "shared-globals"
-        ]
-      },
-      {
-        "cache": true,
-        "configurations": {
-          "check": {
-            "commands": [
-              "nx run {projectName}:clean:check",
-              "nx run {projectName}:dependency-cruiser",
-              "nx run {projectName}:format:check",
-              "nx run {projectName}:lint:check",
-              "nx run {projectName}:markdown-lint:check",
-              "nx run {projectName}:spell-check",
-              "nx run {projectName}:squawk",
-              "nx run {projectName}:type-coverage",
-              "nx run {projectName}:typecheck",
-              "nx run {projectName}:yaml-lint"
-            ],
-            "parallel": true
-          },
-          "write": {
-            "commands": [
-              "nx run {projectName}:clean:write",
-              "nx run {projectName}:dependency-cruiser",
-              "nx run {projectName}:format:write",
-              "nx run {projectName}:lint:write",
-              "nx run {projectName}:markdown-lint:write",
-              "nx run {projectName}:spell-check",
-              "nx run {projectName}:squawk",
-              "nx run {projectName}:type-coverage",
-              "nx run {projectName}:typecheck",
-              "nx run {projectName}:yaml-lint"
-            ],
-            "parallel": false
-          }
-        },
-        "defaultConfiguration": "check",
-        "executor": "nx:run-commands",
-        "filter": {
-          "projects": ["tag:framework:typeorm"]
-        },
-        "inputs": [
-          "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml,sql}",
-          "shared-globals"
-        ]
-      },
-      {
-        "cache": true,
-        "configurations": {
-          "check": {
-            "commands": [
-              "nx run {projectName}:clean:check",
-              "nx run {projectName}:dependency-cruiser",
-              "nx run {projectName}:format:check",
-              "nx run {projectName}:lint:check",
-              "nx run {projectName}:markdown-lint:check",
-              "nx run {projectName}:spell-check",
-              "nx run {projectName}:type-coverage",
-              "nx run {projectName}:typecheck",
-              "nx run {projectName}:yaml-lint"
-            ],
-            "parallel": true
-          },
-          "write": {
-            "commands": [
-              "nx run {projectName}:clean:write",
-              "nx run {projectName}:dependency-cruiser",
-              "nx run {projectName}:format:write",
-              "nx run {projectName}:lint:write",
-              "nx run {projectName}:markdown-lint:write",
-              "nx run {projectName}:spell-check",
-              "nx run {projectName}:type-coverage",
-              "nx run {projectName}:typecheck",
-              "nx run {projectName}:yaml-lint"
-            ],
-            "parallel": false
-          }
-        },
-        "defaultConfiguration": "check",
-        "executor": "nx:run-commands",
-        "filter": {
-          "projects": ["tag:language:typescript"]
-        },
-        "inputs": [
-          "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml,sql}",
-          "shared-globals"
-        ]
-      },
-      {
-        "cache": true,
-        "configurations": {
-          "check": {
-            "commands": [
-              "nx run {projectName}:clean:check",
-              "nx run {projectName}:dependency-cruiser",
-              "nx run {projectName}:format:check",
-              "nx run {projectName}:lint:check",
-              "nx run {projectName}:markdown-lint:check",
-              "nx run {projectName}:spell-check",
-              "nx run {projectName}:stylelint:check",
-              "nx run {projectName}:type-coverage",
-              "nx run {projectName}:typecheck",
-              "nx run {projectName}:yaml-lint"
-            ],
-            "parallel": true
-          },
-          "write": {
-            "commands": [
-              "nx run {projectName}:clean:write",
-              "nx run {projectName}:dependency-cruiser",
-              "nx run {projectName}:format:write",
-              "nx run {projectName}:lint:write",
-              "nx run {projectName}:markdown-lint:write",
-              "nx run {projectName}:spell-check",
-              "nx run {projectName}:stylelint:write",
-              "nx run {projectName}:type-coverage",
-              "nx run {projectName}:typecheck",
-              "nx run {projectName}:yaml-lint"
-            ],
-            "parallel": false
-          }
-        },
-        "defaultConfiguration": "check",
-        "executor": "nx:run-commands",
-        "filter": {
-          "projects": ["tag:framework:react"]
-        },
-        "inputs": [
-          "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml,sql}",
-          "shared-globals"
-        ]
-      }
-    ],
     "bandit": [
       {
         "cache": true,
@@ -292,50 +118,18 @@
         "inputs": ["^production", "production"]
       }
     ],
-    "clean": [
-      {
-        "cache": true,
-        "configurations": {
-          "check": {
-            "commands": ["nx run {projectName}:vulture:check"],
-            "parallel": true
-          },
-          "write": {
-            "commands": ["nx run {projectName}:vulture:write"],
-            "parallel": false
-          }
-        },
-        "defaultConfiguration": "check",
-        "executor": "nx:run-commands",
-        "filter": {
-          "projects": ["tag:language:python"]
-        },
-        "inputs": ["python-source", "shared-globals"]
+    "bundlesize": {
+      "cache": true,
+      "dependsOn": ["build"],
+      "description": "Measure built bundle sizes against the limits in .size-limit.cjs, writing a JSON report the pull request comment reads.",
+      "executor": "nx:run-commands",
+      "inputs": ["^production", "{projectRoot}/.size-limit.cjs", "production"],
+      "options": {
+        "command": "size-limit --json > size-limit-report.json",
+        "cwd": "{projectRoot}"
       },
-      {
-        "cache": true,
-        "configurations": {
-          "check": {
-            "commands": ["nx run {projectName}:knip:check"],
-            "parallel": true
-          },
-          "write": {
-            "commands": ["nx run {projectName}:knip:write"],
-            "parallel": false
-          }
-        },
-        "defaultConfiguration": "check",
-        "executor": "nx:run-commands",
-        "filter": {
-          "projects": ["tag:language:typescript"]
-        },
-        "inputs": [
-          "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,py}",
-          "{workspaceRoot}/configuration/knip.config.ts",
-          "shared-globals"
-        ]
-      }
-    ],
+      "outputs": ["{projectRoot}/size-limit-report.json"]
+    },
     "dependency-cruiser": [
       {
         "cache": true,
@@ -449,91 +243,6 @@
         ]
       }
     ],
-    "format": [
-      {
-        "cache": true,
-        "configurations": {
-          "check": {
-            "commands": ["nx run {projectName}:ruff-format:check"],
-            "parallel": true
-          },
-          "write": {
-            "commands": ["nx run {projectName}:ruff-format:write"],
-            "parallel": false
-          }
-        },
-        "defaultConfiguration": "check",
-        "executor": "nx:run-commands",
-        "filter": {
-          "projects": ["tag:language:python"]
-        },
-        "inputs": ["{workspaceRoot}/pyproject.toml", "python-source"]
-      },
-      {
-        "cache": true,
-        "configurations": {
-          "check": {
-            "commands": [
-              "# nx run {projectName}:prettier:check",
-              "nx run {projectName}:oxfmt:check",
-              "nx run {projectName}:sqlfluff-format:check"
-            ],
-            "parallel": false
-          },
-          "write": {
-            "commands": [
-              "# nx run {projectName}:prettier:write",
-              "nx run {projectName}:oxfmt:write",
-              "nx run {projectName}:sqlfluff-format:write"
-            ],
-            "parallel": false
-          }
-        },
-        "defaultConfiguration": "check",
-        "executor": "nx:run-commands",
-        "filter": {
-          "projects": ["tag:framework:typeorm"]
-        },
-        "inputs": [
-          "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml,sql}",
-          "{workspaceRoot}/configuration/.prettierignore",
-          "{workspaceRoot}/configuration/oxfmt.config.ts",
-          "{workspaceRoot}/configuration/prettier.config.ts",
-          "shared-globals"
-        ]
-      },
-      {
-        "cache": true,
-        "configurations": {
-          "check": {
-            "commands": [
-              "# nx run {projectName}:prettier:check",
-              "nx run {projectName}:oxfmt:check"
-            ],
-            "parallel": true
-          },
-          "write": {
-            "commands": [
-              "# nx run {projectName}:prettier:write",
-              "nx run {projectName}:oxfmt:write"
-            ],
-            "parallel": false
-          }
-        },
-        "defaultConfiguration": "check",
-        "executor": "nx:run-commands",
-        "filter": {
-          "projects": ["tag:language:typescript"]
-        },
-        "inputs": [
-          "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml,sql}",
-          "{workspaceRoot}/configuration/.prettierignore",
-          "{workspaceRoot}/configuration/oxfmt.config.ts",
-          "{workspaceRoot}/configuration/prettier.config.ts",
-          "shared-globals"
-        ]
-      }
-    ],
     "knip": [
       {
         "cache": true,
@@ -557,89 +266,50 @@
         }
       }
     ],
-    "lint": [
-      {
-        "cache": true,
-        "configurations": {
-          "check": {
-            "commands": ["nx run {projectName}:ruff-lint:check"],
-            "parallel": true
-          },
-          "write": {
-            "commands": ["nx run {projectName}:ruff-lint:write"],
-            "parallel": false
-          }
-        },
-        "defaultConfiguration": "check",
-        "executor": "nx:run-commands",
-        "filter": {
-          "projects": ["tag:language:python"]
-        },
-        "inputs": ["{workspaceRoot}/pyproject.toml", "python-source"]
+    "lint-codebase": {
+      "cache": false,
+      "configurations": {
+        "check": {},
+        "write": {}
       },
-      {
-        "cache": true,
-        "configurations": {
-          "check": {
-            "commands": [
-              "nx run {projectName}:eslint:check",
-              "nx run {projectName}:oxlint:check",
-              "nx run {projectName}:sqlfluff-lint:check"
-            ],
-            "parallel": true
-          },
-          "write": {
-            "commands": [
-              "nx run {projectName}:eslint:write",
-              "nx run {projectName}:oxlint:write",
-              "nx run {projectName}:sqlfluff-lint:write"
-            ],
-            "parallel": false
-          }
-        },
-        "defaultConfiguration": "check",
-        "executor": "nx:run-commands",
-        "filter": {
-          "projects": ["tag:framework:typeorm"]
-        },
-        "inputs": [
-          "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,md,mdx,css}",
-          "{workspaceRoot}/configuration/eslint.config.ts",
-          "{workspaceRoot}/configuration/oxlint.config.ts",
-          "shared-globals"
-        ]
-      },
-      {
-        "cache": true,
-        "configurations": {
-          "check": {
-            "commands": [
-              "nx run {projectName}:eslint:check",
-              "nx run {projectName}:oxlint:check"
-            ],
-            "parallel": true
-          },
-          "write": {
-            "commands": [
-              "nx run {projectName}:eslint:write",
-              "nx run {projectName}:oxlint:write"
-            ],
-            "parallel": false
-          }
-        },
-        "defaultConfiguration": "check",
-        "executor": "nx:run-commands",
-        "filter": {
-          "projects": ["tag:language:typescript"]
-        },
-        "inputs": [
-          "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,md,mdx,css}",
-          "{workspaceRoot}/configuration/eslint.config.ts",
-          "{workspaceRoot}/configuration/oxlint.config.ts",
-          "shared-globals"
-        ]
-      }
-    ],
+      "defaultConfiguration": "check",
+      "dependsOn": [
+        "check-catalog-manifests",
+        "check-lockfile",
+        "codometer",
+        "conformetry-validate",
+        "dependency-cruiser",
+        "eslint",
+        "knip",
+        "markdown-lint",
+        "nbstripout",
+        "oxfmt",
+        "oxlint",
+        "ruff-format",
+        "ruff-lint",
+        "sherif",
+        "spell-check",
+        "sqlfluff-format",
+        "sqlfluff-lint",
+        "squawk",
+        "stylelint",
+        "sync-vscode-extensions",
+        "synchronize",
+        "syncpack",
+        "type-coverage",
+        "typecheck",
+        "vulture",
+        "yaml-lint"
+      ],
+      "description": "Static code analysis: every check that reads the source without executing it. An nx:noop aggregator \u2014 the work is the dependsOn targets, which Nx schedules in one graph rather than spawning a process per tool.",
+      "executor": "nx:noop"
+    },
+    "make-projects": {
+      "cache": false,
+      "dependsOn": ["build", "bundlesize"],
+      "description": "Build every buildable project and measure its bundle. An nx:noop aggregator; `build` carries its own ^build dependency.",
+      "executor": "nx:noop"
+    },
     "markdown-lint": [
       {
         "cache": true,
@@ -777,7 +447,11 @@
         "filter": {
           "projects": ["tag:language:python"]
         },
-        "inputs": ["{workspaceRoot}/pyproject.toml", "python-source"],
+        "inputs": [
+          "{workspaceRoot}/pyproject.toml",
+          "{workspaceRoot}/uv.lock",
+          "python-source"
+        ],
         "options": {
           "command": "uv run pyright src/",
           "cwd": "{projectRoot}"
@@ -807,6 +481,7 @@
         },
         "inputs": [
           "{workspaceRoot}/pyproject.toml",
+          "{workspaceRoot}/uv.lock",
           "python-source",
           "python-tests"
         ],
@@ -844,7 +519,11 @@
         "filter": {
           "projects": ["tag:language:python"]
         },
-        "inputs": ["{workspaceRoot}/pyproject.toml", "python-source"],
+        "inputs": [
+          "{workspaceRoot}/pyproject.toml",
+          "{workspaceRoot}/uv.lock",
+          "python-source"
+        ],
         "options": {
           "command": "uv run ruff format {args} .",
           "cwd": "{projectRoot}"
@@ -865,13 +544,29 @@
         "filter": {
           "projects": ["tag:language:python"]
         },
-        "inputs": ["{workspaceRoot}/pyproject.toml", "python-source"],
+        "inputs": [
+          "{workspaceRoot}/pyproject.toml",
+          "{workspaceRoot}/uv.lock",
+          "python-source"
+        ],
         "options": {
           "command": "uv run ruff check {args} .",
           "cwd": "{projectRoot}"
         }
       }
     ],
+    "scan-security": {
+      "cache": false,
+      "dependsOn": [
+        "bandit",
+        "gitleaks",
+        "license-check",
+        "pnpm-audit",
+        "trivy-config"
+      ],
+      "description": "Security scanning: secrets, Python AST, dependency vulnerabilities, licenses, and infrastructure misconfiguration. An nx:noop aggregator.",
+      "executor": "nx:noop"
+    },
     "spell-check": [
       {
         "cache": true,
@@ -1005,97 +700,18 @@
         }
       }
     ],
-    "test": [
-      {
-        "cache": true,
-        "configurations": {
-          "coverage": {
-            "commands": ["nx run {projectName}:pytest:coverage"]
-          },
-          "integration": {
-            "commands": ["nx run {projectName}:pytest:integration"]
-          },
-          "unit": {
-            "commands": ["nx run {projectName}:pytest:unit"]
-          },
-          "watch": {
-            "commands": ["nx run {projectName}:pytest:watch"]
-          }
-        },
-        "executor": "nx:run-commands",
-        "filter": {
-          "projects": ["tag:language:python"]
-        },
-        "inputs": [
-          "{workspaceRoot}/pyproject.toml",
-          "python-source",
-          "python-tests"
-        ],
-        "options": {
-          "commands": ["nx run {projectName}:pytest"]
-        }
+    "test-coverage": {
+      "cache": false,
+      "configurations": {
+        "coverage": {},
+        "integration": {},
+        "unit": {}
       },
-      {
-        "cache": true,
-        "configurations": {
-          "coverage": {
-            "command": "pnpm exec vitest run --coverage --coverage.provider=v8"
-          },
-          "integration": {
-            "command": "pnpm exec vitest run integration.test.ts"
-          },
-          "unit": {
-            "command": "pnpm exec vitest run unit.test.ts"
-          },
-          "watch": {
-            "command": "pnpm exec vitest"
-          }
-        },
-        "executor": "nx:run-commands",
-        "filter": {
-          "projects": ["tag:framework:typeorm"]
-        },
-        "inputs": [
-          "{projectRoot}/**/*.test.ts",
-          "{projectRoot}/**/*.ts",
-          "{workspaceRoot}/configuration/vitest.config.ts",
-          "shared-globals"
-        ],
-        "options": {
-          "command": "pnpm exec vitest run",
-          "cwd": "{projectRoot}"
-        }
-      },
-      {
-        "cache": true,
-        "configurations": {
-          "coverage": {
-            "command": "pnpm exec vitest run --coverage --coverage.provider=v8"
-          },
-          "end-to-end": {
-            "command": "pnpm exec vitest run end-to-end.test.ts"
-          },
-          "integration": {
-            "command": "pnpm exec vitest run integration.test.ts"
-          },
-          "unit": {
-            "command": "pnpm exec vitest run unit.test.ts"
-          },
-          "watch": {
-            "command": "pnpm exec vitest"
-          }
-        },
-        "executor": "nx:run-commands",
-        "filter": {
-          "projects": ["tag:language:typescript"]
-        },
-        "inputs": ["^production", "default"],
-        "options": {
-          "command": "pnpm exec vitest run",
-          "cwd": "{projectRoot}"
-        }
-      }
-    ],
+      "defaultConfiguration": "coverage",
+      "dependsOn": ["pytest", "vitest"],
+      "description": "Dynamic code analysis: the tests, which execute the source. An nx:noop aggregator. The configuration propagates down dependsOn, so test-coverage:coverage reaches test:coverage.",
+      "executor": "nx:noop"
+    },
     "ty": [
       {
         "cache": true,
@@ -1103,7 +719,11 @@
         "filter": {
           "projects": ["tag:language:python"]
         },
-        "inputs": ["{workspaceRoot}/pyproject.toml", "python-source"],
+        "inputs": [
+          "{workspaceRoot}/pyproject.toml",
+          "{workspaceRoot}/uv.lock",
+          "python-source"
+        ],
         "options": {
           "command": "uv run ty check src/",
           "cwd": "{projectRoot}"
@@ -1132,18 +752,11 @@
     ],
     "typecheck": [
       {
-        "cache": true,
-        "executor": "nx:run-commands",
+        "cache": false,
+        "dependsOn": ["pyright", "ty"],
+        "executor": "nx:noop",
         "filter": {
           "projects": ["tag:language:python"]
-        },
-        "inputs": ["{workspaceRoot}/pyproject.toml", "python-source"],
-        "options": {
-          "commands": [
-            "nx run {projectName}:pyright",
-            "nx run {projectName}:ty"
-          ],
-          "parallel": true
         }
       },
       {
@@ -1166,6 +779,26 @@
         "outputs": []
       }
     ],
+    "vitest": {
+      "configurations": {
+        "coverage": {
+          "command": "pnpm exec vitest run --coverage --coverage.provider=v8"
+        },
+        "end-to-end": {
+          "command": "pnpm exec vitest run end-to-end.test.ts"
+        },
+        "integration": {
+          "command": "pnpm exec vitest run integration.test.ts"
+        },
+        "unit": {
+          "command": "pnpm exec vitest run unit.test.ts"
+        },
+        "watch": {
+          "command": "pnpm exec vitest"
+        }
+      },
+      "description": "Extra configurations layered onto the vitest target that @nx/vitest infers. The plugin supplies the command, inputs, and outputs."
+    },
     "vulture": [
       {
         "cache": true,
@@ -1195,7 +828,6 @@
         "inputs": [
           "{projectRoot}/**/*.{yaml,yml}",
           "{workspaceRoot}/configuration/yamllint.yaml",
-          "{workspaceRoot}/uv.lock",
           "shared-globals"
         ],
         "options": {

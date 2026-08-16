@@ -9,6 +9,7 @@ export interface CodeStatisticsResult {
   javascript: JavascriptStatistics;
   json: JsonStatistics;
   linesOfCode: number;
+  markdown: MarkdownStatistics;
   python: PythonStatistics;
   repoSizeMiB: number;
   sourceFiles: number;
@@ -60,6 +61,32 @@ export interface JsonStatistics {
   properties: number;
   strings: number;
   totalNodes: number;
+}
+
+/**
+ * Structural statistics specific to markdown documents.
+ */
+export interface MarkdownStatistics {
+  blockQuotes: number;
+  codeBlocks: number;
+  files: number;
+  headingLevel1: number;
+  headingLevel2: number;
+  headingLevel3: number;
+  headingLevel4: number;
+  headingLevel5: number;
+  headingLevel6: number;
+  images: number;
+  inlineCode: number;
+  lines: number;
+  links: number;
+  listItems: number;
+  lists: number;
+  paragraphs: number;
+  tableRows: number;
+  tables: number;
+  taskListItems: number;
+  thematicBreaks: number;
 }
 
 /**

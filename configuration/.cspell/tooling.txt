@@ -192,6 +192,7 @@ subquery
 subrepositories
 svgs
 swipeable
+Synchronizable
 syncpack
 syncpackrc
 tailwindcss

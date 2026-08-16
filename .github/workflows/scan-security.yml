@@ -1,0 +1,52 @@
+name: 🕵️ Scan Security
+
+# Secrets, Python AST, dependency vulnerabilities, licenses, and infrastructure
+# misconfiguration — all as Nx targets, so `nx run codebase:scan-security`
+# reproduces this job locally.
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  schedule:
+    - cron: 0 6 * * 1 # Weekly Monday 6am UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan-security:
+    name: 🕵️ Scan Security
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: 🕋 Setup Codebase
+        uses: ./.github/actions/setup-codebase
+        with:
+          gitleaks: "true"
+          trivy: "true"
+
+      # Terraform scanning used to sit behind a `dorny/paths-filter` step with
+      # a special case for schedule events, which have no diff context. The
+      # trivy-config target declares the terraform tree in its `inputs`, so Nx
+      # skips it on a cache hit — the same saving without the special case.
+      - name: 🕵️ Scan Security
+        run: pnpm exec nx affected --target=scan-security --parallel=4
+
+      # gitleaks scans history, so it belongs to the root project rather than
+      # to whichever project a commit happened to touch, and `affected` will
+      # not select it on most pull requests.
+      - name: 🚰 Scan Secrets
+        run: pnpm exec nx run codebase:gitleaks:ci

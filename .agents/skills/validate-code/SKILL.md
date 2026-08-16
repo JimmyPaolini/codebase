@@ -1,6 +1,6 @@
 ---
 name: validate-code
-description: Run the full code quality validation suite for this codebase. Use this skill when you have finished implementing code changes and want to verify they are clean before committing, when told to "validate", "check quality", or "run linting", or before invoking the submit-changes skill. Runs analyze-code (format, lint, typecheck, knip, spell-check) using the write configuration to auto-fix what it can, then checks that nothing remains.
+description: Run the full code quality validation suite for this codebase. Use this skill when you have finished implementing code changes and want to verify they are clean before committing, when told to "validate", "check quality", or "run linting", or before invoking the submit-changes skill. Runs lint-codebase (format, lint, typecheck, knip, spell-check) using the write configuration to auto-fix what it can, then checks that nothing remains.
 license: MIT
 ---
 
@@ -15,9 +15,9 @@ Run the codebase's full automated quality suite against your changes **before co
 - When asked to "validate", "check code quality", "run linting", or "verify changes are clean"
 - Anytime you add new dependencies, exports, or files (Knip detects unused ones)
 
-## What `analyze-code` Covers
+## What `lint-codebase` Covers
 
-The `analyze-code` Nx composite target fans out to all quality tools:
+The `lint-codebase` Nx target hangs every quality tool off `dependsOn`, so one invocation builds one task graph:
 
 | Tool | Purpose | Configuration |
 | ---- | ------- | ------------- |
@@ -36,26 +36,26 @@ The `analyze-code` Nx composite target fans out to all quality tools:
 
 ### Step 1 — Auto-fix
 
-Run `analyze-code` in `write` mode to automatically fix all auto-fixable issues (formatting, linting, unused-code whitelist entries, sync checks):
+Run `lint-codebase` in `write` mode to automatically fix all auto-fixable issues (formatting, linting, unused-code whitelist entries, sync checks):
 
 ```bash
-pnpm exec nx affected --target=analyze-code --configuration=write --base=main
+pnpm exec nx affected --target=lint-codebase --configuration=write --base=main
 ```
 
 > For new/untracked files that `nx affected` won't detect, target the relevant project(s) directly:
 >
 > ```bash
-> pnpm exec nx run <project>:analyze-code --configuration=write
+> pnpm exec nx run <project>:lint-codebase --configuration=write
 > ```
 
 Review the changes made. If any files were modified, inspect them to ensure the auto-fixes are correct.
 
 ### Step 2 — Verify
 
-Run `analyze-code` in `check` mode to confirm no issues remain:
+Run `lint-codebase` in `check` mode to confirm no issues remain:
 
 ```bash
-pnpm exec nx affected --target=analyze-code --configuration=check --base=main
+pnpm exec nx affected --target=lint-codebase --configuration=check --base=main
 ```
 
 **All checks must pass before proceeding.** If any fail, triage each failure:
@@ -74,10 +74,10 @@ Once both `write` and `check` pass cleanly, code quality is confirmed. Proceed t
 
 ### Step 4 — Coverage Gate (when required)
 
-`analyze-code` does not enforce Vitest coverage thresholds. If the task, project, or CI requires a coverage target, run the coverage configuration explicitly after Step 3:
+`lint-codebase` does not enforce Vitest coverage thresholds. If the task, project, or CI requires a coverage target, run the coverage configuration explicitly after Step 3:
 
 ```bash
-pnpm exec nx run <project>:test --configuration=coverage
+pnpm exec nx run <project>:vitest --configuration=coverage
 ```
 
 If the threshold fails by a small margin, prioritize adding targeted tests for uncovered guard branches (`if (!value)`, fallback paths, sparse/undefined handling) instead of broad test rewrites.
@@ -99,19 +99,19 @@ pnpm exec nx run <project>:type-coverage
 
 ```bash
 # Target the specific project since affected may not pick up new files
-pnpm exec nx run <project>:analyze-code --configuration=write
-pnpm exec nx run <project>:analyze-code --configuration=check
+pnpm exec nx run <project>:lint-codebase --configuration=write
+pnpm exec nx run <project>:lint-codebase --configuration=check
 ```
 
 ### Refactor-heavy test changes
 
 ```bash
 # 1) Auto-fix + quality checks
-pnpm exec nx run <project>:analyze-code --configuration=write
-pnpm exec nx run <project>:analyze-code --configuration=check
+pnpm exec nx run <project>:lint-codebase --configuration=write
+pnpm exec nx run <project>:lint-codebase --configuration=check
 
 # 2) Re-verify coverage gates explicitly
-pnpm exec nx run <project>:test --configuration=coverage
+pnpm exec nx run <project>:vitest --configuration=coverage
 
 # 3) If available, enforce type coverage gate too
 pnpm exec nx run <project>:typecheck

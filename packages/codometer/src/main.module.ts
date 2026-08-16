@@ -1,15 +1,18 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { DiscoveryModule } from "@nestjs/core";
+// Aliased because this package now has a DiscoveryModule of its own, which
+// discovers files rather than providers.
+import { DiscoveryModule as NestDiscoveryModule } from "@nestjs/core";
 
 import { environmentSchema } from "./constants";
 import { CodometerModule } from "./modules/codometer/codometer.module";
-import { DiscoverFilesModule } from "./modules/discover-files/discover-files.module";
+import { DiscoveryModule } from "./modules/discovery/discovery.module";
+import { JsonModule } from "./modules/json/json.module";
 import { LoggerModule } from "./modules/logger/logger.module";
-import { MeasureJsonModule } from "./modules/measure-json/measure-json.module";
-import { MeasurePythonModule } from "./modules/measure-python/measure-python.module";
-import { MeasureTypescriptModule } from "./modules/measure-typescript/measure-typescript.module";
-import { WriteReadmeModule } from "./modules/write-readme/write-readme.module";
+import { MarkdownModule } from "./modules/markdown/markdown.module";
+import { PythonModule } from "./modules/python/python.module";
+import { TypescriptModule } from "./modules/typescript/typescript.module";
+import { WritingModule } from "./modules/writing/writing.module";
 
 /**
  * Root NestJS application module.
@@ -22,14 +25,15 @@ import { WriteReadmeModule } from "./modules/write-readme/write-readme.module";
       validate: (config: Record<string, unknown>) =>
         environmentSchema.parse(config),
     }),
-    DiscoveryModule,
+    NestDiscoveryModule,
     LoggerModule,
     CodometerModule,
-    DiscoverFilesModule,
-    MeasureJsonModule,
-    MeasurePythonModule,
-    MeasureTypescriptModule,
-    WriteReadmeModule,
+    DiscoveryModule,
+    JsonModule,
+    MarkdownModule,
+    PythonModule,
+    TypescriptModule,
+    WritingModule,
   ],
 })
 export class MainModule {}
