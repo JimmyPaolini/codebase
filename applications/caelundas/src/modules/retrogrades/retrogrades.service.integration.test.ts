@@ -115,9 +115,9 @@ describe("retrogrades.events integration", () => {
   const minute = moment.utc("2024-09-09T12:00:00.000Z");
 
   it("detects a Mercury retrograde station when longitude reaches a maximum", () => {
-    expect.hasAssertions(); // isRetrograde: ALL normalizeForComparison(prev, curr) < curr
+    expect.hasAssertions(); // isRetrograde: ALL normalizeForComparison(previous, current) < current
 
-    //               AND ALL normalizeForComparison(next, curr) <= curr
+    //               AND ALL normalizeForComparison(next, current) <= current
     // Mercury longitude peaks at 100.0 — all previous and next values are 99.5
     const coordinateEphemerisByBody = createRetrogradeEphemeris(minute, {
       body: "mercury",
@@ -136,9 +136,9 @@ describe("retrogrades.events integration", () => {
   });
 
   it("detects a Mercury direct station when longitude reaches a minimum", () => {
-    expect.hasAssertions(); // isDirect: ALL normalizeForComparison(prev, curr) > curr
+    expect.hasAssertions(); // isDirect: ALL normalizeForComparison(previous, current) > current
 
-    //           AND ALL normalizeForComparison(next, curr) >= curr
+    //           AND ALL normalizeForComparison(next, current) >= current
     // Mercury longitude bottoms at 100.0 — all previous and next values are 100.5
     const coordinateEphemerisByBody = createRetrogradeEphemeris(minute, {
       body: "mercury",
@@ -159,8 +159,8 @@ describe("retrogrades.events integration", () => {
   it("returns no events when all planetary longitudes are constant", () => {
     expect.hasAssertions(); // Constant longitude of 100° fails both station conditions:
 
-    //   isRetrograde requires prev < curr; 100 < 100 is false
-    //   isDirect requires prev > curr; 100 > 100 is false
+    //   isRetrograde requires previous < current; 100 < 100 is false
+    //   isDirect requires previous > current; 100 > 100 is false
     const coordinateEphemerisByBody = createRetrogradeEphemeris(minute);
 
     const events = service.detect({ coordinateEphemerisByBody, minute });

@@ -7,7 +7,7 @@ Tests are organized by integration level using filename suffixes:
 | Type            | Suffix                  | Purpose                    | I/O           | Speed                    |
 | --------------- | ----------------------- | -------------------------- | ------------- | ------------------------ |
 | **Unit**        | `*.unit.test.ts`        | Pure functions, no I/O     | Mocked        | Fast (< 100ms suite)     |
-| **Integration** | `*.integration.test.ts` | Database/API interactions  | Real DB       | Moderate (1-2s per test) |
+| **Integration** | `*.integration.test.ts` | Database/API interactions  | Real database | Moderate (1-2s per test) |
 | **End-to-End**  | `*.end-to-end.test.ts`  | Full application workflows | Real services | Slow (30-60s per test)   |
 
 ## Running Tests
@@ -145,7 +145,7 @@ describe("fetchUser", () => {
 
 **Characteristics**:
 
-- Real database connections (temporary test DB)
+- Real database connections (temporary test database)
 - Real file system operations (temp directories)
 - Mocked network requests (external APIs)
 
@@ -162,16 +162,16 @@ import {
 } from "./database.utilities";
 
 describe("database utilities", () => {
-  let db: Database;
+  let database: Database;
 
   beforeEach(() => {
     // Create temporary in-memory database
-    db = new Database(":memory:");
-    initializeDatabase(db);
+    database = new Database(":memory:");
+    initializeDatabase(database);
   });
 
   afterEach(() => {
-    db.close();
+    database.close();
   });
 
   it("upserts events correctly", async () => {
@@ -183,9 +183,9 @@ describe("database utilities", () => {
       endTime: "2024-01-01T01:00:00Z",
     };
 
-    await upsertEvent(db, event);
+    await upsertEvent(database, event);
 
-    const events = getAllEvents(db);
+    const events = getAllEvents(database);
     expect(events).toHaveLength(1);
     expect(events[0]).toMatchObject(event);
   });
@@ -200,10 +200,10 @@ describe("database utilities", () => {
       endTime: "2024-01-01T01:00:00Z",
     };
 
-    await upsertEvent(db, event);
-    await upsertEvent(db, { ...event, endTime: "2024-01-01T02:00:00Z" });
+    await upsertEvent(database, event);
+    await upsertEvent(database, { ...event, endTime: "2024-01-01T02:00:00Z" });
 
-    const events = getAllEvents(db);
+    const events = getAllEvents(database);
     expect(events).toHaveLength(1);
     expect(events[0]?.endTime).toBe("2024-01-01T02:00:00Z");
   });
@@ -404,13 +404,13 @@ See [vitest.md](../vitest.md) for detailed Vitest configuration and patterns.
 
 ## Summary
 
-| Aspect       | Unit            | Integration         | E2E         |
-| ------------ | --------------- | ------------------- | ----------- |
-| **Scope**    | Single function | Multiple components | Full system |
-| **I/O**      | Mocked          | Real (DB, files)    | Real (all)  |
-| **Speed**    | < 100ms         | 1-2s                | 30-60s      |
-| **Coverage** | 80-100%         | 50-70%              | 20-30%      |
-| **Run**      | Every commit    | Pre-push            | CI/CD       |
+| Aspect       | Unit            | Integration            | E2E         |
+| ------------ | --------------- | ---------------------- | ----------- |
+| **Scope**    | Single function | Multiple components    | Full system |
+| **I/O**      | Mocked          | Real (database, files) | Real (all)  |
+| **Speed**    | < 100ms         | 1-2s                   | 30-60s      |
+| **Coverage** | 80-100%         | 50-70%                 | 20-30%      |
+| **Run**      | Every commit    | Pre-push               | CI/CD       |
 
 **Key Principles**:
 

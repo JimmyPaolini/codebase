@@ -185,7 +185,7 @@ export class PartOfSpeechFormsService {
 
     let table: string[][] = $table("table").parsetable(true, true, false);
 
-    // Transpose: table[col][row] -> table[row][col]
+    // Transpose: table[column][row] -> table[row][column]
     table = (table[0] ?? []).map((_: unknown, index: number) =>
       table.map((column: string[]) => column[index] ?? ""),
     );

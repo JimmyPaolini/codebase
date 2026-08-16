@@ -1,3 +1,6 @@
+// `param` is the name of the JSDoc tag these tests count, not an abbreviation.
+// cspell:ignore param
+
 import { Test } from "@nestjs/testing";
 import tsCompiler from "typescript";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -85,8 +88,8 @@ describe(TypescriptService, () => {
 
   it("counts imports and tracks external package names", () => {
     readFileSyncMock.mockReturnValue(
-      `import { foo } from "@scope/pkg";
-       import bar from "other-pkg";
+      `import { foo } from "@scope/package";
+       import bar from "other-package";
        import baz from "./local";`,
     );
 
@@ -97,7 +100,7 @@ describe(TypescriptService, () => {
 
     expect(result.imports).toBe(3);
     expect(result.externalPackages).toStrictEqual(
-      new Set(["@scope/pkg", "other-pkg"]),
+      new Set(["@scope/package", "other-package"]),
     );
   });
 
@@ -299,7 +302,7 @@ describe(TypescriptService, () => {
   it("covers exported and local interface/type alias branches", () => {
     readFileSyncMock.mockReturnValue(
       `import packageMember from "plain-package/submodule";
-       import scopedMember from "@scope/pkg/submodule";
+       import scopedMember from "@scope/package/submodule";
        export interface ExportedInterface<T> {}
        interface LocalInterface {}
        export type ExportedTypeAlias<T> = T;
@@ -315,7 +318,7 @@ describe(TypescriptService, () => {
     expect(result.interfaces).toBe(2);
     expect(result.genericDeclarations).toBe(2);
     expect(result.externalPackages).toStrictEqual(
-      new Set(["@scope/pkg", "plain-package"]),
+      new Set(["@scope/package", "plain-package"]),
     );
     expect(result.exported).toBe(2);
   });

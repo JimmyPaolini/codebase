@@ -568,7 +568,7 @@
           "command": "pnpm audit --audit-level=moderate --ignore-unfixable"
         },
         "write": {
-          "command": "jq 'del(.pnpm.overrides)' package.json > package.tmp.json && mv package.tmp.json package.json && pnpm update --no-frozen-lockfile && pnpm audit --fix --ignore-unfixable; pnpm install --no-frozen-lockfile"
+          "command": "jq 'del(.pnpm.overrides)' package.json > package.temporary.json && mv package.temporary.json package.json && pnpm update --no-frozen-lockfile && pnpm audit --fix --ignore-unfixable; pnpm install --no-frozen-lockfile"
         }
       },
       "defaultConfiguration": "check",
@@ -732,19 +732,26 @@
     },
     "spell-check": {
       "cache": true,
-      "description": "Check spelling in workspace root files (scripts, documentation, infrastructure, planning)",
+      "description": "Check spelling in every workspace root file no project owns (configuration, documentation, infrastructure, notepads, openwiki, planning, scripts, and the .devcontainer, .github, and .vscode directories)",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/*.{ts,tsx,js,jsx,md,yaml,yml,json}",
+        "{projectRoot}/.devcontainer/**",
+        "{projectRoot}/.github/**",
+        "{projectRoot}/.vscode/**",
+        "{projectRoot}/configuration/**",
         "{projectRoot}/documentation/**",
         "{projectRoot}/infrastructure/**",
+        "{projectRoot}/notepads/**",
+        "{projectRoot}/openwiki/**",
         "{projectRoot}/planning/**",
         "{projectRoot}/scripts/**",
+        "{workspaceRoot}/configuration/.cspell/**",
         "{workspaceRoot}/configuration/cspell.config.yaml",
         "default"
       ],
       "options": {
-        "command": "cspell --config configuration/cspell.config.yaml '*.{ts,tsx,js,jsx,md,yaml,yml,json}' 'scripts/**' 'documentation/**' 'infrastructure/**' 'planning/**' --no-progress --gitignore --gitignore-root .",
+        "command": "cspell --config configuration/cspell.config.yaml '*.{ts,tsx,js,jsx,md,yaml,yml,json}' '.devcontainer/**' '.github/**' '.vscode/**' 'configuration/**' 'documentation/**' 'infrastructure/**' 'notepads/**' 'openwiki/**' 'planning/**' 'scripts/**' --no-progress --gitignore --gitignore-root .",
         "cwd": "{projectRoot}"
       }
     },

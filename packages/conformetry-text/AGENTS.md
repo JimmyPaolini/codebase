@@ -89,7 +89,7 @@ Follow the codebase's strict three-tier testing strategy. Co-locate test files w
 
 ```bash
 nx run conformetry-text:test:unit          # Fast (<100ms) — pure logic, mocked DI
-nx run conformetry-text:test:integration   # Moderate (1-2s) — real DB/API I/O
+nx run conformetry-text:test:integration   # Moderate (1-2s) — real database/API I/O
 nx run conformetry-text:test:end-to-end    # Slow (30-60s) — full service initialization
 ```
 
