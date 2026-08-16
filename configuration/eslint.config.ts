@@ -43,6 +43,7 @@ export default [
       "**/vite.config.*.timestamp*",
       "**/vitest.config.*.timestamp*",
       "CHANGELOG.md",
+      "lint-staged.config.ts",
       // Shadcn generated components
       "**/packages/lexico-components/src/components/**",
       "**/packages/lexico-components/src/lib/**",
@@ -293,7 +294,11 @@ export default [
       "**/*.cjs",
       "**/*.jsx",
     ],
-    ignores: ["prettier.config.ts", "configuration/eslint.config.ts"],
+    ignores: [
+      "lint-staged.config.ts",
+      "prettier.config.ts",
+      "configuration/eslint.config.ts",
+    ],
     plugins: {
       "@typescript-eslint": tseslint.plugin,
       "better-max-params": betterMaxParamsPlugin,
@@ -893,16 +898,16 @@ export default [
   ...tseslint.configs.strictTypeChecked.map((config) => ({
     ...config,
     files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
-    ignores: ["prettier.config.ts"],
+    ignores: ["lint-staged.config.ts", "prettier.config.ts"],
   })),
   ...tseslint.configs.stylisticTypeChecked.map((config) => ({
     ...config,
     files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
-    ignores: ["prettier.config.ts"],
+    ignores: ["lint-staged.config.ts", "prettier.config.ts"],
   })),
   {
     files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
-    ignores: ["prettier.config.ts"],
+    ignores: ["lint-staged.config.ts", "prettier.config.ts"],
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -933,7 +938,12 @@ export default [
   // TypeScript-aware tag hygiene, and sentence-quality descriptions.
   {
     files: ["**/*.ts", "**/*.tsx"],
-    ignores: ["**/*.test.ts", "**/*.test.tsx", "prettier.config.ts"],
+    ignores: [
+      "**/*.test.ts",
+      "**/*.test.tsx",
+      "lint-staged.config.ts",
+      "prettier.config.ts",
+    ],
     plugins: {
       jsdoc: jsdocPlugin,
       tsdoc: tsdocPlugin,

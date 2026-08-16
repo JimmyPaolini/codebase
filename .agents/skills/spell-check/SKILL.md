@@ -12,7 +12,7 @@ Use this skill to run cspell consistently in this codebase and fix failures by u
 
 - `nx run-many --target=spell-check` fails.
 - `nx affected --target=spell-check` fails in CI or pre-commit workflows.
-- `Unknown word (...)` appears in `last-pre-commit-output.log`.
+- `Unknown word (...)` appears in `last-lint-staged-output.log`.
 - You need to add approved vocabulary (Latin terms, project acronyms, Postgres catalog columns, etc.) to cspell dictionaries.
 
 ## Repository-Specific CSpell Configuration

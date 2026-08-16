@@ -23,63 +23,50 @@ EXIT_CODE=0
 # stage it out of date. Every conformetry command re-checks the emitted plugin
 # against the configuration and refuses to run against a stale one instead.
 
-# lint-staged used to drive the checks below. It earned its place when it fed
-# `nx affected` an explicit list of staged paths, but that list is exactly what
-# made Nx die — more than roughly twenty paths in `--files` gets the process
-# SIGKILLed with no output, which lint-staged then reported as the thoroughly
-# misleading "Task failed to spawn: undefined". `--uncommitted` asks Nx the same
-# question without the list, and once the list is gone lint-staged is only a
-# stash/restore cycle around three commands the hook can run itself. Nx already
-# scopes by project and caches by input hash, which is the job lint-staged was
-# doing by hand.
-#
-# NODE_OPTIONS deliberately unset for the Nx commands: a `--import=tsx` loader
-# preempts the transpiler Nx uses for workspace plugins. esbuild emits no
-# `design:paramtypes`, so the conformetry plugin's NestJS constructor injection
-# would silently resolve to `undefined` and the project graph would fail to
-# build. Node reads the TypeScript config natively.
-export NODE_OPTIONS=''
-export NX_PERF_LOGGING=false
-
-{
-  # 📏 Measure code
-  nx run codebase:codometer:write || EXIT_CODE=$?
-
-  # 🔒 Lockfile integrity — resolves manifests against the lockfile with a real
-  # `pnpm install --frozen-lockfile`, which no Nx target models.
-  ./scripts/check-lockfile.sh || EXIT_CODE=$?
-
-  # 🔬 Static analysis, scoped to what changed
-  nx affected --target=lint-codebase --configuration=check --parallel=8 \
-    --outputStyle=static --uncommitted || EXIT_CODE=$?
-
-  # 👔 Conformetry validates the whole workspace on every commit: a generated
-  # instance need not match a template-pattern glob to have drifted, so this
-  # cannot be scoped to `affected`.
-  nx run-many --targets=conformetry-validate --outputStyle=static || EXIT_CODE=$?
-} > last-pre-commit-output.log 2>&1
-
-# codometer rewrites the badges in README.md, so stage them with the commit.
+# 📏 Measure code
+nx run codebase:codometer:write || EXIT_CODE=$?
 git add README.md
 
-# 💀 Explain a kill rather than leaving a bare exit code
-if [ "${EXIT_CODE}" = "137" ]; then
+# 🧹 Check staged files
+# NODE_OPTIONS deliberately unset: it is inherited by every command lint-staged
+# runs, and a `--import=tsx` loader preempts the transpiler Nx uses for
+# workspace plugins. esbuild emits no `design:paramtypes`, so the conformetry
+# plugin's NestJS constructor injection would silently resolve to `undefined`
+# and the project graph would fail to build. Node reads the TypeScript config
+# natively.
+NX_PERF_LOGGING=false lint-staged --config configuration/lint-staged.config.ts --continue-on-error > last-lint-staged-output.log 2>&1 || EXIT_CODE=$?
+
+# 💀 Explain a kill rather than leaving lint-staged's misleading wording
+# Exit 137 is SIGKILL. lint-staged reports every killed command as "Task failed
+# to spawn: undefined" regardless of why it died, so the wording names neither
+# cause. Two produce it here: the analysis run growing past available memory,
+# and Node 26 being killed on an over-long argument before it prints anything.
+if [ "${EXIT_CODE}" = "137" ] || grep -q "Task failed to spawn" last-lint-staged-output.log 2>/dev/null; then
+  NODE_MAJOR_VERSION=$(node --version | sed 's/^v\([0-9]*\).*/\1/')
   printf '\n⚠️  A check was killed rather than failing.\n'
-  printf '   This is a SIGKILL, most likely memory pressure.\n'
-  printf '   Free some memory and commit again, or run the analysis directly:\n'
-  printf '   nx affected --target=lint-codebase --configuration=check --parallel=1 --uncommitted\n\n'
+  printf '   This is not a spawn error, whatever lint-staged called it.\n'
+  if [ "${NODE_MAJOR_VERSION}" -ge 26 ] 2>/dev/null; then
+    printf '   You are on Node %s. Node 26 is killed by the operating system on\n' "$(node --version)"
+    printf '   any single argument past ~1 KB, which a long staged file list can\n'
+    printf '   reach. Switch to the pinned version and commit again:\n'
+    printf '   nvm use   # %s, per .nvmrc\n\n' "$(cat "$REPOSITORY_ROOT/.nvmrc")"
+  else
+    printf '   The likely cause is the operating system reclaiming memory.\n'
+    printf '   Free some memory and commit again, or run the analysis directly:\n'
+    printf '   nx affected --target=lint-codebase --configuration=check --parallel=1 --files=<staged path>\n\n'
+  fi
 fi
 
 # 🖨️ Log output
-LAST_PRE_COMMIT_OUTPUT=$(cat last-pre-commit-output.log \
+LAST_LINT_STAGED_OUTPUT=$(cat last-lint-staged-output.log \
   | grep -vE '\(node:[0-9]+\) Warning: The .NO_COLOR' \
   | grep -vE '\(Use .node --trace-warnings' \
   | grep -vE 'Your AI agent configuration is outdated' \
   | perl -pe 's/\x1B\[[0-9;]*[a-zA-Z]//g' \
   | perl -0777 -pe 's/\n{3,}/\n\n/g')
 
-printf "%s\n" "$LAST_PRE_COMMIT_OUTPUT"
-printf '[%s] pre-commit\n%s\n' "$TIMESTAMP" "$LAST_PRE_COMMIT_OUTPUT" > last-pre-commit-output.log
+printf "%s\n" "$LAST_LINT_STAGED_OUTPUT"
+printf '[%s] pre-commit\n%s\n' "$TIMESTAMP" "$LAST_LINT_STAGED_OUTPUT" > last-lint-staged-output.log
 
 # 🚫 Exit
 exit "$EXIT_CODE"

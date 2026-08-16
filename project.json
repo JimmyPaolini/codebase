@@ -308,6 +308,15 @@
       }
     },
     "lint-codebase": {},
+    "lint-staged": {
+      "cache": false,
+      "description": "Run lint-staged on staged files (invoked by the pre-commit git hook)",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_OPTIONS='--import=tsx' lint-staged --config configuration/lint-staged.config.ts --continue-on-error",
+        "cwd": "{projectRoot}"
+      }
+    },
     "markdown-lint": {
       "cache": true,
       "configurations": {
@@ -497,7 +506,7 @@
     },
     "pre-commit": {
       "cache": false,
-      "description": "Run the pre-commit git hook script (signing check, notepads, codometer, lockfile, lint-codebase, conformetry).",
+      "description": "Run the pre-commit git hook script (unstage notepads, lint-staged).",
       "executor": "nx:run-commands",
       "options": {
         "command": "sh configuration/.husky/pre-commit",

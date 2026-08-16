@@ -37,7 +37,7 @@ const config: KnipConfig = {
     "oxlint", // Oxlint CLI, invoked via nx:run-commands oxlint target
     "gitleaks", // Gitleaks CLI, used for detecting hardcoded secrets
     "trivy", // Trivy CLI, used for security scanning (container images & infrastructure)
-    "uv", // uv Python package manager, used by the nbstripout target
+    "uv", // uv Python package manager, used in lint-staged for nbstripout
     "unset", // Shell builtin, used in project.json pre-commit command
     "diff", // Used by root scripts and shell checks
     "squawk",
@@ -95,6 +95,7 @@ const config: KnipConfig = {
         "configuration/dependency-cruiser.cjs",
         "configuration/eslint.config.ts",
         "configuration/eslint.config.js",
+        "configuration/lint-staged.config.ts",
         "configuration/oxfmt.config.ts",
         "configuration/oxlint.config.ts",
         "configuration/fallow.config.jsonc", // fallow static analysis config
