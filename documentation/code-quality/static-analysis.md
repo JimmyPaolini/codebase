@@ -16,14 +16,14 @@ All projects use strict TypeScript with comprehensive automated quality checks:
 
 ```bash
 # Run all quality checks
-nx run-many --target=analyze-code --all
+nx run-many --target=lint-codebase --configuration=check --all
 
 # Check for unused code (review before using :write)
 nx run codebase:knip
 nx run codebase:knip:write  # auto-removes unused code — use with caution
 
 # Run affected projects only
-nx affected --target=analyze-code
+nx affected --target=lint-codebase --configuration=check
 ```
 
 Quality checks run automatically on staged files (pre-commit via lint-staged) and on all PRs via GitHub Actions.

@@ -147,16 +147,19 @@ nx run lexico:typecheck
 nx run lexico:type-coverage
 
 # Linting
-nx run lexico:lint
+nx run lexico:eslint
 
 # Format checking
-nx run lexico:format
+nx run lexico:oxfmt
 
 # Bundle size analysis
 nx run lexico:bundlesize
 
-# All code analysis checks
-nx run lexico:analyze-code
+# All static analysis checks
+nx run lexico:lint-codebase --configuration=check
+
+# Auto-fix what can be fixed
+nx run lexico:lint-codebase --configuration=write
 ```
 
 ### Supabase Services
