@@ -7,6 +7,7 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 import { ZodError } from "zod";
 
 import {
+  DEFAULT_CUSTOM_STATISTIC_COLORS,
   DEFAULT_EXCLUDE_GLOBS,
   DEFAULT_JSON_INDENTATION,
   DEFAULT_MARKDOWN_END_MARKER,
@@ -218,6 +219,59 @@ describe(ConfigurationService, () => {
   it("rejects a render option that is not a function", async () => {
     const configurationPath = await writeConfiguration({
       output: { markdown: { path: "README.md", render: "not a function" } },
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(ZodError);
+  });
+
+  it("gives every configured counter a color from the palette", async () => {
+    const configurationPath = await writeConfiguration({
+      statistics: [
+        { label: "Services", patterns: ["**/*.service.ts"] },
+        { color: "ff0000", label: "Modules", patterns: ["**/*.module.ts"] },
+      ],
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+
+    expect(configuration.statistics).toStrictEqual([
+      {
+        color: DEFAULT_CUSTOM_STATISTIC_COLORS[0],
+        label: "Services",
+        patterns: ["**/*.service.ts"],
+      },
+      { color: "ff0000", label: "Modules", patterns: ["**/*.module.ts"] },
+    ]);
+  });
+
+  it("cycles the palette so every counter keeps a stable color", () => {
+    const paletteLength = DEFAULT_CUSTOM_STATISTIC_COLORS.length;
+    const configuration = service.resolveConfiguration({
+      statistics: Array.from(
+        { length: paletteLength + 1 },
+        (_unused, index) => ({
+          label: `counter ${index}`,
+          patterns: ["**/*.ts"],
+        }),
+      ),
+    });
+
+    expect(configuration.statistics[paletteLength]?.color).toBe(
+      DEFAULT_CUSTOM_STATISTIC_COLORS[0],
+    );
+  });
+
+  it("defaults the counters to none", () => {
+    expect(service.resolveConfiguration({}).statistics).toStrictEqual([]);
+  });
+
+  it("rejects a counter with no patterns", async () => {
+    const configurationPath = await writeConfiguration({
+      statistics: [{ label: "Nothing", patterns: [] }],
     });
 
     await expect(

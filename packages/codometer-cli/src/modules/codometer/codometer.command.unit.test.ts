@@ -25,6 +25,7 @@ function buildConfiguration(
     excludeFrom: [],
     output: { json: undefined, markdown: undefined, ...output },
     python: { command: "python3" },
+    statistics: [],
   };
 }
 

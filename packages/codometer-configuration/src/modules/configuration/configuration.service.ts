@@ -10,6 +10,7 @@ import { parse as parseJsonc } from "jsonc-parser";
 import {
   codometerConfigurationSchema,
   CONFIGURATION_FILE_NAMES,
+  DEFAULT_CUSTOM_STATISTIC_COLORS,
   DEFAULT_EXCLUDE_GLOBS,
   DEFAULT_JSON_INDENTATION,
   DEFAULT_MARKDOWN_END_MARKER,
@@ -23,9 +24,11 @@ import { ConfigurationFileNotFoundError } from "./configuration.errors";
 
 import type {
   CodometerConfiguration,
+  CodometerCustomStatistic,
   CodometerOutputConfiguration,
   LoadConfigurationArguments,
   ResolvedCodometerConfiguration,
+  ResolvedCodometerCustomStatistic,
   ResolvedCodometerJsonOutputConfiguration,
   ResolvedCodometerMarkdownOutputConfiguration,
 } from "./configuration.types";
@@ -175,6 +178,22 @@ export class ConfigurationService {
     return repositoryRelativePath;
   }
 
+  /** Gives every configured counter a color, cycling the default palette. */
+  private resolveCustomStatistics(
+    statistics: CodometerCustomStatistic[] | undefined,
+  ): ResolvedCodometerCustomStatistic[] {
+    return (statistics ?? []).map((statistic, index) => ({
+      color:
+        statistic.color ??
+        DEFAULT_CUSTOM_STATISTIC_COLORS[
+          index % DEFAULT_CUSTOM_STATISTIC_COLORS.length
+        ] ??
+        "7c3aed",
+      label: statistic.label,
+      patterns: statistic.patterns,
+    }));
+  }
+
   /** Applies defaults to the JSON output destination, if one was named. */
   private resolveJsonOutput(
     output: CodometerOutputConfiguration | undefined,
@@ -276,6 +295,7 @@ export class ConfigurationService {
       python: {
         command: configuration.python?.command ?? DEFAULT_PYTHON_COMMAND,
       },
+      statistics: this.resolveCustomStatistics(configuration.statistics),
     };
   }
 }

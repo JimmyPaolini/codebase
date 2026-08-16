@@ -65,6 +65,10 @@ describe(OutputMarkdownService, () => {
       rules: 208,
       selectors: 209,
     },
+    custom: [
+      { color: "7c3aed", files: 120, label: "Service Files" },
+      { color: "0284c7", files: 121, label: "Unit Tests" },
+    ],
     folders: 13,
     hcl: {
       attributes: 210,
@@ -274,8 +278,8 @@ describe(OutputMarkdownService, () => {
     const badgeCount = (block.match(/^!\[/gmu) ?? []).length;
     const measuredCount =
       Object.keys(sampleStatistics).length -
-      // The twelve grouped buckets are replaced by the counters they hold.
-      12 +
+      // The thirteen grouped buckets are replaced by the counters they hold.
+      13 +
       Object.keys(sampleStatistics.javascript).length +
       Object.keys(sampleStatistics.json).length +
       Object.keys(sampleStatistics.jupyter).length +
@@ -287,7 +291,10 @@ describe(OutputMarkdownService, () => {
       Object.keys(sampleStatistics.hcl).length +
       Object.keys(sampleStatistics.shell).length +
       Object.keys(sampleStatistics.sql).length +
-      Object.keys(sampleStatistics.toml).length;
+      Object.keys(sampleStatistics.toml).length +
+      // Each configured counter renders one badge, and the array itself is
+      // one of the buckets the total subtracts.
+      sampleStatistics.custom.length;
 
     expect(badgeCount).toBe(measuredCount);
   });

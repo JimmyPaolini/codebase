@@ -10,6 +10,7 @@
  */
 export interface CodeStatisticsResult {
   css: CssStatistics;
+  custom: CustomStatisticResult[];
   folders: number;
   hcl: HclStatistics;
   javascript: JavascriptStatistics;
@@ -47,6 +48,28 @@ export interface CodometerConfiguration {
   excludeFrom?: string[] | undefined;
   output?: CodometerOutputConfiguration | undefined;
   python?: CodometerPythonConfiguration | undefined;
+  /**
+   * Counters for files a repository names by convention.
+   *
+   * A repository that suffixes its files — `*.service.ts`, `*.unit.test.ts` —
+   * has a vocabulary no language analyzer knows about, and counting it is the
+   * difference between "1015 TypeScript files" and "how much of this is
+   * services, and how much is the tests for them".
+   */
+  statistics?: CodometerCustomStatistic[] | undefined;
+}
+
+/**
+ * One configured counter over file names.
+ *
+ * Every glob is matched against repository-relative paths, and a file counts
+ * once however many of them it matches.
+ */
+export interface CodometerCustomStatistic {
+  /** Badge color, as a shields.io hexadecimal triplet. */
+  color?: string | undefined;
+  label: string;
+  patterns: string[];
 }
 
 /** Where and how the JSON statistics report is written. */
@@ -99,6 +122,13 @@ export interface CssStatistics {
   mediaQueries: number;
   rules: number;
   selectors: number;
+}
+
+/** What one configured counter found. */
+export interface CustomStatisticResult {
+  color: string;
+  files: number;
+  label: string;
 }
 
 /**
@@ -279,6 +309,14 @@ export interface ResolvedCodometerConfiguration {
   excludeFrom: string[];
   output: ResolvedCodometerOutputConfiguration;
   python: ResolvedCodometerPythonConfiguration;
+  statistics: ResolvedCodometerCustomStatistic[];
+}
+
+/** A configured counter with its badge color filled in. */
+export interface ResolvedCodometerCustomStatistic {
+  color: string;
+  label: string;
+  patterns: string[];
 }
 
 /** JSON output destination with defaults applied. */

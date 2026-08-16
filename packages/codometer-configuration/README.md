@@ -67,6 +67,27 @@ markdown because a markdown linter handles it — point codometer at that and th
 prose metrics vanish. A dedicated `.codometerignore` is usually the better
 answer.
 
+## Custom Statistics
+
+A repository that names files by convention has a vocabulary no language
+analyzer knows about. `statistics` counts them:
+
+```ts
+statistics: [
+  { label: "Service Files", patterns: ["**/*.service.ts"] },
+  { label: "Unit Tests", patterns: ["**/*.unit.test.ts"] },
+  { color: "16a34a", label: "Migrations", patterns: ["**/migrations/*.sql"] },
+],
+```
+
+Each entry becomes one badge in a `Conventions` group, in the order it was
+configured. Globs are matched against repository-relative paths with
+`path.matchesGlob` over the same discovered files everything else measures, so
+exclusions apply. A file matching several of one entry's globs counts once.
+`color` is a shields.io hexadecimal triplet; entries that omit it take the next
+color from a built-in palette, cycling so a counter's color stays the same
+between runs. With no entries configured, the group is not rendered at all.
+
 ## Markdown Output
 
 The default markdown report is a `description` paragraph followed by shields.io

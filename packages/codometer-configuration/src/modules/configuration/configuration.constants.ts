@@ -60,6 +60,23 @@ export const DEFAULT_EXCLUDE_GLOBS = [
   "**/node_modules/**",
 ] as const;
 
+/**
+ * Badge colors handed to configured counters that name none, in order.
+ *
+ * Cycled rather than exhausted, so a repository can configure as many counters
+ * as it likes and each still gets a color that is stable between runs.
+ */
+export const DEFAULT_CUSTOM_STATISTIC_COLORS = [
+  "7c3aed",
+  "0284c7",
+  "16a34a",
+  "ea580c",
+  "db2777",
+  "0ea5e9",
+  "059669",
+  "ca8a04",
+] as const;
+
 /** Spaces used to indent the JSON report when a configuration names none. */
 export const DEFAULT_JSON_INDENTATION = 2;
 
@@ -139,4 +156,13 @@ export const codometerConfigurationSchema = z.object({
     })
     .optional(),
   python: z.object({ command: z.string().optional() }).optional(),
+  statistics: z
+    .array(
+      z.object({
+        color: z.string().optional(),
+        label: z.string(),
+        patterns: z.array(z.string()).min(1),
+      }),
+    )
+    .optional(),
 });
