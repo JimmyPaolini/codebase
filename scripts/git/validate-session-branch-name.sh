@@ -7,11 +7,18 @@
 #     as additionalContext when non-compliant
 #
 
+SCRIPT_DIRECTORY="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # 🔎 Current branch
 
 BRANCH=$(git branch --show-current 2>/dev/null)
 # Detached HEAD or non-git directory — nothing to validate
 [ -z "$BRANCH" ] && exit 0
+
+# validate-branch-name resolves its config from the working directory, which is
+# not guaranteed to be the repository root when an agent harness invokes a hook.
+REPOSITORY_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+[ -n "$REPOSITORY_ROOT" ] && cd "$REPOSITORY_ROOT"
 
 # ✅ Validation
 
@@ -23,12 +30,8 @@ ERROR=$(pnpm exec validate-branch-name 2>&1 | awk '/^Error Msg:/{found=1; next} 
 # 📋 Context
 
 # Combine the human-readable error (types, scopes, format) with a directive so
-# Copilot invokes the rename-branch skill before responding to the user.
+# the agent invokes the rename-branch skill before responding to the user.
 CONTEXT="$ERROR
 🚨 Invoke the rename-branch skill to rename this branch before doing anything else."
 
-printf '%s' "$CONTEXT" | node -e "
-const chunks = [];
-process.stdin.on('data', d => chunks.push(d));
-process.stdin.on('end', () => process.stdout.write(JSON.stringify({ additionalContext: chunks.join('') })));
-"
+printf '%s' "$CONTEXT" | bash "$SCRIPT_DIRECTORY/emit-session-hook-context.sh"
