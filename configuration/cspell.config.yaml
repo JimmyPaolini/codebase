@@ -131,3 +131,5 @@ words:
   # Nx's project-discovery ignore file, read when listing a workspace's projects.
   - nxignore
   - openwiki
+  # The markdown heading style written as text underlined by === or ---.
+  - setext

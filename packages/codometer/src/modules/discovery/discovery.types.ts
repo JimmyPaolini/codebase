@@ -4,6 +4,7 @@
 export interface DiscoveryResult {
   jsFiles: string[];
   jsonFiles: string[];
+  markdownFiles: string[];
   pyFiles: string[];
   sourceFiles: string[];
   testFiles: string[];

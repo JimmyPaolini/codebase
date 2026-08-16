@@ -7,7 +7,7 @@ import {
   STATISTICS_BLOCK_END,
   STATISTICS_BLOCK_REGEX,
   STATISTICS_BLOCK_START,
-} from "./readme.constants";
+} from "./writing.constants";
 
 import type { CodeStatisticsResult } from "../codometer/codometer.types";
 
@@ -15,7 +15,7 @@ import type { CodeStatisticsResult } from "../codometer/codometer.types";
  * Writes generated code statistics badges into a README file.
  */
 @Injectable()
-export class ReadmeService {
+export class WritingService {
   // 🏗 Dependency Injection
 
   constructor() {}
@@ -84,7 +84,13 @@ export class ReadmeService {
    * silently mixes several.
    */
   buildBadgeBlock(statistics: CodeStatisticsResult): string {
-    const { javascript: js, json, python: py, typescript: ts } = statistics;
+    const {
+      javascript: js,
+      json,
+      markdown: md,
+      python: py,
+      typescript: ts,
+    } = statistics;
     const groups = [
       this.buildGroup("Repository", [
         this.buildBadge("Lines of Code", statistics.linesOfCode, "22c55e"),
@@ -145,6 +151,28 @@ export class ReadmeService {
         this.buildBadge("JSON Items", json.items, "475569"),
         this.buildBadge("JSON Nodes", json.totalNodes, "dc2626"),
         this.buildBadge("JSON Max Depth", json.maxDepth, "ea580c"),
+      ]),
+      this.buildGroup("Markdown", [
+        this.buildBadge("Markdown Files", md.files, "083fa1"),
+        this.buildBadge("Markdown Lines", md.lines, "1f6feb"),
+        this.buildBadge("H1", md.headingLevel1, "7c3aed"),
+        this.buildBadge("H2", md.headingLevel2, "8b5cf6"),
+        this.buildBadge("H3", md.headingLevel3, "a78bfa"),
+        this.buildBadge("H4", md.headingLevel4, "c4b5fd"),
+        this.buildBadge("H5", md.headingLevel5, "ddd6fe"),
+        this.buildBadge("H6", md.headingLevel6, "ede9fe"),
+        this.buildBadge("Paragraphs", md.paragraphs, "64748b"),
+        this.buildBadge("Lists", md.lists, "16a34a"),
+        this.buildBadge("List Items", md.listItems, "22c55e"),
+        this.buildBadge("Task List Items", md.taskListItems, "4ade80"),
+        this.buildBadge("Tables", md.tables, "0284c7"),
+        this.buildBadge("Table Rows", md.tableRows, "0ea5e9"),
+        this.buildBadge("Links", md.links, "059669"),
+        this.buildBadge("Images", md.images, "10b981"),
+        this.buildBadge("Code Blocks", md.codeBlocks, "dc2626"),
+        this.buildBadge("Inline Code", md.inlineCode, "ef4444"),
+        this.buildBadge("Block Quotes", md.blockQuotes, "ca8a04"),
+        this.buildBadge("Thematic Breaks", md.thematicBreaks, "a16207"),
       ]),
     ].join("\n\n");
 

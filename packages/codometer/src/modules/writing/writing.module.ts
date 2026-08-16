@@ -1,14 +1,14 @@
 import { Module } from "@nestjs/common";
 
-import { ReadmeService } from "./readme.service";
+import { WritingService } from "./writing.service";
 
 /**
  * NestJS module that provides README badge writing tooling.
  */
 @Module({
   controllers: [],
-  exports: [ReadmeService],
+  exports: [WritingService],
   imports: [],
-  providers: [ReadmeService],
+  providers: [WritingService],
 })
-export class ReadmeModule {}
+export class WritingModule {}

@@ -60,6 +60,41 @@ describe(DiscoveryService, () => {
     expect(result.trackedFiles).not.toContain("dist/bundle.js");
   });
 
+  it("categorizes markdown files by extension", () => {
+    execSyncMock.mockReturnValue(
+      Buffer.from(
+        ["README.md", "docs/guide.MD", "notes.mdx", "src/app.ts"].join("\n"),
+      ),
+    );
+
+    const result = service.discoverFiles("/repo");
+
+    expect(result.markdownFiles).toStrictEqual([
+      "README.md",
+      "docs/guide.MD",
+      "notes.mdx",
+    ]);
+  });
+
+  it("excludes ingested corpus and generated output from every category", () => {
+    execSyncMock.mockReturnValue(
+      Buffer.from(
+        [
+          "README.md",
+          "applications/lexico-ingestion/data/library/ovid.md",
+          "applications/affirmations/output/affirmations/one.md",
+          "applications/affirmations/output/affirmations/one.json",
+        ].join("\n"),
+      ),
+    );
+
+    const result = service.discoverFiles("/repo");
+
+    expect(result.markdownFiles).toStrictEqual(["README.md"]);
+    expect(result.jsonFiles).toStrictEqual([]);
+    expect(result.trackedFiles).toStrictEqual(["README.md"]);
+  });
+
   it("excludes files that do not exist on disk", () => {
     execSyncMock.mockReturnValue(Buffer.from("src/missing.ts\nsrc/present.ts"));
     vi.mocked(fs.existsSync).mockImplementation(

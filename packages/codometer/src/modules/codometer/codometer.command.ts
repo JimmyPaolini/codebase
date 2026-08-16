@@ -4,9 +4,10 @@ import { Command, CommandRunner, Option } from "nest-commander";
 import { DiscoveryService } from "../discovery/discovery.service";
 import { JsonService } from "../json/json.service";
 import { LoggerService } from "../logger/logger.service";
+import { MarkdownService } from "../markdown/markdown.service";
 import { PythonService } from "../python/python.service";
-import { ReadmeService } from "../readme/readme.service";
 import { TypescriptService } from "../typescript/typescript.service";
+import { WritingService } from "../writing/writing.service";
 
 import { CodometerService } from "./codometer.service";
 
@@ -26,19 +27,19 @@ export class CodometerCommand extends CommandRunner {
   constructor(
     @Inject(LoggerService) private readonly logger: LoggerService,
     @Inject(CodometerService) measureService?: CodometerService,
-    @Inject(ReadmeService) readmeService?: ReadmeService,
+    @Inject(WritingService) writingService?: WritingService,
   ) {
     super();
     this.logger.setContext(CodometerCommand.name);
     this.measureService = measureService ?? this.createCodometerService();
-    this.readmeService = readmeService ?? new ReadmeService();
+    this.writingService = writingService ?? new WritingService();
   }
 
   // 🔐 Private Fields
 
   private readonly measureService: CodometerService;
 
-  private readonly readmeService: ReadmeService;
+  private readonly writingService: WritingService;
 
   // 🔑 Public Fields
 
@@ -52,12 +53,14 @@ export class CodometerCommand extends CommandRunner {
     const typescriptService = new TypescriptService();
     const pythonService = new PythonService();
     const jsonService = new JsonService();
+    const markdownService = new MarkdownService();
 
     return new CodometerService(
       discoveryService,
       typescriptService,
       pythonService,
       jsonService,
+      markdownService,
     );
   }
 
@@ -123,7 +126,7 @@ export class CodometerCommand extends CommandRunner {
     await Promise.resolve();
 
     if (readmePath) {
-      const isCurrent = this.readmeService.syncReadme(
+      const isCurrent = this.writingService.syncReadme(
         readmePath,
         statistics,
         checkMode,

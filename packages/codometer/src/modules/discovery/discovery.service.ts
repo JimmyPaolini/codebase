@@ -7,6 +7,7 @@ import { Injectable } from "@nestjs/common";
 import {
   EXCLUDE_PATHS,
   JS_EXTENSIONS,
+  MARKDOWN_EXTENSIONS,
   TEST_FILE_REGEX,
   TS_EXTENSIONS,
 } from "./discovery.constants";
@@ -60,6 +61,9 @@ export class DiscoveryService {
         JS_EXTENSIONS.has(path.extname(filePath)),
       ),
       jsonFiles,
+      markdownFiles: trackedFiles.filter((filePath) =>
+        MARKDOWN_EXTENSIONS.has(path.extname(filePath).toLowerCase()),
+      ),
       pyFiles: trackedFiles.filter(
         (filePath) => path.extname(filePath) === ".py",
       ),

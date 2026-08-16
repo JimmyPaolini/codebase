@@ -5,20 +5,20 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 
-import { ReadmeService } from "./readme.service";
+import { WritingService } from "./writing.service";
 
 import type { CodeStatisticsResult } from "../codometer/codometer.types";
 
-describe(ReadmeService, () => {
-  let service: ReadmeService;
+describe(WritingService, () => {
+  let service: WritingService;
   const temporaryDirectories: string[] = [];
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [ReadmeService],
+      providers: [WritingService],
     }).compile();
 
-    service = await module.resolve(ReadmeService);
+    service = await module.resolve(WritingService);
   });
 
   afterEach(() => {
@@ -60,6 +60,28 @@ describe(ReadmeService, () => {
       totalNodes: 30,
     },
     linesOfCode: 31,
+    markdown: {
+      blockQuotes: 50,
+      codeBlocks: 51,
+      files: 52,
+      headingLevel1: 53,
+      headingLevel2: 54,
+      headingLevel3: 55,
+      headingLevel4: 56,
+      headingLevel5: 57,
+      headingLevel6: 58,
+      images: 59,
+      inlineCode: 60,
+      lines: 61,
+      links: 62,
+      listItems: 63,
+      lists: 64,
+      paragraphs: 65,
+      tableRows: 66,
+      tables: 67,
+      taskListItems: 68,
+      thematicBreaks: 69,
+    },
     python: {
       classes: 33,
       commentLines: 3,
@@ -104,10 +126,11 @@ describe(ReadmeService, () => {
     const badgeCount = (block.match(/^!\[/gmu) ?? []).length;
     const measuredCount =
       Object.keys(sampleStatistics).length -
-      // The four grouped buckets are replaced by the counters they hold.
-      4 +
+      // The five grouped buckets are replaced by the counters they hold.
+      5 +
       Object.keys(sampleStatistics.javascript).length +
       Object.keys(sampleStatistics.json).length +
+      Object.keys(sampleStatistics.markdown).length +
       Object.keys(sampleStatistics.python).length +
       Object.keys(sampleStatistics.typescript).length;
 

@@ -9,9 +9,10 @@ import { CodometerModule } from "./modules/codometer/codometer.module";
 import { DiscoveryModule } from "./modules/discovery/discovery.module";
 import { JsonModule } from "./modules/json/json.module";
 import { LoggerModule } from "./modules/logger/logger.module";
+import { MarkdownModule } from "./modules/markdown/markdown.module";
 import { PythonModule } from "./modules/python/python.module";
-import { ReadmeModule } from "./modules/readme/readme.module";
 import { TypescriptModule } from "./modules/typescript/typescript.module";
+import { WritingModule } from "./modules/writing/writing.module";
 
 /**
  * Root NestJS application module.
@@ -29,9 +30,10 @@ import { TypescriptModule } from "./modules/typescript/typescript.module";
     CodometerModule,
     DiscoveryModule,
     JsonModule,
+    MarkdownModule,
     PythonModule,
     TypescriptModule,
-    ReadmeModule,
+    WritingModule,
   ],
 })
 export class MainModule {}

@@ -3,9 +3,10 @@ import { Module } from "@nestjs/common";
 import { DiscoveryModule } from "../discovery/discovery.module";
 import { JsonModule } from "../json/json.module";
 import { LoggerModule } from "../logger/logger.module";
+import { MarkdownModule } from "../markdown/markdown.module";
 import { PythonModule } from "../python/python.module";
-import { ReadmeModule } from "../readme/readme.module";
 import { TypescriptModule } from "../typescript/typescript.module";
+import { WritingModule } from "../writing/writing.module";
 
 import { CodometerCommand } from "./codometer.command";
 import { CodometerService } from "./codometer.service";
@@ -20,9 +21,10 @@ import { CodometerService } from "./codometer.service";
     DiscoveryModule,
     LoggerModule,
     JsonModule,
+    MarkdownModule,
     PythonModule,
     TypescriptModule,
-    ReadmeModule,
+    WritingModule,
   ],
   providers: [CodometerCommand, CodometerService],
 })

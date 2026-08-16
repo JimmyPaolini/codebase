@@ -3,6 +3,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { DiscoveryService } from "../discovery/discovery.service";
 import { JsonService } from "../json/json.service";
+import { MarkdownService } from "../markdown/markdown.service";
 import { PythonService } from "../python/python.service";
 import { TypescriptService } from "../typescript/typescript.service";
 
@@ -12,6 +13,7 @@ describe(CodometerService, () => {
   let service: CodometerService;
   let discoveryService: DiscoveryService;
   let jsonService: JsonService;
+  let markdownService: MarkdownService;
   let pythonService: PythonService;
   let typescriptService: TypescriptService;
 
@@ -21,6 +23,7 @@ describe(CodometerService, () => {
         CodometerService,
         DiscoveryService,
         JsonService,
+        MarkdownService,
         PythonService,
         TypescriptService,
       ],
@@ -32,12 +35,14 @@ describe(CodometerService, () => {
   beforeEach(() => {
     discoveryService = new DiscoveryService();
     jsonService = new JsonService();
+    markdownService = new MarkdownService();
     pythonService = new PythonService();
     typescriptService = new TypescriptService();
 
     vi.spyOn(discoveryService, "discoverFiles").mockReturnValue({
       jsFiles: ["src/app.js"],
       jsonFiles: [],
+      markdownFiles: ["docs/guide.md"],
       pyFiles: ["scripts/check.py"],
       sourceFiles: ["src/app.ts", "scripts/check.py"],
       testFiles: [],
@@ -71,6 +76,28 @@ describe(CodometerService, () => {
       imports: 10,
       lines: 11,
       protocols: 12,
+    });
+    vi.spyOn(markdownService, "analyze").mockReturnValue({
+      blockQuotes: 1,
+      codeBlocks: 2,
+      files: 3,
+      headingLevel1: 4,
+      headingLevel2: 5,
+      headingLevel3: 6,
+      headingLevel4: 7,
+      headingLevel5: 8,
+      headingLevel6: 9,
+      images: 10,
+      inlineCode: 11,
+      lines: 12,
+      links: 13,
+      listItems: 14,
+      lists: 15,
+      paragraphs: 16,
+      tableRows: 17,
+      tables: 18,
+      taskListItems: 19,
+      thematicBreaks: 20,
     });
     vi.spyOn(typescriptService, "analyze").mockReturnValue({
       asyncFunctions: 9,
@@ -110,6 +137,7 @@ describe(CodometerService, () => {
       typescriptService,
       pythonService,
       jsonService,
+      markdownService,
     );
     const result = codometerService.measure("/repo");
 
@@ -122,6 +150,14 @@ describe(CodometerService, () => {
       ["scripts/check.py"],
       "/repo",
     );
+
+    expect(markdownService.analyze).toHaveBeenCalledWith({
+      markdownFiles: ["docs/guide.md"],
+      workingDirectory: "/repo",
+    });
+    expect(result.markdown.headingLevel1).toBe(4);
+    expect(result.markdown.tables).toBe(18);
+    expect(result.markdown.taskListItems).toBe(19);
 
     expect(result.javascript.classes + result.python.classes).toBe(12);
     expect(result.javascript.comments + result.python.comments).toBe(6);

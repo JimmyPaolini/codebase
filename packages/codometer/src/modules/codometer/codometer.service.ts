@@ -5,6 +5,7 @@ import { Injectable } from "@nestjs/common";
 
 import { DiscoveryService } from "../discovery/discovery.service";
 import { JsonService } from "../json/json.service";
+import { MarkdownService } from "../markdown/markdown.service";
 import { PythonService } from "../python/python.service";
 import { TypescriptService } from "../typescript/typescript.service";
 
@@ -22,6 +23,7 @@ export class CodometerService {
     private readonly typescriptService: TypescriptService,
     private readonly pythonService: PythonService,
     private readonly jsonService: JsonService,
+    private readonly markdownService: MarkdownService,
   ) {}
 
   // 🔐 Private Fields
@@ -86,6 +88,10 @@ export class CodometerService {
       jsonFiles: discoveredFiles.jsonFiles,
       workingDirectory: directory,
     });
+    const markdownStatsResult = this.markdownService.analyze({
+      markdownFiles: discoveredFiles.markdownFiles,
+      workingDirectory: directory,
+    });
     const repoBytes = this.getRepositoryBytes(
       discoveredFiles.trackedFiles,
       directory,
@@ -125,6 +131,28 @@ export class CodometerService {
         totalNodes: jsonStatsResult.totalNodes,
       },
       linesOfCode: typescriptStats.lines + pythonStatsResult.lines,
+      markdown: {
+        blockQuotes: markdownStatsResult.blockQuotes,
+        codeBlocks: markdownStatsResult.codeBlocks,
+        files: markdownStatsResult.files,
+        headingLevel1: markdownStatsResult.headingLevel1,
+        headingLevel2: markdownStatsResult.headingLevel2,
+        headingLevel3: markdownStatsResult.headingLevel3,
+        headingLevel4: markdownStatsResult.headingLevel4,
+        headingLevel5: markdownStatsResult.headingLevel5,
+        headingLevel6: markdownStatsResult.headingLevel6,
+        images: markdownStatsResult.images,
+        inlineCode: markdownStatsResult.inlineCode,
+        lines: markdownStatsResult.lines,
+        links: markdownStatsResult.links,
+        listItems: markdownStatsResult.listItems,
+        lists: markdownStatsResult.lists,
+        paragraphs: markdownStatsResult.paragraphs,
+        tableRows: markdownStatsResult.tableRows,
+        tables: markdownStatsResult.tables,
+        taskListItems: markdownStatsResult.taskListItems,
+        thematicBreaks: markdownStatsResult.thematicBreaks,
+      },
       python: {
         classes: pythonStatsResult.classes,
         commentLines: pythonStatsResult.commentLines,

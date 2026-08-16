@@ -3,7 +3,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
-import { ReadmeService } from "../readme/readme.service";
+import { WritingService } from "../writing/writing.service";
 
 import { CodometerCommand } from "./codometer.command";
 import { CodometerService } from "./codometer.service";
@@ -14,7 +14,7 @@ describe(CodometerCommand, () => {
   let command: CodometerCommand;
   let loggerService: LoggerService;
   let codometerService: CodometerService;
-  let readmeService: ReadmeService;
+  let writingService: WritingService;
   const statistics: CodeStatisticsResult = {
     folders: 0,
     javascript: {
@@ -48,6 +48,28 @@ describe(CodometerCommand, () => {
       totalNodes: 0,
     },
     linesOfCode: 0,
+    markdown: {
+      blockQuotes: 0,
+      codeBlocks: 0,
+      files: 0,
+      headingLevel1: 0,
+      headingLevel2: 0,
+      headingLevel3: 0,
+      headingLevel4: 0,
+      headingLevel5: 0,
+      headingLevel6: 0,
+      images: 0,
+      inlineCode: 0,
+      lines: 0,
+      links: 0,
+      listItems: 0,
+      lists: 0,
+      paragraphs: 0,
+      tableRows: 0,
+      tables: 0,
+      taskListItems: 0,
+      thematicBreaks: 0,
+    },
     python: {
       classes: 0,
       commentLines: 0,
@@ -87,8 +109,8 @@ describe(CodometerCommand, () => {
           useValue: createMock<CodometerService>(),
         },
         {
-          provide: ReadmeService,
-          useValue: createMock<ReadmeService>(),
+          provide: WritingService,
+          useValue: createMock<WritingService>(),
         },
       ],
     }).compile();
@@ -99,9 +121,9 @@ describe(CodometerCommand, () => {
   beforeEach(() => {
     loggerService = createMock<LoggerService>();
     codometerService = createMock<CodometerService>();
-    readmeService = createMock<ReadmeService>();
+    writingService = createMock<WritingService>();
     vi.mocked(codometerService.measure).mockReturnValue(statistics);
-    vi.mocked(readmeService.syncReadme).mockReturnValue(true);
+    vi.mocked(writingService.syncReadme).mockReturnValue(true);
   });
 
   it("is defined", () => {
@@ -121,8 +143,8 @@ describe(CodometerCommand, () => {
           useValue: createMock<CodometerService>(),
         },
         {
-          provide: ReadmeService,
-          useValue: createMock<ReadmeService>(),
+          provide: WritingService,
+          useValue: createMock<WritingService>(),
         },
       ],
     }).compile();
@@ -136,7 +158,7 @@ describe(CodometerCommand, () => {
     const localCommand = new CodometerCommand(
       loggerService,
       codometerService,
-      readmeService,
+      writingService,
     );
 
     expect(localCommand.parseCheck(true)).toBe(true);
@@ -152,7 +174,7 @@ describe(CodometerCommand, () => {
     const localCommand = new CodometerCommand(
       loggerService,
       codometerService,
-      readmeService,
+      writingService,
     );
 
     expect(localCommand.parseDirectory(undefined)).toBe(process.cwd());
@@ -162,7 +184,7 @@ describe(CodometerCommand, () => {
     const localCommand = new CodometerCommand(
       loggerService,
       codometerService,
-      readmeService,
+      writingService,
     );
     const stdoutWriteSpy = vi
       .spyOn(process.stdout, "write")
@@ -173,7 +195,7 @@ describe(CodometerCommand, () => {
     expect(stdoutWriteSpy).toHaveBeenCalledWith(
       `${JSON.stringify(statistics, null, 2)}\n`,
     );
-    expect(readmeService.syncReadme).not.toHaveBeenCalled();
+    expect(writingService.syncReadme).not.toHaveBeenCalled();
 
     stdoutWriteSpy.mockRestore();
   });
@@ -182,12 +204,12 @@ describe(CodometerCommand, () => {
     const localCommand = new CodometerCommand(
       loggerService,
       codometerService,
-      readmeService,
+      writingService,
     );
     const consoleErrorSpy = vi
       .spyOn(console, "error")
       .mockReturnValue(undefined);
-    vi.mocked(readmeService.syncReadme).mockReturnValue(false);
+    vi.mocked(writingService.syncReadme).mockReturnValue(false);
     process.exitCode = 0;
 
     await localCommand.run([], {
@@ -196,7 +218,7 @@ describe(CodometerCommand, () => {
       readme: "README.md",
     });
 
-    expect(readmeService.syncReadme).toHaveBeenCalledWith(
+    expect(writingService.syncReadme).toHaveBeenCalledWith(
       "README.md",
       statistics,
       true,
@@ -213,9 +235,9 @@ describe(CodometerCommand, () => {
     const localCommand = new CodometerCommand(
       loggerService,
       codometerService,
-      readmeService,
+      writingService,
     );
-    vi.mocked(readmeService.syncReadme).mockReturnValue(true);
+    vi.mocked(writingService.syncReadme).mockReturnValue(true);
     process.exitCode = 0;
 
     await localCommand.run([], {
@@ -231,7 +253,7 @@ describe(CodometerCommand, () => {
     const localCommand = new CodometerCommand(
       loggerService,
       codometerService,
-      readmeService,
+      writingService,
     );
 
     await localCommand.run([], {
@@ -240,7 +262,7 @@ describe(CodometerCommand, () => {
       readme: "README.md",
     });
 
-    expect(readmeService.syncReadme).toHaveBeenCalledWith(
+    expect(writingService.syncReadme).toHaveBeenCalledWith(
       "README.md",
       statistics,
       false,
@@ -251,7 +273,7 @@ describe(CodometerCommand, () => {
     const localCommand = new CodometerCommand(
       loggerService,
       codometerService,
-      readmeService,
+      writingService,
     );
 
     // nest-commander omits the key rather than passing false, so this is the
@@ -261,7 +283,7 @@ describe(CodometerCommand, () => {
       readme: "README.md",
     });
 
-    expect(readmeService.syncReadme).toHaveBeenCalledWith(
+    expect(writingService.syncReadme).toHaveBeenCalledWith(
       "README.md",
       statistics,
       false,
