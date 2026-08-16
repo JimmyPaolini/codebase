@@ -146,7 +146,12 @@ module.exports = {
     [
       "@semantic-release/git",
       {
-        assets: ["CHANGELOG.md", "package.json", "pnpm-lock.yaml"],
+        // README.md rides along because the codometer step regenerates its
+        // badge block just before this commit. Measuring on a branch instead
+        // made every pull request rewrite the same block and conflict with
+        // every other one; measuring on main makes it a release artifact,
+        // updated exactly when the changelog is.
+        assets: ["CHANGELOG.md", "README.md", "package.json", "pnpm-lock.yaml"],
         message: "chore(release): 🔖 version ${nextRelease.version}",
       },
     ],

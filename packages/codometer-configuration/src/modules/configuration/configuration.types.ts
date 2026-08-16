@@ -9,7 +9,9 @@
  * `codometer.config.ts` has to be able to name it.
  */
 export interface CodeStatisticsResult {
+  css: CssStatistics;
   folders: number;
+  hcl: HclStatistics;
   javascript: JavascriptStatistics;
   json: JsonStatistics;
   jupyter: JupyterStatistics;
@@ -17,8 +19,12 @@ export interface CodeStatisticsResult {
   markdown: MarkdownStatistics;
   python: PythonStatistics;
   repoSizeMiB: number;
+  shell: ShellStatistics;
   sourceFiles: number;
+  sql: SqlStatistics;
+  toml: TomlStatistics;
   typescript: TypescriptStatistics;
+  yaml: YamlStatistics;
 }
 
 /**
@@ -78,6 +84,36 @@ export interface CodometerOutputConfiguration {
 /** How Python sources are analyzed. */
 export interface CodometerPythonConfiguration {
   command?: string | undefined;
+}
+
+/**
+ * Structural statistics specific to CSS stylesheets.
+ */
+export interface CssStatistics {
+  atRules: number;
+  comments: number;
+  customProperties: number;
+  declarations: number;
+  files: number;
+  lines: number;
+  mediaQueries: number;
+  rules: number;
+  selectors: number;
+}
+
+/**
+ * Statistics specific to HCL, the Terraform configuration language.
+ */
+export interface HclStatistics {
+  attributes: number;
+  blocks: number;
+  comments: number;
+  files: number;
+  interpolations: number;
+  lines: number;
+  outputs: number;
+  resources: number;
+  variables: number;
 }
 
 /** Code statistics specific to JavaScript source files. */
@@ -284,6 +320,57 @@ export interface ResolvedCodometerPythonConfiguration {
   command: string;
 }
 
+/**
+ * Statistics specific to shell scripts.
+ *
+ * Counted with patterns rather than a parser: shell has no portable syntax
+ * tree available without a native dependency, so these are the constructs a
+ * reader recognizes on sight rather than everything the language admits.
+ */
+export interface ShellStatistics {
+  commentLines: number;
+  comments: number;
+  conditionals: number;
+  exports: number;
+  files: number;
+  functions: number;
+  lines: number;
+  loops: number;
+  pipelines: number;
+  shebangs: number;
+  variables: number;
+}
+
+/**
+ * Statistics specific to SQL scripts.
+ */
+export interface SqlStatistics {
+  comments: number;
+  commonTableExpressions: number;
+  creates: number;
+  deletes: number;
+  files: number;
+  inserts: number;
+  joins: number;
+  lines: number;
+  selects: number;
+  statements: number;
+  updates: number;
+}
+
+/**
+ * Structural statistics specific to TOML documents.
+ */
+export interface TomlStatistics {
+  arrays: number;
+  arrayTables: number;
+  comments: number;
+  files: number;
+  keys: number;
+  lines: number;
+  tables: number;
+}
+
 /** Code statistics specific to TypeScript source files. */
 export interface TypescriptStatistics {
   decorators: number;
@@ -313,3 +400,23 @@ export interface WriteMarkdownArguments {
  * what fails the command. Anything else counts as up to date.
  */
 export type WriteMarkdownOutput = (args: WriteMarkdownArguments) => boolean;
+
+/**
+ * Structural statistics specific to YAML documents.
+ *
+ * A YAML file is a stream rather than a single value: one file can hold
+ * several documents, which is why `documents` is counted apart from `files`.
+ */
+export interface YamlStatistics {
+  aliases: number;
+  anchors: number;
+  comments: number;
+  documents: number;
+  files: number;
+  keys: number;
+  lines: number;
+  mappings: number;
+  maxDepth: number;
+  scalars: number;
+  sequences: number;
+}

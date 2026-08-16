@@ -1,16 +1,22 @@
 import { execFileSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, lstatSync } from "node:fs";
 import path from "node:path";
 
 import { Injectable, Logger } from "@nestjs/common";
 
 import {
+  CSS_EXTENSIONS,
+  HCL_EXTENSIONS,
   JS_EXTENSIONS,
   JSON_EXTENSIONS,
   MARKDOWN_EXTENSIONS,
   NOTEBOOK_EXTENSIONS,
+  SHELL_EXTENSIONS,
+  SQL_EXTENSIONS,
   TEST_FILE_REGEX,
+  TOML_EXTENSIONS,
   TS_EXTENSIONS,
+  YAML_EXTENSIONS,
 } from "./discovery.constants";
 
 import type {
@@ -33,6 +39,16 @@ export class DiscoveryService {
 
   // 🔏 Private Methods
 
+  /** Selects the tracked files whose extension belongs to a category. */
+  private filterByExtension(
+    trackedFiles: string[],
+    extensions: Set<string>,
+  ): string[] {
+    return trackedFiles.filter((filePath) =>
+      extensions.has(path.extname(filePath).toLowerCase()),
+    );
+  }
+
   /**
    * Whether any exclusion glob claims the given repository-relative path.
    *
@@ -42,6 +58,26 @@ export class DiscoveryService {
    */
   private isExcluded(filePath: string, exclude: string[]): boolean {
     return exclude.some((pattern) => path.matchesGlob(filePath, pattern));
+  }
+
+  /**
+   * Whether a tracked path is a real file this run should measure.
+   *
+   * Symlinks are skipped: git tracks them as their own entries, and following
+   * one counts its target a second time. `CLAUDE.md` pointing at `AGENTS.md`
+   * is not a second document, and reading through the link reported it as one.
+   */
+  private isMeasurableFile(
+    args: DiscoverFilesArguments,
+    filePath: string,
+  ): boolean {
+    const resolvedPath = path.resolve(args.workingDirectory, filePath);
+
+    if (!existsSync(resolvedPath)) {
+      return false;
+    }
+
+    return !lstatSync(resolvedPath).isSymbolicLink();
   }
 
   /**
@@ -100,9 +136,7 @@ export class DiscoveryService {
       .trim()
       .split("\n")
       .filter(Boolean)
-      .filter((filePath) =>
-        existsSync(path.resolve(args.workingDirectory, filePath)),
-      )
+      .filter((filePath) => this.isMeasurableFile(args, filePath))
       .filter((filePath) => !ignoredFiles.has(filePath))
       .filter((filePath) => !this.isExcluded(filePath, args.exclude));
   }
@@ -118,29 +152,29 @@ export class DiscoveryService {
     );
 
     return {
+      cssFiles: this.filterByExtension(trackedFiles, CSS_EXTENSIONS),
+      hclFiles: this.filterByExtension(trackedFiles, HCL_EXTENSIONS),
       jsFiles: sourceFiles.filter((filePath) =>
         JS_EXTENSIONS.has(path.extname(filePath)),
       ),
-      jsonFiles: trackedFiles.filter((filePath) =>
-        JSON_EXTENSIONS.has(path.extname(filePath).toLowerCase()),
-      ),
-      markdownFiles: trackedFiles.filter((filePath) =>
-        MARKDOWN_EXTENSIONS.has(path.extname(filePath).toLowerCase()),
-      ),
-      notebookFiles: trackedFiles.filter((filePath) =>
-        NOTEBOOK_EXTENSIONS.has(path.extname(filePath).toLowerCase()),
-      ),
+      jsonFiles: this.filterByExtension(trackedFiles, JSON_EXTENSIONS),
+      markdownFiles: this.filterByExtension(trackedFiles, MARKDOWN_EXTENSIONS),
+      notebookFiles: this.filterByExtension(trackedFiles, NOTEBOOK_EXTENSIONS),
       pyFiles: trackedFiles.filter(
         (filePath) => path.extname(filePath) === ".py",
       ),
+      shellFiles: this.filterByExtension(trackedFiles, SHELL_EXTENSIONS),
       sourceFiles,
+      sqlFiles: this.filterByExtension(trackedFiles, SQL_EXTENSIONS),
       testFiles: sourceFiles.filter((filePath) =>
         TEST_FILE_REGEX.test(filePath),
       ),
+      tomlFiles: this.filterByExtension(trackedFiles, TOML_EXTENSIONS),
       trackedFiles,
       tsFiles: sourceFiles.filter((filePath) =>
         TS_EXTENSIONS.has(path.extname(filePath)),
       ),
+      yamlFiles: this.filterByExtension(trackedFiles, YAML_EXTENSIONS),
     };
   }
 }

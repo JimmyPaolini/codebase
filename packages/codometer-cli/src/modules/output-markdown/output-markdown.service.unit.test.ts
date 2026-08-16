@@ -54,7 +54,29 @@ describe(OutputMarkdownService, () => {
   });
 
   const sampleStatistics: CodeStatisticsResult = {
+    css: {
+      atRules: 201,
+      comments: 202,
+      customProperties: 203,
+      declarations: 204,
+      files: 205,
+      lines: 206,
+      mediaQueries: 207,
+      rules: 208,
+      selectors: 209,
+    },
     folders: 13,
+    hcl: {
+      attributes: 210,
+      blocks: 211,
+      comments: 212,
+      files: 213,
+      interpolations: 214,
+      lines: 215,
+      outputs: 216,
+      resources: 217,
+      variables: 218,
+    },
     javascript: {
       asyncFunctions: 1,
       classes: 2,
@@ -145,7 +167,42 @@ describe(OutputMarkdownService, () => {
       protocols: 40,
     },
     repoSizeMiB: 2,
+    shell: {
+      commentLines: 219,
+      comments: 220,
+      conditionals: 221,
+      exports: 222,
+      files: 223,
+      functions: 224,
+      lines: 225,
+      loops: 226,
+      pipelines: 227,
+      shebangs: 228,
+      variables: 229,
+    },
     sourceFiles: 41,
+    sql: {
+      comments: 230,
+      commonTableExpressions: 231,
+      creates: 232,
+      deletes: 233,
+      files: 234,
+      inserts: 235,
+      joins: 236,
+      lines: 237,
+      selects: 238,
+      statements: 239,
+      updates: 240,
+    },
+    toml: {
+      arrays: 242,
+      arrayTables: 241,
+      comments: 243,
+      files: 244,
+      keys: 245,
+      lines: 246,
+      tables: 247,
+    },
     typescript: {
       decorators: 6,
       docComments: 7,
@@ -153,6 +210,19 @@ describe(OutputMarkdownService, () => {
       files: 45,
       genericDeclarations: 15,
       interfaces: 17,
+    },
+    yaml: {
+      aliases: 91,
+      anchors: 92,
+      comments: 93,
+      documents: 94,
+      files: 95,
+      keys: 96,
+      lines: 97,
+      mappings: 98,
+      maxDepth: 99,
+      scalars: 100,
+      sequences: 101,
     },
   };
 
@@ -204,14 +274,20 @@ describe(OutputMarkdownService, () => {
     const badgeCount = (block.match(/^!\[/gmu) ?? []).length;
     const measuredCount =
       Object.keys(sampleStatistics).length -
-      // The six grouped buckets are replaced by the counters they hold.
-      6 +
+      // The twelve grouped buckets are replaced by the counters they hold.
+      12 +
       Object.keys(sampleStatistics.javascript).length +
       Object.keys(sampleStatistics.json).length +
       Object.keys(sampleStatistics.jupyter).length +
       Object.keys(sampleStatistics.markdown).length +
       Object.keys(sampleStatistics.python).length +
-      Object.keys(sampleStatistics.typescript).length;
+      Object.keys(sampleStatistics.typescript).length +
+      Object.keys(sampleStatistics.yaml).length +
+      Object.keys(sampleStatistics.css).length +
+      Object.keys(sampleStatistics.hcl).length +
+      Object.keys(sampleStatistics.shell).length +
+      Object.keys(sampleStatistics.sql).length +
+      Object.keys(sampleStatistics.toml).length;
 
     expect(badgeCount).toBe(measuredCount);
   });

@@ -1,0 +1,168 @@
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+
+import { Logger } from "@nestjs/common";
+import { Test } from "@nestjs/testing";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+
+import { ShellService } from "./shell.service";
+
+import type * as NodeFileSystem from "node:fs";
+
+// Reads stay real except for one sentinel path, which throws a bare string:
+// a rejected promise or a thrown literal is not an Error, and the analyzer
+// still has to report which file it gave up on.
+vi.mock("node:fs", async (importOriginal) => {
+  const actual = await importOriginal<typeof NodeFileSystem>();
+
+  return {
+    ...actual,
+    readFileSync: (filePath: string, encoding: "utf8") => {
+      if (filePath.endsWith("throws-a-string.sh")) {
+        // eslint-disable-next-line @typescript-eslint/only-throw-error
+        throw "not an Error";
+      }
+
+      return actual.readFileSync(filePath, encoding);
+    },
+  };
+});
+
+describe(ShellService, () => {
+  let service: ShellService;
+  const temporaryDirectories: string[] = [];
+
+  /** Writes sources into a fresh directory and returns it with their names. */
+  function writeSources(files: Record<string, string>): {
+    shellFiles: string[];
+    workingDirectory: string;
+  } {
+    const workingDirectory = mkdtempSync(
+      path.join(tmpdir(), "codometer-shell-"),
+    );
+    temporaryDirectories.push(workingDirectory);
+
+    for (const [fileName, content] of Object.entries(files)) {
+      writeFileSync(path.join(workingDirectory, fileName), content, "utf8");
+    }
+
+    return { shellFiles: Object.keys(files), workingDirectory };
+  }
+
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
+      providers: [ShellService],
+    }).compile();
+
+    service = await module.resolve(ShellService);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+
+    for (const temporaryDirectory of temporaryDirectories.splice(0)) {
+      rmSync(temporaryDirectory, { force: true, recursive: true });
+    }
+  });
+
+  it("is defined", () => {
+    expect(service).toBeDefined();
+  });
+
+  it("counts functions, variables, and control flow", () => {
+    const { shellFiles, workingDirectory } = writeSources({
+      "setup.sh": [
+        "#!/usr/bin/env bash",
+        "# Sets the workspace up",
+        "set -euo pipefail",
+        "export TARGET=main",
+        "readonly RETRIES=3",
+        "install_dependencies() {",
+        "  for attempt in 1 2 3; do",
+        "    if pnpm install | tee install.log; then",
+        "      return 0",
+        "    fi",
+        "  done",
+        "}",
+      ].join("\n"),
+    });
+
+    const result = service.analyze({ shellFiles, workingDirectory });
+
+    expect(result.files).toBe(1);
+    expect(result.shebangs).toBe(1);
+    expect(result.comments).toBe(1);
+    expect(result.functions).toBe(1);
+    expect(result.exports).toBe(1);
+    expect(result.variables).toBe(1);
+    expect(result.loops).toBe(1);
+    expect(result.conditionals).toBe(1);
+    expect(result.pipelines).toBe(1);
+  });
+
+  it("reads a logical or as one expression rather than two pipelines", () => {
+    const { shellFiles, workingDirectory } = writeSources({
+      "guard.sh": "command -v uv || echo missing\n",
+    });
+
+    const result = service.analyze({ shellFiles, workingDirectory });
+
+    expect(result.pipelines).toBe(0);
+  });
+
+  it("recognizes the function keyword form and a case statement", () => {
+    const { shellFiles, workingDirectory } = writeSources({
+      "dispatch.sh": [
+        "function dispatch {",
+        "  case $1 in",
+        "    start) echo starting ;;",
+        "  esac",
+        "}",
+        "declare -x DISPATCH_MODE=fast",
+      ].join("\n"),
+    });
+
+    const result = service.analyze({ shellFiles, workingDirectory });
+
+    expect(result.functions).toBe(1);
+    expect(result.conditionals).toBe(1);
+    expect(result.exports).toBe(1);
+  });
+
+  it("reports a thrown value that is not an Error", () => {
+    const loggerWarnSpy = vi
+      .spyOn(Logger.prototype, "warn")
+      .mockReturnValue(undefined);
+    const { shellFiles, workingDirectory } = writeSources({
+      "throws-a-string.sh": "",
+    });
+
+    const result = service.analyze({ shellFiles, workingDirectory });
+
+    expect(result.files).toBe(0);
+    expect(loggerWarnSpy).toHaveBeenCalledWith(
+      "🐚 Skipped shell analysis for throws-a-string.sh",
+      undefined,
+      { reason: "not an Error" },
+    );
+  });
+
+  it("skips an unreadable file and warns", () => {
+    const loggerWarnSpy = vi
+      .spyOn(Logger.prototype, "warn")
+      .mockReturnValue(undefined);
+
+    const result = service.analyze({
+      shellFiles: ["missing.sh"],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.files).toBe(0);
+    expect(loggerWarnSpy).toHaveBeenCalledWith(
+      "🐚 Skipped shell analysis for missing.sh",
+      undefined,
+      expect.any(Object),
+    );
+  });
+});
