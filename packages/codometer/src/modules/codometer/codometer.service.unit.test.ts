@@ -4,28 +4,31 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { DiscoverFilesService } from "../discover-files/discover-files.service";
-import { MeasureJsonService } from "../measure-json/measure-json.service";
-import { MeasurePythonService } from "../measure-python/measure-python.service";
-import { MeasureTypescriptService } from "../measure-typescript/measure-typescript.service";
+import { DiscoveryService } from "../discovery/discovery.service";
+import { JsonService } from "../json/json.service";
+import { MarkdownService } from "../markdown/markdown.service";
+import { PythonService } from "../python/python.service";
+import { TypescriptService } from "../typescript/typescript.service";
 
 import { CodometerService } from "./codometer.service";
 
 describe(CodometerService, () => {
   let service: CodometerService;
-  let discoverFilesService: DiscoverFilesService;
-  let measureJsonService: MeasureJsonService;
-  let measurePythonService: MeasurePythonService;
-  let measureTypescriptService: MeasureTypescriptService;
+  let discoveryService: DiscoveryService;
+  let jsonService: JsonService;
+  let markdownService: MarkdownService;
+  let pythonService: PythonService;
+  let typescriptService: TypescriptService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
         CodometerService,
-        DiscoverFilesService,
-        MeasureJsonService,
-        MeasurePythonService,
-        MeasureTypescriptService,
+        DiscoveryService,
+        JsonService,
+        MarkdownService,
+        PythonService,
+        TypescriptService,
       ],
     }).compile();
 
@@ -33,14 +36,16 @@ describe(CodometerService, () => {
   });
 
   beforeEach(() => {
-    const discoveryService = new DiscoverFilesService();
-    const jsonService = new MeasureJsonService();
-    const pythonService = new MeasurePythonService();
-    const typescriptService = new MeasureTypescriptService();
+    discoveryService = new DiscoveryService();
+    jsonService = new JsonService();
+    markdownService = new MarkdownService();
+    pythonService = new PythonService();
+    typescriptService = new TypescriptService();
 
     vi.spyOn(discoveryService, "discoverFiles").mockReturnValue({
       jsFiles: ["src/app.js"],
       jsonFiles: [],
+      markdownFiles: ["docs/guide.md"],
       pyFiles: ["scripts/check.py"],
       sourceFiles: ["src/app.ts", "scripts/check.py"],
       testFiles: [],
@@ -75,6 +80,28 @@ describe(CodometerService, () => {
       lines: 11,
       protocols: 12,
     });
+    vi.spyOn(markdownService, "analyze").mockReturnValue({
+      blockQuotes: 1,
+      codeBlocks: 2,
+      files: 3,
+      headingLevel1: 4,
+      headingLevel2: 5,
+      headingLevel3: 6,
+      headingLevel4: 7,
+      headingLevel5: 8,
+      headingLevel6: 9,
+      images: 10,
+      inlineCode: 11,
+      lines: 12,
+      links: 13,
+      listItems: 14,
+      lists: 15,
+      paragraphs: 16,
+      tableRows: 17,
+      tables: 18,
+      taskListItems: 19,
+      thematicBreaks: 20,
+    });
     vi.spyOn(typescriptService, "analyze").mockReturnValue({
       asyncFunctions: 9,
       blockComments: 1,
@@ -101,11 +128,6 @@ describe(CodometerService, () => {
       todos: 22,
       tsFiles: 1,
     });
-
-    discoverFilesService = discoveryService;
-    measureJsonService = jsonService;
-    measurePythonService = pythonService;
-    measureTypescriptService = typescriptService;
   });
 
   it("is defined", () => {
@@ -114,19 +136,31 @@ describe(CodometerService, () => {
 
   it("aggregates repository statistics into a report", () => {
     const codometerService = new CodometerService(
-      discoverFilesService,
-      measureTypescriptService,
-      measurePythonService,
-      measureJsonService,
+      discoveryService,
+      typescriptService,
+      pythonService,
+      jsonService,
+      markdownService,
     );
     const result = codometerService.measure("/repo");
 
-    expect(discoverFilesService.discoverFiles).toHaveBeenCalledWith("/repo");
-    expect(measureTypescriptService.analyze).toHaveBeenCalledWith({
+    expect(discoveryService.discoverFiles).toHaveBeenCalledWith("/repo");
+    expect(typescriptService.analyze).toHaveBeenCalledWith({
       sourceFiles: ["src/app.ts", "scripts/check.py"],
       workingDirectory: "/repo",
     });
-    expect(measurePythonService.analyze).toHaveBeenCalledWith("/repo");
+    expect(pythonService.analyze).toHaveBeenCalledWith(
+      ["scripts/check.py"],
+      "/repo",
+    );
+
+    expect(markdownService.analyze).toHaveBeenCalledWith({
+      markdownFiles: ["docs/guide.md"],
+      workingDirectory: "/repo",
+    });
+    expect(result.markdown.headingLevel1).toBe(4);
+    expect(result.markdown.tables).toBe(18);
+    expect(result.markdown.taskListItems).toBe(19);
 
     expect(result.javascript.classes + result.python.classes).toBe(12);
     expect(result.javascript.comments + result.python.comments).toBe(6);
