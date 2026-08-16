@@ -3,10 +3,11 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { DiscoverFilesService } from "../discover-files/discover-files.service";
-import { MeasureJsonService } from "../measure-json/measure-json.service";
-import { MeasurePythonService } from "../measure-python/measure-python.service";
-import { MeasureTypescriptService } from "../measure-typescript/measure-typescript.service";
+import { DiscoveryService } from "../discovery/discovery.service";
+import { JsonService } from "../json/json.service";
+import { MarkdownService } from "../markdown/markdown.service";
+import { PythonService } from "../python/python.service";
+import { TypescriptService } from "../typescript/typescript.service";
 
 import type { CodeStatisticsResult } from "./codometer.types";
 
@@ -18,10 +19,11 @@ export class CodometerService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly discoverFilesService: DiscoverFilesService,
-    private readonly measureTypescriptService: MeasureTypescriptService,
-    private readonly measurePythonService: MeasurePythonService,
-    private readonly measureJsonService: MeasureJsonService,
+    private readonly discoveryService: DiscoveryService,
+    private readonly typescriptService: TypescriptService,
+    private readonly pythonService: PythonService,
+    private readonly jsonService: JsonService,
+    private readonly markdownService: MarkdownService,
   ) {}
 
   // 🔐 Private Fields
@@ -73,14 +75,21 @@ export class CodometerService {
    * Measure aggregated repository statistics for the provided directory.
    */
   measure(directory: string): CodeStatisticsResult {
-    const discoveredFiles = this.discoverFilesService.discoverFiles(directory);
-    const typescriptStats = this.measureTypescriptService.analyze({
+    const discoveredFiles = this.discoveryService.discoverFiles(directory);
+    const typescriptStats = this.typescriptService.analyze({
       sourceFiles: discoveredFiles.sourceFiles,
       workingDirectory: directory,
     });
-    const pythonStatsResult = this.measurePythonService.analyze(directory);
-    const jsonStatsResult = this.measureJsonService.analyze({
+    const pythonStatsResult = this.pythonService.analyze(
+      discoveredFiles.pyFiles,
+      directory,
+    );
+    const jsonStatsResult = this.jsonService.analyze({
       jsonFiles: discoveredFiles.jsonFiles,
+      workingDirectory: directory,
+    });
+    const markdownStatsResult = this.markdownService.analyze({
+      markdownFiles: discoveredFiles.markdownFiles,
       workingDirectory: directory,
     });
     const repoBytes = this.getRepositoryBytes(
@@ -122,6 +131,28 @@ export class CodometerService {
         totalNodes: jsonStatsResult.totalNodes,
       },
       linesOfCode: typescriptStats.lines + pythonStatsResult.lines,
+      markdown: {
+        blockQuotes: markdownStatsResult.blockQuotes,
+        codeBlocks: markdownStatsResult.codeBlocks,
+        files: markdownStatsResult.files,
+        headingLevel1: markdownStatsResult.headingLevel1,
+        headingLevel2: markdownStatsResult.headingLevel2,
+        headingLevel3: markdownStatsResult.headingLevel3,
+        headingLevel4: markdownStatsResult.headingLevel4,
+        headingLevel5: markdownStatsResult.headingLevel5,
+        headingLevel6: markdownStatsResult.headingLevel6,
+        images: markdownStatsResult.images,
+        inlineCode: markdownStatsResult.inlineCode,
+        lines: markdownStatsResult.lines,
+        links: markdownStatsResult.links,
+        listItems: markdownStatsResult.listItems,
+        lists: markdownStatsResult.lists,
+        paragraphs: markdownStatsResult.paragraphs,
+        tableRows: markdownStatsResult.tableRows,
+        tables: markdownStatsResult.tables,
+        taskListItems: markdownStatsResult.taskListItems,
+        thematicBreaks: markdownStatsResult.thematicBreaks,
+      },
       python: {
         classes: pythonStatsResult.classes,
         commentLines: pythonStatsResult.commentLines,

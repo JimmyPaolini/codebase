@@ -115,7 +115,10 @@ export class LoggerService extends ConsoleLogger {
       return;
     }
 
-    if (args.context !== undefined && UNVALIDATED_LOG_CONTEXTS.has(args.context)) {
+    if (
+      args.context !== undefined &&
+      UNVALIDATED_LOG_CONTEXTS.has(args.context)
+    ) {
       return;
     }
 
@@ -129,7 +132,10 @@ export class LoggerService extends ConsoleLogger {
 
     const firstWord = FIRST_WORD_PATTERN.exec(text)?.[1];
 
-    if (firstWord === undefined || !LoggerService.isConventionalVerb(firstWord)) {
+    if (
+      firstWord === undefined ||
+      !LoggerService.isConventionalVerb(firstWord)
+    ) {
       throw new Error(
         `Log message must begin with a verb in present progressive or past tense, got "${firstWord ?? ""}": "${emoji} ${text}"`,
       );
@@ -206,8 +212,7 @@ export class LoggerService extends ConsoleLogger {
     contextOrData?: LogData | string,
   ): void {
     const parsed = LoggerService.parseMessage(message);
-    const data =
-      typeof contextOrData === "object" ? contextOrData : undefined;
+    const data = typeof contextOrData === "object" ? contextOrData : undefined;
     const context =
       typeof contextOrData === "string" ? contextOrData : this.context;
 

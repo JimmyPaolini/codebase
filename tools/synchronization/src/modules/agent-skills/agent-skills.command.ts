@@ -136,7 +136,8 @@ export class AgentSkillsCommand
     successMessage: string;
     workspaceRoot: string;
   }): boolean {
-    const { configurations, successCount, successMessage, workspaceRoot } = args;
+    const { configurations, successCount, successMessage, workspaceRoot } =
+      args;
     let allInSync = true;
 
     for (const configuration of configurations) {
