@@ -20,24 +20,39 @@ helm upgrade --install myrelease ./chart
 
 ## Agent Workflow
 
-Use the [obra/superpowers](https://github.com/obra/superpowers) workflow for non-trivial features, refactors, and
-bugfixes so the work is clarified, planned, tracked, and implemented in a
-consistent way.
+Use the [mattpocock/skills](https://github.com/mattpocock/skills) workflow for non-trivial features,
+refactors, and bugfixes so the work is clarified, specified, tracked, and
+implemented in a consistent way.
 
-1. Start with [using-superpowers](.agents/skills/using-superpowers/SKILL.md)
-   and move into [brainstorming](.agents/skills/brainstorming/SKILL.md)
-   when the request needs clarification.
-2. Turn the clarified request into a spec or implementation plan, then
-   create the issue graph when the work spans multiple tasks.
-3. Execute the plan with
+1. Sharpen the request first. Run
+   [grill-with-docs](.agents/skills/grill-with-docs/SKILL.md) when the work
+   needs a domain model or ADRs to come out of the conversation, or
+   [grill-me](.agents/skills/grill-me/SKILL.md) for a plain interview. Unsure
+   which skill fits? Ask [ask-matt](.agents/skills/ask-matt/SKILL.md).
+2. Capture the outcome with [to-spec](.agents/skills/to-spec/SKILL.md), then
+   split it with [to-tickets](.agents/skills/to-tickets/SKILL.md) when the work
+   spans multiple tasks. Reach for
+   [wayfinder](.agents/skills/wayfinder/SKILL.md) when the work is larger than
+   one agent session can hold.
+3. Build with [implement](.agents/skills/implement/SKILL.md), which drives
+   [tdd](.agents/skills/tdd/SKILL.md) red-green-refactor. For a multi-task
+   ticket set, orchestrate with
    [subagent-driven-development](.agents/skills/subagent-driven-development/SKILL.md)
-   or [executing-plans](.agents/skills/executing-plans/SKILL.md),
-   depending on whether subagents are available.
-4. Follow [test-driven-development](.agents/skills/test-driven-development/SKILL.md)
-   and finish with [validate-code](.agents/skills/validate-code/SKILL.md).
+   — one fresh subagent per task — and use
+   [dispatching-parallel-agents](.agents/skills/dispatching-parallel-agents/SKILL.md)
+   when tasks are genuinely independent. Debug regressions with
+   [diagnosing-bugs](.agents/skills/diagnosing-bugs/SKILL.md).
+4. Review with [code-review](.agents/skills/code-review/SKILL.md), and apply
+   incoming feedback through
+   [receiving-code-review](.agents/skills/receiving-code-review/SKILL.md)
+   rather than agreeing on sight.
+5. Finish with [validate-code](.agents/skills/validate-code/SKILL.md), gated by
+   [verification-before-completion](.agents/skills/verification-before-completion/SKILL.md):
+   never claim done without the command output that proves it.
 
-Use the reference document for the full workflow, anti-patterns, and skill
-selection guidance.
+The codebase-native skills still own this repository's mechanics — branch
+names, commits, pull requests, Nx targets, and validation. Prefer them over any
+general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 
 ## Projects
 
@@ -198,11 +213,20 @@ See the [validate-code skill](.agents/skills/validate-code/SKILL.md) for the ful
 
 ### Git Worktrees
 
-- When asked to create a Git worktree, derive or reuse a branch name that follows `<type>/<scope>-<description>`.
-- Validate the candidate branch first with `pnpm exec validate-branch-name -t "<branch-name>"`.
-- Prefer `bash .agents/skills/create-worktree/scripts/create-worktree.sh "<branch-name>" [base-branch] [worktree-path]` over raw `git worktree add`.
-- Default the worktree path to `../codebase-worktrees/<branch-name-with-slashes-replaced-by-hyphens>` unless the user requests a different path.
-- If the branch already exists locally, attach a worktree to it instead of creating a second branch.
+Use [using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md) to create
+or verify an isolated workspace. It prefers this harness's native worktree tool
+over raw `git worktree add`, and falls back to `git worktree` when none exists.
+
+Two repository rules override the skill's generic defaults:
+
+- **The branch name is not free-form.** Derive or reuse a name matching
+  `<type>/<scope>-<description>` from the [Conventional Naming](#conventional-naming)
+  tables, and validate it with `pnpm exec validate-branch-name -t "<branch-name>"`
+  before creating anything. See [checkout-branch](.agents/skills/checkout-branch/SKILL.md)
+  for deriving one. The pre-push hook and the Validate Conventions workflow both
+  reject a non-compliant branch, so an unvalidated worktree wastes the work.
+- **If the branch already exists locally, attach a worktree to it** rather than
+  creating a second branch.
 
 ### Branch Names
 
@@ -510,22 +534,28 @@ Guidelines for creating custom instruction files, skills, agents, and prompts fo
 Specialized domain knowledge for working on specific systems or patterns:
 
 <!-- agent-skills-table-of-contents start -->
+- **[ask-matt](.agents/skills/ask-matt/SKILL.md)**: Ask which skill or flow fits your situation. A router over the skills in this repo.
 - **[backup-code](.agents/skills/backup-code/SKILL.md)**: "Create a safety backup before potentially destructive actions. Use when running risky git commands (reset, rebase, clean, restore, checkout with overwrite, force push), applying large sweeping edits, mass refactors, broad search-and-replace, generator rewrites, or any operation that may be hard to undo. Produces a recoverable snapshot via backup branch, stash, or both, and verifies recovery commands."
-- **[brainstorming](.agents/skills/brainstorming/SKILL.md)**: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
 - **[checkout-branch](.agents/skills/checkout-branch/SKILL.md)**: Create and validate Git branch names following this codebase's Conventional Commits naming convention. Use this skill when creating branches, renaming branches, or when asked about branch naming rules and validation.
+- **[code-review](.agents/skills/code-review/SKILL.md)**: Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes — Standards (does the code follow this repo's documented coding standards?) and Spec (does the code match what the originating issue/spec asked for?). Runs both reviews in parallel sub-agents and reports them side by side. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to "review since X".
+- **[codebase-design](.agents/skills/codebase-design/SKILL.md)**: Shared vocabulary for designing deep modules. Use when the user wants to design or improve a module's interface, find deepening opportunities, decide where a seam goes, make code more testable or AI-navigable, or when another skill needs the deep-module vocabulary.
 - **[commit-code](.agents/skills/commit-code/SKILL.md)**: Write commit messages following this codebase's Conventional Commits standard with Gitmoji support. Use this skill when creating commits or when asked about commit message formatting.
 - **[create-pull-request](.agents/skills/create-pull-request/SKILL.md)**: Create and manage pull requests following this codebase's conventions. Use this skill when creating PRs, opening PRs for review, writing PR descriptions, or asked about PR workflows and best practices.
-- **[create-worktree](.agents/skills/create-worktree/SKILL.md)**: Create or attach git worktrees that follow this codebase's branch naming conventions. Use when asked to create a worktree, derive a compliant branch name, validate a branch name before worktree creation, choose a worktree path, or avoid raw `git worktree add` commands.
+- **[diagnosing-bugs](.agents/skills/diagnosing-bugs/SKILL.md)**: Diagnosis loop for hard bugs and performance regressions. Use when the user says "diagnose"/"debug this", or reports something broken/throwing/failing/slow.
 - **[dispatching-parallel-agents](.agents/skills/dispatching-parallel-agents/SKILL.md)**: Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies
-- **[executing-plans](.agents/skills/executing-plans/SKILL.md)**: Use when you have a written implementation plan to execute in a separate session with review checkpoints
+- **[domain-modeling](.agents/skills/domain-modeling/SKILL.md)**: Build and sharpen a project's domain model. Use when discussing codebase terminology, writing or editing a CONTEXT.md, or recording or editing an ADR.
 - **[explore-codebase](.agents/skills/explore-codebase/SKILL.md)**: "Explore codebase files, patterns, and structure for a given topic. USE WHEN gathering implementation context before planning or executing tasks, when asked to research the codebase, or when a planning agent needs a Sub-Agent A (Codebase Research). Returns a Codebase Research Summary with relevant files, existing patterns, affected Nx projects, reusable code, related plans, constraints, and open questions."
-- **[explore-internet](.agents/skills/explore-internet/SKILL.md)**: "Gather external documentation, changelogs, and release notes for libraries, frameworks, and APIs. USE WHEN a plan involves external dependencies, package upgrades, migrations, new frameworks, or technologies requiring documentation lookup. Skip for purely internal refactoring. Returns an External Research Summary with breaking changes, migration guidance, known issues, and documentation links."
-- **[finishing-a-development-branch](.agents/skills/finishing-a-development-branch/SKILL.md)**: Use when implementation is complete, all tests pass, and you need to decide how to integrate the work
 - **[gh-stack](.agents/skills/gh-stack/SKILL.md)**: >
 - **[github-actions](.agents/skills/github-actions/SKILL.md)**: Build and test GitHub Actions workflows in this codebase. Covers the composite action pattern and workflow templates. Use this skill when creating, modifying, or testing GitHub Actions workflows.
 - **[github-issues](.agents/skills/github-issues/SKILL.md)**: 'Create, update, and manage GitHub issues using MCP tools. Use this skill when users want to create bug reports, feature requests, or task issues, update existing issues, add labels/assignees/milestones, set issue fields (dates, priority, custom fields), set issue types, manage issue workflows, link issues, add dependencies, or track blocked-by/blocking relationships. Triggers on requests like "create an issue", "file a bug", "request a feature", "update issue X", "set the priority", "set the start date", "link issues", "add dependency", "blocked by", "blocking", or any GitHub issue management task.'
+- **[grill-me](.agents/skills/grill-me/SKILL.md)**: A relentless interview to sharpen a plan or design.
+- **[grill-with-docs](.agents/skills/grill-with-docs/SKILL.md)**: A relentless interview to sharpen a plan or design, which also creates docs (ADR's and glossary) as we go.
+- **[grilling](.agents/skills/grilling/SKILL.md)**: Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases.
 - **[handle-errors](.agents/skills/handle-errors/SKILL.md)**: "Apply codebase error handling patterns: Zod validation at boundaries, typed errors, early returns, and retry/backoff. Use when implementing error handling or input validation."
+- **[handoff](.agents/skills/handoff/SKILL.md)**: Compact the current conversation into a handoff document for another agent to pick up.
 - **[impeccable](.agents/skills/impeccable/SKILL.md)**: Use when the user wants to design, redesign, shape, critique, audit, polish, clarify, distill, harden, optimize, adapt, animate, colorize, extract, or otherwise improve a frontend interface. Covers websites, landing pages, dashboards, product UI, app shells, components, forms, settings, onboarding, and empty states. Handles UX review, visual hierarchy, information architecture, cognitive load, accessibility, performance, responsive behavior, theming, anti-patterns, typography, fonts, spacing, layout, alignment, color, motion, micro-interactions, UX copy, error states, edge cases, i18n, and reusable design systems or tokens. Also use for bland designs that need to become bolder or more delightful, loud designs that should become quieter, live browser iteration on UI elements, or ambitious visual effects that should feel technically extraordinary. Not for backend-only or non-UI tasks.
+- **[implement](.agents/skills/implement/SKILL.md)**: "Implement a piece of work based on a spec or set of tickets."
+- **[improve-codebase-architecture](.agents/skills/improve-codebase-architecture/SKILL.md)**: Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick.
 - **[learn-lessons](.agents/skills/learn-lessons/SKILL.md)**: 'Retrospective skill that analyzes a coding agent session, a set of local changes, or a branch/pull request, then extracts reusable coding patterns, architectural decisions, and best practices — and writes them into skills and AGENTS.md so future agents apply the same patterns automatically. Primary use: capturing HOW code was written (naming, structure, TypeScript idioms, module patterns, error handling), not just what the agent did. Use when asked to "learn from this session", "capture patterns from this PR", "remember how we did this", "document this approach", "improve skills from this work", or "make sure future agents do it this way".'
 - **[link-workspace-packages](.agents/skills/link-workspace-packages/SKILL.md)**: 'Link workspace packages in codebases (npm, yarn, pnpm, bun). USE WHEN: (1) you just created or generated new packages and need to wire up their dependencies, (2) user imports from a sibling package and needs to add it as a dependency, (3) you get resolution errors for workspace packages (@org/*) like "cannot find module", "failed to resolve import", "TS2307", or "cannot resolve". DO NOT patch around with tsconfig paths or manual package.json edits - use the package manager''s workspace commands to fix actual linking.'
 - **[monitor-ci](.agents/skills/monitor-ci/SKILL.md)**: Monitor Nx Cloud CI pipeline and handle self-healing fixes. USE WHEN user says "monitor ci", "watch ci", "ci monitor", "watch ci for this branch", "track ci", "check ci status", wants to track CI status, or needs help with self-healing CI fixes. Prefer this skill over native CI provider tools (gh, glab, etc.) for CI monitoring — it integrates with Nx Cloud self-healing which those tools cannot access.
@@ -534,38 +564,43 @@ Specialized domain knowledge for working on specific systems or patterns:
 - **[nx-plugins](.agents/skills/nx-plugins/SKILL.md)**: Find and add Nx plugins. USE WHEN user wants to discover available plugins, install a new plugin, or add support for a specific framework or technology to the workspace.
 - **[nx-run-tasks](.agents/skills/nx-run-tasks/SKILL.md)**: Helps with running tasks in an Nx workspace. USE WHEN the user wants to execute build, test, lint, serve, or run any other tasks defined in the workspace.
 - **[nx-workspace](.agents/skills/nx-workspace/SKILL.md)**: "Explore and understand Nx workspaces. USE WHEN answering questions about the workspace, projects, or tasks. ALSO USE WHEN an nx command fails or you need to check available targets/configuration before running a task. EXAMPLES: 'What projects are in this workspace?', 'How is project X configured?', 'What depends on library Y?', 'What targets can I run?', 'Cannot find configuration for task', 'debug nx task failure'."
-- **[prompt-implementation](.agents/skills/prompt-implementation/SKILL.md)**: Use when preparing a kickoff prompt for a fresh coding agent to implement a feature from superpowers-generated specs/plans and GitHub issue graphs, especially when tasks are linked by parent/sub-issue and blocked-by dependencies.
+- **[prototype](.agents/skills/prototype/SKILL.md)**: Build a throwaway prototype to answer a design question. Use when the user wants to sanity-check whether a state model or logic feels right, or explore what a UI should look like.
 - **[query-sql](.agents/skills/query-sql/SKILL.md)**: Toolkit for interactively querying and exploring the local PostgreSQL database schema and data using the local psql client. Use when asked to write a SQL query, explore database schemas, inspect table structures, or execute local database queries. Relies on workspace default environment variables.
 - **[receiving-code-review](.agents/skills/receiving-code-review/SKILL.md)**: Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires technical rigor and verification, not performative agreement or blind implementation
 - **[refresh-documentation](.agents/skills/refresh-documentation/SKILL.md)**: Review and update all project documentation to keep it accurate and current. Use this skill when asked to refresh, update, or audit documentation, README files, AGENTS.md files, skill descriptions, or any markdown docs across the codebase.
 - **[rename-branch](.agents/skills/rename-branch/SKILL.md)**: "Rename a git branch. Analyzes changes against the main branch, decides on a conventional name, and executes the rename."
-- **[requesting-code-review](.agents/skills/requesting-code-review/SKILL.md)**: Use when completing tasks, implementing major features, or before merging to verify work meets requirements
-- **[resolve-conflicts](.agents/skills/resolve-conflicts/SKILL.md)**: Workflow to resolve Git merge conflicts cleanly. Use when asked to resolve conflicts, fix merge issues, merge a branch, or rebase with conflicts. This skill instructs the agent to analyze both branches to understand their distinct purposes before resolving conflicts to preserve the intent of both.
+- **[research](.agents/skills/research/SKILL.md)**: Investigate a question against high-trust primary sources and capture the findings as a Markdown file in the repo. Use when the user wants a topic researched, docs or API facts gathered, or reading legwork delegated to a background agent.
+- **[resolving-merge-conflicts](.agents/skills/resolving-merge-conflicts/SKILL.md)**: "Use when you need to resolve an in-progress git merge/rebase conflict."
 - **[restore-code](.agents/skills/restore-code/SKILL.md)**: "Restore code safely from backup artifacts created before risky changes. Use when undoing destructive operations, recovering from failed refactors or rebases, restoring deleted files, rolling back broad search-and-replace edits, or rehydrating work from backup branches and stashes. Supports preview-first recovery via backup branch, stash, or selective file restoration."
 - **[seed-postgres](.agents/skills/seed-postgres/SKILL.md)**: "Use this skill to dump and restore local PostgreSQL databases, schemas, and tables (collections) using Nx targets and pg_dump/pg_restore. Use when asked to backup, dump, export, restore, import, or copy local database data."
+- **[setup-matt-pocock-skills](.agents/skills/setup-matt-pocock-skills/SKILL.md)**: Configure this repo for the engineering skills — set up its issue tracker, triage label vocabulary, and domain doc layout. Run once before first use of the other engineering skills.
 - **[sign-commits](.agents/skills/sign-commits/SKILL.md)**: Re-sign unsigned commits on the current branch or pull request without changing code content by rewriting only from the first unsigned commit onward on a temporary branch. Use when asked to sign commits, add GPG signatures to an existing branch, satisfy signed-commit requirements, or make a PR show verified commits. Creates a backup branch first, runs the rebase non-interactively, verifies the rewritten final tree exactly matches the original branch tip, and stops immediately if any check, conflict, drift, or GPG step fails.
 - **[spell-check](.agents/skills/spell-check/SKILL.md)**: Run and triage cspell in this codebase. Use when spell-check fails in lint-staged, nx affected, or nx run-many, when cspell reports Unknown word entries, or when adding domain vocabulary to the correct dictionary under configuration/.cspell. Covers full-workspace checks, project-targeted checks, and dictionary update validation.
-- **[stay-awake](.agents/skills/stay-awake/SKILL.md)**: Use when running long coding-agent sessions on macOS that risk idle sleep, especially when tests, builds, debugging, or CI triage may outlast display or system sleep timers, when starting implementation from a superpowers plan or similar long-running task, or when the user says "caffeinate yourself".
+- **[stay-awake](.agents/skills/stay-awake/SKILL.md)**: Use when running long coding-agent sessions on macOS that risk idle sleep, especially when tests, builds, debugging, or CI triage may outlast display or system sleep timers, when starting implementation from a spec or ticket set or similar long-running task, or when the user says "caffeinate yourself".
 - **[subagent-driven-development](.agents/skills/subagent-driven-development/SKILL.md)**: Use when executing implementation plans with independent tasks in the current session
 - **[submit-changes](.agents/skills/submit-changes/SKILL.md)**: Automatically submit local changes through the full branch → commit → push → pull request pipeline. Includes branch-name conformance checks and automatic branch rename when needed. Use this skill when asked to submit, ship, or push changes; when you want to move from local changes to an open PR in one step; or when orchestrating the complete git workflow automatically without manual steps.
-- **[systematic-debugging](.agents/skills/systematic-debugging/SKILL.md)**: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes
-- **[test-driven-development](.agents/skills/test-driven-development/SKILL.md)**: Use when implementing any feature or bugfix, before writing implementation code
+- **[tdd](.agents/skills/tdd/SKILL.md)**: Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions "red-green-refactor", or wants integration tests.
+- **[teach](.agents/skills/teach/SKILL.md)**: Teach the user a new skill or concept, within this workspace.
 - **[testing-mocks](.agents/skills/testing-mocks/SKILL.md)**: Create and structure mocks for tests using createMock, vi.mock, and NestJS DI patterns. USE WHEN writing unit or integration tests with mocked dependencies, when asked about mocking services or repositories, or when setting up test environments with injected dependencies.
 - **[testing-strategy](.agents/skills/testing-strategy/SKILL.md)**: "Use codebase testing conventions: unit, integration, end-to-end test naming and Nx commands. Use when adding tests or recommending test coverage."
+- **[to-questionnaire](.agents/skills/to-questionnaire/SKILL.md)**: Turn a decision you can't fully answer into a questionnaire for someone else to fill in.
+- **[to-spec](.agents/skills/to-spec/SKILL.md)**: Turn the current conversation into a spec and publish it to the project issue tracker — no interview, just synthesis of what you've already discussed.
+- **[to-tickets](.agents/skills/to-tickets/SKILL.md)**: Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, published to the configured tracker — edges as text in one file per ticket locally, or native blocking links on a real tracker.
+- **[triage](.agents/skills/triage/SKILL.md)**: Move issues and external PRs through a state machine of triage roles — categorise, verify, grill if needed, and write agent-ready briefs.
 - **[triage-deployment](.agents/skills/triage-deployment/SKILL.md)**: "Diagnose and fix failing GitHub Actions CI workflows in this codebase. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: lint-codebase (typecheck, lint, format, spell-check, knip, markdown-lint, yaml-lint, conformetry, synchronization), test-coverage, validate-conventions (branch name, PR title/body, config sync), scan-security (gitleaks, bandit, dependency audit, licenses, trivy), and make-projects (builds, bundle sizes, devcontainer image)."
 - **[triage-submission](.agents/skills/triage-submission/SKILL.md)**: "Triage and fix git submission failures for both commits and pushes. Use when a git commit or push is rejected, when lint-staged errors occur, when pre-commit or pre-push hooks fail, when a branch name is invalid on push, or when you see errors from husky, commitlint, validate-branch-name, ESLint, oxfmt, prettier, typecheck, knip, cspell, markdownlint, or yamllint during a commit or push attempt. Reads the error output, identifies the failing hook and checks, reads the relevant configuration, and applies targeted fixes."
 - **[update-pull-request](.agents/skills/update-pull-request/SKILL.md)**: Update an existing pull request's title and description to accurately reflect the implemented changes. Use this skill when asked to update, refresh, or rewrite a PR title or description, sync a PR with the latest changes, or when the PR description no longer matches the implementation.
-- **[upsert-issues](.agents/skills/upsert-issues/SKILL.md)**: Use when converting implementation plans into many linked GitHub issues, or when creating/updating issue hierarchies with parent-sub-issue and dependency relationships plus consistent metadata.
 - **[using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md)**: Use when starting feature work that needs isolation from current workspace or before executing implementation plans - ensures an isolated workspace exists via native tools or git worktree fallback
-- **[using-superpowers](.agents/skills/using-superpowers/SKILL.md)**: Use when starting any conversation - establishes how to find and use skills, requiring skill invocation before ANY response including clarifying questions
 - **[validate-code](.agents/skills/validate-code/SKILL.md)**: Run the full code quality validation suite for this codebase. Use this skill when you have finished implementing code changes and want to verify they are clean before committing, when told to "validate", "check quality", or "run linting", or before invoking the submit-changes skill. Runs lint-codebase (format, lint, typecheck, knip, spell-check) using the write configuration to auto-fix what it can, then checks that nothing remains.
 - **[verification-before-completion](.agents/skills/verification-before-completion/SKILL.md)**: Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before making any success claims; evidence before assertions always
+- **[wait-what](.agents/skills/wait-what/SKILL.md)**: Stop. That last message did not land — re-pitch it.
+- **[wayfinder](.agents/skills/wayfinder/SKILL.md)**: Plan a huge chunk of work — more than one agent session can hold — as a shared map of decision tickets on your issue tracker, and resolve them one at a time until the way to the destination is clear.
+- **[wizard](.agents/skills/wizard/SKILL.md)**: Generate an interactive bash wizard that walks a human through steps only they can perform. Use when provisioning infrastructure, setting up credentials or CI secrets, walking an unfamiliar third-party dashboard, or running a one-off migration or cutover. Don't invoke this for steps the agent can perform itself.
 - **[write-comments](.agents/skills/write-comments/SKILL.md)**: Apply codebase commenting conventions for TypeScript, Python, and any language. USE WHEN writing or reviewing comments, adding section comments, organizing code into logical groups, or asked about comment style. Covers when to comment, how to write good comments, section comment format (emoji + capitalized name), emoji reference table, and anti-patterns to avoid (obvious comments, redundant JSDoc, TODO lint bypasses, dash-line dividers).
 - **[write-python](.agents/skills/write-python/SKILL.md)**: Python project conventions for this codebase. Use when creating a new Python project, configuring Python tools (ruff, pyright, ty, pytest, bandit, vulture), writing or reviewing pyproject.toml, setting up Nx targets for Python, or asked about Python tooling setup, uv, or the language:python tag. Covers the project.json pattern, pyproject.toml structure, targetDefaults, tool execution via uv run, and ty pre-1.0 configuration rules.
 - **[write-react](.agents/skills/write-react/SKILL.md)**: React coding conventions for this codebase. Use when writing or reviewing React components, when asked about component structure, section ordering, Tailwind CSS usage, state management patterns, conditional rendering, list rendering, or React 19 conventions. Covers component section layout (🔖🧩🪝🏗💪🏁🎨), Tailwind CSS with theme tokens, TanStack Router file-based routing, lexico-components usage, and testing with Vitest + RTL.
 - **[write-typescript](.agents/skills/write-typescript/SKILL.md)**: TypeScript coding conventions for this codebase. Use when writing or modifying TypeScript or TSX files, when TypeScript type errors appear, or when asked about strict mode, type imports, naming conventions, return types, the no-any rule, async functions, floating promises, exhaustive switches, readonly properties, non-null assertions, control-flow style, test typing patterns, or Node fs Dirent mock typing.
-- **[writing-plans](.agents/skills/writing-plans/SKILL.md)**: Use when you have a spec or requirements for a multi-step task, before touching code
-- **[writing-skills](.agents/skills/writing-skills/SKILL.md)**: Use when creating new skills, editing existing skills, or verifying skills work before deployment
+- **[writing-for-agents](.agents/skills/writing-for-agents/SKILL.md)**: Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md.
 <!-- agent-skills-table-of-contents end -->
 
 ### Agents
@@ -573,7 +608,6 @@ Specialized domain knowledge for working on specific systems or patterns:
 <!-- custom-agents-table-of-contents start -->
 - **[ci-monitor-subagent](.github/agents/ci-monitor-subagent.agent.md)**: CI helper for /monitor-ci. Fetches CI status, retrieves fix details, or updates self-healing fixes. Executes one MCP tool call and returns the result.
 - **[explore-codebase](.github/agents/explore-codebase.agent.md)**: Explore codebase files, patterns, and structure for a given topic. USE WHEN gathering implementation context before planning or executing tasks, when asked to research the codebase, or when a planning agent needs a Sub-Agent A (Codebase Research). Returns a Codebase Research Summary with relevant files, existing patterns, affected Nx projects, reusable code, related plans, constraints, and open questions.
-- **[explore-internet](.github/agents/explore-internet.agent.md)**: Gather external documentation, changelogs, and release notes for libraries, frameworks, and APIs. USE WHEN a plan involves external dependencies, package upgrades, migrations, new frameworks, or technologies requiring documentation lookup. Skip for purely internal refactoring. Returns an External Research Summary with breaking changes, migration guidance, known issues, and documentation links.
 - **[triage-deployment](.github/agents/triage-deployment.agent.md)**: Diagnose and fix failing GitHub Actions CI workflows in this codebase. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: lint-codebase (typecheck, lint, format, spell-check, knip, markdown-lint, yaml-lint, conformetry, synchronization), test-coverage, validate-conventions (branch name, PR title/body, config sync), scan-security (gitleaks, bandit, dependency audit, licenses, trivy), and make-projects (builds, bundle sizes, devcontainer image).
 - **[triage-submission](.github/agents/triage-submission.agent.md)**: Triage and fix git submission failures for both commits and pushes. Use when a git commit or push is rejected, when lint-staged errors occur, when pre-commit or pre-push hooks fail, when a branch name is invalid on push, or when you see errors from husky, commitlint, validate-branch-name, ESLint, oxfmt, prettier, typecheck, knip, cspell, markdownlint, or yamllint during a commit or push attempt. Reads the error output, identifies the failing hook and checks, reads the relevant configuration, and applies targeted fixes.
 <!-- custom-agents-table-of-contents end -->

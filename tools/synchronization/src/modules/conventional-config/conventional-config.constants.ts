@@ -5,7 +5,6 @@ export const SYNC_CONVENTIONAL_CONFIG_SKILL_FILES = [
   ".agents/skills/rename-branch/SKILL.md",
   ".agents/skills/commit-code/SKILL.md",
   ".agents/skills/checkout-branch/SKILL.md",
-  ".agents/skills/create-worktree/SKILL.md",
   ".agents/skills/create-pull-request/SKILL.md",
   ".github/skills/triage-submission/SKILL.md",
   ".github/copilot-instructions.md",

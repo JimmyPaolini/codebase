@@ -13,6 +13,7 @@ Buildability
 bundlesize
 caffeinate
 capitalisation
+categorise
 checkpointing
 cipe
 cipes
@@ -28,6 +29,7 @@ context7
 cssmodule
 ctest
 cursorrules
+cutover
 Cython
 dataloaders
 depcruise
@@ -99,6 +101,7 @@ Manypkg
 mapbox
 maplibre
 materialui
+mattpocock
 mcp
 metatype
 middlewares
@@ -143,6 +146,7 @@ pipx
 pkill
 pnpm
 pnpmfile
+pocock
 polymorphic
 precompiled
 preflight
@@ -225,6 +229,7 @@ unrs
 unstub
 unsuffixed
 untaint
+unvalidated
 uppercased
 uppercases
 vaul
@@ -234,6 +239,7 @@ vite
 vitest
 vulture
 warshall
+wayfinder
 wcag
 windsurfrules
 workspaces
