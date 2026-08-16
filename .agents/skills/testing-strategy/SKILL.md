@@ -26,10 +26,10 @@ Use when asked to:
 ## Run Tests
 
 ```bash
-nx run <project>:test:unit
-nx run <project>:test:integration
-nx run <project>:test:end-to-end
-nx affected --target=test --base=main
+nx run <project>:vitest:unit
+nx run <project>:vitest:integration
+nx run <project>:vitest:end-to-end
+nx affected --target=vitest --base=main
 ```
 
 ## Coverage Verification
@@ -37,7 +37,7 @@ nx affected --target=test --base=main
 When a task includes coverage goals (or CI enforces coverage thresholds), run:
 
 ```bash
-nx run <project>:test --configuration=coverage
+nx run <project>:vitest --configuration=coverage
 ```
 
 Key practice: after structural test refactors (renaming, regrouping, helper extraction), always re-run coverage to verify no threshold regression.
@@ -53,7 +53,7 @@ Additional coverage practices from recent 96% threshold work:
 - Prefer deterministic fixtures and fixed clocks for time-sensitive or orbital/math-heavy logic to keep branch tests stable.
 - For orchestration services, combine focused unit tests with a small set of integration tests that verify cross-service error propagation and empty-data behavior.
 - Include module wiring and constants/types-adjacent smoke tests where needed so structural files do not remain persistent blind spots under strict thresholds.
-- Before opening or updating a coverage-focused PR, run the CI-shaped command locally: `nx affected --target=test --configuration=coverage --base=main`.
+- Before opening or updating a coverage-focused PR, run the CI-shaped command locally: `nx affected --target=vitest --configuration=coverage --base=main`.
 
 ## Mocking with `createMock`
 

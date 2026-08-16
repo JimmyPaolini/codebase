@@ -82,19 +82,19 @@ Utility library for Nx generators. Extends base config with:
 
 ```bash
 # Test a specific project
-nx run <project>:test
+nx run <project>:vitest
 
 # Test all affected projects (based on git diff from main)
-nx affected -t test
+nx affected -t vitest
 
 # Run tests with coverage reports
-nx affected -t test --coverage
+nx affected -t vitest --coverage
 
 # Test all projects in the codebase
-nx run-many -t test --all
+nx run-many -t vitest --all
 
 # Test with parallelization (default: 3 projects at once)
-nx run-many -t test --all --parallel=3
+nx run-many -t vitest --all --parallel=3
 ```
 
 ## Coverage Reports
@@ -117,7 +117,7 @@ Open `coverage/index.html` in a browser to view detailed line-by-line coverage a
 The CI workflow ([`.github/workflows/test-coverage.yml`](/.github/workflows/test-coverage.yml)) runs:
 
 ```bash
-npx nx affected -t test --parallel=3 --coverage
+npx nx affected -t vitest --parallel=3 --coverage
 ```
 
 This ensures:
@@ -173,7 +173,7 @@ Use descriptive suffixes to categorize tests:
 Projects can run specific test types using test names:
 
 ```bash
-nx run caelundas:test --testNamePattern="unit"
+nx run caelundas:vitest --testNamePattern="unit"
 ```
 
 ### Setup Files
@@ -271,20 +271,20 @@ export default mergeConfig(
 ### Run Single Test File
 
 ```bash
-nx run caelundas:test src/events/aspects/aspects.events.test.ts
+nx run caelundas:vitest src/events/aspects/aspects.events.test.ts
 ```
 
 ### Run Tests Matching Pattern
 
 ```bash
-nx run caelundas:test --testNamePattern="aspect"
+nx run caelundas:vitest --testNamePattern="aspect"
 ```
 
 ### Run in Watch Mode
 
 ```bash
 # For projects with watch target
-nx run caelundas:test:watch
+nx run caelundas:vitest:watch
 
 # Or manually
 cd applications/caelundas && vitest

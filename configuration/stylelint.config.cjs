@@ -3,7 +3,7 @@
  * Purpose: CSS linting with Tailwind CSS v3 support for all projects in the codebase
  * Usage (Check): nx run <project>:stylelint
  * Usage (Fix): nx run <project>:stylelint --configuration=write
- * CI Workflow: .github/workflows/analyze-code.yml
+ * CI Workflow: .github/workflows/lint-codebase.yml
  * @see https://stylelint.io/
  */
 

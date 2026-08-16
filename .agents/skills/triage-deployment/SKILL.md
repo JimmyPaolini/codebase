@@ -1,6 +1,6 @@
 ---
 name: triage-deployment
-description: "Diagnose and fix failing GitHub Actions CI workflows in this codebase. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: analyze-code (typecheck, lint, format, spell-check, knip, markdown-lint, yaml-lint), test-coverage, validate-conventions (branch name, PR title/body, config sync), audit-security (gitleaks, bandit, scan-dependencies, trivy), and make-devcontainer (VSCode extensions sync, Docker build, devcontainer test)."
+description: "Diagnose and fix failing GitHub Actions CI workflows in this codebase. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: lint-codebase (typecheck, lint, format, spell-check, knip, markdown-lint, yaml-lint, conformetry, synchronization), test-coverage, validate-conventions (branch name, PR title/body, config sync), scan-security (gitleaks, bandit, dependency audit, licenses, trivy), and make-projects (builds, bundle sizes, devcontainer image)."
 argument-hint: "Optional: paste failure logs, or specify a workflow name / run URL to fetch"
 ---
 
@@ -56,19 +56,18 @@ Match the log header against the known workflows:
 
 | Workflow name             | Job name               | Trigger                                                |
 | ------------------------- | ---------------------- | ------------------------------------------------------ |
-| `🧑‍💻 Analyze Code`         | `analyze-code`         | push / PR / manual                                     |
+| `🧑‍💻 Lint Codebase`        | `lint-codebase`        | push / PR / manual                                     |
 | `🧑‍🔬 Test Coverage`        | `test-coverage`        | push / PR / manual                                     |
 | `🧑‍⚖️ Validate Conventions` | `validate-conventions` | PR (opened/sync/edited) / push to main                 |
-| `🕵️ Audit Security`       | `audit-security`       | push / PR / weekly schedule                            |
-| `🧑‍🔧 Make Devcontainer`    | `make-devcontainer`    | push to main / PR touching `.devcontainer/**` / manual |
+| `🕵️ Scan Security`        | `scan-security`        | push / PR / weekly schedule                            |
 
 Identify which **step** within the job failed (visible in the log as `##[error]` or step exit code `!= 0`).
 
 ## Step 3: Triage by Workflow
 
-### 🧑‍💻 Analyze Code — `pnpm exec nx affected --target=analyze-code`
+### 🧑‍💻 Lint Codebase — `pnpm exec nx affected --target=lint-codebase`
 
-The `analyze-code` composite target fans out to per-project sub-targets. Identify which sub-target failed:
+The `lint-codebase` target is an `nx:noop` whose `dependsOn` leaves do the work. Identify which sub-target failed:
 
 | Sub-target      | Underlying tool   | Config file                                                                                                                                                                                         |
 | --------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -99,12 +98,12 @@ The `analyze-code` composite target fans out to per-project sub-targets. Identif
 **Verify:**
 
 ```bash
-pnpm exec nx affected -t analyze-code
+pnpm exec nx affected -t lint-codebase
 ```
 
 ---
 
-### 🧑‍🔬 Test Coverage — `nx affected --target=test --parallel=3 --configuration=coverage`
+### 🧑‍🔬 Test Coverage — `nx affected --target=vitest --parallel=3 --configuration=coverage`
 
 Coverage reports are uploaded as artifacts (`coverage-reports`).
 
@@ -124,7 +123,7 @@ Coverage reports are uploaded as artifacts (`coverage-reports`).
 **Verify:**
 
 ```bash
-pnpm exec nx affected -t test --configuration=coverage --parallel=3
+pnpm exec nx affected -t vitest --configuration=coverage --parallel=3
 ```
 
 ---
@@ -197,7 +196,7 @@ Config: [pyproject.toml](../../../pyproject.toml) (`[tool.bandit]`)
 
 Fix: Address the reported security issue (e.g., use `secrets.token_hex()` instead of `random`, parameterize SQL queries). Use `# nosec <code>` only when justified with a comment.
 
-#### 📚 Dependency Audit — `nx affected --target=scan-dependencies`
+#### 📚 Dependency Audit — part of `nx affected --target=scan-security`
 
 Fix: Upgrade the vulnerable dependency to a patched version, or add a `pnpm audit --ignore` entry if no fix is available and the risk is accepted.
 
@@ -257,10 +256,10 @@ Run the equivalent Nx target before handing back:
 
 ```bash
 # Analyze code
-pnpm exec nx affected -t analyze-code
+pnpm exec nx affected -t lint-codebase
 
 # Test coverage
-pnpm exec nx affected -t test --configuration=coverage --parallel=3
+pnpm exec nx affected -t vitest --configuration=coverage --parallel=3
 
 # Validate conventions (config sync checks only)
 npx nx run synchronization:start:conventional-config-check
@@ -269,7 +268,7 @@ npx nx run synchronization:start:agent-skills-check
 
 # Security
 pnpm exec nx run codebase:gitleaks
-pnpm exec nx affected -t scan-dependencies
+pnpm exec nx affected -t scan-security
 ```
 
 ## Root Cause & Prevention
@@ -282,13 +281,13 @@ Specifically, after every implementation task:
 
 ```bash
 # Auto-fix format, lint, and unused-code issues
-pnpm exec nx affected --target=analyze-code --configuration=write --base=main
+pnpm exec nx affected --target=lint-codebase --configuration=write --base=main
 
 # Verify all checks pass — do not push until this is clean
-pnpm exec nx affected --target=analyze-code --configuration=check --base=main
+pnpm exec nx affected --target=lint-codebase --configuration=check --base=main
 ```
 
-Running this loop locally catches 100% of `analyze-code` CI failures — typecheck, lint, format, spell-check, unused code, and sync checks — without waiting for CI to report them.
+Running this loop locally catches 100% of `lint-codebase` CI failures — typecheck, lint, format, spell-check, unused code, and sync checks — without waiting for CI to report them.
 
 ## Step 6: Report Errors Found and Fixes Implemented
 

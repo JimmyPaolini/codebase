@@ -3,53 +3,127 @@ description: |
   Nx codebase setup with pnpm, node, and cache management
   (requires checkout first)
 
+  Every optional step is gated by an input so a job pays only for what it
+  uses. Homebrew alone costs ~13s, and it exists solely to install the
+  security scanners, so only the security gate should ask for it.
+
+inputs:
+  gitleaks:
+    description: Install gitleaks via Homebrew (secret scanning)
+    default: "false"
+  install:
+    description: Install node dependencies with pnpm
+    default: "true"
+  nx-cache:
+    description: Restore and save the Nx task cache
+    default: "true"
+  nx-graph-cache:
+    description: |
+      Restore and save the Nx project graph (.nx/workspace-data). Saves ~11s
+      of cold graph construction on the first Nx invocation of a job.
+    default: "true"
+  nx-shas:
+    description: Resolve NX_BASE and NX_HEAD, required by `nx affected`
+    default: "true"
+  python-dependencies:
+    description: |
+      Sync the uv workspace into the shared root `.venv`. Defaults on because
+      that venv is where `uv run yamllint` and `uv run sqlfluff` resolve from,
+      and those run on every TypeScript project — not only the Python ones.
+      Turn it off for a job that runs no Python-backed tool at all.
+    default: "true"
+  trivy:
+    description: Install trivy via Homebrew (infrastructure scanning)
+    default: "false"
+  uv:
+    description: |
+      Install uv. Required by far more than the Python projects — yaml-lint
+      and sqlfluff shell out to `uv run --project configuration` on every
+      TypeScript project too.
+    default: "true"
+
 runs:
   using: composite
   steps:
     - name: 📦 Setup pnpm
-      uses: pnpm/action-setup@v4
+      uses: pnpm/action-setup@v6
 
     - name: 🟢 Setup node
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v7
       with:
         node-version-file: .nvmrc
         cache: pnpm
 
     - name: 🎯 Set Nx SHAs
-      uses: nrwl/nx-set-shas@v4
+      if: inputs.nx-shas == 'true'
+      uses: nrwl/nx-set-shas@v5
 
     - name: 🗃️ Configure Nx Cache
-      run: |
-        echo "NX_DEFAULT_OUTPUT_STYLE=static" >> $GITHUB_ENV
+      run: echo "NX_DEFAULT_OUTPUT_STYLE=static" >> "$GITHUB_ENV"
       shell: bash
 
     - name: 🔧 Setup Homebrew
+      if: inputs.gitleaks == 'true' || inputs.trivy == 'true'
       uses: Homebrew/actions/setup-homebrew@main
 
-    - name: 🍺 Install Homebrew tools
-      run: brew install gitleaks --quiet
+    - name: 🍺 Install Homebrew Tools
+      if: inputs.gitleaks == 'true' || inputs.trivy == 'true'
+      env:
+        INSTALL_GITLEAKS: ${{ inputs.gitleaks }}
+        INSTALL_TRIVY: ${{ inputs.trivy }}
+      run: |
+        packages=()
+        if [[ "${INSTALL_GITLEAKS}" == "true" ]]; then
+          packages+=(gitleaks)
+        fi
+        if [[ "${INSTALL_TRIVY}" == "true" ]]; then
+          packages+=(trivy)
+        fi
+        brew install --quiet "${packages[@]}"
       shell: bash
 
+    # Keyed per job. Every workflow previously shared one key, so concurrent
+    # jobs on a single SHA raced and all but one failed to reserve it — the
+    # cache was effectively write-only.
     - name: ♻️ Sync Nx Cache
-      uses: actions/cache@v4
+      if: inputs.nx-cache == 'true'
+      uses: actions/cache@v6
       with:
         path: .nx/cache
         key: |
-          nx-cache-${{ runner.os }}-${{ hashFiles(
-          '**/pnpm-lock.yaml') }}-${{ github.sha }}
+          nx-cache-${{ github.job }}-${{ runner.os }}-${{ hashFiles(
+          'pnpm-lock.yaml') }}-${{ github.sha }}
         restore-keys: |
-          nx-cache-${{ runner.os }}-${{ hashFiles(
-          '**/pnpm-lock.yaml') }}-
-          nx-cache-${{ runner.os }}-
+          nx-cache-${{ github.job }}-${{ runner.os }}-${{ hashFiles(
+          'pnpm-lock.yaml') }}-
+          nx-cache-${{ github.job }}-${{ runner.os }}-
+
+    # Exact match only, and no restore-keys: a partially stale project graph
+    # is worse than rebuilding one. `nx reset` clears it if it ever misbehaves.
+    - name: 🕸️ Sync Nx Graph
+      if: inputs.nx-graph-cache == 'true'
+      uses: actions/cache@v6
+      with:
+        path: .nx/workspace-data
+        key: |
+          nx-graph-${{ runner.os }}-${{ hashFiles(
+          'pnpm-lock.yaml', 'nx.json', 'project.json',
+          'applications/*/project.json', 'packages/*/project.json',
+          'tools/*/project.json') }}
 
     - name: 🌌 Setup uv
-      uses: astral-sh/setup-uv@v6
+      if: inputs.uv == 'true'
+      uses: astral-sh/setup-uv@v10.0.1
       with:
         enable-cache: true
         cache-dependency-glob: uv.lock
         add-problem-matchers: "false"
 
+    # Guarded on `uv` as well as its own input: `python-dependencies` defaults
+    # on, so a job that opts out of installing uv would otherwise inherit a sync
+    # it has no binary to run.
     - name: 🐍 Install Python Dependencies
+      if: inputs.uv == 'true' && inputs.python-dependencies == 'true'
       # Syncs every uv workspace member into the shared root `.venv`. Scoping
       # this to a single project (`--project`) would prune the other members'
       # tools out of that shared environment.
@@ -57,5 +131,6 @@ runs:
       shell: bash
 
     - name: 📚 Install Node Dependencies
+      if: inputs.install == 'true'
       run: CI=true pnpm install --frozen-lockfile --reporter=append-only
       shell: bash

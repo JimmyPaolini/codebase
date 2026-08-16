@@ -6,7 +6,6 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { mockProcessExit } from "../../../testing/mocks";
 import { LoggerService } from "../logger/logger.service";
 
 import { ConventionalConfigIoService } from "./conventional-config-io.service";
@@ -176,7 +175,7 @@ describe(ConventionalConfigService, () => {
     );
   });
 
-  it("exits check mode when any validation fails", () => {
+  it("reports failure from check mode when any validation fails", () => {
     vi.mocked(validators.checkSettingsSync).mockReturnValue(false);
     vi.mocked(validators.checkAllSkillsSync).mockReturnValue(true);
     vi.mocked(validators.checkAllTemplatesSync).mockReturnValue(true);
@@ -185,21 +184,19 @@ describe(ConventionalConfigService, () => {
     vi.mocked(io.getReleaseRulesTypes).mockReturnValue(["fix"]);
     vi.mocked(io.getPresetConfigTypes).mockReturnValue(["fix"]);
 
-    const processExitSpy = mockProcessExit();
+    // Reports rather than exits: the aggregate `synchronization` command runs
+    // every check before exiting once, so drift here must not kill the process.
+    const inSync = service.handleCheckMode({
+      config: conventionalConfig,
+      scopeNames: ["tools"],
+      settingsScopes: [],
+      typeNames: ["fix"],
+    });
 
-    expect(() =>
-      service.handleCheckMode({
-        config: conventionalConfig,
-        scopeNames: ["tools"],
-        settingsScopes: [],
-        typeNames: ["fix"],
-      }),
-    ).toThrow("process.exit:1");
+    expect(inSync).toBe(false);
     expect(logger.log).toHaveBeenCalledWith(
-      "💡 Run 'nx run synchronization:start:conventional-config-write' to sync",
+      "💡 Run 'nx run synchronization:synchronize:write' to sync",
     );
-
-    processExitSpy.mockRestore();
   });
 
   it("returns early in write mode when everything is in sync", () => {
@@ -303,7 +300,7 @@ describe(ConventionalConfigService, () => {
   it("dispatches runSynchronization for check and write modes", () => {
     const handleCheckModeSpy = vi
       .spyOn(service, "handleCheckMode")
-      .mockImplementation(() => {});
+      .mockReturnValue(true);
     const handleWriteModeSpy = vi
       .spyOn(service, "handleWriteMode")
       .mockImplementation(() => {});
