@@ -127,6 +127,33 @@ describe(YamlService, () => {
     expect(result.lines).toBe(5);
   });
 
+  it("counts an empty document without walking into nothing", () => {
+    const { workingDirectory, yamlFiles } = writeYamlFiles({
+      // A stream of two `---` markers: two documents, each an empty scalar.
+      "empty.yaml": "---\n---\n",
+    });
+
+    const result = service.analyze({ workingDirectory, yamlFiles });
+
+    expect(result.documents).toBe(2);
+    expect(result.mappings).toBe(0);
+    expect(result.maxDepth).toBe(1);
+  });
+
+  it("counts an explicit key that has no value", () => {
+    const { workingDirectory, yamlFiles } = writeYamlFiles({
+      // `? key` with nothing under it: the pair's value is absent entirely
+      // rather than an empty scalar, so there is no node to walk into.
+      "explicit.yaml": "? standalone\n",
+    });
+
+    const result = service.analyze({ workingDirectory, yamlFiles });
+
+    expect(result.mappings).toBe(1);
+    expect(result.keys).toBe(1);
+    expect(result.scalars).toBe(1);
+  });
+
   it("returns empty metrics when there are no YAML files", () => {
     const result = service.analyze({
       workingDirectory: "/repo",

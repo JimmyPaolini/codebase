@@ -176,6 +176,23 @@ describe(DiscoveryService, () => {
     expect(result.trackedFiles).toStrictEqual(["src/app.ts"]);
   });
 
+  it("keeps every file when an ignore file matches nothing", () => {
+    execFileSyncMock.mockImplementation((_file: string, args?: string[]) =>
+      // Git prints nothing when no tracked file matches the ignore patterns.
+      args?.includes("--ignored") === true
+        ? Buffer.from("")
+        : Buffer.from("src/app.ts"),
+    );
+
+    const result = service.discoverFiles({
+      exclude: [],
+      excludeFrom: ["configuration/.codometerignore"],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.trackedFiles).toStrictEqual(["src/app.ts"]);
+  });
+
   it("warns and continues when an ignore file is missing", () => {
     const loggerWarnSpy = vi
       .spyOn(Logger.prototype, "warn")
