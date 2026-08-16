@@ -112,34 +112,37 @@ Output files are copied to `applications/caelundas/output/`.
 
 ```bash
 # Run all tests
-nx run caelundas:test
+nx run caelundas:vitest
 
 # Run specific test types
-nx run caelundas:test:unit            # Fast, no I/O
-nx run caelundas:test:integration     # Database tests
-nx run caelundas:test:end-to-end      # Full pipeline with NASA API
+nx run caelundas:vitest:unit            # Fast, no I/O
+nx run caelundas:vitest:integration     # Database tests
+nx run caelundas:vitest:end-to-end      # Full pipeline with NASA API
 
 # Watch mode
-nx run caelundas:test --configuration=watch
+nx run caelundas:vitest:watch
 
 # Coverage report
-nx run caelundas:test --configuration=coverage
+nx run caelundas:test-coverage --configuration=coverage
 ```
 
-### Analyze Code
+### Lint Codebase
 
 ```bash
 # Type checking
 nx run caelundas:typecheck
 
 # Linting
-nx run caelundas:lint
+nx run caelundas:eslint
 
 # Format checking
-nx run caelundas:format
+nx run caelundas:oxfmt
 
 # All checks
-nx run caelundas:analyze-code
+nx run caelundas:lint-codebase --configuration=check
+
+# Auto-fix what can be fixed
+nx run caelundas:lint-codebase --configuration=write
 ```
 
 ### Debugging

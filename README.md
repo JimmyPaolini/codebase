@@ -68,7 +68,7 @@
 
 **Markdown**
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-262-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-47863-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-47868-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-226-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-1649-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-1680-a78bfa?style=flat-square)
@@ -81,8 +81,8 @@
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-187-4ade80?style=flat-square)
 ![Tables](https://img.shields.io/badge/Tables-384-0284c7?style=flat-square)
 ![Table Rows](https://img.shields.io/badge/Table_Rows-3125-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-1808-059669?style=flat-square)
-![Images](https://img.shields.io/badge/Images-262-10b981?style=flat-square)
+![Links](https://img.shields.io/badge/Links-1807-059669?style=flat-square)
+![Images](https://img.shields.io/badge/Images-261-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-1386-dc2626?style=flat-square)
 ![Inline Code](https://img.shields.io/badge/Inline_Code-16097-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-74-ca8a04?style=flat-square)
@@ -119,12 +119,11 @@
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-K8s-326CE5?logo=kubernetes)](https://kubernetes.io/)
 [![Terraform](https://img.shields.io/badge/Terraform-IaC-844FBA?logo=terraform)](https://www.terraform.io/)
 
-[![Analyze Code](https://github.com/JimmyPaolini/codebase/actions/workflows/analyze-code.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/analyze-code.yml)
+[![Lint Codebase](https://github.com/JimmyPaolini/codebase/actions/workflows/lint-codebase.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/lint-codebase.yml)
 [![Test Coverage](https://github.com/JimmyPaolini/codebase/actions/workflows/test-coverage.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/test-coverage.yml)
-[![Security Audit](https://github.com/JimmyPaolini/codebase/actions/workflows/audit-security.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/audit-security.yml)
+[![Scan Security](https://github.com/JimmyPaolini/codebase/actions/workflows/scan-security.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/scan-security.yml)
 [![Validate Conventions](https://github.com/JimmyPaolini/codebase/actions/workflows/validate-conventions.yml/badge.svg?branch=main)](https://github.com/JimmyPaolini/codebase/actions/workflows/validate-conventions.yml)
-[![Build Projects](https://github.com/JimmyPaolini/codebase/actions/workflows/build-projects.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/build-projects.yml)
-[![Make Devcontainer](https://github.com/JimmyPaolini/codebase/actions/workflows/make-devcontainer.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/make-devcontainer.yml)
+[![Make Projects](https://github.com/JimmyPaolini/codebase/actions/workflows/make-projects.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/make-projects.yml)
 [![Release Version](https://github.com/JimmyPaolini/codebase/actions/workflows/release-version.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/release-version.yml)
 
 A modern TypeScript codebase with Nx, featuring automated releases, comprehensive code quality tools, and strict type safety.
@@ -269,7 +268,7 @@ Repository statistics measured by [codometer](packages/codometer), regenerated b
 
 **Markdown**
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-260-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-47566-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-47571-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-224-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-1637-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-1674-a78bfa?style=flat-square)
@@ -282,8 +281,8 @@ Repository statistics measured by [codometer](packages/codometer), regenerated b
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-187-4ade80?style=flat-square)
 ![Tables](https://img.shields.io/badge/Tables-379-0284c7?style=flat-square)
 ![Table Rows](https://img.shields.io/badge/Table_Rows-3100-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-1819-059669?style=flat-square)
-![Images](https://img.shields.io/badge/Images-194-10b981?style=flat-square)
+![Links](https://img.shields.io/badge/Links-1818-059669?style=flat-square)
+![Images](https://img.shields.io/badge/Images-193-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-1377-dc2626?style=flat-square)
 ![Inline Code](https://img.shields.io/badge/Inline_Code-15739-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-74-ca8a04?style=flat-square)
