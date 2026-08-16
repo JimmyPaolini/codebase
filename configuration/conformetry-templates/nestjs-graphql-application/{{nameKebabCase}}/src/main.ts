@@ -3,7 +3,7 @@ import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
 
 import { {{namePascalCase}}Module } from "./modules/{{nameKebabCase}}/{{nameKebabCase}}.module";
-import { LoggerService } from "./modules/logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 async function bootstrap(): Promise<void> {
   const logger = new LoggerService();

@@ -142,7 +142,7 @@ git diff --stat
 Optional targeted checks:
 
 ```bash
-pnpm exec nx affected --target=test --base=main
+pnpm exec nx affected --target=vitest --base=main
 ```
 
 ### 4. Finalize Recovery State

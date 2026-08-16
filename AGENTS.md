@@ -6,7 +6,7 @@
 # Run tasks via Nx (always prefer this)
 nx run <project>:<target>:<configuration>
 nx run-many --target=lint --all
-nx affected --target=test --base=main
+nx affected --target=vitest --base=main
 
 # Install dependencies
 pnpm add --filter <project> <package>
@@ -68,6 +68,7 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 
 - **[lexico-components](packages/lexico-components)**: Shared React component library (shadcn/ui, Radix UI)
 - **[lexico-entities](packages/lexico-entities)**: Shared TypeORM entities and GraphQL types package
+- **[logger](packages/logger)**: Shared pino-backed NestJS `LoggerService` and `LoggerModule`
 
 ### Tools
 
@@ -159,17 +160,17 @@ Use this flow for best results: generate with conformetry first, then run valida
 
 ```bash
 # Auto-fix all format, lint, and unused-code issues
-pnpm exec nx affected --target=analyze-code --configuration=write --base=main
+pnpm exec nx affected --target=lint-codebase --configuration=write --base=main
 
 # Verify no issues remain — all checks must pass
-pnpm exec nx affected --target=analyze-code --configuration=check --base=main
+pnpm exec nx affected --target=lint-codebase --configuration=check --base=main
 ```
 
 For new/untracked files not yet picked up by `nx affected`:
 
 ```bash
-pnpm exec nx run <project>:analyze-code --configuration=write
-pnpm exec nx run <project>:analyze-code --configuration=check
+pnpm exec nx run <project>:lint-codebase --configuration=write
+pnpm exec nx run <project>:lint-codebase --configuration=check
 ```
 
 **Do not commit until both commands pass cleanly.** If they fail, use the [triage-submission skill](.agents/skills/triage-submission/SKILL.md) to diagnose and fix the errors.
@@ -329,6 +330,7 @@ PR description template:
 | `lexico-components` | Shared React/shadcn component library |
 | `lexico-entities` | Shared TypeORM entities and GraphQL types |
 | `lexico-ingestion` | Data ingestion scripts for Lexico |
+| `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
 | `codometer` | NestJS command-line application for codometer metric collection and reporting |
 | `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
 | `no-release` | Escape hatch: suppress semantic-release for any commit type |
@@ -439,7 +441,7 @@ When a file nears 512 lines, split it along the module file suffixes (`*.types.t
 
 ### Formatting and Ordering
 
-Formatting is not a judgement call — `analyze-code --configuration=write` produces the canonical result. Write code in the shape below so the first pass is a no-op.
+Formatting is not a judgement call — `lint-codebase --configuration=write` produces the canonical result. Write code in the shape below so the first pass is a no-op.
 
 - **`oxfmt` is the formatter** (not prettier): 80-column print width, 2-space indent, double quotes, semicolons, trailing commas everywhere, LF endings, one JSX attribute per line.
 - **Import groups** (`perfectionist/sort-imports`): builtin → external → internal (`@codebase/*`) → parent → sibling → index → type, with exactly one blank line between groups and natural alphabetical order inside each group.
@@ -453,9 +455,9 @@ Formatting is not a judgement call — `analyze-code --configuration=write` prod
 - **End-to-end** (`*.end-to-end.test.ts`): Full workflows, real services, slow (30-60s)
 
 ```bash
-nx run <project>:test:unit        # Fast feedback
-nx run <project>:test:integration # Database validation
-nx affected --target=test         # Only changed projects
+nx run <project>:vitest:unit        # Fast feedback
+nx run <project>:vitest:integration # Database validation
+nx affected --target=vitest         # Only changed projects
 ```
 
 Test files are named `*.<kind>.test.ts` and live beside the code they cover. Vitest lint rules also require `it` over `test`, `vi` over `vitest`, `describe.each`/`it.each` over hand-rolled loops, and no `.only`, `.skip`, or commented-out tests.
@@ -479,6 +481,44 @@ See [Testing Strategy](documentation/code-quality/testing-strategy.md) for patte
 | `.claude/skills` | `.agents/skills` |
 | `.github/copilot-instructions.md` | `AGENTS.md` |
 | `.github/skills` | `.agents/skills` |
+
+### Session Hooks
+
+Three checks run at the start of every agent session and inject their failure as
+additional context, so the agent fixes the problem before writing any code. Both
+harnesses run the same scripts under `scripts/git/`:
+
+| Script | Checks |
+| ------ | ------ |
+| `validate-session-branch-name.sh` | Branch follows `<type>/<scope>-<description>`; directs the agent to the rename-branch skill |
+| `validate-session-commit-signing.sh` | `commit.gpgsign`, `user.signingkey`, and a GPG signing smoke test |
+| `validate-session-gh-authentication.sh` | `gh auth status` plus Projects access |
+
+Each script is registered twice — once per harness — and both registrations point
+at the same file:
+
+| Harness | Registration |
+| ------- | ------------ |
+| Claude Code | `SessionStart` entries in `.claude/settings.json` |
+| GitHub Copilot | `sessionStart` entries in `.github/hooks/*.json` |
+
+The two harnesses read different JSON shapes, so the scripts pipe their message
+through `scripts/git/emit-session-hook-context.sh`, which emits
+`hookSpecificOutput.additionalContext` when `CLAUDE_PROJECT_DIR` is set and a
+top-level `additionalContext` otherwise. Remediation text also branches on
+`CI`/`GITHUB_ACTIONS`: cloud agents are told to re-run
+`copilot-setup-steps.yml`, local agents are given the `git config` and
+`gh auth login` commands they can run themselves.
+
+The signing smoke test never opens a pinentry, so a hook can fail but never hang:
+CI signs through a `loopback` wrapper, and local agents sign through a `cancel`
+wrapper that uses an already-cached passphrase and errors out in milliseconds
+when there is none. A cancelled pinentry is reported as inconclusive rather than
+as broken signing, because the following real commit prompts for the passphrase
+normally.
+
+When adding a session check, add the script under `scripts/git/`, emit through
+the shared emitter, and register it in both places.
 
 ### Instructions
 
@@ -547,11 +587,11 @@ Specialized domain knowledge for working on specific systems or patterns:
 - **[to-spec](.agents/skills/to-spec/SKILL.md)**: Turn the current conversation into a spec and publish it to the project issue tracker — no interview, just synthesis of what you've already discussed.
 - **[to-tickets](.agents/skills/to-tickets/SKILL.md)**: Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, published to the configured tracker — edges as text in one file per ticket locally, or native blocking links on a real tracker.
 - **[triage](.agents/skills/triage/SKILL.md)**: Move issues and external PRs through a state machine of triage roles — categorise, verify, grill if needed, and write agent-ready briefs.
-- **[triage-deployment](.agents/skills/triage-deployment/SKILL.md)**: "Diagnose and fix failing GitHub Actions CI workflows in this codebase. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: analyze-code (typecheck, lint, format, spell-check, knip, markdown-lint, yaml-lint), test-coverage, validate-conventions (branch name, PR title/body, config sync), audit-security (gitleaks, bandit, scan-dependencies, trivy), and make-devcontainer (VSCode extensions sync, Docker build, devcontainer test)."
+- **[triage-deployment](.agents/skills/triage-deployment/SKILL.md)**: "Diagnose and fix failing GitHub Actions CI workflows in this codebase. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: lint-codebase (typecheck, lint, format, spell-check, knip, markdown-lint, yaml-lint, conformetry, synchronization), test-coverage, validate-conventions (branch name, PR title/body, config sync), scan-security (gitleaks, bandit, dependency audit, licenses, trivy), and make-projects (builds, bundle sizes, devcontainer image)."
 - **[triage-submission](.agents/skills/triage-submission/SKILL.md)**: "Triage and fix git submission failures for both commits and pushes. Use when a git commit or push is rejected, when lint-staged errors occur, when pre-commit or pre-push hooks fail, when a branch name is invalid on push, or when you see errors from husky, commitlint, validate-branch-name, ESLint, oxfmt, prettier, typecheck, knip, cspell, markdownlint, or yamllint during a commit or push attempt. Reads the error output, identifies the failing hook and checks, reads the relevant configuration, and applies targeted fixes."
 - **[update-pull-request](.agents/skills/update-pull-request/SKILL.md)**: Update an existing pull request's title and description to accurately reflect the implemented changes. Use this skill when asked to update, refresh, or rewrite a PR title or description, sync a PR with the latest changes, or when the PR description no longer matches the implementation.
 - **[using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md)**: Use when starting feature work that needs isolation from current workspace or before executing implementation plans - ensures an isolated workspace exists via native tools or git worktree fallback
-- **[validate-code](.agents/skills/validate-code/SKILL.md)**: Run the full code quality validation suite for this codebase. Use this skill when you have finished implementing code changes and want to verify they are clean before committing, when told to "validate", "check quality", or "run linting", or before invoking the submit-changes skill. Runs analyze-code (format, lint, typecheck, knip, spell-check) using the write configuration to auto-fix what it can, then checks that nothing remains.
+- **[validate-code](.agents/skills/validate-code/SKILL.md)**: Run the full code quality validation suite for this codebase. Use this skill when you have finished implementing code changes and want to verify they are clean before committing, when told to "validate", "check quality", or "run linting", or before invoking the submit-changes skill. Runs lint-codebase (format, lint, typecheck, knip, spell-check) using the write configuration to auto-fix what it can, then checks that nothing remains.
 - **[verification-before-completion](.agents/skills/verification-before-completion/SKILL.md)**: Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before making any success claims; evidence before assertions always
 - **[wait-what](.agents/skills/wait-what/SKILL.md)**: Stop. That last message did not land — re-pitch it.
 - **[wayfinder](.agents/skills/wayfinder/SKILL.md)**: Plan a huge chunk of work — more than one agent session can hold — as a shared map of decision tickets on your issue tracker, and resolve them one at a time until the way to the destination is clear.
@@ -568,7 +608,7 @@ Specialized domain knowledge for working on specific systems or patterns:
 <!-- custom-agents-table-of-contents start -->
 - **[ci-monitor-subagent](.github/agents/ci-monitor-subagent.agent.md)**: CI helper for /monitor-ci. Fetches CI status, retrieves fix details, or updates self-healing fixes. Executes one MCP tool call and returns the result.
 - **[explore-codebase](.github/agents/explore-codebase.agent.md)**: Explore codebase files, patterns, and structure for a given topic. USE WHEN gathering implementation context before planning or executing tasks, when asked to research the codebase, or when a planning agent needs a Sub-Agent A (Codebase Research). Returns a Codebase Research Summary with relevant files, existing patterns, affected Nx projects, reusable code, related plans, constraints, and open questions.
-- **[triage-deployment](.github/agents/triage-deployment.agent.md)**: Diagnose and fix failing GitHub Actions CI workflows in this codebase. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: analyze-code (typecheck, lint, format, spell-check, knip, markdown-lint, yaml-lint), test-coverage, validate-conventions (branch name, PR title/body, config sync), audit-security (gitleaks, bandit, scan-dependencies, trivy), and make-devcontainer (VSCode extensions sync, Docker build, devcontainer test).
+- **[triage-deployment](.github/agents/triage-deployment.agent.md)**: Diagnose and fix failing GitHub Actions CI workflows in this codebase. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: lint-codebase (typecheck, lint, format, spell-check, knip, markdown-lint, yaml-lint, conformetry, synchronization), test-coverage, validate-conventions (branch name, PR title/body, config sync), scan-security (gitleaks, bandit, dependency audit, licenses, trivy), and make-projects (builds, bundle sizes, devcontainer image).
 - **[triage-submission](.github/agents/triage-submission.agent.md)**: Triage and fix git submission failures for both commits and pushes. Use when a git commit or push is rejected, when lint-staged errors occur, when pre-commit or pre-push hooks fail, when a branch name is invalid on push, or when you see errors from husky, commitlint, validate-branch-name, ESLint, oxfmt, prettier, typecheck, knip, cspell, markdownlint, or yamllint during a commit or push attempt. Reads the error output, identifies the failing hook and checks, reads the relevant configuration, and applies targeted fixes.
 <!-- custom-agents-table-of-contents end -->
 

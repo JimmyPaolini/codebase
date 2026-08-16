@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 
+import { LoggerModule } from "@codebase/logger";
+
 import { AgentSkillsModule } from "../agent-skills/agent-skills.module";
 import { ConformetryGeneratorsModule } from "../conformetry-generators/conformetry-generators.module";
 import { ConventionalConfigModule } from "../conventional-config/conventional-config.module";
 import { DevcontainerConfigurationModule } from "../devcontainer-configuration/devcontainer-configuration.module";
-import { LoggerModule } from "../logger/logger.module";
 import { PullRequestTemplateModule } from "../pull-request-template/pull-request-template.module";
 
 import { SynchronizationModule } from "./synchronization.module";

@@ -41,8 +41,8 @@ Use this skill when:
 After TypeScript changes:
 
 ```bash
-pnpm exec nx run <project>:analyze-code --configuration=write
-pnpm exec nx run <project>:analyze-code --configuration=check
+pnpm exec nx run <project>:lint-codebase --configuration=write
+pnpm exec nx run <project>:lint-codebase --configuration=check
 ```
 
 ## Notes

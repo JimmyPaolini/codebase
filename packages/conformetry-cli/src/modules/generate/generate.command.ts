@@ -3,7 +3,7 @@ import { GenerationService } from "@conformetry/generation";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import { DEFAULT_GENERATED_DIRECTORY } from "./generate.constants";
 

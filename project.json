@@ -3,71 +3,6 @@
   "name": "codebase",
   "projectType": "application",
   "targets": {
-    "analyze-code": {
-      "configurations": {
-        "check": {
-          "commands": [
-            "nx run {projectName}:check-catalog-manifests",
-            "nx run {projectName}:clean:check",
-            "nx run {projectName}:format:check",
-            "nx run {projectName}:lint:check",
-            "nx run {projectName}:markdown-lint:check",
-            "nx run {projectName}:spell-check",
-            "nx run synchronization:start:agent-skills-check",
-            "nx run synchronization:start:conventional-config-check",
-            "nx run synchronization:start:pull-request-template-check",
-            "nx run {projectName}:sync-vscode-extensions:check",
-            "nx run {projectName}:type-coverage",
-            "nx run {projectName}:typecheck",
-            "nx run {projectName}:fallow-health",
-            "nx run {projectName}:fallow-audit"
-          ],
-          "parallel": true
-        },
-        "write": {
-          "commands": [
-            "nx run {projectName}:check-catalog-manifests",
-            "nx run {projectName}:codometer:write",
-            "nx run synchronization:start:agent-skills-write",
-            "nx run synchronization:start:conventional-config-write",
-            "nx run synchronization:start:pull-request-template-write",
-            "nx run {projectName}:sync-vscode-extensions:write",
-            "nx run {projectName}:spell-check",
-            "nx run {projectName}:clean:write",
-            "nx run {projectName}:typecheck",
-            "nx run {projectName}:type-coverage",
-            "nx run {projectName}:lint:write",
-            "nx run {projectName}:markdown-lint:write",
-            "nx run {projectName}:format:write",
-            "nx run {projectName}:fallow-health",
-            "nx run {projectName}:fallow-audit"
-          ],
-          "parallel": false
-        }
-      },
-      "defaultConfiguration": "check",
-      "description": "Run all static code analysis tools for workspace root (typecheck, lint, format, clean, spell-check, markdown-lint, yaml-lint)",
-      "executor": "nx:run-commands",
-      "options": {}
-    },
-    "audit-security": {
-      "cache": false,
-      "configurations": {
-        "check": {
-          "commands": [
-            "nx run {projectName}:gitleaks",
-            "nx affected --target=bandit --parallel=3 --base=main --head=HEAD",
-            "nx run {projectName}:scan-dependencies:check",
-            "nx run {projectName}:trivy"
-          ],
-          "parallel": false
-        }
-      },
-      "defaultConfiguration": "check",
-      "description": "Run comprehensive security audit: Gitleaks (secrets), Bandit (Python/affected), npm/pnpm audit (dependencies), and Trivy (containers/IaC). Mirrors .github/workflows/audit-security.yml",
-      "executor": "nx:run-commands",
-      "options": {}
-    },
     "check-catalog-manifests": {
       "description": "Enforce catalog: protocol for external dependencies in workspace package manifests",
       "executor": "nx:run-commands",
@@ -84,37 +19,8 @@
         "cwd": "{projectRoot}"
       }
     },
-    "clean": {
-      "cache": true,
-      "configurations": {
-        "check": {
-          "commands": [
-            "nx run {projectName}:knip:check",
-            "nx run {projectName}:fallow-dead-code",
-            "nx run {projectName}:fallow-duplicates",
-            "nx run {projectName}:jscpd:check",
-            "nx run {projectName}:vulture:check"
-          ],
-          "parallel": true
-        },
-        "write": {
-          "commands": [
-            "nx run {projectName}:knip:write",
-            "nx run {projectName}:fallow-dead-code",
-            "nx run {projectName}:fallow-duplicates",
-            "nx run {projectName}:jscpd:check",
-            "nx run {projectName}:vulture:write"
-          ],
-          "parallel": false
-        }
-      },
-      "defaultConfiguration": "check",
-      "description": "Run unused-code analysis for workspace-root files only across JavaScript, TypeScript, and Python",
-      "executor": "nx:run-commands",
-      "options": {}
-    },
     "codometer": {
-      "cache": false,
+      "cache": true,
       "configurations": {
         "check": {
           "command": "node --import @swc-node/register/esm-register packages/codometer/src/main.ts codometer --directory . --readme README.md --check"
@@ -123,9 +29,14 @@
           "command": "node --import @swc-node/register/esm-register packages/codometer/src/main.ts codometer --directory . --readme README.md"
         }
       },
-      "defaultConfiguration": "write",
+      "defaultConfiguration": "check",
       "description": "Analyze codebase and write README.md statistics badges",
       "executor": "nx:run-commands",
+      "inputs": [
+        "{workspaceRoot}/**/*.{cjs,cts,js,json,jsx,mjs,mts,py,ts,tsx}",
+        "{workspaceRoot}/README.md",
+        "shared-globals"
+      ],
       "options": {
         "cwd": "{workspaceRoot}"
       },
@@ -142,7 +53,7 @@
     },
     "commitlint": {
       "cache": false,
-      "description": "Validate commit message format with commitlint (invoked by the commit-msg git hook)",
+      "description": "Validate commit message format with commitlint. The commit-msg hook calls the binary directly to avoid a project graph build; this target is for manual use.",
       "executor": "nx:run-commands",
       "options": {
         "command": "NODE_OPTIONS='--import=tsx' commitlint --config configuration/commitlint.config.ts --edit {args.edit}",
@@ -155,15 +66,6 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "pnpm exec nx run conformetry-cli:start -- generate {args}",
-        "cwd": "{workspaceRoot}"
-      }
-    },
-    "conformetry-validate": {
-      "cache": false,
-      "description": "Run every project's inferred conformetry validation target",
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pnpm exec nx run-many -t conformetry-validate --exclude=codebase {args}",
         "cwd": "{workspaceRoot}"
       }
     },
@@ -331,29 +233,6 @@
         "cwd": "{workspaceRoot}"
       }
     },
-    "format": {
-      "configurations": {
-        "check": {
-          "commands": [
-            "# nx run codebase:prettier:check",
-            "nx run codebase:oxfmt:check",
-            "nx run codebase:sqlfluff-format:check"
-          ],
-          "parallel": true
-        },
-        "write": {
-          "commands": [
-            "# nx run codebase:prettier:write",
-            "nx run codebase:oxfmt:write",
-            "nx run codebase:sqlfluff-format:write"
-          ],
-          "parallel": false
-        }
-      },
-      "defaultConfiguration": "check",
-      "description": "Use oxfmt as the single source of truth for formatting. Prettier is excluded to avoid formatter conflicts on TypeScript union formatting.",
-      "executor": "nx:run-commands"
-    },
     "gitleaks": {
       "cache": true,
       "configurations": {
@@ -428,28 +307,7 @@
         "cwd": "{workspaceRoot}"
       }
     },
-    "lint": {
-      "configurations": {
-        "check": {
-          "commands": [
-            "nx run codebase:eslint:check",
-            "nx run codebase:oxlint:check",
-            "nx run codebase:sqlfluff-lint:check"
-          ],
-          "parallel": true
-        },
-        "write": {
-          "commands": [
-            "nx run codebase:eslint:write",
-            "nx run codebase:oxlint:write",
-            "nx run codebase:sqlfluff-lint:write"
-          ],
-          "parallel": false
-        }
-      },
-      "defaultConfiguration": "check",
-      "executor": "nx:run-commands"
-    },
+    "lint-codebase": {},
     "lint-staged": {
       "cache": false,
       "description": "Run lint-staged on staged files (invoked by the pre-commit git hook)",
@@ -682,36 +540,7 @@
         "cwd": "{projectRoot}"
       }
     },
-    "scan-dependencies": {
-      "cache": false,
-      "configurations": {
-        "check": {
-          "commands": [
-            "nx run {projectName}:license-check",
-            "nx run {projectName}:pnpm-audit:check",
-            "nx run {projectName}:sherif:check",
-            "nx run {projectName}:syncpack:check"
-          ],
-          "parallel": true
-        },
-        "write": {
-          "commands": [
-            "nx run {projectName}:upgrade-dependencies:write",
-            "nx run {projectName}:license-check",
-            "nx run {projectName}:pnpm-audit:write",
-            "nx run {projectName}:sherif:write",
-            "nx run {projectName}:syncpack:write"
-          ],
-          "parallel": false
-        }
-      },
-      "defaultConfiguration": "check",
-      "description": "Run all dependency management tools (pnpm-audit, license-check, sherif, syncpack). Dependency upgrades are handled separately by upgrade-dependencies.",
-      "executor": "nx:run-commands",
-      "options": {
-        "cwd": "{projectRoot}"
-      }
-    },
+    "scan-security": {},
     "sherif": {
       "cache": true,
       "configurations": {
@@ -719,7 +548,7 @@
           "command": "pnpm dlx sherif@1.10.0 -p applications/JimmyPaolini"
         },
         "write": {
-          "command": "pnpm dlx sherif@1.10.0 -p applications/JimmyPaolini --fix && nx run codebase:format:write"
+          "command": "pnpm dlx sherif@1.10.0 -p applications/JimmyPaolini --fix && nx run codebase:oxfmt:write"
         }
       },
       "defaultConfiguration": "check",
@@ -808,10 +637,10 @@
           "command": "tsx .devcontainer/scripts/sync-vscode-extensions.ts check"
         },
         "write": {
-          "command": "tsx .devcontainer/scripts/sync-vscode-extensions.ts write && nx run codebase:format:write"
+          "command": "tsx .devcontainer/scripts/sync-vscode-extensions.ts write && nx run codebase:oxfmt:write"
         }
       },
-      "defaultConfiguration": "write",
+      "defaultConfiguration": "check",
       "description": "Validate that VS Code extensions are synchronized between .vscode/extensions.json and both devcontainer configurations (check) or sync them (write)",
       "executor": "nx:run-commands",
       "inputs": [
@@ -848,7 +677,7 @@
           "command": "pnpm exec syncpack lint --config configuration/syncpack.config.cjs"
         },
         "write": {
-          "command": "pnpm exec syncpack fix --config configuration/syncpack.config.cjs && nx run codebase:format:write"
+          "command": "pnpm exec syncpack fix --config configuration/syncpack.config.cjs && nx run codebase:oxfmt:write"
         }
       },
       "defaultConfiguration": "check",
@@ -882,30 +711,17 @@
         "cwd": "infrastructure/terraform"
       }
     },
-    "trivy": {
-      "cache": false,
-      "configurations": {
-        "check": {
-          "commands": [
-            "nx run {projectName}:trivy-image",
-            "nx run {projectName}:trivy-config"
-          ],
-          "parallel": true
-        }
-      },
-      "defaultConfiguration": "check",
-      "description": "Run all Trivy security scans (container images and infrastructure config)",
-      "executor": "nx:run-commands",
-      "options": {}
-    },
     "trivy-config": {
-      "cache": false,
-      "description": "Scan Terraform infrastructure code for misconfigurations using Trivy",
+      "cache": true,
+      "description": "Scan Terraform infrastructure code for misconfigurations using Trivy. Identical to what the Scan Security workflow runs, so a local run reproduces CI exactly. Requires trivy on PATH (the devcontainer installs it; otherwise `brew install trivy`).",
       "executor": "nx:run-commands",
-      "inputs": ["{workspaceRoot}/infrastructure/terraform/**/*.tf"],
+      "inputs": [
+        "{workspaceRoot}/configuration/trivyignore",
+        "{workspaceRoot}/infrastructure/terraform/**/*.tf"
+      ],
       "options": {
-        "command": "trivy config infrastructure/terraform --severity CRITICAL,HIGH --exit-code 1 --ignorefile configuration/trivyignore",
-        "cwd": "{projectRoot}"
+        "command": "trivy config infrastructure/terraform --format table --severity CRITICAL,HIGH --exit-code 1 --ignorefile configuration/trivyignore",
+        "cwd": "{workspaceRoot}"
       }
     },
     "type-coverage": {
@@ -947,7 +763,7 @@
     },
     "validate-branch-name": {
       "cache": false,
-      "description": "Validate the current branch name against the configured naming convention (invoked by the pre-push git hook)",
+      "description": "Validate the current branch name against the configured naming convention. The pre-push hook calls the binary directly to avoid a project graph build; this target is for manual use.",
       "executor": "nx:run-commands",
       "options": {
         "command": "validate-branch-name",

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import { MartianPhaseService } from "./martian-phase.service";
 import { MercurianPhaseService } from "./mercurian-phase.service";

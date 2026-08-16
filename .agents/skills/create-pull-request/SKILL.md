@@ -72,6 +72,7 @@ PR titles **must** follow the same format as commit messages:
 | `lexico-components` | Shared React/shadcn component library |
 | `lexico-entities` | Shared TypeORM entities and GraphQL types |
 | `lexico-ingestion` | Data ingestion scripts for Lexico |
+| `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
 | `codometer` | NestJS command-line application for codometer metric collection and reporting |
 | `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
 | `no-release` | Escape hatch: suppress semantic-release for any commit type |
@@ -194,7 +195,7 @@ Adds a user profile page where users can view and edit their information.
 ## 🧪 Testing
 
 \`\`\`bash
-nx run lexico:test
+nx run lexico:vitest
 nx run lexico:develop  # Navigate to /profile
 \`\`\`
 
@@ -230,7 +231,7 @@ All PRs must pass these checks before merging:
 | PR Body     | Section validation               | Required sections: 🌰 Summary, 📝 Details, 🧪 Testing, 🔗 Related |
 | Lint        | `nx affected --target=lint`      | ESLint validation                                                 |
 | Typecheck   | `nx affected --target=typecheck` | TypeScript compilation                                            |
-| Test        | `nx affected --target=test`      | Unit and integration tests                                        |
+| Test        | `nx affected --target=vitest`      | Unit and integration tests                                        |
 | Format      | `nx format:check`                | Oxfmt (primary), Prettier formatting                              |
 
 Run locally before pushing:
@@ -239,7 +240,7 @@ Run locally before pushing:
 # Run all checks on affected projects
 nx affected --target=lint
 nx affected --target=typecheck
-nx affected --target=test
+nx affected --target=vitest
 pnpm format
 ```
 
@@ -325,7 +326,7 @@ Before creating the PR, verify:
 - [ ] Subject uses imperative mood and lowercase after gitmoji
 - [ ] Description includes Summary, Details, and Testing sections
 - [ ] Related issues and documentation are linked in the Related section
-- [ ] Local CI checks pass: `nx affected --target=lint && nx affected --target=typecheck && nx affected --target=test`
+- [ ] Local CI checks pass: `nx affected --target=lint && nx affected --target=typecheck && nx affected --target=vitest`
 
 ## Common Patterns
 
@@ -348,7 +349,7 @@ Adds autocomplete suggestions to the dictionary search input.
 ## 🧪 Testing
 
 ```bash
-nx run lexico:test
+nx run lexico:vitest
 nx run lexico:develop
 ```
 
@@ -377,8 +378,8 @@ Fixes incorrect timezone handling for ephemeris calculations near DST boundaries
 ## 🧪 Testing
 
 ```bash
-nx run caelundas:test:unit
-nx run caelundas:test:integration
+nx run caelundas:vitest:unit
+nx run caelundas:vitest:integration
 ```
 
 ## 🔗 Related
@@ -428,7 +429,7 @@ Updates TanStack Router to latest version with bug fixes.
 ## 🧪 Testing
 
 ```bash
-nx run lexico:test
+nx run lexico:vitest
 nx run lexico:develop
 ```
 
@@ -462,7 +463,7 @@ git checkout -b <type>/<scope>-<description>
 gh pr create --title "<type>(<scope>): <gitmoji> <subject>" --assignee @me --body "..."
 
 # Run CI checks locally
-nx affected --target=lint && nx affected --target=typecheck && nx affected --target=test
+nx affected --target=lint && nx affected --target=typecheck && nx affected --target=vitest
 
 # Update branch
 git fetch origin main && git rebase origin/main && git push --force-with-lease

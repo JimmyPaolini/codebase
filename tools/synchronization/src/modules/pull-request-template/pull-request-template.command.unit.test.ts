@@ -5,8 +5,9 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { expectProcessExitOne, mockProcessExit } from "../../../testing/mocks";
-import { LoggerService } from "../logger/logger.service";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import { PullRequestTemplateCommand } from "./pull-request-template.command";
@@ -123,7 +124,7 @@ describe(PullRequestTemplateCommand, () => {
 
     await command.run(modeArguments);
 
-    expect(logger.log).toHaveBeenCalledWith("✅ PR template is in sync");
+    expect(logger.log).toHaveBeenCalledWith("📄 Verified the PR template");
     expect(writeFileSync).not.toHaveBeenCalled();
   });
 
@@ -170,7 +171,7 @@ describe(PullRequestTemplateCommand, () => {
       `🔄 Syncing ${path.relative(workspaceRoot, firstTarget)} PR template...`,
     );
     expect(logger.log).toHaveBeenCalledWith(
-      `✅ ${path.relative(workspaceRoot, firstTarget)} PR template synced`,
+      `📄 Synced the PR template in ${path.relative(workspaceRoot, firstTarget)}`,
     );
   });
 
@@ -194,7 +195,9 @@ describe(PullRequestTemplateCommand, () => {
 
     await command.run(["write"]);
 
-    expect(logger.log).toHaveBeenCalledWith("✅ Already in sync");
+    expect(logger.log).toHaveBeenCalledWith(
+      "📄 Verified every PR template was already in sync",
+    );
     expect(writeFileSync).not.toHaveBeenCalled();
   });
 
@@ -211,11 +214,13 @@ describe(PullRequestTemplateCommand, () => {
 
     expect(logger.log).toHaveBeenCalledWith(
       expect.stringContaining(
-        `missing <!-- ${SYNC_PULL_REQUEST_TEMPLATE_MARKER}-start/end --> markers`,
+        `Missing <!-- ${SYNC_PULL_REQUEST_TEMPLATE_MARKER}-start/end --> markers in`,
       ),
     );
     expect(logger.log).toHaveBeenCalledWith(
-      "💡 Run 'nx run synchronization:start:pull-request-template-write' to sync",
+      "💡 Suggested a fix",
+      undefined,
+      expect.any(Object),
     );
 
     processExitSpy.mockRestore();
@@ -229,9 +234,10 @@ describe(PullRequestTemplateCommand, () => {
 
     await expectProcessExitOne(async () => command.run(["invalid-mode"]));
 
-    expect(logger.error).toHaveBeenCalledWith("❌ Invalid mode: invalid-mode");
     expect(logger.error).toHaveBeenCalledWith(
-      "💡 Usage: nx run synchronization:start:pull-request-template-check (or synchronization:start:pull-request-template-write)",
+      "🚦 Rejected an unusable mode",
+      undefined,
+      expect.any(Object),
     );
   });
 });

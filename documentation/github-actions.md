@@ -43,36 +43,28 @@ All workflows call this composite action after checkout. It provides:
 
 ### On Every PR + Push to Main
 
-#### 1. Analyze Code (`analyze-code.yml`)
+#### 1. Lint Codebase (`lint-codebase.yml`)
 
-**Name:** 🧑‍💻 Analyze Code
+**Name:** 🧑‍💻 Lint Codebase
 
 **Triggers:** Push to `main`, pull requests, manual dispatch (optional `verbose` flag)
 
 **Jobs:**
 
-- **analyze-code** - Runs `pnpm exec nx affected --target=analyze-code` then uploads type coverage reports from `applications/*/`, `packages/*/`, and `tools/*/` as artifacts (30-day retention)
+- **lint-codebase** - Runs `pnpm exec nx affected --target=lint-codebase --configuration=check --parallel=4`, then uploads type coverage reports from `applications/*/`, `packages/*/`, and `tools/*/` as artifacts (30-day retention)
+
+`lint-codebase` is an `nx:noop` target whose `dependsOn` list holds every static
+analyser: typecheck, type-coverage, eslint, oxlint, oxfmt, knip, spell-check,
+markdown-lint, yaml-lint, dependency-cruiser, stylelint, squawk, sqlfluff, ruff,
+vulture, nbstripout, sherif, syncpack, codometer, conformetry-validate, and the
+synchronization checks. One invocation builds one task graph; the composites it
+replaced spawned a nested `nx run` per tool.
 
 **Concurrency:** Cancels in-progress runs for the same branch
 
 ---
 
-#### 2. Build Projects (`build-projects.yml`)
-
-**Name:** 👷 Build Projects
-
-**Triggers:** Push to `main`, pull requests
-
-**Jobs:**
-
-- **build-projects** - Runs `npx nx run-many --all --target=build --parallel=3` to build all projects
-- **Bundle Report** (PR only) - Builds both PR and base branch, runs `size-limit` on lexico and lexico-components, calculates size differences, and posts a comparison table comment on the PR with emoji status indicators (✅ decrease / ⚠️ increase / 📈 significant / ❌ over limit)
-
-**Concurrency:** Cancels in-progress runs for the same branch
-
----
-
-#### 3. Test Coverage (`test-coverage.yml`)
+#### 2. Test Coverage (`test-coverage.yml`)
 
 **Name:** 🧑‍🔬 Test Coverage
 
@@ -80,7 +72,32 @@ All workflows call this composite action after checkout. It provides:
 
 **Jobs:**
 
-- **test-coverage** - Runs `npx nx affected --target=test --parallel=3 --configuration=coverage` and uploads coverage reports as artifacts (30-day retention, always runs even if tests fail)
+- **test-coverage** - Runs `pnpm exec nx affected --target=vitest-coverage --configuration=coverage --parallel=4` and uploads coverage reports as artifacts (30-day retention, always runs even if tests fail)
+
+`--configuration=coverage` must stay explicit: Nx propagates an explicit
+configuration down `dependsOn`, but never a `defaultConfiguration`.
+
+**Concurrency:** Cancels in-progress runs for the same branch
+
+---
+
+#### 3. Make Projects (`make-projects.yml`)
+
+**Name:** 👷 Make Projects
+
+**Triggers:** Push to `main`, pull requests, manual dispatch
+
+**Jobs:**
+
+- **detect-changes** - `dorny/paths-filter` job that reports whether `.devcontainer/**` changed, since `on.paths` cannot be scoped to a single job
+- **make-projects** - Runs `pnpm exec nx affected --target=make-projects --parallel=4` (build plus bundlesize). On `main` it uploads every `size-limit-report.json` as the `bundle-sizes-main` artifact; on pull requests it downloads that artifact, renders a per-project table with `scripts/report-bundle-sizes.ts`, and upserts one PR comment (✅ decrease / ⚠️ increase under 5% / 📈 5% or more / 🆕 no baseline / ❌ over limit)
+- **make-devcontainer** (only when `.devcontainer/**` changed) - Builds the dev container image with `devcontainers/ci@v0.3`, pushes to GHCR (`ghcr.io/jimmypaolini/codebase-devcontainer`) only on push to `main`, then runs `.devcontainer/scripts/test-devcontainer.sh` inside the container
+
+The baseline comes from an artifact rather than a second build: this job used to
+check out `main`, install it, and build it again on every pull request purely to
+size the base branch.
+
+**Permissions:** `contents: read`, `pull-requests: write`; the devcontainer job adds `packages: write`
 
 **Concurrency:** Cancels in-progress runs for the same branch
 
@@ -88,20 +105,23 @@ All workflows call this composite action after checkout. It provides:
 
 ### On PRs + Push to Main (Security)
 
-#### 4. Audit Security (`audit-security.yml`)
+#### 4. Scan Security (`scan-security.yml`)
 
-**Name:** 🕵️ Audit Security
+**Name:** 🕵️ Scan Security
 
-**Triggers:** Push to `main`, pull requests, weekly (Monday 6am UTC)
+**Triggers:** Push to `main`, pull requests, weekly (Monday 6am UTC), manual dispatch
 
-**Jobs:** Single job running sequential security checks:
+**Jobs:** Single job:
 
 |Check|Command / Tool|
 |---|---|
-|🔍 Gitleaks|`pnpm exec nx run codebase:gitleaks --configuration=ci`|
-|🐍 Bandit (Python)|`pnpm exec nx affected --target=bandit --parallel=3`|
-|📦 Dependency Audit|`pnpm exec nx affected --target=scan-dependencies --parallel=3`|
-|🏗 Trivy (Infrastructure)|`aquasecurity/trivy-action@v0.36.0` on `infrastructure/terraform/` (severity: `CRITICAL,HIGH`; runs on schedule or when Terraform files changed)|
+|🕵️ Scan Security|`pnpm exec nx affected --target=scan-security --parallel=4` — bandit, dependency audit, license check, and Trivy|
+|🚰 Scan Secrets|`pnpm exec nx run codebase:gitleaks:ci` — run outside `affected` because it scans history, not a project|
+
+Trivy runs as the `trivy-config` Nx target rather than
+`aquasecurity/trivy-action`, so `nx run codebase:trivy-config` reproduces CI
+exactly. Its `inputs` cover the Terraform tree, which replaces the previous
+`paths-filter` step and its schedule-event special case.
 
 **Concurrency:** Cancels in-progress runs for the same branch
 
@@ -113,9 +133,9 @@ All workflows call this composite action after checkout. It provides:
 
 **Name:** 🧑‍⚖️ Validate Conventions
 
-**Triggers:** Pull requests (opened, reopened, synchronize, edited), push to `main`
+**Triggers:** Pull requests (opened, reopened, synchronize, edited)
 
-**Condition:** Skips for `dependabot[bot]`
+**Condition:** Skips for `dependabot[bot]`, and for `dependabot/` and `renovate/` branches
 
 **Jobs:** Single job with sequential convention checks:
 
@@ -124,9 +144,11 @@ All workflows call this composite action after checkout. It provides:
 |🎋 Branch Validation|Branch name matches `<type>/<scope>-<description>` via `validate-branch-name` (PR only)|
 |📝 PR Title Validation|PR title follows Conventional Commits format via `commitlint` (PR only)|
 |🪢 PR Body Validation|PR body contains required `## 🌰 Summary`, `## 📝 Details`, `## 🧪 Testing`, `## 🔗 Related` sections (PR only)|
-|⚙️ Convention Config Sync|`npx nx run synchronization:start:conventional-config-check`|
-|📋 PR Template Sync|`npx nx run synchronization:start:pull-request-template-check`|
-|🤖 Agent Skills Sync|`npx nx run synchronization:start:agent-skills-check`|
+
+The convention, PR-template, and agent-skills sync checks moved into
+`lint-codebase` as `synchronize` — a single command that runs all five
+synchronizations in one process. This workflow deliberately skips
+`setup-codebase` entirely: no Nx, no uv, no Homebrew.
 
 **Concurrency:** Cancels in-progress runs for the same branch
 
@@ -150,29 +172,9 @@ All workflows call this composite action after checkout. It provides:
 
 ---
 
-### Automated (Path-Filtered)
+### Automated (Manual / Path-Filtered)
 
-#### 7. Make Devcontainer (`make-devcontainer.yml`)
-
-**Name:** 🧑‍🔧 Make Devcontainer
-
-**Triggers:**
-
-- Push to `main` (only `.devcontainer/**` changes)
-- Pull requests (only `.devcontainer/**` or `make-devcontainer.yml` changes)
-- Manual dispatch
-
-**Jobs:**
-
-- **make-devcontainer** - Validates VSCode extensions sync, builds the dev container image using `devcontainers/ci@v0.3`, pushes to GHCR (`ghcr.io/jimmypaolini/codebase-devcontainer`) only on push to `main`, then runs `.devcontainer/scripts/test-devcontainer.sh` inside the container
-
-**Permissions:** `contents: read`, `packages: write`
-
-**Concurrency:** Cancels in-progress runs for the same branch
-
----
-
-#### 8. Setup Copilot (`copilot-setup-steps.yml`)
+#### 7. Setup Copilot (`copilot-setup-steps.yml`)
 
 **Name:** 🤖 Setup Copilot
 
@@ -200,7 +202,7 @@ All workflows call this composite action after checkout. It provides:
 
 ### Scheduled (Weekly)
 
-#### 9. Remove Deprecations (`remove-deprecations.yml`)
+#### 8. Remove Deprecations (`remove-deprecations.yml`)
 
 **Name:** ✂️ Remove Deprecations
 
@@ -216,7 +218,7 @@ All workflows call this composite action after checkout. It provides:
 
 ---
 
-#### 10. Refresh Documentation (`refresh-documentation.yml`)
+#### 9. Refresh Documentation (`refresh-documentation.yml`)
 
 **Name:** 🧑‍🏫 Refresh Documentation
 
@@ -245,7 +247,7 @@ All workflows call this composite action after checkout. It provides:
 
 ---
 
-#### 11. Upgrade Dependencies (`upgrade-dependencies.yml`)
+#### 10. Upgrade Dependencies (`upgrade-dependencies.yml`)
 
 **Name:** 🧑‍🚒 Upgrade Dependencies
 

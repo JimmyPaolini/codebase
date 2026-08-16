@@ -16,14 +16,5 @@ export const SYNC_CONVENTIONAL_CONFIG_ISSUE_TEMPLATE_FILES = [
   ".github/ISSUE_TEMPLATE/feature-request.yml",
 ];
 
-/** All files managed by the conventional-config sync workflow. */
-export const SYNC_CONVENTIONAL_CONFIG_FILES = [
-  "configuration/conventional.config.cjs",
-  ".vscode/settings.json",
-  ...SYNC_CONVENTIONAL_CONFIG_SKILL_FILES,
-  ...SYNC_CONVENTIONAL_CONFIG_ISSUE_TEMPLATE_FILES,
-  "release.config.cjs",
-];
-
 /** Commit types excluded from release rules presence validation. */
 export const RELEASE_RULES_SPECIAL_TYPES = new Set(["revert"]);

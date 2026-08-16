@@ -6,6 +6,7 @@ import { symbolByBody } from "../caelundas/symbol-caelundas.constants";
 
 import type { AspectPhase, Body } from "../caelundas/caelundas.types";
 import type { Event } from "../calendar/calendar.types";
+import type { LogData } from "@codebase/logger";
 import type { Moment } from "moment-timezone";
 
 /**
@@ -75,7 +76,7 @@ export class AspectEventFormattingService {
     aspectSymbol: string;
     body1: Body;
     body2: Body;
-    log: (message: string) => void;
+    log: (message: string, data?: LogData) => void;
     phase: AspectPhase;
     timestamp: Moment;
   }): Event {
@@ -110,7 +111,7 @@ export class AspectEventFormattingService {
         phase,
       });
     const summary = `${phaseEmoji} ${symbolByBody[body1]} ${aspectSymbol} ${symbolByBody[body2]} ${description}`;
-    log(`${summary} at ${timestamp.toISOString()}`);
+    log(`🗓️ Built ${summary}`, { at: timestamp.toISOString() });
 
     return {
       categories,

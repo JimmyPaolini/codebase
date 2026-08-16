@@ -1,12 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { Command, CommandRunner } from "nest-commander";
+import { Command, CommandRunner, Option } from "nest-commander";
 
-import { DiscoverFilesService } from "../discover-files/discover-files.service";
-import { LoggerService } from "../logger/logger.service";
-import { MeasureJsonService } from "../measure-json/measure-json.service";
-import { MeasurePythonService } from "../measure-python/measure-python.service";
-import { MeasureTypescriptService } from "../measure-typescript/measure-typescript.service";
-import { WriteReadmeService } from "../write-readme/write-readme.service";
+import { LoggerService } from "@codebase/logger";
+
+import { DiscoveryService } from "../discovery/discovery.service";
+import { JsonService } from "../json/json.service";
+import { MarkdownService } from "../markdown/markdown.service";
+import { PythonService } from "../python/python.service";
+import { TypescriptService } from "../typescript/typescript.service";
+import { WritingService } from "../writing/writing.service";
 
 import { CodometerService } from "./codometer.service";
 
@@ -26,33 +28,19 @@ export class CodometerCommand extends CommandRunner {
   constructor(
     @Inject(LoggerService) private readonly logger: LoggerService,
     @Inject(CodometerService) measureService?: CodometerService,
-    @Inject(WriteReadmeService) writeReadmeService?: WriteReadmeService,
+    @Inject(WritingService) writingService?: WritingService,
   ) {
     super();
     this.logger.setContext(CodometerCommand.name);
     this.measureService = measureService ?? this.createCodometerService();
-    this.writeReadmeService = writeReadmeService ?? new WriteReadmeService();
-    this.registerOptionMetadata("parseDirectory", {
-      description: "Directory to analyze",
-      flags: "-d, --directory [directory]",
-    });
-    this.registerOptionMetadata("parseReadme", {
-      description: "Optional README path to update with generated badges",
-      flags: "-r, --readme [readme]",
-    });
-    this.registerOptionMetadata("parseCheck", {
-      description: "Validate README badges without writing changes",
-      flags: "--check",
-    });
+    this.writingService = writingService ?? new WritingService();
   }
 
   // 🔐 Private Fields
 
-  private static readonly optionMetadataKey = "CommandBuilder:Option:Meta";
-
   private readonly measureService: CodometerService;
 
-  private readonly writeReadmeService: WriteReadmeService;
+  private readonly writingService: WritingService;
 
   // 🔑 Public Fields
 
@@ -62,72 +50,62 @@ export class CodometerCommand extends CommandRunner {
    * Create the codometer service graph used when no dependencies are injected.
    */
   private createCodometerService(): CodometerService {
-    const discoverFilesService = new DiscoverFilesService();
-    const measureTypescriptService = new MeasureTypescriptService();
-    const measurePythonService = new MeasurePythonService();
-    const measureJsonService = new MeasureJsonService();
+    const discoveryService = new DiscoveryService();
+    const typescriptService = new TypescriptService();
+    const pythonService = new PythonService();
+    const jsonService = new JsonService();
+    const markdownService = new MarkdownService();
 
     return new CodometerService(
-      discoverFilesService,
-      measureTypescriptService,
-      measurePythonService,
-      measureJsonService,
+      discoveryService,
+      typescriptService,
+      pythonService,
+      jsonService,
+      markdownService,
     );
-  }
-
-  /**
-   * Register option metadata so nest-commander can expose the CLI flags.
-   */
-  private registerOptionMetadata(
-    propertyKey: string,
-    options: { description: string; flags: string },
-  ): void {
-    const descriptor = Object.getOwnPropertyDescriptor(
-      CodometerCommand.prototype,
-      propertyKey,
-    ) as undefined | { value?: unknown };
-
-    if (descriptor?.value !== undefined) {
-      const descriptorValue = descriptor.value;
-
-      if (typeof descriptorValue === "function") {
-        Reflect.defineMetadata(
-          CodometerCommand.optionMetadataKey,
-          options,
-          descriptorValue,
-        );
-      }
-    }
   }
 
   // 🌎 Public Methods
 
   /**
    * Parse the optional check mode flag from command-line input.
+   *
+   * The parser runs only when `--check` is present, and a flag carrying no
+   * value arrives as `undefined` rather than `true`. Presence is therefore the
+   * whole signal: reading `undefined` as "unset" is what silently turned check
+   * mode back into write mode and let a stale README pass CI.
    */
-  parseCheck(value: boolean | string | undefined): boolean {
-    if (typeof value === "boolean") {
-      return value;
-    }
-
+  @Option({
+    description: "Validate README badges without writing changes",
+    flags: "--check",
+  })
+  public parseCheck(value: boolean | string | undefined): boolean {
     if (typeof value === "string") {
-      return value.toLowerCase() === "true";
+      return value.toLowerCase() !== "false";
     }
 
-    return false;
+    return value ?? true;
   }
 
   /**
    * Parse the directory option from command-line input.
    */
-  parseDirectory(value: string | undefined): string {
+  @Option({
+    description: "Directory to analyze",
+    flags: "-d, --directory [directory]",
+  })
+  public parseDirectory(value: string | undefined): string {
     return value ?? process.cwd();
   }
 
   /**
    * Parse the optional README option from command-line input.
    */
-  parseReadme(value: string | undefined): string | undefined {
+  @Option({
+    description: "Optional README path to update with generated badges",
+    flags: "-r, --readme [readme]",
+  })
+  public parseReadme(value: string | undefined): string | undefined {
     return value;
   }
 
@@ -140,13 +118,16 @@ export class CodometerCommand extends CommandRunner {
   ): Promise<void> {
     const directory = this.parseDirectory(options.directory);
     const statistics = this.measureService.measure(directory);
-    const checkMode = this.parseCheck(options.check);
+    // Already parsed by the Option decorator. Running `parseCheck` again here
+    // would read the absent flag's `undefined` as presence and force check
+    // mode on every run.
+    const checkMode = options.check ?? false;
     const readmePath = this.parseReadme(options.readme);
 
     await Promise.resolve();
 
     if (readmePath) {
-      const isCurrent = this.writeReadmeService.syncReadme(
+      const isCurrent = this.writingService.syncReadme(
         readmePath,
         statistics,
         checkMode,

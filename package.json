@@ -1,8 +1,5 @@
 {
   "author": "Jimmy Paolini",
-  "dependencies": {
-    "pino-pretty": "catalog:"
-  },
   "description": "",
   "devDependencies": {
     "@commitlint/cli": "catalog:",
@@ -70,7 +67,6 @@
     "oxlint": "catalog:",
     "prettier": "catalog:",
     "semantic-release": "catalog:",
-    "size-limit": "catalog:",
     "skills": "catalog:",
     "squawk-cli": "catalog:",
     "stylelint": "catalog:",
@@ -116,5 +112,5 @@
     ]
   },
   "type": "module",
-  "version": "1.17.3"
+  "version": "1.19.0"
 }

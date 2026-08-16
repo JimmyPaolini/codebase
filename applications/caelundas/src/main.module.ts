@@ -2,9 +2,10 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { DiscoveryModule } from "@nestjs/core";
 
+import { LoggerModule } from "@codebase/logger";
+
 import { environmentSchema } from "./constants";
 import { CaelundasModule } from "./modules/caelundas/caelundas.module";
-import { LoggerModule } from "./modules/logger/logger.module";
 
 /**
  * Root NestJS application module.

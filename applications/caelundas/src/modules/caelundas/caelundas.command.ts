@@ -1,9 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
+import { LoggerService } from "@codebase/logger";
+
 import { CalendarService } from "../calendar/calendar.service";
 import { InputService } from "../input/input.service";
-import { LoggerService } from "../logger/logger.service";
 import { PerfectiveService } from "../perfective/perfective.service";
 import { ProgressiveService } from "../progressive/progressive.service";
 

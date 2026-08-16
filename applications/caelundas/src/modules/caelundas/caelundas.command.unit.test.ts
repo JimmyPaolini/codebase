@@ -2,9 +2,10 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { CalendarService } from "../calendar/calendar.service";
 import { InputService } from "../input/input.service";
-import { LoggerService } from "../logger/logger.service";
 import { PerfectiveService } from "../perfective/perfective.service";
 import { ProgressiveService } from "../progressive/progressive.service";
 

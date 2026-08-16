@@ -6,9 +6,11 @@ on:
       - main
   workflow_dispatch:
 
+# Never cancel a release. Interrupting semantic-release between the npm
+# publish and the git tag leaves the repository disagreeing with the registry.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -19,19 +21,33 @@ jobs:
   release-version:
     name: 🦸 Release Version
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           persist-credentials: false
 
+      # This job looks like it runs no Nx target, but it runs the whole static
+      # analysis gate: `@semantic-release/git` makes the version commit with a
+      # plain `git commit`, which fires the pre-commit hook, which runs
+      # `nx affected --target=lint-codebase` over every project the root
+      # package.json touches. So it needs uv — yaml-lint, sqlfluff, and vulture
+      # all shell out to `uv run` — and it wants both Nx caches for the 241
+      # tasks that follow. Opting out of them failed the release outright with
+      # `uv: not found`.
+      #
+      # `nx-shas` stays off: lint-staged passes `--files=` for each staged path,
+      # which supersedes NX_BASE and NX_HEAD.
       - name: 🕋 Setup Codebase
         uses: ./.github/actions/setup-codebase
+        with:
+          nx-shas: "false"
 
       - name: 🔐 Import GPG Key
-        uses: crazy-max/ghaction-import-gpg@v6
+        uses: crazy-max/ghaction-import-gpg@v7
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}

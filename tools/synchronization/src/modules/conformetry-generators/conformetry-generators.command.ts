@@ -5,9 +5,14 @@ import { ConfigurationService } from "@conformetry/configuration";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
+
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
+import type {
+  SynchronizableCommand,
+  SynchronizationMode,
+} from "../synchronization/synchronization.types";
 import type { ConformetryGeneratorMetadata } from "./conformetry-generators.types";
 
 /**
@@ -20,7 +25,10 @@ import type { ConformetryGeneratorMetadata } from "./conformetry-generators.type
   name: "conformetry-generators",
 })
 @Injectable()
-export class ConformetryGeneratorsCommand extends CommandRunner {
+export class ConformetryGeneratorsCommand
+  extends CommandRunner
+  implements SynchronizableCommand
+{
   // 🏗 Dependency Injection
 
   constructor(
@@ -36,6 +44,8 @@ export class ConformetryGeneratorsCommand extends CommandRunner {
 
   // 🔑 Public Fields
 
+  readonly synchronizationLabel = "conformetry-generators";
+
   // 🔏 Private Methods
 
   /**
@@ -50,21 +60,19 @@ export class ConformetryGeneratorsCommand extends CommandRunner {
 
     if (generated !== existing) {
       this.logger.log(
-        "❌ Conformetry generators table in AGENTS.md is out of sync\n",
-      );
-      this.logger.log(
-        "  Found generators in configuration/conformetry.config.ts",
-      );
-      this.logger.log("  Generated content doesn't match stored content");
-      this.logger.log(
-        "💡 Run 'pnpm exec nx run synchronization:start:conformetry-generators-write' to sync\n",
+        "📇 Detected an out-of-sync conformetry generators table in AGENTS.md",
+        undefined,
+        {
+          count: generators.length,
+          hint: "Run 'nx run synchronization:synchronize:write' to sync",
+        },
       );
       return false;
     }
 
-    this.logger.log(
-      `✅ Conformetry generators table is in sync (${generators.length} generators)`,
-    );
+    this.logger.log("📇 Verified the conformetry generators table", undefined, {
+      count: generators.length,
+    });
     return true;
   }
 
@@ -151,9 +159,9 @@ export class ConformetryGeneratorsCommand extends CommandRunner {
     const newContent = `${beforeMarker}\n${generatedTable}\n${afterMarker}`;
 
     writeFileSync(agentsFile, newContent, "utf8");
-    this.logger.log(
-      `✅ Updated AGENTS.md with ${generators.length} generators`,
-    );
+    this.logger.log("📇 Updated AGENTS.md", undefined, {
+      count: generators.length,
+    });
   }
 
   // 🌎 Public Methods
@@ -165,7 +173,6 @@ export class ConformetryGeneratorsCommand extends CommandRunner {
     passedParameters: string[],
     _options?: Record<string, unknown>,
   ): Promise<void> {
-    await Promise.resolve();
     const mode =
       this.synchronizationModeService.resolveSynchronizationModeOrExit({
         invalidModeLabel: "Unknown mode",
@@ -174,20 +181,28 @@ export class ConformetryGeneratorsCommand extends CommandRunner {
         usageMessage: "Expected 'check' or 'write'",
       });
 
+    if (!(await this.synchronize(mode))) {
+      process.exit(1);
+    }
+  }
+
+  /** Synchronizes the generators table and reports success without exiting. */
+  async synchronize(mode: SynchronizationMode): Promise<boolean> {
     try {
       const generators = await this.readGenerators();
 
       if (mode === "check") {
-        const success = this.checkSync(generators);
-        if (!success) process.exit(1);
-      } else {
-        this.writeSync(generators);
+        return this.checkSync(generators);
       }
+
+      this.writeSync(generators);
+      return true;
     } catch (error) {
       this.logger.error(
-        `❌ Error: ${error instanceof Error ? error.message : error}`,
+        `💥 Failed synchronizing conformetry generators`,
+        error instanceof Error ? error.stack : String(error),
       );
-      process.exit(1);
+      return false;
     }
   }
 }

@@ -16,34 +16,34 @@ Tests are organized by integration level using filename suffixes:
 
 ```bash
 # Unit tests only (fast feedback loop)
-nx run caelundas:test:unit
-nx run lexico:test:unit
+nx run caelundas:vitest:unit
+nx run lexico:vitest:unit
 
 # Integration tests (database validation)
-nx run caelundas:test:integration
+nx run caelundas:vitest:integration
 
 # End-to-end tests (full system validation)
-nx run caelundas:test:end-to-end
+nx run caelundas:vitest:end-to-end
 
 # All tests
-nx run caelundas:test
+nx run caelundas:vitest
 ```
 
 ### Affected Tests
 
 ```bash
 # Test only changed projects
-nx affected --target=test --base=main
+nx affected --target=vitest --base=main
 
 # Test specific type across affected projects
-nx affected --target=test:unit --base=main
+nx affected --target=vitest:unit --base=main
 ```
 
 ### Coverage
 
 ```bash
 # Generate coverage report
-nx run caelundas:test --coverage
+nx run caelundas:vitest --coverage
 
 # View coverage
 open applications/caelundas/coverage/index.html
@@ -393,7 +393,7 @@ Tests run automatically in GitHub Actions:
 ```bash
 # .github/workflows/test-coverage.yml
 - name: Run tests with coverage
-  run: nx affected --target=test --coverage --base=${{ github.base_ref }}
+  run: nx affected --target=vitest --coverage --base=${{ github.base_ref }}
 ```
 
 See [github-actions.md](../documentation/github-actions.md) for CI/CD workflows.

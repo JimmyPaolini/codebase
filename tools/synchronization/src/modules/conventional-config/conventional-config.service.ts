@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import { ConventionalConfigIoService } from "./conventional-config-io.service";
 import { ConventionalConfigValidatorsService } from "./conventional-config-validators.service";
@@ -119,9 +119,11 @@ export class ConventionalConfigService {
   // 🌎 Public Methods
 
   /**
-   * Check mode: validates all configuration files are in sync with conventional.config.cjs.
+   * Check mode: validates all configuration files are in sync with
+   * conventional.config.cjs, reporting success rather than exiting so the
+   * aggregate `synchronization` command can collect every result.
    */
-  handleCheckMode(context: SyncContext): void {
+  handleCheckMode(context: SyncContext): boolean {
     const { config, scopeNames, settingsScopes, typeNames } = context;
     const settingsOk =
       this.conventionalConfigValidatorsService.checkSettingsSync(
@@ -158,12 +160,13 @@ export class ConventionalConfigService {
       !releaseRulesOk ||
       !presetOk
     ) {
-      this.loggerService.log(
-        "💡 Run 'nx run synchronization:start:conventional-config-write' to sync",
-      );
-      process.exit(1);
+      this.loggerService.log("💡 Suggested a fix", undefined, {
+        hint: "Run 'nx run synchronization:synchronize:write' to sync",
+      });
+      return false;
     }
-    this.loggerService.log("✅ Conventional commit config is in sync");
+    this.loggerService.log("📇 Verified the conventional commit config");
+    return true;
   }
 
   /**
@@ -196,7 +199,7 @@ export class ConventionalConfigService {
       outOfSyncSkills.length === 0 &&
       outOfSyncTemplates.length === 0
     ) {
-      this.loggerService.log("✅ Already in sync");
+      this.loggerService.log("📇 Verified everything was already in sync");
       return;
     }
 
@@ -225,9 +228,9 @@ export class ConventionalConfigService {
   }
 
   /**
-   * Runs the workflow in check or write mode.
+   * Runs the workflow in check or write mode, reporting whether it succeeded.
    */
-  runSynchronization(mode: string): void {
+  runSynchronization(mode: string): boolean {
     const config = this.loadConventionalConfig();
     const context: SyncContext = {
       config,
@@ -239,10 +242,10 @@ export class ConventionalConfigService {
     };
 
     if (mode === "check") {
-      this.handleCheckMode(context);
-      return;
+      return this.handleCheckMode(context);
     }
 
     this.handleWriteMode(context);
+    return true;
   }
 }

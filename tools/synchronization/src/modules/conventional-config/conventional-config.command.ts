@@ -1,10 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
+
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import { ConventionalConfigService } from "./conventional-config.service";
+
+import type {
+  SynchronizableCommand,
+  SynchronizationMode,
+} from "../synchronization/synchronization.types";
 
 /**
  * CLI command that runs the conventional-config sync in check or write mode.
@@ -16,7 +22,10 @@ import { ConventionalConfigService } from "./conventional-config.service";
   name: "conventional-config",
 })
 @Injectable()
-export class ConventionalConfigCommand extends CommandRunner {
+export class ConventionalConfigCommand
+  extends CommandRunner
+  implements SynchronizableCommand
+{
   // 🏗 Dependency Injection
 
   constructor(
@@ -32,6 +41,8 @@ export class ConventionalConfigCommand extends CommandRunner {
 
   // 🔑 Public Fields
 
+  readonly synchronizationLabel = "conventional-config";
+
   // 🔏 Private Methods
 
   // 🌎 Public Methods
@@ -41,7 +52,6 @@ export class ConventionalConfigCommand extends CommandRunner {
     passedParameters: string[],
     _options?: Record<string, unknown>,
   ): Promise<void> {
-    await Promise.resolve();
     const mode =
       this.synchronizationModeService.resolveSynchronizationModeOrExit({
         invalidModeLabel: "Invalid mode",
@@ -50,6 +60,15 @@ export class ConventionalConfigCommand extends CommandRunner {
         usageMessage:
           "💡 Usage: nx run synchronization:start:conventional-config-check (or synchronization:start:conventional-config-write)",
       });
-    this.conventionalConfigService.runSynchronization(mode);
+
+    if (!(await this.synchronize(mode))) {
+      process.exit(1);
+    }
+  }
+
+  /** Synchronizes conventional-commit config and reports success without exiting. */
+  async synchronize(mode: SynchronizationMode): Promise<boolean> {
+    await Promise.resolve();
+    return this.conventionalConfigService.runSynchronization(mode);
   }
 }

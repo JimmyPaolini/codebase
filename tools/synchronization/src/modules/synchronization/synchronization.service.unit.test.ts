@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { SynchronizationService } from "./synchronization.service";
 
-import type { LoggerService } from "../logger/logger.service";
+import type { LoggerService } from "@codebase/logger";
 
 describe(SynchronizationService, () => {
   let service: SynchronizationService;
@@ -59,9 +59,14 @@ describe(SynchronizationService, () => {
       });
     }).toThrow("process.exit:1");
     expect(loggerService.error).toHaveBeenCalledWith(
-      "❌ Invalid mode: invalid-mode",
+      "🚦 Rejected an unusable mode",
+      undefined,
+      {
+        mode: "invalid-mode",
+        reason: "Invalid mode",
+        usage: "Usage",
+      },
     );
-    expect(loggerService.error).toHaveBeenCalledWith("Usage");
 
     processExitSpy.mockRestore();
   });

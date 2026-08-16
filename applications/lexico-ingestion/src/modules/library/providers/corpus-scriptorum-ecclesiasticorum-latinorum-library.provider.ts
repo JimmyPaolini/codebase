@@ -7,8 +7,8 @@ import _ from "lodash";
 import YAML from "yaml";
 
 import { Author, Text } from "@codebase/lexico-entities";
+import { LoggerService } from "@codebase/logger";
 
-import { LoggerService } from "../../logger/logger.service";
 import { formatLineNumber, hasValidTextContent } from "../library.utilities";
 
 /**
@@ -78,9 +78,9 @@ export class CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider {
       return allFiles
         .filter((file) => file.isFile() && file.name.endsWith(".xml"))
         .map((file) => path.join(file.parentPath, file.name));
-    } catch (error) {
+    } catch {
       this.logger.error(
-        `❌ Could not read source directory: ${String(error)}. Did you run the corpus-scriptorum-ecclesiasticorum-latinorum command first?`,
+        `📁 Failed reading the source directory. Did you run the corpus-scriptorum-ecclesiasticorum-latinorum command first?`,
       );
       return null;
     }
@@ -275,7 +275,7 @@ export class CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider {
       });
       if (!appended) {
         this.logger.warn(
-          `⚠️ Skipping empty or invalid text: ${resolved.textSlug}`,
+          `📜 Skipping empty or invalid text ${resolved.textSlug}`,
         );
         return;
       }
@@ -284,7 +284,9 @@ export class CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider {
       });
       this.logSourceProgress({ index, totalFiles, xmlPath });
     } catch (error) {
-      this.logger.warn(`⚠️ Error processing ${xmlPath}: ${error}`);
+      this.logger.warn(`📜 Failed processing ${xmlPath}`, undefined, {
+        reason: String(error),
+      });
     }
   }
 

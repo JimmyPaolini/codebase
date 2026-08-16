@@ -1,26 +1,25 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "codometer",
   "projectType": "application",
   "sourceRoot": "packages/codometer",
   "tags": [
     "framework:nest-commander",
     "framework:nestjs",
     "generator:nestjs-command-application",
-    "language:typescript"
+    "language:typescript",
+    "type:application"
   ],
   "targets": {
-    "analyze-code": {},
-    "clean": {},
     "dependency-cruiser": {},
-    "format": {},
     "knip": {},
-    "lint": {},
+    "lint-codebase": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
     "prettier": {},
     "spell-check": {},
-    "test": {},
+    "test-coverage": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {}

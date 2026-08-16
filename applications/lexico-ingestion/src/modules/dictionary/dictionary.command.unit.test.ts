@@ -3,6 +3,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Lexeme, Translation } from "@codebase/lexico-entities";
+import { LoggerService } from "@codebase/logger";
 
 import {
   createCommandTestHarness,
@@ -10,7 +11,6 @@ import {
 } from "../../../testing/command-harness";
 import { setPromptsMockResponse } from "../../../testing/mocks";
 import { LexemesService } from "../lexemes/lexemes.service";
-import { LoggerService } from "../logger/logger.service";
 import { ManualService } from "../manual/manual.service";
 import { TranslationsService } from "../translations/translations.service";
 
@@ -649,7 +649,7 @@ describe(DictionaryCommand, () => {
     expect(getWiktionaryFilePathForWordSpy).toHaveBeenCalledWith("missing");
     expect(page).toBeNull();
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ No data file found for word: missing",
+      '📄 Missing data file for "missing"',
     );
   });
 
@@ -685,9 +685,7 @@ describe(DictionaryCommand, () => {
     ).loadWiktionaryPageForWord("amo");
 
     expect(page).toBeNull();
-    expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ No data file found for word: amo",
-    );
+    expect(logger.warn).toHaveBeenCalledWith('📄 Missing data file for "amo"');
   });
 
   it("should load and return wiktionary page data when file path and read succeed", () => {
@@ -870,7 +868,9 @@ describe(DictionaryCommand, () => {
     ).ingestTranslationReference(plainTranslation);
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ No reference found in: simple text",
+      "🔗 Missing reference in translation",
+      undefined,
+      expect.any(Object),
     );
   });
 
@@ -897,7 +897,7 @@ describe(DictionaryCommand, () => {
     ).ingestTranslationReference(targetTranslation);
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ No lexeme found for reference: unknown",
+      '🔑 Missing lexeme for reference "unknown"',
     );
   });
 
@@ -1089,7 +1089,7 @@ describe(DictionaryCommand, () => {
         ).processFile("amo.json", 1, 1);
 
         expect(logger.error).toHaveBeenCalledWith(
-          "❌ Failed to process amo.json: string-failure",
+          "📄 Failed processing amo.json",
         );
         expect(appendFileSyncMock).toHaveBeenCalledWith(
           expect.any(String),
@@ -1258,7 +1258,7 @@ describe(DictionaryCommand, () => {
           lexemesService.findLexemesByLemmaWithTranslations,
         ).toHaveBeenCalledWith("");
         expect(logger.warn).toHaveBeenCalledWith(
-          "⚠️ No lexeme found for reference: ",
+          '🔑 Missing lexeme for reference ""',
         );
       });
     });

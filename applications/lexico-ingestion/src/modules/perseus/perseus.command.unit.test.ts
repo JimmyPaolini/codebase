@@ -6,8 +6,9 @@ import { createMock, type DeepMocked } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { resetCommandTestHarness } from "../../../testing/command-harness";
-import { LoggerService } from "../logger/logger.service";
 
 import { PerseusCommand } from "./perseus.command";
 
@@ -107,7 +108,7 @@ describe(PerseusCommand, () => {
 
     expect(result).toBeNull();
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Failed to fetch Perseus tree: Not Found",
+      "🌳 Failed fetching the Perseus tree",
     );
   });
 
@@ -162,7 +163,7 @@ describe(PerseusCommand, () => {
 
     expect(result).toBeNull();
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Failed to parse Perseus tree response payload",
+      "🌳 Failed parsing the Perseus tree response",
     );
   });
 
@@ -177,7 +178,8 @@ describe(PerseusCommand, () => {
     ).appendSourceDownloadErrorLog("a/file-lat.xml", new Error("boom"));
 
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Error downloading a/file-lat.xml: Error: boom",
+      "📥 Failed downloading a/file-lat.xml",
+      expect.any(String),
     );
     expect(appendFileMock).toHaveBeenCalledTimes(1);
   });
@@ -277,7 +279,7 @@ describe(PerseusCommand, () => {
     ).fetchAndWriteXmlFile("https://example.com/file.xml", "/tmp/file.xml");
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ Failed to fetch https://example.com/file.xml: Forbidden",
+      "📥 Failed fetching https://example.com/file.xml",
     );
     expect(writeFileMock).not.toHaveBeenCalled();
   });
@@ -397,7 +399,8 @@ describe(PerseusCommand, () => {
     ).appendSourceDownloadErrorLog("a/file-lat.xml", "text failure");
 
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Error downloading a/file-lat.xml: text failure",
+      "📥 Failed downloading a/file-lat.xml",
+      expect.any(String),
     );
     expect(appendFileMock).toHaveBeenCalledWith(
       expect.any(String),

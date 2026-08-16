@@ -2,8 +2,9 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { expectProcessExitOne } from "../../../testing/mocks";
-import { LoggerService } from "../logger/logger.service";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import { ConventionalConfigCommand } from "./conventional-config.command";
@@ -82,9 +83,10 @@ describe(ConventionalConfigCommand, () => {
   it("exits for invalid mode", async () => {
     await expectProcessExitOne(async () => command.run(["invalid-mode"]));
 
-    expect(logger.error).toHaveBeenCalledWith("❌ Invalid mode: invalid-mode");
     expect(logger.error).toHaveBeenCalledWith(
-      "💡 Usage: nx run synchronization:start:conventional-config-check (or synchronization:start:conventional-config-write)",
+      "🚦 Rejected an unusable mode",
+      undefined,
+      expect.any(Object),
     );
   });
 });

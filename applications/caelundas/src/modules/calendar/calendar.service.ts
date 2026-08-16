@@ -5,7 +5,7 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import moment from "moment-timezone";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import type { Environment, Input } from "../input/input.types";
 import type {
@@ -184,7 +184,9 @@ END:VCALENDAR
   buildInstantEvent(args: BuildInstantEventArguments): Event {
     const { categories, date, description, logger, summary, timezone } = args;
     const dateString = date.clone().tz(timezone).toISOString(true);
-    logger.log(`${summary} at ${dateString}`);
+    logger.log(`🗓️ Built ${summary}`, undefined, {
+      at: dateString,
+    });
 
     return {
       categories,

@@ -6,12 +6,13 @@ import { createMock, type DeepMocked } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { resetCommandTestHarness } from "../../../testing/command-harness";
 import {
   setPromptsMockResponse,
   setPromptsMockResponseOnce,
 } from "../../../testing/mocks";
-import { LoggerService } from "../logger/logger.service";
 
 import { LibraryCommand } from "./library.command";
 import { LIBRARY_PROVIDERS_TOKEN } from "./library.constants";
@@ -836,7 +837,7 @@ describe(LibraryCommand, () => {
     });
 
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Error in provider string-provider",
+      "🔌 Failed running provider string-provider",
       undefined,
     );
     expect(appendFileMock).toHaveBeenCalledWith(

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import {
   ANNUAL_SOLAR_CYCLE_BASE_CATEGORIES,
@@ -41,7 +41,9 @@ export class AnnualSolarCycleEventsService {
       .clone()
       .tz(SOLAR_CYCLE_EVENT_TIMEZONE)
       .toISOString(true);
-    this.logger.log(`${summary} at ${dateString}`);
+    this.logger.log(`🗓️ Built ${summary}`, undefined, {
+      at: dateString,
+    });
     return {
       categories: [...categories],
       description,

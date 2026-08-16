@@ -3,8 +3,9 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { AspectEphemerisService } from "../aspects/aspect-ephemeris.service";
-import { LoggerService } from "../logger/logger.service";
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
 import { MinorAspectsComposerService } from "./minor-aspects-composer.service";

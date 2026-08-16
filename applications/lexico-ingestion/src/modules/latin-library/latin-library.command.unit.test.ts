@@ -10,8 +10,9 @@ import {
   vi,
 } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { resetCommandTestHarness } from "../../../testing/command-harness";
-import { LoggerService } from "../logger/logger.service";
 
 import { LatinLibraryCommand } from "./latin-library.command";
 
@@ -239,7 +240,8 @@ describe(LatinLibraryCommand, () => {
 
     expect(secondResult).toBe("");
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Error downloading https://www.thelatinlibrary.com/ovid/index.html: Error: network error",
+      "📥 Failed downloading https://www.thelatinlibrary.com/ovid/index.html",
+      expect.any(String),
     );
   });
 
@@ -588,7 +590,8 @@ describe(LatinLibraryCommand, () => {
     );
 
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Error processing https://www.thelatinlibrary.com/vergil/: queue failed",
+      "📜 Failed processing https://www.thelatinlibrary.com/vergil/",
+      expect.any(String),
     );
     expect(appendFileMock).toHaveBeenCalledTimes(1);
   });
@@ -677,7 +680,7 @@ describe(LatinLibraryCommand, () => {
       "utf8",
     );
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ Failed to fetch https://www.thelatinlibrary.com/ovid/index.html: Not Found",
+      "📥 Failed fetching https://www.thelatinlibrary.com/ovid/index.html",
     );
 
     vi.useRealTimers();
@@ -725,9 +728,7 @@ describe(LatinLibraryCommand, () => {
 
     expect(mkdirMock).toHaveBeenCalledTimes(1);
     expect(processQueueUrlSpy).toHaveBeenCalledTimes(1);
-    expect(logger.log).toHaveBeenCalledWith(
-      "✅ Finished scraping The Latin Library.",
-    );
+    expect(logger.log).toHaveBeenCalledWith("🕷️ Scraped The Latin Library");
   });
 
   it("should process duplicated author urls only once in run queue", async () => {

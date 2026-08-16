@@ -4,13 +4,19 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
+
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import {
   SYNC_PULL_REQUEST_TEMPLATE_MARKER,
   SYNC_PULL_REQUEST_TEMPLATE_TARGET_FILES,
 } from "./pull-request-template.constants";
+
+import type {
+  SynchronizableCommand,
+  SynchronizationMode,
+} from "../synchronization/synchronization.types";
 
 /**
  * CLI command that syncs the PR template from .github/PULL_REQUEST_TEMPLATE.md
@@ -21,7 +27,10 @@ import {
   name: "pull-request-template",
 })
 @Injectable()
-export class PullRequestTemplateCommand extends CommandRunner {
+export class PullRequestTemplateCommand
+  extends CommandRunner
+  implements SynchronizableCommand
+{
   // 🏗 Dependency Injection
 
   constructor(
@@ -35,6 +44,8 @@ export class PullRequestTemplateCommand extends CommandRunner {
   // 🔐 Private Fields
 
   // 🔑 Public Fields
+
+  readonly synchronizationLabel = "pull-request-template";
 
   // 🔏 Private Methods
 
@@ -55,7 +66,7 @@ export class PullRequestTemplateCommand extends CommandRunner {
 
     if (markerContent === undefined) {
       this.logger.log(
-        `❌ ${targetName} missing <!-- ${SYNC_PULL_REQUEST_TEMPLATE_MARKER}-start/end --> markers\n`,
+        `📄 Missing <!-- ${SYNC_PULL_REQUEST_TEMPLATE_MARKER}-start/end --> markers in ${targetName}`,
       );
       return false;
     }
@@ -63,7 +74,9 @@ export class PullRequestTemplateCommand extends CommandRunner {
     const expectedCodeBlock = this.wrapInCodeBlock(templateContent);
 
     if (markerContent.trim() !== expectedCodeBlock.trim()) {
-      this.logger.log(`❌ ${targetName} PR template is out of sync\n`);
+      this.logger.log(
+        `📄 Detected an out-of-sync PR template in ${targetName}`,
+      );
       return false;
     }
 
@@ -85,12 +98,14 @@ export class PullRequestTemplateCommand extends CommandRunner {
   }
 
   /**
-   * Checks all target files for sync and exits with an error if any are out of sync.
+   * Checks all target files for sync and reports whether every one matched,
+   * rather than exiting, so the aggregate `synchronization` command can
+   * collect every result.
    */
   private handleCheckMode(
     templateContent: string,
     targetFiles: string[],
-  ): void {
+  ): boolean {
     let allInSync = true;
     for (const targetFile of targetFiles) {
       if (!this.checkTargetSync(templateContent, targetFile)) {
@@ -98,12 +113,13 @@ export class PullRequestTemplateCommand extends CommandRunner {
       }
     }
     if (!allInSync) {
-      this.logger.log(
-        "💡 Run 'nx run synchronization:start:pull-request-template-write' to sync",
-      );
-      process.exit(1);
+      this.logger.log("💡 Suggested a fix", undefined, {
+        hint: "Run 'nx run synchronization:synchronize:write' to sync",
+      });
+      return false;
     }
-    this.logger.log("✅ PR template is in sync");
+    this.logger.log("📄 Verified the PR template");
+    return true;
   }
 
   /**
@@ -117,7 +133,7 @@ export class PullRequestTemplateCommand extends CommandRunner {
       (targetFile) => !this.checkTargetSync(templateContent, targetFile),
     );
     if (outOfSyncTargets.length === 0) {
-      this.logger.log("✅ Already in sync");
+      this.logger.log("📄 Verified every PR template was already in sync");
     } else {
       for (const targetFile of outOfSyncTargets) {
         this.writeTargetSync(templateContent, targetFile);
@@ -170,7 +186,7 @@ export class PullRequestTemplateCommand extends CommandRunner {
     );
 
     writeFileSync(targetFile, updatedContent, "utf8");
-    this.logger.log(`✅ ${targetName} PR template synced`);
+    this.logger.log(`📄 Synced the PR template in ${targetName}`);
   }
 
   // 🌎 Public Methods
@@ -182,7 +198,6 @@ export class PullRequestTemplateCommand extends CommandRunner {
     passedParameters: string[],
     _options?: Record<string, unknown>,
   ): Promise<void> {
-    await Promise.resolve();
     const mode =
       this.synchronizationModeService.resolveSynchronizationModeOrExit({
         invalidModeLabel: "Invalid mode",
@@ -191,6 +206,15 @@ export class PullRequestTemplateCommand extends CommandRunner {
         usageMessage:
           "💡 Usage: nx run synchronization:start:pull-request-template-check (or synchronization:start:pull-request-template-write)",
       });
+
+    if (!(await this.synchronize(mode))) {
+      process.exit(1);
+    }
+  }
+
+  /** Synchronizes the PR template and reports success without exiting. */
+  async synchronize(mode: SynchronizationMode): Promise<boolean> {
+    await Promise.resolve();
     const workspaceRoot = process.cwd();
     const templateFile = path.join(
       workspaceRoot,
@@ -203,9 +227,10 @@ export class PullRequestTemplateCommand extends CommandRunner {
     const templateContent = this.loadTemplate(templateFile);
 
     if (mode === "check") {
-      this.handleCheckMode(templateContent, targetFiles);
-    } else {
-      this.handleWriteMode(templateContent, targetFiles);
+      return this.handleCheckMode(templateContent, targetFiles);
     }
+
+    this.handleWriteMode(templateContent, targetFiles);
+    return true;
   }
 }
