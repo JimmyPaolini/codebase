@@ -44,7 +44,7 @@
 [![Validate Conventions](https://github.com/JimmyPaolini/codebase/actions/workflows/validate-conventions.yml/badge.svg?branch=main)](https://github.com/JimmyPaolini/codebase/actions/workflows/validate-conventions.yml)
 [![Make Projects](https://github.com/JimmyPaolini/codebase/actions/workflows/make-projects.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/make-projects.yml)
 [![Make Codebase](https://github.com/JimmyPaolini/codebase/actions/workflows/make-codebase.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/make-codebase.yml)
-[![Release Version](https://github.com/JimmyPaolini/codebase/actions/workflows/release-version.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/release-version.yml)
+[![Push Releases](https://github.com/JimmyPaolini/codebase/actions/workflows/push-releases.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/push-releases.yml)
 
 A modern TypeScript codebase with Nx, featuring automated releases, comprehensive code quality tools, and strict type safety.
 
@@ -95,7 +95,6 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
 ### Getting Started & Workflow
 
 - [Contributing Guide](CONTRIBUTING.md) - Local setup, PR conventions, and workflows
-- [Tool Execution Model](documentation/development/tool-execution-model.md) - When to use Nx vs. direct tooling
 - [Release Process](documentation/development/release-process.md) - Automated semantic versioning and changelogs
 - [Troubleshooting Gotchas](documentation/troubleshooting/gotchas.md) - Solutions to common environment and tooling issues
 
@@ -108,8 +107,8 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
 
 ### Conventions & Guidelines
 
-- [TypeScript](documentation/conventions/typescript.md) / [React](documentation/conventions/react.md) / [Python](documentation/conventions/python.md) - Language standards
-- [Imports](documentation/conventions/imports.md) - Import sorting and module resolution
+- [TypeScript](.agents/skills/write-typescript/SKILL.md) / [React](.agents/skills/write-react/SKILL.md) / [Python](.agents/skills/write-python/SKILL.md) - Language standards, including import ordering and module resolution
+- [Comments](.agents/skills/write-comments/SKILL.md) - Section comments and when a comment earns its place
 - [Testing Strategy](documentation/code-quality/testing-strategy.md) - Unit, integration, and E2E testing approaches
 - [Error Handling](documentation/code-quality/error-handling.md) - Typed errors and boundary validations
 - [Context Engineering](documentation/development/context-engineering.md) - Building AI-friendly context
@@ -121,8 +120,8 @@ Skills are specialized instruction files used by our automated agents, but they 
 - [View all Skills](.agents/skills) - Complete index of available skills
 - **Workflows:** [Git Commits](.agents/skills/commit-code/SKILL.md) / [PR Management](.agents/skills/create-pull-request/SKILL.md) / [Branch Naming](.agents/skills/checkout-branch/SKILL.md)
 - **Tooling:** [Nx Workspaces](.agents/skills/nx-workspace/SKILL.md) / [Generators](.agents/skills/nx-generate/SKILL.md) / [Task Running](.agents/skills/nx-run-tasks/SKILL.md)
-- **Infrastructure:** [Docker](.agents/skills/docker-workflows/SKILL.md) / [Kubernetes](.agents/skills/kubernetes-deployment/SKILL.md) / [Terraform](.agents/skills/mcp-terraform/SKILL.md)
-- **Domains:** [TanStack Start](.agents/skills/tanstack-start-ssr/SKILL.md) / [Ephemeris Pipeline](.agents/skills/ephemeris-pipeline/SKILL.md)
+- **Quality:** [Validating Code](.agents/skills/validate-code/SKILL.md) / [Testing Strategy](.agents/skills/testing-strategy/SKILL.md) / [Error Handling](.agents/skills/handle-errors/SKILL.md)
+- **Triage:** [Failing CI](.agents/skills/triage-deployment/SKILL.md) / [Rejected Commits](.agents/skills/triage-submission/SKILL.md) / [Spell Check](.agents/skills/spell-check/SKILL.md)
 
 Other important files include [CHANGELOG.md](CHANGELOG.md) and [SECURITY.md](SECURITY.md).
 

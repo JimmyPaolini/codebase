@@ -65,7 +65,7 @@
 [![Validate Conventions](https://github.com/JimmyPaolini/codebase/actions/workflows/validate-conventions.yml/badge.svg?branch=main)](https://github.com/JimmyPaolini/codebase/actions/workflows/validate-conventions.yml)
 [![Build Projects](https://github.com/JimmyPaolini/codebase/actions/workflows/build-projects.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/build-projects.yml)
 [![Make Devcontainer](https://github.com/JimmyPaolini/codebase/actions/workflows/make-devcontainer.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/make-devcontainer.yml)
-[![Release Version](https://github.com/JimmyPaolini/codebase/actions/workflows/release-version.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/release-version.yml)
+[![Push Releases](https://github.com/JimmyPaolini/codebase/actions/workflows/push-releases.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/push-releases.yml)
 
 A modern TypeScript codebase with Nx, featuring automated releases, comprehensive code quality tools, and strict type safety.
 
