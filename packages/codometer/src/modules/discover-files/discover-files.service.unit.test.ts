@@ -37,7 +37,7 @@ describe(DiscoverFilesService, () => {
         [
           "src/app.ts",
           "src/app.test.ts",
-          "src/util.js",
+          "src/utility.js",
           "src/script.py",
           "node_modules/lib/index.ts",
           "dist/bundle.js",
@@ -48,13 +48,13 @@ describe(DiscoverFilesService, () => {
     const result = service.discoverFiles("/repo");
 
     expect(result.tsFiles).toStrictEqual(["src/app.ts", "src/app.test.ts"]);
-    expect(result.jsFiles).toStrictEqual(["src/util.js"]);
+    expect(result.jsFiles).toStrictEqual(["src/utility.js"]);
     expect(result.testFiles).toStrictEqual(["src/app.test.ts"]);
     expect(result.pyFiles).toStrictEqual(["src/script.py"]);
     expect(result.sourceFiles).toStrictEqual([
       "src/app.ts",
       "src/app.test.ts",
-      "src/util.js",
+      "src/utility.js",
     ]);
     expect(result.trackedFiles).not.toContain("node_modules/lib/index.ts");
     expect(result.trackedFiles).not.toContain("dist/bundle.js");

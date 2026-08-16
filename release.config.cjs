@@ -44,7 +44,7 @@
  *
  *   # Patch release (1.3.0 → 1.3.1)
  *   fix(api): handle null values
- *   perf(db): add index to queries
+ *   perf(database): add index to queries
  *
  *   # Major release (1.3.1 → 2.0.0)
  *   feat(api)!: redesign authentication

@@ -25,7 +25,7 @@
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true, // Forces bracket notation for index signatures
-    "noUncheckedIndexedAccess": true, // arr[0] is T|undefined, not T — prevents runtime crashes
+    "noUncheckedIndexedAccess": true, // array[0] is T|undefined, not T — prevents runtime crashes
     "noUncheckedSideEffectImports": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

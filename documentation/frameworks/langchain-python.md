@@ -179,7 +179,7 @@ See the [tool-calling guide](https://python.langchain.com/docs/modules/tools/) i
 
 ### Structured Outputs
 
-Use `with_structured_output` or schema-enforced methods to request JSON or typed outputs from the model. Structured outputs are essential for reliable extraction and downstream processing (parsers, DB writes, analytics).
+Use `with_structured_output` or schema-enforced methods to request JSON or typed outputs from the model. Structured outputs are essential for reliable extraction and downstream processing (parsers, database writes, analytics).
 
 ### Multimodality
 

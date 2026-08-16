@@ -1,3 +1,6 @@
+// `obj` is the field name the EDCS API returns, not an abbreviation this code chose.
+// cspell:ignore obj
+
 import * as fs from "node:fs/promises";
 import path from "node:path";
 

@@ -145,7 +145,7 @@ export class FormsService {
    * removed by the database automatically. Matches new forms with existing
    * forms by properties to preserve IDs and avoid database churn.
    *
-   * Uses batched DB operations: one upsert for all Word rows, one reload to
+   * Uses batched database operations: one upsert for all Word rows, one reload to
    * collect their IDs, then two bulk inserts for the junction rows.
    */
   async ingestLexemeForms(forms: Form[], lexeme: Lexeme): Promise<void> {

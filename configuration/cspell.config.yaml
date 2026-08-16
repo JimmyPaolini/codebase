@@ -59,36 +59,50 @@ dictionaryDefinitions:
   - name: tooling
     path: .cspell/tooling.txt
     addWords: true
-# flagWords:
-#   - arr
-#   - auth
-#   - bg
-#   - bool
-#   - char
-#   - col
-#   - ctx
-#   - cur
-#   - curr
-#   - db
-#   - el
-#   - hex
-#   - idx
-#   - nav
-#   - num
-#   - obj
-#   - param
-#   - pkg
-#   - prop
-#   - px
-#   - req
-#   - res
-#   - ret
-#   - src
-#   - stg
-#   - tmp
-#   - txt
-#   - util
-#   - val
+  - name: editor
+    path: .cspell/editor.txt
+# Abbreviations banned everywhere — prose, comments, and identifiers alike. This is the
+# text-level counterpart to ESLint's `unicorn/prevent-abbreviations`, which only sees
+# TypeScript and JavaScript identifiers; these entries extend the same ban to Markdown,
+# Python, SQL, YAML, and JSON. Where an abbreviation is unavoidable because it belongs to
+# an external vocabulary (Tailwind classes, JSDoc tags, TypeORM identifiers, POSIX paths),
+# it is carved out by a named pattern in `ignoreRegExpList` rather than dropped here.
+#
+# `src` and `auth` are deliberately absent: `src` is the universal source-directory name
+# and appears as a literal path segment in globs, module specifiers, and shell commands,
+# and `auth` belongs to external product and CLI vocabulary (`Supabase Auth`, `gh auth`,
+# `AuthGuard`, `auth.guard.ts`). CSpell cannot tell either apart from an identifier, so
+# both stay banned by ESLint alone.
+# cspell:disable
+flagWords:
+  - arr
+  - bg
+  - bool
+  - char
+  - col
+  - ctx
+  - cur
+  - curr
+  - db
+  - el
+  - hex
+  - idx
+  - nav
+  - num
+  - obj
+  - param
+  - pkg
+  - prop
+  - px
+  - req
+  - res
+  - ret
+  - stg
+  - tmp
+  - txt
+  - util
+  - val
+# cspell:enable
 enableFiletypes:
   - markdown
   - typescript
@@ -116,15 +130,90 @@ dictionaries:
   - python
   - infrastructure
   - tooling
+  - editor
 patterns:
   - name: notebook-outputs
     pattern: /"outputs"\s*:\s*\[(?:[^\[\]]*|\[(?:[^\[\]]*|\[(?:[^\[\]]*|\[[^\[\]]*\])*[^\[\]]*\])*[^\[\]]*\])*[^\[\]]*\]/g
+  # cspell:disable
+  # The POSIX temporary directory, written as a literal path (`/tmp/fixture.xml`) or as an
+  # excluded workspace folder (`"tmp"`). A `tmp` identifier is still flagged.
+  - name: temporary-directory-path
+    pattern: /(?<![\w-])\/?tmp(?=["'`/]|$)/gm
+  # The `.txt` file extension.
+  - name: text-file-extension
+    pattern: /\.txt(?![\w])/g
+  # Tailwind utility classes (`bg-card`, `px-4`, `flex-col`, `grid-cols-2`) and CSS pixel
+  # units (`400px`), whose names come from Tailwind and CSS rather than from this codebase.
+  - name: css-utility-class
+    pattern: /(?<![\w-])(?:bg|px|cols?)-[\w[\]/.%-]+|(?<![\w-])(?:flex|grid)-cols?(?![\w-])|\b\d+(?:\.\d+)?px(?![\w])/g
+  # TypeORM-generated index and constraint identifiers, whose hex hashes also spell `db`.
+  - name: typeorm-constraint-identifier
+    pattern: /\b(?:IDX|FK|PK|UQ|REL|CHK|DF)_[\da-f]{8,}\b/g
+  # The JSDoc `@param` tag and the NestJS `@Param()` decorator named after it.
+  - name: jsdoc-parameter-tag
+    pattern: /@[Pp]aram(?![\w])/g
+  # PostgreSQL and Supabase vocabulary: the `POSTGRES_DB` environment variable, which
+  # applications prefix, and the `supabase db` CLI subcommand.
+  - name: database-tooling-vocabulary
+    pattern: /\w*POSTGRES_DB\b|\bsupabase db\b/g
+  # Hexadecimal color literals, which can spell a banned abbreviation. Six letters with no
+  # digit is an English word (`decade`, `facade`), not a color, so it stays checked.
+  - name: hexadecimal-color
+    pattern: /(?<![\w#])#?(?![a-f]{6}(?![\w]))[\da-f]{6}(?![\w])/gi
+  # Lint rule names that embed a banned abbreviation, from ESLint, oxlint, squawk, and fallow.
+  - name: lint-rule-name
+    pattern: /\bno-(?:param-reassign|obj-calls|hex-escape|children-prop)\b|\bban-char-field\b|\bprop-drilling\b/g
+  # External identifiers that embed a banned abbreviation and cannot be renamed: the
+  # `mdast-util-*` packages, Zod's `RefinementCtx` type, pytest's `tmp_path` fixture,
+  # Python's `secrets.token_hex()`, the `git config --bool` flag, and the Universal
+  # Dependencies `NUM` part-of-speech tag.
+  - name: external-identifier
+    pattern: /\bmdast-util-[\w-]+|\bRefinementCtx\b|\btmp_path\b|\btoken_hex\b|--bool\b|(?<=")NUM(?=")/g
+  # Quoted dotted identifiers in editor configuration: VS Code extension IDs
+  # (`esbenp.prettier-vscode`), setting keys (`git.autofetch`), and command IDs
+  # (`workbench.action.terminal.new`). Publisher handles are not English words, and the
+  # keys are VS Code's vocabulary rather than this workspace's. Only applied to the editor
+  # config files in `overrides` — plain strings in those files stay checked.
+  - name: editor-configuration-identifier
+    pattern: /"[a-z\d][\w-]*(?:\.[\w-]+)+"/gi
+  # cspell:enable
+ignoreRegExpList:
+  - temporary-directory-path
+  - text-file-extension
+  - css-utility-class
+  - typeorm-constraint-identifier
+  - jsdoc-parameter-tag
+  - database-tooling-vocabulary
+  - hexadecimal-color
+  - lint-rule-name
+  - external-identifier
 overrides:
   - filename: "**/*.ipynb"
     ignoreRegExpList:
       - notebook-outputs
   - filename: "**/lexico-ingestion/data/**"
     enabled: false
+  # cspell:disable
+  # Python spells some of the banned abbreviations itself: `bool` is a builtin type, and
+  # `col_offset` is an attribute of every `ast` node. `num_results` is LangChain's search
+  # keyword argument.
+  - filename:
+      - "**/*.py"
+      - "**/*.ipynb"
+    ignoreRegExpList:
+      - /\bbool\b|\bcol_offset\b|\bnum_results\b/g
+  # VS Code and devcontainer configuration is written in VS Code's own vocabulary — the
+  # extension recommendation lists are nothing but third-party publisher handles.
+  - filename:
+      - "**/.vscode/**/*.json"
+      - "**/.devcontainer/**/*.json"
+    ignoreRegExpList:
+      - editor-configuration-identifier
+  # The folder-naming rules necessarily spell out the folder names they ban.
+  - filename: "**/configuration/project-structure.json"
+    ignoreRegExpList:
+      - /\(\?![^)]*\)/g
+  # cspell:enable
 words:
   # The rc-style conformetry config filenames the Nx plugin looks for.
   - conformetryrc
