@@ -32,7 +32,7 @@ Then export it in [src/index.ts](src/index.ts).
 - Light/dark mode via `data-theme`
 - Tokens in [src/styles/globals.css](src/styles/globals.css)
 
-See [React Conventions](../../documentation/conventions/react.md) for theming patterns.
+See the [write-react skill](../../.agents/skills/write-react/SKILL.md) for theming patterns.
 
 ## Usage in Apps
 
@@ -60,10 +60,8 @@ export * from "./components/word-card";
 
 ## Troubleshooting
 
-See [Common Gotchas](../../documentation/troubleshooting/gotchas.md) for:
-
-- shadcn updates overwriting `ui/` files
-- theme tokens not updating
+- **shadcn updates overwriting `ui/` files** — never edit `src/components/ui/` directly; compose those primitives in `src/components/` instead, so `pnpx shadcn@latest add <component>` stays safe to re-run.
+- **Theme tokens not updating** — CSS variables in [src/styles/globals.css](src/styles/globals.css) must be bare HSL values (`--primary: 0 0% 9%`), not `hsl(...)` wrapped. Clear `node_modules/.vite` and restart the dev server after changing them.
 
 ## Key Files
 

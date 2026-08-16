@@ -215,7 +215,7 @@ overrides:
     ignoreRegExpList:
       - editor-configuration-identifier
   # The folder-naming rules necessarily spell out the folder names they ban.
-  - filename: "**/configuration/project-structure.json"
+  - filename: "**/configuration/codebase-structure.json"
     ignoreRegExpList:
       - /\(\?![^)]*\)/g
   # cspell:enable

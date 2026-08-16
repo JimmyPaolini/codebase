@@ -477,7 +477,7 @@ gh pr merge --squash --delete-branch
 - [PR template](../../../.github/PULL_REQUEST_TEMPLATE.md) — Default PR description template
 - [commit-code skill](../commit-code/SKILL.md) — Commit and PR title format
 - [checkout-branch skill](../checkout-branch/SKILL.md) — Branch naming conventions
-- [github-actions skill](../github-actions/SKILL.md) — CI workflow details
+- [triage-deployment skill](../triage-deployment/SKILL.md) — Diagnosing failing CI checks on a PR
 - [backup-code](../backup-code/SKILL.md) — Safety checkpoint before history rewrite
 - [restore-code](../restore-code/SKILL.md) — Recovery workflow after failed branch update
 - [Conventional Commits](https://www.conventionalcommits.org/)

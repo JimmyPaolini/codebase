@@ -365,12 +365,12 @@ PR description template:
 
 ### Project Structure
 
-Folder and file placement is a lint error, not a style preference. It is enforced by `eslint-plugin-project-structure` from `configuration/project-structure.json`.
+Folder and file placement is a lint error, not a style preference. It is enforced by `eslint-plugin-project-structure` from `configuration/codebase-structure.json`.
 
 <!-- The folder-name rule below has to spell out the names it bans. cspell:ignore ctx -->
 
 - **Every folder is kebab-case** (`^[a-z0-9-]+$`). The abbreviated names `dir`, `err`, `req`, `res`, `utils`, `ctx`, and `app` are rejected outright as folder names.
-- **Projects live in `applications/`, `packages/`, or `tools/`.** Adding a new file or folder at the workspace root requires adding it to `configuration/project-structure.json` in the same change, or lint fails.
+- **Projects live in `applications/`, `packages/`, or `tools/`.** Adding a new file or folder at the workspace root requires adding it to `configuration/codebase-structure.json` in the same change, or lint fails.
 - **Project subfolders are a fixed set**: `src/`, `testing/`, `scripts/`, `data/`, `assets/`, `coverage/`, `output/`, `public/`, `.vscode/`.
 - **`src/` subfolders are a fixed set**: `modules/`, `components/`, `lib/`, `routes/`, `hooks/`, `styles/`, `assets/`, `executors/`, `generators/`, `validators/`. A `src/plugin.ts` entrypoint is forbidden.
 - **Files inside `src/modules/<module-name>/` must be `<kebab-name>.<suffix>.<extension>`** where suffix is one of `command`, `constants`, `errors`, `module`, `service`, `types`, or `utilities`, optionally with `.unit.test`, `.integration.test`, or `.end-to-end.test` before the extension. A bare `<name>.ts` inside a module folder is invalid — pick a suffix.
@@ -471,7 +471,7 @@ Test files are named `*.<kind>.test.ts` and live beside the code they cover. Vit
 - **Duplication**: `jscpd` fails above a 6% threshold, counting clones of 12+ lines or 24+ tokens. Extract a shared helper rather than copying a block.
 - Lowering a threshold to make a change pass is not an option — fix the code.
 
-See [Testing Strategy](documentation/code-quality/testing-strategy.md) for patterns.
+See the [testing-strategy skill](.agents/skills/testing-strategy/SKILL.md) for patterns.
 
 ## Agent Context
 

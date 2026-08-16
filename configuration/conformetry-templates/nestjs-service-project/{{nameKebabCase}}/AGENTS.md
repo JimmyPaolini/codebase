@@ -98,7 +98,7 @@ nx run {{nameKebabCase}}:test:end-to-end    # Slow (30-60s) — full service ini
 | Integration | `*.integration.test.ts` | Database queries, external API clients |
 | End-to-end | `*.end-to-end.test.ts` | Full `NestFactory.create()` execution |
 
-See [Testing Strategy](../../documentation/code-quality/testing-strategy.md) for patterns and mock conventions.
+See the [testing-strategy skill](../../.agents/skills/testing-strategy/SKILL.md) and [testing-mocks skill](../../.agents/skills/testing-mocks/SKILL.md) for patterns and mock conventions.
 
 ## Writing Modules
 
@@ -210,14 +210,14 @@ export class MainModule {}
 - **Type imports** — use `import { type Foo }` for type-only imports (enforced by ESLint).
 - **No `any` types** — use `unknown` or proper typing; strict mode is enabled.
 
-See [TypeScript Conventions](../../documentation/conventions/typescript.md) for strict mode patterns.
+See the [write-typescript skill](../../.agents/skills/write-typescript/SKILL.md) for strict mode patterns.
 
 ## Troubleshooting
 
 - **Dependency injection failure** — verify the service is `@Injectable()`, exported from its module, and that module is imported by the consuming module.
 - **Env var validation error on startup** — add the missing variable to `environmentSchema` in `src/constants.ts` and to `.env.default`.
 
-See [Common Gotchas](../../documentation/troubleshooting/gotchas.md) for workspace-wide issues.
+See the [triage-submission skill](../../.agents/skills/triage-submission/SKILL.md) for lint and git hook failures.
 
 ## Key Files
 

@@ -156,7 +156,7 @@ nx run caelundas:test:end-to-end    # Slow (30-60s) — full CLI execution
 | Integration | `*.integration.test.ts` | Database queries, external API clients |
 | End-to-end | `*.end-to-end.test.ts` | Full `CommandFactory.run()` execution |
 
-See [Testing Strategy](../../documentation/code-quality/testing-strategy.md) for patterns and mock conventions.
+See the [testing-strategy skill](../../.agents/skills/testing-strategy/SKILL.md) and [testing-mocks skill](../../.agents/skills/testing-mocks/SKILL.md) for patterns and mock conventions.
 
 ### Environment Variables
 
@@ -193,8 +193,6 @@ Caelundas runs as a **Kubernetes Job** (not Deployment):
 - Single execution, terminates on completion
 - Output stored in PersistentVolumeClaim
 - No network exposure needed
-
-See [Deployment Models](../../documentation/architecture/deployment-models.md) for Jobs vs. Deployments patterns.
 
 ### Workflow
 
@@ -393,7 +391,7 @@ pnpm nx run codebase:conformetry-validate
 - **Type imports** — use `import { type Foo }` for type-only imports (enforced by ESLint).
 - **No `any` types** — use `unknown` or proper typing; strict mode is enabled.
 
-See [TypeScript Conventions](../../documentation/conventions/typescript.md) for strict mode patterns.
+See the [write-typescript skill](../../.agents/skills/write-typescript/SKILL.md) for strict mode patterns.
 
 ## Troubleshooting
 
@@ -403,7 +401,7 @@ See [TypeScript Conventions](../../documentation/conventions/typescript.md) for 
 - **Env var validation error on startup** — add the missing variable to environmentSchema in src/constants.ts and to .env.default.
 - **TypeORM entity not found** — register the entity via `TypeOrmModule.forFeature([MyEntity])` in the module that uses it.
 
-See [Common Gotchas](../../documentation/troubleshooting/gotchas.md) for workspace-wide issues.
+See the [triage-submission skill](../../.agents/skills/triage-submission/SKILL.md) for lint and git hook failures.
 
 **Project-Specific Gotchas**:
 

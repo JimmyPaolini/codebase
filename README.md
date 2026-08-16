@@ -95,32 +95,28 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
 ### Getting Started & Workflow
 
 - [Contributing Guide](CONTRIBUTING.md) - Local setup, PR conventions, and workflows
+- [AGENTS.md](AGENTS.md) - Commands, project layout, conventions, code quality gates, and git workflow
 - [Release Process](documentation/development/release-process.md) - Automated semantic versioning and changelogs
-- [Troubleshooting Gotchas](documentation/troubleshooting/gotchas.md) - Solutions to common environment and tooling issues
 
 ### Architecture & Systems
 
-- [CI/CD Pipeline](documentation/github-actions.md) - GitHub Actions workflows
-- [Static Analysis & Code Quality](documentation/code-quality/static-analysis.md) - Linting, formatting, and tests
-- [Deployment Models](documentation/architecture/deployment-models.md) - Kubernetes, Helm, and infrastructure architecture
-- [Framework Guides](documentation/frameworks/) - References for [Kubernetes](documentation/frameworks/kubernetes.md), [NestJS](documentation/frameworks/nestjs.md), and [LangChain Python](documentation/frameworks/langchain-python.md)
+- [CI/CD Workflows](.github/workflows) - GitHub Actions workflows and the shared `setup-codebase` composite action
+- [Infrastructure](infrastructure/README.md) - Helm charts, Terraform, and the Kubernetes deployment pipeline
+- [Dev Container](.devcontainer/README.md) - Containerized development environment
+- [Scripts](scripts/README.md) - Local setup and maintenance scripts
 
 ### Conventions & Guidelines
 
-- [TypeScript](.agents/skills/write-typescript/SKILL.md) / [React](.agents/skills/write-react/SKILL.md) / [Python](.agents/skills/write-python/SKILL.md) - Language standards, including import ordering and module resolution
-- [Comments](.agents/skills/write-comments/SKILL.md) - Section comments and when a comment earns its place
-- [Testing Strategy](documentation/code-quality/testing-strategy.md) - Unit, integration, and E2E testing approaches
-- [Error Handling](documentation/code-quality/error-handling.md) - Typed errors and boundary validations
-- [Context Engineering](documentation/development/context-engineering.md) - Building AI-friendly context
-- [Gitmoji](documentation/gitmoji.md)
+Conventions live in [AGENTS.md](AGENTS.md) and the agent skills below, which are the single sources of truth. Every project also has its own `AGENTS.md` with project-specific patterns.
 
 **🤖 Agent Skills (Domain Knowledge)**
 Skills are specialized instruction files used by our automated agents, but they also serve as excellent deep-dive documentation for human developers.
 
 - [View all Skills](.agents/skills) - Complete index of available skills
+- **Languages:** [TypeScript](.agents/skills/write-typescript/SKILL.md) / [React](.agents/skills/write-react/SKILL.md) / [Python](.agents/skills/write-python/SKILL.md) / [Comments](.agents/skills/write-comments/SKILL.md)
+- **Quality:** [Validate Code](.agents/skills/validate-code/SKILL.md) / [Testing Strategy](.agents/skills/testing-strategy/SKILL.md) / [Testing Mocks](.agents/skills/testing-mocks/SKILL.md) / [Error Handling](.agents/skills/handle-errors/SKILL.md)
 - **Workflows:** [Git Commits](.agents/skills/commit-code/SKILL.md) / [PR Management](.agents/skills/create-pull-request/SKILL.md) / [Branch Naming](.agents/skills/checkout-branch/SKILL.md)
 - **Tooling:** [Nx Workspaces](.agents/skills/nx-workspace/SKILL.md) / [Generators](.agents/skills/nx-generate/SKILL.md) / [Task Running](.agents/skills/nx-run-tasks/SKILL.md)
-- **Quality:** [Validating Code](.agents/skills/validate-code/SKILL.md) / [Testing Strategy](.agents/skills/testing-strategy/SKILL.md) / [Error Handling](.agents/skills/handle-errors/SKILL.md)
 - **Triage:** [Failing CI](.agents/skills/triage-deployment/SKILL.md) / [Rejected Commits](.agents/skills/triage-submission/SKILL.md) / [Spell Check](.agents/skills/spell-check/SKILL.md)
 
 Other important files include [CHANGELOG.md](CHANGELOG.md) and [SECURITY.md](SECURITY.md).
