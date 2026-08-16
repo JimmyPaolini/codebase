@@ -80,7 +80,7 @@ export default [
     },
     settings: {
       "project-structure/folder-structure-config-path":
-        "configuration/project-structure.json",
+        "configuration/codebase-structure.json",
     },
   },
 
