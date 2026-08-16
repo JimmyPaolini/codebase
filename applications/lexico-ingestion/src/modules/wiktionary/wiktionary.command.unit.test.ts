@@ -205,7 +205,7 @@ describe(WiktionaryCommand, () => {
       }
     ).ingestWord("amo", "/w/index.php?title=amo", "lemma");
 
-    expect(logger.warn).toHaveBeenCalledWith('⚠️ "amo" - no wiktionary page');
+    expect(logger.warn).toHaveBeenCalledWith('🌐 Missing wiktionary page for "amo"');
   });
 
   it("should warn when latin section is missing", async () => {
@@ -230,7 +230,7 @@ describe(WiktionaryCommand, () => {
     ).ingestWord("amo", "/wiki/amo", "lemma");
 
     expect(logger.warn).toHaveBeenCalledWith(
-      '⚠️ "amo" - no latin entry in wiktionary',
+      '🌐 Missing latin entry for "amo"',
     );
   });
 
@@ -433,7 +433,7 @@ describe(WiktionaryCommand, () => {
     const response = await responsePromise;
 
     expect(response.status).toBe(200);
-    expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining("60.0s"));
+    expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining("60.0s"), undefined, expect.any(Object));
 
     vi.useRealTimers();
   });
@@ -552,7 +552,7 @@ describe(WiktionaryCommand, () => {
 
     expect(logger.error).toHaveBeenCalledWith(
       '🔤 Failed ingesting word "amo" - Error: word failure',
-    );
+     expect.any(String));
     expect(appendFileSyncMock).toHaveBeenCalledTimes(1);
   });
 
@@ -586,7 +586,7 @@ describe(WiktionaryCommand, () => {
 
     expect(logger.error).toHaveBeenCalledWith(
       '🔤 Failed ingesting word "amo" - word failure string',
-    );
+     expect.any(String));
     expect(appendFileSyncMock).toHaveBeenCalledTimes(1);
   });
 
@@ -649,7 +649,7 @@ describe(WiktionaryCommand, () => {
 
     expect(logger.error).toHaveBeenCalledWith(
       expect.stringContaining('🌐 Failed ingesting category "lemma"'),
-    );
+     expect.any(String));
     expect(appendFileSyncMock).toHaveBeenCalledTimes(1);
   });
 

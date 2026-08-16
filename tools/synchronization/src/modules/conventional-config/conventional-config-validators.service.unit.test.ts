@@ -95,10 +95,10 @@ describe(ConventionalConfigValidatorsService, () => {
     {
       currentScopes: ["tools"],
       expectedAbsentLogMessages: [
-        "🔀 Scopes have matching values but different ordering\n",
+        "🔀 Reordered scopes in settings.json",
       ],
       expectedPresentLogMessages: [
-        "❌ settings.json scopes are out of sync\n",
+        "📇 Detected out-of-sync scopes in settings.json",
         "  Missing in settings.json (1 items):",
         "  Extra in settings.json (1 items):",
       ],
@@ -109,7 +109,7 @@ describe(ConventionalConfigValidatorsService, () => {
       currentScopes: ["tools", "alpha"],
       expectedAbsentLogMessages: [
         "  Extra in settings.json (1 items):",
-        "🔀 Scopes have matching values but different ordering\n",
+        "🔀 Reordered scopes in settings.json",
       ],
       expectedPresentLogMessages: ["  Missing in settings.json (1 items):"],
       scenarioName:
@@ -120,7 +120,7 @@ describe(ConventionalConfigValidatorsService, () => {
       currentScopes: ["tools"],
       expectedAbsentLogMessages: [
         "  Missing in settings.json (1 items):",
-        "🔀 Scopes have matching values but different ordering\n",
+        "🔀 Reordered scopes in settings.json",
       ],
       expectedPresentLogMessages: ["  Extra in settings.json (1 items):"],
       scenarioName:
@@ -134,7 +134,7 @@ describe(ConventionalConfigValidatorsService, () => {
         "  Extra in settings.json (1 items):",
       ],
       expectedPresentLogMessages: [
-        "🔀 Scopes have matching values but different ordering\n",
+        "🔀 Reordered scopes in settings.json",
       ],
       scenarioName: "detects settings ordering drift when values match",
       targetScopes: ["alpha", "tools"],
@@ -152,7 +152,7 @@ describe(ConventionalConfigValidatorsService, () => {
       );
 
       for (const expectedLogMessage of expectedPresentLogMessages) {
-        expect(logger.log).toHaveBeenCalledWith(expectedLogMessage);
+        expect(logger.log).toHaveBeenCalledWith(expectedLogMessage, undefined, expect.any(Object));
       }
 
       for (const expectedLogMessage of expectedAbsentLogMessages) {
@@ -203,7 +203,7 @@ describe(ConventionalConfigValidatorsService, () => {
     expect(service.checkIssueTemplateSync(["tools"], templateFile)).toBe(false);
     expect(logger.log).toHaveBeenCalledWith(
       expect.stringContaining("missing <!-- scopes-start/end --> markers"),
-    );
+     undefined, expect.any(Object));
   });
 
   it.each([

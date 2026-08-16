@@ -1,3 +1,4 @@
+import type { LogData } from "@codebase/logger";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
@@ -75,7 +76,7 @@ export class AspectEventFormattingService {
     aspectSymbol: string;
     body1: Body;
     body2: Body;
-    log: (message: string) => void;
+    log: (message: string, data?: LogData) => void;
     phase: AspectPhase;
     timestamp: Moment;
   }): Event {
@@ -110,7 +111,7 @@ export class AspectEventFormattingService {
         phase,
       });
     const summary = `${phaseEmoji} ${symbolByBody[body1]} ${aspectSymbol} ${symbolByBody[body2]} ${description}`;
-    log(`${summary} at ${timestamp.toISOString()}`);
+    log(`🗓️ Built ${summary}`, { at: timestamp.toISOString() });
 
     return {
       categories,

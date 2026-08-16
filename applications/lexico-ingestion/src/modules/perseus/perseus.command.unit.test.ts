@@ -109,7 +109,7 @@ describe(PerseusCommand, () => {
     expect(result).toBeNull();
     expect(logger.error).toHaveBeenCalledWith(
       "📥 Failed fetching Perseus tree: Not Found",
-    );
+     expect.any(String));
   });
 
   it("should filter and return only latin xml blob paths", async () => {
@@ -179,7 +179,7 @@ describe(PerseusCommand, () => {
 
     expect(logger.error).toHaveBeenCalledWith(
       "📥 Failed downloading a/file-lat.xml: Error: boom",
-    );
+     expect.any(String));
     expect(appendFileMock).toHaveBeenCalledTimes(1);
   });
 
@@ -279,7 +279,7 @@ describe(PerseusCommand, () => {
 
     expect(logger.warn).toHaveBeenCalledWith(
       "⚠️ Failed to fetch https://example.com/file.xml: Forbidden",
-    );
+     undefined, expect.any(Object));
     expect(writeFileMock).not.toHaveBeenCalled();
   });
 
@@ -399,7 +399,7 @@ describe(PerseusCommand, () => {
 
     expect(logger.error).toHaveBeenCalledWith(
       "📥 Failed downloading a/file-lat.xml: text failure",
-    );
+     expect.any(String));
     expect(appendFileMock).toHaveBeenCalledWith(
       expect.any(String),
       expect.stringContaining("text failure"),

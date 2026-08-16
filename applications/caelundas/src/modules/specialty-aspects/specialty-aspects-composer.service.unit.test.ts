@@ -70,7 +70,7 @@ describe(SpecialtyAspectsComposerService, () => {
 
     expect(logger.log).toHaveBeenCalledWith(
       "🎯 ☀️ ⬠ 🌙 Sun quintile Moon at 2024-03-21T12:00:00.000Z",
-    );
+     undefined, expect.any(Object));
   });
 
   it("extracts and casts aspect components", () => {

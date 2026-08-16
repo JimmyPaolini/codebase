@@ -214,7 +214,7 @@ describe(ProgressiveService, () => {
         "my-label",
       );
 
-      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("my-label"));
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("my-label"), undefined, expect.any(Object));
 
       warnSpy.mockRestore();
     });

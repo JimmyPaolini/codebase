@@ -258,7 +258,7 @@ describe(LexemesService, () => {
     const result = await service.parseLexemes(page);
 
     expect(result).toStrictEqual([]);
-    expect(logger.warn).toHaveBeenCalledWith("No headwords found for: amo");
+    expect(logger.warn).toHaveBeenCalledWith('🔤 Missing headwords for "amo"');
   });
 
   it("should parse lexemes from headword elements", async () => {
@@ -405,7 +405,7 @@ describe(LexemesService, () => {
 
     expect(result).toBeNull();
     expect(logger.debug).toHaveBeenCalledWith(
-      'Skipping POS "invalid-pos" for: amo',
+      '🏷️ Skipping part of speech "invalid-pos" for "amo"',
     );
   });
 

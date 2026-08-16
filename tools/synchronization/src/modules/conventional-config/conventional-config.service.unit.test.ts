@@ -197,8 +197,8 @@ describe(ConventionalConfigService, () => {
       }),
     ).toThrow("process.exit:1");
     expect(logger.log).toHaveBeenCalledWith(
-      "💡 Run 'nx run synchronization:start:conventional-config-write' to sync",
-    );
+      "💡 Suggested a fix",
+     undefined, expect.any(Object));
 
     processExitSpy.mockRestore();
   });

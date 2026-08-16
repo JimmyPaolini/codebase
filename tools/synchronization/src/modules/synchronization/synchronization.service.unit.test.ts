@@ -67,7 +67,7 @@ describe(SynchronizationService, () => {
          "usage": "Usage",
        },
     );
-    expect(loggerService.error).toHaveBeenCalledWith("Usage");
+    expect(loggerService.error).toHaveBeenCalledWith("Usage", expect.any(String));
 
     processExitSpy.mockRestore();
   });

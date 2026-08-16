@@ -323,7 +323,7 @@ describe(DevcontainerConfigurationCommand, () => {
 
     await expectProcessExitOne(async () => command.run(["invalid-mode"]));
 
-    expect(logger.error).toHaveBeenCalledWith("❌ Invalid mode: invalid-mode");
+    expect(logger.error).toHaveBeenCalledWith("🚦 Rejected an unusable mode", expect.any(String));
     expect(logger.error).toHaveBeenCalledWith(
       "💡 Usage: nx run synchronization:start:devcontainer-configuration-check (or synchronization:start:devcontainer-configuration-write)",
     );

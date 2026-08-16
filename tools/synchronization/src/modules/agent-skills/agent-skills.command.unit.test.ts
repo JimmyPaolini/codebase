@@ -188,7 +188,7 @@ describe(AgentSkillsCommand, () => {
   it("exits with error for invalid mode", async () => {
     await expectProcessExitOne(async () => command.run(["invalid-mode"]));
 
-    expect(logger.error).toHaveBeenCalledWith("❌ Unknown mode: invalid-mode");
+    expect(logger.error).toHaveBeenCalledWith("🚦 Rejected an unusable mode", expect.any(String));
     expect(logger.error).toHaveBeenCalledWith("Expected 'check' or 'write'");
   });
 
@@ -196,14 +196,14 @@ describe(AgentSkillsCommand, () => {
     await command.run(["check"]);
 
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ All 2 plan agent files are in sync",
-    );
+      "📄 Verified the plan agent files",
+     undefined, expect.any(Object));
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ All 2 triage agent files are in sync",
-    );
+      "📄 Verified the triage agent files",
+     undefined, expect.any(Object));
     expect(logger.log).toHaveBeenCalledWith(
       "✅ Custom agents table of contents is in sync (1 agent)",
-    );
+     undefined, expect.any(Object));
     expect(logger.log).toHaveBeenCalledWith(
       "✅ Skills table of contents is in sync (1 skills)",
     );
@@ -312,8 +312,8 @@ describe(AgentSkillsCommand, () => {
     await expectProcessExitOne(async () => command.run(["check"]));
 
     expect(logger.log).toHaveBeenCalledWith(
-      "❌ Custom agents table of contents in AGENTS.md is out of sync\n",
-    );
+      "📇 Detected an out-of-sync custom agents table in AGENTS.md",
+     undefined, expect.any(Object));
   });
 
   it("exits in check mode when skills table is out of sync", async () => {
@@ -339,8 +339,8 @@ describe(AgentSkillsCommand, () => {
     await expectProcessExitOne(async () => command.run(["check"]));
 
     expect(logger.log).toHaveBeenCalledWith(
-      "❌ Skills table of contents in AGENTS.md is out of sync\n",
-    );
+      "📇 Detected an out-of-sync skills table in AGENTS.md",
+     undefined, expect.any(Object));
   });
 
   it("runs write mode and updates agent and AGENTS files", async () => {
@@ -375,11 +375,11 @@ describe(AgentSkillsCommand, () => {
       "📄 Synced .github/agents/explore-codebase.agent.md",
     );
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ Updated AGENTS.md with 2 agents",
-    );
+      "📇 Updated AGENTS.md",
+     undefined, expect.any(Object));
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ Updated AGENTS.md with 1 skills",
-    );
+      "📇 Updated AGENTS.md",
+     undefined, expect.any(Object));
   });
 
   it("logs question-me update output in question-me mode", () => {
@@ -410,6 +410,6 @@ describe(AgentSkillsCommand, () => {
 
     await expectProcessExitOne(async () => command.run(["write"]));
 
-    expect(logger.error).toHaveBeenCalledWith("❌ Error: cannot read skill");
+    expect(logger.error).toHaveBeenCalledWith("💥 Failed synchronizing agent skills", expect.any(String));
   });
 });

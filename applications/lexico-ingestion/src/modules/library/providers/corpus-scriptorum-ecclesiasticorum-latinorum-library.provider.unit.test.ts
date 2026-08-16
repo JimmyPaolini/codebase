@@ -509,7 +509,7 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider, () => {
 
     expect(logger.warn).toHaveBeenCalledWith(
       expect.stringContaining("📜 Failed processing /tmp/csel/aeneid.xml"),
-    );
+     undefined, expect.any(Object));
   });
 
   it("should process source file, append text, and log completion", async () => {

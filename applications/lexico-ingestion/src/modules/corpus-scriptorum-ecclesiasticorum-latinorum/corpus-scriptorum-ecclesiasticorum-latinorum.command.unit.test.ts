@@ -162,7 +162,7 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumCommand, () => {
     expect(result).toBeNull();
     expect(logger.error).toHaveBeenCalledWith(
       "📥 Failed fetching CSEL tree: Bad Request",
-    );
+     expect.any(String));
   });
 
   it("should fetch tree and return nodes on success", async () => {
@@ -274,7 +274,7 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumCommand, () => {
 
     expect(logger.warn).toHaveBeenCalledWith(
       "⚠️ Failed to fetch https://example.com/file.xml: Not Found",
-    );
+     undefined, expect.any(Object));
     expect(writeFileMock).not.toHaveBeenCalled();
   });
 
@@ -340,7 +340,7 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumCommand, () => {
 
     expect(logger.error).toHaveBeenCalledWith(
       "📥 Failed downloading data/author/work.xml: network-failure",
-    );
+     expect.any(String));
     expect(appendFileMock).toHaveBeenCalledTimes(1);
   });
 

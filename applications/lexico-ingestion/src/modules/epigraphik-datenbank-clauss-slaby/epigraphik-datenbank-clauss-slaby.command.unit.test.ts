@@ -190,7 +190,7 @@ describe(EpigraphikDatenbankClaussSlabyCommand, () => {
 
     expect(shouldContinue).toBe(true);
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ Failed to fetch records: Too Many Requests",
+      "🌐 Failed fetching records",
     );
   });
 
@@ -230,8 +230,8 @@ describe(EpigraphikDatenbankClaussSlabyCommand, () => {
 
     expect(result).toBe(true);
     expect(logger.log).toHaveBeenCalledWith(
-      "⏭️ Chunk 0 already exists, skipping.",
-    );
+      "⏭️ Skipping chunk that already exists",
+     undefined, expect.any(Object));
   });
 
   it("should download missing chunk through chunk-data workflow", async () => {
@@ -297,8 +297,8 @@ describe(EpigraphikDatenbankClaussSlabyCommand, () => {
 
     expect(result).toBe(true);
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Error fetching chunk at 0: network-failure",
-    );
+      "🌐 Failed fetching chunk",
+     expect.any(String));
     expect(appendFileMock).toHaveBeenCalledTimes(1);
   });
 

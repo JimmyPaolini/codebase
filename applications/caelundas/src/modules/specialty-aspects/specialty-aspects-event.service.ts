@@ -58,8 +58,8 @@ export class SpecialtyAspectsEventService {
       aspectSymbol: symbolBySpecialtyAspect[specialtyAspect],
       body1,
       body2,
-      log: (message) => {
-        this.logger.log(message);
+      log: (message, data) => {
+        this.logger.log(message, undefined, data);
       },
       phase,
       timestamp,

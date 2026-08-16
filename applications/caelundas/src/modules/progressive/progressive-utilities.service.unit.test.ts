@@ -70,6 +70,6 @@ describe(ProgressiveUtilitiesService, () => {
     expect(pairs).toStrictEqual([[beginning, ending]]);
     expect(logger.warn).toHaveBeenCalledWith(
       'pairProgressiveEvents: unequal counts for "unequal": 2 beginnings, 3 endings',
-    );
+     undefined, expect.any(Object));
   });
 });

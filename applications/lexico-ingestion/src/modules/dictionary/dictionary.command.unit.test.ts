@@ -650,7 +650,7 @@ describe(DictionaryCommand, () => {
     expect(page).toBeNull();
     expect(logger.warn).toHaveBeenCalledWith(
       "📄 Missing data file for missing",
-    );
+     undefined, expect.any(Object));
   });
 
   it("should return null and warn when wiktionary file exists but page read fails", () => {
@@ -687,7 +687,7 @@ describe(DictionaryCommand, () => {
     expect(page).toBeNull();
     expect(logger.warn).toHaveBeenCalledWith(
       "📄 Missing data file for amo",
-    );
+     undefined, expect.any(Object));
   });
 
   it("should load and return wiktionary page data when file path and read succeed", () => {
@@ -871,7 +871,7 @@ describe(DictionaryCommand, () => {
 
     expect(logger.warn).toHaveBeenCalledWith(
       "🔗 Missing reference in translationsimple text",
-    );
+     undefined, expect.any(Object));
   });
 
   it("should warn when translation reference has no matching lexeme", async () => {
@@ -898,7 +898,7 @@ describe(DictionaryCommand, () => {
 
     expect(logger.warn).toHaveBeenCalledWith(
       "🔑 Missing lexeme for reference unknown",
-    );
+     undefined, expect.any(Object));
   });
 
   it("should process translation references by ingesting missing lexemes", async () => {
@@ -1090,7 +1090,7 @@ describe(DictionaryCommand, () => {
 
         expect(logger.error).toHaveBeenCalledWith(
           "❌ Failed to process amo.json: string-failure",
-        );
+         expect.any(String));
         expect(appendFileSyncMock).toHaveBeenCalledWith(
           expect.any(String),
           expect.stringContaining("amo.json: string-failure\n"),
@@ -1259,7 +1259,7 @@ describe(DictionaryCommand, () => {
         ).toHaveBeenCalledWith("");
         expect(logger.warn).toHaveBeenCalledWith(
           "🔑 Missing lexeme for reference ",
-        );
+         undefined, expect.any(Object));
       });
     });
   });

@@ -98,11 +98,11 @@ describe(LiteratureTextIngestionService, () => {
         title: "Work",
       });
       expect(logger.log).toHaveBeenCalledWith(
-        "  📜 Starting: Work (from provider)",
-      );
+        "📜 Ingesting Work",
+       undefined, expect.any(Object));
       expect(logger.log).toHaveBeenCalledWith(
         "  ✅ Completed: Work (from provider) (50.00%, 1/2)",
-      );
+       undefined, expect.any(Object));
       expect(logger.error).not.toHaveBeenCalled();
     });
 
@@ -146,11 +146,11 @@ describe(LiteratureTextIngestionService, () => {
         title: "Chapter 1",
       });
       expect(logger.log).toHaveBeenCalledWith(
-        "  📜 Starting: book-1 / Chapter 1 (from provider)",
-      );
+        "📜 Ingesting book-1 / Chapter 1",
+       undefined, expect.any(Object));
       expect(logger.log).toHaveBeenCalledWith(
         "  ✅ Completed: book-1 / Chapter 1 (from provider) (100.00%, 2/2)",
-      );
+       undefined, expect.any(Object));
     });
 
     it("logs and appends error details when ingestion fails", async () => {
@@ -187,7 +187,7 @@ describe(LiteratureTextIngestionService, () => {
 
       expect(logger.error).toHaveBeenCalledWith(
         "❌ Failed to process Work (from provider): Error: ingestion failed",
-      );
+       expect.any(String));
       expect(appendFile).toHaveBeenCalledWith(
         "/tmp/literature-errors.log",
         expect.stringContaining("data/library/provider/author/work.md"),
@@ -228,7 +228,7 @@ describe(LiteratureTextIngestionService, () => {
 
       expect(logger.error).toHaveBeenCalledWith(
         "❌ Failed to process Work (from provider): ingestion failed",
-      );
+       expect.any(String));
       expect(appendFile).toHaveBeenCalledWith(
         "/tmp/literature-errors.log",
         expect.stringContaining(

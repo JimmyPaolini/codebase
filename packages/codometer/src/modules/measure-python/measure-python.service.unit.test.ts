@@ -99,7 +99,7 @@ describe(MeasurePythonService, () => {
       protocols: 0,
     });
     expect(loggerWarnSpy).toHaveBeenCalledWith(
-      "Python analysis skipped: failed to execute",
+      "🐍 Skipped Python analysis",
     );
 
     loggerWarnSpy.mockRestore();
@@ -131,7 +131,7 @@ describe(MeasurePythonService, () => {
       protocols: 0,
     });
     expect(loggerWarnSpy).toHaveBeenCalledWith(
-      "Python analysis skipped: string error",
+      "🐍 Skipped Python analysis",
     );
 
     loggerWarnSpy.mockRestore();
