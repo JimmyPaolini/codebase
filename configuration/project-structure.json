@@ -277,6 +277,17 @@
             "ruleId": "any-file"
           }
         ],
+        "name": ".claude"
+      },
+      {
+        "children": [
+          {
+            "ruleId": "kebab-case-folder"
+          },
+          {
+            "ruleId": "any-file"
+          }
+        ],
         "name": ".devcontainer"
       },
       {
@@ -364,6 +375,9 @@
       },
       {
         "name": "CHANGELOG.md"
+      },
+      {
+        "name": "CLAUDE.md"
       },
       {
         "name": "CONTRIBUTING.md"

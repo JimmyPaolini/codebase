@@ -22,6 +22,7 @@ CHANGELOG.md
 **/routeTree.gen.ts
 applications/lexico/src/routeTree.gen.ts
 .github/copilot-instructions.md
+CLAUDE.md
 lint-staged.config.ts
 **/packages/lexico-components/src/components/**
 **/packages/lexico-components/src/hooks/**
@@ -37,6 +38,7 @@ lint-staged.config.ts
 
 # Vendored skill content (framework-managed, not codebase-authored source)
 **/.agents/skills/**
+**/.claude/skills/**
 **/.github/skills/**
 **/documentation/skills/**
 
