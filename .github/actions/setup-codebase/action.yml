@@ -130,6 +130,24 @@ runs:
       run: uv sync --frozen --quiet
       shell: bash
 
+    # pnpm's bundled node-gyp lands `gyp/gyp_main.py` without an executable bit.
+    # gyp runs it through `python3` itself, so generating a Makefile works — but
+    # the Makefile gyp writes carries a self-regenerating rule that invokes the
+    # same script as an executable, and that rule fires whenever `binding.gyp`
+    # is not older than the Makefile. sweph writes `src/functions.cpp` from a
+    # `preinstall` script, so both land in the same second and make's comparison
+    # goes either way, which is why the install fails intermittently rather than
+    # never or always. The failure reads as `gyp_main.py: Permission denied`
+    # under a native build and looks like a code regression; it is not one.
+    - name: 🔨 Repair node-gyp Permissions
+      if: inputs.install == 'true'
+      run: |
+        pnpm_binary="$(readlink -f "$(command -v pnpm)")"
+        pnpm_package_directory="$(dirname "${pnpm_binary}")/.."
+        find "${pnpm_package_directory}" -name gyp_main.py -exec chmod +x {} + \
+          || echo "No bundled gyp_main.py found; nothing to repair."
+      shell: bash
+
     - name: 📚 Install Node Dependencies
       if: inputs.install == 'true'
       run: CI=true pnpm install --frozen-lockfile --reporter=append-only
