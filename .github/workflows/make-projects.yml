@@ -59,6 +59,9 @@ jobs:
 
       - name: 🕋 Setup Codebase
         uses: ./.github/actions/setup-codebase
+        with:
+          # Builds and bundle sizing touch no Python-backed tool.
+          python-dependencies: "false"
 
       - name: 👷 Make Projects
         run: pnpm exec nx affected --target=make-projects --parallel=4

@@ -27,10 +27,11 @@ inputs:
     default: "true"
   python-dependencies:
     description: |
-      Sync the affirmations Python project. Not needed merely to run `uv`:
-      yamllint and sqlfluff resolve their own `configuration` project on
-      demand.
-    default: "false"
+      Sync the uv workspace into the shared root `.venv`. Defaults on because
+      that venv is where `uv run yamllint` and `uv run sqlfluff` resolve from,
+      and those run on every TypeScript project — not only the Python ones.
+      Turn it off for a job that runs no Python-backed tool at all.
+    default: "true"
   trivy:
     description: Install trivy via Homebrew (infrastructure scanning)
     default: "false"
@@ -115,12 +116,15 @@ runs:
       uses: astral-sh/setup-uv@v10.0.1
       with:
         enable-cache: true
-        cache-dependency-glob: "**/pyproject.toml"
+        cache-dependency-glob: uv.lock
         add-problem-matchers: "false"
 
     - name: 🐍 Install Python Dependencies
       if: inputs.python-dependencies == 'true'
-      run: uv sync --frozen --quiet --project applications/affirmations
+      # Syncs every uv workspace member into the shared root `.venv`. Scoping
+      # this to a single project (`--project`) would prune the other members'
+      # tools out of that shared environment.
+      run: uv sync --frozen --quiet
       shell: bash
 
     - name: 📚 Install Node Dependencies

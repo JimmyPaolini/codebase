@@ -192,7 +192,7 @@ Fix: Remove the detected secret from the source file. If it is a false positive,
 
 #### 🥷 Bandit Security Scan — `nx affected --target=bandit`
 
-Config: [configuration/pyproject.toml](../../../configuration/pyproject.toml) (`[tool.bandit]`)
+Config: [pyproject.toml](../../../pyproject.toml) (`[tool.bandit]`)
 
 Fix: Address the reported security issue (e.g., use `secrets.token_hex()` instead of `random`, parameterize SQL queries). Use `# nosec <code>` only when justified with a comment.
 

@@ -1,16 +1,23 @@
-# Root pyproject.toml — shared Python tool configuration and workspace-level dev tools.
-# Mirrors tsconfig.base.json / eslint.config.ts pattern.
+# uv workspace root and shared Python tool configuration.
 #
-# Python projects extend this via [tool.ruff] extend = "../../configuration/pyproject.toml"
+# This file has no `[project]` table on purpose. A virtual workspace root makes
+# `uv sync` install every member and its dev group into the shared `.venv`; a
+# root with `[project]` installs only the root package and silently skips the
+# members.
+#
+# Members are listed explicitly: a glob such as `applications/*` fails on the
+# TypeScript projects, which have no `pyproject.toml`. Add every new Python
+# project to this list.
 
-[project]
-name = "codebase"
-version = "0.0.0"
-requires-python = ">=3.14"
-dependencies = []
+[tool.uv.workspace]
+members = ["applications/affirmations"]
 
+# Tools the workspace-root Nx targets invoke, over files outside any project.
 [dependency-groups]
-dev = ["sqlfluff>=3.0", "yamllint>=1.35"]
+dev = ["sqlfluff>=3.0", "vulture>=2.14", "yamllint>=1.35"]
+
+# Python projects extend the settings below via
+# [tool.ruff] extend = "../../pyproject.toml"
 
 [tool.ruff]
 target-version = "py314"
@@ -25,6 +32,9 @@ ignore = ["E501"]
 [tool.ruff.format]
 quote-style = "double"
 
+# pyright and pytest have no config inheritance — each reads only the
+# pyproject.toml of the directory it runs in. These sections apply to tools run
+# from the workspace root; projects repeat what they need in their own file.
 [tool.pyright]
 pythonVersion = "3.14"
 typeCheckingMode = "strict"

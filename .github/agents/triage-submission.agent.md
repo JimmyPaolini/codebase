@@ -136,7 +136,7 @@ Use the table below to find the exact config file and command for the failing to
 | `prettier` | `prettier --check --config configuration/prettier.config.ts --ignore-path .prettierignore {projectRoot}` | same with `--write` | [configuration/prettier.config.ts](../../../configuration/prettier.config.ts), [.prettierignore](../../../.prettierignore) |
 | `oxfmt`    | `oxfmt -c configuration/oxfmt.config.ts --check {projectRoot}` (cwd: workspaceRoot)                      | same with `--write` | [configuration/oxfmt.config.ts](../../../configuration/oxfmt.config.ts)                                                    |
 
-Python projects: `format` runs `ruff format` (config: [configuration/pyproject.toml](../../../configuration/pyproject.toml))
+Python projects: `format` runs `ruff format` (config: [pyproject.toml](../../../pyproject.toml))
 
 #### `lint` (composite: `eslint` + `oxlint`)
 
@@ -145,15 +145,15 @@ Python projects: `format` runs `ruff format` (config: [configuration/pyproject.t
 | `eslint`   | `eslint . {args}` (cwd: projectRoot)                                                    | same with `--fix` | project `eslint.config.ts` which extends [configuration/eslint.config.ts](../../../configuration/eslint.config.ts) |
 | `oxlint`   | `oxlint --config configuration/oxlint.config.ts {projectRoot}/src` (cwd: workspaceRoot) | same with `--fix` | [configuration/oxlint.config.ts](../../../configuration/oxlint.config.ts)                                          |
 
-Python projects: `lint` runs `ruff check` (config: [configuration/pyproject.toml](../../../configuration/pyproject.toml))
+Python projects: `lint` runs `ruff check` (config: [pyproject.toml](../../../pyproject.toml))
 
 #### `typecheck`
 
 | Project type       | Command                                   | Config                                                                                              |
 | ------------------ | ----------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | TypeScript         | `tsc --noEmit` (cwd: projectRoot)         | project `tsconfig.json` extends [configuration/tsconfig.json](../../../configuration/tsconfig.json) |
-| Python (`pyright`) | `uv run pyright src/` (cwd: projectRoot)  | [configuration/pyproject.toml](../../../configuration/pyproject.toml)                               |
-| Python (`ty`)      | `uv run ty check src/` (cwd: projectRoot) | [configuration/pyproject.toml](../../../configuration/pyproject.toml)                               |
+| Python (`pyright`) | `uv run pyright src/` (cwd: projectRoot)  | [pyproject.toml](../../../pyproject.toml)                               |
+| Python (`ty`)      | `uv run ty check src/` (cwd: projectRoot) | [pyproject.toml](../../../pyproject.toml)                               |
 
 #### `spell-check`
 
@@ -466,7 +466,7 @@ Remaining Actions
 | yamllint                            | [configuration/yamllint.yaml](../../../configuration/yamllint.yaml)                                                        |
 | stylelint                           | [configuration/stylelint.config.cjs](../../../configuration/stylelint.config.cjs)                                          |
 | knip                                | [configuration/knip.config.ts](../../../configuration/knip.config.ts)                                                      |
-| Ruff + pyright                      | [configuration/pyproject.toml](../../../configuration/pyproject.toml)                                                      |
+| Ruff + pyright                      | [pyproject.toml](../../../pyproject.toml)                                                      |
 | commitlint                          | [configuration/commitlint.config.ts](../../../configuration/commitlint.config.ts)                                          |
 | validate-branch-name                | [validate-branch-name.config.cjs](../../../validate-branch-name.config.cjs)                                                |
 | Conventional commits (types/scopes) | [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs)                                    |

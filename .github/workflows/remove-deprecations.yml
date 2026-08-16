@@ -29,7 +29,6 @@ jobs:
         uses: ./.github/actions/setup-codebase
         with:
           nx-shas: "false"
-          python-dependencies: "true"
 
       - name: 🗑️ Close Previous PR
         env:

@@ -38,10 +38,6 @@ jobs:
 
       - name: 🕋 Setup Codebase
         uses: ./.github/actions/setup-codebase
-        with:
-          # ruff, vulture, pyright, ty, and nbstripout all run under the
-          # affirmations project.
-          python-dependencies: "true"
 
       - name: 🧑‍💻 Lint Codebase
         env:

@@ -35,8 +35,6 @@ jobs:
 
       - name: 🕋 Setup Codebase
         uses: ./.github/actions/setup-codebase
-        with:
-          python-dependencies: "true"
 
       # `--configuration=coverage` is passed explicitly and must stay that way:
       # Nx propagates an explicit configuration down `dependsOn`, but never a

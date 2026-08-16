@@ -36,8 +36,6 @@ jobs:
         uses: ./.github/actions/setup-codebase
         with:
           gitleaks: "true"
-          # bandit runs under the affirmations project
-          python-dependencies: "true"
           trivy: "true"
 
       # Terraform scanning used to sit behind a `dorny/paths-filter` step with
