@@ -7,8 +7,6 @@
  *
  * Invoked by Husky's pre-commit hook via `npx lint-staged`.
  */
-import path from "node:path";
-
 import { SYNC_AGENT_SKILLS_FILES } from "../tools/synchronization/src/modules/agent-skills/agent-skills.constants.ts";
 import { SYNC_CONFORMETRY_GENERATORS_FILES } from "../tools/synchronization/src/modules/conformetry-generators/conformetry-generators.constants.ts";
 import { SYNC_CONVENTIONAL_CONFIG_FILES } from "../tools/synchronization/src/modules/conventional-config/conventional-config.constants.ts";
@@ -19,16 +17,10 @@ import { SYNC_PULL_REQUEST_TEMPLATE_FILES } from "../tools/synchronization/src/m
  *
  * A change under `configuration/` belongs to the root project, and every
  * project depends on the shared configuration, so one such path expands
- * `affected` from a handful of projects to all of them. Left unbounded, the
- * resulting fan-out exhausts memory and the operating system kills the run,
- * which surfaces only as lint-staged's "Task failed to spawn: undefined".
+ * `affected` from a handful of projects to all of them. Capping parallelism
+ * keeps that fan-out from saturating the machine during a commit.
  */
 const ANALYSIS_PARALLELISM = 2;
-
-/** Joins staged paths into the workspace-relative list `--files` expects. */
-function getRelativePaths(files: string[]): string {
-  return files.map((file) => path.relative(process.cwd(), file)).join(",");
-}
 
 const config = {
   // 🔒 Lockfile integrity
@@ -98,8 +90,19 @@ const config = {
   // `nx sync:check` runs from the Husky hook instead: it needs NX_DAEMON=false,
   // and lint-staged spawns commands without a shell, so an environment prefix
   // here would be parsed as the executable name.
-  "*": (files: string[]): string[] => [
-    `pnpm exec nx affected --target=analyze-code --configuration=check --parallel=${String(ANALYSIS_PARALLELISM)} --outputStyle=static --files=${getRelativePaths(files)}`,
+  //
+  // `--uncommitted` rather than `--files=<staged paths>`: passing the paths
+  // makes the command line grow with the changeset, and past roughly 900 bytes
+  // of arguments the spawn is killed outright — exit 137, no output, surfacing
+  // only as lint-staged's "Task failed to spawn: undefined". Reshaping the
+  // paths into repeated `--files` flags does not help, because the limit is on
+  // total argument bytes rather than any single argument. `--uncommitted` has
+  // Nx derive the same set from git itself, so the command line stays a fixed
+  // length no matter how many files are staged. lint-staged stashes unstaged
+  // changes for the duration of the run, so what Nx sees is exactly the staged
+  // set. See nrwl/nx#8646 and lint-staged/lint-staged#1481.
+  "*": (): string[] => [
+    `pnpm exec nx affected --target=analyze-code --configuration=check --parallel=${String(ANALYSIS_PARALLELISM)} --outputStyle=static --uncommitted`,
     "pnpm exec nx run codebase:conformetry-validate --outputStyle=static",
   ],
 };
