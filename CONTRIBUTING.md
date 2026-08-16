@@ -53,7 +53,7 @@ This script:
 - Installs **Terraform**, **Helm**, **kubectl**, **GitHub CLI**, **jq**, **yamllint**
 - Creates `.env` files from `.env.default` templates (root, lexico, caelundas)
 - Sets `LOCAL_WORKSPACE_FOLDER` for docker-compose volume mounts
-- Runs `pnpm install` and `uv sync` (Python venv for affirmations)
+- Runs `pnpm install` and `uv sync` (shared Python venv for the uv workspace)
 
 ### Option 2: Dev Container
 

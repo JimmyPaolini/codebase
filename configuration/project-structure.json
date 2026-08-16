@@ -481,6 +481,9 @@
         "name": "project.json"
       },
       {
+        "name": "pyproject.toml"
+      },
+      {
         "name": "release.config.cjs"
       },
       {

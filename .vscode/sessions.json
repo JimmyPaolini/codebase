@@ -16,7 +16,7 @@
       {
         "color": "terminal.ansiBrightYellow",
         "commands": [
-          "source .venv/bin/activate"
+          "source ../../.venv/bin/activate"
         ],
         "cwd": "applications/affirmations",
         "icon": "compass",
@@ -25,7 +25,7 @@
       {
         "color": "terminal.ansiBrightYellow",
         "commands": [
-          "source .venv/bin/activate"
+          "source ../../.venv/bin/activate"
         ],
         "cwd": "applications/affirmations",
         "icon": "compass",

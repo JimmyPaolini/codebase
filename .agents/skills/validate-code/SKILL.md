@@ -23,9 +23,9 @@ The `analyze-code` Nx composite target fans out to all quality tools:
 | ---- | ------- | ------------- |
 | `oxfmt` + `prettier` | Code formatting | `configuration/oxfmt.config.ts`, `configuration/prettier.config.ts` |
 | `eslint` + `oxlint` | Linting (TS/JS) | project `eslint.config.ts`, `configuration/oxlint.config.ts` |
-| `ruff` | Format + lint (Python) | `configuration/pyproject.toml` |
+| `ruff` | Format + lint (Python) | `pyproject.toml` |
 | `tsc --noEmit` | TypeScript type checking | project `tsconfig.json` → `configuration/tsconfig.base.json` |
-| `pyright` + `ty` | Python type checking | `configuration/pyproject.toml` |
+| `pyright` + `ty` | Python type checking | `pyproject.toml` |
 | `knip` | Unused TS files, exports, deps | `configuration/knip.config.ts` |
 | `vulture` | Unused Python code | `configuration/vulture_whitelist.py` |
 | `cspell` | Spell checking | `configuration/cspell.config.yaml` |

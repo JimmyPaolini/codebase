@@ -11,8 +11,12 @@ Python application that generates structured affirmations for spiritual practice
 
 ## Setup
 
+This application is a member of the uv workspace declared in the root
+`pyproject.toml`, sharing the root `uv.lock` and `.venv`. Sync from the
+repository root — running `uv sync` inside this directory prunes the other
+members out of the shared venv.
+
 ```bash
-cd applications/affirmations
 uv sync
 ```
 
@@ -77,7 +81,6 @@ applications/affirmations/
 ├── output/                   # Generated JSON/Markdown files (gitignored except .gitkeep)
 ├── AGENTS.md
 ├── pyproject.toml
-├── uv.lock
 ├── searxng.settings.yml
 └── README.md
 ```

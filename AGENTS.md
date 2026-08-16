@@ -170,15 +170,15 @@ See the [validate-code skill](.agents/skills/validate-code/SKILL.md) for the ful
 | Tool            | Description                                           | Config                                   | Docs                                                    |
 | --------------- | ----------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------- |
 | `oxfmt`         | Formats TS/JS/JSON/MD files                           | `configuration/oxfmt.config.ts`          | [docs](https://oxc.rs/docs/guide/usage/formatter.html)  |
-| `sqlfluff`      | Formats and lints SQL files                           | `configuration/pyproject.toml`           | [docs](https://docs.sqlfluff.com/)                      |
+| `sqlfluff`      | Formats and lints SQL files                           | root `pyproject.toml`                    | [docs](https://docs.sqlfluff.com/)                      |
 | `prettier`      | Supplementary formatter for manual or non-default use | `configuration/prettier.config.ts`       | [docs](https://prettier.io/docs/)                       |
 | `eslint`        | Lints TS/JS and markdown with workspace rules         | project `eslint.config.ts`               | [docs](https://eslint.org/docs/latest/)                 |
 | `oxlint`        | Fast TS/JS linting for workspace files                | `configuration/oxlint.config.ts`         | [docs](https://oxc.rs/docs/guide/usage/linter.html)     |
-| `ruff`          | Formats and lints Python files                        | `configuration/pyproject.toml`           | [docs](https://docs.astral.sh/ruff/)                    |
+| `ruff`          | Formats and lints Python files                        | root `pyproject.toml`                    | [docs](https://docs.astral.sh/ruff/)                    |
 | `tsc`           | Type-checks TypeScript                                | project `tsconfig.json`                  | [docs](https://www.typescriptlang.org/docs/)            |
 | `type-coverage` | Enforces TypeScript type-coverage gates               | root `tsconfig.json`                     | [docs](https://github.com/plantain-00/type-coverage)    |
-| `pyright`       | Performs static Python type checking                  | `configuration/pyproject.toml`           | [docs](https://github.com/microsoft/pyright)            |
-| `ty`            | Performs additional Python type checking              | `configuration/pyproject.toml`           | [docs](https://docs.astral.sh/ty/)                      |
+| `pyright`       | Performs static Python type checking                  | root `pyproject.toml`                    | [docs](https://github.com/microsoft/pyright)            |
+| `ty`            | Performs additional Python type checking              | root `pyproject.toml`                    | [docs](https://docs.astral.sh/ty/)                      |
 | `knip`          | Finds unused TS/JS files, exports, and dependencies   | `configuration/knip.config.ts`           | [docs](https://knip.dev/)                               |
 | `vulture`       | Finds unused Python code                              | `configuration/vulture_whitelist.py`     | [docs](https://github.com/jendrikseipp/vulture)         |
 | `fallow`        | Analyzes dead code, duplication, and code health      | `configuration/fallow.config.jsonc`      | [docs](https://docs.fallow.tools/)                      |
