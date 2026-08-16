@@ -71,5 +71,5 @@ for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
 
 ## References
 
-- [Error Handling](../../code-quality/error-handling.md)
-- [TypeScript Conventions](../../conventions/typescript.md)
+- [write-typescript skill](../write-typescript/SKILL.md)
+- [Zod documentation](https://zod.dev/)

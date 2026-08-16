@@ -138,7 +138,7 @@ nx run logger:test:unit
   imported in that project's root module; `@Global()` only applies once the
   module is registered somewhere.
 
-See [Common Gotchas](../../documentation/troubleshooting/gotchas.md) for workspace-wide issues.
+See the [triage-submission skill](../../.agents/skills/triage-submission/SKILL.md) for lint and git hook failures.
 
 ## Key Files
 

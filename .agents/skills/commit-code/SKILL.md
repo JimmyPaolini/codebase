@@ -178,7 +178,7 @@ Format: `<type>(<scope>): <gitmoji> <subject>`
 | ⬆️    | `:arrow_up:`            | `chore`      | Upgrade dependencies     |
 | 🗃️    | `:card_file_box:`       | `feat`/`fix` | Database changes         |
 
-See [gitmoji.md](../../gitmoji.md) for the complete emoji guide.
+See [gitmoji.dev](https://gitmoji.dev) for the complete emoji list.
 
 ## Body and Footer
 
@@ -315,6 +315,5 @@ refactor(project): ♻️ refactor code
 - [Conventional Commits](https://www.conventionalcommits.org/)
 - [Gitmoji Guide](https://gitmoji.dev)
 - [commitlint](https://commitlint.js.org/)
-- [gitmoji.md](../../gitmoji.md) — Full emoji reference
 - [check-commit-signing-configuration.sh](../../../scripts/git/check-commit-signing-configuration.sh) — Validates signing prerequisites before commit
 - [check-push-commit-signatures.sh](../../../scripts/git/check-push-commit-signatures.sh) — Validates pushed commits are signed

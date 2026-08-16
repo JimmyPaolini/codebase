@@ -141,6 +141,6 @@ See the full guide with examples, do/don't guidance, and coverage tips: [Cheerio
 
 ## References
 
-- [Testing Strategy](../../code-quality/testing-strategy.md)
-- [Vitest](../../vitest.md)
+- [testing-mocks skill](../testing-mocks/SKILL.md)
+- [Vitest documentation](https://vitest.dev/)
 - [Cheerio Testing Reference](./references/cheerio-testing.md)

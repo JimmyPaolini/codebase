@@ -152,7 +152,7 @@ nx run {{nameKebabCase}}:test:end-to-end    # Slow (30-60s) — full server exec
 | Integration | `*.integration.test.ts` | Database queries, external API clients             |
 | End-to-end  | `*.end-to-end.test.ts`  | Full GraphQL request/response cycles               |
 
-See [Testing Strategy](../../documentation/code-quality/testing-strategy.md) for patterns and mock conventions.
+See the [testing-strategy skill](../../.agents/skills/testing-strategy/SKILL.md) and [testing-mocks skill](../../.agents/skills/testing-mocks/SKILL.md) for patterns and mock conventions.
 
 ## Writing GraphQL Modules
 
@@ -266,7 +266,7 @@ Key rules:
 - **Type imports** — use `import { type Foo }` for type-only imports (enforced by ESLint).
 - **No `any` types** — use `unknown` or proper typing; strict mode is enabled.
 
-See [TypeScript Conventions](../../documentation/conventions/typescript.md) for strict mode patterns.
+See the [write-typescript skill](../../.agents/skills/write-typescript/SKILL.md) for strict mode patterns.
 
 ## Troubleshooting
 
@@ -276,7 +276,7 @@ See [TypeScript Conventions](../../documentation/conventions/typescript.md) for 
 - **N+1 query problem** — use DataLoaders for all relation fields in resolvers.
 - **Env var validation error on startup** — add the missing variable to `environmentSchema` in `.constants.ts` and to `.env.default`.
 
-See [Common Gotchas](../../documentation/troubleshooting/gotchas.md) for workspace-wide issues.
+See the [triage-submission skill](../../.agents/skills/triage-submission/SKILL.md) for lint and git hook failures.
 
 ## Key Files
 

@@ -357,5 +357,5 @@ repository.findOneBy.mockResolvedValue(data); // Type safe
 
 - [Testing Strategy](../../skills/testing-strategy/SKILL.md)
 - [@golevelup/ts-vitest docs](https://github.com/golevelup/ts-vitest)
-- [Vitest API](../../vitest.md)
-- [NestJS Testing](../../frameworks/nestjs.md)
+- [Vitest API](https://vitest.dev/api/)
+- [NestJS Testing](https://docs.nestjs.com/fundamentals/testing)

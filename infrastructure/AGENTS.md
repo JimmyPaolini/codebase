@@ -40,7 +40,7 @@ infrastructure/
 - Data migrations
 - Report generation
 
-See [Deployment Models](../documentation/architecture/deployment-models.md) for Jobs vs. Deployments.
+Use a Job for work that runs to completion and leaves output behind (caelundas writes iCalendar files to a PVC); use a Deployment for anything that serves requests continuously.
 
 ## Helm Chart References
 
@@ -50,15 +50,13 @@ See [Deployment Models](../documentation/architecture/deployment-models.md) for 
 
 ## Kubernetes Deployment
 
-See [kubernetes-deployment skill](../.agents/skills/kubernetes-deployment/SKILL.md) for Helm patterns and PVC management.
+See [README.md](README.md) for the build → push → deploy → retrieve → clean pipeline.
 
 ## Troubleshooting
 
-See [Common Gotchas](../documentation/troubleshooting/gotchas.md) for:
-
-- Job pending errors
-- PVC lifecycle issues
-- Image pull failures
+- **Job stuck in `Pending`** — inspect with `kubectl describe job <name>`, then the pod and PVC. Usual causes are an image pull failure against GHCR, insufficient cluster CPU/memory, or an unbound PVC.
+- **PVCs outliving their Job** — PVCs are never deleted automatically when a Job or pod goes away. Remove them explicitly (`kubectl delete pvc <name>`) after retrieving output.
+- **`exec format error`** — the image was built for arm64. Rebuild with `--platform linux/amd64`.
 
 ## Key Files
 

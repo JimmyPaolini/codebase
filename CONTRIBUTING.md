@@ -272,8 +272,8 @@ pnpm update    # Update within semver ranges
 
 - [Commit Messages Guide](.github/skills/commit-code/SKILL.md)
 - [Semantic Release Config](release.config.cjs)
-- [GitHub Actions Guide](documentation/github-actions.md) - CI/CD workflows and composite actions
-- [Gitmoji Reference](documentation/gitmoji.md)
+- [GitHub Actions Workflows](.github/workflows) - CI/CD workflows and composite actions
+- [Gitmoji Reference](https://gitmoji.dev)
 - [Nx Documentation](https://nx.dev)
 - [Conventional Commits](https://www.conventionalcommits.org/)
 
