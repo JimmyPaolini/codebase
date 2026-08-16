@@ -1,8 +1,8 @@
 import { createMock } from "@golevelup/ts-vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { LoggerService } from "./modules/logger/logger.service";
 import type { SynchronizationModule } from "./modules/synchronization/synchronization.module";
+import type { LoggerService } from "@codebase/logger";
 
 type CommandFactoryRun = (
   module: unknown,
@@ -19,7 +19,10 @@ vi.mock("nest-commander", () => ({
   },
 }));
 
-vi.mock("./modules/logger/logger.service", () => ({
+vi.mock("@codebase/logger", () => ({
+  // `main.module` imports `LoggerModule` from the same specifier, so the mock
+  // has to stand in for the whole package, not just the service.
+  LoggerModule: function LoggerModule() {},
   LoggerService: function LoggerService() {
     return loggerServiceMock;
   },

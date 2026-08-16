@@ -2,7 +2,7 @@ import { ConfigurationModule, InputModule } from "@conformetry/configuration";
 import { GenerationModule } from "@conformetry/generation";
 import { Module } from "@nestjs/common";
 
-import { LoggerModule } from "../logger/logger.module";
+import { LoggerModule } from "@codebase/logger";
 
 import { GenerateCommand } from "./generate.command";
 

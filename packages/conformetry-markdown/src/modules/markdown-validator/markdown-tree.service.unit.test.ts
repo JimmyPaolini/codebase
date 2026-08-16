@@ -64,5 +64,22 @@ describe(MarkdownTreeService, () => {
         }),
       ).toStrictEqual([]);
     });
+
+    it("requires only the shape of a childless template container", () => {
+      // A template list with no items asks for *a list*, not for any
+      // particular item, so an instance list of any content satisfies it.
+      expect(
+        service.compareChildren({
+          instanceChildren: [
+            {
+              children: [{ children: [paragraph("alpha")], type: "listItem" }],
+              ordered: false,
+              type: "list",
+            },
+          ],
+          templateChildren: [{ children: [], ordered: false, type: "list" }],
+        }),
+      ).toStrictEqual([]);
+    });
   });
 });

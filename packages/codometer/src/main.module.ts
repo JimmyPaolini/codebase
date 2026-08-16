@@ -4,11 +4,12 @@ import { ConfigModule } from "@nestjs/config";
 // discovers files rather than providers.
 import { DiscoveryModule as NestDiscoveryModule } from "@nestjs/core";
 
+import { LoggerModule } from "@codebase/logger";
+
 import { environmentSchema } from "./constants";
 import { CodometerModule } from "./modules/codometer/codometer.module";
 import { DiscoveryModule } from "./modules/discovery/discovery.module";
 import { JsonModule } from "./modules/json/json.module";
-import { LoggerModule } from "./modules/logger/logger.module";
 import { MarkdownModule } from "./modules/markdown/markdown.module";
 import { PythonModule } from "./modules/python/python.module";
 import { TypescriptModule } from "./modules/typescript/typescript.module";

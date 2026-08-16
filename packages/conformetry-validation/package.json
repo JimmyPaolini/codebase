@@ -6,7 +6,6 @@
     "@conformetry/text": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/core": "catalog:",
-    "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:"
   },

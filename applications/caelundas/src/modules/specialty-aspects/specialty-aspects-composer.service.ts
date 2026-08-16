@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { LoggerService } from "@codebase/logger";
+
 import {
   aspectBodies as specialtyAspectBodies,
   specialtyAspects,
@@ -11,7 +13,6 @@ import {
   symbolBySpecialtyAspect,
 } from "../caelundas/symbol-caelundas.constants";
 import { EphemerisService } from "../ephemeris/ephemeris.service";
-import { LoggerService } from "../logger/logger.service";
 
 import type {
   AspectPhase,
@@ -67,7 +68,9 @@ export class SpecialtyAspectsComposerService {
       timestamp,
     } = args;
     const summary = `${phaseEmoji} ${body1Symbol} ${specialtyAspectSymbol} ${body2Symbol} ${description}`;
-    this.logger.log(`${summary} at ${timestamp.toISOString()}`);
+    this.logger.log(`🗓️ Built ${summary}`, undefined, {
+      at: timestamp.toISOString(),
+    });
     return {
       categories,
       description,

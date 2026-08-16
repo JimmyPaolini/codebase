@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 import prompts from "prompts";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import { LiteratureService } from "./literature.service";
 
@@ -259,11 +259,11 @@ export class LiteratureCommand extends CommandRunner {
     options: LiteratureCommandOptions,
   ): Promise<void> {
     this.logger.log(`📚 Starting literature ingestion...`);
-    this.logger.log(`⚙️ Options: ${JSON.stringify(options)}`);
+    this.logger.log(`⚙️ Parsed command options`, undefined, { options });
     const startTime = performance.now();
     const library = await this.helper.scanLibrary();
     if (library.length === 0) {
-      this.logger.warn(`⚠️ No texts found in data/library directory.`);
+      this.logger.warn(`📚 Missing texts in the data/library directory`);
       return;
     }
     const provider = await this.parseProvider(options.provider ?? undefined);
@@ -286,6 +286,8 @@ export class LiteratureCommand extends CommandRunner {
     await this.helper.ingestAllAuthors(textsToIngest);
     const endTime = performance.now();
     const duration = ((endTime - startTime) / 1000).toFixed(2);
-    this.logger.log(`📚 Literature ingestion complete in ${duration} seconds`);
+    this.logger.log(`📚 Ingested literature`, undefined, {
+      durationSeconds: duration,
+    });
   }
 }

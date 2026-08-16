@@ -3,7 +3,7 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import { ProgressiveUtilitiesService } from "./progressive-utilities.service";
 
@@ -69,7 +69,9 @@ describe(ProgressiveUtilitiesService, () => {
 
     expect(pairs).toStrictEqual([[beginning, ending]]);
     expect(logger.warn).toHaveBeenCalledWith(
-      'pairProgressiveEvents: unequal counts for "unequal": 2 beginnings, 3 endings',
+      '🔀 Mismatched progressive event counts for "unequal"',
+      undefined,
+      expect.any(Object),
     );
   });
 });

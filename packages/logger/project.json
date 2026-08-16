@@ -1,0 +1,45 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "logger",
+  "projectType": "library",
+  "sourceRoot": "packages/logger",
+  "tags": [
+    "framework:nestjs",
+    "language:typescript",
+    "name:logger",
+    "type:package"
+  ],
+  "targets": {
+    "analyze-code": {},
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "packages/logger",
+            "output": "."
+          }
+        ],
+        "main": "packages/logger/src/index.ts",
+        "outputPath": "dist/packages/logger",
+        "tsConfig": "packages/logger/tsconfig.json"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "clean": {},
+    "dependency-cruiser": {},
+    "format": {},
+    "knip": {},
+    "lint": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "oxlint": {},
+    "prettier": {},
+    "spell-check": {},
+    "test": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}

@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { LoggerModule } from "../logger/logger.module";
+import { LoggerModule } from "@codebase/logger";
 
 import { LibraryCommand } from "./library.command";
 import { LIBRARY_PROVIDERS_TOKEN } from "./library.constants";

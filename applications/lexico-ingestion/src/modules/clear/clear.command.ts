@@ -13,8 +13,7 @@ import {
   Translation,
   Word,
 } from "@codebase/lexico-entities";
-
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import type { ClearCommandOptions, ClearPromptResponse } from "./clear.types";
 
@@ -60,11 +59,11 @@ export class ClearCommand extends CommandRunner {
    * in dependency order to avoid foreign-key constraint violations. */
   private async clearDictionary(): Promise<void> {
     this.logger.log("🗑️ Clearing dictionary");
-    this.logger.log("  🧹 Deleting words...");
+    this.logger.log("🧹 Deleting words");
     await this.wordsRepository.createQueryBuilder().delete().execute();
-    this.logger.log("  🧹 Deleting translations...");
+    this.logger.log("🧹 Deleting translations");
     await this.translationsRepository.createQueryBuilder().delete().execute();
-    this.logger.log("  🧹 Deleting lexemes...");
+    this.logger.log("🧹 Deleting lexemes");
     await this.lexemesRepository.createQueryBuilder().delete().execute();
     this.logger.log("✨ Cleared dictionary");
   }
@@ -72,13 +71,13 @@ export class ClearCommand extends CommandRunner {
   /** Deletes all literature data */
   private async clearLiterature(): Promise<void> {
     this.logger.log("🗑️ Clearing literature");
-    this.logger.log("  🧹 Deleting tokens...");
+    this.logger.log("🧹 Deleting tokens");
     await this.tokensRepository.createQueryBuilder().delete().execute();
-    this.logger.log("  🧹 Deleting lines...");
+    this.logger.log("🧹 Deleting lines");
     await this.linesRepository.createQueryBuilder().delete().execute();
-    this.logger.log("  🧹 Deleting texts...");
+    this.logger.log("🧹 Deleting texts");
     await this.textsRepository.createQueryBuilder().delete().execute();
-    this.logger.log("  🧹 Deleting authors...");
+    this.logger.log("🧹 Deleting authors");
     await this.authorsRepository.createQueryBuilder().delete().execute();
     this.logger.log("✨ Cleared literature");
   }
@@ -160,8 +159,8 @@ export class ClearCommand extends CommandRunner {
       options.literature = parsedResponse.literature === true;
     }
 
-    this.logger.log("Running clear command");
-    this.logger.log(`⚙️ Options: ${JSON.stringify(options)}`);
+    this.logger.log("🧹 Running clear command");
+    this.logger.log(`⚙️ Parsed command options`, undefined, { options });
 
     if (options.literature) {
       await this.clearLiterature();

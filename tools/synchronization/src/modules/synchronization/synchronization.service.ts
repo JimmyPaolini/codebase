@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 
-import type { LoggerService } from "../logger/logger.service";
 import type {
   SynchronizationMode,
   SynchronizationModeResolutionOptions,
   SynchronizationModeResolutionResult,
 } from "./synchronization.types";
+import type { LoggerService } from "@codebase/logger";
 
 /** Shared service for resolving and validating synchronization command modes. */
 @Injectable()
@@ -28,8 +28,11 @@ export class SynchronizationService {
     const { invalidModeLabel, loggerService, modeValue, usageMessage } =
       options;
 
-    loggerService.error(`❌ ${invalidModeLabel}: ${modeValue}`);
-    loggerService.error(usageMessage);
+    loggerService.error(`🚦 Rejected an unusable mode`, undefined, {
+      mode: modeValue,
+      reason: invalidModeLabel,
+      usage: usageMessage,
+    });
     process.exit(1);
   }
 

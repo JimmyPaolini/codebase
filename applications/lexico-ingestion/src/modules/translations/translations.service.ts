@@ -5,8 +5,7 @@ import _ from "lodash";
 import { Like, Repository } from "typeorm";
 
 import { Translation } from "@codebase/lexico-entities";
-
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import { translationSkipRegex } from "./translations.constants";
 

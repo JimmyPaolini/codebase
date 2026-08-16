@@ -4,7 +4,8 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
+
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import {
@@ -65,7 +66,7 @@ export class PullRequestTemplateCommand
 
     if (markerContent === undefined) {
       this.logger.log(
-        `❌ ${targetName} missing <!-- ${SYNC_PULL_REQUEST_TEMPLATE_MARKER}-start/end --> markers\n`,
+        `📄 Missing <!-- ${SYNC_PULL_REQUEST_TEMPLATE_MARKER}-start/end --> markers in ${targetName}`,
       );
       return false;
     }
@@ -73,7 +74,9 @@ export class PullRequestTemplateCommand
     const expectedCodeBlock = this.wrapInCodeBlock(templateContent);
 
     if (markerContent.trim() !== expectedCodeBlock.trim()) {
-      this.logger.log(`❌ ${targetName} PR template is out of sync\n`);
+      this.logger.log(
+        `📄 Detected an out-of-sync PR template in ${targetName}`,
+      );
       return false;
     }
 
@@ -110,12 +113,12 @@ export class PullRequestTemplateCommand
       }
     }
     if (!allInSync) {
-      this.logger.log(
-        "💡 Run 'nx run synchronization:synchronize:write' to sync",
-      );
+      this.logger.log("💡 Suggested a fix", undefined, {
+        hint: "Run 'nx run synchronization:synchronize:write' to sync",
+      });
       return false;
     }
-    this.logger.log("✅ PR template is in sync");
+    this.logger.log("📄 Verified the PR template");
     return true;
   }
 
@@ -130,7 +133,7 @@ export class PullRequestTemplateCommand
       (targetFile) => !this.checkTargetSync(templateContent, targetFile),
     );
     if (outOfSyncTargets.length === 0) {
-      this.logger.log("✅ Already in sync");
+      this.logger.log("📄 Verified every PR template was already in sync");
     } else {
       for (const targetFile of outOfSyncTargets) {
         this.writeTargetSync(templateContent, targetFile);
@@ -183,7 +186,7 @@ export class PullRequestTemplateCommand
     );
 
     writeFileSync(targetFile, updatedContent, "utf8");
-    this.logger.log(`✅ ${targetName} PR template synced`);
+    this.logger.log(`📄 Synced the PR template in ${targetName}`);
   }
 
   // 🌎 Public Methods

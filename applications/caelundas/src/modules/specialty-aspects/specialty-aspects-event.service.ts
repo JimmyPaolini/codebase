@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import { AspectEventFormattingService } from "../aspects/aspect-event-formatting.service";
 import { AspectsUtilitiesService } from "../aspects/aspects-utilities.service";
 import { specialtyAspects } from "../caelundas/caelundas.constants";
 import { symbolBySpecialtyAspect } from "../caelundas/symbol-caelundas.constants";
 import { EphemerisService } from "../ephemeris/ephemeris.service";
-import { LoggerService } from "../logger/logger.service";
 
 import type {
   AspectPhase,
@@ -57,8 +58,8 @@ export class SpecialtyAspectsEventService {
       aspectSymbol: symbolBySpecialtyAspect[specialtyAspect],
       body1,
       body2,
-      log: (message) => {
-        this.logger.log(message);
+      log: (message, data) => {
+        this.logger.log(message, undefined, data);
       },
       phase,
       timestamp,

@@ -1,4 +1,5 @@
 // 🏷️ Types
+import type { LogData } from "@codebase/logger";
 import type { Moment } from "moment-timezone";
 
 /**
@@ -31,7 +32,9 @@ export interface BuildInstantEventArguments {
   categories: string[];
   date: Moment;
   description: string;
-  logger: { log: (message: string) => void };
+  logger: {
+    log: (message: string, context?: string, data?: LogData) => void;
+  };
   summary: string;
   timezone: string;
 }

@@ -2,8 +2,7 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { Lexeme } from "@codebase/lexico-entities";
-
-import { LoggerModule } from "../logger/logger.module";
+import { LoggerModule } from "@codebase/logger";
 
 import { PrincipalPartsService } from "./principal-parts.service";
 

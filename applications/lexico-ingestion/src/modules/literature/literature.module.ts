@@ -9,8 +9,8 @@ import {
   Token,
   Word,
 } from "@codebase/lexico-entities";
+import { LoggerModule } from "@codebase/logger";
 
-import { LoggerModule } from "../logger/logger.module";
 import { NumeralsModule } from "../numerals/numerals.module";
 
 import { LiteratureLibraryScanService } from "./literature-library-scan.service";

@@ -8,7 +8,7 @@ import { Author, type Text } from "@codebase/lexico-entities";
 
 import { EpigraphikDatenbankClaussSlabyLibraryProvider } from "./epigraphik-datenbank-clauss-slaby-library.provider";
 
-import type { LoggerService } from "../../logger/logger.service";
+import type { LoggerService } from "@codebase/logger";
 
 const { mkdirMock, readdirMock, readFileMock, writeFileMock } = vi.hoisted(
   () => ({
@@ -241,7 +241,9 @@ describe(EpigraphikDatenbankClaussSlabyLibraryProvider, () => {
     });
 
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining("⚠️ Error reading chunk file chunk-1.json"),
+      expect.stringContaining("📄 Failed reading chunk file chunk-1.json"),
+      undefined,
+      expect.any(Object),
     );
   });
 

@@ -4,11 +4,11 @@ import * as cheerio from "cheerio";
 import { Repository } from "typeorm";
 
 import { Lexeme } from "@codebase/lexico-entities";
+import { LoggerService } from "@codebase/logger";
 
 import { EtymologyService } from "../etymology/etymology.service";
 import { FormsService } from "../forms/forms.service";
 import { LEXICO_INGESTION_BY_ID } from "../lexico-ingestion/lexico-ingestion.constants";
-import { LoggerService } from "../logger/logger.service";
 import { PartOfSpeechService } from "../part-of-speech/part-of-speech.service";
 import { PrincipalPartsService } from "../principal-parts/principal-parts.service";
 import { PronunciationService } from "../pronunciation/pronunciation.service";
@@ -152,7 +152,9 @@ export class LexemesService {
 
     if (!validPOS.has(partOfSpeech)) {
       if (!skipPOS.has(partOfSpeech)) {
-        this.logger.debug(`Skipping POS "${partOfSpeech}" for: ${word}`);
+        this.logger.debug(
+          `🏷️ Skipping part of speech "${partOfSpeech}" for "${word}"`,
+        );
       }
       return null;
     }
@@ -161,7 +163,9 @@ export class LexemesService {
       this.partOfSpeechService.getFirstPrincipalPartName(partOfSpeech);
     if (firstPrincipalPartName === undefined) {
       this.logger.debug(
-        `No principal-part name for POS "${partOfSpeech}" — skipping ${word}`,
+        `🏷️ Skipping "${word}" without a principal-part name`,
+        undefined,
+        { partOfSpeech },
       );
       return null;
     }
@@ -179,7 +183,11 @@ export class LexemesService {
       return lexeme;
     } catch (error) {
       this.logger.warn(
-        `Failed to parse ${lexeme.lemma}:${lexeme.disambiguator}: ${String(error)}`,
+        `🧩 Failed parsing ${lexeme.lemma}:${lexeme.disambiguator}`,
+        undefined,
+        {
+          reason: String(error),
+        },
       );
       return null;
     }
@@ -305,7 +313,7 @@ export class LexemesService {
     const headwordElements = $("p:has(strong.Latn.headword)").toArray();
 
     if (headwordElements.length === 0) {
-      this.logger.warn(`No headwords found for: ${wiktionaryPage.word}`);
+      this.logger.warn(`🔤 Missing headwords for "${wiktionaryPage.word}"`);
       return [];
     }
 
@@ -331,9 +339,9 @@ export class LexemesService {
 
     await this.saveLexemeRelations(lexeme, savedLexeme);
 
-    this.logger.debug(
-      `Upserted lexeme "${lexeme.lemma}" (disambiguator: ${lexeme.disambiguator})`,
-    );
+    this.logger.debug(`🔑 Upserted lexeme "${lexeme.lemma}"`, undefined, {
+      disambiguator: lexeme.disambiguator,
+    });
     return savedLexeme;
   }
 

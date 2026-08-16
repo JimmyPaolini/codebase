@@ -3,13 +3,14 @@ import _ from "lodash";
 import moment from "moment";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import {
   ingressBodies as decanIngressBodies,
   ingressBodies as peakIngressBodies,
   ingressBodies as signIngressBodies,
 } from "../caelundas/caelundas.constants";
 import { EphemerisModule } from "../ephemeris/ephemeris.module";
-import { LoggerService } from "../logger/logger.service";
 import { MathService } from "../math/math.service";
 
 import { IngressesComposerService } from "./ingresses-composer.service";

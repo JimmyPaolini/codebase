@@ -164,6 +164,11 @@ const scopes = [
   },
   {
     description:
+      "Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention",
+    name: "logger",
+  },
+  {
+    description:
       "NestJS command-line application for codometer metric collection and reporting",
     name: "codometer",
   },

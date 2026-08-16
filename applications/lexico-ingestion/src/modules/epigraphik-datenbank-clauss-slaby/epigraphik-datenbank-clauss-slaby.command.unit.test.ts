@@ -2,11 +2,12 @@ import { createMock, type DeepMocked } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import {
   createCommandTestHarness,
   resetCommandTestHarness,
 } from "../../../testing/command-harness";
-import { LoggerService } from "../logger/logger.service";
 
 import { EpigraphikDatenbankClaussSlabyCommand } from "./epigraphik-datenbank-clauss-slaby.command";
 
@@ -188,9 +189,7 @@ describe(EpigraphikDatenbankClaussSlabyCommand, () => {
     ).saveChunkData(2000, "/tmp/chunk-2000.json");
 
     expect(shouldContinue).toBe(true);
-    expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ Failed to fetch records: Too Many Requests",
-    );
+    expect(logger.warn).toHaveBeenCalledWith("🌐 Failed fetching records");
   });
 
   it("should warn and continue when chunk payload parsing fails", async () => {
@@ -213,7 +212,7 @@ describe(EpigraphikDatenbankClaussSlabyCommand, () => {
 
     expect(shouldContinue).toBe(true);
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ Received unexpected EDCS payload shape",
+      "🌐 Received an unexpected EDCS payload shape",
     );
     expect(writeFileMock).not.toHaveBeenCalled();
   });
@@ -229,7 +228,9 @@ describe(EpigraphikDatenbankClaussSlabyCommand, () => {
 
     expect(result).toBe(true);
     expect(logger.log).toHaveBeenCalledWith(
-      "⏭️ Chunk 0 already exists, skipping.",
+      "⏭️ Skipping chunk that already exists",
+      undefined,
+      expect.any(Object),
     );
   });
 
@@ -296,7 +297,9 @@ describe(EpigraphikDatenbankClaussSlabyCommand, () => {
 
     expect(result).toBe(true);
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Error fetching chunk at 0: network-failure",
+      "🌐 Failed fetching chunk",
+      expect.any(String),
+      expect.any(Object),
     );
     expect(appendFileMock).toHaveBeenCalledTimes(1);
   });
@@ -318,6 +321,6 @@ describe(EpigraphikDatenbankClaussSlabyCommand, () => {
     expect(downloadSpy).toHaveBeenCalledTimes(2);
     expect(downloadSpy).toHaveBeenNthCalledWith(1, 0);
     expect(downloadSpy).toHaveBeenNthCalledWith(2, 1000);
-    expect(logger.log).toHaveBeenCalledWith("✅ Finished downloading chunks.");
+    expect(logger.log).toHaveBeenCalledWith("📥 Downloaded chunks");
   });
 });
