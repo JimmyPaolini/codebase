@@ -745,9 +745,6 @@ importers:
       semantic-release:
         specifier: 'catalog:'
         version: 25.0.8(typescript@6.0.3)
-      size-limit:
-        specifier: 'catalog:'
-        version: 12.1.0(jiti@2.7.0)
       skills:
         specifier: 'catalog:'
         version: 1.5.20

@@ -473,10 +473,10 @@ Specifically, after every implementation task:
 
 ```bash
 # Auto-fix format, lint, and unused-code issues
-pnpm exec nx affected --target=analyze-code --configuration=write --base=main
+pnpm exec nx affected --target=lint-codebase --configuration=write --base=main
 
 # Verify all checks pass — do not commit until this is clean
-pnpm exec nx affected --target=analyze-code --configuration=check --base=main
+pnpm exec nx affected --target=lint-codebase --configuration=check --base=main
 ```
 
 Running this loop _before_ staging catches 100% of the pre-commit hook failures this skill handles — formatting, linting, typecheck, spell-check, unused code, and sync checks — without any pre-commit interruption.

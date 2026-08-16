@@ -2,6 +2,18 @@ import type { LoggerService } from "@codebase/logger";
 
 // 🏷️ Types
 
+/**
+ * A synchronization command the aggregate `synchronization` command can drive.
+ *
+ * `synchronize` reports success rather than exiting so the aggregate can run
+ * every command and report all drift at once. Exiting stays in each command's
+ * own `run`, where it belongs.
+ */
+export interface SynchronizableCommand {
+  readonly synchronizationLabel: string;
+  synchronize(mode: SynchronizationMode): Promise<boolean>;
+}
+
 /** Supported synchronization execution modes. */
 export type SynchronizationMode = "check" | "write";
 
@@ -24,3 +36,9 @@ export type SynchronizationModeResolutionResult =
       modeValue: SynchronizationMode;
       valid: true;
     };
+
+/** Outcome of one command within an aggregate synchronization run. */
+export interface SynchronizationResult {
+  readonly label: string;
+  readonly succeeded: boolean;
+}

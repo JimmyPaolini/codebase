@@ -216,7 +216,7 @@ describe(PullRequestTemplateCommand, () => {
       ),
      undefined, expect.any(Object));
     expect(logger.log).toHaveBeenCalledWith(
-      "💡 Run 'nx run synchronization:start:pull-request-template-write' to sync",
+      "💡 Run 'nx run synchronization:synchronize:write' to sync",
     );
 
     processExitSpy.mockRestore();

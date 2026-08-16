@@ -5,7 +5,11 @@ TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S %z')
 printf '[%s] pre-push\n' "$TIMESTAMP"
 
 # 🪾 Validate branch name
-nx run codebase:validate-branch-name
+# Invoked directly rather than through `nx run codebase:validate-branch-name`.
+# That target is `cache: false`, so Nx only added a project graph build —
+# measured at 1.37s against 0.08s for the binary. Husky puts node_modules/.bin
+# on PATH, which is how `nx` resolved here before.
+validate-branch-name
 
 # 🔐 Check GPG git signing configuration
 REPOSITORY_ROOT="$(git rev-parse --show-toplevel)"

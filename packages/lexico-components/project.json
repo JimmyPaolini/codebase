@@ -10,7 +10,6 @@
     "type:package"
   ],
   "targets": {
-    "analyze-code": {},
     "build": {
       "executor": "@nx/vite:build",
       "options": {
@@ -18,25 +17,11 @@
       },
       "outputs": ["{options.outputPath}"]
     },
-    "bundlesize": {
-      "cache": true,
-      "dependsOn": ["build"],
-      "description": "Check bundle size limits",
-      "executor": "nx:run-commands",
-      "inputs": [
-        "{workspaceRoot}/dist/packages/lexico-components/**/*",
-        "default"
-      ],
-      "options": {
-        "command": "npx size-limit",
-        "cwd": "packages/lexico-components"
-      }
-    },
-    "clean": {},
+    "bundlesize": {},
     "dependency-cruiser": {},
-    "format": {},
     "knip": {},
-    "lint": {},
+    "lint-codebase": {},
+    "make-projects": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},

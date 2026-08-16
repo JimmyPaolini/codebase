@@ -226,7 +226,7 @@ describe(ConformetryGeneratorsCommand, () => {
           "📇 Detected an out-of-sync conformetry generators table in AGENTS.md",
         );
         expect(loggerService.log).toHaveBeenCalledWith(
-          "💡 Run 'pnpm exec nx run synchronization:start:conformetry-generators-write' to sync\n",
+          "💡 Run 'nx run synchronization:synchronize:write' to sync\n",
         );
       },
       modeArguments: ["check"],

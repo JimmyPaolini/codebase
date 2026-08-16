@@ -11,12 +11,9 @@
     "type:package"
   ],
   "targets": {
-    "analyze-code": {},
-    "clean": {},
     "dependency-cruiser": {},
-    "format": {},
     "knip": {},
-    "lint": {},
+    "lint-codebase": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
@@ -31,6 +28,9 @@
         },
         "agent-skills-write": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts agent-skills write"
+        },
+        "check": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization check"
         },
         "conformetry-generators-check": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts conformetry-generators check"
@@ -55,16 +55,52 @@
         },
         "pull-request-template-write": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts pull-request-template write"
+        },
+        "write": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization write"
         }
       },
-      "defaultConfiguration": "agent-skills-check",
-      "description": "Start the Synchronization application or run a synchronization command",
+      "defaultConfiguration": "check",
+      "description": "Run every synchronization command (default), or one of them via a named configuration.",
       "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization check",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "synchronize": {
+      "cache": true,
+      "configurations": {
+        "check": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization check"
+        },
+        "write": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization write"
+        }
+      },
+      "defaultConfiguration": "check",
+      "description": "Run every synchronization command in one process. This is what lint-codebase depends on \u2014 it cannot depend on `start`, because other projects use that name to launch an application. `start` (default configuration) runs the same thing for interactive use.",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{projectRoot}/**/*.ts",
+        "{workspaceRoot}/.agents/skills/**",
+        "{workspaceRoot}/.devcontainer/cloud/devcontainer.json",
+        "{workspaceRoot}/.devcontainer/local/devcontainer.json",
+        "{workspaceRoot}/.github/agents/**",
+        "{workspaceRoot}/.github/ISSUE_TEMPLATE/**",
+        "{workspaceRoot}/.github/PULL_REQUEST_TEMPLATE.md",
+        "{workspaceRoot}/.vscode/settings.json",
+        "{workspaceRoot}/AGENTS.md",
+        "{workspaceRoot}/configuration/conformetry.config.ts",
+        "{workspaceRoot}/configuration/conventional.config.cjs",
+        "{workspaceRoot}/release.config.cjs",
+        "shared-globals"
+      ],
       "options": {
         "cwd": "{workspaceRoot}"
       }
     },
-    "test": {},
+    "test-coverage": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {}

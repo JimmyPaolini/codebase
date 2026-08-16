@@ -1,10 +1,16 @@
 name: 🧑‍⚖️ Validate Conventions
 
+# Pull request metadata only — branch name, title, and body. These are not Nx
+# targets and have no project graph to build, so this workflow deliberately
+# skips `setup-codebase`: no Nx cache, no uv, no Homebrew, no full install.
+#
+# The repository-convention checks that used to live here (conformetry,
+# codometer, and the synchronization checks) are `lint-codebase` dependsOn
+# leaves now, so they run once per change instead of once per workflow.
+
 on:
   pull_request:
     types: [opened, reopened, synchronize, edited]
-  push:
-    branches: [main]
 
 permissions:
   contents: read
@@ -17,17 +23,33 @@ jobs:
   validate-conventions:
     name: 🧑‍⚖️ Validate Conventions
     runs-on: ubuntu-latest
-    if: github.actor != 'dependabot[bot]'
+    timeout-minutes: 10
+    if: >-
+      github.actor != 'dependabot[bot]' &&
+      !startsWith(github.head_ref, 'dependabot/') &&
+      !startsWith(github.head_ref, 'renovate/')
 
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - name: 🕋 Setup Codebase
-        uses: ./.github/actions/setup-codebase
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: 🟢 Setup node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      # commitlint and validate-branch-name are the only dependencies these
+      # checks need, and both live in the root manifest.
+      - name: 📚 Install Root Dependencies
+        run: |
+          CI=true pnpm install --frozen-lockfile --reporter=append-only \
+            --filter . --ignore-scripts
 
       - name: 🎋 Validate Branch Name
-        if: github.event_name == 'pull_request'
         env:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
@@ -38,7 +60,6 @@ jobs:
           pnpm exec validate-branch-name -t "$BRANCH_NAME"
 
       - name: 📝 Validate Pull Request Title
-        if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'dependabot/') && !startsWith(github.head_ref, 'renovate/')
         env:
           PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
           NODE_OPTIONS: --import=tsx
@@ -47,10 +68,10 @@ jobs:
             echo "❌ Unable to determine Pull Request Title"
             exit 1
           fi
-          echo "$PULL_REQUEST_TITLE" | pnpm exec commitlint --config configuration/commitlint.config.ts
+          echo "$PULL_REQUEST_TITLE" \
+            | pnpm exec commitlint --config configuration/commitlint.config.ts
 
       - name: 🪢 Validate Pull Request Body
-        if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'dependabot/') && !startsWith(github.head_ref, 'renovate/')
         env:
           PULL_REQUEST_BODY: ${{ github.event.pull_request.body }}
         run: |
@@ -76,21 +97,3 @@ jobs:
             exit 1
           fi
           echo "✅ All required sections present"
-
-      - name: 🏛️ Validate Convention Configuration
-        run: pnpm exec nx run synchronization:start:conventional-config-check
-
-      - name: 📋 Validate Pull Request Template
-        run: pnpm exec nx run synchronization:start:pull-request-template-check
-
-      - name: 💡 Validate Agent Skills
-        run: pnpm exec nx run synchronization:start:agent-skills-check
-
-      - name: 🧩 Validate Conformance Generators
-        run: pnpm exec nx run synchronization:start:conformetry-generators-check
-
-      - name: 👔 Validate Code Conformance
-        run: pnpm exec nx run codebase:conformetry-validate
-
-      - name: 📊 Validate Code Statistics
-        run: pnpm exec nx run codebase:codometer:check

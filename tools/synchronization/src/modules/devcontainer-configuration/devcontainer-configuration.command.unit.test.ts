@@ -229,7 +229,7 @@ describe(DevcontainerConfigurationCommand, () => {
           ),
         );
         expect(loggerService.log).toHaveBeenCalledWith(
-          "  Run: nx run synchronization:start:devcontainer-configuration-write",
+          "  Run: nx run synchronization:synchronize:write",
         );
       },
       scenarioName: "reports drift and exits in check mode when configs differ",

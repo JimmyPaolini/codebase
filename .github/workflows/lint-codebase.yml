@@ -1,4 +1,9 @@
-name: 🧑‍💻 Analyze Code
+name: 🧑‍💻 Lint Codebase
+
+# Static code analysis: every check that reads the source without executing it.
+# One `nx affected` invocation builds one task graph and one scheduler runs it.
+# This replaced `analyze-code`, whose composite targets spawned a nested `nx
+# run` per tool — 290 project graph builds for one logical command.
 
 on:
   push:
@@ -20,28 +25,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  analyze-code:
-    name: 🧑‍💻 Analyze Code
+  lint-codebase:
+    name: 🧑‍💻 Lint Codebase
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: 🕋 Setup Codebase
         uses: ./.github/actions/setup-codebase
 
-      - name: 🧑‍💻 Analyze Code
+      - name: 🧑‍💻 Lint Codebase
         env:
-          NX_PARALLEL: 3
           NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
-        run: pnpm exec nx affected --target=analyze-code --configuration=check
+        run: |
+          pnpm exec nx affected --target=lint-codebase \
+            --configuration=check --parallel=4
 
       - name: 📊 Upload Type Coverage
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: type-coverage-reports
           path: |

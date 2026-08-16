@@ -5,7 +5,6 @@ import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
-
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import {
@@ -28,6 +27,10 @@ import {
 } from "./agent-skills.constants";
 
 import type {
+  SynchronizableCommand,
+  SynchronizationMode,
+} from "../synchronization/synchronization.types";
+import type {
   AgentFileSyncConfig,
   WriteSkillAgentFilesOptions,
 } from "./agent-skills.types";
@@ -40,7 +43,10 @@ import type {
   name: "agent-skills",
 })
 @Injectable()
-export class AgentSkillsCommand extends CommandRunner {
+export class AgentSkillsCommand
+  extends CommandRunner
+  implements SynchronizableCommand
+{
   // 🏗 Dependency Injection
 
   constructor(
@@ -54,6 +60,8 @@ export class AgentSkillsCommand extends CommandRunner {
   // 🔐 Private Fields
 
   // 🔑 Public Fields
+
+  readonly synchronizationLabel = "agent-skills";
 
   // 🔏 Private Methods
 
@@ -73,7 +81,7 @@ export class AgentSkillsCommand extends CommandRunner {
       this.logger.log(
         "📇 Detected an out-of-sync custom agents table in AGENTS.md",
         undefined,
-        { count: agents.length, hint: "Run 'pnpm exec nx run synchronization:start:agent-skills-write' to sync" },
+        { count: agents.length, hint: "Run 'nx run synchronization:synchronize:write' to sync" },
       );
       return false;
     }
@@ -108,7 +116,9 @@ export class AgentSkillsCommand extends CommandRunner {
 
     const expectedContent = generateAgentFile(skill, actualContent);
     if (expectedContent !== actualContent) {
-      this.logger.log(`📄 Detected an out-of-sync agent file ${configuration.agentFile}`);
+      this.logger.log(
+        `📄 Detected an out-of-sync agent file ${configuration.agentFile}`,
+      );
       return false;
     }
 
@@ -133,9 +143,7 @@ export class AgentSkillsCommand extends CommandRunner {
     }
 
     if (!allInSync) {
-      this.logger.log("💡 Suggested a fix", undefined, {
-        hint: "Run 'pnpm exec nx run synchronization:start:agent-skills-write' to sync",
-      });
+      this.logger.log("💡 Suggested a fix", undefined, { hint: "Run 'nx run synchronization:synchronize:write' to sync" });
       return false;
     }
 
@@ -159,7 +167,7 @@ export class AgentSkillsCommand extends CommandRunner {
       this.logger.log(
         "📇 Detected an out-of-sync skills table in AGENTS.md",
         undefined,
-        { count: skills.length, hint: "Run 'pnpm exec nx run synchronization:start:agent-skills-write' to sync" },
+        { count: skills.length, hint: "Run 'nx run synchronization:synchronize:write' to sync" },
       );
       return false;
     }
@@ -173,18 +181,18 @@ export class AgentSkillsCommand extends CommandRunner {
   }
 
   /**
-   * Runs all check-mode validations.
+   * Runs all check-mode validations and reports whether every one passed.
+   *
+   * Each check runs even after an earlier one fails, so a single run surfaces
+   * all drift rather than only the first instance.
    */
-  private runCheckMode(workspaceRoot: string): void {
+  private runCheckMode(workspaceRoot: string): boolean {
     const planInSync = this.checkSkillAgentFiles(
       PLAN_AGENT_CONFIGS,
       workspaceRoot,
       "📄 Verified the plan agent files",
       PLAN_AGENT_CONFIGS.length,
     );
-    if (!planInSync) {
-      process.exit(1);
-    }
 
     const triageInSync = this.checkSkillAgentFiles(
       TRIAGE_AGENT_CONFIGS,
@@ -192,17 +200,11 @@ export class AgentSkillsCommand extends CommandRunner {
       "📄 Verified the triage agent files",
       TRIAGE_AGENT_CONFIGS.length,
     );
-    if (!triageInSync) {
-      process.exit(1);
-    }
 
-    if (!this.checkCustomAgentsTable(workspaceRoot)) {
-      process.exit(1);
-    }
+    const customAgentsInSync = this.checkCustomAgentsTable(workspaceRoot);
+    const skillsInSync = this.checkSkillsTable(workspaceRoot);
 
-    if (!this.checkSkillsTable(workspaceRoot)) {
-      process.exit(1);
-    }
+    return planInSync && triageInSync && customAgentsInSync && skillsInSync;
   }
 
   /**
@@ -326,7 +328,6 @@ export class AgentSkillsCommand extends CommandRunner {
     passedParameters: string[],
     _options?: Record<string, unknown>,
   ): Promise<void> {
-    await Promise.resolve();
     const mode =
       this.synchronizationModeService.resolveSynchronizationModeOrExit({
         invalidModeLabel: "Unknown mode",
@@ -335,21 +336,34 @@ export class AgentSkillsCommand extends CommandRunner {
         usageMessage: "Expected 'check' or 'write'",
       });
 
+    if (!(await this.synchronize(mode))) {
+      process.exit(1);
+    }
+  }
+
+  /**
+   * Synchronizes agent-skill artifacts and reports success without exiting, so
+   * the aggregate `synchronization` command can run every command and report
+   * all drift at once.
+   */
+  async synchronize(mode: SynchronizationMode): Promise<boolean> {
+    await Promise.resolve();
+
     try {
       const workspaceRoot = process.cwd();
 
       if (mode === "check") {
-        this.runCheckMode(workspaceRoot);
-        return;
+        return this.runCheckMode(workspaceRoot);
       }
 
       this.runWriteMode(workspaceRoot);
+      return true;
     } catch (error) {
       this.logger.error(
         `💥 Failed synchronizing agent skills`,
         error instanceof Error ? error.stack : String(error),
       );
-      process.exit(1);
+      return false;
     }
   }
 }
