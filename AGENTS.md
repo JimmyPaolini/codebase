@@ -6,7 +6,7 @@
 # Run tasks via Nx (always prefer this)
 nx run <project>:<target>:<configuration>
 nx run-many --target=lint --all
-nx affected --target=test --base=main
+nx affected --target=vitest --base=main
 
 # Install dependencies
 pnpm add --filter <project> <package>
@@ -424,9 +424,9 @@ Formatting is not a judgement call — `analyze-code --configuration=write` prod
 - **End-to-end** (`*.end-to-end.test.ts`): Full workflows, real services, slow (30-60s)
 
 ```bash
-nx run <project>:test:unit        # Fast feedback
-nx run <project>:test:integration # Database validation
-nx affected --target=test         # Only changed projects
+nx run <project>:vitest:unit        # Fast feedback
+nx run <project>:vitest:integration # Database validation
+nx affected --target=vitest         # Only changed projects
 ```
 
 Test files are named `*.<kind>.test.ts` and live beside the code they cover. Vitest lint rules also require `it` over `test`, `vi` over `vitest`, `describe.each`/`it.each` over hand-rolled loops, and no `.only`, `.skip`, or commented-out tests.

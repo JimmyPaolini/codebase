@@ -146,7 +146,7 @@ nx run caelundas:build --skip-nx-cache
 
 ### Bypassing Nx Costs Performance
 
-**Problem**: Running `pnpm test` directly is slower than `nx run <project>:test`.
+**Problem**: Running `pnpm test` directly is slower than `nx run <project>:vitest`.
 
 **Why**: Bypasses Nx caching and dependency checks.
 
@@ -157,7 +157,7 @@ nx run caelundas:build --skip-nx-cache
 pnpm --filter caelundas test
 
 # ✅ CORRECT: Uses Nx cache
-nx run caelundas:test
+nx run caelundas:vitest
 ```
 
 See [tool-execution-model.md](../development/tool-execution-model.md) for when to use Nx vs. direct tools.
@@ -358,7 +358,7 @@ nx run codebase:dependency-cruiser
 
 ```bash
 # Run only unit tests (fast)
-nx run caelundas:test:unit
+nx run caelundas:vitest:unit
 
 # Enable parallelization (Vitest default)
 # Check vitest.config.ts for maxWorkers

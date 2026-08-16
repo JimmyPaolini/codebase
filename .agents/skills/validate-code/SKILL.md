@@ -77,7 +77,7 @@ Once both `write` and `check` pass cleanly, code quality is confirmed. Proceed t
 `lint-codebase` does not enforce Vitest coverage thresholds. If the task, project, or CI requires a coverage target, run the coverage configuration explicitly after Step 3:
 
 ```bash
-pnpm exec nx run <project>:test --configuration=coverage
+pnpm exec nx run <project>:vitest --configuration=coverage
 ```
 
 If the threshold fails by a small margin, prioritize adding targeted tests for uncovered guard branches (`if (!value)`, fallback paths, sparse/undefined handling) instead of broad test rewrites.
@@ -111,7 +111,7 @@ pnpm exec nx run <project>:lint-codebase --configuration=write
 pnpm exec nx run <project>:lint-codebase --configuration=check
 
 # 2) Re-verify coverage gates explicitly
-pnpm exec nx run <project>:test --configuration=coverage
+pnpm exec nx run <project>:vitest --configuration=coverage
 
 # 3) If available, enforce type coverage gate too
 pnpm exec nx run <project>:typecheck

@@ -128,9 +128,9 @@ git checkout -b feat/lexico-your-feature
 nx run <project>:develop          # caelundas, lexico, JimmyPaolini
 
 # Run tests
-nx run <project>:test             # All tests
-nx run <project>:test:watch       # Watch mode
-nx run caelundas:test:unit        # Specific type
+nx run <project>:vitest             # All tests
+nx run <project>:vitest:watch       # Watch mode
+nx run caelundas:vitest:unit        # Specific type
 
 # Code quality — lint-codebase runs every static analyser in one task graph
 nx run-many --target=lint-codebase                    # check (default)
@@ -145,7 +145,7 @@ nx run-many --target=markdown-lint     # or --configuration=write
 nx run-many --target=knip              # or --configuration=write (caution!)
 
 # The other three gates
-nx run-many --target=test-coverage --configuration=coverage
+nx run-many --target=vitest-coverage --configuration=coverage
 nx run-many --target=scan-security
 nx run-many --target=make-projects
 

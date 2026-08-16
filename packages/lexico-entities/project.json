@@ -65,10 +65,10 @@
     "sqlfluff-format": {},
     "sqlfluff-lint": {},
     "squawk": {},
-    "test": {},
     "test-coverage": {},
     "type-coverage": {},
     "typecheck": {},
+    "vitest": {},
     "yaml-lint": {}
   }
 }

@@ -55,6 +55,7 @@
       }
     },
     "stylelint": {},
+    "test-coverage": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {}

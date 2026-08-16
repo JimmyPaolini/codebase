@@ -103,7 +103,7 @@ pnpm exec nx affected -t lint-codebase
 
 ---
 
-### 🧑‍🔬 Test Coverage — `nx affected --target=test --parallel=3 --configuration=coverage`
+### 🧑‍🔬 Test Coverage — `nx affected --target=vitest --parallel=3 --configuration=coverage`
 
 Coverage reports are uploaded as artifacts (`coverage-reports`).
 
@@ -123,7 +123,7 @@ Coverage reports are uploaded as artifacts (`coverage-reports`).
 **Verify:**
 
 ```bash
-pnpm exec nx affected -t test --configuration=coverage --parallel=3
+pnpm exec nx affected -t vitest --configuration=coverage --parallel=3
 ```
 
 ---
@@ -259,7 +259,7 @@ Run the equivalent Nx target before handing back:
 pnpm exec nx affected -t lint-codebase
 
 # Test coverage
-pnpm exec nx affected -t test --configuration=coverage --parallel=3
+pnpm exec nx affected -t vitest --configuration=coverage --parallel=3
 
 # Validate conventions (config sync checks only)
 npx nx run synchronization:start:conventional-config-check

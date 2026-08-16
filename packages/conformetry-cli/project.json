@@ -48,10 +48,10 @@
         }
       }
     },
-    "test": {},
     "test-coverage": {},
     "type-coverage": {},
     "typecheck": {},
+    "vitest": {},
     "yaml-lint": {}
   }
 }

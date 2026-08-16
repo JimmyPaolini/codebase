@@ -72,7 +72,7 @@ replaced spawned a nested `nx run` per tool.
 
 **Jobs:**
 
-- **test-coverage** - Runs `pnpm exec nx affected --target=test-coverage --configuration=coverage --parallel=4` and uploads coverage reports as artifacts (30-day retention, always runs even if tests fail)
+- **test-coverage** - Runs `pnpm exec nx affected --target=vitest-coverage --configuration=coverage --parallel=4` and uploads coverage reports as artifacts (30-day retention, always runs even if tests fail)
 
 `--configuration=coverage` must stay explicit: Nx propagates an explicit
 configuration down `dependsOn`, but never a `defaultConfiguration`.

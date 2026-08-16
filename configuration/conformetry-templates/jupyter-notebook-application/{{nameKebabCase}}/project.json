@@ -17,7 +17,6 @@
     "ruff-format": {},
     "ruff-lint": {},
     "spell-check": {},
-    "test": {},
     "test-coverage": {},
     "ty": {},
     "typecheck": {},

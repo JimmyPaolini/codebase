@@ -208,7 +208,7 @@ npx nx affected -t lint --dry-run            # Test with explicit SHAs
 
 # Common workflow commands
 npx nx affected -t lint --parallel=3         # Lint affected projects
-npx nx affected -t test --parallel=3         # Test affected projects
+npx nx affected -t vitest --parallel=3         # Test affected projects
 npx nx affected -t build --parallel=3        # Build affected projects
 ```
 

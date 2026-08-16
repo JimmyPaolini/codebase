@@ -72,7 +72,7 @@ const result = provider.parse($, rootElement);
 Run project-level checks with Nx:
 
 ```bash
-pnpm nx run lexico-ingestion:test:unit
+pnpm nx run lexico-ingestion:vitest:unit
 pnpm nx run lexico-ingestion:typecheck
 pnpm nx run lexico-ingestion:lint-codebase --configuration=check
 ```
@@ -80,5 +80,5 @@ pnpm nx run lexico-ingestion:lint-codebase --configuration=check
 If the task is coverage-driven:
 
 ```bash
-pnpm nx run lexico-ingestion:test --configuration=coverage
+pnpm nx run lexico-ingestion:vitest --configuration=coverage
 ```
