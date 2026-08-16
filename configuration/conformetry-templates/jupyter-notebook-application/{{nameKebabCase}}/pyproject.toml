@@ -25,7 +25,7 @@ dev = [
 
 [tool.ruff]
 # Extend base config from root pyproject.toml (mirrors tsconfig.base.json pattern)
-extend = "../../configuration/pyproject.toml"
+extend = "../../pyproject.toml"
 exclude = ["notebooks/**", ".vulture_whitelist.py"]
 extend-include = ["*.ipynb"]
 
@@ -39,8 +39,8 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel"]
 "*.ipynb" = ["F811", "TC002"]
 
 [tool.pyright]
-# Venv settings are project-specific; base config (pythonVersion, typeCheckingMode)
-# is in configuration/pyproject.toml
+# pyright reads only this file — it has no config inheritance, so the root
+# pyproject.toml settings do not apply here and must be repeated when wanted
 # The venv is the shared uv workspace venv at the repository root
 venvPath = "../.."
 venv = ".venv"

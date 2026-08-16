@@ -467,10 +467,7 @@
         "filter": {
           "projects": ["tag:language:python"]
         },
-        "inputs": [
-          "{workspaceRoot}/configuration/pyproject.toml",
-          "python-source"
-        ]
+        "inputs": ["{workspaceRoot}/pyproject.toml", "python-source"]
       },
       {
         "cache": true,
@@ -578,10 +575,7 @@
         "filter": {
           "projects": ["tag:language:python"]
         },
-        "inputs": [
-          "{workspaceRoot}/configuration/pyproject.toml",
-          "python-source"
-        ]
+        "inputs": ["{workspaceRoot}/pyproject.toml", "python-source"]
       },
       {
         "cache": true,
@@ -783,10 +777,7 @@
         "filter": {
           "projects": ["tag:language:python"]
         },
-        "inputs": [
-          "{workspaceRoot}/configuration/pyproject.toml",
-          "python-source"
-        ],
+        "inputs": ["{workspaceRoot}/pyproject.toml", "python-source"],
         "options": {
           "command": "uv run pyright src/",
           "cwd": "{projectRoot}"
@@ -815,7 +806,7 @@
           "projects": ["tag:language:python"]
         },
         "inputs": [
-          "{workspaceRoot}/configuration/pyproject.toml",
+          "{workspaceRoot}/pyproject.toml",
           "python-source",
           "python-tests"
         ],
@@ -853,10 +844,7 @@
         "filter": {
           "projects": ["tag:language:python"]
         },
-        "inputs": [
-          "{workspaceRoot}/configuration/pyproject.toml",
-          "python-source"
-        ],
+        "inputs": ["{workspaceRoot}/pyproject.toml", "python-source"],
         "options": {
           "command": "uv run ruff format {args} .",
           "cwd": "{projectRoot}"
@@ -877,10 +865,7 @@
         "filter": {
           "projects": ["tag:language:python"]
         },
-        "inputs": [
-          "{workspaceRoot}/configuration/pyproject.toml",
-          "python-source"
-        ],
+        "inputs": ["{workspaceRoot}/pyproject.toml", "python-source"],
         "options": {
           "command": "uv run ruff check {args} .",
           "cwd": "{projectRoot}"
@@ -924,12 +909,12 @@
         },
         "inputs": [
           "{projectRoot}/**/*.sql",
-          "{workspaceRoot}/configuration/pyproject.toml",
+          "{workspaceRoot}/pyproject.toml",
           "{workspaceRoot}/uv.lock",
           "shared-globals"
         ],
         "options": {
-          "command": "uv run sqlfluff {args} --config configuration/pyproject.toml {projectRoot}",
+          "command": "uv run sqlfluff {args} --config pyproject.toml {projectRoot}",
           "cwd": "{workspaceRoot}"
         }
       }
@@ -952,12 +937,12 @@
         },
         "inputs": [
           "{projectRoot}/**/*.sql",
-          "{workspaceRoot}/configuration/pyproject.toml",
+          "{workspaceRoot}/pyproject.toml",
           "{workspaceRoot}/uv.lock",
           "shared-globals"
         ],
         "options": {
-          "command": "uv run sqlfluff {args} --config configuration/pyproject.toml {projectRoot}",
+          "command": "uv run sqlfluff {args} --config pyproject.toml {projectRoot}",
           "cwd": "{workspaceRoot}"
         }
       }
@@ -1042,7 +1027,7 @@
           "projects": ["tag:language:python"]
         },
         "inputs": [
-          "{workspaceRoot}/configuration/pyproject.toml",
+          "{workspaceRoot}/pyproject.toml",
           "python-source",
           "python-tests"
         ],
@@ -1118,10 +1103,7 @@
         "filter": {
           "projects": ["tag:language:python"]
         },
-        "inputs": [
-          "{workspaceRoot}/configuration/pyproject.toml",
-          "python-source"
-        ],
+        "inputs": ["{workspaceRoot}/pyproject.toml", "python-source"],
         "options": {
           "command": "uv run ty check src/",
           "cwd": "{projectRoot}"
@@ -1155,10 +1137,7 @@
         "filter": {
           "projects": ["tag:language:python"]
         },
-        "inputs": [
-          "{workspaceRoot}/configuration/pyproject.toml",
-          "python-source"
-        ],
+        "inputs": ["{workspaceRoot}/pyproject.toml", "python-source"],
         "options": {
           "commands": [
             "nx run {projectName}:pyright",

@@ -1,13 +1,70 @@
-# uv workspace root — the only Python file at the repository root.
+# uv workspace root and shared Python tool configuration.
 #
-# Shared Python tool configuration lives in `configuration/pyproject.toml`
-# (mirroring tsconfig.json / eslint.config.ts), which participates here as a
-# workspace member. This file exists solely because uv resolves a workspace
-# from the directory that contains its members, so the root must sit here.
+# This file has no `[project]` table on purpose. A virtual workspace root makes
+# `uv sync` install every member and its dev group into the shared `.venv`; a
+# root with `[project]` installs only the root package and silently skips the
+# members.
 #
 # Members are listed explicitly: a glob such as `applications/*` fails on the
 # TypeScript projects, which have no `pyproject.toml`. Add every new Python
 # project to this list.
 
 [tool.uv.workspace]
-members = ["applications/affirmations", "configuration"]
+members = ["applications/affirmations"]
+
+# Tools the workspace-root Nx targets invoke, over files outside any project.
+[dependency-groups]
+dev = ["sqlfluff>=3.0", "vulture>=2.14", "yamllint>=1.35"]
+
+# Python projects extend the settings below via
+# [tool.ruff] extend = "../../pyproject.toml"
+
+[tool.ruff]
+target-version = "py314"
+line-length = 100
+
+exclude = ["configuration/conformetry-templates/**"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "TCH"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+# pyright and pytest have no config inheritance — each reads only the
+# pyproject.toml of the directory it runs in. These sections apply to tools run
+# from the workspace root; projects repeat what they need in their own file.
+[tool.pyright]
+pythonVersion = "3.14"
+typeCheckingMode = "strict"
+reportMissingTypeStubs = "none"
+reportMissingModuleSource = "none"
+reportUnknownVariableType = "none"
+reportUnknownMemberType = "none"
+reportUnknownLambdaType = "none"
+reportUnknownArgumentType = "none"
+reportUnknownParameterType = "none"
+reportUnknownReturnType = "none"
+reportUnusedParameter = "none"
+
+[tool.pytest.ini_options]
+markers = [
+  "unit: fast unit tests with mocked I/O",
+  "integration: integration tests requiring real services",
+]
+
+[tool.sqlfluff.core]
+dialect = "postgres"
+templater = "raw"
+indent_unit = "space"
+indent_width = 2
+max_line_length = 120
+# PostgreSQL and Supabase use quoted identifiers with special chars in policy/function names
+exclude_rules = ["RF05"]
+
+[tool.sqlfluff.rules.capitalisation.keywords]
+capitalisation_policy = "lower"
+
+[tool.sqlfluff.rules.capitalisation.identifiers]
+extended_capitalisation_policy = "lower"

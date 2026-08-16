@@ -6,7 +6,7 @@ license: MIT
 
 # Write Python
 
-All Python projects inherit configuration from `configuration/pyproject.toml` and Nx `targetDefaults`. Use `uv run` (never `uvx`) for reproducible tool invocations pinned in `uv.lock`.
+All Python projects inherit configuration from the root `pyproject.toml` and Nx `targetDefaults`. Use `uv run` (never `uvx`) for reproducible tool invocations pinned in `uv.lock`.
 
 Every Python project is a member of the uv workspace declared in the root `pyproject.toml`, sharing one `uv.lock` and one `.venv`, both at the repository root.
 
@@ -122,20 +122,27 @@ exclude_dirs = ["testing", "output", "notebooks"]
 skips = ["B101"]
 ```
 
-## Shared Configuration
+## Root pyproject.toml
 
-Located at `configuration/pyproject.toml`. Contains the **shared tool config** plus the dev tools the workspace-root Nx targets run (sqlfluff, vulture, yamllint). Projects inherit the tool settings automatically via `[tool.ruff] extend`.
-
-## uv Workspace
-
-The root `pyproject.toml` declares the workspace and nothing else:
+The root `pyproject.toml` is the single Python configuration file: it declares the uv workspace, the dev tools the workspace-root Nx targets run (sqlfluff, vulture, yamllint), and the shared `[tool.*]` settings projects pick up via `[tool.ruff] extend`.
 
 ```toml
 [tool.uv.workspace]
-members = ["applications/affirmations", "configuration"]
+members = ["applications/affirmations"]
+
+[dependency-groups]
+dev = ["sqlfluff>=3.0", "vulture>=2.14", "yamllint>=1.35"]
+
+[tool.ruff]
+target-version = "py314"
+line-length = 100
 ```
 
-Rules that follow from it:
+It deliberately has **no `[project]` table**. A virtual workspace root makes `uv sync` install every member and its dev group into the shared `.venv`; adding `[project]` makes uv install only the root package and skip the members entirely.
+
+Note that only ruff inherits: pyright and pytest read solely the `pyproject.toml` of the directory they run in, so their settings must be repeated per project.
+
+## uv Workspace Rules
 
 - **Members are listed explicitly.** A glob such as `applications/*` fails on the TypeScript projects, which have no `pyproject.toml`.
 - **Sync from the repository root.** `uv sync --project <member>` prunes the other members' tools out of the shared `.venv`; a bare `uv sync` installs them all.
