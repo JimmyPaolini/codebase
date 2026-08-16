@@ -37,14 +37,24 @@ git add README.md
 NX_PERF_LOGGING=false lint-staged --config configuration/lint-staged.config.ts --continue-on-error > last-lint-staged-output.log 2>&1 || EXIT_CODE=$?
 
 # 💀 Explain a kill rather than leaving lint-staged's misleading wording
-# Exit 137 is SIGKILL. lint-staged reports it as "Task failed to spawn:
-# undefined", which sends you looking at PATH and argument length; the real
-# cause is the operating system reclaiming memory from the analysis run.
+# Exit 137 is SIGKILL. lint-staged reports every killed command as "Task failed
+# to spawn: undefined" regardless of why it died, so the wording names neither
+# cause. Two produce it here: the analysis run growing past available memory,
+# and Node 26 being killed on an over-long argument before it prints anything.
 if [ "${EXIT_CODE}" = "137" ] || grep -q "Task failed to spawn" last-lint-staged-output.log 2>/dev/null; then
+  NODE_MAJOR_VERSION=$(node --version | sed 's/^v\([0-9]*\).*/\1/')
   printf '\n⚠️  A check was killed rather than failing.\n'
-  printf '   This is the operating system reclaiming memory, not a spawn error.\n'
-  printf '   Free some memory and commit again, or run the analysis directly:\n'
-  printf '   nx affected --target=analyze-code --configuration=check --parallel=1 --files=<staged paths>\n\n'
+  printf '   This is not a spawn error, whatever lint-staged called it.\n'
+  if [ "${NODE_MAJOR_VERSION}" -ge 26 ] 2>/dev/null; then
+    printf '   You are on Node %s. Node 26 is killed by the operating system on\n' "$(node --version)"
+    printf '   any single argument past ~1 KB, which a long staged file list can\n'
+    printf '   reach. Switch to the pinned version and commit again:\n'
+    printf '   nvm use   # %s, per .nvmrc\n\n' "$(cat "$REPOSITORY_ROOT/.nvmrc")"
+  else
+    printf '   The likely cause is the operating system reclaiming memory.\n'
+    printf '   Free some memory and commit again, or run the analysis directly:\n'
+    printf '   nx affected --target=analyze-code --configuration=check --parallel=1 --files=<staged path>\n\n'
+  fi
 fi
 
 # 🖨️ Log output

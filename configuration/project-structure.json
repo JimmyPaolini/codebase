@@ -499,6 +499,9 @@
       },
       {
         "name": "validate-branch-name.config.cjs"
+      },
+      {
+        "name": "vitest.config.ts"
       }
     ]
   }

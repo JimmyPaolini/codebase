@@ -20,14 +20,35 @@ import { SYNC_PULL_REQUEST_TEMPLATE_FILES } from "../tools/synchronization/src/m
  * A change under `configuration/` belongs to the root project, and every
  * project depends on the shared configuration, so one such path expands
  * `affected` from a handful of projects to all of them. Left unbounded, the
- * resulting fan-out exhausts memory and the operating system kills the run,
- * which surfaces only as lint-staged's "Task failed to spawn: undefined".
+ * resulting fan-out exhausts memory and the operating system kills the run.
+ *
+ * lint-staged reports every killed command as "Task failed to spawn:
+ * undefined", so that wording alone does not identify the cause. A run killed
+ * for memory does some work first; one killed for an over-long argument dies
+ * instantly with no output at all. See `getStagedFilesFlags`.
  */
 const ANALYSIS_PARALLELISM = 2;
 
-/** Joins staged paths into the workspace-relative list `--files` expects. */
-function getRelativePaths(files: string[]): string {
-  return files.map((file) => path.relative(process.cwd(), file)).join(",");
+/**
+ * Renders staged paths as one workspace-relative `--files=` flag each.
+ *
+ * `--files` also accepts a single comma-separated value, but that value grows
+ * without bound as a commit grows, and one over-long argument is enough to get
+ * the whole run killed: Node 26 is killed by the operating system on any single
+ * argument past 1011 bytes, before the script it was asked to run prints
+ * anything. The commit then fails as lint-staged's "Task failed to spawn:
+ * undefined" with no output to explain it, and the paths look guilty because
+ * whichever one crosses the threshold appears to be the trigger. Nx unions
+ * repeated `--files` flags, so the affected set is identical and every argument
+ * stays path-sized.
+ *
+ * The workspace pins Node 24 in `.nvmrc`, which has no such limit. This keeps
+ * the hook working on a Node that does.
+ */
+function getStagedFilesFlags(files: string[]): string {
+  return files
+    .map((file) => `--files=${path.relative(process.cwd(), file)}`)
+    .join(" ");
 }
 
 const config = {
@@ -99,7 +120,7 @@ const config = {
   // and lint-staged spawns commands without a shell, so an environment prefix
   // here would be parsed as the executable name.
   "*": (files: string[]): string[] => [
-    `pnpm exec nx affected --target=analyze-code --configuration=check --parallel=${String(ANALYSIS_PARALLELISM)} --outputStyle=static --files=${getRelativePaths(files)}`,
+    `pnpm exec nx affected --target=analyze-code --configuration=check --parallel=${String(ANALYSIS_PARALLELISM)} --outputStyle=static ${getStagedFilesFlags(files)}`,
     "pnpm exec nx run codebase:conformetry-validate --outputStyle=static",
   ],
 };
