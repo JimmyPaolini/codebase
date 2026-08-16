@@ -415,7 +415,7 @@ When a file nears 512 lines, split it along the module file suffixes (`*.types.t
 
 ### Formatting and Ordering
 
-Formatting is not a judgement call — `analyze-code --configuration=write` produces the canonical result. Write code in the shape below so the first pass is a no-op.
+Formatting is not a judgement call — `lint-codebase --configuration=write` produces the canonical result. Write code in the shape below so the first pass is a no-op.
 
 - **`oxfmt` is the formatter** (not prettier): 80-column print width, 2-space indent, double quotes, semicolons, trailing commas everywhere, LF endings, one JSX attribute per line.
 - **Import groups** (`perfectionist/sort-imports`): builtin → external → internal (`@codebase/*`) → parent → sibling → index → type, with exactly one blank line between groups and natural alphabetical order inside each group.
