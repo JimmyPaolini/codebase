@@ -33,21 +33,34 @@ fi
 # minutes later, when semantic-release writes the release commit and the whole
 # release silently does not ship.
 #
-# Interactive pinentry cannot work on a headless runner, so in CI gpg is routed
-# through a loopback wrapper: it still uses a passphrase the agent has cached,
-# but fails immediately instead of trying to prompt for one.
-git_options=()
-
+# Either way gpg is routed through a wrapper that never opens a pinentry, so the
+# smoke test can only ever pass, fail, or be skipped — it can never block:
+#
+#   - CI uses loopback, because interactive pinentry cannot work on a headless
+#     runner. It still uses a passphrase the agent has cached, but fails
+#     immediately instead of trying to prompt for one.
+#   - Local agents use cancel, because they share the developer's gpg-agent and a
+#     GUI pinentry would hang a session-start hook until it times out. A cached
+#     passphrase still signs normally; an uncached one fails in milliseconds and
+#     is treated as inconclusive below.
 if [[ -n "${CI:-}" || -n "${GITHUB_ACTIONS:-}" ]]; then
-  gpg_wrapper="$(mktemp)"
-  trap 'rm -f "$gpg_wrapper"' EXIT
-  cat > "$gpg_wrapper" << 'GPG_WRAPPER'
-#!/usr/bin/env bash
-exec gpg --batch --no-tty --pinentry-mode loopback "$@"
-GPG_WRAPPER
-  chmod +x "$gpg_wrapper"
-  git_options+=(-c "gpg.program=$gpg_wrapper")
+  pinentry_mode='loopback'
+else
+  pinentry_mode='cancel'
 fi
+
+gpg_program="$(git config --get gpg.program || true)"
+gpg_wrapper="$(mktemp)"
+smoke_test_stderr="$(mktemp)"
+trap 'rm -f "$gpg_wrapper" "$smoke_test_stderr"' EXIT
+
+cat > "$gpg_wrapper" << GPG_WRAPPER
+#!/usr/bin/env bash
+exec ${gpg_program:-gpg} --batch --no-tty --pinentry-mode ${pinentry_mode} "\$@"
+GPG_WRAPPER
+chmod +x "$gpg_wrapper"
+
+git_options=(-c "gpg.program=$gpg_wrapper")
 
 tree_hash="$(git write-tree)"
 test_commit_message='commit-signing-smoke-test'
@@ -57,11 +70,23 @@ if git rev-parse --verify HEAD > /dev/null 2>&1; then
   parent_options+=(-p "$(git rev-parse HEAD)")
 fi
 
-# gpg's own stderr is left visible on purpose: it names the actual failure.
 if ! test_commit_hash="$(
   printf '%s' "$test_commit_message" | \
-    git "${git_options[@]}" commit-tree "$tree_hash" "${parent_options[@]}" -S
+    git "${git_options[@]}" commit-tree "$tree_hash" "${parent_options[@]}" -S 2> "$smoke_test_stderr"
 )"; then
+  # A cancelled pinentry only means the agent holds no cached passphrase. The key
+  # itself is fine — the checks above proved it exists — and the next real commit
+  # will prompt for it normally, so the smoke test is inconclusive, not failed.
+  #
+  # This never applies in CI: there the passphrase is preloaded into the agent, so
+  # any signing failure is a real one that must fail the run rather than be
+  # skipped.
+  if [[ "$pinentry_mode" == 'cancel' ]] && grep -q 'Operation cancelled' "$smoke_test_stderr"; then
+    exit 0
+  fi
+
+  # gpg's own stderr is replayed on purpose: it names the actual failure.
+  cat "$smoke_test_stderr" >&2
   echo "❌ Git commit signing smoke test failed: gpg could not sign with user.signingkey=$signing_key." >&2
   echo '   Verify the GPG key and its passphrase match (GPG_PRIVATE_KEY / GPG_PASSPHRASE in CI).' >&2
   exit 1
