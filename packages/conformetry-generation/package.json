@@ -3,7 +3,6 @@
     "@nestjs/common": "catalog:",
     "lodash": "catalog:",
     "mustache": "catalog:",
-    "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:"
   },

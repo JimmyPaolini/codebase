@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { LoggerService } from "@codebase/logger";
+
 import {
   ingressBodies as signIngressBodies,
   signs,
@@ -18,7 +20,6 @@ import {
   symbolBySign,
 } from "../caelundas/symbol-caelundas.constants";
 import { EphemerisService } from "../ephemeris/ephemeris.service";
-import { LoggerService } from "../logger/logger.service";
 
 import type { Body, Decan, Sign } from "../caelundas/caelundas.types";
 import type { Event } from "../calendar/calendar.types";
@@ -96,7 +97,9 @@ export class IngressesComposerService {
     longitude: number;
   }): Event {
     const event = this.buildDecanIngressEventObject(args);
-    this.logger.log(`${event.summary} at ${args.date.toISOString()}`);
+    this.logger.log(`🗓️ Built ${event.summary}`, undefined, {
+      at: args.date.toISOString(),
+    });
     return event;
   }
 
@@ -151,7 +154,9 @@ export class IngressesComposerService {
     const description = `${bodyCapitalized} peak ingress ${signCapitalized}`;
     const summary = `${bodySymbol} → ${signSymbol}⛰️ ${description}`;
 
-    this.logger.log(`${summary} at ${date.toISOString()}`);
+    this.logger.log(`🗓️ Built ${summary}`, undefined, {
+      at: date.toISOString(),
+    });
 
     const peakIngressEvent: Event = {
       categories: [
@@ -211,7 +216,9 @@ export class IngressesComposerService {
     const description = `${bodyCapitalized} ingress ${signCapitalized}`;
     const summary = `${bodySymbol} → ${signSymbol} ${description}`;
 
-    this.logger.log(`${summary} at ${date.toISOString()}`);
+    this.logger.log(`🗓️ Built ${summary}`, undefined, {
+      at: date.toISOString(),
+    });
 
     const signIngressEvent: Event = {
       categories: [

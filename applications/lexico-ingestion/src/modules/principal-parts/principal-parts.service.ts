@@ -4,8 +4,7 @@ import * as cheerio from "cheerio";
 import { Repository } from "typeorm";
 
 import { Lexeme, PrincipalPart } from "@codebase/lexico-entities";
-
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import type { AnyNode } from "domhandler";
 

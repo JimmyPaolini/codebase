@@ -9,8 +9,7 @@ import _ from "lodash";
 import YAML from "yaml";
 
 import { Author, Text } from "@codebase/lexico-entities";
-
-import { LoggerService } from "../../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 /**
  * Shape of a single record in the raw JSON chunks returned by the EDCS API.
@@ -119,7 +118,9 @@ export class EpigraphikDatenbankClaussSlabyLibraryProvider {
         `📜 Completed processing chunk: ${file}${progressString}`,
       );
     } catch (error) {
-      this.logger.warn(`⚠️ Error reading chunk file ${file}: ${String(error)}`);
+      this.logger.warn(`📄 Failed reading chunk file ${file}`, undefined, {
+        reason: String(error),
+      });
     }
   }
 
@@ -154,9 +155,9 @@ export class EpigraphikDatenbankClaussSlabyLibraryProvider {
     try {
       const files = await fs.readdir(sourceDataDirectory);
       return files.filter((file) => file.endsWith(".json"));
-    } catch (error) {
+    } catch {
       this.logger.error(
-        `❌ Could not read source directory: ${String(error)}. Did you run the epigraphik-datenbank-clauss-slaby command first?`,
+        `📁 Failed reading the source directory. Did you run the epigraphik-datenbank-clauss-slaby command first?`,
       );
       return null;
     }

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 /**
  * TODO: Document the {{nameCamelCase}} command.

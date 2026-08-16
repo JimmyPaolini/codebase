@@ -3,10 +3,11 @@ import { Test } from "@nestjs/testing";
 import moment, { type Moment } from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { MARGIN_MINUTES } from "../caelundas/caelundas.constants";
 import { CalendarService } from "../calendar/calendar.service";
 import { EphemerisModule } from "../ephemeris/ephemeris.module";
-import { LoggerService } from "../logger/logger.service";
 import { MathService } from "../math/math.service";
 
 import { MonthlyLunarCycleService } from "./monthly-lunar-cycle.service";

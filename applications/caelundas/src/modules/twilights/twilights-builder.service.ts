@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import type { Event } from "../calendar/calendar.types";
 import type { Moment } from "moment-timezone";
@@ -36,7 +36,9 @@ export class TwilightsBuilderService {
   ): Event {
     const summary = `${emoji} ${description}`;
     const dateString = date.clone().tz("America/New_York").toISOString(true);
-    this.logger.log(`${summary} at ${dateString}`);
+    this.logger.log(`🗓️ Built ${summary}`, undefined, {
+      at: dateString,
+    });
 
     return {
       categories: [

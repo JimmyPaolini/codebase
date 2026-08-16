@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { LoggerService } from "@codebase/logger";
+
 import { symbolByVenusianPhase } from "../caelundas/symbol-caelundas.constants";
-import { LoggerService } from "../logger/logger.service";
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
 import { PhaseCalculationService } from "./phase-calculation.service";
@@ -142,7 +143,9 @@ export class VenusianPhaseService {
       timestamp,
       PHASE_EVENT_TIMEZONE,
     );
-    this.logger.log(`${summary} at ${dateString}`);
+    this.logger.log(`🗓️ Built ${summary}`, undefined, {
+      at: dateString,
+    });
 
     const venusianPhaseEvent: Event = {
       categories: [

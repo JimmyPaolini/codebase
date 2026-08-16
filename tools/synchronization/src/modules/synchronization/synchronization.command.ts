@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
+import { LoggerService } from "@codebase/logger";
+
 import { AgentSkillsCommand } from "../agent-skills/agent-skills.command";
 import { ConformetryGeneratorsCommand } from "../conformetry-generators/conformetry-generators.command";
 import { ConventionalConfigCommand } from "../conventional-config/conventional-config.command";
 import { DevcontainerConfigurationCommand } from "../devcontainer-configuration/devcontainer-configuration.command";
-import { LoggerService } from "../logger/logger.service";
 import { PullRequestTemplateCommand } from "../pull-request-template/pull-request-template.command";
 
 import { SynchronizationService } from "./synchronization.service";
@@ -68,23 +69,26 @@ export class SynchronizationCommand extends CommandRunner {
   ): void {
     const failed = results.filter((result) => !result.succeeded);
 
-    this.logger.log("");
-    this.logger.log(`📋 Synchronization summary (${mode})`);
-    for (const { label, succeeded } of results) {
-      this.logger.log(`  ${succeeded ? "✅" : "❌"} ${label}`);
-    }
+    this.logger.log("📋 Summarized the synchronization run", undefined, {
+      failed: results.filter((result) => !result.succeeded).map((r) => r.label),
+      mode,
+      succeeded: results
+        .filter((result) => result.succeeded)
+        .map((r) => r.label),
+    });
 
     if (failed.length === 0) {
-      this.logger.log(`✅ All ${results.length} synchronizations are in sync`);
+      this.logger.log("🔗 Verified every synchronization", undefined, {
+        count: results.length,
+      });
       return;
     }
 
-    this.logger.log(
-      `❌ ${failed.length} of ${results.length} synchronizations are out of sync`,
-    );
-    this.logger.log(
-      "💡 Run 'nx run synchronization:synchronize:write' to sync",
-    );
+    this.logger.log("🔗 Detected out-of-sync synchronizations", undefined, {
+      count: failed.length,
+      hint: "Run 'nx run synchronization:synchronize:write' to sync",
+      total: results.length,
+    });
   }
 
   // 🌎 Public Methods
@@ -119,7 +123,7 @@ export class SynchronizationCommand extends CommandRunner {
     const results: SynchronizationResult[] = [];
 
     for (const command of this.getCommands()) {
-      this.logger.log(`🔄 ${command.synchronizationLabel}`);
+      this.logger.log(`🔄 Synchronizing ${command.synchronizationLabel}`);
       results.push({
         label: command.synchronizationLabel,
         succeeded: await command.synchronize(mode),

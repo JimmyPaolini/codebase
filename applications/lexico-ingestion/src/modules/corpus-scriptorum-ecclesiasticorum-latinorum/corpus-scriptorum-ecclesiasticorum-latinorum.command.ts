@@ -4,7 +4,7 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import { corpusScriptorumTreeResponseSchema } from "./corpus-scriptorum-ecclesiasticorum-latinorum.constants";
 
@@ -63,7 +63,7 @@ export class CorpusScriptorumEcclesiasticorumLatinorumCommand extends CommandRun
       await this.fetchAndWriteXmlFile(fileUrl, targetPath);
     } catch (error: unknown) {
       const { logLine } = this.logger.buildErrorLogEntry(xmlPath, error);
-      this.logger.error(`❌ Error downloading ${xmlPath}: ${String(error)}`);
+      this.logger.error(`📥 Failed downloading ${xmlPath}`, String(error));
       await fs.appendFile(this.errorLogFilePath, logLine);
     }
   }
@@ -77,7 +77,7 @@ export class CorpusScriptorumEcclesiasticorumLatinorumCommand extends CommandRun
   ): Promise<void> {
     const response = await fetch(fileUrl);
     if (!response.ok) {
-      this.logger.warn(`⚠️ Failed to fetch ${fileUrl}: ${response.statusText}`);
+      this.logger.warn(`📥 Failed fetching ${fileUrl}`);
       return;
     }
 
@@ -102,9 +102,7 @@ export class CorpusScriptorumEcclesiasticorumLatinorumCommand extends CommandRun
     const treeResponse = await fetch(treeUrl);
 
     if (!treeResponse.ok) {
-      this.logger.error(
-        `❌ Failed to fetch CSEL tree: ${treeResponse.statusText}`,
-      );
+      this.logger.error(`🌳 Failed fetching the CSEL tree`);
       return null;
     }
 
@@ -112,7 +110,7 @@ export class CorpusScriptorumEcclesiasticorumLatinorumCommand extends CommandRun
     const parsedTreeResponse =
       corpusScriptorumTreeResponseSchema.safeParse(treeData);
     if (!parsedTreeResponse.success) {
-      this.logger.error("❌ Failed to parse CSEL tree response payload");
+      this.logger.error("🌳 Failed parsing the CSEL tree response");
       return null;
     }
 
@@ -150,6 +148,6 @@ export class CorpusScriptorumEcclesiasticorumLatinorumCommand extends CommandRun
       await this.downloadSourceXmlFileIfMissing(xmlPath);
     }
 
-    this.logger.log("✅ Finished downloading CSEL source files.");
+    this.logger.log("📥 Downloaded CSEL source files");
   }
 }

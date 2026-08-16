@@ -6,8 +6,8 @@ import { Author, Text } from "@codebase/lexico-entities";
 
 import { LatinLibraryProvider } from "./latin-library.provider";
 
-import type { LoggerService } from "../../logger/logger.service";
 import type { LatinLibraryBuilder } from "./latin-library.builder";
+import type { LoggerService } from "@codebase/logger";
 import type { AnyNode } from "domhandler";
 
 const { mkdirMock, readFileMock, writeFileMock } = vi.hoisted(() => ({
@@ -849,7 +849,7 @@ describe(LatinLibraryProvider, () => {
     expect((logger.error as ReturnType<typeof vi.fn>).mock.calls).toStrictEqual(
       expect.arrayContaining([
         [
-          expect.stringContaining("❌ Failed to fetch work Aeneid"),
+          expect.stringContaining("📕 Failed fetching work Aeneid"),
           expect.any(String),
         ],
       ]),
@@ -903,7 +903,7 @@ describe(LatinLibraryProvider, () => {
     });
 
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Failed to fetch work Aeneid",
+      "📕 Failed fetching work Aeneid",
       undefined,
     );
   });

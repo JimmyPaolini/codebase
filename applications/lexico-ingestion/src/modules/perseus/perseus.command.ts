@@ -4,7 +4,7 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import { perseusTreeResponseSchema } from "./perseus.constants";
 
@@ -48,7 +48,7 @@ export class PerseusCommand extends CommandRunner {
     error: unknown,
   ): Promise<void> {
     const { logLine } = this.logger.buildErrorLogEntry(xmlPath, error);
-    this.logger.error(`❌ Error downloading ${xmlPath}: ${String(error)}`);
+    this.logger.error(`📥 Failed downloading ${xmlPath}`, String(error));
     await fs.appendFile(this.errorLogFilePath, logLine);
   }
 
@@ -82,7 +82,7 @@ export class PerseusCommand extends CommandRunner {
   ): Promise<void> {
     const response = await fetch(fileUrl);
     if (!response.ok) {
-      this.logger.warn(`⚠️ Failed to fetch ${fileUrl}: ${response.statusText}`);
+      this.logger.warn(`📥 Failed fetching ${fileUrl}`);
       return;
     }
     const xmlContent = await response.text();
@@ -101,15 +101,13 @@ export class PerseusCommand extends CommandRunner {
     this.logger.log(`🌳 Fetching Perseus tree from ${treeUrl}`);
     const treeResponse = await fetch(treeUrl);
     if (!treeResponse.ok) {
-      this.logger.error(
-        `❌ Failed to fetch Perseus tree: ${treeResponse.statusText}`,
-      );
+      this.logger.error(`🌳 Failed fetching the Perseus tree`);
       return null;
     }
     const treeData = await treeResponse.json();
     const parsedTreeResponse = perseusTreeResponseSchema.safeParse(treeData);
     if (!parsedTreeResponse.success) {
-      this.logger.error("❌ Failed to parse Perseus tree response payload");
+      this.logger.error("🌳 Failed parsing the Perseus tree response");
       return null;
     }
 
@@ -143,6 +141,6 @@ export class PerseusCommand extends CommandRunner {
       await this.downloadSourceXmlFileIfMissing(xmlPath);
     }
 
-    this.logger.log("✅ Finished downloading Perseus source files.");
+    this.logger.log("📥 Downloaded Perseus source files");
   }
 }

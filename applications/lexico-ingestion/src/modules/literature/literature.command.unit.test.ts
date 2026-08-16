@@ -2,9 +2,10 @@ import { createMock, type DeepMocked } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { resetCommandTestHarness } from "../../../testing/command-harness";
 import { setPromptsMockResponse } from "../../../testing/mocks";
-import { LoggerService } from "../logger/logger.service";
 
 import { LiteratureCommand } from "./literature.command";
 import { LiteratureService } from "./literature.service";
@@ -398,7 +399,9 @@ describe(LiteratureCommand, () => {
       "📚 Starting literature ingestion...",
     );
     expect(logger.log).toHaveBeenCalledWith(
-      expect.stringContaining("📚 Literature ingestion complete in"),
+      expect.stringContaining("📚 Ingested literature"),
+      undefined,
+      expect.any(Object),
     );
   });
 
@@ -408,7 +411,7 @@ describe(LiteratureCommand, () => {
     await command.run([], {});
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ No texts found in data/library directory.",
+      "📚 Missing texts in the data/library directory",
     );
     expect(literatureService.ingestAllAuthors).not.toHaveBeenCalled();
   });

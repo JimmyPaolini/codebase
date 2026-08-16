@@ -2,7 +2,7 @@ import * as fs from "node:fs/promises";
 
 import { Injectable } from "@nestjs/common";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import type { IngestTextArguments, LibraryEntry } from "./literature.types";
 import type { Text } from "@codebase/lexico-entities";
@@ -85,9 +85,9 @@ export class LiteratureTextIngestionService {
     });
     const hierarchy = this.buildHierarchyPrefix(authorSlug, parentText);
 
-    this.logger.log(
-      `  📜 Starting: ${hierarchy}${textEntry.title} (from ${textEntry.provider})`,
-    );
+    this.logger.log(`📜 Ingesting ${hierarchy}${textEntry.title}`, undefined, {
+      provider: textEntry.provider,
+    });
 
     try {
       await dependencies.ingestText({
@@ -103,14 +103,18 @@ export class LiteratureTextIngestionService {
         error,
       );
       this.logger.error(
-        `❌ Failed to process ${hierarchy}${textEntry.title} (from ${textEntry.provider}): ${String(error)}`,
+        `📜 Failed processing ${hierarchy}${textEntry.title}`,
+        String(error),
+        { provider: textEntry.provider },
       );
       await fs.appendFile(logFilePath, logLine);
     }
 
-    const textProgress = ` (${((currentText / totalTexts) * 100).toFixed(2)}%, ${currentText}/${totalTexts})`;
-    this.logger.log(
-      `  ✅ Completed: ${hierarchy}${textEntry.title} (from ${textEntry.provider})${textProgress}`,
-    );
+    this.logger.log(`📜 Ingested ${hierarchy}${textEntry.title}`, undefined, {
+      count: currentText,
+      percent: Number(((currentText / totalTexts) * 100).toFixed(2)),
+      provider: textEntry.provider,
+      total: totalTexts,
+    });
   }
 }

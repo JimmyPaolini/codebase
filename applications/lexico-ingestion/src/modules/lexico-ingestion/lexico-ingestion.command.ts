@@ -2,13 +2,14 @@ import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 import prompts from "prompts";
 
+import { LoggerService } from "@codebase/logger";
+
 import { CorpusScriptorumEcclesiasticorumLatinorumCommand } from "../corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command";
 import { DictionaryCommand } from "../dictionary/dictionary.command";
 import { EpigraphikDatenbankClaussSlabyCommand } from "../epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command";
 import { LatinLibraryCommand } from "../latin-library/latin-library.command";
 import { LibraryCommand } from "../library/library.command";
 import { LiteratureCommand } from "../literature/literature.command";
-import { LoggerService } from "../logger/logger.service";
 import { PerseusCommand } from "../perseus/perseus.command";
 import { WiktionaryCommand } from "../wiktionary/wiktionary.command";
 
@@ -56,29 +57,35 @@ export class LexicoIngestionCommand extends CommandRunner {
     let step = 1;
 
     if (options.wikipedia) {
-      this.logger.log(
-        `🗂️ Step ${step++}: Ingesting Wikipedia (Wiktionary) pages 🌐`,
-      );
+      this.logger.log(`🌐 Ingesting Wikipedia (Wiktionary) pages`, undefined, {
+        step: step++,
+      });
       await this.wiktionaryCommand.run();
     }
 
     if (options.dictionary) {
-      this.logger.log(`🗂️ Step ${step++}: Processing dictionary lexemes 📖`);
+      this.logger.log(`📖 Processing dictionary lexemes`, undefined, {
+        step: step++,
+      });
       await this.dictionaryCommand.ingestAll();
     }
 
     if (options.librarySources) {
-      this.logger.log(`🗂️ Step ${step++}: Downloading library sources 📥`);
+      this.logger.log(`📥 Downloading library sources`, undefined, {
+        step: step++,
+      });
       await this.runLibrarySourcesStage();
     }
 
     if (options.library) {
-      this.logger.log(`🗂️ Step ${step++}: Parsing library into markdown 📝`);
+      this.logger.log(`📝 Parsing library into markdown`, undefined, {
+        step: step++,
+      });
       await this.libraryCommand.run([], {});
     }
 
     if (options.literature) {
-      this.logger.log(`🗂️ Step ${step}: Ingesting literature texts 📜`);
+      this.logger.log(`📜 Ingesting literature texts`, undefined, { step });
       await this.literatureCommand.run([], {});
     }
   }
@@ -216,10 +223,10 @@ export class LexicoIngestionCommand extends CommandRunner {
     await this.promptForMissingOptions(options);
 
     this.logger.log("🚀 Starting full ingestion pipeline");
-    this.logger.log(`⚙️ Options: ${JSON.stringify(options)}`);
+    this.logger.log(`⚙️ Parsed command options`, undefined, { options });
 
     await this.executeStages(options);
 
-    this.logger.log("✅ Full ingestion pipeline complete 🎉");
+    this.logger.log("🎉 Completed the full ingestion pipeline");
   }
 }

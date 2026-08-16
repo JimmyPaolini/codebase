@@ -2,13 +2,14 @@ import { createMock } from "@golevelup/ts-vitest";
 import moment, { type Moment } from "moment-timezone";
 import { describe, expect, it } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import {
   ingressBodies as decanIngressBodies,
   ingressBodies as peakIngressBodies,
   ingressBodies as signIngressBodies,
 } from "../caelundas/caelundas.constants";
 import { EphemerisService } from "../ephemeris/ephemeris.service";
-import { LoggerService } from "../logger/logger.service";
 
 import { IngressesComposerService } from "./ingresses-composer.service";
 import { IngressesService } from "./ingresses.service";

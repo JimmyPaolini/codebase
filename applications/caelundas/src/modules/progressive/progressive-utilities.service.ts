@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import type { Event } from "../calendar/calendar.types";
 
@@ -39,7 +39,9 @@ export class ProgressiveUtilitiesService {
 
     if (beginnings.length !== endings.length) {
       this.logger.warn(
-        `pairProgressiveEvents: unequal counts for "${label}": ${beginnings.length} beginnings, ${endings.length} endings`,
+        `🔀 Mismatched progressive event counts for "${label}"`,
+        undefined,
+        { beginnings: beginnings.length, endings: endings.length },
       );
     }
 

@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "@nestjs/common": "catalog:",
-    "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:"
   },

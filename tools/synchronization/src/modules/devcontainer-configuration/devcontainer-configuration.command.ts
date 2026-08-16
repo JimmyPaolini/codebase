@@ -6,7 +6,8 @@ import JSON5 from "json5";
 import _ from "lodash";
 import { Command, CommandRunner } from "nest-commander";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
+
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import {
@@ -92,13 +93,13 @@ export class DevcontainerConfigurationCommand
     }
 
     this.logger.log(
-      `❌ ${relativeFilePath} has common fields out of sync with local config\n`,
+      `📦 Detected out-of-sync common fields in ${relativeFilePath}`,
+      undefined,
+      { hint: "Run: nx run synchronization:synchronize:write" },
     );
 
     this.reportDifferences(expectedConfigCopy, currentConfig);
 
-    this.logger.log("");
-    this.logger.log(`  Run: nx run synchronization:synchronize:write`);
     return false;
   }
 
@@ -146,9 +147,10 @@ export class DevcontainerConfigurationCommand
     for (const key of allFieldKeys) {
       if (DEVCONTAINER_CLOUD_ONLY_KEYS.has(key)) continue;
       if (!_.isEqual(expectedFields[key], currentFields[key])) {
-        this.logger.log(`  Field '${key}' differs:`);
-        this.logger.log(`    Expected: ${JSON.stringify(expectedFields[key])}`);
-        this.logger.log(`    Got:      ${JSON.stringify(currentFields[key])}`);
+        this.logger.log(`🔀 Differing field '${key}'`, undefined, {
+          actual: currentFields[key],
+          expected: expectedFields[key],
+        });
       }
     }
   }
@@ -201,7 +203,7 @@ export class DevcontainerConfigurationCommand
       `${JSON.stringify(mergedConfig, null, 2)}\n`,
       "utf8",
     );
-    this.logger.log(`✅ Updated: ${relativeFilePath}`);
+    this.logger.log(`📦 Updated ${relativeFilePath}`);
   }
 
   // 🌎 Public Methods
@@ -251,13 +253,15 @@ export class DevcontainerConfigurationCommand
     if (mode === "check") {
       if (!this.check(mergedConfig, cloudConfigFile)) return false;
       this.logger.log(
-        "✅ Cloud devcontainer config is in sync with local config",
+        "📦 Verified the cloud devcontainer config against the local config",
       );
       return true;
     }
 
     this.write(mergedConfig, cloudConfigFile);
-    this.logger.log("✅ Cloud devcontainer config updated from local config");
+    this.logger.log(
+      "📦 Updated the cloud devcontainer config from the local config",
+    );
     return true;
   }
 }

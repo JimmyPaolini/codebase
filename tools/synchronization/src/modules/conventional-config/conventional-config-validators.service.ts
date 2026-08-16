@@ -8,7 +8,7 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import { ConventionalConfigIoService } from "./conventional-config-io.service";
 import { RELEASE_RULES_SPECIAL_TYPES } from "./conventional-config.constants";
@@ -85,7 +85,7 @@ export class ConventionalConfigValidatorsService {
     );
     if (!markerContent) {
       this.loggerService.log(
-        `❌ ${skillName} missing <!-- ${marker}-start/end --> markers\n`,
+        `📄 Missing <!-- ${marker}-start/end --> markers in ${skillName}`,
       );
       return undefined;
     }
@@ -107,18 +107,14 @@ export class ConventionalConfigValidatorsService {
     const missing = _.difference(source, target);
     const extra = _.difference(target, source);
 
-    if (missing.length > 0) {
-      this.loggerService.log(
-        `  Missing in ${targetName} (${missing.length} items):`,
-      );
-      missing.forEach((item) => this.loggerService.log(`    + ${item}`));
+    if (missing.length === 0 && extra.length === 0) {
+      return;
     }
-    if (extra.length > 0) {
-      this.loggerService.log(
-        `  Extra in ${targetName} (${extra.length} items):`,
-      );
-      extra.forEach((item) => this.loggerService.log(`    - ${item}`));
-    }
+
+    this.loggerService.log(`🔀 Differing values in ${targetName}`, undefined, {
+      extra,
+      missing,
+    });
   }
 
   /** Compares skill marker values against source values and logs any mismatch. */
@@ -133,15 +129,13 @@ export class ConventionalConfigValidatorsService {
     const sortedSkill = _.sortBy([...skillValues]);
     if (!_.isEqual(sortedSource, sortedSkill)) {
       this.loggerService.log(
-        `❌ ${skillName} ${marker} table is out of sync\n`,
+        `📇 Detected an out-of-sync ${marker} table in ${skillName}`,
       );
       this.showDifference(sourceValues, skillValues, skillName);
       return false;
     }
     if (!_.isEqual(sourceValues, skillValues)) {
-      this.loggerService.log(
-        `🔀 ${skillName} ${marker} have matching values but different ordering\n`,
-      );
+      this.loggerService.log(`🔀 Reordered ${marker} in ${skillName}`);
       return false;
     }
     return true;
@@ -193,7 +187,7 @@ export class ConventionalConfigValidatorsService {
       );
     if (templateScopes.length === 0) {
       this.loggerService.log(
-        `❌ ${templateName} missing <!-- scopes-start/end --> markers\n`,
+        `📄 Missing <!-- scopes-start/end --> markers in ${templateName}`,
       );
       return false;
     }
@@ -201,15 +195,13 @@ export class ConventionalConfigValidatorsService {
     const sortedTemplate = _.sortBy([...templateScopes]);
     if (!_.isEqual(sortedSource, sortedTemplate)) {
       this.loggerService.log(
-        `❌ ${templateName} scopes dropdown is out of sync\n`,
+        `📇 Detected an out-of-sync scopes dropdown in ${templateName}`,
       );
       this.showDifference(sourceScopes, templateScopes, templateName);
       return false;
     }
     if (!_.isEqual(sourceScopes, templateScopes)) {
-      this.loggerService.log(
-        `🔀 ${templateName} scopes have matching values but different ordering\n`,
-      );
+      this.loggerService.log(`🔀 Reordered scopes in ${templateName}`);
       return false;
     }
     return true;
@@ -226,12 +218,10 @@ export class ConventionalConfigValidatorsService {
     const missingFromPresetTypes = _.difference(sourceTypes, presetConfigTypes);
     if (missingFromPresetTypes.length > 0) {
       this.loggerService.log(
-        `❌ ${relativeFile} presetConfig.types is missing types:\n`,
+        `🏷️ Missing presetConfig.types entries in ${relativeFile}`,
+        undefined,
+        { missing: missingFromPresetTypes },
       );
-      missingFromPresetTypes.forEach((t) =>
-        this.loggerService.log(`    + ${t}`),
-      );
-      this.loggerService.log("");
       return false;
     }
     return true;
@@ -254,12 +244,10 @@ export class ConventionalConfigValidatorsService {
     );
     if (missingFromReleaseRules.length > 0) {
       this.loggerService.log(
-        `❌ ${relativeFile} releaseRules is missing types:\n`,
+        `🏷️ Missing releaseRules entries in ${relativeFile}`,
+        undefined,
+        { missing: missingFromReleaseRules },
       );
-      missingFromReleaseRules.forEach((t) =>
-        this.loggerService.log(`    + ${t}`),
-      );
-      this.loggerService.log("");
       return false;
     }
     return true;
@@ -275,16 +263,12 @@ export class ConventionalConfigValidatorsService {
     const orderMatches = _.isEqual(sourceScopes, settingsScopes);
 
     if (!valuesMatch || !orderMatches) {
-      this.loggerService.log("❌ settings.json scopes are out of sync\n");
+      this.loggerService.log("📇 Detected out-of-sync scopes in settings.json");
       if (!valuesMatch) {
-        this.loggerService.log("📋 Differences:");
         this.showDifference(sourceScopes, settingsScopes, "settings.json");
-        this.loggerService.log("");
       }
       if (valuesMatch && !orderMatches) {
-        this.loggerService.log(
-          "🔀 Scopes have matching values but different ordering\n",
-        );
+        this.loggerService.log("🔀 Reordered scopes in settings.json");
       }
       return false;
     }

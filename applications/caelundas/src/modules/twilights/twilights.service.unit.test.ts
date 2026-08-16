@@ -2,8 +2,9 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { EphemerisModule } from "../ephemeris/ephemeris.module";
-import { LoggerService } from "../logger/logger.service";
 import { MathService } from "../math/math.service";
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 

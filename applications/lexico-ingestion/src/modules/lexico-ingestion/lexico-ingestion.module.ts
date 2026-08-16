@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { DatabaseModule } from "@codebase/lexico-entities";
+import { LoggerModule } from "@codebase/logger";
 
 import { ClearModule } from "../clear/clear.module";
 import { CorpusScriptorumEcclesiasticorumLatinorumModule } from "../corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.module";
@@ -9,7 +10,6 @@ import { EpigraphikDatenbankClaussSlabyModule } from "../epigraphik-datenbank-cl
 import { LatinLibraryModule } from "../latin-library/latin-library.module";
 import { LibraryModule } from "../library/library.module";
 import { LiteratureModule } from "../literature/literature.module";
-import { LoggerModule } from "../logger/logger.module";
 import { ManualModule } from "../manual/manual.module";
 import { PerseusModule } from "../perseus/perseus.module";
 import { WiktionaryModule } from "../wiktionary/wiktionary.module";

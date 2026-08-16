@@ -1,10 +1,10 @@
 {
   "dependencies": {
+    "@codebase/logger": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
     "nest-commander": "catalog:",
-    "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "zod": "catalog:"
   },

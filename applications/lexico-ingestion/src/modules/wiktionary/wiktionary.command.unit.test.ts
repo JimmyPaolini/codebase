@@ -3,8 +3,9 @@ import { Test } from "@nestjs/testing";
 import * as cheerio from "cheerio";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { resetCommandTestHarness } from "../../../testing/command-harness";
-import { LoggerService } from "../logger/logger.service";
 
 import { WiktionaryCommand } from "./wiktionary.command";
 
@@ -204,7 +205,9 @@ describe(WiktionaryCommand, () => {
       }
     ).ingestWord("amo", "/w/index.php?title=amo", "lemma");
 
-    expect(logger.warn).toHaveBeenCalledWith('⚠️ "amo" - no wiktionary page');
+    expect(logger.warn).toHaveBeenCalledWith(
+      '🌐 Missing wiktionary page for "amo"',
+    );
   });
 
   it("should warn when latin section is missing", async () => {
@@ -229,7 +232,7 @@ describe(WiktionaryCommand, () => {
     ).ingestWord("amo", "/wiki/amo", "lemma");
 
     expect(logger.warn).toHaveBeenCalledWith(
-      '⚠️ "amo" - no latin entry in wiktionary',
+      '🌐 Missing latin entry for "amo"',
     );
   });
 
@@ -432,7 +435,11 @@ describe(WiktionaryCommand, () => {
     const response = await responsePromise;
 
     expect(response.status).toBe(200);
-    expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining("60.0s"));
+    expect(logger.warn).toHaveBeenCalledWith(
+      "⏳ Waiting after a rate limit",
+      undefined,
+      { attempt: 0, backoffMilliseconds: 60_000, retries: 1 },
+    );
 
     vi.useRealTimers();
   });
@@ -550,7 +557,8 @@ describe(WiktionaryCommand, () => {
     ).processWiktionaryCategoryLink(anchor, $, "lemma");
 
     expect(logger.error).toHaveBeenCalledWith(
-      '❌ Error ingesting word "amo" - Error: word failure',
+      '🔤 Failed ingesting word "amo"',
+      expect.any(String),
     );
     expect(appendFileSyncMock).toHaveBeenCalledTimes(1);
   });
@@ -584,7 +592,8 @@ describe(WiktionaryCommand, () => {
     ).processWiktionaryCategoryLink(anchor, cheerioApi, "lemma");
 
     expect(logger.error).toHaveBeenCalledWith(
-      '❌ Error ingesting word "amo" - word failure string',
+      '🔤 Failed ingesting word "amo"',
+      expect.any(String),
     );
     expect(appendFileSyncMock).toHaveBeenCalledTimes(1);
   });
@@ -647,7 +656,9 @@ describe(WiktionaryCommand, () => {
     ).ingestCategory("lemma", "/wiki/start");
 
     expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining('❌ Error ingesting category "lemma"'),
+      expect.stringContaining('🌐 Failed ingesting category "lemma"'),
+      expect.any(String),
+      expect.any(Object),
     );
     expect(appendFileSyncMock).toHaveBeenCalledTimes(1);
   });

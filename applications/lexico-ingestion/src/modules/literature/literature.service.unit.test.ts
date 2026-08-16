@@ -4,9 +4,9 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Author, Line, Text, Token, Word } from "@codebase/lexico-entities";
+import { LoggerService } from "@codebase/logger";
 
 import { createRepositoryMock } from "../../../testing/mocks";
-import { LoggerService } from "../logger/logger.service";
 import { NumeralsService } from "../numerals/numerals.service";
 
 import { LiteratureLibraryScanService } from "./literature-library-scan.service";
@@ -908,7 +908,9 @@ describe(LiteratureService, () => {
     ).ingestLines(text, { children: [], type: "root" });
 
     expect(getWordsCacheSpy).toHaveBeenCalledTimes(1);
-    expect(logger.warn).toHaveBeenCalledWith("⚠️ NO LINES in vergil/aeneid");
+    expect(logger.warn).toHaveBeenCalledWith(
+      "📜 Missing lines in vergil/aeneid",
+    );
   });
 
   it("should extract and upsert tokens when ingesting lines", async () => {

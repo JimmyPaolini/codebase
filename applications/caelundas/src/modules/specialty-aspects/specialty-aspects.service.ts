@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import { AspectsUtilitiesService } from "../aspects/aspects-utilities.service";
 import {
   aspectBodies as specialtyAspectBodies,
   specialtyAspects,
 } from "../caelundas/caelundas.constants";
-import { LoggerService } from "../logger/logger.service";
 
 import { SpecialtyAspectsEventService } from "./specialty-aspects-event.service";
 import { SpecialtyAspectsProgressiveService } from "./specialty-aspects-progressive.service";
@@ -160,7 +161,13 @@ export class SpecialtyAspectsService {
     });
     if (!specialtyAspect) {
       this.logger.error(
-        `No specialty aspect found between ${body1} and ${body2} at ${timestamp.toISOString()}: ${longitudeBody1} and ${longitudeBody2}`,
+        `📐 Missing specialty aspect between ${body1} and ${body2}`,
+        undefined,
+        {
+          at: timestamp.toISOString(),
+          longitudeBody1,
+          longitudeBody2,
+        },
       );
       throw new Error("No specialty aspect found");
     }

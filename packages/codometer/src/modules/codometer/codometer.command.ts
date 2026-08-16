@@ -1,9 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
+import { LoggerService } from "@codebase/logger";
+
 import { DiscoveryService } from "../discovery/discovery.service";
 import { JsonService } from "../json/json.service";
-import { LoggerService } from "../logger/logger.service";
 import { MarkdownService } from "../markdown/markdown.service";
 import { PythonService } from "../python/python.service";
 import { TypescriptService } from "../typescript/typescript.service";

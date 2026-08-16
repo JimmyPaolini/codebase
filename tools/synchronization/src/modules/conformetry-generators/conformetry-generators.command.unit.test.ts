@@ -6,8 +6,9 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { expectProcessExitOne, mockProcessExit } from "../../../testing/mocks";
-import { LoggerService } from "../logger/logger.service";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import { ConformetryGeneratorsCommand } from "./conformetry-generators.command";
@@ -119,8 +120,7 @@ describe(ConformetryGeneratorsCommand, () => {
         "| `beta` | `b` | second |",
         "<!-- conformetry-generators-table end -->",
       ].join("\n"),
-      expectedLogMessage:
-        "✅ Conformetry generators table is in sync (2 generators)",
+      expectedLogMessage: "📇 Verified the conformetry generators table",
       generators: [
         { aliases: ["a"], description: "first", name: "alpha" },
         { aliases: ["b"], description: "second", name: "beta" },
@@ -138,8 +138,7 @@ describe(ConformetryGeneratorsCommand, () => {
         "| `alpha` |  | first |",
         "<!-- conformetry-generators-table end -->",
       ].join("\n"),
-      expectedLogMessage:
-        "✅ Conformetry generators table is in sync (1 generators)",
+      expectedLogMessage: "📇 Verified the conformetry generators table",
       generators: [{ description: "first", name: "alpha" }],
       modeArguments: [],
       scenarioName: "defaults to check mode when no mode is provided",
@@ -157,7 +156,11 @@ describe(ConformetryGeneratorsCommand, () => {
 
       await command.run(modeArguments);
 
-      expect(logger.log).toHaveBeenCalledWith(expectedLogMessage);
+      expect(logger.log).toHaveBeenCalledWith(
+        expectedLogMessage,
+        undefined,
+        expect.any(Object),
+      );
       expect(writeFileSync).not.toHaveBeenCalled();
     },
   );
@@ -185,7 +188,9 @@ describe(ConformetryGeneratorsCommand, () => {
       "utf8",
     );
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ Updated AGENTS.md with 1 generators",
+      "📇 Updated AGENTS.md",
+      undefined,
+      expect.any(Object),
     );
   });
 
@@ -202,14 +207,18 @@ describe(ConformetryGeneratorsCommand, () => {
 
     await expectProcessExitOne(async () => command.run(["invalid-mode"]));
 
-    expect(logger.error).toHaveBeenCalledWith("❌ Unknown mode: invalid-mode");
-    expect(logger.error).toHaveBeenCalledWith("Expected 'check' or 'write'");
+    expect(logger.error).toHaveBeenCalledWith(
+      "🚦 Rejected an unusable mode",
+      undefined,
+      expect.any(Object),
+    );
   });
 
   it.each([
     {
       assertLogs: (loggerService: LoggerService): void => {
         expect(loggerService.error).toHaveBeenCalledWith(
+          "💥 Failed synchronizing conformetry generators",
           expect.stringContaining("Markers not found in AGENTS.md"),
         );
       },
@@ -222,10 +231,9 @@ describe(ConformetryGeneratorsCommand, () => {
     {
       assertLogs: (loggerService: LoggerService): void => {
         expect(loggerService.log).toHaveBeenCalledWith(
-          "❌ Conformetry generators table in AGENTS.md is out of sync\n",
-        );
-        expect(loggerService.log).toHaveBeenCalledWith(
-          "💡 Run 'nx run synchronization:synchronize:write' to sync\n",
+          "📇 Detected an out-of-sync conformetry generators table in AGENTS.md",
+          undefined,
+          expect.any(Object),
         );
       },
       modeArguments: ["check"],
@@ -251,7 +259,8 @@ describe(ConformetryGeneratorsCommand, () => {
     {
       assertLogs: (loggerService: LoggerService): void => {
         expect(loggerService.error).toHaveBeenCalledWith(
-          "❌ Error: [object Object]",
+          "💥 Failed synchronizing conformetry generators",
+          expect.any(String),
         );
       },
       modeArguments: ["check"],
