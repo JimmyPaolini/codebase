@@ -2,6 +2,7 @@
   "author": "Jimmy Paolini",
   "description": "",
   "devDependencies": {
+    "@codometer/configuration": "workspace:*",
     "@commitlint/cli": "catalog:",
     "@commitlint/config-conventional": "catalog:",
     "@commitlint/types": "catalog:",

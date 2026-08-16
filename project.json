@@ -23,10 +23,10 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "node --import @swc-node/register/esm-register packages/codometer/src/main.ts codometer --directory . --readme README.md --check"
+          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts codometer --directory . --config configuration/codometer.config.ts --check"
         },
         "write": {
-          "command": "node --import @swc-node/register/esm-register packages/codometer/src/main.ts codometer --directory . --readme README.md"
+          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts codometer --directory . --config configuration/codometer.config.ts"
         }
       },
       "defaultConfiguration": "check",
@@ -34,6 +34,8 @@
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/**/*.{cjs,cts,js,json,jsx,mjs,mts,py,ts,tsx}",
+        "{workspaceRoot}/configuration/.codometerignore",
+        "{workspaceRoot}/configuration/codometer.config.ts",
         "{workspaceRoot}/README.md",
         "shared-globals"
       ],

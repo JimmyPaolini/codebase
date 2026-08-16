@@ -332,6 +332,20 @@ export default [
               onlyDependOnLibsWithTags: ["type:package"],
               sourceTag: "type:application",
             },
+            // Codometer package graph. The configuration reader is the leaf;
+            // the CLI measures whatever it describes, so the dependency only
+            // ever points that way.
+            {
+              onlyDependOnLibsWithTags: [],
+              sourceTag: "name:codometer-configuration",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:codometer-configuration",
+                "name:logger",
+              ],
+              sourceTag: "name:codometer-cli",
+            },
             // Conformetry package graph. `conformetry-core` is the leaf every
             // other package may depend on; `conformetry-generation` owns
             // template rendering, so configuration depends on it rather than

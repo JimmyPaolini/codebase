@@ -23,6 +23,7 @@ codebase
 codemod
 codemods
 codometer
+codometerignore
 commitlint
 conformetry
 context7

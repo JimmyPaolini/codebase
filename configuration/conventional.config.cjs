@@ -169,7 +169,7 @@ const scopes = [
   },
   {
     description:
-      "NestJS command-line application for codometer metric collection and reporting",
+      "Code statistics measurement CLI and the configuration package it reads",
     name: "codometer",
   },
   {
