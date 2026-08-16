@@ -112,7 +112,7 @@ runs:
 
     - name: 🌌 Setup uv
       if: inputs.uv == 'true'
-      uses: astral-sh/setup-uv@v10
+      uses: astral-sh/setup-uv@v10.0.1
       with:
         enable-cache: true
         cache-dependency-glob: "**/pyproject.toml"
