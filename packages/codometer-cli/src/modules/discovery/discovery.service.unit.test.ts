@@ -6,11 +6,12 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { DiscoveryService } from "./discovery.service";
 
-const { execSyncMock } = vi.hoisted(() => ({
-  execSyncMock: vi.fn<(command: string, options?: object) => Buffer>(),
+const { execFileSyncMock } = vi.hoisted(() => ({
+  execFileSyncMock:
+    vi.fn<(file: string, args?: string[], options?: object) => Buffer>(),
 }));
 
-vi.mock("node:child_process", () => ({ execSync: execSyncMock }));
+vi.mock("node:child_process", () => ({ execFileSync: execFileSyncMock }));
 vi.mock("node:fs");
 
 const DEFAULT_EXCLUDE = ["**/node_modules/**", "**/dist/**"];
@@ -35,7 +36,7 @@ describe(DiscoveryService, () => {
   });
 
   it("categorizes TypeScript, JavaScript, Python, and test files", () => {
-    execSyncMock.mockReturnValue(
+    execFileSyncMock.mockReturnValue(
       Buffer.from(
         [
           "src/app.ts",
@@ -68,7 +69,7 @@ describe(DiscoveryService, () => {
   });
 
   it("categorizes markdown files by extension", () => {
-    execSyncMock.mockReturnValue(
+    execFileSyncMock.mockReturnValue(
       Buffer.from(
         ["README.md", "docs/guide.MD", "notes.mdx", "src/app.ts"].join("\n"),
       ),
@@ -88,7 +89,7 @@ describe(DiscoveryService, () => {
   });
 
   it("categorizes notebooks apart from plain JSON", () => {
-    execSyncMock.mockReturnValue(
+    execFileSyncMock.mockReturnValue(
       Buffer.from(
         ["src/explore.ipynb", "package.json", "README.md"].join("\n"),
       ),
@@ -107,7 +108,7 @@ describe(DiscoveryService, () => {
   });
 
   it("excludes every category's files with the configured globs", () => {
-    execSyncMock.mockReturnValue(
+    execFileSyncMock.mockReturnValue(
       Buffer.from(
         [
           "README.md",
@@ -133,7 +134,7 @@ describe(DiscoveryService, () => {
   });
 
   it("keeps a path that merely contains an excluded name", () => {
-    execSyncMock.mockReturnValue(
+    execFileSyncMock.mockReturnValue(
       Buffer.from(["src/redistribute/index.ts", "dist/bundle.js"].join("\n")),
     );
 
@@ -147,8 +148,8 @@ describe(DiscoveryService, () => {
   });
 
   it("excludes what a configured ignore file claims", () => {
-    execSyncMock.mockImplementation((command: string) =>
-      command.includes("--ignored")
+    execFileSyncMock.mockImplementation((_file: string, args?: string[]) =>
+      args?.includes("--ignored") === true
         ? Buffer.from("pnpm-lock.yaml\nCHANGELOG.md")
         : Buffer.from(
             ["src/app.ts", "pnpm-lock.yaml", "CHANGELOG.md"].join("\n"),
@@ -161,8 +162,15 @@ describe(DiscoveryService, () => {
       workingDirectory: "/repo",
     });
 
-    expect(execSyncMock).toHaveBeenCalledWith(
-      expect.stringContaining("git ls-files --cached --ignored --exclude-from"),
+    // Arguments as an array, so a path is a path and never shell syntax.
+    expect(execFileSyncMock).toHaveBeenCalledWith(
+      "git",
+      [
+        "ls-files",
+        "--cached",
+        "--ignored",
+        "--exclude-from=/repo/configuration/.prettierignore",
+      ],
       { cwd: "/repo" },
     );
     expect(result.trackedFiles).toStrictEqual(["src/app.ts"]);
@@ -172,7 +180,7 @@ describe(DiscoveryService, () => {
     const loggerWarnSpy = vi
       .spyOn(Logger.prototype, "warn")
       .mockReturnValue(undefined);
-    execSyncMock.mockReturnValue(Buffer.from("src/app.ts"));
+    execFileSyncMock.mockReturnValue(Buffer.from("src/app.ts"));
     vi.mocked(fs.existsSync).mockImplementation(
       (filePath) => filePath !== "/repo/.nope-ignore",
     );
@@ -192,7 +200,9 @@ describe(DiscoveryService, () => {
   });
 
   it("excludes files that do not exist on disk", () => {
-    execSyncMock.mockReturnValue(Buffer.from("src/missing.ts\nsrc/present.ts"));
+    execFileSyncMock.mockReturnValue(
+      Buffer.from("src/missing.ts\nsrc/present.ts"),
+    );
     vi.mocked(fs.existsSync).mockImplementation(
       (filePath) => filePath === "/repo/src/present.ts",
     );
@@ -207,7 +217,7 @@ describe(DiscoveryService, () => {
   });
 
   it("passes the working directory to git ls-files", () => {
-    execSyncMock.mockReturnValue(Buffer.from(""));
+    execFileSyncMock.mockReturnValue(Buffer.from(""));
 
     service.discoverFiles({
       exclude: [],
@@ -215,7 +225,7 @@ describe(DiscoveryService, () => {
       workingDirectory: "/my/project",
     });
 
-    expect(execSyncMock).toHaveBeenCalledWith("git ls-files", {
+    expect(execFileSyncMock).toHaveBeenCalledWith("git", ["ls-files"], {
       cwd: "/my/project",
     });
   });

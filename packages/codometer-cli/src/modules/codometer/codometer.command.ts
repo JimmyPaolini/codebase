@@ -252,7 +252,9 @@ export class CodometerCommand extends CommandRunner {
     });
 
     if (stalePaths.length > 0) {
-      this.logger.error(`Statistics are out of date: ${stalePaths.join(", ")}`);
+      this.logger.error(`📊 Found stale statistics`, undefined, {
+        paths: stalePaths,
+      });
       process.exitCode = 1;
     }
   }

@@ -1,4 +1,4 @@
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import path from "node:path";
 
@@ -51,6 +51,10 @@ export class DiscoveryService {
    * directory patterns, anchoring and all — and `git ls-files --ignored`
    * against it is the only reading of that syntax guaranteed to agree with
    * every other tool the repository points at the same file.
+   *
+   * Run through `execFileSync` with the arguments as an array, never a command
+   * string: the path comes from a configuration file, and a shell would read a
+   * quote or a `$(...)` in it as syntax rather than as part of a filename.
    */
   private listIgnoredFiles(args: DiscoverFilesArguments): Set<string> {
     const ignoredFiles = new Set<string>();
@@ -65,8 +69,9 @@ export class DiscoveryService {
         continue;
       }
 
-      const output = execSync(
-        `git ls-files --cached --ignored --exclude-from="${resolvedPath}"`,
+      const output = execFileSync(
+        "git",
+        ["ls-files", "--cached", "--ignored", `--exclude-from=${resolvedPath}`],
         { cwd: args.workingDirectory },
       );
 
@@ -90,7 +95,7 @@ export class DiscoveryService {
   private listTrackedFiles(args: DiscoverFilesArguments): string[] {
     const ignoredFiles = this.listIgnoredFiles(args);
 
-    return execSync("git ls-files", { cwd: args.workingDirectory })
+    return execFileSync("git", ["ls-files"], { cwd: args.workingDirectory })
       .toString()
       .trim()
       .split("\n")

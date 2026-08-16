@@ -278,7 +278,9 @@ describe(CodometerCommand, () => {
       statistics,
     });
     expect(loggerService.error).toHaveBeenCalledWith(
-      "Statistics are out of date: /repo/README.md",
+      "📊 Found stale statistics",
+      undefined,
+      { paths: ["/repo/README.md"] },
     );
     expect(process.exitCode).toBe(1);
 
@@ -306,7 +308,9 @@ describe(CodometerCommand, () => {
       statistics,
     });
     expect(loggerService.error).toHaveBeenCalledWith(
-      "Statistics are out of date: markdown output",
+      "📊 Found stale statistics",
+      undefined,
+      { paths: ["markdown output"] },
     );
     expect(process.exitCode).toBe(1);
 
@@ -328,7 +332,9 @@ describe(CodometerCommand, () => {
     await localCommand.run([], { check: true, directory: "/repo" });
 
     expect(loggerService.error).toHaveBeenCalledWith(
-      "Statistics are out of date: /repo/README.md, /repo/output/codometer.json",
+      "📊 Found stale statistics",
+      undefined,
+      { paths: ["/repo/README.md", "/repo/output/codometer.json"] },
     );
     expect(process.exitCode).toBe(1);
 
