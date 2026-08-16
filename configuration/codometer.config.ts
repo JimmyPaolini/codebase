@@ -9,13 +9,20 @@ import { type CodometerConfiguration } from "@codometer/configuration";
  */
 const codometerConfiguration: CodometerConfiguration = {
   // Appended to the built-in exclusions (node_modules, dist, build, coverage,
-  // .nx). The last two are ingested corpus and generated output rather than
-  // authored source. They are committed, so `git ls-files` reports them, and
-  // they are overwhelmingly markdown: left in, they supply 88% of the
+  // .nx). All of these are generated or ingested rather than authored. They are
+  // committed, so `git ls-files` reports them, and they are overwhelmingly
+  // markdown: left in, the corpus and generated output supply 88% of the
   // repository's markdown files and bury every prose metric under the data
   // payload. `markdownlint` and `cspell` already ignore both for the same
   // reason.
+  //
+  // The root README is excluded because it is this configuration's own output
+  // target. Measuring it makes the report an input to itself: every badge the
+  // last run wrote counts toward the next run's markdown metrics, so a written
+  // block is stale the moment it lands and check mode only agrees after a
+  // second pass.
   exclude: [
+    "README.md",
     "**/notepads/**",
     "**/templates/**",
     "applications/lexico-ingestion/data/**",

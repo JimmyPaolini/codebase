@@ -133,7 +133,7 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-217362-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-217369-22c55e?style=flat-square)
 ![Repo Size](https://img.shields.io/badge/Repo_Size-11_MiB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-387-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-1272-3178c6?style=flat-square)
@@ -157,8 +157,8 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ![Decorators](https://img.shields.io/badge/Decorators-700-db2777?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-1704-ea580c?style=flat-square)
 ![Doc Comments](https://img.shields.io/badge/Doc_Comments-2521-6366f1?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-8005-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-13945-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-8011-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-13951-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-53-ca8a04?style=flat-square)
 
 ### Python
@@ -193,24 +193,24 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Markdown
 
-![Markdown Files](https://img.shields.io/badge/Markdown_Files-262-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-47942-1f6feb?style=flat-square)
-![H1](https://img.shields.io/badge/H1-226-7c3aed?style=flat-square)
-![H2](https://img.shields.io/badge/H2-1649-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-1692-a78bfa?style=flat-square)
+![Markdown Files](https://img.shields.io/badge/Markdown_Files-261-083fa1?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-47725-1f6feb?style=flat-square)
+![H1](https://img.shields.io/badge/H1-225-7c3aed?style=flat-square)
+![H2](https://img.shields.io/badge/H2-1645-8b5cf6?style=flat-square)
+![H3](https://img.shields.io/badge/H3-1682-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-216-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-23-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-13920-64748b?style=flat-square)
-![Lists](https://img.shields.io/badge/Lists-2211-16a34a?style=flat-square)
-![List Items](https://img.shields.io/badge/List_Items-9707-22c55e?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-13862-64748b?style=flat-square)
+![Lists](https://img.shields.io/badge/Lists-2204-16a34a?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-9662-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-187-4ade80?style=flat-square)
 ![Tables](https://img.shields.io/badge/Tables-383-0284c7?style=flat-square)
 ![Table Rows](https://img.shields.io/badge/Table_Rows-3120-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-1836-059669?style=flat-square)
-![Images](https://img.shields.io/badge/Images-194-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-1395-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-15836-ef4444?style=flat-square)
+![Links](https://img.shields.io/badge/Links-1732-059669?style=flat-square)
+![Images](https://img.shields.io/badge/Images-83-10b981?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-1394-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-15832-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-74-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-128-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
