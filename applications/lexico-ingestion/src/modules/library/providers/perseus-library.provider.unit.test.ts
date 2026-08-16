@@ -482,7 +482,11 @@ describe(PerseusLibraryProvider, () => {
 
     expect((logger.warn as ReturnType<typeof vi.fn>).mock.calls).toStrictEqual(
       expect.arrayContaining([
-        [expect.stringContaining("📜 Failed processing /tmp/perseus/bad.xml")],
+        [
+          expect.stringContaining("📜 Failed processing /tmp/perseus/bad.xml"),
+          undefined,
+          expect.any(Object),
+        ],
       ]),
     );
   });

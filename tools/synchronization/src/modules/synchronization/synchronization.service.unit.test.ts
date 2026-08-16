@@ -59,15 +59,14 @@ describe(SynchronizationService, () => {
       });
     }).toThrow("process.exit:1");
     expect(loggerService.error).toHaveBeenCalledWith(
-       "🚦 Rejected an unusable mode",
-       undefined,
-       {
-         "mode": "invalid-mode",
-         "reason": "Invalid mode",
-         "usage": "Usage",
-       },
+      "🚦 Rejected an unusable mode",
+      undefined,
+      {
+        mode: "invalid-mode",
+        reason: "Invalid mode",
+        usage: "Usage",
+      },
     );
-    expect(loggerService.error).toHaveBeenCalledWith("Usage", expect.any(String));
 
     processExitSpy.mockRestore();
   });

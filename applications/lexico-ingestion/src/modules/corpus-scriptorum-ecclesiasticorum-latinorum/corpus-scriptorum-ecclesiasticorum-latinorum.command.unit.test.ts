@@ -161,8 +161,8 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumCommand, () => {
 
     expect(result).toBeNull();
     expect(logger.error).toHaveBeenCalledWith(
-      "📥 Failed fetching CSEL tree: Bad Request",
-     expect.any(String));
+      "🌳 Failed fetching the CSEL tree",
+    );
   });
 
   it("should fetch tree and return nodes on success", async () => {
@@ -273,8 +273,8 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumCommand, () => {
     ).fetchAndWriteXmlFile("https://example.com/file.xml", "/tmp/file.xml");
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ Failed to fetch https://example.com/file.xml: Not Found",
-     undefined, expect.any(Object));
+      "📥 Failed fetching https://example.com/file.xml",
+    );
     expect(writeFileMock).not.toHaveBeenCalled();
   });
 
@@ -339,8 +339,9 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumCommand, () => {
     ).downloadSourceXmlFileIfMissing("data/author/work.xml");
 
     expect(logger.error).toHaveBeenCalledWith(
-      "📥 Failed downloading data/author/work.xml: network-failure",
-     expect.any(String));
+      "📥 Failed downloading data/author/work.xml",
+      expect.any(String),
+    );
     expect(appendFileMock).toHaveBeenCalledTimes(1);
   });
 
@@ -373,9 +374,7 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumCommand, () => {
     expect(mkdirMock).toHaveBeenCalledTimes(1);
     expect(downloadSpy).toHaveBeenCalledTimes(1);
     expect(downloadSpy).toHaveBeenCalledWith("data/author/work.xml");
-    expect(logger.log).toHaveBeenCalledWith(
-      "📥 Downloaded CSEL source files",
-    );
+    expect(logger.log).toHaveBeenCalledWith("📥 Downloaded CSEL source files");
   });
 
   it("should return early when tree fetch fails in run", async () => {

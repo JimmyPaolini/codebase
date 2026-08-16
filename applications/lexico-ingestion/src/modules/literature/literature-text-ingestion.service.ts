@@ -85,11 +85,9 @@ export class LiteratureTextIngestionService {
     });
     const hierarchy = this.buildHierarchyPrefix(authorSlug, parentText);
 
-    this.logger.log(
-      `📜 Ingesting ${hierarchy}${textEntry.title}`, undefined, {
-        provider: textEntry.provider,
-      },
-    );
+    this.logger.log(`📜 Ingesting ${hierarchy}${textEntry.title}`, undefined, {
+      provider: textEntry.provider,
+    });
 
     try {
       await dependencies.ingestText({
@@ -112,15 +110,11 @@ export class LiteratureTextIngestionService {
       await fs.appendFile(logFilePath, logLine);
     }
 
-    this.logger.log(
-      `📜 Ingested ${hierarchy}${textEntry.title}`,
-      undefined,
-      {
-        count: currentText,
-        percent: Number(((currentText / totalTexts) * 100).toFixed(2)),
-        provider: textEntry.provider,
-        total: totalTexts,
-      },
-    );
+    this.logger.log(`📜 Ingested ${hierarchy}${textEntry.title}`, undefined, {
+      count: currentText,
+      percent: Number(((currentText / totalTexts) * 100).toFixed(2)),
+      provider: textEntry.provider,
+      total: totalTexts,
+    });
   }
 }

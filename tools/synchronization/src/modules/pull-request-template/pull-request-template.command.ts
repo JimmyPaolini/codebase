@@ -5,6 +5,7 @@ import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
+
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import {
@@ -112,7 +113,9 @@ export class PullRequestTemplateCommand
       }
     }
     if (!allInSync) {
-      this.logger.log("💡 Suggested a fix", undefined, { hint: "Run 'nx run synchronization:synchronize:write' to sync" });
+      this.logger.log("💡 Suggested a fix", undefined, {
+        hint: "Run 'nx run synchronization:synchronize:write' to sync",
+      });
       return false;
     }
     this.logger.log("📄 Verified the PR template");

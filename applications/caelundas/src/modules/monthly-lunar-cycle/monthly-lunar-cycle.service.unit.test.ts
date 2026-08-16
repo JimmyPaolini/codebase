@@ -1,4 +1,3 @@
-import type { LogData } from "@codebase/logger";
 import { Test } from "@nestjs/testing";
 import _ from "lodash";
 import moment, { type Moment } from "moment-timezone";
@@ -18,6 +17,7 @@ import { MonthlyLunarCycleService } from "./monthly-lunar-cycle.service";
 import type { LunarPhase } from "../caelundas/caelundas.types";
 import type { Event } from "../calendar/calendar.types";
 import type { IlluminationEphemeris } from "../ephemeris/ephemeris.types";
+import type { LogData } from "@codebase/logger";
 
 vi.mock("fs", () => ({
   default: {
@@ -94,8 +94,8 @@ describe(MonthlyLunarCycleService, () => {
               } = args;
               const dateString = date.clone().tz(timezone).toISOString(true);
               logger.log(`🗓️ Built ${summary}`, undefined, {
-      at: dateString,
-    });
+                at: dateString,
+              });
               return {
                 categories,
                 description,
@@ -430,8 +430,10 @@ describe(MonthlyLunarCycleService, () => {
       // Should skip the invalid event
       expect(progressiveEvents).toHaveLength(0);
       expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining("Could not extract lunar phase"),
-       undefined, expect.any(Object));
+        expect.stringContaining("Skipping progressive event"),
+        undefined,
+        expect.any(Object),
+      );
 
       warnSpy.mockRestore();
     });
@@ -503,8 +505,10 @@ describe(MonthlyLunarCycleService, () => {
 
       expect(progressiveEvent).toBeNull();
       expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining("Could not extract lunar phase"),
-       undefined, expect.any(Object));
+        expect.stringContaining("Skipping progressive event"),
+        undefined,
+        expect.any(Object),
+      );
 
       warnSpy.mockRestore();
     });
@@ -605,8 +609,10 @@ describe(MonthlyLunarCycleService, () => {
 
         expect(result).toBeNull();
         expect(warnSpy).toHaveBeenCalledWith(
-          expect.stringContaining("Could not extract lunar phase"),
-         undefined, expect.any(Object));
+          expect.stringContaining("Skipping progressive event"),
+          undefined,
+          expect.any(Object),
+        );
 
         warnSpy.mockRestore();
       });
@@ -623,8 +629,10 @@ describe(MonthlyLunarCycleService, () => {
 
         expect(result).toBeNull();
         expect(warnSpy).toHaveBeenCalledWith(
-          expect.stringContaining("Could not extract lunar phase"),
-         undefined, expect.any(Object));
+          expect.stringContaining("Skipping progressive event"),
+          undefined,
+          expect.any(Object),
+        );
 
         warnSpy.mockRestore();
       });
@@ -653,8 +661,8 @@ describe(MonthlyLunarCycleService, () => {
 
         expect(result).toBeNull();
         expect(warnSpy).toHaveBeenCalledWith(
-          expect.stringContaining("Unknown lunar phase"),
-         undefined, expect.any(Object));
+          expect.stringContaining("Skipping unknown lunar phase"),
+        );
 
         lunarPhaseSpy.mockRestore();
         warnSpy.mockRestore();

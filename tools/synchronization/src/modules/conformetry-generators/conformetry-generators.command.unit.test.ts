@@ -120,8 +120,7 @@ describe(ConformetryGeneratorsCommand, () => {
         "| `beta` | `b` | second |",
         "<!-- conformetry-generators-table end -->",
       ].join("\n"),
-      expectedLogMessage:
-        "📇 Verified the conformetry generators table",
+      expectedLogMessage: "📇 Verified the conformetry generators table",
       generators: [
         { aliases: ["a"], description: "first", name: "alpha" },
         { aliases: ["b"], description: "second", name: "beta" },
@@ -139,8 +138,7 @@ describe(ConformetryGeneratorsCommand, () => {
         "| `alpha` |  | first |",
         "<!-- conformetry-generators-table end -->",
       ].join("\n"),
-      expectedLogMessage:
-        "📇 Verified the conformetry generators table",
+      expectedLogMessage: "📇 Verified the conformetry generators table",
       generators: [{ description: "first", name: "alpha" }],
       modeArguments: [],
       scenarioName: "defaults to check mode when no mode is provided",
@@ -158,7 +156,11 @@ describe(ConformetryGeneratorsCommand, () => {
 
       await command.run(modeArguments);
 
-      expect(logger.log).toHaveBeenCalledWith(expectedLogMessage, undefined, expect.any(Object));
+      expect(logger.log).toHaveBeenCalledWith(
+        expectedLogMessage,
+        undefined,
+        expect.any(Object),
+      );
       expect(writeFileSync).not.toHaveBeenCalled();
     },
   );
@@ -187,7 +189,9 @@ describe(ConformetryGeneratorsCommand, () => {
     );
     expect(logger.log).toHaveBeenCalledWith(
       "📇 Updated AGENTS.md",
-     undefined, expect.any(Object));
+      undefined,
+      expect.any(Object),
+    );
   });
 
   it("exits on invalid mode", async () => {
@@ -203,14 +207,18 @@ describe(ConformetryGeneratorsCommand, () => {
 
     await expectProcessExitOne(async () => command.run(["invalid-mode"]));
 
-    expect(logger.error).toHaveBeenCalledWith("🚦 Rejected an unusable mode", expect.any(String));
-    expect(logger.error).toHaveBeenCalledWith("Expected 'check' or 'write'");
+    expect(logger.error).toHaveBeenCalledWith(
+      "🚦 Rejected an unusable mode",
+      undefined,
+      expect.any(Object),
+    );
   });
 
   it.each([
     {
       assertLogs: (loggerService: LoggerService): void => {
         expect(loggerService.error).toHaveBeenCalledWith(
+          "💥 Failed synchronizing conformetry generators",
           expect.stringContaining("Markers not found in AGENTS.md"),
         );
       },
@@ -224,9 +232,8 @@ describe(ConformetryGeneratorsCommand, () => {
       assertLogs: (loggerService: LoggerService): void => {
         expect(loggerService.log).toHaveBeenCalledWith(
           "📇 Detected an out-of-sync conformetry generators table in AGENTS.md",
-        );
-        expect(loggerService.log).toHaveBeenCalledWith(
-          "💡 Run 'nx run synchronization:synchronize:write' to sync\n",
+          undefined,
+          expect.any(Object),
         );
       },
       modeArguments: ["check"],
@@ -253,6 +260,7 @@ describe(ConformetryGeneratorsCommand, () => {
       assertLogs: (loggerService: LoggerService): void => {
         expect(loggerService.error).toHaveBeenCalledWith(
           "💥 Failed synchronizing conformetry generators",
+          expect.any(String),
         );
       },
       modeArguments: ["check"],

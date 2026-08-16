@@ -160,11 +160,9 @@ export class ConventionalConfigService {
       !releaseRulesOk ||
       !presetOk
     ) {
-      this.loggerService.log(
-        "💡 Suggested a fix",
-        undefined,
-        { hint: "Run 'nx run synchronization:synchronize:write' to sync" },
-      );
+      this.loggerService.log("💡 Suggested a fix", undefined, {
+        hint: "Run 'nx run synchronization:synchronize:write' to sync",
+      });
       return false;
     }
     this.loggerService.log("📇 Verified the conventional commit config");

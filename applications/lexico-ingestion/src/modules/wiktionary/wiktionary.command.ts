@@ -94,11 +94,11 @@ export class WiktionaryCommand extends CommandRunner {
         this.maximumRetryDelayMilliseconds,
       );
 
-      this.logger.warn(
-        `⏳ Waiting after a rate limit`,
-        undefined,
-        { attempt, backoffMilliseconds, retries },
-      );
+      this.logger.warn(`⏳ Waiting after a rate limit`, undefined, {
+        attempt,
+        backoffMilliseconds,
+        retries,
+      });
       await new Promise((resolve) => {
         setTimeout(resolve, backoffMilliseconds);
       });
@@ -238,7 +238,8 @@ export class WiktionaryCommand extends CommandRunner {
           ? wordError.stack || wordError.message
           : String(wordError);
       this.logger.error(
-        `🔤 Failed ingesting word "${word}"`, String(wordError),
+        `🔤 Failed ingesting word "${word}"`,
+        String(wordError),
       );
       fs.appendFileSync(
         this.errorLogFilePath,

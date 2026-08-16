@@ -65,7 +65,9 @@ export class TripleAspectsComposerService {
 
     const aspect = this.resolveAspectType(aspectCapitalized);
     if (!aspect) {
-      this.logger.warn(`📐 Skipping unknown aspect type "${aspectCapitalized}"`);
+      this.logger.warn(
+        `📐 Skipping unknown aspect type "${aspectCapitalized}"`,
+      );
       return null;
     }
 
@@ -251,7 +253,11 @@ export class TripleAspectsComposerService {
       this.logger.warn(
         `🪐 Skipping progressive event with an unknown body`,
         undefined,
-        { body1: body1Capitalized, body2: body2Capitalized, body3: body3Capitalized },
+        {
+          body1: body1Capitalized,
+          body2: body2Capitalized,
+          body3: body3Capitalized,
+        },
       );
       return null;
     }

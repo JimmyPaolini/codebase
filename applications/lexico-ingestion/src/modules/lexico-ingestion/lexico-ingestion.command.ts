@@ -57,24 +57,30 @@ export class LexicoIngestionCommand extends CommandRunner {
     let step = 1;
 
     if (options.wikipedia) {
-      this.logger.log(
-        `🌐 Ingesting Wikipedia (Wiktionary) pages`, undefined, { step: step++ },
-      );
+      this.logger.log(`🌐 Ingesting Wikipedia (Wiktionary) pages`, undefined, {
+        step: step++,
+      });
       await this.wiktionaryCommand.run();
     }
 
     if (options.dictionary) {
-      this.logger.log(`📖 Processing dictionary lexemes`, undefined, { step: step++ });
+      this.logger.log(`📖 Processing dictionary lexemes`, undefined, {
+        step: step++,
+      });
       await this.dictionaryCommand.ingestAll();
     }
 
     if (options.librarySources) {
-      this.logger.log(`📥 Downloading library sources`, undefined, { step: step++ });
+      this.logger.log(`📥 Downloading library sources`, undefined, {
+        step: step++,
+      });
       await this.runLibrarySourcesStage();
     }
 
     if (options.library) {
-      this.logger.log(`📝 Parsing library into markdown`, undefined, { step: step++ });
+      this.logger.log(`📝 Parsing library into markdown`, undefined, {
+        step: step++,
+      });
       await this.libraryCommand.run([], {});
     }
 

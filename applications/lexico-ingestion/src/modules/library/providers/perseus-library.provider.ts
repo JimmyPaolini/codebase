@@ -65,7 +65,7 @@ export class PerseusLibraryProvider {
         `🗂️ Found ${xmlPaths.length} Latin XML files in local Perseus cache`,
       );
       return xmlPaths;
-    } catch (error) {
+    } catch {
       this.logger.error(
         `📁 Failed reading the source directory. Did you run the perseus command first?`,
       );
@@ -200,7 +200,9 @@ export class PerseusLibraryProvider {
       const progress = ` (${(((index + 1) / total) * 100).toFixed(2)}%, ${index + 1}/${total})`;
       this.logger.log(`📜 Completed processing: ${xmlPath}${progress}`);
     } catch (error) {
-      this.logger.warn(`📜 Failed processing ${xmlPath}`, undefined, { reason: String(error) });
+      this.logger.warn(`📜 Failed processing ${xmlPath}`, undefined, {
+        reason: String(error),
+      });
     }
   }
 

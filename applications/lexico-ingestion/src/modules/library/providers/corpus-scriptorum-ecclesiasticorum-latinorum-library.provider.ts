@@ -78,7 +78,7 @@ export class CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider {
       return allFiles
         .filter((file) => file.isFile() && file.name.endsWith(".xml"))
         .map((file) => path.join(file.parentPath, file.name));
-    } catch (error) {
+    } catch {
       this.logger.error(
         `📁 Failed reading the source directory. Did you run the corpus-scriptorum-ecclesiasticorum-latinorum command first?`,
       );
@@ -284,7 +284,9 @@ export class CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider {
       });
       this.logSourceProgress({ index, totalFiles, xmlPath });
     } catch (error) {
-      this.logger.warn(`📜 Failed processing ${xmlPath}`, undefined, { reason: String(error) });
+      this.logger.warn(`📜 Failed processing ${xmlPath}`, undefined, {
+        reason: String(error),
+      });
     }
   }
 

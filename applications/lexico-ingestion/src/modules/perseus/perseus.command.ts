@@ -101,9 +101,7 @@ export class PerseusCommand extends CommandRunner {
     this.logger.log(`🌳 Fetching Perseus tree from ${treeUrl}`);
     const treeResponse = await fetch(treeUrl);
     if (!treeResponse.ok) {
-      this.logger.error(
-        `🌳 Failed fetching the Perseus tree`,
-      );
+      this.logger.error(`🌳 Failed fetching the Perseus tree`);
       return null;
     }
     const treeData = await treeResponse.json();

@@ -188,8 +188,11 @@ describe(AgentSkillsCommand, () => {
   it("exits with error for invalid mode", async () => {
     await expectProcessExitOne(async () => command.run(["invalid-mode"]));
 
-    expect(logger.error).toHaveBeenCalledWith("🚦 Rejected an unusable mode", expect.any(String));
-    expect(logger.error).toHaveBeenCalledWith("Expected 'check' or 'write'");
+    expect(logger.error).toHaveBeenCalledWith(
+      "🚦 Rejected an unusable mode",
+      undefined,
+      expect.any(Object),
+    );
   });
 
   it("runs check mode when all synchronized files are in sync", async () => {
@@ -197,15 +200,23 @@ describe(AgentSkillsCommand, () => {
 
     expect(logger.log).toHaveBeenCalledWith(
       "📄 Verified the plan agent files",
-     undefined, expect.any(Object));
+      undefined,
+      expect.any(Object),
+    );
     expect(logger.log).toHaveBeenCalledWith(
       "📄 Verified the triage agent files",
-     undefined, expect.any(Object));
+      undefined,
+      expect.any(Object),
+    );
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ Custom agents table of contents is in sync (1 agent)",
-     undefined, expect.any(Object));
+      "📇 Verified the custom agents table",
+      undefined,
+      expect.any(Object),
+    );
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ Skills table of contents is in sync (1 skills)",
+      "📇 Verified the skills table",
+      undefined,
+      expect.any(Object),
     );
   });
 
@@ -313,7 +324,9 @@ describe(AgentSkillsCommand, () => {
 
     expect(logger.log).toHaveBeenCalledWith(
       "📇 Detected an out-of-sync custom agents table in AGENTS.md",
-     undefined, expect.any(Object));
+      undefined,
+      expect.any(Object),
+    );
   });
 
   it("exits in check mode when skills table is out of sync", async () => {
@@ -340,7 +353,9 @@ describe(AgentSkillsCommand, () => {
 
     expect(logger.log).toHaveBeenCalledWith(
       "📇 Detected an out-of-sync skills table in AGENTS.md",
-     undefined, expect.any(Object));
+      undefined,
+      expect.any(Object),
+    );
   });
 
   it("runs write mode and updates agent and AGENTS files", async () => {
@@ -376,10 +391,14 @@ describe(AgentSkillsCommand, () => {
     );
     expect(logger.log).toHaveBeenCalledWith(
       "📇 Updated AGENTS.md",
-     undefined, expect.any(Object));
+      undefined,
+      expect.any(Object),
+    );
     expect(logger.log).toHaveBeenCalledWith(
       "📇 Updated AGENTS.md",
-     undefined, expect.any(Object));
+      undefined,
+      expect.any(Object),
+    );
   });
 
   it("logs question-me update output in question-me mode", () => {
@@ -410,6 +429,9 @@ describe(AgentSkillsCommand, () => {
 
     await expectProcessExitOne(async () => command.run(["write"]));
 
-    expect(logger.error).toHaveBeenCalledWith("💥 Failed synchronizing agent skills", expect.any(String));
+    expect(logger.error).toHaveBeenCalledWith(
+      "💥 Failed synchronizing agent skills",
+      expect.any(String),
+    );
   });
 });

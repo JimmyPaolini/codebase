@@ -5,6 +5,7 @@ import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
+
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import {
@@ -81,16 +82,17 @@ export class AgentSkillsCommand
       this.logger.log(
         "📇 Detected an out-of-sync custom agents table in AGENTS.md",
         undefined,
-        { count: agents.length, hint: "Run 'nx run synchronization:synchronize:write' to sync" },
+        {
+          count: agents.length,
+          hint: "Run 'nx run synchronization:synchronize:write' to sync",
+        },
       );
       return false;
     }
 
-    this.logger.log(
-      "📇 Verified the custom agents table",
-      undefined,
-      { count: agents.length },
-    );
+    this.logger.log("📇 Verified the custom agents table", undefined, {
+      count: agents.length,
+    });
     return true;
   }
 
@@ -128,12 +130,13 @@ export class AgentSkillsCommand
   /**
    * Validates a set of agent files against their source skill files.
    */
-  private checkSkillAgentFiles(
-    configurations: AgentFileSyncConfig[],
-    workspaceRoot: string,
-    successMessage: string,
-    successCount: number,
-  ): boolean {
+  private checkSkillAgentFiles(args: {
+    configurations: AgentFileSyncConfig[];
+    successCount: number;
+    successMessage: string;
+    workspaceRoot: string;
+  }): boolean {
+    const { configurations, successCount, successMessage, workspaceRoot } = args;
     let allInSync = true;
 
     for (const configuration of configurations) {
@@ -143,7 +146,9 @@ export class AgentSkillsCommand
     }
 
     if (!allInSync) {
-      this.logger.log("💡 Suggested a fix", undefined, { hint: "Run 'nx run synchronization:synchronize:write' to sync" });
+      this.logger.log("💡 Suggested a fix", undefined, {
+        hint: "Run 'nx run synchronization:synchronize:write' to sync",
+      });
       return false;
     }
 
@@ -167,16 +172,17 @@ export class AgentSkillsCommand
       this.logger.log(
         "📇 Detected an out-of-sync skills table in AGENTS.md",
         undefined,
-        { count: skills.length, hint: "Run 'nx run synchronization:synchronize:write' to sync" },
+        {
+          count: skills.length,
+          hint: "Run 'nx run synchronization:synchronize:write' to sync",
+        },
       );
       return false;
     }
 
-    this.logger.log(
-      "📇 Verified the skills table",
-      undefined,
-      { count: skills.length },
-    );
+    this.logger.log("📇 Verified the skills table", undefined, {
+      count: skills.length,
+    });
     return true;
   }
 
@@ -187,19 +193,19 @@ export class AgentSkillsCommand
    * all drift rather than only the first instance.
    */
   private runCheckMode(workspaceRoot: string): boolean {
-    const planInSync = this.checkSkillAgentFiles(
-      PLAN_AGENT_CONFIGS,
+    const planInSync = this.checkSkillAgentFiles({
+      configurations: PLAN_AGENT_CONFIGS,
+      successCount: PLAN_AGENT_CONFIGS.length,
+      successMessage: "📄 Verified the plan agent files",
       workspaceRoot,
-      "📄 Verified the plan agent files",
-      PLAN_AGENT_CONFIGS.length,
-    );
+    });
 
-    const triageInSync = this.checkSkillAgentFiles(
-      TRIAGE_AGENT_CONFIGS,
+    const triageInSync = this.checkSkillAgentFiles({
+      configurations: TRIAGE_AGENT_CONFIGS,
+      successCount: TRIAGE_AGENT_CONFIGS.length,
+      successMessage: "📄 Verified the triage agent files",
       workspaceRoot,
-      "📄 Verified the triage agent files",
-      TRIAGE_AGENT_CONFIGS.length,
-    );
+    });
 
     const customAgentsInSync = this.checkCustomAgentsTable(workspaceRoot);
     const skillsInSync = this.checkSkillsTable(workspaceRoot);
@@ -292,7 +298,9 @@ export class AgentSkillsCommand
       `${beforeMarker}\n${generatedTable}\n${afterMarker}`,
       "utf8",
     );
-    this.logger.log("📇 Updated AGENTS.md", undefined, { count: skills.length });
+    this.logger.log("📇 Updated AGENTS.md", undefined, {
+      count: skills.length,
+    });
   }
 
   /**

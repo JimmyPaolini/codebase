@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
+import { LoggerService } from "@codebase/logger";
+
 import { AgentSkillsCommand } from "../agent-skills/agent-skills.command";
 import { ConformetryGeneratorsCommand } from "../conformetry-generators/conformetry-generators.command";
 import { ConventionalConfigCommand } from "../conventional-config/conventional-config.command";
 import { DevcontainerConfigurationCommand } from "../devcontainer-configuration/devcontainer-configuration.command";
-import { LoggerService } from "@codebase/logger";
 import { PullRequestTemplateCommand } from "../pull-request-template/pull-request-template.command";
 
 import { SynchronizationService } from "./synchronization.service";
@@ -71,7 +72,9 @@ export class SynchronizationCommand extends CommandRunner {
     this.logger.log("📋 Summarized the synchronization run", undefined, {
       failed: results.filter((result) => !result.succeeded).map((r) => r.label),
       mode,
-      succeeded: results.filter((result) => result.succeeded).map((r) => r.label),
+      succeeded: results
+        .filter((result) => result.succeeded)
+        .map((r) => r.label),
     });
 
     if (failed.length === 0) {

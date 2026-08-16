@@ -478,8 +478,8 @@ export class LibraryCommand extends CommandRunner {
 
     const endTime = performance.now();
     const duration = ((endTime - startTime) / 1000).toFixed(2);
-    this.logger.log(
-      `📚 Ingested library`, undefined, { durationSeconds: duration },
-    );
+    this.logger.log(`📚 Ingested library`, undefined, {
+      durationSeconds: duration,
+    });
   }
 }

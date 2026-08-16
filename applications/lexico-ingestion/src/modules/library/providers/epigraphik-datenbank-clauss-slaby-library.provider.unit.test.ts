@@ -242,7 +242,9 @@ describe(EpigraphikDatenbankClaussSlabyLibraryProvider, () => {
 
     expect(logger.warn).toHaveBeenCalledWith(
       expect.stringContaining("📄 Failed reading chunk file chunk-1.json"),
-     undefined, expect.any(Object));
+      undefined,
+      expect.any(Object),
+    );
   });
 
   it("should skip undefined entries in chunk phase", async () => {

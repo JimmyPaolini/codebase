@@ -286,6 +286,8 @@ export class LiteratureCommand extends CommandRunner {
     await this.helper.ingestAllAuthors(textsToIngest);
     const endTime = performance.now();
     const duration = ((endTime - startTime) / 1000).toFixed(2);
-    this.logger.log(`📚 Ingested literature`, undefined, { durationSeconds: duration });
+    this.logger.log(`📚 Ingested literature`, undefined, {
+      durationSeconds: duration,
+    });
   }
 }

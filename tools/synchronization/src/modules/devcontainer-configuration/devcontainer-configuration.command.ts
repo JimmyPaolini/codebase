@@ -7,6 +7,7 @@ import _ from "lodash";
 import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
+
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import {
@@ -98,7 +99,6 @@ export class DevcontainerConfigurationCommand
     );
 
     this.reportDifferences(expectedConfigCopy, currentConfig);
-
 
     return false;
   }
@@ -260,8 +260,8 @@ export class DevcontainerConfigurationCommand
 
     this.write(mergedConfig, cloudConfigFile);
     this.logger.log(
-        "📦 Updated the cloud devcontainer config from the local config",
-      );
+      "📦 Updated the cloud devcontainer config from the local config",
+    );
     return true;
   }
 }

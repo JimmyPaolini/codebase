@@ -1,4 +1,3 @@
-import type { LogData } from "@codebase/logger";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
@@ -7,6 +6,7 @@ import { symbolByBody } from "../caelundas/symbol-caelundas.constants";
 
 import type { AspectPhase, Body } from "../caelundas/caelundas.types";
 import type { Event } from "../calendar/calendar.types";
+import type { LogData } from "@codebase/logger";
 import type { Moment } from "moment-timezone";
 
 /**

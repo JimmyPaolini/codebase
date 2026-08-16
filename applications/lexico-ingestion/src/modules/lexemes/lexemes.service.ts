@@ -152,7 +152,9 @@ export class LexemesService {
 
     if (!validPOS.has(partOfSpeech)) {
       if (!skipPOS.has(partOfSpeech)) {
-        this.logger.debug(`🏷️ Skipping part of speech "${partOfSpeech}" for "${word}"`);
+        this.logger.debug(
+          `🏷️ Skipping part of speech "${partOfSpeech}" for "${word}"`,
+        );
       }
       return null;
     }
@@ -161,7 +163,9 @@ export class LexemesService {
       this.partOfSpeechService.getFirstPrincipalPartName(partOfSpeech);
     if (firstPrincipalPartName === undefined) {
       this.logger.debug(
-        `🏷️ Skipping "${word}" without a principal-part name`, undefined, { partOfSpeech },
+        `🏷️ Skipping "${word}" without a principal-part name`,
+        undefined,
+        { partOfSpeech },
       );
       return null;
     }
@@ -179,7 +183,9 @@ export class LexemesService {
       return lexeme;
     } catch (error) {
       this.logger.warn(
-        `🧩 Failed parsing ${lexeme.lemma}:${lexeme.disambiguator}`, undefined, {
+        `🧩 Failed parsing ${lexeme.lemma}:${lexeme.disambiguator}`,
+        undefined,
+        {
           reason: String(error),
         },
       );
@@ -333,11 +339,9 @@ export class LexemesService {
 
     await this.saveLexemeRelations(lexeme, savedLexeme);
 
-    this.logger.debug(
-      `🔑 Upserted lexeme "${lexeme.lemma}"`, undefined, {
-        disambiguator: lexeme.disambiguator,
-      },
-    );
+    this.logger.debug(`🔑 Upserted lexeme "${lexeme.lemma}"`, undefined, {
+      disambiguator: lexeme.disambiguator,
+    });
     return savedLexeme;
   }
 

@@ -49,9 +49,7 @@ export class LatinLibraryCommand extends CommandRunner {
   ): Promise<string> {
     const response = await fetch(parsedUrl.href);
     if (!response.ok) {
-      this.logger.warn(
-        `📥 Failed fetching ${parsedUrl.href}`,
-      );
+      this.logger.warn(`📥 Failed fetching ${parsedUrl.href}`);
       return "";
     }
     const text = await response.text();
@@ -101,9 +99,7 @@ export class LatinLibraryCommand extends CommandRunner {
     try {
       return await this.downloadAndSaveLatinLibraryFile(parsed, targetPath);
     } catch (error) {
-      this.logger.error(
-        `📥 Failed downloading ${parsed.href}`, String(error),
-      );
+      this.logger.error(`📥 Failed downloading ${parsed.href}`, String(error));
       return "";
     }
   }

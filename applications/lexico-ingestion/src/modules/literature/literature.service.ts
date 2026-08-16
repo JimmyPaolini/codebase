@@ -249,9 +249,7 @@ export class LiteratureService {
       this.buildLineEntityFromParagraph(paragraph, index, text),
     );
     const savedLines = await this.upsertAndFetchLines(lineEntities, text);
-    this.logger.log(
-      `💾 Saved lines`, undefined, { count: savedLines.length },
-    );
+    this.logger.log(`💾 Saved lines`, undefined, { count: savedLines.length });
     for (const line of savedLines) {
       const tokens = this.extractTokensFromLine(line, text, wordMap);
       tokenEntities.push(...tokens);
@@ -463,9 +461,9 @@ export class LiteratureService {
     tokenEntities: QueryDeepPartialEntity<Token>[],
     text: Text,
   ): Promise<void> {
-    this.logger.log(
-      `💾 Saving tokens for ${text.title}`, undefined, { count: tokenEntities.length },
-    );
+    this.logger.log(`💾 Saving tokens for ${text.title}`, undefined, {
+      count: tokenEntities.length,
+    });
     const tokenChunks = _.chunk(tokenEntities, DEFAULT_TOKEN_CHUNK_SIZE);
     await Promise.all(
       tokenChunks.map(async (chunk) =>

@@ -100,6 +100,8 @@ describe(MeasurePythonService, () => {
     });
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       "🐍 Skipped Python analysis",
+      undefined,
+      expect.any(Object),
     );
 
     loggerWarnSpy.mockRestore();
@@ -132,6 +134,8 @@ describe(MeasurePythonService, () => {
     });
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       "🐍 Skipped Python analysis",
+      undefined,
+      expect.any(Object),
     );
 
     loggerWarnSpy.mockRestore();

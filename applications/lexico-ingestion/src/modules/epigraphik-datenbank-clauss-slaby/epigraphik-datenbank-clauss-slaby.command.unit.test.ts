@@ -189,9 +189,7 @@ describe(EpigraphikDatenbankClaussSlabyCommand, () => {
     ).saveChunkData(2000, "/tmp/chunk-2000.json");
 
     expect(shouldContinue).toBe(true);
-    expect(logger.warn).toHaveBeenCalledWith(
-      "🌐 Failed fetching records",
-    );
+    expect(logger.warn).toHaveBeenCalledWith("🌐 Failed fetching records");
   });
 
   it("should warn and continue when chunk payload parsing fails", async () => {
@@ -231,7 +229,9 @@ describe(EpigraphikDatenbankClaussSlabyCommand, () => {
     expect(result).toBe(true);
     expect(logger.log).toHaveBeenCalledWith(
       "⏭️ Skipping chunk that already exists",
-     undefined, expect.any(Object));
+      undefined,
+      expect.any(Object),
+    );
   });
 
   it("should download missing chunk through chunk-data workflow", async () => {
@@ -298,7 +298,9 @@ describe(EpigraphikDatenbankClaussSlabyCommand, () => {
     expect(result).toBe(true);
     expect(logger.error).toHaveBeenCalledWith(
       "🌐 Failed fetching chunk",
-     expect.any(String));
+      expect.any(String),
+      expect.any(Object),
+    );
     expect(appendFileMock).toHaveBeenCalledTimes(1);
   });
 

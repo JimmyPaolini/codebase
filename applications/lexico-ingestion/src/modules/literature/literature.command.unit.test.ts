@@ -399,8 +399,10 @@ describe(LiteratureCommand, () => {
       "📚 Starting literature ingestion...",
     );
     expect(logger.log).toHaveBeenCalledWith(
-      expect.stringContaining("📚 Literature ingestion complete in"),
-     undefined, expect.any(Object));
+      expect.stringContaining("📚 Ingested literature"),
+      undefined,
+      expect.any(Object),
+    );
   });
 
   it("should stop early when library is empty", async () => {

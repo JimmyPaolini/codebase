@@ -171,8 +171,8 @@ describe(PullRequestTemplateCommand, () => {
       `🔄 Syncing ${path.relative(workspaceRoot, firstTarget)} PR template...`,
     );
     expect(logger.log).toHaveBeenCalledWith(
-      `✅ ${path.relative(workspaceRoot, firstTarget)} PR template synced`,
-     undefined, expect.any(Object));
+      `📄 Synced the PR template in ${path.relative(workspaceRoot, firstTarget)}`,
+    );
   });
 
   it("logs already in sync in write mode when no updates are needed", async () => {
@@ -195,7 +195,9 @@ describe(PullRequestTemplateCommand, () => {
 
     await command.run(["write"]);
 
-    expect(logger.log).toHaveBeenCalledWith("📇 Verified everything was already in sync", undefined, expect.any(Object));
+    expect(logger.log).toHaveBeenCalledWith(
+      "📄 Verified every PR template was already in sync",
+    );
     expect(writeFileSync).not.toHaveBeenCalled();
   });
 
@@ -212,11 +214,13 @@ describe(PullRequestTemplateCommand, () => {
 
     expect(logger.log).toHaveBeenCalledWith(
       expect.stringContaining(
-        `missing <!-- ${SYNC_PULL_REQUEST_TEMPLATE_MARKER}-start/end --> markers`,
+        `Missing <!-- ${SYNC_PULL_REQUEST_TEMPLATE_MARKER}-start/end --> markers in`,
       ),
-     undefined, expect.any(Object));
+    );
     expect(logger.log).toHaveBeenCalledWith(
-      "💡 Run 'nx run synchronization:synchronize:write' to sync",
+      "💡 Suggested a fix",
+      undefined,
+      expect.any(Object),
     );
 
     processExitSpy.mockRestore();
@@ -230,9 +234,10 @@ describe(PullRequestTemplateCommand, () => {
 
     await expectProcessExitOne(async () => command.run(["invalid-mode"]));
 
-    expect(logger.error).toHaveBeenCalledWith("🚦 Rejected an unusable mode", expect.any(String));
     expect(logger.error).toHaveBeenCalledWith(
-      "💡 Usage: nx run synchronization:start:pull-request-template-check (or synchronization:start:pull-request-template-write)",
+      "🚦 Rejected an unusable mode",
+      undefined,
+      expect.any(Object),
     );
   });
 });

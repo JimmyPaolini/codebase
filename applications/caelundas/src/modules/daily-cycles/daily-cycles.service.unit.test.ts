@@ -1,4 +1,3 @@
-import type { LogData } from "@codebase/logger";
 import { Test } from "@nestjs/testing";
 import moment, { type Moment } from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -13,6 +12,7 @@ import { DailyCyclesBuilderService } from "./daily-cycles-builder.service";
 import { DailyCyclesService } from "./daily-cycles.service";
 
 import type { AzimuthElevationEphemeris } from "../ephemeris/ephemeris.types";
+import type { LogData } from "@codebase/logger";
 
 vi.mock("fs", () => ({
   default: {
@@ -61,8 +61,8 @@ describe(DailyCyclesService, () => {
               } = args;
               const dateString = date.clone().tz(timezone).toISOString(true);
               logger.log(`🗓️ Built ${summary}`, undefined, {
-      at: dateString,
-    });
+                at: dateString,
+              });
               return {
                 categories,
                 description,

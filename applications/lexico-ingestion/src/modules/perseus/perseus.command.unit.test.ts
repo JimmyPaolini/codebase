@@ -108,8 +108,8 @@ describe(PerseusCommand, () => {
 
     expect(result).toBeNull();
     expect(logger.error).toHaveBeenCalledWith(
-      "📥 Failed fetching Perseus tree: Not Found",
-     expect.any(String));
+      "🌳 Failed fetching the Perseus tree",
+    );
   });
 
   it("should filter and return only latin xml blob paths", async () => {
@@ -178,8 +178,9 @@ describe(PerseusCommand, () => {
     ).appendSourceDownloadErrorLog("a/file-lat.xml", new Error("boom"));
 
     expect(logger.error).toHaveBeenCalledWith(
-      "📥 Failed downloading a/file-lat.xml: Error: boom",
-     expect.any(String));
+      "📥 Failed downloading a/file-lat.xml",
+      expect.any(String),
+    );
     expect(appendFileMock).toHaveBeenCalledTimes(1);
   });
 
@@ -278,8 +279,8 @@ describe(PerseusCommand, () => {
     ).fetchAndWriteXmlFile("https://example.com/file.xml", "/tmp/file.xml");
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ Failed to fetch https://example.com/file.xml: Forbidden",
-     undefined, expect.any(Object));
+      "📥 Failed fetching https://example.com/file.xml",
+    );
     expect(writeFileMock).not.toHaveBeenCalled();
   });
 
@@ -398,8 +399,9 @@ describe(PerseusCommand, () => {
     ).appendSourceDownloadErrorLog("a/file-lat.xml", "text failure");
 
     expect(logger.error).toHaveBeenCalledWith(
-      "📥 Failed downloading a/file-lat.xml: text failure",
-     expect.any(String));
+      "📥 Failed downloading a/file-lat.xml",
+      expect.any(String),
+    );
     expect(appendFileMock).toHaveBeenCalledWith(
       expect.any(String),
       expect.stringContaining("text failure"),

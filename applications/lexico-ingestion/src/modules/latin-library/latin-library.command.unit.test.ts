@@ -240,8 +240,9 @@ describe(LatinLibraryCommand, () => {
 
     expect(secondResult).toBe("");
     expect(logger.error).toHaveBeenCalledWith(
-      "📥 Failed downloading https://www.thelatinlibrary.com/ovid/index.html: Error: network error",
-     expect.any(String));
+      "📥 Failed downloading https://www.thelatinlibrary.com/ovid/index.html",
+      expect.any(String),
+    );
   });
 
   it("should process link and enqueue only allowed in-host urls", () => {
@@ -589,8 +590,9 @@ describe(LatinLibraryCommand, () => {
     );
 
     expect(logger.error).toHaveBeenCalledWith(
-      "📜 Failed processing https://www.thelatinlibrary.com/vergil/: queue failed",
-     expect.any(String));
+      "📜 Failed processing https://www.thelatinlibrary.com/vergil/",
+      expect.any(String),
+    );
     expect(appendFileMock).toHaveBeenCalledTimes(1);
   });
 
@@ -678,8 +680,8 @@ describe(LatinLibraryCommand, () => {
       "utf8",
     );
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ Failed to fetch https://www.thelatinlibrary.com/ovid/index.html: Not Found",
-     undefined, expect.any(Object));
+      "📥 Failed fetching https://www.thelatinlibrary.com/ovid/index.html",
+    );
 
     vi.useRealTimers();
   });
@@ -726,9 +728,7 @@ describe(LatinLibraryCommand, () => {
 
     expect(mkdirMock).toHaveBeenCalledTimes(1);
     expect(processQueueUrlSpy).toHaveBeenCalledTimes(1);
-    expect(logger.log).toHaveBeenCalledWith(
-      "🕷️ Scraped The Latin Library",
-    );
+    expect(logger.log).toHaveBeenCalledWith("🕷️ Scraped The Latin Library");
   });
 
   it("should process duplicated author urls only once in run queue", async () => {

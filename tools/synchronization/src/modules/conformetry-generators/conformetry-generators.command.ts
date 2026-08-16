@@ -6,6 +6,7 @@ import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
+
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import type {
@@ -61,16 +62,17 @@ export class ConformetryGeneratorsCommand
       this.logger.log(
         "📇 Detected an out-of-sync conformetry generators table in AGENTS.md",
         undefined,
-        { count: generators.length, hint: "Run 'nx run synchronization:synchronize:write' to sync" },
+        {
+          count: generators.length,
+          hint: "Run 'nx run synchronization:synchronize:write' to sync",
+        },
       );
       return false;
     }
 
-    this.logger.log(
-      "📇 Verified the conformetry generators table",
-      undefined,
-      { count: generators.length },
-    );
+    this.logger.log("📇 Verified the conformetry generators table", undefined, {
+      count: generators.length,
+    });
     return true;
   }
 
@@ -157,11 +159,9 @@ export class ConformetryGeneratorsCommand
     const newContent = `${beforeMarker}\n${generatedTable}\n${afterMarker}`;
 
     writeFileSync(agentsFile, newContent, "utf8");
-    this.logger.log(
-      "📇 Updated AGENTS.md",
-      undefined,
-      { count: generators.length },
-    );
+    this.logger.log("📇 Updated AGENTS.md", undefined, {
+      count: generators.length,
+    });
   }
 
   // 🌎 Public Methods

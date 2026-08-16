@@ -241,7 +241,17 @@
       "version": "29"
     }
   },
-  "forwardPorts": [3000, 3001, 8889, 11434, 54321, 54322, 54323, 54324, 54325],
+  "forwardPorts": [
+    3000,
+    3001,
+    8889,
+    11434,
+    54321,
+    54322,
+    54323,
+    54324,
+    54325
+  ],
   "name": "Codebase Devcontainer (Cloud)",
   "portsAttributes": {
     "3000": {
@@ -296,7 +306,9 @@
     "VSCODE_EXTENSION_HOST_WORKER_CONCURRENCY": "4"
   },
   "remoteUser": "root",
-  "runServices": ["devcontainer"],
+  "runServices": [
+    "devcontainer"
+  ],
   "service": "devcontainer",
   "shutdownAction": "stopCompose",
   "waitFor": "postCreateCommand",

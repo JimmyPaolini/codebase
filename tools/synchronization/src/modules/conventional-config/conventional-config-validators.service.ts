@@ -135,9 +135,7 @@ export class ConventionalConfigValidatorsService {
       return false;
     }
     if (!_.isEqual(sourceValues, skillValues)) {
-      this.loggerService.log(
-        `🔀 Reordered ${marker} in ${skillName}`,
-      );
+      this.loggerService.log(`🔀 Reordered ${marker} in ${skillName}`);
       return false;
     }
     return true;
@@ -203,9 +201,7 @@ export class ConventionalConfigValidatorsService {
       return false;
     }
     if (!_.isEqual(sourceScopes, templateScopes)) {
-      this.loggerService.log(
-        `🔀 Reordered scopes in ${templateName}`,
-      );
+      this.loggerService.log(`🔀 Reordered scopes in ${templateName}`);
       return false;
     }
     return true;
@@ -267,9 +263,7 @@ export class ConventionalConfigValidatorsService {
     const orderMatches = _.isEqual(sourceScopes, settingsScopes);
 
     if (!valuesMatch || !orderMatches) {
-      this.loggerService.log(
-        "📇 Detected out-of-sync scopes in settings.json",
-      );
+      this.loggerService.log("📇 Detected out-of-sync scopes in settings.json");
       if (!valuesMatch) {
         this.showDifference(sourceScopes, settingsScopes, "settings.json");
       }

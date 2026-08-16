@@ -849,7 +849,7 @@ describe(LatinLibraryProvider, () => {
     expect((logger.error as ReturnType<typeof vi.fn>).mock.calls).toStrictEqual(
       expect.arrayContaining([
         [
-          expect.stringContaining("📥 Failed fetching work Aeneid"),
+          expect.stringContaining("📕 Failed fetching work Aeneid"),
           expect.any(String),
         ],
       ]),
@@ -903,7 +903,7 @@ describe(LatinLibraryProvider, () => {
     });
 
     expect(logger.error).toHaveBeenCalledWith(
-      "📥 Failed fetching work Aeneid",
+      "📕 Failed fetching work Aeneid",
       undefined,
     );
   });

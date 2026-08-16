@@ -168,7 +168,9 @@ export class DictionaryCommand extends CommandRunner {
   ): Promise<void> {
     const matches = [...translation.data.matchAll(/\{\*(.+?)\*\}/g)];
     if (matches.length === 0) {
-      this.logger.warn(`🔗 Missing reference in translation`, undefined, { translation: translation.data });
+      this.logger.warn(`🔗 Missing reference in translation`, undefined, {
+        translation: translation.data,
+      });
       return;
     }
 

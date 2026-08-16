@@ -2,12 +2,13 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { expectProcessExitOne } from "../../../testing/mocks";
 import { AgentSkillsCommand } from "../agent-skills/agent-skills.command";
 import { ConformetryGeneratorsCommand } from "../conformetry-generators/conformetry-generators.command";
 import { ConventionalConfigCommand } from "../conventional-config/conventional-config.command";
 import { DevcontainerConfigurationCommand } from "../devcontainer-configuration/devcontainer-configuration.command";
-import { LoggerService } from "@codebase/logger";
 import { PullRequestTemplateCommand } from "../pull-request-template/pull-request-template.command";
 
 import { SynchronizationCommand } from "./synchronization.command";
@@ -150,7 +151,9 @@ describe(SynchronizationCommand, () => {
     }
 
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ All 5 synchronizations are in sync",
+      "🔗 Verified every synchronization",
+      undefined,
+      expect.any(Object),
     );
   });
 
@@ -176,10 +179,15 @@ describe(SynchronizationCommand, () => {
       expect(delegate.synchronize).toHaveBeenCalledTimes(1);
     }
 
-    expect(logger.log).toHaveBeenCalledWith("  ❌ agent-skills");
-    expect(logger.log).toHaveBeenCalledWith("  ✅ pull-request-template");
     expect(logger.log).toHaveBeenCalledWith(
-      "❌ 1 of 5 synchronizations are out of sync",
+      "📋 Summarized the synchronization run",
+      undefined,
+      expect.any(Object),
+    );
+    expect(logger.log).toHaveBeenCalledWith(
+      "🔗 Detected out-of-sync synchronizations",
+      undefined,
+      expect.any(Object),
     );
   });
 
@@ -200,7 +208,9 @@ describe(SynchronizationCommand, () => {
     });
 
     expect(logger.log).toHaveBeenCalledWith(
-      "❌ 1 of 5 synchronizations are out of sync",
+      "🔗 Detected out-of-sync synchronizations",
+      undefined,
+      expect.any(Object),
     );
   });
 

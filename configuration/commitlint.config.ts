@@ -56,17 +56,33 @@ const footerCoAuthoredOnly: Rule = (parsed): RuleOutcome => {
 const ADDITIONAL_GITMOJI = ["🪵"];
 
 /** Accepts the published gitmoji list plus this codebase's own additions. */
-const startWithApprovedGitmoji: Rule = (parsed, when, value): RuleOutcome => {
-  const subject: null | string = parsed.subject;
+const startWithApprovedGitmoji: Rule = async (
+  parsed,
+  when,
+  value,
+): Promise<RuleOutcome> => {
+  const subject = parsed["subject"];
 
   if (
-    subject !== null &&
+    typeof subject === "string" &&
     ADDITIONAL_GITMOJI.some((emoji) => subject.startsWith(emoji))
   ) {
     return [true];
   }
 
-  return gitmojiPlugin.rules["start-with-gitmoji"](parsed, when, value);
+  // The plugin bundles an older `@commitlint/types`, so its `Commit` differs
+  // structurally from the parser's. The rule only reads `raw`, so treating it
+  // as this file's `Rule` is accurate.
+  const gitmojiRules = gitmojiPlugin.rules as unknown as Record<
+    string,
+    Rule | undefined
+  >;
+  const gitmojiRule = gitmojiRules["start-with-gitmoji"];
+
+  /* v8 ignore next -- the plugin always registers its one rule */
+  if (gitmojiRule === undefined) return [true];
+
+  return gitmojiRule(parsed, when, value);
 };
 
 const coAuthoredPlugin: Plugin = {

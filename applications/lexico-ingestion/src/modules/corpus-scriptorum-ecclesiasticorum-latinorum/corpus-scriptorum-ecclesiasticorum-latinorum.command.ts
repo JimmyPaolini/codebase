@@ -102,9 +102,7 @@ export class CorpusScriptorumEcclesiasticorumLatinorumCommand extends CommandRun
     const treeResponse = await fetch(treeUrl);
 
     if (!treeResponse.ok) {
-      this.logger.error(
-        `🌳 Failed fetching the CSEL tree`,
-      );
+      this.logger.error(`🌳 Failed fetching the CSEL tree`);
       return null;
     }
 

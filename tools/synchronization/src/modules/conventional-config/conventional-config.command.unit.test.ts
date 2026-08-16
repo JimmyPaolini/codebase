@@ -83,9 +83,10 @@ describe(ConventionalConfigCommand, () => {
   it("exits for invalid mode", async () => {
     await expectProcessExitOne(async () => command.run(["invalid-mode"]));
 
-    expect(logger.error).toHaveBeenCalledWith("🚦 Rejected an unusable mode", expect.any(String));
     expect(logger.error).toHaveBeenCalledWith(
-      "💡 Usage: nx run synchronization:start:conventional-config-check (or synchronization:start:conventional-config-write)",
+      "🚦 Rejected an unusable mode",
+      undefined,
+      expect.any(Object),
     );
   });
 });
