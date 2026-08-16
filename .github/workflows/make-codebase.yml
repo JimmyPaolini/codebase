@@ -1,4 +1,4 @@
-name: 🧑‍🔧 Make Devcontainer
+name: 🧑‍🔧 Make Codebase
 
 # Its own workflow so GitHub's native `on.paths` does the filtering. This lived
 # as a job inside Make Projects for a while, gated by `dorny/paths-filter`,
@@ -17,7 +17,7 @@ on:
       - main
     paths:
       - .devcontainer/**
-      - .github/workflows/make-devcontainer.yml
+      - .github/workflows/make-codebase.yml
   workflow_dispatch:
 
 permissions:
@@ -29,8 +29,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  make-devcontainer:
-    name: 🧑‍🔧 Make Devcontainer
+  make-codebase:
+    name: 🧑‍🔧 Make Codebase
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -55,7 +55,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 🐳 Make Devcontainer
+      - name: 🐳 Build Devcontainer Image
         uses: devcontainers/ci@v0.3
         with:
           configFile: .devcontainer/cloud/devcontainer.json
@@ -73,7 +73,7 @@ jobs:
             GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
 
-      - name: 🔬 Test Devcontainer
+      - name: 🔬 Test Devcontainer Image
         uses: devcontainers/ci@v0.3
         with:
           configFile: .devcontainer/cloud/devcontainer.json

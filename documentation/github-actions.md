@@ -101,19 +101,19 @@ size the base branch.
 
 ---
 
-#### 4. Make Devcontainer (`make-devcontainer.yml`)
+#### 4. Make Codebase (`make-codebase.yml`)
 
-**Name:** 🧑‍🔧 Make Devcontainer
+**Name:** 🧑‍🔧 Make Codebase
 
 **Triggers:**
 
 - Push to `main` (only `.devcontainer/**` changes)
-- Pull requests (only `.devcontainer/**` or `make-devcontainer.yml` changes)
+- Pull requests (only `.devcontainer/**` or `make-codebase.yml` changes)
 - Manual dispatch
 
 **Jobs:**
 
-- **make-devcontainer** - Builds the dev container image with `devcontainers/ci@v0.3`, pushes to GHCR (`ghcr.io/jimmypaolini/codebase-devcontainer`) only on push to `main`, then runs `.devcontainer/scripts/test-devcontainer.sh` inside the container
+- **make-codebase** - Builds the dev container image with `devcontainers/ci@v0.3`, pushes to GHCR (`ghcr.io/jimmypaolini/codebase-devcontainer`) only on push to `main`, then runs `.devcontainer/scripts/test-devcontainer.sh` inside the container
 
 Gated by GitHub's native `on.paths`. It briefly lived as a job inside Make
 Projects behind `dorny/paths-filter`, which needed an extra job, a `needs:`, an
