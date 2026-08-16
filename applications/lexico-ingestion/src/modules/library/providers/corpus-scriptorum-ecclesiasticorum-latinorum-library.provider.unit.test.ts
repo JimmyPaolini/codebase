@@ -6,7 +6,7 @@ import { Author, type Text } from "@codebase/lexico-entities";
 
 import { CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider } from "./corpus-scriptorum-ecclesiasticorum-latinorum-library.provider";
 
-import type { LoggerService } from "../../logger/logger.service";
+import type { LoggerService } from "@codebase/logger";
 
 const { mkdirMock, readdirMock, readFileMock, writeFileMock } = vi.hoisted(
   () => ({
@@ -508,7 +508,9 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider, () => {
     });
 
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining("⚠️ Error processing /tmp/csel/aeneid.xml"),
+      expect.stringContaining("📜 Failed processing /tmp/csel/aeneid.xml"),
+      undefined,
+      expect.any(Object),
     );
   });
 
@@ -682,7 +684,7 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider, () => {
     });
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ Skipping empty or invalid text: vergil/aeneid",
+      "📜 Skipping empty or invalid text vergil/aeneid",
     );
   });
 

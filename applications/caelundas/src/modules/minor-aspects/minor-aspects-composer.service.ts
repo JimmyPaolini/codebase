@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { LoggerService } from "@codebase/logger";
+
 import { AspectEphemerisService } from "../aspects/aspect-ephemeris.service";
 import {
   aspectBodies as minorAspectBodies,
@@ -15,7 +17,6 @@ import {
   symbolByBody,
   symbolByMinorAspect,
 } from "../caelundas/symbol-caelundas.constants";
-import { LoggerService } from "../logger/logger.service";
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
 import type {
@@ -76,7 +77,9 @@ export class MinorAspectsComposerService {
       phase,
     });
     const summary = `${phaseEmoji} ${symbolByBody[body1]} ${symbolByMinorAspect[minorAspect]} ${symbolByBody[body2]} ${description}`;
-    this.logger.log(`${summary} at ${timestamp.toISOString()}`);
+    this.logger.log(`🗓️ Built ${summary}`, undefined, {
+      at: timestamp.toISOString(),
+    });
     return {
       categories,
       description,

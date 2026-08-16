@@ -2,9 +2,10 @@ import { createMock } from "@golevelup/ts-vitest";
 import moment, { type Moment } from "moment-timezone";
 import { describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { MARGIN_MINUTES } from "../caelundas/caelundas.constants";
 import { EphemerisService } from "../ephemeris/ephemeris.service";
-import { LoggerService } from "../logger/logger.service";
 import { MathService } from "../math/math.service";
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 

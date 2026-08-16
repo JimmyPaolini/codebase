@@ -1,7 +1,8 @@
 import { Module } from "@nestjs/common";
 
+import { LoggerModule } from "@codebase/logger";
+
 import { GeneratorModule } from "./modules/generator/generator.module";
-import { LoggerModule } from "./modules/logger/logger.module";
 import { PluginModule } from "./modules/plugin/plugin.module";
 
 /**

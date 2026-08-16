@@ -1,8 +1,9 @@
 import "reflect-metadata";
 import { CommandFactory } from "nest-commander";
 
+import { LoggerService } from "@codebase/logger";
+
 import { MainModule } from "./main.module";
-import { LoggerService } from "./modules/logger/logger.service";
 
 /** Bootstraps the synchronization CLI application. */
 async function main(): Promise<void> {

@@ -3,8 +3,9 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { symbolByMartianPhase } from "../caelundas/symbol-caelundas.constants";
-import { LoggerService } from "../logger/logger.service";
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
 import { MartianPhaseService } from "./martian-phase.service";

@@ -2,9 +2,10 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { DiscoveryModule } from "@nestjs/core";
 
+import { LoggerModule } from "@codebase/logger";
+
 import { environmentSchema } from "./constants";
 import { GenerateModule } from "./modules/generate/generate.module";
-import { LoggerModule } from "./modules/logger/logger.module";
 import { ValidateModule } from "./modules/validate/validate.module";
 
 /**

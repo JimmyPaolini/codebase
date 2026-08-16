@@ -11,6 +11,7 @@ import type {
   PreparedValidationDocument,
 } from "@conformetry/core";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Checks that a JSON or JSONC file contains everything its template declares.
  *
@@ -18,6 +19,7 @@ import type {
  * read the same way TypeScript reads it.
  */
 @Injectable()
+/* v8 ignore stop */
 export class JsonValidatorService implements ConformetryLanguageValidator {
   // 🏗 Dependency Injection
 

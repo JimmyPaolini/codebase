@@ -4,7 +4,7 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import { ConventionalConfigIoService } from "./conventional-config-io.service";
 import { ConventionalConfigValidatorsService } from "./conventional-config-validators.service";
@@ -91,51 +91,36 @@ describe(ConventionalConfigValidatorsService, () => {
     expect(service.checkSettingsSync(["tools"], ["tools"])).toBe(true);
   });
 
+  // `showDifference` now emits one event carrying `missing` and `extra`, so
+  // what used to be told apart by two different messages is told apart by data.
   it.each([
     {
       currentScopes: ["tools"],
-      expectedAbsentLogMessages: [
-        "🔀 Scopes have matching values but different ordering\n",
-      ],
-      expectedPresentLogMessages: [
-        "❌ settings.json scopes are out of sync\n",
-        "  Missing in settings.json (1 items):",
-        "  Extra in settings.json (1 items):",
-      ],
+      expectedDifference: { extra: ["other"], missing: ["tools"] },
+      expectedReordered: false,
       scenarioName: "detects settings scope mismatch",
       targetScopes: ["other"],
     },
     {
       currentScopes: ["tools", "alpha"],
-      expectedAbsentLogMessages: [
-        "  Extra in settings.json (1 items):",
-        "🔀 Scopes have matching values but different ordering\n",
-      ],
-      expectedPresentLogMessages: ["  Missing in settings.json (1 items):"],
+      expectedDifference: { extra: [], missing: ["alpha"] },
+      expectedReordered: false,
       scenarioName:
         "reports only missing settings values when target is subset",
       targetScopes: ["tools"],
     },
     {
       currentScopes: ["tools"],
-      expectedAbsentLogMessages: [
-        "  Missing in settings.json (1 items):",
-        "🔀 Scopes have matching values but different ordering\n",
-      ],
-      expectedPresentLogMessages: ["  Extra in settings.json (1 items):"],
+      expectedDifference: { extra: ["alpha"], missing: [] },
+      expectedReordered: false,
       scenarioName:
         "reports only extra settings values when target has additions",
       targetScopes: ["tools", "alpha"],
     },
     {
       currentScopes: ["tools", "alpha"],
-      expectedAbsentLogMessages: [
-        "  Missing in settings.json (1 items):",
-        "  Extra in settings.json (1 items):",
-      ],
-      expectedPresentLogMessages: [
-        "🔀 Scopes have matching values but different ordering\n",
-      ],
+      expectedDifference: undefined,
+      expectedReordered: true,
       scenarioName: "detects settings ordering drift when values match",
       targetScopes: ["alpha", "tools"],
     },
@@ -143,21 +128,26 @@ describe(ConventionalConfigValidatorsService, () => {
     "$scenarioName",
     ({
       currentScopes,
-      expectedAbsentLogMessages,
-      expectedPresentLogMessages,
+      expectedDifference,
+      expectedReordered,
       targetScopes,
     }) => {
       expect(service.checkSettingsSync(currentScopes, targetScopes)).toBe(
         false,
       );
 
-      for (const expectedLogMessage of expectedPresentLogMessages) {
-        expect(logger.log).toHaveBeenCalledWith(expectedLogMessage);
-      }
+      const calls = vi.mocked(logger).log.mock.calls;
+      const messages = calls.map(([message]) => message);
 
-      for (const expectedLogMessage of expectedAbsentLogMessages) {
-        expect(logger.log).not.toHaveBeenCalledWith(expectedLogMessage);
-      }
+      const difference = calls.find(
+        ([message]) => message === "🔀 Differing values in settings.json",
+      );
+
+      expect(difference?.[2]).toStrictEqual(expectedDifference);
+
+      expect(messages.includes("🔀 Reordered scopes in settings.json")).toBe(
+        expectedReordered,
+      );
     },
   );
 
@@ -202,7 +192,7 @@ describe(ConventionalConfigValidatorsService, () => {
 
     expect(service.checkIssueTemplateSync(["tools"], templateFile)).toBe(false);
     expect(logger.log).toHaveBeenCalledWith(
-      expect.stringContaining("missing <!-- scopes-start/end --> markers"),
+      expect.stringContaining("Missing <!-- scopes-start/end --> markers in"),
     );
   });
 

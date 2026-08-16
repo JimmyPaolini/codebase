@@ -5,7 +5,8 @@ import { ConfigurationService } from "@conformetry/configuration";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
+
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import type {
@@ -59,21 +60,19 @@ export class ConformetryGeneratorsCommand
 
     if (generated !== existing) {
       this.logger.log(
-        "❌ Conformetry generators table in AGENTS.md is out of sync\n",
-      );
-      this.logger.log(
-        "  Found generators in configuration/conformetry.config.ts",
-      );
-      this.logger.log("  Generated content doesn't match stored content");
-      this.logger.log(
-        "💡 Run 'nx run synchronization:synchronize:write' to sync\n",
+        "📇 Detected an out-of-sync conformetry generators table in AGENTS.md",
+        undefined,
+        {
+          count: generators.length,
+          hint: "Run 'nx run synchronization:synchronize:write' to sync",
+        },
       );
       return false;
     }
 
-    this.logger.log(
-      `✅ Conformetry generators table is in sync (${generators.length} generators)`,
-    );
+    this.logger.log("📇 Verified the conformetry generators table", undefined, {
+      count: generators.length,
+    });
     return true;
   }
 
@@ -160,9 +159,9 @@ export class ConformetryGeneratorsCommand
     const newContent = `${beforeMarker}\n${generatedTable}\n${afterMarker}`;
 
     writeFileSync(agentsFile, newContent, "utf8");
-    this.logger.log(
-      `✅ Updated AGENTS.md with ${generators.length} generators`,
-    );
+    this.logger.log("📇 Updated AGENTS.md", undefined, {
+      count: generators.length,
+    });
   }
 
   // 🌎 Public Methods
@@ -200,7 +199,8 @@ export class ConformetryGeneratorsCommand
       return true;
     } catch (error) {
       this.logger.error(
-        `❌ Error: ${error instanceof Error ? error.message : error}`,
+        `💥 Failed synchronizing conformetry generators`,
+        error instanceof Error ? error.stack : String(error),
       );
       return false;
     }

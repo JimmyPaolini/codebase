@@ -3,7 +3,6 @@ import type { KnipConfig } from "knip";
 const CONFORMETRY_PACKAGE_IGNORE_DEPENDENCIES = [
   "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
   "@nestjs/testing",
-  "pino-pretty",
   "vitest",
 ] as const;
 
@@ -66,7 +65,6 @@ const config: KnipConfig = {
     "commitlint-plugin-tense", // commitlint plugin, referenced as string in plugins array
     "markdownlint-cli2", // Markdown linter CLI, invoked via nx:run-commands in project.json
     "jscpd", // Duplicate-code detection CLI, invoked via nx:run-commands in project.json
-    "pino-pretty", // Referenced as string transport target in LoggerService — knip can't trace string references
     "stylelint-config-standard", // stylelint preset, referenced as string in extends array
     "stylelint-config-tailwindcss", // stylelint preset, referenced as string in extends array
     "stylelint", // CSS linter CLI, invoked via nx:run-commands in project.json
@@ -134,9 +132,6 @@ const config: KnipConfig = {
         "output/**", // Generated calendar output files
         "testing/**", // Test fixtures and setup
       ],
-      ignoreDependencies: [
-        "pino-pretty", // Referenced as string transport target in LoggerService — knip can't trace string references
-      ],
       project: "src/**/*.ts",
     },
 
@@ -186,9 +181,21 @@ const config: KnipConfig = {
         "testing/**", // Test fixtures and setup
       ],
       ignoreDependencies: [
-        "@nestjs/testing", // Used by command/logger unit tests; tests are excluded from knip project scope
-        "pino-pretty", // Referenced as string transport target in LoggerService — knip can't trace string references
+        "@nestjs/testing", // Used by command unit tests; tests are excluded from knip project scope
         "tsx", // TypeScript executor CLI (not used; project uses @swc-node/register instead)
+        "vitest", // Knip misses vitest usage because tests are ignored
+      ],
+      project: "src/**/*.ts",
+    },
+
+    // logger: Shared pino-backed NestJS LoggerService and LoggerModule
+    "packages/logger": {
+      entry: ["src/index.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [
+        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
+        "@nestjs/testing", // Used by unit tests; tests are excluded from knip project scope
+        "pino-pretty", // Referenced as a string transport target in LoggerService — knip can't trace string references
         "vitest", // Knip misses vitest usage because tests are ignored
       ],
       project: "src/**/*.ts",
@@ -204,7 +211,6 @@ const config: KnipConfig = {
       ignoreDependencies: [
         "@swc-node/register", // Used in Nx run-commands strings (`node --import @swc-node/register/esm-register`)
         "@swc/core", // Required peer/runtime for @swc-node/register loaded via CLI string command
-        "pino-pretty", // Referenced as string transport target in LoggerService — knip can't trace string references
       ],
       project: "src/**/*.ts",
     },
@@ -215,8 +221,7 @@ const config: KnipConfig = {
       ignore: ["src/**/*.test.ts", "testing/**"],
       ignoreDependencies: [
         "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
-        "@nestjs/testing", // Used by logger unit tests; tests are excluded from knip project scope
-        "pino-pretty", // Referenced as string transport target in LoggerService — knip can't trace string references
+        "@nestjs/testing", // Used by command unit tests; tests are excluded from knip project scope
         "vitest", // Knip misses vitest usage because tests are ignored
       ],
       project: "src/**/*.ts",

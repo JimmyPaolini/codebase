@@ -3,6 +3,7 @@
     "conformetry-nx-bootstrap": "./src/bootstrap.mjs"
   },
   "dependencies": {
+    "@codebase/logger": "workspace:*",
     "@conformetry/configuration": "workspace:*",
     "@conformetry/core": "workspace:*",
     "@conformetry/generation": "workspace:*",
@@ -17,7 +18,6 @@
     "@nestjs/core": "catalog:",
     "@nx/devkit": "catalog:",
     "@swc-node/register": "catalog:",
-    "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:"
   },

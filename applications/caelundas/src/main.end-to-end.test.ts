@@ -6,9 +6,10 @@ import _ from "lodash";
 import moment from "moment-timezone";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { environmentSchema } from "./constants";
 import { CalendarService } from "./modules/calendar/calendar.service";
-import { LoggerService } from "./modules/logger/logger.service";
 
 import type { EphemerisAggregationService } from "./modules/ephemeris/ephemeris-aggregation.service";
 import type { EphemerisConstantsService } from "./modules/ephemeris/ephemeris-constants.service";

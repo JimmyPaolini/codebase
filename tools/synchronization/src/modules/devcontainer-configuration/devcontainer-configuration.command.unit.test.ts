@@ -5,8 +5,9 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { expectProcessExitOne, mockProcessExit } from "../../../testing/mocks";
-import { LoggerService } from "../logger/logger.service";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import { DevcontainerConfigurationCommand } from "./devcontainer-configuration.command";
@@ -134,7 +135,7 @@ describe(DevcontainerConfigurationCommand, () => {
     await command.run(modeArguments);
 
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ Cloud devcontainer config is in sync with local config",
+      "📦 Verified the cloud devcontainer config against the local config",
     );
     expect(writeFileSync).not.toHaveBeenCalled();
   });
@@ -182,7 +183,7 @@ describe(DevcontainerConfigurationCommand, () => {
       "utf8",
     );
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ Cloud devcontainer config updated from local config",
+      "📦 Updated the cloud devcontainer config from the local config",
     );
   });
 
@@ -223,12 +224,9 @@ describe(DevcontainerConfigurationCommand, () => {
     {
       assertLogs: (loggerService: LoggerService): void => {
         expect(loggerService.log).toHaveBeenCalledWith(
-          expect.stringContaining(
-            "has common fields out of sync with local config",
-          ),
-        );
-        expect(loggerService.log).toHaveBeenCalledWith(
-          "  Run: nx run synchronization:synchronize:write",
+          expect.stringContaining("Detected out-of-sync common fields in"),
+          undefined,
+          expect.any(Object),
         );
       },
       scenarioName: "reports drift and exits in check mode when configs differ",
@@ -281,7 +279,9 @@ describe(DevcontainerConfigurationCommand, () => {
           expect.stringContaining("Field 'customizations' differs"),
         );
         expect(loggerService.log).toHaveBeenCalledWith(
-          expect.stringContaining("Field '$schema' differs"),
+          expect.stringContaining("Differing field '$schema'"),
+          undefined,
+          expect.any(Object),
         );
       },
       scenarioName:
@@ -322,9 +322,10 @@ describe(DevcontainerConfigurationCommand, () => {
 
     await expectProcessExitOne(async () => command.run(["invalid-mode"]));
 
-    expect(logger.error).toHaveBeenCalledWith("❌ Invalid mode: invalid-mode");
     expect(logger.error).toHaveBeenCalledWith(
-      "💡 Usage: nx run synchronization:start:devcontainer-configuration-check (or synchronization:start:devcontainer-configuration-write)",
+      "🚦 Rejected an unusable mode",
+      undefined,
+      expect.any(Object),
     );
   });
 });

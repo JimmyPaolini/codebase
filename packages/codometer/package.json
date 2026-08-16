@@ -1,11 +1,11 @@
 {
   "dependencies": {
+    "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
     "nest-commander": "catalog:",
-    "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "remark": "catalog:",
     "remark-frontmatter": "catalog:",

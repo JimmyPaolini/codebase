@@ -11,8 +11,11 @@ const mockCommandFactoryRun = vi.fn<
   (_module: unknown, _options: CommandFactoryRunOptions) => Promise<void>
 >(async () => {});
 
-vi.mock("@nestjs/common", () => {
-  class MockConsoleLogger {
+// `main.ts` only reaches NestJS through `@codebase/logger`, so the logger
+// package is the mock boundary — the real `LoggerService` is covered by its
+// own package's tests.
+vi.mock("@codebase/logger", () => {
+  class MockLoggerService {
     error(message: unknown): void {
       mockLoggerError(message);
     }
@@ -23,13 +26,8 @@ vi.mock("@nestjs/common", () => {
   }
 
   return {
-    ConsoleLogger: MockConsoleLogger,
-    Injectable: (_options?: unknown) => {
-      return (target: unknown): unknown => target;
-    },
-    Scope: {
-      TRANSIENT: "TRANSIENT",
-    },
+    LoggerModule: function MockLoggerModule() {},
+    LoggerService: MockLoggerService,
   };
 });
 
@@ -107,9 +105,6 @@ describe("main", () => {
   });
 
   it("wires command error handler to mark process as failed", async () => {
-    const { LoggerService } = await import("./modules/logger/logger.service");
-    const errorSpy = vi.spyOn(LoggerService.prototype, "error");
-
     await importMainModule();
 
     const runOptions = getRunOptions();
@@ -118,15 +113,10 @@ describe("main", () => {
     runOptions.errorHandler(failure);
 
     expect(process.exitCode).toBe(1);
-    expect(errorSpy).toHaveBeenCalledWith(failure);
-
-    errorSpy.mockRestore();
+    expect(mockLoggerError).toHaveBeenCalledWith(failure);
   });
 
   it("wires service error handler to mark process as failed", async () => {
-    const { LoggerService } = await import("./modules/logger/logger.service");
-    const errorSpy = vi.spyOn(LoggerService.prototype, "error");
-
     await importMainModule();
 
     const runOptions = getRunOptions();
@@ -135,8 +125,6 @@ describe("main", () => {
     runOptions.serviceErrorHandler(failure);
 
     expect(process.exitCode).toBe(1);
-    expect(errorSpy).toHaveBeenCalledWith(failure);
-
-    errorSpy.mockRestore();
+    expect(mockLoggerError).toHaveBeenCalledWith(failure);
   });
 });

@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import { CalendarService } from "../calendar/calendar.service";
 import { EphemerisService } from "../ephemeris/ephemeris.service";
-import { LoggerService } from "../logger/logger.service";
 import { MathService } from "../math/math.service";
 
 import type { Event } from "../calendar/calendar.types";

@@ -12,13 +12,13 @@ import {
   Translation,
   Word,
 } from "@codebase/lexico-entities";
+import { LoggerService } from "@codebase/logger";
 
 import { resetCommandTestHarness } from "../../../testing/command-harness";
 import {
   createRepositoryMock,
   setPromptsMockResponse,
 } from "../../../testing/mocks";
-import { LoggerService } from "../logger/logger.service";
 
 import { ClearCommand } from "./clear.command";
 

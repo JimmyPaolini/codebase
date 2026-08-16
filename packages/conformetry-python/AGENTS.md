@@ -20,7 +20,7 @@ nx run conformetry-python:develop
 - **Framework**: NestJS (modules, dependency injection, providers)
 - **Bootstrap**: `NestFactory.create` (standard NestJS bootstrap)
 - **Env validation**: `@nestjs/config` + `zod` (`environmentSchema` in `.constants.ts`)
-- **Logging**: `pino`-backed `LoggerService` (`Scope.TRANSIENT`)
+- **Logging**: `@codebase/logger` — a `pino`-backed `LoggerService` (`Scope.TRANSIENT`)
 - **Language**: Strict TypeScript
 
 ### Execution Flow
@@ -39,9 +39,6 @@ src/
   main.module.ts                    # Root NestJS module (imports ConfigModule, LoggerModule)
   constants.ts                      # Zod environmentSchema for env validation
   modules/
-    logger/
-      logger.service.ts             # Transient pino LoggerService
-      logger.module.ts              # LoggerModule (exports LoggerService)
     <domain>/                       # Add feature modules here
       <domain>.module.ts
       <domain>.service.ts
@@ -60,6 +57,8 @@ testing/                            # Shared test utilities
 3. **Validate env vars** — extend `environmentSchema` in `constants.ts` with all required environment variables.
 
 ### Logging
+
+`LoggerService` and `LoggerModule` come from `@codebase/logger` — this project does not define its own logger. Add `"@codebase/logger": "workspace:*"` to `dependencies`, then import `LoggerModule` once in the root module; it is `@Global()`, so feature modules inject `LoggerService` without importing it.
 
 `LoggerService` is `Scope.TRANSIENT` — each injecting class gets its own instance. Always call `setContext` in the constructor:
 
@@ -225,6 +224,6 @@ See [Common Gotchas](../../documentation/troubleshooting/gotchas.md) for workspa
 - [src/main.ts](src/main.ts): Application bootstrap
 - [src/main.module.ts](src/main.module.ts): Root NestJS module
 - [src/constants.ts](src/constants.ts): `environmentSchema` (Zod)
-- [src/modules/logger/logger.service.ts](src/modules/logger/logger.service.ts): pino-backed logger
+- `@codebase/logger` (`packages/logger`): shared pino-backed `LoggerService` and `LoggerModule`
 - [project.json](project.json): Nx targets (`develop`, `build`, `test`, `lint`, `typecheck`, `format`)
 - [.env.default](.env.default): Environment variable template

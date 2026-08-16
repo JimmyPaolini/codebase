@@ -110,7 +110,13 @@ export class MarkdownService {
         }
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
-        this.logger.warn(`Markdown analysis skipped ${filePath}: ${message}`);
+        this.logger.warn(
+          `📝 Skipped markdown analysis for ${filePath}`,
+          undefined,
+          {
+            reason: message,
+          },
+        );
         continue;
       }
     }

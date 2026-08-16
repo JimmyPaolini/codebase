@@ -1,8 +1,5 @@
 {
   "author": "Jimmy Paolini",
-  "dependencies": {
-    "pino-pretty": "catalog:"
-  },
   "description": "",
   "devDependencies": {
     "@commitlint/cli": "catalog:",

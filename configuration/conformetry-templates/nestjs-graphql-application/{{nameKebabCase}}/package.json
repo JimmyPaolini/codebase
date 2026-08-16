@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@apollo/server": "catalog:",
+    "@codebase/logger": "workspace:*",
     "@nestjs/apollo": "catalog:",
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
@@ -10,8 +11,6 @@
     "dataloader": "catalog:",
     "graphql": "catalog:",
     "nestjs-graphql-connection": "catalog:",
-    "pino": "catalog:",
-    "pino-pretty": "catalog:",
     "reflect-metadata": "catalog:",
     "tsx": "catalog:",
     "unplugin-swc": "catalog:",

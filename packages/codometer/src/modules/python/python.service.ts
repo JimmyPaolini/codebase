@@ -52,7 +52,9 @@ export class PythonService {
       return JSON.parse(output.trim()) as PythonResult;
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
-      this.logger.warn(`Python analysis skipped: ${message}`);
+      this.logger.warn(`🐍 Skipped Python analysis`, undefined, {
+        reason: message,
+      });
       return { ...EMPTY_PYTHON_RESULT };
     }
   }

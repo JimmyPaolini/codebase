@@ -5,8 +5,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Author, Text } from "@codebase/lexico-entities";
-
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import { LiteratureTextIngestionService } from "./literature-text-ingestion.service";
 
@@ -99,10 +98,14 @@ describe(LiteratureTextIngestionService, () => {
         title: "Work",
       });
       expect(logger.log).toHaveBeenCalledWith(
-        "  📜 Starting: Work (from provider)",
+        "📜 Ingesting Work",
+        undefined,
+        expect.any(Object),
       );
       expect(logger.log).toHaveBeenCalledWith(
-        "  ✅ Completed: Work (from provider) (50.00%, 1/2)",
+        "📜 Ingested Work",
+        undefined,
+        expect.any(Object),
       );
       expect(logger.error).not.toHaveBeenCalled();
     });
@@ -147,10 +150,14 @@ describe(LiteratureTextIngestionService, () => {
         title: "Chapter 1",
       });
       expect(logger.log).toHaveBeenCalledWith(
-        "  📜 Starting: book-1 / Chapter 1 (from provider)",
+        "📜 Ingesting book-1 / Chapter 1",
+        undefined,
+        expect.any(Object),
       );
       expect(logger.log).toHaveBeenCalledWith(
-        "  ✅ Completed: book-1 / Chapter 1 (from provider) (100.00%, 2/2)",
+        "📜 Ingested book-1 / Chapter 1",
+        undefined,
+        expect.any(Object),
       );
     });
 
@@ -187,14 +194,18 @@ describe(LiteratureTextIngestionService, () => {
       );
 
       expect(logger.error).toHaveBeenCalledWith(
-        "❌ Failed to process Work (from provider): Error: ingestion failed",
+        "📜 Failed processing Work",
+        expect.any(String),
+        expect.any(Object),
       );
       expect(appendFile).toHaveBeenCalledWith(
         "/tmp/literature-errors.log",
         expect.stringContaining("data/library/provider/author/work.md"),
       );
       expect(logger.log).toHaveBeenCalledWith(
-        "  ✅ Completed: Work (from provider) (100.00%, 1/1)",
+        "📜 Ingested Work",
+        undefined,
+        expect.any(Object),
       );
     });
 
@@ -228,7 +239,9 @@ describe(LiteratureTextIngestionService, () => {
       );
 
       expect(logger.error).toHaveBeenCalledWith(
-        "❌ Failed to process Work (from provider): ingestion failed",
+        "📜 Failed processing Work",
+        expect.any(String),
+        expect.any(Object),
       );
       expect(appendFile).toHaveBeenCalledWith(
         "/tmp/literature-errors.log",
