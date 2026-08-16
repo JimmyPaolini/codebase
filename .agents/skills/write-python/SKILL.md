@@ -6,7 +6,9 @@ license: MIT
 
 # Write Python
 
-All Python projects inherit configuration from the workspace root `pyproject.toml` and Nx `targetDefaults`. Use `uv run` (never `uvx`) for reproducible tool invocations pinned in `uv.lock`.
+All Python projects inherit configuration from the root `pyproject.toml` and Nx `targetDefaults`. Use `uv run` (never `uvx`) for reproducible tool invocations pinned in `uv.lock`.
+
+Every Python project is a member of the uv workspace declared in the root `pyproject.toml`, sharing one `uv.lock` and one `.venv`, both at the repository root.
 
 ## Tool Targets
 
@@ -103,7 +105,8 @@ reproducible = true
 exclude = ["notebooks/**", ".vulture_whitelist.py"]
 
 [tool.pyright]
-venvPath = "."
+# The shared uv workspace venv at the repository root
+venvPath = "../.."
 venv = ".venv"
 reportMissingModuleSource = "none"
 
@@ -121,7 +124,30 @@ skips = ["B101"]
 
 ## Root pyproject.toml
 
-Located at `configuration/pyproject.toml`. Contains **tool config sections only** — no `[project]`, `[build-system]`, or uv workspace config. Projects inherit these settings automatically.
+The root `pyproject.toml` is the single Python configuration file: it declares the uv workspace, the dev tools the workspace-root Nx targets run (sqlfluff, vulture, yamllint), and the shared `[tool.*]` settings projects pick up via `[tool.ruff] extend`.
+
+```toml
+[tool.uv.workspace]
+members = ["applications/affirmations"]
+
+[dependency-groups]
+dev = ["sqlfluff>=3.0", "vulture>=2.14", "yamllint>=1.35"]
+
+[tool.ruff]
+target-version = "py314"
+line-length = 100
+```
+
+It deliberately has **no `[project]` table**. A virtual workspace root makes `uv sync` install every member and its dev group into the shared `.venv`; adding `[project]` makes uv install only the root package and skip the members entirely.
+
+Note that only ruff inherits: pyright and pytest read solely the `pyproject.toml` of the directory they run in, so their settings must be repeated per project.
+
+## uv Workspace Rules
+
+- **Members are listed explicitly.** A glob such as `applications/*` fails on the TypeScript projects, which have no `pyproject.toml`.
+- **Sync from the repository root.** `uv sync --project <member>` prunes the other members' tools out of the shared `.venv`; a bare `uv sync` installs them all.
+- **`uv run` works from any member directory.** It resolves the workspace root and uses the shared `.venv` without pruning, so Nx targets keep their `cwd: {projectRoot}`.
+- **One resolution for all members.** Dependency conflicts between Python projects have to be settled, not isolated.
 
 ## ty Configuration Note
 
@@ -145,7 +171,8 @@ uv run vulture src/ .vulture_whitelist.py --min-confidence 80
 
 1. Create `project.json` with `language:python` tag and all sub-targets declared as `{}`
 2. Create `pyproject.toml` using the pattern above
-3. Run `uv sync` to generate `uv.lock`
-4. Add `ty` and `bandit` as dev dependencies: `uv add --dev ty 'bandit[toml]'`
-5. Override composite targets (`format`, `lint`, `typecheck`, `test`) in `project.json`
-6. Verify: `nx run <project>:analyze-code`
+3. Add the project path to `members` in the root `pyproject.toml`
+4. Run `uv sync` from the repository root to update the shared `uv.lock` and `.venv`
+5. Add `ty` and `bandit` as dev dependencies: `uv add --dev --package <project> ty 'bandit[toml]'`
+6. Override composite targets (`format`, `lint`, `typecheck`, `test`) in `project.json`
+7. Verify: `nx run <project>:analyze-code`
