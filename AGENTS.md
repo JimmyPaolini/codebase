@@ -456,6 +456,44 @@ See [Testing Strategy](documentation/code-quality/testing-strategy.md) for patte
 | `.github/copilot-instructions.md` | `AGENTS.md` |
 | `.github/skills` | `.agents/skills` |
 
+### Session Hooks
+
+Three checks run at the start of every agent session and inject their failure as
+additional context, so the agent fixes the problem before writing any code. Both
+harnesses run the same scripts under `scripts/git/`:
+
+| Script | Checks |
+| ------ | ------ |
+| `validate-session-branch-name.sh` | Branch follows `<type>/<scope>-<description>`; directs the agent to the rename-branch skill |
+| `validate-session-commit-signing.sh` | `commit.gpgsign`, `user.signingkey`, and a GPG signing smoke test |
+| `validate-session-gh-authentication.sh` | `gh auth status` plus Projects access |
+
+Each script is registered twice — once per harness — and both registrations point
+at the same file:
+
+| Harness | Registration |
+| ------- | ------------ |
+| Claude Code | `SessionStart` entries in `.claude/settings.json` |
+| GitHub Copilot | `sessionStart` entries in `.github/hooks/*.json` |
+
+The two harnesses read different JSON shapes, so the scripts pipe their message
+through `scripts/git/emit-session-hook-context.sh`, which emits
+`hookSpecificOutput.additionalContext` when `CLAUDE_PROJECT_DIR` is set and a
+top-level `additionalContext` otherwise. Remediation text also branches on
+`CI`/`GITHUB_ACTIONS`: cloud agents are told to re-run
+`copilot-setup-steps.yml`, local agents are given the `git config` and
+`gh auth login` commands they can run themselves.
+
+The signing smoke test never opens a pinentry, so a hook can fail but never hang:
+CI signs through a `loopback` wrapper, and local agents sign through a `cancel`
+wrapper that uses an already-cached passphrase and errors out in milliseconds
+when there is none. A cancelled pinentry is reported as inconclusive rather than
+as broken signing, because the following real commit prompts for the passphrase
+normally.
+
+When adding a session check, add the script under `scripts/git/`, emit through
+the shared emitter, and register it in both places.
+
 ### Instructions
 
 Guidelines for creating custom instruction files, skills, agents, and prompts for GitHub Copilot. See [`.github/instructions/`](.github/instructions) for actual implementations:
