@@ -14,7 +14,7 @@ This document outlines the core applications and packages managed within the cod
 - **lexico**: TanStack Start web application providing dictionary search and interactive lexicon features. It connects with [lexico-entities](/openwiki/architecture/overview.md) for data access.
 - **affirmations**: Python-based LangChain and Ollama affirmation generator utilizing LangGraph ReAct agents.
 - **caelundas**: CLI ephemeris calendar generator performing precise astronomical calculations.
-- **lexico-ingestion**: NestJS CLI application responsible for ingesting structured Latin dictionary corpuses.
+- **lexico-ingestion**: NestJS CLI application responsible for ingesting structured Latin dictionary corpora.
 
 ## Packages & Tooling
 

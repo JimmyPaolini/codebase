@@ -176,9 +176,11 @@ export default [
             /vitest\.config\..*$/,
             /eslint\.config\..*$/,
             /package\.json/,
-            // React component prop type names use the standard `Props` suffix
+            // React component property type names use the standard `Props` suffix
             /\w+Props$/,
           ],
+          // The map spells out every abbreviation CSpell's `flagWords` also bans.
+          // cspell:disable
           replacements: {
             app: { application: true },
             arr: { array: true },
@@ -224,6 +226,7 @@ export default [
             util: { utility: true },
             val: { value: true },
           },
+          // cspell:enable
         },
       ],
       // reduce() is used in pipeline transformations and aggregations

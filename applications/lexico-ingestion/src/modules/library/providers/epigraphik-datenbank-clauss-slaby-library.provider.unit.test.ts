@@ -1,3 +1,6 @@
+// `obj` is the field name the EDCS API returns, not an abbreviation this code chose.
+// cspell:ignore obj
+
 import { createMock, type DeepMocked } from "@golevelup/ts-vitest";
 import { describe, expect, it, vi } from "vitest";
 

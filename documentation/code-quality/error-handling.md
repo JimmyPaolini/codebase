@@ -37,7 +37,7 @@ export const createUser = createServerFn({ method: "POST" })
   .validator((input) => CreateUserSchema.parse(input)) // Parse early
   .handler(async ({ data }) => {
     // data is now typed and validated
-    const user = await db.users.create(data);
+    const user = await database.users.create(data);
     return user;
   });
 ```
@@ -258,7 +258,7 @@ TanStack Start server functions throw errors that surface to `errorComponent`:
 export const getWord = createServerFn({ method: "GET" })
   .validator((input) => GetWordSchema.parse(input))
   .handler(async ({ data }) => {
-    const word = await db.words.findUnique({ where: { id: data.id } });
+    const word = await database.words.findUnique({ where: { id: data.id } });
 
     if (!word) {
       throw new Error("Word not found"); // Surfaces to errorComponent

@@ -930,7 +930,7 @@ Each level can override settings from previous levels.
 
 ### Quality Assurance
 
-- [ ] Agent purpose is unique and not duplicative
+- [ ] Agent purpose is unique and not a duplicate
 - [ ] Tools are minimal and necessary
 - [ ] Instructions are clear and unambiguous
 - [ ] Agent has been tested with representative tasks

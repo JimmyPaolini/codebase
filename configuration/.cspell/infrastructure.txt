@@ -20,8 +20,10 @@ esockettimedout
 fkey
 fluentbit
 fuzzystrmatch
+GHSA
 gitleaks
 gitleaksignore
+gojq
 gtrgm
 healthcheck
 healthz
@@ -35,13 +37,16 @@ kubernetes
 lockfiles
 messagebird
 migra
+moby
 nanode
 nodegroup
 nodeuser
+nslookup
 opencontainers
 orioledb
 pgaudit
 PGDATA
+pgdg
 pgjwt
 PGPASSWORD
 pgrst
@@ -58,6 +63,7 @@ psql
 raspberrypi
 readyz
 regconfig
+resolv
 retag
 sendgrid
 signups
@@ -65,6 +71,7 @@ storageclasses
 supabase
 superkey
 textlocal
+tflint
 tfstate
 tfvars
 timestamptz
@@ -72,11 +79,13 @@ tolerations
 trgm
 trivy
 trivyignore
+trivyignores
 tsquery
 tsvector
 upsert
 upserted
 upserting
 upserts
+Virtio
 vonage
 workos

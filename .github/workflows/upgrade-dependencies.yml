@@ -30,14 +30,14 @@ jobs:
 
       - name: 🎁 Upgrade pnpm
         run: |
-          jq --arg v "pnpm@$(pnpm view pnpm version)" '.packageManager = $v' package.json > package.json.tmp && mv package.json.tmp package.json
+          jq --arg v "pnpm@$(pnpm view pnpm version)" '.packageManager = $v' package.json > package.json.temporary && mv package.json.temporary package.json
 
       - name: 🟢 Upgrade node
         run: |
           source ~/.nvm/nvm.sh
           LATEST_NODE=$(nvm version-remote lts/* | sed 's/v//')
           echo "v${LATEST_NODE}" > .nvmrc
-          jq --arg v ">=${LATEST_NODE}" '.engines.node = $v' package.json > package.json.tmp && mv package.json.tmp package.json
+          jq --arg v ">=${LATEST_NODE}" '.engines.node = $v' package.json > package.json.temporary && mv package.json.temporary package.json
 
       - name: 🐍 Upgrade Python
         run: |

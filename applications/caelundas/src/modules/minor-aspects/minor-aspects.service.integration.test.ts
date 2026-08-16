@@ -31,7 +31,7 @@ import type { CoordinateEphemeris } from "../ephemeris/ephemeris.types";
  * produced by real orb comparisons and phase-crossing logic.
  *
  * Ephemeris construction strategy:
- *   - All bodies default to longitude 100° (constant across prev/curr/next).
+ *   - All bodies default to longitude 100° (constant across previous/current/next).
  *     With every pair at 0° separation and no movement, `isBouncing` cannot fire
  *     (requires a strict local extremum) and `isCrossing` cannot fire (no sign change),
  *     so zero events are produced by the base configuration.
@@ -45,7 +45,7 @@ import type { CoordinateEphemeris } from "../ephemeris/ephemeris.types";
  *
  * Phase semantics:
  *   - Forming: previous outside orb, current inside orb
- *   - Perfective: sign change in (angle − aspectAngle) across prev→curr
+ *   - Perfective: sign change in (angle − aspectAngle) across previous→current
  *   - Dissolving: current inside orb, next outside orb
  */
 
