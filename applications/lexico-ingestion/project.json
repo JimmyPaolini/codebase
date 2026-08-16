@@ -16,7 +16,6 @@
       "command": "echo 'lexico-ingestion is a development tool and does not require building'"
     },
     "dependency-cruiser": {},
-    "eslint": {},
     "knip": {},
     "lint-codebase": {},
     "make-projects": {},
@@ -70,7 +69,6 @@
     "test-coverage": {},
     "type-coverage": {},
     "typecheck": {},
-    "vitest": {},
     "yaml-lint": {}
   }
 }

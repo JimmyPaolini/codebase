@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
-    // `configuration/lint-staged.config.ts` is loaded by Node's native
-    // TypeScript stripping during pre-commit, which resolves imports exactly
-    // as written and so needs explicit `.ts` extensions. Safe here because
+    // Retained after `configuration/lint-staged.config.ts` was removed: that
+    // file was loaded by Node's native TypeScript stripping during pre-commit,
+    // which resolves imports exactly as written and so needed explicit `.ts`
+    // extensions. Nothing in this project uses them today, but the option only
+    // permits a style rather than requiring it, and it is safe here because
     // this project only typechecks.
     "allowImportingTsExtensions": true,
     "noEmit": true,

@@ -19,7 +19,6 @@
       "outputs": ["{options.outputPath}"]
     },
     "dependency-cruiser": {},
-    "eslint": {},
     "knip": {},
     "lint-codebase": {},
     "make-projects": {},
@@ -68,7 +67,6 @@
     "test-coverage": {},
     "type-coverage": {},
     "typecheck": {},
-    "vitest": {},
     "yaml-lint": {}
   }
 }

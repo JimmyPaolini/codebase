@@ -68,7 +68,7 @@ size-limit-report.json
 # Other 🗑️
 tmp
 dist
-last-lint-staged-output.log
+last-pre-commit-output.log
 applications/caelundas/output
 vite.config.*.timestamp*
 data/**

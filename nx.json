@@ -68,6 +68,7 @@
     },
     {
       "options": {
+        "testMode": "run",
         "testTargetName": "vitest"
       },
       "plugin": "@nx/vitest"
@@ -770,68 +771,26 @@
         "outputs": []
       }
     ],
-    "vitest": [
-      {
-        "cache": true,
-        "configurations": {
-          "coverage": {
-            "command": "pnpm exec vitest run --coverage --coverage.provider=v8"
-          },
-          "integration": {
-            "command": "pnpm exec vitest run integration.test.ts"
-          },
-          "unit": {
-            "command": "pnpm exec vitest run unit.test.ts"
-          },
-          "watch": {
-            "command": "pnpm exec vitest"
-          }
+    "vitest": {
+      "configurations": {
+        "coverage": {
+          "command": "pnpm exec vitest run --coverage --coverage.provider=v8"
         },
-        "executor": "nx:run-commands",
-        "filter": {
-          "projects": ["tag:framework:typeorm"]
+        "end-to-end": {
+          "command": "pnpm exec vitest run end-to-end.test.ts"
         },
-        "inputs": [
-          "{projectRoot}/**/*.test.ts",
-          "{projectRoot}/**/*.ts",
-          "{workspaceRoot}/configuration/vitest.config.ts",
-          "shared-globals"
-        ],
-        "options": {
-          "command": "pnpm exec vitest run",
-          "cwd": "{projectRoot}"
+        "integration": {
+          "command": "pnpm exec vitest run integration.test.ts"
+        },
+        "unit": {
+          "command": "pnpm exec vitest run unit.test.ts"
+        },
+        "watch": {
+          "command": "pnpm exec vitest"
         }
       },
-      {
-        "cache": true,
-        "configurations": {
-          "coverage": {
-            "command": "pnpm exec vitest run --coverage --coverage.provider=v8"
-          },
-          "end-to-end": {
-            "command": "pnpm exec vitest run end-to-end.test.ts"
-          },
-          "integration": {
-            "command": "pnpm exec vitest run integration.test.ts"
-          },
-          "unit": {
-            "command": "pnpm exec vitest run unit.test.ts"
-          },
-          "watch": {
-            "command": "pnpm exec vitest"
-          }
-        },
-        "executor": "nx:run-commands",
-        "filter": {
-          "projects": ["tag:language:typescript"]
-        },
-        "inputs": ["^production", "default"],
-        "options": {
-          "command": "pnpm exec vitest run",
-          "cwd": "{projectRoot}"
-        }
-      }
-    ],
+      "description": "Extra configurations layered onto the vitest target that @nx/vitest infers. The plugin supplies the command, inputs, and outputs."
+    },
     "vulture": [
       {
         "cache": true,

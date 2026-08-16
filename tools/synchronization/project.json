@@ -29,6 +29,9 @@
         "agent-skills-write": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts agent-skills write"
         },
+        "check": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization check"
+        },
         "conformetry-generators-check": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts conformetry-generators check"
         },
@@ -52,12 +55,16 @@
         },
         "pull-request-template-write": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts pull-request-template write"
+        },
+        "write": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization write"
         }
       },
-      "defaultConfiguration": "agent-skills-check",
-      "description": "Start the Synchronization application or run a synchronization command",
+      "defaultConfiguration": "check",
+      "description": "Run every synchronization command (default), or one of them via a named configuration.",
       "executor": "nx:run-commands",
       "options": {
+        "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization check",
         "cwd": "{workspaceRoot}"
       }
     },
@@ -72,7 +79,7 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Run every synchronization command in one process. The individual `start:*-check` configurations remain for targeted use; this exists so one Nx target covers all five without five project graph builds.",
+      "description": "Run every synchronization command in one process. This is what lint-codebase depends on \u2014 it cannot depend on `start`, because other projects use that name to launch an application. `start` (default configuration) runs the same thing for interactive use.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.ts",
@@ -96,7 +103,6 @@
     "test-coverage": {},
     "type-coverage": {},
     "typecheck": {},
-    "vitest": {},
     "yaml-lint": {}
   }
 }
