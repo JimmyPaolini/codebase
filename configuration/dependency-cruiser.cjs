@@ -10,7 +10,7 @@
  * Usage:
  *   nx run <project>:dependency-cruiser
  *
- * CI: Runs automatically via .github/workflows/analyze-code.yml
+ * CI: Runs automatically via .github/workflows/lint-codebase.yml
  *     (on PRs affecting source files + weekly scheduled run)
  *
  * @type {import('dependency-cruiser').IConfiguration}

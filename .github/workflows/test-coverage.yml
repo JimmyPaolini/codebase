@@ -1,5 +1,7 @@
 name: 🧑‍🔬 Test Coverage
 
+# Dynamic code analysis: the checks that execute the source.
+
 on:
   push:
     branches:
@@ -23,25 +25,36 @@ jobs:
   test-coverage:
     name: 🧑‍🔬 Test Coverage
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: 🕋 Setup Codebase
         uses: ./.github/actions/setup-codebase
 
+      # `--configuration=coverage` is passed explicitly and must stay that way:
+      # Nx propagates an explicit configuration down `dependsOn`, but never a
+      # `defaultConfiguration`. Drop the flag and the leaves run without
+      # coverage instrumentation or thresholds.
       - name: 🧪 Test Coverage
         env:
           NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
-        run: pnpm exec nx affected --target=test --parallel=3 --configuration=coverage
+        run: |
+          pnpm exec nx affected --target=test-coverage \
+            --configuration=coverage --parallel=4
 
       - name: 📊 Upload Test Coverage
-        uses: actions/upload-artifact@v4
         if: always()
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-reports
-          path: coverage/
+          path: |
+            coverage/
+            applications/**/coverage/
+            packages/**/coverage/
+            tools/**/coverage/
           retention-days: 30

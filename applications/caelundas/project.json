@@ -12,8 +12,6 @@
     "type:application"
   ],
   "targets": {
-    "analyze-code": {},
-    "clean": {},
     "dependency-cruiser": {},
     "download-ephemeris": {
       "cache": false,
@@ -24,9 +22,8 @@
         "cwd": "{projectRoot}"
       }
     },
-    "format": {},
     "knip": {},
-    "lint": {},
+    "lint-codebase": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
@@ -56,7 +53,7 @@
         "cwd": "{projectRoot}"
       }
     },
-    "test": {},
+    "test-coverage": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {}

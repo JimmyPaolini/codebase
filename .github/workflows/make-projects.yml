@@ -1,0 +1,199 @@
+name: 👷 Make Projects
+
+# Everything this repository builds: the workspace projects, and the
+# devcontainer image. The devcontainer job is gated on a paths filter rather
+# than living in its own workflow, because `on.paths` cannot be scoped per job.
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  detect-changes:
+    name: 🔍 Detect Changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      devcontainer: ${{ steps.filter.outputs.devcontainer }}
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: 🔍 Check Changes
+        id: filter
+        uses: dorny/paths-filter@v4
+        with:
+          # A push to main has no pull_request base; `base` pins the comparison
+          # so the filter resolves on both event types.
+          base: ${{ github.ref }}
+          filters: |
+            devcontainer:
+              - .devcontainer/**
+              - .github/workflows/make-projects.yml
+
+  make-projects:
+    name: 👷 Make Projects
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: 🕋 Setup Codebase
+        uses: ./.github/actions/setup-codebase
+        with:
+          # Builds and bundle sizing touch no Python-backed tool.
+          python-dependencies: "false"
+
+      - name: 👷 Make Projects
+        run: pnpm exec nx affected --target=make-projects --parallel=4
+
+      # On main this snapshot becomes the baseline every later pull request
+      # compares against, which is what removes the second checkout, install,
+      # and full build this job used to run just to size the base branch.
+      - name: 📤 Upload Bundle Sizes
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v7
+        with:
+          name: bundle-sizes-main
+          path: |
+            applications/**/size-limit-report.json
+            packages/**/size-limit-report.json
+          retention-days: 90
+          if-no-files-found: ignore
+
+      - name: 📥 Download Baseline Bundle Sizes
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          run_id="$(gh run list --workflow=make-projects.yml --branch=main \
+            --status=success --limit=1 --json databaseId --jq '.[0].databaseId')"
+          if [[ -z "${run_id}" ]]; then
+            echo "No successful main run to compare against yet."
+            exit 0
+          fi
+          gh run download "${run_id}" --name bundle-sizes-main --dir .bundle-baseline
+
+      - name: 📦 Report Bundle Sizes
+        if: github.event_name == 'pull_request'
+        run: |
+          pnpm exec tsx scripts/report-bundle-sizes.ts \
+            --baseline .bundle-baseline \
+            --output .bundle-report.md
+
+      - name: 💬 Post Bundle Report
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { readFileSync } = require('node:fs');
+            const body = readFileSync('.bundle-report.md', 'utf8');
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+            });
+            const existing = comments.find(
+              c => c.user.type === 'Bot' && c.body.includes('Bundle Size Report')
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body,
+              });
+            }
+
+  make-devcontainer:
+    name: 🧑‍🔧 Make Devcontainer
+    needs: detect-changes
+    if: needs.detect-changes.outputs.devcontainer == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v7
+
+      # The VS Code extension sync check moved into the Lint Codebase gate.
+      - name: 🗂️ Setup Environment File
+        run: |
+          cp .env.default .env
+          echo "LOCAL_WORKSPACE_FOLDER=$GITHUB_WORKSPACE" >> .env
+
+      - name: 🔧 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: 🔐 Login to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐳 Make Devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          configFile: .devcontainer/cloud/devcontainer.json
+          imageName: ghcr.io/jimmypaolini/codebase-devcontainer
+          cacheFrom: |
+            type=gha,scope=devcontainer
+            ghcr.io/jimmypaolini/codebase-devcontainer
+          push: filter
+          eventFilterForPush: |
+            push:
+              branches:
+                - main
+          env: |
+            CI=true
+            GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
+            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔬 Test Devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          configFile: .devcontainer/cloud/devcontainer.json
+          imageName: ghcr.io/jimmypaolini/codebase-devcontainer
+          cacheFrom: |
+            type=gha,scope=devcontainer
+            ghcr.io/jimmypaolini/codebase-devcontainer
+          push: never
+          env: |
+            CI=true
+            GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
+            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          runCmd: |
+            bash .devcontainer/scripts/test-devcontainer.sh

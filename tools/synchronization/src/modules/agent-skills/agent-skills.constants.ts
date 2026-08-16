@@ -50,10 +50,3 @@ export const TRIAGE_AGENT_CONFIGS: AgentFileSyncConfig[] = [
     skillFile: `${AGENT_SKILLS_DIRECTORY}/triage-submission/SKILL.md`,
   },
 ];
-
-/** Files managed by the agent-skills sync workflow. */
-export const SYNC_AGENT_SKILLS_FILES: string[] = [
-  `${AGENTS_DIRECTORY}/*.agent.md`,
-  AGENTS_MD_FILE,
-  `${AGENT_SKILLS_DIRECTORY}/**/*`,
-];
