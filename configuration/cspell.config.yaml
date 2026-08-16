@@ -149,6 +149,10 @@ patterns:
   # TypeORM-generated index and constraint identifiers, whose hex hashes also spell `db`.
   - name: typeorm-constraint-identifier
     pattern: /\b(?:IDX|FK|PK|UQ|REL|CHK|DF)_[\da-f]{8,}\b/g
+  # postcss's declaration node spells its property name `prop`, so reading one
+  # means writing the abbreviation postcss chose.
+  - name: postcss-declaration-property
+    pattern: /(?<=\bnode)\.prop(?![\w])/g
   # The JSDoc `@param` tag and the NestJS `@Param()` decorator named after it.
   - name: jsdoc-parameter-tag
     pattern: /@[Pp]aram(?![\w])/g
@@ -178,6 +182,7 @@ patterns:
     pattern: /"[a-z\d][\w-]*(?:\.[\w-]+)+"/gi
   # cspell:enable
 ignoreRegExpList:
+  - postcss-declaration-property
   - temporary-directory-path
   - text-file-extension
   - css-utility-class

@@ -80,6 +80,23 @@ export class OutputMarkdownService {
     );
   }
 
+  /** Renders the CSS badge group. */
+  private buildCssGroup(statistics: CodeStatisticsResult): string {
+    const { css } = statistics;
+
+    return this.buildGroup("CSS", [
+      this.buildBadge("CSS Files", css.files, "264de4"),
+      this.buildBadge("CSS Lines", css.lines, "2965f1"),
+      this.buildBadge("CSS Rules", css.rules, "7c3aed"),
+      this.buildBadge("CSS Selectors", css.selectors, "8b5cf6"),
+      this.buildBadge("CSS Declarations", css.declarations, "0284c7"),
+      this.buildBadge("CSS At Rules", css.atRules, "f97316"),
+      this.buildBadge("CSS Media Queries", css.mediaQueries, "ea580c"),
+      this.buildBadge("CSS Custom Properties", css.customProperties, "16a34a"),
+      this.buildBadge("CSS Comments", css.comments, "64748b"),
+    ]);
+  }
+
   /**
    * Build one labelled group of badges.
    *
@@ -92,6 +109,23 @@ export class OutputMarkdownService {
     // section, so `###` is the level that continues the document's outline
     // instead of imitating one, which is what markdownlint's MD036 rejects.
     return `### ${label}\n\n${badges.join("\n")}`;
+  }
+
+  /** Renders the HCL badge group. */
+  private buildHclGroup(statistics: CodeStatisticsResult): string {
+    const { hcl } = statistics;
+
+    return this.buildGroup("HCL", [
+      this.buildBadge("HCL Files", hcl.files, "844fba"),
+      this.buildBadge("HCL Lines", hcl.lines, "a78bfa"),
+      this.buildBadge("HCL Blocks", hcl.blocks, "7c3aed"),
+      this.buildBadge("HCL Resources", hcl.resources, "0284c7"),
+      this.buildBadge("HCL Variables", hcl.variables, "16a34a"),
+      this.buildBadge("HCL Outputs", hcl.outputs, "059669"),
+      this.buildBadge("HCL Attributes", hcl.attributes, "0ea5e9"),
+      this.buildBadge("HCL Interpolations", hcl.interpolations, "db2777"),
+      this.buildBadge("HCL Comments", hcl.comments, "64748b"),
+    ]);
   }
 
   /** Renders the JSON badge group. */
@@ -197,6 +231,59 @@ export class OutputMarkdownService {
       this.buildBadge("Repo Size", `${statistics.repoSizeMiB} MiB`, "6b7280"),
       this.buildBadge("Folders", statistics.folders, "4a4a4a"),
       this.buildBadge("Source Files", statistics.sourceFiles, "3178c6"),
+    ]);
+  }
+
+  /** Renders the Shell badge group. */
+  private buildShellGroup(statistics: CodeStatisticsResult): string {
+    const { shell } = statistics;
+
+    return this.buildGroup("Shell", [
+      this.buildBadge("Shell Files", shell.files, "89e051"),
+      this.buildBadge("Shell Lines", shell.lines, "4eaa25"),
+      this.buildBadge("Shell Functions", shell.functions, "16a34a"),
+      this.buildBadge("Shell Variables", shell.variables, "0284c7"),
+      this.buildBadge("Shell Exports", shell.exports, "ea580c"),
+      this.buildBadge("Shell Conditionals", shell.conditionals, "7c3aed"),
+      this.buildBadge("Shell Loops", shell.loops, "8b5cf6"),
+      this.buildBadge("Shell Pipelines", shell.pipelines, "059669"),
+      this.buildBadge("Shebangs", shell.shebangs, "6b7280"),
+      this.buildBadge("Shell Comments", shell.comments, "64748b"),
+      this.buildBadge("Shell Comment Lines", shell.commentLines, "475569"),
+    ]);
+  }
+
+  /** Renders the SQL badge group. */
+  private buildSqlGroup(statistics: CodeStatisticsResult): string {
+    const { sql } = statistics;
+
+    return this.buildGroup("SQL", [
+      this.buildBadge("SQL Files", sql.files, "e38c00"),
+      this.buildBadge("SQL Lines", sql.lines, "f29111"),
+      this.buildBadge("SQL Statements", sql.statements, "7c3aed"),
+      this.buildBadge("SQL Selects", sql.selects, "16a34a"),
+      this.buildBadge("SQL Inserts", sql.inserts, "22c55e"),
+      this.buildBadge("SQL Updates", sql.updates, "0ea5e9"),
+      this.buildBadge("SQL Deletes", sql.deletes, "dc2626"),
+      this.buildBadge("SQL Creates", sql.creates, "0284c7"),
+      this.buildBadge("SQL Joins", sql.joins, "8b5cf6"),
+      this.buildBadge("SQL CTEs", sql.commonTableExpressions, "059669"),
+      this.buildBadge("SQL Comments", sql.comments, "64748b"),
+    ]);
+  }
+
+  /** Renders the TOML badge group. */
+  private buildTomlGroup(statistics: CodeStatisticsResult): string {
+    const { toml } = statistics;
+
+    return this.buildGroup("TOML", [
+      this.buildBadge("TOML Files", toml.files, "9c4221"),
+      this.buildBadge("TOML Lines", toml.lines, "b45309"),
+      this.buildBadge("TOML Tables", toml.tables, "7c3aed"),
+      this.buildBadge("TOML Array Tables", toml.arrayTables, "8b5cf6"),
+      this.buildBadge("TOML Keys", toml.keys, "0284c7"),
+      this.buildBadge("TOML Arrays", toml.arrays, "16a34a"),
+      this.buildBadge("TOML Comments", toml.comments, "64748b"),
     ]);
   }
 
@@ -346,6 +433,11 @@ export class OutputMarkdownService {
       this.buildPythonGroup(statistics),
       this.buildJsonGroup(statistics),
       this.buildYamlGroup(statistics),
+      this.buildTomlGroup(statistics),
+      this.buildShellGroup(statistics),
+      this.buildSqlGroup(statistics),
+      this.buildHclGroup(statistics),
+      this.buildCssGroup(statistics),
       this.buildJupyterGroup(statistics),
       this.buildMarkdownGroup(statistics),
     ].join("\n\n");

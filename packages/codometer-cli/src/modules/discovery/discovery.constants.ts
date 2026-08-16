@@ -18,6 +18,21 @@ export const MARKDOWN_EXTENSIONS = new Set([".markdown", ".md", ".mdx"]);
  */
 export const JSON_EXTENSIONS = new Set([".json", ".jsonc", ".jsonl"]);
 
+/** File extensions treated as CSS stylesheets. */
+export const CSS_EXTENSIONS = new Set([".css"]);
+
+/** File extensions treated as HCL, the Terraform configuration language. */
+export const HCL_EXTENSIONS = new Set([".hcl", ".tf", ".tfvars"]);
+
+/** File extensions treated as shell scripts. */
+export const SHELL_EXTENSIONS = new Set([".bash", ".sh", ".zsh"]);
+
+/** File extensions treated as SQL scripts. */
+export const SQL_EXTENSIONS = new Set([".sql"]);
+
+/** File extensions treated as TOML documents. */
+export const TOML_EXTENSIONS = new Set([".toml"]);
+
 /** File extensions treated as YAML documents. */
 export const YAML_EXTENSIONS = new Set([".yaml", ".yml"]);
 

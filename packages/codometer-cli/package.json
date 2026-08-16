@@ -9,6 +9,7 @@
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
     "nest-commander": "catalog:",
+    "postcss": "catalog:",
     "reflect-metadata": "catalog:",
     "remark": "catalog:",
     "remark-frontmatter": "catalog:",

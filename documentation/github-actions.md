@@ -56,7 +56,7 @@ All workflows call this composite action after checkout. It provides:
 `lint-codebase` is an `nx:noop` target whose `dependsOn` list holds every static
 analyser: typecheck, type-coverage, eslint, oxlint, oxfmt, knip, spell-check,
 markdown-lint, yaml-lint, dependency-cruiser, stylelint, squawk, sqlfluff, ruff,
-vulture, nbstripout, sherif, syncpack, codometer, conformetry-validate, and the
+vulture, nbstripout, sherif, syncpack, conformetry-validate, and the
 synchronization checks. One invocation builds one task graph; the composites it
 replaced spawned a nested `nx run` per tool.
 

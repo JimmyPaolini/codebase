@@ -4,11 +4,16 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { CssService } from "../css/css.service";
 import { DiscoveryService } from "../discovery/discovery.service";
+import { HclService } from "../hcl/hcl.service";
 import { JsonService } from "../json/json.service";
 import { JupyterService } from "../jupyter/jupyter.service";
 import { MarkdownService } from "../markdown/markdown.service";
 import { PythonService } from "../python/python.service";
+import { ShellService } from "../shell/shell.service";
+import { SqlService } from "../sql/sql.service";
+import { TomlService } from "../toml/toml.service";
 import { TypescriptService } from "../typescript/typescript.service";
 import { YamlService } from "../yaml/yaml.service";
 
@@ -27,7 +32,12 @@ describe(CodometerService, () => {
   let service: CodometerService;
   let discoveryService: DiscoveryService;
   let jsonService: JsonService;
+  let cssService: CssService;
+  let hclService: HclService;
   let jupyterService: JupyterService;
+  let shellService: ShellService;
+  let sqlService: SqlService;
+  let tomlService: TomlService;
   let markdownService: MarkdownService;
   let pythonService: PythonService;
   let typescriptService: TypescriptService;
@@ -37,11 +47,16 @@ describe(CodometerService, () => {
     const module = await Test.createTestingModule({
       providers: [
         CodometerService,
+        CssService,
         DiscoveryService,
+        HclService,
         JsonService,
         JupyterService,
         MarkdownService,
         PythonService,
+        ShellService,
+        SqlService,
+        TomlService,
         TypescriptService,
         YamlService,
       ],
@@ -62,15 +77,25 @@ describe(CodometerService, () => {
     );
     typescriptService = new TypescriptService();
     yamlService = new YamlService();
+    cssService = new CssService();
+    hclService = new HclService();
+    shellService = new ShellService();
+    sqlService = new SqlService();
+    tomlService = new TomlService();
 
     vi.spyOn(discoveryService, "discoverFiles").mockReturnValue({
+      cssFiles: ["src/styles.css"],
+      hclFiles: ["infrastructure/main.tf"],
       jsFiles: ["src/app.js"],
       jsonFiles: [],
       markdownFiles: ["docs/guide.md"],
       notebookFiles: ["notebooks/explore.ipynb"],
       pyFiles: ["scripts/check.py"],
+      shellFiles: ["scripts/setup.sh"],
       sourceFiles: ["src/app.ts", "scripts/check.py"],
+      sqlFiles: ["data/schema.sql"],
       testFiles: [],
+      tomlFiles: ["pyproject.toml"],
       trackedFiles: ["src/app.ts", "scripts/check.py"],
       tsFiles: ["src/app.ts"],
       yamlFiles: [".github/workflows/ci.yml"],
@@ -124,6 +149,63 @@ describe(CodometerService, () => {
       tables: 18,
       taskListItems: 19,
       thematicBreaks: 20,
+    });
+    vi.spyOn(cssService, "analyze").mockReturnValue({
+      atRules: 1,
+      comments: 1,
+      customProperties: 1,
+      declarations: 1,
+      files: 1,
+      lines: 1,
+      mediaQueries: 1,
+      rules: 1,
+      selectors: 1,
+    });
+    vi.spyOn(hclService, "analyze").mockReturnValue({
+      attributes: 1,
+      blocks: 1,
+      comments: 1,
+      files: 1,
+      interpolations: 1,
+      lines: 1,
+      outputs: 1,
+      resources: 1,
+      variables: 1,
+    });
+    vi.spyOn(shellService, "analyze").mockReturnValue({
+      commentLines: 1,
+      comments: 1,
+      conditionals: 1,
+      exports: 1,
+      files: 1,
+      functions: 1,
+      lines: 1,
+      loops: 1,
+      pipelines: 1,
+      shebangs: 1,
+      variables: 1,
+    });
+    vi.spyOn(sqlService, "analyze").mockReturnValue({
+      comments: 1,
+      commonTableExpressions: 1,
+      creates: 1,
+      deletes: 1,
+      files: 1,
+      inserts: 1,
+      joins: 1,
+      lines: 1,
+      selects: 1,
+      statements: 1,
+      updates: 1,
+    });
+    vi.spyOn(tomlService, "analyze").mockReturnValue({
+      arrays: 1,
+      arrayTables: 1,
+      comments: 1,
+      files: 1,
+      keys: 1,
+      lines: 1,
+      tables: 1,
     });
     vi.spyOn(yamlService, "analyze").mockReturnValue({
       aliases: 1,
@@ -201,6 +283,11 @@ describe(CodometerService, () => {
       markdownService,
       jupyterService,
       yamlService,
+      cssService,
+      hclService,
+      shellService,
+      sqlService,
+      tomlService,
     );
     const result = codometerService.measure({
       configuration,
@@ -254,6 +341,15 @@ describe(CodometerService, () => {
       workingDirectory: "/repo",
       yamlFiles: [".github/workflows/ci.yml"],
     });
+    expect(shellService.analyze).toHaveBeenCalledWith({
+      shellFiles: ["scripts/setup.sh"],
+      workingDirectory: "/repo",
+    });
+    expect(result.css.rules).toBe(1);
+    expect(result.hcl.blocks).toBe(1);
+    expect(result.shell.functions).toBe(1);
+    expect(result.sql.statements).toBe(1);
+    expect(result.toml.tables).toBe(1);
     expect(result.yaml.documents).toBe(4);
     expect(result.yaml.keys).toBe(6);
     expect(result.jupyter.cells).toBe(7);

@@ -1,5 +1,6 @@
 import * as fs from "node:fs";
 
+import { createMock } from "@golevelup/ts-vitest";
 import { Logger } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -29,6 +30,9 @@ describe(DiscoveryService, () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(fs.existsSync).mockReturnValue(true);
+    vi.mocked(fs.lstatSync).mockReturnValue(
+      createMock<fs.Stats>({ isSymbolicLink: () => false }),
+    );
   });
 
   it("is defined", () => {
@@ -214,6 +218,28 @@ describe(DiscoveryService, () => {
       { path: ".nope-ignore" },
     );
     expect(result.trackedFiles).toStrictEqual(["src/app.ts"]);
+  });
+
+  it("skips symlinks so a mirrored file is not counted twice", () => {
+    execFileSyncMock.mockReturnValue(
+      Buffer.from(["AGENTS.md", "CLAUDE.md"].join("\n")),
+    );
+    vi.mocked(fs.lstatSync).mockImplementation((filePath) =>
+      createMock<fs.Stats>({
+        isSymbolicLink: () => String(filePath).endsWith("CLAUDE.md"),
+      }),
+    );
+
+    const result = service.discoverFiles({
+      exclude: [],
+      excludeFrom: [],
+      workingDirectory: "/repo",
+    });
+
+    // CLAUDE.md is a link to AGENTS.md; following it would report one document
+    // as two.
+    expect(result.trackedFiles).toStrictEqual(["AGENTS.md"]);
+    expect(result.markdownFiles).toStrictEqual(["AGENTS.md"]);
   });
 
   it("excludes files that do not exist on disk", () => {

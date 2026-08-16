@@ -154,6 +154,25 @@ describe(YamlService, () => {
     expect(result.scalars).toBe(1);
   });
 
+  it("walks mappings nested inside a sequence", () => {
+    const { workingDirectory, yamlFiles } = writeYamlFiles({
+      "steps.yaml": [
+        "steps:",
+        "  - name: checkout",
+        "    uses: actions/checkout@v7",
+        "  - name: build",
+        "    run: pnpm build",
+      ].join("\n"),
+    });
+
+    const result = service.analyze({ workingDirectory, yamlFiles });
+
+    expect(result.sequences).toBe(1);
+    // The root plus one per sequence item.
+    expect(result.mappings).toBe(3);
+    expect(result.keys).toBe(5);
+  });
+
   it("returns empty metrics when there are no YAML files", () => {
     const result = service.analyze({
       workingDirectory: "/repo",
