@@ -18,4 +18,5 @@ export interface DiscoveryResult {
   testFiles: string[];
   trackedFiles: string[];
   tsFiles: string[];
+  yamlFiles: string[];
 }

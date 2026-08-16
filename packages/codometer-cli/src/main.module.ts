@@ -17,6 +17,7 @@ import { OutputJsonModule } from "./modules/output-json/output-json.module";
 import { OutputMarkdownModule } from "./modules/output-markdown/output-markdown.module";
 import { PythonModule } from "./modules/python/python.module";
 import { TypescriptModule } from "./modules/typescript/typescript.module";
+import { YamlModule } from "./modules/yaml/yaml.module";
 
 /**
  * Root NestJS application module.
@@ -41,6 +42,7 @@ import { TypescriptModule } from "./modules/typescript/typescript.module";
     OutputMarkdownModule,
     PythonModule,
     TypescriptModule,
+    YamlModule,
   ],
 })
 export class MainModule {}

@@ -154,6 +154,19 @@ describe(OutputMarkdownService, () => {
       genericDeclarations: 15,
       interfaces: 17,
     },
+    yaml: {
+      aliases: 91,
+      anchors: 92,
+      comments: 93,
+      documents: 94,
+      files: 95,
+      keys: 96,
+      lines: 97,
+      mappings: 98,
+      maxDepth: 99,
+      scalars: 100,
+      sequences: 101,
+    },
   };
 
   it("is defined", () => {
@@ -204,14 +217,15 @@ describe(OutputMarkdownService, () => {
     const badgeCount = (block.match(/^!\[/gmu) ?? []).length;
     const measuredCount =
       Object.keys(sampleStatistics).length -
-      // The six grouped buckets are replaced by the counters they hold.
-      6 +
+      // The seven grouped buckets are replaced by the counters they hold.
+      7 +
       Object.keys(sampleStatistics.javascript).length +
       Object.keys(sampleStatistics.json).length +
       Object.keys(sampleStatistics.jupyter).length +
       Object.keys(sampleStatistics.markdown).length +
       Object.keys(sampleStatistics.python).length +
-      Object.keys(sampleStatistics.typescript).length;
+      Object.keys(sampleStatistics.typescript).length +
+      Object.keys(sampleStatistics.yaml).length;
 
     expect(badgeCount).toBe(measuredCount);
   });

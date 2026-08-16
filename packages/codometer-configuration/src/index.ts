@@ -36,4 +36,5 @@ export type {
   TypescriptStatistics,
   WriteMarkdownArguments,
   WriteMarkdownOutput,
+  YamlStatistics,
 } from "./modules/configuration/configuration.types";

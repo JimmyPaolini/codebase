@@ -11,6 +11,7 @@ import { OutputJsonModule } from "../output-json/output-json.module";
 import { OutputMarkdownModule } from "../output-markdown/output-markdown.module";
 import { PythonModule } from "../python/python.module";
 import { TypescriptModule } from "../typescript/typescript.module";
+import { YamlModule } from "../yaml/yaml.module";
 
 import { CodometerCommand } from "./codometer.command";
 import { CodometerService } from "./codometer.service";
@@ -32,6 +33,7 @@ import { CodometerService } from "./codometer.service";
     OutputMarkdownModule,
     PythonModule,
     TypescriptModule,
+    YamlModule,
   ],
   providers: [CodometerCommand, CodometerService],
 })
