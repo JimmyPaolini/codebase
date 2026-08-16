@@ -7,6 +7,7 @@ import {
   AGENT_SKILLS_DIRECTORY,
   AGENTS_DIRECTORY,
   AGENTS_MD_FILE,
+  INSTALLED_SKILLS_LOCK_FILE,
 } from "./agent-skills.constants";
 
 import type {
@@ -172,6 +173,28 @@ export function readCustomAgentsMetadata(
 }
 
 /**
+ * Reads the names of the skills installed from other repositories.
+ *
+ * Returns an empty set when there is no manifest, so a repository that
+ * installs none lists everything it has.
+ */
+export function readInstalledSkillNames(workspaceRoot: string): Set<string> {
+  try {
+    const content = readFileSync(
+      path.join(workspaceRoot, INSTALLED_SKILLS_LOCK_FILE),
+      "utf8",
+    );
+    const manifest = JSON.parse(content) as {
+      skills?: Record<string, unknown>;
+    };
+
+    return new Set(Object.keys(manifest.skills ?? {}));
+  } catch {
+    return new Set();
+  }
+}
+
+/**
  * Parses a SKILL.md file into synchronized skill metadata.
  */
 export function readSkillSourceFile(skillPath: string): SkillSourceMetadata {
@@ -188,17 +211,27 @@ export function readSkillSourceFile(skillPath: string): SkillSourceMetadata {
 }
 
 /**
- * Reads all SKILL.md files for AGENTS.md skill table generation.
+ * Reads the SKILL.md files this repository authored, for the AGENTS.md table.
+ *
+ * Skills installed from other repositories are left out. They are restored by
+ * the `skills` CLI at whatever version their source holds now, so listing them
+ * would make the table disagree with the working tree the moment an upstream
+ * description changed — in continuous integration, on an unrelated change.
  */
 export function readSkillTableMetadata(
   workspaceRoot: string,
 ): AgentSkillMetadata[] {
   const skillsDirectory = path.join(workspaceRoot, AGENT_SKILLS_DIRECTORY);
+  const installedSkills = readInstalledSkillNames(workspaceRoot);
   const skills: AgentSkillMetadata[] = [];
   const entries = readdirSync(skillsDirectory, { withFileTypes: true });
 
   for (const entry of entries) {
-    if (!entry.isDirectory() || entry.name === "README.md") {
+    if (
+      !entry.isDirectory() ||
+      entry.name === "README.md" ||
+      installedSkills.has(entry.name)
+    ) {
       continue;
     }
 

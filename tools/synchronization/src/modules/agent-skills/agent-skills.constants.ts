@@ -11,6 +11,14 @@ export const AGENTS_MD_FILE = "AGENTS.md";
 /** Source-of-truth directory for repository skills. */
 export const AGENT_SKILLS_DIRECTORY = ".agents/skills";
 
+/**
+ * Manifest of skills installed from other repositories.
+ *
+ * Its keys name every skill the `skills` CLI manages, which is how a skill
+ * this repository authored is told apart from one it borrowed.
+ */
+export const INSTALLED_SKILLS_LOCK_FILE = "skills-lock.json";
+
 /** Start marker for the custom agents table of contents in AGENTS.md. */
 export const CUSTOM_AGENTS_TOC_START =
   "<!-- custom-agents-table-of-contents start -->";

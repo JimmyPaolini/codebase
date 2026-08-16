@@ -9,6 +9,7 @@ import {
   generateAgentFile,
   readAgentsSection,
   readCustomAgentsMetadata,
+  readInstalledSkillNames,
   readSkillSourceFile,
   readSkillTableMetadata,
   renderCustomAgentsTable,
@@ -429,6 +430,68 @@ describe("agent-skills-sync utilities", () => {
         name: "beta",
       },
     ]);
+  });
+
+  it("leaves out skills installed from other repositories", () => {
+    const workspaceRoot = "/workspace";
+    const skillsDirectory = path.join(workspaceRoot, ".agents", "skills");
+
+    directoryEntries.set(skillsDirectory, [
+      createDirectoryEntry("authored", true),
+      createDirectoryEntry("borrowed", true),
+    ]);
+    fileContents.set(
+      path.join(skillsDirectory, "authored", "SKILL.md"),
+      ["---", "name: authored", "description: written here", "---"].join("\n"),
+    );
+    fileContents.set(
+      path.join(skillsDirectory, "borrowed", "SKILL.md"),
+      ["---", "name: borrowed", "description: written elsewhere", "---"].join(
+        "\n",
+      ),
+    );
+    fileContents.set(
+      path.join(workspaceRoot, "skills-lock.json"),
+      JSON.stringify({ skills: { borrowed: { source: "someone/skills" } } }),
+    );
+
+    // The borrowed skill is restored at whatever version its source holds now,
+    // so the table would disagree with the tree the moment upstream changed.
+    expect(readSkillTableMetadata(workspaceRoot)).toStrictEqual([
+      {
+        description: "written here",
+        filePath: ".agents/skills/authored/SKILL.md",
+        name: "authored",
+      },
+    ]);
+  });
+
+  it("reads the installed skill names from the manifest", () => {
+    const workspaceRoot = "/workspace";
+
+    fileContents.set(
+      path.join(workspaceRoot, "skills-lock.json"),
+      JSON.stringify({ skills: { one: {}, two: {} }, version: 1 }),
+    );
+
+    expect(readInstalledSkillNames(workspaceRoot)).toStrictEqual(
+      new Set(["one", "two"]),
+    );
+  });
+
+  it("treats a missing manifest as no installed skills", () => {
+    expect(readInstalledSkillNames("/nowhere")).toStrictEqual(new Set());
+  });
+
+  it("treats a manifest without skills as no installed skills", () => {
+    const workspaceRoot = "/workspace";
+
+    fileContents.set(
+      path.join(workspaceRoot, "skills-lock.json"),
+      JSON.stringify({ version: 1 }),
+    );
+
+    expect(readInstalledSkillNames(workspaceRoot)).toStrictEqual(new Set());
   });
 
   it("renders custom agent table rows", () => {
