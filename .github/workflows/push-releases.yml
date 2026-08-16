@@ -57,6 +57,13 @@ jobs:
       - name: 🔎 Check Commit Signing Configuration
         run: bash scripts/git/check-commit-signing-configuration.sh
 
+      # Measured here rather than on pull requests: the badge block is
+      # regenerated from whatever main now holds, and `@semantic-release/git`
+      # commits it with the changelog. A release that does not happen leaves
+      # the rewrite uncommitted, which is the same thing the changelog does.
+      - name: 📊 Measure Codebase
+        run: pnpm exec nx run codebase:codometer:write
+
       - name: 🦸 Push Releases
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}

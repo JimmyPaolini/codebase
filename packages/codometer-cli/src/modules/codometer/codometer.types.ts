@@ -1,5 +1,10 @@
 // 🏷️ Types
 
+import type { CssResult } from "../css/css.types";
+import type { HclResult } from "../hcl/hcl.types";
+import type { ShellResult } from "../shell/shell.types";
+import type { SqlResult } from "../sql/sql.types";
+import type { TomlResult } from "../toml/toml.types";
 import type {
   CodeStatisticsResult,
   ResolvedCodometerConfiguration,
@@ -20,6 +25,17 @@ export interface CodometerCommandOptions {
   directory?: string;
   json?: string;
   markdown?: string;
+}
+
+/**
+ * What the file-only analyzers report, collected in one step.
+ */
+export interface ConfigurationLanguageResults {
+  css: CssResult;
+  hcl: HclResult;
+  shell: ShellResult;
+  sql: SqlResult;
+  toml: TomlResult;
 }
 
 /**

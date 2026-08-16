@@ -30,7 +30,7 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Analyze codebase and write README.md statistics badges",
+      "description": "Analyze codebase and write README.md statistics badges. Run on main by the release workflow, which commits the result alongside the changelog; pull requests do not check it.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/**/*.{cjs,cts,js,json,jsx,mjs,mts,py,ts,tsx}",

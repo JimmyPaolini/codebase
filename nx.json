@@ -276,7 +276,6 @@
       "dependsOn": [
         "check-catalog-manifests",
         "check-lockfile",
-        "codometer",
         "conformetry-validate",
         "dependency-cruiser",
         "eslint",

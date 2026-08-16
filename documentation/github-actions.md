@@ -56,7 +56,7 @@ All workflows call this composite action after checkout. It provides:
 `lint-codebase` is an `nx:noop` target whose `dependsOn` list holds every static
 analyser: typecheck, type-coverage, eslint, oxlint, oxfmt, knip, spell-check,
 markdown-lint, yaml-lint, dependency-cruiser, stylelint, squawk, sqlfluff, ruff,
-vulture, nbstripout, sherif, syncpack, codometer, conformetry-validate, and the
+vulture, nbstripout, sherif, syncpack, conformetry-validate, and the
 synchronization checks. One invocation builds one task graph; the composites it
 replaced spawned a nested `nx run` per tool.
 
@@ -167,7 +167,7 @@ exactly. Its `inputs` cover the Terraform tree, which replaces the previous
 |📝 PR Title Validation|PR title follows Conventional Commits format via `commitlint` (PR only)|
 |🪢 PR Body Validation|PR body contains required `## 🌰 Summary`, `## 📝 Details`, `## 🧪 Testing`, `## 🔗 Related` sections (PR only)|
 
-The convention, PR-template, and agent-skills sync checks moved into
+The convention and PR-template sync checks moved into
 `lint-codebase` as `synchronize` — a single command that runs all five
 synchronizations in one process. This workflow deliberately skips
 `setup-codebase` entirely: no Nx, no uv, no Homebrew.

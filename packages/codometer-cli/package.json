@@ -9,12 +9,14 @@
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
     "nest-commander": "catalog:",
+    "postcss": "catalog:",
     "reflect-metadata": "catalog:",
     "remark": "catalog:",
     "remark-frontmatter": "catalog:",
     "remark-gfm": "catalog:",
     "tslib": "catalog:",
     "typescript": "catalog:",
+    "yaml": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
