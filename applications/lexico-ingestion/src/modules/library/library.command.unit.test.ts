@@ -837,7 +837,7 @@ describe(LibraryCommand, () => {
     });
 
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Error in provider string-provider",
+      "🔌 Failed running provider string-provider",
       undefined,
     );
     expect(appendFileMock).toHaveBeenCalledWith(

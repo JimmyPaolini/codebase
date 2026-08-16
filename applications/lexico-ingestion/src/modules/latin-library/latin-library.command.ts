@@ -50,7 +50,7 @@ export class LatinLibraryCommand extends CommandRunner {
     const response = await fetch(parsedUrl.href);
     if (!response.ok) {
       this.logger.warn(
-        `⚠️ Failed to fetch ${parsedUrl.href}: ${response.statusText}`,
+        `📥 Failed fetching ${parsedUrl.href}`,
       );
       return "";
     }
@@ -102,7 +102,7 @@ export class LatinLibraryCommand extends CommandRunner {
       return await this.downloadAndSaveLatinLibraryFile(parsed, targetPath);
     } catch (error) {
       this.logger.error(
-        `❌ Error downloading ${parsed.href}: ${String(error)}`,
+        `📥 Failed downloading ${parsed.href}`, String(error),
       );
       return "";
     }
@@ -357,7 +357,7 @@ export class LatinLibraryCommand extends CommandRunner {
       }
     } catch (error: unknown) {
       const { logLine } = this.logger.buildErrorLogEntry(urlString, error);
-      this.logger.error(`❌ Error processing ${urlString}: ${String(error)}`);
+      this.logger.error(`📜 Failed processing ${urlString}`, String(error));
       await fs.appendFile(this.errorLogFilePath, logLine);
     }
   }
@@ -421,6 +421,6 @@ export class LatinLibraryCommand extends CommandRunner {
     // Process queue with concurrency
     await Promise.all(Array.from({ length: 5 }, async () => worker()));
 
-    this.logger.log("✅ Finished scraping The Latin Library.");
+    this.logger.log("🕷️ Scraped The Latin Library");
   }
 }

@@ -409,7 +409,7 @@ describe(LiteratureCommand, () => {
     await command.run([], {});
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ No texts found in data/library directory.",
+      "📚 Missing texts in the data/library directory",
     );
     expect(literatureService.ingestAllAuthors).not.toHaveBeenCalled();
   });

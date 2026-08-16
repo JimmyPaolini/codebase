@@ -238,7 +238,7 @@ describe(LexicoIngestionCommand, () => {
     expect(libraryCommand.run).toHaveBeenCalledWith([], {});
     expect(literatureCommand.run).toHaveBeenCalledWith([], {});
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ Full ingestion pipeline complete 🎉",
+      "🎉 Completed the full ingestion pipeline",
     );
   });
 

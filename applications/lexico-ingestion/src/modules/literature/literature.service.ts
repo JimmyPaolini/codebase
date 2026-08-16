@@ -237,20 +237,20 @@ export class LiteratureService {
    * Ingests lines in the literature ingestion pipeline.
    */
   private async ingestLines(text: Text, ast: Root): Promise<void> {
-    this.logger.log(`  📜 Parsing lines for ${text.title}`);
+    this.logger.log(`📜 Parsing lines for ${text.title}`);
     const wordMap = await this.getWordsCache();
     const tokenEntities: QueryDeepPartialEntity<Token>[] = [];
     const paragraphs = ast.children.filter(
       (child): child is Paragraph => child.type === "paragraph",
     );
     if (paragraphs.length === 0)
-      this.logger.warn(`⚠️ NO LINES in ${text.slug}`);
+      this.logger.warn(`📜 Missing lines in ${text.slug}`);
     const lineEntities = paragraphs.map((paragraph, index) =>
       this.buildLineEntityFromParagraph(paragraph, index, text),
     );
     const savedLines = await this.upsertAndFetchLines(lineEntities, text);
     this.logger.log(
-      `  💾 Saved ${savedLines.length} lines. Extracting tokens...`,
+      `💾 Saved lines`, undefined, { count: savedLines.length },
     );
     for (const line of savedLines) {
       const tokens = this.extractTokensFromLine(line, text, wordMap);
@@ -464,7 +464,7 @@ export class LiteratureService {
     text: Text,
   ): Promise<void> {
     this.logger.log(
-      `  💾 Saving ${tokenEntities.length} tokens for ${text.title}...`,
+      `💾 Saving tokens for ${text.title}`, undefined, { count: tokenEntities.length },
     );
     const tokenChunks = _.chunk(tokenEntities, DEFAULT_TOKEN_CHUNK_SIZE);
     await Promise.all(

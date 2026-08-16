@@ -551,7 +551,7 @@ describe(WiktionaryCommand, () => {
     ).processWiktionaryCategoryLink(anchor, $, "lemma");
 
     expect(logger.error).toHaveBeenCalledWith(
-      '❌ Error ingesting word "amo" - Error: word failure',
+      '🔤 Failed ingesting word "amo" - Error: word failure',
     );
     expect(appendFileSyncMock).toHaveBeenCalledTimes(1);
   });
@@ -585,7 +585,7 @@ describe(WiktionaryCommand, () => {
     ).processWiktionaryCategoryLink(anchor, cheerioApi, "lemma");
 
     expect(logger.error).toHaveBeenCalledWith(
-      '❌ Error ingesting word "amo" - word failure string',
+      '🔤 Failed ingesting word "amo" - word failure string',
     );
     expect(appendFileSyncMock).toHaveBeenCalledTimes(1);
   });
@@ -648,7 +648,7 @@ describe(WiktionaryCommand, () => {
     ).ingestCategory("lemma", "/wiki/start");
 
     expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining('❌ Error ingesting category "lemma"'),
+      expect.stringContaining('🌐 Failed ingesting category "lemma"'),
     );
     expect(appendFileSyncMock).toHaveBeenCalledTimes(1);
   });

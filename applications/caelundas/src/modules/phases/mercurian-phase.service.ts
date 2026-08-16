@@ -148,7 +148,9 @@ export class MercurianPhaseService {
       timestamp,
       PHASE_EVENT_TIMEZONE,
     );
-    this.logger.log(`${summary} at ${dateString}`);
+    this.logger.log(`🗓️ Built ${summary}`, undefined, {
+      at: dateString,
+    });
 
     const mercurianPhaseEvent: Event = {
       categories: [

@@ -63,7 +63,7 @@ export class EpigraphikDatenbankClaussSlabyCommand extends CommandRunner {
         error,
       );
       this.logger.error(
-        `❌ Error fetching chunk at ${start}: ${String(error)}`,
+        `🌐 Failed fetching chunk`, String(error), { start },
       );
       await fs.appendFile(this.errorLogFilePath, logLine);
       return true;
@@ -81,7 +81,7 @@ export class EpigraphikDatenbankClaussSlabyCommand extends CommandRunner {
 
     try {
       await fs.access(chunkFile);
-      this.logger.log(`⏭️ Chunk ${start} already exists, skipping.`);
+      this.logger.log(`⏭️ Skipping chunk that already exists`, undefined, { start });
       return true; // continue to next chunk
     } catch {
       // File doesn't exist, proceed with download
@@ -101,7 +101,7 @@ export class EpigraphikDatenbankClaussSlabyCommand extends CommandRunner {
       `${this.sourceHost}?start=${start}&length=${this.batchSize}`,
     );
     if (!response.ok) {
-      this.logger.warn(`⚠️ Failed to fetch records: ${response.statusText}`);
+      this.logger.warn(`🌐 Failed fetching records`);
       return true;
     }
 
@@ -109,14 +109,14 @@ export class EpigraphikDatenbankClaussSlabyCommand extends CommandRunner {
     const parsedChunkResponse =
       epigraphikDatenbankChunkResponseSchema.safeParse(payload);
     if (!parsedChunkResponse.success) {
-      this.logger.warn("⚠️ Received unexpected EDCS payload shape");
+      this.logger.warn("🌐 Received an unexpected EDCS payload shape");
       return true;
     }
 
     const data: EpigraphikDatenbankChunkResponse = parsedChunkResponse.data;
 
     if (Array.isArray(data.data) && data.data.length === 0) {
-      this.logger.log(`🛑 No more records found after ${start}. Stopping.`);
+      this.logger.log(`🛑 Stopping after the last record`, undefined, { start });
       return false;
     }
 
@@ -148,6 +148,6 @@ export class EpigraphikDatenbankClaussSlabyCommand extends CommandRunner {
       }
     }
 
-    this.logger.log("✅ Finished downloading chunks.");
+    this.logger.log("📥 Downloaded chunks");
   }
 }

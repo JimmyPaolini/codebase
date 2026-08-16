@@ -163,7 +163,7 @@ export class LibraryCommand extends CommandRunner {
     } catch (error: unknown) {
       const { logLine } = this.logger.buildErrorLogEntry(provider.name, error);
       this.logger.error(
-        `❌ Error in provider ${providerName}`,
+        `🔌 Failed running provider ${providerName}`,
         error instanceof Error ? error.stack : undefined,
       );
       await fs.appendFile(this.logFilePath, logLine);
@@ -448,7 +448,7 @@ export class LibraryCommand extends CommandRunner {
     options: LibraryCommandOptions,
   ): Promise<void> {
     this.logger.log("📚 Starting library ingestion...");
-    this.logger.log(`⚙️ Options: ${JSON.stringify(options)}`);
+    this.logger.log(`⚙️ Parsed command options`, undefined, { options });
     const startTime = performance.now();
 
     const dataPath = path.resolve("data", "library");
@@ -479,7 +479,7 @@ export class LibraryCommand extends CommandRunner {
     const endTime = performance.now();
     const duration = ((endTime - startTime) / 1000).toFixed(2);
     this.logger.log(
-      `📚 Successfully finished library ingestion in ${duration} seconds.`,
+      `📚 Ingested library`, undefined, { durationSeconds: duration },
     );
   }
 }

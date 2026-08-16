@@ -124,7 +124,7 @@ describe(PullRequestTemplateCommand, () => {
 
     await command.run(modeArguments);
 
-    expect(logger.log).toHaveBeenCalledWith("✅ PR template is in sync");
+    expect(logger.log).toHaveBeenCalledWith("📄 Verified the PR template");
     expect(writeFileSync).not.toHaveBeenCalled();
   });
 
@@ -195,7 +195,7 @@ describe(PullRequestTemplateCommand, () => {
 
     await command.run(["write"]);
 
-    expect(logger.log).toHaveBeenCalledWith("✅ Already in sync");
+    expect(logger.log).toHaveBeenCalledWith("📇 Verified everything was already in sync");
     expect(writeFileSync).not.toHaveBeenCalled();
   });
 

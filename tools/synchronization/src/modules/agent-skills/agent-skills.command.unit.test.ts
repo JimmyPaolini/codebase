@@ -225,7 +225,7 @@ describe(AgentSkillsCommand, () => {
     await expectProcessExitOne(async () => command.run(["check"]));
 
     expect(logger.log).toHaveBeenCalledWith(
-      "❌ Agent file out of sync: .github/agents/explore-codebase.agent.md",
+      "📄 Detected an out-of-sync agent file .github/agents/explore-codebase.agent.md",
     );
   });
 
@@ -245,7 +245,7 @@ describe(AgentSkillsCommand, () => {
     await expectProcessExitOne(async () => command.run(["check"]));
 
     expect(logger.log).toHaveBeenCalledWith(
-      "❌ Agent file not found: .github/agents/explore-codebase.agent.md",
+      "📄 Missing agent file .github/agents/explore-codebase.agent.md",
     );
   });
 
@@ -265,7 +265,7 @@ describe(AgentSkillsCommand, () => {
     await expectProcessExitOne(async () => command.run(["check"]));
 
     expect(logger.log).toHaveBeenCalledWith(
-      "❌ Agent file out of sync: .github/agents/explore-internet.agent.md",
+      "📄 Detected an out-of-sync agent file .github/agents/explore-internet.agent.md",
     );
   });
 
@@ -285,7 +285,7 @@ describe(AgentSkillsCommand, () => {
     await expectProcessExitOne(async () => command.run(["check"]));
 
     expect(logger.log).toHaveBeenCalledWith(
-      "❌ Agent file out of sync: .github/agents/triage-deployment.agent.md",
+      "📄 Detected an out-of-sync agent file .github/agents/triage-deployment.agent.md",
     );
   });
 
@@ -372,7 +372,7 @@ describe(AgentSkillsCommand, () => {
       "utf8",
     );
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ Synced .github/agents/explore-codebase.agent.md",
+      "📄 Synced .github/agents/explore-codebase.agent.md",
     );
     expect(logger.log).toHaveBeenCalledWith(
       "✅ Updated AGENTS.md with 2 agents",
@@ -400,7 +400,7 @@ describe(AgentSkillsCommand, () => {
       workspaceRoot: "/workspace",
     });
 
-    expect(logger.log).toHaveBeenCalledWith("✅ Updated question-me.agent.md");
+    expect(logger.log).toHaveBeenCalledWith("📄 Updated question-me.agent.md");
   });
 
   it("handles runtime errors by logging and exiting", async () => {

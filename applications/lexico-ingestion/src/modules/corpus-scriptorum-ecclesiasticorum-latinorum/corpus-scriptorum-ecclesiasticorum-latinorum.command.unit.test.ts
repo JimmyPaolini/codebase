@@ -161,7 +161,7 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumCommand, () => {
 
     expect(result).toBeNull();
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Failed to fetch CSEL tree: Bad Request",
+      "📥 Failed fetching CSEL tree: Bad Request",
     );
   });
 
@@ -219,7 +219,7 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumCommand, () => {
 
     expect(result).toBeNull();
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Failed to parse CSEL tree response payload",
+      "🌳 Failed parsing the CSEL tree response",
     );
   });
 
@@ -339,7 +339,7 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumCommand, () => {
     ).downloadSourceXmlFileIfMissing("data/author/work.xml");
 
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Error downloading data/author/work.xml: network-failure",
+      "📥 Failed downloading data/author/work.xml: network-failure",
     );
     expect(appendFileMock).toHaveBeenCalledTimes(1);
   });
@@ -374,7 +374,7 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumCommand, () => {
     expect(downloadSpy).toHaveBeenCalledTimes(1);
     expect(downloadSpy).toHaveBeenCalledWith("data/author/work.xml");
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ Finished downloading CSEL source files.",
+      "📥 Downloaded CSEL source files",
     );
   });
 

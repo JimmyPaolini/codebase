@@ -214,7 +214,7 @@ describe(EpigraphikDatenbankClaussSlabyCommand, () => {
 
     expect(shouldContinue).toBe(true);
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ Received unexpected EDCS payload shape",
+      "🌐 Received an unexpected EDCS payload shape",
     );
     expect(writeFileMock).not.toHaveBeenCalled();
   });
@@ -319,6 +319,6 @@ describe(EpigraphikDatenbankClaussSlabyCommand, () => {
     expect(downloadSpy).toHaveBeenCalledTimes(2);
     expect(downloadSpy).toHaveBeenNthCalledWith(1, 0);
     expect(downloadSpy).toHaveBeenNthCalledWith(2, 1000);
-    expect(logger.log).toHaveBeenCalledWith("✅ Finished downloading chunks.");
+    expect(logger.log).toHaveBeenCalledWith("📥 Downloaded chunks");
   });
 });

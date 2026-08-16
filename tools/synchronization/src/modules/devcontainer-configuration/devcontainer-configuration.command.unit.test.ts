@@ -135,7 +135,7 @@ describe(DevcontainerConfigurationCommand, () => {
     await command.run(modeArguments);
 
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ Cloud devcontainer config is in sync with local config",
+      "📦 Verified the cloud devcontainer config against the local config",
     );
     expect(writeFileSync).not.toHaveBeenCalled();
   });
@@ -183,7 +183,7 @@ describe(DevcontainerConfigurationCommand, () => {
       "utf8",
     );
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ Cloud devcontainer config updated from local config",
+      "📦 Updated the cloud devcontainer config from the local config",
     );
   });
 

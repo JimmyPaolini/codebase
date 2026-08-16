@@ -159,11 +159,15 @@ export class ConventionalConfigService {
       !presetOk
     ) {
       this.loggerService.log(
-        "💡 Run 'nx run synchronization:start:conventional-config-write' to sync",
+        "💡 Suggested a fix",
+        undefined,
+        {
+          hint: "Run 'nx run synchronization:start:conventional-config-write' to sync",
+        },
       );
       process.exit(1);
     }
-    this.loggerService.log("✅ Conventional commit config is in sync");
+    this.loggerService.log("📇 Verified the conventional commit config");
   }
 
   /**
@@ -196,7 +200,7 @@ export class ConventionalConfigService {
       outOfSyncSkills.length === 0 &&
       outOfSyncTemplates.length === 0
     ) {
-      this.loggerService.log("✅ Already in sync");
+      this.loggerService.log("📇 Verified everything was already in sync");
       return;
     }
 

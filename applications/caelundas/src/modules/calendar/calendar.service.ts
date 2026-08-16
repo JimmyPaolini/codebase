@@ -184,7 +184,9 @@ END:VCALENDAR
   buildInstantEvent(args: BuildInstantEventArguments): Event {
     const { categories, date, description, logger, summary, timezone } = args;
     const dateString = date.clone().tz(timezone).toISOString(true);
-    logger.log(`${summary} at ${dateString}`);
+    logger.log(`🗓️ Built ${summary}`, undefined, {
+      at: dateString,
+    });
 
     return {
       categories,

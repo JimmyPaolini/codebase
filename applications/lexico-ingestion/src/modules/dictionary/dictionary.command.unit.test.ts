@@ -649,7 +649,7 @@ describe(DictionaryCommand, () => {
     expect(getWiktionaryFilePathForWordSpy).toHaveBeenCalledWith("missing");
     expect(page).toBeNull();
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ No data file found for word: missing",
+      "📄 Missing data file for missing",
     );
   });
 
@@ -686,7 +686,7 @@ describe(DictionaryCommand, () => {
 
     expect(page).toBeNull();
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ No data file found for word: amo",
+      "📄 Missing data file for amo",
     );
   });
 
@@ -870,7 +870,7 @@ describe(DictionaryCommand, () => {
     ).ingestTranslationReference(plainTranslation);
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ No reference found in: simple text",
+      "🔗 Missing reference in translationsimple text",
     );
   });
 
@@ -897,7 +897,7 @@ describe(DictionaryCommand, () => {
     ).ingestTranslationReference(targetTranslation);
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ No lexeme found for reference: unknown",
+      "🔑 Missing lexeme for reference unknown",
     );
   });
 
@@ -1258,7 +1258,7 @@ describe(DictionaryCommand, () => {
           lexemesService.findLexemesByLemmaWithTranslations,
         ).toHaveBeenCalledWith("");
         expect(logger.warn).toHaveBeenCalledWith(
-          "⚠️ No lexeme found for reference: ",
+          "🔑 Missing lexeme for reference ",
         );
       });
     });

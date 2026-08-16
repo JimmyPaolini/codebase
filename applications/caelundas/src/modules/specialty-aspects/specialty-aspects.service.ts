@@ -161,7 +161,13 @@ export class SpecialtyAspectsService {
     });
     if (!specialtyAspect) {
       this.logger.error(
-        `No specialty aspect found between ${body1} and ${body2} at ${timestamp.toISOString()}: ${longitudeBody1} and ${longitudeBody2}`,
+        `📐 Missing specialty aspect between ${body1} and ${body2}`,
+        undefined,
+        {
+          at: timestamp.toISOString(),
+          longitudeBody1,
+          longitudeBody2,
+        },
       );
       throw new Error("No specialty aspect found");
     }

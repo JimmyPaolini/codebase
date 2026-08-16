@@ -240,7 +240,7 @@ describe(LatinLibraryCommand, () => {
 
     expect(secondResult).toBe("");
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Error downloading https://www.thelatinlibrary.com/ovid/index.html: Error: network error",
+      "📥 Failed downloading https://www.thelatinlibrary.com/ovid/index.html: Error: network error",
     );
   });
 
@@ -589,7 +589,7 @@ describe(LatinLibraryCommand, () => {
     );
 
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Error processing https://www.thelatinlibrary.com/vergil/: queue failed",
+      "📜 Failed processing https://www.thelatinlibrary.com/vergil/: queue failed",
     );
     expect(appendFileMock).toHaveBeenCalledTimes(1);
   });
@@ -727,7 +727,7 @@ describe(LatinLibraryCommand, () => {
     expect(mkdirMock).toHaveBeenCalledTimes(1);
     expect(processQueueUrlSpy).toHaveBeenCalledTimes(1);
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ Finished scraping The Latin Library.",
+      "🕷️ Scraped The Latin Library",
     );
   });
 

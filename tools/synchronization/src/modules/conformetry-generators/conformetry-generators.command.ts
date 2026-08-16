@@ -51,20 +51,19 @@ export class ConformetryGeneratorsCommand extends CommandRunner {
 
     if (generated !== existing) {
       this.logger.log(
-        "❌ Conformetry generators table in AGENTS.md is out of sync\n",
-      );
-      this.logger.log(
-        "  Found generators in configuration/conformetry.config.ts",
-      );
-      this.logger.log("  Generated content doesn't match stored content");
-      this.logger.log(
-        "💡 Run 'pnpm exec nx run synchronization:start:conformetry-generators-write' to sync\n",
+        "📇 Detected an out-of-sync conformetry generators table in AGENTS.md",
+        undefined,
+        {
+          hint: "Run 'pnpm exec nx run synchronization:start:conformetry-generators-write' to sync",
+        },
       );
       return false;
     }
 
     this.logger.log(
-      `✅ Conformetry generators table is in sync (${generators.length} generators)`,
+      "📇 Verified the conformetry generators table",
+      undefined,
+      { count: generators.length },
     );
     return true;
   }
@@ -152,9 +151,9 @@ export class ConformetryGeneratorsCommand extends CommandRunner {
     const newContent = `${beforeMarker}\n${generatedTable}\n${afterMarker}`;
 
     writeFileSync(agentsFile, newContent, "utf8");
-    this.logger.log(
-      `✅ Updated AGENTS.md with ${generators.length} generators`,
-    );
+    this.logger.log("📇 Updated AGENTS.md", undefined, {
+      count: generators.length,
+    });
   }
 
   // 🌎 Public Methods
@@ -186,7 +185,8 @@ export class ConformetryGeneratorsCommand extends CommandRunner {
       }
     } catch (error) {
       this.logger.error(
-        `❌ Error: ${error instanceof Error ? error.message : error}`,
+        `💥 Failed synchronizing conformetry generators`,
+        error instanceof Error ? error.stack : String(error),
       );
       process.exit(1);
     }

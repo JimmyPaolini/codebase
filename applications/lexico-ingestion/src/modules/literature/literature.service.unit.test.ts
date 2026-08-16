@@ -908,7 +908,7 @@ describe(LiteratureService, () => {
     ).ingestLines(text, { children: [], type: "root" });
 
     expect(getWordsCacheSpy).toHaveBeenCalledTimes(1);
-    expect(logger.warn).toHaveBeenCalledWith("⚠️ NO LINES in vergil/aeneid");
+    expect(logger.warn).toHaveBeenCalledWith("📜 Missing lines in vergil/aeneid");
   });
 
   it("should extract and upsert tokens when ingesting lines", async () => {

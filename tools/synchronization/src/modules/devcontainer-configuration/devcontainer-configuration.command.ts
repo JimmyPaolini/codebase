@@ -84,15 +84,14 @@ export class DevcontainerConfigurationCommand extends CommandRunner {
     }
 
     this.logger.log(
-      `❌ ${relativeFilePath} has common fields out of sync with local config\n`,
+      `📦 Detected out-of-sync common fields in ${relativeFilePath}`,
+      undefined,
+      {
+        hint: "Run: nx run synchronization:start:devcontainer-configuration-write",
+      },
     );
 
     this.reportDifferences(expectedConfigCopy, currentConfig);
-
-    this.logger.log("");
-    this.logger.log(
-      `  Run: nx run synchronization:start:devcontainer-configuration-write`,
-    );
     return false;
   }
 
@@ -140,9 +139,10 @@ export class DevcontainerConfigurationCommand extends CommandRunner {
     for (const key of allFieldKeys) {
       if (DEVCONTAINER_CLOUD_ONLY_KEYS.has(key)) continue;
       if (!_.isEqual(expectedFields[key], currentFields[key])) {
-        this.logger.log(`  Field '${key}' differs:`);
-        this.logger.log(`    Expected: ${JSON.stringify(expectedFields[key])}`);
-        this.logger.log(`    Got:      ${JSON.stringify(currentFields[key])}`);
+        this.logger.log(`🔀 Differing field '${key}'`, undefined, {
+          actual: currentFields[key],
+          expected: expectedFields[key],
+        });
       }
     }
   }
@@ -195,7 +195,7 @@ export class DevcontainerConfigurationCommand extends CommandRunner {
       `${JSON.stringify(mergedConfig, null, 2)}\n`,
       "utf8",
     );
-    this.logger.log(`✅ Updated: ${relativeFilePath}`);
+    this.logger.log(`📦 Updated ${relativeFilePath}`);
   }
 
   // 🌎 Public Methods
@@ -237,11 +237,11 @@ export class DevcontainerConfigurationCommand extends CommandRunner {
     if (mode === "check") {
       if (!this.check(mergedConfig, cloudConfigFile)) process.exit(1);
       this.logger.log(
-        "✅ Cloud devcontainer config is in sync with local config",
+        "📦 Verified the cloud devcontainer config against the local config",
       );
     } else {
       this.write(mergedConfig, cloudConfigFile);
-      this.logger.log("✅ Cloud devcontainer config updated from local config");
+      this.logger.log("📦 Updated the cloud devcontainer config from the local config");
     }
   }
 }

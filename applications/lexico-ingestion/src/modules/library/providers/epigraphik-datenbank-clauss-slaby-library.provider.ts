@@ -115,7 +115,7 @@ export class EpigraphikDatenbankClaussSlabyLibraryProvider {
         `📜 Completed processing chunk: ${file}${progressString}`,
       );
     } catch (error) {
-      this.logger.warn(`⚠️ Error reading chunk file ${file}: ${String(error)}`);
+      this.logger.warn(`📄 Failed reading chunk file ${file}`, undefined, { reason: String(error) });
     }
   }
 
@@ -152,7 +152,7 @@ export class EpigraphikDatenbankClaussSlabyLibraryProvider {
       return files.filter((file) => file.endsWith(".json"));
     } catch (error) {
       this.logger.error(
-        `❌ Could not read source directory: ${String(error)}. Did you run the epigraphik-datenbank-clauss-slaby command first?`,
+        `📁 Failed reading the source directory. Did you run the epigraphik-datenbank-clauss-slaby command first?`,
       );
       return null;
     }

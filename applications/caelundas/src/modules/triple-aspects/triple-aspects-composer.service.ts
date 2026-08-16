@@ -65,7 +65,7 @@ export class TripleAspectsComposerService {
 
     const aspect = this.resolveAspectType(aspectCapitalized);
     if (!aspect) {
-      this.logger.warn(`Unknown aspect type: ${aspectCapitalized}`);
+      this.logger.warn(`📐 Skipping unknown aspect type "${aspectCapitalized}"`);
       return null;
     }
 
@@ -249,7 +249,9 @@ export class TripleAspectsComposerService {
 
     if (!body1 || !body2 || !body3) {
       this.logger.warn(
-        `Unknown body in progressive event: ${body1Capitalized}, ${body2Capitalized}, ${body3Capitalized}`,
+        `🪐 Skipping progressive event with an unknown body`,
+        undefined,
+        { body1: body1Capitalized, body2: body2Capitalized, body3: body3Capitalized },
       );
       return null;
     }
@@ -350,7 +352,9 @@ export class TripleAspectsComposerService {
     });
     const summary = `${this.getPhaseEmoji(phase)}${symbolByTripleAspect[tripleAspect]} ${symbolByBody[body1]}-${symbolByBody[body2]}-${symbolByBody[body3]} ${description}`;
 
-    this.logger.log(`${summary} at ${timestamp.toISOString()}`);
+    this.logger.log(`🗓️ Built ${summary}`, undefined, {
+      at: timestamp.toISOString(),
+    });
 
     return {
       categories: this.buildTripleAspectCategories({

@@ -181,7 +181,7 @@ export class LatinLibraryProvider {
     const nickname = this.getMetadataString(author.metadata, "nickname") ?? "";
     const authorPath = this.getMetadataString(author.metadata, "sourceUrl");
     if (!authorPath) {
-      this.logger.warn(`⚠️ Missing source URL for author: ${author.slug}`);
+      this.logger.warn(`🔗 Missing source URL for author ${author.slug}`);
       return;
     }
 
@@ -272,7 +272,7 @@ export class LatinLibraryProvider {
       this.logger.log(`📜 Completed work: ${textSlug}${progress}`);
     } catch (error) {
       this.logger.error(
-        `❌ Failed to fetch work ${work.title}`,
+        `📕 Failed fetching work ${work.title}`,
         error instanceof Error ? error.stack : undefined,
       );
     }
@@ -368,7 +368,7 @@ export class LatinLibraryProvider {
     const workBook = this.getMetadataString(work.metadata, "book");
     const workPath = this.getMetadataString(work.metadata, "sourceUrl");
     if (!workPath) {
-      this.logger.warn(`⚠️ Missing source URL for work: ${work.slug}`);
+      this.logger.warn(`🔗 Missing source URL for work ${work.slug}`);
       return false;
     }
 
@@ -376,7 +376,7 @@ export class LatinLibraryProvider {
     const $work = cheerio.load(workHtml);
     const paragraphs = this.builder.parseWorkParagraphs($work);
     if (!hasValidTextContent(paragraphs)) {
-      this.logger.warn(`⚠️ Skipping empty or invalid text: ${work.slug}`);
+      this.logger.warn(`📜 Skipping empty or invalid text ${work.slug}`);
       return false;
     }
     const markdown = this.builder.buildWorkMarkdownContent({

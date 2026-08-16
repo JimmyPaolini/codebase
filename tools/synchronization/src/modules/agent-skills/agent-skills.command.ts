@@ -71,18 +71,17 @@ export class AgentSkillsCommand extends CommandRunner {
 
     if (generatedList.trim() !== generatedContent.trim()) {
       this.logger.log(
-        "❌ Custom agents table of contents in AGENTS.md is out of sync\n",
-      );
-      this.logger.log(`  Found ${agents.length} agents in .github/agents/`);
-      this.logger.log("  Generated content doesn't match stored content");
-      this.logger.log(
-        "💡 Run 'pnpm exec nx run synchronization:start:agent-skills-write' to sync\n",
+        "📇 Detected an out-of-sync custom agents table in AGENTS.md",
+        undefined,
+        { count: agents.length, hint: "Run 'pnpm exec nx run synchronization:start:agent-skills-write' to sync" },
       );
       return false;
     }
 
     this.logger.log(
-      `✅ Custom agents table of contents is in sync (${agents.length} ${agents.length === 1 ? "agent" : "agents"})`,
+      "📇 Verified the custom agents table",
+      undefined,
+      { count: agents.length },
     );
     return true;
   }
@@ -103,13 +102,13 @@ export class AgentSkillsCommand extends CommandRunner {
     try {
       actualContent = readFileSync(agentPath, "utf8");
     } catch {
-      this.logger.log(`❌ Agent file not found: ${configuration.agentFile}`);
+      this.logger.log(`📄 Missing agent file ${configuration.agentFile}`);
       return false;
     }
 
     const expectedContent = generateAgentFile(skill, actualContent);
     if (expectedContent !== actualContent) {
-      this.logger.log(`❌ Agent file out of sync: ${configuration.agentFile}`);
+      this.logger.log(`📄 Detected an out-of-sync agent file ${configuration.agentFile}`);
       return false;
     }
 
@@ -123,6 +122,7 @@ export class AgentSkillsCommand extends CommandRunner {
     configurations: AgentFileSyncConfig[],
     workspaceRoot: string,
     successMessage: string,
+    successCount: number,
   ): boolean {
     let allInSync = true;
 
@@ -133,13 +133,13 @@ export class AgentSkillsCommand extends CommandRunner {
     }
 
     if (!allInSync) {
-      this.logger.log(
-        "💡 Run 'pnpm exec nx run synchronization:start:agent-skills-write' to sync\n",
-      );
+      this.logger.log("💡 Suggested a fix", undefined, {
+        hint: "Run 'pnpm exec nx run synchronization:start:agent-skills-write' to sync",
+      });
       return false;
     }
 
-    this.logger.log(successMessage);
+    this.logger.log(successMessage, undefined, { count: successCount });
     return true;
   }
 
@@ -157,18 +157,17 @@ export class AgentSkillsCommand extends CommandRunner {
 
     if (generatedTable.trim() !== generatedContent.trim()) {
       this.logger.log(
-        "❌ Skills table of contents in AGENTS.md is out of sync\n",
-      );
-      this.logger.log(`  Found ${skills.length} skills in .agents/skills/`);
-      this.logger.log("  Generated content doesn't match stored content");
-      this.logger.log(
-        "💡 Run 'pnpm exec nx run synchronization:start:agent-skills-write' to sync\n",
+        "📇 Detected an out-of-sync skills table in AGENTS.md",
+        undefined,
+        { count: skills.length, hint: "Run 'pnpm exec nx run synchronization:start:agent-skills-write' to sync" },
       );
       return false;
     }
 
     this.logger.log(
-      `✅ Skills table of contents is in sync (${skills.length} skills)`,
+      "📇 Verified the skills table",
+      undefined,
+      { count: skills.length },
     );
     return true;
   }
@@ -180,7 +179,8 @@ export class AgentSkillsCommand extends CommandRunner {
     const planInSync = this.checkSkillAgentFiles(
       PLAN_AGENT_CONFIGS,
       workspaceRoot,
-      `✅ All ${PLAN_AGENT_CONFIGS.length} plan agent files are in sync`,
+      "📄 Verified the plan agent files",
+      PLAN_AGENT_CONFIGS.length,
     );
     if (!planInSync) {
       process.exit(1);
@@ -189,7 +189,8 @@ export class AgentSkillsCommand extends CommandRunner {
     const triageInSync = this.checkSkillAgentFiles(
       TRIAGE_AGENT_CONFIGS,
       workspaceRoot,
-      `✅ All ${TRIAGE_AGENT_CONFIGS.length} triage agent files are in sync`,
+      "📄 Verified the triage agent files",
+      TRIAGE_AGENT_CONFIGS.length,
     );
     if (!triageInSync) {
       process.exit(1);
@@ -243,8 +244,9 @@ export class AgentSkillsCommand extends CommandRunner {
       "utf8",
     );
 
-    const agentWord = agents.length === 1 ? "agent" : "agents";
-    this.logger.log(`✅ Updated AGENTS.md with ${agents.length} ${agentWord}`);
+    this.logger.log("📇 Updated AGENTS.md", undefined, {
+      count: agents.length,
+    });
   }
 
   /**
@@ -288,7 +290,7 @@ export class AgentSkillsCommand extends CommandRunner {
       `${beforeMarker}\n${generatedTable}\n${afterMarker}`,
       "utf8",
     );
-    this.logger.log(`✅ Updated AGENTS.md with ${skills.length} skills`);
+    this.logger.log("📇 Updated AGENTS.md", undefined, { count: skills.length });
   }
 
   /**
@@ -308,9 +310,9 @@ export class AgentSkillsCommand extends CommandRunner {
       this.writeSingleSkillAgentFile(configuration, workspaceRoot);
 
       if (questionMeMode) {
-        this.logger.log("✅ Updated question-me.agent.md");
+        this.logger.log("📄 Updated question-me.agent.md");
       } else {
-        this.logger.log(`✅ Synced ${configuration.agentFile}`);
+        this.logger.log(`📄 Synced ${configuration.agentFile}`);
       }
     }
   }
@@ -344,7 +346,8 @@ export class AgentSkillsCommand extends CommandRunner {
       this.runWriteMode(workspaceRoot);
     } catch (error) {
       this.logger.error(
-        `❌ Error: ${error instanceof Error ? error.message : error}`,
+        `💥 Failed synchronizing agent skills`,
+        error instanceof Error ? error.stack : String(error),
       );
       process.exit(1);
     }

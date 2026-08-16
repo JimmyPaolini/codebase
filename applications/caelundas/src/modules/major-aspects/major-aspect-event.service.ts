@@ -64,7 +64,9 @@ export class MajorAspectEventService {
       majorAspect: args.majorAspect,
       phase: args.phase,
     });
-    this.logger.log(`${summary} at ${args.timestamp.toISOString()}`);
+    this.logger.log(`🗓️ Built ${summary}`, undefined, {
+      at: args.timestamp.toISOString(),
+    });
 
     return {
       categories,
@@ -129,7 +131,13 @@ export class MajorAspectEventService {
 
     if (!majorAspect) {
       this.logger.error(
-        `No major aspect found between ${body1} and ${body2} at ${timestamp.toISOString()}: ${longitudeBody1} and ${longitudeBody2}`,
+        `📐 Missing major aspect between ${body1} and ${body2}`,
+        undefined,
+        {
+          at: timestamp.toISOString(),
+          longitudeBody1,
+          longitudeBody2,
+        },
       );
       throw new Error("No major aspect found");
     }

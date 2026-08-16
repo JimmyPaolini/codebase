@@ -238,7 +238,7 @@ describe(EpigraphikDatenbankClaussSlabyLibraryProvider, () => {
     });
 
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining("⚠️ Error reading chunk file chunk-1.json"),
+      expect.stringContaining("📄 Failed reading chunk file chunk-1.json"),
     );
   });
 

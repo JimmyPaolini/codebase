@@ -108,7 +108,7 @@ describe(PerseusCommand, () => {
 
     expect(result).toBeNull();
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Failed to fetch Perseus tree: Not Found",
+      "📥 Failed fetching Perseus tree: Not Found",
     );
   });
 
@@ -163,7 +163,7 @@ describe(PerseusCommand, () => {
 
     expect(result).toBeNull();
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Failed to parse Perseus tree response payload",
+      "🌳 Failed parsing the Perseus tree response",
     );
   });
 
@@ -178,7 +178,7 @@ describe(PerseusCommand, () => {
     ).appendSourceDownloadErrorLog("a/file-lat.xml", new Error("boom"));
 
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Error downloading a/file-lat.xml: Error: boom",
+      "📥 Failed downloading a/file-lat.xml: Error: boom",
     );
     expect(appendFileMock).toHaveBeenCalledTimes(1);
   });
@@ -398,7 +398,7 @@ describe(PerseusCommand, () => {
     ).appendSourceDownloadErrorLog("a/file-lat.xml", "text failure");
 
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Error downloading a/file-lat.xml: text failure",
+      "📥 Failed downloading a/file-lat.xml: text failure",
     );
     expect(appendFileMock).toHaveBeenCalledWith(
       expect.any(String),

@@ -508,7 +508,7 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider, () => {
     });
 
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining("⚠️ Error processing /tmp/csel/aeneid.xml"),
+      expect.stringContaining("📜 Failed processing /tmp/csel/aeneid.xml"),
     );
   });
 
@@ -682,7 +682,7 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider, () => {
     });
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ Skipping empty or invalid text: vergil/aeneid",
+      "📜 Skipping empty or invalid text vergil/aeneid",
     );
   });
 

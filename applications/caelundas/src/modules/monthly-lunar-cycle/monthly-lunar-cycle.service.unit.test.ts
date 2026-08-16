@@ -1,3 +1,4 @@
+import type { LogData } from "@codebase/logger";
 import { Test } from "@nestjs/testing";
 import _ from "lodash";
 import moment, { type Moment } from "moment-timezone";
@@ -73,7 +74,13 @@ describe(MonthlyLunarCycleService, () => {
               categories: string[];
               date: Moment;
               description: string;
-              logger: { log: (message: string) => void };
+              logger: {
+                log: (
+                  message: string,
+                  context?: string,
+                  data?: LogData,
+                ) => void;
+              };
               summary: string;
               timezone: string;
             }): Event => {
@@ -86,7 +93,9 @@ describe(MonthlyLunarCycleService, () => {
                 timezone,
               } = args;
               const dateString = date.clone().tz(timezone).toISOString(true);
-              logger.log(`${summary} at ${dateString}`);
+              logger.log(`🗓️ Built ${summary}`, undefined, {
+      at: dateString,
+    });
               return {
                 categories,
                 description,

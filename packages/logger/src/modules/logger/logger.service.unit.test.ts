@@ -96,7 +96,7 @@ describe(LoggerService, () => {
 
       expect(() => {
         logger.setContext("ProductionTestContext");
-        logger.log("production message");
+        logger.log("🚀 Started in production mode");
       }).not.toThrow();
     });
 
@@ -111,7 +111,7 @@ describe(LoggerService, () => {
 
       expect(() => {
         logger.setContext("ProductionDefaultTestContext");
-        logger.log("production default message");
+        logger.log("🚀 Started with the default log level");
       }).not.toThrow();
     });
 
@@ -126,13 +126,145 @@ describe(LoggerService, () => {
 
       expect(() => {
         logger.setContext("DevelopmentTestContext");
-        logger.log("development message");
+        logger.log("🚀 Started in development mode");
       }).not.toThrow();
+    });
+
+    it("neither validates nor tags an emoji in production", async () => {
+      process.env["NODE_ENV"] = "production";
+      vi.resetModules();
+
+      const { LoggerService: ProductionLoggerService } =
+        await import("./logger.service");
+      const logger = new ProductionLoggerService();
+      const loggerChildMock = createLoggerChildMock();
+
+      logger.setContext("ProductionValidationContext");
+      Object.assign(logger, { child: loggerChildMock });
+
+      // A message that would throw in development passes untouched here — a
+      // logger must never be the reason production falls over.
+      expect(() => {
+        logger.log("no emoji and no verb");
+      }).not.toThrow();
+
+      expect(loggerChildMock.info).toHaveBeenCalledWith(
+        { context: "ProductionValidationContext" },
+        "no emoji and no verb",
+      );
     });
   });
 
   it("is defined", () => {
     expect(service).toBeDefined();
+  });
+
+  describe("message convention", () => {
+    beforeEach(() => {
+      service.setContext("ConventionContext");
+      setLoggerChildMock(createLoggerChildMock());
+    });
+
+    it("rejects a message without a leading emoji", () => {
+      expect(() => {
+        service.log("Downloading sources");
+      }).toThrow(/must start with an emoji/);
+    });
+
+    it("rejects a message whose first word is not a verb", () => {
+      expect(() => {
+        service.log("⚠️ Options: everything");
+      }).toThrow(/present progressive or past tense/);
+    });
+
+    it("rejects a message with an emoji but no word after it", () => {
+      expect(() => {
+        service.log("📥 123");
+      }).toThrow(/present progressive or past tense/);
+    });
+
+    it("accepts a present progressive verb", () => {
+      expect(() => {
+        service.log("📥 Downloading sources");
+      }).not.toThrow();
+    });
+
+    it("accepts a regular past verb", () => {
+      expect(() => {
+        service.log("📥 Downloaded sources");
+      }).not.toThrow();
+    });
+
+    it("accepts a verb no dictionary carries", () => {
+      expect(() => {
+        service.log("🔑 Upserting lexemes");
+      }).not.toThrow();
+    });
+
+    it("accepts an irregular past verb", () => {
+      expect(() => {
+        service.log("✏️ Wrote the calendar file");
+      }).not.toThrow();
+    });
+
+    it("exempts framework-owned contexts", () => {
+      // `nest-commander` logs through this very instance, and its messages are
+      // not ours to rephrase.
+      expect(() => {
+        service.log("CommanderError: (outputHelp)", "CommandFactory");
+      }).not.toThrow();
+    });
+  });
+
+  describe("structured data", () => {
+    it("carries the emoji as a field and the prose as the message", () => {
+      const loggerChildMock = createLoggerChildMock();
+
+      service.setContext("DataContext");
+      setLoggerChildMock(loggerChildMock);
+      service.log("📥 Downloading sources");
+
+      expect(loggerChildMock.info).toHaveBeenCalledWith(
+        { context: "DataContext", emoji: "📥" },
+        "Downloading sources",
+      );
+    });
+
+    it("merges the data argument into the log bindings", () => {
+      const loggerChildMock = createLoggerChildMock();
+
+      service.setContext("DataContext");
+      setLoggerChildMock(loggerChildMock);
+      service.log("📥 Downloaded sources", undefined, {
+        count: 412,
+        durationMs: 1421,
+        total: 428,
+      });
+
+      expect(loggerChildMock.info).toHaveBeenCalledWith(
+        {
+          context: "DataContext",
+          count: 412,
+          durationMs: 1421,
+          emoji: "📥",
+          total: 428,
+        },
+        "Downloaded sources",
+      );
+    });
+
+    it("keeps reserved bindings from being overwritten by data", () => {
+      const loggerChildMock = createLoggerChildMock();
+
+      service.setContext("DataContext");
+      setLoggerChildMock(loggerChildMock);
+      service.log("📥 Downloaded sources", undefined, { context: "spoofed" });
+
+      expect(loggerChildMock.info).toHaveBeenCalledWith(
+        { context: "DataContext", emoji: "📥" },
+        "Downloaded sources",
+      );
+    });
   });
 
   describe("setContext", () => {
@@ -141,11 +273,11 @@ describe(LoggerService, () => {
 
       service.setContext("TestService");
       setLoggerChildMock(loggerChildMock);
-      service.log("message");
+      service.log("📝 Logged a message");
 
       expect(loggerChildMock.info).toHaveBeenCalledWith(
-        { context: "TestService" },
-        "message",
+        { context: "TestService", emoji: "📝" },
+        "Logged a message",
       );
     });
   });
@@ -156,28 +288,12 @@ describe(LoggerService, () => {
 
       service.setContext("TestContext");
       setLoggerChildMock(loggerChildMock);
-      const message = "Test message";
 
-      service.log(message);
-
-      expect(loggerChildMock.info).toHaveBeenCalledWith(
-        { context: "TestContext" },
-        "Test message",
-      );
-    });
-
-    it("should stringify non-string messages", () => {
-      const loggerChildMock = createLoggerChildMock();
-
-      service.setContext("TestContext");
-      setLoggerChildMock(loggerChildMock);
-      const message = { data: "test" };
-
-      service.log(message);
+      service.log("📝 Logged a test message");
 
       expect(loggerChildMock.info).toHaveBeenCalledWith(
-        { context: "TestContext" },
-        "[object Object]",
+        { context: "TestContext", emoji: "📝" },
+        "Logged a test message",
       );
     });
 
@@ -186,14 +302,12 @@ describe(LoggerService, () => {
 
       service.setContext("InstanceContext");
       setLoggerChildMock(loggerChildMock);
-      const message = "Test";
-      const customContext = "CustomContext";
 
-      service.log(message, customContext);
+      service.log("📝 Logged a test message", "CustomContext");
 
       expect(loggerChildMock.info).toHaveBeenCalledWith(
-        { context: "CustomContext" },
-        "Test",
+        { context: "CustomContext", emoji: "📝" },
+        "Logged a test message",
       );
     });
   });
@@ -204,13 +318,12 @@ describe(LoggerService, () => {
 
       service.setContext("TestContext");
       setLoggerChildMock(loggerChildMock);
-      const message = "Debug message";
 
-      service.debug(message);
+      service.debug("🔍 Inspecting the parsed tree", undefined, { count: 3 });
 
       expect(loggerChildMock.debug).toHaveBeenCalledWith(
-        { context: "TestContext" },
-        "Debug message",
+        { context: "TestContext", count: 3, emoji: "🔍" },
+        "Inspecting the parsed tree",
       );
     });
   });
@@ -221,13 +334,12 @@ describe(LoggerService, () => {
 
       service.setContext("TestContext");
       setLoggerChildMock(loggerChildMock);
-      const message = "Warning message";
 
-      service.warn(message);
+      service.warn("📄 Missing a data file");
 
       expect(loggerChildMock.warn).toHaveBeenCalledWith(
-        { context: "TestContext" },
-        "Warning message",
+        { context: "TestContext", emoji: "📄" },
+        "Missing a data file",
       );
     });
   });
@@ -238,14 +350,13 @@ describe(LoggerService, () => {
 
       service.setContext("TestContext");
       setLoggerChildMock(loggerChildMock);
-      const message = "Error message";
       const stack = "Error: test stack trace";
 
-      service.error(message, stack);
+      service.error("📥 Failed downloading sources", stack);
 
       expect(loggerChildMock.error).toHaveBeenCalledWith(
-        { context: "TestContext", stack },
-        "Error message",
+        { context: "TestContext", emoji: "📥", stack },
+        "Failed downloading sources",
       );
     });
 
@@ -254,13 +365,40 @@ describe(LoggerService, () => {
 
       service.setContext("ErrorContext");
       setLoggerChildMock(loggerChildMock);
-      const message = "An error";
 
-      service.error(message);
+      service.error("📥 Failed downloading sources");
 
       expect(loggerChildMock.error).toHaveBeenCalledWith(
-        { context: "ErrorContext", stack: undefined },
-        "An error",
+        { context: "ErrorContext", emoji: "📥", stack: undefined },
+        "Failed downloading sources",
+      );
+    });
+
+    it("should read a third string argument as NestJS's context", () => {
+      const loggerChildMock = createLoggerChildMock();
+
+      service.setContext("InstanceContext");
+      setLoggerChildMock(loggerChildMock);
+
+      service.error("📥 Failed downloading sources", "stack", "CustomContext");
+
+      expect(loggerChildMock.error).toHaveBeenCalledWith(
+        { context: "CustomContext", emoji: "📥", stack: "stack" },
+        "Failed downloading sources",
+      );
+    });
+
+    it("should read a third object argument as structured data", () => {
+      const loggerChildMock = createLoggerChildMock();
+
+      service.setContext("ErrorContext");
+      setLoggerChildMock(loggerChildMock);
+
+      service.error("📥 Failed downloading sources", "stack", { count: 7 });
+
+      expect(loggerChildMock.error).toHaveBeenCalledWith(
+        { context: "ErrorContext", count: 7, emoji: "📥", stack: "stack" },
+        "Failed downloading sources",
       );
     });
   });
@@ -271,13 +409,12 @@ describe(LoggerService, () => {
 
       service.setContext("TestContext");
       setLoggerChildMock(loggerChildMock);
-      const message = "Verbose message";
 
-      service.verbose(message);
+      service.verbose("🔬 Tracing the resolution order");
 
       expect(loggerChildMock.trace).toHaveBeenCalledWith(
-        { context: "TestContext" },
-        "Verbose message",
+        { context: "TestContext", emoji: "🔬" },
+        "Tracing the resolution order",
       );
     });
   });

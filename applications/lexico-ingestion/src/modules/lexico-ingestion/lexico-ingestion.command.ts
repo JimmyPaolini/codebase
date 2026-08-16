@@ -58,28 +58,28 @@ export class LexicoIngestionCommand extends CommandRunner {
 
     if (options.wikipedia) {
       this.logger.log(
-        `🗂️ Step ${step++}: Ingesting Wikipedia (Wiktionary) pages 🌐`,
+        `🌐 Ingesting Wikipedia (Wiktionary) pages`, undefined, { step: step++ },
       );
       await this.wiktionaryCommand.run();
     }
 
     if (options.dictionary) {
-      this.logger.log(`🗂️ Step ${step++}: Processing dictionary lexemes 📖`);
+      this.logger.log(`📖 Processing dictionary lexemes`, undefined, { step: step++ });
       await this.dictionaryCommand.ingestAll();
     }
 
     if (options.librarySources) {
-      this.logger.log(`🗂️ Step ${step++}: Downloading library sources 📥`);
+      this.logger.log(`📥 Downloading library sources`, undefined, { step: step++ });
       await this.runLibrarySourcesStage();
     }
 
     if (options.library) {
-      this.logger.log(`🗂️ Step ${step++}: Parsing library into markdown 📝`);
+      this.logger.log(`📝 Parsing library into markdown`, undefined, { step: step++ });
       await this.libraryCommand.run([], {});
     }
 
     if (options.literature) {
-      this.logger.log(`🗂️ Step ${step}: Ingesting literature texts 📜`);
+      this.logger.log(`📜 Ingesting literature texts`, undefined, { step });
       await this.literatureCommand.run([], {});
     }
   }
@@ -217,10 +217,10 @@ export class LexicoIngestionCommand extends CommandRunner {
     await this.promptForMissingOptions(options);
 
     this.logger.log("🚀 Starting full ingestion pipeline");
-    this.logger.log(`⚙️ Options: ${JSON.stringify(options)}`);
+    this.logger.log(`⚙️ Parsed command options`, undefined, { options });
 
     await this.executeStages(options);
 
-    this.logger.log("✅ Full ingestion pipeline complete 🎉");
+    this.logger.log("🎉 Completed the full ingestion pipeline");
   }
 }

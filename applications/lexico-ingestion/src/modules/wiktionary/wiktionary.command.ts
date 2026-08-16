@@ -95,7 +95,9 @@ export class WiktionaryCommand extends CommandRunner {
       );
 
       this.logger.warn(
-        `⏳ Rate limited — waiting ${(backoffMilliseconds / 1000).toFixed(1)}s (attempt ${attempt.toString()}/${retries.toString()})`,
+        `⏳ Waiting after a rate limit`,
+        undefined,
+        { attempt, backoffMilliseconds, retries },
       );
       await new Promise((resolve) => {
         setTimeout(resolve, backoffMilliseconds);
@@ -117,7 +119,9 @@ export class WiktionaryCommand extends CommandRunner {
     const errorMessage =
       error instanceof Error ? error.stack || error.message : String(error);
     this.logger.error(
-      `❌ Error ingesting category "${category}" at url "${this.host}${urlPath}" - ${String(error)}`,
+      `🌐 Failed ingesting category "${category}"`,
+      errorMessage,
+      { url: `${this.host}${urlPath}` },
     );
     fs.appendFileSync(
       this.errorLogFilePath,
@@ -177,13 +181,13 @@ export class WiktionaryCommand extends CommandRunner {
     this.logger.log(`💬 Ingesting word "${entry.word}"`);
 
     if (entry.href.includes("/w/index.php")) {
-      this.logger.warn(`⚠️ "${entry.word}" - no wiktionary page`);
+      this.logger.warn(`🌐 Missing wiktionary page for "${entry.word}"`);
       return;
     }
 
     const parsed = await this.parseLatinSection(entry.href);
     if (!parsed) {
-      this.logger.warn(`⚠️ "${entry.word}" - no latin entry in wiktionary`);
+      this.logger.warn(`🌐 Missing latin entry for "${entry.word}"`);
       return;
     }
 
@@ -234,7 +238,7 @@ export class WiktionaryCommand extends CommandRunner {
           ? wordError.stack || wordError.message
           : String(wordError);
       this.logger.error(
-        `❌ Error ingesting word "${word}" - ${String(wordError)}`,
+        `🔤 Failed ingesting word "${word}"`, String(wordError),
       );
       fs.appendFileSync(
         this.errorLogFilePath,

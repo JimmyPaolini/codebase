@@ -173,7 +173,7 @@ describe(ConventionalConfigService, () => {
     });
 
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ Conventional commit config is in sync",
+      "📇 Verified the conventional commit config",
     );
   });
 
@@ -215,7 +215,7 @@ describe(ConventionalConfigService, () => {
       typeNames: ["fix"],
     });
 
-    expect(logger.log).toHaveBeenCalledWith("✅ Already in sync");
+    expect(logger.log).toHaveBeenCalledWith("📇 Verified everything was already in sync");
     expect(io.writeSettingsSync).not.toHaveBeenCalled();
   });
 

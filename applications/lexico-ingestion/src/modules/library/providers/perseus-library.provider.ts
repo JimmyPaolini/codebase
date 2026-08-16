@@ -67,7 +67,7 @@ export class PerseusLibraryProvider {
       return xmlPaths;
     } catch (error) {
       this.logger.error(
-        `❌ Could not read source directory: ${String(error)}. Did you run the perseus command first?`,
+        `📁 Failed reading the source directory. Did you run the perseus command first?`,
       );
       return [];
     }
@@ -200,7 +200,7 @@ export class PerseusLibraryProvider {
       const progress = ` (${(((index + 1) / total) * 100).toFixed(2)}%, ${index + 1}/${total})`;
       this.logger.log(`📜 Completed processing: ${xmlPath}${progress}`);
     } catch (error) {
-      this.logger.warn(`⚠️ Error processing ${xmlPath}: ${error}`);
+      this.logger.warn(`📜 Failed processing ${xmlPath}`, undefined, { reason: String(error) });
     }
   }
 
@@ -220,7 +220,7 @@ export class PerseusLibraryProvider {
       xmlPath,
     });
     if (!rawAuthor || !rawTitle) {
-      this.logger.warn(`⚠️ Missing metadata in ${xmlPath}`);
+      this.logger.warn(`🏷️ Missing metadata in ${xmlPath}`);
       return;
     }
     if (this.isFilteredOut(rawAuthor, rawTitle, options)) {

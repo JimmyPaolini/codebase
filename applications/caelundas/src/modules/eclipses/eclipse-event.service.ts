@@ -49,7 +49,9 @@ export class EclipseEventService {
     const framedSummary = `${frameSymbol} ${summary}`;
     const dateString = date.clone().tz("America/New_York").toISOString(true);
 
-    this.logger.log(`${framedSummary} at ${dateString}`);
+    this.logger.log(`🗓️ Built ${framedSummary}`, undefined, {
+      at: dateString,
+    });
 
     return {
       categories: [...this.categories, body, frameLabel],

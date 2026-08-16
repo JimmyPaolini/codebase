@@ -136,7 +136,13 @@ export class MinorAspectsService {
     const minorAspect = this.getMinorAspect({ longitudeBody1, longitudeBody2 });
     if (!minorAspect) {
       this.logger.error(
-        `No minor aspect found between ${body1} and ${body2} at ${timestamp.toISOString()}: ${longitudeBody1} and ${longitudeBody2}`,
+        `📐 Missing minor aspect between ${body1} and ${body2}`,
+        undefined,
+        {
+          at: timestamp.toISOString(),
+          longitudeBody1,
+          longitudeBody2,
+        },
       );
       throw new Error("No minor aspect found");
     }
