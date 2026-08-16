@@ -247,6 +247,27 @@ describe(CodometerCommand, () => {
     );
   });
 
+  it("writes when the check flag is absent entirely", async () => {
+    const localCommand = new CodometerCommand(
+      loggerService,
+      codometerService,
+      readmeService,
+    );
+
+    // nest-commander omits the key rather than passing false, so this is the
+    // ordinary `nx run codebase:codometer` path, not an edge case.
+    await localCommand.run([], {
+      directory: "/repo",
+      readme: "README.md",
+    });
+
+    expect(readmeService.syncReadme).toHaveBeenCalledWith(
+      "README.md",
+      statistics,
+      false,
+    );
+  });
+
   it("creates fallback services when optional dependencies are omitted", () => {
     const fallbackCommand = new CodometerCommand(loggerService);
 
