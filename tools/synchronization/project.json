@@ -11,12 +11,9 @@
     "type:package"
   ],
   "targets": {
-    "analyze-code": {},
-    "clean": {},
     "dependency-cruiser": {},
-    "format": {},
     "knip": {},
-    "lint": {},
+    "lint-codebase": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
@@ -64,7 +61,40 @@
         "cwd": "{workspaceRoot}"
       }
     },
+    "synchronize": {
+      "cache": true,
+      "configurations": {
+        "check": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization check"
+        },
+        "write": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization write"
+        }
+      },
+      "defaultConfiguration": "check",
+      "description": "Run every synchronization command in one process. The individual `start:*-check` configurations remain for targeted use; this exists so one Nx target covers all five without five project graph builds.",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{projectRoot}/**/*.ts",
+        "{workspaceRoot}/.agents/skills/**",
+        "{workspaceRoot}/.devcontainer/cloud/devcontainer.json",
+        "{workspaceRoot}/.devcontainer/local/devcontainer.json",
+        "{workspaceRoot}/.github/agents/**",
+        "{workspaceRoot}/.github/ISSUE_TEMPLATE/**",
+        "{workspaceRoot}/.github/PULL_REQUEST_TEMPLATE.md",
+        "{workspaceRoot}/.vscode/settings.json",
+        "{workspaceRoot}/AGENTS.md",
+        "{workspaceRoot}/configuration/conformetry.config.ts",
+        "{workspaceRoot}/configuration/conventional.config.cjs",
+        "{workspaceRoot}/release.config.cjs",
+        "shared-globals"
+      ],
+      "options": {
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "test": {},
+    "test-coverage": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {}

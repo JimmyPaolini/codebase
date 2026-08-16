@@ -15,6 +15,10 @@ import {
   DEVCONTAINER_SYNCED_KEYS,
 } from "./devcontainer-configuration.constants";
 
+import type {
+  SynchronizableCommand,
+  SynchronizationMode,
+} from "../synchronization/synchronization.types";
 import type { DevcontainerConfiguration } from "./devcontainer-configuration.types";
 
 /**
@@ -26,7 +30,10 @@ import type { DevcontainerConfiguration } from "./devcontainer-configuration.typ
   name: "devcontainer-configuration",
 })
 @Injectable()
-export class DevcontainerConfigurationCommand extends CommandRunner {
+export class DevcontainerConfigurationCommand
+  extends CommandRunner
+  implements SynchronizableCommand
+{
   // 🏗 Dependency Injection
 
   constructor(
@@ -40,6 +47,8 @@ export class DevcontainerConfigurationCommand extends CommandRunner {
   // 🔐 Private Fields
 
   // 🔑 Public Fields
+
+  readonly synchronizationLabel = "devcontainer-configuration";
 
   // 🔏 Private Methods
 
@@ -89,9 +98,7 @@ export class DevcontainerConfigurationCommand extends CommandRunner {
     this.reportDifferences(expectedConfigCopy, currentConfig);
 
     this.logger.log("");
-    this.logger.log(
-      `  Run: nx run synchronization:start:devcontainer-configuration-write`,
-    );
+    this.logger.log(`  Run: nx run synchronization:synchronize:write`);
     return false;
   }
 
@@ -206,7 +213,6 @@ export class DevcontainerConfigurationCommand extends CommandRunner {
     passedParameters: string[],
     _options?: Record<string, unknown>,
   ): Promise<void> {
-    await Promise.resolve();
     const mode =
       this.synchronizationModeService.resolveSynchronizationModeOrExit({
         invalidModeLabel: "Invalid mode",
@@ -215,6 +221,15 @@ export class DevcontainerConfigurationCommand extends CommandRunner {
         usageMessage:
           "💡 Usage: nx run synchronization:start:devcontainer-configuration-check (or synchronization:start:devcontainer-configuration-write)",
       });
+
+    if (!(await this.synchronize(mode))) {
+      process.exit(1);
+    }
+  }
+
+  /** Synchronizes the cloud devcontainer config and reports success without exiting. */
+  async synchronize(mode: SynchronizationMode): Promise<boolean> {
+    await Promise.resolve();
     const workspaceRoot = process.cwd();
     const localConfigFile = path.join(
       workspaceRoot,
@@ -234,13 +249,15 @@ export class DevcontainerConfigurationCommand extends CommandRunner {
     const mergedConfig = this.applySync(localConfig, cloudConfig);
 
     if (mode === "check") {
-      if (!this.check(mergedConfig, cloudConfigFile)) process.exit(1);
+      if (!this.check(mergedConfig, cloudConfigFile)) return false;
       this.logger.log(
         "✅ Cloud devcontainer config is in sync with local config",
       );
-    } else {
-      this.write(mergedConfig, cloudConfigFile);
-      this.logger.log("✅ Cloud devcontainer config updated from local config");
+      return true;
     }
+
+    this.write(mergedConfig, cloudConfigFile);
+    this.logger.log("✅ Cloud devcontainer config updated from local config");
+    return true;
   }
 }

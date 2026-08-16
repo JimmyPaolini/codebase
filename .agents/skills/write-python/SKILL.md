@@ -20,7 +20,7 @@ Seven Python tool targets are defined as codebase-wide `targetDefaults` in `nx.j
 | `pytest` | pytest | Run tests (unit/integration/coverage) |
 | `vulture` | vulture | Dead code detection |
 | `ty` | ty | Supplementary type checker (Astral, pre-1.0) |
-| `bandit` | bandit | Security linter (CI `audit-security` only) |
+| `bandit` | bandit | Security linter (CI `scan-security` only) |
 
 ## Project Tags
 
@@ -148,4 +148,4 @@ uv run vulture src/ .vulture_whitelist.py --min-confidence 80
 3. Run `uv sync` to generate `uv.lock`
 4. Add `ty` and `bandit` as dev dependencies: `uv add --dev ty 'bandit[toml]'`
 5. Override composite targets (`format`, `lint`, `typecheck`, `test`) in `project.json`
-6. Verify: `nx run <project>:analyze-code`
+6. Verify: `nx run <project>:lint-codebase`

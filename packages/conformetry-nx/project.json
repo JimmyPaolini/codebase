@@ -11,7 +11,6 @@
     "type:package"
   ],
   "targets": {
-    "analyze-code": {},
     "build": {
       "executor": "@nx/js:tsc",
       "options": {
@@ -48,17 +47,17 @@
       },
       "outputs": ["{options.outputPath}"]
     },
-    "clean": {},
     "dependency-cruiser": {},
-    "format": {},
     "knip": {},
-    "lint": {},
+    "lint-codebase": {},
+    "make-projects": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
     "prettier": {},
     "spell-check": {},
     "test": {},
+    "test-coverage": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {}

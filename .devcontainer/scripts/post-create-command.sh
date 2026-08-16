@@ -16,6 +16,14 @@ curl -sSfL \
   | tar -xzC /usr/local/bin gitleaks
 echo "✅ Gitleaks installed: $(gitleaks version)"
 
+# Trivy backs `nx run codebase:trivy-config`, which the security gate runs in
+# CI and which should behave identically here.
+echo "🏗 Installing Trivy v${TRIVY_VERSION}..."
+curl -sSfL \
+  "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz" \
+  | tar -xzC /usr/local/bin trivy
+echo "✅ Trivy installed: $(trivy --version)"
+
 echo "🔎 Checking for .env file..."
 if [ ! -f ".env" ]; then
   if [ -f ".env.default" ]; then

@@ -38,13 +38,15 @@ NX_PERF_LOGGING=false lint-staged --config configuration/lint-staged.config.ts -
 
 # 💀 Explain a kill rather than leaving lint-staged's misleading wording
 # Exit 137 is SIGKILL. lint-staged reports it as "Task failed to spawn:
-# undefined", which sends you looking at PATH and argument length; the real
-# cause is the operating system reclaiming memory from the analysis run.
+# undefined", which sends you looking at PATH and argument length. The known
+# trigger was `nx affected --files=<staged paths>` with more than roughly twenty
+# distinct paths, which Nx dies on instantly with no output; lint-staged.config.ts
+# passes --uncommitted instead. If this fires again it is genuine memory pressure.
 if [ "${EXIT_CODE}" = "137" ] || grep -q "Task failed to spawn" last-lint-staged-output.log 2>/dev/null; then
   printf '\n⚠️  A check was killed rather than failing.\n'
-  printf '   This is the operating system reclaiming memory, not a spawn error.\n'
+  printf '   This is a SIGKILL, not a spawn error.\n'
   printf '   Free some memory and commit again, or run the analysis directly:\n'
-  printf '   nx affected --target=analyze-code --configuration=check --parallel=1 --files=<staged paths>\n\n'
+  printf '   nx affected --target=lint-codebase --configuration=check --parallel=1 --uncommitted\n\n'
 fi
 
 # 🖨️ Log output

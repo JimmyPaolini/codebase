@@ -17,6 +17,7 @@ jobs:
   refresh-documentation:
     name: 🧑‍🏫 Refresh Documentation
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     env:
       OPENWIKI_PROVIDER: gemini
       OPENWIKI_MODEL: gemini-3.6-flash
@@ -25,18 +26,21 @@ jobs:
 
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: 🕋 Setup Codebase
         uses: ./.github/actions/setup-codebase
+        with:
+          nx-shas: "false"
+          uv: "false"
 
       - name: 🧑‍🏫 Refresh Documentation
         run: pnpm exec nx run codebase:openwiki
 
       - name: 🔀 Upsert Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           base: main

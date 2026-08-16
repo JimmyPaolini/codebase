@@ -74,7 +74,7 @@ Run project-level checks with Nx:
 ```bash
 pnpm nx run lexico-ingestion:test:unit
 pnpm nx run lexico-ingestion:typecheck
-pnpm nx run lexico-ingestion:analyze-code --configuration=check
+pnpm nx run lexico-ingestion:lint-codebase --configuration=check
 ```
 
 If the task is coverage-driven:

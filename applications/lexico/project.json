@@ -12,7 +12,6 @@
     "type:application"
   ],
   "targets": {
-    "analyze-code": {},
     "build": {
       "description": "Build the application for production",
       "executor": "nx:run-commands",
@@ -21,18 +20,7 @@
         "cwd": "applications/lexico"
       }
     },
-    "bundlesize": {
-      "cache": true,
-      "dependsOn": ["build"],
-      "description": "Check bundle size limits",
-      "executor": "nx:run-commands",
-      "inputs": ["{workspaceRoot}/dist/applications/lexico/**/*", "default"],
-      "options": {
-        "command": "npx size-limit",
-        "cwd": "applications/lexico"
-      }
-    },
-    "clean": {},
+    "bundlesize": {},
     "dependency-cruiser": {},
     "develop": {
       "description": "Start development server with hot reload",
@@ -42,9 +30,9 @@
         "cwd": "applications/lexico"
       }
     },
-    "format": {},
     "knip": {},
-    "lint": {},
+    "lint-codebase": {},
+    "make-projects": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},

@@ -56,6 +56,11 @@ coverage/*
 # Type Coverage 🏷️
 type-coverage-report.txt
 
+# Bundle Size 📦
+size-limit-report.json
+.bundle-baseline
+.bundle-report.md
+
 # Agents 🤖
 .claude/worktrees
 .claude/settings.local.json

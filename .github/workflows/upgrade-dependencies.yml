@@ -17,13 +17,16 @@ jobs:
   upgrade-dependencies:
     name: 🧑‍🚒 Upgrade Dependencies
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: 🕋 Setup Codebase
         uses: ./.github/actions/setup-codebase
+        with:
+          nx-shas: "false"
 
       - name: 🎁 Upgrade pnpm
         run: |
@@ -68,7 +71,7 @@ jobs:
 
       - name: 🔐 Import GPG Key
         if: steps.check.outputs.has_dependency_updates == 'true'
-        uses: crazy-max/ghaction-import-gpg@v6
+        uses: crazy-max/ghaction-import-gpg@v7
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
@@ -77,7 +80,7 @@ jobs:
 
       - name: 🔀 Open Pull Request
         if: steps.check.outputs.has_dependency_updates == 'true'
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore(dependencies): ⬆️ Upgrade"

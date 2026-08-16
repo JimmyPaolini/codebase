@@ -27,6 +27,10 @@ import {
 } from "./agent-skills.constants";
 
 import type {
+  SynchronizableCommand,
+  SynchronizationMode,
+} from "../synchronization/synchronization.types";
+import type {
   AgentFileSyncConfig,
   WriteSkillAgentFilesOptions,
 } from "./agent-skills.types";
@@ -39,7 +43,10 @@ import type {
   name: "agent-skills",
 })
 @Injectable()
-export class AgentSkillsCommand extends CommandRunner {
+export class AgentSkillsCommand
+  extends CommandRunner
+  implements SynchronizableCommand
+{
   // 🏗 Dependency Injection
 
   constructor(
@@ -53,6 +60,8 @@ export class AgentSkillsCommand extends CommandRunner {
   // 🔐 Private Fields
 
   // 🔑 Public Fields
+
+  readonly synchronizationLabel = "agent-skills";
 
   // 🔏 Private Methods
 
@@ -75,7 +84,7 @@ export class AgentSkillsCommand extends CommandRunner {
       this.logger.log(`  Found ${agents.length} agents in .github/agents/`);
       this.logger.log("  Generated content doesn't match stored content");
       this.logger.log(
-        "💡 Run 'pnpm exec nx run synchronization:start:agent-skills-write' to sync\n",
+        "💡 Run 'nx run synchronization:synchronize:write' to sync\n",
       );
       return false;
     }
@@ -133,7 +142,7 @@ export class AgentSkillsCommand extends CommandRunner {
 
     if (!allInSync) {
       this.logger.log(
-        "💡 Run 'pnpm exec nx run synchronization:start:agent-skills-write' to sync\n",
+        "💡 Run 'nx run synchronization:synchronize:write' to sync\n",
       );
       return false;
     }
@@ -161,7 +170,7 @@ export class AgentSkillsCommand extends CommandRunner {
       this.logger.log(`  Found ${skills.length} skills in .agents/skills/`);
       this.logger.log("  Generated content doesn't match stored content");
       this.logger.log(
-        "💡 Run 'pnpm exec nx run synchronization:start:agent-skills-write' to sync\n",
+        "💡 Run 'nx run synchronization:synchronize:write' to sync\n",
       );
       return false;
     }
@@ -173,34 +182,28 @@ export class AgentSkillsCommand extends CommandRunner {
   }
 
   /**
-   * Runs all check-mode validations.
+   * Runs all check-mode validations and reports whether every one passed.
+   *
+   * Each check runs even after an earlier one fails, so a single run surfaces
+   * all drift rather than only the first instance.
    */
-  private runCheckMode(workspaceRoot: string): void {
+  private runCheckMode(workspaceRoot: string): boolean {
     const planInSync = this.checkSkillAgentFiles(
       PLAN_AGENT_CONFIGS,
       workspaceRoot,
       `✅ All ${PLAN_AGENT_CONFIGS.length} plan agent files are in sync`,
     );
-    if (!planInSync) {
-      process.exit(1);
-    }
 
     const triageInSync = this.checkSkillAgentFiles(
       TRIAGE_AGENT_CONFIGS,
       workspaceRoot,
       `✅ All ${TRIAGE_AGENT_CONFIGS.length} triage agent files are in sync`,
     );
-    if (!triageInSync) {
-      process.exit(1);
-    }
 
-    if (!this.checkCustomAgentsTable(workspaceRoot)) {
-      process.exit(1);
-    }
+    const customAgentsInSync = this.checkCustomAgentsTable(workspaceRoot);
+    const skillsInSync = this.checkSkillsTable(workspaceRoot);
 
-    if (!this.checkSkillsTable(workspaceRoot)) {
-      process.exit(1);
-    }
+    return planInSync && triageInSync && customAgentsInSync && skillsInSync;
   }
 
   /**
@@ -323,7 +326,6 @@ export class AgentSkillsCommand extends CommandRunner {
     passedParameters: string[],
     _options?: Record<string, unknown>,
   ): Promise<void> {
-    await Promise.resolve();
     const mode =
       this.synchronizationModeService.resolveSynchronizationModeOrExit({
         invalidModeLabel: "Unknown mode",
@@ -332,20 +334,33 @@ export class AgentSkillsCommand extends CommandRunner {
         usageMessage: "Expected 'check' or 'write'",
       });
 
+    if (!(await this.synchronize(mode))) {
+      process.exit(1);
+    }
+  }
+
+  /**
+   * Synchronizes agent-skill artifacts and reports success without exiting, so
+   * the aggregate `synchronization` command can run every command and report
+   * all drift at once.
+   */
+  async synchronize(mode: SynchronizationMode): Promise<boolean> {
+    await Promise.resolve();
+
     try {
       const workspaceRoot = process.cwd();
 
       if (mode === "check") {
-        this.runCheckMode(workspaceRoot);
-        return;
+        return this.runCheckMode(workspaceRoot);
       }
 
       this.runWriteMode(workspaceRoot);
+      return true;
     } catch (error) {
       this.logger.error(
         `❌ Error: ${error instanceof Error ? error.message : error}`,
       );
-      process.exit(1);
+      return false;
     }
   }
 }

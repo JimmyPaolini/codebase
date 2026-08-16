@@ -132,17 +132,25 @@ nx run <project>:test             # All tests
 nx run <project>:test:watch       # Watch mode
 nx run caelundas:test:unit        # Specific type
 
-# Code quality (use --all for all projects)
-nx run-many --target=lint --all           # or :lint:write to fix
-nx run-many --target=typecheck --all
-nx run-many --target=format:check --all   # or :format:write
-nx run-many --target=spell-check --all
-nx run-many --target=markdown-lint --all  # or :markdown-lint:write
-nx run-many --target=knip --all           # or :knip:write (caution!)
-nx run-many --target=analyze-code --all  # Run all checks
+# Code quality — lint-codebase runs every static analyser in one task graph
+nx run-many --target=lint-codebase                    # check (default)
+nx run-many --target=lint-codebase --configuration=write  # auto-fix
+
+# Or reach for a single tool
+nx run-many --target=eslint            # or --configuration=write to fix
+nx run-many --target=typecheck
+nx run-many --target=oxfmt --configuration=write
+nx run-many --target=spell-check
+nx run-many --target=markdown-lint     # or --configuration=write
+nx run-many --target=knip              # or --configuration=write (caution!)
+
+# The other three gates
+nx run-many --target=test-coverage --configuration=coverage
+nx run-many --target=scan-security
+nx run-many --target=make-projects
 
 # Affected projects only
-nx affected --target=test
+nx affected --target=lint-codebase
 ```
 
 ## Code Standards

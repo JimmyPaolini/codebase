@@ -7,6 +7,7 @@ import { DevcontainerConfigurationModule } from "../devcontainer-configuration/d
 import { LoggerModule } from "../logger/logger.module";
 import { PullRequestTemplateModule } from "../pull-request-template/pull-request-template.module";
 
+import { SynchronizationCommand } from "./synchronization.command";
 import { SynchronizationService } from "./synchronization.service";
 
 /**
@@ -14,7 +15,7 @@ import { SynchronizationService } from "./synchronization.service";
  */
 @Module({
   controllers: [],
-  exports: [SynchronizationService],
+  exports: [SynchronizationCommand, SynchronizationService],
   imports: [
     LoggerModule,
     AgentSkillsModule,
@@ -23,6 +24,6 @@ import { SynchronizationService } from "./synchronization.service";
     DevcontainerConfigurationModule,
     PullRequestTemplateModule,
   ],
-  providers: [SynchronizationService],
+  providers: [SynchronizationCommand, SynchronizationService],
 })
 export class SynchronizationModule {}

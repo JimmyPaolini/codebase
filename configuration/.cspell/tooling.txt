@@ -37,6 +37,7 @@ disambiguator
 docstring
 docstrings
 domcontentloaded
+dorny
 dunder
 effectful
 elipssis
@@ -185,6 +186,7 @@ subquery
 subrepositories
 svgs
 swipeable
+Synchronizable
 syncpack
 syncpackrc
 tailwindcss

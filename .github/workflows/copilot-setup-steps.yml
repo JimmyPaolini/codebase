@@ -13,6 +13,7 @@ jobs:
   copilot-setup-steps:
     name: 🤖 Setup Copilot
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     permissions:
       actions: read
@@ -34,10 +35,15 @@ jobs:
 
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: 🕋 Setup Codebase
         uses: ./.github/actions/setup-codebase
+        with:
+          nx-cache: "false"
+          nx-graph-cache: "false"
+          nx-shas: "false"
+          uv: "false"
 
       - name: 🌿 Verify Branch Name
         run: |
@@ -56,7 +62,7 @@ jobs:
         shell: bash
 
       - name: 🔐 Import GPG Key
-        uses: crazy-max/ghaction-import-gpg@v6
+        uses: crazy-max/ghaction-import-gpg@v7
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}

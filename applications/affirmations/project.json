@@ -10,11 +10,8 @@
     "type:application"
   ],
   "targets": {
-    "analyze-code": {},
     "bandit": {},
-    "clean": {},
-    "format": {},
-    "lint": {},
+    "lint-codebase": {},
     "markdown-lint": {},
     "nbstripout": {},
     "ollama": {
@@ -86,6 +83,7 @@
     },
     "spell-check": {},
     "test": {},
+    "test-coverage": {},
     "ty": {},
     "typecheck": {},
     "vulture": {},

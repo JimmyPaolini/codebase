@@ -12,16 +12,14 @@
     "type:application"
   ],
   "targets": {
-    "analyze-code": {},
     "build": {
       "command": "echo 'lexico-ingestion is a development tool and does not require building'"
     },
-    "clean": {},
     "dependency-cruiser": {},
     "eslint": {},
-    "format": {},
     "knip": {},
-    "lint": {},
+    "lint-codebase": {},
+    "make-projects": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
@@ -70,6 +68,7 @@
       }
     },
     "test": {},
+    "test-coverage": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {}
