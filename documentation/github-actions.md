@@ -178,19 +178,19 @@ synchronizations in one process. This workflow deliberately skips
 
 ### Automated (Push to Main)
 
-#### 7. Release Version (`release-version.yml`)
+#### 7. Push Releases (`push-releases.yml`)
 
-**Name:** 🦸 Release Version
+**Name:** 🦸 Push Releases
 
 **Triggers:** Push to `main`, manual dispatch
 
 **Jobs:**
 
-- **release-version** - Runs `pnpm semantic-release` to analyze commits, bump version, update `CHANGELOG.md`, and create a GitHub release. Uses GPG-signed commits.
+- **push-releases** - Runs `pnpm semantic-release` to analyze commits, bump version, update `CHANGELOG.md`, and create a GitHub release. Uses GPG-signed commits.
 
 **Permissions:** `contents: write`, `issues: write`, `pull-requests: write`
 
-**Concurrency:** Cancels in-progress runs for the same branch
+**Concurrency:** Queues runs for the same branch rather than cancelling them. Interrupting semantic-release between the npm publish and the git tag leaves the repository disagreeing with the registry.
 
 ---
 

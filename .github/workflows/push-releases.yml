@@ -1,4 +1,4 @@
-name: 🦸 Release Version
+name: 🦸 Push Releases
 
 on:
   push:
@@ -18,8 +18,8 @@ permissions:
   pull-requests: write
 
 jobs:
-  release-version:
-    name: 🦸 Release Version
+  push-releases:
+    name: 🦸 Push Releases
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -57,7 +57,7 @@ jobs:
       - name: 🔎 Check Commit Signing Configuration
         run: bash scripts/git/check-commit-signing-configuration.sh
 
-      - name: 🦸 Release Version
+      - name: 🦸 Push Releases
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         run: pnpm semantic-release
