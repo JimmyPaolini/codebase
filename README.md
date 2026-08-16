@@ -9,9 +9,9 @@
 [![Jupyter](https://img.shields.io/badge/Jupyter-1.1-F37626?logo=jupyter&logoColor=white)](https://jupyter.org/)
 
 <!-- CODE_STATISTICS_START -->
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-213351-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-213354-22c55e?style=flat-square)
 ![Repo Size](https://img.shields.io/badge/Repo_Size-154_MiB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-618-4a4a4a?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-619-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-1236-3178c6?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-266-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-149-8b5cf6?style=flat-square)
