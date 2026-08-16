@@ -1,8 +1,8 @@
 // ♟️ Constants
 
-import type { MeasureJsonResult } from "./measure-json.types";
+import type { JsonResult } from "./json.types";
 
-export const EMPTY_JSON_RESULT: MeasureJsonResult = {
+export const EMPTY_JSON_RESULT: JsonResult = {
   arrays: 0,
   booleans: 0,
   files: 0,

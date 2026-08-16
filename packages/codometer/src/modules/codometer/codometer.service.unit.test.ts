@@ -1,28 +1,28 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { DiscoverFilesService } from "../discover-files/discover-files.service";
-import { MeasureJsonService } from "../measure-json/measure-json.service";
-import { MeasurePythonService } from "../measure-python/measure-python.service";
-import { MeasureTypescriptService } from "../measure-typescript/measure-typescript.service";
+import { DiscoveryService } from "../discovery/discovery.service";
+import { JsonService } from "../json/json.service";
+import { PythonService } from "../python/python.service";
+import { TypescriptService } from "../typescript/typescript.service";
 
 import { CodometerService } from "./codometer.service";
 
 describe(CodometerService, () => {
   let service: CodometerService;
-  let discoverFilesService: DiscoverFilesService;
-  let measureJsonService: MeasureJsonService;
-  let measurePythonService: MeasurePythonService;
-  let measureTypescriptService: MeasureTypescriptService;
+  let discoveryService: DiscoveryService;
+  let jsonService: JsonService;
+  let pythonService: PythonService;
+  let typescriptService: TypescriptService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
         CodometerService,
-        DiscoverFilesService,
-        MeasureJsonService,
-        MeasurePythonService,
-        MeasureTypescriptService,
+        DiscoveryService,
+        JsonService,
+        PythonService,
+        TypescriptService,
       ],
     }).compile();
 
@@ -30,10 +30,10 @@ describe(CodometerService, () => {
   });
 
   beforeEach(() => {
-    const discoveryService = new DiscoverFilesService();
-    const jsonService = new MeasureJsonService();
-    const pythonService = new MeasurePythonService();
-    const typescriptService = new MeasureTypescriptService();
+    discoveryService = new DiscoveryService();
+    jsonService = new JsonService();
+    pythonService = new PythonService();
+    typescriptService = new TypescriptService();
 
     vi.spyOn(discoveryService, "discoverFiles").mockReturnValue({
       jsFiles: ["src/app.js"],
@@ -98,11 +98,6 @@ describe(CodometerService, () => {
       todos: 22,
       tsFiles: 1,
     });
-
-    discoverFilesService = discoveryService;
-    measureJsonService = jsonService;
-    measurePythonService = pythonService;
-    measureTypescriptService = typescriptService;
   });
 
   it("is defined", () => {
@@ -111,19 +106,22 @@ describe(CodometerService, () => {
 
   it("aggregates repository statistics into a report", () => {
     const codometerService = new CodometerService(
-      discoverFilesService,
-      measureTypescriptService,
-      measurePythonService,
-      measureJsonService,
+      discoveryService,
+      typescriptService,
+      pythonService,
+      jsonService,
     );
     const result = codometerService.measure("/repo");
 
-    expect(discoverFilesService.discoverFiles).toHaveBeenCalledWith("/repo");
-    expect(measureTypescriptService.analyze).toHaveBeenCalledWith({
+    expect(discoveryService.discoverFiles).toHaveBeenCalledWith("/repo");
+    expect(typescriptService.analyze).toHaveBeenCalledWith({
       sourceFiles: ["src/app.ts", "scripts/check.py"],
       workingDirectory: "/repo",
     });
-    expect(measurePythonService.analyze).toHaveBeenCalledWith("/repo");
+    expect(pythonService.analyze).toHaveBeenCalledWith(
+      ["scripts/check.py"],
+      "/repo",
+    );
 
     expect(result.javascript.classes + result.python.classes).toBe(12);
     expect(result.javascript.comments + result.python.comments).toBe(6);

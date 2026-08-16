@@ -5,20 +5,20 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 
-import { WriteReadmeService } from "./write-readme.service";
+import { ReadmeService } from "./readme.service";
 
 import type { CodeStatisticsResult } from "../codometer/codometer.types";
 
-describe(WriteReadmeService, () => {
-  let service: WriteReadmeService;
+describe(ReadmeService, () => {
+  let service: ReadmeService;
   const temporaryDirectories: string[] = [];
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [WriteReadmeService],
+      providers: [ReadmeService],
     }).compile();
 
-    service = await module.resolve(WriteReadmeService);
+    service = await module.resolve(ReadmeService);
   });
 
   afterEach(() => {

@@ -1,25 +1,21 @@
-# packages/codometer/src/modules/measure-python/measure-python.service.py
+# packages/codometer/src/modules/python/python.service.py
 import ast
 import io
 import json
+import sys
 import tokenize
 from pathlib import Path
 
-EXCLUDE = {
-    "node_modules",
-    ".nx",
-    "dist",
-    "build",
-    "coverage",
-    "notepads",
-    ".venv",
-    "__pycache__",
-    ".git",
-}
 
+def read_paths() -> list[Path]:
+    """Read the newline-delimited file list the caller supplies on stdin.
 
-def should_skip(path: Path) -> bool:
-    return any(part in EXCLUDE for part in path.parts)
+    The caller owns discovery so that every language is measured over the same
+    set of git-tracked files. Walking the tree here instead would also count
+    untracked Python -- build output, virtual environments, and sibling git
+    worktrees -- so the totals depended on whatever sat in the directory.
+    """
+    return [Path(line.strip()) for line in sys.stdin if line.strip()]
 
 
 def count_docstring(node: ast.AST, stats: dict[str, int]) -> None:
@@ -46,9 +42,7 @@ stats = {
     "docstringLines": 0,
 }
 
-for path in Path(".").rglob("*.py"):
-    if should_skip(path):
-        continue
+for path in read_paths():
     try:
         source = path.read_text(encoding="utf-8")
         tree = ast.parse(source)

@@ -1,6 +1,6 @@
 // ♟️ Constants
 
-import type { MeasureTypescriptResult } from "./measure-typescript.types";
+import type { TypescriptResult } from "./typescript.types";
 
 /** Regex matching TODO and FIXME annotations inside comments. */
 export const TODO_REGEX =
@@ -13,7 +13,7 @@ export const DOC_TAG_REGEX = /@([a-zA-Z][a-zA-Z0-9-]*)/g;
 export const JS_EXTENSIONS = new Set([".cjs", ".js", ".jsx", ".mjs"]);
 
 /** Empty metrics used to initialize analyzer state. */
-export const EMPTY_TYPESCRIPT_RESULT: MeasureTypescriptResult = {
+export const EMPTY_TYPESCRIPT_RESULT: TypescriptResult = {
   asyncFunctions: 0,
   blockComments: 0,
   classes: 0,

@@ -8,65 +8,6 @@
 [![uv](https://img.shields.io/badge/uv-Python%20Packages-DE5FE9?logo=uv)](https://docs.astral.sh/uv/)
 [![Jupyter](https://img.shields.io/badge/Jupyter-1.1-F37626?logo=jupyter&logoColor=white)](https://jupyter.org/)
 
-<!-- CODE_STATISTICS_START -->
-
-**Repository**
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-213457-22c55e?style=flat-square)
-![Repo Size](https://img.shields.io/badge/Repo_Size-154_MiB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-618-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-1236-3178c6?style=flat-square)
-
-**TypeScript & JavaScript**
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-1083-3178c6?style=flat-square)
-![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-127-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-266-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-149-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-369-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-9963-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-2061-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-10714-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-1310-059669?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-342-0ea5e9?style=flat-square)
-![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-30-0369a1?style=flat-square)
-![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-17026-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-4990-0284c7?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-687-db2777?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-1650-ea580c?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-2426-6366f1?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-7812-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-13535-475569?style=flat-square)
-![TODO Comments](https://img.shields.io/badge/TODO_Comments-53-ca8a04?style=flat-square)
-
-**Python**
-![Python Files](https://img.shields.io/badge/Python_Files-26-3776ab?style=flat-square)
-![Python Lines](https://img.shields.io/badge/Python_Lines-3810-4b8bbe?style=flat-square)
-![Python Classes](https://img.shields.io/badge/Python_Classes-20-7c3aed?style=flat-square)
-![Python Functions](https://img.shields.io/badge/Python_Functions-91-16a34a?style=flat-square)
-![Python Protocols](https://img.shields.io/badge/Python_Protocols-0-0ea5e9?style=flat-square)
-![Python Constants](https://img.shields.io/badge/Python_Constants-120-dc2626?style=flat-square)
-![Python Imports](https://img.shields.io/badge/Python_Imports-67-0284c7?style=flat-square)
-![Python Decorators](https://img.shields.io/badge/Python_Decorators-72-db2777?style=flat-square)
-![Docstrings](https://img.shields.io/badge/Docstrings-39-6366f1?style=flat-square)
-![Docstring Lines](https://img.shields.io/badge/Docstring_Lines-98-818cf8?style=flat-square)
-![Python Comments](https://img.shields.io/badge/Python_Comments-24-64748b?style=flat-square)
-![Python Comment Lines](https://img.shields.io/badge/Python_Comment_Lines-24-475569?style=flat-square)
-
-**JSON**
-![JSON Files](https://img.shields.io/badge/JSON_Files-427-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-233541-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-28914-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-16486-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-116692-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-126916-16a34a?style=flat-square)
-![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-395-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-316-0ea5e9?style=flat-square)
-![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-14670-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-70585-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-187697-dc2626?style=flat-square)
-![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-10-ea580c?style=flat-square)
-<!-- CODE_STATISTICS_END -->
-
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev/)
 [![TanStack](https://img.shields.io/badge/TanStack-Start-FF4154?logo=tanstack)](https://tanstack.com/start)
 [![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-Components-000000?logo=shadcnui)](https://ui.shadcn.com/)
@@ -181,3 +122,66 @@ Skills are specialized instruction files used by our automated agents, but they 
 - **Domains:** [TanStack Start](.agents/skills/tanstack-start-ssr/SKILL.md) / [Ephemeris Pipeline](.agents/skills/ephemeris-pipeline/SKILL.md)
 
 Other important files include [CHANGELOG.md](CHANGELOG.md) and [SECURITY.md](SECURITY.md).
+
+## 📊 Codometer
+
+Repository statistics measured by [codometer](packages/codometer), regenerated by `nx run codebase:codometer`.
+
+<!-- CODE_STATISTICS_START -->
+
+**Repository**
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-213402-22c55e?style=flat-square)
+![Repo Size](https://img.shields.io/badge/Repo_Size-154_MiB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-618-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-1236-3178c6?style=flat-square)
+
+**TypeScript & JavaScript**
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-1083-3178c6?style=flat-square)
+![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-127-f7df1e?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-266-10b981?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-149-8b5cf6?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-369-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-9966-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-2060-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-10716-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-1310-059669?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-342-0ea5e9?style=flat-square)
+![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-30-0369a1?style=flat-square)
+![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-17018-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-4991-0284c7?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-690-db2777?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-1650-ea580c?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-2425-6366f1?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-7819-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-13549-475569?style=flat-square)
+![TODO Comments](https://img.shields.io/badge/TODO_Comments-53-ca8a04?style=flat-square)
+
+**Python**
+![Python Files](https://img.shields.io/badge/Python_Files-26-3776ab?style=flat-square)
+![Python Lines](https://img.shields.io/badge/Python_Lines-3804-4b8bbe?style=flat-square)
+![Python Classes](https://img.shields.io/badge/Python_Classes-20-7c3aed?style=flat-square)
+![Python Functions](https://img.shields.io/badge/Python_Functions-91-16a34a?style=flat-square)
+![Python Protocols](https://img.shields.io/badge/Python_Protocols-0-0ea5e9?style=flat-square)
+![Python Constants](https://img.shields.io/badge/Python_Constants-119-dc2626?style=flat-square)
+![Python Imports](https://img.shields.io/badge/Python_Imports-68-0284c7?style=flat-square)
+![Python Decorators](https://img.shields.io/badge/Python_Decorators-72-db2777?style=flat-square)
+![Docstrings](https://img.shields.io/badge/Docstrings-40-6366f1?style=flat-square)
+![Docstring Lines](https://img.shields.io/badge/Docstring_Lines-104-818cf8?style=flat-square)
+![Python Comments](https://img.shields.io/badge/Python_Comments-24-64748b?style=flat-square)
+![Python Comment Lines](https://img.shields.io/badge/Python_Comment_Lines-24-475569?style=flat-square)
+
+**JSON**
+![JSON Files](https://img.shields.io/badge/JSON_Files-427-a16207?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-233541-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-28914-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-16486-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-116692-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-126916-16a34a?style=flat-square)
+![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-395-059669?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-316-0ea5e9?style=flat-square)
+![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-14670-64748b?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-70585-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-187697-dc2626?style=flat-square)
+![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-10-ea580c?style=flat-square)
+<!-- CODE_STATISTICS_END -->

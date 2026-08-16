@@ -10,13 +10,13 @@ export interface JsoncState {
 }
 
 /** Input to the JSON analysis step. */
-export interface MeasureJsonInput {
+export interface JsonInput {
   jsonFiles: string[];
   workingDirectory: string;
 }
 
 /** Aggregated metrics collected from parsing JSON documents. */
-export interface MeasureJsonResult {
+export interface JsonResult {
   arrays: number;
   booleans: number;
   files: number;

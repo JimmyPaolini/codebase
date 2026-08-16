@@ -3,7 +3,7 @@
 /**
  * Aggregated statistics produced by the Python analyzer.
  */
-export interface MeasurePythonResult {
+export interface PythonResult {
   classes: number;
   commentLines: number;
   comments: number;

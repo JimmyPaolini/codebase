@@ -3,10 +3,10 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { DiscoverFilesService } from "../discover-files/discover-files.service";
-import { MeasureJsonService } from "../measure-json/measure-json.service";
-import { MeasurePythonService } from "../measure-python/measure-python.service";
-import { MeasureTypescriptService } from "../measure-typescript/measure-typescript.service";
+import { DiscoveryService } from "../discovery/discovery.service";
+import { JsonService } from "../json/json.service";
+import { PythonService } from "../python/python.service";
+import { TypescriptService } from "../typescript/typescript.service";
 
 import type { CodeStatisticsResult } from "./codometer.types";
 
@@ -18,10 +18,10 @@ export class CodometerService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly discoverFilesService: DiscoverFilesService,
-    private readonly measureTypescriptService: MeasureTypescriptService,
-    private readonly measurePythonService: MeasurePythonService,
-    private readonly measureJsonService: MeasureJsonService,
+    private readonly discoveryService: DiscoveryService,
+    private readonly typescriptService: TypescriptService,
+    private readonly pythonService: PythonService,
+    private readonly jsonService: JsonService,
   ) {}
 
   // 🔐 Private Fields
@@ -73,13 +73,16 @@ export class CodometerService {
    * Measure aggregated repository statistics for the provided directory.
    */
   measure(directory: string): CodeStatisticsResult {
-    const discoveredFiles = this.discoverFilesService.discoverFiles(directory);
-    const typescriptStats = this.measureTypescriptService.analyze({
+    const discoveredFiles = this.discoveryService.discoverFiles(directory);
+    const typescriptStats = this.typescriptService.analyze({
       sourceFiles: discoveredFiles.sourceFiles,
       workingDirectory: directory,
     });
-    const pythonStatsResult = this.measurePythonService.analyze(directory);
-    const jsonStatsResult = this.measureJsonService.analyze({
+    const pythonStatsResult = this.pythonService.analyze(
+      discoveredFiles.pyFiles,
+      directory,
+    );
+    const jsonStatsResult = this.jsonService.analyze({
       jsonFiles: discoveredFiles.jsonFiles,
       workingDirectory: directory,
     });

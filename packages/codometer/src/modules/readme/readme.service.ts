@@ -7,7 +7,7 @@ import {
   STATISTICS_BLOCK_END,
   STATISTICS_BLOCK_REGEX,
   STATISTICS_BLOCK_START,
-} from "./write-readme.constants";
+} from "./readme.constants";
 
 import type { CodeStatisticsResult } from "../codometer/codometer.types";
 
@@ -15,7 +15,7 @@ import type { CodeStatisticsResult } from "../codometer/codometer.types";
  * Writes generated code statistics badges into a README file.
  */
 @Injectable()
-export class WriteReadmeService {
+export class ReadmeService {
   // 🏗 Dependency Injection
 
   constructor() {}

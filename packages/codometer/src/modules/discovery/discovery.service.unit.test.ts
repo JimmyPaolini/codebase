@@ -3,7 +3,7 @@ import * as fs from "node:fs";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { DiscoverFilesService } from "./discover-files.service";
+import { DiscoveryService } from "./discovery.service";
 
 const { execSyncMock } = vi.hoisted(() => ({
   execSyncMock: vi.fn<(command: string, options?: object) => Buffer>(),
@@ -12,14 +12,14 @@ const { execSyncMock } = vi.hoisted(() => ({
 vi.mock("node:child_process", () => ({ execSync: execSyncMock }));
 vi.mock("node:fs");
 
-describe(DiscoverFilesService, () => {
-  let service: DiscoverFilesService;
+describe(DiscoveryService, () => {
+  let service: DiscoveryService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [DiscoverFilesService],
+      providers: [DiscoveryService],
     }).compile();
-    service = await module.resolve(DiscoverFilesService);
+    service = await module.resolve(DiscoveryService);
   });
 
   beforeEach(() => {

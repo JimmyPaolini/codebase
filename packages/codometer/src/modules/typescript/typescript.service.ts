@@ -9,19 +9,16 @@ import {
   EMPTY_TYPESCRIPT_RESULT,
   JS_EXTENSIONS,
   TODO_REGEX,
-} from "./measure-typescript.constants";
+} from "./typescript.constants";
 
-import type {
-  MeasureTypescriptInput,
-  MeasureTypescriptResult,
-} from "./measure-typescript.types";
+import type { TypescriptInput, TypescriptResult } from "./typescript.types";
 
 /** Walks TypeScript and JavaScript ASTs to collect code metrics. */
 @Injectable()
-export class MeasureTypescriptService {
+export class TypescriptService {
   // 🏗 Dependency Injection
 
-  /** Creates the MeasureTypescriptService. */
+  /** Creates the TypescriptService. */
   constructor() {}
 
   // 🔐 Private Fields
@@ -31,7 +28,7 @@ export class MeasureTypescriptService {
       number,
       (
         node: tsCompiler.Node,
-        stats: MeasureTypescriptResult,
+        stats: TypescriptResult,
         insideClass: boolean,
       ) => void
     >
@@ -68,10 +65,7 @@ export class MeasureTypescriptService {
   // 🔏 Private Methods
 
   /** Count a discovered comment and update the appropriate metrics. */
-  private countComment(
-    commentText: string,
-    stats: MeasureTypescriptResult,
-  ): void {
+  private countComment(commentText: string, stats: TypescriptResult): void {
     stats.comments++;
     const normalizedComment = commentText.replaceAll("\r\n", "\n");
     const lineCount = normalizedComment.split("\n").length;
@@ -100,27 +94,21 @@ export class MeasureTypescriptService {
   /** Dispatches non-class AST nodes to the appropriate metric-collection handler. */
   private dispatchNode(
     node: tsCompiler.Node,
-    stats: MeasureTypescriptResult,
+    stats: TypescriptResult,
     insideClass: boolean,
   ): void {
     this.kindDispatch[node.kind]?.(node, stats, insideClass);
   }
 
   /** Increments class, exported, and generic counts for a class node. */
-  private handleClass(
-    node: tsCompiler.Node,
-    stats: MeasureTypescriptResult,
-  ): void {
+  private handleClass(node: tsCompiler.Node, stats: TypescriptResult): void {
     stats.classes++;
     if (this.hasExportKeyword(node)) stats.exported++;
     if (this.hasTypeParameters(node)) stats.genericDeclarations++;
   }
 
   /** Increments enum and exported counts for an enum declaration node. */
-  private handleEnum(
-    node: tsCompiler.Node,
-    stats: MeasureTypescriptResult,
-  ): void {
+  private handleEnum(node: tsCompiler.Node, stats: TypescriptResult): void {
     stats.enums++;
     if (this.hasExportKeyword(node)) stats.exported++;
   }
@@ -128,7 +116,7 @@ export class MeasureTypescriptService {
   /** Increments function, method, async, sync, exported, and generic counts for a function node. */
   private handleFunction(
     node: tsCompiler.Node,
-    stats: MeasureTypescriptResult,
+    stats: TypescriptResult,
     insideClass: boolean,
   ): void {
     if (insideClass) {
@@ -146,10 +134,7 @@ export class MeasureTypescriptService {
   }
 
   /** Increments import count and tracks the external package name if applicable. */
-  private handleImport(
-    node: tsCompiler.Node,
-    stats: MeasureTypescriptResult,
-  ): void {
+  private handleImport(node: tsCompiler.Node, stats: TypescriptResult): void {
     stats.imports++;
     if (!tsCompiler.isImportDeclaration(node)) return;
     if (!tsCompiler.isStringLiteral(node.moduleSpecifier)) return;
@@ -165,7 +150,7 @@ export class MeasureTypescriptService {
   /** Increments interface, exported, and generic counts for an interface declaration node. */
   private handleInterface(
     node: tsCompiler.Node,
-    stats: MeasureTypescriptResult,
+    stats: TypescriptResult,
   ): void {
     stats.interfaces++;
     if (this.hasExportKeyword(node)) stats.exported++;
@@ -175,7 +160,7 @@ export class MeasureTypescriptService {
   /** Increments method and async or sync counts for a method or accessor node. */
   private handleMethodOrAccessor(
     node: tsCompiler.Node,
-    stats: MeasureTypescriptResult,
+    stats: TypescriptResult,
   ): void {
     stats.methods++;
     if (this.hasAsyncKeyword(node)) {
@@ -188,17 +173,14 @@ export class MeasureTypescriptService {
   /** Increments exported and generic counts for a type alias declaration node. */
   private handleTypeAlias(
     node: tsCompiler.Node,
-    stats: MeasureTypescriptResult,
+    stats: TypescriptResult,
   ): void {
     if (this.hasExportKeyword(node)) stats.exported++;
     if (this.hasTypeParameters(node)) stats.genericDeclarations++;
   }
 
   /** Increments constant and exported counts for a const variable statement. */
-  private handleVariable(
-    node: tsCompiler.Node,
-    stats: MeasureTypescriptResult,
-  ): void {
+  private handleVariable(node: tsCompiler.Node, stats: TypescriptResult): void {
     if (!tsCompiler.isVariableStatement(node)) return;
     const isConst =
       (node.declarationList.flags & tsCompiler.NodeFlags.Const) !== 0;
@@ -246,7 +228,7 @@ export class MeasureTypescriptService {
   }
 
   /** Scan the provided source text and collect comment-based metrics. */
-  private scanComments(content: string, stats: MeasureTypescriptResult): void {
+  private scanComments(content: string, stats: TypescriptResult): void {
     const scanner = tsCompiler.createScanner(
       tsCompiler.ScriptTarget.Latest,
       false,
@@ -271,7 +253,7 @@ export class MeasureTypescriptService {
   /** Recursively visits each AST node and dispatches to the appropriate handler. */
   private walkNode(
     node: tsCompiler.Node,
-    stats: MeasureTypescriptResult,
+    stats: TypescriptResult,
     insideClass: boolean,
   ): void {
     if (
@@ -293,10 +275,10 @@ export class MeasureTypescriptService {
   // 🌎 Public Methods
 
   /** Analyzes TypeScript and JavaScript source files and returns aggregated AST metrics. */
-  analyze(input: MeasureTypescriptInput): MeasureTypescriptResult {
+  analyze(input: TypescriptInput): TypescriptResult {
     const { sourceFiles, workingDirectory } = input;
 
-    const stats: MeasureTypescriptResult = {
+    const stats: TypescriptResult = {
       ...EMPTY_TYPESCRIPT_RESULT,
       docTags: { ...EMPTY_TYPESCRIPT_RESULT.docTags },
       externalPackages: new Set<string>(),

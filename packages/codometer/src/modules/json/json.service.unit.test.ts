@@ -5,18 +5,18 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import { MeasureJsonService } from "./measure-json.service";
+import { JsonService } from "./json.service";
 
-describe(MeasureJsonService, () => {
-  let service: MeasureJsonService;
+describe(JsonService, () => {
+  let service: JsonService;
   let tempDirectory: string;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [MeasureJsonService],
+      providers: [JsonService],
     }).compile();
 
-    service = await module.resolve(MeasureJsonService);
+    service = await module.resolve(JsonService);
   });
 
   beforeEach(() => {

@@ -3,7 +3,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "../logger/logger.service";
-import { WriteReadmeService } from "../write-readme/write-readme.service";
+import { ReadmeService } from "../readme/readme.service";
 
 import { CodometerCommand } from "./codometer.command";
 import { CodometerService } from "./codometer.service";
@@ -14,7 +14,7 @@ describe(CodometerCommand, () => {
   let command: CodometerCommand;
   let loggerService: LoggerService;
   let codometerService: CodometerService;
-  let writeReadmeService: WriteReadmeService;
+  let readmeService: ReadmeService;
   const statistics: CodeStatisticsResult = {
     folders: 0,
     javascript: {
@@ -87,8 +87,8 @@ describe(CodometerCommand, () => {
           useValue: createMock<CodometerService>(),
         },
         {
-          provide: WriteReadmeService,
-          useValue: createMock<WriteReadmeService>(),
+          provide: ReadmeService,
+          useValue: createMock<ReadmeService>(),
         },
       ],
     }).compile();
@@ -99,9 +99,9 @@ describe(CodometerCommand, () => {
   beforeEach(() => {
     loggerService = createMock<LoggerService>();
     codometerService = createMock<CodometerService>();
-    writeReadmeService = createMock<WriteReadmeService>();
+    readmeService = createMock<ReadmeService>();
     vi.mocked(codometerService.measure).mockReturnValue(statistics);
-    vi.mocked(writeReadmeService.syncReadme).mockReturnValue(true);
+    vi.mocked(readmeService.syncReadme).mockReturnValue(true);
   });
 
   it("is defined", () => {
@@ -121,8 +121,8 @@ describe(CodometerCommand, () => {
           useValue: createMock<CodometerService>(),
         },
         {
-          provide: WriteReadmeService,
-          useValue: createMock<WriteReadmeService>(),
+          provide: ReadmeService,
+          useValue: createMock<ReadmeService>(),
         },
       ],
     }).compile();
@@ -136,20 +136,23 @@ describe(CodometerCommand, () => {
     const localCommand = new CodometerCommand(
       loggerService,
       codometerService,
-      writeReadmeService,
+      readmeService,
     );
 
     expect(localCommand.parseCheck(true)).toBe(true);
     expect(localCommand.parseCheck("true")).toBe(true);
     expect(localCommand.parseCheck("false")).toBe(false);
-    expect(localCommand.parseCheck(undefined)).toBe(false);
+    // A valueless `--check` reaches the parser as undefined, and the parser
+    // runs only when the flag is present. Reading that as false is what made
+    // check mode rewrite the README and exit 0 instead of failing.
+    expect(localCommand.parseCheck(undefined)).toBe(true);
   });
 
   it("defaults directory to process cwd", () => {
     const localCommand = new CodometerCommand(
       loggerService,
       codometerService,
-      writeReadmeService,
+      readmeService,
     );
 
     expect(localCommand.parseDirectory(undefined)).toBe(process.cwd());
@@ -159,7 +162,7 @@ describe(CodometerCommand, () => {
     const localCommand = new CodometerCommand(
       loggerService,
       codometerService,
-      writeReadmeService,
+      readmeService,
     );
     const stdoutWriteSpy = vi
       .spyOn(process.stdout, "write")
@@ -170,7 +173,7 @@ describe(CodometerCommand, () => {
     expect(stdoutWriteSpy).toHaveBeenCalledWith(
       `${JSON.stringify(statistics, null, 2)}\n`,
     );
-    expect(writeReadmeService.syncReadme).not.toHaveBeenCalled();
+    expect(readmeService.syncReadme).not.toHaveBeenCalled();
 
     stdoutWriteSpy.mockRestore();
   });
@@ -179,12 +182,12 @@ describe(CodometerCommand, () => {
     const localCommand = new CodometerCommand(
       loggerService,
       codometerService,
-      writeReadmeService,
+      readmeService,
     );
     const consoleErrorSpy = vi
       .spyOn(console, "error")
       .mockReturnValue(undefined);
-    vi.mocked(writeReadmeService.syncReadme).mockReturnValue(false);
+    vi.mocked(readmeService.syncReadme).mockReturnValue(false);
     process.exitCode = 0;
 
     await localCommand.run([], {
@@ -193,7 +196,7 @@ describe(CodometerCommand, () => {
       readme: "README.md",
     });
 
-    expect(writeReadmeService.syncReadme).toHaveBeenCalledWith(
+    expect(readmeService.syncReadme).toHaveBeenCalledWith(
       "README.md",
       statistics,
       true,
@@ -210,9 +213,9 @@ describe(CodometerCommand, () => {
     const localCommand = new CodometerCommand(
       loggerService,
       codometerService,
-      writeReadmeService,
+      readmeService,
     );
-    vi.mocked(writeReadmeService.syncReadme).mockReturnValue(true);
+    vi.mocked(readmeService.syncReadme).mockReturnValue(true);
     process.exitCode = 0;
 
     await localCommand.run([], {
@@ -228,7 +231,7 @@ describe(CodometerCommand, () => {
     const localCommand = new CodometerCommand(
       loggerService,
       codometerService,
-      writeReadmeService,
+      readmeService,
     );
 
     await localCommand.run([], {
@@ -237,7 +240,7 @@ describe(CodometerCommand, () => {
       readme: "README.md",
     });
 
-    expect(writeReadmeService.syncReadme).toHaveBeenCalledWith(
+    expect(readmeService.syncReadme).toHaveBeenCalledWith(
       "README.md",
       statistics,
       false,
@@ -250,53 +253,19 @@ describe(CodometerCommand, () => {
     expect(fallbackCommand).toBeDefined();
   });
 
-  it("ignores option metadata registration for unknown parser names", () => {
-    const localCommand = new CodometerCommand(
-      loggerService,
-      codometerService,
-      writeReadmeService,
+  it("registers each CLI flag through the Option decorator", () => {
+    const flags = ["parseCheck", "parseDirectory", "parseReadme"].map(
+      (parser) =>
+        Reflect.getMetadata(
+          "CommandBuilder:Option:Meta",
+          Reflect.get(CodometerCommand.prototype, parser) as object,
+        ) as undefined | { flags: string },
     );
-    const registerOptionMetadata = Reflect.get(
-      localCommand,
-      "registerOptionMetadata",
-    ) as (
-      propertyKey: string,
-      options: { description: string; flags: string },
-    ) => void;
-    registerOptionMetadata("missingParser", {
-      description: "Missing parser",
-      flags: "--missing",
-    });
 
-    expect(localCommand).toBeDefined();
-  });
-
-  it("ignores option metadata registration for non-function descriptors", () => {
-    const localCommand = new CodometerCommand(
-      loggerService,
-      codometerService,
-      writeReadmeService,
-    );
-    Object.defineProperty(CodometerCommand.prototype, "nonFunctionParser", {
-      configurable: true,
-      value: "not-a-function",
-    });
-
-    const registerOptionMetadata = Reflect.get(
-      localCommand,
-      "registerOptionMetadata",
-    ) as (
-      propertyKey: string,
-      options: { description: string; flags: string },
-    ) => void;
-
-    registerOptionMetadata("nonFunctionParser", {
-      description: "Non-function parser",
-      flags: "--non-function",
-    });
-
-    Reflect.deleteProperty(CodometerCommand.prototype, "nonFunctionParser");
-
-    expect(localCommand).toBeDefined();
+    expect(flags.map((option) => option?.flags)).toStrictEqual([
+      "--check",
+      "-d, --directory [directory]",
+      "-r, --readme [readme]",
+    ]);
   });
 });

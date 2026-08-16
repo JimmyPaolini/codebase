@@ -1,11 +1,11 @@
 import { Module } from "@nestjs/common";
 
-import { DiscoverFilesModule } from "../discover-files/discover-files.module";
+import { DiscoveryModule } from "../discovery/discovery.module";
+import { JsonModule } from "../json/json.module";
 import { LoggerModule } from "../logger/logger.module";
-import { MeasureJsonModule } from "../measure-json/measure-json.module";
-import { MeasurePythonModule } from "../measure-python/measure-python.module";
-import { MeasureTypescriptModule } from "../measure-typescript/measure-typescript.module";
-import { WriteReadmeModule } from "../write-readme/write-readme.module";
+import { PythonModule } from "../python/python.module";
+import { ReadmeModule } from "../readme/readme.module";
+import { TypescriptModule } from "../typescript/typescript.module";
 
 import { CodometerCommand } from "./codometer.command";
 import { CodometerService } from "./codometer.service";
@@ -17,12 +17,12 @@ import { CodometerService } from "./codometer.service";
   controllers: [],
   exports: [CodometerCommand, CodometerService],
   imports: [
-    DiscoverFilesModule,
+    DiscoveryModule,
     LoggerModule,
-    MeasureJsonModule,
-    MeasurePythonModule,
-    MeasureTypescriptModule,
-    WriteReadmeModule,
+    JsonModule,
+    PythonModule,
+    TypescriptModule,
+    ReadmeModule,
   ],
   providers: [CodometerCommand, CodometerService],
 })

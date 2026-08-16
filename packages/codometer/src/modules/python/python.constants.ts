@@ -1,8 +1,8 @@
 // ♟️ Constants
 
-import type { MeasurePythonResult } from "./measure-python.types";
+import type { PythonResult } from "./python.types";
 
-export const EMPTY_PYTHON_RESULT: MeasurePythonResult = {
+export const EMPTY_PYTHON_RESULT: PythonResult = {
   classes: 0,
   commentLines: 0,
   comments: 0,

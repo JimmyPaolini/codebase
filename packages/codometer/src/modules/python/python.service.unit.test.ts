@@ -2,7 +2,8 @@ import { Logger } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { MeasurePythonService } from "./measure-python.service";
+import { EMPTY_PYTHON_RESULT } from "./python.constants";
+import { PythonService } from "./python.service";
 
 const { execSyncMock } = vi.hoisted(() => ({
   execSyncMock: vi.fn(),
@@ -12,15 +13,15 @@ vi.mock("node:child_process", () => ({
   execSync: execSyncMock,
 }));
 
-describe(MeasurePythonService, () => {
-  let service: MeasurePythonService;
+describe(PythonService, () => {
+  let service: PythonService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [MeasurePythonService],
+      providers: [PythonService],
     }).compile();
 
-    service = await module.resolve(MeasurePythonService);
+    service = await module.resolve(PythonService);
   });
 
   beforeEach(() => {
@@ -29,6 +30,24 @@ describe(MeasurePythonService, () => {
 
   it("is defined", () => {
     expect(service).toBeDefined();
+  });
+
+  it("skips the interpreter when there are no python files", () => {
+    const result = service.analyze([], "/repo");
+
+    expect(execSyncMock).not.toHaveBeenCalled();
+    expect(result.files).toBe(0);
+  });
+
+  it("passes the discovered file list to the script over stdin", () => {
+    execSyncMock.mockReturnValue(JSON.stringify(EMPTY_PYTHON_RESULT));
+
+    service.analyze(["src/app.py", "src/other.py"], "/repo");
+
+    expect(execSyncMock).toHaveBeenCalledWith(
+      expect.stringContaining("uv run python"),
+      expect.objectContaining({ input: "src/app.py\nsrc/other.py" }),
+    );
   });
 
   it("returns parsed python metrics when script execution succeeds", () => {
@@ -49,13 +68,14 @@ describe(MeasurePythonService, () => {
       }),
     );
 
-    const result = service.analyze("/repo");
+    const result = service.analyze(["src/app.py"], "/repo");
 
     expect(execSyncMock).toHaveBeenCalledExactlyOnceWith(
       expect.stringContaining("uv run python"),
       {
         cwd: "/repo",
         encoding: "utf8",
+        input: "src/app.py",
       },
     );
     expect(result).toStrictEqual({
@@ -82,7 +102,7 @@ describe(MeasurePythonService, () => {
       throw new Error("failed to execute");
     });
 
-    const result = service.analyze("/repo");
+    const result = service.analyze(["src/app.py"], "/repo");
 
     expect(result).toStrictEqual({
       classes: 0,
@@ -114,7 +134,7 @@ describe(MeasurePythonService, () => {
       throw "string error";
     });
 
-    const result = service.analyze("/repo");
+    const result = service.analyze(["src/app.py"], "/repo");
 
     expect(result).toStrictEqual({
       classes: 0,

@@ -2,7 +2,7 @@ import { Test } from "@nestjs/testing";
 import tsCompiler from "typescript";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { MeasureTypescriptService } from "./measure-typescript.service";
+import { TypescriptService } from "./typescript.service";
 
 const { readFileSyncMock } = vi.hoisted(() => ({
   readFileSyncMock: vi.fn<(filePath: string, encoding: string) => string>(),
@@ -10,14 +10,14 @@ const { readFileSyncMock } = vi.hoisted(() => ({
 
 vi.mock("node:fs", () => ({ readFileSync: readFileSyncMock }));
 
-describe(MeasureTypescriptService, () => {
-  let service: MeasureTypescriptService;
+describe(TypescriptService, () => {
+  let service: TypescriptService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [MeasureTypescriptService],
+      providers: [TypescriptService],
     }).compile();
-    service = await module.resolve(MeasureTypescriptService);
+    service = await module.resolve(TypescriptService);
   });
 
   beforeEach(() => {

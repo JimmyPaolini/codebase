@@ -3,17 +3,13 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { EMPTY_JSON_RESULT } from "./measure-json.constants";
+import { EMPTY_JSON_RESULT } from "./json.constants";
 
-import type {
-  JsoncState,
-  MeasureJsonInput,
-  MeasureJsonResult,
-} from "./measure-json.types";
+import type { JsoncState, JsonInput, JsonResult } from "./json.types";
 
 /** Walks parsed JSON values to collect structural metrics. */
 @Injectable()
-export class MeasureJsonService {
+export class JsonService {
   // 🏗 Dependency Injection
 
   constructor() {}
@@ -92,7 +88,7 @@ export class MeasureJsonService {
   /** Count array nodes and their child values. */
   private countArrayNode(
     node: unknown[],
-    stats: MeasureJsonResult,
+    stats: JsonResult,
     depth: number,
   ): void {
     stats.arrays++;
@@ -106,11 +102,7 @@ export class MeasureJsonService {
   }
 
   /** Recursively count JSON containers, primitives, and nesting depth. */
-  private countNode(
-    node: unknown,
-    stats: MeasureJsonResult,
-    depth: number,
-  ): void {
+  private countNode(node: unknown, stats: JsonResult, depth: number): void {
     if (this.isArrayNode(node)) {
       this.countArrayNode(node, stats, depth);
       return;
@@ -127,7 +119,7 @@ export class MeasureJsonService {
   /** Count scalar values and update primitive stats. */
   private countPrimitiveNode(
     node: unknown,
-    stats: MeasureJsonResult,
+    stats: JsonResult,
     depth: number,
   ): void {
     stats.totalNodes++;
@@ -142,7 +134,7 @@ export class MeasureJsonService {
   }
 
   /** Increment stats for a scalar JSON value. */
-  private countPrimitiveValue(node: unknown, stats: MeasureJsonResult): void {
+  private countPrimitiveValue(node: unknown, stats: JsonResult): void {
     const primitiveType = typeof node;
 
     if (primitiveType === "boolean") {
@@ -163,7 +155,7 @@ export class MeasureJsonService {
   /** Count object nodes and their child values. */
   private countRecordNode(
     node: Record<string, unknown>,
-    stats: MeasureJsonResult,
+    stats: JsonResult,
     depth: number,
   ): void {
     stats.objects++;
@@ -309,9 +301,9 @@ export class MeasureJsonService {
   // 🌎 Public Methods
 
   /** Analyze JSON files and return structural metrics for their contents. */
-  analyze(input: MeasureJsonInput): MeasureJsonResult {
+  analyze(input: JsonInput): JsonResult {
     const { jsonFiles, workingDirectory } = input;
-    const stats: MeasureJsonResult = {
+    const stats: JsonResult = {
       ...EMPTY_JSON_RESULT,
       files: jsonFiles.length,
     };
