@@ -12,6 +12,8 @@
  * Types and scopes are defined in conventional.config.cjs.
  * See: .agents/skills/commit-code/SKILL.md for full documentation.
  */
+import gitmojiPlugin from "commitlint-plugin-gitmoji";
+
 import { scopes, types } from "./conventional.config.cjs";
 
 import type { Plugin, Rule, RuleOutcome, UserConfig } from "@commitlint/types";
@@ -44,10 +46,34 @@ const footerCoAuthoredOnly: Rule = (parsed): RuleOutcome => {
   ];
 };
 
+/**
+ * Emoji this codebase uses that gitmoji.dev does not define.
+ *
+ * `commitlint-plugin-gitmoji` validates against the published gitmoji list with
+ * no way to extend it, so the rule below wraps it: an emoji here passes, and
+ * everything else still has to be a real gitmoji.
+ */
+const ADDITIONAL_GITMOJI = ["🪵"];
+
+/** Accepts the published gitmoji list plus this codebase's own additions. */
+const startWithApprovedGitmoji: Rule = (parsed, when, value): RuleOutcome => {
+  const subject: null | string = parsed.subject;
+
+  if (
+    subject !== null &&
+    ADDITIONAL_GITMOJI.some((emoji) => subject.startsWith(emoji))
+  ) {
+    return [true];
+  }
+
+  return gitmojiPlugin.rules["start-with-gitmoji"](parsed, when, value);
+};
+
 const coAuthoredPlugin: Plugin = {
   rules: {
     "body-co-authored-only": bodyCoAuthoredOnly,
     "footer-co-authored-only": footerCoAuthoredOnly,
+    "start-with-approved-gitmoji": startWithApprovedGitmoji,
   },
 };
 
@@ -63,7 +89,7 @@ const configuration: UserConfig = {
     "subject-exclamation-mark": [0],
 
     // 😀 Enforce gitmoji at start of commit message
-    "start-with-gitmoji": [2, "always"],
+    "start-with-approved-gitmoji": [2, "always"],
 
     // 💬 Enforce grammatical tense
     "tense/subject-tense": [
