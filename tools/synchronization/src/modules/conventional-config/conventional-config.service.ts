@@ -119,9 +119,11 @@ export class ConventionalConfigService {
   // 🌎 Public Methods
 
   /**
-   * Check mode: validates all configuration files are in sync with conventional.config.cjs.
+   * Check mode: validates all configuration files are in sync with
+   * conventional.config.cjs, reporting success rather than exiting so the
+   * aggregate `synchronization` command can collect every result.
    */
-  handleCheckMode(context: SyncContext): void {
+  handleCheckMode(context: SyncContext): boolean {
     const { config, scopeNames, settingsScopes, typeNames } = context;
     const settingsOk =
       this.conventionalConfigValidatorsService.checkSettingsSync(
@@ -159,11 +161,12 @@ export class ConventionalConfigService {
       !presetOk
     ) {
       this.loggerService.log(
-        "💡 Run 'nx run synchronization:start:conventional-config-write' to sync",
+        "💡 Run 'nx run synchronization:synchronize:write' to sync",
       );
-      process.exit(1);
+      return false;
     }
     this.loggerService.log("✅ Conventional commit config is in sync");
+    return true;
   }
 
   /**
@@ -225,9 +228,9 @@ export class ConventionalConfigService {
   }
 
   /**
-   * Runs the workflow in check or write mode.
+   * Runs the workflow in check or write mode, reporting whether it succeeded.
    */
-  runSynchronization(mode: string): void {
+  runSynchronization(mode: string): boolean {
     const config = this.loadConventionalConfig();
     const context: SyncContext = {
       config,
@@ -239,10 +242,10 @@ export class ConventionalConfigService {
     };
 
     if (mode === "check") {
-      this.handleCheckMode(context);
-      return;
+      return this.handleCheckMode(context);
     }
 
     this.handleWriteMode(context);
+    return true;
   }
 }

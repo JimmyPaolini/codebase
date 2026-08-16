@@ -215,7 +215,7 @@ This creates `test-ci--src/lib/foo.spec.ts` targets for each test file, enabling
 3. Install deps: `pnpm add -wD jest jest-environment-jsdom ts-jest @types/jest`
 4. Install framework test deps: `@testing-library/react @testing-library/jest-dom` (React), `@vue/test-utils` (Vue)
 5. Verify `tsconfig.spec.json` has `"types": ["jest", "node"]`
-6. `nx run-many -t test`
+6. `nx run-many -t vitest`
 
 ### Whole-Repo Import (Non-Nx Source)
 
@@ -225,4 +225,4 @@ This creates `test-ci--src/lib/foo.spec.ts` targets for each test file, enabling
 4. Install deps (same as above)
 5. Verify/fix `jest.config.*` — ensure `preset` path points to root `jest.preset.js`
 6. Verify/fix `tsconfig.spec.json` — add `types`, `module`, `include` if missing
-7. `nx run-many -t test`
+7. `nx run-many -t vitest`

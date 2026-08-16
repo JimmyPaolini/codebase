@@ -3,7 +3,6 @@ packages:
   - packages/*
   - tools/*
 allowBuilds:
-  "@apollo/protobufjs": set this to true or false
   "@nestjs/core": true
   "@swc/core": true
   better-sqlite3: true
