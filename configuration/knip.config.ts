@@ -116,6 +116,7 @@ const config: KnipConfig = {
         "configuration/conformetry-templates/**", // Generator templates are placeholder files, not executable workspace code
         // Skill scripts are invoked by the skill framework, not imported in code
         "**/.agents/skills/**",
+        "**/.claude/skills/**",
         "**/.github/skills/**",
       ],
       ignoreBinaries: [

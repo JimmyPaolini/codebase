@@ -1,14 +1,15 @@
-import { AspectGraphService } from "@caelundas/src/modules/aspects/aspect-graph.service";
-import { AspectPhaseEmojiService } from "@caelundas/src/modules/aspects/aspect-phase-emoji.service";
 import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { AspectGraphService } from "../aspects/aspect-graph.service";
+import { AspectPhaseEmojiService } from "../aspects/aspect-phase-emoji.service";
+
 import { QuadrupleAspectsBaseService } from "./quadruple-aspects-base.service";
 
-import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
-import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import type { AspectBodies } from "../aspects/aspects.types";
+import type { Body } from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
 
 describe(QuadrupleAspectsBaseService, () => {
   let service: QuadrupleAspectsBaseService;

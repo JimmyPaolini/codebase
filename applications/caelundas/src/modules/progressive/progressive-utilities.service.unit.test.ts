@@ -7,7 +7,7 @@ import { LoggerService } from "../logger/logger.service";
 
 import { ProgressiveUtilitiesService } from "./progressive-utilities.service";
 
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import type { Event } from "../calendar/calendar.types";
 
 describe(ProgressiveUtilitiesService, () => {
   let service: ProgressiveUtilitiesService;

@@ -7,7 +7,7 @@ import { LoggerService } from "../logger/logger.service";
 
 import { TwilightsBuilderService } from "./twilights-builder.service";
 
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import type { Event } from "../calendar/calendar.types";
 
 describe(TwilightsBuilderService, () => {
   let service: TwilightsBuilderService;

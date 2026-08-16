@@ -9,8 +9,8 @@ import { MercurianPhaseService } from "./mercurian-phase.service";
 import { PhasesService } from "./phases.service";
 import { VenusianPhaseService } from "./venusian-phase.service";
 
+import type { Event } from "../calendar/calendar.types";
 import type { DetectPlanetaryEventsArguments } from "./phases.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 
 const createEvent = (description: string, categories: string[]): Event => {
   const timestamp = moment.utc("2024-01-01T00:00:00.000Z");

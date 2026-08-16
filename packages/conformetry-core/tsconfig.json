@@ -8,7 +8,6 @@
     "moduleResolution": "bundler",
     "noEmit": true,
     "paths": {
-      "@conformetry-core/*": ["./*"],
       "@golevelup/ts-vitest": [
         "./node_modules/@golevelup/ts-vitest/lib/index.d.ts"
       ],

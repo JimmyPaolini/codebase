@@ -1,24 +1,22 @@
-import { AnnualSolarCycleService } from "@caelundas/src/modules/annual-solar-cycle/annual-solar-cycle.service";
-import { AspectsService } from "@caelundas/src/modules/aspects/aspects.service";
-import { MARGIN_MINUTES } from "@caelundas/src/modules/caelundas/caelundas.constants";
-import { DailyCyclesService } from "@caelundas/src/modules/daily-cycles/daily-cycles.service";
-import { DatetimeService } from "@caelundas/src/modules/datetime/datetime.service";
-import { EclipsesService } from "@caelundas/src/modules/eclipses/eclipses.service";
-import { EphemerisService } from "@caelundas/src/modules/ephemeris/ephemeris.service";
-import { IngressesService } from "@caelundas/src/modules/ingresses/ingresses.service";
-import { MonthlyLunarCycleService } from "@caelundas/src/modules/monthly-lunar-cycle/monthly-lunar-cycle.service";
-import { PhasesService } from "@caelundas/src/modules/phases/phases.service";
-import { RetrogradesService } from "@caelundas/src/modules/retrogrades/retrogrades.service";
-import { TwilightsService } from "@caelundas/src/modules/twilights/twilights.service";
 import { Injectable } from "@nestjs/common";
 
-import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
-import type {
-  Coordinates,
-  Ephemerides,
-} from "@caelundas/src/modules/ephemeris/ephemeris.types";
-import type { Input } from "@caelundas/src/modules/input/input.types";
+import { AnnualSolarCycleService } from "../annual-solar-cycle/annual-solar-cycle.service";
+import { AspectsService } from "../aspects/aspects.service";
+import { MARGIN_MINUTES } from "../caelundas/caelundas.constants";
+import { DailyCyclesService } from "../daily-cycles/daily-cycles.service";
+import { DatetimeService } from "../datetime/datetime.service";
+import { EclipsesService } from "../eclipses/eclipses.service";
+import { EphemerisService } from "../ephemeris/ephemeris.service";
+import { IngressesService } from "../ingresses/ingresses.service";
+import { MonthlyLunarCycleService } from "../monthly-lunar-cycle/monthly-lunar-cycle.service";
+import { PhasesService } from "../phases/phases.service";
+import { RetrogradesService } from "../retrogrades/retrogrades.service";
+import { TwilightsService } from "../twilights/twilights.service";
+
+import type { AspectBodies } from "../aspects/aspects.types";
+import type { Event } from "../calendar/calendar.types";
+import type { Coordinates, Ephemerides } from "../ephemeris/ephemeris.types";
+import type { Input } from "../input/input.types";
 import type { Moment } from "moment-timezone";
 
 /**

@@ -4,9 +4,9 @@ import _ from "lodash";
 import { QuadrupleAspectsBaseService } from "./quadruple-aspects-base.service";
 import { QuadrupleAspectsComposerService } from "./quadruple-aspects-composer.service";
 
-import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
-import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import type { AspectBodies } from "../aspects/aspects.types";
+import type { Body } from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
 import type { Moment } from "moment-timezone";
 
 /**

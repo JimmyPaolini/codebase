@@ -1,11 +1,12 @@
 import { writeFile } from "node:fs/promises";
 
-import { LoggerService } from "@caelundas/src/modules/logger/logger.service";
-import { mockDates } from "@caelundas/testing/mocks";
 import { ConfigService } from "@nestjs/config";
 import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
+
+import { mockDates } from "../../../testing/mocks";
+import { LoggerService } from "../logger/logger.service";
 
 import { CalendarService } from "./calendar.service";
 

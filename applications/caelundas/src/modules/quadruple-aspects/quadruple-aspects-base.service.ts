@@ -1,22 +1,23 @@
-import { AspectGraphService } from "@caelundas/src/modules/aspects/aspect-graph.service";
-import { AspectPhaseEmojiService } from "@caelundas/src/modules/aspects/aspect-phase-emoji.service";
-import { aspectBodies as quadrupleAspectBodies } from "@caelundas/src/modules/caelundas/caelundas.constants";
-import {
-  symbolByBody,
-  symbolByQuadrupleAspect,
-} from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
-import type { GetQuadrupleAspectEventArguments } from "./quadruple-aspects.types";
-import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
+import { AspectGraphService } from "../aspects/aspect-graph.service";
+import { AspectPhaseEmojiService } from "../aspects/aspect-phase-emoji.service";
+import { aspectBodies as quadrupleAspectBodies } from "../caelundas/caelundas.constants";
+import {
+  symbolByBody,
+  symbolByQuadrupleAspect,
+} from "../caelundas/symbol-caelundas.constants";
+
+import type { AspectBodies } from "../aspects/aspects.types";
 import type {
   Aspect,
   AspectPhase,
   Body,
   QuadrupleAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+} from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
+import type { GetQuadrupleAspectEventArguments } from "./quadruple-aspects.types";
 
 /** Primitive helper methods for quadruple-aspect pattern detection and event shaping. */
 @Injectable()

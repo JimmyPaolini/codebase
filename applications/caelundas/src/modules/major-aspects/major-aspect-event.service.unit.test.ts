@@ -1,9 +1,10 @@
-import { AspectsUtilitiesService } from "@caelundas/src/modules/aspects/aspects-utilities.service";
-import { LoggerService } from "@caelundas/src/modules/logger/logger.service";
-import { MathService } from "@caelundas/src/modules/math/math.service";
 import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
+
+import { AspectsUtilitiesService } from "../aspects/aspects-utilities.service";
+import { LoggerService } from "../logger/logger.service";
+import { MathService } from "../math/math.service";
 
 import { MajorAspectEventService } from "./major-aspect-event.service";
 

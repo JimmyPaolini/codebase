@@ -1,9 +1,9 @@
-import { symbolByMartianPhase } from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
-import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { symbolByMartianPhase } from "../caelundas/symbol-caelundas.constants";
 import { LoggerService } from "../logger/logger.service";
+import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
 import { PhaseCalculationService } from "./phase-calculation.service";
 import {
@@ -22,13 +22,13 @@ import {
   PHASE_EVENT_TIMEZONE,
 } from "./phases.constants";
 
+import type { MartianPhase } from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
 import type {
   BuildPlanetPhaseEventArguments,
   MartianPhaseEventArguments,
   PhaseParameters,
 } from "./phases.types";
-import type { MartianPhase } from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 import type { Moment } from "moment-timezone";
 
 /**

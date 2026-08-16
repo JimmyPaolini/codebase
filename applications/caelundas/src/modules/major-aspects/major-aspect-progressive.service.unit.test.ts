@@ -1,14 +1,15 @@
-import { LoggerService } from "@caelundas/src/modules/logger/logger.service";
-import { ProgressiveAspectService } from "@caelundas/src/modules/progressive/progressive-aspect.service";
-import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { Test } from "@nestjs/testing";
 import _ from "lodash";
 import moment, { type Moment } from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "../logger/logger.service";
+import { ProgressiveAspectService } from "../progressive/progressive-aspect.service";
+import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
+
 import { MajorAspectProgressiveService } from "./major-aspect-progressive.service";
 
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import type { Event } from "../calendar/calendar.types";
 
 vi.mock("fs", () => ({
   default: {

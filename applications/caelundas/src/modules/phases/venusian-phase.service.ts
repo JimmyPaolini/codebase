@@ -1,9 +1,9 @@
-import { symbolByVenusianPhase } from "@caelundas/src/modules/caelundas/symbol-caelundas.constants";
-import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { symbolByVenusianPhase } from "../caelundas/symbol-caelundas.constants";
 import { LoggerService } from "../logger/logger.service";
+import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
 import { PhaseCalculationService } from "./phase-calculation.service";
 import {
@@ -22,13 +22,13 @@ import {
   VENUSIAN_CATEGORY,
 } from "./phases.constants";
 
+import type { VenusianPhase } from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
 import type {
   BuildPlanetPhaseEventArguments,
   PhaseParameters,
   VenusianPhaseEventArguments,
 } from "./phases.types";
-import type { VenusianPhase } from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
 import type { Moment } from "moment-timezone";
 
 /**

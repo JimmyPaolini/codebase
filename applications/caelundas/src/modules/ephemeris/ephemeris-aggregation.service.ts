@@ -1,5 +1,6 @@
-import { typedFromEntries } from "@caelundas/src/modules/caelundas/caelundas.types";
 import { Injectable } from "@nestjs/common";
+
+import { typedFromEntries } from "../caelundas/caelundas.types";
 
 import { EphemerisConstantsService } from "./ephemeris-constants.service";
 import { EphemerisCoordinateService } from "./ephemeris-coordinate.service";
@@ -7,6 +8,7 @@ import { EphemerisHorizonService } from "./ephemeris-horizon.service";
 import { EphemerisPhenomenaService } from "./ephemeris-phenomena.service";
 import { EphemerisTimeService } from "./ephemeris-time.service";
 
+import type { Body, Node } from "../caelundas/caelundas.types";
 import type {
   AzimuthElevationEphemeris,
   AzimuthElevationEphemerisBody,
@@ -24,10 +26,6 @@ import type {
   EphemerisFeatureSets,
   NonNodeBodyMinuteProcessingArguments,
 } from "./internal-ephemeris.types";
-import type {
-  Body,
-  Node,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
 import type { Moment } from "moment-timezone";
 
 /**

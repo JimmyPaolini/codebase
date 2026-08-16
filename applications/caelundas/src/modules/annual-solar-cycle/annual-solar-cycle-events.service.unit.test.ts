@@ -1,7 +1,8 @@
-import { LoggerService } from "@caelundas/src/modules/logger/logger.service";
 import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
+
+import { LoggerService } from "../logger/logger.service";
 
 import { AnnualSolarCycleEventsService } from "./annual-solar-cycle-events.service";
 

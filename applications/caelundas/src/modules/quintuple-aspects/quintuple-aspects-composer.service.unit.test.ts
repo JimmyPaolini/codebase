@@ -1,15 +1,16 @@
-import { AspectPhaseEmojiService } from "@caelundas/src/modules/aspects/aspect-phase-emoji.service";
-import { CompoundPhaseService } from "@caelundas/src/modules/aspects/compound-phase.service";
-import { ProgressiveCompoundEventService } from "@caelundas/src/modules/aspects/progressive-compound-event.service";
-import { MathService } from "@caelundas/src/modules/math/math.service";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { AspectPhaseEmojiService } from "../aspects/aspect-phase-emoji.service";
+import { CompoundPhaseService } from "../aspects/compound-phase.service";
+import { ProgressiveCompoundEventService } from "../aspects/progressive-compound-event.service";
+import { MathService } from "../math/math.service";
+
 import { QuintupleAspectsComposerService } from "./quintuple-aspects-composer.service";
 
-import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
+import type { Body } from "../caelundas/caelundas.types";
 
 describe(QuintupleAspectsComposerService, () => {
   let service: QuintupleAspectsComposerService;

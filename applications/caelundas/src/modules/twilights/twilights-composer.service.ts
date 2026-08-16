@@ -1,9 +1,10 @@
-import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { Injectable } from "@nestjs/common";
+
+import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
 import { TwilightsBuilderService } from "./twilights-builder.service";
 
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import type { Event } from "../calendar/calendar.types";
 
 /**
  * Composes progressive twilight/daylight intervals by pairing ordered transition events.

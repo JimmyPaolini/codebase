@@ -9,7 +9,6 @@ import {
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { Bookmark, BookOpen, Info, Search, User, Wrench } from "lucide-react";
 import { useState } from "react";
-import { getCurrentUser } from "~/lib/auth";
 
 import {
   Button,
@@ -28,6 +27,7 @@ import {
 import applicationCss from "@codebase/lexico-components/styles/globals.css?url";
 
 import { Logo } from "../components/layout";
+import { getCurrentUser } from "../lib/auth";
 
 import type { ReactNode } from "react";
 

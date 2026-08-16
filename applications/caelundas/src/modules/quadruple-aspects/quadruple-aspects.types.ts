@@ -3,7 +3,7 @@ import type {
   AspectPhase,
   Body,
   QuadrupleAspect,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
+} from "../caelundas/caelundas.types";
 import type { Moment } from "moment-timezone";
 
 /**

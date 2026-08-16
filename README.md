@@ -9,12 +9,12 @@
 [![Jupyter](https://img.shields.io/badge/Jupyter-1.1-F37626?logo=jupyter&logoColor=white)](https://jupyter.org/)
 
 <!-- CODE_STATISTICS_START -->
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-213964-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-214020-22c55e?style=flat-square)
 ![Repo Size](https://img.shields.io/badge/Repo_Size-154_MiB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-618-4a4a4a?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-619-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-1239-3178c6?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-267-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-152-8b5cf6?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-149-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-390-7c3aed?style=flat-square)
 ![Functions](https://img.shields.io/badge/Functions-12145-16a34a?style=flat-square)
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-10727-4ade80?style=flat-square)
@@ -23,7 +23,7 @@
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-30-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-17173-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-5083-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-5082-0284c7?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-761-db2777?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-1649-ea580c?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-53-ca8a04?style=flat-square)
@@ -84,7 +84,21 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
 
 - **[affirmations](applications/affirmations)** - Python LangChain + Ollama affirmation generator (LangGraph ReAct agent, SearxNG)
 - **[caelundas](applications/caelundas)** - CLI ephemeris calendar generator with astronomical calculations
-- **[conformetry-cli](packages/conformetry-cli)** - Command-line code generation and validation toolchain
+- **[codometer](packages/codometer)** - NestJS CLI that measures code statistics and writes the badge block in this README
+- **conformetry** - Template-driven code generation and conformance validation toolchain
+  - **[conformetry-cli](packages/conformetry-cli)** - Command-line host that expands globs, prompts for inputs, and runs generation and validation
+  - **[conformetry-configuration](packages/conformetry-configuration)** - Configuration loading, template discovery, and generator input resolution
+  - **[conformetry-core](packages/conformetry-core)** - Shared error types, language validator contracts, and finding reporting
+  - **[conformetry-files](packages/conformetry-files)** - Checks that every file a template declares exists, whatever its extension
+  - **[conformetry-generation](packages/conformetry-generation)** - Mustache template rendering and scaffold file generation
+  - **[conformetry-json](packages/conformetry-json)** - JSON and JSONC validator parsing through `jsonc-parser`
+  - **[conformetry-jupyter](packages/conformetry-jupyter)** - Notebook validator composing the JSON, markdown, and Python validators
+  - **[conformetry-markdown](packages/conformetry-markdown)** - Markdown validator comparing mdast structure rather than text
+  - **[conformetry-nx](packages/conformetry-nx)** - Nx plugin host with generators, executors, and the emitted-plugin bootstrap
+  - **[conformetry-python](packages/conformetry-python)** - Python validator comparing structure through Python's `ast` module
+  - **[conformetry-text](packages/conformetry-text)** - Plain-text validator matching the lines a template requires
+  - **[conformetry-typescript](packages/conformetry-typescript)** - TypeScript validator checking syntax tree and comment section markers
+  - **[conformetry-validation](packages/conformetry-validation)** - Validation orchestration, language routing, and finding deduplication
 - **[infrastructure](infrastructure)** - Helm charts, Terraform, Kubernetes infrastructure
 - **[JimmyPaolini](applications/JimmyPaolini)** - GitHub profile site
 - **[lexico](applications/lexico)** - TanStack Start dictionary web application

@@ -5,14 +5,11 @@ import { EphemerisCoordinateService } from "./ephemeris-coordinate.service";
 import { EphemerisTimeService } from "./ephemeris-time.service";
 import { ECLIPTIC_TO_HORIZONTAL_FLAG } from "./ephemeris.constants";
 
+import type { Body, Node } from "../caelundas/caelundas.types";
 import type {
   AzimuthElevationEphemeris,
   AzimuthElevationEphemerisBody,
 } from "./ephemeris.types";
-import type {
-  Body,
-  Node,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
 import type { Moment } from "moment-timezone";
 
 /**

@@ -1,5 +1,4 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { deleteAccount, getGoogleSignInUrl, signOut } from "~/lib/auth";
 
 import {
   Button,
@@ -10,6 +9,8 @@ import {
   Label,
   Separator,
 } from "@codebase/lexico-components";
+
+import { deleteAccount, getGoogleSignInUrl, signOut } from "../lib/auth";
 
 import type { ReactNode } from "react";
 

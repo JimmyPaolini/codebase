@@ -1,11 +1,11 @@
-import { AspectEphemerisService } from "@caelundas/src/modules/aspects/aspect-ephemeris.service";
-import { ProgressiveUtilitiesService } from "@caelundas/src/modules/progressive/progressive-utilities.service";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { AspectEphemerisService } from "../aspects/aspect-ephemeris.service";
 import { LoggerService } from "../logger/logger.service";
+import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
 import { MinorAspectsComposerService } from "./minor-aspects-composer.service";
 

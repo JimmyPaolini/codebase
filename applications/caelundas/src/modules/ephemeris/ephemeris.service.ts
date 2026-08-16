@@ -1,12 +1,13 @@
+import { Injectable } from "@nestjs/common";
+
 import {
   azimuthElevationBodies as allAzimuthElevationBodies,
   bodies as allBodies,
   diameterBodies as allDiameterBodies,
   distanceBodies as allDistanceBodies,
   illuminationBodies as allIlluminationBodies,
-} from "@caelundas/src/modules/caelundas/caelundas.constants";
-import { typedFromEntries } from "@caelundas/src/modules/caelundas/caelundas.types";
-import { Injectable } from "@nestjs/common";
+} from "../caelundas/caelundas.constants";
+import { typedFromEntries } from "../caelundas/caelundas.types";
 
 import { EphemerisAggregationService } from "./ephemeris-aggregation.service";
 import { EphemerisConstantsService } from "./ephemeris-constants.service";
@@ -16,6 +17,7 @@ import { EphemerisPhenomenaService } from "./ephemeris-phenomena.service";
 import { EphemerisTimeService } from "./ephemeris-time.service";
 import { initializeSwissEphemeris } from "./ephemeris.constants";
 
+import type { Body } from "../caelundas/caelundas.types";
 import type {
   AzimuthElevationEphemeris,
   AzimuthElevationEphemerisBody,
@@ -28,7 +30,6 @@ import type {
   IlluminationEphemeris,
   IlluminationEphemerisBody,
 } from "./ephemeris.types";
-import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
 import type { Moment } from "moment-timezone";
 
 /**

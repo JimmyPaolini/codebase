@@ -1,21 +1,22 @@
-import {
-  ingressBodies as decanIngressBodies,
-  ingressBodies as peakIngressBodies,
-  ingressBodies as signIngressBodies,
-} from "@caelundas/src/modules/caelundas/caelundas.constants";
-import { EphemerisModule } from "@caelundas/src/modules/ephemeris/ephemeris.module";
-import { LoggerService } from "@caelundas/src/modules/logger/logger.service";
-import { MathService } from "@caelundas/src/modules/math/math.service";
 import { Test } from "@nestjs/testing";
 import _ from "lodash";
 import moment from "moment";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import {
+  ingressBodies as decanIngressBodies,
+  ingressBodies as peakIngressBodies,
+  ingressBodies as signIngressBodies,
+} from "../caelundas/caelundas.constants";
+import { EphemerisModule } from "../ephemeris/ephemeris.module";
+import { LoggerService } from "../logger/logger.service";
+import { MathService } from "../math/math.service";
+
 import { IngressesComposerService } from "./ingresses-composer.service";
 import { IngressesService } from "./ingresses.service";
 
-import type { Body } from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { CoordinateEphemeris } from "@caelundas/src/modules/ephemeris/ephemeris.types";
+import type { Body } from "../caelundas/caelundas.types";
+import type { CoordinateEphemeris } from "../ephemeris/ephemeris.types";
 
 vi.mock("fs", () => ({
   default: {

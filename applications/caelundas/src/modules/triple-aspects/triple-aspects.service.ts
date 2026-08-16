@@ -1,16 +1,14 @@
-import { groupByToMap } from "@caelundas/src/modules/caelundas/caelundas.types";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
+
+import { groupByToMap } from "../caelundas/caelundas.types";
 
 import { TripleAspectsComposerService } from "./triple-aspects-composer.service";
 import { TripleAspectsDetectorService } from "./triple-aspects-detector.service";
 
-import type { AspectBodies } from "@caelundas/src/modules/aspects/aspects.types";
-import type {
-  Aspect,
-  Body,
-} from "@caelundas/src/modules/caelundas/caelundas.types";
-import type { Event } from "@caelundas/src/modules/calendar/calendar.types";
+import type { AspectBodies } from "../aspects/aspects.types";
+import type { Aspect, Body } from "../caelundas/caelundas.types";
+import type { Event } from "../calendar/calendar.types";
 import type { Moment } from "moment-timezone";
 
 /**
