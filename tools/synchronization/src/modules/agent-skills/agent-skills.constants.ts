@@ -33,10 +33,6 @@ export const PLAN_AGENT_CONFIGS: AgentFileSyncConfig[] = [
     agentFile: ".github/agents/explore-codebase.agent.md",
     skillFile: `${AGENT_SKILLS_DIRECTORY}/explore-codebase/SKILL.md`,
   },
-  {
-    agentFile: ".github/agents/explore-internet.agent.md",
-    skillFile: `${AGENT_SKILLS_DIRECTORY}/explore-internet/SKILL.md`,
-  },
 ];
 
 /** Skill-to-agent mappings for triage agents. */

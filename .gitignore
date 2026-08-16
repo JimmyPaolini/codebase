@@ -74,7 +74,7 @@ vite.config.*.timestamp*
 data/**
 .fallow
 
-# Superpowers planning artifacts 📋
+# Agent planning artifacts 📋
 docs/
 
 # project-structure plugin cache
