@@ -12,6 +12,7 @@ brightgreen
 Buildability
 bundlesize
 caffeinate
+capitalisation
 checkpointing
 cipe
 cipes
@@ -37,6 +38,7 @@ disambiguator
 docstring
 docstrings
 domcontentloaded
+dorny
 dunder
 effectful
 elipssis
@@ -54,6 +56,7 @@ firewalled
 fontsource
 frontmatter
 futp
+ghaction
 gitmodules
 gitmoji
 gitmojis
@@ -90,6 +93,7 @@ killport
 licen
 licenseignore
 linesecond
+lintstaged
 lintstagedrc
 Manypkg
 mapbox
@@ -98,6 +102,7 @@ materialui
 mcp
 metatype
 middlewares
+Modelfile
 multiset
 multivalued
 musescore
@@ -145,6 +150,7 @@ projectname
 proptypes
 pthreads
 pycache
+pycompile
 pydantic
 pyright
 pytest
@@ -172,6 +178,7 @@ smallint
 smol
 splitlines
 sqlfluff
+sqlfluffignore
 sqltools
 srow
 srvx
@@ -190,6 +197,7 @@ syncpackrc
 tailwindcss
 tanstack
 teama
+templater
 textnodes
 texttypescript
 timespan

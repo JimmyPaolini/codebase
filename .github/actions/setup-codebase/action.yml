@@ -46,11 +46,14 @@ runs:
       uses: astral-sh/setup-uv@v6
       with:
         enable-cache: true
-        cache-dependency-glob: "**/pyproject.toml"
+        cache-dependency-glob: uv.lock
         add-problem-matchers: "false"
 
     - name: 🐍 Install Python Dependencies
-      run: uv sync --frozen --quiet --project applications/affirmations
+      # Syncs every uv workspace member into the shared root `.venv`. Scoping
+      # this to a single project (`--project`) would prune the other members'
+      # tools out of that shared environment.
+      run: uv sync --frozen --quiet
       shell: bash
 
     - name: 📚 Install Node Dependencies

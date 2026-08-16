@@ -171,15 +171,15 @@ See the [validate-code skill](.agents/skills/validate-code/SKILL.md) for the ful
 | Tool            | Description                                           | Config                                   | Docs                                                    |
 | --------------- | ----------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------- |
 | `oxfmt`         | Formats TS/JS/JSON/MD files                           | `configuration/oxfmt.config.ts`          | [docs](https://oxc.rs/docs/guide/usage/formatter.html)  |
-| `sqlfluff`      | Formats and lints SQL files                           | `configuration/pyproject.toml`           | [docs](https://docs.sqlfluff.com/)                      |
+| `sqlfluff`      | Formats and lints SQL files                           | root `pyproject.toml`                    | [docs](https://docs.sqlfluff.com/)                      |
 | `prettier`      | Supplementary formatter for manual or non-default use | `configuration/prettier.config.ts`       | [docs](https://prettier.io/docs/)                       |
 | `eslint`        | Lints TS/JS and markdown with workspace rules         | project `eslint.config.ts`               | [docs](https://eslint.org/docs/latest/)                 |
 | `oxlint`        | Fast TS/JS linting for workspace files                | `configuration/oxlint.config.ts`         | [docs](https://oxc.rs/docs/guide/usage/linter.html)     |
-| `ruff`          | Formats and lints Python files                        | `configuration/pyproject.toml`           | [docs](https://docs.astral.sh/ruff/)                    |
+| `ruff`          | Formats and lints Python files                        | root `pyproject.toml`                    | [docs](https://docs.astral.sh/ruff/)                    |
 | `tsc`           | Type-checks TypeScript                                | project `tsconfig.json`                  | [docs](https://www.typescriptlang.org/docs/)            |
 | `type-coverage` | Enforces TypeScript type-coverage gates               | root `tsconfig.json`                     | [docs](https://github.com/plantain-00/type-coverage)    |
-| `pyright`       | Performs static Python type checking                  | `configuration/pyproject.toml`           | [docs](https://github.com/microsoft/pyright)            |
-| `ty`            | Performs additional Python type checking              | `configuration/pyproject.toml`           | [docs](https://docs.astral.sh/ty/)                      |
+| `pyright`       | Performs static Python type checking                  | root `pyproject.toml`                    | [docs](https://github.com/microsoft/pyright)            |
+| `ty`            | Performs additional Python type checking              | root `pyproject.toml`                    | [docs](https://docs.astral.sh/ty/)                      |
 | `knip`          | Finds unused TS/JS files, exports, and dependencies   | `configuration/knip.config.ts`           | [docs](https://knip.dev/)                               |
 | `vulture`       | Finds unused Python code                              | `configuration/vulture_whitelist.py`     | [docs](https://github.com/jendrikseipp/vulture)         |
 | `fallow`        | Analyzes dead code, duplication, and code health      | `configuration/fallow.config.jsonc`      | [docs](https://docs.fallow.tools/)                      |
@@ -323,10 +323,13 @@ PR description template:
 
 ### Abbreviations
 
+<!-- The rule below has to spell out the abbreviations it bans. cspell:ignore req, res -->
+
 - **No Acronyms or Abbreviations**: Never use acronyms or abbreviations for variable names, function names, parameters, etc.
 - Use explicit and unabbreviated names (e.g. `request` instead of `req`, `response` instead of `res`, `index` instead of `i`, `error` instead of `e`).
 - **Exceptions**: Abbreviations are acceptable when avoiding language reserved word collisions (e.g., using `args` instead of `arguments`, `str` instead of `string`).
-- Abbreviation rules are enforced by ESLint (`unicorn/prevent-abbreviations`) and CSpell (`flagWords`).
+- Abbreviation rules are enforced by ESLint (`unicorn/prevent-abbreviations`) for TypeScript and JavaScript identifiers, and by CSpell (`flagWords`) for every other file type — Markdown, Python, SQL, YAML, JSON — plus comments and string literals.
+- CSpell sees raw text, so external vocabulary that spells an abbreviation (Tailwind classes, JSDoc tags, TypeORM identifiers, POSIX paths) is carved out by a named pattern in `configuration/cspell.config.yaml`. For a one-off, add a `cspell:ignore <word>` comment to the file with a note explaining where the name comes from.
 
 ### File Naming
 
@@ -337,6 +340,8 @@ PR description template:
 ### Project Structure
 
 Folder and file placement is a lint error, not a style preference. It is enforced by `eslint-plugin-project-structure` from `configuration/project-structure.json`.
+
+<!-- The folder-name rule below has to spell out the names it bans. cspell:ignore ctx -->
 
 - **Every folder is kebab-case** (`^[a-z0-9-]+$`). The abbreviated names `dir`, `err`, `req`, `res`, `utils`, `ctx`, and `app` are rejected outright as folder names.
 - **Projects live in `applications/`, `packages/`, or `tools/`.** Adding a new file or folder at the workspace root requires adding it to `configuration/project-structure.json` in the same change, or lint fails.

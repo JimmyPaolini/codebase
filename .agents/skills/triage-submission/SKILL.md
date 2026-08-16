@@ -118,7 +118,7 @@ Use the table below to find the exact config file and command for the failing to
 | `prettier` | `prettier --check --config configuration/prettier.config.ts --ignore-path .prettierignore {projectRoot}` | same with `--write` | [configuration/prettier.config.ts](../../../configuration/prettier.config.ts), [.prettierignore](../../../.prettierignore) |
 | `oxfmt`    | `oxfmt -c configuration/oxfmt.config.ts --check {projectRoot}` (cwd: workspaceRoot)                      | same with `--write` | [configuration/oxfmt.config.ts](../../../configuration/oxfmt.config.ts)                                                    |
 
-Python projects: `format` runs `ruff format` (config: [configuration/pyproject.toml](../../../configuration/pyproject.toml))
+Python projects: `format` runs `ruff format` (config: [pyproject.toml](../../../pyproject.toml))
 
 #### `lint` (composite: `eslint` + `oxlint`)
 
@@ -127,15 +127,15 @@ Python projects: `format` runs `ruff format` (config: [configuration/pyproject.t
 | `eslint`   | `eslint . {args}` (cwd: projectRoot)                                                    | same with `--fix` | project `eslint.config.ts` which extends [configuration/eslint.config.ts](../../../configuration/eslint.config.ts) |
 | `oxlint`   | `oxlint --config configuration/oxlint.config.ts {projectRoot}/src` (cwd: workspaceRoot) | same with `--fix` | [configuration/oxlint.config.ts](../../../configuration/oxlint.config.ts)                                          |
 
-Python projects: `lint` runs `ruff check` (config: [configuration/pyproject.toml](../../../configuration/pyproject.toml))
+Python projects: `lint` runs `ruff check` (config: [pyproject.toml](../../../pyproject.toml))
 
 #### `typecheck`
 
 | Project type       | Command                                   | Config                                                                                              |
 | ------------------ | ----------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | TypeScript         | `tsc --noEmit` (cwd: projectRoot)         | project `tsconfig.json` extends [configuration/tsconfig.json](../../../configuration/tsconfig.json) |
-| Python (`pyright`) | `uv run pyright src/` (cwd: projectRoot)  | [configuration/pyproject.toml](../../../configuration/pyproject.toml)                               |
-| Python (`ty`)      | `uv run ty check src/` (cwd: projectRoot) | [configuration/pyproject.toml](../../../configuration/pyproject.toml)                               |
+| Python (`pyright`) | `uv run pyright src/` (cwd: projectRoot)  | [pyproject.toml](../../../pyproject.toml)                               |
+| Python (`ty`)      | `uv run ty check src/` (cwd: projectRoot) | [pyproject.toml](../../../pyproject.toml)                               |
 
 #### `spell-check`
 
@@ -279,7 +279,7 @@ pnpm exec nx run synchronization:start:devcontainer-configuration-check
 
 | Failing target                                 | What to do                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `typecheck`                                    | Read the TypeScript/Python errors. **TS**: Use optional chaining `arr[0]?.prop` for index access, avoid `any`, require explicit function return types, and use `import { type Foo }` for type-only imports. **Python**: Note that `[tool.ty]` config must remain in the project-level `pyproject.toml` (not workspace root).                                                                                                                                                                     |
+| `typecheck`                                    | Read the TypeScript/Python errors. **TS**: Use optional chaining `array[0]?.property` for index access, avoid `any`, require explicit function return types, and use `import { type Foo }` for type-only imports. **Python**: Note that `[tool.ty]` config must remain in the project-level `pyproject.toml` (not workspace root).                                                                                                                                                                     |
 | `spell-check`                                  | Either fix the typo, or if it's a valid word (false negative), add it to the most relevant dictionary in `configuration/.cspell/` (e.g. `lexico.txt`, `tooling.txt`). If a suitable category doesn't exist, create a new dictionary file in `configuration/.cspell/`, register it in `configuration/cspell.config.yaml`, and refactor existing dictionaries to move any relevant words into the new dictionary. As a fallback, add it directly to `words` in `configuration/cspell.config.yaml`. |
 | `markdown-lint` (`MD024/no-duplicate-heading`) | Check whether duplicate headings also contain duplicate content. If content is verbatim duplicated, remove only the extra block. If content differs, keep both content blocks and rename one heading to a distinct, specific title.                                                                                                                                                                                                                                                              |
 | `yaml-lint`                                    | Fix YAML syntax errors per `configuration/yamllint.yaml` rules.                                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -449,7 +449,7 @@ Remaining Actions
 | yamllint                            | [configuration/yamllint.yaml](../../../configuration/yamllint.yaml)                                                        |
 | stylelint                           | [configuration/stylelint.config.cjs](../../../configuration/stylelint.config.cjs)                                          |
 | knip                                | [configuration/knip.config.ts](../../../configuration/knip.config.ts)                                                      |
-| Ruff + pyright                      | [configuration/pyproject.toml](../../../configuration/pyproject.toml)                                                      |
+| Ruff + pyright                      | [pyproject.toml](../../../pyproject.toml)                                                      |
 | commitlint                          | [configuration/commitlint.config.ts](../../../configuration/commitlint.config.ts)                                          |
 | validate-branch-name                | [validate-branch-name.config.cjs](../../../validate-branch-name.config.cjs)                                                |
 | Conventional commits (types/scopes) | [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs)                                    |

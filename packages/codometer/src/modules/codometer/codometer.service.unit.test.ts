@@ -1,3 +1,6 @@
+// `param` is the name of the JSDoc tag these tests count, not an abbreviation.
+// cspell:ignore param
+
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 

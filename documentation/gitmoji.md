@@ -127,7 +127,7 @@ Format: emoji | short code | meaning | example commit
 - 🩹 | `:adhesive_bandage:` | Simple fix for a non-critical issue.
   - Example: "🩹 :adhesive_bandage: Fix minor style regression"
 - 🧐 | `:monocle_face:` | Data exploration/inspection.
-  - Example: "🧐 :monocle_face: Inspect DB for user activity patterns"
+  - Example: "🧐 :monocle_face: Inspect database for user activity patterns"
 - ⚰️ | `:coffin:` | Remove dead code.
   - Example: "⚰️ :coffin: Remove legacy analytics code"
 - 🧪 | `:test_tube:` | Add a failing test.

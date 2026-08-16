@@ -356,7 +356,7 @@ export function isDecan(decan: string): decan is Decan {
  * Type guard that checks whether a value is a key of the given object.
  *
  * Use instead of `value as keyof T` when indexing into a `const` object,
- * or in place of `key in obj` casts.
+ * or in place of `key in object` casts.
  *
  *
  * @example

@@ -845,7 +845,7 @@
       "onAutoForward": "notify"
     }
   },
-  "ruff.configuration": "${workspaceFolder}/configuration/pyproject.toml",
+  "ruff.configuration": "/pyproject.toml",
   "ruff.configurationPreference": "editorOnly",
   "ruff.exclude": ["configuration/conformetry-templates/**"],
   "ruff.interpreter": ["${workspaceFolder}/.venv/bin/python"],
@@ -891,7 +891,7 @@
   "search.useIgnoreFiles": true,
   "security.workspace.trust.untrustedFiles": "open",
   "simpleBrowser.useIntegratedBrowser": true,
-  "sqlfluff.config": "${workspaceFolder}/configuration/pyproject.toml",
+  "sqlfluff.config": "/pyproject.toml",
   "sqlfluff.executablePath": "${workspaceFolder}/configuration/.venv/bin/sqlfluff",
   "sqlfluff.linter.diagnosticSeverity": "warning",
   "sqlfluff.linter.run": "onSave",

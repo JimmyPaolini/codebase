@@ -102,7 +102,7 @@ The devcontainer handles equivalent setup automatically.
 
 - Runs `pnpm install` in codebase root
 - Installs dependencies for all workspace packages
-- Runs `uv sync` in `applications/affirmations/` for Python dependencies
+- Runs `uv sync` in codebase root for the uv workspace Python dependencies
 - Respects lockfiles for reproducible builds
 
 ### environment.sh
