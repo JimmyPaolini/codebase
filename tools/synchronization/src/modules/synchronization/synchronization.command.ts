@@ -3,7 +3,6 @@ import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { AgentSkillsCommand } from "../agent-skills/agent-skills.command";
 import { ConformetryGeneratorsCommand } from "../conformetry-generators/conformetry-generators.command";
 import { ConventionalConfigCommand } from "../conventional-config/conventional-config.command";
 import { DevcontainerConfigurationCommand } from "../devcontainer-configuration/devcontainer-configuration.command";
@@ -33,7 +32,6 @@ export class SynchronizationCommand extends CommandRunner {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly agentSkillsCommand: AgentSkillsCommand,
     private readonly conformetryGeneratorsCommand: ConformetryGeneratorsCommand,
     private readonly conventionalConfigCommand: ConventionalConfigCommand,
     private readonly devcontainerConfigurationCommand: DevcontainerConfigurationCommand,
@@ -54,7 +52,6 @@ export class SynchronizationCommand extends CommandRunner {
   /** The commands this aggregate drives, in a stable reporting order. */
   private getCommands(): SynchronizableCommand[] {
     return [
-      this.agentSkillsCommand,
       this.conformetryGeneratorsCommand,
       this.conventionalConfigCommand,
       this.devcontainerConfigurationCommand,

@@ -23,12 +23,6 @@
     "start": {
       "cache": false,
       "configurations": {
-        "agent-skills-check": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts agent-skills check"
-        },
-        "agent-skills-write": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts agent-skills write"
-        },
         "check": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization check"
         },

@@ -152,3 +152,13 @@ runs:
       if: inputs.install == 'true'
       run: CI=true pnpm install --frozen-lockfile --reporter=append-only
       shell: bash
+
+    # Skills installed from other repositories are not committed: the CLI pulls
+    # each one from its source, so tracking them would mean vendoring five
+    # upstream repositories. Restoring them here gives every job the same set a
+    # developer has. The AGENTS.md table deliberately omits them, so a skill
+    # that changed upstream cannot fail a lint run on an unrelated change.
+    - name: 🧩 Install Agent Skills
+      if: inputs.install == 'true'
+      run: pnpm exec skills experimental_install
+      shell: bash

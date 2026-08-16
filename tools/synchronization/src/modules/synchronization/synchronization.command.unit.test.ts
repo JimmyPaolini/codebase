@@ -5,7 +5,6 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { LoggerService } from "@codebase/logger";
 
 import { expectProcessExitOne } from "../../../testing/mocks";
-import { AgentSkillsCommand } from "../agent-skills/agent-skills.command";
 import { ConformetryGeneratorsCommand } from "../conformetry-generators/conformetry-generators.command";
 import { ConventionalConfigCommand } from "../conventional-config/conventional-config.command";
 import { DevcontainerConfigurationCommand } from "../devcontainer-configuration/devcontainer-configuration.command";
@@ -17,7 +16,6 @@ import { SynchronizationService } from "./synchronization.service";
 import type { SynchronizableCommand } from "./synchronization.types";
 
 describe(SynchronizationCommand, () => {
-  let agentSkills: AgentSkillsCommand;
   let command: SynchronizationCommand;
   let conformetryGenerators: ConformetryGeneratorsCommand;
   let conventionalConfig: ConventionalConfigCommand;
@@ -28,7 +26,6 @@ describe(SynchronizationCommand, () => {
   /** The delegates in the order the aggregate reports them. */
   function getDelegates(): SynchronizableCommand[] {
     return [
-      agentSkills,
       conformetryGenerators,
       conventionalConfig,
       devcontainerConfiguration,
@@ -48,12 +45,6 @@ describe(SynchronizationCommand, () => {
       providers: [
         SynchronizationCommand,
         SynchronizationService,
-        {
-          provide: AgentSkillsCommand,
-          useValue: createMock<AgentSkillsCommand>({
-            synchronizationLabel: "agent-skills",
-          }),
-        },
         {
           provide: ConformetryGeneratorsCommand,
           useValue: createMock<ConformetryGeneratorsCommand>({
@@ -85,7 +76,6 @@ describe(SynchronizationCommand, () => {
       ],
     }).compile();
 
-    agentSkills = await module.resolve(AgentSkillsCommand);
     command = await module.resolve(SynchronizationCommand);
     conformetryGenerators = await module.resolve(ConformetryGeneratorsCommand);
     conventionalConfig = await module.resolve(ConventionalConfigCommand);
@@ -109,10 +99,6 @@ describe(SynchronizationCommand, () => {
       providers: [
         SynchronizationCommand,
         SynchronizationService,
-        {
-          provide: AgentSkillsCommand,
-          useValue: createMock<AgentSkillsCommand>(),
-        },
         {
           provide: ConformetryGeneratorsCommand,
           useValue: createMock<ConformetryGeneratorsCommand>(),
@@ -171,7 +157,7 @@ describe(SynchronizationCommand, () => {
   // command must not stop the ones after it.
   it("runs the remaining commands after one fails", async () => {
     stubAllDelegates(true);
-    vi.mocked(agentSkills.synchronize).mockResolvedValue(false);
+    vi.mocked(conformetryGenerators.synchronize).mockResolvedValue(false);
 
     await expect(command.synchronize("check")).resolves.toBe(false);
 
@@ -196,7 +182,7 @@ describe(SynchronizationCommand, () => {
 
     await command.run([]);
 
-    expect(agentSkills.synchronize).toHaveBeenCalledWith("check");
+    expect(conformetryGenerators.synchronize).toHaveBeenCalledWith("check");
   });
 
   it("exits with code 1 when any command reports drift", async () => {
@@ -221,6 +207,6 @@ describe(SynchronizationCommand, () => {
       await command.run(["sideways"]);
     });
 
-    expect(agentSkills.synchronize).not.toHaveBeenCalled();
+    expect(conformetryGenerators.synchronize).not.toHaveBeenCalled();
   });
 });

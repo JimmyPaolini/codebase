@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 
 import { LoggerModule } from "@codebase/logger";
 
-import { AgentSkillsModule } from "../agent-skills/agent-skills.module";
 import { ConformetryGeneratorsModule } from "../conformetry-generators/conformetry-generators.module";
 import { ConventionalConfigModule } from "../conventional-config/conventional-config.module";
 import { DevcontainerConfigurationModule } from "../devcontainer-configuration/devcontainer-configuration.module";
@@ -23,7 +22,6 @@ describe(SynchronizationModule, () => {
 
     expect(imports).toBeDefined();
     expect(imports).toContain(LoggerModule);
-    expect(imports).toContain(AgentSkillsModule);
     expect(imports).toContain(ConformetryGeneratorsModule);
     expect(imports).toContain(ConventionalConfigModule);
     expect(imports).toContain(DevcontainerConfigurationModule);
