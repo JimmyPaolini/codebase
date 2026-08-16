@@ -41,21 +41,17 @@ jobs:
           uv python install 3 --upgrade
           LATEST_PYTHON=$(uv run --python 3 python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
           PYTHON_VER=$(echo "$LATEST_PYTHON" | tr -d '.')
-          sed -i "s/requires-python = \">=3\.[0-9][0-9]*/requires-python = \">=${LATEST_PYTHON}/" configuration/pyproject.toml
-          sed -i "s/target-version = \"py[0-9][0-9]*/target-version = \"py${PYTHON_VER}/" configuration/pyproject.toml
-          sed -i "s/pythonVersion = \"3\.[0-9][0-9]*/pythonVersion = \"${LATEST_PYTHON}/" configuration/pyproject.toml
+          sed -i "s/requires-python = \">=3\.[0-9][0-9]*/requires-python = \">=${LATEST_PYTHON}/" pyproject.toml
+          sed -i "s/target-version = \"py[0-9][0-9]*/target-version = \"py${PYTHON_VER}/" pyproject.toml
+          sed -i "s/pythonVersion = \"3\.[0-9][0-9]*/pythonVersion = \"${LATEST_PYTHON}/" pyproject.toml
           sed -i "s/requires-python = \">=3\.[0-9][0-9]*/requires-python = \">=${LATEST_PYTHON}/" applications/affirmations/pyproject.toml
 
       - name: 📦 Upgrade Dependencies
         run: pnpm exec nx run codebase:upgrade-dependencies:write
 
       - name: 📦 Upgrade Python Dependencies
-        # Both projects are named explicitly: the shared Python configuration
-        # lives in configuration/, not at the repository root, so a bare
-        # `uv lock` here fails with "No `pyproject.toml` found".
-        run: |
-          uv lock --upgrade --project configuration
-          uv lock --upgrade --project applications/affirmations
+        # One lockfile covers every uv workspace member.
+        run: uv lock --upgrade
 
       - name: 🤹 Upgrade Skills
         run: pnpm exec skills update --yes
