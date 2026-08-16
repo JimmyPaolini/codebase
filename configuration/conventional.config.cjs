@@ -15,7 +15,7 @@
 /**
  * Canonical gitmoji — one emoji per commit type.
  * Each entry is the source of truth for the type key, its description, and its canonical emoji.
- * See documentation/gitmoji.md for the full list of available emojis.
+ * See https://gitmoji.dev for the full list of available emojis.
  */
 const types = [
   {

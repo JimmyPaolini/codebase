@@ -47,7 +47,7 @@ import { formatDate } from "./utils.js";
 import { type Profile, type User } from "./types.js";
 ```
 
-See [imports conventions skill](../../imports-conventions/SKILL.md) and [documentation/conventions/imports.md](../../../../documentation/conventions/imports.md) for full ordering rules.
+See the "Formatting and Ordering" section of [AGENTS.md](../../../../AGENTS.md) for full ordering rules.
 
 ## File Extensions in Relative Imports
 

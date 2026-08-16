@@ -54,15 +54,15 @@ Always import shared UI from `@codebase/lexico-components` and never duplicate U
 import { Button, Card, Input } from "@codebase/lexico-components";
 ```
 
-See [React Conventions](../../documentation/conventions/react.md) and [lexico-components AGENTS](../../packages/lexico-components/AGENTS.md).
+See the [write-react skill](../../.agents/skills/write-react/SKILL.md) and [lexico-components AGENTS](../../packages/lexico-components/AGENTS.md).
 
 ## Testing
 
-See [Testing Strategy](../../documentation/code-quality/testing-strategy.md) for unit/integration/E2E patterns.
+See the [testing-strategy skill](../../.agents/skills/testing-strategy/SKILL.md) for unit/integration/end-to-end patterns.
 
 ## Troubleshooting
 
-See [Common Gotchas](../../documentation/troubleshooting/gotchas.md) for TypeScript and Docker issues.
+See the [triage-submission skill](../../.agents/skills/triage-submission/SKILL.md) for lint and git hook failures.
 
 ## Key Files
 

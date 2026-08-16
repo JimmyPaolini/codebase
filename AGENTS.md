@@ -471,7 +471,7 @@ Test files are named `*.<kind>.test.ts` and live beside the code they cover. Vit
 - **Duplication**: `jscpd` fails above a 6% threshold, counting clones of 12+ lines or 24+ tokens. Extract a shared helper rather than copying a block.
 - Lowering a threshold to make a change pass is not an option — fix the code.
 
-See [Testing Strategy](documentation/code-quality/testing-strategy.md) for patterns.
+See the [testing-strategy skill](.agents/skills/testing-strategy/SKILL.md) for patterns.
 
 ## Agent Context
 
