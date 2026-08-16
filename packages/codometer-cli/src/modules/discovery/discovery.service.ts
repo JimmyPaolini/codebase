@@ -2,7 +2,7 @@ import { execSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import path from "node:path";
 
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 
 import {
   JS_EXTENSIONS,
@@ -27,6 +27,8 @@ export class DiscoveryService {
 
   // 🔐 Private Fields
 
+  private readonly logger = new Logger(DiscoveryService.name);
+
   // 🔑 Public Fields
 
   // 🔏 Private Methods
@@ -42,8 +44,52 @@ export class DiscoveryService {
     return exclude.some((pattern) => path.matchesGlob(filePath, pattern));
   }
 
-  /** Lists the files git tracks in the given directory. */
+  /**
+   * Collect the tracked files the configured ignore files exclude.
+   *
+   * Git does the matching. An ignore file is gitignore syntax — negations,
+   * directory patterns, anchoring and all — and `git ls-files --ignored`
+   * against it is the only reading of that syntax guaranteed to agree with
+   * every other tool the repository points at the same file.
+   */
+  private listIgnoredFiles(args: DiscoverFilesArguments): Set<string> {
+    const ignoredFiles = new Set<string>();
+
+    for (const ignoreFilePath of args.excludeFrom) {
+      const resolvedPath = path.resolve(args.workingDirectory, ignoreFilePath);
+
+      if (!existsSync(resolvedPath)) {
+        this.logger.warn(`🙈 Skipped missing ignore file`, undefined, {
+          path: ignoreFilePath,
+        });
+        continue;
+      }
+
+      const output = execSync(
+        `git ls-files --cached --ignored --exclude-from="${resolvedPath}"`,
+        { cwd: args.workingDirectory },
+      );
+
+      for (const filePath of output.toString().trim().split("\n")) {
+        if (filePath !== "") {
+          ignoredFiles.add(filePath);
+        }
+      }
+    }
+
+    return ignoredFiles;
+  }
+
+  /**
+   * Lists the files git tracks in the given directory.
+   *
+   * Enumerating through git is also what enforces `.gitignore`: an ignored
+   * file is an untracked file, so it never reaches an analyzer in the first
+   * place and no exclusion has to name it.
+   */
   private listTrackedFiles(args: DiscoverFilesArguments): string[] {
+    const ignoredFiles = this.listIgnoredFiles(args);
+
     return execSync("git ls-files", { cwd: args.workingDirectory })
       .toString()
       .trim()
@@ -52,6 +98,7 @@ export class DiscoveryService {
       .filter((filePath) =>
         existsSync(path.resolve(args.workingDirectory, filePath)),
       )
+      .filter((filePath) => !ignoredFiles.has(filePath))
       .filter((filePath) => !this.isExcluded(filePath, args.exclude));
   }
 

@@ -107,6 +107,7 @@ const callbackSchema = <CallbackType>(): z.ZodType<CallbackType> =>
  */
 export const codometerConfigurationSchema = z.object({
   exclude: z.array(z.string()).optional(),
+  excludeFrom: z.array(z.string()).optional(),
   output: z
     .object({
       json: z

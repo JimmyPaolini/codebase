@@ -17,6 +17,7 @@ import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
 const configuration: ResolvedCodometerConfiguration = {
   exclude: ["**/node_modules/**"],
+  excludeFrom: [],
   output: { json: undefined, markdown: undefined },
   python: { command: "uv run python" },
 };
@@ -189,6 +190,7 @@ describe(CodometerService, () => {
 
     expect(discoveryService.discoverFiles).toHaveBeenCalledWith({
       exclude: ["**/node_modules/**"],
+      excludeFrom: [],
       workingDirectory: "/repo",
     });
     expect(typescriptService.analyze).toHaveBeenCalledWith({

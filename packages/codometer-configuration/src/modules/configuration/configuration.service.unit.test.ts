@@ -93,6 +93,27 @@ describe(ConfigurationService, () => {
     ]);
   });
 
+  it("carries configured ignore files through untouched", async () => {
+    const configurationPath = await writeConfiguration({
+      excludeFrom: [".prettierignore", ".codometerignore"],
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+
+    // Not merged with defaults the way `exclude` is: naming an ignore file is
+    // naming a file, and there is no default one to keep.
+    expect(configuration.excludeFrom).toStrictEqual([
+      ".prettierignore",
+      ".codometerignore",
+    ]);
+  });
+
+  it("defaults the ignore file list to empty", () => {
+    expect(service.resolveConfiguration({}).excludeFrom).toStrictEqual([]);
+  });
+
   it("defaults the markdown markers and the JSON indentation", async () => {
     const configurationPath = await writeConfiguration({
       output: {

@@ -21,6 +21,8 @@ const codometerConfiguration: CodometerConfiguration = {
   // Appended to the built-in exclusions (node_modules, dist, build, coverage,
   // .nx), matched against repository-relative paths with `path.matchesGlob`.
   exclude: ["notepads/**", "**/templates/**"],
+  // Ignore files in gitignore syntax, whose patterns exclude as well.
+  excludeFrom: ["configuration/.codometerignore"],
   output: {
     // Omit a destination to leave that file unwritten.
     json: { indentation: 2, path: "output/codometer.json" },
@@ -41,6 +43,29 @@ export default codometerConfiguration;
 Output paths are resolved relative to the directory being measured, not to the
 configuration file, so a configuration kept in a `configuration/` folder still
 writes to the repository root.
+
+## What Gets Measured
+
+Discovery enumerates through `git ls-files`, so **`.gitignore` is already in
+force**: an ignored file is an untracked file, and no exclusion has to name it.
+What the two exclusion options are for is the opposite case — files that are
+committed but nobody wrote.
+
+| Option | Syntax | Use it for |
+| ------ | ------ | ---------- |
+| `exclude` | Globs, matched with `path.matchesGlob` | A handful of paths named inline, appended to the built-in defaults |
+| `excludeFrom` | Paths to ignore files, in gitignore syntax | Lockfiles, vendored bundles, generated documentation — the list a repository would rather keep in a file |
+
+`excludeFrom` matching is done by git itself (`git ls-files --ignored
+--exclude-from`), so negations, anchoring, and directory patterns behave exactly
+as they do in a `.gitignore`, and pointing codometer at a file another tool
+already reads gives the same answer that tool gets.
+
+One caution when reusing an existing ignore file: most are written for one
+tool's concerns, not for measurement. A `.prettierignore` typically ignores all
+markdown because a markdown linter handles it — point codometer at that and the
+prose metrics vanish. A dedicated `.codometerignore` is usually the better
+answer.
 
 ## Markdown Output
 

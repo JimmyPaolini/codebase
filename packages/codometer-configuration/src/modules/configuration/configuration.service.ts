@@ -268,6 +268,7 @@ export class ConfigurationService {
           ...(configuration.exclude ?? []),
         ]),
       ],
+      excludeFrom: configuration.excludeFrom ?? [],
       output: {
         json: this.resolveJsonOutput(configuration.output),
         markdown: this.resolveMarkdownOutput(configuration.output),

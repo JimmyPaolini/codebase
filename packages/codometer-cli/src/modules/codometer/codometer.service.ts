@@ -122,6 +122,7 @@ export class CodometerService {
     const directory = args.workingDirectory;
     const discoveredFiles = this.discoveryService.discoverFiles({
       exclude: args.configuration.exclude,
+      excludeFrom: args.configuration.excludeFrom,
       workingDirectory: directory,
     });
     const typescriptStats = this.typescriptService.analyze({

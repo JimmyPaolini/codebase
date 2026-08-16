@@ -34,6 +34,7 @@
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/**/*.{cjs,cts,js,json,jsx,mjs,mts,py,ts,tsx}",
+        "{workspaceRoot}/configuration/.codometerignore",
         "{workspaceRoot}/configuration/codometer.config.ts",
         "{workspaceRoot}/README.md",
         "shared-globals"

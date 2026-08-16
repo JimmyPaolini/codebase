@@ -1,5 +1,6 @@
 import * as fs from "node:fs";
 
+import { Logger } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -49,6 +50,7 @@ describe(DiscoveryService, () => {
 
     const result = service.discoverFiles({
       exclude: DEFAULT_EXCLUDE,
+      excludeFrom: [],
       workingDirectory: "/repo",
     });
 
@@ -74,6 +76,7 @@ describe(DiscoveryService, () => {
 
     const result = service.discoverFiles({
       exclude: [],
+      excludeFrom: [],
       workingDirectory: "/repo",
     });
 
@@ -93,6 +96,7 @@ describe(DiscoveryService, () => {
 
     const result = service.discoverFiles({
       exclude: [],
+      excludeFrom: [],
       workingDirectory: "/repo",
     });
 
@@ -119,6 +123,7 @@ describe(DiscoveryService, () => {
         "applications/lexico-ingestion/data/**",
         "applications/affirmations/output/**",
       ],
+      excludeFrom: [],
       workingDirectory: "/repo",
     });
 
@@ -134,10 +139,56 @@ describe(DiscoveryService, () => {
 
     const result = service.discoverFiles({
       exclude: DEFAULT_EXCLUDE,
+      excludeFrom: [],
       workingDirectory: "/repo",
     });
 
     expect(result.trackedFiles).toStrictEqual(["src/redistribute/index.ts"]);
+  });
+
+  it("excludes what a configured ignore file claims", () => {
+    execSyncMock.mockImplementation((command: string) =>
+      command.includes("--ignored")
+        ? Buffer.from("pnpm-lock.yaml\nCHANGELOG.md")
+        : Buffer.from(
+            ["src/app.ts", "pnpm-lock.yaml", "CHANGELOG.md"].join("\n"),
+          ),
+    );
+
+    const result = service.discoverFiles({
+      exclude: [],
+      excludeFrom: ["configuration/.prettierignore"],
+      workingDirectory: "/repo",
+    });
+
+    expect(execSyncMock).toHaveBeenCalledWith(
+      expect.stringContaining("git ls-files --cached --ignored --exclude-from"),
+      { cwd: "/repo" },
+    );
+    expect(result.trackedFiles).toStrictEqual(["src/app.ts"]);
+  });
+
+  it("warns and continues when an ignore file is missing", () => {
+    const loggerWarnSpy = vi
+      .spyOn(Logger.prototype, "warn")
+      .mockReturnValue(undefined);
+    execSyncMock.mockReturnValue(Buffer.from("src/app.ts"));
+    vi.mocked(fs.existsSync).mockImplementation(
+      (filePath) => filePath !== "/repo/.nope-ignore",
+    );
+
+    const result = service.discoverFiles({
+      exclude: [],
+      excludeFrom: [".nope-ignore"],
+      workingDirectory: "/repo",
+    });
+
+    expect(loggerWarnSpy).toHaveBeenCalledWith(
+      "🙈 Skipped missing ignore file",
+      undefined,
+      { path: ".nope-ignore" },
+    );
+    expect(result.trackedFiles).toStrictEqual(["src/app.ts"]);
   });
 
   it("excludes files that do not exist on disk", () => {
@@ -148,6 +199,7 @@ describe(DiscoveryService, () => {
 
     const result = service.discoverFiles({
       exclude: [],
+      excludeFrom: [],
       workingDirectory: "/repo",
     });
 
@@ -157,7 +209,11 @@ describe(DiscoveryService, () => {
   it("passes the working directory to git ls-files", () => {
     execSyncMock.mockReturnValue(Buffer.from(""));
 
-    service.discoverFiles({ exclude: [], workingDirectory: "/my/project" });
+    service.discoverFiles({
+      exclude: [],
+      excludeFrom: [],
+      workingDirectory: "/my/project",
+    });
 
     expect(execSyncMock).toHaveBeenCalledWith("git ls-files", {
       cwd: "/my/project",

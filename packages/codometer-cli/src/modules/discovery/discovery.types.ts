@@ -3,6 +3,7 @@
 /** Arguments accepted when discovering the files to measure. */
 export interface DiscoverFilesArguments {
   exclude: string[];
+  excludeFrom: string[];
   workingDirectory: string;
 }
 

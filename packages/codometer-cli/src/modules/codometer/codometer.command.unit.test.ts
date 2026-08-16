@@ -22,6 +22,7 @@ function buildConfiguration(
 ): ResolvedCodometerConfiguration {
   return {
     exclude: ["**/node_modules/**"],
+    excludeFrom: [],
     output: { json: undefined, markdown: undefined, ...output },
     python: { command: "python3" },
   };

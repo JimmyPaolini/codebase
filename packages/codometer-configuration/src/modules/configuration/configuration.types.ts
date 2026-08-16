@@ -30,6 +30,15 @@ export interface CodeStatisticsResult {
  */
 export interface CodometerConfiguration {
   exclude?: string[] | undefined;
+  /**
+   * Ignore files, in gitignore syntax, whose patterns also exclude files.
+   *
+   * For the tracked-but-generated files no glob list should have to restate —
+   * lockfiles, vendored bundles, anything a repository already tells its other
+   * tools to skip. Files git never tracked need no mention at all: discovery
+   * enumerates through `git ls-files`, so `.gitignore` is already in force.
+   */
+  excludeFrom?: string[] | undefined;
   output?: CodometerOutputConfiguration | undefined;
   python?: CodometerPythonConfiguration | undefined;
 }
@@ -231,6 +240,7 @@ export type RenderMarkdownOutput = (args: RenderMarkdownArguments) => string;
  */
 export interface ResolvedCodometerConfiguration {
   exclude: string[];
+  excludeFrom: string[];
   output: ResolvedCodometerOutputConfiguration;
   python: ResolvedCodometerPythonConfiguration;
 }
