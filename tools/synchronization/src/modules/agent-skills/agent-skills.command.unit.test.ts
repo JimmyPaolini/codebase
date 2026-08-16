@@ -195,7 +195,7 @@ describe(AgentSkillsCommand, () => {
     await command.run(["check"]);
 
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ All 2 plan agent files are in sync",
+      "✅ All 1 plan agent files are in sync",
     );
     expect(logger.log).toHaveBeenCalledWith(
       "✅ All 2 triage agent files are in sync",
@@ -254,7 +254,7 @@ describe(AgentSkillsCommand, () => {
         throw new TypeError("Unexpected non-string read path");
       }
 
-      if (filePath.endsWith("explore-internet.agent.md")) {
+      if (filePath.endsWith("explore-codebase.agent.md")) {
         return "actual-content\n";
       }
 
@@ -264,7 +264,7 @@ describe(AgentSkillsCommand, () => {
     await expectProcessExitOne(async () => command.run(["check"]));
 
     expect(logger.log).toHaveBeenCalledWith(
-      "❌ Agent file out of sync: .github/agents/explore-internet.agent.md",
+      "❌ Agent file out of sync: .github/agents/explore-codebase.agent.md",
     );
   });
 
@@ -362,7 +362,7 @@ describe(AgentSkillsCommand, () => {
 
     await command.run(["write"]);
 
-    expect(writeFileSync).toHaveBeenCalledTimes(6);
+    expect(writeFileSync).toHaveBeenCalledTimes(5);
     expect(writeFileSync).toHaveBeenCalledWith(
       expect.stringContaining(
         path.join(".github", "agents", "explore-codebase.agent.md"),

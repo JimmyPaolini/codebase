@@ -1,6 +1,6 @@
 ---
 name: stay-awake
-description: Use when running long coding-agent sessions on macOS that risk idle sleep, especially when tests, builds, debugging, or CI triage may outlast display or system sleep timers, when starting implementation from a superpowers plan or similar long-running task, or when the user says "caffeinate yourself".
+description: Use when running long coding-agent sessions on macOS that risk idle sleep, especially when tests, builds, debugging, or CI triage may outlast display or system sleep timers, when starting implementation from a spec or ticket set or similar long-running task, or when the user says "caffeinate yourself".
 ---
 
 # Stay Awake
