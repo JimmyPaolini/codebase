@@ -206,19 +206,24 @@ See the [validate-code skill](.agents/skills/validate-code/SKILL.md) for the ful
 
 ### Branch Names
 
-Format: `<type>/<scope>-<description>` — all three parts required, kebab-case description.
+Format: `<type>/<scope>-<description>` — all three parts required.
+
+- **Type and scope** must be exact values from the [Conventional Naming](#conventional-naming) tables below. An invented scope fails validation even when the branch name reads well.
+- **Description** is kebab-case matching `[a-z0-9-]+` — no uppercase, underscores, dots, or extra slashes.
+- Validate before pushing: `pnpm exec validate-branch-name -t "<branch-name>"`. The pre-push hook and the Validate Conventions workflow both run it.
 
 Examples: `feat/lexico-user-auth`, `fix/caelundas-timezone-bug`, `docs/codebase-architecture`
 
-Special branches exempt from naming convention: `main`, `develop`, `renovate/*`, `dependabot/*`
+Only `main` is exempt from the convention. Automated prefixes are also accepted: `copilot/*`, `dependabot/*`, `jimmypaolini/copilot/*`, `renovate/*`.
 
 ### Commit Messages
 
 Format: `<type>(<scope>): <gitmoji> <subject>` — single line only, max 128 chars.
 
-- **Gitmoji required** at the start of the subject line
-- **Body and footer are forbidden** — all context goes in the subject or PR description
-- Subject: lowercase, imperative mood, no period
+- **Type and scope** must come from the [Conventional Naming](#conventional-naming) tables, both lowercase
+- **Gitmoji required** as the first token of the subject line
+- Subject: lowercase, present-imperative mood (`add`, not `added` or `adds`), no trailing period, never empty
+- **Body and footer are forbidden**, with one exception: lines that are exactly `Co-authored-by: ...` trailers. All other context goes in the subject or the PR description
 - Never list multiple changes — summarize at a higher level or split into separate commits
 
 Common gitmojis: ✨ `feat` · 🐛 `fix` · 📝 `docs` · 🧪 `test` · ♻️ `refactor` · 🎨 `style` · ⚡️ `perf` · 🔧 `chore` · 👷 `ci` · 📦 `build` · ⏪ `revert`
@@ -234,7 +239,9 @@ docs(codebase): 📝 update contributing guide
 
 ### Pull Requests
 
-PR title follows the same format as commit messages: `<type>(<scope>): <gitmoji> <subject>`
+PR title follows the same format as commit messages — `<type>(<scope>): <gitmoji> <subject>` — and is checked by the same commitlint configuration, so every commit-message rule above applies to it.
+
+The PR description must contain all four section headings verbatim. Validate Conventions greps for each one and fails the PR when any is missing.
 
 PR description template:
 
@@ -326,14 +333,39 @@ PR description template:
 - **Always** prefer service files `*.service.ts` over `*.ts` or `*.utilities.ts` for NestJS service classes.
 - Only use utilities files `*.utilities.ts` in cases where a top level function is needed, and only use them to invoke service class methods or to compose multiple service class methods together. Never use utilities files to implement business logic directly.
 
+### Project Structure
+
+Folder and file placement is a lint error, not a style preference. It is enforced by `eslint-plugin-project-structure` from `configuration/project-structure.json`.
+
+- **Every folder is kebab-case** (`^[a-z0-9-]+$`). The abbreviated names `dir`, `err`, `req`, `res`, `utils`, `ctx`, and `app` are rejected outright as folder names.
+- **Projects live in `applications/`, `packages/`, or `tools/`.** Adding a new file or folder at the workspace root requires adding it to `configuration/project-structure.json` in the same change, or lint fails.
+- **Project subfolders are a fixed set**: `src/`, `testing/`, `scripts/`, `data/`, `assets/`, `coverage/`, `output/`, `public/`, `.vscode/`.
+- **`src/` subfolders are a fixed set**: `modules/`, `components/`, `lib/`, `routes/`, `hooks/`, `styles/`, `assets/`, `executors/`, `generators/`, `validators/`. A `src/plugin.ts` entrypoint is forbidden.
+- **Files inside `src/modules/<module-name>/` must be `<kebab-name>.<suffix>.<extension>`** where suffix is one of `command`, `constants`, `errors`, `module`, `service`, `types`, or `utilities`, optionally with `.unit.test`, `.integration.test`, or `.end-to-end.test` before the extension. A bare `<name>.ts` inside a module folder is invalid — pick a suffix.
+- Scaffold with a conformetry generator rather than hand-building the tree; the generators already produce this layout.
+
 ### Project Tags
+
+Every project declares tags in its `project.json`: `type:*`, `language:*`, `framework:*`, `domain:*`, and `name:<project>`.
 
 - **`language:typescript`** — applied to all TypeScript projects (caelundas, lexico, lexico-components, conformetry packages, codebase)
 - **`language:python`** — applied to all Python projects (affirmations)
 
 These tags enable conditional sub-target composition in composite targets (`format`, `lint`, `typecheck`, `test`). Python projects override the TS-default composite targets to compose Python sub-targets (`ruff-format`, `ruff-lint`, `pyright`, `pytest`) instead of TS ones.
 
-See [Python Conventions](documentation/conventions/python.md) for the full Python tooling setup.
+See the [write-python skill](.agents/skills/write-python/SKILL.md) for the full Python tooling setup.
+
+### Nx Boundaries
+
+`@nx/enforce-module-boundaries` derives import rules from the tags above. Check these before adding a cross-project import — a violation fails `lint`, not `typecheck`, so it surfaces late.
+
+- **`type:application` may only import `type:package` projects.** Applications never import other applications.
+- **`type:package` may never import a `type:application`.**
+- **`framework:react` may not import `framework:nestjs`.**
+- **`domain:lexico` and `domain:caelundas` may never import each other.**
+- **Conformetry packages form a strict layered graph** keyed on `name:conformetry-*` tags. `conformetry-core` is the leaf and depends on nothing; every other package declares exactly which siblings it may import. Read the `depConstraints` list in `configuration/eslint.config.ts` before wiring a new dependency between them.
+
+`@nx/dependency-checks` additionally requires that every imported package is declared in that project's own `package.json`. Add it with `pnpm add --filter <project> <package>` rather than editing `package.json` by hand.
 
 ### TypeScript
 
@@ -354,10 +386,37 @@ See [Python Conventions](documentation/conventions/python.md) for the full Pytho
 - **Template literals**: Use `` `Hello ${name}` `` instead of `"Hello " + name`
 - **Max 3 function parameters**: Group extras into an options object (constructors: 12)
 - **JSDoc on public APIs**: Public functions, classes, methods, interfaces, types, and enums must have JSDoc — only when it adds non-obvious context
-- **Section comments**: Use `// 🎯 Section name` (emoji + capitalized name). Never use dash lines or ASCII art dividers. See [write-comment skill](.agents/skills/write-comment/SKILL.md).
+- **Section comments**: Use `// 🎯 Section name` (emoji + capitalized name). Never use dash lines or ASCII art dividers. See [write-comments skill](.agents/skills/write-comments/SKILL.md).
 - **NestJS class file shape**: In `*.service.ts`, `*.command.ts`, `*.resolver.ts`, `*.dataloader.ts`, and `*.module.ts`, keep only imports and the class at top level. Move helper types/interfaces to `*.types.ts`, constants to `*.constants.ts`, and never use alias or type re-exports from class files.
 
-See [TypeScript Conventions](documentation/conventions/typescript.md) for strict mode patterns.
+See the [write-typescript skill](.agents/skills/write-typescript/SKILL.md) for strict mode patterns.
+
+### Size Limits
+
+Hard ESLint errors on source files. Test files (`*.test.ts`, `testing/**`) and `*.config.*` files are exempt from all of them, so a large test file is fine and a large service file is not.
+
+| Limit | Max |
+| ----- | --- |
+| Lines per file (`max-lines`) | 512 |
+| Lines per function (`max-lines-per-function`) | 128 |
+| Statements per function (`max-statements`) | 16 |
+| Block nesting depth (`max-depth`) | 4 |
+| Nested callbacks (`max-nested-callbacks`) | 3 |
+| Classes per file (`max-classes-per-file`) | 1 |
+| Function parameters (`better-max-params`) | 3 — constructors 12, functions in `*.module.ts` 12 |
+| Cyclomatic complexity | 8 (warning) |
+| Nested `describe` blocks | 3 |
+
+When a file nears 512 lines, split it along the module file suffixes (`*.types.ts`, `*.constants.ts`, another `*.service.ts`) instead of raising the limit. Never add a disable comment or edit the threshold to make a file fit.
+
+### Formatting and Ordering
+
+Formatting is not a judgement call — `analyze-code --configuration=write` produces the canonical result. Write code in the shape below so the first pass is a no-op.
+
+- **`oxfmt` is the formatter** (not prettier): 80-column print width, 2-space indent, double quotes, semicolons, trailing commas everywhere, LF endings, one JSX attribute per line.
+- **Import groups** (`perfectionist/sort-imports`): builtin → external → internal (`@codebase/*`) → parent → sibling → index → type, with exactly one blank line between groups and natural alphabetical order inside each group.
+- **Alphabetical order is enforced** for named imports and exports, object literals, object types, interfaces, enums, union and intersection types, switch cases, class members, JSX props, `Map`/`Set` entries, and top-level module declarations. Object literals partition on blank lines and comments, so a blank line starts a fresh sorted run.
+- **Cross-project imports use the workspace package name.** `import/no-relative-packages` is an error and `import/no-relative-parent-imports` warns; inside a project, prefer relative paths over path aliases.
 
 ### Testing
 
@@ -371,9 +430,27 @@ nx run <project>:test:integration # Database validation
 nx affected --target=test         # Only changed projects
 ```
 
+Test files are named `*.<kind>.test.ts` and live beside the code they cover. Vitest lint rules also require `it` over `test`, `vi` over `vitest`, `describe.each`/`it.each` over hand-rolled loops, and no `.only`, `.skip`, or commented-out tests.
+
+#### Coverage Gates
+
+- **Test coverage: 96%** for branches, functions, lines, and statements (`configuration/vitest.config.ts`, v8 provider). New code needs tests in the same change to keep a project above the line.
+- **Type coverage** is per project, declared as `typeCoverage.atLeast` in each project's `package.json` — most packages sit at 100 with `strict: true`, and the workspace root requires 95. Run `type-coverage` alongside `typecheck` for any touched project that defines the target; passing `typecheck` alone proves nothing about this gate.
+- **Duplication**: `jscpd` fails above a 6% threshold, counting clones of 12+ lines or 24+ tokens. Extract a shared helper rather than copying a block.
+- Lowering a threshold to make a change pass is not an option — fix the code.
+
 See [Testing Strategy](documentation/code-quality/testing-strategy.md) for patterns.
 
 ## Agent Context
+
+`.agents/skills/` and this file are the single sources of truth. Every other agent entrypoint is a symlink to them, so edit the source and never the mirror:
+
+| Symlink | Target |
+| ------- | ------ |
+| `CLAUDE.md` | `AGENTS.md` |
+| `.claude/skills` | `.agents/skills` |
+| `.github/copilot-instructions.md` | `AGENTS.md` |
+| `.github/skills` | `.agents/skills` |
 
 ### Instructions
 

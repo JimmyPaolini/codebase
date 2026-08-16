@@ -55,7 +55,9 @@ export default [
       "**/helm/**/templates/**",
       // Terraform providers and generated files
       "**/.terraform/**",
+      // Symlinked mirrors of AGENTS.md — linted once at the source
       ".github/copilot-instructions.md",
+      "CLAUDE.md",
       // Raw data folders (large JSON dumps, not source code)
       "**/data/wikipedia/**",
       "**/data/wiktionary/**",
