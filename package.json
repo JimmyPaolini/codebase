@@ -1,8 +1,5 @@
 {
   "author": "Jimmy Paolini",
-  "dependencies": {
-    "pino-pretty": "catalog:"
-  },
   "description": "",
   "devDependencies": {
     "@codometer/configuration": "workspace:*",
@@ -116,5 +113,5 @@
     ]
   },
   "type": "module",
-  "version": "1.17.3"
+  "version": "1.19.0"
 }

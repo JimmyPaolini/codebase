@@ -2,6 +2,8 @@ import { createMock, type DeepMocked } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { setPromptsMockResponse } from "../../../testing/mocks";
 import { CorpusScriptorumEcclesiasticorumLatinorumCommand } from "../corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command";
 import { DictionaryCommand } from "../dictionary/dictionary.command";
@@ -9,7 +11,6 @@ import { EpigraphikDatenbankClaussSlabyCommand } from "../epigraphik-datenbank-c
 import { LatinLibraryCommand } from "../latin-library/latin-library.command";
 import { LibraryCommand } from "../library/library.command";
 import { LiteratureCommand } from "../literature/literature.command";
-import { LoggerService } from "../logger/logger.service";
 import { PerseusCommand } from "../perseus/perseus.command";
 import { WiktionaryCommand } from "../wiktionary/wiktionary.command";
 
@@ -237,7 +238,7 @@ describe(LexicoIngestionCommand, () => {
     expect(libraryCommand.run).toHaveBeenCalledWith([], {});
     expect(literatureCommand.run).toHaveBeenCalledWith([], {});
     expect(logger.log).toHaveBeenCalledWith(
-      "✅ Full ingestion pipeline complete 🎉",
+      "🎉 Completed the full ingestion pipeline",
     );
   });
 

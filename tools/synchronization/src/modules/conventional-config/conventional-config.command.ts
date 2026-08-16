@@ -1,7 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
+
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import { ConventionalConfigService } from "./conventional-config.service";

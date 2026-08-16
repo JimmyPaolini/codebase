@@ -4,7 +4,8 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
+
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import {
@@ -79,19 +80,19 @@ export class AgentSkillsCommand
 
     if (generatedList.trim() !== generatedContent.trim()) {
       this.logger.log(
-        "❌ Custom agents table of contents in AGENTS.md is out of sync\n",
-      );
-      this.logger.log(`  Found ${agents.length} agents in .github/agents/`);
-      this.logger.log("  Generated content doesn't match stored content");
-      this.logger.log(
-        "💡 Run 'nx run synchronization:synchronize:write' to sync\n",
+        "📇 Detected an out-of-sync custom agents table in AGENTS.md",
+        undefined,
+        {
+          count: agents.length,
+          hint: "Run 'nx run synchronization:synchronize:write' to sync",
+        },
       );
       return false;
     }
 
-    this.logger.log(
-      `✅ Custom agents table of contents is in sync (${agents.length} ${agents.length === 1 ? "agent" : "agents"})`,
-    );
+    this.logger.log("📇 Verified the custom agents table", undefined, {
+      count: agents.length,
+    });
     return true;
   }
 
@@ -111,13 +112,15 @@ export class AgentSkillsCommand
     try {
       actualContent = readFileSync(agentPath, "utf8");
     } catch {
-      this.logger.log(`❌ Agent file not found: ${configuration.agentFile}`);
+      this.logger.log(`📄 Missing agent file ${configuration.agentFile}`);
       return false;
     }
 
     const expectedContent = generateAgentFile(skill, actualContent);
     if (expectedContent !== actualContent) {
-      this.logger.log(`❌ Agent file out of sync: ${configuration.agentFile}`);
+      this.logger.log(
+        `📄 Detected an out-of-sync agent file ${configuration.agentFile}`,
+      );
       return false;
     }
 
@@ -127,11 +130,14 @@ export class AgentSkillsCommand
   /**
    * Validates a set of agent files against their source skill files.
    */
-  private checkSkillAgentFiles(
-    configurations: AgentFileSyncConfig[],
-    workspaceRoot: string,
-    successMessage: string,
-  ): boolean {
+  private checkSkillAgentFiles(args: {
+    configurations: AgentFileSyncConfig[];
+    successCount: number;
+    successMessage: string;
+    workspaceRoot: string;
+  }): boolean {
+    const { configurations, successCount, successMessage, workspaceRoot } =
+      args;
     let allInSync = true;
 
     for (const configuration of configurations) {
@@ -141,13 +147,13 @@ export class AgentSkillsCommand
     }
 
     if (!allInSync) {
-      this.logger.log(
-        "💡 Run 'nx run synchronization:synchronize:write' to sync\n",
-      );
+      this.logger.log("💡 Suggested a fix", undefined, {
+        hint: "Run 'nx run synchronization:synchronize:write' to sync",
+      });
       return false;
     }
 
-    this.logger.log(successMessage);
+    this.logger.log(successMessage, undefined, { count: successCount });
     return true;
   }
 
@@ -165,19 +171,19 @@ export class AgentSkillsCommand
 
     if (generatedTable.trim() !== generatedContent.trim()) {
       this.logger.log(
-        "❌ Skills table of contents in AGENTS.md is out of sync\n",
-      );
-      this.logger.log(`  Found ${skills.length} skills in .agents/skills/`);
-      this.logger.log("  Generated content doesn't match stored content");
-      this.logger.log(
-        "💡 Run 'nx run synchronization:synchronize:write' to sync\n",
+        "📇 Detected an out-of-sync skills table in AGENTS.md",
+        undefined,
+        {
+          count: skills.length,
+          hint: "Run 'nx run synchronization:synchronize:write' to sync",
+        },
       );
       return false;
     }
 
-    this.logger.log(
-      `✅ Skills table of contents is in sync (${skills.length} skills)`,
-    );
+    this.logger.log("📇 Verified the skills table", undefined, {
+      count: skills.length,
+    });
     return true;
   }
 
@@ -188,17 +194,19 @@ export class AgentSkillsCommand
    * all drift rather than only the first instance.
    */
   private runCheckMode(workspaceRoot: string): boolean {
-    const planInSync = this.checkSkillAgentFiles(
-      PLAN_AGENT_CONFIGS,
+    const planInSync = this.checkSkillAgentFiles({
+      configurations: PLAN_AGENT_CONFIGS,
+      successCount: PLAN_AGENT_CONFIGS.length,
+      successMessage: "📄 Verified the plan agent files",
       workspaceRoot,
-      `✅ All ${PLAN_AGENT_CONFIGS.length} plan agent files are in sync`,
-    );
+    });
 
-    const triageInSync = this.checkSkillAgentFiles(
-      TRIAGE_AGENT_CONFIGS,
+    const triageInSync = this.checkSkillAgentFiles({
+      configurations: TRIAGE_AGENT_CONFIGS,
+      successCount: TRIAGE_AGENT_CONFIGS.length,
+      successMessage: "📄 Verified the triage agent files",
       workspaceRoot,
-      `✅ All ${TRIAGE_AGENT_CONFIGS.length} triage agent files are in sync`,
-    );
+    });
 
     const customAgentsInSync = this.checkCustomAgentsTable(workspaceRoot);
     const skillsInSync = this.checkSkillsTable(workspaceRoot);
@@ -245,8 +253,9 @@ export class AgentSkillsCommand
       "utf8",
     );
 
-    const agentWord = agents.length === 1 ? "agent" : "agents";
-    this.logger.log(`✅ Updated AGENTS.md with ${agents.length} ${agentWord}`);
+    this.logger.log("📇 Updated AGENTS.md", undefined, {
+      count: agents.length,
+    });
   }
 
   /**
@@ -290,7 +299,9 @@ export class AgentSkillsCommand
       `${beforeMarker}\n${generatedTable}\n${afterMarker}`,
       "utf8",
     );
-    this.logger.log(`✅ Updated AGENTS.md with ${skills.length} skills`);
+    this.logger.log("📇 Updated AGENTS.md", undefined, {
+      count: skills.length,
+    });
   }
 
   /**
@@ -310,9 +321,9 @@ export class AgentSkillsCommand
       this.writeSingleSkillAgentFile(configuration, workspaceRoot);
 
       if (questionMeMode) {
-        this.logger.log("✅ Updated question-me.agent.md");
+        this.logger.log("📄 Updated question-me.agent.md");
       } else {
-        this.logger.log(`✅ Synced ${configuration.agentFile}`);
+        this.logger.log(`📄 Synced ${configuration.agentFile}`);
       }
     }
   }
@@ -358,7 +369,8 @@ export class AgentSkillsCommand
       return true;
     } catch (error) {
       this.logger.error(
-        `❌ Error: ${error instanceof Error ? error.message : error}`,
+        `💥 Failed synchronizing agent skills`,
+        error instanceof Error ? error.stack : String(error),
       );
       return false;
     }

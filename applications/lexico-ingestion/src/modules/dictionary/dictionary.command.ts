@@ -6,9 +6,9 @@ import { Command, CommandRunner, Option } from "nest-commander";
 import prompts from "prompts";
 
 import { Lexeme, Translation } from "@codebase/lexico-entities";
+import { LoggerService } from "@codebase/logger";
 
 import { LexemesService } from "../lexemes/lexemes.service";
-import { LoggerService } from "../logger/logger.service";
 import { ManualService } from "../manual/manual.service";
 import { TranslationsService } from "../translations/translations.service";
 
@@ -168,7 +168,9 @@ export class DictionaryCommand extends CommandRunner {
   ): Promise<void> {
     const matches = [...translation.data.matchAll(/\{\*(.+?)\*\}/g)];
     if (matches.length === 0) {
-      this.logger.warn(`⚠️ No reference found in: ${translation.data}`);
+      this.logger.warn(`🔗 Missing reference in translation`, undefined, {
+        translation: translation.data,
+      });
       return;
     }
 
@@ -192,12 +194,12 @@ export class DictionaryCommand extends CommandRunner {
   private loadWiktionaryPageForWord(word: string): null | WiktionaryPage {
     const filePath = this.getWiktionaryFilePathForWord(word);
     if (!filePath) {
-      this.logger.warn(`⚠️ No data file found for word: ${word}`);
+      this.logger.warn(`📄 Missing data file for "${word}"`);
       return null;
     }
     const page = this.readWiktionaryPageFromFile(filePath);
     if (!page) {
-      this.logger.warn(`⚠️ No data file found for word: ${word}`);
+      this.logger.warn(`📄 Missing data file for "${word}"`);
       return null;
     }
     return page;
@@ -234,7 +236,7 @@ export class DictionaryCommand extends CommandRunner {
       });
     } catch (error: unknown) {
       const { logLine } = this.logger.buildErrorLogEntry(file, error);
-      this.logger.error(`❌ Failed to process ${file}: ${String(error)}`);
+      this.logger.error(`📄 Failed processing ${file}`);
       fs.appendFileSync(this.errorLogFilePath, logLine);
     }
   }
@@ -262,7 +264,7 @@ export class DictionaryCommand extends CommandRunner {
       ) ?? lexemes[0];
 
     if (!lexeme) {
-      this.logger.warn(`⚠️ No lexeme found for reference: ${reference}`);
+      this.logger.warn(`🔑 Missing lexeme for reference "${reference}"`);
       return;
     }
 
@@ -315,7 +317,9 @@ export class DictionaryCommand extends CommandRunner {
   async ingestAll(startLemma?: string, endLemma?: string): Promise<void> {
     if (!fs.existsSync(this.dataDirectory)) {
       this.logger.warn(
-        `⚠️ Data directory not found: ${this.dataDirectory}. Please run Wikipedia dump extraction first.`,
+        `📁 Missing data directory ${this.dataDirectory}`,
+        undefined,
+        { hint: "Run the Wikipedia dump extraction first" },
       );
       return;
     }
@@ -336,7 +340,7 @@ export class DictionaryCommand extends CommandRunner {
       await this.processFile(file, current, total);
     }
 
-    this.logger.log("📖 Dictionary ingestion complete");
+    this.logger.log("📖 Ingested dictionary");
   }
 
   /**
@@ -455,7 +459,7 @@ export class DictionaryCommand extends CommandRunner {
     options: DictionaryCommandOptions,
   ): Promise<void> {
     this.logger.log(`📖 Ingesting dictionary...`);
-    this.logger.log(`⚙️ Options: ${JSON.stringify(options)}`);
+    this.logger.log(`⚙️ Parsed command options`, undefined, { options });
     const startTime = performance.now();
 
     const startLemma = await this.parseStartLemma(

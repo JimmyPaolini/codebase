@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import { ConventionalConfigIoService } from "./conventional-config-io.service";
 import { ConventionalConfigValidatorsService } from "./conventional-config-validators.service";
@@ -160,12 +160,12 @@ export class ConventionalConfigService {
       !releaseRulesOk ||
       !presetOk
     ) {
-      this.loggerService.log(
-        "💡 Run 'nx run synchronization:synchronize:write' to sync",
-      );
+      this.loggerService.log("💡 Suggested a fix", undefined, {
+        hint: "Run 'nx run synchronization:synchronize:write' to sync",
+      });
       return false;
     }
-    this.loggerService.log("✅ Conventional commit config is in sync");
+    this.loggerService.log("📇 Verified the conventional commit config");
     return true;
   }
 
@@ -199,7 +199,7 @@ export class ConventionalConfigService {
       outOfSyncSkills.length === 0 &&
       outOfSyncTemplates.length === 0
     ) {
-      this.loggerService.log("✅ Already in sync");
+      this.loggerService.log("📇 Verified everything was already in sync");
       return;
     }
 

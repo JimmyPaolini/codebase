@@ -3,7 +3,6 @@
     "@nestjs/common": "catalog:",
     "jiti": "catalog:",
     "jsonc-parser": "catalog:",
-    "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:",
     "zod": "catalog:"

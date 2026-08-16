@@ -3,8 +3,9 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { buildCodeStatistics } from "../../../testing/mocks";
-import { LoggerService } from "../logger/logger.service";
 import { OutputJsonService } from "../output-json/output-json.service";
 import { OutputMarkdownService } from "../output-markdown/output-markdown.service";
 

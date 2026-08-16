@@ -2,15 +2,17 @@ import { Test } from "@nestjs/testing";
 import moment, { type Moment } from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { CalendarService } from "../calendar/calendar.service";
 import { EphemerisModule } from "../ephemeris/ephemeris.module";
-import { LoggerService } from "../logger/logger.service";
 import { MathService } from "../math/math.service";
 
 import { DailyCyclesBuilderService } from "./daily-cycles-builder.service";
 import { DailyCyclesService } from "./daily-cycles.service";
 
 import type { AzimuthElevationEphemeris } from "../ephemeris/ephemeris.types";
+import type { LogData } from "@codebase/logger";
 
 vi.mock("fs", () => ({
   default: {
@@ -39,7 +41,13 @@ describe(DailyCyclesService, () => {
               categories: string[];
               date: Moment;
               description: string;
-              logger: { log: (message: string) => void };
+              logger: {
+                log: (
+                  message: string,
+                  context?: string,
+                  data?: LogData,
+                ) => void;
+              };
               summary: string;
               timezone: string;
             }) => {
@@ -52,7 +60,9 @@ describe(DailyCyclesService, () => {
                 timezone,
               } = args;
               const dateString = date.clone().tz(timezone).toISOString(true);
-              logger.log(`${summary} at ${dateString}`);
+              logger.log(`🗓️ Built ${summary}`, undefined, {
+                at: dateString,
+              });
               return {
                 categories,
                 description,

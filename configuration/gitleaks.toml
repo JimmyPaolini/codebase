@@ -3,7 +3,7 @@
 # Usage (CI): GitHub Action runs on push/PR with full history scan
 # Usage (Local): Install via brew/apt/binary, then run: gitleaks git --staged --verbose --redact --config configuration/gitleaks.toml --gitleaks-ignore-path configuration
 # Installation: https://github.com/gitleaks/gitleaks#installing
-# CI Workflow: .github/workflows/audit-security.yml (secrets-scan job)
+# CI Workflow: .github/workflows/scan-security.yml (scan-security job)
 # @see https://github.com/gitleaks/gitleaks
 
 [extend]

@@ -2,10 +2,11 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { AspectEventFormattingService } from "../aspects/aspect-event-formatting.service";
 import { AspectsUtilitiesService } from "../aspects/aspects-utilities.service";
 import { EphemerisService } from "../ephemeris/ephemeris.service";
-import { LoggerService } from "../logger/logger.service";
 
 import { SpecialtyAspectsEventService } from "./specialty-aspects-event.service";
 

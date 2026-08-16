@@ -3,12 +3,13 @@ import _ from "lodash";
 import moment, { type Moment } from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { MARGIN_MINUTES } from "../caelundas/caelundas.constants";
 import * as CaelundasTypes from "../caelundas/caelundas.types";
 import { symbolByLunarPhase } from "../caelundas/symbol-caelundas.constants";
 import { CalendarService } from "../calendar/calendar.service";
 import { EphemerisModule } from "../ephemeris/ephemeris.module";
-import { LoggerService } from "../logger/logger.service";
 import { MathService } from "../math/math.service";
 
 import { MonthlyLunarCycleService } from "./monthly-lunar-cycle.service";
@@ -16,6 +17,7 @@ import { MonthlyLunarCycleService } from "./monthly-lunar-cycle.service";
 import type { LunarPhase } from "../caelundas/caelundas.types";
 import type { Event } from "../calendar/calendar.types";
 import type { IlluminationEphemeris } from "../ephemeris/ephemeris.types";
+import type { LogData } from "@codebase/logger";
 
 vi.mock("fs", () => ({
   default: {
@@ -72,7 +74,13 @@ describe(MonthlyLunarCycleService, () => {
               categories: string[];
               date: Moment;
               description: string;
-              logger: { log: (message: string) => void };
+              logger: {
+                log: (
+                  message: string,
+                  context?: string,
+                  data?: LogData,
+                ) => void;
+              };
               summary: string;
               timezone: string;
             }): Event => {
@@ -85,7 +93,9 @@ describe(MonthlyLunarCycleService, () => {
                 timezone,
               } = args;
               const dateString = date.clone().tz(timezone).toISOString(true);
-              logger.log(`${summary} at ${dateString}`);
+              logger.log(`🗓️ Built ${summary}`, undefined, {
+                at: dateString,
+              });
               return {
                 categories,
                 description,
@@ -420,7 +430,9 @@ describe(MonthlyLunarCycleService, () => {
       // Should skip the invalid event
       expect(progressiveEvents).toHaveLength(0);
       expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining("Could not extract lunar phase"),
+        expect.stringContaining("Skipping progressive event"),
+        undefined,
+        expect.any(Object),
       );
 
       warnSpy.mockRestore();
@@ -493,7 +505,9 @@ describe(MonthlyLunarCycleService, () => {
 
       expect(progressiveEvent).toBeNull();
       expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining("Could not extract lunar phase"),
+        expect.stringContaining("Skipping progressive event"),
+        undefined,
+        expect.any(Object),
       );
 
       warnSpy.mockRestore();
@@ -595,7 +609,9 @@ describe(MonthlyLunarCycleService, () => {
 
         expect(result).toBeNull();
         expect(warnSpy).toHaveBeenCalledWith(
-          expect.stringContaining("Could not extract lunar phase"),
+          expect.stringContaining("Skipping progressive event"),
+          undefined,
+          expect.any(Object),
         );
 
         warnSpy.mockRestore();
@@ -613,7 +629,9 @@ describe(MonthlyLunarCycleService, () => {
 
         expect(result).toBeNull();
         expect(warnSpy).toHaveBeenCalledWith(
-          expect.stringContaining("Could not extract lunar phase"),
+          expect.stringContaining("Skipping progressive event"),
+          undefined,
+          expect.any(Object),
         );
 
         warnSpy.mockRestore();
@@ -643,7 +661,7 @@ describe(MonthlyLunarCycleService, () => {
 
         expect(result).toBeNull();
         expect(warnSpy).toHaveBeenCalledWith(
-          expect.stringContaining("Unknown lunar phase"),
+          expect.stringContaining("Skipping unknown lunar phase"),
         );
 
         lunarPhaseSpy.mockRestore();

@@ -15,6 +15,7 @@ import type {
   RunGeneratorResult,
 } from "./generation.types";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Runs conformetry generators: walks a template tree, renders every path and
  * file through `RenderingService`, and writes the result.
@@ -25,6 +26,7 @@ import type {
  * exactly as generation does, so both share one `RenderingService`.
  */
 @Injectable()
+/* v8 ignore stop */
 export class GenerationService {
   // 🏗 Dependency Injection
 

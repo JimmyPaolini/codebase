@@ -1,10 +1,11 @@
 import { ConfigurationModule } from "@codometer/configuration";
 import { Module } from "@nestjs/common";
 
+import { LoggerModule } from "@codebase/logger";
+
 import { DiscoveryModule } from "../discovery/discovery.module";
 import { JsonModule } from "../json/json.module";
 import { JupyterModule } from "../jupyter/jupyter.module";
-import { LoggerModule } from "../logger/logger.module";
 import { MarkdownModule } from "../markdown/markdown.module";
 import { OutputJsonModule } from "../output-json/output-json.module";
 import { OutputMarkdownModule } from "../output-markdown/output-markdown.module";

@@ -2,11 +2,12 @@ import { createMock, type DeepMocked } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import {
   createCommandTestHarness,
   resetCommandTestHarness,
 } from "../../../testing/command-harness";
-import { LoggerService } from "../logger/logger.service";
 
 import { CorpusScriptorumEcclesiasticorumLatinorumCommand } from "./corpus-scriptorum-ecclesiasticorum-latinorum.command";
 
@@ -160,7 +161,7 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumCommand, () => {
 
     expect(result).toBeNull();
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Failed to fetch CSEL tree: Bad Request",
+      "🌳 Failed fetching the CSEL tree",
     );
   });
 
@@ -218,7 +219,7 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumCommand, () => {
 
     expect(result).toBeNull();
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Failed to parse CSEL tree response payload",
+      "🌳 Failed parsing the CSEL tree response",
     );
   });
 
@@ -272,7 +273,7 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumCommand, () => {
     ).fetchAndWriteXmlFile("https://example.com/file.xml", "/tmp/file.xml");
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "⚠️ Failed to fetch https://example.com/file.xml: Not Found",
+      "📥 Failed fetching https://example.com/file.xml",
     );
     expect(writeFileMock).not.toHaveBeenCalled();
   });
@@ -338,7 +339,8 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumCommand, () => {
     ).downloadSourceXmlFileIfMissing("data/author/work.xml");
 
     expect(logger.error).toHaveBeenCalledWith(
-      "❌ Error downloading data/author/work.xml: network-failure",
+      "📥 Failed downloading data/author/work.xml",
+      expect.any(String),
     );
     expect(appendFileMock).toHaveBeenCalledTimes(1);
   });
@@ -372,9 +374,7 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumCommand, () => {
     expect(mkdirMock).toHaveBeenCalledTimes(1);
     expect(downloadSpy).toHaveBeenCalledTimes(1);
     expect(downloadSpy).toHaveBeenCalledWith("data/author/work.xml");
-    expect(logger.log).toHaveBeenCalledWith(
-      "✅ Finished downloading CSEL source files.",
-    );
+    expect(logger.log).toHaveBeenCalledWith("📥 Downloaded CSEL source files");
   });
 
   it("should return early when tree fetch fails in run", async () => {

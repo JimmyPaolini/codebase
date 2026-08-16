@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
+
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
 import type { EclipsePhase } from "../caelundas/caelundas.types";
@@ -48,7 +49,9 @@ export class EclipseEventService {
     const framedSummary = `${frameSymbol} ${summary}`;
     const dateString = date.clone().tz("America/New_York").toISOString(true);
 
-    this.logger.log(`${framedSummary} at ${dateString}`);
+    this.logger.log(`🗓️ Built ${framedSummary}`, undefined, {
+      at: dateString,
+    });
 
     return {
       categories: [...this.categories, body, frameLabel],

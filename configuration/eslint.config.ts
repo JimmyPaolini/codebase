@@ -340,7 +340,10 @@ export default [
               sourceTag: "name:codometer-configuration",
             },
             {
-              onlyDependOnLibsWithTags: ["name:codometer-configuration"],
+              onlyDependOnLibsWithTags: [
+                "name:codometer-configuration",
+                "name:logger",
+              ],
               sourceTag: "name:codometer-cli",
             },
             // Conformetry package graph. `conformetry-core` is the leaf every
@@ -434,6 +437,7 @@ export default [
                 "name:conformetry-core",
                 "name:conformetry-generation",
                 "name:conformetry-validation",
+                "name:logger",
               ],
               sourceTag: "name:conformetry",
             },
@@ -449,6 +453,7 @@ export default [
                 "name:conformetry-text",
                 "name:conformetry-typescript",
                 "name:conformetry-validation",
+                "name:logger",
               ],
               sourceTag: "name:conformetry-nx",
             },

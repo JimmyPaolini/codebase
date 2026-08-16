@@ -139,7 +139,13 @@ export class JupyterService {
       return document.cells ?? [];
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
-      this.logger.warn(`Jupyter analysis skipped ${filePath}: ${message}`);
+      this.logger.warn(
+        `📓 Skipped notebook analysis for ${filePath}`,
+        undefined,
+        {
+          reason: message,
+        },
+      );
 
       return undefined;
     }

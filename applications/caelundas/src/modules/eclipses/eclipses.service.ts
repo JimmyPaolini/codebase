@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import { EclipseCalculationService } from "./eclipse-calculation.service";
 import { EclipseEventService } from "./eclipse-event.service";

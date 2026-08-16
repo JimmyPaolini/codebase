@@ -277,7 +277,9 @@ describe(JupyterService, () => {
 
     expect(result.files).toBe(1);
     expect(loggerWarnSpy).toHaveBeenCalledWith(
-      expect.stringContaining("Jupyter analysis skipped broken.ipynb"),
+      "📓 Skipped notebook analysis for broken.ipynb",
+      undefined,
+      expect.any(Object),
     );
   });
 

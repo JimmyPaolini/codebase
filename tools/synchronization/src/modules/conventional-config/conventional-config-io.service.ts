@@ -10,7 +10,7 @@ import { Injectable } from "@nestjs/common";
 import JSON5 from "json5";
 import _ from "lodash";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
 
 import { RELEASE_RULES_SPECIAL_TYPES } from "./conventional-config.constants";
 
@@ -249,7 +249,7 @@ export class ConventionalConfigIoService {
     );
 
     writeFileSync(templateFile, updatedContent, "utf8");
-    this.loggerService.log(`✅ ${templateName} scopes synced`);
+    this.loggerService.log(`📇 Synced scopes in ${templateName}`);
   }
 
   /**
@@ -286,7 +286,7 @@ export class ConventionalConfigIoService {
       sourceTypes,
     );
     writeFileSync(this.releaseConfigFile, content, "utf8");
-    this.loggerService.log(`✅ ${relativeFile} types synced`);
+    this.loggerService.log(`🏷️ Synced types in ${relativeFile}`);
   }
 
   /**
@@ -312,7 +312,7 @@ export class ConventionalConfigIoService {
     );
 
     writeFileSync(this.settingsFile, updatedContent, "utf8");
-    this.loggerService.log("✅ settings.json scopes synced");
+    this.loggerService.log("📇 Synced scopes in settings.json");
   }
 
   /**
@@ -354,6 +354,6 @@ export class ConventionalConfigIoService {
     );
 
     writeFileSync(skillFile, skillContent, "utf8");
-    this.loggerService.log(`✅ ${skillName} types and scopes synced`);
+    this.loggerService.log(`📇 Synced types and scopes in ${skillName}`);
   }
 }

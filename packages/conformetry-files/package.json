@@ -3,7 +3,6 @@
     "@conformetry/configuration": "workspace:*",
     "@conformetry/core": "workspace:*",
     "@nestjs/common": "catalog:",
-    "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:"
   },

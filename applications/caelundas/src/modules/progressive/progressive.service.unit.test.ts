@@ -2,11 +2,12 @@ import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { AnnualSolarCycleService } from "../annual-solar-cycle/annual-solar-cycle.service";
 import { AspectsService } from "../aspects/aspects.service";
 import { EclipsesService } from "../eclipses/eclipses.service";
 import { IngressesService } from "../ingresses/ingresses.service";
-import { LoggerService } from "../logger/logger.service";
 import { MonthlyLunarCycleService } from "../monthly-lunar-cycle/monthly-lunar-cycle.service";
 import { PhasesService } from "../phases/phases.service";
 import { RetrogradesService } from "../retrogrades/retrogrades.service";
@@ -213,7 +214,11 @@ describe(ProgressiveService, () => {
         "my-label",
       );
 
-      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("my-label"));
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining("my-label"),
+        undefined,
+        expect.any(Object),
+      );
 
       warnSpy.mockRestore();
     });

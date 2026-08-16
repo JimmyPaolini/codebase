@@ -53,6 +53,7 @@ selection guidance.
 
 - **[lexico-components](packages/lexico-components)**: Shared React component library (shadcn/ui, Radix UI)
 - **[lexico-entities](packages/lexico-entities)**: Shared TypeORM entities and GraphQL types package
+- **[logger](packages/logger)**: Shared pino-backed NestJS `LoggerService` and `LoggerModule`
 
 ### Tools
 
@@ -307,6 +308,7 @@ PR description template:
 | `lexico-components` | Shared React/shadcn component library |
 | `lexico-entities` | Shared TypeORM entities and GraphQL types |
 | `lexico-ingestion` | Data ingestion scripts for Lexico |
+| `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
 | `codometer` | Code statistics measurement CLI and the configuration package it reads |
 | `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
 | `no-release` | Escape hatch: suppress semantic-release for any commit type |
@@ -417,7 +419,7 @@ When a file nears 512 lines, split it along the module file suffixes (`*.types.t
 
 ### Formatting and Ordering
 
-Formatting is not a judgement call — `analyze-code --configuration=write` produces the canonical result. Write code in the shape below so the first pass is a no-op.
+Formatting is not a judgement call — `lint-codebase --configuration=write` produces the canonical result. Write code in the shape below so the first pass is a no-op.
 
 - **`oxfmt` is the formatter** (not prettier): 80-column print width, 2-space indent, double quotes, semicolons, trailing commas everywhere, LF endings, one JSX attribute per line.
 - **Import groups** (`perfectionist/sort-imports`): builtin → external → internal (`@codebase/*`) → parent → sibling → index → type, with exactly one blank line between groups and natural alphabetical order inside each group.

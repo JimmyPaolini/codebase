@@ -9,7 +9,8 @@ import {
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
-import { LoggerService } from "../logger/logger.service";
+import { LoggerService } from "@codebase/logger";
+
 import { OutputJsonService } from "../output-json/output-json.service";
 import { OutputMarkdownService } from "../output-markdown/output-markdown.service";
 

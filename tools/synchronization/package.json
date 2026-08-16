@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@codebase/logger": "workspace:*",
     "@conformetry/configuration": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
@@ -7,7 +8,6 @@
     "json5": "catalog:",
     "lodash": "catalog:",
     "nest-commander": "catalog:",
-    "pino": "catalog:",
     "reflect-metadata": "catalog:",
     "zod": "catalog:"
   },
