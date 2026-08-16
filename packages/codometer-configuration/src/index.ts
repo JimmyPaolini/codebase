@@ -21,6 +21,7 @@ export type {
   CodometerPythonConfiguration,
   JavascriptStatistics,
   JsonStatistics,
+  JupyterStatistics,
   LoadConfigurationArguments,
   MarkdownAnchorHelpers,
   MarkdownStatistics,

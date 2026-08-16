@@ -10,6 +10,8 @@ export type {
 export { DiscoveryModule } from "./modules/discovery/discovery.module";
 export { DiscoveryService } from "./modules/discovery/discovery.service";
 export type { DiscoveryResult } from "./modules/discovery/discovery.types";
+export { JupyterModule } from "./modules/jupyter/jupyter.module";
+export { JupyterService } from "./modules/jupyter/jupyter.service";
 export { OutputJsonModule } from "./modules/output-json/output-json.module";
 export { OutputJsonService } from "./modules/output-json/output-json.service";
 export { OutputMarkdownModule } from "./modules/output-markdown/output-markdown.module";

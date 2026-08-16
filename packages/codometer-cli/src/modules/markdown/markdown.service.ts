@@ -92,26 +92,41 @@ export class MarkdownService {
 
   /** Analyze the given markdown files, resolved against the directory. */
   analyze({ markdownFiles, workingDirectory }: MarkdownInput): MarkdownResult {
-    const result: MarkdownResult = { ...EMPTY_MARKDOWN_RESULT };
+    const contents: string[] = [];
 
     for (const filePath of markdownFiles) {
       try {
-        const content = readFileSync(
-          path.resolve(workingDirectory, filePath),
-          "utf8",
+        contents.push(
+          readFileSync(path.resolve(workingDirectory, filePath), "utf8"),
         );
-        const tree = this.processor.parse(content);
-
-        result.files++;
-        result.lines += content.split("\n").length;
-
-        for (const child of tree.children) {
-          this.walk(child, result);
-        }
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
         this.logger.warn(`Markdown analysis skipped ${filePath}: ${message}`);
         continue;
+      }
+    }
+
+    return this.analyzeContents(contents);
+  }
+
+  /**
+   * Analyze markdown source text that never came from a file of its own.
+   *
+   * The seam the jupyter analyzer reads through: a notebook's markdown cells
+   * are documents without paths, and re-parsing them anywhere else would be a
+   * second implementation of this counting.
+   */
+  analyzeContents(contents: string[]): MarkdownResult {
+    const result: MarkdownResult = { ...EMPTY_MARKDOWN_RESULT };
+
+    for (const content of contents) {
+      const tree = this.processor.parse(content);
+
+      result.files++;
+      result.lines += content.split("\n").length;
+
+      for (const child of tree.children) {
+        this.walk(child, result);
       }
     }
 

@@ -3,6 +3,7 @@ import { Module } from "@nestjs/common";
 
 import { DiscoveryModule } from "../discovery/discovery.module";
 import { JsonModule } from "../json/json.module";
+import { JupyterModule } from "../jupyter/jupyter.module";
 import { LoggerModule } from "../logger/logger.module";
 import { MarkdownModule } from "../markdown/markdown.module";
 import { OutputJsonModule } from "../output-json/output-json.module";
@@ -24,6 +25,7 @@ import { CodometerService } from "./codometer.service";
     DiscoveryModule,
     LoggerModule,
     JsonModule,
+    JupyterModule,
     MarkdownModule,
     OutputJsonModule,
     OutputMarkdownModule,

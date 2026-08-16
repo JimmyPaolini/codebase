@@ -5,12 +5,18 @@ import { Injectable } from "@nestjs/common";
 
 import { DiscoveryService } from "../discovery/discovery.service";
 import { JsonService } from "../json/json.service";
+import { JupyterService } from "../jupyter/jupyter.service";
 import { MarkdownService } from "../markdown/markdown.service";
 import { PythonService } from "../python/python.service";
 import { TypescriptService } from "../typescript/typescript.service";
 
+import type { TypescriptResult } from "../typescript/typescript.types";
 import type { MeasureArguments } from "./codometer.types";
-import type { CodeStatisticsResult } from "@codometer/configuration";
+import type {
+  CodeStatisticsResult,
+  JavascriptStatistics,
+  TypescriptStatistics,
+} from "@codometer/configuration";
 
 /**
  * Aggregates discovery, TypeScript, and Python analysis results into a single report.
@@ -25,6 +31,7 @@ export class CodometerService {
     private readonly pythonService: PythonService,
     private readonly jsonService: JsonService,
     private readonly markdownService: MarkdownService,
+    private readonly jupyterService: JupyterService,
   ) {}
 
   // 🔐 Private Fields
@@ -32,6 +39,42 @@ export class CodometerService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /** Project the TypeScript analyzer's counters onto the JavaScript group. */
+  private buildJavascriptStatistics(
+    typescriptStats: TypescriptResult,
+  ): JavascriptStatistics {
+    return {
+      asyncFunctions: typescriptStats.asyncFunctions,
+      classes: typescriptStats.classes,
+      commentLines: typescriptStats.commentLines,
+      comments: typescriptStats.comments,
+      constants: typescriptStats.constants,
+      exported: typescriptStats.exported,
+      externalPackages: typescriptStats.externalPackages.size,
+      files: typescriptStats.jsFiles,
+      functions: typescriptStats.functions,
+      imports: typescriptStats.imports,
+      methods: typescriptStats.methods,
+      syncFunctions: typescriptStats.syncFunctions,
+      testFiles: typescriptStats.testFiles,
+      todos: typescriptStats.todos,
+    };
+  }
+
+  /** Project the TypeScript analyzer's counters onto the TypeScript group. */
+  private buildTypescriptStatistics(
+    typescriptStats: TypescriptResult,
+  ): TypescriptStatistics {
+    return {
+      decorators: typescriptStats.decorators,
+      docComments: typescriptStats.docComments,
+      enums: typescriptStats.enums,
+      files: typescriptStats.tsFiles,
+      genericDeclarations: typescriptStats.genericDeclarations,
+      interfaces: typescriptStats.interfaces,
+    };
+  }
 
   /**
    * Count the unique folders represented by the tracked files.
@@ -98,6 +141,11 @@ export class CodometerService {
       markdownFiles: discoveredFiles.markdownFiles,
       workingDirectory: directory,
     });
+    const jupyterStatsResult = this.jupyterService.analyze({
+      notebookFiles: discoveredFiles.notebookFiles,
+      pythonCommand: args.configuration.python.command,
+      workingDirectory: directory,
+    });
     const repoBytes = this.getRepositoryBytes(
       discoveredFiles.trackedFiles,
       directory,
@@ -106,73 +154,19 @@ export class CodometerService {
 
     return {
       folders: folderCount,
-      javascript: {
-        asyncFunctions: typescriptStats.asyncFunctions,
-        classes: typescriptStats.classes,
-        commentLines: typescriptStats.commentLines,
-        comments: typescriptStats.comments,
-        constants: typescriptStats.constants,
-        exported: typescriptStats.exported,
-        externalPackages: typescriptStats.externalPackages.size,
-        files: typescriptStats.jsFiles,
-        functions: typescriptStats.functions,
-        imports: typescriptStats.imports,
-        methods: typescriptStats.methods,
-        syncFunctions: typescriptStats.syncFunctions,
-        testFiles: typescriptStats.testFiles,
-        todos: typescriptStats.todos,
-      },
-      json: {
-        arrays: jsonStatsResult.arrays,
-        booleans: jsonStatsResult.booleans,
-        files: jsonStatsResult.files,
-        items: jsonStatsResult.items,
-        lines: jsonStatsResult.lines,
-        maxDepth: jsonStatsResult.maxDepth,
-        nulls: jsonStatsResult.nulls,
-        numbers: jsonStatsResult.numbers,
-        objects: jsonStatsResult.objects,
-        properties: jsonStatsResult.properties,
-        strings: jsonStatsResult.strings,
-        totalNodes: jsonStatsResult.totalNodes,
-      },
-      linesOfCode: typescriptStats.lines + pythonStatsResult.lines,
-      markdown: {
-        blockQuotes: markdownStatsResult.blockQuotes,
-        codeBlocks: markdownStatsResult.codeBlocks,
-        files: markdownStatsResult.files,
-        headingLevel1: markdownStatsResult.headingLevel1,
-        headingLevel2: markdownStatsResult.headingLevel2,
-        headingLevel3: markdownStatsResult.headingLevel3,
-        headingLevel4: markdownStatsResult.headingLevel4,
-        headingLevel5: markdownStatsResult.headingLevel5,
-        headingLevel6: markdownStatsResult.headingLevel6,
-        images: markdownStatsResult.images,
-        inlineCode: markdownStatsResult.inlineCode,
-        lines: markdownStatsResult.lines,
-        links: markdownStatsResult.links,
-        listItems: markdownStatsResult.listItems,
-        lists: markdownStatsResult.lists,
-        paragraphs: markdownStatsResult.paragraphs,
-        tableRows: markdownStatsResult.tableRows,
-        tables: markdownStatsResult.tables,
-        taskListItems: markdownStatsResult.taskListItems,
-        thematicBreaks: markdownStatsResult.thematicBreaks,
-      },
-      python: {
-        classes: pythonStatsResult.classes,
-        commentLines: pythonStatsResult.commentLines,
-        comments: pythonStatsResult.comments,
-        constants: pythonStatsResult.constants,
-        decorators: pythonStatsResult.decorators,
-        docstringLines: pythonStatsResult.docstringLines,
-        docstrings: pythonStatsResult.docstrings,
-        files: pythonStatsResult.files,
-        functions: pythonStatsResult.functions,
-        imports: pythonStatsResult.imports,
-        lines: pythonStatsResult.lines,
-        protocols: pythonStatsResult.protocols,
-      },
+      javascript: this.buildJavascriptStatistics(typescriptStats),
+      // The JSON, Jupyter, markdown, and Python analyzers already report
+      // exactly the shape their group declares, so nothing is projected.
+      json: { ...jsonStatsResult },
+      jupyter: { ...jupyterStatsResult },
+      // Notebook code is source too: its lines are counted once here, and the
+      // cells they came from are never handed to the standalone analyzers.
+      linesOfCode:
+        typescriptStats.lines +
+        pythonStatsResult.lines +
+        jupyterStatsResult.codeLines,
+      markdown: { ...markdownStatsResult },
+      python: { ...pythonStatsResult },
       // Rounded to a whole MiB on purpose. At one decimal place the total sat
       // 7 KiB from a rounding boundary, so an ordinary commit flipped the badge
       // and CI disagreed with whichever machine wrote it last.
@@ -181,14 +175,7 @@ export class CodometerService {
         typescriptStats.tsFiles +
         typescriptStats.jsFiles +
         pythonStatsResult.files,
-      typescript: {
-        decorators: typescriptStats.decorators,
-        docComments: typescriptStats.docComments,
-        enums: typescriptStats.enums,
-        files: typescriptStats.tsFiles,
-        genericDeclarations: typescriptStats.genericDeclarations,
-        interfaces: typescriptStats.interfaces,
-      },
+      typescript: this.buildTypescriptStatistics(typescriptStats),
     };
   }
 }

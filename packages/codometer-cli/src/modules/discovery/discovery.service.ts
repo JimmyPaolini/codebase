@@ -8,6 +8,7 @@ import {
   JS_EXTENSIONS,
   JSON_EXTENSIONS,
   MARKDOWN_EXTENSIONS,
+  NOTEBOOK_EXTENSIONS,
   TEST_FILE_REGEX,
   TS_EXTENSIONS,
 } from "./discovery.constants";
@@ -73,6 +74,9 @@ export class DiscoveryService {
       ),
       markdownFiles: trackedFiles.filter((filePath) =>
         MARKDOWN_EXTENSIONS.has(path.extname(filePath).toLowerCase()),
+      ),
+      notebookFiles: trackedFiles.filter((filePath) =>
+        NOTEBOOK_EXTENSIONS.has(path.extname(filePath).toLowerCase()),
       ),
       pyFiles: trackedFiles.filter(
         (filePath) => path.extname(filePath) === ".py",

@@ -7,6 +7,13 @@ export interface AnalyzePythonArguments {
   workingDirectory: string;
 }
 
+/** Arguments accepted when analyzing Python source text without files. */
+export interface AnalyzePythonContentsArguments {
+  command: string;
+  contents: string[];
+  workingDirectory: string;
+}
+
 /**
  * Aggregated statistics produced by the Python analyzer.
  */

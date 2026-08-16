@@ -9,6 +9,7 @@ import { environmentSchema } from "./constants";
 import { CodometerModule } from "./modules/codometer/codometer.module";
 import { DiscoveryModule } from "./modules/discovery/discovery.module";
 import { JsonModule } from "./modules/json/json.module";
+import { JupyterModule } from "./modules/jupyter/jupyter.module";
 import { LoggerModule } from "./modules/logger/logger.module";
 import { MarkdownModule } from "./modules/markdown/markdown.module";
 import { OutputJsonModule } from "./modules/output-json/output-json.module";
@@ -33,6 +34,7 @@ import { TypescriptModule } from "./modules/typescript/typescript.module";
     ConfigurationModule,
     DiscoveryModule,
     JsonModule,
+    JupyterModule,
     MarkdownModule,
     OutputJsonModule,
     OutputMarkdownModule,

@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+
 import { Logger } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -175,5 +177,50 @@ describe(PythonService, () => {
     );
 
     loggerWarnSpy.mockRestore();
+  });
+
+  it("returns empty metrics for no source text", () => {
+    const result = service.analyzeContents({
+      command: "python3",
+      contents: [],
+      workingDirectory: "/repo",
+    });
+
+    expect(execSyncMock).not.toHaveBeenCalled();
+    expect(result.files).toBe(0);
+  });
+
+  it("stages source text as files and analyzes it from the measured directory", () => {
+    let workingDirectory = "";
+    let stagedPaths: string[] = [];
+    execSyncMock.mockImplementation((_command: string, options?: object) => {
+      // Narrowed rather than asserted: the mock declares the options as a bare
+      // object, and `in` is what turns that into the two fields read here.
+      if (options !== undefined && "cwd" in options && "input" in options) {
+        workingDirectory = String(options.cwd);
+        stagedPaths = String(options.input).split("\n");
+      }
+
+      return JSON.stringify({ ...EMPTY_PYTHON_RESULT, functions: 2 });
+    });
+
+    const result = service.analyzeContents({
+      command: "uv run python",
+      contents: ["def one():\n    return 1\n", "def two():\n    return 2\n"],
+      workingDirectory: "/repo",
+    });
+
+    // Staged outside the repository, but analyzed from inside it: a command
+    // like `uv run python` resolves its environment from the cwd.
+    expect(workingDirectory).toBe("/repo");
+    expect(stagedPaths).toHaveLength(2);
+
+    for (const stagedPath of stagedPaths) {
+      expect(stagedPath.endsWith(".py")).toBe(true);
+      // The staging directory is removed once the interpreter has run.
+      expect(existsSync(stagedPath)).toBe(false);
+    }
+
+    expect(result.functions).toBe(2);
   });
 });

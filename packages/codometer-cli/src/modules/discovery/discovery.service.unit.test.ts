@@ -84,6 +84,24 @@ describe(DiscoveryService, () => {
     ]);
   });
 
+  it("categorizes notebooks apart from plain JSON", () => {
+    execSyncMock.mockReturnValue(
+      Buffer.from(
+        ["src/explore.ipynb", "package.json", "README.md"].join("\n"),
+      ),
+    );
+
+    const result = service.discoverFiles({
+      exclude: [],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.notebookFiles).toStrictEqual(["src/explore.ipynb"]);
+    // A notebook is JSON on disk, but the jupyter analyzer takes it apart
+    // instead, so it must not also be counted as a plain JSON document.
+    expect(result.jsonFiles).toStrictEqual(["package.json"]);
+  });
+
   it("excludes every category's files with the configured globs", () => {
     execSyncMock.mockReturnValue(
       Buffer.from(

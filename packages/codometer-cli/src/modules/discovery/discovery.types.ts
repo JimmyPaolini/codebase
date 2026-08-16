@@ -11,6 +11,7 @@ export interface DiscoveryResult {
   jsFiles: string[];
   jsonFiles: string[];
   markdownFiles: string[];
+  notebookFiles: string[];
   pyFiles: string[];
   sourceFiles: string[];
   testFiles: string[];

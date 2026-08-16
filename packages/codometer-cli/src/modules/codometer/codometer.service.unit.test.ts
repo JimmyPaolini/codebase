@@ -6,6 +6,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { DiscoveryService } from "../discovery/discovery.service";
 import { JsonService } from "../json/json.service";
+import { JupyterService } from "../jupyter/jupyter.service";
 import { MarkdownService } from "../markdown/markdown.service";
 import { PythonService } from "../python/python.service";
 import { TypescriptService } from "../typescript/typescript.service";
@@ -24,6 +25,7 @@ describe(CodometerService, () => {
   let service: CodometerService;
   let discoveryService: DiscoveryService;
   let jsonService: JsonService;
+  let jupyterService: JupyterService;
   let markdownService: MarkdownService;
   let pythonService: PythonService;
   let typescriptService: TypescriptService;
@@ -34,6 +36,7 @@ describe(CodometerService, () => {
         CodometerService,
         DiscoveryService,
         JsonService,
+        JupyterService,
         MarkdownService,
         PythonService,
         TypescriptService,
@@ -48,12 +51,18 @@ describe(CodometerService, () => {
     jsonService = new JsonService();
     markdownService = new MarkdownService();
     pythonService = new PythonService();
+    jupyterService = new JupyterService(
+      jsonService,
+      markdownService,
+      pythonService,
+    );
     typescriptService = new TypescriptService();
 
     vi.spyOn(discoveryService, "discoverFiles").mockReturnValue({
       jsFiles: ["src/app.js"],
       jsonFiles: [],
       markdownFiles: ["docs/guide.md"],
+      notebookFiles: ["notebooks/explore.ipynb"],
       pyFiles: ["scripts/check.py"],
       sourceFiles: ["src/app.ts", "scripts/check.py"],
       testFiles: [],
@@ -110,6 +119,28 @@ describe(CodometerService, () => {
       taskListItems: 19,
       thematicBreaks: 20,
     });
+    vi.spyOn(jupyterService, "analyze").mockReturnValue({
+      cells: 7,
+      classes: 1,
+      codeBlocks: 2,
+      codeCells: 6,
+      codeLines: 40,
+      decorators: 3,
+      executedCells: 4,
+      files: 1,
+      functions: 5,
+      headings: 6,
+      images: 7,
+      imports: 8,
+      links: 9,
+      markdownCells: 1,
+      markdownLines: 10,
+      maxDepth: 11,
+      outputs: 12,
+      properties: 13,
+      rawCells: 0,
+      totalNodes: 14,
+    });
     vi.spyOn(typescriptService, "analyze").mockReturnValue({
       asyncFunctions: 9,
       blockComments: 1,
@@ -149,6 +180,7 @@ describe(CodometerService, () => {
       pythonService,
       jsonService,
       markdownService,
+      jupyterService,
     );
     const result = codometerService.measure({
       configuration,
@@ -192,7 +224,16 @@ describe(CodometerService, () => {
         result.python.functions,
     ).toBe(44);
     expect(result.javascript.imports + result.python.imports).toBe(27);
-    expect(result.linesOfCode).toBe(30);
+    expect(jupyterService.analyze).toHaveBeenCalledWith({
+      notebookFiles: ["notebooks/explore.ipynb"],
+      pythonCommand: "uv run python",
+      workingDirectory: "/repo",
+    });
+    expect(result.jupyter.cells).toBe(7);
+    expect(result.jupyter.codeCells).toBe(6);
+    expect(result.jupyter.markdownLines).toBe(10);
+    // Notebook code counts toward the repository total exactly once.
+    expect(result.linesOfCode).toBe(70);
     expect(result.sourceFiles).toBe(3);
   });
 });

@@ -85,6 +85,28 @@ describe(OutputMarkdownService, () => {
       strings: 29,
       totalNodes: 30,
     },
+    jupyter: {
+      cells: 71,
+      classes: 72,
+      codeBlocks: 73,
+      codeCells: 74,
+      codeLines: 75,
+      decorators: 76,
+      executedCells: 77,
+      files: 78,
+      functions: 79,
+      headings: 80,
+      images: 81,
+      imports: 82,
+      links: 83,
+      markdownCells: 84,
+      markdownLines: 85,
+      maxDepth: 86,
+      outputs: 87,
+      properties: 88,
+      rawCells: 89,
+      totalNodes: 90,
+    },
     linesOfCode: 31,
     markdown: {
       blockQuotes: 50,
@@ -182,10 +204,11 @@ describe(OutputMarkdownService, () => {
     const badgeCount = (block.match(/^!\[/gmu) ?? []).length;
     const measuredCount =
       Object.keys(sampleStatistics).length -
-      // The five grouped buckets are replaced by the counters they hold.
-      5 +
+      // The six grouped buckets are replaced by the counters they hold.
+      6 +
       Object.keys(sampleStatistics.javascript).length +
       Object.keys(sampleStatistics.json).length +
+      Object.keys(sampleStatistics.jupyter).length +
       Object.keys(sampleStatistics.markdown).length +
       Object.keys(sampleStatistics.python).length +
       Object.keys(sampleStatistics.typescript).length;

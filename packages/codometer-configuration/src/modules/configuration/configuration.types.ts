@@ -12,6 +12,7 @@ export interface CodeStatisticsResult {
   folders: number;
   javascript: JavascriptStatistics;
   json: JsonStatistics;
+  jupyter: JupyterStatistics;
   linesOfCode: number;
   markdown: MarkdownStatistics;
   python: PythonStatistics;
@@ -101,6 +102,37 @@ export interface JsonStatistics {
   objects: number;
   properties: number;
   strings: number;
+  totalNodes: number;
+}
+
+/**
+ * Statistics specific to Jupyter notebooks.
+ *
+ * A notebook is three languages in one file, so the counters come from three
+ * analyzers: the notebook document itself is JSON, its code cells are Python,
+ * and its markdown cells are prose. Cell and output counts are the notebook's
+ * own, belonging to no single language.
+ */
+export interface JupyterStatistics {
+  cells: number;
+  classes: number;
+  codeBlocks: number;
+  codeCells: number;
+  codeLines: number;
+  decorators: number;
+  executedCells: number;
+  files: number;
+  functions: number;
+  headings: number;
+  images: number;
+  imports: number;
+  links: number;
+  markdownCells: number;
+  markdownLines: number;
+  maxDepth: number;
+  outputs: number;
+  properties: number;
+  rawCells: number;
   totalNodes: number;
 }
 

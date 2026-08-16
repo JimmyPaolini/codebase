@@ -6,6 +6,10 @@ NestJS command-line application scaffold generated with `conformetry:nestjs-comm
 
 - It counts TypeScript, JavaScript, Python, JSON, and markdown files, and the
   constructs inside them, over the files `git ls-files` reports.
+- Jupyter notebooks are measured by composition rather than by a fourth parser:
+  the document is handed to the JSON analyzer, its code cells to the Python
+  analyzer, and its markdown cells to the markdown analyzer, leaving only cells,
+  outputs, and executions for the notebook analyzer itself to count.
 - It knows nothing about any particular repository. Which paths to skip, where
   the output goes, and how Python is reached all come from
   `@codometer/configuration`.

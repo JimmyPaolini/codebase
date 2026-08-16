@@ -173,4 +173,16 @@ describe(MarkdownService, () => {
     expect(result.files).toBe(0);
     expect(result.lines).toBe(0);
   });
+
+  it("analyzes markdown source text that came from no file", () => {
+    const result = service.analyzeContents([
+      "# Title\n\nA [link](https://example.com).\n",
+      "## Second\n",
+    ]);
+
+    expect(result.files).toBe(2);
+    expect(result.headingLevel1).toBe(1);
+    expect(result.headingLevel2).toBe(1);
+    expect(result.links).toBe(1);
+  });
 });
