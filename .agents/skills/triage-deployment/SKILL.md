@@ -210,7 +210,7 @@ Fix: Address the CRITICAL/HIGH finding in the Terraform config, or add a scoped 
 
 ---
 
-### 🧑‍🔧 Make Devcontainer
+### 🧑‍🔧 Make Codebase
 
 Triggered only when `.devcontainer/**` files change (or on manual dispatch). Each step is independent:
 
@@ -222,7 +222,7 @@ Source: [.vscode/extensions.json](../../../.vscode/extensions.json), [.devcontai
 
 Fix: Run `npx nx run codebase:sync-vscode-extensions` and commit the generated changes.
 
-#### 🔧 Docker Build — `devcontainers/ci@v0.3` (Make Devcontainer step)
+#### 🔧 Docker Build — `devcontainers/ci@v0.3` (Make Codebase step)
 
 Config: [.devcontainer/cloud/devcontainer.json](../../../.devcontainer/cloud/devcontainer.json)
 

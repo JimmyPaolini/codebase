@@ -1,8 +1,8 @@
 name: 👷 Make Projects
 
-# Everything this repository builds: the workspace projects, and the
-# devcontainer image. The devcontainer job is gated on a paths filter rather
-# than living in its own workflow, because `on.paths` cannot be scoped per job.
+# Builds every workspace project and measures its bundle. The devcontainer
+# image is built by its own workflow, gated on `.devcontainer/**` by
+# GitHub's native `on.paths`.
 
 on:
   push:
@@ -19,29 +19,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  detect-changes:
-    name: 🔍 Detect Changes
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    outputs:
-      devcontainer: ${{ steps.filter.outputs.devcontainer }}
-
-    steps:
-      - name: 📥 Checkout Repository
-        uses: actions/checkout@v7
-
-      - name: 🔍 Check Changes
-        id: filter
-        uses: dorny/paths-filter@v4
-        with:
-          # A push to main has no pull_request base; `base` pins the comparison
-          # so the filter resolves on both event types.
-          base: ${{ github.ref }}
-          filters: |
-            devcontainer:
-              - .devcontainer/**
-              - .github/workflows/make-projects.yml
-
   make-projects:
     name: 👷 Make Projects
     runs-on: ubuntu-latest
@@ -132,68 +109,3 @@ jobs:
                 body,
               });
             }
-
-  make-devcontainer:
-    name: 🧑‍🔧 Make Devcontainer
-    needs: detect-changes
-    if: needs.detect-changes.outputs.devcontainer == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - name: 📥 Checkout Repository
-        uses: actions/checkout@v7
-
-      # The VS Code extension sync check moved into the Lint Codebase gate.
-      - name: 🗂️ Setup Environment File
-        run: |
-          cp .env.default .env
-          echo "LOCAL_WORKSPACE_FOLDER=$GITHUB_WORKSPACE" >> .env
-
-      - name: 🔧 Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-
-      - name: 🔐 Login to GitHub Container Registry
-        uses: docker/login-action@v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 🐳 Make Devcontainer
-        uses: devcontainers/ci@v0.3
-        with:
-          configFile: .devcontainer/cloud/devcontainer.json
-          imageName: ghcr.io/jimmypaolini/codebase-devcontainer
-          cacheFrom: |
-            type=gha,scope=devcontainer
-            ghcr.io/jimmypaolini/codebase-devcontainer
-          push: filter
-          eventFilterForPush: |
-            push:
-              branches:
-                - main
-          env: |
-            CI=true
-            GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
-            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
-
-      - name: 🔬 Test Devcontainer
-        uses: devcontainers/ci@v0.3
-        with:
-          configFile: .devcontainer/cloud/devcontainer.json
-          imageName: ghcr.io/jimmypaolini/codebase-devcontainer
-          cacheFrom: |
-            type=gha,scope=devcontainer
-            ghcr.io/jimmypaolini/codebase-devcontainer
-          push: never
-          env: |
-            CI=true
-            GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
-            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
-          runCmd: |
-            bash .devcontainer/scripts/test-devcontainer.sh
