@@ -11,7 +11,7 @@
 <!-- CODE_STATISTICS_START -->
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-208126-22c55e?style=flat-square)
 ![Repo Size](https://img.shields.io/badge/Repo_Size-154_MiB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-600-4a4a4a?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-603-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-1134-3178c6?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-235-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-150-8b5cf6?style=flat-square)
