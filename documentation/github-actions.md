@@ -22,7 +22,7 @@ All workflows call this composite action after checkout. It provides:
 |gitleaks|brew install|Secret scanning tool|
 |Nx cache|actions/cache@v4|Restores/saves `.nx/cache` keyed on lockfile + SHA|
 |uv|astral-sh/setup-uv@v6|Python package manager with cache|
-|Python dependencies|uv sync|Installs affirmations Python deps from pyproject.toml|
+|Python dependencies|uv sync|Installs every uv workspace member from the root `uv.lock`|
 |Node.js dependencies|pnpm install --frozen-lockfile|Frozen lockfile install|
 
 **Usage in workflows:**

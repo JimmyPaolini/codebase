@@ -1,8 +1,9 @@
 #!/bin/bash
 # python.sh — Install uv and Python 3.14+.
 #
-# uv is the package/environment manager for the affirmations Python project.
-# It installs Python itself and manages virtual environments via `uv sync`.
+# uv is the package/environment manager for the Python projects in the uv
+# workspace. It installs Python itself and manages the shared virtual
+# environment at the repository root via `uv sync`.
 # Python 3.14+ is required for match/case syntax and tomllib used across the project.
 #
 # Depends on: brew.sh (brew_install_or_check must be defined)
