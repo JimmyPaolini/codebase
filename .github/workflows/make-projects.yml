@@ -19,6 +19,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # A job of its own because GitHub has no per-job `paths` filter, and the two
+  # things this workflow builds are independent: gating the devcontainer from
+  # inside `make-projects` would either serialize a 12-minute image build behind
+  # the project build or make it inherit that job's failures. Deciding here
+  # keeps them parallel and lets the devcontainer job report a real skip rather
+  # than a pass it did no work for. Costs one runner for ~13s.
   detect-changes:
     name: 🔍 Detect Changes
     runs-on: ubuntu-latest
@@ -30,13 +36,14 @@ jobs:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v7
 
+      # No `base`: the action already picks the right comparison per event —
+      # the pull request's full diff from the API, or a push's before-SHA. An
+      # explicit `base` is ignored outright on pull requests (with a warning)
+      # and would compare main against itself on a push.
       - name: 🔍 Check Changes
         id: filter
         uses: dorny/paths-filter@v4
         with:
-          # A push to main has no pull_request base; `base` pins the comparison
-          # so the filter resolves on both event types.
-          base: ${{ github.ref }}
           filters: |
             devcontainer:
               - .devcontainer/**
