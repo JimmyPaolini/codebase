@@ -241,11 +241,63 @@ describe(ConfigurationService, () => {
     expect(configuration.statistics).toStrictEqual([
       {
         color: DEFAULT_CUSTOM_STATISTIC_COLORS[0],
+        group: "conventions",
         label: "Services",
         patterns: ["**/*.service.ts"],
+        symbols: undefined,
       },
-      { color: "ff0000", label: "Modules", patterns: ["**/*.module.ts"] },
+      {
+        color: "ff0000",
+        group: "conventions",
+        label: "Modules",
+        patterns: ["**/*.module.ts"],
+        symbols: undefined,
+      },
     ]);
+  });
+
+  // Colors run per group, so a counter added to one group cannot recolor the
+  // badges of another and rewrite a report that had not otherwise changed.
+  it("starts the palette over for each group", () => {
+    const configuration = service.resolveConfiguration({
+      statistics: [
+        { label: "Services", patterns: ["**/*.service.ts"] },
+        { label: "Modules", patterns: ["**/*.module.ts"] },
+        {
+          group: "typescript",
+          label: "Classes",
+          symbols: { kinds: ["class"] },
+        },
+      ],
+    });
+
+    expect(
+      configuration.statistics.map((statistic) => statistic.color),
+    ).toStrictEqual([
+      DEFAULT_CUSTOM_STATISTIC_COLORS[0],
+      DEFAULT_CUSTOM_STATISTIC_COLORS[1],
+      DEFAULT_CUSTOM_STATISTIC_COLORS[0],
+    ]);
+  });
+
+  it("keeps a symbol counter's matcher and defaults its patterns to none", () => {
+    const configuration = service.resolveConfiguration({
+      statistics: [
+        {
+          group: "typescript",
+          label: "Static Methods",
+          symbols: { kinds: ["method"], modifiers: ["static"] },
+        },
+      ],
+    });
+
+    expect(configuration.statistics[0]).toStrictEqual({
+      color: DEFAULT_CUSTOM_STATISTIC_COLORS[0],
+      group: "typescript",
+      label: "Static Methods",
+      patterns: [],
+      symbols: { kinds: ["method"], modifiers: ["static"] },
+    });
   });
 
   it("cycles the palette so every counter keeps a stable color", () => {
@@ -272,6 +324,40 @@ describe(ConfigurationService, () => {
   it("rejects a counter with no patterns", async () => {
     const configurationPath = await writeConfiguration({
       statistics: [{ label: "Nothing", patterns: [] }],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(ZodError);
+  });
+
+  // Neither matcher means a permanent zero, which is worth failing over
+  // rather than rendering as though it had been measured.
+  it("rejects a counter that matches neither files nor symbols", async () => {
+    const configurationPath = await writeConfiguration({
+      statistics: [{ label: "Nothing" }],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(ZodError);
+  });
+
+  it("rejects a counter naming a group that is never rendered", async () => {
+    const configurationPath = await writeConfiguration({
+      statistics: [
+        { group: "notebooks", label: "Classes", patterns: ["**/*.ts"] },
+      ],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(ZodError);
+  });
+
+  it("rejects a symbol matcher asking for an unknown declaration kind", async () => {
+    const configurationPath = await writeConfiguration({
+      statistics: [{ label: "Sigils", symbols: { kinds: ["sigil"] } }],
     });
 
     await expect(

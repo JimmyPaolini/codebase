@@ -38,6 +38,16 @@ const codometerConfiguration: CodometerConfiguration = {
     { label: "Unit Tests", patterns: ["**/*.unit.test.ts"] },
     { label: "Integration Tests", patterns: ["**/*.integration.test.ts"] },
     { label: "End To End Tests", patterns: ["**/*.end-to-end.test.ts"] },
+    // Not a file-name counter but a symbol one, and rendered beside the
+    // built-in TypeScript counters rather than under Conventions. Every
+    // service here is an injected singleton, so a static method appearing
+    // anywhere is worth seeing in the report.
+    {
+      color: "166534",
+      group: "typescript",
+      label: "Static Methods",
+      symbols: { kinds: ["method"], modifiers: ["static"] },
+    },
   ],
 };
 

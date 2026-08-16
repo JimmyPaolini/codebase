@@ -10,9 +10,11 @@ NestJS command-line application scaffold generated with `conformetry:nestjs-comm
   the document is handed to the JSON analyzer, its code cells to the Python
   analyzer, and its markdown cells to the markdown analyzer, leaving only cells,
   outputs, and executions for the notebook analyzer itself to count.
-- Files named by convention — `*.service.ts`, `*.unit.test.ts` — are counted
-  through the `statistics` option, since what a suffix means is a property of
-  the repository rather than of a language.
+- Conventions a repository holds itself to are counted through the `statistics`
+  option, since what a `*.service.ts` means, or whether a static method is worth
+  watching, is a property of the repository rather than of a language. A counter
+  matches files by path or declarations by shape, and names the badge group it
+  is rendered into.
 - It knows nothing about any particular repository. Which paths to skip, where
   the output goes, and how Python is reached all come from
   `@codometer/configuration`.

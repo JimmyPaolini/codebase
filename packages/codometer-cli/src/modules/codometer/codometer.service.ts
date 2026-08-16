@@ -122,6 +122,9 @@ export class CodometerService {
     const languages = this.languagesService.analyze({
       configuration: args.configuration,
       discoveredFiles,
+      symbolCounters: this.customStatisticsService.buildSymbolCounters(
+        args.configuration.statistics,
+      ),
       workingDirectory: directory,
     });
     const repoBytes = this.getRepositoryBytes(
@@ -133,6 +136,7 @@ export class CodometerService {
       css: { ...languages.css },
       custom: this.customStatisticsService.analyze({
         statistics: args.configuration.statistics,
+        symbolCounts: languages.typescript.symbolCounts,
         trackedFiles: discoveredFiles.trackedFiles,
       }),
       folders: this.getFolderCount(discoveredFiles.trackedFiles),

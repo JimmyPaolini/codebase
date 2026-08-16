@@ -18,7 +18,12 @@ const configuration: ResolvedCodometerConfiguration = {
   output: { json: undefined, markdown: undefined },
   python: { command: "uv run python" },
   statistics: [
-    { color: "7c3aed", label: "Service Files", patterns: ["**/*.service.ts"] },
+    {
+      color: "7c3aed",
+      group: "conventions",
+      label: "Service Files",
+      patterns: ["**/*.service.ts"],
+    },
   ],
 };
 
@@ -54,6 +59,7 @@ function buildLanguageResults(): LanguageResults {
       externalPackages: new Set(["react"]),
       jsFiles: 1,
       lines: 19,
+      symbolCounts: {},
       tsFiles: 1,
     }),
   });
@@ -96,8 +102,14 @@ describe(CodometerService, () => {
     languagesService = createMock<LanguagesService>();
     vi.mocked(discoveryService.discoverFiles).mockReturnValue(discoveredFiles);
     vi.mocked(languagesService.analyze).mockReturnValue(buildLanguageResults());
+    vi.mocked(customStatisticsService.buildSymbolCounters).mockReturnValue([]);
     vi.mocked(customStatisticsService.analyze).mockReturnValue([
-      { color: "7c3aed", files: 3, label: "Service Files" },
+      {
+        color: "7c3aed",
+        count: 3,
+        group: "conventions",
+        label: "Service Files",
+      },
     ]);
   });
 
@@ -121,6 +133,7 @@ describe(CodometerService, () => {
     expect(languagesService.analyze).toHaveBeenCalledExactlyOnceWith({
       configuration,
       discoveredFiles,
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
   });
@@ -133,10 +146,16 @@ describe(CodometerService, () => {
 
     expect(customStatisticsService.analyze).toHaveBeenCalledExactlyOnceWith({
       statistics: configuration.statistics,
+      symbolCounts: {},
       trackedFiles: discoveredFiles.trackedFiles,
     });
     expect(result.custom).toStrictEqual([
-      { color: "7c3aed", files: 3, label: "Service Files" },
+      {
+        color: "7c3aed",
+        count: 3,
+        group: "conventions",
+        label: "Service Files",
+      },
     ]);
   });
 

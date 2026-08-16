@@ -80,13 +80,62 @@ statistics: [
 ],
 ```
 
-Each entry becomes one badge in a `Conventions` group, in the order it was
-configured. Globs are matched against repository-relative paths with
-`path.matchesGlob` over the same discovered files everything else measures, so
-exclusions apply. A file matching several of one entry's globs counts once.
-`color` is a shields.io hexadecimal triplet; entries that omit it take the next
-color from a built-in palette, cycling so a counter's color stays the same
-between runs. With no entries configured, the group is not rendered at all.
+Each entry becomes one badge, in the order it was configured. Globs are matched
+against repository-relative paths with `path.matchesGlob` over the same
+discovered files everything else measures, so exclusions apply. A file matching
+several of one entry's globs counts once. `color` is a shields.io hexadecimal
+triplet; entries that omit it take the next color from a built-in palette,
+cycling so a counter's color stays the same between runs.
+
+### Counting Declarations
+
+`symbols` counts declarations in TypeScript and JavaScript sources instead of
+files. It asks for one or more `kinds`, optionally narrowed to declarations
+carrying every named modifier:
+
+```ts
+statistics: [
+  {
+    group: "typescript",
+    label: "Static Methods",
+    symbols: { kinds: ["method"], modifiers: ["static"] },
+  },
+  { label: "Abstract Classes", symbols: { kinds: ["class"], modifiers: ["abstract"] } },
+],
+```
+
+`kinds` are `class`, `enum`, `function`, `getter`, `interface`, `method`,
+`property`, and `setter`. `modifiers` are `abstract`, `async`, `export`,
+`override`, `private`, `protected`, `public`, `readonly`, and `static`.
+
+Both are read literally, from the syntax. A callable written as a class member
+is a `method`; one written anywhere else is a `function`, arrow functions
+included. A class field holding an arrow function is a `property`, and the
+arrow carries none of the field's modifiers — so a `static build = () => {}` is
+found by asking for static properties, not static methods. `public` matches
+members annotated `public`, not members that are public by omission, and
+`private` does not match a `#name` field, which carries no modifier at all.
+
+A symbol counter may also carry `patterns`, which then narrows _which files are
+searched_ rather than being what is counted — `patterns: ["packages/**"]` with
+a `symbols` matcher counts declarations in `packages/`. Counting happens during
+the walk the TypeScript analyzer already makes, so any number of these costs
+one pass over the sources.
+
+An entry with neither `patterns` nor `symbols` is rejected rather than reported
+as a permanent zero.
+
+### Where A Counter Renders
+
+`group` names the badge group a counter is rendered into, after that group's
+built-in badges. It defaults to `conventions` — a group that exists only for
+these counters and is omitted entirely when none belong to it. Any rendered
+group may be named instead: `css`, `hcl`, `json`, `jupyter`, `markdown`,
+`python`, `repository`, `shell`, `sql`, `toml`, `typescript`, or `yaml`. A name
+outside that set fails the configuration rather than rendering nowhere.
+
+The default palette runs per group, so adding a counter to one group never
+recolors the badges of another.
 
 ## Markdown Output
 

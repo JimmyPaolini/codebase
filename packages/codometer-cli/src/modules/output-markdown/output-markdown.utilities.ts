@@ -1,6 +1,9 @@
 // 🛠️ Utilities
 
-import type { CodeStatisticsResult } from "@codometer/configuration";
+import type {
+  CodeStatisticsResult,
+  CodometerStatisticGroup,
+} from "@codometer/configuration";
 
 /**
  * Build a single shields.io badge markdown image.
@@ -27,21 +30,42 @@ export function buildCssGroup(statistics: CodeStatisticsResult): string {
     buildBadge("CSS Media Queries", css.mediaQueries, "ea580c"),
     buildBadge("CSS Custom Properties", css.customProperties, "16a34a"),
     buildBadge("CSS Comments", css.comments, "64748b"),
+    ...buildCustomBadges(statistics, "css"),
   ]);
 }
 
-/** Renders the Custom badge group. */
+/**
+ * Render the badges of every configured counter belonging to one group.
+ *
+ * Appended after a group's built-in badges rather than interleaved with them,
+ * so the counters a repository added are visibly its own and the built-in
+ * order stays the same as every other repository's.
+ */
+export function buildCustomBadges(
+  statistics: CodeStatisticsResult,
+  group: CodometerStatisticGroup,
+): string[] {
+  return statistics.custom
+    .filter((statistic) => statistic.group === group)
+    .map((statistic) =>
+      buildBadge(statistic.label, statistic.count, statistic.color),
+    );
+}
+
+/**
+ * Renders the Conventions badge group.
+ *
+ * The one group that exists only for configured counters, and the only one
+ * that disappears when none belong to it.
+ */
 export function buildCustomGroup(statistics: CodeStatisticsResult): string {
-  if (statistics.custom.length === 0) {
+  const badges = buildCustomBadges(statistics, "conventions");
+
+  if (badges.length === 0) {
     return "";
   }
 
-  return buildGroup(
-    "Conventions",
-    statistics.custom.map((statistic) =>
-      buildBadge(statistic.label, statistic.files, statistic.color),
-    ),
-  );
+  return buildGroup("Conventions", badges);
 }
 
 /**
@@ -72,6 +96,7 @@ export function buildHclGroup(statistics: CodeStatisticsResult): string {
     buildBadge("HCL Attributes", hcl.attributes, "0ea5e9"),
     buildBadge("HCL Interpolations", hcl.interpolations, "db2777"),
     buildBadge("HCL Comments", hcl.comments, "64748b"),
+    ...buildCustomBadges(statistics, "hcl"),
   ]);
 }
 
@@ -92,6 +117,7 @@ export function buildJsonGroup(statistics: CodeStatisticsResult): string {
     buildBadge("JSON Items", json.items, "475569"),
     buildBadge("JSON Nodes", json.totalNodes, "dc2626"),
     buildBadge("JSON Max Depth", json.maxDepth, "ea580c"),
+    ...buildCustomBadges(statistics, "json"),
   ]);
 }
 
@@ -120,6 +146,7 @@ export function buildJupyterGroup(statistics: CodeStatisticsResult): string {
     buildBadge("Notebook Properties", nb.properties, "ca8a04"),
     buildBadge("Notebook Nodes", nb.totalNodes, "a16207"),
     buildBadge("Notebook Max Depth", nb.maxDepth, "ea580c"),
+    ...buildCustomBadges(statistics, "jupyter"),
   ]);
 }
 
@@ -148,6 +175,7 @@ export function buildMarkdownGroup(statistics: CodeStatisticsResult): string {
     buildBadge("Inline Code", md.inlineCode, "ef4444"),
     buildBadge("Block Quotes", md.blockQuotes, "ca8a04"),
     buildBadge("Thematic Breaks", md.thematicBreaks, "a16207"),
+    ...buildCustomBadges(statistics, "markdown"),
   ]);
 }
 
@@ -168,6 +196,7 @@ export function buildPythonGroup(statistics: CodeStatisticsResult): string {
     buildBadge("Docstring Lines", py.docstringLines, "818cf8"),
     buildBadge("Python Comments", py.comments, "64748b"),
     buildBadge("Python Comment Lines", py.commentLines, "475569"),
+    ...buildCustomBadges(statistics, "python"),
   ]);
 }
 
@@ -178,6 +207,7 @@ export function buildRepositoryGroup(statistics: CodeStatisticsResult): string {
     buildBadge("Repo Size", `${statistics.repoSizeMiB} MiB`, "6b7280"),
     buildBadge("Folders", statistics.folders, "4a4a4a"),
     buildBadge("Source Files", statistics.sourceFiles, "3178c6"),
+    ...buildCustomBadges(statistics, "repository"),
   ]);
 }
 
@@ -197,6 +227,7 @@ export function buildShellGroup(statistics: CodeStatisticsResult): string {
     buildBadge("Shebangs", shell.shebangs, "6b7280"),
     buildBadge("Shell Comments", shell.comments, "64748b"),
     buildBadge("Shell Comment Lines", shell.commentLines, "475569"),
+    ...buildCustomBadges(statistics, "shell"),
   ]);
 }
 
@@ -216,6 +247,7 @@ export function buildSqlGroup(statistics: CodeStatisticsResult): string {
     buildBadge("SQL Joins", sql.joins, "8b5cf6"),
     buildBadge("SQL CTEs", sql.commonTableExpressions, "059669"),
     buildBadge("SQL Comments", sql.comments, "64748b"),
+    ...buildCustomBadges(statistics, "sql"),
   ]);
 }
 
@@ -231,6 +263,7 @@ export function buildTomlGroup(statistics: CodeStatisticsResult): string {
     buildBadge("TOML Keys", toml.keys, "0284c7"),
     buildBadge("TOML Arrays", toml.arrays, "16a34a"),
     buildBadge("TOML Comments", toml.comments, "64748b"),
+    ...buildCustomBadges(statistics, "toml"),
   ]);
 }
 
@@ -259,6 +292,7 @@ export function buildTypescriptGroup(statistics: CodeStatisticsResult): string {
     buildBadge("Comments", js.comments, "64748b"),
     buildBadge("Comment Lines", js.commentLines, "475569"),
     buildBadge("TODO Comments", js.todos, "ca8a04"),
+    ...buildCustomBadges(statistics, "typescript"),
   ]);
 }
 
@@ -278,6 +312,7 @@ export function buildYamlGroup(statistics: CodeStatisticsResult): string {
     buildBadge("YAML Aliases", yaml.aliases, "10b981"),
     buildBadge("YAML Comments", yaml.comments, "64748b"),
     buildBadge("YAML Max Depth", yaml.maxDepth, "ea580c"),
+    ...buildCustomBadges(statistics, "yaml"),
   ]);
 }
 

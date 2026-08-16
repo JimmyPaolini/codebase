@@ -2,15 +2,21 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
+import type { TypescriptSymbolCounter } from "../typescript/typescript.types";
 import type { CustomStatisticsInput } from "./custom-statistics.types";
 import type { CustomStatisticResult } from "@codometer/configuration";
 
 /**
- * Counts the files a repository names by convention.
+ * Counts the conventions a repository holds itself to.
  *
  * The languages a repository is written in are the same everywhere; what a
- * `*.service.ts` or a `*.unit.test.ts` means is not, which is why these
- * counters come from the configuration rather than from this package.
+ * `*.service.ts` means, or whether a static method is something to keep an
+ * eye on, is not — which is why these counters come from the configuration
+ * rather than from this package.
+ *
+ * A counter measures files by path or declarations by shape. The file half is
+ * done here; the declaration half is tallied by the TypeScript analyzer during
+ * the walk it already makes, and arrives here as counts to be labelled.
  */
 @Injectable()
 export class CustomStatisticsService {
@@ -42,12 +48,41 @@ export class CustomStatisticsService {
   /** Count every configured statistic over the discovered files. */
   analyze({
     statistics,
+    symbolCounts,
     trackedFiles,
   }: CustomStatisticsInput): CustomStatisticResult[] {
     return statistics.map((statistic) => ({
       color: statistic.color,
-      files: this.countMatches(trackedFiles, statistic.patterns),
+      count:
+        statistic.symbols === undefined
+          ? this.countMatches(trackedFiles, statistic.patterns)
+          : (symbolCounts[statistic.label] ?? 0),
+      group: statistic.group,
       label: statistic.label,
     }));
+  }
+
+  /**
+   * Pick out the counters the TypeScript analyzer has to tally.
+   *
+   * Handed to that analyzer rather than parsed again here: it already walks
+   * every source file, and a second walk would double the slowest part of a
+   * run to learn what the first one passed straight over.
+   */
+  buildSymbolCounters(
+    statistics: CustomStatisticsInput["statistics"],
+  ): TypescriptSymbolCounter[] {
+    return statistics.flatMap((statistic) =>
+      statistic.symbols === undefined
+        ? []
+        : [
+            {
+              kinds: statistic.symbols.kinds,
+              label: statistic.label,
+              modifiers: statistic.symbols.modifiers ?? [],
+              patterns: statistic.patterns,
+            },
+          ],
+    );
   }
 }

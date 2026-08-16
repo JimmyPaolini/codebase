@@ -11,6 +11,7 @@ import {
   codometerConfigurationSchema,
   CONFIGURATION_FILE_NAMES,
   DEFAULT_CUSTOM_STATISTIC_COLORS,
+  DEFAULT_CUSTOM_STATISTIC_GROUP,
   DEFAULT_EXCLUDE_GLOBS,
   DEFAULT_JSON_INDENTATION,
   DEFAULT_MARKDOWN_END_MARKER,
@@ -32,6 +33,7 @@ import type {
   ResolvedCodometerJsonOutputConfiguration,
   ResolvedCodometerMarkdownOutputConfiguration,
 } from "./configuration.types";
+import type { CodometerStatisticGroup } from "./statistics.types";
 
 /**
  * Loads, validates, and normalizes codometer configuration files.
@@ -178,20 +180,36 @@ export class ConfigurationService {
     return repositoryRelativePath;
   }
 
-  /** Gives every configured counter a color, cycling the default palette. */
+  /**
+   * Gives every configured counter a color and a group.
+   *
+   * Colors are handed out by position within a group rather than within the
+   * whole list, so adding a counter to one group does not recolor the badges
+   * of another — which would rewrite a report that had not otherwise changed.
+   */
   private resolveCustomStatistics(
     statistics: CodometerCustomStatistic[] | undefined,
   ): ResolvedCodometerCustomStatistic[] {
-    return (statistics ?? []).map((statistic, index) => ({
-      color:
-        statistic.color ??
-        DEFAULT_CUSTOM_STATISTIC_COLORS[
-          index % DEFAULT_CUSTOM_STATISTIC_COLORS.length
-        ] ??
-        "7c3aed",
-      label: statistic.label,
-      patterns: statistic.patterns,
-    }));
+    const positionsByGroup = new Map<CodometerStatisticGroup, number>();
+
+    return (statistics ?? []).map((statistic) => {
+      const group = statistic.group ?? DEFAULT_CUSTOM_STATISTIC_GROUP;
+      const position = positionsByGroup.get(group) ?? 0;
+      positionsByGroup.set(group, position + 1);
+
+      return {
+        color:
+          statistic.color ??
+          DEFAULT_CUSTOM_STATISTIC_COLORS[
+            position % DEFAULT_CUSTOM_STATISTIC_COLORS.length
+          ] ??
+          "7c3aed",
+        group,
+        label: statistic.label,
+        patterns: statistic.patterns ?? [],
+        symbols: statistic.symbols,
+      };
+    });
   }
 
   /** Applies defaults to the JSON output destination, if one was named. */

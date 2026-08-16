@@ -8,10 +8,19 @@ import {
   DOC_TAG_REGEX,
   EMPTY_TYPESCRIPT_RESULT,
   JS_EXTENSIONS,
+  SYMBOL_KIND_BY_SYNTAX_KIND,
+  SYMBOL_MODIFIER_BY_SYNTAX_KIND,
   TODO_REGEX,
 } from "./typescript.constants";
 
-import type { TypescriptInput, TypescriptResult } from "./typescript.types";
+import type {
+  AnalyzeTypescriptFileArguments,
+  TypescriptInput,
+  TypescriptResult,
+  TypescriptSymbolCounter,
+  TypescriptWalkContext,
+} from "./typescript.types";
+import type { CodometerSymbolModifier } from "@codometer/configuration";
 
 /** Walks TypeScript and JavaScript ASTs to collect code metrics. */
 @Injectable()
@@ -64,6 +73,27 @@ export class TypescriptService {
 
   // 🔏 Private Methods
 
+  /** Read one source file, count its lines and comments, and walk its AST. */
+  private analyzeFile(args: AnalyzeTypescriptFileArguments): void {
+    const { counters, filePath, stats, workingDirectory } = args;
+    const content = readFileSync(
+      path.resolve(workingDirectory, filePath),
+      "utf8",
+    );
+    const sourceFile = tsCompiler.createSourceFile(
+      filePath,
+      content,
+      tsCompiler.ScriptTarget.Latest,
+      true,
+      this.getScriptKind(filePath),
+    );
+
+    stats.lines += content.split(/\r?\n/).length;
+    stats.todos += (content.match(TODO_REGEX) ?? []).length;
+    this.scanComments(content, stats);
+    this.walkNode(sourceFile, { counters, insideClass: false, stats });
+  }
+
   /** Count a discovered comment and update the appropriate metrics. */
   private countComment(commentText: string, stats: TypescriptResult): void {
     stats.comments++;
@@ -92,6 +122,67 @@ export class TypescriptService {
     stats.lineComments++;
   }
 
+  /**
+   * Tally every configured counter that claims this declaration.
+   *
+   * A declaration is claimed when its kind is one the counter asked for and
+   * it carries every modifier the counter requires; a counter naming no
+   * modifiers asks for the kind alone.
+   */
+  private countSymbols(
+    node: tsCompiler.Node,
+    context: TypescriptWalkContext,
+  ): void {
+    const kind = SYMBOL_KIND_BY_SYNTAX_KIND[node.kind];
+
+    if (kind === undefined || context.counters.length === 0) {
+      return;
+    }
+
+    const modifiers = this.getSymbolModifiers(node);
+
+    for (const counter of context.counters) {
+      const claimed =
+        counter.kinds.includes(kind) &&
+        counter.modifiers.every((modifier) => modifiers.has(modifier));
+
+      if (claimed) {
+        context.stats.symbolCounts[counter.label] =
+          (context.stats.symbolCounts[counter.label] ?? 0) + 1;
+      }
+    }
+  }
+
+  /**
+   * Build the zeroed result every file's counters accumulate into.
+   *
+   * Every configured counter is seeded, so one that matches nothing reports a
+   * zero rather than going missing from the report entirely.
+   */
+  private createEmptyResult(input: TypescriptInput): TypescriptResult {
+    const { sourceFiles } = input;
+
+    return {
+      ...EMPTY_TYPESCRIPT_RESULT,
+      docTags: { ...EMPTY_TYPESCRIPT_RESULT.docTags },
+      externalPackages: new Set<string>(),
+      jsFiles: sourceFiles.filter((filePath) =>
+        JS_EXTENSIONS.has(path.extname(filePath)),
+      ).length,
+      symbolCounts: Object.fromEntries(
+        input.symbolCounters.map((counter) => [counter.label, 0]),
+      ),
+      testFiles: sourceFiles.filter((filePath) =>
+        /\.(test|spec|unit\.test|integration\.test|end-to-end\.test)\.[cm]?[jt]sx?$/.test(
+          filePath,
+        ),
+      ).length,
+      tsFiles: sourceFiles.filter(
+        (filePath) => !JS_EXTENSIONS.has(path.extname(filePath)),
+      ).length,
+    };
+  }
+
   /** Dispatches non-class AST nodes to the appropriate metric-collection handler. */
   private dispatchNode(
     node: tsCompiler.Node,
@@ -99,6 +190,53 @@ export class TypescriptService {
     insideClass: boolean,
   ): void {
     this.kindDispatch[node.kind]?.(node, stats, insideClass);
+  }
+
+  /** Narrow the configured counters to the ones that search this file. */
+  private getCountersForFile(
+    filePath: string,
+    counters: TypescriptSymbolCounter[],
+  ): TypescriptSymbolCounter[] {
+    return counters.filter(
+      (counter) =>
+        counter.patterns.length === 0 ||
+        counter.patterns.some((pattern) => path.matchesGlob(filePath, pattern)),
+    );
+  }
+
+  /** Choose the dialect a file is parsed as, from its extension. */
+  private getScriptKind(filePath: string): tsCompiler.ScriptKind {
+    const extension = path.extname(filePath);
+
+    if (extension === ".tsx" || extension === ".jsx") {
+      return tsCompiler.ScriptKind.TSX;
+    }
+
+    return JS_EXTENSIONS.has(extension)
+      ? tsCompiler.ScriptKind.JS
+      : tsCompiler.ScriptKind.TS;
+  }
+
+  /** Collect the modifier keywords a node carries, by configured name. */
+  private getSymbolModifiers(
+    node: tsCompiler.Node,
+  ): Set<CodometerSymbolModifier> {
+    /* v8 ignore next 3 -- every kind this is reached for can have modifiers,
+       and the guard is what narrows the node type for `getModifiers`. */
+    const keywords = tsCompiler.canHaveModifiers(node)
+      ? tsCompiler.getModifiers(node)
+      : undefined;
+    const modifiers = new Set<CodometerSymbolModifier>();
+
+    for (const keyword of keywords ?? []) {
+      const modifier = SYMBOL_MODIFIER_BY_SYNTAX_KIND[keyword.kind];
+
+      if (modifier !== undefined) {
+        modifiers.add(modifier);
+      }
+    }
+
+    return modifiers;
   }
 
   /** Increments class, exported, and generic counts for a class node. */
@@ -254,73 +392,39 @@ export class TypescriptService {
   /** Recursively visits each AST node and dispatches to the appropriate handler. */
   private walkNode(
     node: tsCompiler.Node,
-    stats: TypescriptResult,
-    insideClass: boolean,
+    context: TypescriptWalkContext,
   ): void {
+    this.countSymbols(node, context);
+
     if (
       node.kind === tsCompiler.SyntaxKind.ClassDeclaration ||
       node.kind === tsCompiler.SyntaxKind.ClassExpression
     ) {
-      this.handleClass(node, stats);
+      this.handleClass(node, context.stats);
+      const classContext = { ...context, insideClass: true };
       tsCompiler.forEachChild(node, (child) =>
-        this.walkNode(child, stats, true),
+        this.walkNode(child, classContext),
       );
       return;
     }
-    this.dispatchNode(node, stats, insideClass);
-    tsCompiler.forEachChild(node, (child) =>
-      this.walkNode(child, stats, insideClass),
-    );
+
+    this.dispatchNode(node, context.stats, context.insideClass);
+    tsCompiler.forEachChild(node, (child) => this.walkNode(child, context));
   }
 
   // 🌎 Public Methods
 
   /** Analyzes TypeScript and JavaScript source files and returns aggregated AST metrics. */
   analyze(input: TypescriptInput): TypescriptResult {
-    const { sourceFiles, workingDirectory } = input;
+    const stats = this.createEmptyResult(input);
 
-    const stats: TypescriptResult = {
-      ...EMPTY_TYPESCRIPT_RESULT,
-      docTags: { ...EMPTY_TYPESCRIPT_RESULT.docTags },
-      externalPackages: new Set<string>(),
-      jsFiles: sourceFiles.filter((filePath) =>
-        JS_EXTENSIONS.has(path.extname(filePath)),
-      ).length,
-      testFiles: sourceFiles.filter((filePath) =>
-        /\.(test|spec|unit\.test|integration\.test|end-to-end\.test)\.[cm]?[jt]sx?$/.test(
-          filePath,
-        ),
-      ).length,
-      tsFiles: sourceFiles.filter(
-        (filePath) => !JS_EXTENSIONS.has(path.extname(filePath)),
-      ).length,
-    };
-
-    for (const filePath of sourceFiles) {
-      const absolutePath = path.resolve(workingDirectory, filePath);
-      const content = readFileSync(absolutePath, "utf8");
-      const extension = path.extname(filePath);
-      const isTsx = extension === ".tsx" || extension === ".jsx";
-      const isJs = JS_EXTENSIONS.has(extension);
-      const scriptKind = isTsx
-        ? tsCompiler.ScriptKind.TSX
-        : isJs
-          ? tsCompiler.ScriptKind.JS
-          : tsCompiler.ScriptKind.TS;
-
-      const sourceFile = tsCompiler.createSourceFile(
+    for (const filePath of input.sourceFiles) {
+      this.analyzeFile({
+        counters: this.getCountersForFile(filePath, input.symbolCounters),
         filePath,
-        content,
-        tsCompiler.ScriptTarget.Latest,
-        true,
-        scriptKind,
-      );
-
-      stats.lines += content.split(/\r?\n/).length;
-      stats.todos += (content.match(TODO_REGEX) ?? []).length;
-      this.scanComments(content, stats);
-
-      this.walkNode(sourceFile, stats, false);
+        stats,
+        workingDirectory: input.workingDirectory,
+      });
     }
 
     return stats;

@@ -66,8 +66,24 @@ describe(OutputMarkdownService, () => {
       selectors: 209,
     },
     custom: [
-      { color: "7c3aed", files: 120, label: "Service Files" },
-      { color: "0284c7", files: 121, label: "Unit Tests" },
+      {
+        color: "7c3aed",
+        count: 120,
+        group: "conventions",
+        label: "Service Files",
+      },
+      {
+        color: "0284c7",
+        count: 121,
+        group: "conventions",
+        label: "Unit Tests",
+      },
+      {
+        color: "166534",
+        count: 122,
+        group: "typescript",
+        label: "Static Methods",
+      },
     ],
     folders: 13,
     hcl: {
@@ -246,6 +262,37 @@ describe(OutputMarkdownService, () => {
     expect(block).toContain("### JSON\n\n");
     expect(block).toContain("### Markdown\n\n");
     expect(block).not.toContain("**Repository**");
+  });
+
+  // A counter naming a language group belongs beside the built-in counters
+  // it extends, not in a separate list at the bottom of the report.
+  it("renders a counter into the group it names", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md"),
+      statistics: sampleStatistics,
+    });
+    const typescriptGroup = block.split("### ")[2] ?? "";
+
+    expect(typescriptGroup).toContain("TypeScript & JavaScript");
+    expect(typescriptGroup).toContain(
+      "![Static Methods](https://img.shields.io/badge/Static_Methods-122-166534",
+    );
+    expect(typescriptGroup).not.toContain("Service Files");
+  });
+
+  it("omits the Conventions group when no counter belongs to it", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md"),
+      statistics: {
+        ...sampleStatistics,
+        custom: sampleStatistics.custom.filter(
+          (statistic) => statistic.group === "typescript",
+        ),
+      },
+    });
+
+    expect(block).not.toContain("### Conventions");
+    expect(block).toContain("![Static Methods]");
   });
 
   it("leads with the configured description when there is one", () => {

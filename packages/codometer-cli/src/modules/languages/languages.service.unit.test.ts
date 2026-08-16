@@ -80,6 +80,7 @@ describe(LanguagesService, () => {
     service.analyze({
       configuration,
       discoveredFiles,
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
   });
@@ -117,6 +118,7 @@ describe(LanguagesService, () => {
     const results = service.analyze({
       configuration,
       discoveredFiles,
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 

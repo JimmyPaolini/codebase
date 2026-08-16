@@ -95,6 +95,7 @@ export class LanguagesService {
       }),
       typescript: this.typescriptService.analyze({
         sourceFiles: discoveredFiles.sourceFiles,
+        symbolCounters: args.symbolCounters,
         workingDirectory,
       }),
       yaml: this.yamlService.analyze({

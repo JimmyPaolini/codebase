@@ -10,7 +10,10 @@ import type { PythonResult } from "../python/python.types";
 import type { ShellResult } from "../shell/shell.types";
 import type { SqlResult } from "../sql/sql.types";
 import type { TomlResult } from "../toml/toml.types";
-import type { TypescriptResult } from "../typescript/typescript.types";
+import type {
+  TypescriptResult,
+  TypescriptSymbolCounter,
+} from "../typescript/typescript.types";
 import type { YamlResult } from "../yaml/yaml.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
@@ -18,6 +21,8 @@ import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 export interface AnalyzeLanguagesArguments {
   configuration: ResolvedCodometerConfiguration;
   discoveredFiles: DiscoveryResult;
+  /** Configured counters over declarations, tallied during the TypeScript walk. */
+  symbolCounters: TypescriptSymbolCounter[];
   workingDirectory: string;
 }
 
