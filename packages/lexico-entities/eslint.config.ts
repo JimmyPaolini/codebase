@@ -14,17 +14,8 @@ export default [
       "@nx/dependency-checks": [
         "error",
         {
-          ignoredDependencies: [
-            "vite",
-            "@nx/vite",
-            "typescript",
-            "pg",
-            "@nestjs/core",
-          ],
-          ignoredFiles: [
-            "{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}",
-            "{projectRoot}/vite.config.{js,ts,mjs,mts}",
-          ],
+          ignoredDependencies: ["typescript", "pg", "@nestjs/core"],
+          ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}"],
         },
       ],
     },

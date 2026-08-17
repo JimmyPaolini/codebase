@@ -9,18 +9,18 @@
     "pg": "catalog:",
     "pluralize": "catalog:",
     "reflect-metadata": "catalog:",
+    "tslib": "catalog:",
     "typeorm": "catalog:",
     "typeorm-naming-strategies": "catalog:",
     "vitest": "catalog:"
   },
   "devDependencies": {
     "@nestjs/testing": "catalog:",
-    "@nx/vite": "catalog:",
+    "@size-limit/file": "catalog:",
     "@types/node": "catalog:",
     "@types/pluralize": "catalog:",
-    "typescript": "catalog:",
-    "vite": "catalog:",
-    "vite-tsconfig-paths": "catalog:"
+    "size-limit": "catalog:",
+    "typescript": "catalog:"
   },
   "exports": {
     ".": {
@@ -33,6 +33,7 @@
   "main": "./src/index.ts",
   "name": "@codebase/lexico-entities",
   "private": true,
+  "sizeLimit": "34 KB",
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,

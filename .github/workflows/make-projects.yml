@@ -40,24 +40,35 @@ jobs:
           # Builds and bundle sizing touch no Python-backed tool.
           python-dependencies: "false"
 
+      # A breached size limit fails `bundlesize`, and the whole point of the
+      # comment is to say which bundle broke. So the failure is recorded here
+      # and re-raised after the comment is posted, rather than ending the job
+      # while the developer still has nothing to read.
       - name: 👷 Make Projects
+        id: make-projects
+        continue-on-error: true
         run: pnpm exec nx affected --target=make-projects --parallel=4
 
       # On main this snapshot becomes the baseline every later pull request
       # compares against, which is what removes the second checkout, install,
-      # and full build this job used to run just to size the base branch.
+      # and full build this job used to run just to size the base branch. A
+      # failed build would publish a partial baseline, so it is skipped.
       - name: 📤 Upload Bundle Sizes
-        if: github.ref == 'refs/heads/main'
+        if: >-
+          github.ref == 'refs/heads/main'
+          && steps.make-projects.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
           name: bundle-sizes-main
           path: |
             applications/**/size-limit-report.json
             packages/**/size-limit-report.json
+            tools/**/size-limit-report.json
           retention-days: 90
           if-no-files-found: ignore
 
       - name: 📥 Download Baseline Bundle Sizes
+        id: baseline
         if: github.event_name == 'pull_request'
         continue-on-error: true
         env:
@@ -70,13 +81,18 @@ jobs:
             exit 0
           fi
           gh run download "${run_id}" --name bundle-sizes-main --dir .bundle-baseline
+          echo "run-url=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${run_id}" \
+            >>"${GITHUB_OUTPUT}"
 
       - name: 📦 Report Bundle Sizes
         if: github.event_name == 'pull_request'
         run: |
           pnpm exec tsx scripts/report-bundle-sizes.ts \
             --baseline .bundle-baseline \
+            --baseline-url "${BASELINE_URL}" \
             --output .bundle-report.md
+        env:
+          BASELINE_URL: ${{ steps.baseline.outputs.run-url }}
 
       - name: 💬 Post Bundle Report
         if: github.event_name == 'pull_request'
@@ -109,3 +125,11 @@ jobs:
                 body,
               });
             }
+
+      # Re-raises whatever `make-projects` swallowed above, now that the comment
+      # naming the offending bundle has been posted.
+      - name: 🚦 Enforce Build And Bundle Limits
+        if: steps.make-projects.outcome == 'failure'
+        run: |
+          echo "::error::A project failed to build or exceeded its size limit."
+          exit 1

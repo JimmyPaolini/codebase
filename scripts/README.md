@@ -209,6 +209,38 @@ tsx scripts/sync-devcontainer-configuration.ts [check|write]
 - `0` - In sync or successfully updated
 - `1` - Out of sync (check mode) or failed
 
+### report-bundle-sizes.ts
+
+**Purpose:** Render the bundle size comment that the 👷 Make Projects workflow posts on every pull request. Reads each project's `size-limit-report.json`, joins it to a baseline snapshot downloaded from the latest successful `main` run, and prints one markdown table grouped by project. `collect-bundle-sizes.ts` is the reading half; this script is the rendering half.
+
+**What the comment reports:**
+
+- Every measured bundle with its size, `main` size, byte and percentage change, limit, and the share of that limit it consumes
+- A per-project subtotal for any project with more than one bundle
+- A headline workspace total, and a callout for the bundle that grew most
+- Bundles `nx affected` did not rebuild, shown at their `main` size in a collapsed section, so the total covers the whole workspace
+- Bundles that are new, removed since the baseline, over their limit, or whose `path` glob matched no files
+
+**Usage:**
+
+```bash
+# Direct — needs `nx run-many --target=bundlesize --all` to have run first
+tsx scripts/report-bundle-sizes.ts
+
+# Compare against a downloaded baseline and write the comment body
+tsx scripts/report-bundle-sizes.ts --baseline .bundle-baseline --output .bundle-report.md
+```
+
+**Options:**
+
+- `--baseline <dir>` - Directory holding a `main` snapshot of the reports; without it every bundle reads as new
+- `--baseline-url <url>` - Run URL the baseline came from, linked from the headline
+- `--output <file>` - Write the comment body to a file instead of stdout
+
+Also appends the report to `GITHUB_STEP_SUMMARY` when that variable is set.
+
+**Adding a project:** give it a `.size-limit.cjs` and a `bundlesize` target. Packages generated from the NestJS service template already have both, and declare their budget as `sizeLimit` in their own `package.json`.
+
 ### utilities.sh
 
 **Purpose:** Common utilities and helper functions

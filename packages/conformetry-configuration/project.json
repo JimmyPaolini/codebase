@@ -23,10 +23,11 @@
         ],
         "main": "packages/conformetry-configuration/src/index.ts",
         "outputPath": "dist/packages/conformetry-configuration",
-        "tsConfig": "packages/conformetry-configuration/tsconfig.json"
+        "tsConfig": "packages/conformetry-configuration/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]
     },
+    "bundlesize": {},
     "dependency-cruiser": {},
     "knip": {},
     "lint-codebase": {},
