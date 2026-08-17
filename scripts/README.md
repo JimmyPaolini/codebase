@@ -211,9 +211,9 @@ tsx scripts/sync-devcontainer-configuration.ts [check|write]
 
 ### report-bundle-sizes.ts
 
-**Purpose:** Render the bundle size comment that the 👷 Make Projects workflow posts on every pull request. Reads each project's `size-limit-report.json`, joins it to a baseline snapshot downloaded from the latest successful `main` run, and prints one markdown table grouped by project. `collect-bundle-sizes.ts` is the reading half; this script is the rendering half.
+**Purpose:** Render the `## 🎒 Bundles` section that the 👷 Make Projects workflow writes into the bottom of every pull request description. Reads each project's `size-limit-report.json`, joins it to a baseline snapshot downloaded from the latest successful `main` run, and prints one markdown table grouped by project. `collect-bundle-sizes.ts` is the reading half; this script is the rendering half.
 
-**What the comment reports:**
+**What the section reports:**
 
 - Every measured bundle with its size, `main` size, byte and percentage change, limit, and the share of that limit it consumes
 - A per-project subtotal for any project with more than one bundle
@@ -227,7 +227,7 @@ tsx scripts/sync-devcontainer-configuration.ts [check|write]
 # Direct — needs `nx run-many --target=bundlesize --all` to have run first
 tsx scripts/report-bundle-sizes.ts
 
-# Compare against a downloaded baseline and write the comment body
+# Compare against a downloaded baseline and write the section
 tsx scripts/report-bundle-sizes.ts --baseline .bundle-baseline --output .bundle-report.md
 ```
 
@@ -235,7 +235,7 @@ tsx scripts/report-bundle-sizes.ts --baseline .bundle-baseline --output .bundle-
 
 - `--baseline <dir>` - Directory holding a `main` snapshot of the reports; without it every bundle reads as new
 - `--baseline-url <url>` - Run URL the baseline came from, linked from the headline
-- `--output <file>` - Write the comment body to a file instead of stdout
+- `--output <file>` - Write the section to a file instead of stdout
 
 Also appends the report to `GITHUB_STEP_SUMMARY` when that variable is set.
 

@@ -1,10 +1,14 @@
 /**
- * Renders the pull request bundle size comment.
+ * Renders the `🎒 Bundles` section of the pull request description.
  *
  * Takes the rows `scripts/collect-bundle-sizes.ts` gathered and prints one
  * markdown table grouped by project, plus a headline total, a callout for the
  * bundle that grew most, and a collapsed list of the projects `nx affected`
  * did not rebuild.
+ *
+ * This lives in the description rather than in a comment so that review
+ * automation, which treats every new pull request comment as feedback to act
+ * on, is not woken up by a bot posting build statistics.
  *
  * The baseline is an artifact rather than a second build of `main`: sizing the
  * base branch used to cost a full extra checkout, install, and build on every
@@ -46,6 +50,16 @@ const CROWDED_LIMIT = 0.9;
 
 /** Fraction of growth above which an increase is called out rather than noted. */
 const SIGNIFICANT_GROWTH = 0.05;
+
+/**
+ * Wraps the report so the workflow can replace it in the pull request
+ * description without disturbing anything the author wrote. HTML comments are
+ * invisible once GitHub renders the markdown.
+ */
+const SECTION_END = "<!-- bundle-sizes:end -->";
+const SECTION_START = "<!-- bundle-sizes:start -->";
+
+const HEADING = "## 🎒 Bundles";
 
 const TABLE_HEADER = [
   "| | Project | Bundle | Size | `main` | Diff | % | Limit | Used |",
@@ -235,29 +249,23 @@ function renderMeasuredTable(rows: readonly BundleRow[]): string[] {
   ];
 }
 
-/** Renders the whole comment body. */
+/** Renders the whole `🎒 Bundles` section, markers included. */
 function renderReport(
   rows: readonly BundleRow[],
   baselineUrl: string | undefined,
 ): string {
-  if (rows.length === 0) {
-    return [
-      "## 📦 Bundle Size Report",
-      "",
-      "No bundles were measured for this change.",
-    ].join("\n");
-  }
+  const body =
+    rows.length === 0
+      ? ["No bundles were measured for this change."]
+      : [
+          ...renderSummary(rows, baselineUrl),
+          ...renderMeasuredTable(rows),
+          ...renderUnmeasured(rows),
+          ...renderGuidelines(),
+          "*Updated automatically when you push new commits.*",
+        ];
 
-  return [
-    "## 📦 Bundle Size Report",
-    "",
-    ...renderSummary(rows, baselineUrl),
-    ...renderMeasuredTable(rows),
-    ...renderUnmeasured(rows),
-    ...renderGuidelines(),
-    "---",
-    "*Updated automatically when you push new commits.*",
-  ].join("\n");
+  return [SECTION_START, HEADING, "", ...body, SECTION_END].join("\n");
 }
 
 /** Renders one table row. */

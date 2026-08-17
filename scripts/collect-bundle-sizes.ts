@@ -1,5 +1,5 @@
 /**
- * Collects the bundle measurements the pull request comment renders.
+ * Collects the bundle measurements the `🎒 Bundles` section renders.
  *
  * Reads every `size-limit-report.json` the `bundlesize` target wrote and pairs
  * each entry with the same entry from a baseline snapshot downloaded from the
