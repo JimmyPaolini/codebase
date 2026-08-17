@@ -72,6 +72,8 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 
 ### Tools
 
+- **[callidescope-cli](packages/callidescope-cli)**: Command-line host that traces call stacks through injected dependencies and flags the ones that are too deep
+- **[callidescope-configuration](packages/callidescope-configuration)**: Reads `callidescope.config.ts` and resolves the limits callidescope enforces
 - **[codometer-cli](packages/codometer-cli)**: Command-line host that measures code statistics and writes them to markdown and JSON
 - **[codometer-configuration](packages/codometer-configuration)**: Reads `codometer.config.ts` and resolves the repository-specific settings codometer needs
 - **[conformetry-cli](packages/conformetry-cli)**: Command-line host for code generation and validation

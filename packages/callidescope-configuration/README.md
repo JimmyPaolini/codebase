@@ -27,7 +27,7 @@ import { type CallidescopeConfiguration } from "@callidescope/configuration";
 
 const callidescopeConfiguration: CallidescopeConfiguration = {
   excludeFrom: ["configuration/.callidescopeignore"],
-  limits: { maxDepth: 6, spreadThreshold: 4 },
+  limits: { maximumDepth: 6, spreadThreshold: 4 },
 };
 
 export default callidescopeConfiguration;
@@ -40,10 +40,10 @@ to change.
 
 | Limit | Default | Meaning |
 | ----- | ------- | ------- |
-| `maxDepth` | `6` | Frames a call stack may hold, entry point inclusive |
+| `maximumDepth` | `6` | Frames a call stack may hold, entry point inclusive |
 | `spreadThreshold` | `4` | Distinct modules a callable's transitive callees may touch |
 | `directSpreadThreshold` | `3` | Modules a callable must call _directly_ before spread is reported |
-| `maxImplementationFanOut` | `8` | Implementations one interface member may resolve to |
+| `maximumImplementationFanOut` | `8` | Implementations one interface member may resolve to |
 | `minimumCallers` | `2` | Callers a callable needs before its placement is judged |
 | `callerMajorityRatio` | `0.8` | Share of callers in one foreign module that marks a callable misplaced |
 
@@ -52,7 +52,7 @@ entry point — an entry point legitimately reaches the whole program. Requiring
 direct breadth as well is what isolates the callable personally orchestrating
 unrelated concerns.
 
-`maxImplementationFanOut` is the primary noise control. A structurally matched
+`maximumImplementationFanOut` is the primary noise control. A structurally matched
 interface member named `run` or `sync` otherwise resolves to dozens of unrelated
 classes and manufactures a call stack no execution ever takes.
 

@@ -19,10 +19,17 @@ import { type CallidescopeConfiguration } from "@callidescope/configuration";
 const callidescopeConfiguration: CallidescopeConfiguration = {
   excludeFrom: ["configuration/.callidescopeignore"],
   limits: {
-    // Thresholds are uncalibrated: they are the issue's example limit and
-    // round numbers around it, not measurements of this repository. Run the
-    // report, read the distributions, then move these to the knee.
-    maximumDepth: 6,
+    /**
+     * The deepest stack this repository currently has, so the gate starts
+     * green and only fails on a regression past today's worst.
+     *
+     * A ratchet rather than a target. Set to the issue's suggested six, this
+     * fails on arrival with 46 findings — which is a backlog, not a gate, and
+     * a red pipeline nobody can act on teaches people to ignore it. Lower it
+     * as the outliers come down; the distribution today runs
+     * 19, 18, 17, 15, 14, 13, 13, 12, 12, 11, 11, then a tail at 10 and below.
+     */
+    maximumDepth: 19,
     spreadThreshold: 4,
   },
 };

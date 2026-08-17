@@ -3,6 +3,30 @@
   "name": "codebase",
   "projectType": "application",
   "targets": {
+    "callidescope": {
+      "cache": true,
+      "configurations": {
+        "check": {
+          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directory . --config configuration/callidescope.config.ts --check"
+        },
+        "write": {
+          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directory . --config configuration/callidescope.config.ts"
+        }
+      },
+      "defaultConfiguration": "check",
+      "description": "Trace call stacks and fail on any deeper than the configured limit.",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{workspaceRoot}/**/*.{cts,mts,ts,tsx}",
+        "{workspaceRoot}/configuration/.callidescopeignore",
+        "{workspaceRoot}/configuration/callidescope.config.ts",
+        "shared-globals"
+      ],
+      "options": {
+        "cwd": "{workspaceRoot}"
+      },
+      "outputs": []
+    },
     "check-catalog-manifests": {
       "description": "Enforce catalog: protocol for external dependencies in workspace package manifests",
       "executor": "nx:run-commands",

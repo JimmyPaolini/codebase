@@ -216,6 +216,26 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
 
+    // callidescope packages: the call-stack linting CLI and the configuration
+    // it reads.
+    "packages/callidescope-cli": {
+      entry: ["src/main.mjs", "src/main.ts", "src/repl.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [
+        ...NESTJS_PACKAGE_IGNORE_DEPENDENCIES,
+        // Registered by src/main.mjs and named on Nx command lines as strings,
+        // so nothing knip can see imports either of them.
+        "@swc-node/register",
+        "@swc/core",
+      ],
+      project: "src/**/*.ts",
+    },
+    "packages/callidescope-configuration": {
+      entry: ["src/index.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
+      project: "src/**/*.ts",
+    },
     // codometer packages: the measurement CLI and the configuration it reads
     "packages/codometer-cli": {
       entry: ["src/main.mjs", "src/main.ts", "src/repl.ts"],

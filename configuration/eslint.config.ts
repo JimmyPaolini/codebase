@@ -332,6 +332,20 @@ export default [
               onlyDependOnLibsWithTags: ["type:package"],
               sourceTag: "type:application",
             },
+            // Callidescope package graph. The configuration reader is the
+            // leaf; the CLI traces whatever it describes, so the dependency
+            // only ever points that way.
+            {
+              onlyDependOnLibsWithTags: [],
+              sourceTag: "name:callidescope-configuration",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:callidescope-configuration",
+                "name:logger",
+              ],
+              sourceTag: "name:callidescope-cli",
+            },
             // Codometer package graph. The configuration reader is the leaf;
             // the CLI measures whatever it describes, so the dependency only
             // ever points that way.
