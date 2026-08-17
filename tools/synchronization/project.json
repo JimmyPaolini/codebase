@@ -44,6 +44,12 @@
         "devcontainer-configuration-write": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts devcontainer-configuration write"
         },
+        "nestjs-module-graphs-check": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts nestjs-module-graphs check"
+        },
+        "nestjs-module-graphs-write": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts nestjs-module-graphs write"
+        },
         "pull-request-template-check": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts pull-request-template check"
         },
@@ -85,9 +91,18 @@
         "{workspaceRoot}/.github/PULL_REQUEST_TEMPLATE.md",
         "{workspaceRoot}/.vscode/settings.json",
         "{workspaceRoot}/AGENTS.md",
+        "{workspaceRoot}/applications/*/AGENTS.md",
+        "{workspaceRoot}/applications/*/README.md",
+        "{workspaceRoot}/applications/*/src/**/*.module.ts",
         "{workspaceRoot}/configuration/conformetry.config.ts",
         "{workspaceRoot}/configuration/conventional.config.cjs",
+        "{workspaceRoot}/packages/*/AGENTS.md",
+        "{workspaceRoot}/packages/*/README.md",
+        "{workspaceRoot}/packages/*/src/**/*.module.ts",
         "{workspaceRoot}/release.config.cjs",
+        "{workspaceRoot}/tools/*/AGENTS.md",
+        "{workspaceRoot}/tools/*/README.md",
+        "{workspaceRoot}/tools/*/src/**/*.module.ts",
         "shared-globals"
       ],
       "options": {

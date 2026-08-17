@@ -8,6 +8,7 @@ import { expectProcessExitOne } from "../../../testing/mocks";
 import { ConformetryGeneratorsCommand } from "../conformetry-generators/conformetry-generators.command";
 import { ConventionalConfigCommand } from "../conventional-config/conventional-config.command";
 import { DevcontainerConfigurationCommand } from "../devcontainer-configuration/devcontainer-configuration.command";
+import { NestjsModuleGraphsCommand } from "../nestjs-module-graphs/nestjs-module-graphs.command";
 import { PullRequestTemplateCommand } from "../pull-request-template/pull-request-template.command";
 
 import { SynchronizationCommand } from "./synchronization.command";
@@ -21,6 +22,7 @@ describe(SynchronizationCommand, () => {
   let conventionalConfig: ConventionalConfigCommand;
   let devcontainerConfiguration: DevcontainerConfigurationCommand;
   let logger: LoggerService;
+  let nestjsModuleGraphs: NestjsModuleGraphsCommand;
   let pullRequestTemplate: PullRequestTemplateCommand;
 
   /** The delegates in the order the aggregate reports them. */
@@ -29,6 +31,7 @@ describe(SynchronizationCommand, () => {
       conformetryGenerators,
       conventionalConfig,
       devcontainerConfiguration,
+      nestjsModuleGraphs,
       pullRequestTemplate,
     ];
   }
@@ -68,6 +71,12 @@ describe(SynchronizationCommand, () => {
           useValue: createMock<LoggerService>(),
         },
         {
+          provide: NestjsModuleGraphsCommand,
+          useValue: createMock<NestjsModuleGraphsCommand>({
+            synchronizationLabel: "nestjs-module-graphs",
+          }),
+        },
+        {
           provide: PullRequestTemplateCommand,
           useValue: createMock<PullRequestTemplateCommand>({
             synchronizationLabel: "pull-request-template",
@@ -83,6 +92,7 @@ describe(SynchronizationCommand, () => {
       DevcontainerConfigurationCommand,
     );
     logger = await module.resolve(LoggerService);
+    nestjsModuleGraphs = await module.resolve(NestjsModuleGraphsCommand);
     pullRequestTemplate = await module.resolve(PullRequestTemplateCommand);
   });
 
@@ -114,6 +124,10 @@ describe(SynchronizationCommand, () => {
         {
           provide: LoggerService,
           useValue: createMock<LoggerService>(),
+        },
+        {
+          provide: NestjsModuleGraphsCommand,
+          useValue: createMock<NestjsModuleGraphsCommand>(),
         },
         {
           provide: PullRequestTemplateCommand,
