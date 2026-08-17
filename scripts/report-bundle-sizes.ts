@@ -19,6 +19,7 @@ import { writeFileSync } from "node:fs";
 import {
   type BundleRow,
   collectRows,
+  isComparable,
   readDelta,
   readFraction,
 } from "./collect-bundle-sizes.js";
@@ -119,6 +120,39 @@ function readBiggestGrowth(rows: readonly BundleRow[]): BundleRow | undefined {
         (readFraction(second) ?? 0) - (readFraction(first) ?? 0) ||
         (readDelta(second) ?? 0) - (readDelta(first) ?? 0),
     )[0];
+}
+
+/**
+ * Describes the change against the baseline, and counts whatever appeared or
+ * disappeared rather than folding it into the change.
+ */
+function readComparison(
+  rows: readonly BundleRow[],
+  summary: SizeSummary,
+  baselineUrl: string | undefined,
+): string {
+  const baseline =
+    baselineUrl === undefined ? "`main`" : `[\`main\`](${baselineUrl})`;
+  const added = rows.filter(
+    (row) => row.measured && row.baseSize === undefined,
+  ).length;
+  const removed = rows.filter((row) => row.removed).length;
+  const notes = [
+    added === 0 ? undefined : `${added} new`,
+    removed === 0 ? undefined : `${removed} removed`,
+  ].filter((note) => note !== undefined);
+  const suffix = notes.length === 0 ? "" : ` · ${notes.join(", ")}`;
+
+  if (summary.delta !== undefined) {
+    return (
+      `— ${formatDelta(summary.delta)} ` +
+      `(${formatPercent(summary.fraction)}) vs ${baseline}${suffix}`
+    );
+  }
+  if (rows.some((row) => row.baseSize !== undefined)) {
+    return `— nothing in common with ${baseline} to compare${suffix}`;
+  }
+  return `(no ${baseline} baseline available yet)${suffix}`;
 }
 
 /** Picks the icon for a rebuilt bundle, from how far it moved. */
@@ -247,24 +281,30 @@ function renderRow(row: BundleRow): string {
 
 /** Renders a project's rollup, which only earns its line when it has siblings. */
 function renderSubtotal(group: ProjectGroup): string[] {
-  if (group.rows.length < 2) return [];
+  const live = group.rows.filter((row) => !row.removed);
+  if (live.length < 2) return [];
 
-  const total = group.rows.reduce((sum, row) => sum + row.size, 0);
-  const baseTotal = group.rows.reduce(
+  const total = live.reduce((sum, row) => sum + row.size, 0);
+  const comparable = group.rows.filter((row) => isComparable(row));
+  const baseTotal = comparable.reduce(
     (sum, row) => sum + (row.baseSize ?? 0),
     0,
   );
-  const comparable = group.rows.some((row) => readDelta(row) !== undefined);
-  const delta = comparable ? total - baseTotal : undefined;
+
+  // Once a project has gained or lost a bundle there is no baseline its total
+  // can honestly be compared against, so the change columns stay empty rather
+  // than reporting a difference between two different sets of bundles.
+  const whole = comparable.length === group.rows.length;
+  const delta = whole ? total - baseTotal : undefined;
   const fraction =
     delta === undefined || baseTotal === 0 ? undefined : delta / baseTotal;
 
   const cells = [
     "",
     `\`${group.project}\``,
-    `**${formatCount(group.rows.length, "bundle")}**`,
+    `**${formatCount(live.length, "bundle")}**`,
     `**${formatBytes(total)}**`,
-    baseTotal === 0 ? "—" : formatBytes(baseTotal),
+    whole ? formatBytes(baseTotal) : "—",
     formatDelta(delta),
     formatPercent(fraction),
     "",
@@ -282,12 +322,7 @@ function renderSummary(
   const summary = summarizeRows(rows);
   const bundleCount = rows.filter((row) => !row.removed).length;
   const projectCount = new Set(rows.map((row) => row.project)).size;
-  const baseline =
-    baselineUrl === undefined ? "`main`" : `[\`main\`](${baselineUrl})`;
-  const comparison =
-    summary.delta === undefined
-      ? "(no `main` baseline available yet)"
-      : `— ${formatDelta(summary.delta)} (${formatPercent(summary.fraction)}) vs ${baseline}`;
+  const comparison = readComparison(rows, summary, baselineUrl);
 
   const lines = [
     `${readOverallStatus(rows, summary)} **${formatBytes(summary.total)}** across ` +
@@ -336,12 +371,13 @@ function renderUnmeasured(rows: readonly BundleRow[]): string[] {
 }
 
 /**
- * Totals every bundle, and changes only those with a baseline, so a newly added
- * bundle does not read as workspace-wide growth.
+ * Totals every bundle, and changes only those the baseline and this run both
+ * measured, so neither a newly added bundle nor a renamed one reads as a
+ * workspace-wide swing.
  */
 function summarizeRows(rows: readonly BundleRow[]): SizeSummary {
   const total = rows.reduce((sum, row) => sum + row.size, 0);
-  const comparable = rows.filter((row) => readDelta(row) !== undefined);
+  const comparable = rows.filter((row) => isComparable(row));
 
   if (comparable.length === 0) {
     return { delta: undefined, fraction: undefined, total };

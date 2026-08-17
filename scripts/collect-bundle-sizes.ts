@@ -62,6 +62,18 @@ export function collectRows(
 }
 
 /**
+ * True when this run rebuilt the bundle and the baseline knew it, which is the
+ * only case where a change is like-for-like.
+ *
+ * Totals must be built from these rows alone. A bundle that was renamed shows up
+ * as one removal and one addition, and counting the removal without its
+ * replacement turns a rename into a phantom saving.
+ */
+export function isComparable(row: BundleRow): boolean {
+  return row.measured && row.baseSize !== undefined;
+}
+
+/**
  * The byte change against the baseline, when both sizes are known. A removed
  * bundle counts as a saving of its whole baseline size.
  */
