@@ -1,0 +1,16 @@
+# 🔭 Paths callidescope does not trace
+#
+# Gitignore syntax. Untracked files need no mention — discovery only ever sees
+# what git tracks.
+
+# Generated files. Their call stacks describe a code generator's output rather
+# than anything a person structured, so a depth finding here is not actionable.
+**/routeTree.gen.ts
+packages/lexico-entities/src/modules/database/migrations/
+
+# Template sources. These are not compiled as part of any project, and the
+# mustache placeholders in their paths are not valid TypeScript identifiers.
+configuration/conformetry-templates/
+
+# Planning and prose.
+notepads/

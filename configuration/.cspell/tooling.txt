@@ -12,6 +12,9 @@ brightgreen
 Buildability
 bundlesize
 caffeinate
+callees
+callidescope
+callidescopeignore
 capitalisation
 categorise
 checkpointing
@@ -222,6 +225,7 @@ typeof
 uncacheable
 uncapitalize
 uncapitalizes
+unconfigured
 underspecified
 unioned
 unknowncase

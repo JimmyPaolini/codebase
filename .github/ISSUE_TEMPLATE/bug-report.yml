@@ -32,6 +32,7 @@ body:
         - lexico-entities
         - lexico-ingestion
         - logger
+        - callidescope
         - codometer
         - codebase
         - no-release
@@ -41,6 +42,7 @@ body:
         - testing
         - tools
         - synchronization
+
 
 
 

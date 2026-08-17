@@ -1,0 +1,333 @@
+import { existsSync } from "node:fs";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { Injectable } from "@nestjs/common";
+import { createJiti } from "jiti";
+import { parse as parseJsonc } from "jsonc-parser";
+
+import {
+  callidescopeConfigurationSchema,
+  CONFIGURATION_FILE_NAMES,
+  DEFAULT_ALLOW_SPREAD_FOR,
+  DEFAULT_CALLER_MAJORITY_RATIO,
+  DEFAULT_DIRECT_SPREAD_THRESHOLD,
+  DEFAULT_ENTRY_POINT_DECORATORS,
+  DEFAULT_EXCLUDE_GLOBS,
+  DEFAULT_JSON_INDENTATION,
+  DEFAULT_MARKDOWN_END_MARKER,
+  DEFAULT_MARKDOWN_START_MARKER,
+  DEFAULT_MAXIMUM_DEPTH,
+  DEFAULT_MAXIMUM_IMPLEMENTATION_FAN_OUT,
+  DEFAULT_MINIMUM_CALLERS,
+  DEFAULT_SPREAD_THRESHOLD,
+  REPOSITORY_ROOT_MARKERS,
+  SUPPORTED_CONFIGURATION_EXTENSIONS,
+  UnknownConfigurationFileTypeError,
+} from "./configuration.constants";
+import { ConfigurationFileNotFoundError } from "./configuration.errors";
+
+import type {
+  CallidescopeConfiguration,
+  CallidescopeEntryPoints,
+  CallidescopeLimits,
+  CallidescopeOutputConfiguration,
+  LoadConfigurationArguments,
+  ResolvedCallidescopeConfiguration,
+  ResolvedCallidescopeEntryPoints,
+  ResolvedCallidescopeJsonOutputConfiguration,
+  ResolvedCallidescopeLimits,
+  ResolvedCallidescopeMarkdownOutputConfiguration,
+} from "./configuration.types";
+
+/**
+ * Loads, validates, and normalizes callidescope configuration files.
+ *
+ * This service owns loading only. What the configuration means — which files an
+ * exclusion glob removes, which decorator marks a stack root — belongs to the
+ * analyzers that read it, so that reading a configuration file stays free of any
+ * knowledge of the repository being traced.
+ */
+@Injectable()
+export class ConfigurationService {
+  // 🏗 Dependency Injection
+
+  constructor() {}
+
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
+  /**
+   * Walks upward from a directory looking for a configuration file.
+   *
+   * Returns `undefined` when the search reaches the filesystem root without
+   * finding one: a repository that never wrote a configuration file is traced
+   * with the defaults rather than told to write one.
+   */
+  private findConfigurationFile(searchDirectory: string): string | undefined {
+    let candidateDirectory = path.resolve(searchDirectory);
+
+    for (;;) {
+      for (const fileName of CONFIGURATION_FILE_NAMES) {
+        const candidatePath = path.join(candidateDirectory, fileName);
+
+        if (existsSync(candidatePath)) {
+          return candidatePath;
+        }
+      }
+
+      const parentDirectory = path.dirname(candidateDirectory);
+
+      if (parentDirectory === candidateDirectory) {
+        return undefined;
+      }
+
+      candidateDirectory = parentDirectory;
+    }
+  }
+
+  /**
+   * Walks upward from the process cwd looking for the repository root.
+   *
+   * Used to resolve a configuration path given relative to that root even when
+   * the command was invoked from a nested directory, which is what a task runner
+   * does whenever it sets the cwd to the project rather than the workspace.
+   */
+  private findRepositoryRoot(): string | undefined {
+    let candidateDirectory = path.resolve(process.cwd());
+
+    for (;;) {
+      const directory = candidateDirectory;
+      const isRoot = REPOSITORY_ROOT_MARKERS.some((marker) =>
+        existsSync(path.join(directory, marker)),
+      );
+
+      if (isRoot) {
+        return candidateDirectory;
+      }
+
+      const parentDirectory = path.dirname(candidateDirectory);
+
+      if (parentDirectory === candidateDirectory) {
+        return undefined;
+      }
+
+      candidateDirectory = parentDirectory;
+    }
+  }
+
+  /** Loads a configuration module, choosing the reader by extension. */
+  private async loadConfigurationModule(args: {
+    configurationPath: string;
+    extension: string;
+  }): Promise<unknown> {
+    if (args.extension === ".json" || args.extension === ".jsonc") {
+      return this.loadJsonConfiguration(args);
+    }
+
+    const jiti = createJiti(fileURLToPath(import.meta.url));
+    const importedModule: unknown = await jiti.import(args.configurationPath, {
+      default: true,
+    });
+
+    if (typeof importedModule !== "object" || importedModule === null) {
+      return {};
+    }
+
+    const defaultExport = (importedModule as { default?: unknown }).default;
+
+    return typeof defaultExport === "object" && defaultExport !== null
+      ? defaultExport
+      : importedModule;
+  }
+
+  /** Reads a JSON or JSONC configuration file. */
+  private async loadJsonConfiguration(args: {
+    configurationPath: string;
+    extension: string;
+  }): Promise<unknown> {
+    const configurationContent = await readFile(args.configurationPath, "utf8");
+
+    return args.extension === ".jsonc"
+      ? parseJsonc(configurationContent)
+      : JSON.parse(configurationContent);
+  }
+
+  /** Resolves a configuration path against the cwd, then the repository root. */
+  private resolveConfigurationPath(configurationPath: string): string {
+    const absolutePath = path.resolve(configurationPath);
+
+    if (existsSync(absolutePath)) {
+      return absolutePath;
+    }
+
+    const repositoryRoot = this.findRepositoryRoot();
+
+    if (repositoryRoot === undefined) {
+      throw new ConfigurationFileNotFoundError(absolutePath);
+    }
+
+    const repositoryRelativePath = path.resolve(
+      repositoryRoot,
+      configurationPath,
+    );
+
+    if (!existsSync(repositoryRelativePath)) {
+      throw new ConfigurationFileNotFoundError(absolutePath);
+    }
+
+    return repositoryRelativePath;
+  }
+
+  /**
+   * Applies defaults to the entry-point rules.
+   *
+   * The authored object is defaulted to an empty one up front rather than
+   * optional-chained per field, which keeps this to one branch per option
+   * instead of two.
+   */
+  private resolveEntryPoints(
+    entryPoints: CallidescopeEntryPoints | undefined,
+  ): ResolvedCallidescopeEntryPoints {
+    const authored = entryPoints ?? {};
+
+    return {
+      decorators: authored.decorators ?? [...DEFAULT_ENTRY_POINT_DECORATORS],
+      includeExportedFunctions: authored.includeExportedFunctions ?? true,
+      includeOrphans: authored.includeOrphans ?? true,
+      includeTests: authored.includeTests ?? false,
+    };
+  }
+
+  /** Applies defaults to the JSON output destination, if one was named. */
+  private resolveJsonOutput(
+    output: CallidescopeOutputConfiguration | undefined,
+  ): ResolvedCallidescopeJsonOutputConfiguration | undefined {
+    if (output?.json === undefined) {
+      return undefined;
+    }
+
+    return {
+      indentation: output.json.indentation ?? DEFAULT_JSON_INDENTATION,
+      path: output.json.path,
+    };
+  }
+
+  /** Applies defaults to every threshold. */
+  private resolveLimits(
+    limits: CallidescopeLimits | undefined,
+  ): ResolvedCallidescopeLimits {
+    const authored = limits ?? {};
+
+    return {
+      callerMajorityRatio:
+        authored.callerMajorityRatio ?? DEFAULT_CALLER_MAJORITY_RATIO,
+      directSpreadThreshold:
+        authored.directSpreadThreshold ?? DEFAULT_DIRECT_SPREAD_THRESHOLD,
+      maximumDepth: authored.maximumDepth ?? DEFAULT_MAXIMUM_DEPTH,
+      maximumImplementationFanOut:
+        authored.maximumImplementationFanOut ??
+        DEFAULT_MAXIMUM_IMPLEMENTATION_FAN_OUT,
+      minimumCallers: authored.minimumCallers ?? DEFAULT_MINIMUM_CALLERS,
+      spreadThreshold: authored.spreadThreshold ?? DEFAULT_SPREAD_THRESHOLD,
+    };
+  }
+
+  /** Applies defaults to the markdown output destination, if one was named. */
+  private resolveMarkdownOutput(
+    output: CallidescopeOutputConfiguration | undefined,
+  ): ResolvedCallidescopeMarkdownOutputConfiguration | undefined {
+    if (output?.markdown === undefined) {
+      return undefined;
+    }
+
+    const { markdown } = output;
+
+    return {
+      description: markdown.description,
+      endMarker: markdown.endMarker ?? DEFAULT_MARKDOWN_END_MARKER,
+      path: markdown.path,
+      // Left unset rather than defaulted: the built-in rendering and writing
+      // live in the CLI that calls them, so "unset" is what selects them.
+      render: markdown.render,
+      startMarker: markdown.startMarker ?? DEFAULT_MARKDOWN_START_MARKER,
+      write: markdown.write,
+    };
+  }
+
+  // 🌎 Public Methods
+
+  /**
+   * Loads and validates a callidescope configuration file.
+   *
+   * A path that was named explicitly must exist — a typo in a task runner's
+   * arguments should fail rather than quietly trace the repository with defaults
+   * it never asked for. A path that was not named is searched for, and its
+   * absence is legal.
+   */
+  public async loadConfiguration(
+    args: LoadConfigurationArguments = {},
+  ): Promise<ResolvedCallidescopeConfiguration> {
+    const resolvedPath =
+      args.configurationPath === undefined
+        ? this.findConfigurationFile(args.searchDirectory ?? process.cwd())
+        : this.resolveConfigurationPath(args.configurationPath);
+
+    if (resolvedPath === undefined) {
+      return this.resolveConfiguration({});
+    }
+
+    const extension = path.extname(resolvedPath).toLowerCase();
+
+    if (!SUPPORTED_CONFIGURATION_EXTENSIONS.has(extension)) {
+      throw new UnknownConfigurationFileTypeError(resolvedPath);
+    }
+
+    const configurationModule = await this.loadConfigurationModule({
+      configurationPath: resolvedPath,
+      extension,
+    });
+
+    return this.resolveConfiguration(
+      callidescopeConfigurationSchema.parse(configurationModule),
+    );
+  }
+
+  /**
+   * Fills in every field a configuration file may leave out.
+   *
+   * Exposed so a host embedding callidescope can hand over a configuration
+   * object it assembled itself and get the same shape a configuration file
+   * produces.
+   */
+  public resolveConfiguration(
+    configuration: CallidescopeConfiguration,
+  ): ResolvedCallidescopeConfiguration {
+    return {
+      allowSpreadFor: configuration.allowSpreadFor ?? [
+        ...DEFAULT_ALLOW_SPREAD_FOR,
+      ],
+      entryPoints: this.resolveEntryPoints(configuration.entryPoints),
+      // Additive rather than a replacement: the defaults are directories no
+      // repository wants traced, so a configuration naming its own noise should
+      // not have to restate them to keep them out.
+      exclude: [
+        ...new Set([
+          ...DEFAULT_EXCLUDE_GLOBS,
+          ...(configuration.exclude ?? []),
+        ]),
+      ],
+      excludeFrom: configuration.excludeFrom ?? [],
+      limits: this.resolveLimits(configuration.limits),
+      output: {
+        json: this.resolveJsonOutput(configuration.output),
+        markdown: this.resolveMarkdownOutput(configuration.output),
+      },
+      projects: configuration.projects ?? [],
+    };
+  }
+}
