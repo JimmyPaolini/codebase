@@ -2,7 +2,10 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
+import * as nestjsCommon from "@nestjs/common";
 import { Injectable } from "@nestjs/common";
+import * as nestjsConfig from "@nestjs/config";
+import * as nestjsCore from "@nestjs/core";
 import { NestFactory } from "@nestjs/core";
 import { SpelunkerModule } from "nestjs-spelunker";
 
@@ -10,6 +13,7 @@ import { NestjsModuleGraphsGraphService } from "./nestjs-module-graphs-graph.ser
 import { SyntheticRootModule } from "./nestjs-module-graphs-synthetic.module";
 import {
   NESTJS_MODULE_GRAPH_IGNORED_MODULES,
+  NESTJS_MODULE_GRAPH_MODULE_CLASS_PATTERN,
   NESTJS_MODULE_GRAPH_MODULE_FILE_SUFFIX,
   NESTJS_MODULE_GRAPH_PROJECT_DIRECTORIES,
   NESTJS_MODULE_GRAPH_PROJECT_TAG,
@@ -20,6 +24,7 @@ import {
 
 import type {
   NestjsModuleGraph,
+  NestjsModuleOwnership,
   NestjsProject,
 } from "./nestjs-module-graphs.types";
 import type { DynamicModule, Type } from "@nestjs/common";
@@ -110,6 +115,34 @@ export class NestjsModuleGraphsService {
     return rootModule;
   }
 
+  /**
+   * Names every module the installed NestJS packages export.
+   *
+   * Read rather than listed, so the set stays right as those packages change.
+   */
+  private readFrameworkModuleNames(): Set<string> {
+    const frameworkModuleNames = new Set<string>();
+
+    for (const nestjsPackage of [nestjsCommon, nestjsConfig, nestjsCore]) {
+      for (const exportName of Object.keys(nestjsPackage)) {
+        if (exportName !== "Module" && exportName.endsWith("Module")) {
+          frameworkModuleNames.add(exportName);
+        }
+      }
+    }
+
+    return frameworkModuleNames;
+  }
+
+  /** Names the module classes a module file exports. */
+  private readModuleClassNames(file: string): string[] {
+    const source = readFileSync(file, "utf8");
+
+    return [...source.matchAll(NESTJS_MODULE_GRAPH_MODULE_CLASS_PATTERN)].map(
+      (match) => match.groups?.["moduleName"] ?? "",
+    );
+  }
+
   /** Reads a project's Nx tags, or an empty list when it declares none. */
   private readProjectTags(projectFile: string): string[] {
     const configuration = JSON.parse(readFileSync(projectFile, "utf8")) as {
@@ -165,7 +198,10 @@ export class NestjsModuleGraphsService {
   }
 
   /** Explores a project's container in preview mode and reduces it to a graph. */
-  async exploreProject(project: NestjsProject): Promise<NestjsModuleGraph> {
+  async exploreProject(
+    project: NestjsProject,
+    ownership: NestjsModuleOwnership,
+  ): Promise<NestjsModuleGraph> {
     const { rootModuleFile } = project;
     const rootModule =
       rootModuleFile === undefined
@@ -179,8 +215,10 @@ export class NestjsModuleGraphsService {
     });
 
     try {
-      return this.graphService.buildGraph(
-        SpelunkerModule.explore(application, {
+      return this.graphService.buildGraph({
+        ownership,
+        projectName: project.name,
+        tree: SpelunkerModule.explore(application, {
           ignoreImports: [
             ...NESTJS_MODULE_GRAPH_IGNORED_MODULES,
             ...(rootModuleFile === undefined
@@ -188,10 +226,44 @@ export class NestjsModuleGraphsService {
               : []),
           ],
         }),
-      );
+      });
     } finally {
       await application.close();
     }
+  }
+
+  /**
+   * Maps every module class in the workspace to the project that defines it.
+   *
+   * Names are read out of the source rather than imported, because this runs
+   * across every project and a graph only needs to know who owns a name.
+   */
+  indexModuleOwners(projects: NestjsProject[]): NestjsModuleOwnership {
+    const projectsByModule = new Map<string, string[]>();
+
+    for (const project of projects) {
+      const moduleFiles = this.findModuleFiles(
+        path.join(project.absoluteRoot, "src"),
+      );
+
+      for (const moduleFile of moduleFiles) {
+        for (const moduleName of this.readModuleClassNames(moduleFile)) {
+          const definingProjects = projectsByModule.get(moduleName) ?? [];
+
+          if (!definingProjects.includes(project.name)) {
+            projectsByModule.set(moduleName, [
+              ...definingProjects,
+              project.name,
+            ]);
+          }
+        }
+      }
+    }
+
+    return {
+      frameworkModuleNames: this.readFrameworkModuleNames(),
+      projectsByModule,
+    };
   }
 
   /** Reports whether a directory entry is a project this command graphs. */

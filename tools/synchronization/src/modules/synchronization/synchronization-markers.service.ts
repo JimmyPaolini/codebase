@@ -9,7 +9,7 @@ import { Injectable } from "@nestjs/common";
  * is regenerated wholesale.
  */
 @Injectable()
-export class NestjsModuleGraphsMarkersService {
+export class SynchronizationMarkersService {
   // 🏗 Dependency Injection
 
   constructor() {}

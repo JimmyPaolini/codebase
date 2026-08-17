@@ -8,7 +8,10 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { NestjsModuleGraphsGraphService } from "./nestjs-module-graphs-graph.service";
 import { NestjsModuleGraphsService } from "./nestjs-module-graphs.service";
 
-import type { NestjsProject } from "./nestjs-module-graphs.types";
+import type {
+  NestjsModuleOwnership,
+  NestjsProject,
+} from "./nestjs-module-graphs.types";
 import type { INestApplicationContext } from "@nestjs/common";
 import type { SpelunkedTree } from "nestjs-spelunker";
 
@@ -144,6 +147,15 @@ describe(NestjsModuleGraphsService, () => {
       ).toStrictEqual(["caelundas", "logger", "synchronization"]);
     });
 
+    it("skips a project that declares no tags at all", () => {
+      workspaceEntries.set("packages", ["untagged"]);
+      existingPaths.add("/workspace/packages");
+      existingPaths.add("/workspace/packages/untagged/project.json");
+      fileContents.set("/workspace/packages/untagged/project.json", "{}");
+
+      expect(service.discoverProjects("/workspace")).toStrictEqual([]);
+    });
+
     it("skips a project without the NestJS tag", () => {
       registerProject({
         directory: "applications",
@@ -214,7 +226,145 @@ describe(NestjsModuleGraphsService, () => {
     });
   });
 
+  describe("indexModuleOwners", () => {
+    /** Registers a module file exporting the given class names. */
+    function registerModuleFile(options: {
+      classNames: string[];
+      directory: string;
+      fileName: string;
+      projectRoot: string;
+    }): void {
+      const { classNames, directory, fileName, projectRoot } = options;
+
+      existingPaths.add(path.join(projectRoot, "src"));
+      workspaceEntries.set("src", [directory]);
+      existingPaths.add(path.join(projectRoot, "src", directory));
+      workspaceEntries.set(directory, [fileName]);
+      workspaceFileEntries.add(fileName);
+      fileContents.set(
+        path.join(projectRoot, "src", directory, fileName),
+        classNames.map((name) => `export class ${name} {}`).join("\n"),
+      );
+    }
+
+    it("maps a module class to the project that defines it", () => {
+      registerModuleFile({
+        classNames: ["LoggerModule"],
+        directory: "logger",
+        fileName: "logger.module.ts",
+        projectRoot: "/workspace/packages/logger",
+      });
+
+      const ownership = service.indexModuleOwners([
+        {
+          absoluteRoot: "/workspace/packages/logger",
+          name: "logger",
+          rootModuleFile: undefined,
+        },
+      ]);
+
+      expect(ownership.projectsByModule.get("LoggerModule")).toStrictEqual([
+        "logger",
+      ]);
+    });
+
+    it("records every project defining a shared module name", () => {
+      registerModuleFile({
+        classNames: ["ConfigurationModule"],
+        directory: "configuration",
+        fileName: "configuration.module.ts",
+        projectRoot: "/workspace/packages/first",
+      });
+      fileContents.set(
+        path.join(
+          "/workspace/packages/second/src/configuration/configuration.module.ts",
+        ),
+        "export class ConfigurationModule {}",
+      );
+      existingPaths.add("/workspace/packages/second/src");
+      existingPaths.add("/workspace/packages/second/src/configuration");
+
+      const ownership = service.indexModuleOwners([
+        {
+          absoluteRoot: "/workspace/packages/first",
+          name: "first",
+          rootModuleFile: undefined,
+        },
+        {
+          absoluteRoot: "/workspace/packages/second",
+          name: "second",
+          rootModuleFile: undefined,
+        },
+      ]);
+
+      expect(
+        ownership.projectsByModule.get("ConfigurationModule"),
+      ).toStrictEqual(["first", "second"]);
+    });
+
+    it("records a project once when it defines a name in two files", () => {
+      existingPaths.add("/workspace/packages/logger/src");
+      existingPaths.add("/workspace/packages/logger/src/logger");
+      workspaceEntries.set("src", ["logger"]);
+      workspaceEntries.set("logger", ["first.module.ts", "second.module.ts"]);
+      workspaceFileEntries.add("first.module.ts");
+      workspaceFileEntries.add("second.module.ts");
+      for (const fileName of ["first.module.ts", "second.module.ts"]) {
+        fileContents.set(
+          path.join("/workspace/packages/logger/src/logger", fileName),
+          "export class LoggerModule {}",
+        );
+      }
+
+      const ownership = service.indexModuleOwners([
+        {
+          absoluteRoot: "/workspace/packages/logger",
+          name: "logger",
+          rootModuleFile: undefined,
+        },
+      ]);
+
+      expect(ownership.projectsByModule.get("LoggerModule")).toStrictEqual([
+        "logger",
+      ]);
+    });
+
+    it("ignores an exported class that is not a module", () => {
+      registerModuleFile({
+        classNames: ["LoggerService"],
+        directory: "logger",
+        fileName: "logger.module.ts",
+        projectRoot: "/workspace/packages/logger",
+      });
+
+      const ownership = service.indexModuleOwners([
+        {
+          absoluteRoot: "/workspace/packages/logger",
+          name: "logger",
+          rootModuleFile: undefined,
+        },
+      ]);
+
+      expect(ownership.projectsByModule.has("LoggerService")).toBe(false);
+    });
+
+    // `DiscoveryModule` is a `@nestjs/core` export as well as a name a package
+    // here uses, and the graph must never credit it to that package.
+    it("reads the module names NestJS itself exports", () => {
+      const ownership = service.indexModuleOwners([]);
+
+      expect(ownership.frameworkModuleNames).toContain("DiscoveryModule");
+      expect(ownership.frameworkModuleNames).toContain("ConfigModule");
+      expect(ownership.frameworkModuleNames).not.toContain("Module");
+    });
+  });
+
   describe("exploreProject", () => {
+    const ownership: NestjsModuleOwnership = {
+      frameworkModuleNames: new Set<string>(),
+      projectsByModule: new Map<string, string[]>(),
+    };
+
     /** Points at this project so the dynamic import resolves. */
     function buildProject(rootModuleFile: string | undefined): NestjsProject {
       return {
@@ -253,6 +403,7 @@ describe(NestjsModuleGraphsService, () => {
 
       const graph = await service.exploreProject(
         buildProject("src/main.module.ts"),
+        ownership,
       );
 
       expect(graph.moduleNames).toStrictEqual(["MainModule"]);
@@ -262,7 +413,10 @@ describe(NestjsModuleGraphsService, () => {
     it("builds the container in preview mode so nothing is instantiated", async () => {
       mockApplicationContext();
 
-      await service.exploreProject(buildProject("src/main.module.ts"));
+      await service.exploreProject(
+        buildProject("src/main.module.ts"),
+        ownership,
+      );
 
       expect(NestFactory.createApplicationContext).toHaveBeenCalledWith(
         expect.anything(),
@@ -274,7 +428,7 @@ describe(NestjsModuleGraphsService, () => {
       mockApplicationContext();
 
       await expect(
-        service.exploreProject(buildProject("src/constants.ts")),
+        service.exploreProject(buildProject("src/constants.ts"), ownership),
       ).rejects.toThrow("MainModule");
     });
 
@@ -301,7 +455,7 @@ describe(NestjsModuleGraphsService, () => {
       mockApplicationContext();
       mockPackageTree();
 
-      await service.exploreProject(buildProject(undefined));
+      await service.exploreProject(buildProject(undefined), ownership);
 
       expect(exploredRootModules[0]).toHaveProperty(
         "module.name",
@@ -313,7 +467,7 @@ describe(NestjsModuleGraphsService, () => {
       mockApplicationContext();
       mockPackageTree();
 
-      await service.exploreProject(buildProject(undefined));
+      await service.exploreProject(buildProject(undefined), ownership);
 
       // The config scaffolding is imported first, then the package's own.
       expect(exploredRootModules[0]).toHaveProperty(
@@ -327,7 +481,7 @@ describe(NestjsModuleGraphsService, () => {
       existingPaths.add(path.join(process.cwd(), "src"));
       workspaceEntries.set("src", []);
 
-      await service.exploreProject(buildProject(undefined));
+      await service.exploreProject(buildProject(undefined), ownership);
 
       expect(
         exploreOptions[0]?.ignoreImports?.map((pattern) => pattern.source),
@@ -337,7 +491,7 @@ describe(NestjsModuleGraphsService, () => {
     it("finds no modules in a package with no source directory", async () => {
       mockApplicationContext();
 
-      await service.exploreProject(buildProject(undefined));
+      await service.exploreProject(buildProject(undefined), ownership);
 
       expect(exploredRootModules[0]).toHaveProperty(
         "module.name",
@@ -349,7 +503,10 @@ describe(NestjsModuleGraphsService, () => {
     it("leaves ConfigModule in the graph of a project that declares it", async () => {
       mockApplicationContext();
 
-      await service.exploreProject(buildProject("src/main.module.ts"));
+      await service.exploreProject(
+        buildProject("src/main.module.ts"),
+        ownership,
+      );
 
       expect(
         exploreOptions[0]?.ignoreImports?.map((pattern) => pattern.source),

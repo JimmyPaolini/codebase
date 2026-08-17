@@ -6,6 +6,7 @@ import { ConformetryGeneratorsModule } from "../conformetry-generators/conformet
 import { ConventionalConfigModule } from "../conventional-config/conventional-config.module";
 import { DevcontainerConfigurationModule } from "../devcontainer-configuration/devcontainer-configuration.module";
 import { NestjsModuleGraphsModule } from "../nestjs-module-graphs/nestjs-module-graphs.module";
+import { NxProjectGraphsModule } from "../nx-project-graphs/nx-project-graphs.module";
 import { PullRequestTemplateModule } from "../pull-request-template/pull-request-template.module";
 
 import { SynchronizationCommand } from "./synchronization.command";
@@ -23,6 +24,7 @@ import { SynchronizationService } from "./synchronization.service";
     ConventionalConfigModule,
     DevcontainerConfigurationModule,
     NestjsModuleGraphsModule,
+    NxProjectGraphsModule,
     PullRequestTemplateModule,
   ],
   providers: [SynchronizationCommand, SynchronizationService],

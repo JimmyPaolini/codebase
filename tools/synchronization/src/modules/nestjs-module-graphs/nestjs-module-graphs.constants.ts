@@ -1,5 +1,9 @@
 // ♟️ Constants
 
+/** Explains the rounded nodes a graph with ambient modules renders. */
+export const NESTJS_MODULE_GRAPH_AMBIENT_LEGEND =
+  "_Rounded modules are global: every module can inject them, so their edges are left out._";
+
 /**
  * Smallest graph the ambient-module rule is allowed to fire on.
  *
@@ -46,6 +50,10 @@ export const NESTJS_MODULE_GRAPH_PROJECT_DIRECTORIES: string[] = [
   "packages",
   "tools",
 ];
+
+/** Matches the module class a module file exports. */
+export const NESTJS_MODULE_GRAPH_MODULE_CLASS_PATTERN =
+  /^export class (?<moduleName>\w+Module)\b/gmu;
 
 /** Export a root module file is expected to provide. */
 export const NESTJS_MODULE_GRAPH_ROOT_MODULE_EXPORT = "MainModule";

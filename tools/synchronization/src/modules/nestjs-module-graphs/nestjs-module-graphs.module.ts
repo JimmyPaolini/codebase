@@ -2,10 +2,10 @@ import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";
 
+import { SynchronizationMarkersService } from "../synchronization/synchronization-markers.service";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import { NestjsModuleGraphsGraphService } from "./nestjs-module-graphs-graph.service";
-import { NestjsModuleGraphsMarkersService } from "./nestjs-module-graphs-markers.service";
 import { NestjsModuleGraphsCommand } from "./nestjs-module-graphs.command";
 import { NestjsModuleGraphsService } from "./nestjs-module-graphs.service";
 
@@ -19,7 +19,7 @@ import { NestjsModuleGraphsService } from "./nestjs-module-graphs.service";
   providers: [
     NestjsModuleGraphsCommand,
     NestjsModuleGraphsGraphService,
-    NestjsModuleGraphsMarkersService,
+    SynchronizationMarkersService,
     NestjsModuleGraphsService,
     SynchronizationService,
   ],

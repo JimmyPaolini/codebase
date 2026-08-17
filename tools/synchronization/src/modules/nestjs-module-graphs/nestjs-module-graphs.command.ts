@@ -6,10 +6,10 @@ import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
+import { SynchronizationMarkersService } from "../synchronization/synchronization-markers.service";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import { NestjsModuleGraphsGraphService } from "./nestjs-module-graphs-graph.service";
-import { NestjsModuleGraphsMarkersService } from "./nestjs-module-graphs-markers.service";
 import {
   NESTJS_MODULE_GRAPH_MARKER,
   NESTJS_MODULE_GRAPH_TARGET_FILES,
@@ -20,7 +20,10 @@ import type {
   SynchronizableCommand,
   SynchronizationMode,
 } from "../synchronization/synchronization.types";
-import type { NestjsProject } from "./nestjs-module-graphs.types";
+import type {
+  NestjsModuleOwnership,
+  NestjsProject,
+} from "./nestjs-module-graphs.types";
 
 /**
  * CLI command that syncs each NestJS project's module graph into the marker
@@ -44,7 +47,7 @@ export class NestjsModuleGraphsCommand
   constructor(
     private readonly graphService: NestjsModuleGraphsGraphService,
     private readonly logger: LoggerService,
-    private readonly markersService: NestjsModuleGraphsMarkersService,
+    private readonly markersService: SynchronizationMarkersService,
     private readonly moduleGraphsService: NestjsModuleGraphsService,
     private readonly synchronizationModeService: SynchronizationService,
   ) {
@@ -128,11 +131,16 @@ export class NestjsModuleGraphsCommand
   }
 
   /** Explores one project and syncs its graph into every target markdown file. */
-  private async synchronizeProject(
-    project: NestjsProject,
-    mode: SynchronizationMode,
-  ): Promise<string[]> {
-    const graph = await this.moduleGraphsService.exploreProject(project);
+  private async synchronizeProject(options: {
+    mode: SynchronizationMode;
+    ownership: NestjsModuleOwnership;
+    project: NestjsProject;
+  }): Promise<string[]> {
+    const { mode, ownership, project } = options;
+    const graph = await this.moduleGraphsService.exploreProject(
+      project,
+      ownership,
+    );
     const diagram = this.graphService.renderMermaid(graph);
 
     this.logger.log(`🕸️ Explored ${project.name}`, undefined, {
@@ -176,10 +184,13 @@ export class NestjsModuleGraphsCommand
   async synchronize(mode: SynchronizationMode): Promise<boolean> {
     try {
       const projects = this.moduleGraphsService.discoverProjects(process.cwd());
+      const ownership = this.moduleGraphsService.indexModuleOwners(projects);
       const outOfSyncFiles: string[] = [];
 
       for (const project of projects) {
-        outOfSyncFiles.push(...(await this.synchronizeProject(project, mode)));
+        outOfSyncFiles.push(
+          ...(await this.synchronizeProject({ mode, ownership, project })),
+        );
       }
 
       return this.reportResults(projects.length, outOfSyncFiles);

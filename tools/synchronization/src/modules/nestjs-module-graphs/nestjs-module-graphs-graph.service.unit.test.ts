@@ -3,7 +3,10 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { NestjsModuleGraphsGraphService } from "./nestjs-module-graphs-graph.service";
 
-import type { NestjsModuleGraph } from "./nestjs-module-graphs.types";
+import type {
+  NestjsModuleGraph,
+  NestjsModuleOwnership,
+} from "./nestjs-module-graphs.types";
 import type { SpelunkedTree } from "nestjs-spelunker";
 
 /** Builds a graph of `count` modules that all import `ambientName`. */
@@ -21,8 +24,28 @@ function buildNode(name: string, imports: string[]): SpelunkedTree {
   return { controllers: [], exports: [], imports, name, providers: {} };
 }
 
+/** Builds an ownership record from a module-name-to-projects map. */
+function buildOwnership(
+  projectsByModule: Record<string, string[]> = {},
+  frameworkModuleNames: string[] = [],
+): NestjsModuleOwnership {
+  return {
+    frameworkModuleNames: new Set(frameworkModuleNames),
+    projectsByModule: new Map(Object.entries(projectsByModule)),
+  };
+}
+
 describe(NestjsModuleGraphsGraphService, () => {
   let service: NestjsModuleGraphsGraphService;
+
+  /** Builds a graph for a project owning nothing in particular. */
+  function build(
+    tree: SpelunkedTree[],
+    ownership: NestjsModuleOwnership = buildOwnership(),
+    projectName = "example",
+  ): NestjsModuleGraph {
+    return service.buildGraph({ ownership, projectName, tree });
+  }
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -38,7 +61,7 @@ describe(NestjsModuleGraphsGraphService, () => {
 
   describe("buildGraph", () => {
     it("collects every module and its import edges", () => {
-      const graph = service.buildGraph([
+      const graph = build([
         buildNode("MainModule", ["FeatureModule", "OtherModule"]),
         buildNode("FeatureModule", ["OtherModule"]),
         buildNode("OtherModule", []),
@@ -54,19 +77,10 @@ describe(NestjsModuleGraphsGraphService, () => {
         { from: "MainModule", to: "FeatureModule" },
         { from: "MainModule", to: "OtherModule" },
       ]);
-      expect(graph.ambientModuleNames).toStrictEqual([]);
-    });
-
-    it("registers a module named only as an import", () => {
-      const graph = service.buildGraph([
-        buildNode("MainModule", ["OtherModule"]),
-      ]);
-
-      expect(graph.moduleNames).toStrictEqual(["MainModule", "OtherModule"]);
     });
 
     it("reports a module with no edges as isolated", () => {
-      const graph = service.buildGraph([buildNode("MainModule", [])]);
+      const graph = build([buildNode("MainModule", [])]);
 
       expect(graph.edges).toStrictEqual([]);
       expect(graph.isolatedModuleNames).toStrictEqual(["MainModule"]);
@@ -75,79 +89,158 @@ describe(NestjsModuleGraphsGraphService, () => {
     // A global module is registered into every module in the container, so
     // drawing its edges would add one per module and say nothing.
     it("drops the edges into a module every other module imports", () => {
-      const graph = service.buildGraph(buildAmbientTree(6, "LoggerModule"));
+      const graph = build(buildAmbientTree(6, "LoggerModule"));
 
       expect(graph.ambientModuleNames).toStrictEqual(["LoggerModule"]);
       expect(graph.edges).toStrictEqual([]);
-    });
-
-    it("keeps an ambient module as a node of its own", () => {
-      const graph = service.buildGraph(buildAmbientTree(6, "LoggerModule"));
-
-      expect(graph.moduleNames).toContain("LoggerModule");
       expect(graph.isolatedModuleNames).toContain("LoggerModule");
-    });
-
-    it("keeps the edges into a module only some modules import", () => {
-      const graph = service.buildGraph([
-        buildNode("MainModule", ["SharedModule", "FirstModule"]),
-        buildNode("FirstModule", ["SharedModule"]),
-        buildNode("SecondModule", []),
-        buildNode("ThirdModule", []),
-        buildNode("SharedModule", []),
-      ]);
-
-      expect(graph.ambientModuleNames).toStrictEqual([]);
-      expect(graph.edges).toContainEqual({
-        from: "FirstModule",
-        to: "SharedModule",
-      });
     });
 
     // Below the minimum, the single import of a two-module graph would look
     // exactly like a global module and vanish.
     it("does not treat a small graph's only import as ambient", () => {
-      const graph = service.buildGraph(buildAmbientTree(3, "LoggerModule"));
+      const graph = build(buildAmbientTree(3, "LoggerModule"));
 
       expect(graph.ambientModuleNames).toStrictEqual([]);
       expect(graph.edges).toHaveLength(2);
     });
   });
 
+  describe("grouping", () => {
+    it("groups modules under the project that defines them", () => {
+      const graph = build(
+        [buildNode("MainModule", ["LoggerModule"])],
+        buildOwnership({
+          LoggerModule: ["logger"],
+          MainModule: ["example"],
+        }),
+      );
+
+      expect(graph.groups).toStrictEqual([
+        { moduleNames: ["MainModule"], projectName: "example" },
+        { moduleNames: ["LoggerModule"], projectName: "logger" },
+      ]);
+    });
+
+    // Every application defines a `MainModule`, and two packages here define a
+    // `ConfigurationModule`; the project being graphed settles both.
+    it("credits a name more than one project defines to the graphed project", () => {
+      const graph = build(
+        [buildNode("MainModule", [])],
+        buildOwnership({ MainModule: ["caelundas", "example"] }),
+      );
+
+      expect(graph.groups).toStrictEqual([
+        { moduleNames: ["MainModule"], projectName: "example" },
+      ]);
+    });
+
+    it("credits a name several other projects define to nobody", () => {
+      const graph = build(
+        [buildNode("ConfigurationModule", [])],
+        buildOwnership({ ConfigurationModule: ["first", "second"] }),
+      );
+
+      expect(graph.groups).toStrictEqual([
+        { moduleNames: ["ConfigurationModule"], projectName: undefined },
+      ]);
+    });
+
+    // `DiscoveryModule` is both a `@nestjs/core` module and one a package here
+    // defines, and the name alone cannot tell them apart.
+    it("credits a name NestJS also exports to nobody", () => {
+      const graph = build(
+        [buildNode("DiscoveryModule", [])],
+        buildOwnership({ DiscoveryModule: ["other"] }, ["DiscoveryModule"]),
+      );
+
+      expect(graph.groups).toStrictEqual([
+        { moduleNames: ["DiscoveryModule"], projectName: undefined },
+      ]);
+    });
+
+    it("orders two other projects alphabetically", () => {
+      const graph = build(
+        [buildNode("MainModule", ["ZebraModule", "AlphaModule"])],
+        buildOwnership({
+          AlphaModule: ["alpha"],
+          MainModule: ["example"],
+          ZebraModule: ["zebra"],
+        }),
+      );
+
+      expect(graph.groups.map((group) => group.projectName)).toStrictEqual([
+        "example",
+        "alpha",
+        "zebra",
+      ]);
+    });
+
+    it("orders the graphed project first and the ungrouped modules last", () => {
+      const graph = build(
+        [buildNode("MainModule", ["AlphaModule", "ConfigModule"])],
+        buildOwnership({
+          AlphaModule: ["alpha"],
+          MainModule: ["example"],
+        }),
+      );
+
+      expect(graph.groups.map((group) => group.projectName)).toStrictEqual([
+        "example",
+        "alpha",
+        undefined,
+      ]);
+    });
+  });
+
   describe("renderMermaid", () => {
-    it("renders a fenced mermaid diagram of the edges", () => {
-      const graph: NestjsModuleGraph = {
-        ambientModuleNames: [],
-        edges: [
-          { from: "MainModule", to: "FeatureModule" },
-          { from: "MainModule", to: "OtherModule" },
-        ],
-        isolatedModuleNames: [],
-        moduleNames: ["FeatureModule", "MainModule", "OtherModule"],
-      };
+    it("renders each project's modules in a labelled subgraph", () => {
+      const graph = build(
+        [buildNode("MainModule", ["LoggerModule"])],
+        buildOwnership({
+          LoggerModule: ["logger"],
+          MainModule: ["example"],
+        }),
+      );
 
       expect(service.renderMermaid(graph)).toBe(
         [
           "```mermaid",
           "flowchart LR",
-          "  MainModule --> FeatureModule",
-          "  MainModule --> OtherModule",
+          '  subgraph group0["example"]',
+          "    MainModule",
+          "  end",
+          '  subgraph group1["logger"]',
+          "    LoggerModule",
+          "  end",
+          "  MainModule --> LoggerModule",
           "```",
         ].join("\n"),
       );
     });
 
-    it("declares isolated modules so they still appear", () => {
-      const graph: NestjsModuleGraph = {
-        ambientModuleNames: ["LoggerModule"],
-        edges: [],
-        isolatedModuleNames: ["LoggerModule"],
-        moduleNames: ["LoggerModule"],
-      };
+    it("renders a module belonging to no project outside any subgraph", () => {
+      const graph = build([buildNode("ConfigModule", [])]);
 
       expect(service.renderMermaid(graph)).toBe(
-        ["```mermaid", "flowchart LR", "  LoggerModule", "```"].join("\n"),
+        ["```mermaid", "flowchart LR", "  ConfigModule", "```"].join("\n"),
       );
+    });
+
+    it("draws an ambient module rounded and explains the shape", () => {
+      const graph = build(buildAmbientTree(6, "LoggerModule"));
+      const diagram = service.renderMermaid(graph);
+
+      expect(diagram).toContain("  LoggerModule([LoggerModule])");
+      expect(diagram).toContain("_Rounded modules are global");
+    });
+
+    it("leaves the legend out when no module is ambient", () => {
+      const diagram = service.renderMermaid(
+        build([buildNode("MainModule", [])]),
+      );
+
+      expect(diagram).not.toContain("_Rounded modules are global");
     });
   });
 });

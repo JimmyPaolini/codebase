@@ -5,6 +5,7 @@
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
+    "@nx/devkit": "catalog:",
     "json5": "catalog:",
     "lodash": "catalog:",
     "nest-commander": "catalog:",

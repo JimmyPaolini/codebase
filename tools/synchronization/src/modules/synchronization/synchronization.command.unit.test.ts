@@ -9,6 +9,7 @@ import { ConformetryGeneratorsCommand } from "../conformetry-generators/conforme
 import { ConventionalConfigCommand } from "../conventional-config/conventional-config.command";
 import { DevcontainerConfigurationCommand } from "../devcontainer-configuration/devcontainer-configuration.command";
 import { NestjsModuleGraphsCommand } from "../nestjs-module-graphs/nestjs-module-graphs.command";
+import { NxProjectGraphsCommand } from "../nx-project-graphs/nx-project-graphs.command";
 import { PullRequestTemplateCommand } from "../pull-request-template/pull-request-template.command";
 
 import { SynchronizationCommand } from "./synchronization.command";
@@ -23,6 +24,7 @@ describe(SynchronizationCommand, () => {
   let devcontainerConfiguration: DevcontainerConfigurationCommand;
   let logger: LoggerService;
   let nestjsModuleGraphs: NestjsModuleGraphsCommand;
+  let nxProjectGraphs: NxProjectGraphsCommand;
   let pullRequestTemplate: PullRequestTemplateCommand;
 
   /** The delegates in the order the aggregate reports them. */
@@ -32,6 +34,7 @@ describe(SynchronizationCommand, () => {
       conventionalConfig,
       devcontainerConfiguration,
       nestjsModuleGraphs,
+      nxProjectGraphs,
       pullRequestTemplate,
     ];
   }
@@ -77,6 +80,12 @@ describe(SynchronizationCommand, () => {
           }),
         },
         {
+          provide: NxProjectGraphsCommand,
+          useValue: createMock<NxProjectGraphsCommand>({
+            synchronizationLabel: "nx-project-graphs",
+          }),
+        },
+        {
           provide: PullRequestTemplateCommand,
           useValue: createMock<PullRequestTemplateCommand>({
             synchronizationLabel: "pull-request-template",
@@ -93,6 +102,7 @@ describe(SynchronizationCommand, () => {
     );
     logger = await module.resolve(LoggerService);
     nestjsModuleGraphs = await module.resolve(NestjsModuleGraphsCommand);
+    nxProjectGraphs = await module.resolve(NxProjectGraphsCommand);
     pullRequestTemplate = await module.resolve(PullRequestTemplateCommand);
   });
 
@@ -128,6 +138,10 @@ describe(SynchronizationCommand, () => {
         {
           provide: NestjsModuleGraphsCommand,
           useValue: createMock<NestjsModuleGraphsCommand>(),
+        },
+        {
+          provide: NxProjectGraphsCommand,
+          useValue: createMock<NxProjectGraphsCommand>(),
         },
         {
           provide: PullRequestTemplateCommand,

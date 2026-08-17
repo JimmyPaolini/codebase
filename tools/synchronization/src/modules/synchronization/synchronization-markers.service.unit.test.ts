@@ -1,10 +1,10 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { NestjsModuleGraphsMarkersService } from "./nestjs-module-graphs-markers.service";
+import { SynchronizationMarkersService } from "./synchronization-markers.service";
 
-describe(NestjsModuleGraphsMarkersService, () => {
-  let service: NestjsModuleGraphsMarkersService;
+describe(SynchronizationMarkersService, () => {
+  let service: SynchronizationMarkersService;
 
   const marker = "nestjs-module-graph";
   const content = [
@@ -22,10 +22,10 @@ describe(NestjsModuleGraphsMarkersService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [NestjsModuleGraphsMarkersService],
+      providers: [SynchronizationMarkersService],
     }).compile();
 
-    service = await module.resolve(NestjsModuleGraphsMarkersService);
+    service = await module.resolve(SynchronizationMarkersService);
   });
 
   it("is defined", () => {

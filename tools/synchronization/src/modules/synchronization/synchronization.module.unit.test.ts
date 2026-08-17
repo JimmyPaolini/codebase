@@ -6,6 +6,7 @@ import { ConformetryGeneratorsModule } from "../conformetry-generators/conformet
 import { ConventionalConfigModule } from "../conventional-config/conventional-config.module";
 import { DevcontainerConfigurationModule } from "../devcontainer-configuration/devcontainer-configuration.module";
 import { NestjsModuleGraphsModule } from "../nestjs-module-graphs/nestjs-module-graphs.module";
+import { NxProjectGraphsModule } from "../nx-project-graphs/nx-project-graphs.module";
 import { PullRequestTemplateModule } from "../pull-request-template/pull-request-template.module";
 
 import { SynchronizationModule } from "./synchronization.module";
@@ -27,6 +28,7 @@ describe(SynchronizationModule, () => {
     expect(imports).toContain(ConventionalConfigModule);
     expect(imports).toContain(DevcontainerConfigurationModule);
     expect(imports).toContain(NestjsModuleGraphsModule);
+    expect(imports).toContain(NxProjectGraphsModule);
     expect(imports).toContain(PullRequestTemplateModule);
 
     expect(providers).toBeDefined();

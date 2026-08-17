@@ -8,10 +8,10 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { LoggerService } from "@codebase/logger";
 
 import { expectProcessExitOne } from "../../../testing/mocks";
+import { SynchronizationMarkersService } from "../synchronization/synchronization-markers.service";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import { NestjsModuleGraphsGraphService } from "./nestjs-module-graphs-graph.service";
-import { NestjsModuleGraphsMarkersService } from "./nestjs-module-graphs-markers.service";
 import { NestjsModuleGraphsCommand } from "./nestjs-module-graphs.command";
 import {
   NESTJS_MODULE_GRAPH_MARKER,
@@ -52,6 +52,7 @@ const diagram = [
 const graph: NestjsModuleGraph = {
   ambientModuleNames: [],
   edges: [{ from: "MainModule", to: "A" }],
+  groups: [{ moduleNames: ["A", "MainModule"], projectName: "example" }],
   isolatedModuleNames: [],
   moduleNames: ["A", "MainModule"],
 };
@@ -93,7 +94,7 @@ describe(NestjsModuleGraphsCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         NestjsModuleGraphsCommand,
-        NestjsModuleGraphsMarkersService,
+        SynchronizationMarkersService,
         SynchronizationService,
         {
           provide: LoggerService,
@@ -137,7 +138,7 @@ describe(NestjsModuleGraphsCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         NestjsModuleGraphsCommand,
-        NestjsModuleGraphsMarkersService,
+        SynchronizationMarkersService,
         SynchronizationService,
         {
           provide: LoggerService,
