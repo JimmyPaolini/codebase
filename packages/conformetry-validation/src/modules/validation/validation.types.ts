@@ -1,7 +1,7 @@
 // 🏷️ Types
 
 import type {
-  InstanceCandidate,
+  Instance,
   MatchedInstance,
   TemplateDefinition,
   UnmatchedInstance,
@@ -42,7 +42,7 @@ export interface RunValidationArguments {
    * an Nx plugin filters by project tags, the CLI reads the config — so this
    * package never needs to know what a workspace is.
    */
-  readonly candidates: InstanceCandidate[];
+  readonly instances: Instance[];
   /**
    * Language names (`typescript`, `json`, …) to restrict the run to. Every
    * language runs when this is absent or empty.
@@ -54,7 +54,7 @@ export interface RunValidationArguments {
    */
   readonly loadLanguageModule?: LanguageModuleLoader;
   /**
-   * The templates candidates are matched against. Supplied rather than read
+   * The templates instances are matched against. Supplied rather than read
    * from a root directory, because a template's location is a property of the
    * generator that owns it.
    */
@@ -68,7 +68,7 @@ export interface RunValidationResult {
   readonly fileResults: ValidationFileResult[];
   readonly ok: boolean;
   /**
-   * Candidates that matched no template, or matched two equally well. These
+   * Instances that matched no template, or matched two equally well. These
    * are findings in their own right: a glob is the caller asserting the path
    * is an instance, so matching nothing means the instance has drifted or the
    * glob is wrong.

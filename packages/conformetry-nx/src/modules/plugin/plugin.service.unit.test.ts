@@ -16,7 +16,7 @@ import { GeneratorService } from "../generator/generator.service";
 import { PluginModule } from "./plugin.module";
 import { PluginService } from "./plugin.service";
 
-import type { ProjectScope } from "../candidates/candidates.types";
+import type { ProjectScope } from "../instances/instances.types";
 import type { Tree } from "@nx/devkit";
 
 const WIDGETS: ProjectScope = {

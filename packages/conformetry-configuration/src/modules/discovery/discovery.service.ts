@@ -2,26 +2,26 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { DiscoveryCandidatesService } from "./discovery-candidates.service";
+import { DiscoveryInstancesService } from "./discovery-instances.service";
 import { DiscoveryMatchingService } from "./discovery-matching.service";
 import { DiscoveryTemplatesService } from "./discovery-templates.service";
 
 import type {
-  InstanceCandidate,
+  FindInstancesArguments,
+  Instance,
   InstanceFile,
   MatchedInstance,
   PreparedInstanceDocuments,
   PrepareDocumentsArguments,
-  ResolveCandidatesArguments,
   ResolvedInstances,
   TemplateDefinition,
 } from "./discovery.types";
 
 /**
- * Turns candidate directories into matched instances and comparison documents.
+ * Turns instance directories into matched instances and comparison documents.
  *
  * This is the entry point for the discovery module. It knows nothing about
- * workspaces, projects, or globs — the caller supplies candidates, and the
+ * workspaces, projects, or globs — the caller supplies instances, and the
  * templates root supplies templates. That is what keeps this package usable
  * from any host, not just Nx.
  */
@@ -30,7 +30,7 @@ export class DiscoveryService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly discoveryCandidatesService: DiscoveryCandidatesService,
+    private readonly discoveryInstancesService: DiscoveryInstancesService,
     private readonly discoveryMatchingService: DiscoveryMatchingService,
     private readonly discoveryTemplatesService: DiscoveryTemplatesService,
   ) {}
@@ -51,6 +51,19 @@ export class DiscoveryService {
     return this.discoveryTemplatesService.collectTemplate(args);
   }
 
+  /** Expands instance glob patterns into instances. */
+  public findInstances(args: FindInstancesArguments): Instance[] {
+    return this.discoveryInstancesService.findInstances(args);
+  }
+
+  /** Matches instance directories to the templates that best explain them. */
+  public matchInstances(args: {
+    instances: Instance[];
+    templates: TemplateDefinition[];
+  }): ResolvedInstances {
+    return this.discoveryMatchingService.matchInstances(args);
+  }
+
   /**
    * Prepares the rendered template/instance document pairs for each matched
    * instance, restricted to the extensions the caller's validators claim.
@@ -68,7 +81,7 @@ export class DiscoveryService {
           })
           .map((templateFilePath) => {
             return this.discoveryTemplatesService.prepareDocument({
-              instancePath: instance.candidate.instancePath,
+              instancePath: instance.instance.path,
               substitutions: instance.substitutions,
               templateDirectoryPath: instance.template.directoryPath,
               templateFilePath,
@@ -78,13 +91,6 @@ export class DiscoveryService {
         instance,
       };
     });
-  }
-
-  /** Expands instance glob patterns into candidates. */
-  public resolveCandidates(
-    args: ResolveCandidatesArguments,
-  ): InstanceCandidate[] {
-    return this.discoveryCandidatesService.resolveCandidates(args);
   }
 
   /**
@@ -102,7 +108,7 @@ export class DiscoveryService {
           instance,
           instanceFilePath:
             this.discoveryTemplatesService.resolveInstanceFilePath({
-              instancePath: instance.candidate.instancePath,
+              instancePath: instance.instance.path,
               substitutions: instance.substitutions,
               templateDirectoryPath: instance.template.directoryPath,
               templateFilePath,
@@ -111,13 +117,5 @@ export class DiscoveryService {
         };
       });
     });
-  }
-
-  /** Matches candidate directories to the templates that best explain them. */
-  public resolveInstances(args: {
-    candidates: InstanceCandidate[];
-    templates: TemplateDefinition[];
-  }): ResolvedInstances {
-    return this.discoveryMatchingService.resolveInstances(args);
   }
 }

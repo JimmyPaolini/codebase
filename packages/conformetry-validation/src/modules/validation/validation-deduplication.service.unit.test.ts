@@ -39,9 +39,9 @@ function buildInstance(args: {
   name: string;
 }): MatchedInstance {
   return {
-    candidate: {
-      instancePath: "/w/packages/widgets/src/modules/logger",
+    instance: {
       nameStem: "logger",
+      path: "/w/packages/widgets/src/modules/logger",
     },
     matchedFileCount: args.fileCount,
     substitutions: { name: "logger" },

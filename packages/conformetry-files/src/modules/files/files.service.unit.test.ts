@@ -61,8 +61,8 @@ describe(FilesService, () => {
 
   /** Matches an instance path against the single `widget` template. */
   function matchInstance(instancePath: string): MatchedInstance[] {
-    const { matched } = discoveryService.resolveInstances({
-      candidates: [{ instancePath, nameStem: "my-widget" }],
+    const { matched } = discoveryService.matchInstances({
+      instances: [{ nameStem: "my-widget", path: instancePath }],
       templates: [template],
     });
 
@@ -152,8 +152,8 @@ describe(FilesService, () => {
       "utf8",
     );
 
-    const { matched } = discoveryService.resolveInstances({
-      candidates: [{ instancePath, nameStem: "my-widget" }],
+    const { matched } = discoveryService.matchInstances({
+      instances: [{ nameStem: "my-widget", path: instancePath }],
       templates: [nestedTemplate],
     });
     const results = service.checkInstanceFiles({ instances: matched });

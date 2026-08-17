@@ -22,10 +22,10 @@ import type {
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
- * Runs a full conformetry validation: match candidates to templates, check the
+ * Runs a full conformetry validation: match instances to templates, check the
  * files exist, then compare contents language by language.
  *
- * The candidates arrive from the caller. This package used to scan the
+ * The instances arrive from the caller. This package used to scan the
  * workspace for `project.json` files and infer scope from generator name
  * suffixes, which made a generic package depend on one repository's layout.
  */
@@ -102,7 +102,7 @@ export class ValidationService {
       ...this.filesService.checkInstanceFiles({ instances: [args.instance] }),
       ...args.validators.flatMap((validator) => {
         return this.languageService.runValidator({
-          checkedPaths: [args.instance.candidate.instancePath],
+          checkedPaths: [args.instance.instance.path],
           documents: prepared?.documents ?? [],
           validator,
         }).fileResults;
@@ -113,17 +113,17 @@ export class ValidationService {
   // 🌎 Public Methods
 
   /**
-   * Validates every candidate and returns the differences found.
+   * Validates every instance and returns the differences found.
    *
-   * Candidates that matched no template are reported alongside the content
+   * Instances that matched no template are reported alongside the content
    * differences rather than skipped, so one report covers both "this file is
    * wrong" and "conformetry cannot tell what this path was generated from".
    */
   public async validate(
     args: RunValidationArguments,
   ): Promise<RunValidationResult> {
-    const { matched, unmatched } = this.discoveryService.resolveInstances({
-      candidates: args.candidates,
+    const { matched, unmatched } = this.discoveryService.matchInstances({
+      instances: args.instances,
       templates: args.templates,
     });
     const validators = this.selectValidators({
@@ -151,7 +151,7 @@ export class ValidationService {
 
     return {
       checkedPaths: matched.map((instance) => {
-        return instance.candidate.instancePath;
+        return instance.instance.path;
       }),
       fileResults,
       ok: fileResults.length === 0,

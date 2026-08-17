@@ -1,6 +1,6 @@
 // 🏷️ Types
 
-import type { ProjectScope } from "../candidates/candidates.types";
+import type { ProjectScope } from "../instances/instances.types";
 import type { PLUGIN_CONTEXT_GLOBAL_KEY } from "./plugin.constants";
 import type { INestApplicationContext } from "@nestjs/common";
 import type { Tree } from "@nx/devkit";

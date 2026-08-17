@@ -18,7 +18,7 @@ import type { ValidateCommandOptions } from "./validate.types.js";
 import type {
   ConformetryConfiguration,
   ConformetryInstanceGroup,
-  InstanceCandidate,
+  Instance,
   TemplateDefinition,
 } from "@conformetry/configuration";
 
@@ -57,19 +57,19 @@ export class ValidateCommand extends CommandRunner {
   // 🔏 Private Methods
 
   /**
-   * Expands every configured glob group into candidates, or the single
+   * Expands every configured glob group into instances, or the single
    * override group `--instances` supplies.
    *
    * Groups exist so that substitutions can differ per glob: `type` is
    * `packages` for one set of paths and `applications` for another, and no
    * generic rule can tell them apart.
    */
-  private resolveCandidates(args: {
+  private findInstances(args: {
     groups: ConformetryInstanceGroup[];
     workingDirectory: string;
-  }): InstanceCandidate[] {
+  }): Instance[] {
     return args.groups.flatMap((group) => {
-      return this.discoveryService.resolveCandidates({
+      return this.discoveryService.findInstances({
         // A group may name only labels, which this host has nothing to match
         // them against — it locates instances by glob alone.
         patterns: group.patterns ?? [],
@@ -138,7 +138,7 @@ export class ValidateCommand extends CommandRunner {
         options.config ?? DEFAULT_CONFIGURATION_PATH,
       );
     const result = await this.validationService.validate({
-      candidates: this.resolveCandidates({
+      instances: this.findInstances({
         groups:
           options.instances === undefined
             ? configuration.flatMap((generator) => generator.instances)

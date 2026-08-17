@@ -4,7 +4,7 @@
 
 `@conformetry/configuration` reads a repository's `conformetry.config.*`, checks
 it, and turns it into the three things the rest of the toolchain works from:
-the generator registry, the instance candidates validation walks, and the
+the generator registry, the instances validation walks, and the
 resolved inputs a generator renders with.
 
 ```bash
@@ -73,7 +73,7 @@ problem in one pass:
   the first match, so a collision does not error where it is used — it silently
   shadows, and the losing generator becomes unreachable while still appearing
   in the configuration.
-- **Two generators sharing a `templatePath`.** Validation then finds candidates
+- **Two generators sharing a `templatePath`.** Validation then finds instances
   that fit both equally and reports them as matching nothing.
 - **A name or alias containing a path separator.** A generator is addressed by
   that text and emitted to a file named after it.
@@ -177,15 +177,15 @@ rather than hanging it.
 ## Matching
 
 Validation does not record which template produced a file. It works it out:
-every candidate is scored against every template by the share of the template's
-files the candidate already has, and the best fit wins.
+every instance is weighed against every template by the share of the template's
+files the instance already has, and the best fit wins.
 
 Two outcomes are reported rather than skipped, because a glob is the author
 asserting that these paths _are_ instances:
 
 | Reason | Meaning |
 | ------ | ------- |
-| `no-match` | No template explains this candidate well enough |
+| `no-match` | No template explains this instance well enough |
 | `ambiguous` | Two or more templates tied, so they are indistinguishable here |
 
 ## Exports
@@ -193,7 +193,7 @@ asserting that these paths _are_ instances:
 | Export | Purpose |
 | ------ | ------- |
 | `ConfigurationService` | Loads, validates, and normalizes a configuration file |
-| `DiscoveryService` | Expands globs into candidates, reads templates, matches the two, prepares documents |
+| `DiscoveryService` | Expands globs into instances, reads templates, matches the two, prepares documents |
 | `InputService` | Parses command-line options and resolves generator inputs, prompting when allowed |
 | `ConformetryConfiguration` | The loaded configuration type — author your config as this |
 | `ConformetryInstanceGroup`, `ConformetryGeneratorDefinition` | Field-level types for the above |

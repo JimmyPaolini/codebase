@@ -105,7 +105,7 @@ instances: [{ patterns: ["src/modules/*"], tags: ["framework:nestjs"] }];
 
 The two group forms are told apart by `tags` alone. There is no second field
 that could disagree with it: a separate scope that excluded a project the globs
-reached narrowed validation silently, and validation cannot notice candidates
+reached narrowed validation silently, and validation cannot notice instances
 it was never offered.
 
 Omitting `patterns` selects the projects without locating anything in them,
@@ -117,7 +117,7 @@ to the projects the template suits.
 `runConformetryGenerator` for generator wrappers, `bootstrapPlugin` and
 `runBootstrapCli` for the bootstrap, the `ConformetryNxConfiguration` and
 instance-group types, and the NestJS services behind them (`PluginService`,
-`AdapterService`, `CandidatesService`, `ScopeService`, `OptionsService`).
+`AdapterService`, `InstancesService`, `ScopeService`, `OptionsService`).
 
 ## Test
 

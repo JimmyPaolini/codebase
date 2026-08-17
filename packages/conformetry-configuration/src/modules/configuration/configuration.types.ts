@@ -39,7 +39,7 @@ export type ConformetryGeneratorInputDefinition = Record<string, unknown>;
  * One set of instance globs and the substitutions their template renders with.
  *
  * Directory and file patterns behave differently on purpose — see
- * `InstanceCandidate.instancePath`.
+ * `Instance.path`.
  */
 export interface ConformetryInstanceGroup {
   /**

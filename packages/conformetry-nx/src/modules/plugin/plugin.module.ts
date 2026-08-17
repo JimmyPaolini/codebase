@@ -8,8 +8,8 @@ import { ValidationModule } from "@conformetry/validation";
 import { Module } from "@nestjs/common";
 
 import { AdapterModule } from "../adapter/adapter.module";
-import { CandidatesModule } from "../candidates/candidates.module";
 import { GeneratorModule } from "../generator/generator.module";
+import { InstancesModule } from "../instances/instances.module";
 import { OptionsModule } from "../options/options.module";
 import { PathsModule } from "../paths/paths.module";
 import { ProjectsModule } from "../projects/projects.module";
@@ -28,7 +28,7 @@ import { PluginService } from "./plugin.service";
   controllers: [],
   exports: [
     AdapterModule,
-    CandidatesModule,
+    InstancesModule,
     ConfigurationModule,
     GeneratorModule,
     DiscoveryModule,
@@ -43,7 +43,7 @@ import { PluginService } from "./plugin.service";
   ],
   imports: [
     AdapterModule,
-    CandidatesModule,
+    InstancesModule,
     ConfigurationModule,
     GeneratorModule,
     DiscoveryModule,

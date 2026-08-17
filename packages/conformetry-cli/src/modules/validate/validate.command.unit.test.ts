@@ -15,7 +15,7 @@ import { ValidateCommand } from "./validate.command";
 
 import type {
   ConformetryConfiguration,
-  InstanceCandidate,
+  Instance,
   TemplateDefinition,
 } from "@conformetry/configuration";
 
@@ -28,9 +28,9 @@ const CONFIGURATION: ConformetryConfiguration = [
   },
 ];
 
-const CANDIDATE: InstanceCandidate = {
-  instancePath: "/w/packages/widgets/src/modules",
+const INSTANCE: Instance = {
   nameStem: "gears",
+  path: "/w/packages/widgets/src/modules",
 };
 
 const TEMPLATE: TemplateDefinition = {
@@ -83,7 +83,7 @@ describe(ValidateCommand, () => {
     vi.mocked(
       configurationService.loadConformetryConfiguration,
     ).mockResolvedValue(CONFIGURATION);
-    vi.mocked(discoveryService.resolveCandidates).mockReturnValue([CANDIDATE]);
+    vi.mocked(discoveryService.findInstances).mockReturnValue([INSTANCE]);
     vi.mocked(discoveryService.collectTemplate).mockReturnValue(TEMPLATE);
     vi.mocked(validationService.validate).mockResolvedValue({
       checkedPaths: [],
@@ -126,11 +126,11 @@ describe(ValidateCommand, () => {
     it("validates the configured instances and reports the outcome", async () => {
       await command.run([], {});
 
-      expect(discoveryService.resolveCandidates).toHaveBeenCalledWith(
+      expect(discoveryService.findInstances).toHaveBeenCalledWith(
         expect.objectContaining({ patterns: ["packages/*/src/modules/*"] }),
       );
       expect(validationService.validate).toHaveBeenCalledWith(
-        expect.objectContaining({ candidates: [CANDIDATE] }),
+        expect.objectContaining({ instances: [INSTANCE] }),
       );
       expect(commandLogger.log).toHaveBeenCalledTimes(1);
     });
@@ -138,7 +138,7 @@ describe(ValidateCommand, () => {
     it("lets an explicit glob override the configured instances", async () => {
       await command.run([], { instances: ["tools/*"] });
 
-      expect(discoveryService.resolveCandidates).toHaveBeenCalledWith(
+      expect(discoveryService.findInstances).toHaveBeenCalledWith(
         expect.objectContaining({ patterns: ["tools/*"] }),
       );
     });
@@ -162,7 +162,7 @@ describe(ValidateCommand, () => {
 
       await command.run([], {});
 
-      expect(discoveryService.resolveCandidates).toHaveBeenCalledWith(
+      expect(discoveryService.findInstances).toHaveBeenCalledWith(
         expect.objectContaining({ substitutions: { type: "packages" } }),
       );
     });

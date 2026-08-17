@@ -11,7 +11,7 @@ import type { z } from "zod";
  * or alias matches, so a collision does not error where it is used — it
  * silently shadows, and the losing generator becomes unreachable while still
  * appearing in the configuration. Two generators sharing a template collide
- * differently: validation then finds candidates that fit both equally and
+ * differently: validation then finds instances that fit both equally and
  * reports them as matching nothing.
  *
  * Reported through Zod rather than thrown, so every collision in a

@@ -4,25 +4,22 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 
 import {
-  CANDIDATE_KEY_SEPARATOR,
   FILE_EXTENSION_PATTERN,
   GLOB_WILDCARD_CHARACTERS,
+  INSTANCE_KEY_SEPARATOR,
 } from "./discovery.constants";
 
-import type {
-  InstanceCandidate,
-  ResolveCandidatesArguments,
-} from "./discovery.types";
+import type { FindInstancesArguments, Instance } from "./discovery.types";
 
 /**
- * Expands instance glob patterns into candidates.
+ * Expands instance glob patterns into instances.
  *
  * The globs are the author's assertion of what was generated from a template;
  * nothing is inferred from directory names or marker files, which is what the
  * previous matcher did and what made it repo-specific.
  */
 @Injectable()
-export class DiscoveryCandidatesService {
+export class DiscoveryInstancesService {
   // 🏗 Dependency Injection
 
   constructor() {}
@@ -34,7 +31,7 @@ export class DiscoveryCandidatesService {
   // 🔏 Private Methods
 
   /**
-   * Derives the substitutions a candidate's own location answers.
+   * Derives the substitutions an instance's own location answers.
    *
    * `type` is the top-level directory the instance sits in — `packages` for
    * `packages/widgets` — because that is what a project template's own
@@ -67,7 +64,7 @@ export class DiscoveryCandidatesService {
    * `.service.ts` for `**\/*.service.ts`, or `""` when the pattern's last
    * segment holds no wildcard.
    *
-   * This is what a file candidate's name is derived from: the part of the
+   * This is what a file instance's name is derived from: the part of the
    * filename the glob did not spell out is the name.
    */
   private resolveGlobSuffix(pattern: string): string {
@@ -82,13 +79,13 @@ export class DiscoveryCandidatesService {
   }
 
   /**
-   * Derives the name a candidate's substitutions are built from.
+   * Derives the name an instance's substitutions are built from.
    *
    * A directory is named by itself. A file is named by what remains once the
    * glob's literal suffix is removed, so `errors.service.ts` matched by
    * `*.service.ts` and `errors.service.unit.test.ts` matched by
    * `*.service.unit.test.ts` both yield `errors` — which is what collapses the
-   * two into a single two-file candidate.
+   * two into a single two-file instance.
    */
   private resolveNameStem(args: {
     entryName: string;
@@ -109,18 +106,16 @@ export class DiscoveryCandidatesService {
   // 🌎 Public Methods
 
   /**
-   * Expands every pattern and returns one candidate per distinct instance
-   * path, name, and scope kind.
+   * Expands every pattern and returns one instance per distinct path, name,
+   * and scope kind.
    *
    * A directory match leaves the file scope open, so the largest fitting
    * template wins. File matches for the same name are unioned into one scoped
-   * candidate, so a template describing exactly those files wins instead. A
-   * directory and a file candidate for the same name stay separate on purpose:
+   * instance, so a template describing exactly those files wins instead. A
+   * directory and a file instance for the same name stay separate on purpose:
    * both run, and deduplication reports the finding from the smaller template.
    */
-  public resolveCandidates(
-    args: ResolveCandidatesArguments,
-  ): InstanceCandidate[] {
+  public findInstances(args: FindInstancesArguments): Instance[] {
     const fileScopesByKey = new Map<string, Set<string> | undefined>();
 
     for (const pattern of args.patterns) {
@@ -145,7 +140,7 @@ export class DiscoveryCandidatesService {
           instancePath,
           nameStem,
           isDirectory ? "directory" : "file",
-        ].join(CANDIDATE_KEY_SEPARATOR);
+        ].join(INSTANCE_KEY_SEPARATOR);
 
         if (isDirectory) {
           fileScopesByKey.set(key, undefined);
@@ -163,15 +158,17 @@ export class DiscoveryCandidatesService {
       .toSorted(([left], [right]) => left.localeCompare(right))
       .map(([key, fileScope]) => {
         const [instancePath = "", nameStem = ""] = key.split(
-          CANDIDATE_KEY_SEPARATOR,
+          INSTANCE_KEY_SEPARATOR,
         );
 
         return {
-          instancePath,
           ...(fileScope === undefined
             ? {}
             : { fileScope: [...fileScope].toSorted() }),
           nameStem,
+          // Spelled out rather than shorthand: `path` is the node module in
+          // this scope, so the shorthand would bind the import.
+          path: instancePath,
           substitutions: {
             ...this.deriveLocationSubstitutions({
               instancePath,

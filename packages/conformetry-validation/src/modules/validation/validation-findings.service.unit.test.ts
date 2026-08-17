@@ -16,18 +16,18 @@ const TEMPLATES: TemplateDefinition[] = [
   },
 ];
 
-/** Builds an unmatched candidate for `packages/widgets/src/modules/gears`. */
+/** Builds an unmatched instance for `packages/widgets/src/modules/gears`. */
 function buildUnmatched(args: {
-  candidateTemplateNames: string[];
   reason: "ambiguous" | "no-match";
+  tiedTemplateNames: string[];
 }): UnmatchedInstance {
   return {
-    candidate: {
-      instancePath: "/w/packages/widgets/src/modules",
+    instance: {
       nameStem: "gears",
+      path: "/w/packages/widgets/src/modules",
     },
-    candidateTemplateNames: args.candidateTemplateNames,
     reason: args.reason,
+    tiedTemplateNames: args.tiedTemplateNames,
   };
 }
 
@@ -51,7 +51,7 @@ describe(ValidationFindingsService, () => {
       const [result] = service.buildUnmatchedResults({
         templates: TEMPLATES,
         unmatched: [
-          buildUnmatched({ candidateTemplateNames: [], reason: "no-match" }),
+          buildUnmatched({ reason: "no-match", tiedTemplateNames: [] }),
         ],
       });
 
@@ -65,7 +65,7 @@ describe(ValidationFindingsService, () => {
       const [result] = service.buildUnmatchedResults({
         templates: TEMPLATES,
         unmatched: [
-          buildUnmatched({ candidateTemplateNames: [], reason: "no-match" }),
+          buildUnmatched({ reason: "no-match", tiedTemplateNames: [] }),
         ],
       });
 
@@ -78,8 +78,8 @@ describe(ValidationFindingsService, () => {
         templates: TEMPLATES,
         unmatched: [
           buildUnmatched({
-            candidateTemplateNames: ["alpha", "beta"],
             reason: "ambiguous",
+            tiedTemplateNames: ["alpha", "beta"],
           }),
         ],
       });
@@ -92,7 +92,7 @@ describe(ValidationFindingsService, () => {
       const [result] = service.buildUnmatchedResults({
         templates: TEMPLATES,
         unmatched: [
-          buildUnmatched({ candidateTemplateNames: [], reason: "no-match" }),
+          buildUnmatched({ reason: "no-match", tiedTemplateNames: [] }),
         ],
       });
 
@@ -103,14 +103,14 @@ describe(ValidationFindingsService, () => {
       const [result] = service.buildUnmatchedResults({
         templates: [],
         unmatched: [
-          buildUnmatched({ candidateTemplateNames: [], reason: "no-match" }),
+          buildUnmatched({ reason: "no-match", tiedTemplateNames: [] }),
         ],
       });
 
       expect(result?.templateFilePath).toBe("");
     });
 
-    it("returns nothing when every candidate matched", () => {
+    it("returns nothing when every instance matched", () => {
       expect(
         service.buildUnmatchedResults({ templates: TEMPLATES, unmatched: [] }),
       ).toStrictEqual([]);

@@ -249,7 +249,7 @@ graph — and every other package declares exactly which siblings it may import.
 | Package | Role |
 | ------- | ---- |
 | [`@conformetry/core`](../conformetry-core/README.md) | Structured error shape, the language validator contract, report rendering |
-| [`@conformetry/configuration`](../conformetry-configuration/README.md) | Config loading, template discovery, candidate matching, input resolution |
+| [`@conformetry/configuration`](../conformetry-configuration/README.md) | Config loading, template discovery, instance matching, input resolution |
 | [`@conformetry/generation`](../conformetry-generation/README.md) | Mustache rendering and the generator lifecycle |
 | [`@conformetry/validation`](../conformetry-validation/README.md) | Validation orchestration, language routing, finding deduplication |
 | [`@conformetry/files`](../conformetry-files/README.md) | Existence checking for every declared file, whatever its extension |

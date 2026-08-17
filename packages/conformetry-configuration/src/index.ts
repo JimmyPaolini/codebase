@@ -9,20 +9,21 @@ export type {
   ConformetryInstanceGroup,
   JsonSchemaDefinition,
 } from "./modules/configuration/configuration.types";
-export { DiscoveryCandidatesService } from "./modules/discovery/discovery-candidates.service";
+export { DiscoveryInstancesService } from "./modules/discovery/discovery-instances.service";
 export { DiscoveryMatchingService } from "./modules/discovery/discovery-matching.service";
 export { DiscoveryTemplatesService } from "./modules/discovery/discovery-templates.service";
 export { DiscoveryModule } from "./modules/discovery/discovery.module";
 export { DiscoveryService } from "./modules/discovery/discovery.service";
 export type {
-  InstanceCandidate,
+  FindInstancesArguments,
+  Instance,
   InstanceFile,
   MatchedInstance,
   PreparedInstanceDocuments,
   PrepareDocumentsArguments,
-  ResolveCandidatesArguments,
   ResolvedInstances,
   TemplateDefinition,
+  TemplateMatch,
   UnmatchedInstance,
   UnmatchedReason,
 } from "./modules/discovery/discovery.types";

@@ -3,14 +3,27 @@
 import type { PreparedValidationDocument } from "@conformetry/core";
 import type { Substitutions } from "@conformetry/generation";
 
+/** Arguments for expanding instance globs into instances. */
+export interface FindInstancesArguments {
+  /** Glob patterns, resolved against the working directory. */
+  readonly patterns: string[];
+  /**
+   * Applied to every instance these patterns produce. Callers that need
+   * per-project values, such as an Nx plugin supplying `type`, call once per
+   * project rather than passing a lookup table.
+   */
+  readonly substitutions?: Substitutions;
+  readonly workingDirectory: string;
+}
+
 /**
  * A place a template's tree is rendered into, plus the name it renders with.
  *
- * Candidates come from the caller's glob expansion. Nothing here knows how
- * they were found — that is the host's job, because globbing a workspace and
+ * Instances come from the caller's glob expansion. Nothing here knows how they
+ * were found — that is the host's job, because globbing a workspace and
  * reading project labels is workspace knowledge, not template knowledge.
  */
-export interface InstanceCandidate {
+export interface Instance {
   /**
    * Absolute paths the match is restricted to, or `undefined` for the whole
    * directory tree.
@@ -22,18 +35,17 @@ export interface InstanceCandidate {
    * directory.
    */
   readonly fileScope?: string[];
+  /** Drives the name substitutions — a directory basename or a filename stem. */
+  readonly nameStem: string;
   /**
    * Absolute path to the directory the template's tree is laid over.
    *
    * A template that produces a folder contains that folder, so this is the
    * folder's *parent*: `nestjs-service-module` holds `{{nameKebabCase}}/…`,
-   * and its instance path is `…/src/modules`. A template that produces loose
-   * files holds them at its root, and its instance path is the directory those
-   * files sit in.
+   * and its path is `…/src/modules`. A template that produces loose files
+   * holds them at its root, and its path is the directory those files sit in.
    */
-  readonly instancePath: string;
-  /** Drives the name substitutions — a directory basename or a filename stem. */
-  readonly nameStem: string;
+  readonly path: string;
   /**
    * Substitutions the caller supplies on top of the derived name variants,
    * such as `type` from the project graph. Mustache renders an unknown
@@ -49,10 +61,10 @@ export interface InstanceFile {
   readonly templateFilePath: string;
 }
 
-/** A candidate paired with the template that best explains it. */
+/** An instance paired with the template that best explains it. */
 export interface MatchedInstance {
-  readonly candidate: InstanceCandidate;
-  /** How many of the template's files the candidate already has. */
+  readonly instance: Instance;
+  /** How many of the template's files the instance already has. */
   readonly matchedFileCount: number;
   readonly substitutions: Substitutions;
   readonly template: TemplateDefinition;
@@ -70,31 +82,10 @@ export interface PrepareDocumentsArguments {
   readonly instances: MatchedInstance[];
 }
 
-/** Arguments for expanding instance globs into candidates. */
-export interface ResolveCandidatesArguments {
-  /** Glob patterns, resolved against the working directory. */
-  readonly patterns: string[];
-  /**
-   * Applied to every candidate these patterns produce. Callers that need
-   * per-project values, such as an Nx plugin supplying `type`, call once per
-   * project rather than passing a lookup table.
-   */
-  readonly substitutions?: Substitutions;
-  readonly workingDirectory: string;
-}
-
-/** The outcome of resolving a set of candidates against a set of templates. */
+/** The outcome of resolving a set of instances against a set of templates. */
 export interface ResolvedInstances {
   readonly matched: MatchedInstance[];
   readonly unmatched: UnmatchedInstance[];
-}
-
-/** One template scored against a candidate during matching. */
-export interface ScoredTemplate {
-  readonly matchedFileCount: number;
-  /** Share of the template's files the candidate already has, 0 to 1. */
-  readonly ratio: number;
-  readonly template: TemplateDefinition;
 }
 
 /** One template: a directory of mustache files under the templates root. */
@@ -107,19 +98,34 @@ export interface TemplateDefinition {
   readonly name: string;
 }
 
-/** A candidate no template explains well enough to validate against. */
+/**
+ * One template weighed against an instance during matching.
+ *
+ * `matchRatio` measures which template *fits*, by file presence alone. It is
+ * deliberately not called a score: an instance's conformance score measures
+ * how well the matched template's contents are honoured, which is a different
+ * number arrived at a different way.
+ */
+export interface TemplateMatch {
+  readonly matchedFileCount: number;
+  /** Share of the template's files the instance already has, 0 to 1. */
+  readonly matchRatio: number;
+  readonly template: TemplateDefinition;
+}
+
+/** An instance no template explains well enough to validate against. */
 export interface UnmatchedInstance {
-  readonly candidate: InstanceCandidate;
-  /** Templates that tied, when the reason is `ambiguous`. */
-  readonly candidateTemplateNames: string[];
+  readonly instance: Instance;
   readonly reason: UnmatchedReason;
+  /** Templates that tied, when the reason is `ambiguous`. */
+  readonly tiedTemplateNames: string[];
 }
 
 /**
- * Why a candidate could not be matched.
+ * Why an instance could not be matched.
  *
  * Both are reported rather than skipped: a glob is the caller asserting these
- * directories are instances, so a candidate matching nothing is a real finding,
+ * directories are instances, so an instance matching nothing is a real finding,
  * and a tie means two templates are indistinguishable.
  */
 export type UnmatchedReason = "ambiguous" | "no-match";
