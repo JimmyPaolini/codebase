@@ -380,6 +380,9 @@
         "name": "CLAUDE.md"
       },
       {
+        "name": "CONTEXT.md"
+      },
+      {
         "name": "CONTRIBUTING.md"
       },
       {
@@ -420,6 +423,17 @@
           }
         ],
         "name": "configuration"
+      },
+      {
+        "children": [
+          {
+            "ruleId": "kebab-case-folder"
+          },
+          {
+            "ruleId": "any-file"
+          }
+        ],
+        "name": "docs"
       },
       {
         "children": [

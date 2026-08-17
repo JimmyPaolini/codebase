@@ -539,6 +539,67 @@ directly, so they are not listed here — reading the directory is what tells yo
 which ones exist right now, including the ones installed from other
 repositories.
 
+Skills come from two places. The ones this repository owns are committed. The
+ones installed from other repositories — including the
+[mattpocock/skills](https://github.com/mattpocock/skills) set that
+[Agent Workflow](#agent-workflow) is built on — are declared in
+`skills-lock.json` and gitignored per-folder in `.gitignore`, so a fresh
+checkout holds none of them.
+
+`scripts/install-skills.sh` restores them, and the root `postinstall` runs it.
+Every environment that installs node dependencies therefore ends up with the
+skills this file links to: local clones, devcontainers, CI jobs using the
+`setup-codebase` action, and Claude Code worktrees. Run it directly when a skill
+named in this file is missing from `.agents/skills/`:
+
+```bash
+pnpm exec nx run codebase:install-skills
+```
+
+Four behaviors are worth knowing before changing any of this:
+
+- **It is idempotent.** With every locked skill already on disk it returns in
+  milliseconds instead of re-cloning every source repository. Use the `force`
+  configuration to re-restore a skill that is present but damaged.
+- **It never leaves tracked files dirty.** `skills experimental_install`
+  rewrites `skills-lock.json` with whatever hash each source holds now, so the
+  script reverts that rewrite. Otherwise every CI job would end with a dirty
+  tree and `upgrade-dependencies.yml` — which gates its pull request on
+  `git diff --quiet` — would open an empty upgrade pull request on every run.
+- **It never fails an install.** Skills are agent context, not a build input, so
+  a GitHub outage or rate limit prints a warning and the retry command rather
+  than breaking `pnpm install` for everyone. A missing skill is a broken agent
+  workflow, not a broken build.
+- **Two escape hatches.** `SKIP_SKILLS_INSTALL=1` skips restoration entirely;
+  `validate-conventions.yml` already bypasses it by installing with
+  `--ignore-scripts`, since commitlint and validate-branch-name are all it
+  needs.
+
+Moving the pins forward is a separate job, owned by `skills update` — the
+`🤹 Upgrade Skills` step in `upgrade-dependencies.yml` runs it weekly so hash
+changes arrive as a reviewable dependency pull request:
+
+```bash
+pnpm exec skills update
+```
+
+### Agent Skills Configuration
+
+The [mattpocock/skills](https://github.com/mattpocock/skills) engineering skills
+read their per-repository configuration from `docs/agents/`. Edit these files
+directly; re-run `/setup-matt-pocock-skills` only to switch issue trackers or
+start over.
+
+| Concern | Setting | Reference |
+| ------- | ------- | --------- |
+| Issue tracker | GitHub Issues in `JimmyPaolini/codebase`, via the `gh` CLI | [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md) |
+| Triage labels | The five canonical roles mapped onto this repository's `status:` label family | [`docs/agents/triage-labels.md`](docs/agents/triage-labels.md) |
+| Domain docs | Single-context — one root `CONTEXT.md` plus root `docs/adr/` | [`docs/agents/domain.md`](docs/agents/domain.md) |
+
+`CONTEXT.md` and `docs/adr/` do not exist yet, and that is expected —
+[domain-modeling](.agents/skills/domain-modeling/SKILL.md) creates them lazily as
+terms and decisions actually get resolved. Do not scaffold them upfront.
+
 ### Agents
 
 Custom agent definitions live in [`.github/agents/`](.github/agents), and are

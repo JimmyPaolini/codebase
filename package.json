@@ -97,7 +97,7 @@
   "packageManager": "pnpm@11.2.2",
   "repository": "JimmyPaolini/codebase.git",
   "scripts": {
-    "postinstall": "conformetry-nx-bootstrap",
+    "postinstall": "conformetry-nx-bootstrap && bash scripts/install-skills.sh",
     "prepare": "husky configuration/.husky",
     "semantic-release": "semantic-release",
     "semantic-release:dry-run": "semantic-release --dry-run"
