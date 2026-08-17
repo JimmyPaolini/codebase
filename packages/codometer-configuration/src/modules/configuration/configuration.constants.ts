@@ -3,9 +3,12 @@
 import { z } from "zod";
 
 import type {
+  CodometerSymbolKind,
+  CodometerSymbolModifier,
   RenderMarkdownOutput,
   WriteMarkdownOutput,
 } from "./configuration.types";
+import type { CodometerStatisticGroup } from "./statistics.types";
 
 /** Raised when the configuration path points to an unsupported file type. */
 export class UnknownConfigurationFileTypeError extends Error {
@@ -60,6 +63,26 @@ export const DEFAULT_EXCLUDE_GLOBS = [
   "**/node_modules/**",
 ] as const;
 
+/**
+ * Badge colors handed to configured counters that name none, in order.
+ *
+ * Cycled rather than exhausted, so a repository can configure as many counters
+ * as it likes and each still gets a color that is stable between runs.
+ */
+export const DEFAULT_CUSTOM_STATISTIC_COLORS = [
+  "7c3aed",
+  "0284c7",
+  "16a34a",
+  "ea580c",
+  "db2777",
+  "0ea5e9",
+  "059669",
+  "ca8a04",
+] as const;
+
+/** Badge group a configured counter is rendered into when it names none. */
+export const DEFAULT_CUSTOM_STATISTIC_GROUP = "conventions";
+
 /** Spaces used to indent the JSON report when a configuration names none. */
 export const DEFAULT_JSON_INDENTATION = 2;
 
@@ -86,6 +109,53 @@ export const DEFAULT_PYTHON_COMMAND = "python3";
  * than the root a configuration path was written relative to.
  */
 export const REPOSITORY_ROOT_MARKERS = [".git", "pnpm-workspace.yaml"] as const;
+
+/**
+ * Badge groups a configured counter may be rendered into.
+ *
+ * Accepted by name rather than as free text so a misspelled group fails the
+ * configuration instead of silently rendering the badge nowhere.
+ */
+export const CODOMETER_STATISTIC_GROUPS = [
+  "conventions",
+  "css",
+  "hcl",
+  "json",
+  "jupyter",
+  "markdown",
+  "python",
+  "repository",
+  "shell",
+  "sql",
+  "toml",
+  "typescript",
+  "yaml",
+] as const satisfies readonly CodometerStatisticGroup[];
+
+/** Declaration kinds a symbol counter may ask for. */
+export const CODOMETER_SYMBOL_KINDS = [
+  "class",
+  "enum",
+  "function",
+  "getter",
+  "interface",
+  "method",
+  "property",
+  "setter",
+] as const satisfies readonly CodometerSymbolKind[];
+
+/** Modifiers a symbol counter may require of a declaration. */
+export const CODOMETER_SYMBOL_MODIFIERS = [
+  "abstract",
+  "async",
+  "export",
+  "override",
+  "private",
+  "protected",
+  "public",
+  "readonly",
+  "static",
+] as const satisfies readonly CodometerSymbolModifier[];
 
 /**
  * Accepts a configured callback.
@@ -139,4 +209,31 @@ export const codometerConfigurationSchema = z.object({
     })
     .optional(),
   python: z.object({ command: z.string().optional() }).optional(),
+  statistics: z
+    .array(
+      z
+        .object({
+          color: z.string().optional(),
+          group: z.enum(CODOMETER_STATISTIC_GROUPS).optional(),
+          label: z.string(),
+          patterns: z.array(z.string()).min(1).optional(),
+          symbols: z
+            .object({
+              kinds: z.array(z.enum(CODOMETER_SYMBOL_KINDS)).min(1),
+              modifiers: z.array(z.enum(CODOMETER_SYMBOL_MODIFIERS)).optional(),
+            })
+            .optional(),
+        })
+        // Without one of the two a counter has nothing to match on, and would
+        // report a permanent zero rather than announcing it was misconfigured.
+        .refine(
+          (statistic) =>
+            statistic.patterns !== undefined || statistic.symbols !== undefined,
+          {
+            message:
+              "A statistic needs patterns to match files, symbols to match declarations, or both — otherwise it counts nothing.",
+          },
+        ),
+    )
+    .optional(),
 });

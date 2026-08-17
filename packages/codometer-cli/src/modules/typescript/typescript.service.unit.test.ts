@@ -7,6 +7,8 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { TypescriptService } from "./typescript.service";
 
+import type { TypescriptSymbolCounter } from "./typescript.types";
+
 const { readFileSyncMock } = vi.hoisted(() => ({
   readFileSyncMock: vi.fn<(filePath: string, encoding: string) => string>(),
 }));
@@ -41,6 +43,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/foo.ts"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -60,6 +63,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/utils.ts"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -77,6 +81,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/types.ts"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -95,6 +100,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/imports.ts"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -117,6 +123,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/comments.ts"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -138,6 +145,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/todos.ts"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -152,6 +160,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/consts.ts"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -171,6 +180,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/advanced.ts"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -185,6 +195,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/mutable.ts"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -200,6 +211,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/decorated.ts"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -221,6 +233,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/class-expression.ts", "src/view.tsx", "src/index.js"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -239,6 +252,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/imports-mixed.ts"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -311,6 +325,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/type-shapes.ts"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -332,6 +347,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/generics.ts"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -348,6 +364,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/a.ts", "src/b.ts"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -365,6 +382,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/no-tags.ts"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -399,6 +417,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/local.ts"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -418,6 +437,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/special-tags.ts"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -439,6 +459,7 @@ describe(TypescriptService, () => {
 
     const result = service.analyze({
       sourceFiles: ["src/decorators.ts"],
+      symbolCounters: [],
       workingDirectory: "/repo",
     });
 
@@ -446,5 +467,169 @@ describe(TypescriptService, () => {
     expect(result.docTags["deprecated"]).toBe(1);
     expect(result.docTags["experimental"]).toBe(1);
     expect(result.docTags["internal"]).toBe(1);
+  });
+
+  describe("configured symbol counters", () => {
+    const staticMethods: TypescriptSymbolCounter = {
+      kinds: ["method"],
+      label: "Static Methods",
+      modifiers: ["static"],
+      patterns: [],
+    };
+
+    it("counts the class members carrying every required modifier", () => {
+      readFileSyncMock.mockReturnValue(
+        `export class Foo {
+           static build(): Foo { return new Foo(); }
+           static async load(): Promise<Foo> { return new Foo(); }
+           instance(): void {}
+         }`,
+      );
+
+      const result = service.analyze({
+        sourceFiles: ["src/foo.ts"],
+        symbolCounters: [{ ...staticMethods }],
+        workingDirectory: "/repo",
+      });
+
+      expect(result.symbolCounts["Static Methods"]).toBe(2);
+    });
+
+    it("requires every modifier a counter names, not just one", () => {
+      readFileSyncMock.mockReturnValue(
+        `export class Foo {
+           static build(): void {}
+           async load(): Promise<void> {}
+           static async both(): Promise<void> {}
+         }`,
+      );
+
+      const result = service.analyze({
+        sourceFiles: ["src/foo.ts"],
+        symbolCounters: [
+          {
+            kinds: ["method"],
+            label: "Static Async Methods",
+            modifiers: ["async", "static"],
+            patterns: [],
+          },
+        ],
+        workingDirectory: "/repo",
+      });
+
+      expect(result.symbolCounts["Static Async Methods"]).toBe(1);
+    });
+
+    it("asks for the kind alone when a counter names no modifiers", () => {
+      readFileSyncMock.mockReturnValue(
+        `class Foo {
+           get name(): string { return ""; }
+           set name(value: string) {}
+           private field = 1;
+         }
+         interface Shape { area: number }
+         enum Color { Red }`,
+      );
+
+      const result = service.analyze({
+        sourceFiles: ["src/shapes.ts"],
+        symbolCounters: [
+          {
+            kinds: ["getter", "setter"],
+            label: "Accessors",
+            modifiers: [],
+            patterns: [],
+          },
+          {
+            kinds: ["enum", "interface"],
+            label: "Shapes",
+            modifiers: [],
+            patterns: [],
+          },
+        ],
+        workingDirectory: "/repo",
+      });
+
+      expect(result.symbolCounts["Accessors"]).toBe(2);
+      expect(result.symbolCounts["Shapes"]).toBe(2);
+    });
+
+    // A class field holding an arrow function is a property: the arrow carries
+    // none of the field's modifiers, so it is not found by asking for methods.
+    it("treats a static arrow-function field as a property", () => {
+      readFileSyncMock.mockReturnValue(
+        `class Foo {
+           static build = (): void => {};
+         }`,
+      );
+
+      const result = service.analyze({
+        sourceFiles: ["src/foo.ts"],
+        symbolCounters: [
+          { ...staticMethods },
+          {
+            kinds: ["property"],
+            label: "Static Properties",
+            modifiers: ["static"],
+            patterns: [],
+          },
+        ],
+        workingDirectory: "/repo",
+      });
+
+      expect(result.symbolCounts["Static Methods"]).toBe(0);
+      expect(result.symbolCounts["Static Properties"]).toBe(1);
+    });
+
+    it("reports zero for a counter nothing in the repository matches", () => {
+      readFileSyncMock.mockReturnValue(`export const value = 1;`);
+
+      const result = service.analyze({
+        sourceFiles: ["src/value.ts"],
+        symbolCounters: [{ ...staticMethods }],
+        workingDirectory: "/repo",
+      });
+
+      expect(result.symbolCounts).toStrictEqual({ "Static Methods": 0 });
+    });
+
+    // `default` is a modifier keyword the matcher vocabulary has no name for,
+    // and passing over it must not disturb the modifiers beside it.
+    it("ignores modifier keywords a counter cannot ask for", () => {
+      readFileSyncMock.mockReturnValue(
+        `export default class Foo {
+           static build(): void {}
+         }`,
+      );
+
+      const result = service.analyze({
+        sourceFiles: ["src/foo.ts"],
+        symbolCounters: [
+          { ...staticMethods },
+          {
+            kinds: ["class"],
+            label: "Exported Classes",
+            modifiers: ["export"],
+            patterns: [],
+          },
+        ],
+        workingDirectory: "/repo",
+      });
+
+      expect(result.symbolCounts["Static Methods"]).toBe(1);
+      expect(result.symbolCounts["Exported Classes"]).toBe(1);
+    });
+
+    it("searches only the files a counter's patterns name", () => {
+      readFileSyncMock.mockReturnValue(`class Foo { static build(): void {} }`);
+
+      const result = service.analyze({
+        sourceFiles: ["packages/one/src/foo.ts", "applications/two/src/foo.ts"],
+        symbolCounters: [{ ...staticMethods, patterns: ["packages/**"] }],
+        workingDirectory: "/repo",
+      });
+
+      expect(result.symbolCounts["Static Methods"]).toBe(1);
+    });
   });
 });

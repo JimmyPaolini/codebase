@@ -23,6 +23,32 @@ const codometerConfiguration: CodometerConfiguration = {
   // Python lives in a uv workspace, so the interpreter is reached through uv
   // rather than being on PATH.
   python: { command: "uv run python" },
+  // The file suffixes this repository's project structure enforces. Counting
+  // them says what the TypeScript total is actually made of — how much is
+  // services, and how much is the tests for them.
+  statistics: [
+    { label: "Module Files", patterns: ["**/*.module.ts"] },
+    { label: "Service Files", patterns: ["**/*.service.ts"] },
+    { label: "Command Files", patterns: ["**/*.command.ts"] },
+    { label: "Constants Files", patterns: ["**/*.constants.ts"] },
+    { label: "Types Files", patterns: ["**/*.types.ts"] },
+    { label: "Utilities Files", patterns: ["**/*.utilities.ts"] },
+    { label: "Errors Files", patterns: ["**/*.errors.ts"] },
+    { label: "TypeORM Entities", patterns: ["**/*.entity.ts"] },
+    { label: "Unit Tests", patterns: ["**/*.unit.test.ts"] },
+    { label: "Integration Tests", patterns: ["**/*.integration.test.ts"] },
+    { label: "End To End Tests", patterns: ["**/*.end-to-end.test.ts"] },
+    // Not a file-name counter but a symbol one, and rendered beside the
+    // built-in TypeScript counters rather than under Conventions. Every
+    // service here is an injected singleton, so a static method appearing
+    // anywhere is worth seeing in the report.
+    {
+      color: "166534",
+      group: "typescript",
+      label: "Static Methods",
+      symbols: { kinds: ["method"], modifiers: ["static"] },
+    },
+  ],
 };
 
 export default codometerConfiguration;

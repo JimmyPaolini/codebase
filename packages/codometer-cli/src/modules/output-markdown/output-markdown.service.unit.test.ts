@@ -65,6 +65,26 @@ describe(OutputMarkdownService, () => {
       rules: 208,
       selectors: 209,
     },
+    custom: [
+      {
+        color: "7c3aed",
+        count: 120,
+        group: "conventions",
+        label: "Service Files",
+      },
+      {
+        color: "0284c7",
+        count: 121,
+        group: "conventions",
+        label: "Unit Tests",
+      },
+      {
+        color: "166534",
+        count: 122,
+        group: "typescript",
+        label: "Static Methods",
+      },
+    ],
     folders: 13,
     hcl: {
       attributes: 210,
@@ -244,6 +264,37 @@ describe(OutputMarkdownService, () => {
     expect(block).not.toContain("**Repository**");
   });
 
+  // A counter naming a language group belongs beside the built-in counters
+  // it extends, not in a separate list at the bottom of the report.
+  it("renders a counter into the group it names", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md"),
+      statistics: sampleStatistics,
+    });
+    const typescriptGroup = block.split("### ")[2] ?? "";
+
+    expect(typescriptGroup).toContain("TypeScript & JavaScript");
+    expect(typescriptGroup).toContain(
+      "![Static Methods](https://img.shields.io/badge/Static_Methods-122-166534",
+    );
+    expect(typescriptGroup).not.toContain("Service Files");
+  });
+
+  it("omits the Conventions group when no counter belongs to it", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md"),
+      statistics: {
+        ...sampleStatistics,
+        custom: sampleStatistics.custom.filter(
+          (statistic) => statistic.group === "typescript",
+        ),
+      },
+    });
+
+    expect(block).not.toContain("### Conventions");
+    expect(block).toContain("![Static Methods]");
+  });
+
   it("leads with the configured description when there is one", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md", {
@@ -274,8 +325,8 @@ describe(OutputMarkdownService, () => {
     const badgeCount = (block.match(/^!\[/gmu) ?? []).length;
     const measuredCount =
       Object.keys(sampleStatistics).length -
-      // The twelve grouped buckets are replaced by the counters they hold.
-      12 +
+      // The thirteen grouped buckets are replaced by the counters they hold.
+      13 +
       Object.keys(sampleStatistics.javascript).length +
       Object.keys(sampleStatistics.json).length +
       Object.keys(sampleStatistics.jupyter).length +
@@ -287,7 +338,10 @@ describe(OutputMarkdownService, () => {
       Object.keys(sampleStatistics.hcl).length +
       Object.keys(sampleStatistics.shell).length +
       Object.keys(sampleStatistics.sql).length +
-      Object.keys(sampleStatistics.toml).length;
+      Object.keys(sampleStatistics.toml).length +
+      // Each configured counter renders one badge, and the array itself is
+      // one of the buckets the total subtracts.
+      sampleStatistics.custom.length;
 
     expect(badgeCount).toBe(measuredCount);
   });

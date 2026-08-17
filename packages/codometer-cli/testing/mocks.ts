@@ -28,6 +28,7 @@ export function buildCodeStatistics(
       rules: 0,
       selectors: 0,
     },
+    custom: [],
     folders: 0,
     hcl: {
       attributes: 0,

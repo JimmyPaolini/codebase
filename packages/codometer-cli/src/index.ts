@@ -7,6 +7,8 @@ export type {
   CodometerCommandOptions,
   MeasureArguments,
 } from "./modules/codometer/codometer.types";
+export { CustomStatisticsModule } from "./modules/custom-statistics/custom-statistics.module";
+export { CustomStatisticsService } from "./modules/custom-statistics/custom-statistics.service";
 export { DiscoveryModule } from "./modules/discovery/discovery.module";
 export { DiscoveryService } from "./modules/discovery/discovery.service";
 export type { DiscoveryResult } from "./modules/discovery/discovery.types";
