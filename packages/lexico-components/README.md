@@ -1,8 +1,17 @@
-# Lexico Components
+# 🎨 Lexico Components
 
 **Shared React component library built on shadcn/ui and Radix UI primitives.**
 
 A collection of accessible, customizable UI components for the codebase, providing a consistent design system across applications. Built with Tailwind CSS, TypeScript, and shadcn/ui (New York style).
+
+The interface half of the [Lexico](../../applications/lexico/README.md) suite:
+
+| Project | Role |
+| ------- | ---- |
+| 🐺 [lexico](../../applications/lexico/README.md) | The SSR web application |
+| 🎨 [lexico-components](README.md) | This package — shared React components |
+| 📖 [lexico-entities](../lexico-entities/README.md) | TypeORM entities and migrations |
+| 🚰 [lexico-ingestion](../../applications/lexico-ingestion/README.md) | Dictionary and literature ingestion |
 
 ## Features
 
@@ -412,6 +421,7 @@ For detailed architecture, component patterns, and development workflows:
 
 - **[AGENTS.md](AGENTS.md)**: Complete architectural documentation
 - **[Main AGENTS.md](../../AGENTS.md)**: Codebase architecture and Nx workflows
+- **[lexico](../../applications/lexico/README.md)**: The application these components build
 
 External resources:
 

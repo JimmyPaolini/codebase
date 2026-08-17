@@ -1,13 +1,25 @@
-# Affirmations
+# 🤲 Affirmations
 
-A Python + Jupyter notebook application scaffold in this codebase.
+**Affirmations generated across every grammatical mood a language offers.**
 
-Python application that generates structured affirmations for spiritual practices using LangChain, LangGraph, and a locally-hosted Qwen 3.5 LLM via Ollama. A LangGraph ReAct agent researches spiritual topics using SearxNG metasearch (aggregating Wikipedia, DuckDuckGo, Google Scholar, and more) with Trafilatura-powered content extraction, then generates Pydantic-validated affirmations saved as structured JSON.
+A Python and Jupyter application that generates structured affirmations for
+spiritual practices using LangChain, LangGraph, and a locally-hosted
+`gemma4:e2b` model via Ollama. A LangGraph ReAct agent researches a subject
+through SearxNG metasearch, and the model writes affirmations that are
+validated against Pydantic models before being saved.
+
+The interesting part is the grammar. Rather than producing a flat list of "I
+am…" sentences, the pipeline enumerates moods, voices, tenses, aspects,
+persons, numbers, polarities, and deixis — so a single subject yields
+affirmations phrased as imperatives, optatives, subjunctives, and more.
 
 ## Requirements
 
 - Python `>=3.11`
 - [uv](https://docs.astral.sh/uv/) package manager
+- Docker, for Ollama and SearxNG
+
+The devcontainer provides Python 3.14.
 
 ## Setup
 
@@ -19,6 +31,87 @@ members out of the shared venv.
 ```bash
 uv sync
 ```
+
+## Quickstart
+
+```bash
+# 1. Start the local services
+nx run affirmations:ollama --configuration=start
+nx run affirmations:searxng --configuration=start
+nx run affirmations:open-webui --configuration=start
+
+# 2. Pull the model (one-time download)
+nx run affirmations:ollama --configuration=pull-small   # gemma4:e2b
+
+# 3. Open src/affirmations.ipynb in VSCode and run the pipeline
+```
+
+## Project Structure
+
+```text
+applications/affirmations/
+├── src/
+│   ├── affirmations.ipynb   # Main generation pipeline
+│   ├── semantics.ipynb      # Semantic exploration of subjects
+│   ├── prices.ipynb         # Token accounting for a single run
+│   ├── grammars.py          # Mood, Voice, Tense, Aspect, Person, Number,
+│   │                        #   Polarity, Deixis, Form — and the Grammar model
+│   ├── models.py            # Affirmation, GrammarAffirmations,
+│   │                        #   SubjectAffirmations, ValidationResult
+│   ├── prompts.py           # LangChain prompt templates
+│   ├── subjects.py          # Subject and SubjectCategory definitions
+│   └── output.py            # JSON and markdown writers
+├── testing/                 # pytest suites, one per module
+├── output/                  # Generated files (gitignored)
+├── pyproject.toml
+└── searxng.settings.yml
+```
+
+## Subjects
+
+Subjects are declared in `src/subjects.py` as a `Subject` with a
+`SubjectCategory`. The categories in place span tarot cards, Lenormand cards,
+astrological signs, planets, nodes, asteroids, aspects and houses, modalities
+and polarities, chakras, runes, sephiroth, Hebrew letters, kabbalistic worlds,
+solfeggio frequencies, weekdays, and elements.
+
+Adding a practice means adding its category and its subjects to that file —
+nothing else in the pipeline needs to know about it.
+
+## Grammar
+
+`src/grammars.py` defines each grammatical axis as a `DescribedEnum`, so every
+value carries its own description into the prompt. `Grammar` composes them into
+one combination the model is asked to write in.
+
+| Axis | Examples |
+| ---- | -------- |
+| `Mood` | indicative, imperative, optative, subjunctive, jussive |
+| `Voice` | active, middle, passive |
+| `Tense` | past, present, future |
+| `Aspect` | perfective, imperfective, progressive, habitual |
+| `Person` | first, second, third |
+| `Number` | singular, dual, plural |
+| `Polarity` | affirmative, negative |
+| `Deixis` | proximal, medial, distal |
+| `Form` | finite and non-finite forms |
+
+## Nx Targets
+
+| Target | Does |
+| ------ | ---- |
+| `ruff-lint` | Ruff linting |
+| `ruff-format` | Ruff formatting |
+| `pyright` / `ty` | Static type checking |
+| `pytest` / `test-coverage` | Tests, with and without coverage |
+| `vulture` | Dead code analysis |
+| `bandit` | Security linting |
+| `nbstripout` | Strip notebook outputs before commit |
+| `spell-check`, `markdown-lint`, `yaml-lint` | Prose and configuration checks |
+| `lint-codebase` | All of the above; `--configuration=write` to auto-fix |
+| `ollama` | `start`, `stop`, `pull-small`, `pull-medium`, `pull-large` |
+| `searxng` | `start`, `stop`, `open` |
+| `open-webui` | `start`, `stop`, `open` |
 
 ## Run tests
 
@@ -39,150 +132,35 @@ uv run vulture src testing
 uv run bandit -r src
 ```
 
-## Prerequisites
-
-- **Docker** (Docker-in-Docker is already configured in the devcontainer)
-- **uv** (Python package manager) — auto-installed if missing
-- **Python ≥ 3.11** (devcontainer provides 3.14)
-
-## Quickstart
-
-```bash
-# 1. Start Docker services
-nx run affirmations:ollama --configuration=start
-nx run affirmations:searxng --configuration=start
-nx run affirmations:open-webui --configuration=start
-
-# 2. Pull the gemma4:e2b model (one-time download)
-nx run affirmations:ollama --configuration=pull-small   # gemma4:e2b
-
-# 3. Open src/affirmations.ipynb in VSCode to explore the full pipeline
-```
-
-## Project Structure
-
-```text
-applications/affirmations/
-├── src/
-│   ├── __init__.py          # Package marker
-│   ├── affirmations.ipynb   # Main Jupyter notebook pipeline
-│   ├── grammars.py          # Grammar enums (Mood, Voice, Tense, etc.) and Grammar model
-│   ├── models.py            # Pydantic models (Affirmation, SubjectAffirmations, etc.)
-│   ├── output.py            # JSON/Markdown file I/O utilities
-│   ├── prompts.py           # LangChain prompt templates
-│   └── subjects.py          # Spiritual subject configuration (Subject, SubjectCategory)
-├── testing/
-│   ├── __init__.py
-│   ├── test_grammars.py
-│   ├── test_models.py
-│   ├── test_output.py
-│   ├── test_prompts.py
-│   └── test_subjects.py
-├── output/                   # Generated JSON/Markdown files (gitignored except .gitkeep)
-├── AGENTS.md
-├── pyproject.toml
-├── searxng.settings.yml
-└── README.md
-```
-
-## Nx Targets
-
-| Target          | Command                                                 | Description                |
-| --------------- | ------------------------------------------------------- | -------------------------- |
-| `lint`          | `nx run affirmations:lint`                              | Ruff linting               |
-| `format`        | `nx run affirmations:format`                            | Ruff formatting            |
-| `typecheck`     | `nx run affirmations:typecheck`                         | pyright type checking      |
-| `test`          | `nx run affirmations:test`                              | pytest unit tests          |
-| `vulture`       | `nx run affirmations:vulture`                           | Vulture dead code analysis |
-| `ollama`        | `nx run affirmations:ollama --configuration=start`      | Start Ollama container     |
-| `ollama`        | `nx run affirmations:ollama --configuration=stop`       | Stop Ollama container      |
-| `ollama`        | `nx run affirmations:ollama --configuration=pull-small` | Pull gemma4:e2b            |
-| `searxng`       | `nx run affirmations:searxng --configuration=start`     | Start SearxNG container    |
-| `searxng`       | `nx run affirmations:searxng --configuration=stop`      | Stop SearxNG container     |
-| `searxng`       | `nx run affirmations:searxng --configuration=open`      | Open SearxNG in browser    |
-| `open-webui`    | `nx run affirmations:open-webui --configuration=start`  | Start Open WebUI container |
-| `open-webui`    | `nx run affirmations:open-webui --configuration=stop`   | Stop Open WebUI container  |
-| `open-webui`    | `nx run affirmations:open-webui --configuration=open`   | Open Open WebUI in browser |
-| `spell-check`   | `nx run affirmations:spell-check`                       | cspell spell check         |
-| `markdown-lint` | `nx run affirmations:markdown-lint`                     | Markdown linting           |
-
-## Output Format
-
-Generated affirmations are saved to `output/{practice}.json`:
-
-```json
-{
-  "practice": "tarot",
-  "affirmations": [
-    {
-      "text": "I am resilient through the revolution of transformation",
-      "practice": "tarot",
-      "structure": "I am [positive quality] through [transformative process]",
-      "keywords": ["resilience", "revolution", "transformation", "liberation"]
-    }
-  ]
-}
-```
-
-## Research Tools
-
-| Tool             | Type          | Description                                                             |
-| ---------------- | ------------- | ----------------------------------------------------------------------- |
-| `searxng_search` | Always active | Self-hosted SearxNG at `http://localhost:8889`, aggregates 135+ engines |
-
-## Research Processing Layer
-
-Raw search results pass through `src/research.py` before reaching the LLM:
-
-1. **Trafilatura extraction** — removes HTML boilerplate (navs, footers, ads) and extracts main article content. Outperforms BeautifulSoup in all benchmarks.
-2. **Relevance truncation** — keeps the most query-relevant section within `max_chars=1000`
-3. **Deduplication** — removes near-duplicate content across sources
-4. **Context budgeting** — caps total context at ~12,000 chars to preserve the 4B model's attention window
-
-## Spiritual Practices
-
-| Practice  | Topics           | Example Structure                                      |
-| --------- | ---------------- | ------------------------------------------------------ |
-| tarot     | 22 Major Arcana  | `I am [quality] through [transformative process]`      |
-| astrology | 12 zodiac signs  | `I channel the [quality] energy of [sign] to [action]` |
-| chakras   | 7 chakras        | `My [chakra] is open and [quality] flows freely`       |
-| kabbalah  | 10 sephirot      | `I embody the [quality] of [sephirah] in all I do`     |
-| runes     | 24 Elder Futhark | `I carry the power of [rune] and [quality]`            |
-| lenormand | 36 cards         | `I welcome [meaning] into my life with [quality]`      |
-
-## Adding New Spiritual Practices
-
-Add entries to `src/subjects.py`:
-
-```python
-PRACTICES["numerology"] = PracticeConfig(
-    name="numerology",
-    topics=["Life Path 1", "Life Path 2", ...],
-    structures=[
-        "Through the vibration of [number], I [positive action]",
-        "I align with the energy of [number] to [manifestation]",
-    ],
-)
-```
-
 ## Services
 
-| Service    | Port    | Description                           |
-| ---------- | ------- | ------------------------------------- |
-| Ollama     | `11434` | Local LLM server (`gemma4:e2b`)       |
-| Open WebUI | `3001`  | Browser-based Ollama chat interface   |
-| SearxNG    | `8889`  | Self-hosted metasearch (135+ engines) |
+| Service | Port | Purpose |
+| ------- | ---- | ------- |
+| Ollama | `11434` | Local LLM server (`gemma4:e2b`) |
+| Open WebUI | `3001` | Browser-based chat interface for Ollama |
+| SearxNG | `8889` | Self-hosted metasearch, aggregating 135+ engines |
 
-## Environment Variables
+| Variable | Default | Purpose |
+| -------- | ------- | ------- |
+| `OLLAMA_HOST` | `http://localhost:11434` | Ollama server URL |
+| `SEARXNG_HOST` | `http://localhost:8889` | SearxNG server URL |
 
-| Variable       | Default                  | Description        |
-| -------------- | ------------------------ | ------------------ |
-| `OLLAMA_HOST`  | `http://localhost:11434` | Ollama server URL  |
-| `SEARXNG_HOST` | `http://localhost:8889`  | SearxNG server URL |
+## Notes
 
-## Performance Notes
+- **CPU-only inference.** `gemma4:e2b` is the small variant deliberately —
+  generation stays interactive without a GPU. `pull-medium` and `pull-large`
+  fetch `gemma4:e4b` and `gemma4:e26b` when more capacity is worth the wait.
+- **Model keepalive.** `OLLAMA_KEEP_ALIVE=10m` avoids reloading the model
+  between cells.
+- **Context budget.** `gemma4:e2b` has a 128k-token window, and research
+  results are truncated to stay well inside it.
+- **Notebook outputs are stripped** on commit by `nbstripout`, so a diff shows
+  the code rather than the last run's results.
 
-- **CPU-only inference**: Qwen3.5 9B takes ~5–15s per generation on CPU
-- **Model keepalive**: `OLLAMA_KEEP_ALIVE=10m` avoids repeated model loads
-- **Smaller alternative**: Use `qwen3.5:0.8b` (default) for fast iteration during development
-- **Simple chain**: Use LCEL chains (no research) for quick generation without tool overhead
+See [AGENTS.md](AGENTS.md) for the architecture, and the
+[write-python skill](../../.agents/skills/write-python/SKILL.md) for the
+workspace's Python tooling conventions.
+
+## License
+
+MIT — see [LICENSE](../../LICENSE).
