@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "hooks": {
     "SessionStart": [
       {
@@ -22,5 +23,6 @@
         "matcher": "startup|resume|clear"
       }
     ]
-  }
+  },
+  "remoteControlAtStartup": true
 }
