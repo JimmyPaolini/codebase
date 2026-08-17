@@ -1,30 +1,37 @@
 import path from "node:path";
 
+import { createMock } from "@golevelup/ts-vitest";
+import { NestFactory } from "@nestjs/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { NestjsModuleGraphsGraphService } from "./nestjs-module-graphs-graph.service";
 import { NestjsModuleGraphsService } from "./nestjs-module-graphs.service";
 
-import type {
-  NestjsModuleGraph,
-  NestjsProject,
-} from "./nestjs-module-graphs.types";
-import type { DebuggedTree } from "nestjs-spelunker";
+import type { NestjsProject } from "./nestjs-module-graphs.types";
+import type { INestApplicationContext } from "@nestjs/common";
+import type { SpelunkedTree } from "nestjs-spelunker";
 
-/** Entry names the mocked workspace holds, keyed by workspace directory. */
+/** Files the mocked workspace holds, keyed by directory basename. */
 const workspaceEntries = new Map<string, string[]>();
 
 /** Entry names the mocked workspace reports as files rather than directories. */
 const workspaceFileEntries = new Set<string>();
 
-/** Project names whose root module file the mocked workspace holds. */
-const projectsWithRootModule = new Set<string>();
+/** Paths the mocked workspace reports as existing. */
+const existingPaths = new Set<string>();
 
-/** Root modules the mocked spelunker was handed, in call order. */
-const exploredModules: unknown[] = [];
+/** Contents the mocked workspace returns for a read. */
+const fileContents = new Map<string, string>();
 
-/** Tree the mocked spelunker returns for the next exploration. */
-let spelunkedTree: DebuggedTree[] = [];
+/** Root modules the mocked container was built from, in call order. */
+const exploredRootModules: unknown[] = [];
+
+/** Options the mocked explorer was given, in call order. */
+const exploreOptions: { ignoreImports?: RegExp[] }[] = [];
+
+/** Tree the mocked explorer returns. */
+let exploredTree: SpelunkedTree[] = [];
 
 vi.mock("node:fs", async (importOriginal) => {
   const importedModule = await importOriginal();
@@ -36,11 +43,7 @@ vi.mock("node:fs", async (importOriginal) => {
   return {
     ...module,
     existsSync: vi.fn<(target: string) => boolean>((target: string) =>
-      target.endsWith("main.module.ts")
-        ? projectsWithRootModule.has(
-            path.basename(path.dirname(path.dirname(target))),
-          )
-        : workspaceEntries.has(path.basename(target)),
+      existingPaths.has(target),
     ),
     readdirSync: vi.fn<
       (target: string) => { isDirectory: () => boolean; name: string }[]
@@ -50,32 +53,55 @@ vi.mock("node:fs", async (importOriginal) => {
         name,
       })),
     ),
+    readFileSync: vi.fn<(target: string) => string>(
+      (target: string) => fileContents.get(target) ?? "{}",
+    ),
   };
 });
 
 vi.mock("nestjs-spelunker", () => ({
   SpelunkerModule: {
-    debug: vi.fn<(rootModule: unknown) => Promise<DebuggedTree[]>>(
-      async (rootModule: unknown) => {
-        await Promise.resolve();
-        exploredModules.push(rootModule);
-        return spelunkedTree;
-      },
-    ),
+    explore: vi.fn<
+      (application: unknown, options: { ignoreImports?: RegExp[] }) => unknown
+    >((_application: unknown, options: { ignoreImports?: RegExp[] }) => {
+      exploreOptions.push(options);
+      return exploredTree;
+    }),
   },
 }));
-
-/** Builds a spelunked tree node with only the fields the graph reads. */
-function buildTreeNode(name: string, imports: string[]): DebuggedTree {
-  return { controllers: [], exports: [], imports, name, providers: [] };
-}
 
 describe(NestjsModuleGraphsService, () => {
   let service: NestjsModuleGraphsService;
 
+  /** Registers a project directory with the given Nx tags. */
+  function registerProject(options: {
+    directory: string;
+    name: string;
+    tags: string[];
+    withRootModule?: boolean;
+  }): void {
+    const { directory, name, tags, withRootModule = false } = options;
+    const absoluteRoot = path.join("/workspace", directory, name);
+
+    workspaceEntries.set(directory, [
+      ...(workspaceEntries.get(directory) ?? []),
+      name,
+    ]);
+    existingPaths.add(path.join("/workspace", directory));
+    existingPaths.add(path.join(absoluteRoot, "project.json"));
+    fileContents.set(
+      path.join(absoluteRoot, "project.json"),
+      JSON.stringify({ tags }),
+    );
+
+    if (withRootModule) {
+      existingPaths.add(path.join(absoluteRoot, "src/main.module.ts"));
+    }
+  }
+
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [NestjsModuleGraphsService],
+      providers: [NestjsModuleGraphsGraphService, NestjsModuleGraphsService],
     }).compile();
 
     service = await module.resolve(NestjsModuleGraphsService);
@@ -84,161 +110,64 @@ describe(NestjsModuleGraphsService, () => {
   beforeEach(() => {
     workspaceEntries.clear();
     workspaceFileEntries.clear();
-    projectsWithRootModule.clear();
-    exploredModules.length = 0;
-    spelunkedTree = [];
+    existingPaths.clear();
+    fileContents.clear();
+    exploredRootModules.length = 0;
+    exploreOptions.length = 0;
+    exploredTree = [];
   });
 
   it("is defined", () => {
     expect(service).toBeDefined();
   });
 
-  describe("buildGraph", () => {
-    it("collects every module and its import edges", () => {
-      const graph = service.buildGraph([
-        buildTreeNode("MainModule", ["LoggerModule", "FeatureModule"]),
-        buildTreeNode("FeatureModule", ["LoggerModule"]),
-        buildTreeNode("LoggerModule", []),
-      ]);
-
-      expect(graph.moduleNames).toStrictEqual([
-        "FeatureModule",
-        "LoggerModule",
-        "MainModule",
-      ]);
-      expect(graph.edges).toStrictEqual([
-        { from: "FeatureModule", to: "LoggerModule" },
-        { from: "MainModule", to: "FeatureModule" },
-        { from: "MainModule", to: "LoggerModule" },
-      ]);
-    });
-
-    // `debug` emits a module once per path that reaches it, so the same module
-    // arrives more than once carrying different slices of its imports.
-    it("merges the duplicate entries of a module reached by two paths", () => {
-      const graph = service.buildGraph([
-        buildTreeNode("MainModule", ["SharedModule"]),
-        buildTreeNode("SharedModule", ["FirstModule"]),
-        buildTreeNode("SharedModule", ["SecondModule"]),
-      ]);
-
-      expect(graph.moduleNames).toStrictEqual([
-        "FirstModule",
-        "MainModule",
-        "SecondModule",
-        "SharedModule",
-      ]);
-      expect(
-        graph.edges.filter((edge) => edge.from === "SharedModule"),
-      ).toStrictEqual([
-        { from: "SharedModule", to: "FirstModule" },
-        { from: "SharedModule", to: "SecondModule" },
-      ]);
-    });
-
-    it("registers a module named only as an import", () => {
-      const graph = service.buildGraph([
-        buildTreeNode("MainModule", ["LoggerModule"]),
-      ]);
-
-      expect(graph.moduleNames).toStrictEqual(["LoggerModule", "MainModule"]);
-      expect(graph.isolatedModuleNames).toStrictEqual([]);
-    });
-
-    it("reports a module with no edges as isolated", () => {
-      const graph = service.buildGraph([buildTreeNode("MainModule", [])]);
-
-      expect(graph.edges).toStrictEqual([]);
-      expect(graph.isolatedModuleNames).toStrictEqual(["MainModule"]);
-    });
-  });
-
-  describe("renderMermaid", () => {
-    it("renders a fenced mermaid diagram of the edges", () => {
-      const graph: NestjsModuleGraph = {
-        edges: [
-          { from: "MainModule", to: "FeatureModule" },
-          { from: "MainModule", to: "LoggerModule" },
-        ],
-        isolatedModuleNames: [],
-        moduleNames: ["FeatureModule", "LoggerModule", "MainModule"],
-      };
-
-      expect(service.renderMermaid(graph)).toBe(
-        [
-          "```mermaid",
-          "flowchart LR",
-          "  MainModule --> FeatureModule",
-          "  MainModule --> LoggerModule",
-          "```",
-        ].join("\n"),
-      );
-    });
-
-    it("declares isolated modules so they still appear", () => {
-      const graph: NestjsModuleGraph = {
-        edges: [],
-        isolatedModuleNames: ["MainModule"],
-        moduleNames: ["MainModule"],
-      };
-
-      expect(service.renderMermaid(graph)).toBe(
-        ["```mermaid", "flowchart LR", "  MainModule", "```"].join("\n"),
-      );
-    });
-  });
-
   describe("discoverProjects", () => {
-    it("finds every project with a root module file", () => {
-      workspaceEntries.set("applications", ["caelundas"]);
-      workspaceEntries.set("packages", ["conformetry-cli"]);
-      workspaceEntries.set("tools", ["synchronization"]);
-      projectsWithRootModule.add("caelundas");
-      projectsWithRootModule.add("conformetry-cli");
-      projectsWithRootModule.add("synchronization");
-
-      const projects = service.discoverProjects("/workspace");
-
-      expect(projects.map((project) => project.name)).toStrictEqual([
-        "caelundas",
-        "conformetry-cli",
-        "synchronization",
-      ]);
-      expect(projects[0]?.absoluteRoot).toBe(
-        path.join("/workspace", "applications", "caelundas"),
-      );
-      expect(projects[0]?.rootModuleFile).toBe(
-        path.join(
-          "/workspace",
-          "applications",
-          "caelundas",
-          "src/main.module.ts",
-        ),
-      );
-    });
-
-    it("sorts projects by name across workspace directories", () => {
-      workspaceEntries.set("applications", ["zebra"]);
-      workspaceEntries.set("packages", ["alpha"]);
-      projectsWithRootModule.add("zebra");
-      projectsWithRootModule.add("alpha");
+    it("finds every project tagged as a NestJS project", () => {
+      registerProject({
+        directory: "applications",
+        name: "caelundas",
+        tags: ["framework:nestjs"],
+      });
+      registerProject({
+        directory: "packages",
+        name: "logger",
+        tags: ["framework:nestjs"],
+      });
+      registerProject({
+        directory: "tools",
+        name: "synchronization",
+        tags: ["framework:nestjs"],
+      });
 
       expect(
         service.discoverProjects("/workspace").map((project) => project.name),
-      ).toStrictEqual(["alpha", "zebra"]);
+      ).toStrictEqual(["caelundas", "logger", "synchronization"]);
     });
 
-    // A package that only exports modules has no root to explore from.
-    it("skips a project without a root module file", () => {
-      workspaceEntries.set("packages", ["logger"]);
+    it("skips a project without the NestJS tag", () => {
+      registerProject({
+        directory: "applications",
+        name: "lexico",
+        tags: ["framework:react"],
+      });
+
+      expect(service.discoverProjects("/workspace")).toStrictEqual([]);
+    });
+
+    it("skips a directory entry with no project file", () => {
+      workspaceEntries.set("packages", ["stray"]);
+      existingPaths.add("/workspace/packages");
 
       expect(service.discoverProjects("/workspace")).toStrictEqual([]);
     });
 
     it("skips an entry that is not a directory", () => {
-      workspaceEntries.set("packages", ["README.md"]);
+      registerProject({
+        directory: "packages",
+        name: "README.md",
+        tags: ["framework:nestjs"],
+      });
       workspaceFileEntries.add("README.md");
-      projectsWithRootModule.add("README.md");
 
       expect(service.discoverProjects("/workspace")).toStrictEqual([]);
     });
@@ -246,33 +175,185 @@ describe(NestjsModuleGraphsService, () => {
     it("skips a workspace directory that does not exist", () => {
       expect(service.discoverProjects("/workspace")).toStrictEqual([]);
     });
+
+    it("sorts projects by name across workspace directories", () => {
+      registerProject({
+        directory: "applications",
+        name: "zebra",
+        tags: ["framework:nestjs"],
+      });
+      registerProject({
+        directory: "packages",
+        name: "alpha",
+        tags: ["framework:nestjs"],
+      });
+
+      expect(
+        service.discoverProjects("/workspace").map((project) => project.name),
+      ).toStrictEqual(["alpha", "zebra"]);
+    });
+  });
+
+  describe("describeProject", () => {
+    it("records the root module file of a project that bootstraps one", () => {
+      const absoluteRoot = "/workspace/applications/caelundas";
+      existingPaths.add(path.join(absoluteRoot, "src/main.module.ts"));
+
+      expect(service.describeProject(absoluteRoot, "caelundas")).toStrictEqual({
+        absoluteRoot,
+        name: "caelundas",
+        rootModuleFile: path.join(absoluteRoot, "src/main.module.ts"),
+      });
+    });
+
+    it("leaves the root module file undefined for a library package", () => {
+      expect(
+        service.describeProject("/workspace/packages/logger", "logger")
+          .rootModuleFile,
+      ).toBeUndefined();
+    });
   });
 
   describe("exploreProject", () => {
-    /** Points at a real file so the dynamic import resolves. */
-    function buildProject(rootModuleFile: string): NestjsProject {
+    /** Points at this project so the dynamic import resolves. */
+    function buildProject(rootModuleFile: string | undefined): NestjsProject {
       return {
         absoluteRoot: process.cwd(),
         name: "synchronization",
-        rootModuleFile: path.join(process.cwd(), rootModuleFile),
+        rootModuleFile:
+          rootModuleFile === undefined
+            ? undefined
+            : path.join(process.cwd(), rootModuleFile),
       };
     }
 
+    /** Records the root module the container was asked to build. */
+    function mockApplicationContext(): void {
+      vi.spyOn(NestFactory, "createApplicationContext").mockImplementation(
+        async (rootModule: unknown): Promise<INestApplicationContext> => {
+          await Promise.resolve();
+          exploredRootModules.push(rootModule);
+
+          return createMock<INestApplicationContext>();
+        },
+      );
+    }
+
     it("explores the root module a project exports", async () => {
-      spelunkedTree = [buildTreeNode("MainModule", ["LoggerModule"])];
+      mockApplicationContext();
+      exploredTree = [
+        {
+          controllers: [],
+          exports: [],
+          imports: [],
+          name: "MainModule",
+          providers: {},
+        },
+      ];
 
       const graph = await service.exploreProject(
         buildProject("src/main.module.ts"),
       );
 
-      expect(graph.moduleNames).toStrictEqual(["LoggerModule", "MainModule"]);
-      expect(exploredModules[0]).toHaveProperty("name", "MainModule");
+      expect(graph.moduleNames).toStrictEqual(["MainModule"]);
+      expect(exploredRootModules[0]).toHaveProperty("name", "MainModule");
+    });
+
+    it("builds the container in preview mode so nothing is instantiated", async () => {
+      mockApplicationContext();
+
+      await service.exploreProject(buildProject("src/main.module.ts"));
+
+      expect(NestFactory.createApplicationContext).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ preview: true }),
+      );
     });
 
     it("rejects a root module file that exports no MainModule", async () => {
+      mockApplicationContext();
+
       await expect(
         service.exploreProject(buildProject("src/constants.ts")),
       ).rejects.toThrow("MainModule");
+    });
+
+    /**
+     * Mirrors this project's own tree so the module files the walk finds are
+     * real, and the dynamic import that follows resolves.
+     */
+    function mockPackageTree(): void {
+      existingPaths.add(path.join(process.cwd(), "src"));
+      existingPaths.add(path.join(process.cwd(), "src/modules"));
+      existingPaths.add(
+        path.join(process.cwd(), "src/modules/nestjs-module-graphs"),
+      );
+      workspaceEntries.set("src", ["constants.ts", "modules"]);
+      workspaceEntries.set("modules", ["nestjs-module-graphs"]);
+      workspaceEntries.set("nestjs-module-graphs", [
+        "nestjs-module-graphs.module.ts",
+      ]);
+      workspaceFileEntries.add("constants.ts");
+      workspaceFileEntries.add("nestjs-module-graphs.module.ts");
+    }
+
+    it("roots a library package in a synthetic module built from its own", async () => {
+      mockApplicationContext();
+      mockPackageTree();
+
+      await service.exploreProject(buildProject(undefined));
+
+      expect(exploredRootModules[0]).toHaveProperty(
+        "module.name",
+        "SyntheticRootModule",
+      );
+    });
+
+    it("imports every module the package defines into the synthetic root", async () => {
+      mockApplicationContext();
+      mockPackageTree();
+
+      await service.exploreProject(buildProject(undefined));
+
+      // The config scaffolding is imported first, then the package's own.
+      expect(exploredRootModules[0]).toHaveProperty(
+        "imports.1.name",
+        "NestjsModuleGraphsModule",
+      );
+    });
+
+    it("keeps the synthetic root's config scaffolding out of the graph", async () => {
+      mockApplicationContext();
+      existingPaths.add(path.join(process.cwd(), "src"));
+      workspaceEntries.set("src", []);
+
+      await service.exploreProject(buildProject(undefined));
+
+      expect(
+        exploreOptions[0]?.ignoreImports?.map((pattern) => pattern.source),
+      ).toContain("^ConfigModule$");
+    });
+
+    it("finds no modules in a package with no source directory", async () => {
+      mockApplicationContext();
+
+      await service.exploreProject(buildProject(undefined));
+
+      expect(exploredRootModules[0]).toHaveProperty(
+        "module.name",
+        "SyntheticRootModule",
+      );
+      expect(exploredRootModules[0]).not.toHaveProperty("imports.1");
+    });
+
+    it("leaves ConfigModule in the graph of a project that declares it", async () => {
+      mockApplicationContext();
+
+      await service.exploreProject(buildProject("src/main.module.ts"));
+
+      expect(
+        exploreOptions[0]?.ignoreImports?.map((pattern) => pattern.source),
+      ).not.toContain("^ConfigModule$");
     });
   });
 });

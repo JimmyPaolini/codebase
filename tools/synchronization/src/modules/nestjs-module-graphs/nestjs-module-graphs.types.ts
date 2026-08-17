@@ -2,11 +2,17 @@
 
 /** A NestJS module graph reduced to what the mermaid diagram needs. */
 export interface NestjsModuleGraph {
-  /** Every import relationship, sorted so the rendered diagram is stable. */
+  /**
+   * Modules every other module imports, and whose edges are therefore left
+   * out. Reported so a caller can say why the diagram looks sparser than the
+   * container does.
+   */
+  readonly ambientModuleNames: string[];
+  /** Every drawn import relationship, sorted so the diagram is stable. */
   readonly edges: NestjsModuleGraphEdge[];
-  /** Modules that neither import nor are imported by anything else. */
+  /** Modules left with no drawn edge in either direction. */
   readonly isolatedModuleNames: string[];
-  /** Every module class name reachable from the root module, sorted. */
+  /** Every module class name in the graph, sorted. */
   readonly moduleNames: string[];
 }
 
@@ -16,12 +22,17 @@ export interface NestjsModuleGraphEdge {
   readonly to: string;
 }
 
-/** A workspace project whose root module can be explored. */
+/** A workspace project tagged as a NestJS project. */
 export interface NestjsProject {
   /** Absolute path of the project directory. */
   readonly absoluteRoot: string;
   /** Project directory name, which is also the Nx project name. */
   readonly name: string;
-  /** Absolute path of the project's root module file. */
-  readonly rootModuleFile: string;
+  /**
+   * Absolute path of the project's root module file, when it has one.
+   *
+   * Undefined for a library package, whose graph is rooted in a synthetic
+   * module built from every module the package defines.
+   */
+  readonly rootModuleFile: string | undefined;
 }

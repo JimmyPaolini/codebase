@@ -10,6 +10,7 @@ import { LoggerService } from "@codebase/logger";
 import { expectProcessExitOne } from "../../../testing/mocks";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
+import { NestjsModuleGraphsGraphService } from "./nestjs-module-graphs-graph.service";
 import { NestjsModuleGraphsMarkersService } from "./nestjs-module-graphs-markers.service";
 import { NestjsModuleGraphsCommand } from "./nestjs-module-graphs.command";
 import {
@@ -26,6 +27,9 @@ import type {
 const fileContents = new Map<string, string>();
 
 vi.mock("node:fs", () => ({
+  existsSync: vi.fn<(filePath: string) => boolean>((filePath: string) =>
+    fileContents.has(filePath),
+  ),
   readFileSync: vi.fn<(filePath: string) => string>((filePath: string) => {
     const value = fileContents.get(filePath);
     if (value === undefined) throw new Error(`File not found: ${filePath}`);
@@ -46,6 +50,7 @@ const diagram = [
 ].join("\n");
 
 const graph: NestjsModuleGraph = {
+  ambientModuleNames: [],
   edges: [{ from: "MainModule", to: "A" }],
   isolatedModuleNames: [],
   moduleNames: ["A", "MainModule"],
@@ -81,6 +86,7 @@ function buildMarkdown(blockContent: string): string {
 describe(NestjsModuleGraphsCommand, () => {
   let command: NestjsModuleGraphsCommand;
   let logger: LoggerService;
+  let graphService: NestjsModuleGraphsGraphService;
   let moduleGraphsService: NestjsModuleGraphsService;
 
   beforeAll(async () => {
@@ -94,6 +100,10 @@ describe(NestjsModuleGraphsCommand, () => {
           useValue: createMock<LoggerService>(),
         },
         {
+          provide: NestjsModuleGraphsGraphService,
+          useValue: createMock<NestjsModuleGraphsGraphService>(),
+        },
+        {
           provide: NestjsModuleGraphsService,
           useValue: createMock<NestjsModuleGraphsService>(),
         },
@@ -102,6 +112,7 @@ describe(NestjsModuleGraphsCommand, () => {
 
     command = await module.resolve(NestjsModuleGraphsCommand);
     logger = await module.resolve(LoggerService);
+    graphService = await module.resolve(NestjsModuleGraphsGraphService);
     moduleGraphsService = await module.resolve(NestjsModuleGraphsService);
   });
 
@@ -111,7 +122,7 @@ describe(NestjsModuleGraphsCommand, () => {
 
     vi.mocked(moduleGraphsService.discoverProjects).mockReturnValue([project]);
     vi.mocked(moduleGraphsService.exploreProject).mockResolvedValue(graph);
-    vi.mocked(moduleGraphsService.renderMermaid).mockReturnValue(diagram);
+    vi.mocked(graphService.renderMermaid).mockReturnValue(diagram);
 
     for (const targetFile of targetFiles) {
       fileContents.set(targetFile, buildMarkdown(diagram));
@@ -131,6 +142,10 @@ describe(NestjsModuleGraphsCommand, () => {
         {
           provide: LoggerService,
           useValue: createMock<LoggerService>(),
+        },
+        {
+          provide: NestjsModuleGraphsGraphService,
+          useValue: createMock<NestjsModuleGraphsGraphService>(),
         },
         {
           provide: NestjsModuleGraphsService,
@@ -188,6 +203,18 @@ describe(NestjsModuleGraphsCommand, () => {
 
     expect(logger.log).toHaveBeenCalledWith(
       expect.stringContaining("Missing <!-- nestjs-module-graph-start -->"),
+    );
+  });
+
+  // Which documents a project must keep is conformetry's rule, enforced from
+  // the templates the markers now live in.
+  it("skips a target file the project does not have", async () => {
+    fileContents.delete(targetFiles[0] ?? "");
+
+    await expect(command.synchronize("check")).resolves.toBe(true);
+
+    expect(logger.log).not.toHaveBeenCalledWith(
+      expect.stringContaining("Missing"),
     );
   });
 

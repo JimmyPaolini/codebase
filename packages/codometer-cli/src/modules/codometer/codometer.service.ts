@@ -4,7 +4,7 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 
 import { CustomStatisticsService } from "../custom-statistics/custom-statistics.service";
-import { DiscoveryService } from "../discovery/discovery.service";
+import { FileDiscoveryService } from "../file-discovery/file-discovery.service";
 import { LanguagesService } from "../languages/languages.service";
 
 import type { TypescriptResult } from "../typescript/typescript.types";
@@ -23,7 +23,7 @@ export class CodometerService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly discoveryService: DiscoveryService,
+    private readonly fileDiscoveryService: FileDiscoveryService,
     private readonly languagesService: LanguagesService,
     private readonly customStatisticsService: CustomStatisticsService,
   ) {}
@@ -114,7 +114,7 @@ export class CodometerService {
    */
   measure(args: MeasureArguments): CodeStatisticsResult {
     const directory = args.workingDirectory;
-    const discoveredFiles = this.discoveryService.discoverFiles({
+    const discoveredFiles = this.fileDiscoveryService.discoverFiles({
       exclude: args.configuration.exclude,
       excludeFrom: args.configuration.excludeFrom,
       workingDirectory: directory,

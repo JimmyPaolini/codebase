@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
@@ -8,6 +8,7 @@ import { LoggerService } from "@codebase/logger";
 
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
+import { NestjsModuleGraphsGraphService } from "./nestjs-module-graphs-graph.service";
 import { NestjsModuleGraphsMarkersService } from "./nestjs-module-graphs-markers.service";
 import {
   NESTJS_MODULE_GRAPH_MARKER,
@@ -41,6 +42,7 @@ export class NestjsModuleGraphsCommand
   // 🏗 Dependency Injection
 
   constructor(
+    private readonly graphService: NestjsModuleGraphsGraphService,
     private readonly logger: LoggerService,
     private readonly markersService: NestjsModuleGraphsMarkersService,
     private readonly moduleGraphsService: NestjsModuleGraphsService,
@@ -131,21 +133,22 @@ export class NestjsModuleGraphsCommand
     mode: SynchronizationMode,
   ): Promise<string[]> {
     const graph = await this.moduleGraphsService.exploreProject(project);
-    const diagram = this.moduleGraphsService.renderMermaid(graph);
+    const diagram = this.graphService.renderMermaid(graph);
 
     this.logger.log(`🕸️ Explored ${project.name}`, undefined, {
+      ambient: graph.ambientModuleNames,
       edges: graph.edges.length,
       modules: graph.moduleNames.length,
     });
 
-    return NESTJS_MODULE_GRAPH_TARGET_FILES.filter(
-      (fileName) =>
-        !this.synchronizeFile({
-          diagram,
-          file: path.join(project.absoluteRoot, fileName),
-          mode,
-        }),
-    ).map((fileName) => path.join(project.name, fileName));
+    // A document a project does not keep is not drift. Which documents a
+    // project must keep is conformetry's rule, not this command's, and the
+    // markers live in the templates so it can enforce them.
+    return NESTJS_MODULE_GRAPH_TARGET_FILES.filter((fileName) => {
+      const file = path.join(project.absoluteRoot, fileName);
+
+      return existsSync(file) && !this.synchronizeFile({ diagram, file, mode });
+    }).map((fileName) => path.join(project.name, fileName));
   }
 
   // 🌎 Public Methods

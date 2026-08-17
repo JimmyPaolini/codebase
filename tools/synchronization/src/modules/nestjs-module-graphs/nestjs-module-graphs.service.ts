@@ -1,39 +1,43 @@
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 import { Injectable } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
 import { SpelunkerModule } from "nestjs-spelunker";
 
+import { NestjsModuleGraphsGraphService } from "./nestjs-module-graphs-graph.service";
+import { SyntheticRootModule } from "./nestjs-module-graphs-synthetic.module";
 import {
-  NESTJS_MODULE_GRAPH_MERMAID_HEADER,
+  NESTJS_MODULE_GRAPH_IGNORED_MODULES,
+  NESTJS_MODULE_GRAPH_MODULE_FILE_SUFFIX,
   NESTJS_MODULE_GRAPH_PROJECT_DIRECTORIES,
+  NESTJS_MODULE_GRAPH_PROJECT_TAG,
   NESTJS_MODULE_GRAPH_ROOT_MODULE_EXPORT,
   NESTJS_MODULE_GRAPH_ROOT_MODULE_FILE,
+  NESTJS_MODULE_GRAPH_SYNTHETIC_IGNORED_MODULES,
 } from "./nestjs-module-graphs.constants";
 
 import type {
   NestjsModuleGraph,
-  NestjsModuleGraphEdge,
   NestjsProject,
 } from "./nestjs-module-graphs.types";
-import type { Type } from "@nestjs/common";
-import type { DebuggedTree } from "nestjs-spelunker";
+import type { DynamicModule, Type } from "@nestjs/common";
 
 /**
- * Discovers the workspace's NestJS projects and renders each one's module
- * graph as mermaid.
+ * Discovers the workspace's NestJS projects and explores each one's modules.
  *
- * The graph comes from `SpelunkerModule.debug`, which walks the `@Module`
- * metadata rather than a running application. Nothing is instantiated, so a
- * project whose modules open a database connection on boot is still safe to
- * explore from a workstation or from CI.
+ * Exploration runs the container in NestJS preview mode, which registers every
+ * module and provider without instantiating any of them. That is what makes a
+ * project safe to graph from a workstation or from CI: `lexico-ingestion`
+ * builds its `TypeOrmModule.forRootAsync` options without a database ever
+ * being contacted.
  */
 @Injectable()
 export class NestjsModuleGraphsService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly graphService: NestjsModuleGraphsGraphService) {}
 
   // 🔐 Private Fields
 
@@ -41,93 +45,98 @@ export class NestjsModuleGraphsService {
 
   // 🔏 Private Methods
 
-  /**
-   * Collects every module name and its imports, merging the duplicate entries
-   * `debug` emits for a module reached by more than one path.
-   */
-  private collectImports(tree: DebuggedTree[]): Map<string, Set<string>> {
-    const importsByModuleName = new Map<string, Set<string>>();
+  /** Roots a package that bootstraps nothing in every module it defines. */
+  private async buildSyntheticRootModule(
+    project: NestjsProject,
+  ): Promise<DynamicModule> {
+    const moduleFiles = this.findModuleFiles(
+      path.join(project.absoluteRoot, "src"),
+    );
+    const loadedClasses = await Promise.all(
+      moduleFiles.map(async (file) => this.loadModuleClasses(file)),
+    );
 
-    for (const node of tree) {
-      const imports = importsByModuleName.get(node.name) ?? new Set<string>();
-      importsByModuleName.set(node.name, imports);
+    return SyntheticRootModule.forModules(loadedClasses.flat());
+  }
 
-      for (const importedName of node.imports) {
-        imports.add(importedName);
-        if (!importsByModuleName.has(importedName)) {
-          importsByModuleName.set(importedName, new Set<string>());
-        }
+  /** Finds every module definition file beneath a directory. */
+  private findModuleFiles(directory: string): string[] {
+    if (!existsSync(directory)) return [];
+
+    const moduleFiles: string[] = [];
+
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      const target = path.join(directory, entry.name);
+
+      if (entry.isDirectory()) {
+        moduleFiles.push(...this.findModuleFiles(target));
+      } else if (entry.name.endsWith(NESTJS_MODULE_GRAPH_MODULE_FILE_SUFFIX)) {
+        moduleFiles.push(target);
       }
     }
 
-    return importsByModuleName;
+    return moduleFiles.toSorted((first, second) => first.localeCompare(second));
   }
 
-  /** Sorts edges by source then target so the rendered diagram never churns. */
-  private compareEdges(
-    first: NestjsModuleGraphEdge,
-    second: NestjsModuleGraphEdge,
-  ): number {
-    return (
-      first.from.localeCompare(second.from) || first.to.localeCompare(second.to)
-    );
+  /** Imports a module file and returns every module class it exports. */
+  private async loadModuleClasses(file: string): Promise<Type<unknown>[]> {
+    const loaded = (await import(pathToFileURL(file).href)) as Record<
+      string,
+      Type<unknown> | undefined
+    >;
+
+    return Object.entries(loaded)
+      .filter(
+        (entry): entry is [string, Type<unknown>] =>
+          entry[0].endsWith("Module") && typeof entry[1] === "function",
+      )
+      .map(([, moduleClass]) => moduleClass);
   }
 
-  /**
-   * Imports a root module file and returns the module class it exports.
-   *
-   * The import is dynamic because the file belongs to another project, and the
-   * CLI already runs under a TypeScript loader, so the source is read directly
-   * rather than a build output.
-   */
-  private async loadRootModule(project: NestjsProject): Promise<Type<unknown>> {
-    const loaded = (await import(
-      pathToFileURL(project.rootModuleFile).href
-    )) as Record<string, Type<unknown> | undefined>;
+  /** Imports a root module file and returns the module class it exports. */
+  private async loadRootModule(rootModuleFile: string): Promise<Type<unknown>> {
+    const loaded = (await import(pathToFileURL(rootModuleFile).href)) as Record<
+      string,
+      Type<unknown> | undefined
+    >;
     const rootModule = loaded[NESTJS_MODULE_GRAPH_ROOT_MODULE_EXPORT];
 
     if (typeof rootModule !== "function") {
       throw new TypeError(
-        `Expected ${project.rootModuleFile} to export a ${NESTJS_MODULE_GRAPH_ROOT_MODULE_EXPORT} class`,
+        `Expected ${rootModuleFile} to export a ${NESTJS_MODULE_GRAPH_ROOT_MODULE_EXPORT} class`,
       );
     }
 
     return rootModule;
   }
 
+  /** Reads a project's Nx tags, or an empty list when it declares none. */
+  private readProjectTags(projectFile: string): string[] {
+    const configuration = JSON.parse(readFileSync(projectFile, "utf8")) as {
+      tags?: string[];
+    };
+
+    return configuration.tags ?? [];
+  }
+
   // 🌎 Public Methods
 
-  /** Reduces a spelunked module tree to sorted names and import edges. */
-  buildGraph(tree: DebuggedTree[]): NestjsModuleGraph {
-    const importsByModuleName = this.collectImports(tree);
-    const edges: NestjsModuleGraphEdge[] = [];
-    const connectedModuleNames = new Set<string>();
-
-    for (const [moduleName, importedNames] of importsByModuleName) {
-      for (const importedName of importedNames) {
-        edges.push({ from: moduleName, to: importedName });
-        connectedModuleNames.add(moduleName);
-        connectedModuleNames.add(importedName);
-      }
-    }
-
-    const moduleNames = [...importsByModuleName.keys()].toSorted(
-      (first, second) => first.localeCompare(second),
+  /** Describes a project, noting whether it bootstraps a root module. */
+  describeProject(absoluteRoot: string, name: string): NestjsProject {
+    const rootModuleFile = path.join(
+      absoluteRoot,
+      NESTJS_MODULE_GRAPH_ROOT_MODULE_FILE,
     );
 
     return {
-      edges: edges.toSorted((first, second) =>
-        this.compareEdges(first, second),
-      ),
-      isolatedModuleNames: moduleNames.filter(
-        (moduleName) => !connectedModuleNames.has(moduleName),
-      ),
-      moduleNames,
+      absoluteRoot,
+      name,
+      rootModuleFile: existsSync(rootModuleFile) ? rootModuleFile : undefined,
     };
   }
 
   /**
-   * Finds every project that bootstraps a NestJS root module.
+   * Finds every project tagged as a NestJS project.
    *
    * Projects are returned in a stable order so a run reports them the same way
    * every time regardless of how the filesystem enumerates directories.
@@ -142,16 +151,10 @@ export class NestjsModuleGraphsService {
       for (const entry of readdirSync(absoluteDirectory, {
         withFileTypes: true,
       })) {
-        if (!entry.isDirectory()) continue;
-
         const absoluteRoot = path.join(absoluteDirectory, entry.name);
-        const rootModuleFile = path.join(
-          absoluteRoot,
-          NESTJS_MODULE_GRAPH_ROOT_MODULE_FILE,
-        );
 
-        if (existsSync(rootModuleFile)) {
-          projects.push({ absoluteRoot, name: entry.name, rootModuleFile });
+        if (this.isNestjsProject(entry.isDirectory(), absoluteRoot)) {
+          projects.push(this.describeProject(absoluteRoot, entry.name));
         }
       }
     }
@@ -161,27 +164,44 @@ export class NestjsModuleGraphsService {
     );
   }
 
-  /** Loads a project's root module and reduces it to a module graph. */
+  /** Explores a project's container in preview mode and reduces it to a graph. */
   async exploreProject(project: NestjsProject): Promise<NestjsModuleGraph> {
-    const rootModule = await this.loadRootModule(project);
-    const tree = await SpelunkerModule.debug(rootModule);
+    const { rootModuleFile } = project;
+    const rootModule =
+      rootModuleFile === undefined
+        ? await this.buildSyntheticRootModule(project)
+        : await this.loadRootModule(rootModuleFile);
 
-    return this.buildGraph(tree);
+    const application = await NestFactory.createApplicationContext(rootModule, {
+      abortOnError: false,
+      logger: false,
+      preview: true,
+    });
+
+    try {
+      return this.graphService.buildGraph(
+        SpelunkerModule.explore(application, {
+          ignoreImports: [
+            ...NESTJS_MODULE_GRAPH_IGNORED_MODULES,
+            ...(rootModuleFile === undefined
+              ? NESTJS_MODULE_GRAPH_SYNTHETIC_IGNORED_MODULES
+              : []),
+          ],
+        }),
+      );
+    } finally {
+      await application.close();
+    }
   }
 
-  /** Renders a module graph as a fenced mermaid diagram. */
-  renderMermaid(graph: NestjsModuleGraph): string {
-    const lines = ["```mermaid", NESTJS_MODULE_GRAPH_MERMAID_HEADER];
+  /** Reports whether a directory entry is a project this command graphs. */
+  isNestjsProject(isDirectory: boolean, absoluteRoot: string): boolean {
+    const projectFile = path.join(absoluteRoot, "project.json");
 
-    for (const moduleName of graph.isolatedModuleNames) {
-      lines.push(`  ${moduleName}`);
-    }
-    for (const edge of graph.edges) {
-      lines.push(`  ${edge.from} --> ${edge.to}`);
-    }
+    if (!isDirectory || !existsSync(projectFile)) return false;
 
-    lines.push("```");
-
-    return lines.join("\n");
+    return this.readProjectTags(projectFile).includes(
+      NESTJS_MODULE_GRAPH_PROJECT_TAG,
+    );
   }
 }

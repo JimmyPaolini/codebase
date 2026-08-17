@@ -4,6 +4,7 @@ import { LoggerModule } from "@codebase/logger";
 
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
+import { NestjsModuleGraphsGraphService } from "./nestjs-module-graphs-graph.service";
 import { NestjsModuleGraphsMarkersService } from "./nestjs-module-graphs-markers.service";
 import { NestjsModuleGraphsCommand } from "./nestjs-module-graphs.command";
 import { NestjsModuleGraphsService } from "./nestjs-module-graphs.service";
@@ -17,6 +18,7 @@ import { NestjsModuleGraphsService } from "./nestjs-module-graphs.service";
   imports: [LoggerModule],
   providers: [
     NestjsModuleGraphsCommand,
+    NestjsModuleGraphsGraphService,
     NestjsModuleGraphsMarkersService,
     NestjsModuleGraphsService,
     SynchronizationService,

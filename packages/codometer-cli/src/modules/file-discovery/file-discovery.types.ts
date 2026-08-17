@@ -8,7 +8,7 @@ export interface DiscoverFilesArguments {
 }
 
 /** Categorized lists of file paths (relative to the working directory) discovered in a git repository. */
-export interface DiscoveryResult {
+export interface FileDiscoveryResult {
   cssFiles: string[];
   hclFiles: string[];
   jsFiles: string[];

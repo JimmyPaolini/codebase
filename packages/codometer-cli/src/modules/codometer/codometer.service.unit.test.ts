@@ -3,12 +3,12 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CustomStatisticsService } from "../custom-statistics/custom-statistics.service";
-import { DiscoveryService } from "../discovery/discovery.service";
+import { FileDiscoveryService } from "../file-discovery/file-discovery.service";
 import { LanguagesService } from "../languages/languages.service";
 
 import { CodometerService } from "./codometer.service";
 
-import type { DiscoveryResult } from "../discovery/discovery.types";
+import type { FileDiscoveryResult } from "../file-discovery/file-discovery.types";
 import type { LanguageResults } from "../languages/languages.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
@@ -27,7 +27,7 @@ const configuration: ResolvedCodometerConfiguration = {
   ],
 };
 
-const discoveredFiles: DiscoveryResult = {
+const discoveredFiles: FileDiscoveryResult = {
   cssFiles: ["src/styles.css"],
   hclFiles: ["infrastructure/main.tf"],
   jsFiles: ["src/app.js"],
@@ -68,13 +68,13 @@ function buildLanguageResults(): LanguageResults {
 describe(CodometerService, () => {
   let service: CodometerService;
   let customStatisticsService: CustomStatisticsService;
-  let discoveryService: DiscoveryService;
+  let fileDiscoveryService: FileDiscoveryService;
   let languagesService: LanguagesService;
 
   /** Builds an aggregator whose collaborators are all mocked. */
   function buildService(): CodometerService {
     return new CodometerService(
-      discoveryService,
+      fileDiscoveryService,
       languagesService,
       customStatisticsService,
     );
@@ -88,7 +88,10 @@ describe(CodometerService, () => {
           provide: CustomStatisticsService,
           useValue: createMock<CustomStatisticsService>(),
         },
-        { provide: DiscoveryService, useValue: createMock<DiscoveryService>() },
+        {
+          provide: FileDiscoveryService,
+          useValue: createMock<FileDiscoveryService>(),
+        },
         { provide: LanguagesService, useValue: createMock<LanguagesService>() },
       ],
     }).compile();
@@ -98,9 +101,11 @@ describe(CodometerService, () => {
 
   beforeEach(() => {
     customStatisticsService = createMock<CustomStatisticsService>();
-    discoveryService = createMock<DiscoveryService>();
+    fileDiscoveryService = createMock<FileDiscoveryService>();
     languagesService = createMock<LanguagesService>();
-    vi.mocked(discoveryService.discoverFiles).mockReturnValue(discoveredFiles);
+    vi.mocked(fileDiscoveryService.discoverFiles).mockReturnValue(
+      discoveredFiles,
+    );
     vi.mocked(languagesService.analyze).mockReturnValue(buildLanguageResults());
     vi.mocked(customStatisticsService.buildSymbolCounters).mockReturnValue([]);
     vi.mocked(customStatisticsService.analyze).mockReturnValue([
@@ -120,7 +125,7 @@ describe(CodometerService, () => {
   it("passes the configured exclusions to discovery", () => {
     buildService().measure({ configuration, workingDirectory: "/repo" });
 
-    expect(discoveryService.discoverFiles).toHaveBeenCalledExactlyOnceWith({
+    expect(fileDiscoveryService.discoverFiles).toHaveBeenCalledExactlyOnceWith({
       exclude: ["**/node_modules/**"],
       excludeFrom: [],
       workingDirectory: "/repo",
