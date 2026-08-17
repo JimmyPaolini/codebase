@@ -1,11 +1,18 @@
-# CodometerConfiguration
+# ⏲️ Codometer Configuration
 
-NestJS service package scaffold generated with `conformetry:nestjs-service-project`.
+**The configuration reference for [Codometer](../codometer-cli/README.md).**
 
 `@codometer/configuration` reads a repository's `codometer.config.ts` and hands
 back a fully defaulted configuration object. It is the only package that knows
 anything about a particular repository; `@codometer/cli` measures whatever the
 configuration describes.
+
+```bash
+npm install --save-dev @codometer/configuration
+```
+
+Install it directly when you are typing a configuration file. `@codometer/cli`
+already depends on it.
 
 ## Configuration File
 
@@ -182,14 +189,18 @@ what fails a `--check` run; anything else counts as up to date. Markdown output
 needs a `path`, a `write` function, or both — a destination naming neither is
 rejected when the configuration loads.
 
-## Start
+## Exports
 
-```bash
-nx run codometer-configuration:start
-```
+`ConfigurationService` and `ConfigurationModule`, plus the
+`CodometerConfiguration` type you author your config as and the resolved shapes
+the CLI reads.
 
 ## Test
 
 ```bash
-nx run codometer-configuration:test
+nx run codometer-configuration:vitest
 ```
+
+## License
+
+MIT — see [LICENSE](../../LICENSE).
