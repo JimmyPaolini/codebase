@@ -1,11 +1,16 @@
 import { DiscoveryModule } from "@conformetry/configuration";
-import { LanguageModule, ReportingModule } from "@conformetry/core";
+import {
+  LanguageModule,
+  ReportingModule,
+  ScoringModule,
+} from "@conformetry/core";
 import { FilesModule } from "@conformetry/files";
 import { Module } from "@nestjs/common";
 
 import { ValidationDeduplicationService } from "./validation-deduplication.service";
 import { ValidationFindingsService } from "./validation-findings.service";
 import { ValidationLanguagesService } from "./validation-languages.service";
+import { ValidationScoringService } from "./validation-scoring.service";
 import { ValidationService } from "./validation.service";
 
 /**
@@ -22,16 +27,25 @@ import { ValidationService } from "./validation.service";
     FilesModule,
     LanguageModule,
     ReportingModule,
+    ScoringModule,
     ValidationDeduplicationService,
     ValidationFindingsService,
     ValidationLanguagesService,
+    ValidationScoringService,
     ValidationService,
   ],
-  imports: [DiscoveryModule, FilesModule, LanguageModule, ReportingModule],
+  imports: [
+    DiscoveryModule,
+    FilesModule,
+    LanguageModule,
+    ReportingModule,
+    ScoringModule,
+  ],
   providers: [
     ValidationDeduplicationService,
     ValidationFindingsService,
     ValidationLanguagesService,
+    ValidationScoringService,
     ValidationService,
   ],
 })

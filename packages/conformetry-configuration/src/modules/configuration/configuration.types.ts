@@ -30,6 +30,15 @@ export interface ConformetryGeneratorDefinition {
   name: string;
   /** The template folder, relative to the workspace root. */
   templatePath: string;
+  /**
+   * Lowest conformance score, from 0 to 1, an instance of this template may
+   * have and still pass.
+   *
+   * Left undefined when unset rather than defaulted to 1, so a run-level
+   * `--threshold` still has somewhere to apply. The default is reached only
+   * when no level supplies a value.
+   */
+  threshold?: number;
 }
 
 /** One configurable input, expressed as a JSON Schema fragment. */
@@ -66,6 +75,15 @@ export interface ConformetryInstanceGroup {
    * group with no tags applies everywhere.
    */
   tags?: string[] | undefined;
+  /**
+   * Lowest conformance score the instances in this group may have, overriding
+   * the generator's own threshold.
+   *
+   * This is what makes a migration bearable: one directory being brought onto
+   * a new template can be held to a lower bar while every other instance of
+   * the same template stays strict.
+   */
+  threshold?: number | undefined;
 }
 
 /**

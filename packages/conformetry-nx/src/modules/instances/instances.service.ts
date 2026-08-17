@@ -93,6 +93,9 @@ export class InstancesService {
           ...(group.substitutions === undefined
             ? {}
             : { substitutions: group.substitutions }),
+          ...(group.threshold === undefined
+            ? {}
+            : { threshold: group.threshold }),
           workingDirectory: args.workspaceRoot,
         });
       })

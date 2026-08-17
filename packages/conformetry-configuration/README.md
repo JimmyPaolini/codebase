@@ -103,6 +103,7 @@ instances: [
 | `patterns` | Globs locating this group's instances, workspace-relative |
 | `substitutions` | Values the template's placeholders are rendered with for this group |
 | `tags` | Labels selecting which hosts the group applies to, carried uninterpreted |
+| `threshold` | Lowest conformance score these instances may have, overriding the generator's |
 
 Groups exist so substitutions can differ per glob. `type` is `packages` for one
 set of paths and `applications` for another, and no generic rule can tell them
@@ -146,6 +147,41 @@ is the folder's **parent**: `nestjs-service-module` holds `{{nameKebabCase}}/…
 and its instances are `…/src/modules`. A template that produces loose files
 holds them at its root, and its instance path is the directory those files sit
 in.
+
+## Thresholds
+
+An instance passes when its conformance score reaches the threshold that
+applies to it. Three levels set it, and the narrowest wins:
+
+```ts
+instances[].threshold ?? generator.threshold ?? runThreshold ?? 1
+```
+
+A level left unset stays unset rather than being filled with the default — that
+is what lets a host's own `--threshold` reach an instance whose generator has
+no opinion. The default of `1` is applied only at the end of the chain, so
+nothing configured is quietly overridden, and a level nobody set is not
+quietly treated as if they had.
+
+```ts
+{
+  name: "nestjs-service-module",
+  templatePath: "templates/nestjs-service-module",
+  threshold: 1,                               // strict everywhere by default
+  instances: [
+    { patterns: ["packages/*/src/modules/*"] },
+    {
+      patterns: ["applications/legacy/src/modules/*"],
+      threshold: 0.75,                        // …except while migrating this one
+    },
+  ],
+}
+```
+
+When two groups locate the same instance with different thresholds the
+strictest wins: nothing makes one group more specific than another, and letting
+order decide would mean a lenient group could silently relax a bar someone else
+set.
 
 ## Inputs
 

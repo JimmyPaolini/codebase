@@ -6,12 +6,14 @@ import type {
   TemplateDefinition,
   UnmatchedInstance,
 } from "@conformetry/configuration";
-import type { ValidationFileResult } from "@conformetry/core";
+import type { InstanceScore, ValidationFileResult } from "@conformetry/core";
 
 /** Every finding one matched instance produced, kept with the instance. */
 export interface InstanceFileResults {
   readonly fileResults: ValidationFileResult[];
   readonly instance: MatchedInstance;
+  /** Combined weight of everything this instance's template asked for. */
+  readonly totalWeight: number;
 }
 
 /**
@@ -59,6 +61,11 @@ export interface RunValidationArguments {
    * generator that owns it.
    */
   readonly templates: TemplateDefinition[];
+  /**
+   * Lowest score any instance may have, unless its template or its instance
+   * group says otherwise. The weakest of the three levels.
+   */
+  readonly threshold?: number;
 }
 
 /** The outcome of one validation run. */
@@ -67,6 +74,8 @@ export interface RunValidationResult {
   readonly checkedPaths: string[];
   readonly fileResults: ValidationFileResult[];
   readonly ok: boolean;
+  /** One score per matched instance, in the order they were matched. */
+  readonly scores: InstanceScore[];
   /**
    * Instances that matched no template, or matched two equally well. These
    * are findings in their own right: a glob is the caller asserting the path
@@ -74,4 +83,20 @@ export interface RunValidationResult {
    * glob is wrong.
    */
   readonly unmatched: UnmatchedInstance[];
+}
+
+/** Arguments for scoring one matched instance. */
+export interface ScoreInstanceArguments {
+  readonly fileResults: ValidationFileResult[];
+  readonly instance: MatchedInstance;
+  /** Run-level threshold, from a `--threshold` flag. The weakest level. */
+  readonly runThreshold?: number | undefined;
+  readonly totalWeight: number;
+}
+
+/** Arguments for scoring every matched instance of a run. */
+export interface ScoreInstancesArguments {
+  readonly groups: InstanceFileResults[];
+  /** Run-level threshold, from a `--threshold` flag. The weakest level. */
+  readonly runThreshold?: number | undefined;
 }

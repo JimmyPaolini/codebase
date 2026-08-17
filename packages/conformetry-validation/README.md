@@ -18,8 +18,9 @@ const result = await validationService.validate({
   instances, // from DiscoveryService.findInstances
   templates, // from DiscoveryService.collectTemplate
   languageNames: ["typescript"], // optional filter
+  threshold: 0.9, // optional run-level conformance floor
 });
-// → { ok, fileResults, checkedPaths, unmatched }
+// → { ok, fileResults, checkedPaths, scores, unmatched }
 ```
 
 Instances arrive from the caller. This package used to scan the workspace for
@@ -38,6 +39,21 @@ generic package depend on one repository's layout.
 Instances that matched no template are reported alongside the content
 differences rather than skipped, so one report covers both "this file is wrong"
 and "conformetry cannot tell what this path was generated from".
+
+## Scoring
+
+Each matched instance is scored by how much of its template it honours, and
+passes when that reaches the threshold resolved for it — the instance group's,
+else the generator's, else the run's, else a perfect `1`.
+
+Scores are taken **before** deduplication. Deduplication decides which template
+gets to _print_ a shared file's finding, which is a reporting concern; a score
+answers how well one instance honours its own template, so collapsing the
+report must not change it.
+
+`ok` is `false` when any instance falls below its threshold, or when any
+instance matched no template at all — an unmatched path has no template to be
+held to, so no threshold could excuse it.
 
 ## Lazy language loading
 

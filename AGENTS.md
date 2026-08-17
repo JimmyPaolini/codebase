@@ -145,7 +145,10 @@ How validation works:
 - By default, it validates all selected workspace projects using all configured rule names.
 - Rules map to generator families (for example `nestjs-service-module`, `react-component`).
 - A rule runs only where applicable based on project tags and discovered file patterns.
-- Any failed rule causes the validator command to fail, which is intended for CI and pre-merge quality gates.
+- Each matched instance is scored by how much of its template it honours, and fails when that score falls below its threshold. Any failing instance fails the command, which is intended for CI and pre-merge quality gates.
+- The threshold defaults to `1` — a perfect match — so validation is strict unless a threshold is lowered deliberately.
+- Three levels set it, narrowest first: an instance group's `threshold`, then the generator's `threshold`, then a run-level `--threshold`. Lower one when migrating existing instances onto a new template rather than converting the whole workspace in one change.
+- Findings print whether or not the instance cleared its threshold: a lowered threshold permits the drift, it does not hide it.
 
 Use this flow for best results: generate with conformetry first, then run validation after custom edits to confirm the result still matches the repository's conformetry standards.
 

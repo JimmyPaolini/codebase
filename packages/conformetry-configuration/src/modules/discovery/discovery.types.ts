@@ -13,6 +13,8 @@ export interface FindInstancesArguments {
    * project rather than passing a lookup table.
    */
   readonly substitutions?: Substitutions;
+  /** Applied to every instance these patterns produce, when the group sets one. */
+  readonly threshold?: number;
   readonly workingDirectory: string;
 }
 
@@ -52,6 +54,11 @@ export interface Instance {
    * placeholder as empty, so anything a template references must arrive here.
    */
   readonly substitutions?: Substitutions;
+  /**
+   * Lowest conformance score this instance may have, from the instance group
+   * that located it. The narrowest of the three levels, so it wins.
+   */
+  readonly threshold?: number;
 }
 
 /** A file a matched template requires its instance to have. */
@@ -96,6 +103,11 @@ export interface TemplateDefinition {
   readonly filePaths: string[];
   /** The template's directory name, used to identify it. */
   readonly name: string;
+  /**
+   * Lowest conformance score an instance of this template may have, from the
+   * generator that owns it. Undefined when the generator sets none.
+   */
+  readonly threshold?: number;
 }
 
 /**

@@ -177,6 +177,9 @@ export class DiscoveryInstancesService {
             }),
             ...args.substitutions,
           },
+          ...(args.threshold === undefined
+            ? {}
+            : { threshold: args.threshold }),
         };
       });
   }

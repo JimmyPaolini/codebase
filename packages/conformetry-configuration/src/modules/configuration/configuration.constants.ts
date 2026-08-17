@@ -65,11 +65,13 @@ export const conformetryConfigurationSchema = z
             patterns: z.array(z.string()).optional(),
             substitutions: z.record(z.string(), z.string()).optional(),
             tags: z.array(z.string()).optional(),
+            threshold: z.number().min(0).max(1).optional(),
           }),
         )
         .optional(),
       name: z.string(),
       templatePath: z.string(),
+      threshold: z.number().min(0).max(1).optional(),
     }),
   )
   .superRefine(assertNoCollisions);

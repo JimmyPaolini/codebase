@@ -29,16 +29,19 @@ function createValidator(args: {
       args.seen?.push(document.filename);
 
       if (args.cleanFilenames?.includes(document.filename) === true) {
-        return [];
+        return { errors: [], totalWeight: 10 };
       }
 
-      return [
-        {
-          errorType: "code",
-          fix: "Fix it.",
-          message: `problem in ${document.filename}`,
-        },
-      ];
+      return {
+        errors: [
+          {
+            errorType: "code",
+            fix: "Fix it.",
+            message: `problem in ${document.filename}`,
+          },
+        ],
+        totalWeight: 10,
+      };
     },
   };
 }
@@ -89,6 +92,7 @@ describe(LanguageService, () => {
       filename: "a.ts",
       instanceFilePath: "/project/a.ts",
       templateFilePath: "/templates/a.ts",
+      totalWeight: 10,
     });
   });
 
@@ -104,6 +108,31 @@ describe(LanguageService, () => {
 
     expect(result.fileResults).toHaveLength(1);
     expect(result.fileResults[0]?.filename).toBe("dirty.ts");
+  });
+
+  it("still counts a conforming file's weight toward the total", () => {
+    const result = service.runValidator({
+      checkedPaths: ["/project"],
+      documents: [createDocument("clean.ts"), createDocument("dirty.ts")],
+      validator: createValidator({
+        cleanFilenames: ["clean.ts"],
+        extensions: [".ts"],
+      }),
+    });
+
+    // Both files weigh 10. Dropping the clean one from the denominator would
+    // leave 10 instead of 20 and silently double every score.
+    expect(result.totalWeight).toBe(20);
+  });
+
+  it("counts no weight for documents the validator does not claim", () => {
+    const result = service.runValidator({
+      checkedPaths: ["/project"],
+      documents: [createDocument("only.md")],
+      validator: createValidator({ extensions: [".ts"] }),
+    });
+
+    expect(result.totalWeight).toBe(0);
   });
 
   it("reports ok when no claimed document produces an error", () => {

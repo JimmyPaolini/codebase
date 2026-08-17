@@ -51,6 +51,18 @@ export interface ConformetryError {
   readonly templateLine?: number;
   /** JSON dot-notation path in the template document. */
   readonly templatePath?: string;
+  /**
+   * How many template requirements this one finding accounts for.
+   *
+   * A validator reports a missing element once, however much of the template
+   * that element contained: deleting a class is one error, not one per member.
+   * The weight restores the proportion — a missing class stands in for its
+   * whole subtree, a missing import stands only for itself — so an instance's
+   * score reflects how much of the template is actually absent.
+   *
+   * Defaults to 1 when absent, which is right for any leaf requirement.
+   */
+  readonly weight?: number;
 }
 
 /**

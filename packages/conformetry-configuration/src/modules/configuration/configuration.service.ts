@@ -59,6 +59,12 @@ export class ConfigurationService {
       instances: definition.instances ?? [],
       name: definition.name,
       templatePath: definition.templatePath,
+      // Deliberately not defaulted. Stamping every generator with 1 here would
+      // make the generator level always beat a run-level `--threshold`, which
+      // would leave that flag with nothing it could ever change.
+      ...(definition.threshold === undefined
+        ? {}
+        : { threshold: definition.threshold }),
     };
   }
 

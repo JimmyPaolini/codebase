@@ -213,6 +213,7 @@ export class PluginService {
       return this.discoveryService.collectTemplate({
         name: generator.name,
         templatePath: path.resolve(args.workspaceRoot, generator.templatePath),
+        threshold: generator.threshold,
       });
     });
   }
@@ -366,12 +367,14 @@ export class PluginService {
         configurationPath: pluginOptions.configurationPath,
         workspaceRoot: args.workspaceRoot,
       }),
+      ...(args.threshold === undefined ? {} : { threshold: args.threshold }),
     });
 
     return {
       ok: result.ok,
       report: this.reportingService.formatReport({
         fileResults: result.fileResults,
+        scores: result.scores,
         workingDirectory: args.workspaceRoot,
       }),
     };

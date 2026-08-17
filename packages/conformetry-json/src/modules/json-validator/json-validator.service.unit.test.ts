@@ -1,3 +1,4 @@
+import { ScoringService } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -24,7 +25,7 @@ describe(JsonValidatorService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [JsonComparisonService, JsonValidatorService],
+      providers: [JsonComparisonService, JsonValidatorService, ScoringService],
     }).compile();
 
     service = await module.resolve(JsonValidatorService);
@@ -49,12 +50,12 @@ describe(JsonValidatorService, () => {
           instance: '{"a": 1, "b": 2}',
           renderedTemplate: '{"a": 1}',
         }),
-      ),
+      ).errors,
     ).toStrictEqual([]);
   });
 
   it("reports a missing key", () => {
-    const errors = service.validateDocument(
+    const { errors } = service.validateDocument(
       createDocument({ instance: "{}", renderedTemplate: '{"a": 1}' }),
     );
 
@@ -69,7 +70,7 @@ describe(JsonValidatorService, () => {
           instance: '{\n  // a comment\n  "a": 1\n}',
           renderedTemplate: '{"a": 1}',
         }),
-      ),
+      ).errors,
     ).toStrictEqual([]);
   });
 });

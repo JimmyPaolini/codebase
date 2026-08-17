@@ -8,6 +8,7 @@ import {
 import { TODO_COMMENT_PATTERN } from "./typescript-validator.constants";
 
 import type {
+  CommentComparison,
   CompareCommentsArguments,
   ExtractedComment,
 } from "./typescript-validator.types";
@@ -37,15 +38,18 @@ export class TypescriptCommentsService {
   /**
    * Reports each template comment absent from the instance, or present but
    * out of order relative to the comments before it.
+   *
+   * Every template comment is one requirement, whatever its length: a section
+   * marker is a marker. That is reported alongside the misses so a document
+   * whose comments are all present still contributes them to its score.
    */
-  public compareComments(args: CompareCommentsArguments): ExtractedComment[] {
+  public compareComments(args: CompareCommentsArguments): CommentComparison {
     const instanceComments = this.extractComments(args.instanceSourceFile);
+    const templateComments = this.extractComments(args.templateSourceFile);
     const missingComments: ExtractedComment[] = [];
     let searchIndex = 0;
 
-    for (const templateComment of this.extractComments(
-      args.templateSourceFile,
-    )) {
+    for (const templateComment of templateComments) {
       const isPlaceholder = TODO_COMMENT_PATTERN.test(templateComment.text);
       const relativeIndex = instanceComments
         .slice(searchIndex)
@@ -61,7 +65,7 @@ export class TypescriptCommentsService {
       searchIndex += relativeIndex + 1;
     }
 
-    return missingComments;
+    return { missingComments, totalWeight: templateComments.length };
   }
 
   /**

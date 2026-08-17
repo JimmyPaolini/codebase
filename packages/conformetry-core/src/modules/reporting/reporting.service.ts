@@ -2,15 +2,21 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
+import { PERFECT_SCORE } from "../scoring/scoring.constants";
+
 import {
   REPORT_ERROR_DETAIL_INDENT,
   REPORT_FILE_DETAIL_INDENT,
   REPORT_FILE_INDENT,
+  REPORT_SCORES_HEADING,
   REPORT_SUCCESS_MESSAGE,
+  SCORE_PERCENTAGE_DIGITS,
+  SCORE_PERCENTAGE_SCALE,
 } from "./reporting.constants";
 
 import type { ConformetryError } from "../errors/errors.types";
 import type { ValidationFileResult } from "../language/language.types";
+import type { InstanceScore } from "../scoring/scoring.types";
 import type {
   FormatLocationArguments,
   FormatReportArguments,
@@ -117,25 +123,66 @@ export class ReportingService {
     return [];
   }
 
-  // 🌎 Public Methods
-
   /**
-   * Renders every failing file as one report string. Returns a success message
-   * when there is nothing to report, so callers never print an empty report.
+   * Renders the summary of instances that did not score perfectly.
+   *
+   * Both sides of the comparison are printed, because a score alone does not
+   * say whether the run failed: 94% passes under a threshold of 90 and fails
+   * under 95, and a reader should not have to go looking for which applied.
    */
-  public formatReport(args: FormatReportArguments): string {
-    if (args.fileResults.length === 0) {
-      return REPORT_SUCCESS_MESSAGE;
+  private formatScores(scores: InstanceScore[]): string[] {
+    const imperfect = scores.filter((score) => {
+      return score.score < PERFECT_SCORE;
+    });
+
+    if (imperfect.length === 0) {
+      return [];
     }
 
-    return args.fileResults
-      .flatMap((fileResult, index) => {
+    return [
+      REPORT_SCORES_HEADING,
+      ...imperfect.map((score) => {
+        const verdict = score.ok ? "within threshold" : "below threshold";
+
+        return `${REPORT_FILE_INDENT}${score.ok ? "✓" : "✗"} ${score.instancePath} (${score.templateName}) — ${this.formatPercentage(score.score)} of ${String(score.totalWeight)}, threshold ${this.formatPercentage(score.threshold)}, ${verdict}`;
+      }),
+      "",
+    ];
+  }
+
+  // 🌎 Public Methods
+
+  /** Renders a 0-to-1 score as a percentage. */
+  public formatPercentage(score: number): string {
+    return `${(score * SCORE_PERCENTAGE_SCALE).toFixed(SCORE_PERCENTAGE_DIGITS)}%`;
+  }
+
+  /**
+   * Renders every failing file as one report string, with a score summary
+   * above it. Returns a success message when there is nothing to report, so
+   * callers never print an empty report.
+   *
+   * Findings print whether or not their instance cleared its threshold: a
+   * lowered threshold is permission to ship the drift, not a reason to stop
+   * showing it.
+   */
+  public formatReport(args: FormatReportArguments): string {
+    const scoreLines = this.formatScores(args.scores ?? []);
+
+    if (args.fileResults.length === 0) {
+      return [...scoreLines, REPORT_SUCCESS_MESSAGE].join("\n");
+    }
+
+    return [
+      ...scoreLines,
+      ...args.fileResults.flatMap((fileResult, index) => {
         return this.formatFileResult({
           fileResult,
           index,
           workingDirectory: args.workingDirectory,
         });
-      })
+      }),
+    ]
       .join("\n")
       .trimStart();
   }

@@ -99,7 +99,7 @@ describe(TypescriptCommentsService, () => {
         service.compareComments({
           instanceSourceFile: parse(SECTIONED_SERVICE),
           templateSourceFile: parse(SECTIONED_SERVICE),
-        }),
+        }).missingComments,
       ).toStrictEqual([]);
     });
 
@@ -111,9 +111,9 @@ describe(TypescriptCommentsService, () => {
         templateSourceFile: parse(SECTIONED_SERVICE),
       });
 
-      expect(missing.map((comment) => comment.text)).toStrictEqual([
-        "// 🔏 Private Methods",
-      ]);
+      expect(
+        missing.missingComments.map((comment) => comment.text),
+      ).toStrictEqual(["// 🔏 Private Methods"]);
     });
 
     it("reports markers that are present but out of order", () => {
@@ -136,7 +136,7 @@ describe(TypescriptCommentsService, () => {
         service.compareComments({
           instanceSourceFile: parse(scrambled),
           templateSourceFile: parse(SECTIONED_SERVICE),
-        }).length,
+        }).missingComments.length,
       ).toBeGreaterThan(0);
     });
 
@@ -145,7 +145,7 @@ describe(TypescriptCommentsService, () => {
         service.compareComments({
           instanceSourceFile: parse("/** Owns widgets. */\nclass A {}\n"),
           templateSourceFile: parse("/** TODO: Document it. */\nclass A {}\n"),
-        }),
+        }).missingComments,
       ).toStrictEqual([]);
     });
   });

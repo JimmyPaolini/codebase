@@ -105,12 +105,15 @@ describe(FilesService, () => {
     );
 
     expect(
-      service.checkInstanceFiles({ instances: matchInstance(instancePath) }),
+      service.checkInstanceFiles({ instances: matchInstance(instancePath) })
+        .fileResults,
     ).toStrictEqual([]);
   });
 
   it("reports nothing when no instance matched", () => {
-    expect(service.checkInstanceFiles({ instances: [] })).toStrictEqual([]);
+    expect(
+      service.checkInstanceFiles({ instances: [] }).fileResults,
+    ).toStrictEqual([]);
   });
 
   it("reports an extension-less file the template requires", async () => {
@@ -125,7 +128,7 @@ describe(FilesService, () => {
       "utf8",
     );
 
-    const results = service.checkInstanceFiles({
+    const { fileResults: results } = service.checkInstanceFiles({
       instances: matchInstance(instancePath),
     });
 
@@ -156,7 +159,9 @@ describe(FilesService, () => {
       instances: [{ nameStem: "my-widget", path: instancePath }],
       templates: [nestedTemplate],
     });
-    const results = service.checkInstanceFiles({ instances: matched });
+    const { fileResults: results } = service.checkInstanceFiles({
+      instances: matched,
+    });
 
     expect(results).toHaveLength(1);
     expect(results[0]?.errors[0]?.errorType).toBe("directory");
@@ -173,7 +178,7 @@ describe(FilesService, () => {
       "utf8",
     );
 
-    const results = service.checkInstanceFiles({
+    const { fileResults: results } = service.checkInstanceFiles({
       instances: matchInstance(instancePath),
     });
 

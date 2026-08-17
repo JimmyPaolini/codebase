@@ -89,6 +89,7 @@ describe(ValidateCommand, () => {
       checkedPaths: [],
       fileResults: [],
       ok: true,
+      scores: [],
       unmatched: [],
     });
   });
@@ -192,9 +193,21 @@ describe(ValidateCommand, () => {
             filename: "gears.ts",
             instanceFilePath: "/w/gears.ts",
             templateFilePath: "/w/template.ts",
+            totalWeight: 4,
           },
         ],
         ok: false,
+        scores: [
+          {
+            failedWeight: 1,
+            instancePath: "/w",
+            ok: false,
+            score: 0.75,
+            templateName: "widget",
+            threshold: 1,
+            totalWeight: 4,
+          },
+        ],
         unmatched: [],
       });
 
@@ -210,6 +223,7 @@ describe(ValidateCommand, () => {
       expect(command.parseConfig("path")).toBeDefined();
       expect(command.parseInstances("a,b")).toBeDefined();
       expect(command.parseLanguages("typescript")).toBeDefined();
+      expect(command.parseThreshold("0.9")).toBeDefined();
     });
   });
 });

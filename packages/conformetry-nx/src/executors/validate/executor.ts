@@ -38,6 +38,9 @@ export default async function validateExecutor(
       ? {}
       : { languageNames: options.languages }),
     options,
+    ...(options.threshold === undefined
+      ? {}
+      : { threshold: options.threshold }),
     project: {
       name: projectName,
       root: projectConfiguration.root,

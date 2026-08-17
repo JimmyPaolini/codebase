@@ -5,8 +5,13 @@ import { DiscoveryService } from "@conformetry/configuration";
 import { ErrorsService } from "@conformetry/core";
 import { Injectable } from "@nestjs/common";
 
-import type { CheckInstanceFilesArguments } from "./files.types";
-import type { ConformetryError, ValidationFileResult } from "@conformetry/core";
+import type {
+  CheckInstanceFilesArguments,
+  FilesCheckResult,
+  WeighedConformetryError,
+} from "./files.types";
+import type { InstanceFile } from "@conformetry/configuration";
+import type { ValidationFileResult } from "@conformetry/core";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
@@ -44,19 +49,40 @@ export class FilesService {
    * the twenty files inside it.
    */
   private buildMissingError(args: {
+    expectedFileCount: number;
     instanceFilePath: string;
     templateFilePath: string;
-  }): ConformetryError {
+  }): WeighedConformetryError {
     const parentDirectoryPath = path.dirname(args.instanceFilePath);
 
     if (fs.existsSync(parentDirectoryPath)) {
-      return this.errorsService.buildMissingFileError(args);
+      return {
+        ...this.errorsService.buildMissingFileError(args),
+        weight: 1,
+      };
     }
 
-    return this.errorsService.buildMissingDirectoryError({
-      instanceDirectoryPath: parentDirectoryPath,
-      templateDirectoryPath: path.dirname(args.templateFilePath),
-    });
+    return {
+      ...this.errorsService.buildMissingDirectoryError({
+        instanceDirectoryPath: parentDirectoryPath,
+        templateDirectoryPath: path.dirname(args.templateFilePath),
+      }),
+      // One finding stands in for every file the absent directory should have
+      // held, so it costs what reporting them individually would have.
+      weight: args.expectedFileCount,
+    };
+  }
+
+  /** Counts how many declared files one directory should hold. */
+  private countExpectedFiles(args: {
+    expectedFiles: InstanceFile[];
+    parentDirectoryPath: string;
+  }): number {
+    return args.expectedFiles.filter((expectedFile) => {
+      return (
+        path.dirname(expectedFile.instanceFilePath) === args.parentDirectoryPath
+      );
+    }).length;
   }
 
   /**
@@ -68,7 +94,7 @@ export class FilesService {
    */
   public checkInstanceFiles(
     args: CheckInstanceFilesArguments,
-  ): ValidationFileResult[] {
+  ): FilesCheckResult {
     const expectedFiles = this.discoveryService.resolveInstanceFiles(
       args.instances,
     );
@@ -86,7 +112,13 @@ export class FilesService {
         continue;
       }
 
-      const error = this.buildMissingError(expectedFile);
+      const error = this.buildMissingError({
+        expectedFileCount: this.countExpectedFiles({
+          expectedFiles,
+          parentDirectoryPath,
+        }),
+        ...expectedFile,
+      });
 
       if (error.errorType === "directory") {
         reportedDirectories.add(parentDirectoryPath);
@@ -97,9 +129,11 @@ export class FilesService {
         filename: path.basename(expectedFile.instanceFilePath),
         instanceFilePath: expectedFile.instanceFilePath,
         templateFilePath: expectedFile.templateFilePath,
+        totalWeight: error.weight,
       });
     }
 
-    return fileResults;
+    // Every declared file is one requirement, present ones included.
+    return { fileResults, totalWeight: expectedFiles.length };
   }
 }

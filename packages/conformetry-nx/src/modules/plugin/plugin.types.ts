@@ -43,6 +43,8 @@ export interface RunValidationArguments {
   readonly languageNames?: string[];
   readonly options: unknown;
   readonly project: ProjectScope;
+  /** Run-level conformance floor; the weakest of the three threshold levels. */
+  readonly threshold?: number;
   readonly workspaceRoot: string;
 }
 

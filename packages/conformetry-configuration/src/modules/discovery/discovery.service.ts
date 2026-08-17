@@ -47,6 +47,7 @@ export class DiscoveryService {
   public collectTemplate(args: {
     name: string;
     templatePath: string;
+    threshold?: number | undefined;
   }): TemplateDefinition {
     return this.discoveryTemplatesService.collectTemplate(args);
   }

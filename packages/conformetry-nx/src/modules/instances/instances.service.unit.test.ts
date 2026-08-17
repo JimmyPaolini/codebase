@@ -117,6 +117,45 @@ describe(InstancesService, () => {
       expect(instances[0]?.nameStem).toBe("errors");
     });
 
+    it("carries an instance group's threshold onto the instances it locates", async () => {
+      await writeFile(
+        path.join(workspaceRoot, "threshold.config.json"),
+        JSON.stringify([
+          {
+            instances: [
+              {
+                patterns: ["src/modules/*"],
+                tags: ["type:package"],
+                threshold: 0.75,
+              },
+            ],
+            name: "widget",
+            templatePath: "templates/widget",
+          },
+        ]),
+        "utf8",
+      );
+
+      const instances = await service.findProjectInstances({
+        configurationPath: path.join(workspaceRoot, "threshold.config.json"),
+        project: PROJECT,
+        workspaceRoot,
+      });
+
+      expect(instances[0]?.threshold).toBe(0.75);
+    });
+
+    it("leaves the threshold unset when the group declares none", async () => {
+      // Unset rather than defaulted to 1, so a run-level flag still applies.
+      const instances = await service.findProjectInstances({
+        configurationPath: path.join(workspaceRoot, "conformetry.config.json"),
+        project: PROJECT,
+        workspaceRoot,
+      });
+
+      expect(instances[0]?.threshold).toBeUndefined();
+    });
+
     it("skips groups whose tags the project does not carry", async () => {
       const instances = await service.findProjectInstances({
         configurationPath: path.join(workspaceRoot, "conformetry.config.json"),

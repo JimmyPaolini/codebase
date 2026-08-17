@@ -3,12 +3,13 @@
 import ast
 
 from python.nodes import (
+    count_subtree,
     filter_by_same_key,
     filter_by_same_type,
     get_children,
     get_key,
 )
-from python.types import ConformetryError
+from python.types import ConformetryError, TreeComparison
 
 
 def _get_node_location(node: ast.AST) -> tuple[int | None, int | None]:
@@ -34,7 +35,46 @@ def _build_error(
         template_line=template_line,
         template_column=template_column,
         fix=f"Add the missing {breadcrumb} to the instance file. See the template for the expected structure.",
+        weight=count_subtree(template_child),
     )
+
+
+def _failed_weight(errors: list[ConformetryError]) -> int:
+    return sum(error.weight for error in errors)
+
+
+def _compare_child(
+    template_child: ast.AST,
+    instance_node: ast.AST,
+    instance_children: list[ast.AST],
+    template_source: str,
+    instance_source: str,
+    filename: str,
+) -> TreeComparison:
+    """Match one template child, descending into whichever instance node fits.
+
+    A child with no counterpart ends the walk on that branch: nothing below it
+    can be compared, so its whole subtree counts as both required and absent.
+    """
+    key = get_key(template_child)
+    if key is not None:
+        matches = filter_by_same_key(instance_children, template_child)
+    else:
+        matches = filter_by_same_type(instance_children, template_child)
+
+    if not matches:
+        error = _build_error(template_child, instance_node, filename)
+        return TreeComparison(errors=[error], total_weight=error.weight)
+
+    candidates = [
+        validate_depth_first_search(
+            template_child, match, template_source, instance_source, filename
+        )
+        for match in matches
+    ]
+    # Weighed by failed weight rather than error count: one finding standing in
+    # for a whole missing class is a worse match than two missing decorators.
+    return min(candidates, key=lambda comparison: _failed_weight(comparison.errors))
 
 
 def validate_depth_first_search(
@@ -43,34 +83,26 @@ def validate_depth_first_search(
     template_source: str,
     instance_source: str,
     filename: str,
-) -> list[ConformetryError]:
+) -> TreeComparison:
+    """Compare one level of two trees, descending into every match.
+
+    Alongside the differences, the walk counts what it asked for: every
+    template node it weighs is one requirement.
+    """
     errors: list[ConformetryError] = []
     instance_children = get_children(instance_node)
-    template_children = get_children(template_node)
-    for template_child in template_children:
-        key = get_key(template_child)
-        if key is not None:
-            matches = filter_by_same_key(instance_children, template_child)
-            match = matches[0] if matches else None
-            if match is None:
-                errors.append(_build_error(template_child, instance_node, filename))
-            else:
-                errors.extend(
-                    validate_depth_first_search(
-                        template_child, match, template_source, instance_source, filename
-                    )
-                )
-        else:
-            same_type = filter_by_same_type(instance_children, template_child)
-            if not same_type:
-                errors.append(_build_error(template_child, instance_node, filename))
-            else:
-                candidate_errors = [
-                    validate_depth_first_search(
-                        template_child, candidate, template_source, instance_source, filename
-                    )
-                    for candidate in same_type
-                ]
-                fewest = min(candidate_errors, key=len)
-                errors.extend(fewest)
-    return errors
+    # The node itself is the one requirement its own level contributes; its
+    # children add theirs.
+    total_weight = 1
+    for template_child in get_children(template_node):
+        comparison = _compare_child(
+            template_child,
+            instance_node,
+            instance_children,
+            template_source,
+            instance_source,
+            filename,
+        )
+        errors.extend(comparison.errors)
+        total_weight += comparison.total_weight
+    return TreeComparison(errors=errors, total_weight=total_weight)

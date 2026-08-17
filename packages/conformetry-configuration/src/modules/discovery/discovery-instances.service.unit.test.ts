@@ -153,6 +153,28 @@ describe(DiscoveryInstancesService, () => {
       ).toBe(true);
     });
 
+    it("applies a group's threshold to every instance it locates", () => {
+      const instances = service.findInstances({
+        patterns: ["packages/*/src/modules/*"],
+        threshold: 0.7,
+        workingDirectory,
+      });
+
+      expect(instances.length).toBeGreaterThan(0);
+      expect(instances.every((instance) => instance.threshold === 0.7)).toBe(
+        true,
+      );
+    });
+
+    it("leaves the threshold unset when the group declares none", () => {
+      const instances = service.findInstances({
+        patterns: ["packages/*/src/modules/*"],
+        workingDirectory,
+      });
+
+      expect(instances[0]?.threshold).toBeUndefined();
+    });
+
     it("returns nothing when a pattern matches nothing", () => {
       expect(
         service.findInstances({

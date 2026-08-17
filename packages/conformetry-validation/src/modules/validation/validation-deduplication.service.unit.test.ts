@@ -27,9 +27,11 @@ function buildGroup(args: {
         filename: "logger.service.ts",
         instanceFilePath: INSTANCE_FILE_PATH,
         templateFilePath: args.templateFilePath,
+        totalWeight: 1,
       },
     ],
     instance: args.instance,
+    totalWeight: 1,
   };
 }
 
@@ -153,6 +155,7 @@ describe(ValidationDeduplicationService, () => {
               return { ...fileResult, instanceFilePath: "/w/other.ts" };
             }),
             instance,
+            totalWeight: 1,
           },
         ]),
       ).toHaveLength(2);

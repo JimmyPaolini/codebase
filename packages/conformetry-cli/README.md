@@ -94,10 +94,44 @@ the template it was generated from.
 | `--config [path]` | Configuration file to read |
 | `--instances [globs]` | Comma-separated globs to validate, overriding the configuration |
 | `--languages [names]` | Comma-separated validators to run — `typescript`, `markdown`, `python`, `json`, `jupyter`, `text` |
+| `--threshold [ratio]` | Lowest conformance score an instance may have, 0 to 1. The weakest of the three threshold levels |
 
 Every flag is optional; an absent filter means "everything". The command exits
-non-zero when any instance does not conform, which is what makes it usable as a
-pre-merge gate.
+non-zero when any instance scores below its threshold, which is what makes it
+usable as a pre-merge gate.
+
+## Scoring
+
+Validation reports **how much** of its template an instance honours, not just
+whether it does. Every template element the comparison weighs is one
+requirement, and a missing element costs the whole subtree it stood for — so
+deleting a class costs far more than dropping an import, without anyone
+maintaining a table of weights.
+
+```text
+Conformance scores:
+  ✗ packages/logger/src/modules/logger (nestjs-service-module) — 99.3% of 151, threshold 100.0%, below threshold
+```
+
+An instance must score at or above its **threshold** to pass. The default is
+`1` — a perfect match, which is what conformetry has always demanded — so
+adding scoring changes nothing until a threshold is lowered deliberately.
+
+Three levels set it, narrowest first:
+
+| Level | Where | Applies to |
+| ----- | ----- | ---------- |
+| Instance group | `instances[].threshold` | Only the paths that group's globs locate |
+| Generator | `threshold` on the generator | Every instance of that template |
+| Run | `--threshold` | Every instance the run touches |
+
+That is what makes introducing a template bearable. A new template can be
+adopted with the directory still being migrated held to `0.75` while every
+other instance of it stays strict, instead of having to bring the whole
+workspace over in one change.
+
+Findings print either way. A lowered threshold is permission to ship the drift,
+not a reason to stop showing it.
 
 Findings are grouped by file and each one carries the location on **both**
 sides — where the instance is wrong and where the template says so — plus the

@@ -113,6 +113,17 @@ describe(validateExecutor, () => {
     );
   });
 
+  it("passes a run-level threshold through when the caller set one", async () => {
+    await validateExecutor(
+      { threshold: 0.9 },
+      createContext({ projectName: "widgets" }),
+    );
+
+    expect(runValidation).toHaveBeenCalledWith(
+      expect.objectContaining({ threshold: 0.9 }),
+    );
+  });
+
   it("fails the task when an instance does not conform", async () => {
     runValidation.mockResolvedValue({ ok: false, report: "1 finding." });
 

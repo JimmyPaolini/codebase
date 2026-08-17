@@ -1,11 +1,12 @@
 import { spawnSync } from "node:child_process";
 
-import { ErrorsModule } from "@conformetry/core";
+import { ErrorsModule, ScoringModule } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { PythonBridgeService } from "./python-bridge.service";
 
+import type { ConformetryError } from "@conformetry/core";
 import type childProcess from "node:child_process";
 
 // Calls through by default so most tests exercise the real bridge; the
@@ -23,7 +24,7 @@ describe(PythonBridgeService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [ErrorsModule],
+      imports: [ErrorsModule, ScoringModule],
       providers: [PythonBridgeService],
     }).compile();
 
@@ -41,12 +42,12 @@ describe(PythonBridgeService, () => {
           filename: "alpha.py",
           instance: "import os\n\n\ndef alpha():\n    return os\n",
           template: "import os\n",
-        }),
+        }).errors,
       ).toStrictEqual([]);
     });
 
     it("reports an import the instance lacks", () => {
-      const errors = service.validatePythonSource({
+      const { errors } = service.validatePythonSource({
         filename: "alpha.py",
         instance: "def alpha():\n    return 1\n",
         template: "import os\n",
@@ -62,7 +63,7 @@ describe(PythonBridgeService, () => {
           filename: "alpha.py",
           instance: "import os\nimport sys\n",
           template: "import os\n",
-        }),
+        }).errors,
       ).toStrictEqual([]);
     });
   });
@@ -73,14 +74,20 @@ describe(PythonBridgeService, () => {
     });
 
     /** Compares a file against itself, so only the staged failure shows up. */
-    function runBridge(): ReturnType<
-      PythonBridgeService["validatePythonSource"]
-    > {
+    function runBridge(): ConformetryError[] {
       return service.validatePythonSource({
         filename: "alpha.py",
         instance: "import os\n",
         template: "import os\n",
-      });
+      }).errors;
+    }
+
+    function weighBridge(): number {
+      return service.validatePythonSource({
+        filename: "alpha.py",
+        instance: "import os\n",
+        template: "import os\n",
+      }).totalWeight;
     }
 
     it("reports a python3 that could not be started", () => {
@@ -168,6 +175,53 @@ describe(PythonBridgeService, () => {
       expect(error?.actual).toBe("def beta()");
       expect(error?.expected).toBe("def alpha()");
       expect(error?.fix).toBe("Rename it.");
+    });
+
+    it("carries the weight the bridge reported for a finding", () => {
+      spawnSyncMock.mockReturnValue({
+        output: [],
+        pid: 0,
+        signal: null,
+        status: 0,
+        stderr: "",
+        stdout: JSON.stringify({
+          errors: [{ message: "Missing ClassDef", weight: 24 }],
+          total_weight: 30,
+        }),
+      });
+
+      const [error] = runBridge();
+
+      expect(error?.weight).toBe(24);
+      expect(weighBridge()).toBe(30);
+    });
+
+    it("defaults a finding the bridge gave no weight to one", () => {
+      spawnSyncMock.mockReturnValue({
+        output: [],
+        pid: 0,
+        signal: null,
+        status: 0,
+        stderr: "",
+        stdout: JSON.stringify({ errors: [{}], total_weight: 5 }),
+      });
+
+      expect(runBridge()[0]?.weight).toBe(1);
+    });
+
+    it("falls back to the findings' own weight when the bridge omits a total", () => {
+      spawnSyncMock.mockReturnValue({
+        output: [],
+        pid: 0,
+        signal: null,
+        status: 0,
+        stderr: "",
+        stdout: JSON.stringify({ errors: [{ weight: 4 }, { weight: 3 }] }),
+      });
+
+      // A bridge reporting findings but no denominator would otherwise score a
+      // perfect 1 on a file it just said was broken.
+      expect(weighBridge()).toBe(7);
     });
 
     it("reports output it cannot parse", () => {

@@ -9,6 +9,7 @@ import { MARKDOWN_VALIDATOR_DESCRIPTOR } from "./markdown-validator.constants";
 import type {
   ConformetryError,
   ConformetryLanguageValidator,
+  DocumentValidationResult,
   PreparedValidationDocument,
 } from "@conformetry/core";
 
@@ -46,30 +47,31 @@ export class MarkdownValidatorService implements ConformetryLanguageValidator {
   /** Reports every markdown structure the template requires and the file lacks. */
   public validateDocument(
     document: PreparedValidationDocument,
-  ): ConformetryError[] {
+  ): DocumentValidationResult {
     const templateTree = this.processor.parse(document.renderedTemplate);
     const instanceTree = this.processor.parse(document.instance);
+    const comparison = this.markdownTreeService.compareChildren({
+      instanceChildren: this.markdownNodesService.filterNodes(
+        instanceTree.children,
+      ),
+      templateChildren: this.markdownNodesService.filterNodes(
+        templateTree.children,
+      ),
+    });
+    const errors: ConformetryError[] = comparison.errors.map((error) => {
+      return {
+        errorType: "code",
+        expected: error.text,
+        fix: `Add the ${error.nodeType} "${error.text}" to the instance file.`,
+        ...(error.instanceLine === undefined
+          ? {}
+          : { instanceLine: error.instanceLine }),
+        language: "markdown",
+        message: `Missing markdown ${error.nodeType}: "${error.text}"`,
+        weight: error.weight,
+      };
+    });
 
-    return this.markdownTreeService
-      .compareChildren({
-        instanceChildren: this.markdownNodesService.filterNodes(
-          instanceTree.children,
-        ),
-        templateChildren: this.markdownNodesService.filterNodes(
-          templateTree.children,
-        ),
-      })
-      .map((error) => {
-        return {
-          errorType: "code",
-          expected: error.text,
-          fix: `Add the ${error.nodeType} "${error.text}" to the instance file.`,
-          ...(error.instanceLine === undefined
-            ? {}
-            : { instanceLine: error.instanceLine }),
-          language: "markdown",
-          message: `Missing markdown ${error.nodeType}: "${error.text}"`,
-        };
-      });
+    return { errors, totalWeight: comparison.totalWeight };
   }
 }

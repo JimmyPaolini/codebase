@@ -16,10 +16,28 @@ export interface ConformetryLanguageValidator {
   readonly descriptor: LanguageValidatorDescriptor;
   /**
    * Compares one already-rendered template against its instance and returns
-   * every difference. Called only for documents whose extension this validator
-   * claims, so implementations never need to re-check the extension.
+   * every difference, plus how much was asked of the instance. Called only for
+   * documents whose extension this validator claims, so implementations never
+   * need to re-check the extension.
    */
-  validateDocument(document: PreparedValidationDocument): ConformetryError[];
+  validateDocument(
+    document: PreparedValidationDocument,
+  ): DocumentValidationResult;
+}
+
+/**
+ * What comparing one document produced: the differences, and the size of the
+ * requirement the comparison weighed them against.
+ *
+ * The total is reported even when nothing is wrong. A conforming document is
+ * still evidence — it is the part of the instance that *did* honour its
+ * template — and leaving it out of the denominator would score an instance
+ * only against the files it got wrong.
+ */
+export interface DocumentValidationResult {
+  readonly errors: ConformetryError[];
+  /** Combined weight of the template requirements this document imposes. */
+  readonly totalWeight: number;
 }
 
 /** Identifies a language validator and declares which files it claims. */
@@ -38,6 +56,11 @@ export interface LanguageValidatorResult {
   readonly fileResults: ValidationFileResult[];
   readonly languageName: string;
   readonly ok: boolean;
+  /**
+   * Combined weight of every document this validator claimed, conforming ones
+   * included — see `DocumentValidationResult.totalWeight`.
+   */
+  readonly totalWeight: number;
 }
 
 /**
@@ -83,4 +106,6 @@ export interface ValidationFileResult {
   readonly filename: string;
   readonly instanceFilePath: string;
   readonly templateFilePath: string;
+  /** Combined weight of the template requirements checked in this file. */
+  readonly totalWeight: number;
 }

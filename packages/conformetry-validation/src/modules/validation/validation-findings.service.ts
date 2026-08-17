@@ -92,6 +92,10 @@ export class ValidationFindingsService {
         filename: instance.instance.nameStem,
         instanceFilePath: instancePath,
         templateFilePath: templatesRootPath,
+        // An unmatched instance is never scored — no template means no
+        // requirements to weigh it against — so this total is never a
+        // denominator. It fails the run on its own, before any threshold.
+        totalWeight: 0,
       };
     });
   }
