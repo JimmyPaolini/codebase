@@ -486,7 +486,7 @@ See the [testing-strategy skill](.agents/skills/testing-strategy/SKILL.md) for p
 
 ### Session Hooks
 
-Three checks run at the start of every agent session and inject their failure as
+Four checks run at the start of every agent session and inject their failure as
 additional context, so the agent fixes the problem before writing any code. Both
 harnesses run the same scripts under `scripts/git/`:
 
@@ -495,6 +495,15 @@ harnesses run the same scripts under `scripts/git/`:
 | `validate-session-branch-name.sh` | Branch follows `<type>/<scope>-<description>`; directs the agent to the rename-branch skill |
 | `validate-session-commit-signing.sh` | `commit.gpgsign`, `user.signingkey`, and a GPG signing smoke test |
 | `validate-session-gh-authentication.sh` | `gh auth status` plus Projects access |
+| `validate-session-skills.sh` | Every skill declared in `skills-lock.json` is present; directs the agent to `codebase:install-skills` |
+
+The skills check exists because `postinstall` alone does not cover worktrees.
+pnpm skips lifecycle scripts when `node_modules` is already up to date, so a
+worktree branched from an existing checkout never restores the gitignored
+skills, and every skill link in this file dangles. The hook reports rather than
+restores: harnesses register skills when a session starts, so restoring from the
+hook would still not expose them to the session already underway. Restore, then
+start a fresh session.
 
 Each script is registered twice — once per harness — and both registrations point
 at the same file:

@@ -18,6 +18,11 @@
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/git/validate-session-gh-authentication.sh\"",
             "timeout": 15,
             "type": "command"
+          },
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/git/validate-session-skills.sh\"",
+            "timeout": 15,
+            "type": "command"
           }
         ],
         "matcher": "startup|resume|clear"
