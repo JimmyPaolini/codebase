@@ -192,13 +192,21 @@ export class ValidateCommand extends CommandRunner {
       templates: this.resolveTemplates({ configuration, workingDirectory }),
     });
 
-    this.logger.log(
-      this.reportingService.formatReport({
+    // The report is the command's product, not a log line: it is a multi-line
+    // document written for a reader, and routing it through the logger would
+    // both bury it in log framing and force prose no telemetry can group on.
+    process.stdout.write(
+      `${this.reportingService.formatReport({
         fileResults: result.fileResults,
         scores: result.scores,
         workingDirectory,
-      }),
+      })}\n`,
     );
+    this.logger.log("👔 Validated conformetry instances", undefined, {
+      count: result.checkedPaths.length,
+      failedCount: result.scores.filter((score) => !score.ok).length,
+      unmatchedCount: result.unmatched.length,
+    });
 
     if (!result.ok) {
       process.exitCode = 1;

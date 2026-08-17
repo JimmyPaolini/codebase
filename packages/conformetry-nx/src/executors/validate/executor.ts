@@ -49,8 +49,9 @@ export default async function validateExecutor(
     workspaceRoot: context.root,
   });
 
-  // eslint-disable-next-line no-console -- an executor's report is its output
-  console.log(result.report);
+  // The report is the executor's product rather than a log line, so it goes
+  // to stdout verbatim — which is also what lets the suppression go away.
+  process.stdout.write(`${result.report}\n`);
 
   return { success: result.ok };
 }

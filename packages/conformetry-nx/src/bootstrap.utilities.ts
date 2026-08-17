@@ -74,11 +74,15 @@ export async function runBootstrapCli(workspaceRoot: string): Promise<void> {
   try {
     const files = await bootstrapPlugin(workspaceRoot);
 
+    // No Nest container exists during `postinstall`, so this cannot go
+    // through `LoggerService`. The message still follows its convention —
+    // emoji, then a verb — so bootstrap output reads like everything else.
     console.info(
-      `Emitted ${files.length} files of the conformetry generator plugin to ${DEFAULT_OUTPUT_PATH}.`,
+      `👔 Emitted the conformetry generator plugin to ${DEFAULT_OUTPUT_PATH}`,
+      { count: files.length },
     );
   } catch (error) {
-    console.warn("Could not emit the conformetry generator plugin:");
+    console.warn("👔 Skipped emitting the conformetry generator plugin");
     console.warn(error instanceof Error ? error.message : error);
   }
 }

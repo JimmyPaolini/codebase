@@ -44,7 +44,7 @@ describe(validateExecutor, () => {
     vi.mocked(resolvePluginService).mockResolvedValue({
       runValidation,
     } as unknown as Awaited<ReturnType<typeof resolvePluginService>>);
-    vi.spyOn(console, "log").mockReturnValue(undefined);
+    vi.spyOn(process.stdout, "write").mockReturnValue(true);
   });
 
   afterEach(() => {
@@ -76,7 +76,7 @@ describe(validateExecutor, () => {
         workspaceRoot: "/w",
       }),
     );
-    expect(console.log).toHaveBeenCalledWith("All good.");
+    expect(process.stdout.write).toHaveBeenCalledWith("All good.\n");
     expect(result).toStrictEqual({ success: true });
   });
 

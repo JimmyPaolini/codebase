@@ -48,6 +48,7 @@ describe(ValidateCommand, () => {
   let configurationService: ConfigurationService;
   let discoveryService: DiscoveryService;
   let commandLogger: LoggerService;
+  let reportingService: ReportingService;
   let validationService: ValidationService;
 
   beforeAll(async () => {
@@ -73,6 +74,7 @@ describe(ValidateCommand, () => {
     configurationService = await module.resolve(ConfigurationService);
     discoveryService = await module.resolve(DiscoveryService);
     commandLogger = await module.resolve(LoggerService);
+    reportingService = await module.resolve(ReportingService);
     validationService = await module.resolve(ValidationService);
   });
 
@@ -134,6 +136,34 @@ describe(ValidateCommand, () => {
         expect.objectContaining({ instances: [INSTANCE] }),
       );
       expect(commandLogger.log).toHaveBeenCalledTimes(1);
+    });
+
+    it("writes the report to stdout rather than through the logger", async () => {
+      const write = vi.spyOn(process.stdout, "write").mockReturnValue(true);
+
+      vi.mocked(reportingService.formatReport).mockReturnValue(
+        "All checked files conform.",
+      );
+
+      await command.run([], {});
+
+      // The report is a document for a reader, and the logger rejects any
+      // message that does not open with an emoji and a verb — which every
+      // report, success message included, does not.
+      expect(write).toHaveBeenCalledWith("All checked files conform.\n");
+      expect(commandLogger.log).not.toHaveBeenCalledWith(
+        expect.stringContaining("All checked files conform."),
+      );
+    });
+
+    it("logs the outcome as a conventional message with the counts as data", async () => {
+      await command.run([], {});
+
+      expect(commandLogger.log).toHaveBeenCalledWith(
+        expect.stringMatching(/^👔 Validated /u),
+        undefined,
+        { count: 0, failedCount: 0, unmatchedCount: 0 },
+      );
     });
 
     it("lets an explicit glob override the configured instances", async () => {

@@ -217,7 +217,12 @@ describe("bootstrap utilities", () => {
 
       await runBootstrapCli(workspaceRoot);
 
-      expect(info).toHaveBeenCalledWith(expect.stringContaining("Emitted 2"));
+      // Emoji then a verb, matching the logger convention the rest of the
+      // toolchain follows, with the varying count carried as data.
+      expect(info).toHaveBeenCalledWith(
+        expect.stringMatching(/^👔 Emitted /u),
+        { count: 2 },
+      );
     });
 
     it("warns rather than failing the install when the emit throws", async () => {
