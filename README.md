@@ -62,12 +62,12 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
 
 ## 💽 Projects
 
-- **[affirmations](applications/affirmations)** - Python LangChain + Ollama affirmation generator (LangGraph ReAct agent, SearxNG)
-- **[caelundas](applications/caelundas)** - CLI ephemeris calendar generator with astronomical calculations
-- **codometer** - Repository measurement toolchain that counts a codebase and reports what it found
+- **🤲 [affirmations](applications/affirmations)** - Python LangChain + Ollama affirmation generator (LangGraph ReAct agent, SearxNG)
+- **🛰️ [caelundas](applications/caelundas)** - Swiss Ephemeris calendar generator that turns astronomical events into an `.ics` file
+- **⏲️ codometer** - Repository measurement toolchain that counts a codebase and reports what it found
   - **[codometer-cli](packages/codometer-cli)** - Command-line host that measures TypeScript, JavaScript, Python, JSON, markdown, and Jupyter notebooks, then writes the badge block in this README, a JSON report, or both
   - **[codometer-configuration](packages/codometer-configuration)** - Reads `codometer.config.ts` for exclusion globs, output destinations and their render/write callbacks, and the Python interpreter
-- **conformetry** - Template-driven code generation and conformance validation toolchain
+- **👔 conformetry** - Template-driven code generation and conformance validation toolchain
   - **[conformetry-cli](packages/conformetry-cli)** - Command-line host that expands globs, prompts for inputs, and runs generation and validation
   - **[conformetry-configuration](packages/conformetry-configuration)** - Configuration loading, template discovery, and generator input resolution
   - **[conformetry-core](packages/conformetry-core)** - Shared error types, language validator contracts, and finding reporting
@@ -83,12 +83,13 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
   - **[conformetry-validation](packages/conformetry-validation)** - Validation orchestration, language routing, and finding deduplication
 - **[infrastructure](infrastructure)** - Helm charts, Terraform, Kubernetes infrastructure
 - **[JimmyPaolini](applications/JimmyPaolini)** - GitHub profile site
-- **[lexico](applications/lexico)** - TanStack Start dictionary web application
-- **[lexico-components](packages/lexico-components)** - Shared React component library using shadcn/ui
-- **[lexico-entities](packages/lexico-entities)** - Shared TypeORM entities and GraphQL types package
-- **[lexico-ingestion](applications/lexico-ingestion)** - NestJS CLI app for Latin dictionary data ingestion
-- **[logger](packages/logger)** - Shared pino-backed NestJS `LoggerService` and `LoggerModule`
-- **[synchronization](tools/synchronization)** - NestJS CLI app for synchronizing codebase configuration and documentation artifacts
+- **🐺 lexico** - Latin-English dictionary suite: the web application, its components, its schema, and the ingestion that fills it
+  - **[lexico](applications/lexico)** - TanStack Start SSR dictionary web application
+  - **[lexico-components](packages/lexico-components)** - Shared React component library using shadcn/ui and Radix primitives
+  - **[lexico-entities](packages/lexico-entities)** - TypeORM entities, migrations, and grammatical enumerations for the dictionary and literature schema
+  - **[lexico-ingestion](applications/lexico-ingestion)** - NestJS CLI that scrapes and loads dictionary, literature, and etymology sources
+- **🪵 [logger](packages/logger)** - Shared pino-backed NestJS `LoggerService` and `LoggerModule`
+- **↔️ [synchronization](tools/synchronization)** - NestJS CLI that regenerates the workspace's derived configuration and documentation, and fails CI when they drift
 
 ## 📖 Documentation
 
@@ -303,24 +304,24 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Markdown
 
-![Markdown Files](https://img.shields.io/badge/Markdown_Files-143-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-26564-1f6feb?style=flat-square)
-![H1](https://img.shields.io/badge/H1-132-7c3aed?style=flat-square)
-![H2](https://img.shields.io/badge/H2-914-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-1050-a78bfa?style=flat-square)
-![H4](https://img.shields.io/badge/H4-147-c4b5fd?style=flat-square)
+![Markdown Files](https://img.shields.io/badge/Markdown_Files-144-083fa1?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-27520-1f6feb?style=flat-square)
+![H1](https://img.shields.io/badge/H1-129-7c3aed?style=flat-square)
+![H2](https://img.shields.io/badge/H2-983-8b5cf6?style=flat-square)
+![H3](https://img.shields.io/badge/H3-1040-a78bfa?style=flat-square)
+![H4](https://img.shields.io/badge/H4-135-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-7211-64748b?style=flat-square)
-![Lists](https://img.shields.io/badge/Lists-1126-16a34a?style=flat-square)
-![List Items](https://img.shields.io/badge/List_Items-5253-22c55e?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-7284-64748b?style=flat-square)
+![Lists](https://img.shields.io/badge/Lists-1109-16a34a?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-5172-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-56-4ade80?style=flat-square)
-![Tables](https://img.shields.io/badge/Tables-288-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-2309-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-946-059669?style=flat-square)
+![Tables](https://img.shields.io/badge/Tables-315-0284c7?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-2466-0ea5e9?style=flat-square)
+![Links](https://img.shields.io/badge/Links-1036-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-22-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-855-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-12693-ef4444?style=flat-square)
-![Block Quotes](https://img.shields.io/badge/Block_Quotes-36-ca8a04?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-884-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-13055-ef4444?style=flat-square)
+![Block Quotes](https://img.shields.io/badge/Block_Quotes-40-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-73-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

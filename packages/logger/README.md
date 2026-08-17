@@ -1,12 +1,6 @@
-# Logger
+# 🪵 Logger
 
 The shared NestJS logging package.
-
-## Test
-
-```bash
-nx run logger:test
-```
 
 ## Purpose
 
@@ -73,3 +67,13 @@ re-deriving timestamps and output paths:
 | -------------------------------------------- | --------------------------------------------------------------- |
 | `buildErrorLogEntry(context, error)`         | `{ errorMessage, logLine }` — normalizes `unknown` errors       |
 | `createTimestampedOutputLogFilePath(prefix)` | `<cwd>/output/<prefix>-<ISO timestamp>.log`, creating `output/` |
+
+## Development
+
+```bash
+nx run logger:vitest
+```
+
+## License
+
+MIT — see [LICENSE](../../LICENSE).

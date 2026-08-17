@@ -1,7 +1,3 @@
-# {{namePascalCase}}
-
-A Python + Jupyter notebook application scaffold in this codebase.
-
 ## Requirements
 
 - Python `>=3.11`

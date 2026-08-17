@@ -1,15 +1,39 @@
-# ConformetryJson
+# 👔 Conformetry JSON
 
-NestJS service package scaffold generated with `conformetry:nestjs-service-project`.
-
-## Start
+The JSON and JSONC validator for [Conformetry](../conformetry-cli/README.md).
+Claims `.json` and `.jsonc`.
 
 ```bash
-nx run conformetry-json:start
+npm install --save-dev @conformetry/json
 ```
+
+## What it compares
+
+Every key and value the template declares must be present in the instance. Key
+order does not matter, and an instance may add keys the template does not
+mention — the template is a lower bound, not an exact specification. That is
+what lets one `package.json` template govern projects with different
+dependencies.
+
+Findings carry a JSON path rather than a line number, so a difference deep in a
+nested object is addressable.
+
+Parsing goes through
+[`jsonc-parser`](https://github.com/microsoft/node-jsonc-parser), so a
+`tsconfig.json` with comments is read the same way TypeScript reads it.
+
+## Exports
+
+`JsonValidatorService`, `JsonValidatorModule`, `JsonComparisonService`, and the
+`JsonValue` type. [`@conformetry/jupyter`](../conformetry-jupyter/README.md)
+reuses `JsonComparisonService` for the notebook envelope.
 
 ## Test
 
 ```bash
-nx run conformetry-json:test
+nx run conformetry-json:vitest
 ```
+
+## License
+
+MIT — see [LICENSE](../../LICENSE).
