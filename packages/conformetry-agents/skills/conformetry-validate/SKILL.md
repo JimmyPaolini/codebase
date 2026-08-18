@@ -43,8 +43,9 @@ let the full run be the gate.
 
 ## Reading a report
 
-Each entry names the file, then the instance and template it compared, then every
-difference with a suggested fix:
+A report opens with a score summary when anything scored below a perfect match,
+then lists each file, the instance and template it compared, and every difference
+with a suggested fix:
 
 ```text
   1. file: orders.service.ts
@@ -108,8 +109,9 @@ rather than treating the second report as a regression.
 differences appear against `.py` files complaining that Python is unavailable,
 the fix is to install `python3`, not to change the template.
 
-**Nothing is fixed automatically.** There is no autofix, no write mode, and no
-flag that will write for you. Remediation is either editing the instance by hand
+**Nothing is fixed automatically.** There is no autofix and no write mode; the
+only flag that changes the outcome is `--threshold`, which changes what passes
+rather than changing any file. Remediation is either editing the instance by hand
 or regenerating it — and regeneration overwrites unconditionally, so read
 `conformetry-generate` before reaching for it.
 
@@ -122,10 +124,29 @@ Regenerate only when the instance has drifted so far that reconstructing it by
 hand is worse, and only after reading what will be destroyed — generation has no
 existence check, no merge, and no conflict detection.
 
-## Severity
+## Scores and thresholds
 
-There is none. Every difference fails the run. Do not look for a way to
-downgrade one; fix it, or change the template so it stops being declared.
+A run does not only say whether an instance conforms — it scores **how much** of
+its template the instance honours, and fails that instance when the score falls
+below the threshold that applies to it. Differences carry weights, and the score
+is the share of weighed requirements honoured.
+
+The report prints a `Conformance scores:` summary above the differences, listing
+every instance that scored below a perfect match, whether it met its threshold,
+and a workspace total.
+
+**The threshold defaults to `1` — a perfect match — so a fresh workspace is
+strict.** Three levels set it, narrowest winning: an instance group's
+`threshold`, then the generator's `threshold`, then a run-level `--threshold`.
+
+Two consequences worth holding on to:
+
+- **A lowered threshold permits drift, it does not hide it.** Differences still
+  print for an instance that cleared its threshold. Reading a report and finding
+  differences does not mean the run failed — check the score summary.
+- **Lower a threshold to migrate, not to silence.** It is the tool for moving
+  existing instances onto a new template gradually. If an instance can conform,
+  make it conform; there is still no per-difference severity to downgrade.
 
 ## Before claiming the work is done
 

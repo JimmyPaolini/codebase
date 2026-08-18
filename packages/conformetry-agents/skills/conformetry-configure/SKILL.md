@@ -25,6 +25,7 @@ two fields are required:
 | `instances` | no | Where this generator's output already lives |
 | `aliases` | no | Short alternative names |
 | `description` | no | Shown when generators are listed |
+| `threshold` | no | Lowest conformance score this generator's instances may have, 0 to 1 |
 
 Unknown keys are **stripped silently** rather than rejected, so a misspelled
 field is not an error — it simply does nothing. Check your entry took effect by
@@ -48,8 +49,9 @@ template that nothing validates afterwards.
 
 ### Instance groups: where output already lives
 
-`instances` is a list of groups, each with optional `patterns`, `tags`, and
-`substitutions`. Groups exist so substitutions can differ per set of paths.
+`instances` is a list of groups, each with optional `patterns`, `tags`,
+`substitutions`, and `threshold`. Groups exist so substitutions — and the
+conformance bar — can differ per set of paths.
 
 Under the Nx plugin, `tags` is what changes a group's meaning:
 
@@ -139,6 +141,21 @@ There is **no equivalent for string literals**. A string in a template is
 required verbatim, so a placeholder description or message becomes a permanent
 requirement for every instance. Prefer leaving such a value out of the template
 to pinning wording nobody wants.
+
+## Thresholds
+
+Conformance is scored rather than merely passed, and a threshold is the lowest
+score an instance may have. It resolves narrowest-first: an instance group's
+`threshold`, then the generator's, then a run-level `--threshold`, then `1`.
+
+**Leave it unset unless you are migrating.** The default of `1` means a perfect
+match, which is what makes a template a standard rather than a suggestion. Lower
+it deliberately when bringing existing instances onto a new template gradually,
+and raise it back as they catch up — a permanently lowered threshold is a
+template that no longer describes its instances.
+
+A lowered threshold does not suppress reporting: differences still print for an
+instance that cleared its bar.
 
 ## After changing the configuration
 
