@@ -46,14 +46,12 @@ jobs:
           pnpm exec nx affected --target=lint-codebase \
             --configuration=check --parallel=4
 
-      # `lint-codebase` depends on this too, so a full or `run-many` invocation
-      # covers it — which is what makes the local command equivalent to this
-      # workflow. It stays an explicit step because `nx affected` maps a touched
-      # file to the project whose root is the longest matching prefix, so a
-      # change under `packages/` never marks the root `codebase` project
-      # affected, and the dependency alone would sit idle on exactly the pull
-      # requests worth checking. When the step above already ran it, this hits
-      # the cache.
+      # `lint-codebase` depends on this, and the step above already runs it: the
+      # target's inputs include `{workspaceRoot}/**/*.ts`, which marks the root
+      # `codebase` project affected on any TypeScript change. Kept as its own
+      # step so a stale call stack report fails under a name that says what
+      # broke rather than inside the aggregate — it hits the cache, so the
+      # second run costs nothing.
       - name: 🔭 Lint Call Stacks
         run: pnpm exec nx run codebase:callidescope:check
 
