@@ -169,6 +169,11 @@ const scopes = [
   },
   {
     description:
+      "Call stack tracing and linting CLI and the configuration package it reads",
+    name: "callidescope",
+  },
+  {
+    description:
       "Code statistics measurement CLI and the configuration package it reads",
     name: "codometer",
   },

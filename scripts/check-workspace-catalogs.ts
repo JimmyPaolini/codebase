@@ -35,6 +35,7 @@ const workspaceScopes = ["applications", "packages", "tools"];
  */
 function isInternalWorkspaceDependency(dependencyName: string): boolean {
   return (
+    dependencyName.startsWith("@callidescope/") ||
     dependencyName.startsWith("@codebase/") ||
     dependencyName.startsWith("@codometer/") ||
     dependencyName.startsWith("@conformetry/") ||

@@ -77,6 +77,7 @@ Where this project sits in the Nx project graph: what it depends on, and what de
 ```mermaid
 flowchart LR
   caelundas["caelundas"]
+  callidescope_cli["callidescope-cli"]
   codometer_cli["codometer-cli"]
   conformetry_cli["conformetry-cli"]
   conformetry_nx["conformetry-nx"]
@@ -85,6 +86,7 @@ flowchart LR
   reporting["reporting"]
   synchronization["synchronization"]
   caelundas --> logger
+  callidescope_cli --> logger
   codometer_cli --> logger
   conformetry_cli --> logger
   conformetry_nx --> logger
@@ -121,3 +123,43 @@ nx run logger:vitest
 ## License
 
 MIT — see [LICENSE](../../LICENSE).
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `logger`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 14 |
+| Files | 7 |
+| Calls traced | 12 |
+| Call stacks | 1 |
+| Deepest stack | 4 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 1 |
+
+### Call stacks
+
+**1. `LoggerService.verbose`** — depth 4 · orphan-root
+
+```text
+🚀 LoggerService.verbose(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:241]
+   ↳ Logs a verbose message at the `trace` level.
+  └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+     ↳ Assembles the object pino merges into the line.
+    └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+       ↳ Fails a malformed message in development, and never in production.
+      └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+         ↳ Whether a word is a verb in one of the two tenses the convention allows.
+```
+
+### Module spread
+
+None.
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->

@@ -302,3 +302,76 @@ nx run conformetry-configuration:vitest
 ## License
 
 MIT — see [LICENSE](../../LICENSE).
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `conformetry-configuration`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 99 |
+| Files | 22 |
+| Calls traced | 80 |
+| Call stacks | 3 |
+| Deepest stack | 8 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 5 |
+
+### Call stacks
+
+**1. `InputService.resolveInputsFromValues`** — depth ≥ 8 · orphan-root
+
+```text
+🚀 InputService.resolveInputsFromValues(args: ResolveInputsFromValuesArguments): Promise<Record<string, string>> [packages/conformetry-configuration/src/modules/input/input.service.ts:203]
+   ↳ Resolves inputs from values the caller already parsed.
+  └─> InputService.resolveInputs(…): Promise<Record<string, string>> [packages/conformetry-configuration/src/modules/input/input.service.ts:52]
+     ↳ Walks a schema, taking each value from the resolver or a prompt.
+    └─> InputService.acceptProvidedValue(args: { input: SchemaInput; value: string; }): string [packages/conformetry-configuration/src/modules/input/input.service.ts:38]
+       ↳ Validates a value the caller already had, throwing if it is invalid.
+      └─> InputSchemaService.validateValue(args: { input: SchemaInput; value: unknown; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:158]
+         ↳ Validates a value, returning `true` or the reason it failed.
+        └─> InputSchemaService.validateEnum(args: { input: SchemaInput; value: string; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:39]
+           ↳ Validates a value against a schema `enum`, when one is declared.
+          └─> InputSchemaService.readEnumValues(propertySchema: unknown): string[] [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:123]
+             ↳ Reads the string members of a schema `enum`.
+            └─> InputSchemaService.readSchemaProperty(propertySchema: unknown, key: string): unknown [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:26]
+               ↳ Reads one property off a schema fragment when it is an object.
+              └─> InputSchemaService.find(…)([entryKey]: [string, any]): boolean [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:31]
+```
+
+**2. `InputPromptingService.validate`** — depth 6 · orphan-root
+
+```text
+🚀 InputPromptingService.validate(value: unknown): string | true [packages/conformetry-configuration/src/modules/input/input-prompting.service.ts:51]
+  └─> InputSchemaService.validateValue(args: { input: SchemaInput; value: unknown; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:158]
+     ↳ Validates a value, returning `true` or the reason it failed.
+    └─> InputSchemaService.validateEnum(args: { input: SchemaInput; value: string; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:39]
+       ↳ Validates a value against a schema `enum`, when one is declared.
+      └─> InputSchemaService.readEnumValues(propertySchema: unknown): string[] [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:123]
+         ↳ Reads the string members of a schema `enum`.
+        └─> InputSchemaService.readSchemaProperty(propertySchema: unknown, key: string): unknown [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:26]
+           ↳ Reads one property off a schema fragment when it is an object.
+          └─> InputSchemaService.find(…)([entryKey]: [string, any]): boolean [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:31]
+```
+
+**3. `assertNoCollisions`** — depth ≥ 4 · orphan-root
+
+```text
+🚀 assertNoCollisions(…): void [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:26]
+   ↳ Fails when two generators would answer to the same thing.
+  └─> findUnusableHandles(…): { message: string; path: (string | number)[]; }[] [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:96]
+     ↳ Reports names and aliases that could not be addressed or emitted.
+    └─> flatMap(…)(…): { message: string; path: number[]; }[] [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:102]
+      └─> map(…)(handle: string): { message: string; path: number[]; } [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:105]
+```
+
+### Module spread
+
+None.
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->

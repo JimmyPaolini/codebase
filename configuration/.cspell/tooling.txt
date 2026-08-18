@@ -12,7 +12,11 @@ brightgreen
 Buildability
 bundlesize
 caffeinate
+callees
+callidescope
+callidescopeignore
 capitalisation
+capitalised
 categorise
 checkpointing
 cipe
@@ -61,6 +65,7 @@ frontmatter
 futp
 ghaction
 gitmodules
+groupable
 gitmoji
 gitmojis
 glab
@@ -93,6 +98,7 @@ keyof
 killallnode
 killallvscodeextensions
 killport
+lemmatizers
 licen
 licenseignore
 linesecond
@@ -204,6 +210,7 @@ syncpack
 syncpackrc
 tailwindcss
 tanstack
+Tarjan
 teama
 templater
 textnodes
@@ -224,7 +231,9 @@ typeof
 uncacheable
 uncapitalize
 uncapitalizes
+unconfigured
 underspecified
+unfollowable
 unioned
 unknowncase
 unredacted

@@ -89,3 +89,46 @@ nx run conformetry-python:vitest
 ## License
 
 MIT — see [LICENSE](../../LICENSE).
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `conformetry-python`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 11 |
+| Files | 8 |
+| Calls traced | 20 |
+| Call stacks | 1 |
+| Deepest stack | 6 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 0 |
+
+### Call stacks
+
+**1. `PythonValidatorService.validateDocument`** — depth 6 · orphan-root
+
+```text
+🚀 PythonValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-python/src/modules/python-validator/python-validator.service.ts:38]
+   ↳ Reports every declaration and comment the template requires.
+  └─> PythonBridgeService.validatePythonSource(args: RunPythonBridgeArguments): DocumentValidationResult [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:154]
+     ↳ Compares one Python source against its rendered template.
+    └─> PythonBridgeService.map(…)(error: Readonly<Record<string, unknown>>): ConformetryError [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:179]
+      └─> PythonBridgeService.toConformetryError(error: PythonBridgeError): ConformetryError [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:130]
+         ↳ Maps one snake_case bridge error onto the shared error shape.
+        └─> PythonBridgeService.readValues(error: PythonBridgeError): Partial<ConformetryError> [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:119]
+           ↳ Reads the optional expected and actual values.
+          └─> PythonBridgeService.readString(error: PythonBridgeError, key: string): string | undefined [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:109]
+             ↳ Narrows an untrusted string field from the bridge payload.
+```
+
+### Module spread
+
+None.
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->

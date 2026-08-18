@@ -84,3 +84,109 @@ nx run conformetry-markdown:vitest
 ## License
 
 MIT — see [LICENSE](../../LICENSE).
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `conformetry-markdown`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 33 |
+| Files | 9 |
+| Calls traced | 46 |
+| Call stacks | 9 |
+| Deepest stack | 3 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 0 |
+
+### Call stacks
+
+**1. `MarkdownNodesService.table`** — depth 3 · orphan-root
+
+```text
+🚀 MarkdownNodesService.table(templateNode: MarkdownNode, instanceNode: MarkdownNode): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:68]
+  └─> MarkdownNodesService.readColumnCount(node: MarkdownNode): number [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:91]
+     ↳ Counts a table's columns from its first row.
+    └─> MarkdownNodesService.readChildren(node: MarkdownNode): MarkdownNode[] [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:158]
+       ↳ Reads a node's children, or an empty list for a leaf.
+```
+
+**2. `MarkdownNodesService.code`** — depth 2 · orphan-root
+
+```text
+🚀 MarkdownNodesService.code(templateNode: MarkdownNode, instanceNode: MarkdownNode): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:35]
+  └─> MarkdownNodesService.sameField(leftValue: string | undefined, rightValue: string | undefined): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:98]
+     ↳ Compares two optional string fields, treating absent as empty.
+```
+
+**3. `MarkdownNodesService.heading`** — depth 2 · orphan-root
+
+```text
+🚀 MarkdownNodesService.heading(templateNode: MarkdownNode, instanceNode: MarkdownNode): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:41]
+  └─> MarkdownNodesService.readText(node: MarkdownNode): string [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:163]
+     ↳ Reads a node's rendered plain text.
+```
+
+<details>
+<summary>6 more call stacks</summary>
+
+**4. `MarkdownNodesService.html`** — depth 2 · orphan-root
+
+```text
+🚀 MarkdownNodesService.html(templateNode: MarkdownNode, instanceNode: MarkdownNode): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:47]
+  └─> MarkdownNodesService.sameField(leftValue: string | undefined, rightValue: string | undefined): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:98]
+     ↳ Compares two optional string fields, treating absent as empty.
+```
+
+**5. `MarkdownNodesService.image`** — depth 2 · orphan-root
+
+```text
+🚀 MarkdownNodesService.image(templateNode: MarkdownNode, instanceNode: MarkdownNode): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:50]
+  └─> MarkdownNodesService.sameField(leftValue: string | undefined, rightValue: string | undefined): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:98]
+     ↳ Compares two optional string fields, treating absent as empty.
+```
+
+**6. `MarkdownNodesService.inlineCode`** — depth 2 · orphan-root
+
+```text
+🚀 MarkdownNodesService.inlineCode(templateNode: MarkdownNode, instanceNode: MarkdownNode): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:56]
+  └─> MarkdownNodesService.sameField(leftValue: string | undefined, rightValue: string | undefined): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:98]
+     ↳ Compares two optional string fields, treating absent as empty.
+```
+
+**7. `MarkdownNodesService.link`** — depth 2 · orphan-root
+
+```text
+🚀 MarkdownNodesService.link(templateNode: MarkdownNode, instanceNode: MarkdownNode): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:59]
+  └─> MarkdownNodesService.sameField(leftValue: string | undefined, rightValue: string | undefined): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:98]
+     ↳ Compares two optional string fields, treating absent as empty.
+```
+
+**8. `MarkdownNodesService.tableRow`** — depth 2 · orphan-root
+
+```text
+🚀 MarkdownNodesService.tableRow(templateNode: MarkdownNode, instanceNode: MarkdownNode): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:74]
+  └─> MarkdownNodesService.readChildren(node: MarkdownNode): MarkdownNode[] [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:158]
+     ↳ Reads a node's children, or an empty list for a leaf.
+```
+
+**9. `MarkdownNodesService.text`** — depth 2 · orphan-root
+
+```text
+🚀 MarkdownNodesService.text(templateNode: MarkdownNode, instanceNode: MarkdownNode): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:80]
+  └─> MarkdownNodesService.sameField(leftValue: string | undefined, rightValue: string | undefined): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:98]
+     ↳ Compares two optional string fields, treating absent as empty.
+```
+
+</details>
+
+### Module spread
+
+None.
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->
