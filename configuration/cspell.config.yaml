@@ -173,6 +173,11 @@ patterns:
   # Dependencies `NUM` part-of-speech tag.
   - name: external-identifier
     pattern: /\bmdast-util-[\w-]+|\bRefinementCtx\b|\btmp_path\b|\btoken_hex\b|--bool\b|(?<=")NUM(?=")/g
+  # HTML element names quoted as a React type argument (`ComponentProps<"nav">`,
+  # `ComponentPropsWithoutRef<"img">`). The tag names come from HTML, so `nav` is the
+  # element rather than an abbreviation anyone here chose.
+  - name: react-intrinsic-element
+    pattern: /\bComponentProps(?:WithoutRef|WithRef)?<"[a-z][\w-]*">/g
   # Quoted dotted identifiers in editor configuration: VS Code extension IDs
   # (`esbenp.prettier-vscode`), setting keys (`git.autofetch`), and command IDs
   # (`workbench.action.terminal.new`). Publisher handles are not English words, and the
@@ -192,6 +197,7 @@ ignoreRegExpList:
   - hexadecimal-color
   - lint-rule-name
   - external-identifier
+  - react-intrinsic-element
 overrides:
   - filename: "**/*.ipynb"
     ignoreRegExpList:

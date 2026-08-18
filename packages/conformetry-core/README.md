@@ -149,3 +149,32 @@ nx run conformetry-core:vitest
 ## License
 
 MIT — see [LICENSE](../../LICENSE).
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `conformetry-core`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 36 |
+| Files | 19 |
+| Calls traced | 31 |
+| Call stacks | 0 |
+| Deepest stack | 0 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 1 |
+
+### Call stacks
+
+None.
+
+### Module spread
+
+None.
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->

@@ -69,7 +69,8 @@ This skill teaches how to name Git branches for this codebase. All branch names 
 | `lexico-entities` | Shared TypeORM entities and GraphQL types |
 | `lexico-ingestion` | Data ingestion scripts for Lexico |
 | `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
-| `codometer` | NestJS command-line application for codometer metric collection and reporting |
+| `callidescope` | Call stack tracing and linting CLI and the configuration package it reads |
+| `codometer` | Code statistics measurement CLI and the configuration package it reads |
 | `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
 | `no-release` | Escape hatch: suppress semantic-release for any commit type |
 | `packages` | Changes spanning multiple shared packages in packages/ |

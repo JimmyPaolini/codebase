@@ -87,3 +87,55 @@ nx run conformetry-typescript:vitest
 ## License
 
 MIT — see [LICENSE](../../LICENSE).
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `conformetry-typescript`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 40 |
+| Files | 10 |
+| Calls traced | 49 |
+| Call stacks | 1 |
+| Deepest stack | 12 |
+| Stacks through recursion | 1 |
+| Unfollowable calls | 0 |
+
+### Call stacks
+
+**1. `TypescriptValidatorService.validateDocument`** — depth 12 · orphan-root
+
+```text
+🚀 TypescriptValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:168]
+   ↳ Reports every declaration and comment the template requires.
+  └─> TypescriptValidatorService.validateStructure(…): DocumentValidationResult [packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:111]
+     ↳ Compares the syntax trees and describes each missing declaration.
+    └─> TypescriptTreeService.compareBestCandidate(args: { candidates: Node[]; templateChild: Node; }): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:70]
+       ↳ Descends into whichever candidate explains the template best.
+      └─> TypescriptTreeService.map(…)(candidate: Node): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:75]
+        └─> TypescriptTreeService.compareTree(args: CompareTreeArguments): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:130]
+           ↳ Compares one level of two trees, descending into every match.
+          └─> TypescriptTreeService.map(…)(templateChild: Node): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:137]
+            └─> TypescriptTreeService.compareChild(…): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:91]
+               ↳ Matches one template child against the instance's children.
+              └─> TypescriptTreeService.buildError(…): TypescriptComparisonError [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:44]
+                 ↳ Describes a template node with no instance counterpart.
+                └─> TypescriptNodesService.countSubtree(node: Node): number (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:181]
+                   ↳ Counts a node and everything beneath it.
+                  └─> TypescriptNodesService.reduce(…)(total: number, child: Node): number (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:182]
+                    └─> TypescriptNodesService.readChildren(node: Node): Node[] [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:188]
+                       ↳ Reads a node's direct children, skipping the end-of-file token.
+                      └─> TypescriptNodesService.forEachChild(…)(childNode: Node): undefined [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:191]
+```
+
+### Module spread
+
+None.
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->

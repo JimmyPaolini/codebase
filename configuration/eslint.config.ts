@@ -332,6 +332,20 @@ export default [
               onlyDependOnLibsWithTags: ["type:package"],
               sourceTag: "type:application",
             },
+            // Callidescope package graph. The configuration reader is the
+            // leaf; the CLI traces whatever it describes, so the dependency
+            // only ever points that way.
+            {
+              onlyDependOnLibsWithTags: [],
+              sourceTag: "name:callidescope-configuration",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:callidescope-configuration",
+                "name:logger",
+              ],
+              sourceTag: "name:callidescope-cli",
+            },
             // Codometer package graph. The configuration reader is the leaf;
             // the CLI measures whatever it describes, so the dependency only
             // ever points that way.
@@ -1431,7 +1445,14 @@ export default [
       "markdown/no-empty-definitions": "error",
       "markdown/no-empty-images": "error",
       "markdown/no-empty-links": "error",
-      "markdown/no-html": ["error", { allowed: ["img", "a"] }],
+      // `details`/`summary` is the one disclosure GitHub renders and markdown
+      // cannot express, and generated sections long enough to need it — the
+      // callidescope call stacks — are exactly where it earns its place.
+      // `markdownlint`'s MD033 already permits inline HTML here.
+      "markdown/no-html": [
+        "error",
+        { allowed: ["a", "details", "img", "summary"] },
+      ],
       "markdown/no-invalid-label-refs": "error",
       "markdown/no-missing-atx-heading-space": "error",
       "markdown/no-missing-label-refs": "error",

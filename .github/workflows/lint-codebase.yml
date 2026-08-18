@@ -46,6 +46,14 @@ jobs:
           pnpm exec nx affected --target=lint-codebase \
             --configuration=check --parallel=4
 
+      # An explicit step rather than a `lint-codebase` dependency: `nx affected`
+      # maps a touched file to the project whose root is the longest matching
+      # prefix, so a change under `packages/` never marks the root `codebase`
+      # project affected — and a dependency would sit idle on exactly the pull
+      # requests worth checking.
+      - name: 🔭 Lint Call Stacks
+        run: pnpm exec nx run codebase:callidescope:check
+
       - name: 📊 Upload Type Coverage
         if: always()
         uses: actions/upload-artifact@v7

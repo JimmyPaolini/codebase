@@ -104,3 +104,58 @@ nx run conformetry-jupyter:vitest
 ## License
 
 MIT — see [LICENSE](../../LICENSE).
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `conformetry-jupyter`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 22 |
+| Files | 8 |
+| Calls traced | 28 |
+| Call stacks | 1 |
+| Deepest stack | 13 |
+| Stacks through recursion | 1 |
+| Unfollowable calls | 0 |
+
+### Call stacks
+
+**1. `JupyterValidatorService.validateDocument`** — depth 13 · orphan-root
+
+```text
+🚀 JupyterValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:146]
+   ↳ Reports every notebook difference: envelope, missing cells, cell contents.
+  └─> JupyterValidatorService.map(…)(…): { error: { errorType: "code"; expected: string; fix: string; language: "python"; message: string; weight: number; }; weight: number; } [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:166]
+    └─> JupyterValidatorService.weighMissingCell(args: { cell: PairedCells; document: PreparedValidationDocument; }): number [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:133]
+       ↳ Weighs a cell the notebook does not have.
+      └─> JupyterValidatorService.validateCell(…): DocumentValidationResult [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:89]
+         ↳ Validates one paired cell with the validator matching its kind.
+        └─> MarkdownValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-markdown/src/modules/markdown-validator/markdown-validator.service.ts:48]
+           ↳ Reports every markdown structure the template requires and the file lacks.
+          └─> MarkdownTreeService.compareChildren(args: CompareChildrenArguments): CompareChildrenResult (cycle) [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:142]
+             ↳ Compares one level of two trees, descending into containers.
+            └─> MarkdownTreeService.compareContainer(args: CompareNodeArguments): CompareNodeResult (cycle) [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:64]
+               ↳ Matches a container node, then descends into it.
+              └─> MarkdownTreeService.map(…)(…): { errors: MarkdownComparisonError[]; lastMatchedNode: MarkdownNode; totalWeight: number; } (cycle) [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:86]
+                └─> MarkdownTreeService.compareLeaf(args: CompareNodeArguments): CompareNodeResult [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:110]
+                   ↳ Matches a leaf node on its own identity, without descending.
+                  └─> MarkdownTreeService.findCandidates(args: CompareNodeArguments): MarkdownNode[] [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:130]
+                     ↳ Finds every instance sibling satisfying the template node.
+                    └─> MarkdownTreeService.filter(…)(instanceNode: MarkdownNode): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:131]
+                      └─> MarkdownNodesService.matches(args: { instanceNode: MarkdownNode; templateNode: MarkdownNode; }): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:140]
+                         ↳ Returns whether an instance node satisfies a template node.
+                        └─> MarkdownNodesService.readText(node: MarkdownNode): string [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:163]
+                           ↳ Reads a node's rendered plain text.
+```
+
+### Module spread
+
+None.
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->
