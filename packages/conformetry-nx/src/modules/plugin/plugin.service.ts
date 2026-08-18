@@ -11,12 +11,12 @@ import { ValidationService } from "@conformetry/validation";
 import { Injectable } from "@nestjs/common";
 
 import { AdapterService } from "../adapter/adapter.service";
-import { CandidatesService } from "../candidates/candidates.service";
 import {
   DEFAULT_OUTPUT_PATH,
   DEFAULT_PACKAGE_NAME,
 } from "../generator/generator.constants";
 import { GeneratorService } from "../generator/generator.service";
+import { InstancesService } from "../instances/instances.service";
 import {
   CONFORMETRY_NX_PLUGIN_NAME,
   NX_CONFIGURATION_FILENAME,
@@ -56,7 +56,7 @@ export class PluginService {
 
   constructor(
     private readonly adapterService: AdapterService,
-    private readonly candidatesService: CandidatesService,
+    private readonly instancesService: InstancesService,
     private readonly configurationService: ConfigurationService,
     private readonly templateDiscoveryService: TemplateDiscoveryService,
     private readonly generatorService: GeneratorService,
@@ -213,6 +213,7 @@ export class PluginService {
       return this.templateDiscoveryService.collectTemplate({
         name: generator.name,
         templatePath: path.resolve(args.workspaceRoot, generator.templatePath),
+        threshold: generator.threshold,
       });
     });
   }
@@ -251,13 +252,13 @@ export class PluginService {
         continue;
       }
 
-      const candidates = await this.candidatesService.resolveProjectCandidates({
+      const instances = await this.instancesService.findProjectInstances({
         configurationPath: pluginOptions.configurationPath,
         project,
         workspaceRoot: args.workspaceRoot,
       });
 
-      if (candidates.length === 0) {
+      if (instances.length === 0) {
         continue;
       }
 
@@ -353,7 +354,7 @@ export class PluginService {
     });
 
     const result = await this.validationService.validate({
-      candidates: await this.candidatesService.resolveProjectCandidates({
+      instances: await this.instancesService.findProjectInstances({
         configurationPath: pluginOptions.configurationPath,
         project: args.project,
         workspaceRoot: args.workspaceRoot,
@@ -366,12 +367,14 @@ export class PluginService {
         configurationPath: pluginOptions.configurationPath,
         workspaceRoot: args.workspaceRoot,
       }),
+      ...(args.threshold === undefined ? {} : { threshold: args.threshold }),
     });
 
     return {
       ok: result.ok,
       report: this.reportingService.formatReport({
         fileResults: result.fileResults,
+        scores: result.scores,
         workingDirectory: args.workspaceRoot,
       }),
     };

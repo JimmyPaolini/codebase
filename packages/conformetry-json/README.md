@@ -56,9 +56,11 @@ flowchart LR
   subgraph group0["conformetry-json"]
     JsonValidatorModule
   end
+  subgraph group1["conformetry-core"]
+    ScoringModule
+  end
+  JsonValidatorModule --> ScoringModule
 ```
-
-_Reached only for their types, and so declaring no module here: conformetry-core._
 
 <!-- nestjs-module-graph-end -->
 
@@ -86,33 +88,38 @@ Call stacks traced through `conformetry-json`, deepest first. Each frame shows w
 
 | Measure | Value |
 | --- | --- |
-| Callables | 16 |
+| Callables | 23 |
 | Files | 8 |
-| Calls traced | 21 |
+| Calls traced | 37 |
 | Call stacks | 1 |
-| Deepest stack | 9 |
+| Deepest stack | 12 |
 | Stacks through recursion | 1 |
 | Unfollowable calls | 0 |
 
 ### Call stacks
 
-**1. `JsonValidatorService.validateDocument`** — depth 9 · orphan-root
+**1. `JsonValidatorService.validateDocument`** — depth 12 · orphan-root
 
 ```text
-🚀 JsonValidatorService.validateDocument(document: PreparedValidationDocument): ConformetryError[] [packages/conformetry-json/src/modules/json-validator/json-validator.service.ts:39]
+🚀 JsonValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-json/src/modules/json-validator/json-validator.service.ts:39]
    ↳ Reports every key or value the template requires and the instance lacks.
-  └─> JsonComparisonService.compareArrays(…): ConformetryError[] (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:63]
-     ↳ Compares two arrays.
-    └─> JsonComparisonService.flatMap(…)(this: undefined, templateItem: JsonValue): ConformetryError[] (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:69]
-      └─> JsonComparisonService.map(…)(instanceItem: JsonValue, index: number): ConformetryError[] (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:98]
-        └─> JsonComparisonService.compare(args: CompareJsonArguments): ConformetryError[] (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:180]
-           ↳ Compares a template value against an instance value, returning every way the instance fails to contain what the…
-          └─> JsonComparisonService.compareObjects(…): ConformetryError[] (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:111]
-             ↳ Compares two objects, requiring every template key to be present.
-            └─> JsonComparisonService.flatMap(…)(this: undefined, key: string): ConformetryError[] (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:117]
-              └─> JsonComparisonService.formatPath(pathSegments: JsonPathSegment[]): string [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:143]
-                 ↳ Renders a path as `scripts.build[0]` for error messages.
-                └─> JsonComparisonService.reduce(…)(pathValue: string, segment: JsonPathSegment): string [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:144]
+  └─> JsonComparisonService.compareArrayItem(…): JsonComparison (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:79]
+     ↳ Matches one required array entry against the instance array.
+    └─> JsonComparisonService.map(…)(instanceItem: JsonValue, index: number): JsonComparison (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:122]
+      └─> JsonComparisonService.compare(args: CompareJsonArguments): JsonComparison (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:268]
+         ↳ Compares a template value against an instance value, returning every way the instance fails to contain what the…
+        └─> JsonComparisonService.compareArrays(…): JsonComparison (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:141]
+           ↳ Compares two arrays.
+          └─> JsonComparisonService.map(…)(templateItem: JsonValue): JsonComparison (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:148]
+            └─> JsonComparisonService.compareObjects(…): JsonComparison (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:155]
+               ↳ Compares two objects, requiring every template key to be present.
+              └─> JsonComparisonService.map(…)([key, templateValue]: [string, JsonValue]): JsonComparison (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:164]
+                └─> JsonComparisonService.countNodes(value: JsonValue): number (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:207]
+                   ↳ Counts a JSON value and every value nested inside it.
+                  └─> JsonComparisonService.reduce(…)(total: number, item: JsonValue): number (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:209]
+                    └─> JsonComparisonService.reduce(…)(total: number, nested: JsonValue): number (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:215]
+                      └─> JsonComparisonService.isJsonObject(value: JsonValue): value is Record<string, JsonValue> [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:235]
+                         ↳ Returns whether a value is a plain JSON object.
 ```
 
 ### Module spread

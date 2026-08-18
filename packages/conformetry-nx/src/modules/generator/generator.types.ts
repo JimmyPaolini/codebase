@@ -1,6 +1,6 @@
 // 🏷️ Types
 
-import type { ProjectScope } from "../candidates/candidates.types";
+import type { ProjectScope } from "../instances/instances.types";
 
 /** Arguments for emitting the consumer's generator plugin. */
 export interface EmitPluginArguments {

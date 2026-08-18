@@ -6,6 +6,7 @@ import type { MissingLine } from "./text-validator.types";
 import type {
   ConformetryError,
   ConformetryLanguageValidator,
+  DocumentValidationResult,
   PreparedValidationDocument,
 } from "@conformetry/core";
 
@@ -65,19 +66,32 @@ export class TextValidatorService implements ConformetryLanguageValidator {
 
   // 🌎 Public Methods
 
-  /** Reports every template line missing from the instance. */
+  /**
+   * Reports every template line missing from the instance.
+   *
+   * Every template line is one requirement, blank ones included: this
+   * validator matches them literally, so a blank line the instance does not
+   * supply is a real miss and counting it keeps the denominator honest.
+   */
   public validateDocument(
     document: PreparedValidationDocument,
-  ): ConformetryError[] {
-    return this.findMissingLines(document).map((missingLine) => {
-      return {
-        errorType: "code",
-        expected: missingLine.line,
-        fix: `Add the line \`${missingLine.line}\` to the instance file.`,
-        language: "text",
-        message: `Missing line: ${missingLine.line}`,
-        templateLine: missingLine.templateLine,
-      };
-    });
+  ): DocumentValidationResult {
+    const errors: ConformetryError[] = this.findMissingLines(document).map(
+      (missingLine) => {
+        return {
+          errorType: "code",
+          expected: missingLine.line,
+          fix: `Add the line \`${missingLine.line}\` to the instance file.`,
+          language: "text",
+          message: `Missing line: ${missingLine.line}`,
+          templateLine: missingLine.templateLine,
+        };
+      },
+    );
+
+    return {
+      errors,
+      totalWeight: document.renderedTemplate.split("\n").length,
+    };
   }
 }

@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { toString } from "mdast-util-to-string";
 
+import { SKIPPED_TYPES } from "./markdown-validator.constants";
+
 import type { MarkdownNode } from "./markdown-validator.types";
 
 /**
@@ -101,6 +103,27 @@ export class MarkdownNodesService {
   }
 
   // 🌎 Public Methods
+
+  /**
+   * Counts a node and every countable node beneath it.
+   *
+   * This is what a missing node costs. Comparison reports a vanished section
+   * once, but the template asked for the section and everything inside it, so
+   * weighing the finding by its subtree keeps a deleted table from scoring the
+   * same as a deleted heading.
+   *
+   * Skipped types are excluded on both sides of the fraction, so nodes the
+   * comparison never checks cannot dilute a score.
+   */
+  public countSubtree(node: MarkdownNode): number {
+    if (SKIPPED_TYPES.has(node.type)) {
+      return 0;
+    }
+
+    return this.readChildren(node).reduce((total, child) => {
+      return total + this.countSubtree(child);
+    }, 1);
+  }
 
   /** Narrows a raw mdast child list to the nodes this validator understands. */
   public filterNodes(children: readonly unknown[]): MarkdownNode[] {

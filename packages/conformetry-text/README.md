@@ -98,11 +98,11 @@ Call stacks traced through `conformetry-text`, deepest first. Each frame shows w
 **1. `TextValidatorService.validateDocument`** — depth 3 · orphan-root
 
 ```text
-🚀 TextValidatorService.validateDocument(document: PreparedValidationDocument): ConformetryError[] [packages/conformetry-text/src/modules/text-validator/text-validator.service.ts:69]
+🚀 TextValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-text/src/modules/text-validator/text-validator.service.ts:76]
    ↳ Reports every template line missing from the instance.
-  └─> TextValidatorService.findMissingLines(document: PreparedValidationDocument): MissingLine[] [packages/conformetry-text/src/modules/text-validator/text-validator.service.ts:45]
+  └─> TextValidatorService.findMissingLines(document: PreparedValidationDocument): MissingLine[] [packages/conformetry-text/src/modules/text-validator/text-validator.service.ts:46]
      ↳ Finds template lines the instance does not supply often enough.
-    └─> TextValidatorService.countLines(text: string): Map<string, number> [packages/conformetry-text/src/modules/text-validator/text-validator.service.ts:34]
+    └─> TextValidatorService.countLines(text: string): Map<string, number> [packages/conformetry-text/src/modules/text-validator/text-validator.service.ts:35]
        ↳ Counts how many times each line occurs, for duplicate-aware matching.
 ```
 

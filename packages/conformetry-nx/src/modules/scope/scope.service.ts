@@ -4,7 +4,7 @@ import { Injectable } from "@nestjs/common";
 
 import { PROJECT_ROOT_PATTERN } from "./scope.constants";
 
-import type { ProjectScope } from "../candidates/candidates.types";
+import type { ProjectScope } from "../instances/instances.types";
 import type { ConformetryInstanceGroup } from "@conformetry/configuration";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */

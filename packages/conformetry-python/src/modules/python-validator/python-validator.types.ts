@@ -12,6 +12,14 @@ export type PythonBridgeError = Readonly<Record<string, unknown>>;
 /** The bridge's response envelope. */
 export interface PythonBridgeResponse {
   readonly errors: PythonBridgeError[];
+  /**
+   * Template requirements the Python side weighed the instance against.
+   *
+   * Snake_case because it crosses the same process boundary as the errors,
+   * and `unknown` for the same reason: nothing about a subprocess's stdout is
+   * trustworthy until narrowed.
+   */
+  readonly total_weight?: unknown;
 }
 
 /** Arguments for one bridge invocation. */

@@ -33,6 +33,17 @@ def get_children(node: ast.AST) -> list[ast.AST]:
     return []
 
 
+def count_subtree(node: ast.AST) -> int:
+    """Count a node and every semantically meaningful node beneath it.
+
+    This is what a missing declaration costs. Comparison reports a vanished
+    class once, but the template asked for the class and every member inside
+    it, so weighing the finding by its subtree keeps a deleted class from
+    scoring the same as a deleted decorator.
+    """
+    return 1 + sum(count_subtree(child) for child in get_children(node))
+
+
 def filter_by_same_key(instance_nodes: list[ast.AST], template_node: ast.AST) -> list[ast.AST]:
     key = get_key(template_node)
     return [n for n in instance_nodes if get_key(n) == key]

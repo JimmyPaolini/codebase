@@ -8,20 +8,20 @@ import {
 } from "./template-discovery.constants";
 
 import type {
-  InstanceCandidate,
+  Instance,
   MatchedInstance,
   ResolvedInstances,
-  ScoredTemplate,
   TemplateDefinition,
+  TemplateMatch,
 } from "./template-discovery.types";
 import type { Substitutions } from "@conformetry/generation";
 
 /**
- * Decides which template a candidate directory is an instance of.
+ * Decides which template an instance directory was generated from.
  *
  * Nothing declares the answer — an instance is ordinary code with no marker
  * saying where it came from — so the template is inferred from how much of its
- * structure the candidate already has.
+ * structure the instance already has.
  */
 @Injectable()
 export class TemplateDiscoveryMatchingService {
@@ -39,7 +39,7 @@ export class TemplateDiscoveryMatchingService {
   // 🔏 Private Methods
 
   /**
-   * Orders scored templates best-first.
+   * Orders template matches best-first.
    *
    * Coverage ratio leads, because absolute count alone lets a large template
    * win on a weak partial match — a module directory matching three of a
@@ -48,9 +48,9 @@ export class TemplateDiscoveryMatchingService {
    * service-file template when both match completely. Name makes it
    * deterministic.
    */
-  private compareScored(left: ScoredTemplate, right: ScoredTemplate): number {
-    if (left.ratio !== right.ratio) {
-      return right.ratio - left.ratio;
+  private compareMatches(left: TemplateMatch, right: TemplateMatch): number {
+    if (left.matchRatio !== right.matchRatio) {
+      return right.matchRatio - left.matchRatio;
     }
 
     if (left.matchedFileCount !== right.matchedFileCount) {
@@ -60,56 +60,56 @@ export class TemplateDiscoveryMatchingService {
     return left.template.name.localeCompare(right.template.name);
   }
 
-  /** Scores every template that shares at least one file with the candidate. */
-  private scoreTemplates(args: {
-    candidate: InstanceCandidate;
+  /** Weighs every template that shares at least one file with the instance. */
+  private matchTemplates(args: {
+    instance: Instance;
     substitutions: Substitutions;
     templates: TemplateDefinition[];
-  }): ScoredTemplate[] {
+  }): TemplateMatch[] {
     return args.templates
       .map((template) => {
         const matchedFileCount =
           this.templateDiscoveryTemplatesService.countMatchingFiles({
-            fileScope: args.candidate.fileScope,
-            instancePath: args.candidate.instancePath,
+            fileScope: args.instance.fileScope,
+            instancePath: args.instance.path,
             substitutions: args.substitutions,
             template,
           });
 
         return {
           matchedFileCount,
-          ratio: matchedFileCount / template.filePaths.length,
+          matchRatio: matchedFileCount / template.filePaths.length,
           template,
         };
       })
-      .filter((scored) => {
+      .filter((match) => {
         return (
-          scored.matchedFileCount > 0 && scored.ratio > MINIMUM_MATCH_RATIO
+          match.matchedFileCount > 0 && match.matchRatio > MINIMUM_MATCH_RATIO
         );
       })
-      .toSorted((left, right) => this.compareScored(left, right));
+      .toSorted((left, right) => this.compareMatches(left, right));
   }
 
   // 🌎 Public Methods
 
   /**
-   * Builds the substitutions a candidate's template is rendered with.
+   * Builds the substitutions an instance's template is rendered with.
    *
-   * Name variants come from the candidate's stem; caller-supplied values are
+   * Name variants come from the instance's stem; caller-supplied values are
    * spread last so an explicit `type` or `description` always wins.
    */
-  public buildSubstitutions(candidate: InstanceCandidate): Substitutions {
+  public buildSubstitutions(instance: Instance): Substitutions {
     return {
-      ...this.renderingService.buildNameSubstitutions(candidate.nameStem),
-      name: candidate.nameStem,
-      ...candidate.substitutions,
+      ...this.renderingService.buildNameSubstitutions(instance.nameStem),
+      name: instance.nameStem,
+      ...instance.substitutions,
     };
   }
 
   /**
-   * Resolves every candidate to the template — or templates — that explain it.
+   * Resolves every instance to the template — or templates — that explain it.
    *
-   * A candidate matching nothing, or matching two templates equally well but
+   * An instance matching nothing, or matching two templates equally well but
    * only partially, is returned as unmatched rather than dropped: the caller
    * asserted these are instances, so silence would hide both a drifted
    * instance and a pair of indistinguishable templates.
@@ -119,56 +119,50 @@ export class TemplateDiscoveryMatchingService {
    * `nestjs-command-module` and `nestjs-service-module`; calling that ambiguous
    * would demand the author narrow a glob that is not wrong.
    */
-  public resolveInstances(args: {
-    candidates: InstanceCandidate[];
+  public matchInstances(args: {
+    instances: Instance[];
     templates: TemplateDefinition[];
   }): ResolvedInstances {
     const matched: MatchedInstance[] = [];
     const unmatched: ResolvedInstances["unmatched"] = [];
 
-    for (const candidate of args.candidates) {
-      const substitutions = this.buildSubstitutions(candidate);
-      const scored = this.scoreTemplates({
-        candidate,
+    for (const instance of args.instances) {
+      const substitutions = this.buildSubstitutions(instance);
+      const matches = this.matchTemplates({
+        instance,
         substitutions,
         templates: args.templates,
       });
-      const best = scored[0];
+      const best = matches[0];
 
       if (best === undefined) {
-        unmatched.push({
-          candidate,
-          candidateTemplateNames: [],
-          reason: "no-match",
-        });
+        unmatched.push({ instance, reason: "no-match", tiedTemplateNames: [] });
         continue;
       }
 
-      const tied = scored.filter((scoredTemplate) => {
+      const tied = matches.filter((match) => {
         return (
-          scoredTemplate.ratio === best.ratio &&
-          scoredTemplate.matchedFileCount === best.matchedFileCount
+          match.matchRatio === best.matchRatio &&
+          match.matchedFileCount === best.matchedFileCount
         );
       });
 
-      if (tied.length > 1 && best.ratio < COMPLETE_MATCH_RATIO) {
+      if (tied.length > 1 && best.matchRatio < COMPLETE_MATCH_RATIO) {
         unmatched.push({
-          candidate,
-          candidateTemplateNames: tied.map((scoredTemplate) => {
-            return scoredTemplate.template.name;
-          }),
+          instance,
           reason: "ambiguous",
+          tiedTemplateNames: tied.map((match) => match.template.name),
         });
         continue;
       }
 
       matched.push(
-        ...tied.map((scoredTemplate) => {
+        ...tied.map((match) => {
           return {
-            candidate,
-            matchedFileCount: scoredTemplate.matchedFileCount,
+            instance,
+            matchedFileCount: match.matchedFileCount,
             substitutions,
-            template: scoredTemplate.template,
+            template: match.template,
           };
         }),
       );

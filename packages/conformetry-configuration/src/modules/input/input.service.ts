@@ -158,6 +158,31 @@ export class InputService {
     return trimmed;
   }
 
+  /**
+   * Parses a threshold option as a ratio from 0 to 1.
+   *
+   * Rejected loudly rather than clamped: `--threshold 90` is someone meaning
+   * 90%, and silently reading it as "always passes" would turn a typo into a
+   * validation run that can never fail.
+   */
+  public parseThresholdOption(value: string | undefined): number | undefined {
+    const trimmed = this.parseOptionalOption(value);
+
+    if (trimmed === undefined) {
+      return undefined;
+    }
+
+    const threshold = Number(trimmed);
+
+    if (!Number.isFinite(threshold) || threshold < 0 || threshold > 1) {
+      throw new Error(
+        `Invalid --threshold ${trimmed}: expected a ratio between 0 and 1, such as 0.9.`,
+      );
+    }
+
+    return threshold;
+  }
+
   /** Resolves generator inputs from raw command-line arguments. */
   public async resolveGeneratorInputs(
     args: ResolveGeneratorInputsArguments,

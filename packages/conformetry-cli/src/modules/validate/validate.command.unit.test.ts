@@ -15,7 +15,7 @@ import { ValidateCommand } from "./validate.command";
 
 import type {
   ConformetryConfiguration,
-  InstanceCandidate,
+  Instance,
   TemplateDefinition,
 } from "@conformetry/configuration";
 
@@ -28,9 +28,9 @@ const CONFIGURATION: ConformetryConfiguration = [
   },
 ];
 
-const CANDIDATE: InstanceCandidate = {
-  instancePath: "/w/packages/widgets/src/modules",
+const INSTANCE: Instance = {
   nameStem: "gears",
+  path: "/w/packages/widgets/src/modules",
 };
 
 const TEMPLATE: TemplateDefinition = {
@@ -48,6 +48,7 @@ describe(ValidateCommand, () => {
   let configurationService: ConfigurationService;
   let templateDiscoveryService: TemplateDiscoveryService;
   let commandLogger: LoggerService;
+  let reportingService: ReportingService;
   let validationService: ValidationService;
 
   beforeAll(async () => {
@@ -76,6 +77,7 @@ describe(ValidateCommand, () => {
     configurationService = await module.resolve(ConfigurationService);
     templateDiscoveryService = await module.resolve(TemplateDiscoveryService);
     commandLogger = await module.resolve(LoggerService);
+    reportingService = await module.resolve(ReportingService);
     validationService = await module.resolve(ValidationService);
   });
 
@@ -86,8 +88,8 @@ describe(ValidateCommand, () => {
     vi.mocked(
       configurationService.loadConformetryConfiguration,
     ).mockResolvedValue(CONFIGURATION);
-    vi.mocked(templateDiscoveryService.resolveCandidates).mockReturnValue([
-      CANDIDATE,
+    vi.mocked(templateDiscoveryService.findInstances).mockReturnValue([
+      INSTANCE,
     ]);
     vi.mocked(templateDiscoveryService.collectTemplate).mockReturnValue(
       TEMPLATE,
@@ -96,6 +98,7 @@ describe(ValidateCommand, () => {
       checkedPaths: [],
       fileResults: [],
       ok: true,
+      scores: [],
       unmatched: [],
     });
   });
@@ -136,19 +139,47 @@ describe(ValidateCommand, () => {
     it("validates the configured instances and reports the outcome", async () => {
       await command.run([], {});
 
-      expect(templateDiscoveryService.resolveCandidates).toHaveBeenCalledWith(
+      expect(templateDiscoveryService.findInstances).toHaveBeenCalledWith(
         expect.objectContaining({ patterns: ["packages/*/src/modules/*"] }),
       );
       expect(validationService.validate).toHaveBeenCalledWith(
-        expect.objectContaining({ candidates: [CANDIDATE] }),
+        expect.objectContaining({ instances: [INSTANCE] }),
       );
       expect(commandLogger.log).toHaveBeenCalledTimes(1);
+    });
+
+    it("writes the report to stdout rather than through the logger", async () => {
+      const write = vi.spyOn(process.stdout, "write").mockReturnValue(true);
+
+      vi.mocked(reportingService.formatReport).mockReturnValue(
+        "All checked files conform.",
+      );
+
+      await command.run([], {});
+
+      // The report is a document for a reader, and the logger rejects any
+      // message that does not open with an emoji and a verb — which every
+      // report, success message included, does not.
+      expect(write).toHaveBeenCalledWith("All checked files conform.\n");
+      expect(commandLogger.log).not.toHaveBeenCalledWith(
+        expect.stringContaining("All checked files conform."),
+      );
+    });
+
+    it("logs the outcome as a conventional message with the counts as data", async () => {
+      await command.run([], {});
+
+      expect(commandLogger.log).toHaveBeenCalledWith(
+        expect.stringMatching(/^👔 Validated /u),
+        undefined,
+        { count: 0, failedCount: 0, unmatchedCount: 0 },
+      );
     });
 
     it("lets an explicit glob override the configured instances", async () => {
       await command.run([], { instances: ["tools/*"] });
 
-      expect(templateDiscoveryService.resolveCandidates).toHaveBeenCalledWith(
+      expect(templateDiscoveryService.findInstances).toHaveBeenCalledWith(
         expect.objectContaining({ patterns: ["tools/*"] }),
       );
     });
@@ -172,7 +203,7 @@ describe(ValidateCommand, () => {
 
       await command.run([], {});
 
-      expect(templateDiscoveryService.resolveCandidates).toHaveBeenCalledWith(
+      expect(templateDiscoveryService.findInstances).toHaveBeenCalledWith(
         expect.objectContaining({ substitutions: { type: "packages" } }),
       );
     });
@@ -191,9 +222,56 @@ describe(ValidateCommand, () => {
 
       await command.run([], {});
 
-      expect(templateDiscoveryService.resolveCandidates).toHaveBeenCalledWith(
+      expect(templateDiscoveryService.findInstances).toHaveBeenCalledWith(
         expect.objectContaining({ patterns: [] }),
       );
+    });
+
+    it("passes a run-level threshold through to validation", async () => {
+      await command.run([], { threshold: 0.9 });
+
+      expect(validationService.validate).toHaveBeenCalledWith(
+        expect.objectContaining({ threshold: 0.9 }),
+      );
+    });
+
+    it("passes an instance group's threshold to glob expansion", async () => {
+      vi.mocked(
+        configurationService.loadConformetryConfiguration,
+      ).mockResolvedValue([
+        {
+          inputs: {},
+          instances: [{ patterns: ["packages/*"], threshold: 0.75 }],
+          name: "widget",
+          templatePath: "configuration/templates/widget",
+        },
+      ]);
+
+      await command.run([], {});
+
+      expect(templateDiscoveryService.findInstances).toHaveBeenCalledWith(
+        expect.objectContaining({ threshold: 0.75 }),
+      );
+    });
+
+    it("names the unmatched instances in the failure message", async () => {
+      vi.mocked(validationService.validate).mockResolvedValue({
+        checkedPaths: [],
+        fileResults: [],
+        ok: false,
+        scores: [],
+        unmatched: [
+          { instance: INSTANCE, reason: "no-match", tiedTemplateNames: [] },
+        ],
+      });
+
+      // An unmatched instance has no score to report, so the count is the only
+      // thing that can explain why the run failed.
+      await expect(command.run([], {})).rejects.toThrow(
+        "1 instance(s) matched no template",
+      );
+
+      process.exitCode = undefined;
     });
 
     it("passes a language filter through", async () => {
@@ -221,9 +299,21 @@ describe(ValidateCommand, () => {
             filename: "gears.ts",
             instanceFilePath: "/w/gears.ts",
             templateFilePath: "/w/template.ts",
+            totalWeight: 4,
           },
         ],
         ok: false,
+        scores: [
+          {
+            failedWeight: 1,
+            instancePath: "/w",
+            ok: false,
+            score: 0.75,
+            templateName: "widget",
+            threshold: 1,
+            totalWeight: 4,
+          },
+        ],
         unmatched: [],
       });
 
@@ -239,6 +329,7 @@ describe(ValidateCommand, () => {
       expect(command.parseConfig("path")).toBeDefined();
       expect(command.parseInstances("a,b")).toBeDefined();
       expect(command.parseLanguages("typescript")).toBeDefined();
+      expect(command.parseThreshold("0.9")).toBeDefined();
     });
   });
 });

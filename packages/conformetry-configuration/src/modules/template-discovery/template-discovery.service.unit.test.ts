@@ -60,7 +60,7 @@ describe(TemplateDiscoveryService, () => {
     ]);
   });
 
-  describe("resolveInstances and prepareDocuments", () => {
+  describe("matchInstances and prepareDocuments", () => {
     async function createInstance(): Promise<MatchedInstance> {
       const instancePath = await mkdtemp(
         path.join(tmpdir(), "conformetry-instance-"),
@@ -72,20 +72,20 @@ describe(TemplateDiscoveryService, () => {
         "utf8",
       );
 
-      const { matched } = service.resolveInstances({
-        candidates: [{ instancePath, nameStem: "alpha" }],
+      const { matched } = service.matchInstances({
+        instances: [{ nameStem: "alpha", path: instancePath }],
         templates,
       });
       const instance = matched[0];
 
       if (instance === undefined) {
-        throw new Error("expected the candidate to match");
+        throw new Error("expected the instance to match");
       }
 
       return instance;
     }
 
-    it("matches a candidate to its template", async () => {
+    it("matches an instance to its template", async () => {
       const instance = await createInstance();
 
       expect(instance.template.name).toBe("widget");
@@ -117,14 +117,14 @@ describe(TemplateDiscoveryService, () => {
     });
   });
 
-  describe("resolveCandidates", () => {
-    it("expands a glob into the candidates it matches", () => {
-      const candidates = service.resolveCandidates({
+  describe("findInstances", () => {
+    it("expands a glob into the instances it matches", () => {
+      const instances = service.findInstances({
         patterns: ["src/modules/*"],
         workingDirectory: process.cwd(),
       });
 
-      expect(candidates.length).toBeGreaterThan(0);
+      expect(instances.length).toBeGreaterThan(0);
     });
   });
 });

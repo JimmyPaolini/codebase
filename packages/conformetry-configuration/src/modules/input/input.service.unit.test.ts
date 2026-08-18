@@ -49,6 +49,31 @@ describe(InputService, () => {
       expect(service.parseOptionalOption(" path ")).toBe("path");
     });
 
+    it("reads a threshold as a ratio", () => {
+      expect(service.parseThresholdOption("0.9")).toBe(0.9);
+      expect(service.parseThresholdOption("0")).toBe(0);
+      expect(service.parseThresholdOption("1")).toBe(1);
+      expect(service.parseThresholdOption("  ")).toBeUndefined();
+      expect(service.parseThresholdOption(undefined)).toBeUndefined();
+    });
+
+    it("rejects a threshold outside the 0-to-1 range", () => {
+      // `--threshold 90` is someone meaning 90%. Clamping it to 1 would turn a
+      // typo into a validation run that can never fail.
+      expect(() => service.parseThresholdOption("90")).toThrow(
+        /between 0 and 1/,
+      );
+      expect(() => service.parseThresholdOption("-1")).toThrow(
+        /between 0 and 1/,
+      );
+    });
+
+    it("rejects a threshold that is not a number", () => {
+      expect(() => service.parseThresholdOption("high")).toThrow(
+        /between 0 and 1/,
+      );
+    });
+
     it("rejects a blank required option", () => {
       expect(() =>
         service.parseRequiredOption({ optionName: "generator", value: "  " }),

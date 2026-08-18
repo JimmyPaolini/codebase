@@ -5,4 +5,5 @@ export interface ValidateCommandOptions {
   config?: string;
   instances?: string[];
   languages?: string[];
+  threshold?: number;
 }

@@ -1,7 +1,7 @@
 # 👔 Conformetry Validation
 
 The validation orchestrator for [Conformetry](../conformetry-cli/README.md):
-it matches candidates to templates, checks the declared files exist, routes
+it matches instances to templates, checks the declared files exist, routes
 each document to the validator that claims its extension, and deduplicates
 what comes back.
 
@@ -15,14 +15,15 @@ npm install --save-dev @conformetry/validation
 import { ValidationService } from "@conformetry/validation";
 
 const result = await validationService.validate({
-  candidates, // from DiscoveryService.resolveCandidates
+  instances, // from DiscoveryService.findInstances
   templates, // from DiscoveryService.collectTemplate
   languageNames: ["typescript"], // optional filter
+  threshold: 0.9, // optional run-level conformance floor
 });
-// → { ok, fileResults, checkedPaths, unmatched }
+// → { ok, fileResults, checkedPaths, scores, unmatched }
 ```
 
-Candidates arrive from the caller. This package used to scan the workspace for
+Instances arrive from the caller. This package used to scan the workspace for
 `project.json` files and infer scope from generator name suffixes, which made a
 generic package depend on one repository's layout.
 
@@ -35,9 +36,24 @@ generic package depend on one repository's layout.
 2. **Documents compare.** Each validator sees only the documents whose
    extensions it claims.
 
-Candidates that matched no template are reported alongside the content
+Instances that matched no template are reported alongside the content
 differences rather than skipped, so one report covers both "this file is wrong"
 and "conformetry cannot tell what this path was generated from".
+
+## Scoring
+
+Each matched instance is scored by how much of its template it honours, and
+passes when that reaches the threshold resolved for it — the instance group's,
+else the generator's, else the run's, else a perfect `1`.
+
+Scores are taken **before** deduplication. Deduplication decides which template
+gets to _print_ a shared file's finding, which is a reporting concern; a score
+answers how well one instance honours its own template, so collapsing the
+report must not change it.
+
+`ok` is `false` when any instance falls below its threshold, or when any
+instance matched no template at all — an unmatched path has no template to be
+held to, so no threshold could excuse it.
 
 ## Lazy language loading
 
@@ -113,6 +129,7 @@ flowchart LR
     ErrorsModule
     LanguageModule
     ReportingModule
+    ScoringModule
   end
   subgraph group3["conformetry-files"]
     FilesModule
@@ -140,6 +157,7 @@ flowchart LR
   end
   FilesModule --> ErrorsModule
   FilesModule --> TemplateDiscoveryModule
+  ReportingModule --> ScoringModule
   TemplateDiscoveryModule --> RenderingModule
   ValidationModule --> FilesModule
   ValidationModule -.-> JsonValidatorModule
@@ -148,6 +166,7 @@ flowchart LR
   ValidationModule -.-> MarkdownValidatorModule
   ValidationModule -.-> PythonValidatorModule
   ValidationModule --> ReportingModule
+  ValidationModule --> ScoringModule
   ValidationModule --> TemplateDiscoveryModule
   ValidationModule -.-> TextValidatorModule
   ValidationModule -.-> TypescriptValidatorModule
@@ -183,9 +202,9 @@ Call stacks traced through `conformetry-validation`, deepest first. Each frame s
 
 | Measure | Value |
 | --- | --- |
-| Callables | 38 |
-| Files | 11 |
-| Calls traced | 38 |
+| Callables | 48 |
+| Files | 12 |
+| Calls traced | 49 |
 | Call stacks | 0 |
 | Deepest stack | 0 |
 | Stacks through recursion | 0 |

@@ -64,9 +64,11 @@ flowchart LR
   subgraph group0["conformetry-typescript"]
     TypescriptValidatorModule
   end
+  subgraph group1["conformetry-core"]
+    ScoringModule
+  end
+  TypescriptValidatorModule --> ScoringModule
 ```
-
-_Reached only for their types, and so declaring no module here: conformetry-core._
 
 <!-- nestjs-module-graph-end -->
 
@@ -94,38 +96,39 @@ Call stacks traced through `conformetry-typescript`, deepest first. Each frame s
 
 | Measure | Value |
 | --- | --- |
-| Callables | 37 |
+| Callables | 40 |
 | Files | 10 |
-| Calls traced | 42 |
+| Calls traced | 49 |
 | Call stacks | 1 |
-| Deepest stack | 11 |
+| Deepest stack | 12 |
 | Stacks through recursion | 1 |
 | Unfollowable calls | 0 |
 
 ### Call stacks
 
-**1. `TypescriptValidatorService.validateDocument`** — depth 11 · orphan-root
+**1. `TypescriptValidatorService.validateDocument`** — depth 12 · orphan-root
 
 ```text
-🚀 TypescriptValidatorService.validateDocument(document: PreparedValidationDocument): ConformetryError[] [packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:156]
+🚀 TypescriptValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:168]
    ↳ Reports every declaration and comment the template requires.
-  └─> TypescriptValidatorService.validateStructure(…): ConformetryError[] [packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:107]
+  └─> TypescriptValidatorService.validateStructure(…): DocumentValidationResult [packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:111]
      ↳ Compares the syntax trees and describes each missing declaration.
-    └─> TypescriptTreeService.compareBestCandidate(…): TypescriptComparisonError[] (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:57]
+    └─> TypescriptTreeService.compareBestCandidate(args: { candidates: Node[]; templateChild: Node; }): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:70]
        ↳ Descends into whichever candidate explains the template best.
-      └─> TypescriptTreeService.map(…)(candidate: Node): TypescriptComparisonError[] (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:62]
-        └─> TypescriptTreeService.compareTree(args: CompareTreeArguments): TypescriptComparisonError[] (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:111]
+      └─> TypescriptTreeService.map(…)(candidate: Node): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:75]
+        └─> TypescriptTreeService.compareTree(args: CompareTreeArguments): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:130]
            ↳ Compares one level of two trees, descending into every match.
-          └─> TypescriptTreeService.flatMap(…)(this: undefined, templateChild: Node): TypescriptComparisonError[] (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:118]
-            └─> TypescriptTreeService.compareChild(…): TypescriptComparisonError[] (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:75]
+          └─> TypescriptTreeService.map(…)(templateChild: Node): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:137]
+            └─> TypescriptTreeService.compareChild(…): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:91]
                ↳ Matches one template child against the instance's children.
-              └─> TypescriptTreeService.filter(…)(instanceChild: Node): boolean [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:86]
-                └─> TypescriptNodesService.readKey(node: Node): null | string [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:192]
-                   ↳ Reads a node's identity, or `null` when it has none.
-                  └─> TypescriptNodesService.readDecoratorKey(node: Decorator): null | string [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:77]
-                     ↳ Keys a decorator by its callee, so `@Injectable()` matches `@Injectable`.
-                    └─> TypescriptNodesService.buildDottedName(callee: Node): null | string [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:48]
-                       ↳ Builds a dotted name such as `Nest.Injectable` from a callee expression.
+              └─> TypescriptTreeService.buildError(…): TypescriptComparisonError [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:44]
+                 ↳ Describes a template node with no instance counterpart.
+                └─> TypescriptNodesService.countSubtree(node: Node): number (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:181]
+                   ↳ Counts a node and everything beneath it.
+                  └─> TypescriptNodesService.reduce(…)(total: number, child: Node): number (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:182]
+                    └─> TypescriptNodesService.readChildren(node: Node): Node[] [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:188]
+                       ↳ Reads a node's direct children, skipping the end-of-file token.
+                      └─> TypescriptNodesService.forEachChild(…)(childNode: Node): undefined [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:191]
 ```
 
 ### Module spread

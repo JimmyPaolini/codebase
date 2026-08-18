@@ -65,7 +65,9 @@ flowchart LR
     ErrorsModule
     LanguageModule
     ReportingModule
+    ScoringModule
   end
+  ReportingModule --> ScoringModule
 ```
 
 <!-- nestjs-module-graph-end -->

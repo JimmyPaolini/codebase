@@ -99,9 +99,9 @@ Call stacks traced through `conformetry-files`, deepest first. Each frame shows 
 
 | Measure | Value |
 | --- | --- |
-| Callables | 3 |
+| Callables | 5 |
 | Files | 7 |
-| Calls traced | 4 |
+| Calls traced | 6 |
 | Call stacks | 0 |
 | Deepest stack | 0 |
 | Stacks through recursion | 0 |

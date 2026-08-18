@@ -4,7 +4,7 @@
 
 `@conformetry/configuration` reads a repository's `conformetry.config.*`, checks
 it, and turns it into the three things the rest of the toolchain works from:
-the generator registry, the instance candidates validation walks, and the
+the generator registry, the instances validation walks, and the
 resolved inputs a generator renders with.
 
 ```bash
@@ -73,7 +73,7 @@ problem in one pass:
   the first match, so a collision does not error where it is used — it silently
   shadows, and the losing generator becomes unreachable while still appearing
   in the configuration.
-- **Two generators sharing a `templatePath`.** Validation then finds candidates
+- **Two generators sharing a `templatePath`.** Validation then finds instances
   that fit both equally and reports them as matching nothing.
 - **A name or alias containing a path separator.** A generator is addressed by
   that text and emitted to a file named after it.
@@ -103,6 +103,7 @@ instances: [
 | `patterns` | Globs locating this group's instances, workspace-relative |
 | `substitutions` | Values the template's placeholders are rendered with for this group |
 | `tags` | Labels selecting which hosts the group applies to, carried uninterpreted |
+| `threshold` | Lowest conformance score these instances may have, overriding the generator's |
 
 Groups exist so substitutions can differ per glob. `type` is `packages` for one
 set of paths and `applications` for another, and no generic rule can tell them
@@ -147,6 +148,41 @@ and its instances are `…/src/modules`. A template that produces loose files
 holds them at its root, and its instance path is the directory those files sit
 in.
 
+## Thresholds
+
+An instance passes when its conformance score reaches the threshold that
+applies to it. Three levels set it, and the narrowest wins:
+
+```ts
+instances[].threshold ?? generator.threshold ?? runThreshold ?? 1
+```
+
+A level left unset stays unset rather than being filled with the default — that
+is what lets a host's own `--threshold` reach an instance whose generator has
+no opinion. The default of `1` is applied only at the end of the chain, so
+nothing configured is quietly overridden, and a level nobody set is not
+quietly treated as if they had.
+
+```ts
+{
+  name: "nestjs-service-module",
+  templatePath: "templates/nestjs-service-module",
+  threshold: 1,                               // strict everywhere by default
+  instances: [
+    { patterns: ["packages/*/src/modules/*"] },
+    {
+      patterns: ["applications/legacy/src/modules/*"],
+      threshold: 0.75,                        // …except while migrating this one
+    },
+  ],
+}
+```
+
+When two groups locate the same instance with different thresholds the
+strictest wins: nothing makes one group more specific than another, and letting
+order decide would mean a lenient group could silently relax a bar someone else
+set.
+
 ## Inputs
 
 Each entry in `inputs` is a JSON Schema fragment. Only `properties` and
@@ -177,15 +213,15 @@ rather than hanging it.
 ## Matching
 
 Validation does not record which template produced a file. It works it out:
-every candidate is scored against every template by the share of the template's
-files the candidate already has, and the best fit wins.
+every instance is weighed against every template by the share of the template's
+files the instance already has, and the best fit wins.
 
 Two outcomes are reported rather than skipped, because a glob is the author
 asserting that these paths _are_ instances:
 
 | Reason | Meaning |
 | ------ | ------- |
-| `no-match` | No template explains this candidate well enough |
+| `no-match` | No template explains this instance well enough |
 | `ambiguous` | Two or more templates tied, so they are indistinguishable here |
 
 ## Project Graph
@@ -245,7 +281,7 @@ _Reached only for their types, and so declaring no module here: conformetry-core
 | Export | Purpose |
 | ------ | ------- |
 | `ConfigurationService` | Loads, validates, and normalizes a configuration file |
-| `DiscoveryService` | Expands globs into candidates, reads templates, matches the two, prepares documents |
+| `DiscoveryService` | Expands globs into instances, reads templates, matches the two, prepares documents |
 | `InputService` | Parses command-line options and resolves generator inputs, prompting when allowed |
 | `ConformetryConfiguration` | The loaded configuration type — author your config as this |
 | `ConformetryInstanceGroup`, `ConformetryGeneratorDefinition` | Field-level types for the above |
@@ -275,9 +311,9 @@ Call stacks traced through `conformetry-configuration`, deepest first. Each fram
 
 | Measure | Value |
 | --- | --- |
-| Callables | 98 |
+| Callables | 99 |
 | Files | 22 |
-| Calls traced | 79 |
+| Calls traced | 80 |
 | Call stacks | 3 |
 | Deepest stack | 8 |
 | Stacks through recursion | 0 |
@@ -288,7 +324,7 @@ Call stacks traced through `conformetry-configuration`, deepest first. Each fram
 **1. `InputService.resolveInputsFromValues`** — depth ≥ 8 · orphan-root
 
 ```text
-🚀 InputService.resolveInputsFromValues(args: ResolveInputsFromValuesArguments): Promise<Record<string, string>> [packages/conformetry-configuration/src/modules/input/input.service.ts:178]
+🚀 InputService.resolveInputsFromValues(args: ResolveInputsFromValuesArguments): Promise<Record<string, string>> [packages/conformetry-configuration/src/modules/input/input.service.ts:203]
    ↳ Resolves inputs from values the caller already parsed.
   └─> InputService.resolveInputs(…): Promise<Record<string, string>> [packages/conformetry-configuration/src/modules/input/input.service.ts:52]
      ↳ Walks a schema, taking each value from the resolver or a prompt.
