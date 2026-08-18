@@ -40,10 +40,13 @@ templates/
 # metrics, so a written block is stale the moment it lands.
 /README.md
 
-# 🧩 Skills installed from other repositories, listed in skills-lock.json.
-# Vendored rather than authored here: 33 of them, and the largest
-# carries half a megabyte of bundled browser JavaScript that would otherwise
-# dominate every JavaScript counter.
+# 🧩 Installed agent skills, one entry per skill in skills-lock.json. Owned
+# upstream rather than authored here, and the largest carries half a megabyte
+# of bundled browser JavaScript that would otherwise dominate every counter.
+# Listed individually rather than as `.agents/skills/` so this repository's
+# own skills in the same directory keep being measured.
+# Verified by `nx run codebase:check-skill-exclusions`.
+.agents/licenses/
 .agents/skills/ask-matt/
 .agents/skills/code-review/
 .agents/skills/codebase-design/
@@ -59,6 +62,13 @@ templates/
 .agents/skills/impeccable/
 .agents/skills/implement/
 .agents/skills/improve-codebase-architecture/
+.agents/skills/link-workspace-packages/
+.agents/skills/monitor-ci/
+.agents/skills/nx-generate/
+.agents/skills/nx-import/
+.agents/skills/nx-plugins/
+.agents/skills/nx-run-tasks/
+.agents/skills/nx-workspace/
 .agents/skills/prototype/
 .agents/skills/receiving-code-review/
 .agents/skills/research/
