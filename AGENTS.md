@@ -83,33 +83,38 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 
 ## Conformetry
 
-The conformetry toolchain provides two workflows that should be used together:
+Conformetry generators scaffold projects, modules, and components from
+**templates**; conformance then measures the generated **instances** back against
+those templates. The two are one workflow: code hand-written in a shape a
+template already describes starts life failing conformance.
 
-- **Generators** create standardized project and module scaffolding from templates.
-- **Validation** checks generated (and manually edited) files against those templates to keep structure and conventions consistent.
-
-### Generation
-
-Conformetry generators are declared in `configuration/conformetry.config.ts` and executed through the `@conformetry/nx` Nx plugin.
-
-Use generators when creating new applications/modules/components so the initial file set, naming, and conventions are correct from the start.
+**Generate rather than hand-craft**, then check conformance. Reach for a
+generator whenever creating a new application, package, module, or component.
 
 ```bash
-nx generate conformetry:<generator-name> [options]
-# or
-nx g conformetry:<generator-name> [options]
+nx g conformetry:<generator-or-alias> [options]
+pnpm nx run-many --targets=conformetry-validate
 ```
 
-The `conformetry` generator namespace is emitted from the configuration into
-the gitignored `.conformetry/` directory on `pnpm install`, so it is never
+Three skills carry the detail — how the two entrypoints differ, what a template
+may declare, and how to act on a difference. Load the one that fits the task:
+
+- [conformetry-generate](packages/conformetry-agents/skills/conformetry-generate/SKILL.md)
+  — scaffolding with a generator
+- [conformetry-configure](packages/conformetry-agents/skills/conformetry-configure/SKILL.md)
+  — adding a generator, or writing its template
+- [conformetry-validate](packages/conformetry-agents/skills/conformetry-validate/SKILL.md)
+  — running conformance and fixing differences
+
+The generator namespace is emitted from `configuration/conformetry.config.ts`
+into the gitignored `.conformetry/` directory on `pnpm install`, so it is never
 committed. If Nx reports it is not installed, run `pnpm install` again. No
 project is called `conformetry` — the name means the generator namespace and
 nothing else, and the command-line host is `conformetry-cli`.
 
-Prefer generator aliases for speed when you already know them (for example, `nsm`, `ngm`, `c`).
-After scaffolding, implement domain-specific logic in the generated files rather than hand-crafting parallel structures.
-
-The table below reflects the conformetry generator registry in `configuration/conformetry.config.ts`.
+This repository's generators, kept in step with the configuration by
+`nx run synchronization:synchronize`. `conformetry list` prints the same thing
+for any workspace:
 
 <!-- conformetry-generators-table start -->
 | Generator | Alias | Description |
@@ -125,43 +130,6 @@ The table below reflects the conformetry generator registry in `configuration/co
 | `nestjs-service-module` | `nsm` | Generate a NestJS service module with module, service, types, constants, and unit test files |
 | `react-component` | `c` | Generate a React component with test file |
 <!-- conformetry-generators-table end -->
-
-### Validation
-
-Conformetry validation measures an **instance** — generated code on disk — against
-the **template** it came from, and prints a text report of every **difference**.
-A difference is something the template declares that the instance lacks; content
-the instance adds is never a difference.
-
-Every project with instances to check carries its own target. Run one, or all of
-them:
-
-```bash
-pnpm nx run <project>:conformetry-validate
-pnpm nx run-many --targets=conformetry-validate
-```
-
-The root project is deliberately excluded, so there is no workspace-wide wrapper
-target. `run-many` is what the pre-commit hook runs, which is why it is the form
-to reach for.
-
-How validation works:
-
-- Instance globs in the configuration decide which paths are checked. A group
-  carrying project tags is read inside each project it selects.
-- Each path is attributed to a template by how many of that template's files it
-  already has. Nothing records where an instance came from, so an unattributable
-  path is itself reported as a difference.
-- A **language**, chosen by file extension, does the comparing. There is no
-  autofix; remediation is editing the instance or regenerating it.
-- Each matched instance is scored by how much of its template it honours, and fails when that score falls below its threshold. Any failing instance fails the command, which is intended for CI and pre-merge quality gates.
-- The threshold defaults to `1` — a perfect match — so validation is strict unless a threshold is lowered deliberately.
-- Three levels set it, narrowest first: an instance group's `threshold`, then the generator's `threshold`, then a run-level `--threshold`. Lower one when migrating existing instances onto a new template rather than converting the whole workspace in one change.
-- Differences print whether or not the instance cleared its threshold: a lowered threshold permits the drift, it does not hide it.
-
-Use this flow for best results: generate with conformetry first, then run
-validation after custom edits to confirm the result still matches the
-repository's conformetry standards.
 
 ## Work Scope
 
