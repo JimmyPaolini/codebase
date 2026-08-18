@@ -3,6 +3,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { MainModule } from "./main.module";
 import { GenerateCommand } from "./modules/generate/generate.command";
+import { ListCommand } from "./modules/list/list.command";
 import { ValidateCommand } from "./modules/validate/validate.command";
 
 import type { TestingModule } from "@nestjs/testing";
@@ -37,6 +38,15 @@ describe(MainModule, () => {
 
     expect(command).toBeDefined();
     expect(command.parseGenerator("example")).toBe("example");
+  });
+
+  it("resolves the list command with every dependency injected", async () => {
+    const command = await module.resolve(ListCommand);
+
+    expect(command).toBeDefined();
+    expect(command.parseConfig("custom/conformetry.config.ts")).toBe(
+      "custom/conformetry.config.ts",
+    );
   });
 
   it("resolves the validate command with every dependency injected", async () => {

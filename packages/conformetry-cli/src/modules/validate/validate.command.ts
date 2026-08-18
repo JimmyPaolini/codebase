@@ -12,7 +12,7 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { DEFAULT_CONFIGURATION_PATH } from "./validate.constants";
+import { DEFAULT_CONFIGURATION_PATH } from "../../constants.js";
 
 import type { ValidateCommandOptions } from "./validate.types.js";
 import type {
