@@ -1,11 +1,15 @@
 import { Injectable } from "@nestjs/common";
 
 import {
+  COLLAPSED_PARAMETERS,
   CONSOLE_FINDING_LIMIT,
   CONSOLE_STACK_LIMIT,
+  DEPRECATED_MARKER,
   ENTRY_FRAME_PREFIX,
   NESTED_FRAME_PREFIX,
   RULE_WIDTH,
+  SIGNATURE_LIMIT,
+  SUMMARY_PREFIX,
 } from "./report.constants";
 
 import type {
@@ -38,9 +42,15 @@ export class ReportService {
     const indent = "  ".repeat(args.depth);
     const prefix = args.depth === 0 ? ENTRY_FRAME_PREFIX : NESTED_FRAME_PREFIX;
     const cycle = args.frame.isCycle ? " (cycle)" : "";
+    const deprecated = args.frame.documentation?.isDeprecated ?? false;
+    const marker = deprecated ? ` ${DEPRECATED_MARKER}` : "";
     const { filePath, line } = args.frame.location;
+    const head = `${indent}${prefix} ${args.frame.displayName}${this.renderSignature(args.frame)}${cycle}${marker} [${filePath}:${String(line)}]`;
+    const summary = args.frame.documentation?.summary ?? "";
 
-    return `${indent}${prefix} ${args.frame.displayName}()${cycle} [${filePath}:${String(line)}]`;
+    return summary.length === 0
+      ? head
+      : `${head}\n${indent}   ${SUMMARY_PREFIX} ${summary}`;
   }
 
   /** Renders the misplaced-callable findings. */
@@ -68,6 +78,27 @@ export class ReportService {
     }
 
     return lines;
+  }
+
+  /**
+   * Renders a callable's signature, collapsing one that is too long.
+   *
+   * The return type survives the collapse. Which twelve services a constructor
+   * takes is noise at the point where someone is reading a stack; what it hands
+   * back is not.
+   */
+  private renderSignature(frame: StackFrame): string {
+    const { signature } = frame;
+
+    if (signature === undefined) {
+      return "()";
+    }
+
+    if (signature.text.length <= SIGNATURE_LIMIT) {
+      return signature.text;
+    }
+
+    return `${COLLAPSED_PARAMETERS}: ${signature.returnType}`;
   }
 
   /** Renders the module-spread findings. */

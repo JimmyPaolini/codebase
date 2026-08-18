@@ -5,6 +5,7 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { AnnotationsModule } from "../annotations/annotations.module";
 import { CallablesModule } from "../callables/callables.module";
 import { ClassHierarchyModule } from "../class-hierarchy/class-hierarchy.module";
 import { CohesionModule } from "../cohesion/cohesion.module";
@@ -118,6 +119,7 @@ describe(`${CallidescopeService.name} (integration)`, () => {
     const workspaceRoot = await buildWorkspace();
     const module = await Test.createTestingModule({
       imports: [
+        AnnotationsModule,
         CallablesModule,
         CohesionModule,
         EdgesModule,

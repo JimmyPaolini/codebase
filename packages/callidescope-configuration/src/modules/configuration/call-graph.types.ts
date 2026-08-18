@@ -1,5 +1,14 @@
 // 🏷️ Types
 
+/** What the documentation comment above a callable says. */
+export interface CallableDocumentation {
+  readonly isDeprecated: boolean;
+  /** The comment's prose, newlines collapsed. Empty when it is all tags. */
+  readonly summary: string;
+  /** Tag names present, without the leading `@`, in source order. */
+  readonly tags: readonly string[];
+}
+
 /**
  * Stable identifier for one callable: workspace-relative path plus the byte
  * offset its declaration starts at.
@@ -33,6 +42,29 @@ export interface CallableNode {
   readonly moduleId: ModuleId;
   readonly projectName: string;
   readonly statementCount: number;
+}
+
+/** One parameter of a callable, as the type checker renders it. */
+export interface CallableParameter {
+  /** True for a parameter with a `?` or a default value. */
+  readonly isOptional: boolean;
+  readonly isRest: boolean;
+  readonly name: string;
+  readonly type: string;
+}
+
+/** What a callable takes and gives back. */
+export interface CallableSignature {
+  readonly parameters: readonly CallableParameter[];
+  readonly returnType: string;
+  /**
+   * The whole signature on one line, as TypeScript writes it.
+   *
+   * Kept alongside the parts because TypeScript renders some shapes better
+   * than reassembling them does — a destructured parameter reads as
+   * `{ alpha, beta }` here and as the synthetic `__0` in `parameters`.
+   */
+  readonly text: string;
 }
 
 /** One caller-to-callee edge, produced by one call site. */
@@ -140,10 +172,14 @@ export interface SourceLocation {
 /** One frame of a reported call stack. */
 export interface StackFrame {
   readonly displayName: string;
+  /** Absent when the callable carries no documentation comment. */
+  readonly documentation: CallableDocumentation | undefined;
   readonly id: CallableId;
   /** True when this frame belongs to a recursive cycle. */
   readonly isCycle: boolean;
   readonly location: SourceLocation;
+  /** Absent when the checker could not resolve a signature. */
+  readonly signature: CallableSignature | undefined;
 }
 
 /** Depth range across the members of one class, reported as context. */

@@ -1,7 +1,10 @@
 export type {
+  CallableDocumentation,
   CallableId,
   CallableKind,
   CallableNode,
+  CallableParameter,
+  CallableSignature,
   CallEdge,
   CallGraphResult,
   CallGraphSummary,

@@ -21,13 +21,14 @@ callidescope --directory . --config configuration/callidescope.config.ts
 
 ```text
 Stack #1 | 🚨 [DEPTH ≥ 10 > 6] (decorated-method)
-🚀 CodometerCommand.run() [packages/codometer-cli/src/modules/codometer/codometer.command.ts:220]
-  └─> CodometerService.measure() [packages/codometer-cli/src/modules/codometer/codometer.service.ts:115]
-    └─> LanguagesService.analyze() [packages/codometer-cli/src/modules/languages/languages.service.ts:54]
-      └─> JupyterService.analyze() [packages/codometer-cli/src/modules/jupyter/jupyter.service.ts:166]
-        └─> JsonService.analyze() [packages/codometer-cli/src/modules/json/json.service.ts:304]
-          └─> JsonService.countArrayNode() (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:89]
-            └─> JsonService.countNode() (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:105]
+🚀 CodometerCommand.run(…): Promise<void> [.../codometer.command.ts:220]
+   ↳ Measure the repository and write every configured output. With no destination…
+  └─> CodometerService.measure(args: MeasureArguments): CodeStatisticsResult [.../codometer.service.ts:115]
+     ↳ Measure aggregated repository statistics for the provided directory.
+    └─> LanguagesService.analyze(args: AnalyzeLanguagesArguments): LanguageResults [.../languages.service.ts:54]
+       ↳ Analyze every language present in the discovered files.
+      └─> JsonService.countArrayNode(node: unknown[], stats: JsonResult, depth: number): void (cycle) [.../json.service.ts:89]
+         ↳ Count array nodes and their child values.
 ```
 
 ## Why
@@ -84,6 +85,33 @@ other module of the same project. The output is a concrete move.
 A depth printed as `≥ 10` is a floor rather than a measurement: something on
 that path could not be followed — a callback invoked through a parameter, a
 computed member name — and the run says so rather than quietly under-reporting.
+
+## What a frame carries
+
+Every frame is annotated from the type checker, because a stack of bare names
+is a list of places to go look rather than something you can read:
+
+- **The signature** — parameter names and types, and the return type. On the
+  repository this covers 100% of reported frames.
+- **The documentation summary** — the JSDoc prose, collapsed to one line and
+  cut at 120 characters. Around 90% of reported frames have one.
+- **Tags**, including `@deprecated`, which marks the frame inline.
+
+Both come from the checker rather than the comment trivia, which is what makes
+them right on the shapes this repository writes. An overload's documentation
+lives on the signature rather than the implementation the graph points at; an
+arrow-typed property's lives on the property rather than the arrow; a
+destructured parameter has no name at all in the syntax. The checker resolves
+all three.
+
+A signature longer than 80 characters collapses to `(…): ReturnType`. That is
+almost always a NestJS constructor taking a dozen injected services — which
+services those are is noise at the point where you are reading a stack, and a
+440-character line destroys the indentation that makes the stack legible.
+
+Annotations are read only for the frames a report actually prints, not for all
+3,264 callables. Rendering a type is the one genuinely costly thing the checker
+does, and reports touch a few hundred frames.
 
 ## How it follows a call
 

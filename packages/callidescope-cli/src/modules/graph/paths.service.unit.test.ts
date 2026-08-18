@@ -6,6 +6,7 @@ import {
   buildSourceLocation,
 } from "../../../testing/mocks";
 import { ANALYSIS_MODULES } from "../../../testing/modules";
+import { AnnotationsService } from "../annotations/annotations.service";
 
 import { ComponentsService } from "./components.service";
 import { DepthService } from "./depth.service";
@@ -49,7 +50,7 @@ function buildPath(args: {
     moduleIdByCallable: new Map(args.ids.map((id) => [id, "example:one"])),
   });
 
-  return new PathsService()
+  return new PathsService(new AnnotationsService())
     .buildDeepestPath({
       callablesById: buildCallables(args.ids),
       condensed,
@@ -172,7 +173,7 @@ describe(PathsService, () => {
 
   it("skips a member it has no description for", () => {
     // Defensive: a condensation holding an identifier the collection dropped.
-    const frames = new PathsService().buildDeepestPath({
+    const frames = new PathsService(new AnnotationsService()).buildDeepestPath({
       callablesById: buildCallables(["known"]),
       condensed: {
         componentIdByCallable: new Map([["known", 0]]),
@@ -196,7 +197,7 @@ describe(PathsService, () => {
   });
 
   it("leaves a cycle in place when it was entered at its first member", () => {
-    const frames = new PathsService().buildDeepestPath({
+    const frames = new PathsService(new AnnotationsService()).buildDeepestPath({
       callablesById: buildCallables(["first", "second"]),
       condensed: {
         componentIdByCallable: new Map([
@@ -226,7 +227,7 @@ describe(PathsService, () => {
   });
 
   it("stops at a component the condensation does not describe", () => {
-    const frames = new PathsService().buildDeepestPath({
+    const frames = new PathsService(new AnnotationsService()).buildDeepestPath({
       callablesById: buildCallables(["a"]),
       condensed: {
         componentIdByCallable: new Map([["a", 7]]),
@@ -241,7 +242,7 @@ describe(PathsService, () => {
   });
 
   it("leaves a cycle in place when the entered member is not one of them", () => {
-    const frames = new PathsService().buildDeepestPath({
+    const frames = new PathsService(new AnnotationsService()).buildDeepestPath({
       callablesById: buildCallables(["first", "second"]),
       condensed: {
         componentIdByCallable: new Map([["outside", 0]]),
@@ -262,6 +263,41 @@ describe(PathsService, () => {
     });
 
     expect(frames.map((frame) => frame.displayName)).toStrictEqual([
+      "first",
+      "second",
+    ]);
+  });
+
+  it("rotates a cycle to start where the path entered it", () => {
+    // Within a cycle there is no single true order, but starting at the member
+    // execution actually reached is what makes the printed stack match how it
+    // got there.
+    const frames = new PathsService(new AnnotationsService()).buildDeepestPath({
+      callablesById: buildCallables(["first", "second", "third"]),
+      condensed: {
+        componentIdByCallable: new Map([
+          ["first", 0],
+          ["second", 0],
+          ["third", 0],
+        ]),
+        memberIdsByComponent: [["first", "second", "third"]],
+        successorsByComponent: [new Set()],
+      },
+      entryPointId: "third",
+      measurement: {
+        byComponent: [
+          {
+            deepestSuccessor: undefined,
+            depth: 3,
+            moduleIds: new Set(["example:one"]),
+            reachesUnresolved: false,
+          },
+        ],
+      },
+    });
+
+    expect(frames.map((frame) => frame.displayName)).toStrictEqual([
+      "third",
       "first",
       "second",
     ]);

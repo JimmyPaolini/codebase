@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildCallGraphResult,
   buildSourceLocation,
+  buildStackFrame,
 } from "../../../testing/mocks";
 
 import { renderTables } from "./output-markdown.utilities";
@@ -58,12 +59,10 @@ function buildPopulatedResult(): CallGraphResult {
 
 /** Builds a stack frame for a rendered table. */
 function frame(displayName: string): StackFrame {
-  return {
+  return buildStackFrame({
     displayName,
-    id: `${displayName}#0`,
-    isCycle: false,
-    location: buildSourceLocation({ filePath: `${displayName}.ts`, line: 9 }),
-  };
+    location: buildSourceLocation({ filePath: `${displayName}.ts`, line: 12 }),
+  });
 }
 
 describe(renderTables, () => {

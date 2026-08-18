@@ -99,6 +99,16 @@ A markdown destination may supply `render` to replace the built-in tables, or
 splice rather than reimplementing it. Returning `false` reports the destination
 as stale; anything else, `undefined` included, counts as current.
 
+## Call Graph Types
+
+The result types define the JSON report's shape, so a consumer types against
+this package rather than reverse-engineering the output. Each reported
+`StackFrame` carries a `CallableSignature` (parameter names, types, optional and
+rest flags, return type, and the one-line rendering) and a
+`CallableDocumentation` (summary, tag names, and a deprecation flag). Both are
+`undefined` when the callable has neither — and `undefined` fields are absent
+from the JSON entirely rather than present and null.
+
 ## Exports
 
 `ConfigurationModule` and `ConfigurationService` for NestJS consumers, the zod

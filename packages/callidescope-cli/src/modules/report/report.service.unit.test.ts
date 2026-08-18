@@ -4,6 +4,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import {
   buildCallGraphResult,
   buildSourceLocation,
+  buildStackFrame,
 } from "../../../testing/mocks";
 import { ANALYSIS_MODULES } from "../../../testing/modules";
 
@@ -13,12 +14,11 @@ import type { CallGraphResult, StackFrame } from "@callidescope/configuration";
 
 /** Builds a stack frame for a printed call stack. */
 function frame(displayName: string, isCycle = false): StackFrame {
-  return {
+  return buildStackFrame({
     displayName,
-    id: `${displayName}#0`,
     isCycle,
     location: buildSourceLocation({ filePath: `${displayName}.ts`, line: 12 }),
-  };
+  });
 }
 
 /** Builds a result holding one deep stack. */
@@ -116,6 +116,96 @@ describe(ReportService, () => {
     );
 
     expect(rendered).toContain("Service.recurse() (cycle)");
+  });
+
+  // ✍️ Annotations
+
+  it("prints a frame's signature where the empty parentheses were", () => {
+    const rendered = service.renderStacks(
+      resultWithStack({
+        frames: [
+          buildStackFrame({
+            displayName: "Service.load",
+            signature: {
+              parameters: [],
+              returnType: "Promise<void>",
+              text: "(value: string): Promise<void>",
+            },
+          }),
+        ],
+      }),
+    );
+
+    expect(rendered).toContain("Service.load(value: string): Promise<void>");
+  });
+
+  it("collapses a signature too long to print, keeping the return type", () => {
+    // Which twelve services a constructor takes is noise mid-stack; what it
+    // hands back is not.
+    const rendered = service.renderStacks(
+      resultWithStack({
+        frames: [
+          buildStackFrame({
+            displayName: "Service.constructor",
+            signature: {
+              parameters: [],
+              returnType: "Service",
+              text: `(${"dependency: SomeVeryLongServiceName, ".repeat(6)}): Service`,
+            },
+          }),
+        ],
+      }),
+    );
+
+    expect(rendered).toContain("Service.constructor(…): Service");
+  });
+
+  it("prints a frame's documentation under it", () => {
+    const rendered = service.renderStacks(
+      resultWithStack({
+        frames: [
+          buildStackFrame({
+            displayName: "Service.load",
+            documentation: {
+              isDeprecated: false,
+              summary: "Loads the thing from the repository.",
+              tags: [],
+            },
+          }),
+        ],
+      }),
+    );
+
+    expect(rendered).toContain("↳ Loads the thing from the repository.");
+  });
+
+  it("marks a deprecated frame", () => {
+    const rendered = service.renderStacks(
+      resultWithStack({
+        frames: [
+          buildStackFrame({
+            displayName: "Service.old",
+            documentation: {
+              isDeprecated: true,
+              summary: "",
+              tags: ["deprecated"],
+            },
+          }),
+        ],
+      }),
+    );
+
+    expect(rendered).toContain("⚠ deprecated");
+  });
+
+  it("adds no documentation line for an undocumented frame", () => {
+    expect(service.renderStacks(resultWithStack())).not.toContain("↳");
+  });
+
+  it("prints empty parentheses when there is no signature", () => {
+    expect(service.renderStacks(resultWithStack())).toContain(
+      "Resolver.read()",
+    );
   });
 
   it("says how many stacks it left out when there are many", () => {

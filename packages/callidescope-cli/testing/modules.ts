@@ -1,3 +1,4 @@
+import { AnnotationsModule } from "../src/modules/annotations/annotations.module";
 import { CallablesModule } from "../src/modules/callables/callables.module";
 import { ClassHierarchyModule } from "../src/modules/class-hierarchy/class-hierarchy.module";
 import { CohesionModule } from "../src/modules/cohesion/cohesion.module";
@@ -19,6 +20,7 @@ import { WorkspaceModule } from "../src/modules/workspace/workspace.module";
  * list — and then drift from it.
  */
 export const ANALYSIS_MODULES = [
+  AnnotationsModule,
   CallablesModule,
   CohesionModule,
   EdgesModule,

@@ -8,6 +8,7 @@ import {
   collectFixtureCallables,
   FIXTURE_ROOT,
 } from "../../../testing/programs";
+import { AnnotationsService } from "../annotations/annotations.service";
 import { CohesionService } from "../cohesion/cohesion.service";
 import { EntryPointsService } from "../entry-points/entry-points.service";
 import { ComponentsService } from "../graph/components.service";
@@ -43,7 +44,7 @@ function analyze(args: {
     new EntryPointsService(),
     fixture.external,
     new GraphService(),
-    new PathsService(),
+    new PathsService(new AnnotationsService()),
     fixture.programService,
     fixture.workspace,
   );

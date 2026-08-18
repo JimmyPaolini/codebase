@@ -6,6 +6,7 @@ import type {
   CallableNode,
   CallGraphResult,
   SourceLocation,
+  StackFrame,
 } from "@callidescope/configuration";
 
 /**
@@ -94,6 +95,29 @@ export function buildSourceLocation(
     column: 1,
     filePath: "packages/example/src/modules/example/example.service.ts",
     line: 1,
+    ...overrides,
+  };
+}
+
+/**
+ * Builds a stack frame, defaulting the parts a test does not care about.
+ *
+ * Carrying neither documentation nor a signature by default: most assertions are about the
+ * shape of a stack rather than what its frames say about themselves, and a
+ * frame carrying neither is the honest baseline.
+ */
+export function buildStackFrame(
+  overrides: Partial<StackFrame> = {},
+): StackFrame {
+  const location = overrides.location ?? buildSourceLocation();
+
+  return {
+    displayName: "ExampleService.example",
+    documentation: undefined,
+    id: `${location.filePath}#0`,
+    isCycle: false,
+    location,
+    signature: undefined,
     ...overrides,
   };
 }
