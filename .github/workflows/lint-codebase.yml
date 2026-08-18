@@ -46,15 +46,6 @@ jobs:
           pnpm exec nx affected --target=lint-codebase \
             --configuration=check --parallel=4
 
-      # `lint-codebase` depends on this, and the step above already runs it: the
-      # target's inputs include `{workspaceRoot}/**/*.ts`, which marks the root
-      # `codebase` project affected on any TypeScript change. Kept as its own
-      # step so a stale call stack report fails under a name that says what
-      # broke rather than inside the aggregate — it hits the cache, so the
-      # second run costs nothing.
-      - name: 🔭 Lint Call Stacks
-        run: pnpm exec nx run codebase:callidescope:check
-
       - name: 📊 Upload Type Coverage
         if: always()
         uses: actions/upload-artifact@v7
