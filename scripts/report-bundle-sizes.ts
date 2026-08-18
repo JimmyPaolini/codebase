@@ -1,180 +1,31 @@
 /**
- * Renders the `🎒 Bundles` section of the pull request description.
+ * Reports bundle sizes for a pull request.
  *
- * Takes the rows `scripts/collect-bundle-sizes.ts` gathered and prints one
- * markdown table grouped by project, plus a headline total, a callout for the
- * bundle that grew most, and a collapsed list of the projects `nx affected`
- * did not rebuild.
+ * Collects every `size-limit-report.json` the `bundlesize` target wrote,
+ * renders the `🎒 Bundles` section, and writes it wherever asked — standard
+ * output, a file, or the bottom of a pull request description.
  *
- * This lives in the description rather than in a comment so that review
+ * The report lives in the description rather than in a comment so that review
  * automation, which treats every new pull request comment as feedback to act
- * on, is not woken up by a bot posting build statistics.
+ * on, is not woken up by a bot posting build statistics on each push.
  *
  * The baseline is an artifact rather than a second build of `main`: sizing the
  * base branch used to cost a full extra checkout, install, and build on every
  * pull request.
  *
  * Usage:
- *   tsx scripts/report-bundle-sizes.ts [--baseline <dir>] [--output <file>]
- *     [--baseline-url <url>]
+ *   tsx scripts/report-bundle-sizes.ts [--baseline <dir>] [--baseline-url <url>]
+ *     [--output <file>] [--pull-request <number>]
  */
-import { writeFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 
-import {
-  type BundleRow,
-  collectRows,
-  isComparable,
-  readDelta,
-  readFraction,
-} from "./collect-bundle-sizes.js";
+import { collectRows } from "./collect-bundle-sizes.js";
+import { renderBundlesSection, spliceSection } from "./render-bundle-sizes.js";
 
-// 🏷️ Types
-
-/** A project's bundles, kept in the order its `.size-limit.cjs` declares them. */
-interface ProjectGroup {
-  project: string;
-  rows: BundleRow[];
-}
-
-/** Workspace-wide totals, and the change against the baseline. */
-interface SizeSummary {
-  delta: number | undefined;
-  fraction: number | undefined;
-  total: number;
-}
-
-// ♟️ Constants
-
-/** Fraction of a limit above which a bundle is called out as nearly full. */
-const CROWDED_LIMIT = 0.9;
-
-/** Fraction of growth above which an increase is called out rather than noted. */
-const SIGNIFICANT_GROWTH = 0.05;
-
-/**
- * Wraps the report so the workflow can replace it in the pull request
- * description without disturbing anything the author wrote. HTML comments are
- * invisible once GitHub renders the markdown.
- */
-const SECTION_END = "<!-- bundle-sizes:end -->";
-const SECTION_START = "<!-- bundle-sizes:start -->";
-
-const HEADING = "## 🎒 Bundles";
-
-const TABLE_HEADER = [
-  "| | Project | Bundle | Size | `main` | Diff | % | Limit | Used |",
-  "|--|---------|--------|------|--------|------|---|-------|------|",
-];
-
-// 🔧 Formatting
-
-/** Formats a byte count, switching to megabytes once kilobytes get unwieldy. */
-function formatBytes(bytes: number): string {
-  if (Math.abs(bytes) >= 1_000_000) {
-    return `${(bytes / 1_000_000).toFixed(2)} MB`;
-  }
-  return `${(bytes / 1000).toFixed(2)} kB`;
-}
-
-/** Formats a count with its noun, pluralized. */
-function formatCount(count: number, noun: string): string {
-  return `${count} ${noun}${count === 1 ? "" : "s"}`;
-}
-
-/** Formats a signed delta, or an em dash when there is no baseline. */
-function formatDelta(delta: number | undefined): string {
-  if (delta === undefined) return "—";
-  return `${delta >= 0 ? "+" : ""}${formatBytes(delta)}`;
-}
-
-/** Formats a signed percentage, or an em dash when there is no baseline. */
-function formatPercent(fraction: number | undefined): string {
-  if (fraction === undefined) return "—";
-  return `${fraction >= 0 ? "+" : ""}${(fraction * 100).toFixed(1)}%`;
-}
-
-/** Formats how much of a bundle's limit it consumes, flagging a near-full one. */
-function formatUsage(row: BundleRow): string {
-  if (row.sizeLimit === undefined || row.sizeLimit === 0) return "—";
-  const usage = row.size / row.sizeLimit;
-  const marker = row.passed && usage >= CROWDED_LIMIT ? " ❗" : "";
-  return `${(usage * 100).toFixed(0)}%${marker}`;
-}
-
-/** Groups rows by project, preserving the order each report declared. */
-function groupByProject(rows: readonly BundleRow[]): ProjectGroup[] {
-  const groups = new Map<string, BundleRow[]>();
-
-  for (const row of rows) {
-    const existing = groups.get(row.project);
-    if (existing === undefined) {
-      groups.set(row.project, [row]);
-    } else {
-      existing.push(row);
-    }
-  }
-
-  return [...groups].map(([project, projectRows]) => ({
-    project,
-    rows: projectRows,
-  }));
-}
-
-// 📐 Statuses
-
-/**
- * Finds the bundle that grew most, proportionally, for the callout line. Ties
- * break on absolute bytes, so uniform growth names the costliest bundle.
- */
-function readBiggestGrowth(rows: readonly BundleRow[]): BundleRow | undefined {
-  return rows
-    .filter((row) => (readDelta(row) ?? 0) > 0)
-    .toSorted(
-      (first, second) =>
-        (readFraction(second) ?? 0) - (readFraction(first) ?? 0) ||
-        (readDelta(second) ?? 0) - (readDelta(first) ?? 0),
-    )[0];
-}
-
-/**
- * Describes the change against the baseline, and counts whatever appeared or
- * disappeared rather than folding it into the change.
- */
-function readComparison(
-  rows: readonly BundleRow[],
-  summary: SizeSummary,
-  baselineUrl: string | undefined,
-): string {
-  const baseline =
-    baselineUrl === undefined ? "`main`" : `[\`main\`](${baselineUrl})`;
-  const added = rows.filter(
-    (row) => row.measured && row.baseSize === undefined,
-  ).length;
-  const removed = rows.filter((row) => row.removed).length;
-  const notes = [
-    added === 0 ? undefined : `${added} new`,
-    removed === 0 ? undefined : `${removed} removed`,
-  ].filter((note) => note !== undefined);
-  const suffix = notes.length === 0 ? "" : ` · ${notes.join(", ")}`;
-
-  if (summary.delta !== undefined) {
-    return (
-      `— ${formatDelta(summary.delta)} ` +
-      `(${formatPercent(summary.fraction)}) vs ${baseline}${suffix}`
-    );
-  }
-  if (rows.some((row) => row.baseSize !== undefined)) {
-    return `— nothing in common with ${baseline} to compare${suffix}`;
-  }
-  return `(no ${baseline} baseline available yet)${suffix}`;
-}
-
-/** Picks the icon for a rebuilt bundle, from how far it moved. */
-function readGrowthStatus(row: BundleRow): string {
-  if (row.baseSize === undefined) return "🆕";
-  if ((readDelta(row) ?? 0) <= 0) return "✅";
-  return (readFraction(row) ?? 0) > SIGNIFICANT_GROWTH ? "📈" : "⚠️";
-}
+// 🔧 Utilities
 
 /**
  * Reads `--flag value` pairs out of argv, treating an empty value as absent so
@@ -187,236 +38,64 @@ function readOption(flag: string): string | undefined {
   return value === undefined || value === "" ? undefined : value;
 }
 
-/** Picks the icon for the report as a whole. */
-function readOverallStatus(
-  rows: readonly BundleRow[],
-  summary: SizeSummary,
-): string {
-  if (rows.some((row) => !row.passed || row.missing)) return "❌";
-  if (summary.delta === undefined || summary.delta <= 0) return "✅";
-  return (summary.fraction ?? 0) > SIGNIFICANT_GROWTH ? "📈" : "⚠️";
-}
-
-/** Picks the status icon for one row. */
-function readStatus(row: BundleRow): string {
-  if (row.removed) return "🗑️";
-  if (row.missing) return "⁉️";
-  if (!row.passed) return "❌";
-  if (!row.measured) return "💤";
-  return readGrowthStatus(row);
-}
-
-// 🌎 Rendering
-
-/** Renders the legend that explains every icon the table can show. */
-function renderGuidelines(): string[] {
-  return [
-    "<details>",
-    "<summary>📊 Guidelines</summary>",
-    "",
-    "- ✅ Size decreased or unchanged",
-    "- ⚠️ Increased under 5%",
-    "- 📈 Increased 5% or more",
-    "- 🆕 No baseline for this bundle",
-    "- 💤 Not rebuilt by this change, shown at its `main` size",
-    "- 🗑️ Removed since the baseline",
-    "- ❌ Exceeds its configured limit",
-    "- ⁉️ Its `path` glob matched no files",
-    "- ❗ Within 10% of its limit",
-    "",
-    "Sizes are gzipped. `Used` is the share of a bundle's limit it consumes.",
-    "Packages declare their limit as `sizeLimit` in their package.json. Add a",
-    "`.size-limit.cjs` and a `bundlesize` target to a project to include it here.",
-    "</details>",
-    "",
-  ];
-}
-
-/** Renders the table of everything this run rebuilt. */
-function renderMeasuredTable(rows: readonly BundleRow[]): string[] {
-  const measured = rows.filter((row) => row.measured || row.removed);
-  if (measured.length === 0) {
-    return ["This change rebuilt no measured project.", ""];
-  }
-
-  return [
-    ...TABLE_HEADER,
-    ...groupByProject(measured).flatMap((group) => [
-      ...group.rows.map((row) => renderRow(row)),
-      ...renderSubtotal(group),
-    ]),
-    "",
-  ];
-}
-
-/** Renders the whole `🎒 Bundles` section, markers included. */
-function renderReport(
-  rows: readonly BundleRow[],
-  baselineUrl: string | undefined,
-): string {
-  const body =
-    rows.length === 0
-      ? ["No bundles were measured for this change."]
-      : [
-          ...renderSummary(rows, baselineUrl),
-          ...renderMeasuredTable(rows),
-          ...renderUnmeasured(rows),
-          ...renderGuidelines(),
-          "*Updated automatically when you push new commits.*",
-        ];
-
-  return [SECTION_START, HEADING, "", ...body, SECTION_END].join("\n");
-}
-
-/** Renders one table row. */
-function renderRow(row: BundleRow): string {
-  const cells = [
-    readStatus(row),
-    `\`${row.project}\``,
-    row.removed ? `~~${row.name}~~` : row.name,
-    row.removed ? "—" : formatBytes(row.size),
-    row.baseSize === undefined ? "—" : formatBytes(row.baseSize),
-    formatDelta(readDelta(row)),
-    formatPercent(readFraction(row)),
-    row.sizeLimit === undefined || row.removed
-      ? "—"
-      : formatBytes(row.sizeLimit),
-    row.removed ? "—" : formatUsage(row),
-  ];
-
-  return `| ${cells.join(" | ")} |`;
-}
-
-/** Renders a project's rollup, which only earns its line when it has siblings. */
-function renderSubtotal(group: ProjectGroup): string[] {
-  const live = group.rows.filter((row) => !row.removed);
-  if (live.length < 2) return [];
-
-  const total = live.reduce((sum, row) => sum + row.size, 0);
-  const comparable = group.rows.filter((row) => isComparable(row));
-  const baseTotal = comparable.reduce(
-    (sum, row) => sum + (row.baseSize ?? 0),
-    0,
-  );
-
-  // Once a project has gained or lost a bundle there is no baseline its total
-  // can honestly be compared against, so the change columns stay empty rather
-  // than reporting a difference between two different sets of bundles.
-  const whole = comparable.length === group.rows.length;
-  const delta = whole ? total - baseTotal : undefined;
-  const fraction =
-    delta === undefined || baseTotal === 0 ? undefined : delta / baseTotal;
-
-  const cells = [
-    "",
-    `\`${group.project}\``,
-    `**${formatCount(live.length, "bundle")}**`,
-    `**${formatBytes(total)}**`,
-    whole ? formatBytes(baseTotal) : "—",
-    formatDelta(delta),
-    formatPercent(fraction),
-    "",
-    "",
-  ];
-
-  return [`| ${cells.join(" | ")} |`];
-}
-
-/** Renders the headline, and the callout for whatever grew most. */
-function renderSummary(
-  rows: readonly BundleRow[],
-  baselineUrl: string | undefined,
-): string[] {
-  const summary = summarizeRows(rows);
-  const bundleCount = rows.filter((row) => !row.removed).length;
-  const projectCount = new Set(rows.map((row) => row.project)).size;
-  const comparison = readComparison(rows, summary, baselineUrl);
-
-  const lines = [
-    `${readOverallStatus(rows, summary)} **${formatBytes(summary.total)}** across ` +
-      `${formatCount(bundleCount, "bundle")} in ` +
-      `${formatCount(projectCount, "project")} ${comparison}`,
-    "",
-  ];
-
-  const biggest = readBiggestGrowth(rows);
-  if (biggest !== undefined) {
-    lines.push(
-      `**Biggest increase:** \`${biggest.project}\` ${biggest.name} ` +
-        `${formatDelta(readDelta(biggest))} ` +
-        `(${formatPercent(readFraction(biggest))})`,
-      "",
-    );
-  }
-
-  return lines;
-}
-
-/** Renders the collapsed list of projects `nx affected` skipped. */
-function renderUnmeasured(rows: readonly BundleRow[]): string[] {
-  const skipped = rows.filter((row) => !row.measured && !row.removed);
-  if (skipped.length === 0) return [];
-
-  const total = skipped.reduce((sum, row) => sum + row.size, 0);
-
-  return [
-    "<details>",
-    `<summary>💤 Unchanged by this pull request — ${formatCount(skipped.length, "bundle")}, ${formatBytes(total)}</summary>`,
-    "",
-    "CI measures only the projects `nx affected` rebuilt. These kept their",
-    "`main` sizes, and are counted in the total above.",
-    "",
-    "| Project | Bundle | Size on `main` | Limit |",
-    "|---------|--------|----------------|-------|",
-    ...skipped.map((row) => {
-      const limit =
-        row.sizeLimit === undefined ? "—" : formatBytes(row.sizeLimit);
-      return `| \`${row.project}\` | ${row.name} | ${formatBytes(row.size)} | ${limit} |`;
-    }),
-    "</details>",
-    "",
-  ];
+/** Runs a `gh` subcommand and returns its output. */
+function runGitHub(args: readonly string[]): string {
+  return execFileSync("gh", [...args], { encoding: "utf8" });
 }
 
 /**
- * Totals every bundle, and changes only those the baseline and this run both
- * measured, so neither a newly added bundle nor a renamed one reads as a
- * workspace-wide swing.
+ * Rewrites a pull request description around the section, leaving it alone when
+ * nothing moved so an unaffected push does not churn the timeline.
+ *
+ * The description travels to `gh` through a file rather than an argument: it is
+ * kilobytes of markdown, well past what a single argument should carry.
  */
-function summarizeRows(rows: readonly BundleRow[]): SizeSummary {
-  const total = rows.reduce((sum, row) => sum + row.size, 0);
-  const comparable = rows.filter((row) => isComparable(row));
+function updateDescription(pullRequest: string, section: string): void {
+  const current = runGitHub([
+    "pr",
+    "view",
+    pullRequest,
+    "--json",
+    "body",
+    "--jq",
+    ".body",
+  ]).trimEnd();
+  const description = spliceSection(current, section);
 
-  if (comparable.length === 0) {
-    return { delta: undefined, fraction: undefined, total };
+  if (description === current) {
+    console.log(`Bundles section on #${pullRequest} is already current.`);
+    return;
   }
 
-  const baseTotal = comparable.reduce(
-    (sum, row) => sum + (row.baseSize ?? 0),
-    0,
-  );
-  const delta = comparable.reduce((sum, row) => sum + (readDelta(row) ?? 0), 0);
-
-  return {
-    delta,
-    fraction: baseTotal === 0 ? undefined : delta / baseTotal,
-    total,
-  };
+  const directory = mkdtempSync(path.join(tmpdir(), "bundle-sizes-"));
+  const file = path.join(directory, "description.md");
+  writeFileSync(file, `${description}\n`, "utf8");
+  runGitHub(["pr", "edit", pullRequest, "--body-file", file]);
+  console.log(`Wrote the Bundles section to #${pullRequest}.`);
 }
 
 // 🏁 Entrypoint
 
-const rows = collectRows(readOption("--baseline"));
-const report = renderReport(rows, readOption("--baseline-url"));
+const section = renderBundlesSection(
+  collectRows(readOption("--baseline")),
+  readOption("--baseline-url"),
+);
 const outputFile = readOption("--output");
+const pullRequest = readOption("--pull-request");
 
-if (outputFile === undefined) {
-  process.stdout.write(`${report}\n`);
-} else {
-  writeFileSync(outputFile, `${report}\n`, "utf8");
+if (outputFile !== undefined) {
+  writeFileSync(outputFile, `${section}\n`, "utf8");
+}
+
+if (pullRequest !== undefined) {
+  updateDescription(pullRequest, section);
+}
+
+if (outputFile === undefined && pullRequest === undefined) {
+  process.stdout.write(`${section}\n`);
 }
 
 const stepSummary = process.env["GITHUB_STEP_SUMMARY"];
 if (stepSummary !== undefined && stepSummary !== "") {
-  writeFileSync(stepSummary, `${report}\n`, { encoding: "utf8", flag: "a" });
+  writeFileSync(stepSummary, `${section}\n`, { encoding: "utf8", flag: "a" });
 }

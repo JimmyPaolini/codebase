@@ -211,7 +211,9 @@ tsx scripts/sync-devcontainer-configuration.ts [check|write]
 
 ### report-bundle-sizes.ts
 
-**Purpose:** Render the `## 🎒 Bundles` section that the 👷 Make Projects workflow writes into the bottom of every pull request description. Reads each project's `size-limit-report.json`, joins it to a baseline snapshot downloaded from the latest successful `main` run, and prints one markdown table grouped by project. `collect-bundle-sizes.ts` is the reading half; this script is the rendering half.
+**Purpose:** Write the `## 🎒 Bundles` section into the bottom of a pull request description. Reads each project's `size-limit-report.json`, joins it to a baseline snapshot downloaded from the latest successful `main` run, renders one markdown table grouped by project, and splices it into the description. The 👷 Make Projects workflow runs this as a single step.
+
+The work is split three ways: `collect-bundle-sizes.ts` reads the reports, `render-bundle-sizes.ts` turns rows into markdown, and this script is the command-line half that decides where the result goes.
 
 **What the section reports:**
 
@@ -227,8 +229,11 @@ tsx scripts/sync-devcontainer-configuration.ts [check|write]
 # Direct — needs `nx run-many --target=bundlesize --all` to have run first
 tsx scripts/report-bundle-sizes.ts
 
-# Compare against a downloaded baseline and write the section
+# Compare against a downloaded baseline and write the section to a file
 tsx scripts/report-bundle-sizes.ts --baseline .bundle-baseline --output .bundle-report.md
+
+# Splice the section into a pull request description (what CI does)
+tsx scripts/report-bundle-sizes.ts --baseline .bundle-baseline --pull-request 191
 ```
 
 **Options:**
@@ -236,6 +241,7 @@ tsx scripts/report-bundle-sizes.ts --baseline .bundle-baseline --output .bundle-
 - `--baseline <dir>` - Directory holding a `main` snapshot of the reports; without it every bundle reads as new
 - `--baseline-url <url>` - Run URL the baseline came from, linked from the headline
 - `--output <file>` - Write the section to a file instead of stdout
+- `--pull-request <number>` - Splice the section into that pull request's description via `gh`, leaving it untouched when nothing changed
 
 Also appends the report to `GITHUB_STEP_SUMMARY` when that variable is set.
 
