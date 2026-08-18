@@ -1,10 +1,11 @@
 import { Injectable } from "@nestjs/common";
 
 import {
-  NESTJS_MODULE_GRAPH_ABSENT_LEGEND,
   NESTJS_MODULE_GRAPH_AMBIENT_LEGEND,
   NESTJS_MODULE_GRAPH_AMBIENT_MINIMUM_MODULES,
   NESTJS_MODULE_GRAPH_MERMAID_HEADER,
+  NESTJS_MODULE_GRAPH_RUNTIME_LEGEND,
+  NESTJS_MODULE_GRAPH_TYPE_ONLY_LEGEND,
 } from "./nestjs-module-graphs.constants";
 
 import type {
@@ -35,6 +36,33 @@ export class NestjsModuleGraphsGraphService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /** Walks the tree into the edges worth drawing and the modules they touch. */
+  private collectEdges(
+    tree: SpelunkedTree[],
+    ambientModuleNames: Set<string>,
+  ): {
+    connectedModuleNames: Set<string>;
+    edges: NestjsModuleGraphEdge[];
+    moduleNames: Set<string>;
+  } {
+    const moduleNames = new Set(tree.map((node) => node.name));
+    const connectedModuleNames = new Set<string>();
+    const edges: NestjsModuleGraphEdge[] = [];
+
+    for (const node of tree) {
+      for (const importedName of node.imports) {
+        if (ambientModuleNames.has(importedName)) continue;
+
+        edges.push({ from: node.name, to: importedName });
+        moduleNames.add(importedName);
+        connectedModuleNames.add(node.name);
+        connectedModuleNames.add(importedName);
+      }
+    }
+
+    return { connectedModuleNames, edges, moduleNames };
+  }
 
   /** Sorts edges by source then target so the rendered diagram never churns. */
   private compareEdges(
@@ -76,7 +104,7 @@ export class NestjsModuleGraphsGraphService {
     return inboundCounts;
   }
 
-  /** Names the project dependencies no module in the graph came from. */
+  /** Names the imported projects no module in the graph came from. */
   private findAbsentDependencyNames(options: {
     groups: NestjsModuleGraphGroup[];
     ownership: NestjsModuleOwnership;
@@ -84,9 +112,10 @@ export class NestjsModuleGraphsGraphService {
   }): string[] {
     const { groups, ownership, projectName } = options;
     const represented = new Set(groups.map((group) => group.projectName));
+    const imports = ownership.importsByProject.get(projectName);
 
     return this.sortNames(
-      [...(ownership.dependenciesByProject.get(projectName) ?? [])].filter(
+      [...(imports?.projects ?? [])].filter(
         (dependency) => !represented.has(dependency),
       ),
     );
@@ -169,9 +198,10 @@ export class NestjsModuleGraphsGraphService {
    * The graphed project wins outright, which settles every application
    * defining a `MainModule`. A name NestJS also exports is credited to nobody,
    * because a name alone cannot tell `@nestjs/core`'s module from a workspace
-   * one. Otherwise the Nx project graph decides: two packages here define a
-   * `ConfigurationModule`, and the one the graphed project depends on is the
-   * one it imported. Anything still ambiguous is credited to nobody.
+   * one. Otherwise the project's own imports decide: two packages here define
+   * a `ConfigurationModule`, and the source says which one was imported. A
+   * name reached transitively falls back to its only definition, and anything
+   * still ambiguous is credited to nobody rather than to a guess.
    */
   private resolveOwner(options: {
     moduleName: string;
@@ -183,22 +213,22 @@ export class NestjsModuleGraphsGraphService {
 
     if (definingProjects.includes(projectName)) return projectName;
     if (ownership.frameworkModuleNames.has(moduleName)) return undefined;
-    if (definingProjects.length === 1) return definingProjects[0];
 
-    const dependencies = ownership.dependenciesByProject.get(projectName);
-    const depended = definingProjects.filter(
-      (candidate) => dependencies?.has(candidate) === true,
-    );
+    const imported = ownership.importsByProject
+      .get(projectName)
+      ?.projectsByModule.get(moduleName);
 
-    return depended.length === 1 ? depended[0] : undefined;
+    if (imported !== undefined) return imported;
+
+    return definingProjects.length === 1 ? definingProjects[0] : undefined;
   }
+
+  // 🌎 Public Methods
 
   /** Sorts names into a stable order. */
   private sortNames(names: Set<string> | string[]): string[] {
     return [...names].toSorted((first, second) => first.localeCompare(second));
   }
-
-  // 🌎 Public Methods
 
   /** Reduces an explored container to grouped names and drawable import edges. */
   buildGraph(options: {
@@ -208,34 +238,26 @@ export class NestjsModuleGraphsGraphService {
   }): NestjsModuleGraph {
     const { ownership, projectName, tree } = options;
     const ambientModuleNames = this.findAmbientModuleNames(tree);
-    const moduleNames = new Set(tree.map((node) => node.name));
-    const connectedModuleNames = new Set<string>();
-    const edges: NestjsModuleGraphEdge[] = [];
-
-    for (const node of tree) {
-      for (const importedName of node.imports) {
-        if (ambientModuleNames.has(importedName)) continue;
-
-        edges.push({ from: node.name, to: importedName });
-        moduleNames.add(importedName);
-        connectedModuleNames.add(node.name);
-        connectedModuleNames.add(importedName);
-      }
-    }
-
+    const { connectedModuleNames, edges, moduleNames } = this.collectEdges(
+      tree,
+      ambientModuleNames,
+    );
     const sortedModuleNames = this.sortNames(moduleNames);
     const groups = this.groupModuleNames({
       moduleNames: sortedModuleNames,
       ownership,
       projectName,
     });
+    const absentDependencyNames = this.findAbsentDependencyNames({
+      groups,
+      ownership,
+      projectName,
+    });
+    const typeOnlyProjects =
+      ownership.importsByProject.get(projectName)?.typeOnlyProjects ??
+      new Set<string>();
 
     return {
-      absentDependencyNames: this.findAbsentDependencyNames({
-        groups,
-        ownership,
-        projectName,
-      }),
       ambientModuleNames: this.sortNames(ambientModuleNames),
       edges: edges.toSorted((first, second) =>
         this.compareEdges(first, second),
@@ -245,6 +267,12 @@ export class NestjsModuleGraphsGraphService {
         (moduleName) => !connectedModuleNames.has(moduleName),
       ),
       moduleNames: sortedModuleNames,
+      runtimeDependencyNames: absentDependencyNames.filter(
+        (name) => !typeOnlyProjects.has(name),
+      ),
+      typeOnlyDependencyNames: absentDependencyNames.filter((name) =>
+        typeOnlyProjects.has(name),
+      ),
     };
   }
 
@@ -285,14 +313,13 @@ export class NestjsModuleGraphsGraphService {
     if (graph.ambientModuleNames.length > 0) {
       lines.push("", NESTJS_MODULE_GRAPH_AMBIENT_LEGEND);
     }
-    if (graph.absentDependencyNames.length > 0) {
-      lines.push(
-        "",
-        NESTJS_MODULE_GRAPH_ABSENT_LEGEND.replace(
-          "%s",
-          this.renderNameList(graph.absentDependencyNames),
-        ),
-      );
+    for (const [names, legend] of [
+      [graph.typeOnlyDependencyNames, NESTJS_MODULE_GRAPH_TYPE_ONLY_LEGEND],
+      [graph.runtimeDependencyNames, NESTJS_MODULE_GRAPH_RUNTIME_LEGEND],
+    ] as const) {
+      if (names.length > 0) {
+        lines.push("", legend.replace("%s", this.renderNameList(names)));
+      }
     }
 
     return lines.join("\n");
@@ -300,8 +327,11 @@ export class NestjsModuleGraphsGraphService {
 
   /** Renders a name list as prose, with `and` before the last entry. */
   renderNameList(names: string[]): string {
-    if (names.length < 2) return names.join("");
+    const last = names.at(-1);
 
-    return `${names.slice(0, -1).join(", ")} and ${names.at(-1) ?? ""}`;
+    if (last === undefined) return "";
+    if (names.length === 1) return last;
+
+    return `${names.slice(0, -1).join(", ")} and ${last}`;
   }
 }

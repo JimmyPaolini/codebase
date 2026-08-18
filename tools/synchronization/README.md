@@ -72,12 +72,18 @@ ambient: its edges are dropped and it is kept as a node on its own. Nothing a
 project actually designs comes close to that threshold.
 
 Modules are grouped by the project that defines them. Ownership is decided by
-name, which needs three rules because names collide: the graphed project wins
+name, which needs several rules because names collide: the graphed project wins
 outright (every application defines a `MainModule`); a name NestJS itself
 exports is credited to nobody, because a name cannot distinguish
-`@nestjs/core`'s module from a workspace one; and otherwise the Nx project
-graph settles it, since two packages here define a `ConfigurationModule` and
-the one the graphed project depends on is the one it imported.
+`@nestjs/core`'s module from a workspace one; otherwise the project's own
+source settles it, since two packages here define a `ConfigurationModule` and
+the import statement says which one was taken; and a name reached transitively
+falls back to its only definition.
+
+None of that consults the Nx project graph. A diagram of imports is derived
+from the imports — the source of the project being graphed, and its manifest —
+so the two graphs are independent readings of the same workspace rather than
+one deriving from the other.
 
 Where a name would otherwise be genuinely ambiguous in a single container —
 `conformetry-cli` imports `@nestjs/core`'s `DiscoveryModule` and
@@ -90,11 +96,19 @@ separate.
 
 A project dependency can be real and still contribute no module, so the module
 graph names those below the diagram rather than leaving a reader to wonder why
-the two disagree. It happens for two reasons: a dependency reached only through
-types — `conformetry-json` imports `ConformetryError` from `@conformetry/core`
-and nothing else — and a dependency loaded at runtime through
-`LazyModuleLoader`, which is how `conformetry-validation` reaches its language
-packages.
+the two disagree. It distinguishes the two reasons, because it can tell them
+apart from the source: a dependency every import of which is an `import type`
+declares no module by nature — `conformetry-json` takes `ConformetryError` from
+`@conformetry/core` and nothing else — while one the manifest declares but the
+source never imports is reached at runtime, which is how
+`conformetry-validation` loads its language packages through
+`LazyModuleLoader`.
+
+Type-only dependencies are deliberately left as they are. Importing
+`ErrorsModule` into `JsonValidatorModule` would draw an edge, but it would also
+create a runtime dependency the code does not have and enlarge every validator
+package's container to make a diagram look tidier. The note is the honest
+answer; the import would be a false one.
 
 The reverse also happens and is equally correct: the module graph reaches
 transitively, so it can show a module from a project the one-hop project graph

@@ -123,7 +123,7 @@ flowchart LR
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
 
-_Also depends on conformetry-json, conformetry-jupyter, conformetry-markdown, conformetry-python, conformetry-text and conformetry-typescript — reached through types alone or loaded lazily, and so absent from this graph._
+_Loaded at runtime rather than imported, and so absent from this container: conformetry-json, conformetry-jupyter, conformetry-markdown, conformetry-python, conformetry-text and conformetry-typescript._
 
 <!-- nestjs-module-graph-end -->
 

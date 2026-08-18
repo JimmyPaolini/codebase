@@ -184,8 +184,7 @@ export class NestjsModuleGraphsCommand
   async synchronize(mode: SynchronizationMode): Promise<boolean> {
     try {
       const projects = this.moduleGraphsService.discoverProjects(process.cwd());
-      const ownership =
-        await this.moduleGraphsService.indexModuleOwners(projects);
+      const ownership = this.moduleGraphsService.indexModuleOwners(projects);
       const outOfSyncFiles: string[] = [];
 
       for (const project of projects) {

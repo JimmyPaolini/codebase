@@ -6,6 +6,7 @@ import { NestjsModuleGraphsGraphService } from "./nestjs-module-graphs-graph.ser
 import type {
   NestjsModuleGraph,
   NestjsModuleOwnership,
+  NestjsProjectImports,
 } from "./nestjs-module-graphs.types";
 import type { SpelunkedTree } from "nestjs-spelunker";
 
@@ -28,16 +29,21 @@ function buildNode(name: string, imports: string[]): SpelunkedTree {
 function buildOwnership(
   projectsByModule: Record<string, string[]> = {},
   frameworkModuleNames: string[] = [],
-  dependenciesByProject: Record<string, string[]> = {},
+  imports: Partial<NestjsProjectImports> = {},
 ): NestjsModuleOwnership {
   return {
-    dependenciesByProject: new Map(
-      Object.entries(dependenciesByProject).map(([project, dependencies]) => [
-        project,
-        new Set(dependencies),
-      ]),
-    ),
     frameworkModuleNames: new Set(frameworkModuleNames),
+    importsByProject: new Map([
+      [
+        "example",
+        {
+          projects: imports.projects ?? new Set<string>(),
+          projectsByModule:
+            imports.projectsByModule ?? new Map<string, string>(),
+          typeOnlyProjects: imports.typeOnlyProjects ?? new Set<string>(),
+        },
+      ],
+    ]),
     projectsByModule: new Map(Object.entries(projectsByModule)),
   };
 }
@@ -103,6 +109,21 @@ describe(NestjsModuleGraphsGraphService, () => {
       expect(graph.isolatedModuleNames).toContain("LoggerModule");
     });
 
+    it("keeps the edges into a module only some modules import", () => {
+      const graph = build([
+        buildNode("MainModule", ["SharedModule", "FirstModule"]),
+        buildNode("FirstModule", ["SharedModule"]),
+        buildNode("SecondModule", []),
+        buildNode("SharedModule", []),
+      ]);
+
+      expect(graph.ambientModuleNames).toStrictEqual([]);
+      expect(graph.edges).toContainEqual({
+        from: "FirstModule",
+        to: "SharedModule",
+      });
+    });
+
     // Below the minimum, the single import of a two-module graph would look
     // exactly like a global module and vanish.
     it("does not treat a small graph's only import as ambient", () => {
@@ -153,9 +174,9 @@ describe(NestjsModuleGraphsGraphService, () => {
       ]);
     });
 
-    // Two packages here define a `ConfigurationModule`; the one the graphed
-    // project depends on is the one it imported.
-    it("settles a shared name by which project is depended on", () => {
+    // Two packages here define a `ConfigurationModule`; the project's own
+    // source says which one it imported.
+    it("settles a shared name by where the project imported it from", () => {
       const graph = build(
         [buildNode("ConfigurationModule", [])],
         buildOwnership(
@@ -166,7 +187,11 @@ describe(NestjsModuleGraphsGraphService, () => {
             ],
           },
           [],
-          { example: ["conformetry-configuration"] },
+          {
+            projectsByModule: new Map([
+              ["ConfigurationModule", "conformetry-configuration"],
+            ]),
+          },
         ),
       );
 
@@ -178,12 +203,10 @@ describe(NestjsModuleGraphsGraphService, () => {
       ]);
     });
 
-    it("credits a shared name to nobody when both are depended on", () => {
+    it("credits a shared name to nobody when the project imports neither", () => {
       const graph = build(
         [buildNode("ConfigurationModule", [])],
-        buildOwnership({ ConfigurationModule: ["first", "second"] }, [], {
-          example: ["first", "second"],
-        }),
+        buildOwnership({ ConfigurationModule: ["first", "second"] }),
       );
 
       expect(graph.groups[0]?.projectName).toBeUndefined();
@@ -281,17 +304,32 @@ describe(NestjsModuleGraphsGraphService, () => {
     // A dependency reached only through types, or loaded lazily, is real at
     // the project level and absent here; saying so stops the two diagrams from
     // looking like they disagree.
-    it("names a dependency that contributes no module", () => {
+    it("names a dependency reached only for its types", () => {
       const graph = build(
         [buildNode("JsonValidatorModule", [])],
         buildOwnership({ JsonValidatorModule: ["example"] }, [], {
-          example: ["conformetry-core"],
+          projects: new Set(["conformetry-core"]),
+          typeOnlyProjects: new Set(["conformetry-core"]),
         }),
       );
 
-      expect(graph.absentDependencyNames).toStrictEqual(["conformetry-core"]);
+      expect(graph.typeOnlyDependencyNames).toStrictEqual(["conformetry-core"]);
       expect(service.renderMermaid(graph)).toContain(
-        "_Also depends on conformetry-core —",
+        "Reached only for their types",
+      );
+    });
+
+    it("names a dependency reached only at runtime", () => {
+      const graph = build(
+        [buildNode("ValidationModule", [])],
+        buildOwnership({ ValidationModule: ["example"] }, [], {
+          projects: new Set(["conformetry-text"]),
+        }),
+      );
+
+      expect(graph.runtimeDependencyNames).toStrictEqual(["conformetry-text"]);
+      expect(service.renderMermaid(graph)).toContain(
+        "Loaded at runtime rather than imported",
       );
     });
 

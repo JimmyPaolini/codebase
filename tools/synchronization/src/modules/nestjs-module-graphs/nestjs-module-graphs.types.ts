@@ -3,15 +3,6 @@
 /** A NestJS module graph reduced to what the mermaid diagram needs. */
 export interface NestjsModuleGraph {
   /**
-   * Projects this one depends on that contribute no module to the graph.
-   *
-   * A dependency reached only through types, or loaded through
-   * `LazyModuleLoader`, is real at the project level and absent from the
-   * container. Naming it here is what keeps the two diagrams from looking
-   * like they disagree.
-   */
-  readonly absentDependencyNames: string[];
-  /**
    * Modules every other module imports, and whose edges are therefore left
    * out. Reported so a caller can say why the diagram looks sparser than the
    * container does.
@@ -25,6 +16,20 @@ export interface NestjsModuleGraph {
   readonly isolatedModuleNames: string[];
   /** Every module class name in the graph, sorted. */
   readonly moduleNames: string[];
+  /**
+   * Projects imported at runtime whose modules are not in this container.
+   *
+   * `conformetry-validation` reaches its language packages through
+   * `LazyModuleLoader`, so they are real dependencies and legitimately absent.
+   */
+  readonly runtimeDependencyNames: string[];
+  /**
+   * Projects this one uses only for their types.
+   *
+   * A type-only dependency declares no module by nature. Naming it is what
+   * keeps this diagram from looking like it disagrees with the project graph.
+   */
+  readonly typeOnlyDependencyNames: string[];
 }
 
 /** One module importing another. */
@@ -54,15 +59,15 @@ export interface NestjsModuleOwnership {
    * defines, and a name alone cannot tell them apart — so a framework name is
    * never credited to a workspace project.
    */
+  readonly frameworkModuleNames: Set<string>;
   /**
-   * Projects each project depends on, from the Nx project graph.
+   * What each project imports from the rest of the workspace.
    *
    * This is what settles a name two packages define: `ConfigurationModule`
-   * belongs to whichever of them the project being graphed actually depends
-   * on.
+   * belongs to whichever package the project being graphed imported it from,
+   * which its own source says outright.
    */
-  readonly dependenciesByProject: Map<string, Set<string>>;
-  readonly frameworkModuleNames: Set<string>;
+  readonly importsByProject: Map<string, NestjsProjectImports>;
   /** Every workspace project defining each module name. */
   readonly projectsByModule: Map<string, string[]>;
 }
@@ -80,4 +85,14 @@ export interface NestjsProject {
    * module built from every module the package defines.
    */
   readonly rootModuleFile: string | undefined;
+}
+
+/** What one project imports from the rest of the workspace. */
+export interface NestjsProjectImports {
+  /** Every workspace project this one imports from. */
+  readonly projects: Set<string>;
+  /** The project each imported module name came from. */
+  readonly projectsByModule: Map<string, string>;
+  /** Projects every import of which is a `type` import. */
+  readonly typeOnlyProjects: Set<string>;
 }

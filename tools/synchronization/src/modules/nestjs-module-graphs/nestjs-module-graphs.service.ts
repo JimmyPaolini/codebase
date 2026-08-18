@@ -9,9 +9,8 @@ import * as nestjsCore from "@nestjs/core";
 import { NestFactory } from "@nestjs/core";
 import { SpelunkerModule } from "nestjs-spelunker";
 
-import { NxProjectGraphsService } from "../nx-project-graphs/nx-project-graphs.service";
-
 import { NestjsModuleGraphsGraphService } from "./nestjs-module-graphs-graph.service";
+import { NestjsModuleGraphsImportsService } from "./nestjs-module-graphs-imports.service";
 import { SyntheticRootModule } from "./nestjs-module-graphs-synthetic.module";
 import {
   NESTJS_MODULE_GRAPH_IGNORED_MODULES,
@@ -46,7 +45,7 @@ export class NestjsModuleGraphsService {
 
   constructor(
     private readonly graphService: NestjsModuleGraphsGraphService,
-    private readonly projectGraphsService: NxProjectGraphsService,
+    private readonly importsService: NestjsModuleGraphsImportsService,
   ) {}
 
   // 🔐 Private Fields
@@ -143,28 +142,9 @@ export class NestjsModuleGraphsService {
   private readModuleClassNames(file: string): string[] {
     const source = readFileSync(file, "utf8");
 
-    return [...source.matchAll(NESTJS_MODULE_GRAPH_MODULE_CLASS_PATTERN)].map(
-      (match) => match.groups?.["moduleName"] ?? "",
-    );
-  }
-
-  /** Reads which projects each project depends on from the Nx project graph. */
-  private async readProjectDependencies(): Promise<Map<string, Set<string>>> {
-    const graph = await this.projectGraphsService.readProjectGraph();
-    const dependenciesByProject = new Map<string, Set<string>>();
-
-    for (const [source, dependencies] of Object.entries(graph.dependencies)) {
-      dependenciesByProject.set(
-        source,
-        new Set(
-          dependencies
-            .map((dependency) => dependency.target)
-            .filter((target) => graph.nodes[target] !== undefined),
-        ),
-      );
-    }
-
-    return dependenciesByProject;
+    return [...source.matchAll(NESTJS_MODULE_GRAPH_MODULE_CLASS_PATTERN)]
+      .map((match) => match.groups?.["moduleName"])
+      .filter((name): name is string => name !== undefined);
   }
 
   /** Reads a project's Nx tags, or an empty list when it declares none. */
@@ -262,9 +242,7 @@ export class NestjsModuleGraphsService {
    * Names are read out of the source rather than imported, because this runs
    * across every project and a graph only needs to know who owns a name.
    */
-  async indexModuleOwners(
-    projects: NestjsProject[],
-  ): Promise<NestjsModuleOwnership> {
+  indexModuleOwners(projects: NestjsProject[]): NestjsModuleOwnership {
     const projectsByModule = new Map<string, string[]>();
 
     for (const project of projects) {
@@ -286,9 +264,20 @@ export class NestjsModuleGraphsService {
       }
     }
 
+    const projectNamesByPackage =
+      this.importsService.readProjectNamesByPackage(projects);
+
     return {
-      dependenciesByProject: await this.readProjectDependencies(),
       frameworkModuleNames: this.readFrameworkModuleNames(),
+      importsByProject: new Map(
+        projects.map((project) => [
+          project.name,
+          this.importsService.readProjectImports(
+            project,
+            projectNamesByPackage,
+          ),
+        ]),
+      ),
       projectsByModule,
     };
   }

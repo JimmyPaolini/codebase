@@ -66,7 +66,7 @@ flowchart LR
   end
 ```
 
-_Also depends on conformetry-core — reached through types alone or loaded lazily, and so absent from this graph._
+_Reached only for their types, and so declaring no module here: conformetry-core._
 
 <!-- nestjs-module-graph-end -->
 

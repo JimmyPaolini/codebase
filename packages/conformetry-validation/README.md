@@ -129,7 +129,7 @@ flowchart LR
   ValidationModule --> TemplateDiscoveryModule
 ```
 
-_Also depends on conformetry-json, conformetry-jupyter, conformetry-markdown, conformetry-python, conformetry-text and conformetry-typescript — reached through types alone or loaded lazily, and so absent from this graph._
+_Loaded at runtime rather than imported, and so absent from this container: conformetry-text._
 
 <!-- nestjs-module-graph-end -->
 

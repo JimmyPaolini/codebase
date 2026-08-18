@@ -5,17 +5,16 @@ import { NestFactory } from "@nestjs/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { NxProjectGraphsService } from "../nx-project-graphs/nx-project-graphs.service";
-
 import { NestjsModuleGraphsGraphService } from "./nestjs-module-graphs-graph.service";
+import { NestjsModuleGraphsImportsService } from "./nestjs-module-graphs-imports.service";
 import { NestjsModuleGraphsService } from "./nestjs-module-graphs.service";
 
 import type {
   NestjsModuleOwnership,
   NestjsProject,
+  NestjsProjectImports,
 } from "./nestjs-module-graphs.types";
 import type { INestApplicationContext } from "@nestjs/common";
-import type { ProjectGraph } from "@nx/devkit";
 import type { SpelunkedTree } from "nestjs-spelunker";
 
 /** Files the mocked workspace holds, keyed by directory basename. */
@@ -109,17 +108,8 @@ describe(NestjsModuleGraphsService, () => {
     const module = await Test.createTestingModule({
       providers: [
         NestjsModuleGraphsGraphService,
+        NestjsModuleGraphsImportsService,
         NestjsModuleGraphsService,
-        {
-          provide: NxProjectGraphsService,
-          useValue: createMock<NxProjectGraphsService>({
-            readProjectGraph: vi.fn<() => Promise<ProjectGraph>>(async () => {
-              await Promise.resolve();
-
-              return createMock<ProjectGraph>({ dependencies: {}, nodes: {} });
-            }),
-          }),
-        },
       ],
     }).compile();
 
@@ -263,7 +253,7 @@ describe(NestjsModuleGraphsService, () => {
       );
     }
 
-    it("maps a module class to the project that defines it", async () => {
+    it("maps a module class to the project that defines it", () => {
       registerModuleFile({
         classNames: ["LoggerModule"],
         directory: "logger",
@@ -271,7 +261,7 @@ describe(NestjsModuleGraphsService, () => {
         projectRoot: "/workspace/packages/logger",
       });
 
-      const ownership = await service.indexModuleOwners([
+      const ownership = service.indexModuleOwners([
         {
           absoluteRoot: "/workspace/packages/logger",
           name: "logger",
@@ -284,7 +274,7 @@ describe(NestjsModuleGraphsService, () => {
       ]);
     });
 
-    it("records every project defining a shared module name", async () => {
+    it("records every project defining a shared module name", () => {
       registerModuleFile({
         classNames: ["ConfigurationModule"],
         directory: "configuration",
@@ -300,7 +290,7 @@ describe(NestjsModuleGraphsService, () => {
       existingPaths.add("/workspace/packages/second/src");
       existingPaths.add("/workspace/packages/second/src/configuration");
 
-      const ownership = await service.indexModuleOwners([
+      const ownership = service.indexModuleOwners([
         {
           absoluteRoot: "/workspace/packages/first",
           name: "first",
@@ -318,7 +308,7 @@ describe(NestjsModuleGraphsService, () => {
       ).toStrictEqual(["first", "second"]);
     });
 
-    it("records a project once when it defines a name in two files", async () => {
+    it("records a project once when it defines a name in two files", () => {
       existingPaths.add("/workspace/packages/logger/src");
       existingPaths.add("/workspace/packages/logger/src/logger");
       workspaceEntries.set("src", ["logger"]);
@@ -332,7 +322,7 @@ describe(NestjsModuleGraphsService, () => {
         );
       }
 
-      const ownership = await service.indexModuleOwners([
+      const ownership = service.indexModuleOwners([
         {
           absoluteRoot: "/workspace/packages/logger",
           name: "logger",
@@ -345,7 +335,7 @@ describe(NestjsModuleGraphsService, () => {
       ]);
     });
 
-    it("ignores an exported class that is not a module", async () => {
+    it("ignores an exported class that is not a module", () => {
       registerModuleFile({
         classNames: ["LoggerService"],
         directory: "logger",
@@ -353,7 +343,7 @@ describe(NestjsModuleGraphsService, () => {
         projectRoot: "/workspace/packages/logger",
       });
 
-      const ownership = await service.indexModuleOwners([
+      const ownership = service.indexModuleOwners([
         {
           absoluteRoot: "/workspace/packages/logger",
           name: "logger",
@@ -366,8 +356,8 @@ describe(NestjsModuleGraphsService, () => {
 
     // `DiscoveryModule` is a `@nestjs/core` export as well as a name a package
     // here uses, and the graph must never credit it to that package.
-    it("reads the module names NestJS itself exports", async () => {
-      const ownership = await service.indexModuleOwners([]);
+    it("reads the module names NestJS itself exports", () => {
+      const ownership = service.indexModuleOwners([]);
 
       expect(ownership.frameworkModuleNames).toContain("DiscoveryModule");
       expect(ownership.frameworkModuleNames).toContain("ConfigModule");
@@ -377,8 +367,8 @@ describe(NestjsModuleGraphsService, () => {
 
   describe("exploreProject", () => {
     const ownership: NestjsModuleOwnership = {
-      dependenciesByProject: new Map<string, Set<string>>(),
       frameworkModuleNames: new Set<string>(),
+      importsByProject: new Map<string, NestjsProjectImports>(),
       projectsByModule: new Map<string, string[]>(),
     };
 

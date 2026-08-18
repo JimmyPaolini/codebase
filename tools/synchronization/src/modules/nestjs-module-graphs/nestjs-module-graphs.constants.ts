@@ -1,8 +1,12 @@
 // ♟️ Constants
 
-/** Introduces the project dependencies that contribute no module. */
-export const NESTJS_MODULE_GRAPH_ABSENT_LEGEND =
-  "_Also depends on %s — reached through types alone or loaded lazily, and so absent from this graph._";
+/** Names the projects reached only for their types, which declare no module. */
+export const NESTJS_MODULE_GRAPH_TYPE_ONLY_LEGEND =
+  "_Reached only for their types, and so declaring no module here: %s._";
+
+/** Names the projects reached at runtime rather than through a static import. */
+export const NESTJS_MODULE_GRAPH_RUNTIME_LEGEND =
+  "_Loaded at runtime rather than imported, and so absent from this container: %s._";
 
 /** Explains the rounded nodes a graph with ambient modules renders. */
 export const NESTJS_MODULE_GRAPH_AMBIENT_LEGEND =
@@ -54,6 +58,18 @@ export const NESTJS_MODULE_GRAPH_PROJECT_DIRECTORIES: string[] = [
   "packages",
   "tools",
 ];
+
+/**
+ * Matches a named import and the specifier it comes from.
+ *
+ * Written to span lines, because a named-import clause of any size is wrapped
+ * by the formatter.
+ */
+export const NESTJS_MODULE_GRAPH_IMPORT_PATTERN =
+  /^import\s+(?<type>type\s+)?\{(?<clause>[^}]*)\}\s+from\s+"(?<from>[^"]+)"/gmsu;
+
+/** File suffix of the sources an import scan reads. */
+export const NESTJS_MODULE_GRAPH_TYPESCRIPT_FILE_SUFFIX = ".ts";
 
 /** Matches the module class a module file exports. */
 export const NESTJS_MODULE_GRAPH_MODULE_CLASS_PATTERN =
