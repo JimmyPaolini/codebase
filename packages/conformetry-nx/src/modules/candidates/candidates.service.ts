@@ -2,7 +2,7 @@ import path from "node:path";
 
 import {
   ConfigurationService,
-  DiscoveryService,
+  TemplateDiscoveryService,
 } from "@conformetry/configuration";
 import { Injectable } from "@nestjs/common";
 
@@ -27,7 +27,7 @@ export class CandidatesService {
 
   constructor(
     private readonly configurationService: ConfigurationService,
-    private readonly discoveryService: DiscoveryService,
+    private readonly templateDiscoveryService: TemplateDiscoveryService,
     private readonly scopeService: ScopeService,
   ) {}
 
@@ -88,7 +88,7 @@ export class CandidatesService {
         return this.scopeService.resolveGroup({ group, project: args.project });
       })
       .flatMap((group) => {
-        return this.discoveryService.resolveCandidates({
+        return this.templateDiscoveryService.resolveCandidates({
           patterns: group.patterns ?? [],
           ...(group.substitutions === undefined
             ? {}

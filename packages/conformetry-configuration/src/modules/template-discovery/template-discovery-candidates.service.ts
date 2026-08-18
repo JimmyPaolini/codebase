@@ -7,12 +7,12 @@ import {
   CANDIDATE_KEY_SEPARATOR,
   FILE_EXTENSION_PATTERN,
   GLOB_WILDCARD_CHARACTERS,
-} from "./discovery.constants";
+} from "./template-discovery.constants";
 
 import type {
   InstanceCandidate,
   ResolveCandidatesArguments,
-} from "./discovery.types";
+} from "./template-discovery.types";
 
 /**
  * Expands instance glob patterns into candidates.
@@ -22,7 +22,7 @@ import type {
  * previous matcher did and what made it repo-specific.
  */
 @Injectable()
-export class DiscoveryCandidatesService {
+export class TemplateDiscoveryCandidatesService {
   // 🏗 Dependency Injection
 
   constructor() {}

@@ -6,9 +6,9 @@ import { RenderingService } from "@conformetry/generation";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { DiscoveryTemplatesService } from "./discovery-templates.service";
+import { TemplateDiscoveryTemplatesService } from "./template-discovery-templates.service";
 
-import type { TemplateDefinition } from "./discovery.types";
+import type { TemplateDefinition } from "./template-discovery.types";
 
 const SUBSTITUTIONS = {
   nameKebabCase: "my-widget",
@@ -47,16 +47,16 @@ async function createTemplatePath(): Promise<string> {
   return templatePath;
 }
 
-describe(DiscoveryTemplatesService, () => {
-  let service: DiscoveryTemplatesService;
+describe(TemplateDiscoveryTemplatesService, () => {
+  let service: TemplateDiscoveryTemplatesService;
   let template: TemplateDefinition;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [DiscoveryTemplatesService, RenderingService],
+      providers: [TemplateDiscoveryTemplatesService, RenderingService],
     }).compile();
 
-    service = await module.resolve(DiscoveryTemplatesService);
+    service = await module.resolve(TemplateDiscoveryTemplatesService);
     template = service.collectTemplate({
       name: "example",
       templatePath: await createTemplatePath(),

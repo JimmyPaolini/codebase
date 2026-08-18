@@ -75,9 +75,6 @@ vite.config.*.timestamp*
 data/**
 .fallow
 
-# Agent planning artifacts 📋
-docs/
-
 # project-structure plugin cache
 projectStructure.cache.json
 
