@@ -1,7 +1,7 @@
 import {
   ConfigurationModule,
-  DiscoveryModule,
   InputModule,
+  TemplateDiscoveryModule,
 } from "@conformetry/configuration";
 import { ReportingModule } from "@conformetry/core";
 import { ValidationModule } from "@conformetry/validation";
@@ -19,7 +19,7 @@ import { ValidateCommand } from "./validate.command";
   exports: [ValidateCommand],
   imports: [
     ConfigurationModule,
-    DiscoveryModule,
+    TemplateDiscoveryModule,
     InputModule,
     LoggerModule,
     ReportingModule,

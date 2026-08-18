@@ -7,14 +7,14 @@ import { RenderingService } from "@conformetry/generation";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { DiscoveryMatchingService } from "./discovery-matching.service";
-import { DiscoveryTemplatesService } from "./discovery-templates.service";
+import { TemplateDiscoveryMatchingService } from "./template-discovery-matching.service";
+import { TemplateDiscoveryTemplatesService } from "./template-discovery-templates.service";
 
-import type { TemplateDefinition } from "./discovery.types";
+import type { TemplateDefinition } from "./template-discovery.types";
 
 /** Reads every template folder directly under a root. */
 function collectTemplates(
-  templatesService: DiscoveryTemplatesService,
+  templatesService: TemplateDiscoveryTemplatesService,
   templatesRootPath: string,
 ): TemplateDefinition[] {
   return readdirSync(templatesRootPath, { withFileTypes: true })
@@ -98,21 +98,21 @@ async function createTemplates(): Promise<{
   return { templates: [], templatesRootPath };
 }
 
-describe(DiscoveryMatchingService, () => {
-  let service: DiscoveryMatchingService;
-  let templatesService: DiscoveryTemplatesService;
+describe(TemplateDiscoveryMatchingService, () => {
+  let service: TemplateDiscoveryMatchingService;
+  let templatesService: TemplateDiscoveryTemplatesService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        DiscoveryMatchingService,
-        DiscoveryTemplatesService,
+        TemplateDiscoveryMatchingService,
+        TemplateDiscoveryTemplatesService,
         RenderingService,
       ],
     }).compile();
 
-    service = await module.resolve(DiscoveryMatchingService);
-    templatesService = await module.resolve(DiscoveryTemplatesService);
+    service = await module.resolve(TemplateDiscoveryMatchingService);
+    templatesService = await module.resolve(TemplateDiscoveryTemplatesService);
   });
 
   it("is defined", () => {

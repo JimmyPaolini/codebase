@@ -1,6 +1,6 @@
 import {
   ConfigurationModule,
-  DiscoveryModule,
+  TemplateDiscoveryModule,
 } from "@conformetry/configuration";
 import { Module } from "@nestjs/common";
 
@@ -17,7 +17,7 @@ import { InstancesService } from "./instances.service";
 @Module({
   controllers: [],
   exports: [InstancesService, ScopeModule],
-  imports: [ConfigurationModule, DiscoveryModule, ScopeModule],
+  imports: [ConfigurationModule, TemplateDiscoveryModule, ScopeModule],
   providers: [InstancesService],
 })
 export class InstancesModule {}

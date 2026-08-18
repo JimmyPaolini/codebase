@@ -17,23 +17,23 @@ import {
   TOML_EXTENSIONS,
   TS_EXTENSIONS,
   YAML_EXTENSIONS,
-} from "./discovery.constants";
+} from "./file-discovery.constants";
 
 import type {
   DiscoverFilesArguments,
-  DiscoveryResult,
-} from "./discovery.types";
+  FileDiscoveryResult,
+} from "./file-discovery.types";
 
 /** Discovers and categorizes git-tracked files within a codebase directory. */
 @Injectable()
-export class DiscoveryService {
+export class FileDiscoveryService {
   // 🏗 Dependency Injection
 
   constructor() {}
 
   // 🔐 Private Fields
 
-  private readonly logger = new Logger(DiscoveryService.name);
+  private readonly logger = new Logger(FileDiscoveryService.name);
 
   // 🔑 Public Fields
 
@@ -144,7 +144,7 @@ export class DiscoveryService {
   // 🌎 Public Methods
 
   /** Returns categorized file path lists for the given codebase root. */
-  discoverFiles(args: DiscoverFilesArguments): DiscoveryResult {
+  discoverFiles(args: DiscoverFilesArguments): FileDiscoveryResult {
     const allExtensions = new Set([...TS_EXTENSIONS, ...JS_EXTENSIONS]);
     const trackedFiles = this.listTrackedFiles(args);
     const sourceFiles = trackedFiles.filter((filePath) =>

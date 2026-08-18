@@ -3,7 +3,7 @@ import path from "node:path";
 
 import {
   ConfigurationService,
-  DiscoveryService,
+  TemplateDiscoveryService,
 } from "@conformetry/configuration";
 import { ReportingService } from "@conformetry/core";
 import { GenerationService } from "@conformetry/generation";
@@ -58,7 +58,7 @@ export class PluginService {
     private readonly adapterService: AdapterService,
     private readonly instancesService: InstancesService,
     private readonly configurationService: ConfigurationService,
-    private readonly discoveryService: DiscoveryService,
+    private readonly templateDiscoveryService: TemplateDiscoveryService,
     private readonly generatorService: GeneratorService,
     private readonly generationService: GenerationService,
     private readonly optionsService: OptionsService,
@@ -210,7 +210,7 @@ export class PluginService {
       );
 
     return configuration.map((generator) => {
-      return this.discoveryService.collectTemplate({
+      return this.templateDiscoveryService.collectTemplate({
         name: generator.name,
         templatePath: path.resolve(args.workspaceRoot, generator.templatePath),
         threshold: generator.threshold,

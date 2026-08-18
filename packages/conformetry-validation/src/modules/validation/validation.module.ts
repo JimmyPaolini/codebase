@@ -1,4 +1,4 @@
-import { DiscoveryModule } from "@conformetry/configuration";
+import { TemplateDiscoveryModule } from "@conformetry/configuration";
 import {
   LanguageModule,
   ReportingModule,
@@ -23,7 +23,7 @@ import { ValidationService } from "./validation.service";
 @Module({
   controllers: [],
   exports: [
-    DiscoveryModule,
+    TemplateDiscoveryModule,
     FilesModule,
     LanguageModule,
     ReportingModule,
@@ -35,7 +35,7 @@ import { ValidationService } from "./validation.service";
     ValidationService,
   ],
   imports: [
-    DiscoveryModule,
+    TemplateDiscoveryModule,
     FilesModule,
     LanguageModule,
     ReportingModule,

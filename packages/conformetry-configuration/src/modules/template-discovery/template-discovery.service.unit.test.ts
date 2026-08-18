@@ -5,10 +5,13 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { DiscoveryModule } from "./discovery.module";
-import { DiscoveryService } from "./discovery.service";
+import { TemplateDiscoveryModule } from "./template-discovery.module";
+import { TemplateDiscoveryService } from "./template-discovery.service";
 
-import type { MatchedInstance, TemplateDefinition } from "./discovery.types";
+import type {
+  MatchedInstance,
+  TemplateDefinition,
+} from "./template-discovery.types";
 
 /** A flat two-file template: it produces loose files, not a folder. */
 async function createTemplatePath(): Promise<string> {
@@ -28,17 +31,17 @@ async function createTemplatePath(): Promise<string> {
   return templatePath;
 }
 
-describe(DiscoveryService, () => {
-  let service: DiscoveryService;
+describe(TemplateDiscoveryService, () => {
+  let service: TemplateDiscoveryService;
   let templates: TemplateDefinition[];
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [DiscoveryModule],
-      providers: [DiscoveryService],
+      imports: [TemplateDiscoveryModule],
+      providers: [TemplateDiscoveryService],
     }).compile();
 
-    service = await module.resolve(DiscoveryService);
+    service = await module.resolve(TemplateDiscoveryService);
     templates = [
       service.collectTemplate({
         name: "widget",

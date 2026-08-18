@@ -181,6 +181,8 @@ shiftsmart
 signingkey
 smallint
 smol
+spelunked
+spelunker
 splitlines
 sqlfluff
 sqlfluffignore

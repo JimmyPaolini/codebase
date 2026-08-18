@@ -2,9 +2,9 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { DiscoveryInstancesService } from "./discovery-instances.service";
-import { DiscoveryMatchingService } from "./discovery-matching.service";
-import { DiscoveryTemplatesService } from "./discovery-templates.service";
+import { TemplateDiscoveryInstancesService } from "./template-discovery-instances.service";
+import { TemplateDiscoveryMatchingService } from "./template-discovery-matching.service";
+import { TemplateDiscoveryTemplatesService } from "./template-discovery-templates.service";
 
 import type {
   FindInstancesArguments,
@@ -15,7 +15,7 @@ import type {
   PrepareDocumentsArguments,
   ResolvedInstances,
   TemplateDefinition,
-} from "./discovery.types";
+} from "./template-discovery.types";
 
 /**
  * Turns instance directories into matched instances and comparison documents.
@@ -26,13 +26,13 @@ import type {
  * from any host, not just Nx.
  */
 @Injectable()
-export class DiscoveryService {
+export class TemplateDiscoveryService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly discoveryInstancesService: DiscoveryInstancesService,
-    private readonly discoveryMatchingService: DiscoveryMatchingService,
-    private readonly discoveryTemplatesService: DiscoveryTemplatesService,
+    private readonly templateDiscoveryInstancesService: TemplateDiscoveryInstancesService,
+    private readonly templateDiscoveryMatchingService: TemplateDiscoveryMatchingService,
+    private readonly templateDiscoveryTemplatesService: TemplateDiscoveryTemplatesService,
   ) {}
 
   // 🔐 Private Fields
@@ -49,12 +49,12 @@ export class DiscoveryService {
     templatePath: string;
     threshold?: number | undefined;
   }): TemplateDefinition {
-    return this.discoveryTemplatesService.collectTemplate(args);
+    return this.templateDiscoveryTemplatesService.collectTemplate(args);
   }
 
   /** Expands instance glob patterns into instances. */
   public findInstances(args: FindInstancesArguments): Instance[] {
-    return this.discoveryInstancesService.findInstances(args);
+    return this.templateDiscoveryInstancesService.findInstances(args);
   }
 
   /** Matches instance directories to the templates that best explain them. */
@@ -62,7 +62,7 @@ export class DiscoveryService {
     instances: Instance[];
     templates: TemplateDefinition[];
   }): ResolvedInstances {
-    return this.discoveryMatchingService.matchInstances(args);
+    return this.templateDiscoveryMatchingService.matchInstances(args);
   }
 
   /**
@@ -81,7 +81,7 @@ export class DiscoveryService {
             return extensions.has(path.extname(templateFilePath));
           })
           .map((templateFilePath) => {
-            return this.discoveryTemplatesService.prepareDocument({
+            return this.templateDiscoveryTemplatesService.prepareDocument({
               instancePath: instance.instance.path,
               substitutions: instance.substitutions,
               templateDirectoryPath: instance.template.directoryPath,
@@ -108,7 +108,7 @@ export class DiscoveryService {
         return {
           instance,
           instanceFilePath:
-            this.discoveryTemplatesService.resolveInstanceFilePath({
+            this.templateDiscoveryTemplatesService.resolveInstanceFilePath({
               instancePath: instance.instance.path,
               substitutions: instance.substitutions,
               templateDirectoryPath: instance.template.directoryPath,

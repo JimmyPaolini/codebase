@@ -1,7 +1,7 @@
 import {
   ConfigurationService,
-  DiscoveryService,
   InputService,
+  TemplateDiscoveryService,
 } from "@conformetry/configuration";
 import { ReportingService } from "@conformetry/core";
 import { ValidationService } from "@conformetry/validation";
@@ -46,7 +46,7 @@ const TEMPLATE: TemplateDefinition = {
 describe(ValidateCommand, () => {
   let command: ValidateCommand;
   let configurationService: ConfigurationService;
-  let discoveryService: DiscoveryService;
+  let templateDiscoveryService: TemplateDiscoveryService;
   let commandLogger: LoggerService;
   let reportingService: ReportingService;
   let validationService: ValidationService;
@@ -59,7 +59,10 @@ describe(ValidateCommand, () => {
           provide: ConfigurationService,
           useValue: createMock<ConfigurationService>(),
         },
-        { provide: DiscoveryService, useValue: createMock<DiscoveryService>() },
+        {
+          provide: TemplateDiscoveryService,
+          useValue: createMock<TemplateDiscoveryService>(),
+        },
         { provide: InputService, useValue: createMock<InputService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         { provide: ReportingService, useValue: createMock<ReportingService>() },
@@ -72,7 +75,7 @@ describe(ValidateCommand, () => {
 
     command = await module.resolve(ValidateCommand);
     configurationService = await module.resolve(ConfigurationService);
-    discoveryService = await module.resolve(DiscoveryService);
+    templateDiscoveryService = await module.resolve(TemplateDiscoveryService);
     commandLogger = await module.resolve(LoggerService);
     reportingService = await module.resolve(ReportingService);
     validationService = await module.resolve(ValidationService);
@@ -85,8 +88,12 @@ describe(ValidateCommand, () => {
     vi.mocked(
       configurationService.loadConformetryConfiguration,
     ).mockResolvedValue(CONFIGURATION);
-    vi.mocked(discoveryService.findInstances).mockReturnValue([INSTANCE]);
-    vi.mocked(discoveryService.collectTemplate).mockReturnValue(TEMPLATE);
+    vi.mocked(templateDiscoveryService.findInstances).mockReturnValue([
+      INSTANCE,
+    ]);
+    vi.mocked(templateDiscoveryService.collectTemplate).mockReturnValue(
+      TEMPLATE,
+    );
     vi.mocked(validationService.validate).mockResolvedValue({
       checkedPaths: [],
       fileResults: [],
@@ -110,7 +117,10 @@ describe(ValidateCommand, () => {
           provide: ConfigurationService,
           useValue: createMock<ConfigurationService>(),
         },
-        { provide: DiscoveryService, useValue: createMock<DiscoveryService>() },
+        {
+          provide: TemplateDiscoveryService,
+          useValue: createMock<TemplateDiscoveryService>(),
+        },
         { provide: InputService, useValue: createMock<InputService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         { provide: ReportingService, useValue: createMock<ReportingService>() },
@@ -129,7 +139,7 @@ describe(ValidateCommand, () => {
     it("validates the configured instances and reports the outcome", async () => {
       await command.run([], {});
 
-      expect(discoveryService.findInstances).toHaveBeenCalledWith(
+      expect(templateDiscoveryService.findInstances).toHaveBeenCalledWith(
         expect.objectContaining({ patterns: ["packages/*/src/modules/*"] }),
       );
       expect(validationService.validate).toHaveBeenCalledWith(
@@ -169,7 +179,7 @@ describe(ValidateCommand, () => {
     it("lets an explicit glob override the configured instances", async () => {
       await command.run([], { instances: ["tools/*"] });
 
-      expect(discoveryService.findInstances).toHaveBeenCalledWith(
+      expect(templateDiscoveryService.findInstances).toHaveBeenCalledWith(
         expect.objectContaining({ patterns: ["tools/*"] }),
       );
     });
@@ -193,7 +203,7 @@ describe(ValidateCommand, () => {
 
       await command.run([], {});
 
-      expect(discoveryService.findInstances).toHaveBeenCalledWith(
+      expect(templateDiscoveryService.findInstances).toHaveBeenCalledWith(
         expect.objectContaining({ substitutions: { type: "packages" } }),
       );
     });

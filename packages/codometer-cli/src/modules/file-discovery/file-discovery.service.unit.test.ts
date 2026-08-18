@@ -5,7 +5,7 @@ import { Logger } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { DiscoveryService } from "./discovery.service";
+import { FileDiscoveryService } from "./file-discovery.service";
 
 const { execFileSyncMock } = vi.hoisted(() => ({
   execFileSyncMock:
@@ -17,14 +17,14 @@ vi.mock("node:fs");
 
 const DEFAULT_EXCLUDE = ["**/node_modules/**", "**/dist/**"];
 
-describe(DiscoveryService, () => {
-  let service: DiscoveryService;
+describe(FileDiscoveryService, () => {
+  let service: FileDiscoveryService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [DiscoveryService],
+      providers: [FileDiscoveryService],
     }).compile();
-    service = await module.resolve(DiscoveryService);
+    service = await module.resolve(FileDiscoveryService);
   });
 
   beforeEach(() => {

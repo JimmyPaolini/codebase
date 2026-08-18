@@ -1,0 +1,13 @@
+{
+  "hooks": {
+    "sessionStart": [
+      {
+        "bash": "scripts/git/validate-session-skills.sh",
+        "cwd": ".",
+        "timeoutSec": 10,
+        "type": "command"
+      }
+    ]
+  },
+  "version": 1
+}

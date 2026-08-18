@@ -2,7 +2,10 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { DiscoveryModule, DiscoveryService } from "@conformetry/configuration";
+import {
+  TemplateDiscoveryModule,
+  TemplateDiscoveryService,
+} from "@conformetry/configuration";
 import { ErrorsModule } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
@@ -55,13 +58,13 @@ async function createTemplatePath(): Promise<string> {
 }
 
 describe(FilesService, () => {
-  let discoveryService: DiscoveryService;
+  let templateDiscoveryService: TemplateDiscoveryService;
   let service: FilesService;
   let template: TemplateDefinition;
 
   /** Matches an instance path against the single `widget` template. */
   function matchInstance(instancePath: string): MatchedInstance[] {
-    const { matched } = discoveryService.matchInstances({
+    const { matched } = templateDiscoveryService.matchInstances({
       instances: [{ nameStem: "my-widget", path: instancePath }],
       templates: [template],
     });
@@ -71,13 +74,13 @@ describe(FilesService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [DiscoveryModule, ErrorsModule],
+      imports: [TemplateDiscoveryModule, ErrorsModule],
       providers: [FilesService],
     }).compile();
 
     service = await module.resolve(FilesService);
-    discoveryService = await module.resolve(DiscoveryService);
-    template = discoveryService.collectTemplate({
+    templateDiscoveryService = await module.resolve(TemplateDiscoveryService);
+    template = templateDiscoveryService.collectTemplate({
       name: "widget",
       templatePath: await createTemplatePath(),
     });
@@ -140,7 +143,7 @@ describe(FilesService, () => {
   });
 
   it("reports a missing directory once however many files it holds", async () => {
-    const nestedTemplate = discoveryService.collectTemplate({
+    const nestedTemplate = templateDiscoveryService.collectTemplate({
       name: "widget",
       templatePath: await createNestedTemplatePath(),
     });
@@ -155,7 +158,7 @@ describe(FilesService, () => {
       "utf8",
     );
 
-    const { matched } = discoveryService.matchInstances({
+    const { matched } = templateDiscoveryService.matchInstances({
       instances: [{ nameStem: "my-widget", path: instancePath }],
       templates: [nestedTemplate],
     });

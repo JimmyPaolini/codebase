@@ -1,11 +1,11 @@
 import { RenderingService } from "@conformetry/generation";
 import { Injectable } from "@nestjs/common";
 
-import { DiscoveryTemplatesService } from "./discovery-templates.service";
+import { TemplateDiscoveryTemplatesService } from "./template-discovery-templates.service";
 import {
   COMPLETE_MATCH_RATIO,
   MINIMUM_MATCH_RATIO,
-} from "./discovery.constants";
+} from "./template-discovery.constants";
 
 import type {
   Instance,
@@ -13,7 +13,7 @@ import type {
   ResolvedInstances,
   TemplateDefinition,
   TemplateMatch,
-} from "./discovery.types";
+} from "./template-discovery.types";
 import type { Substitutions } from "@conformetry/generation";
 
 /**
@@ -24,11 +24,11 @@ import type { Substitutions } from "@conformetry/generation";
  * structure the instance already has.
  */
 @Injectable()
-export class DiscoveryMatchingService {
+export class TemplateDiscoveryMatchingService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly discoveryTemplatesService: DiscoveryTemplatesService,
+    private readonly templateDiscoveryTemplatesService: TemplateDiscoveryTemplatesService,
     private readonly renderingService: RenderingService,
   ) {}
 
@@ -69,7 +69,7 @@ export class DiscoveryMatchingService {
     return args.templates
       .map((template) => {
         const matchedFileCount =
-          this.discoveryTemplatesService.countMatchingFiles({
+          this.templateDiscoveryTemplatesService.countMatchingFiles({
             fileScope: args.instance.fileScope,
             instancePath: args.instance.path,
             substitutions: args.substitutions,

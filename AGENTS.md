@@ -489,7 +489,7 @@ See the [testing-strategy skill](.agents/skills/testing-strategy/SKILL.md) for p
 
 ### Session Hooks
 
-Three checks run at the start of every agent session and inject their failure as
+Four checks run at the start of every agent session and inject their failure as
 additional context, so the agent fixes the problem before writing any code. Both
 harnesses run the same scripts under `scripts/git/`:
 
@@ -498,6 +498,15 @@ harnesses run the same scripts under `scripts/git/`:
 | `validate-session-branch-name.sh` | Branch follows `<type>/<scope>-<description>`; directs the agent to the rename-branch skill |
 | `validate-session-commit-signing.sh` | `commit.gpgsign`, `user.signingkey`, and a GPG signing smoke test |
 | `validate-session-gh-authentication.sh` | `gh auth status` plus Projects access |
+| `validate-session-skills.sh` | Every skill declared in `skills-lock.json` is present; directs the agent to `codebase:install-skills` |
+
+The skills check exists because `postinstall` alone does not cover worktrees.
+pnpm skips lifecycle scripts when `node_modules` is already up to date, so a
+worktree branched from an existing checkout never restores the gitignored
+skills, and every skill link in this file dangles. The hook reports rather than
+restores: harnesses register skills when a session starts, so restoring from the
+hook would still not expose them to the session already underway. Restore, then
+start a fresh session.
 
 Each script is registered twice — once per harness — and both registrations point
 at the same file:
@@ -541,6 +550,67 @@ Specialized domain knowledge for working on specific systems or patterns, in
 directly, so they are not listed here — reading the directory is what tells you
 which ones exist right now, including the ones installed from other
 repositories.
+
+Skills come from two places. The ones this repository owns are committed. The
+ones installed from other repositories — including the
+[mattpocock/skills](https://github.com/mattpocock/skills) set that
+[Agent Workflow](#agent-workflow) is built on — are declared in
+`skills-lock.json` and gitignored per-folder in `.gitignore`, so a fresh
+checkout holds none of them.
+
+`scripts/install-skills.sh` restores them, and the root `postinstall` runs it.
+Every environment that installs node dependencies therefore ends up with the
+skills this file links to: local clones, devcontainers, CI jobs using the
+`setup-codebase` action, and Claude Code worktrees. Run it directly when a skill
+named in this file is missing from `.agents/skills/`:
+
+```bash
+pnpm exec nx run codebase:install-skills
+```
+
+Four behaviors are worth knowing before changing any of this:
+
+- **It is idempotent.** With every locked skill already on disk it returns in
+  milliseconds instead of re-cloning every source repository. Use the `force`
+  configuration to re-restore a skill that is present but damaged.
+- **It never leaves tracked files dirty.** `skills experimental_install`
+  rewrites `skills-lock.json` with whatever hash each source holds now, so the
+  script reverts that rewrite. Otherwise every CI job would end with a dirty
+  tree and `upgrade-dependencies.yml` — which gates its pull request on
+  `git diff --quiet` — would open an empty upgrade pull request on every run.
+- **It never fails an install.** Skills are agent context, not a build input, so
+  a GitHub outage or rate limit prints a warning and the retry command rather
+  than breaking `pnpm install` for everyone. A missing skill is a broken agent
+  workflow, not a broken build.
+- **Two escape hatches.** `SKIP_SKILLS_INSTALL=1` skips restoration entirely;
+  `validate-conventions.yml` already bypasses it by installing with
+  `--ignore-scripts`, since commitlint and validate-branch-name are all it
+  needs.
+
+Moving the pins forward is a separate job, owned by `skills update` — the
+`🤹 Upgrade Skills` step in `upgrade-dependencies.yml` runs it weekly so hash
+changes arrive as a reviewable dependency pull request:
+
+```bash
+pnpm exec skills update
+```
+
+### Agent Skills Configuration
+
+The [mattpocock/skills](https://github.com/mattpocock/skills) engineering skills
+read their per-repository configuration from `docs/agents/`. Edit these files
+directly; re-run `/setup-matt-pocock-skills` only to switch issue trackers or
+start over.
+
+| Concern | Setting | Reference |
+| ------- | ------- | --------- |
+| Issue tracker | GitHub Issues in `JimmyPaolini/codebase`, via the `gh` CLI | [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md) |
+| Triage labels | The five canonical roles mapped onto this repository's `status:` label family | [`docs/agents/triage-labels.md`](docs/agents/triage-labels.md) |
+| Domain docs | Single-context — one root `CONTEXT.md` plus root `docs/adr/` | [`docs/agents/domain.md`](docs/agents/domain.md) |
+
+`CONTEXT.md` and `docs/adr/` do not exist yet, and that is expected —
+[domain-modeling](.agents/skills/domain-modeling/SKILL.md) creates them lazily as
+terms and decisions actually get resolved. Do not scaffold them upfront.
 
 ### Agents
 

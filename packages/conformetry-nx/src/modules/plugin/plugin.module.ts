@@ -1,6 +1,6 @@
 import {
   ConfigurationModule,
-  DiscoveryModule,
+  TemplateDiscoveryModule,
 } from "@conformetry/configuration";
 import { ReportingModule } from "@conformetry/core";
 import { GenerationModule } from "@conformetry/generation";
@@ -31,7 +31,7 @@ import { PluginService } from "./plugin.service";
     InstancesModule,
     ConfigurationModule,
     GeneratorModule,
-    DiscoveryModule,
+    TemplateDiscoveryModule,
     GenerationModule,
     OptionsModule,
     PathsModule,
@@ -46,7 +46,7 @@ import { PluginService } from "./plugin.service";
     InstancesModule,
     ConfigurationModule,
     GeneratorModule,
-    DiscoveryModule,
+    TemplateDiscoveryModule,
     GenerationModule,
     OptionsModule,
     PathsModule,
