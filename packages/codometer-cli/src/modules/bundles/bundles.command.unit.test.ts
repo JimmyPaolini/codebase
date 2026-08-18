@@ -119,6 +119,19 @@ describe(BundlesCommand, () => {
     expect(printed).toContain("## 🎒 Bundles");
   });
 
+  it("ignores a valueless flag rather than rendering it as text", async () => {
+    const output = path.join(makeDirectory(), "section.md");
+
+    // Commander reports `--baseline-url` with no value as `true`, without
+    // calling the option's parser.
+    await command.run([], { baselineUrl: true, output });
+
+    const written = readFileSync(output, "utf8");
+
+    expect(written).not.toContain("(true)");
+    expect(written).toContain("no `main` baseline available yet");
+  });
+
   it("writes the section alone to an output file", async () => {
     const output = path.join(makeDirectory(), "section.md");
 

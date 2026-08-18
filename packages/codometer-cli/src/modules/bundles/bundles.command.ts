@@ -54,9 +54,11 @@ export class BundlesCommand extends CommandRunner {
   /**
    * Reads an option that carries text, or nothing at all.
    *
-   * A flag written `--baseline-url "$EMPTY"` reaches commander with no value
-   * and arrives here as `true`, so anything but a non-empty string counts as
-   * absent. Passing that boolean through renders a link to `true`.
+   * A flag written `--baseline-url "$EMPTY"` can reach commander with no value
+   * at all, which it reports as `true` without ever calling this option's
+   * parser. So every option is narrowed again on the way in, and anything but
+   * a non-empty string counts as absent — passing that boolean through renders
+   * a link to the word `true`.
    */
   private readOptionalText(value: unknown): string | undefined {
     return typeof value === "string" && value !== "" ? value : undefined;
@@ -118,30 +120,32 @@ export class BundlesCommand extends CommandRunner {
     _passedParameters: string[],
     options: BundlesCommandOptions,
   ): Promise<void> {
+    const markdown = this.readOptionalText(options.markdown);
+    const output = this.readOptionalText(options.output);
     const section = this.bundleMarkdownService.renderSection({
-      baselineUrl: options.baselineUrl,
+      baselineUrl: this.readOptionalText(options.baselineUrl),
       rows: this.bundlesService.collectRows({
-        baselineDirectory: options.baseline,
+        baselineDirectory: this.readOptionalText(options.baseline),
         workingDirectory: process.cwd(),
       }),
     });
 
-    if (options.output !== undefined) {
-      await writeFile(options.output, `${section}\n`, "utf8");
-      this.logger.log(`Wrote the bundles section to ${options.output}`);
+    if (output !== undefined) {
+      await writeFile(output, `${section}\n`, "utf8");
+      this.logger.log(`Wrote the bundles section to ${output}`);
     }
 
-    if (options.markdown !== undefined) {
-      const existing = await this.readMarkdown(options.markdown);
+    if (markdown !== undefined) {
+      const existing = await this.readMarkdown(markdown);
       const spliced = this.bundleMarkdownService.spliceSection(
         existing,
         section,
       );
-      await writeFile(options.markdown, `${spliced}\n`, "utf8");
-      this.logger.log(`Spliced the bundles section into ${options.markdown}`);
+      await writeFile(markdown, `${spliced}\n`, "utf8");
+      this.logger.log(`Spliced the bundles section into ${markdown}`);
     }
 
-    if (options.output === undefined && options.markdown === undefined) {
+    if (output === undefined && markdown === undefined) {
       process.stdout.write(`${section}\n`);
     }
   }

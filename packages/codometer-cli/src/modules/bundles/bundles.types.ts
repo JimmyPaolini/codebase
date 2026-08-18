@@ -16,12 +16,17 @@ export interface BundleRow {
   sizeLimit: number | undefined;
 }
 
-/** Options accepted by the `bundles` command. */
+/**
+ * Options accepted by the `bundles` command.
+ *
+ * Typed loosely because commander skips an option's parser when the flag
+ * arrives without a value, handing the command `true` instead of text.
+ */
 export interface BundlesCommandOptions {
-  baseline?: string;
-  baselineUrl?: string;
-  markdown?: string;
-  output?: string;
+  baseline?: unknown;
+  baselineUrl?: unknown;
+  markdown?: unknown;
+  output?: unknown;
 }
 
 /** Arguments for reading one project's report and its baseline. */
