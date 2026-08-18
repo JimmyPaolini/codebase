@@ -8,19 +8,16 @@ import {
   collectFixtureCallables,
 } from "../../../testing/programs";
 
-import { AnnotationsService } from "./annotations.service";
+import { DocumentationService } from "./documentation.service";
 
-import type { ReadAnnotationsArguments } from "./annotations.types";
-import type {
-  CallableDocumentation,
-  CallableSignature,
-} from "@callidescope/configuration";
+import type { ReadDocumentationArguments } from "./documentation.types";
+import type { CallableDocumentation } from "@callidescope/configuration";
 
 /** Builds the arguments for one named callable in an in-memory file. */
 function readArguments(args: {
   displayName: string;
   source: string;
-}): ReadAnnotationsArguments {
+}): ReadDocumentationArguments {
   const projectProgram = buildFixtureProgram({
     "packages/example/src/modules/a/a.service.ts": args.source,
   });
@@ -39,16 +36,16 @@ function readArguments(args: {
   };
 }
 
-describe(AnnotationsService, () => {
-  let service: AnnotationsService;
+describe(DocumentationService, () => {
+  let service: DocumentationService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [...ANALYSIS_MODULES],
-      providers: [AnnotationsService],
+      providers: [DocumentationService],
     }).compile();
 
-    service = await module.resolve(AnnotationsService);
+    service = await module.resolve(DocumentationService);
   });
 
   it("is defined", () => {
@@ -60,18 +57,8 @@ describe(AnnotationsService, () => {
     displayName: string;
     source: string;
   }): CallableDocumentation | undefined {
-    return service.readDocumentation(readArguments(args));
+    return service.read(readArguments(args));
   }
-
-  /** Reads the signature of one named callable. */
-  function readSignature(args: {
-    displayName: string;
-    source: string;
-  }): CallableSignature | undefined {
-    return service.readSignature(readArguments(args));
-  }
-
-  // 📖 Documentation
 
   it("reads the summary of a documented function", () => {
     expect(
@@ -217,112 +204,5 @@ describe(AnnotationsService, () => {
         `,
       }),
     ).toBeUndefined();
-  });
-
-  // ✍️ Signatures
-
-  it("reads the parameters and return type of a function", () => {
-    const signature = readSignature({
-      displayName: "entry",
-      source:
-        "export function entry(value: string): number { void value; return 1; }",
-    });
-
-    expect(signature?.parameters).toStrictEqual([
-      { isOptional: false, isRest: false, name: "value", type: "string" },
-    ]);
-    expect(signature?.returnType).toBe("number");
-  });
-
-  it("renders the whole signature on one line", () => {
-    expect(
-      readSignature({
-        displayName: "entry",
-        source:
-          "export function entry(value: string): number { void value; return 1; }",
-      })?.text,
-    ).toBe("(value: string): number");
-  });
-
-  it("marks a parameter with a question mark as optional", () => {
-    expect(
-      readSignature({
-        displayName: "entry",
-        source: "export function entry(value?: string): void { void value; }",
-      })?.parameters[0]?.isOptional,
-    ).toBe(true);
-  });
-
-  it("marks a parameter with a default as optional", () => {
-    expect(
-      readSignature({
-        displayName: "entry",
-        source: "export function entry(value = 3): void { void value; }",
-      })?.parameters[0]?.isOptional,
-    ).toBe(true);
-  });
-
-  it("marks a rest parameter", () => {
-    expect(
-      readSignature({
-        displayName: "entry",
-        source:
-          "export function entry(...values: string[]): void { void values; }",
-      })?.parameters[0]?.isRest,
-    ).toBe(true);
-  });
-
-  it("reads a constructor's parameters", () => {
-    expect(
-      readSignature({
-        displayName: "Service.constructor",
-        source:
-          "export class Service {\n  constructor(private readonly value: string) {}\n  public use(): void { void this.value; }\n}",
-      })?.parameters[0]?.name,
-    ).toBe("value");
-  });
-
-  it("reads an accessor's return type", () => {
-    expect(
-      readSignature({
-        displayName: "Service.get value",
-        source:
-          "export class Service {\n  public get value(): number { return 1; }\n}",
-      })?.returnType,
-    ).toBe("number");
-  });
-
-  it("reads an arrow property's signature", () => {
-    expect(
-      readSignature({
-        displayName: "Service.load",
-        source:
-          "export class Service {\n  public load = (value: number): string => String(value);\n}",
-      })?.text,
-    ).toBe("(value: number): string");
-  });
-
-  it("reads a callback's contextual signature", () => {
-    // The literal declares no types at all; the checker supplies them from the
-    // parameter it was passed to, which is what makes a callback frame useful.
-    expect(
-      readSignature({
-        displayName: "each(…)",
-        source: `
-          function each(callback: (item: string) => boolean): void { void callback("a"); }
-          export function entry(): void { each((item) => item.length > 0); }
-        `,
-      })?.text,
-    ).toBe("(item: string): boolean");
-  });
-
-  it("renders a destructured parameter as it was written", () => {
-    expect(
-      readSignature({
-        displayName: "entry",
-        source:
-          "export function entry({ alpha }: { alpha: string }): void { void alpha; }",
-      })?.text,
-    ).toContain("{ alpha }");
   });
 });

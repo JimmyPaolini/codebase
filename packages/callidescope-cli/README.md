@@ -21,7 +21,7 @@ callidescope --directory . --config configuration/callidescope.config.ts
 
 ```text
 Stack #1 | 🚨 [DEPTH ≥ 10 > 6] (decorated-method)
-🚀 CodometerCommand.run(…): Promise<void> [.../codometer.command.ts:220]
+🚀 CodometerCommand.run(_passedParameters: string[], options: CodometerCommandOptions): Promise<void> [.../codometer.command.ts:220]
    ↳ Measure the repository and write every configured output. With no destination…
   └─> CodometerService.measure(args: MeasureArguments): CodeStatisticsResult [.../codometer.service.ts:115]
      ↳ Measure aggregated repository statistics for the provided directory.

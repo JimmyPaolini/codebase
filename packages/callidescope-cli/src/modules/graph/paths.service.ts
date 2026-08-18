@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
-import { AnnotationsService } from "../annotations/annotations.service";
+import { DocumentationService } from "../documentation/documentation.service";
+import { SignaturesService } from "../signatures/signatures.service";
 
 import type { DiscoveredCallable } from "../callables/callables.types";
 import type { CondensedGraph, DepthMeasurement } from "./graph.types";
@@ -19,7 +20,10 @@ import type { CallableId, StackFrame } from "@callidescope/configuration";
 export class PathsService {
   // 🏗 Dependency Injection
 
-  constructor(private readonly annotationsService: AnnotationsService) {}
+  constructor(
+    private readonly documentationService: DocumentationService,
+    private readonly signaturesService: SignaturesService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -57,19 +61,18 @@ export class PathsService {
     // Read here rather than when the callable was first described: only the
     // handful of frames a report prints ever need this, and asking the checker
     // to render a type is the one part of the run that is not cheap.
-    const annotationArguments = {
+    const source = {
       checker: args.callable.projectProgram.checker,
       declaration: args.callable.declaration,
     };
 
     return {
       displayName: args.callable.node.displayName,
-      documentation:
-        this.annotationsService.readDocumentation(annotationArguments),
+      documentation: this.documentationService.read(source),
       id: args.callable.node.id,
       isCycle: args.isCycle,
       location: args.callable.node.location,
-      signature: this.annotationsService.readSignature(annotationArguments),
+      signature: this.signaturesService.read(source),
     };
   }
 

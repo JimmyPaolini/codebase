@@ -1,7 +1,7 @@
-import { AnnotationsModule } from "../src/modules/annotations/annotations.module";
 import { CallablesModule } from "../src/modules/callables/callables.module";
 import { ClassHierarchyModule } from "../src/modules/class-hierarchy/class-hierarchy.module";
 import { CohesionModule } from "../src/modules/cohesion/cohesion.module";
+import { DocumentationModule } from "../src/modules/documentation/documentation.module";
 import { EdgesModule } from "../src/modules/edges/edges.module";
 import { EntryPointsModule } from "../src/modules/entry-points/entry-points.module";
 import { GraphModule } from "../src/modules/graph/graph.module";
@@ -9,6 +9,7 @@ import { OutputJsonModule } from "../src/modules/output-json/output-json.module"
 import { OutputMarkdownModule } from "../src/modules/output-markdown/output-markdown.module";
 import { ProgramModule } from "../src/modules/program/program.module";
 import { ReportModule } from "../src/modules/report/report.module";
+import { SignaturesModule } from "../src/modules/signatures/signatures.module";
 import { WorkspaceModule } from "../src/modules/workspace/workspace.module";
 
 /**
@@ -20,9 +21,9 @@ import { WorkspaceModule } from "../src/modules/workspace/workspace.module";
  * list — and then drift from it.
  */
 export const ANALYSIS_MODULES = [
-  AnnotationsModule,
   CallablesModule,
   CohesionModule,
+  DocumentationModule,
   EdgesModule,
   EntryPointsModule,
   GraphModule,
@@ -31,5 +32,6 @@ export const ANALYSIS_MODULES = [
   OutputMarkdownModule,
   ProgramModule,
   ReportModule,
+  SignaturesModule,
   WorkspaceModule,
 ];

@@ -6,7 +6,8 @@ import {
   buildSourceLocation,
 } from "../../../testing/mocks";
 import { ANALYSIS_MODULES } from "../../../testing/modules";
-import { AnnotationsService } from "../annotations/annotations.service";
+import { DocumentationService } from "../documentation/documentation.service";
+import { SignaturesService } from "../signatures/signatures.service";
 
 import { ComponentsService } from "./components.service";
 import { DepthService } from "./depth.service";
@@ -50,7 +51,7 @@ function buildPath(args: {
     moduleIdByCallable: new Map(args.ids.map((id) => [id, "example:one"])),
   });
 
-  return new PathsService(new AnnotationsService())
+  return new PathsService(new DocumentationService(), new SignaturesService())
     .buildDeepestPath({
       callablesById: buildCallables(args.ids),
       condensed,
@@ -173,7 +174,10 @@ describe(PathsService, () => {
 
   it("skips a member it has no description for", () => {
     // Defensive: a condensation holding an identifier the collection dropped.
-    const frames = new PathsService(new AnnotationsService()).buildDeepestPath({
+    const frames = new PathsService(
+      new DocumentationService(),
+      new SignaturesService(),
+    ).buildDeepestPath({
       callablesById: buildCallables(["known"]),
       condensed: {
         componentIdByCallable: new Map([["known", 0]]),
@@ -197,7 +201,10 @@ describe(PathsService, () => {
   });
 
   it("leaves a cycle in place when it was entered at its first member", () => {
-    const frames = new PathsService(new AnnotationsService()).buildDeepestPath({
+    const frames = new PathsService(
+      new DocumentationService(),
+      new SignaturesService(),
+    ).buildDeepestPath({
       callablesById: buildCallables(["first", "second"]),
       condensed: {
         componentIdByCallable: new Map([
@@ -227,7 +234,10 @@ describe(PathsService, () => {
   });
 
   it("stops at a component the condensation does not describe", () => {
-    const frames = new PathsService(new AnnotationsService()).buildDeepestPath({
+    const frames = new PathsService(
+      new DocumentationService(),
+      new SignaturesService(),
+    ).buildDeepestPath({
       callablesById: buildCallables(["a"]),
       condensed: {
         componentIdByCallable: new Map([["a", 7]]),
@@ -242,7 +252,10 @@ describe(PathsService, () => {
   });
 
   it("leaves a cycle in place when the entered member is not one of them", () => {
-    const frames = new PathsService(new AnnotationsService()).buildDeepestPath({
+    const frames = new PathsService(
+      new DocumentationService(),
+      new SignaturesService(),
+    ).buildDeepestPath({
       callablesById: buildCallables(["first", "second"]),
       condensed: {
         componentIdByCallable: new Map([["outside", 0]]),
@@ -272,7 +285,10 @@ describe(PathsService, () => {
     // Within a cycle there is no single true order, but starting at the member
     // execution actually reached is what makes the printed stack match how it
     // got there.
-    const frames = new PathsService(new AnnotationsService()).buildDeepestPath({
+    const frames = new PathsService(
+      new DocumentationService(),
+      new SignaturesService(),
+    ).buildDeepestPath({
       callablesById: buildCallables(["first", "second", "third"]),
       condensed: {
         componentIdByCallable: new Map([

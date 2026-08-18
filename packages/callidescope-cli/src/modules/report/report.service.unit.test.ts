@@ -118,7 +118,7 @@ describe(ReportService, () => {
     expect(rendered).toContain("Service.recurse() (cycle)");
   });
 
-  // ✍️ Annotations
+  // ✍️ Signatures and documentation
 
   it("prints a frame's signature where the empty parentheses were", () => {
     const rendered = service.renderStacks(

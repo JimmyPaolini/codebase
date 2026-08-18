@@ -5,14 +5,15 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { AnnotationsModule } from "../annotations/annotations.module";
 import { CallablesModule } from "../callables/callables.module";
 import { ClassHierarchyModule } from "../class-hierarchy/class-hierarchy.module";
 import { CohesionModule } from "../cohesion/cohesion.module";
+import { DocumentationModule } from "../documentation/documentation.module";
 import { EdgesModule } from "../edges/edges.module";
 import { EntryPointsModule } from "../entry-points/entry-points.module";
 import { GraphModule } from "../graph/graph.module";
 import { ProgramModule } from "../program/program.module";
+import { SignaturesModule } from "../signatures/signatures.module";
 import { WorkspaceModule } from "../workspace/workspace.module";
 
 import { CallidescopeService } from "./callidescope.service";
@@ -119,14 +120,15 @@ describe(`${CallidescopeService.name} (integration)`, () => {
     const workspaceRoot = await buildWorkspace();
     const module = await Test.createTestingModule({
       imports: [
-        AnnotationsModule,
         CallablesModule,
         CohesionModule,
+        DocumentationModule,
         EdgesModule,
         EntryPointsModule,
         GraphModule,
         ClassHierarchyModule,
         ProgramModule,
+        SignaturesModule,
         WorkspaceModule,
       ],
       providers: [CallidescopeService],
