@@ -87,6 +87,10 @@ jobs:
       # The report lives in the description, not a comment. Review automation
       # treats every new pull request comment as feedback needing a reply, so a
       # bot posting build statistics on each push kept waking agents up.
+      #
+      # Codometer only ever touches a markdown file, which keeps a publishable
+      # measurement tool free of any one forge's API. The description is fetched
+      # and put back around it.
       - name: 🎒 Report Bundle Sizes
         if: github.event_name == 'pull_request'
         env:
@@ -94,10 +98,13 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PULL_REQUEST: ${{ github.event.pull_request.number }}
         run: |
-          pnpm exec tsx scripts/report-bundle-sizes.ts \
+          gh pr view "${PULL_REQUEST}" --json body --jq '.body' \
+            >.pull-request-body.md
+          pnpm exec nx run codebase:bundles -- \
             --baseline .bundle-baseline \
             --baseline-url "${BASELINE_URL}" \
-            --pull-request "${PULL_REQUEST}"
+            --markdown .pull-request-body.md
+          gh pr edit "${PULL_REQUEST}" --body-file .pull-request-body.md
 
       # Re-raises whatever `make-projects` swallowed above, now that the
       # description section naming the offending bundle has been written.

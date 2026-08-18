@@ -3,6 +3,15 @@
   "name": "codebase",
   "projectType": "application",
   "targets": {
+    "bundles": {
+      "cache": false,
+      "description": "Render measured bundle sizes as the \ud83c\udf92 Bundles markdown section.",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts bundles",
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "check-catalog-manifests": {
       "description": "Enforce catalog: protocol for external dependencies in workspace package manifests",
       "executor": "nx:run-commands",

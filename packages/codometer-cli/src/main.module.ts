@@ -8,6 +8,7 @@ import { DiscoveryModule as NestDiscoveryModule } from "@nestjs/core";
 import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
+import { BundlesModule } from "./modules/bundles/bundles.module";
 import { CodometerModule } from "./modules/codometer/codometer.module";
 import { CustomStatisticsModule } from "./modules/custom-statistics/custom-statistics.module";
 import { DiscoveryModule } from "./modules/discovery/discovery.module";
@@ -28,6 +29,7 @@ import { OutputMarkdownModule } from "./modules/output-markdown/output-markdown.
     }),
     NestDiscoveryModule,
     LoggerModule,
+    BundlesModule,
     CodometerModule,
     ConfigurationModule,
     CustomStatisticsModule,

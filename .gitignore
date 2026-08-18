@@ -60,6 +60,7 @@ type-coverage-report.txt
 size-limit-report.json
 .bundle-baseline
 .bundle-report.md
+.pull-request-body.md
 
 # Agents 🤖
 .claude/worktrees
