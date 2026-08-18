@@ -208,6 +208,72 @@ describe(ValidateCommand, () => {
       );
     });
 
+    it("expands a group that names no patterns to an empty glob list", async () => {
+      vi.mocked(
+        configurationService.loadConformetryConfiguration,
+      ).mockResolvedValue([
+        {
+          inputs: {},
+          instances: [{ tags: ["language:typescript"] }],
+          name: "widget",
+          templatePath: "configuration/templates/widget",
+        },
+      ]);
+
+      await command.run([], {});
+
+      expect(templateDiscoveryService.findInstances).toHaveBeenCalledWith(
+        expect.objectContaining({ patterns: [] }),
+      );
+    });
+
+    it("passes a run-level threshold through to validation", async () => {
+      await command.run([], { threshold: 0.9 });
+
+      expect(validationService.validate).toHaveBeenCalledWith(
+        expect.objectContaining({ threshold: 0.9 }),
+      );
+    });
+
+    it("passes an instance group's threshold to glob expansion", async () => {
+      vi.mocked(
+        configurationService.loadConformetryConfiguration,
+      ).mockResolvedValue([
+        {
+          inputs: {},
+          instances: [{ patterns: ["packages/*"], threshold: 0.75 }],
+          name: "widget",
+          templatePath: "configuration/templates/widget",
+        },
+      ]);
+
+      await command.run([], {});
+
+      expect(templateDiscoveryService.findInstances).toHaveBeenCalledWith(
+        expect.objectContaining({ threshold: 0.75 }),
+      );
+    });
+
+    it("names the unmatched instances in the failure message", async () => {
+      vi.mocked(validationService.validate).mockResolvedValue({
+        checkedPaths: [],
+        fileResults: [],
+        ok: false,
+        scores: [],
+        unmatched: [
+          { instance: INSTANCE, reason: "no-match", tiedTemplateNames: [] },
+        ],
+      });
+
+      // An unmatched instance has no score to report, so the count is the only
+      // thing that can explain why the run failed.
+      await expect(command.run([], {})).rejects.toThrow(
+        "1 instance(s) matched no template",
+      );
+
+      process.exitCode = undefined;
+    });
+
     it("passes a language filter through", async () => {
       await command.run([], { languages: ["typescript"] });
 

@@ -47,3 +47,52 @@ pnpm-lock.yaml -diff linguist-generated
 coverage/** linguist-generated
 .nx/** linguist-generated
 dist/** linguist-generated
+
+# Installed agent skills — vendored from other repositories and committed so a
+# fresh worktree has them, so Linguist should not count them as this
+# repository's code. One of them ships half a megabyte of bundled browser
+# JavaScript, which would otherwise dominate the language bar. Diffs stay
+# visible on purpose: `skills update` lands upstream changes as a reviewable
+# pull request. One entry per skill in skills-lock.json, verified by
+# `nx run codebase:check-skill-exclusions`.
+.agents/licenses/** linguist-vendored
+.agents/skills/ask-matt/** linguist-vendored
+.agents/skills/code-review/** linguist-vendored
+.agents/skills/codebase-design/** linguist-vendored
+.agents/skills/diagnosing-bugs/** linguist-vendored
+.agents/skills/dispatching-parallel-agents/** linguist-vendored
+.agents/skills/domain-modeling/** linguist-vendored
+.agents/skills/gh-stack/** linguist-vendored
+.agents/skills/github-issues/** linguist-vendored
+.agents/skills/grill-me/** linguist-vendored
+.agents/skills/grill-with-docs/** linguist-vendored
+.agents/skills/grilling/** linguist-vendored
+.agents/skills/handoff/** linguist-vendored
+.agents/skills/impeccable/** linguist-vendored
+.agents/skills/implement/** linguist-vendored
+.agents/skills/improve-codebase-architecture/** linguist-vendored
+.agents/skills/link-workspace-packages/** linguist-vendored
+.agents/skills/monitor-ci/** linguist-vendored
+.agents/skills/nx-generate/** linguist-vendored
+.agents/skills/nx-import/** linguist-vendored
+.agents/skills/nx-plugins/** linguist-vendored
+.agents/skills/nx-run-tasks/** linguist-vendored
+.agents/skills/nx-workspace/** linguist-vendored
+.agents/skills/prototype/** linguist-vendored
+.agents/skills/receiving-code-review/** linguist-vendored
+.agents/skills/research/** linguist-vendored
+.agents/skills/resolving-merge-conflicts/** linguist-vendored
+.agents/skills/setup-matt-pocock-skills/** linguist-vendored
+.agents/skills/subagent-driven-development/** linguist-vendored
+.agents/skills/tdd/** linguist-vendored
+.agents/skills/teach/** linguist-vendored
+.agents/skills/to-questionnaire/** linguist-vendored
+.agents/skills/to-spec/** linguist-vendored
+.agents/skills/to-tickets/** linguist-vendored
+.agents/skills/triage/** linguist-vendored
+.agents/skills/using-git-worktrees/** linguist-vendored
+.agents/skills/verification-before-completion/** linguist-vendored
+.agents/skills/wait-what/** linguist-vendored
+.agents/skills/wayfinder/** linguist-vendored
+.agents/skills/wizard/** linguist-vendored
+.agents/skills/writing-for-agents/** linguist-vendored

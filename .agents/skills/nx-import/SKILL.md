@@ -1,6 +1,6 @@
 ---
 name: nx-import
-description: Import, merge, or combine repositories into an Nx workspace using nx import. USE WHEN the user asks to adopt Nx across repos, move projects into a codebase, or bring code/history from another repository.
+description: Import, merge, or combine repositories into an Nx workspace using nx import. USE WHEN the user asks to adopt Nx across repos, move projects into a monorepo, or bring code/history from another repository.
 ---
 
 ## Quick Start
@@ -22,14 +22,14 @@ Read the nx docs if you have the tools for it.
 
 **Subdirectory-at-a-time** (`nx import <source> apps --source=apps`):
 
-- **Recommended for codebase sources** — files land at top level, no redundant config
+- **Recommended for monorepo sources** — files land at top level, no redundant config
 - Caveats: multiple import commands (separate merge commits each); dest must not have conflicting directories; root configs (deps, plugins, targetDefaults) not imported
 - **Directory conflicts**: Import into alternate-named dir (e.g. `imported-apps/`), then rename
 
 **Whole repo** (`nx import <source> imported --source=.`):
 
-- **Only for non-codebase sources** (single-project repos)
-- For codebases, creates messy nested config (`imported/nx.json`, `imported/tsconfig.base.json`, etc.)
+- **Only for non-monorepo sources** (single-project repos)
+- For monorepos, creates messy nested config (`imported/nx.json`, `imported/tsconfig.base.json`, etc.)
 - If you must: keep imported `tsconfig.base.json` (projects extend it), prefix workspace globs and executor paths
 
 ### Directory Conventions
