@@ -99,10 +99,10 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "eslint {args} --config configuration/eslint.config.ts --no-error-on-unmatched-pattern '*.ts' '*.js' '*.json' '*.md' 'scripts/' 'documentation/' 'infrastructure/'"
+          "command": "eslint {args} --config configuration/eslint.config.ts --no-error-on-unmatched-pattern '*.ts' '*.js' '*.json' '*.md' 'docs/' 'scripts/' 'documentation/' 'infrastructure/'"
         },
         "write": {
-          "command": "eslint {args} --fix --config configuration/eslint.config.ts --no-error-on-unmatched-pattern '*.ts' '*.js' '*.json' '*.md' 'scripts/' 'documentation/' 'infrastructure/'"
+          "command": "eslint {args} --fix --config configuration/eslint.config.ts --no-error-on-unmatched-pattern '*.ts' '*.js' '*.json' '*.md' 'docs/' 'scripts/' 'documentation/' 'infrastructure/'"
         }
       },
       "defaultConfiguration": "check",
@@ -278,6 +278,20 @@
         "cwd": "{projectRoot}"
       }
     },
+    "install-skills": {
+      "cache": false,
+      "configurations": {
+        "force": {
+          "command": "SKILLS_INSTALL_FORCE=1 bash scripts/install-skills.sh"
+        }
+      },
+      "description": "Restore the skills listed in skills-lock.json from their source repositories into the gitignored .agents/skills/<name>/ folders. Also runs from postinstall; the force configuration re-restores skills that are already present.",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bash scripts/install-skills.sh",
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "jscpd": {
       "cache": true,
       "configurations": {
@@ -347,10 +361,10 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "markdownlint-cli2 --config configuration/.markdownlint-cli2.jsonc '*.md' 'scripts/**/*.md' 'documentation/**/*.md' 'infrastructure/**/*.md'"
+          "command": "markdownlint-cli2 --config configuration/.markdownlint-cli2.jsonc '*.md' 'docs/**/*.md' 'scripts/**/*.md' 'documentation/**/*.md' 'infrastructure/**/*.md'"
         },
         "write": {
-          "command": "markdownlint-cli2 --fix --config configuration/.markdownlint-cli2.jsonc '*.md' 'scripts/**/*.md' 'documentation/**/*.md' 'infrastructure/**/*.md'"
+          "command": "markdownlint-cli2 --fix --config configuration/.markdownlint-cli2.jsonc '*.md' 'docs/**/*.md' 'scripts/**/*.md' 'documentation/**/*.md' 'infrastructure/**/*.md'"
         }
       },
       "defaultConfiguration": "check",
@@ -358,6 +372,7 @@
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/*.md",
+        "{projectRoot}/docs/**/*.md",
         "{projectRoot}/documentation/**/*.md",
         "{projectRoot}/infrastructure/**/*.md",
         "{projectRoot}/scripts/**/*.md",
@@ -409,10 +424,10 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "oxfmt -c configuration/oxfmt.config.ts --ignore-path configuration/.oxfmtignore {args} '*.ts' '*.js' '*.json' '*.md' 'scripts/' 'documentation/' 'infrastructure/'"
+          "command": "oxfmt -c configuration/oxfmt.config.ts --ignore-path configuration/.oxfmtignore {args} '*.ts' '*.js' '*.json' '*.md' 'docs/' 'scripts/' 'documentation/' 'infrastructure/'"
         },
         "write": {
-          "command": "oxfmt -c configuration/oxfmt.config.ts --ignore-path configuration/.oxfmtignore {args} '*.ts' '*.js' '*.json' '*.md' 'scripts/' 'documentation/' 'infrastructure/'"
+          "command": "oxfmt -c configuration/oxfmt.config.ts --ignore-path configuration/.oxfmtignore {args} '*.ts' '*.js' '*.json' '*.md' 'docs/' 'scripts/' 'documentation/' 'infrastructure/'"
         }
       },
       "defaultConfiguration": "check",
@@ -595,6 +610,7 @@
         "{projectRoot}/.github/**",
         "{projectRoot}/.vscode/**",
         "{projectRoot}/configuration/**",
+        "{projectRoot}/docs/**",
         "{projectRoot}/documentation/**",
         "{projectRoot}/infrastructure/**",
         "{projectRoot}/notepads/**",
@@ -606,7 +622,7 @@
         "default"
       ],
       "options": {
-        "command": "cspell --config configuration/cspell.config.yaml '*.{ts,tsx,js,jsx,md,yaml,yml,json}' '.devcontainer/**' '.github/**' '.vscode/**' 'configuration/**' 'documentation/**' 'infrastructure/**' 'notepads/**' 'openwiki/**' 'planning/**' 'scripts/**' --no-progress --gitignore --gitignore-root .",
+        "command": "cspell --config configuration/cspell.config.yaml '*.{ts,tsx,js,jsx,md,yaml,yml,json}' '.devcontainer/**' '.github/**' '.vscode/**' 'configuration/**' 'docs/**' 'documentation/**' 'infrastructure/**' 'notepads/**' 'openwiki/**' 'planning/**' 'scripts/**' --no-progress --gitignore --gitignore-root .",
         "cwd": "{projectRoot}"
       }
     },

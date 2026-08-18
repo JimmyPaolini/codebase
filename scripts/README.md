@@ -147,6 +147,44 @@ The devcontainer handles equivalent setup automatically.
 - `0` - Lockfile is valid
 - `1` - Lockfile is out of sync
 
+### install-skills.sh
+
+**Purpose:** Restore the skills declared in `skills-lock.json` into their gitignored `.agents/skills/<name>/` folders, so every environment that installs node dependencies holds the skills that `AGENTS.md` links to
+
+**Usage:**
+
+```bash
+# Via Nx (recommended)
+pnpm exec nx run codebase:install-skills
+
+# Re-restore skills that are present but damaged
+pnpm exec nx run codebase:install-skills --configuration=force
+
+# Direct
+./scripts/install-skills.sh
+```
+
+**Use cases:**
+
+- Root `postinstall` (automatically run by every `pnpm install`)
+- Fresh clones, devcontainers, CI jobs, and Claude Code worktrees
+- Manual repair when a skill named in `AGENTS.md` is missing
+
+**Behavior:**
+
+- Idempotent — returns in milliseconds when every locked skill is already present
+- Reverts the hashes that `skills experimental_install` rewrites into `skills-lock.json`, so an install never dirties the tree. Pins move via `pnpm exec skills update`, which `upgrade-dependencies.yml` runs weekly
+- Non-fatal — a GitHub outage warns and prints the retry command rather than failing the install
+
+**Environment variables:**
+
+- `SKIP_SKILLS_INSTALL=1` - Skip restoration entirely
+- `SKILLS_INSTALL_FORCE=1` - Re-restore even when every skill is present
+
+**Exit codes:**
+
+- `0` - Always, by design; skills are agent context, not a build input
+
 ### sync-vscode-extensions.ts
 
 > Located in `.devcontainer/scripts/sync-vscode-extensions.ts`
