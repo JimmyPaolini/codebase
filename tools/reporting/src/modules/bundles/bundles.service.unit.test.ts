@@ -7,7 +7,16 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { BundlesService } from "./bundles.service";
 
-import type { SizeLimitEntry } from "./bundles.types";
+/**
+ * A report entry as size-limit writes it, before the service normalizes it. It
+ * omits `size` when a `path` glob matched nothing.
+ */
+interface RawSizeLimitEntry {
+  name: string;
+  passed?: boolean;
+  size?: number;
+  sizeLimit?: number;
+}
 
 describe(BundlesService, () => {
   let service: BundlesService;
@@ -15,7 +24,7 @@ describe(BundlesService, () => {
 
   /** Lays out size-limit reports inside a throwaway workspace. */
   function writeWorkspace(
-    reports: Record<string, SizeLimitEntry[] | string>,
+    reports: Record<string, RawSizeLimitEntry[] | string>,
   ): string {
     const workingDirectory = mkdtempSync(
       path.join(tmpdir(), "codometer-bundles-"),

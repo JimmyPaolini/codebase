@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { REPORT_GLOBS } from "./bundles.constants";
+import { REPORT_GLOBS, sizeLimitReportSchema } from "./bundles.constants";
 
 import type {
   BundleRow,
@@ -51,7 +51,7 @@ export class BundlesService {
       passed: true,
       project,
       removed,
-      size: removed ? 0 : (entry.size ?? 0),
+      size: removed ? 0 : entry.size,
       sizeLimit: entry.sizeLimit,
     };
   }
@@ -62,7 +62,7 @@ export class BundlesService {
     baseline: SizeLimitEntry | undefined,
     project: string,
   ): BundleRow {
-    const size = entry.size ?? 0;
+    const { size } = entry;
 
     return {
       baseSize: baseline?.size,
@@ -124,10 +124,14 @@ export class BundlesService {
     reportPath: string,
   ): SizeLimitEntry[] {
     try {
-      const parsed: unknown = JSON.parse(
-        readFileSync(path.join(workingDirectory, reportPath), "utf8"),
+      const parsed = sizeLimitReportSchema.safeParse(
+        JSON.parse(
+          readFileSync(path.join(workingDirectory, reportPath), "utf8"),
+        ),
       );
-      return Array.isArray(parsed) ? (parsed as SizeLimitEntry[]) : [];
+      if (!parsed.success) return [];
+
+      return parsed.data.map((entry) => ({ ...entry, size: entry.size ?? 0 }));
     } catch {
       return [];
     }

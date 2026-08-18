@@ -17,6 +17,8 @@ import {
 import { LoggerService } from "@codebase/logger";
 
 import { BundleMarkdownService } from "../bundle-markdown/bundle-markdown.service";
+import { ReportingMarkersService } from "../reporting/reporting-markers.service";
+import { ReportingService } from "../reporting/reporting.service";
 
 import { BundlesCommand } from "./bundles.command";
 import { BundlesService } from "./bundles.service";
@@ -52,6 +54,8 @@ describe(BundlesCommand, () => {
       providers: [
         BundlesCommand,
         BundleMarkdownService,
+        ReportingMarkersService,
+        ReportingService,
         { provide: BundlesService, useValue: { collectRows } },
         {
           provide: LoggerService,
@@ -82,6 +86,8 @@ describe(BundlesCommand, () => {
       providers: [
         BundlesCommand,
         BundleMarkdownService,
+        ReportingMarkersService,
+        ReportingService,
         { provide: BundlesService, useValue: { collectRows } },
         {
           provide: LoggerService,
@@ -130,6 +136,21 @@ describe(BundlesCommand, () => {
 
     expect(written).not.toContain("(true)");
     expect(written).toContain("no `main` baseline available yet");
+  });
+
+  it("declares the block it claims in a shared document", () => {
+    expect(command.reportLabel).toBe("bundle sizes");
+    expect(command.reportMarkers.start).toBe("<!-- bundle-sizes:start -->");
+  });
+
+  it("renders a body with no markers of its own", () => {
+    const body = command.renderReport({
+      baseline: undefined,
+      baselineUrl: undefined,
+    });
+
+    expect(body.startsWith("## 🎒 Bundles")).toBe(true);
+    expect(body).not.toContain("bundle-sizes:start");
   });
 
   it("writes the section alone to an output file", async () => {

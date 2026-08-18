@@ -40,7 +40,8 @@ body:
         - testing
         - tools
         - synchronization
-        - bundle-sizes
+        - reporting
+
 
 
 

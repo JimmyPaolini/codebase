@@ -211,8 +211,8 @@ const scopes = [
   },
   {
     description:
-      "Bundle size reporting CLI that renders the 🎒 Bundles pull request section",
-    name: "bundle-sizes",
+      "Internal reporting CLI and the reports it renders, such as 🎒 Bundles",
+    name: "reporting",
   },
 ];
 

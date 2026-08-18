@@ -2,8 +2,6 @@ import { Injectable } from "@nestjs/common";
 
 import {
   HEADING,
-  SECTION_END,
-  SECTION_START,
   SIGNIFICANT_GROWTH,
   TABLE_HEADER,
 } from "./bundle-markdown.constants";
@@ -23,10 +21,7 @@ import type {
   SizeSummary,
 } from "./bundle-markdown.types";
 
-/**
- * Renders measured bundles as the `🎒 Bundles` section of a pull request
- * description, and splices that section into an existing description.
- */
+/** Renders measured bundles as the body of the `🎒 Bundles` report. */
 @Injectable()
 export class BundleMarkdownService {
   // 🏗 Dependency Injection
@@ -56,13 +51,16 @@ export class BundleMarkdownService {
    * Ties break on absolute bytes, so uniform growth names the costliest one.
    */
   private readBiggestGrowth(rows: readonly BundleRow[]): BundleRow | undefined {
-    return rows
-      .filter((row) => (this.readDelta(row) ?? 0) > 0)
-      .toSorted(
-        (first, second) =>
-          (this.readFraction(second) ?? 0) - (this.readFraction(first) ?? 0) ||
-          (this.readDelta(second) ?? 0) - (this.readDelta(first) ?? 0),
-      )[0];
+    const grown = rows
+      .filter((row: BundleRow) => this.isComparable(row))
+      .filter((row) => row.size > row.baseSize);
+
+    return grown.toSorted(
+      (first, second) =>
+        (second.size - second.baseSize) / second.baseSize -
+          (first.size - first.baseSize) / first.baseSize ||
+        second.size - second.baseSize - (first.size - first.baseSize),
+    )[0];
   }
 
   /**
@@ -123,9 +121,10 @@ export class BundleMarkdownService {
 
   /** Picks the icon for a rebuilt bundle, from how far it moved. */
   private readGrowthStatus(row: BundleRow): string {
-    if (row.baseSize === undefined) return "🆕";
-    if ((this.readDelta(row) ?? 0) <= 0) return "✅";
-    return (this.readFraction(row) ?? 0) > SIGNIFICANT_GROWTH ? "📈" : "⚠️";
+    const { baseSize } = row;
+    if (baseSize === undefined) return "🆕";
+    if (row.size <= baseSize) return "✅";
+    return (row.size - baseSize) / baseSize > SIGNIFICANT_GROWTH ? "📈" : "⚠️";
   }
 
   /** Picks the icon for the report as a whole. */
@@ -333,7 +332,7 @@ export class BundleMarkdownService {
 
   // 🌎 Public Methods
 
-  /** Renders the whole `🎒 Bundles` section, markers included. */
+  /** Renders the report body: its heading, and everything under it. */
   renderSection(args: RenderSectionArguments): string {
     const body =
       args.rows.length === 0
@@ -346,24 +345,6 @@ export class BundleMarkdownService {
             "*Updated automatically when you push new commits.*",
           ];
 
-    return [SECTION_START, HEADING, "", ...body, SECTION_END].join("\n");
-  }
-
-  /**
-   * Replaces the marked section in a pull request description, or appends it
-   * when the description has none, leaving the author's prose untouched.
-   */
-  spliceSection(description: string, section: string): string {
-    const start = description.indexOf(SECTION_START);
-    const before = (
-      start === -1 ? description : description.slice(0, start)
-    ).trimEnd();
-    const end = description.indexOf(SECTION_END);
-    const after =
-      end === -1 ? "" : description.slice(end + SECTION_END.length).trimStart();
-
-    return [before, section, after]
-      .filter((part) => part.length > 0)
-      .join("\n\n");
+    return [HEADING, "", ...body].join("\n");
   }
 }

@@ -43,10 +43,16 @@ export interface CollectRowsArguments {
 /** A row this run rebuilt that the baseline also knew, so it carries a size. */
 export type ComparableBundleRow = BundleRow & { baseSize: number };
 
-/** One measured bundle, as `size-limit --json` emits it. */
+/**
+ * One measured bundle, as `size-limit --json` emits it.
+ *
+ * `size` is normalized to a number when the report is parsed: size-limit omits
+ * it when a `path` glob matched nothing, and every reader downstream would
+ * otherwise need the same fallback.
+ */
 export interface SizeLimitEntry {
   name: string;
-  passed?: boolean;
-  size?: number;
-  sizeLimit?: number;
+  passed?: boolean | undefined;
+  size: number;
+  sizeLimit?: number | undefined;
 }

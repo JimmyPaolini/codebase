@@ -5,7 +5,7 @@ import { DiscoveryModule } from "@nestjs/core";
 import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
-import { BundlesModule } from "./modules/bundles/bundles.module";
+import { ReportingModule } from "./modules/reporting/reporting.module";
 
 /**
  * Root NestJS application module.
@@ -18,7 +18,7 @@ import { BundlesModule } from "./modules/bundles/bundles.module";
       validate: (config: Record<string, unknown>) =>
         environmentSchema.parse(config),
     }),
-    BundlesModule,
+    ReportingModule,
     DiscoveryModule,
     LoggerModule,
   ],

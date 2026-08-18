@@ -1,0 +1,42 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "reporting",
+  "projectType": "application",
+  "sourceRoot": "tools/reporting",
+  "tags": [
+    "framework:nest-commander",
+    "framework:nestjs",
+    "generator:nestjs-command-project",
+    "language:typescript",
+    "type:package"
+  ],
+  "targets": {
+    "dependency-cruiser": {},
+    "knip": {},
+    "lint-codebase": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "oxlint": {},
+    "prettier": {},
+    "repl": {},
+    "report": {
+      "cache": false,
+      "configurations": {
+        "bundles": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/reporting/src/main.ts bundles"
+        }
+      },
+      "description": "Render every internal report (default), or one of them via a named configuration.",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/reporting/src/main.ts reporting",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "spell-check": {},
+    "test-coverage": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}

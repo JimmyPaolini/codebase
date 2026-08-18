@@ -76,20 +76,20 @@ Where this project sits in the Nx project graph: what it depends on, and what de
 
 ```mermaid
 flowchart LR
-  bundle_sizes["bundle-sizes"]
   caelundas["caelundas"]
   codometer_cli["codometer-cli"]
   conformetry_cli["conformetry-cli"]
   conformetry_nx["conformetry-nx"]
   lexico_ingestion["lexico-ingestion"]
   logger["logger"]
+  reporting["reporting"]
   synchronization["synchronization"]
-  bundle_sizes --> logger
   caelundas --> logger
   codometer_cli --> logger
   conformetry_cli --> logger
   conformetry_nx --> logger
   lexico_ingestion --> logger
+  reporting --> logger
   synchronization --> logger
   classDef subject stroke-width:3px
   class logger subject

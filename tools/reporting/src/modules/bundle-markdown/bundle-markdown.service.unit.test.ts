@@ -65,14 +65,14 @@ describe(BundleMarkdownService, () => {
       expect(section).toContain("## 🎒 Bundles");
     });
 
-    it("wraps the section in markers so it can be replaced later", () => {
+    it("leads with its heading and carries no markers of its own", () => {
       const section = service.renderSection({
         baselineUrl: undefined,
         rows: [buildRow()],
       });
 
-      expect(section.startsWith("<!-- bundle-sizes:start -->")).toBe(true);
-      expect(section.endsWith("<!-- bundle-sizes:end -->")).toBe(true);
+      expect(section.startsWith("## 🎒 Bundles")).toBe(true);
+      expect(section).not.toContain("bundle-sizes:start");
     });
 
     it("says no baseline exists when nothing carries one", () => {
@@ -285,44 +285,6 @@ describe(BundleMarkdownService, () => {
       });
 
       expect(section).toContain("⚠️ **1.00 kB**");
-    });
-  });
-
-  describe("spliceSection", () => {
-    const section =
-      "<!-- bundle-sizes:start -->\nbody\n<!-- bundle-sizes:end -->";
-
-    it("appends the section to a description that has none", () => {
-      expect(service.spliceSection("## Summary\n\nProse.", section)).toBe(
-        `## Summary\n\nProse.\n\n${section}`,
-      );
-    });
-
-    it("replaces an existing section in place", () => {
-      const first = service.spliceSection("## Summary", section);
-      const replacement = section.replace("body", "fresher body");
-
-      expect(service.spliceSection(first, replacement)).toBe(
-        `## Summary\n\n${replacement}`,
-      );
-    });
-
-    it("is idempotent", () => {
-      const once = service.spliceSection("## Summary", section);
-
-      expect(service.spliceSection(once, section)).toBe(once);
-    });
-
-    it("keeps prose written after the section", () => {
-      const description = `## Summary\n\n${section}\n\n## Footer`;
-
-      expect(service.spliceSection(description, section)).toContain(
-        "## Footer",
-      );
-    });
-
-    it("handles an empty description", () => {
-      expect(service.spliceSection("", section)).toBe(section);
     });
   });
 });

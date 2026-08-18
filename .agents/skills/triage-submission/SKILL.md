@@ -368,7 +368,7 @@ Read `configuration/commitlint.config.ts` for the full rule set before amending.
 | `testing` | Vitest configuration, shared test utilities, and coverage setup |
 | `tools` | Changes spanning multiple tool projects in tools/ |
 | `synchronization` | Synchronization application and commands for automating workflows |
-| `bundle-sizes` | Bundle size reporting CLI that renders the 🎒 Bundles pull request section |
+| `reporting` | Internal reporting CLI and the reports it renders, such as 🎒 Bundles |
 
 <!-- scopes-end -->
 

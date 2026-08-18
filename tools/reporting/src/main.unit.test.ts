@@ -1,7 +1,7 @@
 import { createMock } from "@golevelup/ts-vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { BundlesModule } from "./modules/bundles/bundles.module";
+import type { ReportingModule } from "./modules/reporting/reporting.module";
 import type { LoggerService } from "@codebase/logger";
 
 type CommandFactoryRun = (
@@ -11,7 +11,7 @@ type CommandFactoryRun = (
 
 const run = vi.fn<CommandFactoryRun>().mockResolvedValue(undefined);
 const loggerServiceMock = createMock<LoggerService>();
-const bundlesModuleMock = createMock<BundlesModule>();
+const reportingModuleMock = createMock<ReportingModule>();
 
 vi.mock("nest-commander", () => ({
   CommandFactory: {
@@ -30,9 +30,9 @@ vi.mock("@codebase/logger", () => ({
 
 // Mocked so that bootstrapping never reaches the real command, which extends a
 // `nest-commander` class this suite has replaced.
-vi.mock("./modules/bundles/bundles.module", () => ({
-  BundlesModule: function BundlesModule() {
-    return bundlesModuleMock;
+vi.mock("./modules/reporting/reporting.module", () => ({
+  ReportingModule: function ReportingModule() {
+    return reportingModuleMock;
   },
 }));
 
