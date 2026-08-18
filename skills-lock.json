@@ -19,6 +19,24 @@
       "skillPath": "skills/engineering/codebase-design/SKILL.md",
       "computedHash": "e6394592ecf4b5aa5bc93f95a20d0a56314788bde2e1221f87296d3becb734a2"
     },
+    "conformetry-configure": {
+      "source": "JimmyPaolini/codebase",
+      "sourceType": "github",
+      "skillPath": "packages/conformetry-agents/skills/conformetry-configure/SKILL.md",
+      "computedHash": "8db4d6afe378414b29a726612a48ab3d726b6756f06414aaf883cb963fae62c4"
+    },
+    "conformetry-generate": {
+      "source": "JimmyPaolini/codebase",
+      "sourceType": "github",
+      "skillPath": "packages/conformetry-agents/skills/conformetry-generate/SKILL.md",
+      "computedHash": "dd1a12482a9ffd9d9e044bb2b49772de14cbbaa21a3242ad4d99334bee14b5f0"
+    },
+    "conformetry-validate": {
+      "source": "JimmyPaolini/codebase",
+      "sourceType": "github",
+      "skillPath": "packages/conformetry-agents/skills/conformetry-validate/SKILL.md",
+      "computedHash": "b64d2efa815a8a9c134bfd8287109949c2b40cd724c270fd1e88b944f16d394e"
+    },
     "diagnosing-bugs": {
       "source": "mattpocock/skills",
       "sourceType": "github",
