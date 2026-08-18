@@ -267,24 +267,24 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
 
 ```text
 🚀 runConformetryGenerator(…): Promise<string[]> [packages/conformetry-nx/src/index.ts:90]
-   ↳ Runs one configured generator against an Nx tree. This is the machinery a consumer's generated generator wrappers call.…
+   ↳ Runs one configured generator against an Nx tree.
   └─> PluginService.runGenerator(args: RunGeneratorArguments): Promise<string[]> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:290]
-     ↳ Runs one configured generator against an Nx tree. Nothing is written to disk here — the tree records the writes and Nx…
+     ↳ Runs one configured generator against an Nx tree.
     └─> PluginService.assertPluginInSync(args: { configurationPath: string; workspaceRoot: string; }): Promise<void> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:115]
        ↳ Fails fast when the plugin would run against a stale or broken setup.
       └─> PluginService.assertEmittedPluginCurrent(args: { configurationPath: string; workspaceRoot: string; }): Promise<void> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:86]
          ↳ Fails when the emitted Nx plugin no longer matches the configuration. `generators.json` and its schemas are derived…
         └─> GeneratorService.emitPlugin(args: EmitPluginArguments): Promise<EmittedFile[]> [packages/conformetry-nx/src/modules/generator/generator.service.ts:217]
-           ↳ Returns every file the consumer's generator plugin consists of. Pure with respect to the filesystem: the caller writes…
+           ↳ Returns every file the consumer's generator plugin consists of.
           └─> GeneratorService.map(…)(…): { content: string; filePath: string; } [packages/conformetry-nx/src/modules/generator/generator.service.ts:243]
             └─> GeneratorService.resolveScopedProjectNames(…): string[] | undefined [packages/conformetry-nx/src/modules/generator/generator.service.ts:185]
                ↳ The projects a generator's tagged groups admit, or nothing when it has none.
               └─> ScopeService.resolveScopedProjectNames(…): string[] [packages/conformetry-nx/src/modules/scope/scope.service.ts:129]
-                 ↳ The projects a generator's groups admit, by name and sorted. Sorted because the emitted schema is compared byte for…
+                 ↳ The projects a generator's groups admit, by name and sorted.
                 └─> ScopeService.filter(…)(project: ProjectScope): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:142]
                   └─> ScopeService.some(…)(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:143]
                     └─> ScopeService.matchesProject(args: { group: ConformetryInstanceGroup; project: ProjectScope; }): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:47]
-                       ↳ Returns whether a group applies to a project. A group with no tags applies everywhere — tags narrow a group, they do…
+                       ↳ Returns whether a group applies to a project.
                       └─> ScopeService.isProjectGroup(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:34]
                          ↳ Whether a group locates its instances by project tag.
 ```
@@ -293,7 +293,7 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
 
 ```text
 🚀 validateExecutor(…): Promise<{ success: boolean; }> [packages/conformetry-nx/src/executors/validate/executor.ts:16]
-   ↳ Validates one project's instances against their conformetry templates. Inferred onto every project holding at least one…
+   ↳ Validates one project's instances against their conformetry templates.
   └─> PluginService.runValidation(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:343]
      ↳ Validates one project's instances and renders the report.
     └─> PluginService.assertPluginInSync(args: { configurationPath: string; workspaceRoot: string; }): Promise<void> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:115]
@@ -301,16 +301,16 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
       └─> PluginService.assertEmittedPluginCurrent(args: { configurationPath: string; workspaceRoot: string; }): Promise<void> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:86]
          ↳ Fails when the emitted Nx plugin no longer matches the configuration. `generators.json` and its schemas are derived…
         └─> GeneratorService.emitPlugin(args: EmitPluginArguments): Promise<EmittedFile[]> [packages/conformetry-nx/src/modules/generator/generator.service.ts:217]
-           ↳ Returns every file the consumer's generator plugin consists of. Pure with respect to the filesystem: the caller writes…
+           ↳ Returns every file the consumer's generator plugin consists of.
           └─> GeneratorService.map(…)(…): { content: string; filePath: string; } [packages/conformetry-nx/src/modules/generator/generator.service.ts:243]
             └─> GeneratorService.resolveScopedProjectNames(…): string[] | undefined [packages/conformetry-nx/src/modules/generator/generator.service.ts:185]
                ↳ The projects a generator's tagged groups admit, or nothing when it has none.
               └─> ScopeService.resolveScopedProjectNames(…): string[] [packages/conformetry-nx/src/modules/scope/scope.service.ts:129]
-                 ↳ The projects a generator's groups admit, by name and sorted. Sorted because the emitted schema is compared byte for…
+                 ↳ The projects a generator's groups admit, by name and sorted.
                 └─> ScopeService.filter(…)(project: ProjectScope): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:142]
                   └─> ScopeService.some(…)(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:143]
                     └─> ScopeService.matchesProject(args: { group: ConformetryInstanceGroup; project: ProjectScope; }): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:47]
-                       ↳ Returns whether a group applies to a project. A group with no tags applies everywhere — tags narrow a group, they do…
+                       ↳ Returns whether a group applies to a project.
                       └─> ScopeService.isProjectGroup(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:34]
                          ↳ Whether a group locates its instances by project tag.
 ```
@@ -319,20 +319,20 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
 
 ```text
 🚀 runBootstrapCli(workspaceRoot: string): Promise<void> [packages/conformetry-nx/src/bootstrap.utilities.ts:73]
-   ↳ Bootstraps the plugin, warning rather than failing the install. A `postinstall` that exits non-zero fails `pnpm…
+   ↳ Bootstraps the plugin, warning rather than failing the install.
   └─> bootstrapPlugin(workspaceRoot: string): Promise<EmittedFile[]> [packages/conformetry-nx/src/bootstrap.utilities.ts:38]
-     ↳ Emits the generator plugin and puts it where Nx will find it. Run from a `postinstall`, which is what makes the emitted…
+     ↳ Emits the generator plugin and puts it where Nx will find it.
     └─> GeneratorService.emitPlugin(args: EmitPluginArguments): Promise<EmittedFile[]> [packages/conformetry-nx/src/modules/generator/generator.service.ts:217]
-       ↳ Returns every file the consumer's generator plugin consists of. Pure with respect to the filesystem: the caller writes…
+       ↳ Returns every file the consumer's generator plugin consists of.
       └─> GeneratorService.map(…)(…): { content: string; filePath: string; } [packages/conformetry-nx/src/modules/generator/generator.service.ts:243]
         └─> GeneratorService.resolveScopedProjectNames(…): string[] | undefined [packages/conformetry-nx/src/modules/generator/generator.service.ts:185]
            ↳ The projects a generator's tagged groups admit, or nothing when it has none.
           └─> ScopeService.resolveScopedProjectNames(…): string[] [packages/conformetry-nx/src/modules/scope/scope.service.ts:129]
-             ↳ The projects a generator's groups admit, by name and sorted. Sorted because the emitted schema is compared byte for…
+             ↳ The projects a generator's groups admit, by name and sorted.
             └─> ScopeService.filter(…)(project: ProjectScope): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:142]
               └─> ScopeService.some(…)(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:143]
                 └─> ScopeService.matchesProject(args: { group: ConformetryInstanceGroup; project: ProjectScope; }): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:47]
-                   ↳ Returns whether a group applies to a project. A group with no tags applies everywhere — tags narrow a group, they do…
+                   ↳ Returns whether a group applies to a project.
                   └─> ScopeService.isProjectGroup(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:34]
                      ↳ Whether a group locates its instances by project tag.
 ```
@@ -344,18 +344,18 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
 
 ```text
 🚀 syncGenerator(…): Promise<{ outOfSyncMessage: string; }> [packages/conformetry-nx/src/generators/sync/generator.ts:26]
-   ↳ Regenerates the workspace's conformetry generator plugin. Registered as a global sync generator, so `nx sync:check`…
+   ↳ Regenerates the workspace's conformetry generator plugin.
   └─> GeneratorService.emitPlugin(args: EmitPluginArguments): Promise<EmittedFile[]> [packages/conformetry-nx/src/modules/generator/generator.service.ts:217]
-     ↳ Returns every file the consumer's generator plugin consists of. Pure with respect to the filesystem: the caller writes…
+     ↳ Returns every file the consumer's generator plugin consists of.
     └─> GeneratorService.map(…)(…): { content: string; filePath: string; } [packages/conformetry-nx/src/modules/generator/generator.service.ts:243]
       └─> GeneratorService.resolveScopedProjectNames(…): string[] | undefined [packages/conformetry-nx/src/modules/generator/generator.service.ts:185]
          ↳ The projects a generator's tagged groups admit, or nothing when it has none.
         └─> ScopeService.resolveScopedProjectNames(…): string[] [packages/conformetry-nx/src/modules/scope/scope.service.ts:129]
-           ↳ The projects a generator's groups admit, by name and sorted. Sorted because the emitted schema is compared byte for…
+           ↳ The projects a generator's groups admit, by name and sorted.
           └─> ScopeService.filter(…)(project: ProjectScope): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:142]
             └─> ScopeService.some(…)(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:143]
               └─> ScopeService.matchesProject(args: { group: ConformetryInstanceGroup; project: ProjectScope; }): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:47]
-                 ↳ Returns whether a group applies to a project. A group with no tags applies everywhere — tags narrow a group, they do…
+                 ↳ Returns whether a group applies to a project.
                 └─> ScopeService.isProjectGroup(group: ConformetryInstanceGroup): boolean [packages/conformetry-nx/src/modules/scope/scope.service.ts:34]
                    ↳ Whether a group locates its instances by project tag.
 ```
@@ -365,14 +365,14 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
 ```text
 🚀 anonymous(…): Promise<CreateNodesResultArray> [packages/conformetry-nx/src/index.ts:46]
   └─> PluginService.inferTargets(args: InferTargetsArguments): Promise<Map<string, InferredTargets>> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:231]
-     ↳ Infers a validation target onto every project that holds at least one instance. Projects with nothing to validate get…
+     ↳ Infers a validation target onto every project that holds at least one instance.
     └─> CandidatesService.resolveProjectCandidates(args: ResolveProjectCandidatesArguments): Promise<InstanceCandidate[]> [packages/conformetry-nx/src/modules/candidates/candidates.service.ts:74]
-       ↳ Expands every instance group that applies to a project, keeping only the candidates that live inside it. The globs stay…
+       ↳ Expands every instance group that applies to a project, keeping only the candidates that live inside it.
       └─> CandidatesService.flatMap(…)(this: undefined, group: ConformetryInstanceGroup): InstanceCandidate[] [packages/conformetry-nx/src/modules/candidates/candidates.service.ts:90]
         └─> TemplateDiscoveryService.resolveCandidates(args: ResolveCandidatesArguments): InstanceCandidate[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:84]
            ↳ Expands instance glob patterns into candidates.
           └─> TemplateDiscoveryCandidatesService.resolveCandidates(args: ResolveCandidatesArguments): InstanceCandidate[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-candidates.service.ts:121]
-             ↳ Expands every pattern and returns one candidate per distinct instance path, name, and scope kind. A directory match…
+             ↳ Expands every pattern and returns one candidate per distinct instance path, name, and scope kind.
             └─> TemplateDiscoveryCandidatesService.resolveGlobSuffix(pattern: string): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-candidates.service.ts:73]
                ↳ Returns the literal filename suffix a pattern ends with, such as `.service.ts` for `**\/*.service.ts`, or `""` when the…
               └─> TemplateDiscoveryCandidatesService.map(…)(character: string): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-candidates.service.ts:76]
@@ -383,7 +383,7 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
 ```text
 🚀 AdapterService.listDirectory(directoryPath: string): Promise<DirectoryEntry[]> [packages/conformetry-nx/src/modules/adapter/adapter.service.ts:116]
   └─> AdapterService.listDirectory(…): Promise<DirectoryEntry[]> [packages/conformetry-nx/src/modules/adapter/adapter.service.ts:44]
-     ↳ Lists a directory through the tree when it is inside the workspace, and through the filesystem otherwise. Templates…
+     ↳ Lists a directory through the tree when it is inside the workspace, and through the filesystem otherwise.
     └─> AdapterService.resolveTreePath(args: { directoryPath: string; workspaceRoot: string; }): string | undefined [packages/conformetry-nx/src/modules/adapter/adapter.service.ts:91]
        ↳ Converts an absolute path to the workspace-relative form a `Tree` uses, or returns `undefined` when the path lies…
 ```

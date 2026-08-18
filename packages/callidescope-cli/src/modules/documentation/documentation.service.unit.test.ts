@@ -139,35 +139,16 @@ describe(DocumentationService, () => {
     ).toBe("First line. Second line.");
   });
 
-  it("cuts a very long summary short", () => {
+  it("keeps a long summary whole, leaving what fits to the renderer", () => {
+    // Shortening belongs to whatever is being rendered into. A JSON consumer
+    // has no line width to respect, and cutting here would decide for it.
     const summary = readDocumentation({
       displayName: "entry",
       source: `/** ${"word ".repeat(60)} */\nexport function entry(): void {}`,
     })?.summary;
 
-    expect(summary?.length).toBeLessThanOrEqual(121);
-    expect(summary?.endsWith("…")).toBe(true);
-  });
-
-  it("cuts a long summary on a word boundary, not mid-word", () => {
-    // A summary cut mid-word reads as a typo rather than as an elision, and a
-    // spell checker reading the published report agrees.
-    const word = "observability";
-    const summary = readDocumentation({
-      displayName: "entry",
-      source: `/** ${`${word} `.repeat(20)} */\nexport function entry(): void {}`,
-    })?.summary;
-
-    expect(summary?.endsWith(`${word}…`)).toBe(true);
-  });
-
-  it("cuts at the limit when one word runs past it", () => {
-    const summary = readDocumentation({
-      displayName: "entry",
-      source: `/** ${"x".repeat(200)} */\nexport function entry(): void {}`,
-    })?.summary;
-
-    expect(summary).toBe(`${"x".repeat(120)}…`);
+    expect(summary?.length).toBeGreaterThan(200);
+    expect(summary).not.toContain("\u2026");
   });
 
   it("records the tags a comment carries", () => {

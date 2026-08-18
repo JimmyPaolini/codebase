@@ -295,7 +295,7 @@ Call stacks traced through `conformetry-configuration`, deepest first. Each fram
     └─> InputService.acceptProvidedValue(args: { input: SchemaInput; value: string; }): string [packages/conformetry-configuration/src/modules/input/input.service.ts:38]
        ↳ Validates a value the caller already had, throwing if it is invalid.
       └─> InputSchemaService.validateValue(args: { input: SchemaInput; value: unknown; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:158]
-         ↳ Validates a value, returning `true` or the reason it failed. An empty value is only an error when the input is…
+         ↳ Validates a value, returning `true` or the reason it failed.
         └─> InputSchemaService.validateEnum(args: { input: SchemaInput; value: string; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:39]
            ↳ Validates a value against a schema `enum`, when one is declared.
           └─> InputSchemaService.readEnumValues(propertySchema: unknown): string[] [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:123]
@@ -310,7 +310,7 @@ Call stacks traced through `conformetry-configuration`, deepest first. Each fram
 ```text
 🚀 InputPromptingService.validate(value: unknown): string | true [packages/conformetry-configuration/src/modules/input/input-prompting.service.ts:51]
   └─> InputSchemaService.validateValue(args: { input: SchemaInput; value: unknown; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:158]
-     ↳ Validates a value, returning `true` or the reason it failed. An empty value is only an error when the input is…
+     ↳ Validates a value, returning `true` or the reason it failed.
     └─> InputSchemaService.validateEnum(args: { input: SchemaInput; value: string; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:39]
        ↳ Validates a value against a schema `enum`, when one is declared.
       └─> InputSchemaService.readEnumValues(propertySchema: unknown): string[] [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:123]
@@ -324,7 +324,7 @@ Call stacks traced through `conformetry-configuration`, deepest first. Each fram
 
 ```text
 🚀 assertNoCollisions(…): void [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:26]
-   ↳ Fails when two generators would answer to the same thing. A host resolves `<name-or-alias>` by taking the *first*…
+   ↳ Fails when two generators would answer to the same thing.
   └─> findUnusableHandles(…): { message: string; path: (string | number)[]; }[] [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:96]
      ↳ Reports names and aliases that could not be addressed or emitted.
     └─> flatMap(…)(…): { message: string; path: number[]; }[] [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:102]

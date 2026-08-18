@@ -435,21 +435,21 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 🚀 ValidateCommand.run(_passedParameters: string[], options: ValidateCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/validate/validate.command.ts:131]
    ↳ Runs validation and reports every difference found.
   └─> ValidationService.validate(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-validation/src/modules/validation/validation.service.ts:122]
-     ↳ Validates every candidate and returns the differences found. Candidates that matched no template are reported alongside…
+     ↳ Validates every candidate and returns the differences found.
     └─> TemplateDiscoveryService.resolveInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:117]
        ↳ Matches candidate directories to the templates that best explain them.
       └─> TemplateDiscoveryMatchingService.resolveInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-matching.service.ts:122]
-         ↳ Resolves every candidate to the template — or templates — that explain it. A candidate matching nothing, or matching…
+         ↳ Resolves every candidate to the template — or templates — that explain it.
         └─> TemplateDiscoveryMatchingService.scoreTemplates(…): ScoredTemplate[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-matching.service.ts:64]
            ↳ Scores every template that shares at least one file with the candidate.
           └─> TemplateDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; ratio: number; template: TemplateDefinition; } [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-matching.service.ts:70]
             └─> TemplateDiscoveryTemplatesService.countMatchingFiles(…): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-templates.service.ts:95]
-               ↳ Counts how many of a template's files the instance path already has. When a file scope is given, only files inside it…
+               ↳ Counts how many of a template's files the instance path already has.
               └─> TemplateDiscoveryTemplatesService.filter(…)(templateFilePath: string): boolean [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-templates.service.ts:104]
                 └─> TemplateDiscoveryTemplatesService.resolveInstanceFilePath(…): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-templates.service.ts:152]
                    ↳ Maps a template file path to the instance file path it governs.
                   └─> RenderingService.renderPath(args: { substitutions: Substitutions; templatePath: string; }): string [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:80]
-                     ↳ Renders a template path with mustache, the same way contents are rendered. Paths once used a `__field__` syntax of…
+                     ↳ Renders a template path with mustache, the same way contents are rendered.
 ```
 
 **2. `GenerateCommand.run`** — depth ≥ 9 · decorated-method
@@ -464,7 +464,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
       └─> InputService.acceptProvidedValue(args: { input: SchemaInput; value: string; }): string [packages/conformetry-configuration/src/modules/input/input.service.ts:38]
          ↳ Validates a value the caller already had, throwing if it is invalid.
         └─> InputSchemaService.validateValue(args: { input: SchemaInput; value: unknown; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:158]
-           ↳ Validates a value, returning `true` or the reason it failed. An empty value is only an error when the input is…
+           ↳ Validates a value, returning `true` or the reason it failed.
           └─> InputSchemaService.validateEnum(args: { input: SchemaInput; value: string; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:39]
              ↳ Validates a value against a schema `enum`, when one is declared.
             └─> InputSchemaService.readEnumValues(propertySchema: unknown): string[] [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:123]
@@ -483,9 +483,9 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
     └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
        ↳ Assembles the object pino merges into the line.
       └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-         ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+         ↳ Fails a malformed message in development, and never in production.
         └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-           ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+           ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 <details>
@@ -500,9 +500,9 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
     └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
        ↳ Assembles the object pino merges into the line.
       └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-         ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+         ↳ Fails a malformed message in development, and never in production.
         └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-           ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+           ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **5. `ValidateCommand.parseInstances`** — depth 3 · decorated-method

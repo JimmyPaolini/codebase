@@ -102,7 +102,7 @@ Call stacks traced through `conformetry-json`, deepest first. Each frame shows w
 🚀 JsonValidatorService.validateDocument(document: PreparedValidationDocument): ConformetryError[] [packages/conformetry-json/src/modules/json-validator/json-validator.service.ts:39]
    ↳ Reports every key or value the template requires and the instance lacks.
   └─> JsonComparisonService.compareArrays(…): ConformetryError[] (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:63]
-     ↳ Compares two arrays. Required scalars must appear somewhere in the instance array, order independent. For a required…
+     ↳ Compares two arrays.
     └─> JsonComparisonService.flatMap(…)(this: undefined, templateItem: JsonValue): ConformetryError[] (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:69]
       └─> JsonComparisonService.map(…)(instanceItem: JsonValue, index: number): ConformetryError[] (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:98]
         └─> JsonComparisonService.compare(args: CompareJsonArguments): ConformetryError[] (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:180]

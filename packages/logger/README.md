@@ -148,9 +148,9 @@ Call stacks traced through `logger`, deepest first. Each frame shows what it tak
   └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
      ↳ Assembles the object pino merges into the line.
     └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-       ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+       ↳ Fails a malformed message in development, and never in production.
       └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-         ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+         ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 ### Module spread

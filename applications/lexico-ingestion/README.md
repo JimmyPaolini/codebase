@@ -249,9 +249,9 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
                 └─> LexemesService.enrichLexeme(…): Promise<void> [applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:71]
                    ↳ Handles an internal workflow step for lexeme parsing and persistence.
                   └─> FormsService.buildFormsForPartOfSpeech(pos: PartOfSpeech, rawForms: unknown, lexeme: Lexeme): Form[] [applications/lexico-ingestion/src/modules/forms/forms.service.ts:127]
-                     ↳ Builds Form entities from the raw parsed forms object for a given POS. Returns an empty array when rawForms is null or…
+                     ↳ Builds Form entities from the raw parsed forms object for a given POS.
                     └─> FormsBuilderOtherService.buildFormsForPartOfSpeech(pos: PartOfSpeech, rawForms: unknown, lexeme: Lexeme): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:482]
-                       ↳ Builds Form entities for a given part-of-speech category. Routes to specialized handlers based on morphological type.…
+                       ↳ Builds Form entities for a given part-of-speech category.
                       └─> FormsBuilderOtherService.buildVerbFormsFromRaw(rawForms: unknown, lexeme: Lexeme): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:393]
                          ↳ Builds structured data used during form entity building.
                         └─> FormsBuilderOtherService.buildFiniteMoodForms(moodData: Record<string, unknown>, mood: FormMood, lexeme: Lexeme): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:160]
@@ -290,9 +290,9 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
               └─> LexemesService.enrichLexeme(…): Promise<void> [applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:71]
                  ↳ Handles an internal workflow step for lexeme parsing and persistence.
                 └─> FormsService.buildFormsForPartOfSpeech(pos: PartOfSpeech, rawForms: unknown, lexeme: Lexeme): Form[] [applications/lexico-ingestion/src/modules/forms/forms.service.ts:127]
-                   ↳ Builds Form entities from the raw parsed forms object for a given POS. Returns an empty array when rawForms is null or…
+                   ↳ Builds Form entities from the raw parsed forms object for a given POS.
                   └─> FormsBuilderOtherService.buildFormsForPartOfSpeech(pos: PartOfSpeech, rawForms: unknown, lexeme: Lexeme): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:482]
-                     ↳ Builds Form entities for a given part-of-speech category. Routes to specialized handlers based on morphological type.…
+                     ↳ Builds Form entities for a given part-of-speech category.
                     └─> FormsBuilderOtherService.buildVerbFormsFromRaw(rawForms: unknown, lexeme: Lexeme): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:393]
                        ↳ Builds structured data used during form entity building.
                       └─> FormsBuilderOtherService.buildFiniteMoodForms(moodData: Record<string, unknown>, mood: FormMood, lexeme: Lexeme): Form[] [applications/lexico-ingestion/src/modules/forms/forms-builder-other.service.ts:160]
@@ -369,9 +369,9 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
                 └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
                    ↳ Assembles the object pino merges into the line.
                   └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-                     ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+                     ↳ Fails a malformed message in development, and never in production.
                     └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-                       ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+                       ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **5. `LatinLibraryCommand.run`** — depth ≥ 9 · decorated-method
@@ -392,9 +392,9 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
             └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
                ↳ Assembles the object pino merges into the line.
               └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-                 ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+                 ↳ Fails a malformed message in development, and never in production.
                 └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-                   ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+                   ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **6. `LiteratureCommand.run`** — depth ≥ 9 · decorated-method
@@ -415,9 +415,9 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
             └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
                ↳ Assembles the object pino merges into the line.
               └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-                 ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+                 ↳ Fails a malformed message in development, and never in production.
                 └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-                   ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+                   ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **7. `EpigraphikDatenbankClaussSlabyCommand.run`** — depth 8 · decorated-method
@@ -436,9 +436,9 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
           └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
              ↳ Assembles the object pino merges into the line.
             └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-               ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+               ↳ Fails a malformed message in development, and never in production.
               └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-                 ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+                 ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **8. `LatinLibraryCommand.worker`** — depth ≥ 8 · orphan-root
@@ -456,9 +456,9 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
           └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
              ↳ Assembles the object pino merges into the line.
             └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-               ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+               ↳ Fails a malformed message in development, and never in production.
               └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-                 ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+                 ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **9. `CorpusScriptorumEcclesiasticorumLatinorumCommand.run`** — depth 7 · decorated-method
@@ -475,9 +475,9 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
         └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
            ↳ Assembles the object pino merges into the line.
           └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-             ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+             ↳ Fails a malformed message in development, and never in production.
             └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+               ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **10. `LibraryCommand.parseAuthor`** — depth 7 · decorated-method
@@ -532,9 +532,9 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
         └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
            ↳ Assembles the object pino merges into the line.
           └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-             ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+             ↳ Fails a malformed message in development, and never in production.
             └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+               ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **13. `LiteratureService.ingestText`** — depth 7 · orphan-root
@@ -551,9 +551,9 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
         └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
            ↳ Assembles the object pino merges into the line.
           └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-             ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+             ↳ Fails a malformed message in development, and never in production.
             └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+               ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **14. `ClearCommand.run`** — depth 6 · decorated-method
@@ -568,9 +568,9 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
       └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
          ↳ Assembles the object pino merges into the line.
         └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-           ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+           ↳ Fails a malformed message in development, and never in production.
           └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-             ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+             ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **15. `LiteratureCommand.parseAuthor`** — depth 5 · decorated-method
@@ -788,7 +788,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 ```text
 🚀 FormsService.setTransientWords(form: Form, words: string[]): void [applications/lexico-ingestion/src/modules/forms/forms.service.ts:181]
-   ↳ Sets transient word strings for a Form instance. These are used during ingestion to link forms to their corresponding…
+   ↳ Sets transient word strings for a Form instance.
   └─> FormsTransientWordsService.setTransientWords(form: Form, words: string[]): void [applications/lexico-ingestion/src/modules/forms/forms-transient-words.service.ts:34]
      ↳ Associates a list of transient words with a given Form entity.
 ```

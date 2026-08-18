@@ -19,6 +19,26 @@ export const SIGNATURE_LIMIT = 80;
 /** Stands in for a parameter list too long to print. */
 export const COLLAPSED_PARAMETERS = "(…)";
 
+/**
+ * Characters of documentation prose a printed frame keeps.
+ *
+ * A summary is meant to orient a reader mid-stack, not to replace opening the
+ * file, and a paragraph indented under ten frames is worse than a sentence.
+ * Only the tree is bound by this — the JSON report carries the whole comment.
+ */
+export const SUMMARY_LIMIT = 120;
+
+/**
+ * Ends a sentence, when the next one starts.
+ *
+ * A capital after the space is what separates a sentence break from `e.g. the`
+ * or a dotted identifier, neither of which ends anything.
+ */
+export const SENTENCE_END_PATTERN = /[!.?](?=\s+[A-Z])/;
+
+/** Appended to a summary cut mid-thought. */
+export const TRUNCATION_SUFFIX = "…";
+
 /** Marks a frame whose callable is on its way out. */
 export const DEPRECATED_MARKER = "⚠ deprecated";
 

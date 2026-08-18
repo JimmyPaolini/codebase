@@ -123,7 +123,7 @@ Call stacks traced through `conformetry-python`, deepest first. Each frame shows
 🚀 PythonValidatorService.validateDocument(document: PreparedValidationDocument): ConformetryError[] [packages/conformetry-python/src/modules/python-validator/python-validator.service.ts:38]
    ↳ Reports every declaration and comment the template requires.
   └─> PythonBridgeService.validatePythonSource(args: RunPythonBridgeArguments): ConformetryError[] [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:137]
-     ↳ Compares one Python source against its rendered template. A missing interpreter, a crashed bridge, or unreadable output…
+     ↳ Compares one Python source against its rendered template.
     └─> PythonBridgeService.buildBridgeError(message: string): ConformetryError[] [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:56]
        ↳ Wraps a bridge failure as a reportable error rather than throwing.
 ```

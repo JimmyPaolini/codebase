@@ -112,7 +112,7 @@ Call stacks traced through `conformetry-typescript`, deepest first. Each frame s
   └─> TypescriptValidatorService.validateStructure(…): ConformetryError[] [packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:107]
      ↳ Compares the syntax trees and describes each missing declaration.
     └─> TypescriptTreeService.compareBestCandidate(…): TypescriptComparisonError[] (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:57]
-       ↳ Descends into whichever candidate explains the template best. Several instance nodes can share a key or kind — two…
+       ↳ Descends into whichever candidate explains the template best.
       └─> TypescriptTreeService.map(…)(candidate: Node): TypescriptComparisonError[] (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:62]
         └─> TypescriptTreeService.compareTree(args: CompareTreeArguments): TypescriptComparisonError[] (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:111]
            ↳ Compares one level of two trees, descending into every match.
@@ -121,7 +121,7 @@ Call stacks traced through `conformetry-typescript`, deepest first. Each frame s
                ↳ Matches one template child against the instance's children.
               └─> TypescriptTreeService.filter(…)(instanceChild: Node): boolean [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:86]
                 └─> TypescriptNodesService.readKey(node: Node): null | string [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:192]
-                   ↳ Reads a node's identity, or `null` when it has none. A `null` key means the node can only be matched by syntax kind —…
+                   ↳ Reads a node's identity, or `null` when it has none.
                   └─> TypescriptNodesService.readDecoratorKey(node: Decorator): null | string [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:77]
                      ↳ Keys a decorator by its callee, so `@Injectable()` matches `@Injectable`.
                     └─> TypescriptNodesService.buildDottedName(callee: Node): null | string [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:48]

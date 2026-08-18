@@ -313,7 +313,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 🚀 SynchronizationCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:100]
    ↳ Runs every synchronization command, exiting once if any reported drift.
   └─> SynchronizationCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:125]
-     ↳ Runs every synchronization command and reports whether all succeeded. Commands run in sequence and every one runs even…
+     ↳ Runs every synchronization command and reports whether all succeeded.
     └─> ConventionalConfigCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:70]
        ↳ Synchronizes conventional-commit config and reports success without exiting.
       └─> ConventionalConfigService.runSynchronization(mode: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:233]
@@ -335,9 +335,9 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                       └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
                          ↳ Assembles the object pino merges into the line.
                         └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-                           ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+                           ↳ Fails a malformed message in development, and never in production.
                           └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-                             ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+                             ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **2. `ConventionalConfigCommand.run`** — depth 13 · decorated-method
@@ -366,9 +366,9 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                     └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
                        ↳ Assembles the object pino merges into the line.
                       └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-                         ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+                         ↳ Fails a malformed message in development, and never in production.
                         └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-                           ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+                           ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **3. `NestjsModuleGraphsCommand.run`** — depth ≥ 9 · decorated-method
@@ -382,15 +382,15 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
        ↳ Explores one project and syncs its graph into every target markdown file.
       └─> NestjsModuleGraphsCommand.filter(…)(fileName: string): boolean [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:155]
         └─> NestjsModuleGraphsCommand.synchronizeFile(…): boolean [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:91]
-           ↳ Checks or rewrites one markdown file's graph block. A file without markers is drift rather than an error: it names a…
+           ↳ Checks or rewrites one markdown file's graph block.
           └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
              ↳ Logs an informational message at the `info` level.
             └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
                ↳ Assembles the object pino merges into the line.
               └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-                 ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+                 ↳ Fails a malformed message in development, and never in production.
                 └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-                   ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+                   ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 <details>
@@ -413,9 +413,9 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
             └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
                ↳ Assembles the object pino merges into the line.
               └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-                 ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+                 ↳ Fails a malformed message in development, and never in production.
                 └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-                   ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+                   ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **5. `PullRequestTemplateCommand.run`** — depth 9 · decorated-method
@@ -435,9 +435,9 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
             └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
                ↳ Assembles the object pino merges into the line.
               └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-                 ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+                 ↳ Fails a malformed message in development, and never in production.
                 └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-                   ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+                   ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **6. `DevcontainerConfigurationCommand.run`** — depth 8 · decorated-method
@@ -456,9 +456,9 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
           └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
              ↳ Assembles the object pino merges into the line.
             └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-               ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+               ↳ Fails a malformed message in development, and never in production.
               └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-                 ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+                 ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **7. `ConformetryGeneratorsCommand.run`** — depth ≥ 7 · decorated-method
@@ -475,9 +475,9 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
         └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
            ↳ Assembles the object pino merges into the line.
           └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-             ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+             ↳ Fails a malformed message in development, and never in production.
             └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+               ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **8. `main`** — depth ≥ 2 · module-bootstrap

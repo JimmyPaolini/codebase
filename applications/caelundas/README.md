@@ -312,15 +312,15 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 CaelundasCommand.run(): Promise<void> [applications/caelundas/src/modules/caelundas/caelundas.command.ts:59]
-   ↳ Executes the full calendar generation pipeline. Parses environment input, detects all perfective and progressive…
+   ↳ Executes the full calendar generation pipeline.
   └─> PerfectiveService.detect(input: Input): Event[] [applications/caelundas/src/modules/perfective/perfective.service.ts:198]
-     ↳ Detects all perfective (instantaneous) astronomical events within the given date range. Iterates day-by-day, computes…
+     ↳ Detects all perfective (instantaneous) astronomical events within the given date range.
     └─> PerfectiveService.detectDayEvents(…): { events: Event[]; previousAspectBodies: AspectBodies[]; } [applications/caelundas/src/modules/perfective/perfective.service.ts:54]
        ↳ Sweeps one day minute-by-minute, aggregating perfective events and rolling aspect state forward.
       └─> PerfectiveService.detectMinuteEvents(…): { aspectBodies: AspectBodies[]; events: Event[]; } [applications/caelundas/src/modules/perfective/perfective.service.ts:92]
          ↳ Detects all minute-level event families and returns both events and updated aspect-body state.
         └─> AspectsService.detect(…): { aspectBodies: AspectBodies[]; events: Event[]; } [applications/caelundas/src/modules/aspects/aspects.service.ts:180]
-           ↳ Detects all aspect events at a single minute, including 2-body and multi-body patterns. Runs simple-aspect detection…
+           ↳ Detects all aspect events at a single minute, including 2-body and multi-body patterns.
           └─> AspectsService.detectSimpleAspects(…): Event[] [applications/caelundas/src/modules/aspects/aspects.service.ts:85]
              ↳ Runs all simple-aspect detectors for a minute and flattens their detected events.
             └─> PhasesService.detect(args: DetectPlanetaryEventsArguments): Event[] ⚠ deprecated [applications/caelundas/src/modules/phases/phases.service.ts:52]
@@ -366,9 +366,9 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
               └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
                  ↳ Assembles the object pino merges into the line.
                 └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-                   ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+                   ↳ Fails a malformed message in development, and never in production.
                   └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-                     ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+                     ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **3. `MajorAspectsService.detectAspectForBodyPair`** — depth ≥ 8 · orphan-root
@@ -377,7 +377,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 🚀 MajorAspectsService.detectAspectForBodyPair(args: DetectAspectForBodyPairArguments): Event | null [applications/caelundas/src/modules/major-aspects/major-aspects.service.ts:59]
    ↳ Detects aspect for body pair.
   └─> MajorAspectsService.buildMajorAspectEvent(…): Event [applications/caelundas/src/modules/major-aspects/major-aspects.service.ts:124]
-     ↳ Resolves the active major aspect for two bodies and assembles a typed event. Throws when no major aspect is within orb…
+     ↳ Resolves the active major aspect for two bodies and assembles a typed event.
     └─> MajorAspectEventService.buildMajorAspectEvent(…): Event [applications/caelundas/src/modules/major-aspects/major-aspect-event.service.ts:120]
        ↳ Resolves and builds a typed major-aspect event for two body longitudes.
       └─> MajorAspectEventService.assembleMajorAspectEvent(…): Event [applications/caelundas/src/modules/major-aspects/major-aspect-event.service.ts:54]
@@ -387,9 +387,9 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
           └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
              ↳ Assembles the object pino merges into the line.
             └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-               ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+               ↳ Fails a malformed message in development, and never in production.
               └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-                 ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+                 ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 <details>
@@ -401,7 +401,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 🚀 IngressesService.buildDecanIngressEvent(args: { body: Body; date: Moment; longitude: number; }): Event [applications/caelundas/src/modules/ingresses/ingresses.service.ts:86]
    ↳ Delegates decan-ingress event construction to the composer service.
   └─> IngressesComposerService.buildDecanIngressEvent(args: { body: Body; date: Moment; longitude: number; }): Event [applications/caelundas/src/modules/ingresses/ingresses-composer.service.ts:94]
-     ↳ Creates a decan ingress calendar event. A decan ingress occurs when a body crosses into one of the three 10°…
+     ↳ Creates a decan ingress calendar event.
     └─> IngressesComposerService.buildDecanIngressEventObject(args: { body: Body; date: Moment; longitude: number; }): Event [applications/caelundas/src/modules/ingresses/ingresses-composer.service.ts:109]
        ↳ Builds the decan ingress payload without logging side effects.
       └─> IngressesComposerService.resolveDecan(longitude: number): Decan [applications/caelundas/src/modules/ingresses/ingresses-composer.service.ts:411]
@@ -427,9 +427,9 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
         └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
            ↳ Assembles the object pino merges into the line.
           └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-             ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+             ↳ Fails a malformed message in development, and never in production.
             └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+               ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **6. `EclipsesService.buildSolarEclipseEvent`** — depth 7 · orphan-root
@@ -446,9 +446,9 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
         └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
            ↳ Assembles the object pino merges into the line.
           └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-             ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+             ↳ Fails a malformed message in development, and never in production.
             └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+               ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **7. `TwilightsService.buildAstronomicalDawnEvent`** — depth 7 · orphan-root
@@ -465,16 +465,16 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
         └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
            ↳ Assembles the object pino merges into the line.
           └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-             ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+             ↳ Fails a malformed message in development, and never in production.
             └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+               ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **8. `TwilightsService.buildAstronomicalDuskEvent`** — depth 7 · orphan-root
 
 ```text
 🚀 TwilightsService.buildAstronomicalDuskEvent(date: Moment): Event [applications/caelundas/src/modules/twilights/twilights.service.ts:66]
-   ↳ Creates an astronomical dusk calendar event. Marks when the sky is dark enough for astronomical observation (Sun at…
+   ↳ Creates an astronomical dusk calendar event.
   └─> TwilightsBuilderService.buildAstronomicalDuskEvent(date: Moment): Event [applications/caelundas/src/modules/twilights/twilights-builder.service.ts:67]
      ↳ Builds the instant when Sun crosses -18 degrees downward.
     └─> TwilightsBuilderService.buildTransitionEvent(date: Moment, description: string, emoji: string): Event [applications/caelundas/src/modules/twilights/twilights-builder.service.ts:32]
@@ -484,16 +484,16 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
         └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
            ↳ Assembles the object pino merges into the line.
           └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-             ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+             ↳ Fails a malformed message in development, and never in production.
             └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+               ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **9. `TwilightsService.buildCivilDawnEvent`** — depth 7 · orphan-root
 
 ```text
 🚀 TwilightsService.buildCivilDawnEvent(date: Moment): Event [applications/caelundas/src/modules/twilights/twilights.service.ts:76]
-   ↳ Creates a civil dawn calendar event. Marks when outdoor activities are possible without artificial light (Sun at −6°…
+   ↳ Creates a civil dawn calendar event.
   └─> TwilightsBuilderService.buildCivilDawnEvent(date: Moment): Event [applications/caelundas/src/modules/twilights/twilights-builder.service.ts:74]
      ↳ Builds the instant when Sun crosses -6 degrees upward.
     └─> TwilightsBuilderService.buildTransitionEvent(date: Moment, description: string, emoji: string): Event [applications/caelundas/src/modules/twilights/twilights-builder.service.ts:32]
@@ -503,16 +503,16 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
         └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
            ↳ Assembles the object pino merges into the line.
           └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-             ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+             ↳ Fails a malformed message in development, and never in production.
             └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+               ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **10. `TwilightsService.buildCivilDuskEvent`** — depth 7 · orphan-root
 
 ```text
 🚀 TwilightsService.buildCivilDuskEvent(date: Moment): Event [applications/caelundas/src/modules/twilights/twilights.service.ts:86]
-   ↳ Creates a civil dusk calendar event. Marks when artificial light becomes necessary for outdoor activities (Sun at −6°…
+   ↳ Creates a civil dusk calendar event.
   └─> TwilightsBuilderService.buildCivilDuskEvent(date: Moment): Event [applications/caelundas/src/modules/twilights/twilights-builder.service.ts:81]
      ↳ Builds the instant when Sun crosses -6 degrees downward.
     └─> TwilightsBuilderService.buildTransitionEvent(date: Moment, description: string, emoji: string): Event [applications/caelundas/src/modules/twilights/twilights-builder.service.ts:32]
@@ -522,9 +522,9 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
         └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
            ↳ Assembles the object pino merges into the line.
           └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-             ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+             ↳ Fails a malformed message in development, and never in production.
             └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+               ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **11. `TwilightsService.buildNauticalDawnEvent`** — depth 7 · orphan-root
@@ -541,9 +541,9 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
         └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
            ↳ Assembles the object pino merges into the line.
           └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-             ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+             ↳ Fails a malformed message in development, and never in production.
             └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+               ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **12. `TwilightsService.buildNauticalDuskEvent`** — depth 7 · orphan-root
@@ -560,26 +560,26 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
         └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
            ↳ Assembles the object pino merges into the line.
           └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-             ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+             ↳ Fails a malformed message in development, and never in production.
             └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+               ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **13. `IngressesService.buildPeakIngressEvent`** — depth 6 · orphan-root
 
 ```text
 🚀 IngressesService.buildPeakIngressEvent(args: { body: Body; date: Moment; longitude: number; }): Event [applications/caelundas/src/modules/ingresses/ingresses.service.ts:101]
-   ↳ Creates a sign peak ingress calendar event. Marks when a celestial body reaches the 15° midpoint of its current zodiac…
+   ↳ Creates a sign peak ingress calendar event.
   └─> IngressesComposerService.buildPeakIngressEvent(args: { body: Body; date: Moment; longitude: number; }): Event [applications/caelundas/src/modules/ingresses/ingresses-composer.service.ts:142]
-     ↳ Creates a sign peak ingress calendar event. Marks when a celestial body reaches the 15° midpoint of its current zodiac…
+     ↳ Creates a sign peak ingress calendar event.
     └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
        ↳ Logs an informational message at the `info` level.
       └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
          ↳ Assembles the object pino merges into the line.
         └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-           ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+           ↳ Fails a malformed message in development, and never in production.
           └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-             ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+             ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **14. `IngressesService.buildSignIngressEvent`** — depth 6 · orphan-root
@@ -594,9 +594,9 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
       └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
          ↳ Assembles the object pino merges into the line.
         └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-           ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+           ↳ Fails a malformed message in development, and never in production.
           └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-             ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+             ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **15. `MinorAspectsService.detectBodyPairAspect`** — depth ≥ 6 · orphan-root
@@ -605,15 +605,15 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 🚀 MinorAspectsService.detectBodyPairAspect(args: DetectBodyPairAspectArguments): Event | null [applications/caelundas/src/modules/minor-aspects/minor-aspects.service.ts:60]
    ↳ Detects a minor-aspect event for one body pair at a specific minute window.
   └─> MinorAspectsService.buildMinorAspectEvent(…): Event [applications/caelundas/src/modules/minor-aspects/minor-aspects.service.ts:126]
-     ↳ Creates a calendar event for a specific minor aspect occurrence. Formats the event with appropriate emoji indicators,…
+     ↳ Creates a calendar event for a specific minor aspect occurrence.
     └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:206]
        ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
       └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
          ↳ Assembles the object pino merges into the line.
         └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-           ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+           ↳ Fails a malformed message in development, and never in production.
           └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-             ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+             ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **16. `SextupleAspectsService.checkPatternExists`** — depth 6 · orphan-root
@@ -621,7 +621,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 ```text
 🚀 SextupleAspectsService.checkPatternExists(edges: AspectBodies[]): boolean [applications/caelundas/src/modules/sextuple-aspects/sextuple-aspects.service.ts:80]
   └─> SextupleAspectsComposerService.findHexagramPattern(bodies: Body[], edges: AspectBodies[]): Body[] | null [applications/caelundas/src/modules/sextuple-aspects/sextuple-aspects-composer.service.ts:269]
-     ↳ Checks if 6 bodies form a valid hexagram (Star of David) pattern. A hexagram consists of two interlocking Grand Trines…
+     ↳ Checks if 6 bodies form a valid hexagram (Star of David) pattern.
     └─> SextupleAspectsComposerService.findValidHexagonArrangement(…): ("lunar apogee" | "lunar perigee" | "north lunar node" | "south lunar node" | "ceres" | "chiron" | "juno" | "lilith" | "pallas" | "vesta" | "jupiter" | "mars" | "mercury" | ... 6 more ... | "venus")[] | null [applications/caelundas/src/modules/sextuple-aspects/sextuple-aspects-composer.service.ts:292]
        ↳ Finds valid hexagon arrangement.
       └─> SextupleAspectsComposerService.tryHexagonArrangement(…): ("lunar apogee" | "lunar perigee" | "north lunar node" | "south lunar node" | "ceres" | "chiron" | "juno" | "lilith" | "pallas" | "vesta" | "jupiter" | "mars" | "mercury" | ... 6 more ... | "venus")[] | null [applications/caelundas/src/modules/sextuple-aspects/sextuple-aspects-composer.service.ts:454]
@@ -637,15 +637,15 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 🚀 SpecialtyAspectsService.detectBodyPairEvent(…): Event | null [applications/caelundas/src/modules/specialty-aspects/specialty-aspects.service.ts:60]
    ↳ Detects a specialty-aspect event for one body pair using three-point longitude sampling.
   └─> SpecialtyAspectsService.buildSpecialtyAspectEvent(…): Event [applications/caelundas/src/modules/specialty-aspects/specialty-aspects.service.ts:148]
-     ↳ Creates a calendar event for a specific specialty aspect occurrence. Formats the event with appropriate emoji…
+     ↳ Creates a calendar event for a specific specialty aspect occurrence.
     └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:206]
        ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
       └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
          ↳ Assembles the object pino merges into the line.
         └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-           ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+           ↳ Fails a malformed message in development, and never in production.
           └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-             ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+             ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **18. `EclipseCalculationService.isLunarTopocentricActive`** — depth 6 · orphan-root
@@ -660,7 +660,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
       └─> EclipseTopocentricService.getCurrentAnglesAndDiameter(…): { currentDiameter: number; currentLatitudeAngle: number; currentLongitudeAngle: number; } [applications/caelundas/src/modules/eclipses/eclipse-topocentric.service.ts:41]
          ↳ Derives current longitude/latitude separation angles and eclipse diameter sum.
         └─> MathService.getAngle(longitude1: Longitude, longitude2: Longitude): number [applications/caelundas/src/modules/math/math.service.ts:69]
-           ↳ Calculates the shortest angular distance between two ecliptic longitudes. This function computes the minimum arc length…
+           ↳ Calculates the shortest angular distance between two ecliptic longitudes.
           └─> MathService.normalizeDegrees(degrees: number): number [applications/caelundas/src/modules/math/math.service.ts:155]
              ↳ Normalizes an angle in degrees to the range [0, 360).
 ```
@@ -677,7 +677,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
       └─> EclipseTopocentricService.getCurrentAnglesAndDiameter(…): { currentDiameter: number; currentLatitudeAngle: number; currentLongitudeAngle: number; } [applications/caelundas/src/modules/eclipses/eclipse-topocentric.service.ts:41]
          ↳ Derives current longitude/latitude separation angles and eclipse diameter sum.
         └─> MathService.getAngle(longitude1: Longitude, longitude2: Longitude): number [applications/caelundas/src/modules/math/math.service.ts:69]
-           ↳ Calculates the shortest angular distance between two ecliptic longitudes. This function computes the minimum arc length…
+           ↳ Calculates the shortest angular distance between two ecliptic longitudes.
           └─> MathService.normalizeDegrees(degrees: number): number [applications/caelundas/src/modules/math/math.service.ts:155]
              ↳ Normalizes an angle in degrees to the range [0, 360).
 ```
@@ -694,9 +694,9 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
       └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
          ↳ Assembles the object pino merges into the line.
         └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-           ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+           ↳ Fails a malformed message in development, and never in production.
           └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-             ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+             ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **21. `downloadEphemerisFiles`** — depth ≥ 5 · orphan-root
@@ -732,7 +732,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 🚀 EphemerisService.getCoordinateEphemerisByBody(…): Record<"lunar apogee" | "lunar perigee" | "north lunar node" | "south lunar node" | "ceres" | "chiron" | "juno" | "lilith" | "pallas" | "vesta" | "jupiter" | "mars" | "mercury" | ... 6 more ... | "venus", CoordinateEphemeris> [applications/caelundas/src/modules/ephemeris/ephemeris.service.ts:218]
    ↳ Computes minute-by-minute ecliptic coordinates for all requested bodies.
   └─> EphemerisCoordinateService.computeNodeBodyMinutes(args: { body: Node; end: Moment; start: Moment; }): CoordinateEphemeris [applications/caelundas/src/modules/ephemeris/ephemeris-coordinate.service.ts:173]
-     ↳ Computes minute-by-minute coordinates for a node (lunar/solar nodes and lunar perigee). Returns latitude (always 0 for…
+     ↳ Computes minute-by-minute coordinates for a node (lunar/solar nodes and lunar perigee).
     └─> EphemerisCoordinateService.computeNodeCoordinate(…): { latitude: number; longitude: number; } [applications/caelundas/src/modules/ephemeris/ephemeris-coordinate.service.ts:87]
        ↳ Computes node coordinate (lunar node or perigee). Dispatches to the appropriate computation based on node type.
       └─> EphemerisCoordinateService.computeLunarPerigeeCoordinate(julianDayUniversalTime: number): { latitude: number; longitude: number; } [applications/caelundas/src/modules/ephemeris/ephemeris-coordinate.service.ts:64]
@@ -779,7 +779,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
     └─> AspectsUtilitiesService.isAspect(…): boolean [applications/caelundas/src/modules/aspects/aspects-utilities.service.ts:309]
        ↳ Returns `true` when the angular separation between two bodies falls within the configured orb for the given aspect.
       └─> MathService.getAngle(longitude1: Longitude, longitude2: Longitude): number [applications/caelundas/src/modules/math/math.service.ts:69]
-         ↳ Calculates the shortest angular distance between two ecliptic longitudes. This function computes the minimum arc length…
+         ↳ Calculates the shortest angular distance between two ecliptic longitudes.
         └─> MathService.normalizeDegrees(degrees: number): number [applications/caelundas/src/modules/math/math.service.ts:155]
            ↳ Normalizes an angle in degrees to the range [0, 360).
 ```
@@ -793,16 +793,16 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
     └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
        ↳ Assembles the object pino merges into the line.
       └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-         ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+         ↳ Fails a malformed message in development, and never in production.
         └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-           ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+           ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **28. `MinorAspectsService.detectProgressive`** — depth ≥ 5 · orphan-root
 
 ```text
 🚀 MinorAspectsService.detectProgressive(events: Event[]): Event[] [applications/caelundas/src/modules/minor-aspects/minor-aspects.service.ts:195]
-   ↳ Converts instantaneous minor aspect events into progressive events. Pairs forming and dissolving events for the same…
+   ↳ Converts instantaneous minor aspect events into progressive events.
   └─> MinorAspectsProgressiveService.detectProgressive(events: Event[]): Event[] [applications/caelundas/src/modules/minor-aspects/minor-aspects-progressive.service.ts:78]
      ↳ Builds progressive minor-aspect events from detected minute-level events.
     └─> ProgressiveAspectService.buildSimpleAspectFamilyProgressiveEvents(…): Event[] [applications/caelundas/src/modules/progressive/progressive-aspect.service.ts:117]
@@ -830,7 +830,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 QuintupleAspectsService.detectProgressive(events: Event[]): Event[] [applications/caelundas/src/modules/quintuple-aspects/quintuple-aspects.service.ts:56]
-   ↳ Converts instantaneous quintuple aspect events into progressive events. Pairs forming and dissolving events for the…
+   ↳ Converts instantaneous quintuple aspect events into progressive events.
   └─> QuintupleAspectsComposerService.groupQuintupleEventsByKey(events: Event[]): Record<string, Event[]> [applications/caelundas/src/modules/quintuple-aspects/quintuple-aspects-composer.service.ts:325]
      ↳ Groups quintuple events by key.
     └─> QuintupleAspectsComposerService.groupBy(…)(event: Event): string [applications/caelundas/src/modules/quintuple-aspects/quintuple-aspects-composer.service.ts:330]
@@ -842,7 +842,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 SextupleAspectsService.detectProgressive(events: Event[]): Event[] [applications/caelundas/src/modules/sextuple-aspects/sextuple-aspects.service.ts:130]
-   ↳ Converts instantaneous sextuple aspect events into progressive events. Pairs forming and dissolving events for the same…
+   ↳ Converts instantaneous sextuple aspect events into progressive events.
   └─> SextupleAspectsComposerService.groupSextupleEventsByKey(events: Event[]): Record<string, Event[]> [applications/caelundas/src/modules/sextuple-aspects/sextuple-aspects-composer.service.ts:384]
      ↳ Groups sextuple events by key.
     └─> SextupleAspectsComposerService.groupBy(…)(event: Event): string [applications/caelundas/src/modules/sextuple-aspects/sextuple-aspects-composer.service.ts:389]
@@ -859,16 +859,16 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
     └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
        ↳ Assembles the object pino merges into the line.
       └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-         ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+         ↳ Fails a malformed message in development, and never in production.
         └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-           ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+           ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **33. `SpecialtyAspectsService.detectProgressive`** — depth ≥ 5 · orphan-root
 
 ```text
 🚀 SpecialtyAspectsService.detectProgressive(events: Event[]): Event[] [applications/caelundas/src/modules/specialty-aspects/specialty-aspects.service.ts:213]
-   ↳ Converts instantaneous specialty aspect events into progressive events. Pairs forming and dissolving events for the…
+   ↳ Converts instantaneous specialty aspect events into progressive events.
   └─> SpecialtyAspectsProgressiveService.detectProgressive(events: Event[]): Event[] [applications/caelundas/src/modules/specialty-aspects/specialty-aspects-progressive.service.ts:41]
      ↳ Builds progressive specialty-aspect events from detected minute-level events.
     └─> ProgressiveAspectService.buildSimpleAspectFamilyProgressiveEvents(…): Event[] [applications/caelundas/src/modules/progressive/progressive-aspect.service.ts:117]
@@ -882,7 +882,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 StelliumService.detectProgressive(events: Event[]): Event[] [applications/caelundas/src/modules/stellium/stellium.service.ts:337]
-   ↳ Converts instantaneous stellium events into progressive events. Pairs forming and dissolving events for the same body…
+   ↳ Converts instantaneous stellium events into progressive events.
   └─> StelliumService.pairStelliumGroup(group: Event[]): Event[] [applications/caelundas/src/modules/stellium/stellium.service.ts:252]
      ↳ Pairs stellium group.
     └─> StelliumService.buildProgressiveStelliumEvent(forming: Event, dissolving: Event): Event [applications/caelundas/src/modules/stellium/stellium.service.ts:117]
@@ -902,7 +902,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
     └─> EclipseTopocentricService.getCurrentAnglesAndDiameter(…): { currentDiameter: number; currentLatitudeAngle: number; currentLongitudeAngle: number; } [applications/caelundas/src/modules/eclipses/eclipse-topocentric.service.ts:41]
        ↳ Derives current longitude/latitude separation angles and eclipse diameter sum.
       └─> MathService.getAngle(longitude1: Longitude, longitude2: Longitude): number [applications/caelundas/src/modules/math/math.service.ts:69]
-         ↳ Calculates the shortest angular distance between two ecliptic longitudes. This function computes the minimum arc length…
+         ↳ Calculates the shortest angular distance between two ecliptic longitudes.
         └─> MathService.normalizeDegrees(degrees: number): number [applications/caelundas/src/modules/math/math.service.ts:155]
            ↳ Normalizes an angle in degrees to the range [0, 360).
 ```
@@ -917,7 +917,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
     └─> EclipseTopocentricService.getCurrentAnglesAndDiameter(…): { currentDiameter: number; currentLatitudeAngle: number; currentLongitudeAngle: number; } [applications/caelundas/src/modules/eclipses/eclipse-topocentric.service.ts:41]
        ↳ Derives current longitude/latitude separation angles and eclipse diameter sum.
       └─> MathService.getAngle(longitude1: Longitude, longitude2: Longitude): number [applications/caelundas/src/modules/math/math.service.ts:69]
-         ↳ Calculates the shortest angular distance between two ecliptic longitudes. This function computes the minimum arc length…
+         ↳ Calculates the shortest angular distance between two ecliptic longitudes.
         └─> MathService.normalizeDegrees(degrees: number): number [applications/caelundas/src/modules/math/math.service.ts:155]
            ↳ Normalizes an angle in degrees to the range [0, 360).
 ```
@@ -932,9 +932,9 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
     └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
        ↳ Assembles the object pino merges into the line.
       └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-         ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+         ↳ Fails a malformed message in development, and never in production.
         └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-           ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+           ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **38. `SpecialtyAspectsComposerService.buildSpecialtyAspectEventFromParts`** — depth 5 · orphan-root
@@ -947,9 +947,9 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
     └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
        ↳ Assembles the object pino merges into the line.
       └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
-         ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+         ↳ Fails a malformed message in development, and never in production.
         └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
-           ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+           ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **39. `EphemerisService.getDistanceEphemerisByBody`** — depth 4 · orphan-root
@@ -958,7 +958,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 🚀 EphemerisService.getDistanceEphemerisByBody(…): Record<"lunar apogee" | "lunar perigee" | "north lunar node" | "south lunar node" | "ceres" | "chiron" | "juno" | "lilith" | "pallas" | "vesta" | "jupiter" | "mars" | "mercury" | ... 6 more ... | "venus", DistanceEphemeris> [applications/caelundas/src/modules/ephemeris/ephemeris.service.ts:320]
    ↳ Computes minute-by-minute geocentric distance for the requested bodies.
   └─> EphemerisCoordinateService.computeDistanceForBody(…): DistanceEphemeris [applications/caelundas/src/modules/ephemeris/ephemeris-coordinate.service.ts:149]
-     ↳ * Computes minute-by-minute geocentric distance for a single body. Distance is stored in astronomical units (AU) as…
+     ↳ * Computes minute-by-minute geocentric distance for a single body.
     └─> EphemerisCoordinateService.computeBodyCoordinates(…): { distance: number; latitude: number; longitude: number; } [applications/caelundas/src/modules/ephemeris/ephemeris-coordinate.service.ts:40]
        ↳ Computes body ecliptic coordinates (longitude, latitude, distance).
       └─> EphemerisConstantsService.getSwissEphemerisConstantForBody(body: Exclude<Body, Node>): number [applications/caelundas/src/modules/ephemeris/ephemeris-constants.service.ts:36]
@@ -1053,7 +1053,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 QuadrupleAspectsService.detectProgressive(events: Event[]): Event[] [applications/caelundas/src/modules/quadruple-aspects/quadruple-aspects.service.ts:75]
-   ↳ Converts instantaneous quadruple aspect events into progressive events. Pairs forming and dissolving events for the…
+   ↳ Converts instantaneous quadruple aspect events into progressive events.
   └─> QuadrupleAspectsComposerService.collectProgressiveEventsFromGroup(group: Event[], progressiveEvents: Event[]): void [applications/caelundas/src/modules/quadruple-aspects/quadruple-aspects-composer.service.ts:110]
      ↳ Collects progressive events from group.
     └─> QuadrupleAspectsBaseService.buildProgressiveEvent(formingEvent: Event, dissolvingEvent: Event): Event [applications/caelundas/src/modules/quadruple-aspects/quadruple-aspects-base.service.ts:58]
@@ -1066,7 +1066,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 ```text
 🚀 QuintupleAspectsComposerService.checkPatternExists(edges: AspectBodies[]): boolean [applications/caelundas/src/modules/quintuple-aspects/quintuple-aspects-composer.service.ts:367]
   └─> QuintupleAspectsComposerService.findPentagramPattern(bodies: Body[], edges: AspectBodies[]): Body[] | null [applications/caelundas/src/modules/quintuple-aspects/quintuple-aspects-composer.service.ts:255]
-     ↳ Checks if 5 bodies form a valid pentagram pattern (5-pointed star). A pentagram consists of 5 bodies where each body…
+     ↳ Checks if 5 bodies form a valid pentagram pattern (5-pointed star).
     └─> QuintupleAspectsComposerService.traversePentagramPath(connections: Map<Body, Set<Body>>, bodies: Body[]): Body[] | null [applications/caelundas/src/modules/quintuple-aspects/quintuple-aspects-composer.service.ts:388]
        ↳ Traverses pentagram path.
       └─> QuintupleAspectsComposerService.find(…)(…): boolean [applications/caelundas/src/modules/quintuple-aspects/quintuple-aspects-composer.service.ts:399]
@@ -1116,7 +1116,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
   └─> AspectCalculationSupportService.getLongitudesWindowForBody(…): { current: number; next: number; previous: number; } [applications/caelundas/src/modules/aspects/aspect-calculation-support.service.ts:75]
      ↳ Returns previous/current/next longitudes for one body from a body-keyed ephemeris map.
     └─> EphemerisService.getLongitudesWindow(…): { current: number; next: number; previous: number; } [applications/caelundas/src/modules/ephemeris/ephemeris.service.ts:440]
-       ↳ Extracts the ecliptic longitude for a body at the previous, current, and next minute. Convenience wrapper around {@link…
+       ↳ Extracts the ecliptic longitude for a body at the previous, current, and next minute.
       └─> EphemerisService.getCoordinateFromEphemeris(…): number [applications/caelundas/src/modules/ephemeris/ephemeris.service.ts:261]
          ↳ Safely extracts coordinate data (longitude or latitude) from ephemeris at a timestamp.
 ```
@@ -1149,7 +1149,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 🚀 EphemerisService.getDiameterEphemerisByBody(…): Record<"lunar apogee" | "lunar perigee" | "north lunar node" | "south lunar node" | "ceres" | "chiron" | "juno" | "lilith" | "pallas" | "vesta" | "jupiter" | "mars" | "mercury" | ... 6 more ... | "venus", DiameterEphemeris> [applications/caelundas/src/modules/ephemeris/ephemeris.service.ts:277]
    ↳ Computes minute-by-minute apparent angular diameter for the requested bodies. pheno_ut() returns apparent diameter in…
   └─> EphemerisPhenomenaService.computeDiameterForBody(…): DiameterEphemeris [applications/caelundas/src/modules/ephemeris/ephemeris-phenomena.service.ts:81]
-     ↳ Computes minute-by-minute apparent angular diameter for a single body. Diameter is stored in degrees as returned by…
+     ↳ Computes minute-by-minute apparent angular diameter for a single body.
     └─> EphemerisConstantsService.getSwissEphemerisConstantForBody(body: Exclude<Body, Node>): number [applications/caelundas/src/modules/ephemeris/ephemeris-constants.service.ts:36]
        ↳ Looks up the Swiss Ephemeris constant for a non-node body (planet or asteroid).
 ```
@@ -1160,7 +1160,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 🚀 EphemerisService.getIlluminationEphemerisByBody(…): Record<"lunar apogee" | "lunar perigee" | "north lunar node" | "south lunar node" | "ceres" | "chiron" | "juno" | "lilith" | "pallas" | "vesta" | "jupiter" | "mars" | "mercury" | ... 6 more ... | "venus", IlluminationEphemeris> [applications/caelundas/src/modules/ephemeris/ephemeris.service.ts:392]
    ↳ Computes per-body illumination series for the requested range.
   └─> EphemerisPhenomenaService.computeIlluminationForBody(…): IlluminationEphemeris [applications/caelundas/src/modules/ephemeris/ephemeris-phenomena.service.ts:115]
-     ↳ Computes minute-by-minute illumination fraction for requested bodies. Illumination is stored as a percentage (0-100).…
+     ↳ Computes minute-by-minute illumination fraction for requested bodies.
     └─> EphemerisConstantsService.getSwissEphemerisConstantForBody(body: Exclude<Body, Node>): number [applications/caelundas/src/modules/ephemeris/ephemeris-constants.service.ts:36]
        ↳ Looks up the Swiss Ephemeris constant for a non-node body (planet or asteroid).
 ```
@@ -1219,7 +1219,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 🚀 DailyCyclesService.buildLunarNadirEvent(date: Moment): Event [applications/caelundas/src/modules/daily-cycles/daily-cycles.service.ts:77]
    ↳ Creates a lunar nadir calendar event.
   └─> DailyCyclesBuilderService.buildLunarNadirEvent(date: Moment): Event [applications/caelundas/src/modules/daily-cycles/daily-cycles-builder.service.ts:66]
-     ↳ Creates a lunar nadir calendar event. Lunar nadir is the moment when the Moon reaches its lowest point below the…
+     ↳ Creates a lunar nadir calendar event.
     └─> CalendarService.buildInstantEvent(args: BuildInstantEventArguments): Event [applications/caelundas/src/modules/calendar/calendar.service.ts:184]
        ↳ Builds a one-minute-point event where start and end are the same timestamp.
 ```
@@ -1230,7 +1230,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 🚀 DailyCyclesService.buildLunarZenithEvent(date: Moment): Event [applications/caelundas/src/modules/daily-cycles/daily-cycles.service.ts:84]
    ↳ Creates a lunar zenith (culmination) calendar event.
   └─> DailyCyclesBuilderService.buildLunarZenithEvent(date: Moment): Event [applications/caelundas/src/modules/daily-cycles/daily-cycles-builder.service.ts:97]
-     ↳ Creates a lunar zenith (culmination) calendar event. Lunar zenith is the moment when the Moon reaches its highest…
+     ↳ Creates a lunar zenith (culmination) calendar event.
     └─> CalendarService.buildInstantEvent(args: BuildInstantEventArguments): Event [applications/caelundas/src/modules/calendar/calendar.service.ts:184]
        ↳ Builds a one-minute-point event where start and end are the same timestamp.
 ```
@@ -1241,7 +1241,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 🚀 DailyCyclesService.buildMoonriseEvent(date: Moment): Event [applications/caelundas/src/modules/daily-cycles/daily-cycles.service.ts:91]
    ↳ Creates a moonrise calendar event.
   └─> DailyCyclesBuilderService.buildMoonriseEvent(date: Moment): Event [applications/caelundas/src/modules/daily-cycles/daily-cycles-builder.service.ts:128]
-     ↳ Creates a moonrise calendar event. Moonrise occurs when the Moon crosses the horizon from below, becoming visible. The…
+     ↳ Creates a moonrise calendar event.
     └─> CalendarService.buildInstantEvent(args: BuildInstantEventArguments): Event [applications/caelundas/src/modules/calendar/calendar.service.ts:184]
        ↳ Builds a one-minute-point event where start and end are the same timestamp.
 ```
@@ -1252,7 +1252,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 🚀 DailyCyclesService.buildMoonsetEvent(date: Moment): Event [applications/caelundas/src/modules/daily-cycles/daily-cycles.service.ts:98]
    ↳ Creates a moonset calendar event.
   └─> DailyCyclesBuilderService.buildMoonsetEvent(date: Moment): Event [applications/caelundas/src/modules/daily-cycles/daily-cycles-builder.service.ts:159]
-     ↳ Creates a moonset calendar event. Moonset occurs when the Moon crosses the horizon from above, disappearing from view.…
+     ↳ Creates a moonset calendar event.
     └─> CalendarService.buildInstantEvent(args: BuildInstantEventArguments): Event [applications/caelundas/src/modules/calendar/calendar.service.ts:184]
        ↳ Builds a one-minute-point event where start and end are the same timestamp.
 ```
@@ -1263,7 +1263,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 🚀 DailyCyclesService.buildSolarNadirEvent(date: Moment): Event [applications/caelundas/src/modules/daily-cycles/daily-cycles.service.ts:105]
    ↳ Creates a formatted calendar event for solar nadir (solar midnight).
   └─> DailyCyclesBuilderService.buildSolarNadirEvent(date: Moment): Event [applications/caelundas/src/modules/daily-cycles/daily-cycles-builder.service.ts:202]
-     ↳ Creates a formatted calendar event for solar nadir (solar midnight). Generates a calendar event marking the moment when…
+     ↳ Creates a formatted calendar event for solar nadir (solar midnight).
     └─> CalendarService.buildInstantEvent(args: BuildInstantEventArguments): Event [applications/caelundas/src/modules/calendar/calendar.service.ts:184]
        ↳ Builds a one-minute-point event where start and end are the same timestamp.
 ```
@@ -1274,7 +1274,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 🚀 DailyCyclesService.buildSolarZenithEvent(date: Moment): Event [applications/caelundas/src/modules/daily-cycles/daily-cycles.service.ts:112]
    ↳ Creates a formatted calendar event for solar zenith (solar noon).
   └─> DailyCyclesBuilderService.buildSolarZenithEvent(date: Moment): Event [applications/caelundas/src/modules/daily-cycles/daily-cycles-builder.service.ts:244]
-     ↳ Creates a formatted calendar event for solar zenith (solar noon). Generates a calendar event marking the moment when…
+     ↳ Creates a formatted calendar event for solar zenith (solar noon).
     └─> CalendarService.buildInstantEvent(args: BuildInstantEventArguments): Event [applications/caelundas/src/modules/calendar/calendar.service.ts:184]
        ↳ Builds a one-minute-point event where start and end are the same timestamp.
 ```
@@ -1285,7 +1285,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 🚀 DailyCyclesService.buildSunriseEvent(date: Moment): Event [applications/caelundas/src/modules/daily-cycles/daily-cycles.service.ts:119]
    ↳ Creates a formatted calendar event for sunrise.
   └─> DailyCyclesBuilderService.buildSunriseEvent(date: Moment): Event [applications/caelundas/src/modules/daily-cycles/daily-cycles-builder.service.ts:284]
-     ↳ Creates a formatted calendar event for sunrise. Generates a calendar event marking the moment when Sun's center crosses…
+     ↳ Creates a formatted calendar event for sunrise.
     └─> CalendarService.buildInstantEvent(args: BuildInstantEventArguments): Event [applications/caelundas/src/modules/calendar/calendar.service.ts:184]
        ↳ Builds a one-minute-point event where start and end are the same timestamp.
 ```
@@ -1296,7 +1296,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 🚀 DailyCyclesService.buildSunsetEvent(date: Moment): Event [applications/caelundas/src/modules/daily-cycles/daily-cycles.service.ts:126]
    ↳ Creates a formatted calendar event for sunset.
   └─> DailyCyclesBuilderService.buildSunsetEvent(date: Moment): Event [applications/caelundas/src/modules/daily-cycles/daily-cycles-builder.service.ts:325]
-     ↳ Creates a formatted calendar event for sunset. Generates a calendar event marking the moment when Sun's center crosses…
+     ↳ Creates a formatted calendar event for sunset.
     └─> CalendarService.buildInstantEvent(args: BuildInstantEventArguments): Event [applications/caelundas/src/modules/calendar/calendar.service.ts:184]
        ↳ Builds a one-minute-point event where start and end are the same timestamp.
 ```
@@ -1316,7 +1316,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 🚀 SpecialtyAspectsComposerService.getBodyLongitudesWindow(…): { current: number; next: number; previous: number; } [applications/caelundas/src/modules/specialty-aspects/specialty-aspects-composer.service.ts:144]
    ↳ Returns previous/current/next longitudes for one body at minute resolution.
   └─> EphemerisService.getLongitudesWindow(…): { current: number; next: number; previous: number; } [applications/caelundas/src/modules/ephemeris/ephemeris.service.ts:440]
-     ↳ Extracts the ecliptic longitude for a body at the previous, current, and next minute. Convenience wrapper around {@link…
+     ↳ Extracts the ecliptic longitude for a body at the previous, current, and next minute.
     └─> EphemerisService.getCoordinateFromEphemeris(…): number [applications/caelundas/src/modules/ephemeris/ephemeris.service.ts:261]
        ↳ Safely extracts coordinate data (longitude or latitude) from ephemeris at a timestamp.
 ```
@@ -1350,7 +1350,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 CalendarService.buildEventContent(event: Event, timezone?: string): string [applications/caelundas/src/modules/calendar/calendar.service.ts:114]
-   ↳ Converts a single Event to VEVENT format for iCalendar inclusion. Generates an RFC 5545-compliant VEVENT component.…
+   ↳ Converts a single Event to VEVENT format for iCalendar inclusion.
   └─> CalendarService.generateUid(event: Event): string [applications/caelundas/src/modules/calendar/calendar.service.ts:98]
      ↳ Generates a deterministic event identity string used as the VEVENT UID source.
 ```
@@ -1360,7 +1360,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 ```text
 🚀 EphemerisService.constructor(…): EphemerisService [applications/caelundas/src/modules/ephemeris/ephemeris.service.ts:46]
   └─> initializeSwissEphemeris(): void [applications/caelundas/src/modules/ephemeris/ephemeris.constants.ts:62]
-     ↳ Configures the Swiss Ephemeris data path before any calculations are performed. Must be called once at application…
+     ↳ Configures the Swiss Ephemeris data path before any calculations are performed.
 ```
 
 **77. `IngressesComposerService.constructor`** — depth 2 · orphan-root

@@ -129,7 +129,7 @@ Call stacks traced through `conformetry-jupyter`, deepest first. Each frame show
     └─> MarkdownTreeService.compareChildren(args: CompareChildrenArguments): MarkdownComparisonError[] (cycle) [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:115]
        ↳ Compares one level of two trees, descending into containers.
       └─> MarkdownTreeService.compareContainer(args: CompareNodeArguments): CompareNodeResult (cycle) [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:55]
-         ↳ Matches a container node, then descends into it. Several instance nodes may match the container shape — two lists, say…
+         ↳ Matches a container node, then descends into it.
         └─> MarkdownTreeService.map(…)(…): { errors: MarkdownComparisonError[]; lastMatchedNode: MarkdownNode; } (cycle) [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:74]
           └─> MarkdownTreeService.compareLeaf(args: CompareNodeArguments): CompareNodeResult [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:91]
              ↳ Matches a leaf node on its own identity, without descending.
@@ -148,7 +148,7 @@ Call stacks traced through `conformetry-jupyter`, deepest first. Each frame show
 🚀 JupyterValidatorService.validateDocument(document: PreparedValidationDocument): ConformetryError[] [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:122]
    ↳ Reports every notebook difference: envelope, missing cells, cell contents.
   └─> JsonComparisonService.compareArrays(…): ConformetryError[] (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:63]
-     ↳ Compares two arrays. Required scalars must appear somewhere in the instance array, order independent. For a required…
+     ↳ Compares two arrays.
     └─> JsonComparisonService.flatMap(…)(this: undefined, templateItem: JsonValue): ConformetryError[] (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:69]
       └─> JsonComparisonService.map(…)(instanceItem: JsonValue, index: number): ConformetryError[] (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:98]
         └─> JsonComparisonService.compare(args: CompareJsonArguments): ConformetryError[] (cycle) [packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:180]

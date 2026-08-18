@@ -3,7 +3,12 @@
 /** What the documentation comment above a callable says. */
 export interface CallableDocumentation {
   readonly isDeprecated: boolean;
-  /** The comment's prose, newlines collapsed. Empty when it is all tags. */
+  /**
+   * The comment's prose in full, newlines collapsed. Empty when it is all tags.
+   *
+   * Never shortened. How much of it fits belongs to whatever renders it, and
+   * a consumer reading this has no line to fit inside.
+   */
   readonly summary: string;
   /** Tag names present, without the leading `@`, in source order. */
   readonly tags: readonly string[];

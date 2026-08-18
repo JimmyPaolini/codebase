@@ -164,6 +164,63 @@ describe(ReportService, () => {
     ).not.toContain("↳");
   });
 
+  // ✂️ Shortening a summary to fit under a frame
+
+  /** Renders one frame carrying the given summary, and returns its prose. */
+  function renderSummary(summary: string): string {
+    const rendered = service.renderStackTree(
+      stack([
+        frame("Service.load", {
+          documentation: { isDeprecated: false, summary, tags: [] },
+        }),
+      ]),
+    );
+
+    return rendered.split("↳ ")[1] ?? "";
+  }
+
+  it("prints a summary that already fits, whole", () => {
+    expect(renderSummary("Loads the thing.")).toBe("Loads the thing.");
+  });
+
+  it("keeps only the opening sentence of a summary that runs long", () => {
+    // What a callable does, then paragraphs of why. The first half is the half
+    // that orients someone reading a stack.
+    expect(
+      renderSummary(
+        `Loads the thing from the repository. ${"Because of a long reason. ".repeat(6)}`.trim(),
+      ),
+    ).toBe("Loads the thing from the repository.");
+  });
+
+  it("marks nothing when the opening sentence is a complete thought", () => {
+    // A whole sentence is not an elision, and the frame's file:line already
+    // points at the rest.
+    expect(
+      renderSummary(`Does it. ${"More prose here. ".repeat(10)}`.trim()),
+    ).not.toContain("…");
+  });
+
+  it("does not mistake a dotted identifier for the end of a sentence", () => {
+    expect(
+      renderSummary(
+        `Wraps Array.prototype.map for the caller. ${"Padding sentence. ".repeat(10)}`.trim(),
+      ),
+    ).toBe("Wraps Array.prototype.map for the caller.");
+  });
+
+  it("cuts a single overlong sentence on a word, and marks it", () => {
+    const word = "observability";
+
+    expect(renderSummary(`${word} `.repeat(20).trim())).toBe(
+      `${`${word} `.repeat(8).trim()}…`,
+    );
+  });
+
+  it("cuts at the limit when one word runs past it", () => {
+    expect(renderSummary("x".repeat(200))).toBe(`${"x".repeat(120)}…`);
+  });
+
   it("renders nothing for a stack with no frames", () => {
     expect(service.renderStackTree(stack([]))).toBe("");
   });

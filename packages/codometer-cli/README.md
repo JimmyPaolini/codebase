@@ -282,7 +282,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 ```text
 🚀 CodometerCommand.run(_passedParameters: string[], options: CodometerCommandOptions): Promise<void> [packages/codometer-cli/src/modules/codometer/codometer.command.ts:220]
-   ↳ Measure the repository and write every configured output. With no destination configured or passed, the statistics go…
+   ↳ Measure the repository and write every configured output.
   └─> CodometerService.measure(args: MeasureArguments): CodeStatisticsResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:115]
      ↳ Measure aggregated repository statistics for the provided directory.
     └─> LanguagesService.analyze(args: AnalyzeLanguagesArguments): LanguageResults [packages/codometer-cli/src/modules/languages/languages.service.ts:54]
@@ -307,7 +307,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 ```text
 🚀 OutputMarkdownService.renderBadges(args: RenderBadgesArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:165]
-   ↳ Render the built-in badge report for the measured statistics. Every counter the measurement pipeline produces gets a…
+   ↳ Render the built-in badge report for the measured statistics.
   └─> buildRepositoryGroup(statistics: CodeStatisticsResult): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:204]
      ↳ Renders the Repository badge group.
     └─> buildBadge(label: string, value: number | string, color: string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:11]
@@ -383,7 +383,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 ```text
 🚀 OutputMarkdownService.syncAnchoredBlock(args: SyncAnchoredBlockArguments): boolean [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:109]
-   ↳ Splice the anchored block into a file, or report whether it is current. Replaces the block when the markers are found,…
+   ↳ Splice the anchored block into a file, or report whether it is current.
   └─> OutputMarkdownService.buildBlockRegex(args: { endMarker: string; startMarker: string; }): RegExp [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:75]
      ↳ Build the matcher for a block delimited by the configured markers.
     └─> OutputMarkdownService.escapeRegex(input: string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:87]

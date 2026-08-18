@@ -1,11 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import ts from "typescript";
 
-import {
-  DEPRECATED_TAG,
-  SUMMARY_LIMIT,
-  TRUNCATION_SUFFIX,
-} from "./documentation.constants";
+import { DEPRECATED_TAG } from "./documentation.constants";
 
 import type { ReadDocumentationArguments } from "./documentation.types";
 import type { CallableDocumentation } from "@callidescope/configuration";
@@ -32,30 +28,23 @@ export class DocumentationService {
 
   // 🔏 Private Methods
 
-  /** Collapses a documentation comment onto one line, within the limit. */
+  /**
+   * Collapses a documentation comment onto one line, in full.
+   *
+   * Nothing is shortened here. A comment is what it is, and how much of it
+   * fits is a question about the thing being rendered into — an indented tree
+   * in a terminal has an answer, and a JSON report consumed by a machine does
+   * not. Shortening at the point of reading would impose the terminal's answer
+   * on every consumer, so `ReportService` decides instead.
+   */
   private readSummary(args: {
     checker: ts.TypeChecker;
     symbol: ts.Symbol;
   }): string {
-    const text = ts
+    return ts
       .displayPartsToString(args.symbol.getDocumentationComment(args.checker))
       .replaceAll(/\s+/g, " ")
       .trim();
-
-    if (text.length <= SUMMARY_LIMIT) {
-      return text;
-    }
-
-    // Cut on a word boundary. Slicing at the character leaves half a word,
-    // which reads as a typo rather than as an elision — and a spell checker
-    // reading the published report agrees. A summary with no space inside the
-    // limit is one long token, and cutting it anywhere is equally arbitrary,
-    // so cut at the limit.
-    const clipped = text.slice(0, SUMMARY_LIMIT);
-    const lastSpace = clipped.lastIndexOf(" ");
-    const kept = lastSpace === -1 ? clipped : clipped.slice(0, lastSpace);
-
-    return `${kept.trimEnd()}${TRUNCATION_SUFFIX}`;
   }
 
   /** Resolves the symbol a declaration's documentation hangs off. */

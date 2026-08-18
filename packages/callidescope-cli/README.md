@@ -22,7 +22,7 @@ callidescope --directory . --config configuration/callidescope.config.ts
 ```text
 Stack #1 | 🚨 [DEPTH ≥ 10 > 6] (decorated-method)
 🚀 CodometerCommand.run(_passedParameters: string[], options: CodometerCommandOptions): Promise<void> [.../codometer.command.ts:220]
-   ↳ Measure the repository and write every configured output. With no destination…
+   ↳ Measure the repository and write every configured output.
   └─> CodometerService.measure(args: MeasureArguments): CodeStatisticsResult [.../codometer.service.ts:115]
      ↳ Measure aggregated repository statistics for the provided directory.
     └─> LanguagesService.analyze(args: AnalyzeLanguagesArguments): LanguageResults [.../languages.service.ts:54]
@@ -124,8 +124,8 @@ is a list of places to go look rather than something you can read:
 
 - **The signature** — parameter names and types, and the return type. On the
   repository this covers 100% of reported frames.
-- **The documentation summary** — the JSDoc prose, collapsed to one line and
-  cut at 120 characters. Around 90% of reported frames have one.
+- **The documentation summary** — the JSDoc prose, collapsed to one line.
+  Around 90% of reported frames have one.
 - **Tags**, including `@deprecated`, which marks the frame inline.
 
 Both come from the checker rather than the comment trivia, which is what makes
@@ -139,6 +139,18 @@ A signature longer than 80 characters collapses to `(…): ReturnType`. That is
 almost always a NestJS constructor taking a dozen injected services — which
 services those are is noise at the point where you are reading a stack, and a
 440-character line destroys the indentation that makes the stack legible.
+
+A summary longer than 120 characters prints only its opening sentence. Comments
+here state what a callable does and then explain why, and the first half is the
+half that orients someone reading a stack. It prints unmarked, because a whole
+sentence is a complete thought rather than an elision and the frame's
+`file:line` already points at the rest. Only a single sentence with no boundary
+to find is cut on a word and marked `…`, which across this repository is 30 of
+905 printed summaries.
+
+**Shortening applies to the printed tree only.** The JSON report carries every
+comment in full, because a machine reading it has no line width to respect —
+the longest in the workspace runs 288 characters.
 
 Annotations are read only for the frames a report actually prints, not for all
 3,264 callables. Rendering a type is the one genuinely costly thing the checker
@@ -315,9 +327,9 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 
 | Measure | Value |
 | --- | --- |
-| Callables | 250 |
+| Callables | 252 |
 | Files | 81 |
-| Calls traced | 227 |
+| Calls traced | 229 |
 | Call stacks | 13 |
 | Deepest stack | 13 |
 | Stacks through recursion | 0 |
@@ -345,11 +357,11 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
               └─> SymbolResolutionService.resolve(…): ResolvedCallSite [packages/callidescope-cli/src/modules/edges/symbol-resolution.service.ts:267]
                  ↳ Resolves a call expression to every declaration it can reach.
                 └─> SymbolResolutionService.resolveSymbol(…): ResolvedCallSite [packages/callidescope-cli/src/modules/edges/symbol-resolution.service.ts:165]
-                   ↳ Resolves an already-identified callee symbol to its declarations. Split from `resolve` so that identifying the callee…
+                   ↳ Resolves an already-identified callee symbol to its declarations.
                   └─> SymbolResolutionService.resolveThroughHierarchy(…): ResolvedCallSite [packages/callidescope-cli/src/modules/edges/symbol-resolution.service.ts:217]
                      ↳ Expands an interface or abstract member to its implementations.
                     └─> ClassHierarchyService.resolveImplementations(…): ImplementationLookup [packages/callidescope-cli/src/modules/class-hierarchy/class-hierarchy.service.ts:207]
-                       ↳ Finds the concrete declarations one interface member resolves to. Nominal implementers are preferred; when a base names…
+                       ↳ Finds the concrete declarations one interface member resolves to.
                       └─> ClassHierarchyService.filterAssignable(…): ClassDeclaration[] [packages/callidescope-cli/src/modules/class-hierarchy/class-hierarchy.service.ts:87]
                          ↳ Keeps only classes whose instance type satisfies the declaring type.
                         └─> ClassHierarchyService.filter(…)(candidate: ts.ClassDeclaration): boolean [packages/callidescope-cli/src/modules/class-hierarchy/class-hierarchy.service.ts:94]
@@ -394,17 +406,28 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
     └─> CallSitesService.filter(…)(argument: ts.Expression): argument is ts.Expression & ts.SignatureDeclaration [packages/callidescope-cli/src/modules/edges/call-sites.service.ts:46]
 ```
 
-**5. `MarkdownReportService.renderStack`** — depth 3 · orphan-root
+**5. `ReportService.renderFrame`** — depth 3 · orphan-root
+
+```text
+🚀 ReportService.renderFrame(args: { depth: number; frame: StackFrame; }): string [packages/callidescope-cli/src/modules/report/report.service.ts:44]
+   ↳ Renders one frame at its indentation, with whatever it says about itself.
+  └─> ReportService.shortenSummary(summary: string): string [packages/callidescope-cli/src/modules/report/report.service.ts:102]
+     ↳ Shortens a summary to what fits under an indented frame.
+    └─> ReportService.readFirstSentence(summary: string): string | undefined [packages/callidescope-cli/src/modules/report/report.service.ts:37]
+       ↳ Reads a summary's opening sentence, when it has more than one.
+```
+
+**6. `MarkdownReportService.renderStack`** — depth 3 · orphan-root
 
 ```text
 🚀 MarkdownReportService.renderStack(args: { index: number; stack: CallStack; }): string [packages/callidescope-cli/src/modules/report/markdown-report.service.ts:67]
    ↳ Renders one stack: a labelled heading line and its tree in a fence.
-  └─> ReportService.renderStackTree(stack: CallStack): string [packages/callidescope-cli/src/modules/report/report.service.ts:77]
+  └─> ReportService.renderStackTree(stack: CallStack): string [packages/callidescope-cli/src/modules/report/report.service.ts:123]
      ↳ Renders every frame of a stack, the entry point first.
-    └─> ReportService.map(…)(frame: StackFrame, depth: number): string [packages/callidescope-cli/src/modules/report/report.service.ts:79]
+    └─> ReportService.map(…)(frame: StackFrame, depth: number): string [packages/callidescope-cli/src/modules/report/report.service.ts:125]
 ```
 
-**6. `CallidescopeCommand.parseProjects`** — depth 2 · decorated-method
+**7. `CallidescopeCommand.parseProjects`** — depth 2 · decorated-method
 
 ```text
 🚀 CallidescopeCommand.parseProjects(value: string | undefined): string[] [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:261]
@@ -412,7 +435,7 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
   └─> CallidescopeCommand.map(…)(name: string): string [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:270]
 ```
 
-**7. `main`** — depth ≥ 2 · module-bootstrap
+**8. `main`** — depth ≥ 2 · module-bootstrap
 
 ```text
 🚀 main(): Promise<void> [packages/callidescope-cli/src/main.ts:11]
@@ -420,14 +443,14 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
   └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:36]
 ```
 
-**8. `WorkspaceService.isExcluded`** — depth 2 · orphan-root
+**9. `WorkspaceService.isExcluded`** — depth 2 · orphan-root
 
 ```text
 🚀 WorkspaceService.isExcluded(workspaceRelativePath: string): boolean [packages/callidescope-cli/src/modules/workspace/workspace.service.ts:149]
   └─> WorkspaceService.some(…)(glob: string): boolean [packages/callidescope-cli/src/modules/workspace/workspace.service.ts:151]
 ```
 
-**9. `CallablesService.toWorkspaceRelative`** — depth 2 · orphan-root
+**10. `CallablesService.toWorkspaceRelative`** — depth 2 · orphan-root
 
 ```text
 🚀 CallablesService.toWorkspaceRelative(args: { sourceFile: ts.SourceFile; workspaceRoot: string; }): string [packages/callidescope-cli/src/modules/callables/callables.service.ts:214]
@@ -436,7 +459,7 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
      ↳ Rewrites an absolute path as workspace-relative with POSIX separators.
 ```
 
-**10. `ClassHierarchyService.readMemberDeclarations`** — depth 2 · orphan-root
+**11. `ClassHierarchyService.readMemberDeclarations`** — depth 2 · orphan-root
 
 ```text
 🚀 ClassHierarchyService.readMemberDeclarations(…): Declaration[] [packages/callidescope-cli/src/modules/class-hierarchy/class-hierarchy.service.ts:149]
@@ -444,22 +467,13 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
   └─> ClassHierarchyService.filter(…)(member: ts.PropertyDeclaration | ts.MethodDeclaration): boolean [packages/callidescope-cli/src/modules/class-hierarchy/class-hierarchy.service.ts:163]
 ```
 
-**11. `EdgesService.resolveCallableId`** — depth 2 · orphan-root
+**12. `EdgesService.resolveCallableId`** — depth 2 · orphan-root
 
 ```text
 🚀 EdgesService.resolveCallableId(…): string | undefined [packages/callidescope-cli/src/modules/edges/edges.service.ts:167]
-   ↳ Maps a resolved declaration to the callable it belongs to. A resolution can land on a property or variable declaration…
+   ↳ Maps a resolved declaration to the callable it belongs to.
   └─> WorkspaceService.toWorkspaceRelative(args: { absolutePath: string; workspaceRoot: string; }): string [packages/callidescope-cli/src/modules/workspace/workspace.service.ts:240]
      ↳ Rewrites an absolute path as workspace-relative with POSIX separators.
-```
-
-**12. `ReportService.renderFrame`** — depth 2 · orphan-root
-
-```text
-🚀 ReportService.renderFrame(args: { depth: number; frame: StackFrame; }): string [packages/callidescope-cli/src/modules/report/report.service.ts:34]
-   ↳ Renders one frame at its indentation, with whatever it says about itself.
-  └─> ReportService.renderSignature(frame: StackFrame): string [packages/callidescope-cli/src/modules/report/report.service.ts:62]
-     ↳ Renders a callable's signature, collapsing one that is too long. The return type survives the collapse. Which twelve…
 ```
 
 **13. `CallidescopeCommand.constructor`** — depth ≥ 2 · orphan-root
