@@ -1,0 +1,34 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tools/bundle-sizes",
+  "tags": [
+    "framework:nest-commander",
+    "framework:nestjs",
+    "generator:nestjs-command-project",
+    "language:typescript",
+    "type:package"
+  ],
+  "targets": {
+    "bundles": {
+      "cache": false,
+      "description": "Render measured bundle sizes as a markdown section. The SWC loader is what makes NestJS constructor injection work; tsx would not.",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/bundle-sizes/src/main.ts bundles",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "dependency-cruiser": {},
+    "knip": {},
+    "lint-codebase": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "oxlint": {},
+    "prettier": {},
+    "spell-check": {},
+    "test-coverage": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}

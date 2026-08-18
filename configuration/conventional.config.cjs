@@ -209,6 +209,11 @@ const scopes = [
       "Synchronization application and commands for automating workflows",
     name: "synchronization",
   },
+  {
+    description:
+      "Bundle size reporting CLI that renders the 🎒 Bundles pull request section",
+    name: "bundle-sizes",
+  },
 ];
 
 module.exports = { scopes, types };

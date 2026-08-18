@@ -132,7 +132,7 @@ export class BundlesCommand extends CommandRunner {
 
     if (output !== undefined) {
       await writeFile(output, `${section}\n`, "utf8");
-      this.logger.log(`Wrote the bundles section to ${output}`);
+      this.logger.log(`🎒 Wrote the bundles section to ${output}`);
     }
 
     if (markdown !== undefined) {
@@ -142,7 +142,7 @@ export class BundlesCommand extends CommandRunner {
         section,
       );
       await writeFile(markdown, `${spliced}\n`, "utf8");
-      this.logger.log(`Spliced the bundles section into ${markdown}`);
+      this.logger.log(`🎒 Spliced the bundles section into ${markdown}`);
     }
 
     if (output === undefined && markdown === undefined) {

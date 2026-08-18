@@ -88,9 +88,8 @@ jobs:
       # treats every new pull request comment as feedback needing a reply, so a
       # bot posting build statistics on each push kept waking agents up.
       #
-      # Codometer only ever touches a markdown file, which keeps a publishable
-      # measurement tool free of any one forge's API. The description is fetched
-      # and put back around it.
+      # The tool only ever touches a markdown file, so it stays independent of
+      # any one forge's API. The description is fetched and put back around it.
       - name: 🎒 Report Bundle Sizes
         if: github.event_name == 'pull_request'
         env:
@@ -100,7 +99,7 @@ jobs:
         run: |
           gh pr view "${PULL_REQUEST}" --json body --jq '.body' \
             >.pull-request-body.md
-          pnpm exec nx run codebase:bundles -- \
+          pnpm exec nx run bundle-sizes:bundles -- \
             --baseline .bundle-baseline \
             --baseline-url "${BASELINE_URL}" \
             --markdown .pull-request-body.md

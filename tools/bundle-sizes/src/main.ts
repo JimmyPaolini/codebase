@@ -1,0 +1,16 @@
+import "reflect-metadata";
+import { CommandFactory } from "nest-commander";
+
+import { LoggerService } from "@codebase/logger";
+
+import { MainModule } from "./main.module";
+
+/** Bootstraps the bundle sizes CLI application. */
+async function main(): Promise<void> {
+  const logger = new LoggerService();
+  logger.setContext("CommandFactory");
+
+  await CommandFactory.run(MainModule, { bufferLogs: true, logger });
+}
+
+void main();
