@@ -5,7 +5,7 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { DiscoveryCandidatesService } from "./discovery-candidates.service";
+import { TemplateDiscoveryCandidatesService } from "./template-discovery-candidates.service";
 
 /**
  * Builds a workspace holding two module directories, so directory globs and
@@ -37,16 +37,16 @@ async function createWorkspace(): Promise<string> {
   return workingDirectory;
 }
 
-describe(DiscoveryCandidatesService, () => {
-  let service: DiscoveryCandidatesService;
+describe(TemplateDiscoveryCandidatesService, () => {
+  let service: TemplateDiscoveryCandidatesService;
   let workingDirectory: string;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [DiscoveryCandidatesService],
+      providers: [TemplateDiscoveryCandidatesService],
     }).compile();
 
-    service = await module.resolve(DiscoveryCandidatesService);
+    service = await module.resolve(TemplateDiscoveryCandidatesService);
     workingDirectory = await createWorkspace();
   });
 

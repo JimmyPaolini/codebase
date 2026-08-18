@@ -16,14 +16,14 @@ import { YamlService } from "../yaml/yaml.service";
 
 import { LanguagesService } from "./languages.service";
 
-import type { DiscoveryResult } from "../discovery/discovery.types";
+import type { FileDiscoveryResult } from "../file-discovery/file-discovery.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
 const configuration = createMock<ResolvedCodometerConfiguration>({
   python: { command: "uv run python" },
 });
 
-const discoveredFiles: DiscoveryResult = {
+const discoveredFiles: FileDiscoveryResult = {
   cssFiles: ["src/styles.css"],
   hclFiles: ["infrastructure/main.tf"],
   jsFiles: ["src/app.js"],

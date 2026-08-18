@@ -1,4 +1,4 @@
-import { DiscoveryModule } from "@conformetry/configuration";
+import { TemplateDiscoveryModule } from "@conformetry/configuration";
 import { LanguageModule, ReportingModule } from "@conformetry/core";
 import { FilesModule } from "@conformetry/files";
 import { Module } from "@nestjs/common";
@@ -18,7 +18,7 @@ import { ValidationService } from "./validation.service";
 @Module({
   controllers: [],
   exports: [
-    DiscoveryModule,
+    TemplateDiscoveryModule,
     FilesModule,
     LanguageModule,
     ReportingModule,
@@ -27,7 +27,12 @@ import { ValidationService } from "./validation.service";
     ValidationLanguagesService,
     ValidationService,
   ],
-  imports: [DiscoveryModule, FilesModule, LanguageModule, ReportingModule],
+  imports: [
+    TemplateDiscoveryModule,
+    FilesModule,
+    LanguageModule,
+    ReportingModule,
+  ],
   providers: [
     ValidationDeduplicationService,
     ValidationFindingsService,
