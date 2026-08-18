@@ -148,9 +148,9 @@
   "ignoreExportsUsedInFile": true,
   "ignorePatterns": [
     "**/*.min.js",
-    "**/.agents/skills/**",
-    "**/.agents/licenses/**",
-    "**/.claude/skills/**",
+    "**/.agents/skills/**/scripts/**",
+    "**/.agents/skills/**/scripts/**",
+    "**/.claude/skills/**/scripts/**",
     "**/.conformetry/**",
     "**/.github/skills/**/scripts/**",
     "**/.nx/**",

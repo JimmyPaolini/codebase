@@ -33,10 +33,6 @@ export default [
     ignores: [
       "**/dist",
       "**/node_modules",
-      // Vendored agent skills — committed so fresh worktrees have them, but
-      // owned upstream and treated like node_modules by every tool
-      "**/.agents/skills/**",
-      "**/.agents/licenses/**",
       "**/.venv",
       "**/coverage",
       "**/.conformetry",

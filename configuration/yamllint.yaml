@@ -15,8 +15,6 @@ ignore: |
   **/coverage/
   **/dist/
   **/node_modules/
-  **/.agents/skills/
-  **/.agents/licenses/
   **/pnpm-lock.yaml
   **/templates/
   CHANGELOG.md

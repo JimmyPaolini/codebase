@@ -50,7 +50,3 @@ tmp
 **/data/wikipedia
 **/data/wiktionary
 yarn.lock
-
-# 🧩 Vendored agent skills — committed for fresh worktrees, owned upstream
-**/.agents/skills/**
-**/.agents/licenses/**
