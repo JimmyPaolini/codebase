@@ -46,7 +46,7 @@ export interface LanguageValidatorDescriptor {
   readonly description?: string;
   /** Extensions this validator claims, including the leading dot. */
   readonly fileExtensions: readonly string[];
-  /** Stable identifier, also usable as a `--rules` filter value. */
+  /** Stable identifier, also usable as a `--languages` filter value. */
   readonly name: string;
 }
 

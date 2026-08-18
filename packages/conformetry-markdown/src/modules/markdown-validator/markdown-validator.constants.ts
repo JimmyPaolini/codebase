@@ -5,7 +5,7 @@ import type { LanguageValidatorDescriptor } from "@conformetry/core";
 /** Extensions the markdown validator claims. */
 export const MARKDOWN_VALIDATOR_FILE_EXTENSIONS = [".md"];
 
-/** Identifies the markdown validator to the orchestrator and `--rules` filter. */
+/** Identifies the markdown language to the orchestrator and the `--languages` filter. */
 export const MARKDOWN_VALIDATOR_DESCRIPTOR: LanguageValidatorDescriptor = {
   description: "Checks markdown structural conformance using mdast",
   fileExtensions: MARKDOWN_VALIDATOR_FILE_EXTENSIONS,

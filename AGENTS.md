@@ -128,32 +128,40 @@ The table below reflects the conformetry generator registry in `configuration/co
 
 ### Validation
 
-Conformetry validation is run via the workspace wrapper target and returns a JSON result summary.
-It evaluates selected projects against validator rules derived from the conformetry configuration.
+Conformetry validation measures an **instance** — generated code on disk — against
+the **template** it came from, and prints a text report of every **difference**.
+A difference is something the template declares that the instance lacks; content
+the instance adds is never a difference.
+
+Every project with instances to check carries its own target. Run one, or all of
+them:
 
 ```bash
-pnpm nx run codebase:conformetry-validate
+pnpm nx run <project>:conformetry-validate
+pnpm nx run-many --targets=conformetry-validate
 ```
 
-Use filters when you want targeted checks:
-
-```bash
-pnpm nx run codebase:conformetry-validate -- --projects=<project-a>,<project-b>
-pnpm nx run codebase:conformetry-validate -- --rules=<rule-a>,<rule-b>
-pnpm nx run codebase:conformetry-validate -- --projects=<project> --rules=<rule>
-```
+The root project is deliberately excluded, so there is no workspace-wide wrapper
+target. `run-many` is what the pre-commit hook runs, which is why it is the form
+to reach for.
 
 How validation works:
 
-- By default, it validates all selected workspace projects using all configured rule names.
-- Rules map to generator families (for example `nestjs-service-module`, `react-component`).
-- A rule runs only where applicable based on project tags and discovered file patterns.
+- Instance globs in the configuration decide which paths are checked. A group
+  carrying project tags is read inside each project it selects.
+- Each path is attributed to a template by how many of that template's files it
+  already has. Nothing records where an instance came from, so an unattributable
+  path is itself reported as a difference.
+- A **language**, chosen by file extension, does the comparing. There is no
+  autofix; remediation is editing the instance or regenerating it.
 - Each matched instance is scored by how much of its template it honours, and fails when that score falls below its threshold. Any failing instance fails the command, which is intended for CI and pre-merge quality gates.
 - The threshold defaults to `1` — a perfect match — so validation is strict unless a threshold is lowered deliberately.
 - Three levels set it, narrowest first: an instance group's `threshold`, then the generator's `threshold`, then a run-level `--threshold`. Lower one when migrating existing instances onto a new template rather than converting the whole workspace in one change.
-- Findings print whether or not the instance cleared its threshold: a lowered threshold permits the drift, it does not hide it.
+- Differences print whether or not the instance cleared its threshold: a lowered threshold permits the drift, it does not hide it.
 
-Use this flow for best results: generate with conformetry first, then run validation after custom edits to confirm the result still matches the repository's conformetry standards.
+Use this flow for best results: generate with conformetry first, then run
+validation after custom edits to confirm the result still matches the
+repository's conformetry standards.
 
 ## Work Scope
 

@@ -84,6 +84,41 @@ reserving that flag would leave no way to supply it.
 Missing required inputs are prompted for when stdin is a TTY and `CI` is not
 `true`. Otherwise the command fails rather than hanging.
 
+### `conformetry list`
+
+Names every generator the loaded configuration declares, with its aliases,
+description and template. Nothing else answers that question: a generator name
+guessed at is rejected, and aliases only resolve through the Nx plugin.
+
+| Flag | Purpose |
+| ---- | ------- |
+| `--config [path]` | Configuration file to read |
+| `--json` | Write the listing as JSON |
+
+### `conformetry explain`
+
+Explains which template a path is an instance of, and why. Nothing records where
+an instance came from — attribution is inferred from how much of a template's
+structure the path already has — so this is the way to act on an ambiguous or
+unmatched instance.
+
+```bash
+conformetry explain packages/billing/src/modules/billing
+```
+
+```text
+  packages/billing/src/modules/billing
+    Verdict: matched nestjs-service-module
+    Considered:
+      nestjs-service-module 5/5 files 100%
+      nestjs-command-module 3/5 files 60%
+```
+
+| Flag | Purpose |
+| ---- | ------- |
+| `--config [path]` | Configuration file to read |
+| `--json` | Write the report as JSON |
+
 ### `conformetry validate`
 
 Expands the configured instance globs and compares everything it finds against
@@ -93,7 +128,7 @@ the template it was generated from.
 | ---- | ------- |
 | `--config [path]` | Configuration file to read |
 | `--instances [globs]` | Comma-separated globs to validate, overriding the configuration |
-| `--languages [names]` | Comma-separated validators to run — `typescript`, `markdown`, `python`, `json`, `jupyter`, `text` |
+| `--languages [names]` | Comma-separated languages to run — `typescript`, `markdown`, `python`, `json`, `jupyter`, `text` |
 | `--threshold [ratio]` | Lowest conformance score an instance may have, 0 to 1. The weakest of the three threshold levels |
 
 Every flag is optional; an absent filter means "everything". The command exits
@@ -165,7 +200,7 @@ workspace over in one change.
 Findings print either way. A lowered threshold is permission to ship the drift,
 not a reason to stop showing it.
 
-Findings are grouped by file and each one carries the location on **both**
+Differences are grouped by file and each one carries the location on **both**
 sides — where the instance is wrong and where the template says so — plus the
 expected value and a concrete fix:
 
