@@ -573,12 +573,22 @@ license to travel with the copy:
 | Source | License | Skills |
 | ------ | ------- | ------ |
 | [mattpocock/skills](https://github.com/mattpocock/skills) | MIT | 25, the Agent Workflow set |
+| [nrwl/nx](https://github.com/nrwl/nx) | MIT | 7, the `nx-*` skills plus `monitor-ci` and `link-workspace-packages` |
 | [obra/superpowers](https://github.com/obra/superpowers) | MIT | 5 |
 | [github/gh-stack](https://github.com/github/gh-stack) | MIT | 1 |
 | [github/awesome-copilot](https://github.com/github/awesome-copilot) | MIT | 1 |
 | [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | Apache-2.0 | 1 |
 
 `skills-lock.json` maps each individual skill to its source.
+
+Two tools reach `.agents/` and so must skip the installed skills: `prettier`
+scans `.`, and `codometer` scans `--directory .`. Both list the skills one per
+line in their ignore files rather than excluding `.agents/skills/` wholesale, so
+this repository's own skills in the same directory keep being checked and
+measured. `codebase:check-skill-exclusions` runs inside `lint-codebase` and
+fails when a skill in the lockfile is missing from either file — which is what
+`skills update` adding a skill would otherwise do silently. Every other tool
+scopes itself with explicit globs that never include `.agents/`.
 
 `scripts/install-skills.sh` still exists, run by the root `postinstall` and by
 `codebase:install-skills`. With the skills committed it is a no-op in the normal
@@ -650,6 +660,11 @@ loaded from there rather than from a list kept in this file.
 - You have access to the Nx MCP server and its tools, use them to help the user
 - For Nx plugin best practices, check `node_modules/@nx/<plugin>/PLUGIN.md`. Not all plugins have this file - proceed without it if unavailable.
 - NEVER guess CLI flags - always check nx_docs or `--help` first when unsure
+- **This workspace has no `test` target.** The `nx-*` skills are installed from
+  [nrwl/nx](https://github.com/nrwl/nx) and their examples use the conventional
+  `nx run-many -t test`, which fails here. Read `test` as `vitest` — or
+  `pytest` for a `language:python` project — and see
+  [Testing](#testing) for the real target names.
 
 ## Scaffolding & Generators
 

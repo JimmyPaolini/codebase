@@ -6,7 +6,7 @@
 
 ## The Config-as-Package Pattern
 
-Turborepo codebases ship with internal workspace packages that share configuration:
+Turborepo monorepos ship with internal workspace packages that share configuration:
 
 - **`@repo/typescript-config`** (or similar) — tsconfig files (`base.json`, `nextjs.json`, `react-library.json`, etc.)
 - **`@repo/eslint-config`** (or similar) — ESLint config files and all ESLint plugin dependencies

@@ -31,9 +31,9 @@ You can pass a `-p` flag to filter to specific projects, otherwise it runs on al
 
 Examples:
 
-- `nx run-many -t vitest -p proj1 proj2` — test specific projects
-- `nx run-many -t vitest --projects=*-app --exclude=excluded-app` — test projects matching a pattern
-- `nx run-many -t vitest --projects=tag:api-*` — test projects by tag
+- `nx run-many -t test -p proj1 proj2` — test specific projects
+- `nx run-many -t test --projects=*-app --exclude=excluded-app` — test projects matching a pattern
+- `nx run-many -t test --projects=tag:api-*` — test projects by tag
 
 ## Run tasks for affected projects
 
@@ -45,8 +45,8 @@ nx affected -t build test lint
 
 By default it compares against the base branch. You can customize this:
 
-- `nx affected -t vitest --base=main --head=HEAD` — compare against a specific base and head
-- `nx affected -t vitest --files=libs/mylib/src/index.ts` — specify changed files directly
+- `nx affected -t test --base=main --head=HEAD` — compare against a specific base and head
+- `nx affected -t test --files=libs/mylib/src/index.ts` — specify changed files directly
 
 ## Useful flags
 

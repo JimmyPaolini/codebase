@@ -66,7 +66,7 @@ projectStructure.cache.json
 # upstream rather than authored here, so they are formatted as their sources
 # formatted them. Listed individually rather than as `.agents/skills/` so this
 # repository's own skills in the same directory keep being checked.
-# Regenerate after `skills update` adds a skill.
+# Verified by `nx run codebase:check-skill-exclusions`.
 **/.agents/licenses/**
 **/.agents/skills/ask-matt/**
 **/.agents/skills/code-review/**
@@ -83,6 +83,13 @@ projectStructure.cache.json
 **/.agents/skills/impeccable/**
 **/.agents/skills/implement/**
 **/.agents/skills/improve-codebase-architecture/**
+**/.agents/skills/link-workspace-packages/**
+**/.agents/skills/monitor-ci/**
+**/.agents/skills/nx-generate/**
+**/.agents/skills/nx-import/**
+**/.agents/skills/nx-plugins/**
+**/.agents/skills/nx-run-tasks/**
+**/.agents/skills/nx-workspace/**
 **/.agents/skills/prototype/**
 **/.agents/skills/receiving-code-review/**
 **/.agents/skills/research/**
