@@ -82,6 +82,8 @@ export interface CallGraphResult {
   readonly deepStacks: readonly DeepStackFinding[];
   readonly misplacedCallables: readonly MisplacedCallableFinding[];
   readonly moduleSpreads: readonly ModuleSpreadFinding[];
+  /** One report per project traced, in the order projects were discovered. */
+  readonly projects: readonly ProjectReport[];
   readonly summary: CallGraphSummary;
   readonly typeDepths: readonly TypeDepthSummary[];
 }
@@ -98,8 +100,8 @@ export interface CallGraphSummary {
   readonly unresolvedCallCount: number;
 }
 
-/** A call stack deeper than the configured limit. */
-export interface DeepStackFinding {
+/** One entry point and the deepest stack below it. */
+export interface CallStack {
   readonly depth: number;
   readonly entryPointKind: EntryPointKind;
   readonly frames: readonly StackFrame[];
@@ -108,6 +110,10 @@ export interface DeepStackFinding {
    * floor rather than a measurement.
    */
   readonly isLowerBound: boolean;
+}
+
+/** A call stack deeper than the configured limit. */
+export interface DeepStackFinding extends CallStack {
   readonly limit: number;
 }
 
@@ -159,6 +165,22 @@ export interface ModuleSpreadFinding {
   readonly location: SourceLocation;
   readonly statementCount: number;
   readonly transitiveSpread: number;
+}
+
+/**
+ * Everything one project contributed to a run.
+ *
+ * Scoped by the project the entry point sits in, so a section embedded in a
+ * project's own README describes that project rather than the workspace.
+ */
+export interface ProjectReport {
+  readonly misplacedCallables: readonly MisplacedCallableFinding[];
+  readonly moduleSpreads: readonly ModuleSpreadFinding[];
+  readonly projectName: string;
+  /** Every stack that makes at least one call, deepest first. */
+  readonly stacks: readonly CallStack[];
+  readonly summary: CallGraphSummary;
+  readonly typeDepths: readonly TypeDepthSummary[];
 }
 
 /** Where a declaration or a call site sits. */

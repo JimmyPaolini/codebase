@@ -8,3 +8,6 @@
  * stack that runs through one.
  */
 export const INCLUDE_CONSTRUCTOR_EDGES = true;
+
+/** File a project's embedded section is spliced into. */
+export const PROJECT_README_NAME = "README.md";

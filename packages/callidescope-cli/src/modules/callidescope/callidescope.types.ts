@@ -2,6 +2,7 @@
 
 import type {
   CallGraphResult,
+  CallidescopeOutputFormat,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
 
@@ -10,6 +11,7 @@ export interface CallidescopeCommandOptions {
   readonly check?: boolean | undefined;
   readonly config?: string | undefined;
   readonly directory?: string | undefined;
+  readonly format?: CallidescopeOutputFormat | undefined;
   readonly json?: string | undefined;
   readonly markdown?: string | undefined;
   readonly projects?: string[] | undefined;
@@ -19,6 +21,7 @@ export interface CallidescopeCommandOptions {
 export interface SyncDestinationsArguments {
   readonly check: boolean;
   readonly configuration: ResolvedCallidescopeConfiguration;
+  readonly projectRoots: ReadonlyMap<string, string>;
   readonly result: CallGraphResult;
 }
 
@@ -32,5 +35,7 @@ export interface TraceArguments {
 /** What one trace produced, alongside the projects it covered. */
 export interface TraceOutcome {
   readonly projectNames: readonly string[];
+  /** Workspace-relative root of each project traced, keyed by name. */
+  readonly projectRoots: ReadonlyMap<string, string>;
   readonly result: CallGraphResult;
 }

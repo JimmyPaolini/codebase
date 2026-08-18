@@ -9,6 +9,8 @@ import type ts from "typescript";
 export interface CallableCollection {
   readonly byId: ReadonlyMap<CallableId, DiscoveredCallable>;
   readonly fileCount: number;
+  /** How many files each project contributed, for its own report. */
+  readonly fileCountByProject: ReadonlyMap<string, number>;
 }
 
 /** Any declaration the tool treats as a frame on a call stack. */

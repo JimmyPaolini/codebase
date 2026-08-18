@@ -322,3 +322,188 @@ nx run conformetry-cli:build
 ## License
 
 MIT — see [LICENSE](../../LICENSE).
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `conformetry-cli`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 25 |
+| Files | 15 |
+| Calls traced | 31 |
+| Call stacks | 13 |
+| Deepest stack | 10 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 2 |
+
+### Call stacks
+
+**1. `ValidateCommand.run`** — depth ≥ 10 · decorated-method
+
+```text
+🚀 ValidateCommand.run(_passedParameters: string[], options: ValidateCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/validate/validate.command.ts:131]
+   ↳ Runs validation and reports every difference found.
+  └─> ValidationService.validate(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-validation/src/modules/validation/validation.service.ts:122]
+     ↳ Validates every candidate and returns the differences found. Candidates that matched no template are reported alongside…
+    └─> DiscoveryService.resolveInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/discovery/discovery.service.ts:117]
+       ↳ Matches candidate directories to the templates that best explain them.
+      └─> DiscoveryMatchingService.resolveInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/discovery/discovery-matching.service.ts:122]
+         ↳ Resolves every candidate to the template — or templates — that explain it. A candidate matching nothing, or matching…
+        └─> DiscoveryMatchingService.scoreTemplates(…): ScoredTemplate[] [packages/conformetry-configuration/src/modules/discovery/discovery-matching.service.ts:64]
+           ↳ Scores every template that shares at least one file with the candidate.
+          └─> DiscoveryMatchingService.map(…)(…): { matchedFileCount: number; ratio: number; template: TemplateDefinition; } [packages/conformetry-configuration/src/modules/discovery/discovery-matching.service.ts:70]
+            └─> DiscoveryTemplatesService.countMatchingFiles(…): number [packages/conformetry-configuration/src/modules/discovery/discovery-templates.service.ts:95]
+               ↳ Counts how many of a template's files the instance path already has. When a file scope is given, only files inside it…
+              └─> DiscoveryTemplatesService.filter(…)(templateFilePath: string): boolean [packages/conformetry-configuration/src/modules/discovery/discovery-templates.service.ts:104]
+                └─> DiscoveryTemplatesService.resolveInstanceFilePath(…): string [packages/conformetry-configuration/src/modules/discovery/discovery-templates.service.ts:152]
+                   ↳ Maps a template file path to the instance file path it governs.
+                  └─> RenderingService.renderPath(args: { substitutions: Substitutions; templatePath: string; }): string [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:80]
+                     ↳ Renders a template path with mustache, the same way contents are rendered. Paths once used a `__field__` syntax of…
+```
+
+**2. `GenerateCommand.run`** — depth ≥ 9 · decorated-method
+
+```text
+🚀 GenerateCommand.run(passedParameters: string[], options: GenerateCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/generate/generate.command.ts:106]
+   ↳ Resolves the generator's inputs and writes its files.
+  └─> InputService.resolveGeneratorInputs(args: ResolveGeneratorInputsArguments): Promise<Record<string, string>> [packages/conformetry-configuration/src/modules/input/input.service.ts:162]
+     ↳ Resolves generator inputs from raw command-line arguments.
+    └─> InputService.resolveInputs(…): Promise<Record<string, string>> [packages/conformetry-configuration/src/modules/input/input.service.ts:52]
+       ↳ Walks a schema, taking each value from the resolver or a prompt.
+      └─> InputService.acceptProvidedValue(args: { input: SchemaInput; value: string; }): string [packages/conformetry-configuration/src/modules/input/input.service.ts:38]
+         ↳ Validates a value the caller already had, throwing if it is invalid.
+        └─> InputSchemaService.validateValue(args: { input: SchemaInput; value: unknown; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:158]
+           ↳ Validates a value, returning `true` or the reason it failed. An empty value is only an error when the input is…
+          └─> InputSchemaService.validateEnum(args: { input: SchemaInput; value: string; }): string | true [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:39]
+             ↳ Validates a value against a schema `enum`, when one is declared.
+            └─> InputSchemaService.readEnumValues(propertySchema: unknown): string[] [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:123]
+               ↳ Reads the string members of a schema `enum`.
+              └─> InputSchemaService.readSchemaProperty(propertySchema: unknown, key: string): unknown [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:26]
+                 ↳ Reads one property off a schema fragment when it is an object.
+                └─> InputSchemaService.find(…)([entryKey]: [string, any]): boolean [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:31]
+```
+
+**3. `errorHandler`** — depth 5 · orphan-root
+
+```text
+🚀 errorHandler(error: Error): void [packages/conformetry-cli/src/main.ts:17]
+  └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:206]
+     ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
+    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+       ↳ Assembles the object pino merges into the line.
+      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+         ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+           ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+```
+
+<details>
+<summary>10 more call stacks</summary>
+
+**4. `serviceErrorHandler`** — depth 5 · orphan-root
+
+```text
+🚀 serviceErrorHandler(error: Error): void [packages/conformetry-cli/src/main.ts:22]
+  └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:206]
+     ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
+    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+       ↳ Assembles the object pino merges into the line.
+      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+         ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+           ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+```
+
+**5. `ValidateCommand.parseInstances`** — depth 3 · decorated-method
+
+```text
+🚀 ValidateCommand.parseInstances(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:112]
+   ↳ Parses the optional instance glob override.
+  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:125]
+     ↳ Splits a comma-delimited filter option into its values.
+    └─> InputService.filter(…)(item: string): boolean [packages/conformetry-configuration/src/modules/input/input.service.ts:135]
+```
+
+**6. `ValidateCommand.parseLanguages`** — depth 3 · decorated-method
+
+```text
+🚀 ValidateCommand.parseLanguages(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:122]
+   ↳ Parses the optional language filter.
+  └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:125]
+     ↳ Splits a comma-delimited filter option into its values.
+    └─> InputService.filter(…)(item: string): boolean [packages/conformetry-configuration/src/modules/input/input.service.ts:135]
+```
+
+**7. `GenerateCommand.parseConfig`** — depth 2 · decorated-method
+
+```text
+🚀 GenerateCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/generate/generate.command.ts:66]
+   ↳ Parses the optional configuration path.
+  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:141]
+     ↳ Trims an optional string option, treating blank as absent.
+```
+
+**8. `GenerateCommand.parseDirectory`** — depth 2 · decorated-method
+
+```text
+🚀 GenerateCommand.parseDirectory(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/generate/generate.command.ts:75]
+   ↳ Parses the output directory override.
+  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:141]
+     ↳ Trims an optional string option, treating blank as absent.
+```
+
+**9. `GenerateCommand.parseGenerator`** — depth 2 · decorated-method
+
+```text
+🚀 GenerateCommand.parseGenerator(value: string): string [packages/conformetry-cli/src/modules/generate/generate.command.ts:84]
+   ↳ Parses the name of the generator to run.
+  └─> InputService.parseRequiredOption(args: { optionName: string; value: string; }): string [packages/conformetry-configuration/src/modules/input/input.service.ts:148]
+     ↳ Trims a required string option, rejecting blank values.
+```
+
+**10. `ValidateCommand.parseConfig`** — depth 2 · decorated-method
+
+```text
+🚀 ValidateCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:103]
+   ↳ Parses the optional configuration path.
+  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:141]
+     ↳ Trims an optional string option, treating blank as absent.
+```
+
+**11. `main`** — depth ≥ 2 · module-bootstrap
+
+```text
+🚀 main(): Promise<void> [packages/conformetry-cli/src/main.ts:11]
+   ↳ Bootstraps the NestJS command application.
+  └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:36]
+```
+
+**12. `GenerateCommand.constructor`** — depth ≥ 2 · orphan-root
+
+```text
+🚀 GenerateCommand.constructor(…): GenerateCommand [packages/conformetry-cli/src/modules/generate/generate.command.ts:32]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+     ↳ Sets the context label included in every subsequent log line.
+```
+
+**13. `ValidateCommand.constructor`** — depth ≥ 2 · orphan-root
+
+```text
+🚀 ValidateCommand.constructor(…): ValidateCommand [packages/conformetry-cli/src/modules/validate/validate.command.ts:41]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+     ↳ Sets the context label included in every subsequent log line.
+```
+
+</details>
+
+### Module spread
+
+None.
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->

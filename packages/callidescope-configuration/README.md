@@ -84,7 +84,7 @@ stays out of the configuration file itself.
 
 ## Output
 
-Both destinations are optional, and unconfigured is the normal case: a run that
+Every destination is optional, and unconfigured is the normal case: a run that
 names no destination reports to the console and exits non-zero on violations, so
 nothing it writes can go stale.
 
@@ -92,6 +92,16 @@ nothing it writes can go stale.
 | ----------- | ------- |
 | `output.json` | A machine-readable report at `path`, indented by `indentation` |
 | `output.markdown` | A marker-delimited block spliced into `path` |
+| `output.projectReadmes` | One section per traced project, in that project's own `README.md` |
+
+`output.format` is separate from all three: it decides what the run prints,
+`markdown` or `json`, and defaults to `markdown`. Writing to a file and printing
+to a terminal are independent, so both can be on at once.
+
+`output.projectReadmes` takes `heading` (`## 🔭 Callidescope` by default),
+`previewCount` (how many stacks are shown before the rest go behind a
+disclosure, three by default), and the same `startMarker`/`endMarker` pair the
+markdown destination uses. `{}` accepts all four defaults.
 
 A markdown destination may supply `render` to replace the built-in tables, or
 `write` to place the block itself. A `write` function is handed
@@ -129,3 +139,32 @@ nx run callidescope-configuration:vitest
 ## License
 
 MIT — see [LICENSE](../../LICENSE).
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `callidescope-configuration`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 18 |
+| Files | 9 |
+| Calls traced | 16 |
+| Call stacks | 0 |
+| Deepest stack | 0 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 2 |
+
+### Call stacks
+
+None.
+
+### Module spread
+
+None.
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->

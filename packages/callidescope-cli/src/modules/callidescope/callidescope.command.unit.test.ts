@@ -18,6 +18,7 @@ import { LoggerService } from "@codebase/logger";
 import { buildCallGraphResult } from "../../../testing/mocks";
 import { OutputJsonService } from "../output-json/output-json.service";
 import { OutputMarkdownService } from "../output-markdown/output-markdown.service";
+import { MarkdownReportService } from "../report/markdown-report.service";
 import { ReportService } from "../report/report.service";
 
 import { CallidescopeCommand } from "./callidescope.command";
@@ -25,6 +26,7 @@ import { CallidescopeService } from "./callidescope.service";
 
 import type {
   CallGraphResult,
+  ProjectReport,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
 
@@ -50,9 +52,35 @@ function buildConfiguration(
       minimumCallers: 2,
       spreadThreshold: 4,
     },
-    output: { json: undefined, markdown: undefined },
+    output: {
+      format: "markdown",
+      json: undefined,
+      markdown: undefined,
+      projectReadmes: undefined,
+    },
     projects: [],
     ...overrides,
+  };
+}
+
+/** Builds an empty report for one named project. */
+function buildProjectReport(projectName: string): ProjectReport {
+  return {
+    misplacedCallables: [],
+    moduleSpreads: [],
+    projectName,
+    stacks: [],
+    summary: {
+      callableCount: 0,
+      cyclicComponentCount: 0,
+      edgeCount: 0,
+      entryPointCount: 0,
+      fileCount: 0,
+      maximumDepth: 0,
+      projectCount: 1,
+      unresolvedCallCount: 0,
+    },
+    typeDepths: [],
   };
 }
 
@@ -69,6 +97,7 @@ describe(CallidescopeCommand, () => {
   function stubTrace(result: CallGraphResult = buildCallGraphResult()): void {
     callidescopeService.trace.mockReturnValue({
       projectNames: ["example"],
+      projectRoots: new Map([["example", "packages/example"]]),
       result,
     });
   }
@@ -93,7 +122,10 @@ describe(CallidescopeCommand, () => {
           provide: OutputMarkdownService,
           useValue: createMock<OutputMarkdownService>(),
         },
-        { provide: ReportService, useValue: new ReportService() },
+        {
+          provide: MarkdownReportService,
+          useValue: new MarkdownReportService(new ReportService()),
+        },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
@@ -118,7 +150,10 @@ describe(CallidescopeCommand, () => {
         { provide: CallidescopeService, useValue: callidescopeService },
         { provide: OutputJsonService, useValue: outputJsonService },
         { provide: OutputMarkdownService, useValue: outputMarkdownService },
-        { provide: ReportService, useValue: new ReportService() },
+        {
+          provide: MarkdownReportService,
+          useValue: new MarkdownReportService(new ReportService()),
+        },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
@@ -148,7 +183,10 @@ describe(CallidescopeCommand, () => {
         { provide: CallidescopeService, useValue: callidescopeService },
         { provide: OutputJsonService, useValue: outputJsonService },
         { provide: OutputMarkdownService, useValue: outputMarkdownService },
-        { provide: ReportService, useValue: new ReportService() },
+        {
+          provide: MarkdownReportService,
+          useValue: new MarkdownReportService(new ReportService()),
+        },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
@@ -214,8 +252,143 @@ describe(CallidescopeCommand, () => {
     await command.run([], {});
 
     expect(callidescopeService.trace).toHaveBeenCalledTimes(1);
-    // Header, stacks, cohesion, summary — the four parts of the report.
-    expect(process.stdout.write).toHaveBeenCalledTimes(4);
+    // One write: the report is a single rendered document now.
+    expect(process.stdout.write).toHaveBeenCalledTimes(1);
+  });
+
+  it("prints markdown by default", async () => {
+    const write = vi.spyOn(process.stdout, "write").mockReturnValue(true);
+
+    await command.run([], {});
+
+    const printed = String(write.mock.calls[0]?.[0] ?? "");
+
+    expect(printed).toContain("# 🔭 Callidescope");
+    expect(printed).toContain("| Measure | Value |");
+  });
+
+  it("prints json when the format asks for it", async () => {
+    configurationService.loadConfiguration.mockResolvedValue(
+      buildConfiguration({
+        output: {
+          format: "json",
+          json: undefined,
+          markdown: undefined,
+          projectReadmes: undefined,
+        },
+      }),
+    );
+    outputJsonService.buildReport.mockReturnValue('{"summary":{}}\n');
+
+    await command.run([], {});
+
+    expect(outputJsonService.buildReport).toHaveBeenCalledTimes(1);
+  });
+
+  it("prefers the format a flag names over the configured one", async () => {
+    outputJsonService.buildReport.mockReturnValue("{}\n");
+
+    await command.run([], { format: "json" });
+
+    expect(outputJsonService.buildReport).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    ["json", "json"],
+    ["markdown", "markdown"],
+    [undefined, "markdown"],
+    ["nonsense", "markdown"],
+  ] as const)("parses the format flag %s as %s", (value, expected) => {
+    expect(command.parseFormat(value)).toBe(expected);
+  });
+
+  it("writes a section into every traced project's README", async () => {
+    configurationService.loadConfiguration.mockResolvedValue(
+      buildConfiguration({
+        output: {
+          format: "markdown",
+          json: undefined,
+          markdown: undefined,
+          projectReadmes: {
+            endMarker: "<!-- END -->",
+            heading: "## 🔭 Callidescope",
+            previewCount: 3,
+            startMarker: "<!-- START -->",
+          },
+        },
+      }),
+    );
+    outputMarkdownService.syncProjectReadmes.mockReturnValue([]);
+    stubTrace(
+      buildCallGraphResult({
+        projects: [
+          buildProjectReport("example"),
+          buildProjectReport("untraced"),
+        ],
+      }),
+    );
+
+    await command.run([], {});
+
+    const [sent] = outputMarkdownService.syncProjectReadmes.mock.calls[0] ?? [];
+
+    expect(sent?.sections.map((section) => section.path)).toStrictEqual([
+      path.join("packages/example", "README.md"),
+    ]);
+  });
+
+  it("addresses a section to the README of the project it describes", async () => {
+    configurationService.loadConfiguration.mockResolvedValue(
+      buildConfiguration({
+        output: {
+          format: "markdown",
+          json: undefined,
+          markdown: undefined,
+          projectReadmes: {
+            endMarker: "<!-- END -->",
+            heading: "## 🔭 Callidescope",
+            previewCount: 3,
+            startMarker: "<!-- START -->",
+          },
+        },
+      }),
+    );
+    outputMarkdownService.syncProjectReadmes.mockReturnValue([]);
+    stubTrace(
+      buildCallGraphResult({ projects: [buildProjectReport("example")] }),
+    );
+
+    await command.run([], {});
+
+    const [sent] = outputMarkdownService.syncProjectReadmes.mock.calls[0] ?? [];
+
+    expect(sent?.sections[0]?.content).toContain("## 🔭 Callidescope");
+    expect(sent?.sections[0]?.content).toContain("`example`");
+  });
+
+  it("fails when a project README is stale in check mode", async () => {
+    configurationService.loadConfiguration.mockResolvedValue(
+      buildConfiguration({
+        output: {
+          format: "markdown",
+          json: undefined,
+          markdown: undefined,
+          projectReadmes: {
+            endMarker: "<!-- END -->",
+            heading: "## 🔭 Callidescope",
+            previewCount: 3,
+            startMarker: "<!-- START -->",
+          },
+        },
+      }),
+    );
+    outputMarkdownService.syncProjectReadmes.mockReturnValue([
+      "packages/example/README.md",
+    ]);
+
+    await command.run([], { check: true });
+
+    expect(process.exitCode).toBe(1);
   });
 
   it("leaves the exit code alone when nothing was found", async () => {
@@ -248,8 +421,10 @@ describe(CallidescopeCommand, () => {
     configurationService.loadConfiguration.mockResolvedValue(
       buildConfiguration({
         output: {
+          format: "markdown",
           json: { indentation: 2, path: "output/report.json" },
           markdown: undefined,
+          projectReadmes: undefined,
         },
       }),
     );
@@ -277,6 +452,7 @@ describe(CallidescopeCommand, () => {
     configurationService.resolveConfiguration.mockReturnValue(
       buildConfiguration({
         output: {
+          format: "markdown",
           json: undefined,
           markdown: {
             description: undefined,
@@ -286,6 +462,7 @@ describe(CallidescopeCommand, () => {
             startMarker: "<!-- START -->",
             write: undefined,
           },
+          projectReadmes: undefined,
         },
       }),
     );
@@ -309,8 +486,10 @@ describe(CallidescopeCommand, () => {
     configurationService.loadConfiguration.mockResolvedValue(
       buildConfiguration({
         output: {
+          format: "markdown",
           json: { indentation: 2, path: "output/report.json" },
           markdown: undefined,
+          projectReadmes: undefined,
         },
       }),
     );
@@ -325,6 +504,7 @@ describe(CallidescopeCommand, () => {
     configurationService.loadConfiguration.mockResolvedValue(
       buildConfiguration({
         output: {
+          format: "markdown",
           json: undefined,
           markdown: {
             description: undefined,
@@ -334,6 +514,7 @@ describe(CallidescopeCommand, () => {
             startMarker: "<!-- START -->",
             write: undefined,
           },
+          projectReadmes: undefined,
         },
       }),
     );
@@ -350,8 +531,10 @@ describe(CallidescopeCommand, () => {
     configurationService.loadConfiguration.mockResolvedValue(
       buildConfiguration({
         output: {
+          format: "markdown",
           json: { indentation: 2, path: "output/report.json" },
           markdown: undefined,
+          projectReadmes: undefined,
         },
       }),
     );

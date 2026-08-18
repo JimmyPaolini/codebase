@@ -16,6 +16,7 @@ callees
 callidescope
 callidescopeignore
 capitalisation
+capitalised
 categorise
 checkpointing
 cipe
@@ -64,6 +65,7 @@ frontmatter
 futp
 ghaction
 gitmodules
+groupable
 gitmoji
 gitmojis
 glab
@@ -96,6 +98,7 @@ keyof
 killallnode
 killallvscodeextensions
 killport
+lemmatizers
 licen
 licenseignore
 linesecond

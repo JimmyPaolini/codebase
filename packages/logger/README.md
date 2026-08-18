@@ -77,3 +77,43 @@ nx run logger:vitest
 ## License
 
 MIT — see [LICENSE](../../LICENSE).
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `logger`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 14 |
+| Files | 7 |
+| Calls traced | 12 |
+| Call stacks | 1 |
+| Deepest stack | 4 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 1 |
+
+### Call stacks
+
+**1. `LoggerService.verbose`** — depth 4 · orphan-root
+
+```text
+🚀 LoggerService.verbose(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:241]
+   ↳ Logs a verbose message at the `trace` level.
+  └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+     ↳ Assembles the object pino merges into the line.
+    └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+       ↳ Fails a malformed message in development, and never in production. A logger that throws in production turns an…
+      └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+         ↳ Whether a word is a verb in one of the two tenses the convention allows. Present progressive means the operation is…
+```
+
+### Module spread
+
+None.
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->

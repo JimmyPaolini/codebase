@@ -5,16 +5,7 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { CallablesModule } from "../callables/callables.module";
-import { ClassHierarchyModule } from "../class-hierarchy/class-hierarchy.module";
-import { CohesionModule } from "../cohesion/cohesion.module";
-import { DocumentationModule } from "../documentation/documentation.module";
-import { EdgesModule } from "../edges/edges.module";
-import { EntryPointsModule } from "../entry-points/entry-points.module";
-import { GraphModule } from "../graph/graph.module";
-import { ProgramModule } from "../program/program.module";
-import { SignaturesModule } from "../signatures/signatures.module";
-import { WorkspaceModule } from "../workspace/workspace.module";
+import { ANALYSIS_MODULES } from "../../../testing/modules";
 
 import { CallidescopeService } from "./callidescope.service";
 
@@ -43,7 +34,12 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
       minimumCallers: 2,
       spreadThreshold: 2,
     },
-    output: { json: undefined, markdown: undefined },
+    output: {
+      format: "markdown",
+      json: undefined,
+      markdown: undefined,
+      projectReadmes: undefined,
+    },
     projects: [],
   };
 }
@@ -119,18 +115,7 @@ describe(`${CallidescopeService.name} (integration)`, () => {
   beforeAll(async () => {
     const workspaceRoot = await buildWorkspace();
     const module = await Test.createTestingModule({
-      imports: [
-        CallablesModule,
-        CohesionModule,
-        DocumentationModule,
-        EdgesModule,
-        EntryPointsModule,
-        GraphModule,
-        ClassHierarchyModule,
-        ProgramModule,
-        SignaturesModule,
-        WorkspaceModule,
-      ],
+      imports: [...ANALYSIS_MODULES],
       providers: [CallidescopeService],
     }).compile();
     const service = await module.resolve(CallidescopeService);

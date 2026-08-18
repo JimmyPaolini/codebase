@@ -81,8 +81,30 @@ export interface CallidescopeMarkdownOutputConfiguration {
 
 /** Where a run writes its findings. */
 export interface CallidescopeOutputConfiguration {
+  /** What the run prints to standard output. Markdown unless told otherwise. */
+  format?: CallidescopeOutputFormat | undefined;
   json?: CallidescopeJsonOutputConfiguration | undefined;
   markdown?: CallidescopeMarkdownOutputConfiguration | undefined;
+  projectReadmes?: CallidescopeProjectReadmeConfiguration | undefined;
+}
+
+/** How a run renders what it found. */
+export type CallidescopeOutputFormat = "json" | "markdown";
+
+/**
+ * A section spliced into every traced project's own README.
+ *
+ * One destination rather than a list of paths: which files these are follows
+ * from which projects were traced, and restating that in configuration would
+ * only give it somewhere to drift from.
+ */
+export interface CallidescopeProjectReadmeConfiguration {
+  endMarker?: string | undefined;
+  /** Heading the section is written under. */
+  heading?: string | undefined;
+  /** Stacks shown before the rest fold into a disclosure. */
+  previewCount?: number | undefined;
+  startMarker?: string | undefined;
 }
 
 /** Arguments accepted by the configuration loader. */
@@ -191,8 +213,18 @@ export interface ResolvedCallidescopeMarkdownOutputConfiguration {
  * nothing it writes can go stale.
  */
 export interface ResolvedCallidescopeOutputConfiguration {
+  format: CallidescopeOutputFormat;
   json: ResolvedCallidescopeJsonOutputConfiguration | undefined;
   markdown: ResolvedCallidescopeMarkdownOutputConfiguration | undefined;
+  projectReadmes: ResolvedCallidescopeProjectReadmeConfiguration | undefined;
+}
+
+/** Project README destination with defaults applied. */
+export interface ResolvedCallidescopeProjectReadmeConfiguration {
+  endMarker: string;
+  heading: string;
+  previewCount: number;
+  startMarker: string;
 }
 
 /** What a `write` function is handed. */

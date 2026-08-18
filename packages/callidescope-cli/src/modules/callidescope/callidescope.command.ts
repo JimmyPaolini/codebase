@@ -1,6 +1,10 @@
 import path from "node:path";
 
-import { ConfigurationService } from "@callidescope/configuration";
+import {
+  ConfigurationService,
+  DEFAULT_JSON_INDENTATION,
+  DEFAULT_PREVIEW_COUNT,
+} from "@callidescope/configuration";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
@@ -8,17 +12,22 @@ import { LoggerService } from "@codebase/logger";
 
 import { OutputJsonService } from "../output-json/output-json.service";
 import { OutputMarkdownService } from "../output-markdown/output-markdown.service";
-import { ReportService } from "../report/report.service";
+import { MarkdownReportService } from "../report/markdown-report.service";
 
+import { PROJECT_README_NAME } from "./callidescope.constants";
 import { CallidescopeService } from "./callidescope.service";
 
+import type { ProjectSection } from "../output-markdown/output-markdown.types";
 import type {
   CallidescopeCommandOptions,
   SyncDestinationsArguments,
 } from "./callidescope.types";
 import type {
+  CallGraphResult,
+  CallidescopeOutputFormat,
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeMarkdownOutputConfiguration,
+  ResolvedCallidescopeProjectReadmeConfiguration,
 } from "@callidescope/configuration";
 
 /**
@@ -37,7 +46,7 @@ export class CallidescopeCommand extends CommandRunner {
     private readonly callidescopeService: CallidescopeService,
     private readonly outputJsonService: OutputJsonService,
     private readonly outputMarkdownService: OutputMarkdownService,
-    private readonly reportService: ReportService,
+    private readonly markdownReportService: MarkdownReportService,
     private readonly logger: LoggerService,
   ) {
     super();
@@ -50,22 +59,68 @@ export class CallidescopeCommand extends CommandRunner {
 
   // 🔏 Private Methods
 
-  /** Prints the whole console report. */
+  /** Builds one section per project, addressed to that project's README. */
+  private buildProjectSections(args: {
+    destination: ResolvedCallidescopeProjectReadmeConfiguration;
+    projectRoots: ReadonlyMap<string, string>;
+    result: CallGraphResult;
+  }): ProjectSection[] {
+    // A project whose root is unknown is dropped rather than defaulted: the
+    // fallback for a missing root is a path, and the wrong path is a README
+    // rewritten somewhere nobody asked for.
+    return args.result.projects.flatMap((report) => {
+      const root = args.projectRoots.get(report.projectName);
+
+      return root === undefined
+        ? []
+        : [
+            {
+              content: this.markdownReportService.renderProjectSection({
+                heading: args.destination.heading,
+                previewCount: args.destination.previewCount,
+                report,
+              }),
+              path: path.join(root, PROJECT_README_NAME),
+            },
+          ];
+    });
+  }
+
+  /**
+   * Prints the run in the requested format.
+   *
+   * Markdown unless asked otherwise: it is the one rendering that reads well
+   * in a terminal, pastes into an issue, and is already what the file
+   * destinations write, so there is no second format to keep in step.
+   */
   private report(args: {
-    limit: number;
-    outcome: ReturnType<CallidescopeService["trace"]>;
+    configuration: ResolvedCallidescopeConfiguration;
+    result: CallGraphResult;
   }): void {
-    const { result } = args.outcome;
+    const { format, json } = args.configuration.output;
+
+    if (format === "json") {
+      process.stdout.write(
+        this.outputJsonService.buildReport({
+          destination: json ?? {
+            indentation: DEFAULT_JSON_INDENTATION,
+            path: "",
+          },
+          result: args.result,
+        }),
+      );
+
+      return;
+    }
 
     process.stdout.write(
-      this.reportService.renderHeader({
-        limit: args.limit,
-        projectNames: args.outcome.projectNames,
+      this.markdownReportService.renderRun({
+        previewCount:
+          args.configuration.output.projectReadmes?.previewCount ??
+          DEFAULT_PREVIEW_COUNT,
+        result: args.result,
       }),
     );
-    process.stdout.write(this.reportService.renderStacks(result));
-    process.stdout.write(this.reportService.renderCohesion(result));
-    process.stdout.write(this.reportService.renderSummary(result));
   }
 
   /** Merges the markdown destination a flag named over the configured one. */
@@ -104,11 +159,33 @@ export class CallidescopeCommand extends CommandRunner {
       markdown !== undefined &&
       !this.outputMarkdownService.sync({
         check: args.check,
+        content: this.markdownReportService.renderRun({
+          previewCount:
+            args.configuration.output.projectReadmes?.previewCount ??
+            DEFAULT_PREVIEW_COUNT,
+          result: args.result,
+        }),
         destination: markdown,
         result: args.result,
       })
     ) {
       stale.push(markdown.path);
+    }
+
+    const { projectReadmes } = args.configuration.output;
+
+    if (projectReadmes !== undefined) {
+      stale.push(
+        ...this.outputMarkdownService.syncProjectReadmes({
+          check: args.check,
+          destination: projectReadmes,
+          sections: this.buildProjectSections({
+            destination: projectReadmes,
+            projectRoots: args.projectRoots,
+            result: args.result,
+          }),
+        }),
+      );
     }
 
     return stale;
@@ -151,6 +228,15 @@ export class CallidescopeCommand extends CommandRunner {
     // the traced code, and a relative root makes every one of those comparisons
     // fail — which reads as a workspace containing nothing at all.
     return path.resolve(value ?? process.cwd());
+  }
+
+  /** Parses `--format`, which decides what the run prints. */
+  @Option({
+    description: "What to print: markdown or json",
+    flags: "-f, --format [format]",
+  })
+  public parseFormat(value: string | undefined): CallidescopeOutputFormat {
+    return value === "json" ? "json" : "markdown";
   }
 
   /** Parses `--json`. */
@@ -200,6 +286,7 @@ export class CallidescopeCommand extends CommandRunner {
     const configuration: ResolvedCallidescopeConfiguration = {
       ...loaded,
       output: {
+        format: options.format ?? loaded.output.format,
         json:
           options.json === undefined
             ? loaded.output.json
@@ -208,6 +295,7 @@ export class CallidescopeCommand extends CommandRunner {
           configuration: loaded,
           markdown: options.markdown,
         }),
+        projectReadmes: loaded.output.projectReadmes,
       },
     };
 
@@ -217,11 +305,12 @@ export class CallidescopeCommand extends CommandRunner {
       workspaceRoot,
     });
 
-    this.report({ limit: configuration.limits.maximumDepth, outcome });
+    this.report({ configuration, result: outcome.result });
 
     const stale = this.syncDestinations({
       check: options.check ?? false,
       configuration,
+      projectRoots: outcome.projectRoots,
       result: outcome.result,
     });
 

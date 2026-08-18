@@ -45,3 +45,52 @@ nx run conformetry-python:vitest
 ## License
 
 MIT — see [LICENSE](../../LICENSE).
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `conformetry-python`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 11 |
+| Files | 8 |
+| Calls traced | 17 |
+| Call stacks | 2 |
+| Deepest stack | 3 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 0 |
+
+### Call stacks
+
+**1. `PythonBridgeService.toConformetryError`** — depth 3 · orphan-root
+
+```text
+🚀 PythonBridgeService.toConformetryError(error: PythonBridgeError): ConformetryError [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:114]
+   ↳ Maps one snake_case bridge error onto the shared error shape.
+  └─> PythonBridgeService.readValues(error: PythonBridgeError): Partial<ConformetryError> [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:103]
+     ↳ Reads the optional expected and actual values.
+    └─> PythonBridgeService.readString(error: PythonBridgeError, key: string): string | undefined [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:93]
+       ↳ Narrows an untrusted string field from the bridge payload.
+```
+
+**2. `PythonValidatorService.validateDocument`** — depth 3 · orphan-root
+
+```text
+🚀 PythonValidatorService.validateDocument(document: PreparedValidationDocument): ConformetryError[] [packages/conformetry-python/src/modules/python-validator/python-validator.service.ts:38]
+   ↳ Reports every declaration and comment the template requires.
+  └─> PythonBridgeService.validatePythonSource(args: RunPythonBridgeArguments): ConformetryError[] [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:137]
+     ↳ Compares one Python source against its rendered template. A missing interpreter, a crashed bridge, or unreadable output…
+    └─> PythonBridgeService.buildBridgeError(message: string): ConformetryError[] [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:56]
+       ↳ Wraps a bridge failure as a reportable error rather than throwing.
+```
+
+### Module spread
+
+None.
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->

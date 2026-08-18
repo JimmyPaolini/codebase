@@ -11,7 +11,10 @@ import { ANALYSIS_MODULES } from "../../../testing/modules";
 import { MissingMarkdownPathError } from "./output-markdown.errors";
 import { OutputMarkdownService } from "./output-markdown.service";
 
-import type { ResolvedCallidescopeMarkdownOutputConfiguration } from "@callidescope/configuration";
+import type {
+  ResolvedCallidescopeMarkdownOutputConfiguration,
+  WriteMarkdownOutput,
+} from "@callidescope/configuration";
 
 /** Builds a markdown destination pointing at the given path. */
 function buildDestination(
@@ -56,39 +59,6 @@ describe(OutputMarkdownService, () => {
 
     return path.join(directory, "REPORT.md");
   }
-
-  // 📝 Rendering
-
-  it("renders the built-in tables by default", () => {
-    const content = subject.render({
-      destination: buildDestination(""),
-      result,
-    });
-
-    expect(content).toContain("Deep call stacks");
-    expect(content).toContain("Module spread");
-  });
-
-  it("uses a configured renderer instead of the built-in tables", () => {
-    const content = subject.render({
-      destination: buildDestination("", { render: () => "custom" }),
-      result,
-    });
-
-    expect(content).toBe("custom");
-  });
-
-  it("hands a configured renderer the built-in tables to build on", () => {
-    const content = subject.render({
-      destination: buildDestination("", {
-        render: (args) => `prefix\n${args.renderTables()}`,
-      }),
-      result,
-    });
-
-    expect(content).toContain("prefix");
-    expect(content).toContain("Deep call stacks");
-  });
 
   it("wraps content in the configured anchors", () => {
     expect(
@@ -137,6 +107,35 @@ describe(OutputMarkdownService, () => {
     await expect(readFile(filePath, "utf8")).resolves.toContain(
       "<!-- CALL_STACKS_START -->",
     );
+  });
+
+  it("leaves exactly one blank line before an appended block", async () => {
+    const filePath = await temporaryPath();
+
+    await writeFile(filePath, "# Title\n", "utf8");
+    subject.syncAnchoredBlock({
+      check: false,
+      content: "body",
+      destination: buildDestination(filePath),
+      path: undefined,
+    });
+
+    await expect(readFile(filePath, "utf8")).resolves.not.toContain("\n\n\n");
+  });
+
+  it("does not open a new file with a blank line", async () => {
+    const filePath = await temporaryPath();
+
+    subject.syncAnchoredBlock({
+      check: false,
+      content: "body",
+      destination: buildDestination(filePath),
+      path: undefined,
+    });
+
+    const written = await readFile(filePath, "utf8");
+
+    expect(written.startsWith("<!--")).toBe(true);
   });
 
   it("creates the file when it does not exist", async () => {
@@ -203,9 +202,11 @@ describe(OutputMarkdownService, () => {
     const filePath = await temporaryPath();
     const destination = buildDestination(filePath);
 
-    subject.sync({ check: false, destination, result });
+    subject.sync({ check: false, content: "body", destination, result });
 
-    expect(subject.sync({ check: true, destination, result })).toBe(true);
+    expect(
+      subject.sync({ check: true, content: "body", destination, result }),
+    ).toBe(true);
   });
 
   it("reports a drifted block as stale", async () => {
@@ -220,6 +221,7 @@ describe(OutputMarkdownService, () => {
     expect(
       subject.sync({
         check: true,
+        content: "body",
         destination: buildDestination(filePath),
         result,
       }),
@@ -234,6 +236,7 @@ describe(OutputMarkdownService, () => {
     expect(
       subject.sync({
         check: true,
+        content: "body",
         destination: buildDestination(filePath),
         result,
       }),
@@ -244,6 +247,7 @@ describe(OutputMarkdownService, () => {
     expect(
       subject.sync({
         check: true,
+        content: "body",
         destination: buildDestination(await temporaryPath()),
         result,
       }),
@@ -256,6 +260,7 @@ describe(OutputMarkdownService, () => {
     await writeFile(filePath, "untouched", "utf8");
     subject.sync({
       check: true,
+      content: "body",
       destination: buildDestination(filePath),
       result,
     });
@@ -266,10 +271,11 @@ describe(OutputMarkdownService, () => {
   // 🔌 Custom writers
 
   it("defers to a configured writer", async () => {
-    const write = vi.fn(() => true);
+    const write = vi.fn<WriteMarkdownOutput>(() => true);
 
     subject.sync({
       check: false,
+      content: "body",
       destination: buildDestination(await temporaryPath(), { write }),
       result,
     });
@@ -281,6 +287,7 @@ describe(OutputMarkdownService, () => {
     expect(
       subject.sync({
         check: true,
+        content: "body",
         destination: buildDestination(await temporaryPath(), {
           write: () => false,
         }),
@@ -294,6 +301,7 @@ describe(OutputMarkdownService, () => {
 
     subject.sync({
       check: false,
+      content: "body",
       destination: buildDestination(filePath, {
         write: (args) => args.helpers.syncAnchoredBlock(),
       }),
@@ -310,6 +318,7 @@ describe(OutputMarkdownService, () => {
 
     subject.sync({
       check: false,
+      content: "body",
       destination: buildDestination(await temporaryPath(), {
         write: (args) => {
           wrapped = args.helpers.wrapInAnchors("mine");
@@ -328,6 +337,7 @@ describe(OutputMarkdownService, () => {
 
     subject.sync({
       check: false,
+      content: "body",
       destination: buildDestination(await temporaryPath(), {
         write: (args) => {
           wrapped = args.helpers.wrapInAnchors();
@@ -338,7 +348,7 @@ describe(OutputMarkdownService, () => {
       result,
     });
 
-    expect(wrapped).toContain("Deep call stacks");
+    expect(wrapped).toContain("body");
   });
 
   it("splices a writer's own content when it passes some", async () => {
@@ -346,6 +356,7 @@ describe(OutputMarkdownService, () => {
 
     subject.sync({
       check: false,
+      content: "body",
       destination: buildDestination(filePath, {
         write: (args) => args.helpers.syncAnchoredBlock({ content: "mine" }),
       }),
@@ -360,6 +371,7 @@ describe(OutputMarkdownService, () => {
 
     subject.sync({
       check: false,
+      content: "body",
       destination: buildDestination(await temporaryPath(), {
         write: (args) => {
           markers = `${args.helpers.startMarker}|${args.helpers.endMarker}`;
@@ -378,6 +390,7 @@ describe(OutputMarkdownService, () => {
 
     subject.sync({
       check: false,
+      content: "body",
       destination: buildDestination(await temporaryPath(), {
         write: (args) => args.helpers.syncAnchoredBlock({ path: override }),
       }),
@@ -387,5 +400,66 @@ describe(OutputMarkdownService, () => {
     await expect(readFile(override, "utf8")).resolves.toContain(
       "<!-- CALL_STACKS_START -->",
     );
+  });
+
+  // 📚 Project READMEs
+
+  /** The project-README destination, which carries its own markers. */
+  const readmeDestination = {
+    endMarker: "<!-- CALL_STACKS_END -->",
+    heading: "## 🔭 Callidescope",
+    previewCount: 3,
+    startMarker: "<!-- CALL_STACKS_START -->",
+  };
+
+  it("splices a section into every project README it is given", async () => {
+    const first = await temporaryPath();
+    const second = await temporaryPath();
+
+    subject.syncProjectReadmes({
+      check: false,
+      destination: readmeDestination,
+      sections: [
+        { content: "alpha section", path: first },
+        { content: "beta section", path: second },
+      ],
+    });
+
+    await expect(readFile(first, "utf8")).resolves.toContain("alpha section");
+    await expect(readFile(second, "utf8")).resolves.toContain("beta section");
+  });
+
+  it("reports nothing stale once every README is current", async () => {
+    const filePath = await temporaryPath();
+    const sections = [{ content: "body", path: filePath }];
+
+    subject.syncProjectReadmes({
+      check: false,
+      destination: readmeDestination,
+      sections,
+    });
+
+    expect(
+      subject.syncProjectReadmes({
+        check: true,
+        destination: readmeDestination,
+        sections,
+      }),
+    ).toStrictEqual([]);
+  });
+
+  it("names every stale README rather than stopping at the first", async () => {
+    const stale = [
+      { content: "body", path: await temporaryPath() },
+      { content: "body", path: await temporaryPath() },
+    ];
+
+    expect(
+      subject.syncProjectReadmes({
+        check: true,
+        destination: readmeDestination,
+        sections: stale,
+      }),
+    ).toStrictEqual(stale.map((section) => section.path));
   });
 });

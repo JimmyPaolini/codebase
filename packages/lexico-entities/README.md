@@ -101,3 +101,58 @@ database rather than against a mock.
 ## License
 
 MIT — see [LICENSE](../../LICENSE).
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `lexico-entities`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 94 |
+| Files | 47 |
+| Calls traced | 9 |
+| Call stacks | 3 |
+| Deepest stack | 3 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 1 |
+
+### Call stacks
+
+**1. `main`** — depth 3 · orphan-root
+
+```text
+🚀 main(): Promise<void> [packages/lexico-entities/scripts/extract-migration-sql.ts:164]
+   ↳ Main.
+  └─> parseMode(): Mode [packages/lexico-entities/scripts/extract-migration-sql.ts:188]
+     ↳ Parse mode.
+    └─> find(…)(argument: string): boolean [packages/lexico-entities/scripts/extract-migration-sql.ts:189]
+```
+
+**2. `visit`** — depth 2 · orphan-root
+
+```text
+🚀 visit(node: ts.Node): void [packages/lexico-entities/scripts/extract-migration-sql.ts:66]
+   ↳ Visit.
+  └─> extractSqlFromLiteral(argument: ts.Expression, sourceFile: ts.SourceFile): string | undefined [packages/lexico-entities/scripts/extract-migration-sql.ts:37]
+     ↳ Extract sql from literal.
+```
+
+**3. `visit`** — depth 2 · orphan-root
+
+```text
+🚀 visit(node: ts.Node): void [packages/lexico-entities/scripts/extract-migration-sql.ts:113]
+   ↳ Visit.
+  └─> extractSqlFromMethod(method: ts.MethodDeclaration, sourceFile: ts.SourceFile): string[] [packages/lexico-entities/scripts/extract-migration-sql.ts:57]
+     ↳ Extract sql from method.
+```
+
+### Module spread
+
+None.
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->

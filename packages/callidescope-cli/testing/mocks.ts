@@ -53,6 +53,7 @@ export function buildCallGraphResult(
     deepStacks: [],
     misplacedCallables: [],
     moduleSpreads: [],
+    projects: [],
     summary: {
       callableCount: 0,
       cyclicComponentCount: 0,

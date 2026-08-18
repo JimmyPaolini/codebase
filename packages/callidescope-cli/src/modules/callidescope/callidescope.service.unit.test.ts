@@ -15,6 +15,7 @@ import { ComponentsService } from "../graph/components.service";
 import { DepthService } from "../graph/depth.service";
 import { GraphService } from "../graph/graph.service";
 import { PathsService } from "../graph/paths.service";
+import { ProjectReportsService } from "../project-reports/project-reports.service";
 import { SignaturesService } from "../signatures/signatures.service";
 
 import { CallidescopeService } from "./callidescope.service";
@@ -45,7 +46,9 @@ function analyze(args: {
     new EntryPointsService(),
     fixture.external,
     new GraphService(),
-    new PathsService(new DocumentationService(), new SignaturesService()),
+    new ProjectReportsService(
+      new PathsService(new DocumentationService(), new SignaturesService()),
+    ),
     fixture.programService,
     fixture.workspace,
   );
@@ -54,7 +57,9 @@ function analyze(args: {
     callablesById: collection.byId,
     configuration: args.configuration ?? buildConfiguration(),
     fileCount: collection.fileCount,
+    fileCountByProject: collection.fileCountByProject,
     projectCount: 1,
+    projectNames: ["example"],
     workspaceRoot: FIXTURE_ROOT,
   });
 }
@@ -81,7 +86,12 @@ function buildConfiguration(
       minimumCallers: 2,
       spreadThreshold: 2,
     },
-    output: { json: undefined, markdown: undefined },
+    output: {
+      format: "markdown",
+      json: undefined,
+      markdown: undefined,
+      projectReadmes: undefined,
+    },
     projects: [],
     ...overrides,
   };

@@ -74,3 +74,37 @@ nx run conformetry-generation:vitest
 ## License
 
 MIT — see [LICENSE](../../LICENSE).
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `conformetry-generation`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 17 |
+| Files | 11 |
+| Calls traced | 10 |
+| Call stacks | 1 |
+| Deepest stack | 2 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 2 |
+
+### Call stacks
+
+**1. `GenerationService.listDirectory`** — depth 2 · orphan-root
+
+```text
+🚀 GenerationService.listDirectory(directoryPath: string): Promise<DirectoryEntry[]> [packages/conformetry-generation/src/modules/generation/generation.service.ts:39]
+  └─> GenerationService.map(…)(entry: Dirent<string>): { isDirectory: boolean; name: string; } [packages/conformetry-generation/src/modules/generation/generation.service.ts:42]
+```
+
+### Module spread
+
+None.
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->

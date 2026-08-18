@@ -42,9 +42,20 @@ export class DocumentationService {
       .replaceAll(/\s+/g, " ")
       .trim();
 
-    return text.length > SUMMARY_LIMIT
-      ? `${text.slice(0, SUMMARY_LIMIT).trimEnd()}${TRUNCATION_SUFFIX}`
-      : text;
+    if (text.length <= SUMMARY_LIMIT) {
+      return text;
+    }
+
+    // Cut on a word boundary. Slicing at the character leaves half a word,
+    // which reads as a typo rather than as an elision — and a spell checker
+    // reading the published report agrees. A summary with no space inside the
+    // limit is one long token, and cutting it anywhere is equally arbitrary,
+    // so cut at the limit.
+    const clipped = text.slice(0, SUMMARY_LIMIT);
+    const lastSpace = clipped.lastIndexOf(" ");
+    const kept = lastSpace === -1 ? clipped : clipped.slice(0, lastSpace);
+
+    return `${kept.trimEnd()}${TRUNCATION_SUFFIX}`;
   }
 
   /** Resolves the symbol a declaration's documentation hangs off. */

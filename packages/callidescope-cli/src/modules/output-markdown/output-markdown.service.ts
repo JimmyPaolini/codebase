@@ -4,12 +4,11 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 
 import { MissingMarkdownPathError } from "./output-markdown.errors";
-import { renderTables } from "./output-markdown.utilities";
 
 import type {
-  RenderArguments,
   SyncAnchoredBlockArguments,
   SyncMarkdownArguments,
+  SyncProjectReadmesArguments,
   WrapInAnchorsArguments,
 } from "./output-markdown.types";
 import type { MarkdownAnchorHelpers } from "@callidescope/configuration";
@@ -61,7 +60,7 @@ export class OutputMarkdownService {
 
   /** Builds the helpers a configured `write` function is handed. */
   public buildHelpers(args: SyncMarkdownArguments): MarkdownAnchorHelpers {
-    const content = this.render(args);
+    const { content } = args;
 
     return {
       endMarker: args.destination.endMarker,
@@ -81,24 +80,9 @@ export class OutputMarkdownService {
     };
   }
 
-  /** Renders the built-in tables for the traced findings. */
-  public render(args: RenderArguments): string {
-    const custom = args.destination.render;
-
-    if (custom === undefined) {
-      return renderTables(args.result);
-    }
-
-    return custom({
-      description: args.destination.description,
-      renderTables: () => renderTables(args.result),
-      result: args.result,
-    });
-  }
-
   /** Syncs the configured markdown destination with the current findings. */
   public sync(args: SyncMarkdownArguments): boolean {
-    const content = this.render(args);
+    const { content } = args;
     const custom = args.destination.write;
 
     if (custom === undefined) {
@@ -143,7 +127,13 @@ export class OutputMarkdownService {
     }
 
     if (!existing.includes(args.destination.startMarker)) {
-      writeFileSync(resolvedPath, `${existing}\n\n${generated}\n`, "utf8");
+      // Trailing newlines are trimmed before the separator goes in: a file
+      // that already ended with one would otherwise gain a second blank line
+      // every time, which every markdown linter rejects.
+      const body = existing.trimEnd();
+      const separator = body.length === 0 ? "" : `${body}\n\n`;
+
+      writeFileSync(resolvedPath, `${separator}${generated}\n`, "utf8");
 
       return true;
     }
@@ -157,6 +147,38 @@ export class OutputMarkdownService {
     );
 
     return true;
+  }
+
+  /**
+   * Splices one section into each traced project's own README.
+   *
+   * Every path is visited even in check mode, so one stale README does not
+   * hide the next twenty — a caller fixing them wants the whole list.
+   */
+  public syncProjectReadmes(args: SyncProjectReadmesArguments): string[] {
+    const stale: string[] = [];
+
+    for (const section of args.sections) {
+      const current = this.syncAnchoredBlock({
+        check: args.check,
+        content: section.content,
+        destination: {
+          description: undefined,
+          endMarker: args.destination.endMarker,
+          path: section.path,
+          render: undefined,
+          startMarker: args.destination.startMarker,
+          write: undefined,
+        },
+        path: section.path,
+      });
+
+      if (!current) {
+        stale.push(section.path);
+      }
+    }
+
+    return stale;
   }
 
   /** Wraps content in the configured anchors. */

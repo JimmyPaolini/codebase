@@ -8,6 +8,7 @@ import { GraphModule } from "../src/modules/graph/graph.module";
 import { OutputJsonModule } from "../src/modules/output-json/output-json.module";
 import { OutputMarkdownModule } from "../src/modules/output-markdown/output-markdown.module";
 import { ProgramModule } from "../src/modules/program/program.module";
+import { ProjectReportsModule } from "../src/modules/project-reports/project-reports.module";
 import { ReportModule } from "../src/modules/report/report.module";
 import { SignaturesModule } from "../src/modules/signatures/signatures.module";
 import { WorkspaceModule } from "../src/modules/workspace/workspace.module";
@@ -31,6 +32,7 @@ export const ANALYSIS_MODULES = [
   OutputJsonModule,
   OutputMarkdownModule,
   ProgramModule,
+  ProjectReportsModule,
   ReportModule,
   SignaturesModule,
   WorkspaceModule,

@@ -12,6 +12,7 @@ import { GraphModule } from "../graph/graph.module";
 import { OutputJsonModule } from "../output-json/output-json.module";
 import { OutputMarkdownModule } from "../output-markdown/output-markdown.module";
 import { ProgramModule } from "../program/program.module";
+import { ProjectReportsModule } from "../project-reports/project-reports.module";
 import { ReportModule } from "../report/report.module";
 import { WorkspaceModule } from "../workspace/workspace.module";
 
@@ -36,6 +37,7 @@ import { CallidescopeService } from "./callidescope.service";
     OutputJsonModule,
     OutputMarkdownModule,
     ProgramModule,
+    ProjectReportsModule,
     ReportModule,
     WorkspaceModule,
   ],

@@ -21,6 +21,9 @@ import {
   DEFAULT_MAXIMUM_DEPTH,
   DEFAULT_MAXIMUM_IMPLEMENTATION_FAN_OUT,
   DEFAULT_MINIMUM_CALLERS,
+  DEFAULT_OUTPUT_FORMAT,
+  DEFAULT_PREVIEW_COUNT,
+  DEFAULT_PROJECT_README_HEADING,
   DEFAULT_SPREAD_THRESHOLD,
   REPOSITORY_ROOT_MARKERS,
   SUPPORTED_CONFIGURATION_EXTENSIONS,
@@ -39,6 +42,7 @@ import type {
   ResolvedCallidescopeJsonOutputConfiguration,
   ResolvedCallidescopeLimits,
   ResolvedCallidescopeMarkdownOutputConfiguration,
+  ResolvedCallidescopeProjectReadmeConfiguration,
 } from "./configuration.types";
 
 /**
@@ -259,6 +263,24 @@ export class ConfigurationService {
     };
   }
 
+  /** Applies defaults to the project README destination, if it was asked for. */
+  private resolveProjectReadmes(
+    output: CallidescopeOutputConfiguration | undefined,
+  ): ResolvedCallidescopeProjectReadmeConfiguration | undefined {
+    if (output?.projectReadmes === undefined) {
+      return undefined;
+    }
+
+    const { projectReadmes } = output;
+
+    return {
+      endMarker: projectReadmes.endMarker ?? DEFAULT_MARKDOWN_END_MARKER,
+      heading: projectReadmes.heading ?? DEFAULT_PROJECT_README_HEADING,
+      previewCount: projectReadmes.previewCount ?? DEFAULT_PREVIEW_COUNT,
+      startMarker: projectReadmes.startMarker ?? DEFAULT_MARKDOWN_START_MARKER,
+    };
+  }
+
   // 🌎 Public Methods
 
   /**
@@ -324,8 +346,10 @@ export class ConfigurationService {
       excludeFrom: configuration.excludeFrom ?? [],
       limits: this.resolveLimits(configuration.limits),
       output: {
+        format: configuration.output?.format ?? DEFAULT_OUTPUT_FORMAT,
         json: this.resolveJsonOutput(configuration.output),
         markdown: this.resolveMarkdownOutput(configuration.output),
+        projectReadmes: this.resolveProjectReadmes(configuration.output),
       },
       projects: configuration.projects ?? [],
     };

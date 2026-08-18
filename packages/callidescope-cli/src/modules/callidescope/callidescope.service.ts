@@ -9,14 +9,13 @@ import { EntryPointsService } from "../entry-points/entry-points.service";
 import { ComponentsService } from "../graph/components.service";
 import { DepthService } from "../graph/depth.service";
 import { GraphService } from "../graph/graph.service";
-import { PathsService } from "../graph/paths.service";
 import { ProgramService } from "../program/program.service";
+import { ProjectReportsService } from "../project-reports/project-reports.service";
 import { WorkspaceService } from "../workspace/workspace.service";
 
 import { INCLUDE_CONSTRUCTOR_EDGES } from "./callidescope.constants";
 
 import type { DiscoveredCallable } from "../callables/callables.types";
-import type { EntryPointCollection } from "../entry-points/entry-points.types";
 import type {
   CallGraph,
   CondensedGraph,
@@ -26,7 +25,6 @@ import type { TraceArguments, TraceOutcome } from "./callidescope.types";
 import type {
   CallableId,
   CallGraphResult,
-  DeepStackFinding,
   ModuleId,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
@@ -48,7 +46,7 @@ export class CallidescopeService {
     private readonly entryPointsService: EntryPointsService,
     private readonly externalService: ExternalService,
     private readonly graphService: GraphService,
-    private readonly pathsService: PathsService,
+    private readonly projectReportsService: ProjectReportsService,
     private readonly programService: ProgramService,
     private readonly workspaceService: WorkspaceService,
   ) {}
@@ -97,46 +95,6 @@ export class CallidescopeService {
     };
   }
 
-  /** Turns every entry point over the limit into a reportable stack. */
-  private findDeepStacks(args: {
-    callablesById: ReadonlyMap<CallableId, DiscoveredCallable>;
-    condensed: CondensedGraph;
-    entryPoints: EntryPointCollection;
-    limit: number;
-    measurement: DepthMeasurement;
-  }): DeepStackFinding[] {
-    const findings: DeepStackFinding[] = [];
-
-    for (const entryPoint of args.entryPoints.entryPoints) {
-      const componentId = args.condensed.componentIdByCallable.get(
-        entryPoint.callableId,
-      );
-      const measured =
-        componentId === undefined
-          ? undefined
-          : args.measurement.byComponent[componentId];
-
-      if (measured === undefined || measured.depth <= args.limit) {
-        continue;
-      }
-
-      findings.push({
-        depth: measured.depth,
-        entryPointKind: entryPoint.kind,
-        frames: this.pathsService.buildDeepestPath({
-          callablesById: args.callablesById,
-          condensed: args.condensed,
-          entryPointId: entryPoint.callableId,
-          measurement: args.measurement,
-        }),
-        isLowerBound: measured.reachesUnresolved,
-        limit: args.limit,
-      });
-    }
-
-    return findings.toSorted((first, second) => second.depth - first.depth);
-  }
-
   /** Reads the deepest depth any component reached. */
   private readMaximumDepth(measurement: DepthMeasurement): number {
     return measurement.byComponent.reduce(
@@ -152,7 +110,9 @@ export class CallidescopeService {
     callablesById: ReadonlyMap<CallableId, DiscoveredCallable>;
     configuration: ResolvedCallidescopeConfiguration;
     fileCount: number;
+    fileCountByProject: ReadonlyMap<string, number>;
     projectCount: number;
+    projectNames: readonly string[];
     workspaceRoot: string;
   }): CallGraphResult {
     const { condensed, graph, measurement } = this.buildGraph(args);
@@ -173,17 +133,34 @@ export class CallidescopeService {
       measurement,
     };
 
+    const misplacedCallables =
+      this.cohesionService.findMisplacedCallables(cohesionArguments);
+    const moduleSpreads =
+      this.cohesionService.findModuleSpreads(cohesionArguments);
+    const typeDepths =
+      this.cohesionService.summarizeTypeDepths(cohesionArguments);
+
+    const projects = this.projectReportsService.build({
+      callablesById: args.callablesById,
+      condensed,
+      entryPoints,
+      fileCountByProject: args.fileCountByProject,
+      graph,
+      measurement,
+      misplacedCallables,
+      moduleSpreads,
+      projectNames: args.projectNames,
+      typeDepths,
+    });
+
     return {
-      deepStacks: this.findDeepStacks({
-        callablesById: args.callablesById,
-        condensed,
-        entryPoints,
+      deepStacks: this.projectReportsService.findDeepStacks({
         limit: args.configuration.limits.maximumDepth,
-        measurement,
+        reports: projects,
       }),
-      misplacedCallables:
-        this.cohesionService.findMisplacedCallables(cohesionArguments),
-      moduleSpreads: this.cohesionService.findModuleSpreads(cohesionArguments),
+      misplacedCallables,
+      moduleSpreads,
+      projects,
       summary: {
         callableCount: args.callablesById.size,
         cyclicComponentCount: condensed.memberIdsByComponent.filter(
@@ -196,7 +173,7 @@ export class CallidescopeService {
         projectCount: args.projectCount,
         unresolvedCallCount: graph.unresolvedCalls.length,
       },
-      typeDepths: this.cohesionService.summarizeTypeDepths(cohesionArguments),
+      typeDepths,
     };
   }
 
@@ -233,11 +210,16 @@ export class CallidescopeService {
 
     return {
       projectNames: projects.map((project) => project.name),
+      projectRoots: new Map(
+        projects.map((project) => [project.name, project.root]),
+      ),
       result: this.analyze({
         callablesById: collection.byId,
         configuration: args.configuration,
         fileCount: collection.fileCount,
+        fileCountByProject: collection.fileCountByProject,
         projectCount: projects.length,
+        projectNames: projects.map((project) => project.name),
         workspaceRoot: args.workspaceRoot,
       }),
     };

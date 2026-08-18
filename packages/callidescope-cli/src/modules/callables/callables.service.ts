@@ -188,9 +188,12 @@ export class CallablesService {
    */
   public collect(args: CollectCallablesArguments): CallableCollection {
     const byId = new Map<CallableId, DiscoveredCallable>();
+    const fileCountByProject = new Map<string, number>();
     let fileCount = 0;
 
     for (const projectProgram of new Set(args.ownerByFilePath.values())) {
+      const { name } = projectProgram.project;
+
       for (const discovered of this.collectFromProgram({
         ...args,
         projectProgram,
@@ -200,10 +203,11 @@ export class CallablesService {
         }
 
         fileCount += 1;
+        fileCountByProject.set(name, (fileCountByProject.get(name) ?? 0) + 1);
       }
     }
 
-    return { byId, fileCount };
+    return { byId, fileCount, fileCountByProject };
   }
 
   /** Resolves the workspace-relative path of a source file. */

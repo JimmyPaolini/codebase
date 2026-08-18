@@ -149,6 +149,27 @@ describe(DocumentationService, () => {
     expect(summary?.endsWith("…")).toBe(true);
   });
 
+  it("cuts a long summary on a word boundary, not mid-word", () => {
+    // A summary cut mid-word reads as a typo rather than as an elision, and a
+    // spell checker reading the published report agrees.
+    const word = "observability";
+    const summary = readDocumentation({
+      displayName: "entry",
+      source: `/** ${`${word} `.repeat(20)} */\nexport function entry(): void {}`,
+    })?.summary;
+
+    expect(summary?.endsWith(`${word}…`)).toBe(true);
+  });
+
+  it("cuts at the limit when one word runs past it", () => {
+    const summary = readDocumentation({
+      displayName: "entry",
+      source: `/** ${"x".repeat(200)} */\nexport function entry(): void {}`,
+    })?.summary;
+
+    expect(summary).toBe(`${"x".repeat(120)}…`);
+  });
+
   it("records the tags a comment carries", () => {
     expect(
       readDocumentation({

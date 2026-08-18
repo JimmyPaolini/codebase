@@ -1,19 +1,10 @@
 // ♟️ Constants
 
-/** Width of the rules framing each section of the console report. */
-export const RULE_WIDTH = 66;
-
 /** Marks the first frame of a printed call stack. */
 export const ENTRY_FRAME_PREFIX = "🚀";
 
 /** Marks every frame below the first. */
 export const NESTED_FRAME_PREFIX = "└─>";
-
-/** Stacks the console report prints before it stops. */
-export const CONSOLE_STACK_LIMIT = 20;
-
-/** Cohesion findings the console report prints before it stops. */
-export const CONSOLE_FINDING_LIMIT = 15;
 
 /**
  * Characters of signature a frame prints before it collapses the parameters.
@@ -33,3 +24,17 @@ export const DEPRECATED_MARKER = "⚠ deprecated";
 
 /** Introduces the documentation line printed under a frame. */
 export const SUMMARY_PREFIX = "↳";
+
+/** Heading a whole-run report is written under. */
+export const RUN_HEADING = "# 🔭 Callidescope";
+
+/** Header of the run or project summary table. */
+export const MARKDOWN_SUMMARY_HEADER = "| Measure | Value |\n| --- | --- |";
+
+/** Header of the module-spread table. */
+export const MARKDOWN_SPREAD_HEADER =
+  "| Callable | Spread | Calls directly | Location |\n| --- | --- | --- | --- |";
+
+/** Header of the misplaced-callable table. */
+export const MARKDOWN_MISPLACED_HEADER =
+  "| Callable | Declared in | Called from | Callers |\n| --- | --- | --- | --- |";

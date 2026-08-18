@@ -129,6 +129,15 @@ export const DEFAULT_ENTRY_POINT_DECORATORS = [
 /** Spaces used to indent the JSON report. */
 export const DEFAULT_JSON_INDENTATION = 2;
 
+/** What a run prints to standard output when nothing says otherwise. */
+export const DEFAULT_OUTPUT_FORMAT = "markdown";
+
+/** Heading the section embedded in a project README is written under. */
+export const DEFAULT_PROJECT_README_HEADING = "## 🔭 Callidescope";
+
+/** Stacks a README section shows before the rest fold into a disclosure. */
+export const DEFAULT_PREVIEW_COUNT = 3;
+
 /** Opening anchor of the generated markdown block. */
 export const DEFAULT_MARKDOWN_START_MARKER = "<!-- CALL_STACKS_START -->";
 
@@ -175,8 +184,18 @@ const entryPointsSchema = z
   })
   .optional();
 
+const projectReadmesSchema = z
+  .object({
+    endMarker: z.string().optional(),
+    heading: z.string().optional(),
+    previewCount: z.number().int().nonnegative().optional(),
+    startMarker: z.string().optional(),
+  })
+  .optional();
+
 const outputSchema = z
   .object({
+    format: z.enum(["json", "markdown"]).optional(),
     json: z
       .object({
         indentation: z.number().int().nonnegative().optional(),
@@ -193,6 +212,7 @@ const outputSchema = z
         write: callbackSchema<WriteMarkdownOutput>().optional(),
       })
       .optional(),
+    projectReadmes: projectReadmesSchema,
   })
   .optional();
 

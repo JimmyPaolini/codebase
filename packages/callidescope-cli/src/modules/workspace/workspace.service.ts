@@ -8,6 +8,7 @@ import {
   MODULES_DIRECTORY,
   PROJECT_CONTAINER_DIRECTORIES,
   ROOT_MODULE_SEGMENT,
+  TEST_DIRECTORY_SEGMENT,
   TEST_FILE_PATTERN,
 } from "./workspace.constants";
 
@@ -196,9 +197,12 @@ export class WorkspaceService {
     );
   }
 
-  /** True when a path names a test file. */
+  /** True when a path names a test file, or scaffolding written for tests. */
   public isTestFile(filePath: string): boolean {
-    return TEST_FILE_PATTERN.test(filePath);
+    return (
+      TEST_FILE_PATTERN.test(filePath) ||
+      filePath.split("/").includes(TEST_DIRECTORY_SEGMENT)
+    );
   }
 
   /**

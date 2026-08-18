@@ -18,6 +18,8 @@ import {
   DEFAULT_MAXIMUM_DEPTH,
   DEFAULT_MAXIMUM_IMPLEMENTATION_FAN_OUT,
   DEFAULT_MINIMUM_CALLERS,
+  DEFAULT_PREVIEW_COUNT,
+  DEFAULT_PROJECT_README_HEADING,
   DEFAULT_SPREAD_THRESHOLD,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
@@ -219,6 +221,47 @@ describe(ConfigurationService, () => {
     expect(configuration.output.markdown?.endMarker).toBe("<!-- END -->");
     expect(configuration.output.markdown?.render).toBe(render);
     expect(configuration.output.markdown?.write).toBe(write);
+  });
+
+  // 📚 Project READMEs
+
+  it("leaves the project READMEs alone until they are asked for", () => {
+    expect(
+      service.resolveConfiguration({ output: {} }).output.projectReadmes,
+    ).toBeUndefined();
+  });
+
+  it("defaults every part of an empty project README destination", () => {
+    const configuration = service.resolveConfiguration({
+      output: { projectReadmes: {} },
+    });
+
+    expect(configuration.output.projectReadmes).toStrictEqual({
+      endMarker: DEFAULT_MARKDOWN_END_MARKER,
+      heading: DEFAULT_PROJECT_README_HEADING,
+      previewCount: DEFAULT_PREVIEW_COUNT,
+      startMarker: DEFAULT_MARKDOWN_START_MARKER,
+    });
+  });
+
+  it("keeps an authored heading, preview count, and markers", () => {
+    const configuration = service.resolveConfiguration({
+      output: {
+        projectReadmes: {
+          endMarker: "<!-- END -->",
+          heading: "## Call stacks",
+          previewCount: 10,
+          startMarker: "<!-- START -->",
+        },
+      },
+    });
+
+    expect(configuration.output.projectReadmes).toStrictEqual({
+      endMarker: "<!-- END -->",
+      heading: "## Call stacks",
+      previewCount: 10,
+      startMarker: "<!-- START -->",
+    });
   });
 
   // 📂 File discovery

@@ -47,3 +47,54 @@ nx run conformetry-typescript:vitest
 ## License
 
 MIT — see [LICENSE](../../LICENSE).
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `conformetry-typescript`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 37 |
+| Files | 10 |
+| Calls traced | 42 |
+| Call stacks | 1 |
+| Deepest stack | 11 |
+| Stacks through recursion | 1 |
+| Unfollowable calls | 0 |
+
+### Call stacks
+
+**1. `TypescriptValidatorService.validateDocument`** — depth 11 · orphan-root
+
+```text
+🚀 TypescriptValidatorService.validateDocument(document: PreparedValidationDocument): ConformetryError[] [packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:156]
+   ↳ Reports every declaration and comment the template requires.
+  └─> TypescriptValidatorService.validateStructure(…): ConformetryError[] [packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:107]
+     ↳ Compares the syntax trees and describes each missing declaration.
+    └─> TypescriptTreeService.compareBestCandidate(…): TypescriptComparisonError[] (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:57]
+       ↳ Descends into whichever candidate explains the template best. Several instance nodes can share a key or kind — two…
+      └─> TypescriptTreeService.map(…)(candidate: Node): TypescriptComparisonError[] (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:62]
+        └─> TypescriptTreeService.compareTree(args: CompareTreeArguments): TypescriptComparisonError[] (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:111]
+           ↳ Compares one level of two trees, descending into every match.
+          └─> TypescriptTreeService.flatMap(…)(this: undefined, templateChild: Node): TypescriptComparisonError[] (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:118]
+            └─> TypescriptTreeService.compareChild(…): TypescriptComparisonError[] (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:75]
+               ↳ Matches one template child against the instance's children.
+              └─> TypescriptTreeService.filter(…)(instanceChild: Node): boolean [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:86]
+                └─> TypescriptNodesService.readKey(node: Node): null | string [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:192]
+                   ↳ Reads a node's identity, or `null` when it has none. A `null` key means the node can only be matched by syntax kind —…
+                  └─> TypescriptNodesService.readDecoratorKey(node: Decorator): null | string [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:77]
+                     ↳ Keys a decorator by its callee, so `@Injectable()` matches `@Injectable`.
+                    └─> TypescriptNodesService.buildDottedName(callee: Node): null | string [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:48]
+                       ↳ Builds a dotted name such as `Nest.Injectable` from a callee expression.
+```
+
+### Module spread
+
+None.
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->

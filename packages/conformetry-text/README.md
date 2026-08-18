@@ -38,3 +38,41 @@ nx run conformetry-text:vitest
 ## License
 
 MIT — see [LICENSE](../../LICENSE).
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `conformetry-text`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 5 |
+| Files | 7 |
+| Calls traced | 3 |
+| Call stacks | 1 |
+| Deepest stack | 3 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 0 |
+
+### Call stacks
+
+**1. `TextValidatorService.validateDocument`** — depth 3 · orphan-root
+
+```text
+🚀 TextValidatorService.validateDocument(document: PreparedValidationDocument): ConformetryError[] [packages/conformetry-text/src/modules/text-validator/text-validator.service.ts:69]
+   ↳ Reports every template line missing from the instance.
+  └─> TextValidatorService.findMissingLines(document: PreparedValidationDocument): MissingLine[] [packages/conformetry-text/src/modules/text-validator/text-validator.service.ts:45]
+     ↳ Finds template lines the instance does not supply often enough.
+    └─> TextValidatorService.countLines(text: string): Map<string, number> [packages/conformetry-text/src/modules/text-validator/text-validator.service.ts:34]
+       ↳ Counts how many times each line occurs, for duplicate-aware matching.
+```
+
+### Module spread
+
+None.
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->

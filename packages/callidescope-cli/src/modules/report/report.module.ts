@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 
+import { MarkdownReportService } from "./markdown-report.service";
 import { ReportService } from "./report.service";
 
 /**
@@ -7,8 +8,8 @@ import { ReportService } from "./report.service";
  */
 @Module({
   controllers: [],
-  exports: [ReportService],
+  exports: [MarkdownReportService, ReportService],
   imports: [],
-  providers: [ReportService],
+  providers: [MarkdownReportService, ReportService],
 })
 export class ReportModule {}

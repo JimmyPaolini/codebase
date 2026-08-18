@@ -208,6 +208,17 @@ describe(WorkspaceService, () => {
     expect(subject.isTestFile(fileName)).toBe(true);
   });
 
+  it.each([
+    "packages/example/testing/mocks.ts",
+    "packages/example/testing/setup.ts",
+  ])("recognizes %s as test scaffolding", (filePath) => {
+    expect(subject.isTestFile(filePath)).toBe(true);
+  });
+
+  it("does not mistake a directory merely containing the word", () => {
+    expect(subject.isTestFile("packages/testing-library/src/a.ts")).toBe(false);
+  });
+
   it("does not mistake a service for a test", () => {
     expect(subject.isTestFile("example.service.ts")).toBe(false);
   });
