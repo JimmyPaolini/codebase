@@ -1,4 +1,4 @@
-import { ErrorsModule, ScoringModule } from "@conformetry/core";
+import { DifferencesModule, ScoringModule } from "@conformetry/core";
 import { Module } from "@nestjs/common";
 
 import { PythonBridgeService } from "./python-bridge.service";
@@ -13,7 +13,7 @@ import { PythonValidatorService } from "./python-validator.service";
 @Module({
   controllers: [],
   exports: [PythonBridgeService, PythonValidatorService],
-  imports: [ErrorsModule, ScoringModule],
+  imports: [DifferencesModule, ScoringModule],
   providers: [PythonBridgeService, PythonValidatorService],
 })
 export class PythonValidatorModule {}

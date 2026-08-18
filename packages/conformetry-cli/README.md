@@ -414,7 +414,7 @@ flowchart LR
     TemplateDiscoveryModule
   end
   subgraph group2["conformetry-core"]
-    ErrorsModule
+    DifferencesModule
     InventoryModule
     LanguageModule
     ReportingModule
@@ -435,7 +435,7 @@ flowchart LR
   end
   ConfigModule([ConfigModule])
   DiscoveryModule
-  FilesModule --> ErrorsModule
+  FilesModule --> DifferencesModule
   FilesModule --> InstanceDiscoveryModule
   GenerateModule --> ConfigurationModule
   GenerateModule --> GenerationModule

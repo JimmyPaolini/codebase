@@ -53,7 +53,7 @@ flowchart LR
     JupyterValidatorModule
   end
   subgraph group1["conformetry-core"]
-    ErrorsModule
+    DifferencesModule
     ScoringModule
   end
   subgraph group2["conformetry-json"]
@@ -70,7 +70,7 @@ flowchart LR
   JupyterValidatorModule --> MarkdownValidatorModule
   JupyterValidatorModule --> PythonValidatorModule
   MarkdownValidatorModule --> ScoringModule
-  PythonValidatorModule --> ErrorsModule
+  PythonValidatorModule --> DifferencesModule
   PythonValidatorModule --> ScoringModule
 ```
 

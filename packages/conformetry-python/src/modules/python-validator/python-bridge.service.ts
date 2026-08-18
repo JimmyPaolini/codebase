@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { ErrorsService, ScoringService } from "@conformetry/core";
+import { DifferencesService, ScoringService } from "@conformetry/core";
 import { Injectable } from "@nestjs/common";
 
 import {
@@ -18,7 +18,7 @@ import type {
   RunPythonBridgeArguments,
 } from "./python-validator.types";
 import type {
-  ConformetryError,
+  ConformetryDifference,
   DocumentValidationResult,
 } from "@conformetry/core";
 
@@ -38,7 +38,7 @@ export class PythonBridgeService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly errorsService: ErrorsService,
+    private readonly errorsService: DifferencesService,
     private readonly scoringService: ScoringService,
   ) {}
 
@@ -68,9 +68,9 @@ export class PythonBridgeService {
    */
   private buildBridgeError(message: string): DocumentValidationResult {
     return {
-      errors: [
+      differences: [
         {
-          errorType: "code",
+          differenceType: "code",
           fix: PYTHON_UNAVAILABLE_FIX,
           language: "python",
           message,
@@ -81,7 +81,9 @@ export class PythonBridgeService {
   }
 
   /** Reads the optional location fields, omitting any the bridge left out. */
-  private readLocations(error: PythonBridgeError): Partial<ConformetryError> {
+  private readLocations(
+    error: PythonBridgeError,
+  ): Partial<ConformetryDifference> {
     const instanceColumn = this.readNumber(error, "instance_column");
     const instanceLine = this.readNumber(error, "instance_line");
     const templateColumn = this.readNumber(error, "template_column");
@@ -116,7 +118,7 @@ export class PythonBridgeService {
   }
 
   /** Reads the optional expected and actual values. */
-  private readValues(error: PythonBridgeError): Partial<ConformetryError> {
+  private readValues(error: PythonBridgeError): Partial<ConformetryDifference> {
     const actual = this.readString(error, "actual");
     const expected = this.readString(error, "expected");
 
@@ -127,11 +129,15 @@ export class PythonBridgeService {
   }
 
   /** Maps one snake_case bridge error onto the shared error shape. */
-  private toConformetryError(error: PythonBridgeError): ConformetryError {
+  private toConformetryDifference(
+    error: PythonBridgeError,
+  ): ConformetryDifference {
     return {
       ...this.readValues(error),
       ...this.readLocations(error),
-      errorType: this.errorsService.resolveErrorType(error["error_type"]),
+      differenceType: this.errorsService.resolveDifferenceType(
+        error["difference_type"],
+      ),
       fix: this.readString(error, "fix") ?? "Fix the conformance issue.",
       language:
         this.errorsService.resolveErrorLanguage(error["language"]) ?? "python",
@@ -147,7 +153,7 @@ export class PythonBridgeService {
    * Compares one Python source against its rendered template.
    *
    * A missing interpreter, a crashed bridge, or unreadable output are all
-   * reported as conformance errors: they mean this file could not be checked,
+   * reported as conformance differences: they mean this file could not be checked,
    * which the run should surface, but they must not abort validation of every
    * other file.
    */
@@ -176,19 +182,19 @@ export class PythonBridgeService {
 
     try {
       const payload = JSON.parse(result.stdout) as PythonBridgeResponse;
-      const errors = payload.errors.map((error) => {
-        return this.toConformetryError(error);
+      const differences = payload.differences.map((error) => {
+        return this.toConformetryDifference(error);
       });
 
       return {
-        errors,
+        differences,
         totalWeight:
           typeof payload.total_weight === "number"
             ? payload.total_weight
             : // A bridge that reported findings but no total is broken in a
               // way that would otherwise inflate the score to 1; charge the
               // findings against themselves instead.
-              this.scoringService.sumWeights(errors),
+              this.scoringService.sumWeights(differences),
       };
     } catch {
       return this.buildBridgeError(

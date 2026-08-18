@@ -48,7 +48,7 @@ function buildValidatorClass(args: {
     };
 
     public validateDocument(): DocumentValidationResult {
-      return { errors: [], totalWeight: 1 };
+      return { differences: [], totalWeight: 1 };
     }
   };
 }
@@ -156,7 +156,9 @@ describe(ValidationLanguagesService, () => {
       expect(validators).toHaveLength(2);
       expect(fallback?.descriptor.name).toBe("text");
       expect(fallback?.descriptor.fileExtensions).toContain(".gitignore");
-      expect(fallback?.validateDocument(DOCUMENT).errors).toStrictEqual([]);
+      expect(fallback?.validateDocument(DOCUMENT).differences).toStrictEqual(
+        [],
+      );
     });
 
     it("names the package and the extensions when one is not installed", async () => {

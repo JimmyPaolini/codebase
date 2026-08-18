@@ -133,7 +133,7 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-164323-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-164393-22c55e?style=flat-square)
 ![Repo Size](https://img.shields.io/badge/Repo_Size-7_MiB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-352-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-1261-3178c6?style=flat-square)

@@ -1,4 +1,4 @@
-import { ErrorsService, ScoringService } from "@conformetry/core";
+import { DifferencesService, ScoringService } from "@conformetry/core";
 import { JsonComparisonService } from "@conformetry/json";
 import {
   MarkdownNodesService,
@@ -13,7 +13,7 @@ import { JupyterNotebookService } from "./jupyter-notebook.service";
 import { JupyterValidatorService } from "./jupyter-validator.service";
 
 import type {
-  ConformetryError,
+  ConformetryDifference,
   PreparedValidationDocument,
 } from "@conformetry/core";
 
@@ -56,19 +56,19 @@ const TEMPLATE_CELLS: CellSpec[] = [
 describe(JupyterValidatorService, () => {
   let service: JupyterValidatorService;
 
-  function validate(instanceCells: CellSpec[]): ConformetryError[] {
+  function validate(instanceCells: CellSpec[]): ConformetryDifference[] {
     return service.validateDocument(
       createDocument({
         instance: buildNotebook(instanceCells),
         renderedTemplate: buildNotebook(TEMPLATE_CELLS),
       }),
-    ).errors;
+    ).differences;
   }
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        ErrorsService,
+        DifferencesService,
         JsonComparisonService,
         JupyterNotebookService,
         JupyterValidatorService,
@@ -112,68 +112,70 @@ describe(JupyterValidatorService, () => {
   });
 
   it("reports a missing cell", () => {
-    const errors = validate([{ kind: "markdown", source: "# Analysis\n" }]);
+    const differences = validate([
+      { kind: "markdown", source: "# Analysis\n" },
+    ]);
 
-    expect(errors).toHaveLength(1);
-    expect(errors[0]?.message).toBe("Missing code cell 2");
+    expect(differences).toHaveLength(1);
+    expect(differences[0]?.message).toBe("Missing code cell 2");
   });
 
   it("reports a missing heading in a markdown cell", () => {
-    const errors = validate([
+    const differences = validate([
       { kind: "markdown", source: "# Something else\n" },
       { kind: "code", source: "import os\n\n\ndef run():\n    pass\n" },
     ]);
 
-    expect(errors).toHaveLength(1);
-    expect(errors[0]?.message).toContain("Cell 1 (markdown)");
-    expect(errors[0]?.message).toContain("Analysis");
+    expect(differences).toHaveLength(1);
+    expect(differences[0]?.message).toContain("Cell 1 (markdown)");
+    expect(differences[0]?.message).toContain("Analysis");
   });
 
   it("reports a missing function in a code cell", () => {
-    const errors = validate([
+    const differences = validate([
       { kind: "markdown", source: "# Analysis\n" },
       { kind: "code", source: "import os\n" },
     ]);
 
-    expect(errors).toHaveLength(1);
-    expect(errors[0]?.message).toContain("Cell 2 (code)");
-    expect(errors[0]?.message).toContain("run");
+    expect(differences).toHaveLength(1);
+    expect(differences[0]?.message).toContain("Cell 2 (code)");
+    expect(differences[0]?.message).toContain("run");
   });
 
   it("reports an envelope difference", () => {
-    const errors = service.validateDocument(
+    const differences = service.validateDocument(
       createDocument({
         instance: JSON.stringify({ cells: [], nbformat: 3 }),
         renderedTemplate: JSON.stringify({ cells: [], nbformat: 4 }),
       }),
-    ).errors;
+    ).differences;
 
-    expect(errors.some((error) => error.instancePath === "nbformat")).toBe(
+    expect(differences.some((error) => error.instancePath === "nbformat")).toBe(
       true,
     );
   });
 
   describe("malformed and unrecognized notebooks", () => {
     it("compares an empty envelope when a notebook is not an object", () => {
-      const { errors } = service.validateDocument(
+      const { differences } = service.validateDocument(
         createDocument({
           instance: JSON.stringify([]),
           renderedTemplate: JSON.stringify([]),
         }),
       );
 
-      expect(errors).toStrictEqual([]);
+      expect(differences).toStrictEqual([]);
     });
 
     it("raises nothing for a cell kind no validator owns", () => {
       const raw = JSON.stringify({
         cells: [{ cell_type: "heading", source: ["hi\n"] }],
       });
-      const { errors } = service.validateDocument(
+      const { differences } = service.validateDocument(
         createDocument({ instance: raw, renderedTemplate: raw }),
       );
 
-      expect(errors).toStrictEqual([]);
+      expect(differences).toStrictEqual([]);
     });
   });
 });

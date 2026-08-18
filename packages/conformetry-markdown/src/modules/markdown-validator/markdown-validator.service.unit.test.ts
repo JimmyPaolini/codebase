@@ -7,7 +7,7 @@ import { MarkdownTreeService } from "./markdown-tree.service";
 import { MarkdownValidatorService } from "./markdown-validator.service";
 
 import type {
-  ConformetryError,
+  ConformetryDifference,
   PreparedValidationDocument,
 } from "@conformetry/core";
 
@@ -30,10 +30,10 @@ describe(MarkdownValidatorService, () => {
   function validate(
     renderedTemplate: string,
     instance: string,
-  ): ConformetryError[] {
+  ): ConformetryDifference[] {
     return service.validateDocument(
       createDocument({ instance, renderedTemplate }),
-    ).errors;
+    ).differences;
   }
 
   beforeAll(async () => {
@@ -77,39 +77,39 @@ describe(MarkdownValidatorService, () => {
   });
 
   it("reports a missing heading", () => {
-    const errors = validate("# Title\n\n## Usage\n", "# Title\n");
+    const differences = validate("# Title\n\n## Usage\n", "# Title\n");
 
-    expect(errors).toHaveLength(1);
-    expect(errors[0]?.message).toBe('Missing markdown heading: "Usage"');
-    expect(errors[0]?.language).toBe("markdown");
+    expect(differences).toHaveLength(1);
+    expect(differences[0]?.message).toBe('Missing markdown heading: "Usage"');
+    expect(differences[0]?.language).toBe("markdown");
   });
 
   it("distinguishes heading depth", () => {
-    const errors = validate("## Usage\n", "# Usage\n");
+    const differences = validate("## Usage\n", "# Usage\n");
 
-    expect(errors).toHaveLength(1);
+    expect(differences).toHaveLength(1);
   });
 
   it("reports a missing fenced code block", () => {
-    const errors = validate(
+    const differences = validate(
       "```bash\nnx run build\n```\n",
       "```bash\nnx run test\n```\n",
     );
 
-    expect(errors).toHaveLength(1);
-    expect(errors[0]?.message).toContain("Missing markdown code");
+    expect(differences).toHaveLength(1);
+    expect(differences[0]?.message).toContain("Missing markdown code");
   });
 
   it("anchors an error to the line after the last match", () => {
-    const errors = validate("# Title\n\n## Usage\n", "# Title\n");
+    const differences = validate("# Title\n\n## Usage\n", "# Title\n");
 
-    expect(errors[0]?.instanceLine).toBe(2);
+    expect(differences[0]?.instanceLine).toBe(2);
   });
 
   it("carries an actionable fix", () => {
-    const errors = validate("# Title\n\n## Usage\n", "# Title\n");
+    const differences = validate("# Title\n\n## Usage\n", "# Title\n");
 
-    expect(errors[0]?.fix).toBe(
+    expect(differences[0]?.fix).toBe(
       'Add the heading "Usage" to the instance file.',
     );
   });

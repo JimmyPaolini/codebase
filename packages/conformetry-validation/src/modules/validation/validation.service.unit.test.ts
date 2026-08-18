@@ -134,7 +134,9 @@ describe(ValidationService, () => {
       });
 
       expect(result.ok).toBe(false);
-      expect(result.fileResults[0]?.errors[0]?.errorType).toBe("file");
+      expect(result.fileResults[0]?.differences[0]?.differenceType).toBe(
+        "file",
+      );
     });
 
     it("runs only the languages it was asked for", async () => {

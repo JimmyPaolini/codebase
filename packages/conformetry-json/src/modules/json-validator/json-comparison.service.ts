@@ -8,7 +8,7 @@ import type {
   JsonPathSegment,
   JsonValue,
 } from "./json-validator.types";
-import type { ConformetryError } from "@conformetry/core";
+import type { ConformetryDifference } from "@conformetry/core";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
@@ -48,10 +48,10 @@ export class JsonComparisonService {
     message: string;
     pathValue: string;
     weight: number;
-  }): ConformetryError {
+  }): ConformetryDifference {
     return {
       ...(args.actual === undefined ? {} : { actual: args.actual }),
-      errorType: "code",
+      differenceType: "code",
       ...(args.expected === undefined ? {} : { expected: args.expected }),
       fix: args.fix,
       instancePath: args.pathValue,
@@ -67,11 +67,11 @@ export class JsonComparisonService {
     return comparisons.reduce<JsonComparison>(
       (combined, comparison) => {
         return {
-          errors: [...combined.errors, ...comparison.errors],
+          differences: [...combined.differences, ...comparison.differences],
           totalWeight: combined.totalWeight + comparison.totalWeight,
         };
       },
-      { errors: [], totalWeight: 0 },
+      { differences: [], totalWeight: 0 },
     );
   }
 
@@ -87,9 +87,9 @@ export class JsonComparisonService {
 
     if (this.isJsonPrimitive(args.templateItem)) {
       return args.instanceArray.includes(args.templateItem)
-        ? { errors: [], totalWeight: weight }
+        ? { differences: [], totalWeight: weight }
         : {
-            errors: [
+            differences: [
               this.buildError({
                 expected: JSON.stringify(args.templateItem),
                 fix: `Add ${JSON.stringify(args.templateItem)} to the array at "${pathValue}".`,
@@ -105,7 +105,7 @@ export class JsonComparisonService {
 
     if (args.instanceArray.length === 0) {
       return {
-        errors: [
+        differences: [
           this.buildError({
             fix: `Add the required entry to the array at "${pathValue}".`,
             language: args.language,
@@ -135,7 +135,7 @@ export class JsonComparisonService {
    *
    * Required scalars must appear somewhere in the instance array, order
    * independent. For a required object, the instance entry that produces the
-   * fewest errors is taken as the intended match — an array entry has no key, so
+   * fewest differences is taken as the intended match — an array entry has no key, so
    * there is nothing better to match on.
    */
   private compareArrays(args: {
@@ -170,7 +170,7 @@ export class JsonComparisonService {
           const weight = this.countNodes(templateValue);
 
           return {
-            errors: [
+            differences: [
               this.buildError({
                 expected: JSON.stringify(templateValue),
                 fix: `Add the key "${pathValue}" to the instance document.`,
@@ -252,8 +252,8 @@ export class JsonComparisonService {
    */
   private pickClosestMatch(candidates: JsonComparison[]): JsonComparison {
     return candidates.reduce((best, candidate) => {
-      return this.scoringService.sumWeights(candidate.errors) <
-        this.scoringService.sumWeights(best.errors)
+      return this.scoringService.sumWeights(candidate.differences) <
+        this.scoringService.sumWeights(best.differences)
         ? candidate
         : best;
     });
@@ -299,13 +299,13 @@ export class JsonComparisonService {
     const weight = this.countNodes(args.templateValue);
 
     if (args.templateValue === args.instanceValue) {
-      return { errors: [], totalWeight: weight };
+      return { differences: [], totalWeight: weight };
     }
 
     const pathValue = this.formatPath(pathSegments);
 
     return {
-      errors: [
+      differences: [
         this.buildError({
           actual: JSON.stringify(args.instanceValue),
           expected: JSON.stringify(args.templateValue),

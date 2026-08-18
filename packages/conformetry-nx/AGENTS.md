@@ -66,7 +66,7 @@ flowchart LR
     TemplateDiscoveryModule
   end
   subgraph group2["conformetry-core"]
-    ErrorsModule
+    DifferencesModule
     LanguageModule
     ReportingModule
     ScoringModule
@@ -84,7 +84,7 @@ flowchart LR
   subgraph group6["logger"]
     LoggerModule([LoggerModule])
   end
-  FilesModule --> ErrorsModule
+  FilesModule --> DifferencesModule
   FilesModule --> InstanceDiscoveryModule
   GenerationModule --> RenderingModule
   GeneratorModule --> ConfigurationModule

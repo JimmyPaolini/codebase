@@ -42,7 +42,7 @@ describe(TextValidatorService, () => {
     expect(
       service.validateDocument(
         createDocument({ instance: "a\nb", renderedTemplate: "a\nb" }),
-      ).errors,
+      ).differences,
     ).toStrictEqual([]);
   });
 
@@ -50,7 +50,7 @@ describe(TextValidatorService, () => {
     expect(
       service.validateDocument(
         createDocument({ instance: "a\nextra\nb", renderedTemplate: "a\nb" }),
-      ).errors,
+      ).differences,
     ).toStrictEqual([]);
   });
 
@@ -58,29 +58,29 @@ describe(TextValidatorService, () => {
     expect(
       service.validateDocument(
         createDocument({ instance: "b\na", renderedTemplate: "a\nb" }),
-      ).errors,
+      ).differences,
     ).toStrictEqual([]);
   });
 
   it("reports a missing line with its template line number", () => {
-    const { errors } = service.validateDocument(
+    const { differences } = service.validateDocument(
       createDocument({ instance: "a", renderedTemplate: "a\nmissing" }),
     );
 
-    expect(errors).toHaveLength(1);
-    expect(errors[0]?.message).toBe("Missing line: missing");
-    expect(errors[0]?.templateLine).toBe(2);
-    expect(errors[0]?.expected).toBe("missing");
-    expect(errors[0]?.language).toBe("text");
+    expect(differences).toHaveLength(1);
+    expect(differences[0]?.message).toBe("Missing line: missing");
+    expect(differences[0]?.templateLine).toBe(2);
+    expect(differences[0]?.expected).toBe("missing");
+    expect(differences[0]?.language).toBe("text");
   });
 
   it("requires a duplicated template line to appear as often", () => {
-    const { errors } = service.validateDocument(
+    const { differences } = service.validateDocument(
       createDocument({ instance: "a", renderedTemplate: "a\na" }),
     );
 
-    expect(errors).toHaveLength(1);
-    expect(errors[0]?.templateLine).toBe(2);
+    expect(differences).toHaveLength(1);
+    expect(differences[0]?.templateLine).toBe(2);
   });
 
   it("weighs every template line, conforming ones included", () => {
@@ -90,7 +90,7 @@ describe(TextValidatorService, () => {
 
     // A file that conforms still contributes its whole denominator; counting
     // only the broken lines would score every clean instance against nothing.
-    expect(conforming).toStrictEqual({ errors: [], totalWeight: 3 });
+    expect(conforming).toStrictEqual({ differences: [], totalWeight: 3 });
   });
 
   it("weighs each missing line as one requirement", () => {
@@ -99,17 +99,19 @@ describe(TextValidatorService, () => {
     );
 
     expect(result.totalWeight).toBe(3);
-    expect(result.errors.map((error) => error.weight)).toStrictEqual([
+    expect(result.differences.map((error) => error.weight)).toStrictEqual([
       undefined,
       undefined,
     ]);
   });
 
   it("carries an actionable fix", () => {
-    const { errors } = service.validateDocument(
+    const { differences } = service.validateDocument(
       createDocument({ instance: "", renderedTemplate: "needed" }),
     );
 
-    expect(errors[0]?.fix).toBe("Add the line `needed` to the instance file.");
+    expect(differences[0]?.fix).toBe(
+      "Add the line `needed` to the instance file.",
+    );
   });
 });

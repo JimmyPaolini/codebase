@@ -29,7 +29,7 @@ export interface ExtractedComment {
 
 /** What comparing two syntax trees produced. */
 export interface TreeComparison {
-  readonly errors: TypescriptComparisonError[];
+  readonly differences: TypescriptComparisonError[];
   /** Number of template nodes the walk weighed the instance against. */
   readonly totalWeight: number;
 }

@@ -5,7 +5,7 @@ import { ScoringModule } from "../scoring/scoring.module";
 import { ReportingService } from "./reporting.service";
 
 /**
- * Owns rendering of structured conformance errors into readable text.
+ * Owns rendering of structured conformance differences into readable text.
  *
  * Imported by `conformetry-validation` and by the CLI, so that a validation
  * run reports identically no matter which surface invoked it.

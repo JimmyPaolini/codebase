@@ -4,18 +4,18 @@ import {
   CONFORMETRY_ERROR_LANGUAGES,
   CONFORMETRY_ERROR_TYPES,
   DEFAULT_CONFORMETRY_ERROR_TYPE,
-} from "./errors.constants";
+} from "./differences.constants";
 
 import type {
   BuildMissingDirectoryErrorArguments,
   BuildMissingFileErrorArguments,
-  ConformetryError,
-  ConformetryErrorLanguage,
-  ConformetryErrorType,
-} from "./errors.types";
+  ConformetryDifference,
+  ConformetryDifferenceLanguage,
+  ConformetryDifferenceType,
+} from "./differences.types";
 
 /**
- * Builds and narrows structured conformance errors.
+ * Builds and narrows structured conformance differences.
  *
  * Every validator funnels through here so that error wording, the `fix`
  * suggestion, and the location fields stay consistent across languages. The
@@ -24,7 +24,7 @@ import type {
  * boundary and cannot be trusted to match the TypeScript types.
  */
 @Injectable()
-export class ErrorsService {
+export class DifferencesService {
   // 🏗 Dependency Injection
 
   constructor() {}
@@ -42,11 +42,11 @@ export class ErrorsService {
    * the instance tree. Carries no `language`, since a missing directory is not
    * attributable to any one file format.
    */
-  public buildMissingDirectoryError(
+  public buildMissingDirectoryDifference(
     args: BuildMissingDirectoryErrorArguments,
-  ): ConformetryError {
+  ): ConformetryDifference {
     return {
-      errorType: "directory",
+      differenceType: "directory",
       fix: `Create the directory ${args.instanceDirectoryPath} to match the template at ${args.templateDirectoryPath}.`,
       message: `Missing directory: ${args.instanceDirectoryPath}`,
     };
@@ -58,14 +58,27 @@ export class ErrorsService {
    * regardless of extension, so extension-less files such as `.gitignore` are
    * covered too.
    */
-  public buildMissingFileError(
+  public buildMissingFileDifference(
     args: BuildMissingFileErrorArguments,
-  ): ConformetryError {
+  ): ConformetryDifference {
     return {
-      errorType: "file",
+      differenceType: "file",
       fix: `Create the file using the generator, or manually from the template at ${args.templateFilePath}.`,
       message: `Missing file: ${args.instanceFilePath}`,
     };
+  }
+
+  /**
+   * Narrows an untrusted value to a known error category, falling back to
+   * `"code"`. Falling back rather than throwing keeps one malformed error from
+   * failing an entire validation run.
+   */
+  public resolveDifferenceType(value: unknown): ConformetryDifferenceType {
+    return (
+      CONFORMETRY_ERROR_TYPES.find(
+        (differenceType) => differenceType === value,
+      ) ?? DEFAULT_CONFORMETRY_ERROR_TYPE
+    );
   }
 
   /**
@@ -75,19 +88,7 @@ export class ErrorsService {
    */
   public resolveErrorLanguage(
     value: unknown,
-  ): ConformetryErrorLanguage | undefined {
+  ): ConformetryDifferenceLanguage | undefined {
     return CONFORMETRY_ERROR_LANGUAGES.find((language) => language === value);
-  }
-
-  /**
-   * Narrows an untrusted value to a known error category, falling back to
-   * `"code"`. Falling back rather than throwing keeps one malformed error from
-   * failing an entire validation run.
-   */
-  public resolveErrorType(value: unknown): ConformetryErrorType {
-    return (
-      CONFORMETRY_ERROR_TYPES.find((errorType) => errorType === value) ??
-      DEFAULT_CONFORMETRY_ERROR_TYPE
-    );
   }
 }
