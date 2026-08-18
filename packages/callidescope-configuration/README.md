@@ -92,11 +92,17 @@ nothing it writes can go stale.
 | ----------- | ------- |
 | `output.json` | A machine-readable report at `path`, indented by `indentation` |
 | `output.markdown` | A marker-delimited block spliced into `path` |
+| `output.mermaid` | The same block with its call stacks drawn as one mermaid flowchart |
 | `output.projectReadmes` | One section per traced project, in that project's own `README.md` |
 
-`output.format` is separate from all three: it decides what the run prints,
-`markdown` or `json`, and defaults to `markdown`. Writing to a file and printing
-to a terminal are independent, so both can be on at once.
+`output.mermaid` takes the same keys as `output.markdown` — they differ in what
+goes between the anchors, not in how a block is placed or overridden — and is a
+separate destination so a repository can publish the printed trees and the
+diagram from one run.
+
+`output.format` is separate from all four: it decides what the run prints,
+`markdown`, `mermaid`, or `json`, and defaults to `markdown`. Writing to a file
+and printing to a terminal are independent, so both can be on at once.
 
 `output.projectReadmes` takes `heading` (`## 🔭 Callidescope` by default),
 `previewCount` (how many stacks are shown before the rest go behind a
@@ -183,7 +189,7 @@ Call stacks traced through `callidescope-configuration`, deepest first. Each fra
 | --- | --- |
 | Callables | 18 |
 | Files | 9 |
-| Calls traced | 16 |
+| Calls traced | 17 |
 | Call stacks | 0 |
 | Deepest stack | 0 |
 | Stacks through recursion | 0 |

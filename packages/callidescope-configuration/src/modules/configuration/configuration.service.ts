@@ -35,6 +35,7 @@ import type {
   CallidescopeConfiguration,
   CallidescopeEntryPoints,
   CallidescopeLimits,
+  CallidescopeMarkdownOutputConfiguration,
   CallidescopeOutputConfiguration,
   LoadConfigurationArguments,
   ResolvedCallidescopeConfiguration,
@@ -241,25 +242,28 @@ export class ConfigurationService {
     };
   }
 
-  /** Applies defaults to the markdown output destination, if one was named. */
-  private resolveMarkdownOutput(
-    output: CallidescopeOutputConfiguration | undefined,
+  /**
+   * Applies defaults to one anchored markdown destination, if it was named.
+   *
+   * Shared by `markdown` and `mermaid`: the two differ in what is written
+   * between the anchors, and in nothing this resolves.
+   */
+  private resolveMarkdownDestination(
+    destination: CallidescopeMarkdownOutputConfiguration | undefined,
   ): ResolvedCallidescopeMarkdownOutputConfiguration | undefined {
-    if (output?.markdown === undefined) {
+    if (destination === undefined) {
       return undefined;
     }
 
-    const { markdown } = output;
-
     return {
-      description: markdown.description,
-      endMarker: markdown.endMarker ?? DEFAULT_MARKDOWN_END_MARKER,
-      path: markdown.path,
+      description: destination.description,
+      endMarker: destination.endMarker ?? DEFAULT_MARKDOWN_END_MARKER,
+      path: destination.path,
       // Left unset rather than defaulted: the built-in rendering and writing
       // live in the CLI that calls them, so "unset" is what selects them.
-      render: markdown.render,
-      startMarker: markdown.startMarker ?? DEFAULT_MARKDOWN_START_MARKER,
-      write: markdown.write,
+      render: destination.render,
+      startMarker: destination.startMarker ?? DEFAULT_MARKDOWN_START_MARKER,
+      write: destination.write,
     };
   }
 
@@ -348,7 +352,10 @@ export class ConfigurationService {
       output: {
         format: configuration.output?.format ?? DEFAULT_OUTPUT_FORMAT,
         json: this.resolveJsonOutput(configuration.output),
-        markdown: this.resolveMarkdownOutput(configuration.output),
+        markdown: this.resolveMarkdownDestination(
+          configuration.output?.markdown,
+        ),
+        mermaid: this.resolveMarkdownDestination(configuration.output?.mermaid),
         projectReadmes: this.resolveProjectReadmes(configuration.output),
       },
       projects: configuration.projects ?? [],

@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
+import { MermaidReportService } from "./mermaid-report.service";
 import {
   MARKDOWN_MISPLACED_HEADER,
   MARKDOWN_SPREAD_HEADER,
@@ -10,10 +11,11 @@ import { ReportService } from "./report.service";
 
 import type {
   RenderProjectSectionArguments,
+  RenderRunArguments,
   RenderStacksArguments,
+  StackRendering,
 } from "./report.types";
 import type {
-  CallGraphResult,
   CallGraphSummary,
   CallStack,
   MisplacedCallableFinding,
@@ -31,7 +33,10 @@ import type {
 export class MarkdownReportService {
   // 🏗 Dependency Injection
 
-  constructor(private readonly reportService: ReportService) {}
+  constructor(
+    private readonly mermaidReportService: MermaidReportService,
+    private readonly reportService: ReportService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -80,6 +85,20 @@ export class MarkdownReportService {
     ].join("\n");
   }
 
+  /** Renders the stacks of one scope, drawn or printed as asked. */
+  private renderStacksAs(args: {
+    previewCount: number;
+    rendering: StackRendering;
+    stacks: readonly CallStack[];
+  }): string {
+    return args.rendering === "diagram"
+      ? this.mermaidReportService.renderStacks({ stacks: args.stacks })
+      : this.renderStacks({
+          previewCount: args.previewCount,
+          stacks: args.stacks,
+        });
+  }
+
   /** Renders the counts describing what a run, or a project, produced. */
   private renderSummaryTable(summary: CallGraphSummary): string {
     return [
@@ -119,8 +138,9 @@ export class MarkdownReportService {
       "",
       "### Call stacks",
       "",
-      this.renderStacks({
+      this.renderStacksAs({
         previewCount: args.previewCount,
+        rendering: args.rendering,
         stacks: report.stacks,
       }),
       "",
@@ -135,10 +155,7 @@ export class MarkdownReportService {
   }
 
   /** Renders a whole run, for a terminal or a report file. */
-  public renderRun(args: {
-    previewCount: number;
-    result: CallGraphResult;
-  }): string {
+  public renderRun(args: RenderRunArguments): string {
     const { result } = args;
 
     return [
@@ -148,8 +165,9 @@ export class MarkdownReportService {
       "",
       `## Call stacks over the limit (${String(result.deepStacks.length)})`,
       "",
-      this.renderStacks({
+      this.renderStacksAs({
         previewCount: args.previewCount,
+        rendering: args.rendering,
         stacks: result.deepStacks,
       }),
       "",

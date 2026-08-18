@@ -142,6 +142,7 @@ describe(MarkdownReportService, () => {
       service.renderProjectSection({
         heading: "## 🔭 Callidescope",
         previewCount: 3,
+        rendering: "tree",
         report: report([stack({ entry: "Resolver.read" })]),
       }),
     ).toContain("## 🔭 Callidescope");
@@ -152,6 +153,7 @@ describe(MarkdownReportService, () => {
       service.renderProjectSection({
         heading: "## 🔭 Callidescope",
         previewCount: 3,
+        rendering: "tree",
         report: report([]),
       }),
     ).toContain("`example`");
@@ -161,6 +163,7 @@ describe(MarkdownReportService, () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
       previewCount: 3,
+      rendering: "tree",
       report: report([]),
     });
 
@@ -172,6 +175,7 @@ describe(MarkdownReportService, () => {
   it("heads a whole run and counts the stacks over the limit", () => {
     const rendered = service.renderRun({
       previewCount: 3,
+      rendering: "tree",
       result: buildCallGraphResult({
         deepStacks: [{ ...stack({ entry: "Resolver.read" }), limit: 1 }],
       }),
@@ -183,7 +187,11 @@ describe(MarkdownReportService, () => {
 
   it("renders a run that found nothing without failing", () => {
     expect(
-      service.renderRun({ previewCount: 3, result: buildCallGraphResult() }),
+      service.renderRun({
+        previewCount: 3,
+        rendering: "tree",
+        result: buildCallGraphResult(),
+      }),
     ).toContain("None.");
   });
 
@@ -193,6 +201,7 @@ describe(MarkdownReportService, () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
       previewCount: 3,
+      rendering: "tree",
       report: {
         ...report([]),
         moduleSpreads: [
@@ -221,6 +230,7 @@ describe(MarkdownReportService, () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
       previewCount: 3,
+      rendering: "tree",
       report: {
         ...report([]),
         misplacedCallables: [

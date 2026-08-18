@@ -54,7 +54,7 @@ Two questions this answers that reading code does not:
 | `-d, --directory` | Workspace root to trace. Defaults to the working directory |
 | `--config` | Path to a `callidescope.config.ts`. Searched for when omitted |
 | `-p, --projects` | Comma-separated Nx project names. Every project when omitted |
-| `-f, --format` | `markdown` or `json`, for what it prints. Markdown by default |
+| `-f, --format` | `markdown`, `mermaid`, or `json`, for what it prints. Markdown by default |
 | `--json` | Path to write the machine-readable report to |
 | `-m, --markdown` | Path to splice the markdown block into |
 | `--check` | Fail instead of writing, when a configured report is stale |
@@ -74,15 +74,43 @@ both can be on at once.
 
 Markdown is the console default because it is the one rendering that reads in a
 terminal, pastes into an issue, and is already what the files hold. `--format
-json` is for a machine reading standard output.
+json` is for a machine reading standard output, and `--format mermaid` prints
+diagram source to paste somewhere that draws it.
 
-Three destinations, each independent:
+Four destinations, each independent:
 
 | `output` key | What it writes |
 | ------------ | -------------- |
 | `json` | The whole run as JSON, at one path |
 | `markdown` | The whole run, spliced between anchors in one file |
+| `mermaid` | The same report with its stacks drawn instead of printed |
 | `projectReadmes` | One section per traced project, in that project's own `README.md` |
+
+### The diagram
+
+`mermaid` is its own destination rather than a mode on `markdown`, so a
+repository can publish both. They answer different questions: the tree says
+what each frame takes, returns, and documents; the diagram says what shape they
+make together.
+
+All the stacks are drawn as **one** flowchart, not one apiece. A single stack is
+a straight line, and a straight line is a list with extra steps. Drawn together
+the shared tails converge — every command reaching the same repository, every
+resolver ending in the same service — and that convergence is the thing a
+picture shows and an indented tree cannot. On this workspace the run's 48 deep
+stacks collapse to 276 callables with 14 of them called from more than one
+place.
+
+Entry points are drawn as stadiums and everything below them as boxes. Shape
+rather than color, because the diagram is read in whichever theme the reader
+has and only one of those is the one it was authored in. Labels carry the
+callable's name alone: a diagram trying to also carry signatures is unreadable
+at any size, and the tree already has room for them.
+
+A diagram stops at 300 callables — GitHub refuses a mermaid block past 50,000
+characters, and the widest project here draws 263. Whole stacks are dropped
+rather than trimmed, so the diagram never contains an edge into something it
+did not draw, and it says how many it left out.
 
 `projectReadmes` is what puts a `## 🔭 Callidescope` section at the bottom of
 every package in this repository. Each section carries that project's stacks and
@@ -327,9 +355,9 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 
 | Measure | Value |
 | --- | --- |
-| Callables | 252 |
-| Files | 81 |
-| Calls traced | 229 |
+| Callables | 263 |
+| Files | 82 |
+| Calls traced | 240 |
 | Call stacks | 13 |
 | Deepest stack | 13 |
 | Stacks through recursion | 0 |
@@ -340,7 +368,7 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 **1. `CallidescopeCommand.run`** — depth ≥ 13 · decorated-method
 
 ```text
-🚀 CallidescopeCommand.run(…): Promise<void> [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:275]
+🚀 CallidescopeCommand.run(…): Promise<void> [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:302]
    ↳ Traces the workspace, reports, and sets the exit code.
   └─> CallidescopeService.trace(args: TraceArguments): TraceOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:181]
      ↳ Traces a workspace and returns everything the run found.
@@ -420,7 +448,7 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 **6. `MarkdownReportService.renderStack`** — depth 3 · orphan-root
 
 ```text
-🚀 MarkdownReportService.renderStack(args: { index: number; stack: CallStack; }): string [packages/callidescope-cli/src/modules/report/markdown-report.service.ts:67]
+🚀 MarkdownReportService.renderStack(args: { index: number; stack: CallStack; }): string [packages/callidescope-cli/src/modules/report/markdown-report.service.ts:72]
    ↳ Renders one stack: a labelled heading line and its tree in a fence.
   └─> ReportService.renderStackTree(stack: CallStack): string [packages/callidescope-cli/src/modules/report/report.service.ts:123]
      ↳ Renders every frame of a stack, the entry point first.
@@ -430,9 +458,9 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 **7. `CallidescopeCommand.parseProjects`** — depth 2 · decorated-method
 
 ```text
-🚀 CallidescopeCommand.parseProjects(value: string | undefined): string[] [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:261]
+🚀 CallidescopeCommand.parseProjects(value: string | undefined): string[] [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:288]
    ↳ Parses `--projects`, a comma-separated list of Nx project names.
-  └─> CallidescopeCommand.map(…)(name: string): string [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:270]
+  └─> CallidescopeCommand.map(…)(name: string): string [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:297]
 ```
 
 **8. `main`** — depth ≥ 2 · module-bootstrap

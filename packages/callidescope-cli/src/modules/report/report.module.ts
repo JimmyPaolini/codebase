@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { MarkdownReportService } from "./markdown-report.service";
+import { MermaidReportService } from "./mermaid-report.service";
 import { ReportService } from "./report.service";
 
 /**
@@ -8,8 +9,8 @@ import { ReportService } from "./report.service";
  */
 @Module({
   controllers: [],
-  exports: [MarkdownReportService, ReportService],
+  exports: [MarkdownReportService, MermaidReportService, ReportService],
   imports: [],
-  providers: [MarkdownReportService, ReportService],
+  providers: [MarkdownReportService, MermaidReportService, ReportService],
 })
 export class ReportModule {}

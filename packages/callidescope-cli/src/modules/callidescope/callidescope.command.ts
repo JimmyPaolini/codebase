@@ -78,6 +78,7 @@ export class CallidescopeCommand extends CommandRunner {
               content: this.markdownReportService.renderProjectSection({
                 heading: args.destination.heading,
                 previewCount: args.destination.previewCount,
+                rendering: "tree",
                 report,
               }),
               path: path.join(root, PROJECT_README_NAME),
@@ -86,12 +87,23 @@ export class CallidescopeCommand extends CommandRunner {
     });
   }
 
+  /** How many stacks a section shows before the rest are folded away. */
+  private readPreviewCount(
+    configuration: ResolvedCallidescopeConfiguration,
+  ): number {
+    return (
+      configuration.output.projectReadmes?.previewCount ?? DEFAULT_PREVIEW_COUNT
+    );
+  }
+
   /**
    * Prints the run in the requested format.
    *
    * Markdown unless asked otherwise: it is the one rendering that reads well
    * in a terminal, pastes into an issue, and is already what the file
-   * destinations write, so there is no second format to keep in step.
+   * destinations write, so there is no second format to keep in step. A
+   * diagram printed to a terminal is mermaid source, which is what someone
+   * asking for one at a prompt wants to paste somewhere that renders it.
    */
   private report(args: {
     configuration: ResolvedCallidescopeConfiguration;
@@ -115,9 +127,8 @@ export class CallidescopeCommand extends CommandRunner {
 
     process.stdout.write(
       this.markdownReportService.renderRun({
-        previewCount:
-          args.configuration.output.projectReadmes?.previewCount ??
-          DEFAULT_PREVIEW_COUNT,
+        previewCount: this.readPreviewCount(args.configuration),
+        rendering: format === "mermaid" ? "diagram" : "tree",
         result: args.result,
       }),
     );
@@ -142,7 +153,7 @@ export class CallidescopeCommand extends CommandRunner {
   /** Writes every configured destination, returning the stale ones. */
   private syncDestinations(args: SyncDestinationsArguments): string[] {
     const stale: string[] = [];
-    const { json, markdown } = args.configuration.output;
+    const { json, markdown, mermaid } = args.configuration.output;
 
     if (
       json !== undefined &&
@@ -155,21 +166,27 @@ export class CallidescopeCommand extends CommandRunner {
       stale.push(json.path);
     }
 
-    if (
-      markdown !== undefined &&
-      !this.outputMarkdownService.sync({
-        check: args.check,
-        content: this.markdownReportService.renderRun({
-          previewCount:
-            args.configuration.output.projectReadmes?.previewCount ??
-            DEFAULT_PREVIEW_COUNT,
+    // Both anchored destinations write the same report; they differ only in
+    // whether its stacks are printed or drawn.
+    for (const [destination, rendering] of [
+      [markdown, "tree"],
+      [mermaid, "diagram"],
+    ] as const) {
+      if (
+        destination !== undefined &&
+        !this.outputMarkdownService.sync({
+          check: args.check,
+          content: this.markdownReportService.renderRun({
+            previewCount: this.readPreviewCount(args.configuration),
+            rendering,
+            result: args.result,
+          }),
+          destination,
           result: args.result,
-        }),
-        destination: markdown,
-        result: args.result,
-      })
-    ) {
-      stale.push(markdown.path);
+        })
+      ) {
+        stale.push(destination.path);
+      }
     }
 
     const { projectReadmes } = args.configuration.output;
@@ -230,13 +247,23 @@ export class CallidescopeCommand extends CommandRunner {
     return path.resolve(value ?? process.cwd());
   }
 
-  /** Parses `--format`, which decides what the run prints. */
+  /**
+   * Parses `--format`, which decides what the run prints.
+   *
+   * Anything unrecognized reads as markdown rather than failing: this decides
+   * how findings are shown, and refusing to show them over a misspelled flag
+   * helps nobody.
+   */
   @Option({
-    description: "What to print: markdown or json",
+    description: "What to print: markdown, mermaid, or json",
     flags: "-f, --format [format]",
   })
   public parseFormat(value: string | undefined): CallidescopeOutputFormat {
-    return value === "json" ? "json" : "markdown";
+    if (value === "json" || value === "mermaid") {
+      return value;
+    }
+
+    return "markdown";
   }
 
   /** Parses `--json`. */
@@ -295,6 +322,7 @@ export class CallidescopeCommand extends CommandRunner {
           configuration: loaded,
           markdown: options.markdown,
         }),
+        mermaid: loaded.output.mermaid,
         projectReadmes: loaded.output.projectReadmes,
       },
     };

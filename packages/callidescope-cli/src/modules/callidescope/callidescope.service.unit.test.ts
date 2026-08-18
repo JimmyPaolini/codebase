@@ -90,6 +90,7 @@ function buildConfiguration(
       format: "markdown",
       json: undefined,
       markdown: undefined,
+      mermaid: undefined,
       projectReadmes: undefined,
     },
     projects: [],

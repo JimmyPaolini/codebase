@@ -193,25 +193,34 @@ const projectReadmesSchema = z
   })
   .optional();
 
+/**
+ * A marker-delimited block in a markdown file.
+ *
+ * Shared by the `markdown` and `mermaid` destinations: they differ in what
+ * goes between the markers, not in how a block is placed or overridden.
+ */
+const markdownDestinationSchema = z
+  .object({
+    description: z.string().optional(),
+    endMarker: z.string().optional(),
+    path: z.string(),
+    render: callbackSchema<RenderMarkdownOutput>().optional(),
+    startMarker: z.string().optional(),
+    write: callbackSchema<WriteMarkdownOutput>().optional(),
+  })
+  .optional();
+
 const outputSchema = z
   .object({
-    format: z.enum(["json", "markdown"]).optional(),
+    format: z.enum(["json", "markdown", "mermaid"]).optional(),
     json: z
       .object({
         indentation: z.number().int().nonnegative().optional(),
         path: z.string(),
       })
       .optional(),
-    markdown: z
-      .object({
-        description: z.string().optional(),
-        endMarker: z.string().optional(),
-        path: z.string(),
-        render: callbackSchema<RenderMarkdownOutput>().optional(),
-        startMarker: z.string().optional(),
-        write: callbackSchema<WriteMarkdownOutput>().optional(),
-      })
-      .optional(),
+    markdown: markdownDestinationSchema,
+    mermaid: markdownDestinationSchema,
     projectReadmes: projectReadmesSchema,
   })
   .optional();

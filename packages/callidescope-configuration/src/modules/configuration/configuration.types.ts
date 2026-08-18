@@ -85,11 +85,20 @@ export interface CallidescopeOutputConfiguration {
   format?: CallidescopeOutputFormat | undefined;
   json?: CallidescopeJsonOutputConfiguration | undefined;
   markdown?: CallidescopeMarkdownOutputConfiguration | undefined;
+  /**
+   * A markdown block whose call stacks are drawn rather than printed.
+   *
+   * Its own destination rather than a mode on `markdown`, so a repository can
+   * publish both: the tree carries what each frame takes, returns, and
+   * documents, and the diagram carries the shape they make together. Neither
+   * one is the other with a flag flipped.
+   */
+  mermaid?: CallidescopeMarkdownOutputConfiguration | undefined;
   projectReadmes?: CallidescopeProjectReadmeConfiguration | undefined;
 }
 
 /** How a run renders what it found. */
-export type CallidescopeOutputFormat = "json" | "markdown";
+export type CallidescopeOutputFormat = "json" | "markdown" | "mermaid";
 
 /**
  * A section spliced into every traced project's own README.
@@ -216,6 +225,7 @@ export interface ResolvedCallidescopeOutputConfiguration {
   format: CallidescopeOutputFormat;
   json: ResolvedCallidescopeJsonOutputConfiguration | undefined;
   markdown: ResolvedCallidescopeMarkdownOutputConfiguration | undefined;
+  mermaid: ResolvedCallidescopeMarkdownOutputConfiguration | undefined;
   projectReadmes: ResolvedCallidescopeProjectReadmeConfiguration | undefined;
 }
 

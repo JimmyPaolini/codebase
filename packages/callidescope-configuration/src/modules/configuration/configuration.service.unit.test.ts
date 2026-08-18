@@ -223,6 +223,54 @@ describe(ConfigurationService, () => {
     expect(configuration.output.markdown?.write).toBe(write);
   });
 
+  it("leaves the diagram destination alone until it is asked for", () => {
+    expect(
+      service.resolveConfiguration({ output: {} }).output.mermaid,
+    ).toBeUndefined();
+  });
+
+  it("defaults the diagram destination's markers when a path is named", () => {
+    expect(
+      service.resolveConfiguration({
+        output: { mermaid: { path: "GRAPH.md" } },
+      }).output.mermaid,
+    ).toStrictEqual({
+      description: undefined,
+      endMarker: DEFAULT_MARKDOWN_END_MARKER,
+      path: "GRAPH.md",
+      render: undefined,
+      startMarker: DEFAULT_MARKDOWN_START_MARKER,
+      write: undefined,
+    });
+  });
+
+  it("resolves the diagram and markdown destinations independently", () => {
+    // Two destinations rather than one with a mode, so a repository can
+    // publish the tree and the diagram from the same run.
+    const configuration = service.resolveConfiguration({
+      output: {
+        markdown: { path: "REPORT.md" },
+        mermaid: { endMarker: "<!-- END -->", path: "GRAPH.md" },
+      },
+    });
+
+    expect(configuration.output.markdown?.path).toBe("REPORT.md");
+    expect(configuration.output.markdown?.endMarker).toBe(
+      DEFAULT_MARKDOWN_END_MARKER,
+    );
+    expect(configuration.output.mermaid?.path).toBe("GRAPH.md");
+    expect(configuration.output.mermaid?.endMarker).toBe("<!-- END -->");
+  });
+
+  it.each(["json", "markdown", "mermaid"] as const)(
+    "keeps %s as the printed format",
+    (format) => {
+      expect(
+        service.resolveConfiguration({ output: { format } }).output.format,
+      ).toBe(format);
+    },
+  );
+
   // 📚 Project READMEs
 
   it("leaves the project READMEs alone until they are asked for", () => {

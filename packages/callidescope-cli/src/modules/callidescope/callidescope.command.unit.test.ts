@@ -15,10 +15,11 @@ import {
 
 import { LoggerService } from "@codebase/logger";
 
-import { buildCallGraphResult } from "../../../testing/mocks";
+import { buildCallGraphResult, buildStackFrame } from "../../../testing/mocks";
 import { OutputJsonService } from "../output-json/output-json.service";
 import { OutputMarkdownService } from "../output-markdown/output-markdown.service";
 import { MarkdownReportService } from "../report/markdown-report.service";
+import { MermaidReportService } from "../report/mermaid-report.service";
 import { ReportService } from "../report/report.service";
 
 import { CallidescopeCommand } from "./callidescope.command";
@@ -56,6 +57,7 @@ function buildConfiguration(
       format: "markdown",
       json: undefined,
       markdown: undefined,
+      mermaid: undefined,
       projectReadmes: undefined,
     },
     projects: [],
@@ -124,7 +126,10 @@ describe(CallidescopeCommand, () => {
         },
         {
           provide: MarkdownReportService,
-          useValue: new MarkdownReportService(new ReportService()),
+          useValue: new MarkdownReportService(
+            new MermaidReportService(),
+            new ReportService(),
+          ),
         },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
@@ -152,7 +157,10 @@ describe(CallidescopeCommand, () => {
         { provide: OutputMarkdownService, useValue: outputMarkdownService },
         {
           provide: MarkdownReportService,
-          useValue: new MarkdownReportService(new ReportService()),
+          useValue: new MarkdownReportService(
+            new MermaidReportService(),
+            new ReportService(),
+          ),
         },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
@@ -185,7 +193,10 @@ describe(CallidescopeCommand, () => {
         { provide: OutputMarkdownService, useValue: outputMarkdownService },
         {
           provide: MarkdownReportService,
-          useValue: new MarkdownReportService(new ReportService()),
+          useValue: new MarkdownReportService(
+            new MermaidReportService(),
+            new ReportService(),
+          ),
         },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
@@ -274,6 +285,7 @@ describe(CallidescopeCommand, () => {
           format: "json",
           json: undefined,
           markdown: undefined,
+          mermaid: undefined,
           projectReadmes: undefined,
         },
       }),
@@ -296,10 +308,133 @@ describe(CallidescopeCommand, () => {
   it.each([
     ["json", "json"],
     ["markdown", "markdown"],
+    ["mermaid", "mermaid"],
     [undefined, "markdown"],
     ["nonsense", "markdown"],
   ] as const)("parses the format flag %s as %s", (value, expected) => {
     expect(command.parseFormat(value)).toBe(expected);
+  });
+
+  it("prints a diagram when the format asks for mermaid", async () => {
+    configurationService.loadConfiguration.mockResolvedValue(
+      buildConfiguration({
+        output: {
+          format: "mermaid",
+          json: undefined,
+          markdown: undefined,
+          mermaid: undefined,
+          projectReadmes: undefined,
+        },
+      }),
+    );
+    stubTrace(
+      buildCallGraphResult({
+        deepStacks: [
+          {
+            depth: 2,
+            entryPointKind: "decorated-method",
+            frames: [
+              buildStackFrame({ displayName: "Resolver.read", id: "a" }),
+              buildStackFrame({ displayName: "Service.load", id: "b" }),
+            ],
+            isLowerBound: false,
+            limit: 1,
+          },
+        ],
+      }),
+    );
+
+    const write = vi.spyOn(process.stdout, "write").mockReturnValue(true);
+
+    await command.run([], {});
+
+    const printed = String(write.mock.calls[0]?.[0] ?? "");
+
+    expect(printed).toContain("```mermaid");
+    expect(printed).toContain("flowchart LR");
+    expect(printed).toContain("n0 --> n1");
+  });
+
+  it("writes the diagram destination alongside the markdown one", async () => {
+    const destination = {
+      description: undefined,
+      endMarker: "<!-- END -->",
+      path: "DIAGRAM.md",
+      render: undefined,
+      startMarker: "<!-- START -->",
+      write: undefined,
+    };
+
+    configurationService.loadConfiguration.mockResolvedValue(
+      buildConfiguration({
+        output: {
+          format: "markdown",
+          json: undefined,
+          markdown: { ...destination, path: "REPORT.md" },
+          mermaid: destination,
+          projectReadmes: undefined,
+        },
+      }),
+    );
+    outputMarkdownService.sync.mockReturnValue(true);
+
+    await command.run([], {});
+
+    const written = outputMarkdownService.sync.mock.calls.map(
+      ([call]) => call.destination.path,
+    );
+
+    expect(written).toStrictEqual(["REPORT.md", "DIAGRAM.md"]);
+  });
+
+  it("draws the stacks in the diagram destination and prints them in the other", async () => {
+    const destination = {
+      description: undefined,
+      endMarker: "<!-- END -->",
+      path: "DIAGRAM.md",
+      render: undefined,
+      startMarker: "<!-- START -->",
+      write: undefined,
+    };
+
+    configurationService.loadConfiguration.mockResolvedValue(
+      buildConfiguration({
+        output: {
+          format: "markdown",
+          json: undefined,
+          markdown: { ...destination, path: "REPORT.md" },
+          mermaid: destination,
+          projectReadmes: undefined,
+        },
+      }),
+    );
+    outputMarkdownService.sync.mockReturnValue(true);
+    stubTrace(
+      buildCallGraphResult({
+        deepStacks: [
+          {
+            depth: 2,
+            entryPointKind: "decorated-method",
+            frames: [
+              buildStackFrame({ displayName: "Resolver.read", id: "a" }),
+              buildStackFrame({ displayName: "Service.load", id: "b" }),
+            ],
+            isLowerBound: false,
+            limit: 1,
+          },
+        ],
+      }),
+    );
+
+    await command.run([], {});
+
+    const [report, diagram] = outputMarkdownService.sync.mock.calls.map(
+      ([call]) => call.content,
+    );
+
+    expect(report).toContain("```text");
+    expect(report).not.toContain("```mermaid");
+    expect(diagram).toContain("```mermaid");
   });
 
   it("writes a section into every traced project's README", async () => {
@@ -309,6 +444,7 @@ describe(CallidescopeCommand, () => {
           format: "markdown",
           json: undefined,
           markdown: undefined,
+          mermaid: undefined,
           projectReadmes: {
             endMarker: "<!-- END -->",
             heading: "## 🔭 Callidescope",
@@ -344,6 +480,7 @@ describe(CallidescopeCommand, () => {
           format: "markdown",
           json: undefined,
           markdown: undefined,
+          mermaid: undefined,
           projectReadmes: {
             endMarker: "<!-- END -->",
             heading: "## 🔭 Callidescope",
@@ -373,6 +510,7 @@ describe(CallidescopeCommand, () => {
           format: "markdown",
           json: undefined,
           markdown: undefined,
+          mermaid: undefined,
           projectReadmes: {
             endMarker: "<!-- END -->",
             heading: "## 🔭 Callidescope",
@@ -424,6 +562,7 @@ describe(CallidescopeCommand, () => {
           format: "markdown",
           json: { indentation: 2, path: "output/report.json" },
           markdown: undefined,
+          mermaid: undefined,
           projectReadmes: undefined,
         },
       }),
@@ -462,6 +601,7 @@ describe(CallidescopeCommand, () => {
             startMarker: "<!-- START -->",
             write: undefined,
           },
+          mermaid: undefined,
           projectReadmes: undefined,
         },
       }),
@@ -489,6 +629,7 @@ describe(CallidescopeCommand, () => {
           format: "markdown",
           json: { indentation: 2, path: "output/report.json" },
           markdown: undefined,
+          mermaid: undefined,
           projectReadmes: undefined,
         },
       }),
@@ -514,6 +655,7 @@ describe(CallidescopeCommand, () => {
             startMarker: "<!-- START -->",
             write: undefined,
           },
+          mermaid: undefined,
           projectReadmes: undefined,
         },
       }),
@@ -534,6 +676,7 @@ describe(CallidescopeCommand, () => {
           format: "markdown",
           json: { indentation: 2, path: "output/report.json" },
           markdown: undefined,
+          mermaid: undefined,
           projectReadmes: undefined,
         },
       }),

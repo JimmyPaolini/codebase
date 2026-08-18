@@ -48,6 +48,34 @@ export const SUMMARY_PREFIX = "↳";
 /** Heading a whole-run report is written under. */
 export const RUN_HEADING = "# 🔭 Callidescope";
 
+/**
+ * Opens every diagram.
+ *
+ * Left to right, because that is the direction a stack reads and the direction
+ * a wide, shallow call graph fits a page.
+ */
+export const MERMAID_FLOWCHART_HEADER = "flowchart LR";
+
+/**
+ * Callables a diagram draws before it stops accepting stacks.
+ *
+ * GitHub refuses a mermaid block past 50,000 characters, and at roughly fifty
+ * characters per node and edge this leaves room to spare — the widest project
+ * here draws 263. Whole stacks are dropped rather than trimmed, so the diagram
+ * never shows an edge into a callable it does not draw.
+ */
+export const MAXIMUM_DIAGRAM_NODES = 300;
+
+/** Prefix of every generated node identifier. */
+export const DIAGRAM_NODE_PREFIX = "n";
+
+/** What mermaid would read as syntax inside a node label. */
+export const MERMAID_LABEL_ESCAPES: ReadonlyMap<string, string> = new Map([
+  ["<", "#lt;"],
+  [">", "#gt;"],
+  ['"', "#quot;"],
+]);
+
 /** Header of the run or project summary table. */
 export const MARKDOWN_SUMMARY_HEADER = "| Measure | Value |\n| --- | --- |";
 
