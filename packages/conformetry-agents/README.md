@@ -29,6 +29,7 @@ holds, most of which are specific to this workspace.
 | ----- | ----------------- |
 | [conformetry-generate](skills/conformetry-generate/SKILL.md) | Adding a module, component, service, application, or package |
 | [conformetry-configure](skills/conformetry-configure/SKILL.md) | Adding a generator, or writing the template it renders |
+| [conformetry-validate](skills/conformetry-validate/SKILL.md) | A conformance run failed, or generated code needs checking |
 
 Each skill covers both entrypoints — the Nx plugin and the command-line host —
 because the same generator behaves differently through each, and an agent needs
