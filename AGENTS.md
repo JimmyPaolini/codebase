@@ -497,13 +497,12 @@ harnesses run the same scripts under `scripts/git/`:
 | `validate-session-gh-authentication.sh` | `gh auth status` plus Projects access |
 | `validate-session-skills.sh` | Every skill declared in `skills-lock.json` is present; directs the agent to `codebase:install-skills` |
 
-The skills check exists because `postinstall` alone does not cover worktrees.
-pnpm skips lifecycle scripts when `node_modules` is already up to date, so a
-worktree branched from an existing checkout never restores the gitignored
-skills, and every skill link in this file dangles. The hook reports rather than
-restores: harnesses register skills when a session starts, so restoring from the
-hook would still not expose them to the session already underway. Restore, then
-start a fresh session.
+The skills check is a backstop. Now that every skill is committed, a checkout
+holds them all and the check stays silent; it fires only when a skill folder is
+genuinely absent — deleted locally, or newly added to `skills-lock.json` by
+`skills update` and not yet materialized. It reports rather than restores,
+because harnesses register skills when a session starts, so restoring from the
+hook would still not expose them to the session already underway.
 
 Each script is registered twice — once per harness — and both registrations point
 at the same file:
@@ -548,18 +547,44 @@ directly, so they are not listed here — reading the directory is what tells yo
 which ones exist right now, including the ones installed from other
 repositories.
 
-Skills come from two places. The ones this repository owns are committed. The
-ones installed from other repositories — including the
-[mattpocock/skills](https://github.com/mattpocock/skills) set that
-[Agent Workflow](#agent-workflow) is built on — are declared in
-`skills-lock.json` and gitignored per-folder in `.gitignore`, so a fresh
-checkout holds none of them.
+**Every skill is committed**, including the ones vendored from other
+repositories — the [mattpocock/skills](https://github.com/mattpocock/skills) set
+that [Agent Workflow](#agent-workflow) is built on, and the rest recorded in
+`skills-lock.json`. They are checked in rather than restored on demand for one
+reason: a skill only becomes a slash command if its file is on disk when the
+session starts. Nothing runs between `git worktree add` and an agent session, so
+a gitignored skill leaves `/grill-with-docs` reporting `Unknown command` for the
+whole of that first session. Committing them makes a fresh clone or worktree
+work with no setup step at all.
 
-`scripts/install-skills.sh` restores them, and the root `postinstall` runs it.
-Every environment that installs node dependencies therefore ends up with the
-skills this file links to: local clones, devcontainers, CI jobs using the
-`setup-codebase` action, and Claude Code worktrees. Run it directly when a skill
-named in this file is missing from `.agents/skills/`:
+Vendored skills stay in sync through `skills update`, which rewrites
+`skills-lock.json` and the skill folders together, so upstream drift arrives as
+a reviewable pull request rather than silently. `upgrade-dependencies.yml` runs
+it weekly:
+
+```bash
+pnpm exec skills update
+```
+
+Their upstream licenses are vendored alongside them in
+[`.agents/licenses/`](.agents/licenses), as MIT and Apache-2.0 both require the
+license to travel with the copy:
+
+| Source | License | Skills |
+| ------ | ------- | ------ |
+| [mattpocock/skills](https://github.com/mattpocock/skills) | MIT | 25, the Agent Workflow set |
+| [obra/superpowers](https://github.com/obra/superpowers) | MIT | 5 |
+| [github/gh-stack](https://github.com/github/gh-stack) | MIT | 1 |
+| [github/awesome-copilot](https://github.com/github/awesome-copilot) | MIT | 1 |
+| [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | Apache-2.0 | 1 |
+
+`skills-lock.json` maps each individual skill to its source.
+
+`scripts/install-skills.sh` still exists, run by the root `postinstall` and by
+`codebase:install-skills`. With the skills committed it is a no-op in the normal
+case, and matters only when a skill folder is genuinely absent — after
+`skills update` adds a new entry to the lockfile, or when a folder has been
+deleted:
 
 ```bash
 pnpm exec nx run codebase:install-skills
