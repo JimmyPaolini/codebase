@@ -28,6 +28,7 @@ holds, most of which are specific to this workspace.
 | Skill | Reach for it when |
 | ----- | ----------------- |
 | [conformetry-generate](skills/conformetry-generate/SKILL.md) | Adding a module, component, service, application, or package |
+| [conformetry-configure](skills/conformetry-configure/SKILL.md) | Adding a generator, or writing the template it renders |
 
 Each skill covers both entrypoints — the Nx plugin and the command-line host —
 because the same generator behaves differently through each, and an agent needs
