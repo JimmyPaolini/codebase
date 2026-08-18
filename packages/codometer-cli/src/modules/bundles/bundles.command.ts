@@ -51,6 +51,17 @@ export class BundlesCommand extends CommandRunner {
     }
   }
 
+  /**
+   * Reads an option that carries text, or nothing at all.
+   *
+   * A flag written `--baseline-url "$EMPTY"` reaches commander with no value
+   * and arrives here as `true`, so anything but a non-empty string counts as
+   * absent. Passing that boolean through renders a link to `true`.
+   */
+  private readOptionalText(value: unknown): string | undefined {
+    return typeof value === "string" && value !== "" ? value : undefined;
+  }
+
   // 🌎 Public Methods
 
   /**
@@ -60,8 +71,8 @@ export class BundlesCommand extends CommandRunner {
     description: "Directory holding a baseline snapshot of the reports",
     flags: "--baseline [baseline]",
   })
-  public parseBaseline(value: string | undefined): string | undefined {
-    return value === "" ? undefined : value;
+  public parseBaseline(value: unknown): string | undefined {
+    return this.readOptionalText(value);
   }
 
   /**
@@ -71,8 +82,8 @@ export class BundlesCommand extends CommandRunner {
     description: "Run URL the baseline came from",
     flags: "--baseline-url [baselineUrl]",
   })
-  public parseBaselineUrl(value: string | undefined): string | undefined {
-    return value === "" ? undefined : value;
+  public parseBaselineUrl(value: unknown): string | undefined {
+    return this.readOptionalText(value);
   }
 
   /**
@@ -82,8 +93,8 @@ export class BundlesCommand extends CommandRunner {
     description: "Markdown file to splice the section into",
     flags: "--markdown [markdown]",
   })
-  public parseMarkdown(value: string | undefined): string | undefined {
-    return value === "" ? undefined : value;
+  public parseMarkdown(value: unknown): string | undefined {
+    return this.readOptionalText(value);
   }
 
   /**
@@ -93,8 +104,8 @@ export class BundlesCommand extends CommandRunner {
     description: "File to write the rendered section to",
     flags: "--output [output]",
   })
-  public parseOutput(value: string | undefined): string | undefined {
-    return value === "" ? undefined : value;
+  public parseOutput(value: unknown): string | undefined {
+    return this.readOptionalText(value);
   }
 
   /**

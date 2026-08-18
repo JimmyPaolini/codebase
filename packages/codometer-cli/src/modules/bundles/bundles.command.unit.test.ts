@@ -104,6 +104,9 @@ describe(BundlesCommand, () => {
     expect(command[parse]("value")).toBe("value");
     expect(command[parse]("")).toBeUndefined();
     expect(command[parse](undefined)).toBeUndefined();
+    // An empty shell variable reaches commander as a valueless flag, which it
+    // reports as `true`; rendering that would link to the word "true".
+    expect(command[parse](true)).toBeUndefined();
   });
 
   it("prints the section when given no destination", async () => {
