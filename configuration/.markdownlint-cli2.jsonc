@@ -41,7 +41,8 @@
     "**/dist/**",
     "**/node_modules/**",
     // Vendored upstream skills (kept close to upstream formatting)
-    ".agents/skills/link-workspace-packages/**",
+    ".agents/skills/**",
+    ".agents/licenses/**",
     ".conformetry/**",
     ".nx/**",
     "applications/affirmations/output/**",

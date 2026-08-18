@@ -1,8 +1,10 @@
 {
   "gitignore": true,
   "ignore": [
-    "**/.git/**",
+    "**/.agents/licenses/**",
+    "**/.agents/skills/**",
     "**/.conformetry/**",
+    "**/.git/**",
     "**/.nx/**",
     "**/coverage/**",
     "**/dist/**",
