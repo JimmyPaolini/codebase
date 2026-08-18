@@ -532,30 +532,30 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 
 | Measure | Value |
 | --- | --- |
-| Callables | 30 |
-| Files | 15 |
-| Calls traced | 38 |
-| Call stacks | 14 |
+| Callables | 50 |
+| Files | 23 |
+| Calls traced | 60 |
+| Call stacks | 20 |
 | Deepest stack | 10 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 2 |
+| Unfollowable calls | 4 |
 
 ### Call stacks
 
 **1. `ValidateCommand.run`** — depth ≥ 10 · decorated-method
 
 ```text
-🚀 ValidateCommand.run(_passedParameters: string[], options: ValidateCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/validate/validate.command.ts:169]
+🚀 ValidateCommand.run(_passedParameters: string[], options: ValidateCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/validate/validate.command.ts:149]
    ↳ Runs validation and reports every difference found.
   └─> ValidationService.validate(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-validation/src/modules/validation/validation.service.ts:134]
      ↳ Validates every instance and returns the differences found.
-    └─> TemplateDiscoveryService.matchInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:61]
+    └─> TemplateDiscoveryService.matchInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:85]
        ↳ Matches instance directories to the templates that best explain them.
-      └─> TemplateDiscoveryMatchingService.matchInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-matching.service.ts:122]
+      └─> TemplateDiscoveryMatchingService.matchInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-matching.service.ts:92]
          ↳ Resolves every instance to the template — or templates — that explain it.
-        └─> TemplateDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-matching.service.ts:64]
-           ↳ Weighs every template that shares at least one file with the instance.
-          └─> TemplateDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-matching.service.ts:70]
+        └─> TemplateDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-matching.service.ts:153]
+           ↳ Weighs every template that shares at least one file with the instance, best-first.
+          └─> TemplateDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-matching.service.ts:159]
             └─> TemplateDiscoveryTemplatesService.countMatchingFiles(…): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-templates.service.ts:97]
                ↳ Counts how many of a template's files the instance path already has.
               └─> TemplateDiscoveryTemplatesService.filter(…)(templateFilePath: string): boolean [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-templates.service.ts:106]
@@ -565,10 +565,30 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
                      ↳ Renders a template path with mustache, the same way contents are rendered.
 ```
 
-**2. `GenerateCommand.run`** — depth ≥ 9 · decorated-method
+**2. `ExplainCommand.run`** — depth ≥ 9 · decorated-method
 
 ```text
-🚀 GenerateCommand.run(passedParameters: string[], options: GenerateCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/generate/generate.command.ts:106]
+🚀 ExplainCommand.run(passedParameters: string[], options: ExplainCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/explain/explain.command.ts:218]
+   ↳ Explains every instance the given path expands to.
+  └─> ExplainCommand.explainInstances(…): ExplainedInstance[] [packages/conformetry-cli/src/modules/explain/explain.command.ts:133]
+     ↳ Pairs each instance with its verdict and the ranking behind it.
+    └─> ExplainCommand.map(…)(…): { considered: ConsideredTemplate[]; instancePath: string; nameStem: string; templates: string[]; verdict: ExplainVerdict; } [packages/conformetry-cli/src/modules/explain/explain.command.ts:138]
+      └─> TemplateDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-matching.service.ts:153]
+         ↳ Weighs every template that shares at least one file with the instance, best-first.
+        └─> TemplateDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-matching.service.ts:159]
+          └─> TemplateDiscoveryTemplatesService.countMatchingFiles(…): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-templates.service.ts:97]
+             ↳ Counts how many of a template's files the instance path already has.
+            └─> TemplateDiscoveryTemplatesService.filter(…)(templateFilePath: string): boolean [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-templates.service.ts:106]
+              └─> TemplateDiscoveryTemplatesService.resolveInstanceFilePath(…): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-templates.service.ts:154]
+                 ↳ Maps a template file path to the instance file path it governs.
+                └─> RenderingService.renderPath(args: { substitutions: Substitutions; templatePath: string; }): string [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:80]
+                   ↳ Renders a template path with mustache, the same way contents are rendered.
+```
+
+**3. `GenerateCommand.run`** — depth ≥ 9 · decorated-method
+
+```text
+🚀 GenerateCommand.run(passedParameters: string[], options: GenerateCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/generate/generate.command.ts:108]
    ↳ Resolves the generator's inputs and writes its files.
   └─> InputService.resolveGeneratorInputs(args: ResolveGeneratorInputsArguments): Promise<Record<string, string>> [packages/conformetry-configuration/src/modules/input/input.service.ts:187]
      ↳ Resolves generator inputs from raw command-line arguments.
@@ -587,7 +607,10 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
                 └─> InputSchemaService.find(…)([entryKey]: [string, any]): boolean [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:31]
 ```
 
-**3. `errorHandler`** — depth 5 · orphan-root
+<details>
+<summary>17 more call stacks</summary>
+
+**4. `errorHandler`** — depth 5 · orphan-root
 
 ```text
 🚀 errorHandler(error: Error): void [packages/conformetry-cli/src/main.ts:17]
@@ -601,10 +624,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
            ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-<details>
-<summary>11 more call stacks</summary>
-
-**4. `serviceErrorHandler`** — depth 5 · orphan-root
+**5. `serviceErrorHandler`** — depth 5 · orphan-root
 
 ```text
 🚀 serviceErrorHandler(error: Error): void [packages/conformetry-cli/src/main.ts:22]
@@ -618,30 +638,43 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
            ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-**5. `ValidateCommand.parseInstances`** — depth 3 · decorated-method
+**6. `ListCommand.run`** — depth ≥ 4 · decorated-method
 
 ```text
-🚀 ValidateCommand.parseInstances(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:140]
+🚀 ListCommand.run(_passedParameters: string[], options: ListCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/list/list.command.ts:116]
+   ↳ Writes every declared generator to standard output.
+  └─> ConfigurationService.loadConformetryConfiguration(configurationPath: string): Promise<ConformetryConfiguration> [packages/conformetry-configuration/src/modules/configuration/configuration.service.ts:172]
+     ↳ Loads, validates, and normalizes a conformetry configuration file.
+    └─> ConfigurationService.resolveConfigurationPath(configurationPath: string): Promise<string> [packages/conformetry-configuration/src/modules/configuration/configuration.service.ts:138]
+       ↳ Resolves a config path against the cwd, falling back to the workspace root.
+      └─> ConfigurationService.findWorkspaceRoot(): Promise<string | undefined> [packages/conformetry-configuration/src/modules/configuration/configuration.service.ts:77]
+         ↳ Walks upward from the process cwd looking for the workspace manifest.
+```
+
+**7. `ValidateCommand.parseInstances`** — depth 3 · decorated-method
+
+```text
+🚀 ValidateCommand.parseInstances(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:120]
    ↳ Parses the optional instance glob override.
   └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:125]
      ↳ Splits a comma-delimited filter option into its values.
     └─> InputService.filter(…)(item: string): boolean [packages/conformetry-configuration/src/modules/input/input.service.ts:135]
 ```
 
-**6. `ValidateCommand.parseLanguages`** — depth 3 · decorated-method
+**8. `ValidateCommand.parseLanguages`** — depth 3 · decorated-method
 
 ```text
-🚀 ValidateCommand.parseLanguages(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:150]
+🚀 ValidateCommand.parseLanguages(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:130]
    ↳ Parses the optional language filter.
   └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:125]
      ↳ Splits a comma-delimited filter option into its values.
     └─> InputService.filter(…)(item: string): boolean [packages/conformetry-configuration/src/modules/input/input.service.ts:135]
 ```
 
-**7. `ValidateCommand.parseThreshold`** — depth 3 · decorated-method
+**9. `ValidateCommand.parseThreshold`** — depth 3 · decorated-method
 
 ```text
-🚀 ValidateCommand.parseThreshold(value: string | undefined): number | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:159]
+🚀 ValidateCommand.parseThreshold(value: string | undefined): number | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:139]
    ↳ Parses the optional run-level conformance threshold.
   └─> InputService.parseThresholdOption(value: string | undefined): number | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:168]
      ↳ Parses a threshold option as a ratio from 0 to 1.
@@ -649,43 +682,61 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
        ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**8. `GenerateCommand.parseConfig`** — depth 2 · decorated-method
+**10. `ExplainCommand.parseConfig`** — depth 2 · decorated-method
 
 ```text
-🚀 GenerateCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/generate/generate.command.ts:66]
+🚀 ExplainCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/explain/explain.command.ts:200]
    ↳ Parses the optional configuration path.
   └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:141]
      ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**9. `GenerateCommand.parseDirectory`** — depth 2 · decorated-method
+**11. `GenerateCommand.parseConfig`** — depth 2 · decorated-method
 
 ```text
-🚀 GenerateCommand.parseDirectory(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/generate/generate.command.ts:75]
+🚀 GenerateCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/generate/generate.command.ts:68]
+   ↳ Parses the optional configuration path.
+  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:141]
+     ↳ Trims an optional string option, treating blank as absent.
+```
+
+**12. `GenerateCommand.parseDirectory`** — depth 2 · decorated-method
+
+```text
+🚀 GenerateCommand.parseDirectory(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/generate/generate.command.ts:77]
    ↳ Parses the output directory override.
   └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:141]
      ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**10. `GenerateCommand.parseGenerator`** — depth 2 · decorated-method
+**13. `GenerateCommand.parseGenerator`** — depth 2 · decorated-method
 
 ```text
-🚀 GenerateCommand.parseGenerator(value: string): string [packages/conformetry-cli/src/modules/generate/generate.command.ts:84]
+🚀 GenerateCommand.parseGenerator(value: string): string [packages/conformetry-cli/src/modules/generate/generate.command.ts:86]
    ↳ Parses the name of the generator to run.
   └─> InputService.parseRequiredOption(args: { optionName: string; value: string; }): string [packages/conformetry-configuration/src/modules/input/input.service.ts:148]
      ↳ Trims a required string option, rejecting blank values.
 ```
 
-**11. `ValidateCommand.parseConfig`** — depth 2 · decorated-method
+**14. `ListCommand.parseConfig`** — depth 2 · decorated-method
 
 ```text
-🚀 ValidateCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:131]
+🚀 ListCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/list/list.command.ts:98]
    ↳ Parses the optional configuration path.
   └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:141]
      ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**12. `main`** — depth ≥ 2 · module-bootstrap
+**15. `ValidateCommand.parseConfig`** — depth 2 · decorated-method
+
+```text
+🚀 ValidateCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:111]
+   ↳ Parses the optional configuration path.
+  └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:141]
+     ↳ Trims an optional string option, treating blank as absent.
+```
+
+**16. `main`** — depth ≥ 2 · module-bootstrap
 
 ```text
 🚀 main(): Promise<void> [packages/conformetry-cli/src/main.ts:11]
@@ -693,18 +744,34 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
   └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:36]
 ```
 
-**13. `GenerateCommand.constructor`** — depth ≥ 2 · orphan-root
+**17. `ExplainCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 GenerateCommand.constructor(…): GenerateCommand [packages/conformetry-cli/src/modules/generate/generate.command.ts:32]
+🚀 ExplainCommand.constructor(…): ExplainCommand [packages/conformetry-cli/src/modules/explain/explain.command.ts:58]
   └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**14. `ValidateCommand.constructor`** — depth ≥ 2 · orphan-root
+**18. `GenerateCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 ValidateCommand.constructor(…): ValidateCommand [packages/conformetry-cli/src/modules/validate/validate.command.ts:42]
+🚀 GenerateCommand.constructor(…): GenerateCommand [packages/conformetry-cli/src/modules/generate/generate.command.ts:34]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+     ↳ Sets the context label included in every subsequent log line.
+```
+
+**19. `ListCommand.constructor`** — depth ≥ 2 · orphan-root
+
+```text
+🚀 ListCommand.constructor(…): ListCommand [packages/conformetry-cli/src/modules/list/list.command.ts:42]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+     ↳ Sets the context label included in every subsequent log line.
+```
+
+**20. `ValidateCommand.constructor`** — depth ≥ 2 · orphan-root
+
+```text
+🚀 ValidateCommand.constructor(…): ValidateCommand [packages/conformetry-cli/src/modules/validate/validate.command.ts:38]
   └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
      ↳ Sets the context label included in every subsequent log line.
 ```

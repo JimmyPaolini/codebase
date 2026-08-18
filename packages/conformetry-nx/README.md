@@ -372,7 +372,7 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
     └─> InstancesService.findProjectInstances(args: FindProjectInstancesArguments): Promise<Instance[]> [packages/conformetry-nx/src/modules/instances/instances.service.ts:74]
        ↳ Expands every instance group that applies to a project, keeping only the instances that live inside it.
       └─> InstancesService.flatMap(…)(this: undefined, group: ConformetryInstanceGroup): Instance[] [packages/conformetry-nx/src/modules/instances/instances.service.ts:90]
-        └─> TemplateDiscoveryService.findInstances(args: FindInstancesArguments): Instance[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:56]
+        └─> TemplateDiscoveryService.findInstances(args: FindInstancesArguments): Instance[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:80]
            ↳ Expands instance glob patterns into instances.
           └─> TemplateDiscoveryInstancesService.findInstances(args: FindInstancesArguments): Instance[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-instances.service.ts:121]
              ↳ Expands every pattern and returns one instance per distinct path, name, and scope kind.

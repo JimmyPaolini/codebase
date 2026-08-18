@@ -311,9 +311,9 @@ Call stacks traced through `conformetry-configuration`, deepest first. Each fram
 
 | Measure | Value |
 | --- | --- |
-| Callables | 99 |
+| Callables | 101 |
 | Files | 22 |
-| Calls traced | 80 |
+| Calls traced | 82 |
 | Call stacks | 3 |
 | Deepest stack | 8 |
 | Stacks through recursion | 0 |
