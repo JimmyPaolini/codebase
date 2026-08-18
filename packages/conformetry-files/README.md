@@ -61,16 +61,18 @@ flowchart LR
   subgraph group0["conformetry-files"]
     FilesModule
   end
-  subgraph group1["conformetry-core"]
+  subgraph group1["conformetry-configuration"]
+    TemplateDiscoveryModule
+  end
+  subgraph group2["conformetry-core"]
     ErrorsModule
   end
-  subgraph group2["conformetry-generation"]
+  subgraph group3["conformetry-generation"]
     RenderingModule
   end
-  DiscoveryModule
-  DiscoveryModule --> RenderingModule
-  FilesModule --> DiscoveryModule
   FilesModule --> ErrorsModule
+  FilesModule --> TemplateDiscoveryModule
+  TemplateDiscoveryModule --> RenderingModule
 ```
 
 <!-- nestjs-module-graph-end -->

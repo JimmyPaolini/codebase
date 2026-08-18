@@ -3,6 +3,15 @@
 /** A NestJS module graph reduced to what the mermaid diagram needs. */
 export interface NestjsModuleGraph {
   /**
+   * Projects this one depends on that contribute no module to the graph.
+   *
+   * A dependency reached only through types, or loaded through
+   * `LazyModuleLoader`, is real at the project level and absent from the
+   * container. Naming it here is what keeps the two diagrams from looking
+   * like they disagree.
+   */
+  readonly absentDependencyNames: string[];
+  /**
    * Modules every other module imports, and whose edges are therefore left
    * out. Reported so a caller can say why the diagram looks sparser than the
    * container does.
@@ -45,6 +54,14 @@ export interface NestjsModuleOwnership {
    * defines, and a name alone cannot tell them apart — so a framework name is
    * never credited to a workspace project.
    */
+  /**
+   * Projects each project depends on, from the Nx project graph.
+   *
+   * This is what settles a name two packages define: `ConfigurationModule`
+   * belongs to whichever of them the project being graphed actually depends
+   * on.
+   */
+  readonly dependenciesByProject: Map<string, Set<string>>;
   readonly frameworkModuleNames: Set<string>;
   /** Every workspace project defining each module name. */
   readonly projectsByModule: Map<string, string[]>;

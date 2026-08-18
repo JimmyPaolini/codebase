@@ -92,11 +92,13 @@ flowchart LR
     PullRequestTemplateModule
     SynchronizationModule
   end
-  subgraph group1["logger"]
+  subgraph group1["conformetry-configuration"]
+    ConfigurationModule
+  end
+  subgraph group2["logger"]
     LoggerModule([LoggerModule])
   end
   ConfigModule([ConfigModule])
-  ConfigurationModule
   DiscoveryModule
   ConformetryGeneratorsModule --> ConfigurationModule
   MainModule --> DiscoveryModule

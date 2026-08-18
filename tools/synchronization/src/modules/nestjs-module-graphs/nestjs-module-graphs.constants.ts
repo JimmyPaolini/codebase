@@ -1,5 +1,9 @@
 // ♟️ Constants
 
+/** Introduces the project dependencies that contribute no module. */
+export const NESTJS_MODULE_GRAPH_ABSENT_LEGEND =
+  "_Also depends on %s — reached through types alone or loaded lazily, and so absent from this graph._";
+
 /** Explains the rounded nodes a graph with ambient modules renders. */
 export const NESTJS_MODULE_GRAPH_AMBIENT_LEGEND =
   "_Rounded modules are global: every module can inject them, so their edges are left out._";

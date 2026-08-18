@@ -269,31 +269,33 @@ flowchart LR
     MainModule
     ValidateModule
   end
-  subgraph group1["conformetry-core"]
+  subgraph group1["conformetry-configuration"]
+    ConfigurationModule
+    InputModule
+    TemplateDiscoveryModule
+  end
+  subgraph group2["conformetry-core"]
     ErrorsModule
     LanguageModule
     ReportingModule
   end
-  subgraph group2["conformetry-files"]
+  subgraph group3["conformetry-files"]
     FilesModule
   end
-  subgraph group3["conformetry-generation"]
+  subgraph group4["conformetry-generation"]
     GenerationModule
     RenderingModule
   end
-  subgraph group4["conformetry-validation"]
+  subgraph group5["conformetry-validation"]
     ValidationModule
   end
-  subgraph group5["logger"]
+  subgraph group6["logger"]
     LoggerModule([LoggerModule])
   end
   ConfigModule([ConfigModule])
-  ConfigurationModule
   DiscoveryModule
-  InputModule
-  DiscoveryModule --> RenderingModule
-  FilesModule --> DiscoveryModule
   FilesModule --> ErrorsModule
+  FilesModule --> TemplateDiscoveryModule
   GenerateModule --> ConfigurationModule
   GenerateModule --> GenerationModule
   GenerateModule --> InputModule
@@ -301,15 +303,16 @@ flowchart LR
   MainModule --> DiscoveryModule
   MainModule --> GenerateModule
   MainModule --> ValidateModule
+  TemplateDiscoveryModule --> RenderingModule
   ValidateModule --> ConfigurationModule
-  ValidateModule --> DiscoveryModule
   ValidateModule --> InputModule
   ValidateModule --> ReportingModule
+  ValidateModule --> TemplateDiscoveryModule
   ValidateModule --> ValidationModule
-  ValidationModule --> DiscoveryModule
   ValidationModule --> FilesModule
   ValidationModule --> LanguageModule
   ValidationModule --> ReportingModule
+  ValidationModule --> TemplateDiscoveryModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._

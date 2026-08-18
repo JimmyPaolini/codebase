@@ -66,6 +66,8 @@ flowchart LR
   end
 ```
 
+_Also depends on conformetry-core — reached through types alone or loaded lazily, and so absent from this graph._
+
 <!-- nestjs-module-graph-end -->
 
 ## Exports

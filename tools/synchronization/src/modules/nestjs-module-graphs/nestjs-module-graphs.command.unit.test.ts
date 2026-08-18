@@ -50,6 +50,7 @@ const diagram = [
 ].join("\n");
 
 const graph: NestjsModuleGraph = {
+  absentDependencyNames: [],
   ambientModuleNames: [],
   edges: [{ from: "MainModule", to: "A" }],
   groups: [{ moduleNames: ["A", "MainModule"], projectName: "example" }],

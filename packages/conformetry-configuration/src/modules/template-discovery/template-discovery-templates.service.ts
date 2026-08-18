@@ -4,7 +4,7 @@ import path from "node:path";
 import { RenderingService } from "@conformetry/generation";
 import { Injectable } from "@nestjs/common";
 
-import type { TemplateDefinition } from "./discovery.types";
+import type { TemplateDefinition } from "./template-discovery.types";
 import type { PreparedValidationDocument } from "@conformetry/core";
 import type { Substitutions } from "@conformetry/generation";
 
@@ -22,7 +22,7 @@ import type { Substitutions } from "@conformetry/generation";
  * would report differences the generator itself introduced.
  */
 @Injectable()
-export class DiscoveryTemplatesService {
+export class TemplateDiscoveryTemplatesService {
   // 🏗 Dependency Injection
 
   constructor(private readonly renderingService: RenderingService) {}

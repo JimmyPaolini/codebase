@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import {
+  NESTJS_MODULE_GRAPH_ABSENT_LEGEND,
   NESTJS_MODULE_GRAPH_AMBIENT_LEGEND,
   NESTJS_MODULE_GRAPH_AMBIENT_MINIMUM_MODULES,
   NESTJS_MODULE_GRAPH_MERMAID_HEADER,
@@ -73,6 +74,22 @@ export class NestjsModuleGraphsGraphService {
     }
 
     return inboundCounts;
+  }
+
+  /** Names the project dependencies no module in the graph came from. */
+  private findAbsentDependencyNames(options: {
+    groups: NestjsModuleGraphGroup[];
+    ownership: NestjsModuleOwnership;
+    projectName: string;
+  }): string[] {
+    const { groups, ownership, projectName } = options;
+    const represented = new Set(groups.map((group) => group.projectName));
+
+    return this.sortNames(
+      [...(ownership.dependenciesByProject.get(projectName) ?? [])].filter(
+        (dependency) => !represented.has(dependency),
+      ),
+    );
   }
 
   /**
@@ -149,10 +166,12 @@ export class NestjsModuleGraphsGraphService {
   /**
    * Decides which project a module name belongs to.
    *
-   * The graphed project wins outright, which is what settles the names more
-   * than one project uses — every application defines a `MainModule`, and two
-   * packages define a `ConfigurationModule`. A name left ambiguous after that,
-   * or one NestJS also exports, is credited to nobody rather than to a guess.
+   * The graphed project wins outright, which settles every application
+   * defining a `MainModule`. A name NestJS also exports is credited to nobody,
+   * because a name alone cannot tell `@nestjs/core`'s module from a workspace
+   * one. Otherwise the Nx project graph decides: two packages here define a
+   * `ConfigurationModule`, and the one the graphed project depends on is the
+   * one it imported. Anything still ambiguous is credited to nobody.
    */
   private resolveOwner(options: {
     moduleName: string;
@@ -164,8 +183,14 @@ export class NestjsModuleGraphsGraphService {
 
     if (definingProjects.includes(projectName)) return projectName;
     if (ownership.frameworkModuleNames.has(moduleName)) return undefined;
+    if (definingProjects.length === 1) return definingProjects[0];
 
-    return definingProjects.length === 1 ? definingProjects[0] : undefined;
+    const dependencies = ownership.dependenciesByProject.get(projectName);
+    const depended = definingProjects.filter(
+      (candidate) => dependencies?.has(candidate) === true,
+    );
+
+    return depended.length === 1 ? depended[0] : undefined;
   }
 
   /** Sorts names into a stable order. */
@@ -199,17 +224,23 @@ export class NestjsModuleGraphsGraphService {
     }
 
     const sortedModuleNames = this.sortNames(moduleNames);
+    const groups = this.groupModuleNames({
+      moduleNames: sortedModuleNames,
+      ownership,
+      projectName,
+    });
 
     return {
+      absentDependencyNames: this.findAbsentDependencyNames({
+        groups,
+        ownership,
+        projectName,
+      }),
       ambientModuleNames: this.sortNames(ambientModuleNames),
       edges: edges.toSorted((first, second) =>
         this.compareEdges(first, second),
       ),
-      groups: this.groupModuleNames({
-        moduleNames: sortedModuleNames,
-        ownership,
-        projectName,
-      }),
+      groups,
       isolatedModuleNames: sortedModuleNames.filter(
         (moduleName) => !connectedModuleNames.has(moduleName),
       ),
@@ -254,7 +285,23 @@ export class NestjsModuleGraphsGraphService {
     if (graph.ambientModuleNames.length > 0) {
       lines.push("", NESTJS_MODULE_GRAPH_AMBIENT_LEGEND);
     }
+    if (graph.absentDependencyNames.length > 0) {
+      lines.push(
+        "",
+        NESTJS_MODULE_GRAPH_ABSENT_LEGEND.replace(
+          "%s",
+          this.renderNameList(graph.absentDependencyNames),
+        ),
+      );
+    }
 
     return lines.join("\n");
+  }
+
+  /** Renders a name list as prose, with `and` before the last entry. */
+  renderNameList(names: string[]): string {
+    if (names.length < 2) return names.join("");
+
+    return `${names.slice(0, -1).join(", ")} and ${names.at(-1) ?? ""}`;
   }
 }

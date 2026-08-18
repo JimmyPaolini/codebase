@@ -71,6 +71,35 @@ worth reading, so a module that every other module imports is treated as
 ambient: its edges are dropped and it is kept as a node on its own. Nothing a
 project actually designs comes close to that threshold.
 
+Modules are grouped by the project that defines them. Ownership is decided by
+name, which needs three rules because names collide: the graphed project wins
+outright (every application defines a `MainModule`); a name NestJS itself
+exports is credited to nobody, because a name cannot distinguish
+`@nestjs/core`'s module from a workspace one; and otherwise the Nx project
+graph settles it, since two packages here define a `ConfigurationModule` and
+the one the graphed project depends on is the one it imported.
+
+Where a name would otherwise be genuinely ambiguous in a single container —
+`conformetry-cli` imports `@nestjs/core`'s `DiscoveryModule` and
+`@conformetry/configuration`'s in the same application — the fix is to rename
+the module rather than to guess. Spelunker reports modules by name, so two
+different modules sharing one would collapse into a single node no rule can
+separate.
+
+### When the two graphs disagree
+
+A project dependency can be real and still contribute no module, so the module
+graph names those below the diagram rather than leaving a reader to wonder why
+the two disagree. It happens for two reasons: a dependency reached only through
+types — `conformetry-json` imports `ConformetryError` from `@conformetry/core`
+and nothing else — and a dependency loaded at runtime through
+`LazyModuleLoader`, which is how `conformetry-validation` reaches its language
+packages.
+
+The reverse also happens and is equally correct: the module graph reaches
+transitively, so it can show a module from a project the one-hop project graph
+does not list.
+
 A target file that exists but has no marker comments counts as drift. Which
 files a project must keep is conformetry's rule rather than this command's:
 the markers live in the NestJS project templates, so validation fails a project
@@ -162,11 +191,13 @@ flowchart LR
     PullRequestTemplateModule
     SynchronizationModule
   end
-  subgraph group1["logger"]
+  subgraph group1["conformetry-configuration"]
+    ConfigurationModule
+  end
+  subgraph group2["logger"]
     LoggerModule([LoggerModule])
   end
   ConfigModule([ConfigModule])
-  ConfigurationModule
   DiscoveryModule
   ConformetryGeneratorsModule --> ConfigurationModule
   MainModule --> DiscoveryModule

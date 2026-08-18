@@ -106,26 +106,30 @@ flowchart LR
   subgraph group0["conformetry-validation"]
     ValidationModule
   end
-  subgraph group1["conformetry-core"]
+  subgraph group1["conformetry-configuration"]
+    TemplateDiscoveryModule
+  end
+  subgraph group2["conformetry-core"]
     ErrorsModule
     LanguageModule
     ReportingModule
   end
-  subgraph group2["conformetry-files"]
+  subgraph group3["conformetry-files"]
     FilesModule
   end
-  subgraph group3["conformetry-generation"]
+  subgraph group4["conformetry-generation"]
     RenderingModule
   end
-  DiscoveryModule
-  DiscoveryModule --> RenderingModule
-  FilesModule --> DiscoveryModule
   FilesModule --> ErrorsModule
-  ValidationModule --> DiscoveryModule
+  FilesModule --> TemplateDiscoveryModule
+  TemplateDiscoveryModule --> RenderingModule
   ValidationModule --> FilesModule
   ValidationModule --> LanguageModule
   ValidationModule --> ReportingModule
+  ValidationModule --> TemplateDiscoveryModule
 ```
+
+_Also depends on conformetry-json, conformetry-jupyter, conformetry-markdown, conformetry-python, conformetry-text and conformetry-typescript — reached through types alone or loaded lazily, and so absent from this graph._
 
 <!-- nestjs-module-graph-end -->
 

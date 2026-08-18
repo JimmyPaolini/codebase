@@ -195,11 +195,13 @@ flowchart LR
     TypescriptModule
     YamlModule
   end
-  subgraph group1["logger"]
+  subgraph group1["codometer-configuration"]
+    ConfigurationModule
+  end
+  subgraph group2["logger"]
     LoggerModule([LoggerModule])
   end
   ConfigModule([ConfigModule])
-  ConfigurationModule
   DiscoveryModule
   CodometerModule --> ConfigurationModule
   CodometerModule --> CustomStatisticsModule

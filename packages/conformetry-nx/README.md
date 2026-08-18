@@ -168,32 +168,33 @@ flowchart LR
     ProjectsModule
     ScopeModule
   end
-  subgraph group1["conformetry-core"]
+  subgraph group1["conformetry-configuration"]
+    ConfigurationModule
+    TemplateDiscoveryModule
+  end
+  subgraph group2["conformetry-core"]
     ErrorsModule
     LanguageModule
     ReportingModule
   end
-  subgraph group2["conformetry-files"]
+  subgraph group3["conformetry-files"]
     FilesModule
   end
-  subgraph group3["conformetry-generation"]
+  subgraph group4["conformetry-generation"]
     GenerationModule
     RenderingModule
   end
-  subgraph group4["conformetry-validation"]
+  subgraph group5["conformetry-validation"]
     ValidationModule
   end
-  subgraph group5["logger"]
+  subgraph group6["logger"]
     LoggerModule([LoggerModule])
   end
-  ConfigurationModule
-  DiscoveryModule
   CandidatesModule --> ConfigurationModule
-  CandidatesModule --> DiscoveryModule
   CandidatesModule --> ScopeModule
-  DiscoveryModule --> RenderingModule
-  FilesModule --> DiscoveryModule
+  CandidatesModule --> TemplateDiscoveryModule
   FilesModule --> ErrorsModule
+  FilesModule --> TemplateDiscoveryModule
   GenerationModule --> RenderingModule
   GeneratorModule --> ConfigurationModule
   GeneratorModule --> ScopeModule
@@ -205,7 +206,6 @@ flowchart LR
   PluginModule --> AdapterModule
   PluginModule --> CandidatesModule
   PluginModule --> ConfigurationModule
-  PluginModule --> DiscoveryModule
   PluginModule --> GenerationModule
   PluginModule --> GeneratorModule
   PluginModule --> OptionsModule
@@ -213,14 +213,18 @@ flowchart LR
   PluginModule --> ProjectsModule
   PluginModule --> ReportingModule
   PluginModule --> ScopeModule
+  PluginModule --> TemplateDiscoveryModule
   PluginModule --> ValidationModule
-  ValidationModule --> DiscoveryModule
+  TemplateDiscoveryModule --> RenderingModule
   ValidationModule --> FilesModule
   ValidationModule --> LanguageModule
   ValidationModule --> ReportingModule
+  ValidationModule --> TemplateDiscoveryModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
+
+_Also depends on conformetry-json, conformetry-jupyter, conformetry-markdown, conformetry-python, conformetry-text and conformetry-typescript — reached through types alone or loaded lazily, and so absent from this graph._
 
 <!-- nestjs-module-graph-end -->
 

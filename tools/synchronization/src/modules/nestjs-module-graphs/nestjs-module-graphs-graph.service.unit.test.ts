@@ -28,8 +28,15 @@ function buildNode(name: string, imports: string[]): SpelunkedTree {
 function buildOwnership(
   projectsByModule: Record<string, string[]> = {},
   frameworkModuleNames: string[] = [],
+  dependenciesByProject: Record<string, string[]> = {},
 ): NestjsModuleOwnership {
   return {
+    dependenciesByProject: new Map(
+      Object.entries(dependenciesByProject).map(([project, dependencies]) => [
+        project,
+        new Set(dependencies),
+      ]),
+    ),
     frameworkModuleNames: new Set(frameworkModuleNames),
     projectsByModule: new Map(Object.entries(projectsByModule)),
   };
@@ -146,6 +153,42 @@ describe(NestjsModuleGraphsGraphService, () => {
       ]);
     });
 
+    // Two packages here define a `ConfigurationModule`; the one the graphed
+    // project depends on is the one it imported.
+    it("settles a shared name by which project is depended on", () => {
+      const graph = build(
+        [buildNode("ConfigurationModule", [])],
+        buildOwnership(
+          {
+            ConfigurationModule: [
+              "codometer-configuration",
+              "conformetry-configuration",
+            ],
+          },
+          [],
+          { example: ["conformetry-configuration"] },
+        ),
+      );
+
+      expect(graph.groups).toStrictEqual([
+        {
+          moduleNames: ["ConfigurationModule"],
+          projectName: "conformetry-configuration",
+        },
+      ]);
+    });
+
+    it("credits a shared name to nobody when both are depended on", () => {
+      const graph = build(
+        [buildNode("ConfigurationModule", [])],
+        buildOwnership({ ConfigurationModule: ["first", "second"] }, [], {
+          example: ["first", "second"],
+        }),
+      );
+
+      expect(graph.groups[0]?.projectName).toBeUndefined();
+    });
+
     // `DiscoveryModule` is both a `@nestjs/core` module and one a package here
     // defines, and the name alone cannot tell them apart.
     it("credits a name NestJS also exports to nobody", () => {
@@ -233,6 +276,31 @@ describe(NestjsModuleGraphsGraphService, () => {
 
       expect(diagram).toContain("  LoggerModule([LoggerModule])");
       expect(diagram).toContain("_Rounded modules are global");
+    });
+
+    // A dependency reached only through types, or loaded lazily, is real at
+    // the project level and absent here; saying so stops the two diagrams from
+    // looking like they disagree.
+    it("names a dependency that contributes no module", () => {
+      const graph = build(
+        [buildNode("JsonValidatorModule", [])],
+        buildOwnership({ JsonValidatorModule: ["example"] }, [], {
+          example: ["conformetry-core"],
+        }),
+      );
+
+      expect(graph.absentDependencyNames).toStrictEqual(["conformetry-core"]);
+      expect(service.renderMermaid(graph)).toContain(
+        "_Also depends on conformetry-core —",
+      );
+    });
+
+    it("lists several absent dependencies as prose", () => {
+      expect(service.renderNameList(["first", "second", "third"])).toBe(
+        "first, second and third",
+      );
+      expect(service.renderNameList(["only"])).toBe("only");
+      expect(service.renderNameList([])).toBe("");
     });
 
     it("leaves the legend out when no module is ambient", () => {
