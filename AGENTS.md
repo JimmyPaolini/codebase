@@ -581,12 +581,15 @@ license to travel with the copy:
 
 `skills-lock.json` maps each individual skill to its source.
 
-Two tools reach `.agents/` and so must skip the installed skills: `prettier`
-scans `.`, and `codometer` scans `--directory .`. Both list the skills one per
-line in their ignore files rather than excluding `.agents/skills/` wholesale, so
-this repository's own skills in the same directory keep being checked and
-measured. `codebase:check-skill-exclusions` runs inside `lint-codebase` and
-fails when a skill in the lockfile is missing from either file — which is what
+Three things reach `.agents/` and so must skip the installed skills: `prettier`
+scans `.`, `codometer` scans `--directory .`, and GitHub Linguist reads every
+committed file — one installed skill ships half a megabyte of bundled browser
+JavaScript that would otherwise dominate the language bar, so `.gitattributes`
+marks them `linguist-vendored`. All three list the skills one per line rather
+than excluding `.agents/skills/` wholesale, so this repository's own skills in
+the same directory keep being checked, measured, and attributed.
+`codebase:check-skill-exclusions` runs inside `lint-codebase` and fails when a
+skill in the lockfile is missing from any of the three — which is what
 `skills update` adding a skill would otherwise do silently. Every other tool
 scopes itself with explicit globs that never include `.agents/`.
 
