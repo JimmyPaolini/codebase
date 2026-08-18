@@ -6,6 +6,8 @@ import { LoggerService } from "@codebase/logger";
 import { ConformetryGeneratorsCommand } from "../conformetry-generators/conformetry-generators.command";
 import { ConventionalConfigCommand } from "../conventional-config/conventional-config.command";
 import { DevcontainerConfigurationCommand } from "../devcontainer-configuration/devcontainer-configuration.command";
+import { NestjsModuleGraphsCommand } from "../nestjs-module-graphs/nestjs-module-graphs.command";
+import { NxProjectGraphsCommand } from "../nx-project-graphs/nx-project-graphs.command";
 import { PullRequestTemplateCommand } from "../pull-request-template/pull-request-template.command";
 
 import { SynchronizationService } from "./synchronization.service";
@@ -36,6 +38,8 @@ export class SynchronizationCommand extends CommandRunner {
     private readonly conventionalConfigCommand: ConventionalConfigCommand,
     private readonly devcontainerConfigurationCommand: DevcontainerConfigurationCommand,
     private readonly logger: LoggerService,
+    private readonly nestjsModuleGraphsCommand: NestjsModuleGraphsCommand,
+    private readonly nxProjectGraphsCommand: NxProjectGraphsCommand,
     private readonly pullRequestTemplateCommand: PullRequestTemplateCommand,
     private readonly synchronizationModeService: SynchronizationService,
   ) {
@@ -55,6 +59,8 @@ export class SynchronizationCommand extends CommandRunner {
       this.conformetryGeneratorsCommand,
       this.conventionalConfigCommand,
       this.devcontainerConfigurationCommand,
+      this.nestjsModuleGraphsCommand,
+      this.nxProjectGraphsCommand,
       this.pullRequestTemplateCommand,
     ];
   }

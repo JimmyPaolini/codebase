@@ -1,7 +1,7 @@
 // 🏷️ Types
 
 import type { CssResult } from "../css/css.types";
-import type { DiscoveryResult } from "../discovery/discovery.types";
+import type { FileDiscoveryResult } from "../file-discovery/file-discovery.types";
 import type { HclResult } from "../hcl/hcl.types";
 import type { JsonResult } from "../json/json.types";
 import type { JupyterResult } from "../jupyter/jupyter.types";
@@ -20,7 +20,7 @@ import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 /** Arguments accepted when running every language analyzer. */
 export interface AnalyzeLanguagesArguments {
   configuration: ResolvedCodometerConfiguration;
-  discoveredFiles: DiscoveryResult;
+  discoveredFiles: FileDiscoveryResult;
   /** Configured counters over declarations, tallied during the TypeScript walk. */
   symbolCounters: TypescriptSymbolCounter[];
   workingDirectory: string;

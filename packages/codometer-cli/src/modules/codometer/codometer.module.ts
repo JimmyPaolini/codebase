@@ -4,7 +4,7 @@ import { Module } from "@nestjs/common";
 import { LoggerModule } from "@codebase/logger";
 
 import { CustomStatisticsModule } from "../custom-statistics/custom-statistics.module";
-import { DiscoveryModule } from "../discovery/discovery.module";
+import { FileDiscoveryModule } from "../file-discovery/file-discovery.module";
 import { LanguagesModule } from "../languages/languages.module";
 import { OutputJsonModule } from "../output-json/output-json.module";
 import { OutputMarkdownModule } from "../output-markdown/output-markdown.module";
@@ -21,7 +21,7 @@ import { CodometerService } from "./codometer.service";
   imports: [
     ConfigurationModule,
     CustomStatisticsModule,
-    DiscoveryModule,
+    FileDiscoveryModule,
     LanguagesModule,
     LoggerModule,
     OutputJsonModule,

@@ -2,9 +2,9 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { DiscoveryCandidatesService } from "./discovery-candidates.service";
-import { DiscoveryMatchingService } from "./discovery-matching.service";
-import { DiscoveryTemplatesService } from "./discovery-templates.service";
+import { TemplateDiscoveryCandidatesService } from "./template-discovery-candidates.service";
+import { TemplateDiscoveryMatchingService } from "./template-discovery-matching.service";
+import { TemplateDiscoveryTemplatesService } from "./template-discovery-templates.service";
 
 import type {
   InstanceCandidate,
@@ -15,7 +15,7 @@ import type {
   ResolveCandidatesArguments,
   ResolvedInstances,
   TemplateDefinition,
-} from "./discovery.types";
+} from "./template-discovery.types";
 
 /**
  * Turns candidate directories into matched instances and comparison documents.
@@ -26,13 +26,13 @@ import type {
  * from any host, not just Nx.
  */
 @Injectable()
-export class DiscoveryService {
+export class TemplateDiscoveryService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly discoveryCandidatesService: DiscoveryCandidatesService,
-    private readonly discoveryMatchingService: DiscoveryMatchingService,
-    private readonly discoveryTemplatesService: DiscoveryTemplatesService,
+    private readonly templateDiscoveryCandidatesService: TemplateDiscoveryCandidatesService,
+    private readonly templateDiscoveryMatchingService: TemplateDiscoveryMatchingService,
+    private readonly templateDiscoveryTemplatesService: TemplateDiscoveryTemplatesService,
   ) {}
 
   // 🔐 Private Fields
@@ -48,7 +48,7 @@ export class DiscoveryService {
     name: string;
     templatePath: string;
   }): TemplateDefinition {
-    return this.discoveryTemplatesService.collectTemplate(args);
+    return this.templateDiscoveryTemplatesService.collectTemplate(args);
   }
 
   /**
@@ -67,7 +67,7 @@ export class DiscoveryService {
             return extensions.has(path.extname(templateFilePath));
           })
           .map((templateFilePath) => {
-            return this.discoveryTemplatesService.prepareDocument({
+            return this.templateDiscoveryTemplatesService.prepareDocument({
               instancePath: instance.candidate.instancePath,
               substitutions: instance.substitutions,
               templateDirectoryPath: instance.template.directoryPath,
@@ -84,7 +84,7 @@ export class DiscoveryService {
   public resolveCandidates(
     args: ResolveCandidatesArguments,
   ): InstanceCandidate[] {
-    return this.discoveryCandidatesService.resolveCandidates(args);
+    return this.templateDiscoveryCandidatesService.resolveCandidates(args);
   }
 
   /**
@@ -101,7 +101,7 @@ export class DiscoveryService {
         return {
           instance,
           instanceFilePath:
-            this.discoveryTemplatesService.resolveInstanceFilePath({
+            this.templateDiscoveryTemplatesService.resolveInstanceFilePath({
               instancePath: instance.candidate.instancePath,
               substitutions: instance.substitutions,
               templateDirectoryPath: instance.template.directoryPath,
@@ -118,6 +118,6 @@ export class DiscoveryService {
     candidates: InstanceCandidate[];
     templates: TemplateDefinition[];
   }): ResolvedInstances {
-    return this.discoveryMatchingService.resolveInstances(args);
+    return this.templateDiscoveryMatchingService.resolveInstances(args);
   }
 }

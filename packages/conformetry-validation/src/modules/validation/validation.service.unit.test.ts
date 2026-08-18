@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { DiscoveryService } from "@conformetry/configuration";
+import { TemplateDiscoveryService } from "@conformetry/configuration";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -74,10 +74,12 @@ describe(ValidationService, () => {
     }).compile();
 
     service = await module.resolve(ValidationService);
-    const discoveryService = await module.resolve(DiscoveryService);
+    const templateDiscoveryService = await module.resolve(
+      TemplateDiscoveryService,
+    );
 
     templates = [
-      discoveryService.collectTemplate({
+      templateDiscoveryService.collectTemplate({
         name: "widget",
         templatePath: await createTemplatePath(),
       }),
