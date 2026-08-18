@@ -120,11 +120,11 @@ describe(TemplateDiscoveryMatchingService, () => {
   });
 
   describe("buildSubstitutions", () => {
-    it("derives name variants from the candidate stem", () => {
+    it("derives name variants from the instance stem", () => {
       expect(
         service.buildSubstitutions({
-          instancePath: "/w/packages/x",
           nameStem: "my-widget",
+          path: "/w/packages/x",
         }),
       ).toStrictEqual({
         name: "my-widget",
@@ -138,22 +138,22 @@ describe(TemplateDiscoveryMatchingService, () => {
     it("lets caller-supplied substitutions win", () => {
       expect(
         service.buildSubstitutions({
-          instancePath: "/w/packages/x",
           nameStem: "my-widget",
+          path: "/w/packages/x",
           substitutions: { name: "overridden", type: "packages" },
         }),
       ).toMatchObject({ name: "overridden", type: "packages" });
     });
   });
 
-  describe("resolveInstances", () => {
+  describe("matchInstances", () => {
     it("prefers the larger template when both match completely", async () => {
       const { templatesRootPath } = await createTemplates();
       const templates = collectTemplates(templatesService, templatesRootPath);
       const instancePath = await createServiceModule("errors");
 
-      const { matched } = service.resolveInstances({
-        candidates: [{ instancePath, nameStem: "errors" }],
+      const { matched } = service.matchInstances({
+        instances: [{ nameStem: "errors", path: instancePath }],
         templates,
       });
 
@@ -166,8 +166,8 @@ describe(TemplateDiscoveryMatchingService, () => {
       const templates = collectTemplates(templatesService, templatesRootPath);
       const instancePath = await createServiceModule("errors");
 
-      const { matched } = service.resolveInstances({
-        candidates: [{ instancePath, nameStem: "errors" }],
+      const { matched } = service.matchInstances({
+        instances: [{ nameStem: "errors", path: instancePath }],
         templates,
       });
 
@@ -175,21 +175,21 @@ describe(TemplateDiscoveryMatchingService, () => {
       expect(matched[0]?.template.name).not.toBe("nestjs-graphql-module");
     });
 
-    it("selects a two-file template when a file scope narrows the candidate", async () => {
+    it("selects a two-file template when a file scope narrows the instance", async () => {
       const { templatesRootPath } = await createTemplates();
       const templates = collectTemplates(templatesService, templatesRootPath);
       const instancePath = await createServiceModule("errors");
 
       const modulePath = path.join(instancePath, "errors");
-      const { matched } = service.resolveInstances({
-        candidates: [
+      const { matched } = service.matchInstances({
+        instances: [
           {
             fileScope: [
               path.join(modulePath, "errors.service.ts"),
               path.join(modulePath, "errors.service.unit.test.ts"),
             ],
-            instancePath: modulePath,
             nameStem: "errors",
+            path: modulePath,
           },
         ],
         templates,
@@ -198,15 +198,15 @@ describe(TemplateDiscoveryMatchingService, () => {
       expect(matched[0]?.template.name).toBe("nestjs-service-file");
     });
 
-    it("reports a candidate no template explains", async () => {
+    it("reports an instance no template explains", async () => {
       const { templatesRootPath } = await createTemplates();
       const templates = collectTemplates(templatesService, templatesRootPath);
       const instancePath = await mkdtemp(
         path.join(tmpdir(), "conformetry-empty-"),
       );
 
-      const { matched, unmatched } = service.resolveInstances({
-        candidates: [{ instancePath, nameStem: "nothing" }],
+      const { matched, unmatched } = service.matchInstances({
+        instances: [{ nameStem: "nothing", path: instancePath }],
         templates,
       });
 
@@ -240,19 +240,16 @@ describe(TemplateDiscoveryMatchingService, () => {
       }
 
       const instancePath = await createServiceModule("errors");
-      const { unmatched } = service.resolveInstances({
-        candidates: [{ instancePath, nameStem: "errors" }],
+      const { unmatched } = service.matchInstances({
+        instances: [{ nameStem: "errors", path: instancePath }],
         templates: collectTemplates(templatesService, templatesRootPath),
       });
 
       expect(unmatched[0]?.reason).toBe("ambiguous");
-      expect(unmatched[0]?.candidateTemplateNames).toStrictEqual([
-        "alpha",
-        "beta",
-      ]);
+      expect(unmatched[0]?.tiedTemplateNames).toStrictEqual(["alpha", "beta"]);
     });
 
-    it("matches every template a candidate satisfies completely", async () => {
+    it("matches every template an instance satisfies completely", async () => {
       const templatesRootPath = await mkdtemp(
         path.join(tmpdir(), "conformetry-templates-"),
       );
@@ -269,8 +266,8 @@ describe(TemplateDiscoveryMatchingService, () => {
       }
 
       const instancePath = await createServiceModule("errors");
-      const { matched, unmatched } = service.resolveInstances({
-        candidates: [{ instancePath, nameStem: "errors" }],
+      const { matched, unmatched } = service.matchInstances({
+        instances: [{ nameStem: "errors", path: instancePath }],
         templates: collectTemplates(templatesService, templatesRootPath),
       });
 

@@ -3,6 +3,14 @@
 import type { LanguageValidatorDescriptor } from "@conformetry/core";
 
 /**
+ * Weight assumed for a bridge finding that declares none.
+ *
+ * Right for any leaf requirement, and the only safe assumption for a payload
+ * that crossed a process boundary without one.
+ */
+export const DEFAULT_BRIDGE_WEIGHT = 1;
+
+/**
  * Extensions the Python validator claims.
  *
  * Notebooks are deliberately absent — `.ipynb` is a JSON envelope containing

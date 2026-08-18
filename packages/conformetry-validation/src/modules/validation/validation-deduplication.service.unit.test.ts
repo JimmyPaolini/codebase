@@ -27,9 +27,11 @@ function buildGroup(args: {
         filename: "logger.service.ts",
         instanceFilePath: INSTANCE_FILE_PATH,
         templateFilePath: args.templateFilePath,
+        totalWeight: 1,
       },
     ],
     instance: args.instance,
+    totalWeight: 1,
   };
 }
 
@@ -39,9 +41,9 @@ function buildInstance(args: {
   name: string;
 }): MatchedInstance {
   return {
-    candidate: {
-      instancePath: "/w/packages/widgets/src/modules/logger",
+    instance: {
       nameStem: "logger",
+      path: "/w/packages/widgets/src/modules/logger",
     },
     matchedFileCount: args.fileCount,
     substitutions: { name: "logger" },
@@ -153,6 +155,7 @@ describe(ValidationDeduplicationService, () => {
               return { ...fileResult, instanceFilePath: "/w/other.ts" };
             }),
             instance,
+            totalWeight: 1,
           },
         ]),
       ).toHaveLength(2);

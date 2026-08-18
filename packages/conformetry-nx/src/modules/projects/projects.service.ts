@@ -9,7 +9,7 @@ import {
   PROJECT_CONFIGURATION_FILENAME,
 } from "./projects.constants";
 
-import type { ProjectScope } from "../candidates/candidates.types";
+import type { ProjectScope } from "../instances/instances.types";
 import type {
   ListProjectConfigurationFilesArguments,
   ReadProjectScopeArguments,

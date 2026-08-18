@@ -1,4 +1,4 @@
-import { ErrorsService } from "@conformetry/core";
+import { ErrorsService, ScoringService } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -39,12 +39,17 @@ describe(PythonValidatorService, () => {
   function validate(instance: string): ConformetryError[] {
     return service.validateDocument(
       createDocument({ instance, renderedTemplate: TEMPLATE }),
-    );
+    ).errors;
   }
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [ErrorsService, PythonBridgeService, PythonValidatorService],
+      providers: [
+        ErrorsService,
+        PythonBridgeService,
+        PythonValidatorService,
+        ScoringService,
+      ],
     }).compile();
 
     service = await module.resolve(PythonValidatorService);

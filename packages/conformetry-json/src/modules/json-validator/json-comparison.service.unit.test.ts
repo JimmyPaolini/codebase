@@ -1,3 +1,4 @@
+import { ScoringService } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -17,12 +18,12 @@ describe(JsonComparisonService, () => {
       instanceValue,
       language: "json",
       templateValue,
-    });
+    }).errors;
   }
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [JsonComparisonService],
+      providers: [JsonComparisonService, ScoringService],
     }).compile();
 
     service = await module.resolve(JsonComparisonService);
@@ -99,7 +100,7 @@ describe(JsonComparisonService, () => {
       instanceValue: {},
       language: "python",
       templateValue: { a: 1 },
-    });
+    }).errors;
 
     expect(errors[0]?.language).toBe("python");
   });
@@ -135,5 +136,61 @@ describe(JsonComparisonService, () => {
     const errors = compare({ a: 1 }, {});
 
     expect(errors[0]?.fix).toBe('Add the key "a" to the instance document.');
+  });
+
+  describe("weighing", () => {
+    it("weighs a missing object by everything inside it", () => {
+      const leaf = service.compare({
+        instanceValue: {},
+        language: "json",
+        templateValue: { a: 1 },
+      });
+      const subtree = service.compare({
+        instanceValue: {},
+        language: "json",
+        templateValue: { a: { b: 1, c: 2, d: [3, 4] } },
+      });
+
+      // Both report one missing key. Without subtree weighting, dropping a
+      // whole config section would cost the same as dropping one scalar.
+      expect(leaf.errors).toHaveLength(1);
+      expect(subtree.errors).toHaveLength(1);
+      expect(subtree.errors[0]?.weight).toBeGreaterThan(
+        leaf.errors[0]?.weight ?? 0,
+      );
+    });
+
+    it("counts array entries and their contents toward the total", () => {
+      const flat = service.compare({
+        instanceValue: { a: [1, 2] },
+        language: "json",
+        templateValue: { a: [1, 2] },
+      });
+      const nested = service.compare({
+        instanceValue: { a: [{ b: 1 }, { c: 2 }] },
+        language: "json",
+        templateValue: { a: [{ b: 1 }, { c: 2 }] },
+      });
+
+      expect(flat.errors).toStrictEqual([]);
+      expect(nested.errors).toStrictEqual([]);
+      expect(nested.totalWeight).toBeGreaterThan(flat.totalWeight);
+    });
+
+    it("asks for the same amount whether or not the instance supplied it", () => {
+      const template = { a: { b: 1, c: [2, 3] } };
+      const present = service.compare({
+        instanceValue: template,
+        language: "json",
+        templateValue: template,
+      });
+      const absent = service.compare({
+        instanceValue: {},
+        language: "json",
+        templateValue: template,
+      });
+
+      expect(absent.totalWeight).toBe(present.totalWeight);
+    });
   });
 });

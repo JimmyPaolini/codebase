@@ -1,3 +1,4 @@
+import { ScoringService } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -36,12 +37,19 @@ describe(TypescriptValidatorService, () => {
   ): ConformetryError[] {
     return service.validateDocument(
       createDocument({ instance, renderedTemplate }),
-    );
+    ).errors;
+  }
+
+  function weigh(renderedTemplate: string, instance: string): number {
+    return service.validateDocument(
+      createDocument({ instance, renderedTemplate }),
+    ).totalWeight;
   }
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
+        ScoringService,
         TypescriptCommentsService,
         TypescriptNodesService,
         TypescriptTreeService,
@@ -54,6 +62,15 @@ describe(TypescriptValidatorService, () => {
 
   it("is defined", () => {
     expect(service).toBeDefined();
+  });
+
+  it("weighs a document's requirements whether or not it conforms", () => {
+    const template = "export class Widget {\n  alpha() {}\n}\n";
+
+    // The denominator must not move with the instance: a template asks for the
+    // same amount whether or not the instance supplied any of it.
+    expect(weigh(template, template)).toBe(weigh(template, ""));
+    expect(weigh(template, template)).toBeGreaterThan(0);
   });
 
   it("claims TypeScript files", () => {
@@ -327,7 +344,7 @@ describe(TypescriptValidatorService, () => {
             instance: source,
             renderedTemplate: source,
           }),
-        ),
+        ).errors,
       ).toStrictEqual([]);
     });
 

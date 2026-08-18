@@ -1,11 +1,20 @@
 // 🏷️ Types
 
+import type { ConformetryError } from "@conformetry/core";
+
 /** Arguments for comparing two JSON values. */
 export interface CompareJsonArguments {
   readonly instanceValue: JsonValue;
   readonly language: JsonComparisonLanguage;
   readonly pathSegments?: JsonPathSegment[];
   readonly templateValue: JsonValue;
+}
+
+/** What structurally comparing two JSON values produced. */
+export interface JsonComparison {
+  readonly errors: ConformetryError[];
+  /** Template nodes the walk weighed the instance against. */
+  readonly totalWeight: number;
 }
 
 /**

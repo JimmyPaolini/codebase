@@ -1,3 +1,4 @@
+import { ScoringModule } from "@conformetry/core";
 import { Module } from "@nestjs/common";
 
 import { MarkdownNodesService } from "./markdown-nodes.service";
@@ -13,7 +14,7 @@ import { MarkdownValidatorService } from "./markdown-validator.service";
 @Module({
   controllers: [],
   exports: [MarkdownValidatorService],
-  imports: [],
+  imports: [ScoringModule],
   providers: [
     MarkdownNodesService,
     MarkdownTreeService,

@@ -1,3 +1,4 @@
+import { ScoringService } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -32,7 +33,7 @@ describe(MarkdownValidatorService, () => {
   ): ConformetryError[] {
     return service.validateDocument(
       createDocument({ instance, renderedTemplate }),
-    );
+    ).errors;
   }
 
   beforeAll(async () => {
@@ -41,6 +42,7 @@ describe(MarkdownValidatorService, () => {
         MarkdownNodesService,
         MarkdownTreeService,
         MarkdownValidatorService,
+        ScoringService,
       ],
     }).compile();
 

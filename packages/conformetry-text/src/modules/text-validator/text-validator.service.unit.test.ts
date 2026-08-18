@@ -42,7 +42,7 @@ describe(TextValidatorService, () => {
     expect(
       service.validateDocument(
         createDocument({ instance: "a\nb", renderedTemplate: "a\nb" }),
-      ),
+      ).errors,
     ).toStrictEqual([]);
   });
 
@@ -50,7 +50,7 @@ describe(TextValidatorService, () => {
     expect(
       service.validateDocument(
         createDocument({ instance: "a\nextra\nb", renderedTemplate: "a\nb" }),
-      ),
+      ).errors,
     ).toStrictEqual([]);
   });
 
@@ -58,12 +58,12 @@ describe(TextValidatorService, () => {
     expect(
       service.validateDocument(
         createDocument({ instance: "b\na", renderedTemplate: "a\nb" }),
-      ),
+      ).errors,
     ).toStrictEqual([]);
   });
 
   it("reports a missing line with its template line number", () => {
-    const errors = service.validateDocument(
+    const { errors } = service.validateDocument(
       createDocument({ instance: "a", renderedTemplate: "a\nmissing" }),
     );
 
@@ -75,7 +75,7 @@ describe(TextValidatorService, () => {
   });
 
   it("requires a duplicated template line to appear as often", () => {
-    const errors = service.validateDocument(
+    const { errors } = service.validateDocument(
       createDocument({ instance: "a", renderedTemplate: "a\na" }),
     );
 
@@ -83,8 +83,30 @@ describe(TextValidatorService, () => {
     expect(errors[0]?.templateLine).toBe(2);
   });
 
+  it("weighs every template line, conforming ones included", () => {
+    const conforming = service.validateDocument(
+      createDocument({ instance: "a\nb\nc", renderedTemplate: "a\nb\nc" }),
+    );
+
+    // A file that conforms still contributes its whole denominator; counting
+    // only the broken lines would score every clean instance against nothing.
+    expect(conforming).toStrictEqual({ errors: [], totalWeight: 3 });
+  });
+
+  it("weighs each missing line as one requirement", () => {
+    const result = service.validateDocument(
+      createDocument({ instance: "a", renderedTemplate: "a\nb\nc" }),
+    );
+
+    expect(result.totalWeight).toBe(3);
+    expect(result.errors.map((error) => error.weight)).toStrictEqual([
+      undefined,
+      undefined,
+    ]);
+  });
+
   it("carries an actionable fix", () => {
-    const errors = service.validateDocument(
+    const { errors } = service.validateDocument(
       createDocument({ instance: "", renderedTemplate: "needed" }),
     );
 

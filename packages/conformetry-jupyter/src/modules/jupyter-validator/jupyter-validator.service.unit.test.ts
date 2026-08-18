@@ -1,4 +1,4 @@
-import { ErrorsService } from "@conformetry/core";
+import { ErrorsService, ScoringService } from "@conformetry/core";
 import { JsonComparisonService } from "@conformetry/json";
 import {
   MarkdownNodesService,
@@ -62,7 +62,7 @@ describe(JupyterValidatorService, () => {
         instance: buildNotebook(instanceCells),
         renderedTemplate: buildNotebook(TEMPLATE_CELLS),
       }),
-    );
+    ).errors;
   }
 
   beforeAll(async () => {
@@ -76,6 +76,7 @@ describe(JupyterValidatorService, () => {
         MarkdownTreeService,
         MarkdownValidatorService,
         PythonBridgeService,
+        ScoringService,
       ],
     }).compile();
 
@@ -145,7 +146,7 @@ describe(JupyterValidatorService, () => {
         instance: JSON.stringify({ cells: [], nbformat: 3 }),
         renderedTemplate: JSON.stringify({ cells: [], nbformat: 4 }),
       }),
-    );
+    ).errors;
 
     expect(errors.some((error) => error.instancePath === "nbformat")).toBe(
       true,
@@ -154,7 +155,7 @@ describe(JupyterValidatorService, () => {
 
   describe("malformed and unrecognized notebooks", () => {
     it("compares an empty envelope when a notebook is not an object", () => {
-      const errors = service.validateDocument(
+      const { errors } = service.validateDocument(
         createDocument({
           instance: JSON.stringify([]),
           renderedTemplate: JSON.stringify([]),
@@ -168,7 +169,7 @@ describe(JupyterValidatorService, () => {
       const raw = JSON.stringify({
         cells: [{ cell_type: "heading", source: ["hi\n"] }],
       });
-      const errors = service.validateDocument(
+      const { errors } = service.validateDocument(
         createDocument({ instance: raw, renderedTemplate: raw }),
       );
 

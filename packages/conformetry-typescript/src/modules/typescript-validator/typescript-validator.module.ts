@@ -1,3 +1,4 @@
+import { ScoringModule } from "@conformetry/core";
 import { Module } from "@nestjs/common";
 
 import { TypescriptCommentsService } from "./typescript-comments.service";
@@ -15,7 +16,7 @@ import { TypescriptValidatorService } from "./typescript-validator.service";
 @Module({
   controllers: [],
   exports: [TypescriptValidatorService],
-  imports: [],
+  imports: [ScoringModule],
   providers: [
     TypescriptCommentsService,
     TypescriptNodesService,

@@ -1,3 +1,4 @@
+import { ScoringService } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -16,7 +17,7 @@ describe(MarkdownTreeService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [MarkdownNodesService, MarkdownTreeService],
+      providers: [MarkdownNodesService, MarkdownTreeService, ScoringService],
     }).compile();
 
     service = await module.resolve(MarkdownTreeService);
@@ -32,12 +33,12 @@ describe(MarkdownTreeService, () => {
         service.compareChildren({
           instanceChildren: [paragraph("alpha"), paragraph("beta")],
           templateChildren: [paragraph("alpha"), paragraph("beta")],
-        }),
+        }).errors,
       ).toStrictEqual([]);
     });
 
     it("reports a template node the instance lacks", () => {
-      const errors = service.compareChildren({
+      const { errors } = service.compareChildren({
         instanceChildren: [paragraph("alpha")],
         templateChildren: [paragraph("alpha"), paragraph("beta")],
       });
@@ -52,7 +53,7 @@ describe(MarkdownTreeService, () => {
         service.compareChildren({
           instanceChildren: [paragraph("alpha"), paragraph("extra")],
           templateChildren: [paragraph("alpha")],
-        }),
+        }).errors,
       ).toStrictEqual([]);
     });
 
@@ -61,7 +62,7 @@ describe(MarkdownTreeService, () => {
         service.compareChildren({
           instanceChildren: [paragraph("alpha")],
           templateChildren: [],
-        }),
+        }).errors,
       ).toStrictEqual([]);
     });
 
@@ -78,7 +79,7 @@ describe(MarkdownTreeService, () => {
             },
           ],
           templateChildren: [{ children: [], ordered: false, type: "list" }],
-        }),
+        }).errors,
       ).toStrictEqual([]);
     });
   });

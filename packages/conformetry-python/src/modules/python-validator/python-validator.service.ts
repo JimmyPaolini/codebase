@@ -4,8 +4,8 @@ import { PythonBridgeService } from "./python-bridge.service";
 import { PYTHON_VALIDATOR_DESCRIPTOR } from "./python-validator.constants";
 
 import type {
-  ConformetryError,
   ConformetryLanguageValidator,
+  DocumentValidationResult,
   PreparedValidationDocument,
 } from "@conformetry/core";
 
@@ -37,7 +37,7 @@ export class PythonValidatorService implements ConformetryLanguageValidator {
   /** Reports every declaration and comment the template requires. */
   public validateDocument(
     document: PreparedValidationDocument,
-  ): ConformetryError[] {
+  ): DocumentValidationResult {
     return this.pythonBridgeService.validatePythonSource({
       filename: document.filename,
       instance: document.instance,

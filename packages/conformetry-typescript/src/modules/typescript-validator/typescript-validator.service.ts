@@ -13,6 +13,7 @@ import { TYPESCRIPT_VALIDATOR_DESCRIPTOR } from "./typescript-validator.constant
 import type {
   ConformetryError,
   ConformetryLanguageValidator,
+  DocumentValidationResult,
   PreparedValidationDocument,
 } from "@conformetry/core";
 
@@ -77,10 +78,10 @@ export class TypescriptValidatorService implements ConformetryLanguageValidator 
   private validateComments(args: {
     instanceSourceFile: SourceFile;
     templateSourceFile: SourceFile;
-  }): ConformetryError[] {
-    return this.typeScriptCommentsService
-      .compareComments(args)
-      .map((comment) => {
+  }): DocumentValidationResult {
+    const comparison = this.typeScriptCommentsService.compareComments(args);
+    const errors: ConformetryError[] = comparison.missingComments.map(
+      (comment) => {
         const templateLocation = this.readLocation({
           position: comment.position,
           sourceFile: args.templateSourceFile,
@@ -100,62 +101,73 @@ export class TypescriptValidatorService implements ConformetryLanguageValidator 
                 templateLine: templateLocation.line,
               }),
         };
-      });
+      },
+    );
+
+    return { errors, totalWeight: comparison.totalWeight };
   }
 
   /** Compares the syntax trees and describes each missing declaration. */
   private validateStructure(args: {
     instanceSourceFile: SourceFile;
     templateSourceFile: SourceFile;
-  }): ConformetryError[] {
-    return this.typeScriptTreeService
-      .compareTree({
-        instanceNode: args.instanceSourceFile,
-        templateNode: args.templateSourceFile,
-      })
-      .map((error) => {
-        const described =
-          error.nodeKey === undefined
-            ? error.kindLabel
-            : `${error.kindLabel} "${error.nodeKey}"`;
-        const instanceLocation = this.readLocation({
-          position: error.instancePosition,
-          sourceFile: args.instanceSourceFile,
-        });
-        const templateLocation = this.readLocation({
-          position: error.templatePosition,
-          sourceFile: args.templateSourceFile,
-        });
-
-        return {
-          errorType: "code",
-          fix: `Add the missing ${described} to the instance file. See the template for the expected structure.`,
-          /* v8 ignore next -- a parsed node always resolves a location */
-          ...(instanceLocation === undefined
-            ? {}
-            : {
-                instanceColumn: instanceLocation.column,
-                instanceLine: instanceLocation.line,
-              }),
-          language: "typescript",
-          message: `Missing ${described}`,
-          /* v8 ignore next -- a parsed node always resolves a location */
-          ...(templateLocation === undefined
-            ? {}
-            : {
-                templateColumn: templateLocation.column,
-                templateLine: templateLocation.line,
-              }),
-        };
+  }): DocumentValidationResult {
+    const comparison = this.typeScriptTreeService.compareTree({
+      instanceNode: args.instanceSourceFile,
+      templateNode: args.templateSourceFile,
+    });
+    const errors: ConformetryError[] = comparison.errors.map((error) => {
+      const described =
+        error.nodeKey === undefined
+          ? error.kindLabel
+          : `${error.kindLabel} "${error.nodeKey}"`;
+      const instanceLocation = this.readLocation({
+        position: error.instancePosition,
+        sourceFile: args.instanceSourceFile,
       });
+      const templateLocation = this.readLocation({
+        position: error.templatePosition,
+        sourceFile: args.templateSourceFile,
+      });
+
+      return {
+        errorType: "code",
+        fix: `Add the missing ${described} to the instance file. See the template for the expected structure.`,
+        /* v8 ignore next -- a parsed node always resolves a location */
+        ...(instanceLocation === undefined
+          ? {}
+          : {
+              instanceColumn: instanceLocation.column,
+              instanceLine: instanceLocation.line,
+            }),
+        language: "typescript",
+        message: `Missing ${described}`,
+        /* v8 ignore next -- a parsed node always resolves a location */
+        ...(templateLocation === undefined
+          ? {}
+          : {
+              templateColumn: templateLocation.column,
+              templateLine: templateLocation.line,
+            }),
+        weight: error.weight,
+      };
+    });
+
+    return { errors, totalWeight: comparison.totalWeight };
   }
 
   // 🌎 Public Methods
 
-  /** Reports every declaration and comment the template requires. */
+  /**
+   * Reports every declaration and comment the template requires.
+   *
+   * The two passes weigh independent things — structure counts syntax nodes,
+   * comments count section markers — so their totals add rather than one
+   * subsuming the other.
+   */
   public validateDocument(
     document: PreparedValidationDocument,
-  ): ConformetryError[] {
+  ): DocumentValidationResult {
     const sourceFiles = {
       instanceSourceFile: this.parseSourceFile({
         content: document.instance,
@@ -166,10 +178,12 @@ export class TypescriptValidatorService implements ConformetryLanguageValidator 
         filename: document.filename,
       }),
     };
+    const structure = this.validateStructure(sourceFiles);
+    const comments = this.validateComments(sourceFiles);
 
-    return [
-      ...this.validateStructure(sourceFiles),
-      ...this.validateComments(sourceFiles),
-    ];
+    return {
+      errors: [...structure.errors, ...comments.errors],
+      totalWeight: structure.totalWeight + comments.totalWeight,
+    };
   }
 }

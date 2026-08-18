@@ -14,6 +14,7 @@ import type { PairedCells } from "./jupyter-validator.types";
 import type {
   ConformetryError,
   ConformetryLanguageValidator,
+  DocumentValidationResult,
   PreparedValidationDocument,
 } from "@conformetry/core";
 import type { JsonValue } from "@conformetry/json";
@@ -88,32 +89,55 @@ export class JupyterValidatorService implements ConformetryLanguageValidator {
   private validateCell(args: {
     cell: PairedCells;
     document: PreparedValidationDocument;
-  }): ConformetryError[] {
+  }): DocumentValidationResult {
     const { cell } = args;
 
     if (cell.kind === "markdown") {
-      return this.attributeToCell({
-        cell,
-        errors: this.markdownValidatorService.validateDocument({
-          ...args.document,
-          instance: cell.instanceSource,
-          renderedTemplate: cell.templateSource,
-        }),
+      const result = this.markdownValidatorService.validateDocument({
+        ...args.document,
+        instance: cell.instanceSource,
+        renderedTemplate: cell.templateSource,
       });
+
+      return {
+        errors: this.attributeToCell({ cell, errors: result.errors }),
+        totalWeight: result.totalWeight,
+      };
     }
 
     if (cell.kind === "code") {
-      return this.attributeToCell({
-        cell,
-        errors: this.pythonBridgeService.validatePythonSource({
-          filename: `${args.document.filename}#cell-${String(cell.index + 1)}.py`,
-          instance: cell.instanceSource,
-          template: cell.templateSource,
-        }),
+      const result = this.pythonBridgeService.validatePythonSource({
+        filename: `${args.document.filename}#cell-${String(cell.index + 1)}.py`,
+        instance: cell.instanceSource,
+        template: cell.templateSource,
       });
+
+      return {
+        errors: this.attributeToCell({ cell, errors: result.errors }),
+        totalWeight: result.totalWeight,
+      };
     }
 
-    return [];
+    return { errors: [], totalWeight: 0 };
+  }
+
+  /**
+   * Weighs a cell the notebook does not have.
+   *
+   * Measured by comparing the template cell against an empty instance, which
+   * is exactly what "none of this is present" means. Guessing a flat 1 instead
+   * would let a notebook drop a forty-line code cell for the same price as an
+   * empty one, and mixing in a line count would put a unit in the denominator
+   * that nothing else uses.
+   */
+  private weighMissingCell(args: {
+    cell: PairedCells;
+    document: PreparedValidationDocument;
+  }): number {
+    return this.validateCell({
+      cell: { ...args.cell, instanceSource: "" },
+      document: args.document,
+    }).totalWeight;
   }
 
   // 🌎 Public Methods
@@ -121,7 +145,7 @@ export class JupyterValidatorService implements ConformetryLanguageValidator {
   /** Reports every notebook difference: envelope, missing cells, cell contents. */
   public validateDocument(
     document: PreparedValidationDocument,
-  ): ConformetryError[] {
+  ): DocumentValidationResult {
     const templateNotebook = this.jupyterNotebookService.parseNotebook(
       document.renderedTemplate,
     );
@@ -134,23 +158,41 @@ export class JupyterValidatorService implements ConformetryLanguageValidator {
         templateNotebook,
       },
     );
+    const envelope = this.jsonComparisonService.compare({
+      instanceValue: this.readEnvelope(document.instance),
+      language: "json",
+      templateValue: this.readEnvelope(document.renderedTemplate),
+    });
+    const missing = missingCells.map((cell) => {
+      const weight = this.weighMissingCell({ cell, document });
 
-    return [
-      ...this.jsonComparisonService.compare({
-        instanceValue: this.readEnvelope(document.instance),
-        language: "json",
-        templateValue: this.readEnvelope(document.renderedTemplate),
-      }),
-      ...missingCells.map((cell) => {
-        return {
+      return {
+        error: {
           errorType: "code" as const,
           expected: cell.templateSource,
           fix: `Add a ${cell.kind} cell matching the template's cell ${String(cell.index + 1)}.`,
           language: "python" as const,
           message: `Missing ${cell.kind} cell ${String(cell.index + 1)}`,
-        };
-      }),
-      ...pairedCells.flatMap((cell) => this.validateCell({ cell, document })),
-    ];
+          weight,
+        },
+        weight,
+      };
+    });
+    const paired = pairedCells.map((cell) => {
+      return this.validateCell({ cell, document });
+    });
+
+    return {
+      errors: [
+        ...envelope.errors,
+        ...missing.map((entry) => entry.error),
+        ...paired.flatMap((result) => result.errors),
+      ],
+      totalWeight: [
+        envelope.totalWeight,
+        ...missing.map((entry) => entry.weight),
+        ...paired.map((result) => result.totalWeight),
+      ].reduce((total, weight) => total + weight, 0),
+    };
   }
 }

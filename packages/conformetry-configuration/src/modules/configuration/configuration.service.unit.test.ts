@@ -73,6 +73,55 @@ describe(ConfigurationService, () => {
     expect(configuration[0]?.templatePath).toBe("custom/templates/example");
   });
 
+  it("keeps a generator's declared threshold", async () => {
+    const configurationPath = await writeConfiguration([
+      { name: "example", templatePath: "templates/example", threshold: 0.9 },
+    ]);
+
+    const configuration =
+      await service.loadConformetryConfiguration(configurationPath);
+
+    expect(configuration[0]?.threshold).toBe(0.9);
+  });
+
+  it("keeps an instance group's declared threshold", async () => {
+    const configurationPath = await writeConfiguration([
+      {
+        instances: [{ patterns: ["src/modules/*"], threshold: 0.75 }],
+        name: "example",
+        templatePath: "templates/example",
+      },
+    ]);
+
+    const configuration =
+      await service.loadConformetryConfiguration(configurationPath);
+
+    expect(configuration[0]?.instances[0]?.threshold).toBe(0.75);
+  });
+
+  it("leaves an undeclared threshold unset rather than defaulting it", async () => {
+    const configurationPath = await writeConfiguration([
+      { name: "example", templatePath: "templates/example" },
+    ]);
+
+    const configuration =
+      await service.loadConformetryConfiguration(configurationPath);
+
+    // Stamping every generator with 1 here would make the generator level
+    // always beat a run-level `--threshold`, leaving that flag inert.
+    expect(configuration[0]?.threshold).toBeUndefined();
+  });
+
+  it("rejects a threshold outside the 0-to-1 range", async () => {
+    const configurationPath = await writeConfiguration([
+      { name: "example", templatePath: "templates/example", threshold: 90 },
+    ]);
+
+    await expect(
+      service.loadConformetryConfiguration(configurationPath),
+    ).rejects.toThrow(/threshold/i);
+  });
+
   it("defaults inputs and instances to empty", async () => {
     const configurationPath = await writeConfiguration([
       { name: "example", templatePath: "templates/example" },
