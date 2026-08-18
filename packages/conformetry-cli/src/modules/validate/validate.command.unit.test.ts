@@ -177,6 +177,25 @@ describe(ValidateCommand, () => {
       );
     });
 
+    it("expands a group that names no patterns to an empty glob list", async () => {
+      vi.mocked(
+        configurationService.loadConformetryConfiguration,
+      ).mockResolvedValue([
+        {
+          inputs: {},
+          instances: [{ tags: ["language:typescript"] }],
+          name: "widget",
+          templatePath: "configuration/templates/widget",
+        },
+      ]);
+
+      await command.run([], {});
+
+      expect(templateDiscoveryService.resolveCandidates).toHaveBeenCalledWith(
+        expect.objectContaining({ patterns: [] }),
+      );
+    });
+
     it("passes a language filter through", async () => {
       await command.run([], { languages: ["typescript"] });
 

@@ -91,6 +91,48 @@
       "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
       "computedHash": "4a02bd01030d5ed6a5040c0382b9f56fbf02c7c8b8fd68aa1bcc55628963f760"
     },
+    "link-workspace-packages": {
+      "source": "nrwl/nx",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/link-workspace-packages/SKILL.md",
+      "computedHash": "28a62513af1293c1ca064203a3d6e4dcdbd08f5be6e5ce9a16acc6176bef2ca4"
+    },
+    "monitor-ci": {
+      "source": "nrwl/nx",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/monitor-ci/SKILL.md",
+      "computedHash": "987bf5b66cf48532dd80028cf6e80305a1a6fc3e576afe7da0645aee0720b662"
+    },
+    "nx-generate": {
+      "source": "nrwl/nx",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/nx-generate/SKILL.md",
+      "computedHash": "c1dfe360d6af9ee28f478afa4503c30790138ff1ceff32f18fb4391118a65933"
+    },
+    "nx-import": {
+      "source": "nrwl/nx",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/nx-import/SKILL.md",
+      "computedHash": "11ada1b25edcf0164a76c310e989119c3e0431cae3b7283a6f10d392df9da200"
+    },
+    "nx-plugins": {
+      "source": "nrwl/nx",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/nx-plugins/SKILL.md",
+      "computedHash": "e93d10328f589667d6a7cc71d134c96b3c28ab4a1468eaec7bc29420c950e4e2"
+    },
+    "nx-run-tasks": {
+      "source": "nrwl/nx",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/nx-run-tasks/SKILL.md",
+      "computedHash": "e42dec15f588268887d88d606187b0fab9cbb3f90fd4ce41d66d2faffc9295c4"
+    },
+    "nx-workspace": {
+      "source": "nrwl/nx",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/nx-workspace/SKILL.md",
+      "computedHash": "32b7b72c54c6644e97ac8c8491e3cfa936afa6f8a86798214258d631367b4add"
+    },
     "prototype": {
       "source": "mattpocock/skills",
       "sourceType": "github",

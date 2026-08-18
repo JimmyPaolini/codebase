@@ -257,12 +257,6 @@ const config: KnipConfig = {
     // conformetry packages: NestJS service/command application scaffolds
     "packages/conformetry-cli": {
       entry: ["src/main.ts", "src/repl.ts"],
-      ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [
-        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
-        "@nestjs/testing", // Used by command unit tests; tests are excluded from knip project scope
-        "vitest", // Knip misses vitest usage because tests are ignored
-      ],
       project: "src/**/*.ts",
     },
     "packages/conformetry-core": {
