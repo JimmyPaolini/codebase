@@ -53,19 +53,6 @@ export class TemplateDiscoveryService {
     return this.templateDiscoveryTemplatesService.collectTemplate(args);
   }
 
-  /** Expands instance glob patterns into instances. */
-  public findInstances(args: FindInstancesArguments): Instance[] {
-    return this.templateDiscoveryInstancesService.findInstances(args);
-  }
-
-  /** Matches instance directories to the templates that best explain them. */
-  public matchInstances(args: {
-    instances: Instance[];
-    templates: TemplateDefinition[];
-  }): ResolvedInstances {
-    return this.templateDiscoveryMatchingService.matchInstances(args);
-  }
-
   /**
    * Reads every configured generator's template folder.
    *
@@ -87,6 +74,19 @@ export class TemplateDiscoveryService {
         threshold: generator.threshold,
       });
     });
+  }
+
+  /** Expands instance glob patterns into instances. */
+  public findInstances(args: FindInstancesArguments): Instance[] {
+    return this.templateDiscoveryInstancesService.findInstances(args);
+  }
+
+  /** Matches instance directories to the templates that best explain them. */
+  public matchInstances(args: {
+    instances: Instance[];
+    templates: TemplateDefinition[];
+  }): ResolvedInstances {
+    return this.templateDiscoveryMatchingService.matchInstances(args);
   }
 
   /**

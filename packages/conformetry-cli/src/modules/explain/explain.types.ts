@@ -3,9 +3,9 @@
 /** One template that was scored against a candidate. */
 export interface ConsideredTemplate {
   matchedFileCount: number;
-  name: string;
   /** Share of the template's files the instance already has, 0 to 1. */
   matchRatio: number;
+  name: string;
   templateFileCount: number;
 }
 

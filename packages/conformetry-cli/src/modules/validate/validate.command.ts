@@ -14,7 +14,6 @@ import { DEFAULT_CONFIGURATION_PATH } from "../../constants.js";
 
 import type { ValidateCommandOptions } from "./validate.types.js";
 import type {
-  ConformetryConfiguration,
   ConformetryInstanceGroup,
   Instance,
 } from "@conformetry/configuration";

@@ -14,9 +14,9 @@ import { ExplainCommand } from "./explain.command";
 
 import type {
   ConformetryConfiguration,
-  InstanceCandidate,
-  ScoredTemplate,
+  Instance,
   TemplateDefinition,
+  TemplateMatch,
 } from "@conformetry/configuration";
 import type { DeepMocked } from "@golevelup/ts-vitest";
 
@@ -29,9 +29,9 @@ const CONFIGURATION: ConformetryConfiguration = [
   },
 ];
 
-const CANDIDATE: InstanceCandidate = {
-  instancePath: "/w/packages/widgets/src/modules",
+const INSTANCE: Instance = {
   nameStem: "gears",
+  path: "/w/packages/widgets/src/modules",
 };
 
 const COMMAND_TEMPLATE: TemplateDefinition = {
@@ -46,15 +46,15 @@ const SERVICE_TEMPLATE: TemplateDefinition = {
   name: "service-module",
 };
 
-const WINNER: ScoredTemplate = {
+const WINNER: TemplateMatch = {
   matchedFileCount: 4,
-  ratio: 1,
+  matchRatio: 1,
   template: COMMAND_TEMPLATE,
 };
 
-const LOSER: ScoredTemplate = {
+const LOSER: TemplateMatch = {
   matchedFileCount: 1,
-  ratio: 0.5,
+  matchRatio: 0.5,
   template: SERVICE_TEMPLATE,
 };
 
@@ -115,11 +115,11 @@ describe(ExplainCommand, () => {
       COMMAND_TEMPLATE,
       SERVICE_TEMPLATE,
     ]);
-    templateDiscoveryService.resolveCandidates.mockReturnValue([CANDIDATE]);
-    templateDiscoveryService.resolveInstances.mockReturnValue({
+    templateDiscoveryService.findInstances.mockReturnValue([INSTANCE]);
+    templateDiscoveryService.matchInstances.mockReturnValue({
       matched: [
         {
-          candidate: CANDIDATE,
+          instance: INSTANCE,
           matchedFileCount: 4,
           substitutions: {},
           template: COMMAND_TEMPLATE,
@@ -128,7 +128,7 @@ describe(ExplainCommand, () => {
       unmatched: [],
     });
     matchingService.buildSubstitutions.mockReturnValue({});
-    matchingService.scoreTemplates.mockReturnValue([WINNER, LOSER]);
+    matchingService.matchTemplates.mockReturnValue([WINNER, LOSER]);
   });
 
   it("is defined", () => {
@@ -170,7 +170,7 @@ describe(ExplainCommand, () => {
     it("expands the given path the way an instance glob would", async () => {
       await command.run(["packages/widgets/src/modules/gears"], {});
 
-      expect(templateDiscoveryService.resolveCandidates).toHaveBeenCalledWith(
+      expect(templateDiscoveryService.findInstances).toHaveBeenCalledWith(
         expect.objectContaining({
           patterns: ["packages/widgets/src/modules/gears"],
         }),
@@ -194,13 +194,13 @@ describe(ExplainCommand, () => {
     });
 
     it("distinguishes an ambiguous outcome and names every rival", async () => {
-      templateDiscoveryService.resolveInstances.mockReturnValue({
+      templateDiscoveryService.matchInstances.mockReturnValue({
         matched: [],
         unmatched: [
           {
-            candidate: CANDIDATE,
-            candidateTemplateNames: ["command-module", "service-module"],
+            instance: INSTANCE,
             reason: "ambiguous",
+            tiedTemplateNames: ["command-module", "service-module"],
           },
         ],
       });
@@ -212,17 +212,17 @@ describe(ExplainCommand, () => {
     });
 
     it("distinguishes an unmatched outcome from an ambiguous one", async () => {
-      templateDiscoveryService.resolveInstances.mockReturnValue({
+      templateDiscoveryService.matchInstances.mockReturnValue({
         matched: [],
         unmatched: [
           {
-            candidate: CANDIDATE,
-            candidateTemplateNames: [],
+            instance: INSTANCE,
             reason: "no-match",
+            tiedTemplateNames: [],
           },
         ],
       });
-      matchingService.scoreTemplates.mockReturnValue([]);
+      matchingService.matchTemplates.mockReturnValue([]);
 
       await command.run(["packages/widgets/src/modules/gears"], {});
 
@@ -232,7 +232,7 @@ describe(ExplainCommand, () => {
     });
 
     it("says so when the path is not an instance at all", async () => {
-      templateDiscoveryService.resolveCandidates.mockReturnValue([]);
+      templateDiscoveryService.findInstances.mockReturnValue([]);
 
       await command.run(["packages/widgets/nowhere"], {});
 
@@ -259,14 +259,14 @@ describe(ExplainCommand, () => {
           considered: [
             {
               matchedFileCount: 4,
+              matchRatio: 1,
               name: "command-module",
-              ratio: 1,
               templateFileCount: 4,
             },
             {
               matchedFileCount: 1,
+              matchRatio: 0.5,
               name: "service-module",
-              ratio: 0.5,
               templateFileCount: 2,
             },
           ],
@@ -279,7 +279,7 @@ describe(ExplainCommand, () => {
     });
 
     it("writes an empty collection when the path is not an instance", async () => {
-      templateDiscoveryService.resolveCandidates.mockReturnValue([]);
+      templateDiscoveryService.findInstances.mockReturnValue([]);
 
       await command.run(["packages/widgets/nowhere"], { json: true });
 

@@ -14,8 +14,8 @@ import { LoggerService } from "@codebase/logger";
 import { DEFAULT_CONFIGURATION_PATH } from "../../constants.js";
 
 import {
-  INSTANCE_INDENT,
   DETAIL_INDENT,
+  INSTANCE_INDENT,
   NO_CANDIDATES_MESSAGE,
   NO_OVERLAP_MESSAGE,
   PATH_REQUIRED_MESSAGE,
@@ -147,8 +147,8 @@ export class ExplainCommand extends CommandRunner {
         considered: matches.map((match): ConsideredTemplate => {
           return {
             matchedFileCount: match.matchedFileCount,
-            name: match.template.name,
             matchRatio: match.matchRatio,
+            name: match.template.name,
             templateFileCount: match.template.filePaths.length,
           };
         }),
@@ -186,7 +186,7 @@ export class ExplainCommand extends CommandRunner {
     });
 
     if (unmatched !== undefined) {
-      return unmatched.candidateTemplateNames;
+      return unmatched.tiedTemplateNames;
     }
 
     return args.resolved.matched
