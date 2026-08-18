@@ -46,11 +46,14 @@ jobs:
           pnpm exec nx affected --target=lint-codebase \
             --configuration=check --parallel=4
 
-      # An explicit step rather than a `lint-codebase` dependency: `nx affected`
-      # maps a touched file to the project whose root is the longest matching
-      # prefix, so a change under `packages/` never marks the root `codebase`
-      # project affected — and a dependency would sit idle on exactly the pull
-      # requests worth checking.
+      # `lint-codebase` depends on this too, so a full or `run-many` invocation
+      # covers it — which is what makes the local command equivalent to this
+      # workflow. It stays an explicit step because `nx affected` maps a touched
+      # file to the project whose root is the longest matching prefix, so a
+      # change under `packages/` never marks the root `codebase` project
+      # affected, and the dependency alone would sit idle on exactly the pull
+      # requests worth checking. When the step above already ran it, this hits
+      # the cache.
       - name: 🔭 Lint Call Stacks
         run: pnpm exec nx run codebase:callidescope:check
 

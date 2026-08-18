@@ -274,6 +274,7 @@
       },
       "defaultConfiguration": "check",
       "dependsOn": [
+        "callidescope",
         "check-catalog-manifests",
         "check-lockfile",
         "check-skill-exclusions",
