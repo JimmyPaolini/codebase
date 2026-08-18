@@ -7,6 +7,7 @@ import { ValidationLanguagesService } from "./validation-languages.service";
 import type { LanguageModuleLoader } from "./validation.types";
 import type {
   ConformetryLanguageValidator,
+  DocumentValidationResult,
   PreparedValidationDocument,
 } from "@conformetry/core";
 import type { Type } from "@nestjs/common";
@@ -46,8 +47,8 @@ function buildValidatorClass(args: {
       name: args.name,
     };
 
-    public validateDocument(): [] {
-      return [];
+    public validateDocument(): DocumentValidationResult {
+      return { errors: [], totalWeight: 1 };
     }
   };
 }
@@ -155,7 +156,7 @@ describe(ValidationLanguagesService, () => {
       expect(validators).toHaveLength(2);
       expect(fallback?.descriptor.name).toBe("text");
       expect(fallback?.descriptor.fileExtensions).toContain(".gitignore");
-      expect(fallback?.validateDocument(DOCUMENT)).toStrictEqual([]);
+      expect(fallback?.validateDocument(DOCUMENT).errors).toStrictEqual([]);
     });
 
     it("names the package and the extensions when one is not installed", async () => {

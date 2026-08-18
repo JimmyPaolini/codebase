@@ -4,7 +4,7 @@ import { ConfigurationService } from "@conformetry/configuration";
 import { Injectable } from "@nestjs/common";
 import { getProjects, readProjectConfiguration } from "@nx/devkit";
 
-import { CandidatesService } from "../candidates/candidates.service";
+import { InstancesService } from "../instances/instances.service";
 import { ScopeService } from "../scope/scope.service";
 
 import {
@@ -15,7 +15,7 @@ import {
 } from "./paths.constants";
 
 import type { ResolveGenerationPathArguments } from "./paths.types";
-import type { InstanceCandidate } from "@conformetry/configuration";
+import type { Instance } from "@conformetry/configuration";
 import type { Tree } from "@nx/devkit";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
@@ -23,7 +23,7 @@ import type { Tree } from "@nx/devkit";
  * Decides where a generator writes, by reading the workspace it writes into.
  *
  * `conformetry-generation` takes a destination and renders into it; it has no
- * opinion about layout, exactly as `conformetry-validation` takes candidates
+ * opinion about layout, exactly as `conformetry-validation` takes instances
  * and has no opinion about how they were found. Layout is Nx-shaped knowledge,
  * so it is answered here — and answered by looking at the projects and module
  * folders that already exist, rather than by a configured convention that
@@ -35,7 +35,7 @@ export class PathsService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly candidatesService: CandidatesService,
+    private readonly instancesService: InstancesService,
     private readonly configurationService: ConfigurationService,
     private readonly scopeService: ScopeService,
   ) {}
@@ -54,12 +54,12 @@ export class PathsService {
    * and reported success, which reads as the generator having worked.
    */
   private requireModulePath(args: {
-    candidates: InstanceCandidate[];
+    instances: Instance[];
     moduleName: string;
     projectName: string;
   }): string {
     const modulePath = this.resolveModulePath({
-      candidates: args.candidates,
+      instances: args.instances,
       moduleName: args.moduleName,
     });
 
@@ -83,15 +83,15 @@ export class PathsService {
    * how a generic package acquires one repository's layout.
    */
   private resolveModuleParentPath(args: {
-    candidates: InstanceCandidate[];
+    instances: Instance[];
     projectRootPath: string;
   }): string | undefined {
     const countsByParent = new Map<string, number>();
 
-    for (const candidate of args.candidates) {
-      // A candidate's instance path is already the parent: the template
-      // supplies the folder, so nothing is stripped here.
-      const parentPath = candidate.instancePath;
+    for (const instance of args.instances) {
+      // An instance's path is already the parent: the template supplies the
+      // folder, so nothing is stripped here.
+      const parentPath = instance.path;
 
       if (!parentPath.startsWith(args.projectRootPath + path.sep)) {
         continue;
@@ -115,16 +115,16 @@ export class PathsService {
    * so the module has to be located rather than placed.
    */
   private resolveModulePath(args: {
-    candidates: InstanceCandidate[];
+    instances: Instance[];
     moduleName: string;
   }): string | undefined {
-    const candidate = args.candidates.find((entry) => {
+    const instance = args.instances.find((entry) => {
       return entry.nameStem === args.moduleName;
     });
 
-    return candidate === undefined
+    return instance === undefined
       ? undefined
-      : path.join(candidate.instancePath, candidate.nameStem);
+      : path.join(instance.path, instance.nameStem);
   }
 
   /**
@@ -229,7 +229,7 @@ export class PathsService {
 
     const project = readProjectConfiguration(args.tree, projectName);
     const projectRootPath = path.resolve(args.workspaceRoot, project.root);
-    const candidates = await this.candidatesService.resolveProjectCandidates({
+    const instances = await this.instancesService.findProjectInstances({
       configurationPath: args.configurationPath,
       project: {
         name: projectName,
@@ -242,7 +242,7 @@ export class PathsService {
 
     if (moduleName !== undefined) {
       return this.requireModulePath({
-        candidates,
+        instances,
         moduleName,
         projectName: args.inputs[PROJECT_INPUT_NAME] ?? "",
       });
@@ -258,7 +258,7 @@ export class PathsService {
     }
 
     return (
-      this.resolveModuleParentPath({ candidates, projectRootPath }) ??
+      this.resolveModuleParentPath({ instances, projectRootPath }) ??
       projectRootPath
     );
   }

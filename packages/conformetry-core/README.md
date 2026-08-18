@@ -15,6 +15,7 @@ npm install --save-dev @conformetry/core
 | `errors` | The structured `ConformetryError` shape, plus builders and guards for it |
 | `language` | The language validator contract and the shared execution envelope |
 | `reporting` | Rendering conformance errors as readable, actionable text |
+| `scoring` | The conformance arithmetic: what a finding weighs, what a weight pair scores |
 
 "Language" here means a validator for one file format — TypeScript, JSON,
 markdown, Python. The word "plugin" is reserved for the Nx plugin in
@@ -35,11 +36,33 @@ export class ExampleValidatorService implements ConformetryLanguageValidator {
 
   public validateDocument(
     document: PreparedValidationDocument,
-  ): ConformetryError[] {
+  ): DocumentValidationResult {
     // compare document.renderedTemplate against document.instance
+    return { errors, totalWeight };
   }
 }
 ```
+
+## Weight and score
+
+A validator reports how much the template asked for alongside what it found.
+`totalWeight` counts every requirement the comparison weighed — conforming ones
+included, because leaving them out would score an instance only against the
+parts of itself that are already wrong.
+
+Each error may carry a `weight`, defaulting to 1. It says how many requirements
+that one finding stands in for: a validator reports a missing class once,
+however many members it held, so weighing the finding by its subtree is what
+keeps deleting a class from costing the same as deleting an import. No per-kind
+weight table is needed — a class is worth more because it contains more.
+
+```text
+score = (totalWeight - sum(error.weight ?? 1)) / totalWeight
+```
+
+`ScoringService` owns that arithmetic, including the two cases worth getting
+right once: the default weight of a finding that declares none, and an empty
+template whose denominator is zero and which therefore conforms perfectly.
 
 [`@conformetry/validation`](../conformetry-validation/README.md) drives the
 registered validators; they are never responsible for discovering files or
@@ -102,17 +125,20 @@ flowchart LR
     ErrorsModule
     LanguageModule
     ReportingModule
+    ScoringModule
   end
+  ReportingModule --> ScoringModule
 ```
 
 <!-- nestjs-module-graph-end -->
 
 ## Exports
 
-`ErrorsService`, `LanguageService`, `ReportingService` and their modules, plus
-the `ConformetryError`, `ConformetryLanguageValidator`,
-`LanguageValidatorDescriptor`, `PreparedValidationDocument`, and
-`ValidationFileResult` types.
+`ErrorsService`, `LanguageService`, `ReportingService`, `ScoringService` and
+their modules, plus the `ConformetryError`, `ConformetryLanguageValidator`,
+`DocumentValidationResult`, `InstanceScore`, `LanguageValidatorDescriptor`,
+`PreparedValidationDocument`, `ValidationFileResult`, and `WeightedFinding`
+types.
 
 ## Test
 

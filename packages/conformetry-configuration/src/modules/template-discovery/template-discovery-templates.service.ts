@@ -77,11 +77,13 @@ export class TemplateDiscoveryTemplatesService {
   public collectTemplate(args: {
     name: string;
     templatePath: string;
+    threshold?: number | undefined;
   }): TemplateDefinition {
     return {
       directoryPath: args.templatePath,
       filePaths: this.collectFilePaths(args.templatePath),
       name: args.name,
+      ...(args.threshold === undefined ? {} : { threshold: args.threshold }),
     };
   }
 

@@ -1,3 +1,4 @@
+import { ScoringService } from "@conformetry/core";
 import { Injectable } from "@nestjs/common";
 
 import { MarkdownNodesService } from "./markdown-nodes.service";
@@ -5,6 +6,7 @@ import { CONTAINER_TYPES, SKIPPED_TYPES } from "./markdown-validator.constants";
 
 import type {
   CompareChildrenArguments,
+  CompareChildrenResult,
   CompareNodeArguments,
   CompareNodeResult,
   MarkdownComparisonError,
@@ -19,12 +21,18 @@ import type {
  * matched against any instance sibling, and the last match anchors the error
  * location for whatever follows. A document may therefore add sections freely,
  * as long as it still contains everything the template declares.
+ *
+ * The walk also counts what it asked for: every template node it weighs is one
+ * requirement, and a node with no counterpart costs its whole subtree.
  */
 @Injectable()
 export class MarkdownTreeService {
   // 🏗 Dependency Injection
 
-  constructor(private readonly markdownNodesService: MarkdownNodesService) {}
+  constructor(
+    private readonly markdownNodesService: MarkdownNodesService,
+    private readonly scoringService: ScoringService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -43,6 +51,7 @@ export class MarkdownTreeService {
       instanceLine: anchorLine === undefined ? undefined : anchorLine + 1,
       nodeType: args.templateChild.type,
       text: this.markdownNodesService.readText(args.templateChild),
+      weight: this.markdownNodesService.countSubtree(args.templateChild),
     };
   }
 
@@ -56,9 +65,12 @@ export class MarkdownTreeService {
     const candidates = this.findCandidates(args);
 
     if (candidates.length === 0) {
+      const error = this.buildError(args);
+
       return {
-        errors: [this.buildError(args)],
+        errors: [error],
         lastMatchedNode: args.lastMatchedNode,
+        totalWeight: error.weight,
       };
     }
 
@@ -67,36 +79,51 @@ export class MarkdownTreeService {
     );
 
     if (templateGrandchildren.length === 0) {
-      return { errors: [], lastMatchedNode: candidates.at(-1) };
+      return { errors: [], lastMatchedNode: candidates.at(-1), totalWeight: 1 };
     }
 
     return candidates
       .map((candidate) => {
+        const comparison = this.compareChildren({
+          instanceChildren: this.markdownNodesService.readChildren(candidate),
+          templateChildren: templateGrandchildren,
+        });
+
         return {
-          errors: this.compareChildren({
-            instanceChildren: this.markdownNodesService.readChildren(candidate),
-            templateChildren: templateGrandchildren,
-          }),
+          errors: comparison.errors,
           lastMatchedNode: candidate,
+          // The container itself is one requirement; its children add theirs.
+          totalWeight: comparison.totalWeight + 1,
         };
       })
-      .reduce((fewest, candidate) => {
-        return candidate.errors.length < fewest.errors.length
+      .reduce((best, candidate) => {
+        // Weighed by failed weight, not error count: one finding standing in
+        // for a whole missing list is a worse match than two missing headings.
+        return this.scoringService.sumWeights(candidate.errors) <
+          this.scoringService.sumWeights(best.errors)
           ? candidate
-          : fewest;
+          : best;
       });
   }
 
   /** Matches a leaf node on its own identity, without descending. */
   private compareLeaf(args: CompareNodeArguments): CompareNodeResult {
     const candidates = this.findCandidates(args);
+    // A leaf is matched whole, without descending, so its subtree is either
+    // entirely accounted for or entirely missing.
+    const weight = this.markdownNodesService.countSubtree(args.templateChild);
 
     return candidates.length === 0
       ? {
           errors: [this.buildError(args)],
           lastMatchedNode: args.lastMatchedNode,
+          totalWeight: weight,
         }
-      : { errors: [], lastMatchedNode: candidates.at(-1) };
+      : {
+          errors: [],
+          lastMatchedNode: candidates.at(-1),
+          totalWeight: weight,
+        };
   }
 
   /** Finds every instance sibling satisfying the template node. */
@@ -114,9 +141,10 @@ export class MarkdownTreeService {
   /** Compares one level of two trees, descending into containers. */
   public compareChildren(
     args: CompareChildrenArguments,
-  ): MarkdownComparisonError[] {
+  ): CompareChildrenResult {
     const errors: MarkdownComparisonError[] = [];
     let lastMatchedNode: MarkdownNode | undefined;
+    let totalWeight = 0;
 
     for (const templateChild of args.templateChildren) {
       if (SKIPPED_TYPES.has(templateChild.type)) {
@@ -137,8 +165,9 @@ export class MarkdownTreeService {
 
       errors.push(...result.errors);
       lastMatchedNode = result.lastMatchedNode;
+      totalWeight += result.totalWeight;
     }
 
-    return errors;
+    return { errors, totalWeight };
   }
 }

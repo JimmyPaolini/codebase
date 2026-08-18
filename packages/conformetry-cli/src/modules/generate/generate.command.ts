@@ -138,11 +138,14 @@ export class GenerateCommand extends CommandRunner {
         `${DEFAULT_GENERATED_DIRECTORY}/${definition.name}`,
     });
 
-    this.logger.log(
-      [
-        `Generated ${String(result.generatedFilePaths.length)} file(s) in ${result.outputDirectoryPath}:`,
-        ...result.generatedFilePaths.map((filePath) => `  ${filePath}`),
-      ].join("\n"),
+    // The file list is what the caller asked for, so it goes to stdout; the
+    // log line carries the same facts as data a telemetry backend can group.
+    process.stdout.write(
+      `${result.generatedFilePaths.map((filePath) => `  ${filePath}`).join("\n")}\n`,
     );
+    this.logger.log("✨ Generated instance files", undefined, {
+      count: result.generatedFilePaths.length,
+      outputDirectoryPath: result.outputDirectoryPath,
+    });
   }
 }

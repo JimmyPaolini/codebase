@@ -71,6 +71,7 @@ flowchart LR
     ErrorsModule
     LanguageModule
     ReportingModule
+    ScoringModule
   end
   subgraph group3["conformetry-files"]
     FilesModule
@@ -96,6 +97,7 @@ flowchart LR
   MainModule --> DiscoveryModule
   MainModule --> GenerateModule
   MainModule --> ValidateModule
+  ReportingModule --> ScoringModule
   TemplateDiscoveryModule --> RenderingModule
   ValidateModule --> ConfigurationModule
   ValidateModule --> InputModule
@@ -105,6 +107,7 @@ flowchart LR
   ValidationModule --> FilesModule
   ValidationModule --> LanguageModule
   ValidationModule --> ReportingModule
+  ValidationModule --> ScoringModule
   ValidationModule --> TemplateDiscoveryModule
 ```
 

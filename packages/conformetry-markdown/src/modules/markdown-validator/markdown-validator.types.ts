@@ -6,6 +6,13 @@ export interface CompareChildrenArguments {
   readonly templateChildren: MarkdownNode[];
 }
 
+/** The outcome of walking one level of two trees. */
+export interface CompareChildrenResult {
+  readonly errors: MarkdownComparisonError[];
+  /** Template nodes the level weighed the instance against. */
+  readonly totalWeight: number;
+}
+
 /** Arguments for matching one template node against the instance's children. */
 export interface CompareNodeArguments {
   readonly instanceChildren: MarkdownNode[];
@@ -21,6 +28,8 @@ export interface CompareNodeArguments {
 export interface CompareNodeResult {
   readonly errors: MarkdownComparisonError[];
   readonly lastMatchedNode: MarkdownNode | undefined;
+  /** Template nodes this match or miss accounted for. */
+  readonly totalWeight: number;
 }
 
 /** A required markdown node the instance does not contain. */
@@ -29,6 +38,8 @@ export interface MarkdownComparisonError {
   readonly instanceLine: number | undefined;
   readonly nodeType: string;
   readonly text: string;
+  /** Template nodes this one finding stands in for — the missing subtree. */
+  readonly weight: number;
 }
 
 /**

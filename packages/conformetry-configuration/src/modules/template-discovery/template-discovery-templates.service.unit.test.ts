@@ -75,6 +75,21 @@ describe(TemplateDiscoveryTemplatesService, () => {
       ).toStrictEqual(["README.md", "{{nameKebabCase}}.service.ts"]);
     });
 
+    it("carries a declared threshold onto the template", () => {
+      expect(
+        service.collectTemplate({
+          name: "example",
+          templatePath: "/does/not/exist",
+          threshold: 0.85,
+        }).threshold,
+      ).toBe(0.85);
+    });
+
+    it("leaves the threshold unset when the generator declares none", () => {
+      // Unset rather than defaulted, so a run-level flag still applies.
+      expect(template.threshold).toBeUndefined();
+    });
+
     it("returns no files when the template folder does not exist", () => {
       expect(
         service.collectTemplate({

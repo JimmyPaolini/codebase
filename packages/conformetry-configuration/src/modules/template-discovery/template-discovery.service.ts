@@ -2,26 +2,26 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { TemplateDiscoveryCandidatesService } from "./template-discovery-candidates.service";
+import { TemplateDiscoveryInstancesService } from "./template-discovery-instances.service";
 import { TemplateDiscoveryMatchingService } from "./template-discovery-matching.service";
 import { TemplateDiscoveryTemplatesService } from "./template-discovery-templates.service";
 
 import type {
-  InstanceCandidate,
+  FindInstancesArguments,
+  Instance,
   InstanceFile,
   MatchedInstance,
   PreparedInstanceDocuments,
   PrepareDocumentsArguments,
-  ResolveCandidatesArguments,
   ResolvedInstances,
   TemplateDefinition,
 } from "./template-discovery.types";
 
 /**
- * Turns candidate directories into matched instances and comparison documents.
+ * Turns instance directories into matched instances and comparison documents.
  *
  * This is the entry point for the discovery module. It knows nothing about
- * workspaces, projects, or globs — the caller supplies candidates, and the
+ * workspaces, projects, or globs — the caller supplies instances, and the
  * templates root supplies templates. That is what keeps this package usable
  * from any host, not just Nx.
  */
@@ -30,7 +30,7 @@ export class TemplateDiscoveryService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly templateDiscoveryCandidatesService: TemplateDiscoveryCandidatesService,
+    private readonly templateDiscoveryInstancesService: TemplateDiscoveryInstancesService,
     private readonly templateDiscoveryMatchingService: TemplateDiscoveryMatchingService,
     private readonly templateDiscoveryTemplatesService: TemplateDiscoveryTemplatesService,
   ) {}
@@ -47,8 +47,22 @@ export class TemplateDiscoveryService {
   public collectTemplate(args: {
     name: string;
     templatePath: string;
+    threshold?: number | undefined;
   }): TemplateDefinition {
     return this.templateDiscoveryTemplatesService.collectTemplate(args);
+  }
+
+  /** Expands instance glob patterns into instances. */
+  public findInstances(args: FindInstancesArguments): Instance[] {
+    return this.templateDiscoveryInstancesService.findInstances(args);
+  }
+
+  /** Matches instance directories to the templates that best explain them. */
+  public matchInstances(args: {
+    instances: Instance[];
+    templates: TemplateDefinition[];
+  }): ResolvedInstances {
+    return this.templateDiscoveryMatchingService.matchInstances(args);
   }
 
   /**
@@ -68,7 +82,7 @@ export class TemplateDiscoveryService {
           })
           .map((templateFilePath) => {
             return this.templateDiscoveryTemplatesService.prepareDocument({
-              instancePath: instance.candidate.instancePath,
+              instancePath: instance.instance.path,
               substitutions: instance.substitutions,
               templateDirectoryPath: instance.template.directoryPath,
               templateFilePath,
@@ -78,13 +92,6 @@ export class TemplateDiscoveryService {
         instance,
       };
     });
-  }
-
-  /** Expands instance glob patterns into candidates. */
-  public resolveCandidates(
-    args: ResolveCandidatesArguments,
-  ): InstanceCandidate[] {
-    return this.templateDiscoveryCandidatesService.resolveCandidates(args);
   }
 
   /**
@@ -102,7 +109,7 @@ export class TemplateDiscoveryService {
           instance,
           instanceFilePath:
             this.templateDiscoveryTemplatesService.resolveInstanceFilePath({
-              instancePath: instance.candidate.instancePath,
+              instancePath: instance.instance.path,
               substitutions: instance.substitutions,
               templateDirectoryPath: instance.template.directoryPath,
               templateFilePath,
@@ -111,13 +118,5 @@ export class TemplateDiscoveryService {
         };
       });
     });
-  }
-
-  /** Matches candidate directories to the templates that best explain them. */
-  public resolveInstances(args: {
-    candidates: InstanceCandidate[];
-    templates: TemplateDefinition[];
-  }): ResolvedInstances {
-    return this.templateDiscoveryMatchingService.resolveInstances(args);
   }
 }

@@ -31,14 +31,15 @@ def main() -> None:
                     "message": f"Python validator dependency missing: {error}",
                     "fix": "Reinstall the conformetry-python package.",
                 }
-            ]
+            ],
+            "total_weight": 1,
         }
 
     errors = [
         asdict(error) if hasattr(error, "__dataclass_fields__") else error
         for error in result.get("errors", [])
     ]
-    print(json.dumps({"errors": errors}))
+    print(json.dumps({"errors": errors, "total_weight": result.get("total_weight", 0)}))
 
 
 if __name__ == "__main__":

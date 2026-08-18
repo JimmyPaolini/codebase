@@ -170,6 +170,20 @@ export class TypescriptNodesService {
 
   // 🌎 Public Methods
 
+  /**
+   * Counts a node and everything beneath it.
+   *
+   * This is what a missing declaration costs. Comparison reports a vanished
+   * class once, but the template asked for the class *and* every member inside
+   * it, so weighing that finding by its subtree is what keeps a deleted class
+   * from scoring the same as a deleted import.
+   */
+  public countSubtree(node: Node): number {
+    return this.readChildren(node).reduce((total, child) => {
+      return total + this.countSubtree(child);
+    }, 1);
+  }
+
   /** Reads a node's direct children, skipping the end-of-file token. */
   public readChildren(node: Node): Node[] {
     const children: Node[] = [];

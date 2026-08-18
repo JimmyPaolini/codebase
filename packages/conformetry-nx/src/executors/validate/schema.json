@@ -10,6 +10,12 @@
       "description": "Language names to restrict the run to. Every language runs when omitted.",
       "items": { "type": "string" },
       "type": "array"
+    },
+    "threshold": {
+      "description": "Lowest conformance score an instance may have, from 0 to 1. Overridden by a generator's own threshold and by an instance group's.",
+      "maximum": 1,
+      "minimum": 0,
+      "type": "number"
     }
   },
   "required": [],

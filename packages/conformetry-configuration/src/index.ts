@@ -18,20 +18,21 @@ export type {
   ResolveGeneratorInputsArguments,
   ResolveInputsFromValuesArguments,
 } from "./modules/input/input.types";
-export { TemplateDiscoveryCandidatesService } from "./modules/template-discovery/template-discovery-candidates.service";
+export { TemplateDiscoveryInstancesService } from "./modules/template-discovery/template-discovery-instances.service";
 export { TemplateDiscoveryMatchingService } from "./modules/template-discovery/template-discovery-matching.service";
 export { TemplateDiscoveryTemplatesService } from "./modules/template-discovery/template-discovery-templates.service";
 export { TemplateDiscoveryModule } from "./modules/template-discovery/template-discovery.module";
 export { TemplateDiscoveryService } from "./modules/template-discovery/template-discovery.service";
 export type {
-  InstanceCandidate,
+  FindInstancesArguments,
+  Instance,
   InstanceFile,
   MatchedInstance,
   PreparedInstanceDocuments,
   PrepareDocumentsArguments,
-  ResolveCandidatesArguments,
   ResolvedInstances,
   TemplateDefinition,
+  TemplateMatch,
   UnmatchedInstance,
   UnmatchedReason,
 } from "./modules/template-discovery/template-discovery.types";

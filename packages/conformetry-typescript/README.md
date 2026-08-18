@@ -64,9 +64,11 @@ flowchart LR
   subgraph group0["conformetry-typescript"]
     TypescriptValidatorModule
   end
+  subgraph group1["conformetry-core"]
+    ScoringModule
+  end
+  TypescriptValidatorModule --> ScoringModule
 ```
-
-_Reached only for their types, and so declaring no module here: conformetry-core._
 
 <!-- nestjs-module-graph-end -->
 

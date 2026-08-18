@@ -78,7 +78,7 @@ export const PLUGIN_CONTEXT_GLOBAL_KEY = "__conformetryPluginContext";
 /**
  * Root of the workspace-level project, which is skipped during inference.
  *
- * Every candidate in the workspace sits inside it, so inferring a target there
+ * Every instance in the workspace sits inside it, so inferring a target there
  * would duplicate every other project's work under one uncacheable task.
  */
 export const WORKSPACE_PROJECT_ROOT = ".";

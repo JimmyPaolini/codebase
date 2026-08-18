@@ -11,12 +11,12 @@ import type { ValidationFileResult } from "@conformetry/core";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
- * Turns candidates that matched no template into ordinary findings.
+ * Turns instances that matched no template into ordinary findings.
  *
  * Silence would be the wrong answer here. A glob is the author asserting that
  * a path holds generated code, so a path matching nothing means either the
  * instance drifted past recognition or the glob is wrong — both worth saying
- * out loud, and both invisible if unmatched candidates were merely skipped.
+ * out loud, and both invisible if unmatched instances were merely skipped.
  */
 @Injectable()
 /* v8 ignore stop */
@@ -31,13 +31,13 @@ export class ValidationFindingsService {
 
   // 🔏 Private Methods
 
-  /** Describes why a candidate could not be attributed to one template. */
+  /** Describes why an instance could not be attributed to one template. */
   private describeReason(args: {
-    candidateTemplateNames: string[];
     reason: UnmatchedReason;
+    tiedTemplateNames: string[];
   }): { fix: string; message: string } {
     if (args.reason === "ambiguous") {
-      const names = args.candidateTemplateNames.join(", ");
+      const names = args.tiedTemplateNames.join(", ");
 
       return {
         fix: `Give the templates ${names} distinguishing files, or narrow the instance glob so only one applies.`,
@@ -66,7 +66,7 @@ export class ValidationFindingsService {
 
   // 🌎 Public Methods
 
-  /** Builds one finding per unmatched candidate, in candidate order. */
+  /** Builds one finding per unmatched instance, in instance order. */
   public buildUnmatchedResults(args: {
     templates: TemplateDefinition[];
     unmatched: UnmatchedInstance[];
@@ -75,8 +75,8 @@ export class ValidationFindingsService {
 
     return args.unmatched.map((instance) => {
       const instancePath = path.join(
-        instance.candidate.instancePath,
-        instance.candidate.nameStem,
+        instance.instance.path,
+        instance.instance.nameStem,
       );
 
       return {
@@ -84,14 +84,18 @@ export class ValidationFindingsService {
           {
             errorType: "instance" as const,
             ...this.describeReason({
-              candidateTemplateNames: instance.candidateTemplateNames,
               reason: instance.reason,
+              tiedTemplateNames: instance.tiedTemplateNames,
             }),
           },
         ],
-        filename: instance.candidate.nameStem,
+        filename: instance.instance.nameStem,
         instanceFilePath: instancePath,
         templateFilePath: templatesRootPath,
+        // An unmatched instance is never scored — no template means no
+        // requirements to weigh it against — so this total is never a
+        // denominator. It fails the run on its own, before any threshold.
+        totalWeight: 0,
       };
     });
   }

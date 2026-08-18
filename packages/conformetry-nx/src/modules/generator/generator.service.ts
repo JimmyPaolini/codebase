@@ -12,7 +12,7 @@ import {
   JSON_INDENT,
 } from "./generator.constants";
 
-import type { ProjectScope } from "../candidates/candidates.types";
+import type { ProjectScope } from "../instances/instances.types";
 import type { EmitPluginArguments, EmittedFile } from "./generator.types";
 import type { ConformetryGeneratorDefinition } from "@conformetry/configuration";
 

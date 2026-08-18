@@ -5,7 +5,7 @@ description: Generate code using nx generators. INVOKE IMMEDIATELY when user men
 
 # Run Nx Generator
 
-Nx generators are powerful tools that scaffold projects, make automated code migrations or automate repetitive tasks in a codebase. They ensure consistency across the codebase and reduce boilerplate work.
+Nx generators are powerful tools that scaffold projects, make automated code migrations or automate repetitive tasks in a monorepo. They ensure consistency across the codebase and reduce boilerplate work.
 
 This skill applies when the user wants to:
 
@@ -56,7 +56,7 @@ Pay attention to required options, defaults that might need overriding, and opti
 
 | Type                        | When to use                                                       | Generator flags                     |
 | --------------------------- | ----------------------------------------------------------------- | ----------------------------------- |
-| **Non-buildable** (default) | Internal codebase libs consumed by apps                           | No `--bundler` flag                 |
+| **Non-buildable** (default) | Internal monorepo libs consumed by apps                           | No `--bundler` flag                 |
 | **Buildable**               | Publishing to npm, cross-repo sharing, stable libs for cache hits | `--bundler=vite` or `--bundler=swc` |
 
 Non-buildable libs:

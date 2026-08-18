@@ -68,6 +68,7 @@ flowchart LR
   end
   subgraph group1["conformetry-core"]
     ErrorsModule
+    ScoringModule
   end
   subgraph group2["conformetry-json"]
     JsonValidatorModule
@@ -78,10 +79,13 @@ flowchart LR
   subgraph group4["conformetry-python"]
     PythonValidatorModule
   end
+  JsonValidatorModule --> ScoringModule
   JupyterValidatorModule --> JsonValidatorModule
   JupyterValidatorModule --> MarkdownValidatorModule
   JupyterValidatorModule --> PythonValidatorModule
+  MarkdownValidatorModule --> ScoringModule
   PythonValidatorModule --> ErrorsModule
+  PythonValidatorModule --> ScoringModule
 ```
 
 <!-- nestjs-module-graph-end -->

@@ -4,7 +4,7 @@ import io
 import tokenize
 
 from python.constants import TODO_LINE_REGEX
-from python.types import ConformetryError
+from python.types import ConformetryError, TreeComparison
 
 
 def extract_comments(source: str) -> list[tuple[str, int, int]]:
@@ -20,7 +20,12 @@ def extract_comments(source: str) -> list[tuple[str, int, int]]:
     return comments
 
 
-def validate_comments(template_source: str, instance_source: str) -> list[ConformetryError]:
+def validate_comments(template_source: str, instance_source: str) -> TreeComparison:
+    """Report each template comment the instance lacks, and how many were checked.
+
+    Every template comment is one requirement, whatever its length: a section
+    marker is a marker.
+    """
     template_comments = extract_comments(template_source)
     instance_comment_texts = [c[0] for c in extract_comments(instance_source)]
     errors = []
@@ -49,4 +54,4 @@ def validate_comments(template_source: str, instance_source: str) -> list[Confor
             )
         else:
             start_pos += index + 1
-    return errors
+    return TreeComparison(errors=errors, total_weight=len(template_comments))

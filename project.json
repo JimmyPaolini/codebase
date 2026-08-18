@@ -19,6 +19,21 @@
         "cwd": "{projectRoot}"
       }
     },
+    "check-skill-exclusions": {
+      "cache": true,
+      "description": "Verify that every skill in skills-lock.json is excluded from prettier and codometer, the two tools whose scan reaches .agents/",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{workspaceRoot}/configuration/.codometerignore",
+        "{workspaceRoot}/configuration/.prettierignore",
+        "{workspaceRoot}/scripts/check-skill-exclusions.sh",
+        "{workspaceRoot}/skills-lock.json"
+      ],
+      "options": {
+        "command": "bash scripts/check-skill-exclusions.sh",
+        "cwd": "{projectRoot}"
+      }
+    },
     "codometer": {
       "cache": true,
       "configurations": {

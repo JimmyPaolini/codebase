@@ -1,3 +1,4 @@
+import { ScoringModule } from "@conformetry/core";
 import { Module } from "@nestjs/common";
 
 import { JsonComparisonService } from "./json-comparison.service";
@@ -12,7 +13,7 @@ import { JsonValidatorService } from "./json-validator.service";
 @Module({
   controllers: [],
   exports: [JsonComparisonService, JsonValidatorService],
-  imports: [],
+  imports: [ScoringModule],
   providers: [JsonComparisonService, JsonValidatorService],
 })
 export class JsonValidatorModule {}

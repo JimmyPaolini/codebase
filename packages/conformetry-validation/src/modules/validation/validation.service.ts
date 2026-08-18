@@ -8,6 +8,7 @@ import { Injectable } from "@nestjs/common";
 import { ValidationDeduplicationService } from "./validation-deduplication.service";
 import { ValidationFindingsService } from "./validation-findings.service";
 import { ValidationLanguagesService } from "./validation-languages.service";
+import { ValidationScoringService } from "./validation-scoring.service";
 
 import type {
   InstanceFileResults,
@@ -15,17 +16,14 @@ import type {
   RunValidationResult,
 } from "./validation.types";
 import type { MatchedInstance } from "@conformetry/configuration";
-import type {
-  ConformetryLanguageValidator,
-  ValidationFileResult,
-} from "@conformetry/core";
+import type { ConformetryLanguageValidator } from "@conformetry/core";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
- * Runs a full conformetry validation: match candidates to templates, check the
+ * Runs a full conformetry validation: match instances to templates, check the
  * files exist, then compare contents language by language.
  *
- * The candidates arrive from the caller. This package used to scan the
+ * The instances arrive from the caller. This package used to scan the
  * workspace for `project.json` files and infer scope from generator name
  * suffixes, which made a generic package depend on one repository's layout.
  */
@@ -41,6 +39,7 @@ export class ValidationService {
     private readonly validationDeduplicationService: ValidationDeduplicationService,
     private readonly validationFindingsService: ValidationFindingsService,
     private readonly validationLanguagesService: ValidationLanguagesService,
+    private readonly validationScoringService: ValidationScoringService,
   ) {}
 
   // 🔐 Private Fields
@@ -90,43 +89,57 @@ export class ValidationService {
   private validateInstance(args: {
     instance: MatchedInstance;
     validators: ConformetryLanguageValidator[];
-  }): ValidationFileResult[] {
+  }): InstanceFileResults {
     const [prepared] = this.templateDiscoveryService.prepareDocuments({
       fileExtensions: args.validators.flatMap((validator) => {
         return [...validator.descriptor.fileExtensions];
       }),
       instances: [args.instance],
     });
+    const files = this.filesService.checkInstanceFiles({
+      instances: [args.instance],
+    });
+    const languages = args.validators.map((validator) => {
+      return this.languageService.runValidator({
+        checkedPaths: [args.instance.instance.path],
+        documents: prepared?.documents ?? [],
+        validator,
+      });
+    });
 
-    return [
-      ...this.filesService.checkInstanceFiles({ instances: [args.instance] }),
-      ...args.validators.flatMap((validator) => {
-        return this.languageService.runValidator({
-          checkedPaths: [args.instance.candidate.instancePath],
-          documents: prepared?.documents ?? [],
-          validator,
-        }).fileResults;
-      }),
-    ];
+    return {
+      fileResults: [
+        ...files.fileResults,
+        ...languages.flatMap((language) => language.fileResults),
+      ],
+      instance: args.instance,
+      // Existence and content are separate requirements over the same files:
+      // a file can be present and still wrong, so neither total subsumes the
+      // other and they add.
+      totalWeight: languages.reduce((total, language) => {
+        return total + language.totalWeight;
+      }, files.totalWeight),
+    };
   }
 
   // 🌎 Public Methods
 
   /**
-   * Validates every candidate and returns the differences found.
+   * Validates every instance and returns the differences found.
    *
-   * Candidates that matched no template are reported alongside the content
+   * Instances that matched no template are reported alongside the content
    * differences rather than skipped, so one report covers both "this file is
    * wrong" and "conformetry cannot tell what this path was generated from".
    */
   public async validate(
     args: RunValidationArguments,
   ): Promise<RunValidationResult> {
-    const { matched, unmatched } =
-      this.templateDiscoveryService.resolveInstances({
-        candidates: args.candidates,
+    const { matched, unmatched } = this.templateDiscoveryService.matchInstances(
+      {
+        instances: args.instances,
         templates: args.templates,
-      });
+      },
+    );
     const validators = this.selectValidators({
       languageNames: args.languageNames,
       validators: await this.validationLanguagesService.resolveValidators({
@@ -137,10 +150,11 @@ export class ValidationService {
       }),
     });
     const groups: InstanceFileResults[] = matched.map((instance) => {
-      return {
-        fileResults: this.validateInstance({ instance, validators }),
-        instance,
-      };
+      return this.validateInstance({ instance, validators });
+    });
+    const scores = this.validationScoringService.scoreInstances({
+      groups,
+      runThreshold: args.threshold,
     });
     const fileResults = [
       ...this.validationDeduplicationService.deduplicate(groups),
@@ -152,10 +166,13 @@ export class ValidationService {
 
     return {
       checkedPaths: matched.map((instance) => {
-        return instance.candidate.instancePath;
+        return instance.instance.path;
       }),
       fileResults,
-      ok: fileResults.length === 0,
+      // An unmatched instance always fails: no template explains it, so there
+      // is no threshold it could be held to in the first place.
+      ok: unmatched.length === 0 && scores.every((score) => score.ok),
+      scores,
       unmatched,
     };
   }

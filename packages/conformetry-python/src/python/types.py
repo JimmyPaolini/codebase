@@ -17,6 +17,19 @@ class StringCase:
 
 
 @dataclass
+class TreeComparison:
+    """What comparing two syntax trees produced.
+
+    The total is reported even when nothing is wrong: a conforming document is
+    still evidence, and leaving it out of the denominator would score an
+    instance only against the parts of itself that are wrong.
+    """
+
+    errors: "list[ConformetryError]"
+    total_weight: int
+
+
+@dataclass
 class ConformetryError:
     """A structured conformance error produced by any Python validator."""
 
@@ -32,3 +45,10 @@ class ConformetryError:
     template_path: str | None = None
     expected: str | None = None
     actual: str | None = None
+    weight: int = 1
+    """Template nodes this one finding stands in for — the missing subtree.
+
+    A validator reports a missing element once, however much of the template
+    that element contained, so the weight restores the proportion when the
+    instance is scored.
+    """

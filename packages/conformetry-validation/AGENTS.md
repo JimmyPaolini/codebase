@@ -66,6 +66,7 @@ flowchart LR
     ErrorsModule
     LanguageModule
     ReportingModule
+    ScoringModule
   end
   subgraph group3["conformetry-files"]
     FilesModule
@@ -93,6 +94,7 @@ flowchart LR
   end
   FilesModule --> ErrorsModule
   FilesModule --> TemplateDiscoveryModule
+  ReportingModule --> ScoringModule
   TemplateDiscoveryModule --> RenderingModule
   ValidationModule --> FilesModule
   ValidationModule -.-> JsonValidatorModule
@@ -101,6 +103,7 @@ flowchart LR
   ValidationModule -.-> MarkdownValidatorModule
   ValidationModule -.-> PythonValidatorModule
   ValidationModule --> ReportingModule
+  ValidationModule --> ScoringModule
   ValidationModule --> TemplateDiscoveryModule
   ValidationModule -.-> TextValidatorModule
   ValidationModule -.-> TypescriptValidatorModule

@@ -1,6 +1,8 @@
 #!/bin/bash
 # infra.sh — Install infrastructure / DevOps CLI tools and print version summary.
 #
+# gitleaks   — scans commits and staged changes for secrets, run by the pre-commit
+#              hook and the scan-security workflow
 # terraform  — manages Linode Kubernetes Engine (LKE) cluster (infrastructure/)
 # trivy      — scans Docker images and infrastructure code for vulnerabilities
 # supabase   — local Supabase stack + migrations for lexico

@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 
+import { ScoringModule } from "../scoring/scoring.module";
+
 import { ReportingService } from "./reporting.service";
 
 /**
@@ -11,7 +13,7 @@ import { ReportingService } from "./reporting.service";
 @Module({
   controllers: [],
   exports: [ReportingService],
-  imports: [],
+  imports: [ScoringModule],
   providers: [ReportingService],
 })
 export class ReportingModule {}

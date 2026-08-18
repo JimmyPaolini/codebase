@@ -2,10 +2,11 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { ErrorsService } from "@conformetry/core";
+import { ErrorsService, ScoringService } from "@conformetry/core";
 import { Injectable } from "@nestjs/common";
 
 import {
+  DEFAULT_BRIDGE_WEIGHT,
   PYTHON_BRIDGE_MODULE,
   PYTHON_EXECUTABLE,
   PYTHON_UNAVAILABLE_FIX,
@@ -16,7 +17,10 @@ import type {
   PythonBridgeResponse,
   RunPythonBridgeArguments,
 } from "./python-validator.types";
-import type { ConformetryError } from "@conformetry/core";
+import type {
+  ConformetryError,
+  DocumentValidationResult,
+} from "@conformetry/core";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
@@ -33,7 +37,10 @@ import type { ConformetryError } from "@conformetry/core";
 export class PythonBridgeService {
   // 🏗 Dependency Injection
 
-  constructor(private readonly errorsService: ErrorsService) {}
+  constructor(
+    private readonly errorsService: ErrorsService,
+    private readonly scoringService: ScoringService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -52,16 +59,25 @@ export class PythonBridgeService {
 
   // 🔏 Private Methods
 
-  /** Wraps a bridge failure as a reportable error rather than throwing. */
-  private buildBridgeError(message: string): ConformetryError[] {
-    return [
-      {
-        errorType: "code",
-        fix: PYTHON_UNAVAILABLE_FIX,
-        language: "python",
-        message,
-      },
-    ];
+  /**
+   * Wraps a bridge failure as a reportable error rather than throwing.
+   *
+   * Weighed as a single failed requirement out of one: the file could not be
+   * checked at all, so claiming any particular proportion of it conforms would
+   * be an invention.
+   */
+  private buildBridgeError(message: string): DocumentValidationResult {
+    return {
+      errors: [
+        {
+          errorType: "code",
+          fix: PYTHON_UNAVAILABLE_FIX,
+          language: "python",
+          message,
+        },
+      ],
+      totalWeight: 1,
+    };
   }
 
   /** Reads the optional location fields, omitting any the bridge left out. */
@@ -121,6 +137,7 @@ export class PythonBridgeService {
         this.errorsService.resolveErrorLanguage(error["language"]) ?? "python",
       message:
         this.readString(error, "message") ?? "Python conformance issue found.",
+      weight: this.readNumber(error, "weight") ?? DEFAULT_BRIDGE_WEIGHT,
     };
   }
 
@@ -136,7 +153,7 @@ export class PythonBridgeService {
    */
   public validatePythonSource(
     args: RunPythonBridgeArguments,
-  ): ConformetryError[] {
+  ): DocumentValidationResult {
     const result = spawnSync(PYTHON_EXECUTABLE, ["-m", PYTHON_BRIDGE_MODULE], {
       cwd: this.pythonRootPath,
       encoding: "utf8",
@@ -159,8 +176,20 @@ export class PythonBridgeService {
 
     try {
       const payload = JSON.parse(result.stdout) as PythonBridgeResponse;
+      const errors = payload.errors.map((error) => {
+        return this.toConformetryError(error);
+      });
 
-      return payload.errors.map((error) => this.toConformetryError(error));
+      return {
+        errors,
+        totalWeight:
+          typeof payload.total_weight === "number"
+            ? payload.total_weight
+            : // A bridge that reported findings but no total is broken in a
+              // way that would otherwise inflate the score to 1; charge the
+              // findings against themselves instead.
+              this.scoringService.sumWeights(errors),
+      };
     } catch {
       return this.buildBridgeError(
         "Python validator returned output that could not be parsed.",

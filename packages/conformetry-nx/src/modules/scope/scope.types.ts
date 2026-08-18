@@ -28,7 +28,7 @@ export interface ConformetryNxGeneratorDefinition extends Omit<
  * in exactly one place. There is no second field that could disagree with this
  * one, which is what the single key buys: a separate scope that excluded a
  * project the globs reached narrowed validation silently, and validation
- * cannot notice candidates it was never offered.
+ * cannot notice instances it was never offered.
  */
 export type ConformetryNxInstanceGroup =
   | ConformetryNxProjectInstanceGroup

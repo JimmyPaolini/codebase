@@ -94,10 +94,76 @@ the template it was generated from.
 | `--config [path]` | Configuration file to read |
 | `--instances [globs]` | Comma-separated globs to validate, overriding the configuration |
 | `--languages [names]` | Comma-separated validators to run — `typescript`, `markdown`, `python`, `json`, `jupyter`, `text` |
+| `--threshold [ratio]` | Lowest conformance score an instance may have, 0 to 1. The weakest of the three threshold levels |
 
 Every flag is optional; an absent filter means "everything". The command exits
-non-zero when any instance does not conform, which is what makes it usable as a
-pre-merge gate.
+non-zero when any instance scores below its threshold, which is what makes it
+usable as a pre-merge gate.
+
+## Scoring
+
+Validation reports **how much** of its template an instance honours, not just
+whether it does. Every template element the comparison weighs is one
+requirement, and a missing element costs the whole subtree it stood for — so
+deleting a class costs far more than dropping an import, without anyone
+maintaining a table of weights.
+
+The same three numbers — met, total, percentage — are reported at every level:
+
+```text
+Conformance scores:
+  ✗ packages/logger/src/modules/logger (nestjs-service-module) — 149/151 requirements met (98.7%), below threshold 100.0%
+  ✗ packages/logger/src/modules/logger/logger (nestjs-service-file) — 108/109 requirements met (99.1%), below threshold 100.0%
+  Total — 257/260 requirements met (98.8%) across 2 instance(s), 2 below threshold
+
+  1. file: logger.types.ts — 1/2 requirements met (50.0%)
+     Instance: packages/logger/src/modules/logger/logger.types.ts
+     Template: configuration/conformetry-templates/nestjs-service-module/{{nameKebabCase}}/{{nameKebabCase}}.types.ts
+
+     1. Missing comment // 🏷️ Types
+        Template: Line 1, Column 1
+        Expected: `// 🏷️ Types`
+        Weight  : 1 of the 2 requirements in this file
+        Fix     : Add the comment // 🏷️ Types to the instance file.
+```
+
+| Level | Answers |
+| ----- | ------- |
+| File | How much of _this file_ drifted — a small file can lose half of itself to one finding |
+| Instance | Whether this instance clears its threshold; this is the level thresholds apply to |
+| Total | How the whole run did, across every instance/template pair |
+
+The fraction is printed alongside the percentage because a percentage hides its
+own scale: 99.3% reads the same whether one requirement of 151 went missing or
+thirty of four thousand did, and only the first is a five-minute fix.
+
+The total is counted in instance/template pairs rather than files. A file
+governed by two templates owes both of them, so its requirements genuinely
+count once per template.
+
+A finding that stands in for more than itself says so, which is what tells the
+expensive drift from the trivial — a missing class carries the weight of every
+member it held.
+
+An instance must score at or above its **threshold** to pass. The default is
+`1` — a perfect match, which is what conformetry has always demanded — so
+adding scoring changes nothing until a threshold is lowered deliberately.
+
+Three levels set it, narrowest first:
+
+| Level | Where | Applies to |
+| ----- | ----- | ---------- |
+| Instance group | `instances[].threshold` | Only the paths that group's globs locate |
+| Generator | `threshold` on the generator | Every instance of that template |
+| Run | `--threshold` | Every instance the run touches |
+
+That is what makes introducing a template bearable. A new template can be
+adopted with the directory still being migrated held to `0.75` while every
+other instance of it stays strict, instead of having to bring the whole
+workspace over in one change.
+
+Findings print either way. A lowered threshold is permission to ship the drift,
+not a reason to stop showing it.
 
 Findings are grouped by file and each one carries the location on **both**
 sides — where the instance is wrong and where the template says so — plus the
@@ -278,6 +344,7 @@ flowchart LR
     ErrorsModule
     LanguageModule
     ReportingModule
+    ScoringModule
   end
   subgraph group3["conformetry-files"]
     FilesModule
@@ -303,6 +370,7 @@ flowchart LR
   MainModule --> DiscoveryModule
   MainModule --> GenerateModule
   MainModule --> ValidateModule
+  ReportingModule --> ScoringModule
   TemplateDiscoveryModule --> RenderingModule
   ValidateModule --> ConfigurationModule
   ValidateModule --> InputModule
@@ -312,6 +380,7 @@ flowchart LR
   ValidationModule --> FilesModule
   ValidationModule --> LanguageModule
   ValidationModule --> ReportingModule
+  ValidationModule --> ScoringModule
   ValidationModule --> TemplateDiscoveryModule
 ```
 
@@ -337,7 +406,7 @@ graph — and every other package declares exactly which siblings it may import.
 | Package | Role |
 | ------- | ---- |
 | [`@conformetry/core`](../conformetry-core/README.md) | Structured error shape, the language validator contract, report rendering |
-| [`@conformetry/configuration`](../conformetry-configuration/README.md) | Config loading, template discovery, candidate matching, input resolution |
+| [`@conformetry/configuration`](../conformetry-configuration/README.md) | Config loading, template discovery, instance matching, input resolution |
 | [`@conformetry/generation`](../conformetry-generation/README.md) | Mustache rendering and the generator lifecycle |
 | [`@conformetry/validation`](../conformetry-validation/README.md) | Validation orchestration, language routing, finding deduplication |
 | [`@conformetry/files`](../conformetry-files/README.md) | Existence checking for every declared file, whatever its extension |
