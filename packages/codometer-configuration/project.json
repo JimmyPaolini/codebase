@@ -23,10 +23,11 @@
         ],
         "main": "packages/codometer-configuration/src/index.ts",
         "outputPath": "dist/packages/codometer-configuration",
-        "tsConfig": "packages/codometer-configuration/tsconfig.json"
+        "tsConfig": "packages/codometer-configuration/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]
     },
+    "bundlesize": {},
     "dependency-cruiser": {},
     "knip": {},
     "lint-codebase": {},

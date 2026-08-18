@@ -23,12 +23,13 @@
         ],
         "main": "{{type}}/{{nameKebabCase}}/src/index.ts",
         "outputPath": "dist/{{type}}/{{nameKebabCase}}",
-        "tsConfig": "{{type}}/{{nameKebabCase}}/tsconfig.json"
+        "tsConfig": "{{type}}/{{nameKebabCase}}/tsconfig.build.json"
       },
       "outputs": [
         "{options.outputPath}"
       ]
     },
+    "bundlesize": {},
     "dependency-cruiser": {},
     "knip": {},
     "lint-codebase": {},

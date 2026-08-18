@@ -43,10 +43,11 @@
         ],
         "main": "packages/conformetry-nx/src/index.ts",
         "outputPath": "dist/packages/conformetry-nx",
-        "tsConfig": "packages/conformetry-nx/tsconfig.json"
+        "tsConfig": "packages/conformetry-nx/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]
     },
+    "bundlesize": {},
     "dependency-cruiser": {},
     "knip": {},
     "lint-codebase": {},

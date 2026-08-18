@@ -15,10 +15,12 @@
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
     "@nx/eslint-plugin": "catalog:",
+    "@size-limit/file": "catalog:",
     "@swc/helpers": "catalog:",
     "@types/node": "catalog:",
     "@types/prompts": "catalog:",
     "@vitest/coverage-v8": "catalog:",
+    "size-limit": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
@@ -33,6 +35,7 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
+  "sizeLimit": "25 KB",
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,

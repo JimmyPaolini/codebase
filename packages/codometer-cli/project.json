@@ -29,10 +29,11 @@
         ],
         "main": "packages/codometer-cli/src/main.ts",
         "outputPath": "dist/packages/codometer-cli",
-        "tsConfig": "packages/codometer-cli/tsconfig.json"
+        "tsConfig": "packages/codometer-cli/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]
     },
+    "bundlesize": {},
     "dependency-cruiser": {},
     "knip": {},
     "lint-codebase": {},

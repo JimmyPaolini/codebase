@@ -10,9 +10,11 @@
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
     "@nx/eslint-plugin": "catalog:",
+    "@size-limit/file": "catalog:",
     "@swc/helpers": "catalog:",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
+    "size-limit": "catalog:",
     "vitest": "catalog:"
   },
   "exports": {
@@ -22,6 +24,7 @@
   "main": "src/index.ts",
   "name": "@codebase/logger",
   "private": true,
+  "sizeLimit": "6 KB",
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,

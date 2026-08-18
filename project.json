@@ -14,10 +14,11 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Trace call stacks and fail on any deeper than the configured limit.",
+      "description": "Trace call stacks and fail on any deeper than the configured limit, or on a stale report. Runs as part of lint-codebase. The README glob is an input because the check compares those files against the traced source: without it, a hand-edited report replays a cached pass.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/**/*.{cts,mts,ts,tsx}",
+        "{workspaceRoot}/**/README.md",
         "{workspaceRoot}/configuration/.callidescopeignore",
         "{workspaceRoot}/configuration/callidescope.config.ts",
         "shared-globals"

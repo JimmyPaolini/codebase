@@ -12,12 +12,22 @@
   ],
   "targets": {
     "build": {
-      "executor": "@nx/vite:build",
+      "executor": "@nx/js:tsc",
       "options": {
-        "outputPath": "dist/packages/lexico-entities"
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "packages/lexico-entities",
+            "output": "."
+          }
+        ],
+        "main": "packages/lexico-entities/src/index.ts",
+        "outputPath": "dist/packages/lexico-entities",
+        "tsConfig": "packages/lexico-entities/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]
     },
+    "bundlesize": {},
     "dependency-cruiser": {},
     "knip": {},
     "lint-codebase": {},

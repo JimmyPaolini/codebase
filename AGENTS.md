@@ -78,6 +78,7 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 - **[codometer-configuration](packages/codometer-configuration)**: Reads `codometer.config.ts` and resolves the repository-specific settings codometer needs
 - **[conformetry-cli](packages/conformetry-cli)**: Command-line host for code generation and validation
 - **[conformetry-nx](packages/conformetry-nx)**: Nx plugin that exposes the conformetry generator namespace
+- **[reporting](tools/reporting)**: NestJS CLI that renders internal codebase reports into markdown, such as the `🎒 Bundles` pull request section
 - **[synchronization](tools/synchronization)**: NestJS CLI for synchronizing codebase configuration and documentation artifacts
 
 ## Conformetry
@@ -206,6 +207,7 @@ See the [validate-code skill](.agents/skills/validate-code/SKILL.md) for the ful
 | `vulture`       | Finds unused Python code                              | `configuration/vulture_whitelist.py`     | [docs](https://github.com/jendrikseipp/vulture)         |
 | `fallow`        | Analyzes dead code, duplication, and code health      | `configuration/fallow.config.jsonc`      | [docs](https://docs.fallow.tools/)                      |
 | `jscpd`         | Detects duplicated code and copy-paste patterns       | `configuration/jscpd.config.json`        | [docs](https://jscpd.dev/)                              |
+| `callidescope`  | Traces call stacks and flags ones that are too deep   | `configuration/callidescope.config.ts`   | [docs](packages/callidescope-cli/README.md)             |
 | `cspell`        | Checks spelling across code and documentation         | `configuration/cspell.config.yaml`       | [docs](https://cspell.org/)                             |
 | `markdownlint`  | Lints markdown files                                  | `configuration/.markdownlint-cli2.jsonc` | [docs](https://github.com/DavidAnson/markdownlint-cli2) |
 | `yamllint`      | Lints YAML files                                      | `configuration/yamllint.yaml`            | [docs](https://yamllint.readthedocs.io/)                |
@@ -348,6 +350,7 @@ PR description template:
 | `testing` | Vitest configuration, shared test utilities, and coverage setup |
 | `tools` | Changes spanning multiple tool projects in tools/ |
 | `synchronization` | Synchronization application and commands for automating workflows |
+| `reporting` | Internal reporting CLI and the reports it renders, such as 🎒 Bundles |
 
 <!-- scopes-end -->
 
@@ -475,6 +478,7 @@ Test files are named `*.<kind>.test.ts` and live beside the code they cover. Vit
 - **Test coverage: 96%** for branches, functions, lines, and statements (`configuration/vitest.config.ts`, v8 provider). New code needs tests in the same change to keep a project above the line.
 - **Type coverage** is per project, declared as `typeCoverage.atLeast` in each project's `package.json` — most packages sit at 100 with `strict: true`, and the workspace root requires 95. Run `type-coverage` alongside `typecheck` for any touched project that defines the target; passing `typecheck` alone proves nothing about this gate.
 - **Duplication**: `jscpd` fails above a 6% threshold, counting clones of 12+ lines or 24+ tokens. Extract a shared helper rather than copying a block.
+- **Bundle size** is per project, enforced by the `bundlesize` target against each project's `.size-limit.cjs`. Every package declares its gzipped budget as `sizeLimit` in its own `package.json`, next to `typeCoverage`; `lexico` and `lexico-components` set limits inline because they measure several bundles each. Breaching one fails 👷 Make Projects, and the `## 🎒 Bundles` section names the bundle. That section is rendered by `nx run reporting:report:bundles`.
 - Lowering a threshold to make a change pass is not an option — fix the code.
 
 See the [testing-strategy skill](.agents/skills/testing-strategy/SKILL.md) for patterns.

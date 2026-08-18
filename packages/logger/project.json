@@ -23,15 +23,17 @@
         ],
         "main": "packages/logger/src/index.ts",
         "outputPath": "dist/packages/logger",
-        "tsConfig": "packages/logger/tsconfig.json"
+        "tsConfig": "packages/logger/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]
     },
+    "bundlesize": {},
     "clean": {},
     "dependency-cruiser": {},
     "format": {},
     "knip": {},
     "lint": {},
+    "make-projects": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},

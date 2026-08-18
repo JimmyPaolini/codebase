@@ -40,24 +40,35 @@ jobs:
           # Builds and bundle sizing touch no Python-backed tool.
           python-dependencies: "false"
 
+      # A breached size limit fails `bundlesize`, and the whole point of the
+      # report is to say which bundle broke. So the failure is recorded here and
+      # re-raised once the report is written, rather than ending the job while
+      # the developer still has nothing to read.
       - name: 👷 Make Projects
+        id: make-projects
+        continue-on-error: true
         run: pnpm exec nx affected --target=make-projects --parallel=4
 
       # On main this snapshot becomes the baseline every later pull request
       # compares against, which is what removes the second checkout, install,
-      # and full build this job used to run just to size the base branch.
+      # and full build this job used to run just to size the base branch. A
+      # failed build would publish a partial baseline, so it is skipped.
       - name: 📤 Upload Bundle Sizes
-        if: github.ref == 'refs/heads/main'
+        if: >-
+          github.ref == 'refs/heads/main'
+          && steps.make-projects.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
           name: bundle-sizes-main
           path: |
             applications/**/size-limit-report.json
             packages/**/size-limit-report.json
+            tools/**/size-limit-report.json
           retention-days: 90
           if-no-files-found: ignore
 
       - name: 📥 Download Baseline Bundle Sizes
+        id: baseline
         if: github.event_name == 'pull_request'
         continue-on-error: true
         env:
@@ -70,42 +81,34 @@ jobs:
             exit 0
           fi
           gh run download "${run_id}" --name bundle-sizes-main --dir .bundle-baseline
+          echo "run-url=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${run_id}" \
+            >>"${GITHUB_OUTPUT}"
 
-      - name: 📦 Report Bundle Sizes
+      # The report lives in the description, not a comment. Review automation
+      # treats every new pull request comment as feedback needing a reply, so a
+      # bot posting build statistics on each push kept waking agents up.
+      #
+      # The tool only ever touches a markdown file, so it stays independent of
+      # any one forge's API. The description is fetched and put back around it.
+      - name: 🎒 Report Bundle Sizes
         if: github.event_name == 'pull_request'
+        env:
+          BASELINE_URL: ${{ steps.baseline.outputs.run-url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PULL_REQUEST: ${{ github.event.pull_request.number }}
         run: |
-          pnpm exec tsx scripts/report-bundle-sizes.ts \
+          gh pr view "${PULL_REQUEST}" --json body --jq '.body' \
+            >.pull-request-body.md
+          pnpm exec nx run reporting:report:bundles -- \
             --baseline .bundle-baseline \
-            --output .bundle-report.md
+            --baseline-url "${BASELINE_URL}" \
+            --markdown .pull-request-body.md
+          gh pr edit "${PULL_REQUEST}" --body-file .pull-request-body.md
 
-      - name: 💬 Post Bundle Report
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v9
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const { readFileSync } = require('node:fs');
-            const body = readFileSync('.bundle-report.md', 'utf8');
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-            });
-            const existing = comments.find(
-              c => c.user.type === 'Bot' && c.body.includes('Bundle Size Report')
-            );
-            if (existing) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existing.id,
-                body,
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.payload.pull_request.number,
-                body,
-              });
-            }
+      # Re-raises whatever `make-projects` swallowed above, now that the
+      # description section naming the offending bundle has been written.
+      - name: 🚦 Enforce Build And Bundle Limits
+        if: steps.make-projects.outcome == 'failure'
+        run: |
+          echo "::error::A project failed to build or exceeded its size limit."
+          exit 1

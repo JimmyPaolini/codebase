@@ -23,10 +23,11 @@
         ],
         "main": "packages/callidescope-configuration/src/index.ts",
         "outputPath": "dist/packages/callidescope-configuration",
-        "tsConfig": "packages/callidescope-configuration/tsconfig.json"
+        "tsConfig": "packages/callidescope-configuration/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]
     },
+    "bundlesize": {},
     "dependency-cruiser": {},
     "knip": {},
     "lint-codebase": {},

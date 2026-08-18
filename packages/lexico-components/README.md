@@ -255,8 +255,10 @@ nx run lexico-components:type-coverage
 
 ```bash
 nx run lexico-components:bundlesize
-# Limit: 25 KB gzipped
+# Limit: 200 KB gzipped
 ```
+
+The 200 KB limit is a ratchet against the measured size, not a design target — the Vite library build bundles React and Radix into the output rather than externalizing them, even though React is a `peerDependency`. See `.size-limit.cjs` for the full note.
 
 ## Usage Examples
 

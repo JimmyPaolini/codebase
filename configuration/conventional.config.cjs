@@ -214,6 +214,11 @@ const scopes = [
       "Synchronization application and commands for automating workflows",
     name: "synchronization",
   },
+  {
+    description:
+      "Internal reporting CLI and the reports it renders, such as 🎒 Bundles",
+    name: "reporting",
+  },
 ];
 
 module.exports = { scopes, types };

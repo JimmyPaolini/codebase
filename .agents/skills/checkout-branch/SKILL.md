@@ -79,6 +79,7 @@ This skill teaches how to name Git branches for this codebase. All branch names 
 | `testing` | Vitest configuration, shared test utilities, and coverage setup |
 | `tools` | Changes spanning multiple tool projects in tools/ |
 | `synchronization` | Synchronization application and commands for automating workflows |
+| `reporting` | Internal reporting CLI and the reports it renders, such as 🎒 Bundles |
 
 <!-- scopes-end -->
 
