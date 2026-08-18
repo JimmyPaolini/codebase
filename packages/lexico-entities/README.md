@@ -145,8 +145,8 @@ Call stacks traced through `lexico-entities`, deepest first. Each frame shows wh
 
 | Measure | Value |
 | --- | --- |
-| Callables | 94 |
-| Files | 47 |
+| Callables | 93 |
+| Files | 46 |
 | Calls traced | 9 |
 | Call stacks | 3 |
 | Deepest stack | 3 |
