@@ -136,25 +136,6 @@ jobs:
               });
             }
 
-            // Retire the comment this job used to leave on older pull requests.
-            const { data: comments } = await github.rest.issues.listComments({
-              owner,
-              repo,
-              issue_number: number,
-            });
-            const stale = comments.find(
-              comment =>
-                comment.user.type === 'Bot' &&
-                comment.body.includes('Bundle Size Report'),
-            );
-            if (stale) {
-              await github.rest.issues.deleteComment({
-                owner,
-                repo,
-                comment_id: stale.id,
-              });
-            }
-
       # Re-raises whatever `make-projects` swallowed above, now that the
       # description section naming the offending bundle has been written.
       - name: 🚦 Enforce Build And Bundle Limits
