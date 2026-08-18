@@ -2,7 +2,10 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { PERFECT_SCORE } from "../scoring/scoring.constants";
+import {
+  DEFAULT_ERROR_WEIGHT,
+  PERFECT_SCORE,
+} from "../scoring/scoring.constants";
 
 import {
   REPORT_ERROR_DETAIL_INDENT,
@@ -49,6 +52,7 @@ export class ReportingService {
   private formatError(args: {
     error: ConformetryError;
     index: number;
+    totalWeight: number;
   }): string[] {
     const { error } = args;
 
@@ -73,6 +77,14 @@ export class ReportingService {
       ...(error.actual === undefined
         ? []
         : [`${REPORT_ERROR_DETAIL_INDENT}Actual  : \`${error.actual}\``]),
+      // Only when this finding stands in for more than itself. Printing
+      // "Weight: 1" on every leaf would be noise on the majority of findings,
+      // and the point of the line is to say which one is worth fixing first.
+      ...((error.weight ?? DEFAULT_ERROR_WEIGHT) <= DEFAULT_ERROR_WEIGHT
+        ? []
+        : [
+            `${REPORT_ERROR_DETAIL_INDENT}Weight  : ${String(error.weight)} of the ${String(args.totalWeight)} requirements in this file`,
+          ]),
       `${REPORT_ERROR_DETAIL_INDENT}Fix     : ${error.fix}`,
     ];
   }
@@ -94,7 +106,11 @@ export class ReportingService {
       `${REPORT_FILE_DETAIL_INDENT}Instance: ${path.relative(args.workingDirectory, fileResult.instanceFilePath)}`,
       `${REPORT_FILE_DETAIL_INDENT}Template: ${path.relative(args.workingDirectory, fileResult.templateFilePath)}`,
       ...fileResult.errors.flatMap((error, index) => {
-        return this.formatError({ error, index });
+        return this.formatError({
+          error,
+          index,
+          totalWeight: fileResult.totalWeight,
+        });
       }),
     ];
   }
@@ -123,15 +139,44 @@ export class ReportingService {
     return [];
   }
 
+  /** Renders one instance's score as a fraction, a percentage, and a verdict. */
+  private formatScore(args: {
+    score: InstanceScore;
+    workingDirectory: string;
+  }): string {
+    const { score } = args;
+    const metWeight = score.totalWeight - score.failedWeight;
+    const verdict = score.ok
+      ? `meets threshold ${this.formatPercentage(score.threshold)}`
+      : `below threshold ${this.formatPercentage(score.threshold)}`;
+    // Relative, like every other path the report prints. An absolute path here
+    // and a relative one three lines below describe the same tree twice.
+    const instancePath = path.relative(
+      args.workingDirectory,
+      score.instancePath,
+    );
+
+    return `${REPORT_FILE_INDENT}${score.ok ? "✓" : "✗"} ${instancePath} (${score.templateName}) — ${String(metWeight)}/${String(score.totalWeight)} requirements met (${this.formatPercentage(score.score)}), ${verdict}`;
+  }
+
   /**
    * Renders the summary of instances that did not score perfectly.
    *
-   * Both sides of the comparison are printed, because a score alone does not
-   * say whether the run failed: 94% passes under a threshold of 90 and fails
-   * under 95, and a reader should not have to go looking for which applied.
+   * The fraction is printed alongside the percentage because the percentage
+   * alone hides its own scale: "99.3%" reads the same whether one requirement
+   * of 151 went missing or thirty of four thousand did, and only the first is
+   * a five-minute fix.
+   *
+   * Both sides of the comparison are printed too, because a score alone does
+   * not say whether the run failed: 94% passes under a threshold of 90 and
+   * fails under 95, and a reader should not have to go looking for which
+   * applied.
    */
-  private formatScores(scores: InstanceScore[]): string[] {
-    const imperfect = scores.filter((score) => {
+  private formatScores(args: {
+    scores: InstanceScore[];
+    workingDirectory: string;
+  }): string[] {
+    const imperfect = args.scores.filter((score) => {
       return score.score < PERFECT_SCORE;
     });
 
@@ -142,9 +187,10 @@ export class ReportingService {
     return [
       REPORT_SCORES_HEADING,
       ...imperfect.map((score) => {
-        const verdict = score.ok ? "within threshold" : "below threshold";
-
-        return `${REPORT_FILE_INDENT}${score.ok ? "✓" : "✗"} ${score.instancePath} (${score.templateName}) — ${this.formatPercentage(score.score)} of ${String(score.totalWeight)}, threshold ${this.formatPercentage(score.threshold)}, ${verdict}`;
+        return this.formatScore({
+          score,
+          workingDirectory: args.workingDirectory,
+        });
       }),
       "",
     ];
@@ -167,7 +213,10 @@ export class ReportingService {
    * showing it.
    */
   public formatReport(args: FormatReportArguments): string {
-    const scoreLines = this.formatScores(args.scores ?? []);
+    const scoreLines = this.formatScores({
+      scores: args.scores ?? [],
+      workingDirectory: args.workingDirectory,
+    });
 
     if (args.fileResults.length === 0) {
       return [...scoreLines, REPORT_SUCCESS_MESSAGE].join("\n");

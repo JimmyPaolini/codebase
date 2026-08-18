@@ -110,7 +110,22 @@ maintaining a table of weights.
 
 ```text
 Conformance scores:
-  ✗ packages/logger/src/modules/logger (nestjs-service-module) — 99.3% of 151, threshold 100.0%, below threshold
+  ✗ packages/logger/src/modules/logger (nestjs-service-module) — 148/151 requirements met (98.0%), below threshold 100.0%
+```
+
+The fraction is printed alongside the percentage because a percentage hides its
+own scale: 99.3% reads the same whether one requirement of 151 went missing or
+thirty of four thousand did, and only the first is a five-minute fix.
+
+A finding that stands in for more than itself says so, which is what tells the
+expensive drift from the trivial:
+
+```text
+  1. Missing Constructor
+     Instance: Line 32, Column 1
+     Template: Line 10, Column 3
+     Weight  : 2 of the 21 requirements in this file
+     Fix     : Add the missing Constructor to the instance file.
 ```
 
 An instance must score at or above its **threshold** to pass. The default is

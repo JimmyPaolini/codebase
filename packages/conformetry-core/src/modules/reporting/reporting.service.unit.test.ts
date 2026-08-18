@@ -137,6 +137,45 @@ describe(ReportingService, () => {
     expect(report).toContain("Actual  : `esnext`");
   });
 
+  it("shows what a finding weighs when it stands for a whole subtree", () => {
+    const report = service.formatReport({
+      fileResults: [
+        {
+          ...createFileResult([
+            {
+              errorType: "code",
+              fix: "Add it.",
+              message: "Missing ClassDeclaration",
+              weight: 38,
+            },
+          ]),
+          totalWeight: 109,
+        },
+      ],
+      workingDirectory: WORKING_DIRECTORY,
+    });
+
+    // Which finding to fix first is the question a score raises, and only the
+    // weight answers it.
+    expect(report).toContain(
+      "Weight  : 38 of the 109 requirements in this file",
+    );
+  });
+
+  it("omits the weight line for a finding that stands only for itself", () => {
+    const report = service.formatReport({
+      fileResults: [
+        createFileResult([
+          { errorType: "comment", fix: "Add it.", message: "Missing comment" },
+        ]),
+      ],
+      workingDirectory: WORKING_DIRECTORY,
+    });
+
+    // Most findings are leaves; printing "Weight: 1" on each would be noise.
+    expect(report).not.toContain("Weight");
+  });
+
   describe("score summary", () => {
     function createScore(overrides: Partial<InstanceScore>): InstanceScore {
       return {
@@ -159,9 +198,35 @@ describe(ReportingService, () => {
       });
 
       expect(report).toContain("Conformance scores:");
-      expect(report).toContain("80.0%");
-      expect(report).toContain("threshold 100.0%");
-      expect(report).toContain("below threshold");
+      expect(report).toContain("16/20 requirements met (80.0%)");
+      expect(report).toContain("below threshold 100.0%");
+    });
+
+    it("shows the fraction the percentage was derived from", () => {
+      const report = service.formatReport({
+        fileResults: [],
+        scores: [
+          createScore({ failedWeight: 1, score: 0.993, totalWeight: 151 }),
+        ],
+        workingDirectory: WORKING_DIRECTORY,
+      });
+
+      // A percentage hides its own scale: 99.3% reads the same whether one
+      // requirement of 151 went missing or thirty of four thousand did.
+      expect(report).toContain("150/151 requirements met (99.3%)");
+    });
+
+    it("prints the instance path relative to the working directory", () => {
+      const report = service.formatReport({
+        fileResults: [],
+        scores: [createScore({})],
+        workingDirectory: WORKING_DIRECTORY,
+      });
+
+      // Every other path the report prints is relative; an absolute one here
+      // would describe the same tree twice in two different ways.
+      expect(report).toContain("packages/example/src/modules/billing");
+      expect(report).not.toContain(`${WORKING_DIRECTORY}/packages`);
     });
 
     it("prints a score that cleared a lowered threshold as within it", () => {
@@ -171,8 +236,7 @@ describe(ReportingService, () => {
         workingDirectory: WORKING_DIRECTORY,
       });
 
-      expect(report).toContain("within threshold");
-      expect(report).toContain("threshold 75.0%");
+      expect(report).toContain("meets threshold 75.0%");
     });
 
     it("leaves perfect instances out of the summary", () => {
@@ -200,7 +264,7 @@ describe(ReportingService, () => {
 
       // A lowered threshold is permission to ship the drift, not a reason to
       // stop showing it.
-      expect(report).toContain("within threshold");
+      expect(report).toContain("meets threshold 75.0%");
       expect(report).toContain("Missing thing");
     });
 
