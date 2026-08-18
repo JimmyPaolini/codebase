@@ -6,6 +6,7 @@ import {
   DEFAULT_ERROR_WEIGHT,
   PERFECT_SCORE,
 } from "../scoring/scoring.constants";
+import { ScoringService } from "../scoring/scoring.service";
 
 import {
   REPORT_ERROR_DETAIL_INDENT,
@@ -37,7 +38,7 @@ import type {
 export class ReportingService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly scoringService: ScoringService) {}
 
   // 🔐 Private Fields
 
@@ -102,7 +103,12 @@ export class ReportingService {
 
     return [
       "",
-      `${REPORT_FILE_INDENT}${String(args.index + 1)}. file: ${fileResult.filename}`,
+      `${REPORT_FILE_INDENT}${String(args.index + 1)}. file: ${fileResult.filename}${this.formatFraction(
+        {
+          failedWeight: this.scoringService.sumWeights(fileResult.errors),
+          totalWeight: fileResult.totalWeight,
+        },
+      )}`,
       `${REPORT_FILE_DETAIL_INDENT}Instance: ${path.relative(args.workingDirectory, fileResult.instanceFilePath)}`,
       `${REPORT_FILE_DETAIL_INDENT}Template: ${path.relative(args.workingDirectory, fileResult.templateFilePath)}`,
       ...fileResult.errors.flatMap((error, index) => {
@@ -113,6 +119,22 @@ export class ReportingService {
         });
       }),
     ];
+  }
+
+  /**
+   * Renders a weight pair as ` — met/total requirements met (percentage)`.
+   *
+   * One renderer for every level — file, instance, and run total — so the same
+   * three numbers appear in the same order wherever a reader looks.
+   */
+  private formatFraction(args: {
+    failedWeight: number;
+    totalWeight: number;
+  }): string {
+    const metWeight = args.totalWeight - args.failedWeight;
+    const score = this.scoringService.calculateScore(args);
+
+    return ` — ${String(metWeight)}/${String(args.totalWeight)} requirements met (${this.formatPercentage(score)})`;
   }
 
   /**
@@ -145,7 +167,6 @@ export class ReportingService {
     workingDirectory: string;
   }): string {
     const { score } = args;
-    const metWeight = score.totalWeight - score.failedWeight;
     const verdict = score.ok
       ? `meets threshold ${this.formatPercentage(score.threshold)}`
       : `below threshold ${this.formatPercentage(score.threshold)}`;
@@ -156,7 +177,7 @@ export class ReportingService {
       score.instancePath,
     );
 
-    return `${REPORT_FILE_INDENT}${score.ok ? "✓" : "✗"} ${instancePath} (${score.templateName}) — ${String(metWeight)}/${String(score.totalWeight)} requirements met (${this.formatPercentage(score.score)}), ${verdict}`;
+    return `${REPORT_FILE_INDENT}${score.ok ? "✓" : "✗"} ${instancePath} (${score.templateName})${this.formatFraction(score)}, ${verdict}`;
   }
 
   /**
@@ -192,8 +213,33 @@ export class ReportingService {
           workingDirectory: args.workingDirectory,
         });
       }),
+      this.formatTotal(args.scores),
       "",
     ];
+  }
+
+  /**
+   * Renders the run's total across every scored instance.
+   *
+   * Totalled over all of them rather than only the ones listed above, because
+   * the question the total answers is how the run did overall, and a total of
+   * just the failures would always read close to zero.
+   *
+   * The unit is the instance/template pair, not the file. One file governed by
+   * two templates owes both of them, so its requirements genuinely count twice
+   * — which is why this is labelled by instances rather than presented as a
+   * share of the codebase.
+   */
+  private formatTotal(scores: InstanceScore[]): string {
+    const failedWeight = scores.reduce((total, score) => {
+      return total + score.failedWeight;
+    }, 0);
+    const totalWeight = scores.reduce((total, score) => {
+      return total + score.totalWeight;
+    }, 0);
+    const belowCount = scores.filter((score) => !score.ok).length;
+
+    return `${REPORT_FILE_INDENT}Total${this.formatFraction({ failedWeight, totalWeight })} across ${String(scores.length)} instance(s), ${String(belowCount)} below threshold`;
   }
 
   // 🌎 Public Methods

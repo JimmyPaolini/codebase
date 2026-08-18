@@ -1,6 +1,8 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { ScoringService } from "../scoring/scoring.service";
+
 import { ReportingService } from "./reporting.service";
 
 import type { ValidationFileResult } from "../language/language.types";
@@ -25,7 +27,7 @@ describe(ReportingService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [ReportingService],
+      providers: [ReportingService, ScoringService],
     }).compile();
 
     service = await module.resolve(ReportingService);
@@ -176,6 +178,28 @@ describe(ReportingService, () => {
     expect(report).not.toContain("Weight");
   });
 
+  it("shows each file's own fraction on its heading", () => {
+    const report = service.formatReport({
+      fileResults: [
+        {
+          ...createFileResult([
+            {
+              errorType: "comment",
+              fix: "Add it.",
+              message: "Missing comment",
+            },
+          ]),
+          totalWeight: 2,
+        },
+      ],
+      workingDirectory: WORKING_DIRECTORY,
+    });
+
+    // A small file loses a large share of itself to one finding, which the
+    // instance-level score averages away entirely.
+    expect(report).toContain("1/2 requirements met (50.0%)");
+  });
+
   describe("score summary", () => {
     function createScore(overrides: Partial<InstanceScore>): InstanceScore {
       return {
@@ -237,6 +261,22 @@ describe(ReportingService, () => {
       });
 
       expect(report).toContain("meets threshold 75.0%");
+    });
+
+    it("totals every scored instance, listed or not", () => {
+      const report = service.formatReport({
+        fileResults: [],
+        scores: [
+          createScore({}),
+          createScore({ failedWeight: 0, ok: true, score: 1 }),
+        ],
+        workingDirectory: WORKING_DIRECTORY,
+      });
+
+      // Totalling only the failures would always read close to zero; the
+      // question the total answers is how the run did overall.
+      expect(report).toContain("Total — 36/40 requirements met (90.0%)");
+      expect(report).toContain("across 2 instance(s), 1 below threshold");
     });
 
     it("leaves perfect instances out of the summary", () => {

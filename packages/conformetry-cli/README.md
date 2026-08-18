@@ -108,25 +108,42 @@ requirement, and a missing element costs the whole subtree it stood for — so
 deleting a class costs far more than dropping an import, without anyone
 maintaining a table of weights.
 
+The same three numbers — met, total, percentage — are reported at every level:
+
 ```text
 Conformance scores:
-  ✗ packages/logger/src/modules/logger (nestjs-service-module) — 148/151 requirements met (98.0%), below threshold 100.0%
+  ✗ packages/logger/src/modules/logger (nestjs-service-module) — 149/151 requirements met (98.7%), below threshold 100.0%
+  ✗ packages/logger/src/modules/logger/logger (nestjs-service-file) — 108/109 requirements met (99.1%), below threshold 100.0%
+  Total — 257/260 requirements met (98.8%) across 2 instance(s), 2 below threshold
+
+  1. file: logger.types.ts — 1/2 requirements met (50.0%)
+     Instance: packages/logger/src/modules/logger/logger.types.ts
+     Template: configuration/conformetry-templates/nestjs-service-module/{{nameKebabCase}}/{{nameKebabCase}}.types.ts
+
+     1. Missing comment // 🏷️ Types
+        Template: Line 1, Column 1
+        Expected: `// 🏷️ Types`
+        Weight  : 1 of the 2 requirements in this file
+        Fix     : Add the comment // 🏷️ Types to the instance file.
 ```
+
+| Level | Answers |
+| ----- | ------- |
+| File | How much of _this file_ drifted — a small file can lose half of itself to one finding |
+| Instance | Whether this instance clears its threshold; this is the level thresholds apply to |
+| Total | How the whole run did, across every instance/template pair |
 
 The fraction is printed alongside the percentage because a percentage hides its
 own scale: 99.3% reads the same whether one requirement of 151 went missing or
 thirty of four thousand did, and only the first is a five-minute fix.
 
-A finding that stands in for more than itself says so, which is what tells the
-expensive drift from the trivial:
+The total is counted in instance/template pairs rather than files. A file
+governed by two templates owes both of them, so its requirements genuinely
+count once per template.
 
-```text
-  1. Missing Constructor
-     Instance: Line 32, Column 1
-     Template: Line 10, Column 3
-     Weight  : 2 of the 21 requirements in this file
-     Fix     : Add the missing Constructor to the instance file.
-```
+A finding that stands in for more than itself says so, which is what tells the
+expensive drift from the trivial — a missing class carries the weight of every
+member it held.
 
 An instance must score at or above its **threshold** to pass. The default is
 `1` — a perfect match, which is what conformetry has always demanded — so
