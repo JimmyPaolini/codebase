@@ -2,6 +2,7 @@ import { Test } from "@nestjs/testing";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { MainModule } from "./main.module";
+import { ExplainCommand } from "./modules/explain/explain.command";
 import { GenerateCommand } from "./modules/generate/generate.command";
 import { ListCommand } from "./modules/list/list.command";
 import { ValidateCommand } from "./modules/validate/validate.command";
@@ -31,6 +32,15 @@ describe(MainModule, () => {
 
   it("compiles the whole application graph", () => {
     expect(module).toBeDefined();
+  });
+
+  it("resolves the explain command with every dependency injected", async () => {
+    const command = await module.resolve(ExplainCommand);
+
+    expect(command).toBeDefined();
+    expect(command.parseConfig("custom/conformetry.config.ts")).toBe(
+      "custom/conformetry.config.ts",
+    );
   });
 
   it("resolves the generate command with every dependency injected", async () => {

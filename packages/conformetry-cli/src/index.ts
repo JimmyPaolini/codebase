@@ -1,5 +1,13 @@
 // 📤 Exports
 export { MainModule } from "./main.module";
+export { ExplainCommand } from "./modules/explain/explain.command";
+export { ExplainModule } from "./modules/explain/explain.module";
+export type {
+  ConsideredTemplate,
+  ExplainCommandOptions,
+  ExplainedInstance,
+  ExplainVerdict,
+} from "./modules/explain/explain.types";
 export { GenerateCommand } from "./modules/generate/generate.command";
 export { GenerateModule } from "./modules/generate/generate.module";
 export type { GenerateCommandOptions } from "./modules/generate/generate.types";

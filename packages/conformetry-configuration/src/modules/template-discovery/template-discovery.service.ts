@@ -6,6 +6,7 @@ import { TemplateDiscoveryInstancesService } from "./template-discovery-instance
 import { TemplateDiscoveryMatchingService } from "./template-discovery-matching.service";
 import { TemplateDiscoveryTemplatesService } from "./template-discovery-templates.service";
 
+import type { ConformetryConfiguration } from "../configuration/configuration.types";
 import type {
   FindInstancesArguments,
   Instance,
@@ -63,6 +64,29 @@ export class TemplateDiscoveryService {
     templates: TemplateDefinition[];
   }): ResolvedInstances {
     return this.templateDiscoveryMatchingService.matchInstances(args);
+  }
+
+  /**
+   * Reads every configured generator's template folder.
+   *
+   * Every host needs this before it can match anything, and each was resolving
+   * the configured paths itself. Resolving them once here keeps one answer to
+   * where a generator's template lives.
+   */
+  public collectTemplates(args: {
+    configuration: ConformetryConfiguration;
+    workingDirectory: string;
+  }): TemplateDefinition[] {
+    return args.configuration.map((generator) => {
+      return this.collectTemplate({
+        name: generator.name,
+        templatePath: path.resolve(
+          args.workingDirectory,
+          generator.templatePath,
+        ),
+        threshold: generator.threshold,
+      });
+    });
   }
 
   /**

@@ -31,6 +31,7 @@ export type {
   PreparedInstanceDocuments,
   PrepareDocumentsArguments,
   ResolvedInstances,
+  ScoredTemplate,
   TemplateDefinition,
   TemplateMatch,
   UnmatchedInstance,

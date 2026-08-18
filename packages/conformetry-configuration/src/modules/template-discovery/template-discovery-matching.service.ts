@@ -60,36 +60,6 @@ export class TemplateDiscoveryMatchingService {
     return left.template.name.localeCompare(right.template.name);
   }
 
-  /** Weighs every template that shares at least one file with the instance. */
-  private matchTemplates(args: {
-    instance: Instance;
-    substitutions: Substitutions;
-    templates: TemplateDefinition[];
-  }): TemplateMatch[] {
-    return args.templates
-      .map((template) => {
-        const matchedFileCount =
-          this.templateDiscoveryTemplatesService.countMatchingFiles({
-            fileScope: args.instance.fileScope,
-            instancePath: args.instance.path,
-            substitutions: args.substitutions,
-            template,
-          });
-
-        return {
-          matchedFileCount,
-          matchRatio: matchedFileCount / template.filePaths.length,
-          template,
-        };
-      })
-      .filter((match) => {
-        return (
-          match.matchedFileCount > 0 && match.matchRatio > MINIMUM_MATCH_RATIO
-        );
-      })
-      .toSorted((left, right) => this.compareMatches(left, right));
-  }
-
   // 🌎 Public Methods
 
   /**
@@ -169,5 +139,43 @@ export class TemplateDiscoveryMatchingService {
     }
 
     return { matched, unmatched };
+  }
+
+  /**
+   * Weighs every template that shares at least one file with the instance,
+   * best-first.
+   *
+   * Public because a caller may need the ranking itself and not just the
+   * verdict: nothing records which template an instance came from, so an
+   * ambiguous or unmatched outcome is only explainable by showing what was
+   * weighed and how well each template fitted.
+   */
+  public matchTemplates(args: {
+    instance: Instance;
+    substitutions: Substitutions;
+    templates: TemplateDefinition[];
+  }): TemplateMatch[] {
+    return args.templates
+      .map((template) => {
+        const matchedFileCount =
+          this.templateDiscoveryTemplatesService.countMatchingFiles({
+            fileScope: args.instance.fileScope,
+            instancePath: args.instance.path,
+            substitutions: args.substitutions,
+            template,
+          });
+
+        return {
+          matchedFileCount,
+          matchRatio: matchedFileCount / template.filePaths.length,
+          template,
+        };
+      })
+      .filter((match) => {
+        return (
+          match.matchedFileCount > 0 && match.matchRatio > MINIMUM_MATCH_RATIO
+        );
+      })
+      .toSorted((left, right) => this.compareMatches(left, right));
   }
 }

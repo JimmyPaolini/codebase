@@ -1,5 +1,3 @@
-import path from "node:path";
-
 import {
   ConfigurationService,
   InputService,
@@ -19,7 +17,6 @@ import type {
   ConformetryConfiguration,
   ConformetryInstanceGroup,
   Instance,
-  TemplateDefinition,
 } from "@conformetry/configuration";
 import type { RunValidationResult } from "@conformetry/validation";
 
@@ -109,22 +106,6 @@ export class ValidateCommand extends CommandRunner {
   }
 
   /** Reads every configured generator's template folder. */
-  private resolveTemplates(args: {
-    configuration: ConformetryConfiguration;
-    workingDirectory: string;
-  }): TemplateDefinition[] {
-    return args.configuration.map((generator) => {
-      return this.templateDiscoveryService.collectTemplate({
-        name: generator.name,
-        templatePath: path.resolve(
-          args.workingDirectory,
-          generator.templatePath,
-        ),
-        threshold: generator.threshold,
-      });
-    });
-  }
-
   // 🌎 Public Methods
 
   /** Parses the optional configuration path. */
@@ -189,7 +170,10 @@ export class ValidateCommand extends CommandRunner {
       ...(options.languages === undefined
         ? {}
         : { languageNames: options.languages }),
-      templates: this.resolveTemplates({ configuration, workingDirectory }),
+      templates: this.templateDiscoveryService.collectTemplates({
+        configuration,
+        workingDirectory,
+      }),
     });
 
     // The report is the command's product, not a log line: it is a multi-line

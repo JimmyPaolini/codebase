@@ -5,6 +5,7 @@ import { DiscoveryModule } from "@nestjs/core";
 import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
+import { ExplainModule } from "./modules/explain/explain.module";
 import { GenerateModule } from "./modules/generate/generate.module";
 import { ListModule } from "./modules/list/list.module";
 import { ValidateModule } from "./modules/validate/validate.module";
@@ -22,6 +23,7 @@ import { ValidateModule } from "./modules/validate/validate.module";
     }),
     DiscoveryModule,
     LoggerModule,
+    ExplainModule,
     GenerateModule,
     ListModule,
     ValidateModule,

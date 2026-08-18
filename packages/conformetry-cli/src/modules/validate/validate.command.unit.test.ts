@@ -91,9 +91,9 @@ describe(ValidateCommand, () => {
     vi.mocked(templateDiscoveryService.findInstances).mockReturnValue([
       INSTANCE,
     ]);
-    vi.mocked(templateDiscoveryService.collectTemplate).mockReturnValue(
+    vi.mocked(templateDiscoveryService.collectTemplates).mockReturnValue([
       TEMPLATE,
-    );
+    ]);
     vi.mocked(validationService.validate).mockResolvedValue({
       checkedPaths: [],
       fileResults: [],
