@@ -51,7 +51,7 @@ const diagram = [
 
 const graph: NestjsModuleGraph = {
   ambientModuleNames: [],
-  edges: [{ from: "MainModule", to: "A" }],
+  edges: [{ from: "MainModule", runtime: false, to: "A" }],
   groups: [{ moduleNames: ["A", "MainModule"], projectName: "example" }],
   isolatedModuleNames: [],
   moduleNames: ["A", "MainModule"],

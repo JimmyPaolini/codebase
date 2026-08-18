@@ -4,6 +4,7 @@ import {
   NESTJS_MODULE_GRAPH_AMBIENT_LEGEND,
   NESTJS_MODULE_GRAPH_AMBIENT_MINIMUM_MODULES,
   NESTJS_MODULE_GRAPH_MERMAID_HEADER,
+  NESTJS_MODULE_GRAPH_RUNTIME_EDGE_LEGEND,
   NESTJS_MODULE_GRAPH_RUNTIME_LEGEND,
   NESTJS_MODULE_GRAPH_TYPE_ONLY_LEGEND,
 } from "./nestjs-module-graphs.constants";
@@ -54,7 +55,7 @@ export class NestjsModuleGraphsGraphService {
       for (const importedName of node.imports) {
         if (ambientModuleNames.has(importedName)) continue;
 
-        edges.push({ from: node.name, to: importedName });
+        edges.push({ from: node.name, runtime: false, to: importedName });
         moduleNames.add(importedName);
         connectedModuleNames.add(node.name);
         connectedModuleNames.add(importedName);
@@ -143,6 +144,36 @@ export class NestjsModuleGraphsGraphService {
     }
 
     return ambientModuleNames;
+  }
+
+  /**
+   * Keeps the runtime edges worth drawing.
+   *
+   * A name several projects define is not evidence of anything — every
+   * application defines a `MainModule`, and this command's own constants name
+   * one — so only an unambiguous name earns an edge, and only when the module
+   * is not already in the container.
+   */
+  private findRuntimeEdges(options: {
+    drawnModuleNames: Set<string>;
+    ownership: NestjsModuleOwnership;
+    projectName: string;
+  }): NestjsModuleGraphEdge[] {
+    const { drawnModuleNames, ownership, projectName } = options;
+    const candidates =
+      ownership.importsByProject.get(projectName)?.runtimeModuleEdges ?? [];
+
+    const kept = new Map<string, NestjsModuleGraphEdge>();
+
+    for (const edge of candidates) {
+      const definingProjects = ownership.projectsByModule.get(edge.to) ?? [];
+
+      if (definingProjects.length === 1 && !drawnModuleNames.has(edge.to)) {
+        kept.set(`${edge.from}->${edge.to}`, edge);
+      }
+    }
+
+    return [...kept.values()];
   }
 
   /**
@@ -242,6 +273,18 @@ export class NestjsModuleGraphsGraphService {
       tree,
       ambientModuleNames,
     );
+
+    for (const edge of this.findRuntimeEdges({
+      drawnModuleNames: moduleNames,
+      ownership,
+      projectName,
+    })) {
+      edges.push(edge);
+      moduleNames.add(edge.to);
+      connectedModuleNames.add(edge.from);
+      connectedModuleNames.add(edge.to);
+    }
+
     const sortedModuleNames = this.sortNames(moduleNames);
     const groups = this.groupModuleNames({
       moduleNames: sortedModuleNames,
@@ -305,13 +348,16 @@ export class NestjsModuleGraphsGraphService {
       lines.push(...this.renderGroup(group, index, graph));
     }
     for (const edge of graph.edges) {
-      lines.push(`  ${edge.from} --> ${edge.to}`);
+      lines.push(`  ${edge.from} ${edge.runtime ? "-.->" : "-->"} ${edge.to}`);
     }
 
     lines.push("```");
 
     if (graph.ambientModuleNames.length > 0) {
       lines.push("", NESTJS_MODULE_GRAPH_AMBIENT_LEGEND);
+    }
+    if (graph.edges.some((edge) => edge.runtime)) {
+      lines.push("", NESTJS_MODULE_GRAPH_RUNTIME_EDGE_LEGEND);
     }
     for (const [names, legend] of [
       [graph.typeOnlyDependencyNames, NESTJS_MODULE_GRAPH_TYPE_ONLY_LEGEND],

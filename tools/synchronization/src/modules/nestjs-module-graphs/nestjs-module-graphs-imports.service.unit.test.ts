@@ -94,6 +94,32 @@ describe(NestjsModuleGraphsImportsService, () => {
     fileContents.clear();
   });
 
+  /** Gives the project a module file and a sibling naming modules as strings. */
+  function writeModuleFolder(options: {
+    moduleClass?: string;
+    named: string;
+  }): void {
+    const { moduleClass = "export class ValidationModule {}", named } = options;
+
+    existingPaths.add("/workspace/tools/example/src");
+    existingPaths.add("/workspace/tools/example/src/validation");
+    workspaceEntries.set("src", ["validation"]);
+    workspaceEntries.set("validation", [
+      "validation.constants.ts",
+      "validation.module.ts",
+    ]);
+    workspaceFileEntries.add("validation.constants.ts");
+    workspaceFileEntries.add("validation.module.ts");
+    fileContents.set(
+      "/workspace/tools/example/src/validation/validation.module.ts",
+      moduleClass,
+    );
+    fileContents.set(
+      "/workspace/tools/example/src/validation/validation.constants.ts",
+      named,
+    );
+  }
+
   it("is defined", () => {
     expect(service).toBeDefined();
   });
@@ -272,6 +298,44 @@ describe(NestjsModuleGraphsImportsService, () => {
         service.readProjectImports(project, projectNamesByPackage).projects
           .size,
       ).toBe(0);
+    });
+
+    // A module loaded through `LazyModuleLoader` is named rather than
+    // imported, so the literal is the only evidence the dependency exists.
+    it("reads a module named as a string as a runtime edge", () => {
+      writeModuleFolder({ named: 'moduleExport: "JsonValidatorModule",' });
+
+      const imports = service.readProjectImports(
+        project,
+        projectNamesByPackage,
+      );
+
+      expect(imports.runtimeModuleEdges).toContainEqual({
+        from: "ValidationModule",
+        runtime: true,
+        to: "JsonValidatorModule",
+      });
+    });
+
+    it("reads no runtime edge from a file naming no module", () => {
+      writeModuleFolder({ named: 'specifier: "@conformetry/json",' });
+
+      expect(
+        service.readProjectImports(project, projectNamesByPackage)
+          .runtimeModuleEdges,
+      ).toStrictEqual([]);
+    });
+
+    it("reads no runtime edge when no module file sits beside the literal", () => {
+      writeModuleFolder({
+        moduleClass: "export const nothing = 1;",
+        named: 'moduleExport: "JsonValidatorModule",',
+      });
+
+      expect(
+        service.readProjectImports(project, projectNamesByPackage)
+          .runtimeModuleEdges,
+      ).toStrictEqual([]);
     });
 
     it("reads nothing from a project with no source directory", () => {

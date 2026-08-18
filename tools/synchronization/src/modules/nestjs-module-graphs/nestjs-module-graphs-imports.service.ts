@@ -5,10 +5,14 @@ import { Injectable } from "@nestjs/common";
 
 import {
   NESTJS_MODULE_GRAPH_IMPORT_PATTERN,
+  NESTJS_MODULE_GRAPH_MODULE_CLASS_PATTERN,
+  NESTJS_MODULE_GRAPH_MODULE_FILE_SUFFIX,
+  NESTJS_MODULE_GRAPH_RUNTIME_MODULE_PATTERN,
   NESTJS_MODULE_GRAPH_TYPESCRIPT_FILE_SUFFIX,
 } from "./nestjs-module-graphs.constants";
 
 import type {
+  NestjsModuleGraphEdge,
   NestjsProject,
   NestjsProjectImports,
 } from "./nestjs-module-graphs.types";
@@ -75,7 +79,35 @@ export class NestjsModuleGraphsImportsService {
       .filter((name): name is string => name !== undefined);
   }
 
-  // 🌎 Public Methods
+  /** Records what one file's static imports say about the workspace. */
+  private readFileImports(options: {
+    file: string;
+    project: NestjsProject;
+    projectNamesByPackage: Map<string, string>;
+    projects: Set<string>;
+    projectsByModule: Map<string, string>;
+    valueImportedProjects: Set<string>;
+  }): void {
+    const source = readFileSync(options.file, "utf8");
+
+    for (const match of source.matchAll(NESTJS_MODULE_GRAPH_IMPORT_PATTERN)) {
+      const imported = options.projectNamesByPackage.get(
+        match.groups?.["from"] ?? "",
+      );
+      if (imported === undefined || imported === options.project.name) continue;
+
+      options.projects.add(imported);
+      if (match.groups?.["type"] === undefined) {
+        options.valueImportedProjects.add(imported);
+      }
+
+      for (const moduleName of this.readImportedModuleNames(
+        match.groups?.["clause"] ?? "",
+      )) {
+        options.projectsByModule.set(moduleName, imported);
+      }
+    }
+  }
 
   /** Names the modules a named-import clause brings in. */
   private readImportedModuleNames(clause: string): string[] {
@@ -84,6 +116,54 @@ export class NestjsModuleGraphsImportsService {
       .map((specifier) => specifier.trim().replace(/^type\s+/u, ""))
       .map((specifier) => specifier.split(/\s+as\s+/u)[0])
       .filter((name): name is string => name?.endsWith("Module") === true);
+  }
+
+  /**
+   * Names the module whose folder a file belongs to.
+   *
+   * A module's folder holds its constants and services, so the module beside a
+   * file is the one that does whatever the file describes.
+   */
+  private readOwningModuleName(file: string): string | undefined {
+    const directory = path.dirname(file);
+
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      if (
+        entry.isDirectory() ||
+        !entry.name.endsWith(NESTJS_MODULE_GRAPH_MODULE_FILE_SUFFIX)
+      ) {
+        continue;
+      }
+
+      const source = readFileSync(path.join(directory, entry.name), "utf8");
+      const match = NESTJS_MODULE_GRAPH_MODULE_CLASS_PATTERN.exec(source);
+      NESTJS_MODULE_GRAPH_MODULE_CLASS_PATTERN.lastIndex = 0;
+
+      if (match?.groups?.["moduleName"] !== undefined) {
+        return match.groups["moduleName"];
+      }
+    }
+
+    return undefined;
+  }
+
+  // 🌎 Public Methods
+
+  /** Reads the modules a file names as a string rather than importing. */
+  private readRuntimeModuleEdges(file: string): NestjsModuleGraphEdge[] {
+    const source = readFileSync(file, "utf8");
+    const named = [
+      ...source.matchAll(NESTJS_MODULE_GRAPH_RUNTIME_MODULE_PATTERN),
+    ]
+      .map((match) => match.groups?.["moduleName"])
+      .filter((name): name is string => name !== undefined);
+
+    if (named.length === 0) return [];
+
+    const from = this.readOwningModuleName(file);
+    if (from === undefined) return [];
+
+    return named.map((to) => ({ from, runtime: true, to }));
   }
 
   /**
@@ -102,29 +182,20 @@ export class NestjsModuleGraphsImportsService {
     const projectsByModule = new Map<string, string>();
     const projects = new Set<string>();
     const valueImportedProjects = new Set<string>();
+    const runtimeModuleEdges: NestjsModuleGraphEdge[] = [];
 
     for (const file of this.findSourceFiles(
       path.join(project.absoluteRoot, "src"),
     )) {
-      const source = readFileSync(file, "utf8");
-
-      for (const match of source.matchAll(NESTJS_MODULE_GRAPH_IMPORT_PATTERN)) {
-        const imported = projectNamesByPackage.get(
-          match.groups?.["from"] ?? "",
-        );
-        if (imported === undefined || imported === project.name) continue;
-
-        projects.add(imported);
-        if (match.groups?.["type"] === undefined) {
-          valueImportedProjects.add(imported);
-        }
-
-        for (const moduleName of this.readImportedModuleNames(
-          match.groups?.["clause"] ?? "",
-        )) {
-          projectsByModule.set(moduleName, imported);
-        }
-      }
+      runtimeModuleEdges.push(...this.readRuntimeModuleEdges(file));
+      this.readFileImports({
+        file,
+        project,
+        projectNamesByPackage,
+        projects,
+        projectsByModule,
+        valueImportedProjects,
+      });
     }
 
     const declared = this.readDeclaredProjects(project, projectNamesByPackage);
@@ -132,6 +203,7 @@ export class NestjsModuleGraphsImportsService {
     return {
       projects: new Set([...projects, ...declared]),
       projectsByModule,
+      runtimeModuleEdges,
       typeOnlyProjects: new Set(
         [...projects].filter((name) => !valueImportedProjects.has(name)),
       ),

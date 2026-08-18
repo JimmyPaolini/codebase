@@ -4,6 +4,10 @@
 export const NESTJS_MODULE_GRAPH_TYPE_ONLY_LEGEND =
   "_Reached only for their types, and so declaring no module here: %s._";
 
+/** Explains the dotted edges a graph with runtime module loads renders. */
+export const NESTJS_MODULE_GRAPH_RUNTIME_EDGE_LEGEND =
+  "_Dotted edges are modules named for a runtime load rather than imported._";
+
 /** Names the projects reached at runtime rather than through a static import. */
 export const NESTJS_MODULE_GRAPH_RUNTIME_LEGEND =
   "_Loaded at runtime rather than imported, and so absent from this container: %s._";
@@ -70,6 +74,16 @@ export const NESTJS_MODULE_GRAPH_IMPORT_PATTERN =
 
 /** File suffix of the sources an import scan reads. */
 export const NESTJS_MODULE_GRAPH_TYPESCRIPT_FILE_SUFFIX = ".ts";
+
+/**
+ * Matches a module class named by a string literal.
+ *
+ * A module loaded through `LazyModuleLoader` is named rather than imported, so
+ * the literal is the only evidence the dependency exists — the same kind of
+ * evidence Nx reads to infer a runtime dependency between projects.
+ */
+export const NESTJS_MODULE_GRAPH_RUNTIME_MODULE_PATTERN =
+  /"(?<moduleName>[A-Z][\dA-Za-z]*Module)"/gu;
 
 /** Matches the module class a module file exports. */
 export const NESTJS_MODULE_GRAPH_MODULE_CLASS_PATTERN =

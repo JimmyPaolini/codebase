@@ -91,11 +91,22 @@ flowchart LR
     NxProjectGraphsModule
     PullRequestTemplateModule
     SynchronizationModule
+    SyntheticRootModule
   end
   subgraph group1["conformetry-configuration"]
     ConfigurationModule
+    TemplateDiscoveryModule
   end
-  subgraph group2["logger"]
+  subgraph group2["conformetry-files"]
+    FilesModule
+  end
+  subgraph group3["conformetry-json"]
+    JsonValidatorModule
+  end
+  subgraph group4["conformetry-validation"]
+    ValidationModule
+  end
+  subgraph group5["logger"]
     LoggerModule([LoggerModule])
   end
   ConfigModule([ConfigModule])
@@ -109,9 +120,16 @@ flowchart LR
   SynchronizationModule --> NestjsModuleGraphsModule
   SynchronizationModule --> NxProjectGraphsModule
   SynchronizationModule --> PullRequestTemplateModule
+  SyntheticRootModule -.-> FilesModule
+  SyntheticRootModule -.-> JsonValidatorModule
+  SyntheticRootModule -.-> SyntheticRootModule
+  SyntheticRootModule -.-> TemplateDiscoveryModule
+  SyntheticRootModule -.-> ValidationModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
+
+_Dotted edges are modules named for a runtime load rather than imported._
 
 <!-- nestjs-module-graph-end -->
 

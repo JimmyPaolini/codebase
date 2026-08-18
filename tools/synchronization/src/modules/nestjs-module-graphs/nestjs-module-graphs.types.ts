@@ -35,6 +35,8 @@ export interface NestjsModuleGraph {
 /** One module importing another. */
 export interface NestjsModuleGraphEdge {
   readonly from: string;
+  /** True when the module is named for a runtime load rather than imported. */
+  readonly runtime: boolean;
   readonly to: string;
 }
 
@@ -93,6 +95,13 @@ export interface NestjsProjectImports {
   readonly projects: Set<string>;
   /** The project each imported module name came from. */
   readonly projectsByModule: Map<string, string>;
+  /**
+   * Modules this project names as a string rather than importing.
+   *
+   * The edge is from the module whose folder holds the naming file, which is
+   * the module that does the loading.
+   */
+  readonly runtimeModuleEdges: NestjsModuleGraphEdge[];
   /** Projects every import of which is a `type` import. */
   readonly typeOnlyProjects: Set<string>;
 }

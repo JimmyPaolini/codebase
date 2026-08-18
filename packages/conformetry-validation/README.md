@@ -120,16 +120,40 @@ flowchart LR
   subgraph group4["conformetry-generation"]
     RenderingModule
   end
+  subgraph group5["conformetry-json"]
+    JsonValidatorModule
+  end
+  subgraph group6["conformetry-jupyter"]
+    JupyterValidatorModule
+  end
+  subgraph group7["conformetry-markdown"]
+    MarkdownValidatorModule
+  end
+  subgraph group8["conformetry-python"]
+    PythonValidatorModule
+  end
+  subgraph group9["conformetry-text"]
+    TextValidatorModule
+  end
+  subgraph group10["conformetry-typescript"]
+    TypescriptValidatorModule
+  end
   FilesModule --> ErrorsModule
   FilesModule --> TemplateDiscoveryModule
   TemplateDiscoveryModule --> RenderingModule
   ValidationModule --> FilesModule
+  ValidationModule -.-> JsonValidatorModule
+  ValidationModule -.-> JupyterValidatorModule
   ValidationModule --> LanguageModule
+  ValidationModule -.-> MarkdownValidatorModule
+  ValidationModule -.-> PythonValidatorModule
   ValidationModule --> ReportingModule
   ValidationModule --> TemplateDiscoveryModule
+  ValidationModule -.-> TextValidatorModule
+  ValidationModule -.-> TypescriptValidatorModule
 ```
 
-_Loaded at runtime rather than imported, and so absent from this container: conformetry-text._
+_Dotted edges are modules named for a runtime load rather than imported._
 
 <!-- nestjs-module-graph-end -->
 

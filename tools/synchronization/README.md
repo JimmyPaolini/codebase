@@ -104,11 +104,22 @@ source never imports is reached at runtime, which is how
 `conformetry-validation` loads its language packages through
 `LazyModuleLoader`.
 
-Type-only dependencies are deliberately left as they are. Importing
-`ErrorsModule` into `JsonValidatorModule` would draw an edge, but it would also
-create a runtime dependency the code does not have and enlarge every validator
-package's container to make a diagram look tidier. The note is the honest
-answer; the import would be a false one.
+A module loaded at runtime is inferred rather than left to prose, in the way
+Nx infers a runtime dependency between projects: a module named as a string
+literal is evidence of a dependency the container cannot show, so
+`conformetry-validation`'s `LANGUAGE_PACKAGES` table turns into six dotted
+edges to the validator modules it loads. A name is only believed when exactly
+one project in the workspace defines it — every application defines a
+`MainModule`, and this command's own constants name one, so an ambiguous name
+buys nothing.
+
+Type-only dependencies have no equivalent, because there is no module to infer.
+`conformetry-json` takes `ConformetryError` from `@conformetry/core` — an
+interface, not a module — and nothing is registered in any container as a
+result. Importing `ErrorsModule` to draw the edge would create a runtime
+dependency the code does not have and enlarge every validator package's
+container to make a diagram look tidier. The note is the honest answer; the
+edge would be a fiction.
 
 The reverse also happens and is equally correct: the module graph reaches
 transitively, so it can show a module from a project the one-hop project graph
@@ -204,11 +215,22 @@ flowchart LR
     NxProjectGraphsModule
     PullRequestTemplateModule
     SynchronizationModule
+    SyntheticRootModule
   end
   subgraph group1["conformetry-configuration"]
     ConfigurationModule
+    TemplateDiscoveryModule
   end
-  subgraph group2["logger"]
+  subgraph group2["conformetry-files"]
+    FilesModule
+  end
+  subgraph group3["conformetry-json"]
+    JsonValidatorModule
+  end
+  subgraph group4["conformetry-validation"]
+    ValidationModule
+  end
+  subgraph group5["logger"]
     LoggerModule([LoggerModule])
   end
   ConfigModule([ConfigModule])
@@ -222,9 +244,16 @@ flowchart LR
   SynchronizationModule --> NestjsModuleGraphsModule
   SynchronizationModule --> NxProjectGraphsModule
   SynchronizationModule --> PullRequestTemplateModule
+  SyntheticRootModule -.-> FilesModule
+  SyntheticRootModule -.-> JsonValidatorModule
+  SyntheticRootModule -.-> SyntheticRootModule
+  SyntheticRootModule -.-> TemplateDiscoveryModule
+  SyntheticRootModule -.-> ValidationModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
+
+_Dotted edges are modules named for a runtime load rather than imported._
 
 <!-- nestjs-module-graph-end -->
 

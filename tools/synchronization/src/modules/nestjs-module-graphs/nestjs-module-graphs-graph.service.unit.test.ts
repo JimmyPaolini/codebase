@@ -40,6 +40,7 @@ function buildOwnership(
           projects: imports.projects ?? new Set<string>(),
           projectsByModule:
             imports.projectsByModule ?? new Map<string, string>(),
+          runtimeModuleEdges: imports.runtimeModuleEdges ?? [],
           typeOnlyProjects: imports.typeOnlyProjects ?? new Set<string>(),
         },
       ],
@@ -86,9 +87,9 @@ describe(NestjsModuleGraphsGraphService, () => {
         "OtherModule",
       ]);
       expect(graph.edges).toStrictEqual([
-        { from: "FeatureModule", to: "OtherModule" },
-        { from: "MainModule", to: "FeatureModule" },
-        { from: "MainModule", to: "OtherModule" },
+        { from: "FeatureModule", runtime: false, to: "OtherModule" },
+        { from: "MainModule", runtime: false, to: "FeatureModule" },
+        { from: "MainModule", runtime: false, to: "OtherModule" },
       ]);
     });
 
@@ -120,6 +121,7 @@ describe(NestjsModuleGraphsGraphService, () => {
       expect(graph.ambientModuleNames).toStrictEqual([]);
       expect(graph.edges).toContainEqual({
         from: "FirstModule",
+        runtime: false,
         to: "SharedModule",
       });
     });
@@ -256,6 +258,80 @@ describe(NestjsModuleGraphsGraphService, () => {
         "alpha",
         undefined,
       ]);
+    });
+  });
+
+  describe("runtime edges", () => {
+    // A module loaded through `LazyModuleLoader` is named rather than
+    // imported, so the name is the only evidence the dependency exists.
+    it("draws an edge to a module the project only names", () => {
+      const graph = build(
+        [buildNode("ValidationModule", [])],
+        buildOwnership(
+          {
+            JsonValidatorModule: ["conformetry-json"],
+            ValidationModule: ["example"],
+          },
+          [],
+          {
+            runtimeModuleEdges: [
+              {
+                from: "ValidationModule",
+                runtime: true,
+                to: "JsonValidatorModule",
+              },
+            ],
+          },
+        ),
+      );
+
+      expect(graph.edges).toContainEqual({
+        from: "ValidationModule",
+        runtime: true,
+        to: "JsonValidatorModule",
+      });
+      expect(service.renderMermaid(graph)).toContain(
+        "ValidationModule -.-> JsonValidatorModule",
+      );
+    });
+
+    // This command's own constants name a `"MainModule"`, and every
+    // application defines one.
+    it("ignores a named module several projects define", () => {
+      const graph = build(
+        [buildNode("SynchronizationModule", [])],
+        buildOwnership(
+          {
+            MainModule: ["caelundas", "conformetry-cli"],
+            SynchronizationModule: ["example"],
+          },
+          [],
+          {
+            runtimeModuleEdges: [
+              {
+                from: "SynchronizationModule",
+                runtime: true,
+                to: "MainModule",
+              },
+            ],
+          },
+        ),
+      );
+
+      expect(graph.edges).toStrictEqual([]);
+    });
+
+    it("ignores a named module the container already holds", () => {
+      const graph = build(
+        [buildNode("ValidationModule", ["FilesModule"])],
+        buildOwnership({ FilesModule: ["conformetry-files"] }, [], {
+          runtimeModuleEdges: [
+            { from: "ValidationModule", runtime: true, to: "FilesModule" },
+          ],
+        }),
+      );
+
+      expect(graph.edges.filter((edge) => edge.runtime)).toStrictEqual([]);
     });
   });
 
