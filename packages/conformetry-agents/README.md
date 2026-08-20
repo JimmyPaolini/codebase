@@ -61,3 +61,32 @@ Where this project sits in the Nx project graph: what it depends on, and what de
 _This project neither depends on nor is depended on by another project in this workspace._
 
 <!-- nx-project-graph-end -->
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `conformetry-agents`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 0 |
+| Files | 2 |
+| Calls traced | 0 |
+| Call stacks | 0 |
+| Deepest stack | 0 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 0 |
+
+### Call stacks
+
+None.
+
+### Module spread
+
+None.
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->
