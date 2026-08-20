@@ -13,6 +13,7 @@ import {
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_PYTHON_COMMAND,
+  DEFAULT_TARGET_COMPRESSION,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
 import { ConfigurationFileNotFoundError } from "./configuration.errors";
@@ -319,6 +320,153 @@ describe(ConfigurationService, () => {
 
   it("defaults the counters to none", () => {
     expect(service.resolveConfiguration({}).statistics).toStrictEqual([]);
+  });
+
+  it("defaults the targets to none", () => {
+    expect(service.resolveConfiguration({}).targets).toStrictEqual([]);
+  });
+
+  it("defaults a target's compression to gzip", () => {
+    const [target] = service.resolveConfiguration({
+      targets: [
+        { analyses: ["size"], include: ["dist/**/*.js"], name: "compiled" },
+      ],
+    }).targets;
+
+    expect(target).toStrictEqual({
+      analyses: ["size"],
+      compression: DEFAULT_TARGET_COMPRESSION,
+      exclude: [],
+      include: ["dist/**/*.js"],
+      name: "compiled",
+    });
+  });
+
+  it("keeps a compression the target names for itself", () => {
+    const [target] = service.resolveConfiguration({
+      targets: [
+        {
+          analyses: ["size"],
+          compression: "none",
+          include: ["dist/**/*.js"],
+          name: "compiled",
+        },
+      ],
+    }).targets;
+
+    expect(target?.compression).toBe("none");
+  });
+
+  // Where a negation sits in the array is exactly what used to decide which
+  // patterns it applied to, so it is collected rather than read in place.
+  it.each([
+    ["last", ["dist/**/*.js", "dist/extra/**/*.js", "!dist/**/*.map.js"]],
+    ["first", ["!dist/**/*.map.js", "dist/**/*.js", "dist/extra/**/*.js"]],
+    ["between", ["dist/**/*.js", "!dist/**/*.map.js", "dist/extra/**/*.js"]],
+  ])("collects a negation written %s into the exclusions", (_, include) => {
+    const [target] = service.resolveConfiguration({
+      targets: [{ analyses: ["size"], include, name: "compiled" }],
+    }).targets;
+
+    expect(target?.exclude).toStrictEqual(["dist/**/*.map.js"]);
+    expect(target?.include.toSorted()).toStrictEqual([
+      "dist/**/*.js",
+      "dist/extra/**/*.js",
+    ]);
+  });
+
+  it("keeps a negation out of the include globs and in the exclusions", () => {
+    const [target] = service.resolveConfiguration({
+      targets: [
+        {
+          analyses: ["language", "size"],
+          exclude: ["dist/vendor/**"],
+          include: ["dist/**/*.js", "!dist/**/*.map.js"],
+          name: "compiled",
+        },
+      ],
+    }).targets;
+
+    expect(target?.include).toStrictEqual(["dist/**/*.js"]);
+    expect(target?.exclude).toStrictEqual([
+      "dist/**/*.map.js",
+      "dist/vendor/**",
+    ]);
+  });
+
+  it("rejects two targets sharing one name", async () => {
+    const configurationPath = await writeConfiguration({
+      targets: [
+        { analyses: ["size"], include: ["dist/**/*.js"], name: "compiled" },
+        { analyses: ["size"], include: ["build/**/*.js"], name: "compiled" },
+      ],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(ZodError);
+  });
+
+  it("rejects a target asking for an analysis nobody runs", async () => {
+    const configurationPath = await writeConfiguration({
+      targets: [
+        {
+          analyses: ["astrology"],
+          include: ["dist/**/*.js"],
+          name: "compiled",
+        },
+      ],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(ZodError);
+  });
+
+  // A `!` in a list that only ever removes files has nothing to negate, and
+  // silently matches no path at all rather than the one it names.
+  it("rejects a negated exclude glob", async () => {
+    const configurationPath = await writeConfiguration({
+      targets: [
+        {
+          analyses: ["size"],
+          exclude: ["!dist/**/*.map.js"],
+          include: ["dist/**/*.js"],
+          name: "compiled",
+        },
+      ],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(ZodError);
+  });
+
+  it("reads the targets a configuration file declares", async () => {
+    const configurationPath = await writeConfiguration({
+      targets: [
+        {
+          analyses: ["size"],
+          compression: "brotli",
+          include: ["dist/**/*.js"],
+          name: "compiled",
+        },
+      ],
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+
+    expect(configuration.targets).toStrictEqual([
+      {
+        analyses: ["size"],
+        compression: "brotli",
+        exclude: [],
+        include: ["dist/**/*.js"],
+        name: "compiled",
+      },
+    ]);
   });
 
   it("rejects a counter with no patterns", async () => {

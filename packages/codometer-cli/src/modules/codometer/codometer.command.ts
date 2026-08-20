@@ -228,7 +228,7 @@ export class CodometerCommand extends CommandRunner {
       configurationPath: options.config,
       searchDirectory: workingDirectory,
     });
-    const statistics = this.codometerService.measure({
+    const { statistics } = this.codometerService.measure({
       configuration,
       workingDirectory,
     });

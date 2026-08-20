@@ -6,6 +6,24 @@ import type {
 } from "./statistics.types";
 
 /**
+ * An analysis codometer can run over a target.
+ *
+ * `language` parses the matched files and counts what they declare; `size`
+ * compresses them and counts bytes. Which of them a target runs is the only
+ * thing separating a source tree from build output.
+ */
+export type CodometerAnalysis = "language" | "size";
+
+/**
+ * How a target's files are compressed before size analysis counts them.
+ *
+ * `none` reports the bytes on disk. Named explicitly rather than inferred from
+ * which options are absent, because a compression nobody chose is a byte count
+ * nobody can explain.
+ */
+export type CodometerCompression = "brotli" | "gzip" | "none";
+
+/**
  * Configuration authored in a `codometer.config.ts` file.
  *
  * Every field is optional. A repository with no configuration file at all is
@@ -17,10 +35,10 @@ export interface CodometerConfiguration {
   /**
    * Ignore files, in gitignore syntax, whose patterns also exclude files.
    *
-   * For the tracked-but-generated files no glob list should have to restate —
+   * For the committed-but-generated files no glob list should have to restate —
    * lockfiles, vendored bundles, anything a repository already tells its other
-   * tools to skip. Files git never tracked need no mention at all: discovery
-   * enumerates through `git ls-files`, so `.gitignore` is already in force.
+   * tools to skip. Files the repository's own `.gitignore` claims need no
+   * mention at all: discovery reads those files itself.
    */
   excludeFrom?: string[] | undefined;
   output?: CodometerOutputConfiguration | undefined;
@@ -35,6 +53,14 @@ export interface CodometerConfiguration {
    * them".
    */
   statistics?: CodometerCustomStatistic[] | undefined;
+  /**
+   * Named sets of files measured alongside the codebase itself.
+   *
+   * Everything the repository holds is measured without one — a target is how
+   * a repository names a *part* of itself, most often compiled output, which
+   * its ignore files keep out of the codebase measurement on purpose.
+   */
+  targets?: CodometerTarget[] | undefined;
 }
 
 /**
@@ -151,6 +177,27 @@ export type CodometerSymbolModifier =
   | "readonly"
   | "static";
 
+/**
+ * A named set of files, declared by include and exclude globs.
+ *
+ * Globs are relative to the measured directory, and a leading `!` on an
+ * include glob excludes instead of including. Negations are collected rather
+ * than applied in order, so moving one within the array cannot change which
+ * files the target holds.
+ *
+ * Ignore files are not consulted. A target names its files outright, which is
+ * what lets one measure compiled output — a directory `.gitignore` claims, and
+ * therefore the one place ignore rules must not reach.
+ */
+export interface CodometerTarget {
+  /** Which analyses run over the matched files. At least one. */
+  analyses: CodometerAnalysis[];
+  compression?: CodometerCompression | undefined;
+  exclude?: string[] | undefined;
+  include: string[];
+  name: string;
+}
+
 /** Arguments accepted when loading a configuration file. */
 export interface LoadConfigurationArguments {
   configurationPath?: string | undefined;
@@ -210,6 +257,7 @@ export interface ResolvedCodometerConfiguration {
   output: ResolvedCodometerOutputConfiguration;
   python: ResolvedCodometerPythonConfiguration;
   statistics: ResolvedCodometerCustomStatistic[];
+  targets: ResolvedCodometerTarget[];
 }
 
 /** A configured counter with its badge color and group filled in. */
@@ -259,6 +307,22 @@ export interface ResolvedCodometerOutputConfiguration {
 /** Python analysis settings with defaults applied. */
 export interface ResolvedCodometerPythonConfiguration {
   command: string;
+}
+
+/**
+ * A target with its compression filled in and its negations collected.
+ *
+ * `include` holds only patterns that add files and `exclude` only patterns
+ * that remove them, whichever list they were authored in. Order carries no
+ * meaning in either: a file is in the target when some include glob claims it
+ * and no exclude glob does.
+ */
+export interface ResolvedCodometerTarget {
+  analyses: CodometerAnalysis[];
+  compression: CodometerCompression;
+  exclude: string[];
+  include: string[];
+  name: string;
 }
 
 /** What a `write` function is handed. */

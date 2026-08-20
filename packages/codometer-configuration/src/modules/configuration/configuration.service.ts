@@ -17,6 +17,8 @@ import {
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_PYTHON_COMMAND,
+  DEFAULT_TARGET_COMPRESSION,
+  NEGATION_PREFIX,
   REPOSITORY_ROOT_MARKERS,
   SUPPORTED_CONFIGURATION_EXTENSIONS,
   UnknownConfigurationFileTypeError,
@@ -27,11 +29,13 @@ import type {
   CodometerConfiguration,
   CodometerCustomStatistic,
   CodometerOutputConfiguration,
+  CodometerTarget,
   LoadConfigurationArguments,
   ResolvedCodometerConfiguration,
   ResolvedCodometerCustomStatistic,
   ResolvedCodometerJsonOutputConfiguration,
   ResolvedCodometerMarkdownOutputConfiguration,
+  ResolvedCodometerTarget,
 } from "./configuration.types";
 import type { CodometerStatisticGroup } from "./statistics.types";
 
@@ -248,6 +252,35 @@ export class ConfigurationService {
     };
   }
 
+  /**
+   * Splits every target's globs into what they add and what they remove.
+   *
+   * A `!` prefix in an include glob is what the tool this replaced used to
+   * subtract a file, and there it mattered where in the array it sat. Here the
+   * negations join the exclude globs in a single set, so a target holds the
+   * same files however its patterns are arranged.
+   */
+  private resolveTargets(
+    targets: CodometerTarget[] | undefined,
+  ): ResolvedCodometerTarget[] {
+    return (targets ?? []).map((target) => ({
+      analyses: [...target.analyses],
+      compression: target.compression ?? DEFAULT_TARGET_COMPRESSION,
+      exclude: [
+        ...new Set([
+          ...target.include
+            .filter((pattern) => pattern.startsWith(NEGATION_PREFIX))
+            .map((pattern) => pattern.slice(NEGATION_PREFIX.length)),
+          ...(target.exclude ?? []),
+        ]),
+      ],
+      include: target.include.filter(
+        (pattern) => !pattern.startsWith(NEGATION_PREFIX),
+      ),
+      name: target.name,
+    }));
+  }
+
   // 🌎 Public Methods
 
   /**
@@ -314,6 +347,7 @@ export class ConfigurationService {
         command: configuration.python?.command ?? DEFAULT_PYTHON_COMMAND,
       },
       statistics: this.resolveCustomStatistics(configuration.statistics),
+      targets: this.resolveTargets(configuration.targets),
     };
   }
 }

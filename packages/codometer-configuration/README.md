@@ -245,17 +245,22 @@ Call stacks traced through `codometer-configuration`, deepest first. Each frame 
 
 | Measure | Value |
 | --- | --- |
-| Callables | 19 |
+| Callables | 27 |
 | Files | 9 |
-| Calls traced | 15 |
-| Call stacks | 0 |
-| Deepest stack | 0 |
+| Calls traced | 21 |
+| Call stacks | 1 |
+| Deepest stack | 2 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 2 |
 
 ### Call stacks
 
-None.
+**1. `refine(…)`** — depth 2 · orphan-root
+
+```text
+🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:303]
+  └─> map(…)(…): string [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:304]
+```
 
 ### Module spread
 

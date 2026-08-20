@@ -126,7 +126,7 @@ describe(FileDiscoveryService, () => {
 
   it("discovers every measurable file, sorted, and nothing else", () => {
     expect.hasAssertions();
-    expect(discover().trackedFiles).toStrictEqual([
+    expect(discover().files).toStrictEqual([
       ".gitignore",
       "redistribute/index.ts",
       "src/app.ts",
@@ -174,9 +174,9 @@ describe(FileDiscoveryService, () => {
   it("prunes a directory the repository's gitignore file names", () => {
     expect.hasAssertions();
 
-    const { trackedFiles } = discover();
+    const { files } = discover();
 
-    expect(trackedFiles).not.toContain("build/output.js");
+    expect(files).not.toContain("build/output.js");
     // Pruned rather than enumerated and discarded: the walk never read it.
     expect(readdirSyncMock).not.toHaveBeenCalledWith(
       "/repo/build",
@@ -187,10 +187,10 @@ describe(FileDiscoveryService, () => {
   it("keeps a path that merely contains an excluded name", () => {
     expect.hasAssertions();
 
-    const { trackedFiles } = discover();
+    const { files } = discover();
 
-    expect(trackedFiles).toContain("redistribute/index.ts");
-    expect(trackedFiles).not.toContain("node_modules/library/index.ts");
+    expect(files).toContain("redistribute/index.ts");
+    expect(files).not.toContain("node_modules/library/index.ts");
     expect(readdirSyncMock).not.toHaveBeenCalledWith(
       "/repo/node_modules",
       expect.anything(),
@@ -200,26 +200,23 @@ describe(FileDiscoveryService, () => {
   it("excludes files with a glob that names no directory", () => {
     expect.hasAssertions();
 
-    const { jsonFiles, trackedFiles } = discover([
-      ...DEFAULT_EXCLUDE,
-      "src/*.json",
-    ]);
+    const { files, jsonFiles } = discover([...DEFAULT_EXCLUDE, "src/*.json"]);
 
     expect(jsonFiles).toStrictEqual([]);
-    expect(trackedFiles).not.toContain("src/data.json");
+    expect(files).not.toContain("src/data.json");
   });
 
   it("excludes what a configured ignore file claims", () => {
     expect.hasAssertions();
     // `/AGENTS.md` is anchored at the root the ignore file was read for.
-    expect(discover().trackedFiles).not.toContain("AGENTS.md");
+    expect(discover().files).not.toContain("AGENTS.md");
   });
 
   it("skips symlinks so a mirrored file is not counted twice", () => {
     expect.hasAssertions();
     // CLAUDE.md is a link to AGENTS.md; following it would report one document
     // as two.
-    expect(discover().trackedFiles).not.toContain("CLAUDE.md");
+    expect(discover().files).not.toContain("CLAUDE.md");
   });
 
   it("warns and continues when a configured ignore file is missing", () => {
@@ -241,7 +238,7 @@ describe(FileDiscoveryService, () => {
     );
     // Nothing was subtracted, so what that ignore file would have claimed is
     // still there.
-    expect(result.trackedFiles).toContain("AGENTS.md");
+    expect(result.files).toContain("AGENTS.md");
 
     loggerWarnSpy.mockRestore();
   });
@@ -265,7 +262,7 @@ describe(FileDiscoveryService, () => {
       undefined,
       expect.objectContaining({ path: "/gone" }),
     );
-    expect(result.trackedFiles).toStrictEqual([]);
+    expect(result.files).toStrictEqual([]);
 
     loggerWarnSpy.mockRestore();
   });

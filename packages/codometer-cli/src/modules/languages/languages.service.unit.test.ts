@@ -25,6 +25,7 @@ const configuration = createMock<ResolvedCodometerConfiguration>({
 
 const discoveredFiles: FileDiscoveryResult = {
   cssFiles: ["src/styles.css"],
+  files: ["src/app.ts"],
   hclFiles: ["infrastructure/main.tf"],
   jsFiles: ["src/app.js"],
   jsonFiles: ["package.json"],
@@ -36,7 +37,6 @@ const discoveredFiles: FileDiscoveryResult = {
   sqlFiles: ["data/schema.sql"],
   testFiles: [],
   tomlFiles: ["pyproject.toml"],
-  trackedFiles: ["src/app.ts"],
   tsFiles: ["src/app.ts"],
   yamlFiles: [".github/workflows/ci.yml"],
 };

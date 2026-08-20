@@ -1,5 +1,7 @@
 // 📤 Exports
 export {
+  CODOMETER_ANALYSES,
+  CODOMETER_COMPRESSIONS,
   CODOMETER_STATISTIC_GROUPS,
   CODOMETER_SYMBOL_KINDS,
   CODOMETER_SYMBOL_MODIFIERS,
@@ -12,12 +14,16 @@ export {
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_PYTHON_COMMAND,
+  DEFAULT_TARGET_COMPRESSION,
+  DEFAULT_TARGET_NAME,
   UnknownConfigurationFileTypeError,
 } from "./modules/configuration/configuration.constants";
 export { ConfigurationFileNotFoundError } from "./modules/configuration/configuration.errors";
 export { ConfigurationModule } from "./modules/configuration/configuration.module";
 export { ConfigurationService } from "./modules/configuration/configuration.service";
 export type {
+  CodometerAnalysis,
+  CodometerCompression,
   CodometerConfiguration,
   CodometerCustomStatistic,
   CodometerJsonOutputConfiguration,
@@ -27,6 +33,7 @@ export type {
   CodometerSymbolKind,
   CodometerSymbolMatcher,
   CodometerSymbolModifier,
+  CodometerTarget,
   LoadConfigurationArguments,
   MarkdownAnchorHelpers,
   RenderMarkdownArguments,
@@ -37,6 +44,7 @@ export type {
   ResolvedCodometerMarkdownOutputConfiguration,
   ResolvedCodometerOutputConfiguration,
   ResolvedCodometerPythonConfiguration,
+  ResolvedCodometerTarget,
   WriteMarkdownArguments,
   WriteMarkdownOutput,
 } from "./modules/configuration/configuration.types";

@@ -8,6 +8,8 @@ import { FileDiscoveryModule } from "../file-discovery/file-discovery.module";
 import { LanguagesModule } from "../languages/languages.module";
 import { OutputJsonModule } from "../output-json/output-json.module";
 import { OutputMarkdownModule } from "../output-markdown/output-markdown.module";
+import { SizeAnalysisModule } from "../size-analysis/size-analysis.module";
+import { TargetsModule } from "../targets/targets.module";
 
 import { CodometerCommand } from "./codometer.command";
 import { CodometerService } from "./codometer.service";
@@ -26,6 +28,8 @@ import { CodometerService } from "./codometer.service";
     LoggerModule,
     OutputJsonModule,
     OutputMarkdownModule,
+    SizeAnalysisModule,
+    TargetsModule,
   ],
   providers: [CodometerCommand, CodometerService],
 })

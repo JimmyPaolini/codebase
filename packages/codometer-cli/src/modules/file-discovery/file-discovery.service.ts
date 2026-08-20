@@ -68,10 +68,10 @@ export class FileDiscoveryService {
 
   /** Selects the discovered files whose extension belongs to a category. */
   private filterByExtension(
-    trackedFiles: string[],
+    files: string[],
     extensions: Set<string>,
   ): string[] {
-    return trackedFiles.filter((filePath) =>
+    return files.filter((filePath) =>
       extensions.has(path.extname(filePath).toLowerCase()),
     );
   }
@@ -270,38 +270,46 @@ export class FileDiscoveryService {
 
   // 🌎 Public Methods
 
-  /** Returns categorized file path lists for the given codebase root. */
-  discoverFiles(args: DiscoverFilesArguments): FileDiscoveryResult {
+  /**
+   * Sorts a list of file paths into the categories the analyzers ask for.
+   *
+   * Separate from the walk so that any target's files can be categorized, not
+   * only the ones this service found itself: a target naming its files by glob
+   * is analyzed by the same language analyzers as the codebase around it.
+   */
+  categorize(files: string[]): FileDiscoveryResult {
     const allExtensions = new Set([...TS_EXTENSIONS, ...JS_EXTENSIONS]);
-    const trackedFiles = this.listDiscoveredFiles(args);
-    const sourceFiles = trackedFiles.filter((filePath) =>
+    const sourceFiles = files.filter((filePath) =>
       allExtensions.has(path.extname(filePath)),
     );
 
     return {
-      cssFiles: this.filterByExtension(trackedFiles, CSS_EXTENSIONS),
-      hclFiles: this.filterByExtension(trackedFiles, HCL_EXTENSIONS),
+      cssFiles: this.filterByExtension(files, CSS_EXTENSIONS),
+      files,
+      hclFiles: this.filterByExtension(files, HCL_EXTENSIONS),
       jsFiles: sourceFiles.filter((filePath) =>
         JS_EXTENSIONS.has(path.extname(filePath)),
       ),
-      jsonFiles: this.filterByExtension(trackedFiles, JSON_EXTENSIONS),
-      markdownFiles: this.filterByExtension(trackedFiles, MARKDOWN_EXTENSIONS),
-      notebookFiles: this.filterByExtension(trackedFiles, NOTEBOOK_EXTENSIONS),
-      pyFiles: trackedFiles.filter(
-        (filePath) => path.extname(filePath) === ".py",
-      ),
-      shellFiles: this.filterByExtension(trackedFiles, SHELL_EXTENSIONS),
+      jsonFiles: this.filterByExtension(files, JSON_EXTENSIONS),
+      markdownFiles: this.filterByExtension(files, MARKDOWN_EXTENSIONS),
+      notebookFiles: this.filterByExtension(files, NOTEBOOK_EXTENSIONS),
+      pyFiles: files.filter((filePath) => path.extname(filePath) === ".py"),
+      shellFiles: this.filterByExtension(files, SHELL_EXTENSIONS),
       sourceFiles,
-      sqlFiles: this.filterByExtension(trackedFiles, SQL_EXTENSIONS),
+      sqlFiles: this.filterByExtension(files, SQL_EXTENSIONS),
       testFiles: sourceFiles.filter((filePath) =>
         TEST_FILE_REGEX.test(filePath),
       ),
-      tomlFiles: this.filterByExtension(trackedFiles, TOML_EXTENSIONS),
-      trackedFiles,
+      tomlFiles: this.filterByExtension(files, TOML_EXTENSIONS),
       tsFiles: sourceFiles.filter((filePath) =>
         TS_EXTENSIONS.has(path.extname(filePath)),
       ),
-      yamlFiles: this.filterByExtension(trackedFiles, YAML_EXTENSIONS),
+      yamlFiles: this.filterByExtension(files, YAML_EXTENSIONS),
     };
+  }
+
+  /** Returns categorized file path lists for the given codebase root. */
+  discoverFiles(args: DiscoverFilesArguments): FileDiscoveryResult {
+    return this.categorize(this.listDiscoveredFiles(args));
   }
 }

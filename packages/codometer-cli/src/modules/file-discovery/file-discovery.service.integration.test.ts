@@ -45,7 +45,7 @@ describe(`${FileDiscoveryService.name} over a real directory`, () => {
     expect.hasAssertions();
     // The fixture tree is not a git repository and never becomes one, which is
     // what the implementation this replaced could not measure at all.
-    expect(result.trackedFiles).toStrictEqual([
+    expect(result.files).toStrictEqual([
       ".codometerignore",
       ".gitignore",
       "AGENTS.md",
@@ -88,23 +88,23 @@ describe(`${FileDiscoveryService.name} over a real directory`, () => {
   it("applies the gitignore files it passes on the way down", () => {
     expect.hasAssertions();
     // `build/`, `*.log`, and `nested/generated/` from the root ignore file.
-    expect(result.trackedFiles).not.toContain("build/output.js");
-    expect(result.trackedFiles).not.toContain("debug.log");
-    expect(result.trackedFiles).not.toContain("nested/generated/thing.ts");
+    expect(result.files).not.toContain("build/output.js");
+    expect(result.files).not.toContain("debug.log");
+    expect(result.files).not.toContain("nested/generated/thing.ts");
   });
 
   it("lets a nested gitignore file overrule the one above it", () => {
     expect.hasAssertions();
     // `nested/.gitignore` claims `*.md` and then re-includes `keep.md`.
-    expect(result.trackedFiles).toContain("nested/keep.md");
-    expect(result.trackedFiles).not.toContain("nested/drop.md");
+    expect(result.files).toContain("nested/keep.md");
+    expect(result.files).not.toContain("nested/drop.md");
   });
 
   it("excludes what the configured ignore file claims", () => {
     expect.hasAssertions();
     // `/README.md` is anchored, `vendor/` is a whole directory.
-    expect(result.trackedFiles).not.toContain("README.md");
-    expect(result.trackedFiles).not.toContain("vendor/vendored.ts");
+    expect(result.files).not.toContain("README.md");
+    expect(result.files).not.toContain("vendor/vendored.ts");
   });
 
   it("skips a real symlink so a mirrored file is not counted twice", () => {

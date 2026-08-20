@@ -26,6 +26,7 @@ function buildConfiguration(
     output: { json: undefined, markdown: undefined, ...output },
     python: { command: "python3" },
     statistics: [],
+    targets: [],
   };
 }
 
@@ -92,7 +93,10 @@ describe(CodometerCommand, () => {
     vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
       buildConfiguration(),
     );
-    vi.mocked(codometerService.measure).mockReturnValue(statistics);
+    vi.mocked(codometerService.measure).mockReturnValue({
+      statistics,
+      targets: [],
+    });
     vi.mocked(outputJsonService.sync).mockReturnValue(true);
     vi.mocked(outputMarkdownService.sync).mockReturnValue(true);
   });

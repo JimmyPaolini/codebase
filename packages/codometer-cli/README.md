@@ -195,7 +195,9 @@ flowchart LR
     OutputMarkdownModule
     PythonModule
     ShellModule
+    SizeAnalysisModule
     SqlModule
+    TargetsModule
     TomlModule
     TypescriptModule
     YamlModule
@@ -214,6 +216,8 @@ flowchart LR
   CodometerModule --> LanguagesModule
   CodometerModule --> OutputJsonModule
   CodometerModule --> OutputMarkdownModule
+  CodometerModule --> SizeAnalysisModule
+  CodometerModule --> TargetsModule
   JupyterModule --> JsonModule
   JupyterModule --> MarkdownModule
   JupyterModule --> PythonModule
@@ -273,23 +277,50 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Measure | Value |
 | --- | --- |
-| Callables | 206 |
-| Files | 80 |
-| Calls traced | 363 |
-| Call stacks | 11 |
-| Deepest stack | 10 |
-| Stacks through recursion | 1 |
-| Unfollowable calls | 6 |
+| Callables | 234 |
+| Files | 88 |
+| Calls traced | 389 |
+| Call stacks | 12 |
+| Deepest stack | 11 |
+| Stacks through recursion | 2 |
+| Unfollowable calls | 7 |
 
 ### Call stacks
 
-**1. `CodometerCommand.run`** — depth ≥ 10 · decorated-method
+**1. `CodometerCommand.run`** — depth ≥ 11 · decorated-method
 
 ```text
 🚀 CodometerCommand.run(_passedParameters: string[], options: CodometerCommandOptions): Promise<void> [packages/codometer-cli/src/modules/codometer/codometer.command.ts:220]
    ↳ Measure the repository and write every configured output.
-  └─> CodometerService.measure(args: MeasureArguments): CodeStatisticsResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:115]
-     ↳ Measure aggregated repository statistics for the provided directory.
+  └─> CodometerService.measure(args: MeasureArguments): MeasurementResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:229]
+     ↳ Measure the codebase and every target declared alongside it.
+    └─> CodometerService.analyzeLanguage(args: AnalyzeLanguageArguments): CodeStatisticsResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:56]
+       ↳ Run every language analyzer over one target's files.
+      └─> LanguagesService.analyze(args: AnalyzeLanguagesArguments): LanguageResults [packages/codometer-cli/src/modules/languages/languages.service.ts:54]
+         ↳ Analyze every language present in the discovered files.
+        └─> JupyterService.analyze(args: AnalyzeJupyterArguments): JupyterResult [packages/codometer-cli/src/modules/jupyter/jupyter.service.ts:166]
+           ↳ Analyze the given notebooks, resolved against the directory.
+          └─> JsonService.analyze(input: JsonInput): JsonResult [packages/codometer-cli/src/modules/json/json.service.ts:304]
+             ↳ Analyze JSON files and return structural metrics for their contents.
+            └─> JsonService.countArrayNode(node: unknown[], stats: JsonResult, depth: number): void (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:89]
+               ↳ Count array nodes and their child values.
+              └─> JsonService.countNode(node: unknown, stats: JsonResult, depth: number): void (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:105]
+                 ↳ Recursively count JSON containers, primitives, and nesting depth.
+                └─> JsonService.countRecordNode(node: Record<string, unknown>, stats: JsonResult, depth: number): void (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:156]
+                   ↳ Count object nodes and their child values.
+                  └─> JsonService.countPrimitiveNode(node: unknown, stats: JsonResult, depth: number): void [packages/codometer-cli/src/modules/json/json.service.ts:120]
+                     ↳ Count scalar values and update primitive stats.
+                    └─> JsonService.countPrimitiveValue(node: unknown, stats: JsonResult): void [packages/codometer-cli/src/modules/json/json.service.ts:137]
+                       ↳ Increment stats for a scalar JSON value.
+```
+
+**2. `CodometerService.measureTarget`** — depth ≥ 10 · orphan-root
+
+```text
+🚀 CodometerService.measureTarget(args: MeasureTargetArguments): TargetMeasurement [packages/codometer-cli/src/modules/codometer/codometer.service.ts:186]
+   ↳ Measure one declared target with whichever analyses it asked for.
+  └─> CodometerService.analyzeLanguage(args: AnalyzeLanguageArguments): CodeStatisticsResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:56]
+     ↳ Run every language analyzer over one target's files.
     └─> LanguagesService.analyze(args: AnalyzeLanguagesArguments): LanguageResults [packages/codometer-cli/src/modules/languages/languages.service.ts:54]
        ↳ Analyze every language present in the discovered files.
       └─> JupyterService.analyze(args: AnalyzeJupyterArguments): JupyterResult [packages/codometer-cli/src/modules/jupyter/jupyter.service.ts:166]
@@ -308,7 +339,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
                      ↳ Increment stats for a scalar JSON value.
 ```
 
-**2. `OutputMarkdownService.renderBadges`** — depth 4 · orphan-root
+**3. `OutputMarkdownService.renderBadges`** — depth 4 · orphan-root
 
 ```text
 🚀 OutputMarkdownService.renderBadges(args: RenderBadgesArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:165]
@@ -321,7 +352,10 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
          ↳ Encode a value so it can safely appear in a badge URL.
 ```
 
-**3. `TypescriptService.handleEnum`** — depth 3 · orphan-root
+<details>
+<summary>9 more call stacks</summary>
+
+**4. `TypescriptService.handleEnum`** — depth 3 · orphan-root
 
 ```text
 🚀 TypescriptService.handleEnum(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-cli/src/modules/typescript/typescript.service.ts:250]
@@ -331,10 +365,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
     └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-cli/src/modules/typescript/typescript.service.ts:352]
 ```
 
-<details>
-<summary>8 more call stacks</summary>
-
-**4. `TypescriptService.handleFunction`** — depth 3 · orphan-root
+**5. `TypescriptService.handleFunction`** — depth 3 · orphan-root
 
 ```text
 🚀 TypescriptService.handleFunction(node: tsCompiler.Node, stats: TypescriptResult, insideClass: boolean): void [packages/codometer-cli/src/modules/typescript/typescript.service.ts:256]
@@ -344,7 +375,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
     └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-cli/src/modules/typescript/typescript.service.ts:352]
 ```
 
-**5. `TypescriptService.handleInterface`** — depth 3 · orphan-root
+**6. `TypescriptService.handleInterface`** — depth 3 · orphan-root
 
 ```text
 🚀 TypescriptService.handleInterface(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-cli/src/modules/typescript/typescript.service.ts:290]
@@ -354,7 +385,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
     └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-cli/src/modules/typescript/typescript.service.ts:352]
 ```
 
-**6. `TypescriptService.handleMethodOrAccessor`** — depth 3 · orphan-root
+**7. `TypescriptService.handleMethodOrAccessor`** — depth 3 · orphan-root
 
 ```text
 🚀 TypescriptService.handleMethodOrAccessor(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-cli/src/modules/typescript/typescript.service.ts:300]
@@ -364,7 +395,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
     └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.AsyncKeyword [packages/codometer-cli/src/modules/typescript/typescript.service.ts:340]
 ```
 
-**7. `TypescriptService.handleTypeAlias`** — depth 3 · orphan-root
+**8. `TypescriptService.handleTypeAlias`** — depth 3 · orphan-root
 
 ```text
 🚀 TypescriptService.handleTypeAlias(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-cli/src/modules/typescript/typescript.service.ts:313]
@@ -374,7 +405,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
     └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-cli/src/modules/typescript/typescript.service.ts:352]
 ```
 
-**8. `TypescriptService.handleVariable`** — depth 3 · orphan-root
+**9. `TypescriptService.handleVariable`** — depth 3 · orphan-root
 
 ```text
 🚀 TypescriptService.handleVariable(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-cli/src/modules/typescript/typescript.service.ts:322]
@@ -384,7 +415,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
     └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-cli/src/modules/typescript/typescript.service.ts:352]
 ```
 
-**9. `OutputMarkdownService.syncAnchoredBlock`** — depth ≥ 3 · orphan-root
+**10. `OutputMarkdownService.syncAnchoredBlock`** — depth ≥ 3 · orphan-root
 
 ```text
 🚀 OutputMarkdownService.syncAnchoredBlock(args: SyncAnchoredBlockArguments): boolean [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:109]
@@ -395,7 +426,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
        ↳ Escape a configured marker so it can be searched for literally.
 ```
 
-**10. `main`** — depth ≥ 2 · module-bootstrap
+**11. `main`** — depth ≥ 2 · module-bootstrap
 
 ```text
 🚀 main(): Promise<void> [packages/codometer-cli/src/main.ts:11]
@@ -403,7 +434,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
   └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:36]
 ```
 
-**11. `CodometerCommand.constructor`** — depth ≥ 2 · orphan-root
+**12. `CodometerCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 CodometerCommand.constructor(…): CodometerCommand [packages/codometer-cli/src/modules/codometer/codometer.command.ts:40]
@@ -417,7 +448,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CodometerService.measure` | 15 | `codometer-cli:modules/custom-statistics`, `codometer-cli:modules/file-discovery`, `codometer-cli:modules/languages` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:115` |
+| `CodometerService.measureTarget` | 17 | `codometer-cli:modules/file-discovery`, `codometer-cli:modules/size-analysis`, `codometer-cli:modules/targets` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:186` |
 | `LanguagesService.analyze` | 12 | `codometer-cli:modules/css`, `codometer-cli:modules/hcl`, `codometer-cli:modules/json`, `codometer-cli:modules/jupyter`, `codometer-cli:modules/markdown`, `codometer-cli:modules/python`, `codometer-cli:modules/shell`, `codometer-cli:modules/sql`, `codometer-cli:modules/toml`, `codometer-cli:modules/typescript`, `codometer-cli:modules/yaml` | `packages/codometer-cli/src/modules/languages/languages.service.ts:54` |
 
 ### Possibly misplaced

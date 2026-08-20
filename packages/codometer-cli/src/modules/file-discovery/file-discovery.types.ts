@@ -12,6 +12,8 @@ export interface DiscoverFilesArguments {
 /** Categorized lists of file paths, relative to the working directory. */
 export interface FileDiscoveryResult {
   cssFiles: string[];
+  /** Every file the target holds, before any category claims it. */
+  files: string[];
   hclFiles: string[];
   jsFiles: string[];
   jsonFiles: string[];
@@ -23,7 +25,6 @@ export interface FileDiscoveryResult {
   sqlFiles: string[];
   testFiles: string[];
   tomlFiles: string[];
-  trackedFiles: string[];
   tsFiles: string[];
   yamlFiles: string[];
 }

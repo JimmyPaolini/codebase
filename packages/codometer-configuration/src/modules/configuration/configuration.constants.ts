@@ -3,6 +3,8 @@
 import { z } from "zod";
 
 import type {
+  CodometerAnalysis,
+  CodometerCompression,
   CodometerSymbolKind,
   CodometerSymbolModifier,
   RenderMarkdownOutput,
@@ -83,6 +85,24 @@ export const DEFAULT_CUSTOM_STATISTIC_COLORS = [
 /** Badge group a configured counter is rendered into when it names none. */
 export const DEFAULT_CUSTOM_STATISTIC_GROUP = "conventions";
 
+/**
+ * Compression applied to a target that names none.
+ *
+ * Gzip rather than the best available, because a compressed size is only worth
+ * measuring against what a server would actually send, and gzip is what every
+ * client understands. A target measuring bytes on disk asks for `none`.
+ */
+export const DEFAULT_TARGET_COMPRESSION = "gzip" satisfies CodometerCompression;
+
+/**
+ * Name of the target every run measures: the codebase itself.
+ *
+ * Not declarable, because it is not a glob match. It is every file the
+ * repository's ignore files leave behind, which is the one set of files no
+ * glob can name.
+ */
+export const DEFAULT_TARGET_NAME = "codebase";
+
 /** Spaces used to indent the JSON report when a configuration names none. */
 export const DEFAULT_JSON_INDENTATION = 2;
 
@@ -100,6 +120,15 @@ export const DEFAULT_MARKDOWN_START_MARKER = "<!-- CODE_STATISTICS_START -->";
  * path to a virtual environment's interpreter.
  */
 export const DEFAULT_PYTHON_COMMAND = "python3";
+
+/**
+ * Prefix that turns an include glob into one that removes files instead.
+ *
+ * Read wherever a target's globs are resolved, so the negations end up in the
+ * exclude set rather than being matched literally against a path no file
+ * starts with.
+ */
+export const NEGATION_PREFIX = "!";
 
 /**
  * Marks the repository root during an upward search from the process cwd.
@@ -131,6 +160,19 @@ export const CODOMETER_STATISTIC_GROUPS = [
   "typescript",
   "yaml",
 ] as const satisfies readonly CodometerStatisticGroup[];
+
+/** Analyses a target may ask to have run over it. */
+export const CODOMETER_ANALYSES = [
+  "language",
+  "size",
+] as const satisfies readonly CodometerAnalysis[];
+
+/** Compressions a target may ask its size to be measured under. */
+export const CODOMETER_COMPRESSIONS = [
+  "brotli",
+  "gzip",
+  "none",
+] as const satisfies readonly CodometerCompression[];
 
 /** Declaration kinds a symbol counter may ask for. */
 export const CODOMETER_SYMBOL_KINDS = [
@@ -234,6 +276,33 @@ export const codometerConfigurationSchema = z.object({
               "A statistic needs patterns to match files, symbols to match declarations, or both — otherwise it counts nothing.",
           },
         ),
+    )
+    .optional(),
+  targets: z
+    .array(
+      z.object({
+        analyses: z.array(z.enum(CODOMETER_ANALYSES)).min(1),
+        compression: z.enum(CODOMETER_COMPRESSIONS).optional(),
+        // A `!` here would read as a negation and match nothing instead, since
+        // every pattern in this list already removes files.
+        exclude: z
+          .array(
+            z.string().refine((pattern) => !pattern.startsWith("!"), {
+              message:
+                "An exclude glob already removes files, so a leading `!` has nothing to negate — write the glob without it.",
+            }),
+          )
+          .optional(),
+        include: z.array(z.string()).min(1),
+        name: z.string().min(1),
+      }),
+    )
+    // A metric is addressed by its target's name, so two targets sharing one
+    // would make every limit on either of them ambiguous.
+    .refine(
+      (targets) =>
+        new Set(targets.map((target) => target.name)).size === targets.length,
+      { message: "Every target needs its own name." },
     )
     .optional(),
 });

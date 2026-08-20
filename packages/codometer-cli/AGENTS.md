@@ -72,7 +72,9 @@ flowchart LR
     OutputMarkdownModule
     PythonModule
     ShellModule
+    SizeAnalysisModule
     SqlModule
+    TargetsModule
     TomlModule
     TypescriptModule
     YamlModule
@@ -91,6 +93,8 @@ flowchart LR
   CodometerModule --> LanguagesModule
   CodometerModule --> OutputJsonModule
   CodometerModule --> OutputMarkdownModule
+  CodometerModule --> SizeAnalysisModule
+  CodometerModule --> TargetsModule
   JupyterModule --> JsonModule
   JupyterModule --> MarkdownModule
   JupyterModule --> PythonModule
