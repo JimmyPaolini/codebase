@@ -373,6 +373,83 @@ describe(BundlesService, () => {
     expect(row?.breach).toBeUndefined();
   });
 
+  it.each([
+    { label: "unmeasured", removed: false },
+    { label: "removed", removed: true },
+  ])(
+    "drops the baseline's breach from a $label row, so `main` cannot mark this change",
+    ({ removed }) => {
+      const breaching = buildSizeTarget({
+        breached: true,
+        empty: true,
+        limit: 180_000,
+        name: "Library bundle",
+        severity: "warn",
+        size: 196_157,
+      });
+      const workingDirectory = writeWorkspace({
+        ".baseline/packages/lexico-components/codometer-report.json":
+          buildReport([breaching]),
+        // Present but holding a different metric, so the baseline-only row is
+        // reported removed rather than merely skipped.
+        ...(removed
+          ? {
+              "packages/lexico-components/codometer-report.json": buildReport([
+                buildSizeTarget({ name: "Something else", size: 10 }),
+              ]),
+            }
+          : {}),
+      });
+
+      const row = service
+        .collect({ baselineDirectory: ".baseline", workingDirectory })
+        .rows.find((candidate) => candidate.label === "Library bundle");
+
+      expect(row?.measured).toBe(false);
+      expect(row?.removed).toBe(removed);
+      // The numbers are `main`'s; the verdicts are not carried across.
+      expect(row?.baseSize).toBe(196_157);
+      expect(row?.breach).toBeUndefined();
+      expect(row?.empty).toBe(false);
+    },
+  );
+
+  it("skips a metric whose unit it does not understand, keeping the rest", () => {
+    const workingDirectory = writeWorkspace({
+      "packages/logger/codometer-report.json": {
+        targets: [
+          {
+            empty: false,
+            metrics: [
+              {
+                limits: [],
+                name: "Compiled JavaScript.duration",
+                unit: "milliseconds",
+                value: 42,
+              },
+              {
+                limits: [],
+                name: "Compiled JavaScript.size",
+                unit: "bytes",
+                value: 50,
+              },
+            ],
+            name: "Compiled JavaScript",
+          },
+        ],
+      },
+    });
+
+    const { rows } = service.collect({
+      baselineDirectory: undefined,
+      workingDirectory,
+    });
+
+    expect(rows.map((row) => row.name)).toStrictEqual([
+      "Compiled JavaScript.size",
+    ]);
+  });
+
   it("carries a failure through, tagged with the project it came from", () => {
     const workingDirectory = writeWorkspace({
       "packages/logger/codometer-report.json": {

@@ -74,11 +74,20 @@ export class BundleMarkdownService {
    * itself rather than from anything decided here. An advisory breach is the
    * declared, configurable replacement for a renderer that used to invent its
    * own idea of "nearly full".
+   *
+   * Only rows this run measured are weighed. A row standing at its `main` size
+   * is reporting what the default branch was doing, and a headline sourced
+   * from one sends the reader hunting for a glyph that is not on screen —
+   * unmeasured rows sit in the collapsed table and removed ones print 🗑️. The
+   * collector already clears those verdicts; this is the same rule enforced
+   * where it is consumed, so neither layer alone has to be trusted.
    */
   private readBreachStatus(rows: readonly MetricRow[]): string | undefined {
-    if (rows.some((row) => row.empty)) return "❌";
-    if (rows.some((row) => row.breach === "fail")) return "❌";
-    if (rows.some((row) => row.breach !== undefined)) return "❗";
+    const measured = rows.filter((row) => row.measured);
+
+    if (measured.some((row) => row.empty)) return "❌";
+    if (measured.some((row) => row.breach === "fail")) return "❌";
+    if (measured.some((row) => row.breach !== undefined)) return "❗";
     return undefined;
   }
 
@@ -214,13 +223,16 @@ export class BundleMarkdownService {
       "- 🗑️ Removed since the baseline",
       "- ❌ Breached a `fail` limit",
       "- ❗ Breached a `warn` limit, which advises rather than fails",
-      "  — `Limit` and `Used` still report the `fail` ceiling above it",
       "- ⁉️ Its globs matched no files, so nothing was measured at all",
       "- 🚫 Could not be measured at all, so it has no row above",
       "",
-      "Sizes are gzipped, and kilobytes are decimal. `Used` is the share of a",
-      "limit a bundle consumes; how full is too full is declared as a `warn`",
-      "limit rather than assumed here. Packages declare their limit as",
+      "Sizes are gzipped, and kilobytes are decimal. `Limit` is the ceiling a",
+      "bundle is enforced against — its `fail` limit, or its `warn` limit where",
+      "that is the only one declared — and `Used` is the share of that ceiling",
+      "it consumes. Where a `warn` limit sits below a `fail` one, breaching it",
+      "shows as ❗ while the columns keep reporting the `fail` ceiling, so",
+      "`Used` means the same thing on every row. How full is too full is",
+      "declared per project rather than assumed here. Packages declare a limit as",
       "`sizeLimit` in their package.json, or in a `codometer.config.cjs` of",
       "their own; add a `codometer` target to include a project here.",
       "",

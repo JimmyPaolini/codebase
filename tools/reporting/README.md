@@ -185,9 +185,9 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
 
 | Measure | Value |
 | --- | --- |
-| Callables | 108 |
+| Callables | 109 |
 | Files | 22 |
-| Calls traced | 131 |
+| Calls traced | 132 |
 | Call stacks | 16 |
 | Deepest stack | 9 |
 | Stacks through recursion | 0 |
@@ -204,12 +204,12 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
      ↳ Renders one report and writes it wherever the destination says.
     └─> BundlesCommand.renderReport(options: ReportOptions): string [tools/reporting/src/modules/bundles/bundles.command.ts:92]
        ↳ Renders the report body from whatever the `bundlesize` target measured.
-      └─> BundleMarkdownService.renderSection(args: RenderSectionArguments): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:397]
+      └─> BundleMarkdownService.renderSection(args: RenderSectionArguments): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:409]
          ↳ Renders the report body: its heading, and everything under it.
-        └─> BundleMarkdownService.renderMeasuredTable(rows: readonly MetricRow[]): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:236]
+        └─> BundleMarkdownService.renderMeasuredTable(rows: readonly MetricRow[]): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:248]
            ↳ Renders the table of everything this run rebuilt.
-          └─> BundleMarkdownService.flatMap(…)(this: undefined, group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:244]
-            └─> BundleMarkdownService.renderSubtotal(group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:270]
+          └─> BundleMarkdownService.flatMap(…)(this: undefined, group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:256]
+            └─> BundleMarkdownService.renderSubtotal(group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:282]
                ↳ Renders a project's rollup, which earns its line only with siblings.
               └─> formatDelta(delta: number | undefined): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts:24]
                  ↳ Formats a signed delta, or an em dash when there is no baseline.
@@ -226,12 +226,12 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
      ↳ Renders one report and writes it wherever the destination says.
     └─> BundlesCommand.renderReport(options: ReportOptions): string [tools/reporting/src/modules/bundles/bundles.command.ts:92]
        ↳ Renders the report body from whatever the `bundlesize` target measured.
-      └─> BundleMarkdownService.renderSection(args: RenderSectionArguments): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:397]
+      └─> BundleMarkdownService.renderSection(args: RenderSectionArguments): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:409]
          ↳ Renders the report body: its heading, and everything under it.
-        └─> BundleMarkdownService.renderMeasuredTable(rows: readonly MetricRow[]): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:236]
+        └─> BundleMarkdownService.renderMeasuredTable(rows: readonly MetricRow[]): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:248]
            ↳ Renders the table of everything this run rebuilt.
-          └─> BundleMarkdownService.flatMap(…)(this: undefined, group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:244]
-            └─> BundleMarkdownService.renderSubtotal(group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:270]
+          └─> BundleMarkdownService.flatMap(…)(this: undefined, group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:256]
+            └─> BundleMarkdownService.renderSubtotal(group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:282]
                ↳ Renders a project's rollup, which earns its line only with siblings.
               └─> formatDelta(delta: number | undefined): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts:24]
                  ↳ Formats a signed delta, or an em dash when there is no baseline.
@@ -242,13 +242,13 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
 **3. `BundlesService.collectProjectRows`** — depth 4 · orphan-root
 
 ```text
-🚀 BundlesService.collectProjectRows(args: CollectProjectRowsArguments): BundleCollection [tools/reporting/src/modules/bundles/bundles.service.ts:91]
+🚀 BundlesService.collectProjectRows(args: CollectProjectRowsArguments): MetricCollection [tools/reporting/src/modules/bundles/bundles.service.ts:105]
    ↳ Joins one project's current report to its baseline.
-  └─> BundlesService.readBaseline(args: CollectProjectRowsArguments): Map<string, SizeMetric> [tools/reporting/src/modules/bundles/bundles.service.ts:118]
+  └─> BundlesService.readBaseline(args: CollectProjectRowsArguments): Map<string, SizeMetric> [tools/reporting/src/modules/bundles/bundles.service.ts:132]
      ↳ Reads a baseline report into a name-to-metric lookup.
-    └─> BundlesService.readReport(workingDirectory: string, reportPath: string): ProjectReport [tools/reporting/src/modules/bundles/bundles.service.ts:180]
+    └─> BundlesService.readReport(workingDirectory: string, reportPath: string): ProjectReport [tools/reporting/src/modules/bundles/bundles.service.ts:194]
        ↳ Parses a codometer report, tolerating an absent or malformed file.
-      └─> BundlesService.flatMap(…)(…): SizeMetric[] [tools/reporting/src/modules/bundles/bundles.service.ts:196]
+      └─> BundlesService.flatMap(…)(…): SizeMetric[] [tools/reporting/src/modules/bundles/bundles.service.ts:210]
 ```
 
 <details>
@@ -257,22 +257,22 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
 **4. `BundlesService.readSizeMetrics`** — depth 4 · orphan-root
 
 ```text
-🚀 BundlesService.readSizeMetrics(target: ReportTarget): SizeMetric[] [tools/reporting/src/modules/bundles/bundles.service.ts:237]
+🚀 BundlesService.readSizeMetrics(target: ReportTarget): SizeMetric[] [tools/reporting/src/modules/bundles/bundles.service.ts:251]
    ↳ Pulls one target's byte-counting metrics out of the report.
-  └─> BundlesService.map(…)(…): { breach: MetricSeverity | undefined; empty: boolean; label: string; limit: number | undefined; name: string; size: number; } [tools/reporting/src/modules/bundles/bundles.service.ts:240]
-    └─> BundlesService.readBreach(limits: readonly ReportLimit[]): MetricSeverity | undefined [tools/reporting/src/modules/bundles/bundles.service.ts:139]
+  └─> BundlesService.map(…)(…): { breach: MetricSeverity | undefined; empty: boolean; label: string; limit: number | undefined; name: string; size: number; } [tools/reporting/src/modules/bundles/bundles.service.ts:254]
+    └─> BundlesService.readBreach(limits: readonly ReportLimit[]): MetricSeverity | undefined [tools/reporting/src/modules/bundles/bundles.service.ts:153]
        ↳ The severity of the worst limit a metric breached, if it breached one.
-      └─> BundlesService.filter(…)(…): boolean [tools/reporting/src/modules/bundles/bundles.service.ts:142]
+      └─> BundlesService.filter(…)(…): boolean [tools/reporting/src/modules/bundles/bundles.service.ts:156]
 ```
 
 **5. `BundleMarkdownService.renderRow`** — depth 3 · orphan-root
 
 ```text
-🚀 BundleMarkdownService.renderRow(row: MetricRow): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:253]
+🚀 BundleMarkdownService.renderRow(row: MetricRow): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:265]
    ↳ Renders one table row.
-  └─> BundleMarkdownService.readStatus(row: MetricRow): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:167]
+  └─> BundleMarkdownService.readStatus(row: MetricRow): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:176]
      ↳ Picks the status icon for one row of the measured table.
-    └─> BundleMarkdownService.readGrowthStatus(row: MetricRow): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:142]
+    └─> BundleMarkdownService.readGrowthStatus(row: MetricRow): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:151]
        ↳ Picks the icon for a rebuilt bundle, from how far it moved.
 ```
 

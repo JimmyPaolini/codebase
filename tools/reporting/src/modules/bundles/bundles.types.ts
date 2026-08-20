@@ -4,18 +4,6 @@ import type { codometerReportSchema } from "./bundles.constants";
 import type { z } from "zod";
 
 /**
- * Everything one collection read: the rows, and what could not be measured.
- *
- * Both travel together because a table of rows alone cannot be read honestly.
- * A target that failed contributes no row, and the reader would have to count
- * rows against a list of projects to notice it was gone.
- */
-export interface BundleCollection {
-  failures: ProjectFailure[];
-  rows: MetricRow[];
-}
-
-/**
  * Options accepted by the `bundles` command.
  *
  * Typed loosely because commander skips an option's parser when the flag
@@ -44,6 +32,18 @@ export interface CollectRowsArguments {
 
 /** A row this run rebuilt that the baseline also knew, so it carries a size. */
 export type ComparableMetricRow = MetricRow & { baseSize: number };
+
+/**
+ * Everything one collection read: the rows, and what could not be measured.
+ *
+ * Both travel together because a table of rows alone cannot be read honestly.
+ * A target that failed contributes no row, and the reader would have to count
+ * rows against a list of projects to notice it was gone.
+ */
+export interface MetricCollection {
+  failures: ProjectFailure[];
+  rows: MetricRow[];
+}
 
 /** One size metric joined to the project that measured it and to its baseline. */
 export interface MetricRow extends SizeMetric {

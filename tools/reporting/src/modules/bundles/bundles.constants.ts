@@ -31,15 +31,23 @@ export const REPORT_GLOBS = [
  * flowing through as untyped data.
  *
  * Nothing here is inferred from an absent field. A target says outright whether
- * its globs matched anything, and a metric nobody limited carries an explicit
- * `null` rather than no limit key at all — which is what lets a target that
- * matched no files read differently from one that genuinely measured zero
- * bytes.
+ * its globs matched anything, and a metric nobody limited carries an empty
+ * `limits` array rather than no limits key at all — so a target that matched
+ * no files reads differently from one that genuinely measured zero bytes, and
+ * an unlimited metric differently from an unread report.
  *
- * `failures` is read for the same reason. A target the run could not measure
- * contributes no row, and a table that silently holds fewer rows than the
- * workspace has targets is a number that looks right only because whatever
- * would have contradicted it is missing.
+ * `limits` is a list because a metric may carry more than one: the
+ * configuration accepts a `warn` short of a `fail` on purpose, and the gate
+ * enforces every one of them.
+ *
+ * `failures` is read for the same reason the rest of this is. A target the run
+ * could not measure contributes no row, and a table that silently holds fewer
+ * rows than the workspace has targets is a number that looks right only
+ * because whatever would have contradicted it is missing.
+ *
+ * `unit` is read as free text rather than as the one value this renderer acts
+ * on, so a metric counting something new is skipped by the reader instead of
+ * invalidating every other metric in the file alongside it.
  */
 export const codometerReportSchema = z.object({
   failures: z
@@ -65,7 +73,7 @@ export const codometerReportSchema = z.object({
             }),
           ),
           name: z.string(),
-          unit: z.literal(BYTES_UNIT).nullable(),
+          unit: z.string().nullable(),
           value: z.number(),
         }),
       ),

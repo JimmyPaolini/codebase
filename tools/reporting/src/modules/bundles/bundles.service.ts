@@ -10,9 +10,9 @@ import {
 } from "./bundles.constants";
 
 import type {
-  BundleCollection,
   CollectProjectRowsArguments,
   CollectRowsArguments,
+  MetricCollection,
   MetricRow,
   MetricSeverity,
   ProjectReport,
@@ -51,7 +51,19 @@ export class BundlesService {
 
   // 🔏 Private Methods
 
-  /** Builds the row for a metric only the baseline knows about. */
+  /**
+   * Builds the row for a metric only the baseline knows about.
+   *
+   * Its numbers come from `main`, so its verdicts are dropped: `breach` and
+   * `empty` are cleared rather than spread through. A pull request that never
+   * rebuilt a project must not be marked by what that project was doing on
+   * `main` — otherwise a limit breached there marks every unrelated pull
+   * request, and the row explaining it is not even on screen, because an
+   * unmeasured row lives in the collapsed table and a removed one prints 🗑️.
+   *
+   * The same reasoning drops the baseline's failures in `readBaseline`. Both
+   * exist to keep this change's status derived from this change.
+   */
   private buildBaselineRow(
     metric: SizeMetric,
     project: string,
@@ -60,6 +72,8 @@ export class BundlesService {
     return {
       ...metric,
       baseSize: metric.size,
+      breach: undefined,
+      empty: false,
       measured: false,
       project,
       removed,
@@ -90,7 +104,7 @@ export class BundlesService {
    */
   private collectProjectRows(
     args: CollectProjectRowsArguments,
-  ): BundleCollection {
+  ): MetricCollection {
     const project = this.readProjectName(args.reportPath);
     const baseline = this.readBaseline(args);
     const { failures, metrics } = this.readReport(
@@ -250,7 +264,7 @@ export class BundlesService {
   // 🌎 Public Methods
 
   /** Joins every current report to the baseline snapshot. */
-  collect(args: CollectRowsArguments): BundleCollection {
+  collect(args: CollectRowsArguments): MetricCollection {
     const collections = this.readReportPaths(args).map((reportPath) =>
       this.collectProjectRows({ ...args, reportPath }),
     );

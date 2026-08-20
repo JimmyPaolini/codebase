@@ -254,6 +254,66 @@ describe(BundleMarkdownService, () => {
     });
   });
 
+  describe("baseline rows do not set the headline", () => {
+    // The row this guards is invisible on screen: an unmeasured row lives in
+    // the collapsed 💤 table and a removed one prints 🗑️, so a headline glyph
+    // sourced from either sends the reader looking for a row that is not there.
+    it("keeps the headline clear when only a skipped row carries a breach", () => {
+      const section = service.renderSection({
+        baselineUrl: undefined,
+        failures: [],
+        rows: [
+          buildRow({ baseSize: 1000 }),
+          buildRow({
+            baseSize: 196_157,
+            // What the collector must never produce for a baseline row, pinned
+            // here so the renderer is proven not to depend on it being absent.
+            breach: "warn",
+            label: "Library bundle",
+            measured: false,
+            project: "lexico-components",
+            size: 196_157,
+          }),
+        ],
+      });
+
+      expect(section.startsWith("## 🎒 Bundles\n\n✅")).toBe(true);
+    });
+
+    it("keeps the headline clear when only a removed row carries a breach", () => {
+      const section = service.renderSection({
+        baselineUrl: undefined,
+        failures: [],
+        rows: [
+          buildRow({ baseSize: 1000 }),
+          buildRow({
+            baseSize: 2000,
+            breach: "fail",
+            label: "Retired",
+            measured: false,
+            removed: true,
+            size: 0,
+          }),
+        ],
+      });
+
+      expect(section.startsWith("## 🎒 Bundles\n\n✅")).toBe(true);
+    });
+
+    it("keeps the headline clear when only a skipped row reads as empty", () => {
+      const section = service.renderSection({
+        baselineUrl: undefined,
+        failures: [],
+        rows: [
+          buildRow({ baseSize: 1000 }),
+          buildRow({ baseSize: 500, empty: true, measured: false, size: 500 }),
+        ],
+      });
+
+      expect(section.startsWith("## 🎒 Bundles\n\n✅")).toBe(true);
+    });
+  });
+
   describe("failures", () => {
     const failure = {
       kind: "target" as const,

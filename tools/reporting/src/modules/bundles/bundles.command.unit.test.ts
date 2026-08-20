@@ -23,7 +23,7 @@ import { ReportingService } from "../reporting/reporting.service";
 import { BundlesCommand } from "./bundles.command";
 import { BundlesService } from "./bundles.service";
 
-import type { BundleCollection, MetricRow } from "./bundles.types";
+import type { MetricCollection, MetricRow } from "./bundles.types";
 
 const row: MetricRow = {
   baseSize: undefined,
@@ -40,7 +40,7 @@ const row: MetricRow = {
 
 describe(BundlesCommand, () => {
   let command: BundlesCommand;
-  const collect = vi.fn<() => BundleCollection>(() => ({
+  const collect = vi.fn<() => MetricCollection>(() => ({
     failures: [],
     rows: [row],
   }));
