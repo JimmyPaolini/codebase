@@ -45,22 +45,38 @@ codometer --directory . --config configuration/codometer.config.ts
 
 | Flag | Purpose |
 | ---- | ------- |
-| `--check` | Report whether the outputs are current, write nothing, exit non-zero when stale |
+| `--check <set>` | Fail on a comma-separated set drawn from `reports` and `limits` |
 | `--config [path]` | Configuration file to read; searched for when omitted |
 | `-d, --directory [path]` | Directory to measure; defaults to the current one |
-| `--json [path]` | Write the JSON report here, overriding the configured path |
-| `-m, --markdown [path]` | Write the badge block here, overriding the configured path |
+| `--json [path]` | The report goes here; the console when the path is omitted |
+| `-m, --markdown [path]` | The rendered badges go here as a whole document; the console when the path is omitted |
+| `--readme <path>` | Markdown file the badge block is spliced into, between its markers |
+| `--write` | Write every resolved destination |
 
-With no markdown or JSON destination — from either the configuration or the
-flags — the statistics are written to stdout instead. A repository with no
-configuration file at all is still measurable, which is what makes the tool
-usable before anyone has decided what their exclusions should be.
+**`--write` and `--check` are independent.** Neither implies the other and no
+combination of them is inferred, which is the whole of the surface:
 
-`--check` is the CI form: it fails when the committed badge block or JSON
-report no longer matches what the repository would produce.
+| Invocation | Writes | Fails on staleness | Fails on a breach |
+| ---------- | ------ | ------------------ | ----------------- |
+| `codometer` | no | no | no |
+| `codometer --check limits` | no | no | yes |
+| `codometer --check reports` | no | yes | no |
+| `codometer --check reports,limits` | no | yes | yes |
+| `codometer --write` | yes | no | no |
+| `codometer --write --check limits` | yes | no | yes, after writing |
+
+A `--write` run that also gates produces **every** report before it fails, so
+the report is on disk even when the gate trips. `--write --check reports` is
+refused rather than obeyed: nothing can be stale in the run that just wrote it.
+So is a `--check` value the tool does not know, and every complaint about one
+command line is reported together rather than one run at a time.
+
+A **breach** and **staleness** are different findings and are never reported as
+one. A `warn` breach is printed and leaves the exit code alone; a `fail` breach
+exits 1, but only where `--check limits` asked for a gate.
 
 ```yaml
-- run: npx codometer --check
+- run: npx codometer --check reports,limits
 ```
 
 ## What gets measured
@@ -224,9 +240,35 @@ narrows a symbol counter rather than being what it counts — is in
 
 ## Output
 
-The default markdown report is a description paragraph followed by shields.io
-badges under one `###` heading per language, spliced between two anchor
-markers:
+Three sinks, none of which implies another:
+
+| Sink | Flag | What lands there |
+| ---- | ---- | ---------------- |
+| Report | `--json [path]` | The structured report below |
+| Document | `-m, --markdown [path]` | The rendered badges as a whole file |
+| Splice | `--readme <path>` | The badge block, between two markers in a file somebody else wrote |
+
+A sink whose path is omitted goes to the console, and so does any sink on a run
+that neither writes nor compares. With nothing named anywhere — no flag, no
+configured destination — the badges go to the console, which is what a bare
+`codometer` does.
+
+**A named destination stands for all of them.** `--json` on its own asks for
+the report and nothing else, whatever the configuration file also describes.
+Adding to the configured set instead would put a second document on the stream
+the first one was piped out of.
+
+**Standard output carries the result; every diagnostic goes to standard error.**
+`codometer --json > report.json` has to produce a file something can parse, so a
+log line never shares that stream — including the exclusion notice below, which
+is still on the console and still in front of a human, just not inside the data.
+
+**The splice sink's path is never defaulted.** Splicing rewrites a file
+somebody else wrote the rest of, so a run that guessed the filename would edit
+a document nobody pointed it at.
+
+The rendered badges are a description paragraph followed by shields.io badges
+under one `###` heading per language. Spliced, they sit between two markers:
 
 ```markdown
 <!-- CODE_STATISTICS_START -->
@@ -239,8 +281,82 @@ it does not exist. Both halves of that behavior are replaceable on their own —
 lands in and how — and supplying one keeps the built-in other. See
 [markdown output](../codometer-configuration/README.md#markdown-output).
 
-JSON output writes the same statistics as a structured document, for anything
-that wants to chart them rather than read them.
+### What codometer writes, it does not measure
+
+Every file a run would write is left out of what it measures, and the run says
+so on the console. No configuration, and no ignore-file entry: codometer knows
+its own destinations.
+
+A badge is an image inside a link, so a spliced block moves `markdown.images`,
+`markdown.links`, and `markdown.lines`, which moves the badges, which moves the
+counts. Left in, a written report would be stale the moment it landed. The
+exclusion is applied identically whatever the flags say, so a `--write` run and
+a `--check reports` run always measure the same tree.
+
+### The report
+
+Codometer's own shape rather than any other tool's. Every metric carries its
+value, and where something limits it, that limit's value, severity, and whether
+it was breached — a limit that held is written out exactly like one that did
+not, so a consumer can render the headroom rather than only the failures.
+
+```json
+{
+  "failures": [
+    {
+      "kind": "limit",
+      "reason": "Cannot bind the limit written against \"nowhere.at.all\": nothing measured answers to it.",
+      "subject": "nowhere.at.all"
+    }
+  ],
+  "targets": [
+    {
+      "empty": false,
+      "files": 1,
+      "metrics": [
+        {
+          "limit": null,
+          "name": "compiled.files",
+          "path": "files",
+          "unit": null,
+          "value": 1
+        },
+        {
+          "limit": { "breached": true, "label": "Bundle", "severity": "fail", "value": 1000 },
+          "name": "compiled.size",
+          "path": "size",
+          "unit": "bytes",
+          "value": 5195
+        }
+      ],
+      "name": "compiled"
+    }
+  ]
+}
+```
+
+| Field | Meaning |
+| ----- | ------- |
+| `name` | The metric's name across runs — its target, then its path. The join key a later run is compared on |
+| `path` | The metric's path within its target, with no target name on the front |
+| `unit` | `"bytes"` where the value counts bytes, `null` for a plain count |
+| `limit` | `null` where nothing limits the metric — never an absent key |
+| `empty` | Said outright when a target's globs matched nothing |
+| `failures` | Whatever the run could not do: a target that would not measure, a limit that bound to nothing |
+
+**Byte values are raw and decimal.** A renderer showing kilobytes divides by
+1000, the same units a limit written `"8 KB"` is read in.
+
+**Nothing is signalled by a missing field.** A target that matched nothing says
+`"empty": true` and any limit written against it joins `failures`, rather than
+leaving a consumer to infer an empty match from an absent limit beside a
+passing verdict.
+
+A failure is neither a breach nor staleness: it is the run not having finished.
+Every one of them is collected and reported together, so a configuration with
+three broken limits is one run to diagnose rather than three. A failure fails
+any run that writes or gates; a bare run reports it and exits clean, exactly as
+the flag table promises.
 
 ## Project Graph
 
@@ -284,6 +400,7 @@ flowchart LR
     OutputJsonModule
     OutputMarkdownModule
     PythonModule
+    ReportModule
     ShellModule
     SizeAnalysisModule
     SqlModule
@@ -307,6 +424,7 @@ flowchart LR
   CodometerModule --> LimitsModule
   CodometerModule --> OutputJsonModule
   CodometerModule --> OutputMarkdownModule
+  CodometerModule --> ReportModule
   CodometerModule --> SizeAnalysisModule
   CodometerModule --> TargetsModule
   JupyterModule --> JsonModule
@@ -368,85 +486,65 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Measure | Value |
 | --- | --- |
-| Callables | 255 |
-| Files | 96 |
-| Calls traced | 417 |
-| Call stacks | 12 |
-| Deepest stack | 11 |
-| Stacks through recursion | 2 |
-| Unfollowable calls | 11 |
+| Callables | 306 |
+| Files | 103 |
+| Calls traced | 484 |
+| Call stacks | 11 |
+| Deepest stack | 13 |
+| Stacks through recursion | 1 |
+| Unfollowable calls | 10 |
 
 ### Call stacks
 
-**1. `CodometerCommand.run`** — depth ≥ 11 · decorated-method
+**1. `CodometerCommand.run`** — depth ≥ 13 · decorated-method
 
 ```text
-🚀 CodometerCommand.run(_passedParameters: string[], options: CodometerCommandOptions): Promise<void> [packages/codometer-cli/src/modules/codometer/codometer.command.ts:220]
-   ↳ Measure the repository and write every configured output.
-  └─> CodometerService.measure(args: MeasureArguments): MeasurementResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:231]
+🚀 CodometerCommand.run(_passedParameters: string[], options: CodometerCommandOptions): Promise<void> [packages/codometer-cli/src/modules/codometer/codometer.command.ts:393]
+   ↳ Measure the repository and produce every resolved output.
+  └─> CodometerService.measure(args: MeasureArguments): MeasurementResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:332]
      ↳ Measure the codebase and every target declared alongside it.
-    └─> CodometerService.analyzeLanguage(args: AnalyzeLanguageArguments): CodeStatisticsResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:58]
-       ↳ Run every language analyzer over one target's files.
-      └─> LanguagesService.analyze(args: AnalyzeLanguagesArguments): LanguageResults [packages/codometer-cli/src/modules/languages/languages.service.ts:54]
-         ↳ Analyze every language present in the discovered files.
-        └─> JupyterService.analyze(args: AnalyzeJupyterArguments): JupyterResult [packages/codometer-cli/src/modules/jupyter/jupyter.service.ts:166]
-           ↳ Analyze the given notebooks, resolved against the directory.
-          └─> JsonService.analyze(input: JsonInput): JsonResult [packages/codometer-cli/src/modules/json/json.service.ts:304]
-             ↳ Analyze JSON files and return structural metrics for their contents.
-            └─> JsonService.countArrayNode(node: unknown[], stats: JsonResult, depth: number): void (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:89]
-               ↳ Count array nodes and their child values.
-              └─> JsonService.countNode(node: unknown, stats: JsonResult, depth: number): void (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:105]
-                 ↳ Recursively count JSON containers, primitives, and nesting depth.
-                └─> JsonService.countRecordNode(node: Record<string, unknown>, stats: JsonResult, depth: number): void (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:156]
-                   ↳ Count object nodes and their child values.
-                  └─> JsonService.countPrimitiveNode(node: unknown, stats: JsonResult, depth: number): void [packages/codometer-cli/src/modules/json/json.service.ts:120]
-                     ↳ Count scalar values and update primitive stats.
-                    └─> JsonService.countPrimitiveValue(node: unknown, stats: JsonResult): void [packages/codometer-cli/src/modules/json/json.service.ts:137]
-                       ↳ Increment stats for a scalar JSON value.
+    └─> CodometerService.measureDeclaredTargets(…): { failures: ReportFailure[]; targets: TargetMeasurement[]; } [packages/codometer-cli/src/modules/codometer/codometer.service.ts:236]
+       ↳ Measure every declared target, keeping whatever the failures leave.
+      └─> CodometerService.measureTarget(args: MeasureTargetArguments): TargetMeasurement [packages/codometer-cli/src/modules/codometer/codometer.service.ts:272]
+         ↳ Measure one declared target with whichever analyses it asked for.
+        └─> CodometerService.analyzeLanguage(args: AnalyzeLanguageArguments): CodeStatisticsResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:62]
+           ↳ Run every language analyzer over one target's files.
+          └─> LanguagesService.analyze(args: AnalyzeLanguagesArguments): LanguageResults [packages/codometer-cli/src/modules/languages/languages.service.ts:54]
+             ↳ Analyze every language present in the discovered files.
+            └─> JupyterService.analyze(args: AnalyzeJupyterArguments): JupyterResult [packages/codometer-cli/src/modules/jupyter/jupyter.service.ts:166]
+               ↳ Analyze the given notebooks, resolved against the directory.
+              └─> JsonService.analyze(input: JsonInput): JsonResult [packages/codometer-cli/src/modules/json/json.service.ts:304]
+                 ↳ Analyze JSON files and return structural metrics for their contents.
+                └─> JsonService.countArrayNode(node: unknown[], stats: JsonResult, depth: number): void (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:89]
+                   ↳ Count array nodes and their child values.
+                  └─> JsonService.countNode(node: unknown, stats: JsonResult, depth: number): void (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:105]
+                     ↳ Recursively count JSON containers, primitives, and nesting depth.
+                    └─> JsonService.countRecordNode(node: Record<string, unknown>, stats: JsonResult, depth: number): void (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:156]
+                       ↳ Count object nodes and their child values.
+                      └─> JsonService.countPrimitiveNode(node: unknown, stats: JsonResult, depth: number): void [packages/codometer-cli/src/modules/json/json.service.ts:120]
+                         ↳ Count scalar values and update primitive stats.
+                        └─> JsonService.countPrimitiveValue(node: unknown, stats: JsonResult): void [packages/codometer-cli/src/modules/json/json.service.ts:137]
+                           ↳ Increment stats for a scalar JSON value.
 ```
 
-**2. `CodometerService.measureTarget`** — depth ≥ 10 · orphan-root
+**2. `OutputMarkdownService.renderBadges`** — depth 6 · orphan-root
 
 ```text
-🚀 CodometerService.measureTarget(args: MeasureTargetArguments): TargetMeasurement [packages/codometer-cli/src/modules/codometer/codometer.service.ts:188]
-   ↳ Measure one declared target with whichever analyses it asked for.
-  └─> CodometerService.analyzeLanguage(args: AnalyzeLanguageArguments): CodeStatisticsResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:58]
-     ↳ Run every language analyzer over one target's files.
-    └─> LanguagesService.analyze(args: AnalyzeLanguagesArguments): LanguageResults [packages/codometer-cli/src/modules/languages/languages.service.ts:54]
-       ↳ Analyze every language present in the discovered files.
-      └─> JupyterService.analyze(args: AnalyzeJupyterArguments): JupyterResult [packages/codometer-cli/src/modules/jupyter/jupyter.service.ts:166]
-         ↳ Analyze the given notebooks, resolved against the directory.
-        └─> JsonService.analyze(input: JsonInput): JsonResult [packages/codometer-cli/src/modules/json/json.service.ts:304]
-           ↳ Analyze JSON files and return structural metrics for their contents.
-          └─> JsonService.countArrayNode(node: unknown[], stats: JsonResult, depth: number): void (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:89]
-             ↳ Count array nodes and their child values.
-            └─> JsonService.countNode(node: unknown, stats: JsonResult, depth: number): void (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:105]
-               ↳ Recursively count JSON containers, primitives, and nesting depth.
-              └─> JsonService.countRecordNode(node: Record<string, unknown>, stats: JsonResult, depth: number): void (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:156]
-                 ↳ Count object nodes and their child values.
-                └─> JsonService.countPrimitiveNode(node: unknown, stats: JsonResult, depth: number): void [packages/codometer-cli/src/modules/json/json.service.ts:120]
-                   ↳ Count scalar values and update primitive stats.
-                  └─> JsonService.countPrimitiveValue(node: unknown, stats: JsonResult): void [packages/codometer-cli/src/modules/json/json.service.ts:137]
-                     ↳ Increment stats for a scalar JSON value.
+🚀 OutputMarkdownService.renderBadges(args: RenderBadgesArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:217]
+   ↳ Render the badge block for a destination, description and all.
+  └─> OutputMarkdownService.renderDocument(args: RenderDocumentArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:243]
+     ↳ Render the badges as a document of their own.
+    └─> OutputMarkdownService.buildBadgeGroups(statistics: CodeStatisticsResult): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:86]
+       ↳ Assemble the badge groups, in the order they are rendered.
+      └─> buildRepositoryGroup(statistics: CodeStatisticsResult): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:204]
+         ↳ Renders the Repository badge group.
+        └─> buildBadge(label: string, value: number | string, color: string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:11]
+           ↳ Build a single shields.io badge markdown image.
+          └─> encodeValue(input: number | string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:322]
+             ↳ Encode a value so it can safely appear in a badge URL.
 ```
 
-**3. `OutputMarkdownService.renderBadges`** — depth 4 · orphan-root
-
-```text
-🚀 OutputMarkdownService.renderBadges(args: RenderBadgesArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:165]
-   ↳ Render the built-in badge report for the measured statistics.
-  └─> buildRepositoryGroup(statistics: CodeStatisticsResult): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:204]
-     ↳ Renders the Repository badge group.
-    └─> buildBadge(label: string, value: number | string, color: string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:11]
-       ↳ Build a single shields.io badge markdown image.
-      └─> encodeValue(input: number | string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:322]
-         ↳ Encode a value so it can safely appear in a badge URL.
-```
-
-<details>
-<summary>9 more call stacks</summary>
-
-**4. `TypescriptService.handleEnum`** — depth 3 · orphan-root
+**3. `TypescriptService.handleEnum`** — depth 3 · orphan-root
 
 ```text
 🚀 TypescriptService.handleEnum(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-cli/src/modules/typescript/typescript.service.ts:250]
@@ -456,7 +554,10 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
     └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-cli/src/modules/typescript/typescript.service.ts:352]
 ```
 
-**5. `TypescriptService.handleFunction`** — depth 3 · orphan-root
+<details>
+<summary>8 more call stacks</summary>
+
+**4. `TypescriptService.handleFunction`** — depth 3 · orphan-root
 
 ```text
 🚀 TypescriptService.handleFunction(node: tsCompiler.Node, stats: TypescriptResult, insideClass: boolean): void [packages/codometer-cli/src/modules/typescript/typescript.service.ts:256]
@@ -466,7 +567,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
     └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-cli/src/modules/typescript/typescript.service.ts:352]
 ```
 
-**6. `TypescriptService.handleInterface`** — depth 3 · orphan-root
+**5. `TypescriptService.handleInterface`** — depth 3 · orphan-root
 
 ```text
 🚀 TypescriptService.handleInterface(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-cli/src/modules/typescript/typescript.service.ts:290]
@@ -476,7 +577,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
     └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-cli/src/modules/typescript/typescript.service.ts:352]
 ```
 
-**7. `TypescriptService.handleMethodOrAccessor`** — depth 3 · orphan-root
+**6. `TypescriptService.handleMethodOrAccessor`** — depth 3 · orphan-root
 
 ```text
 🚀 TypescriptService.handleMethodOrAccessor(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-cli/src/modules/typescript/typescript.service.ts:300]
@@ -486,7 +587,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
     └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.AsyncKeyword [packages/codometer-cli/src/modules/typescript/typescript.service.ts:340]
 ```
 
-**8. `TypescriptService.handleTypeAlias`** — depth 3 · orphan-root
+**7. `TypescriptService.handleTypeAlias`** — depth 3 · orphan-root
 
 ```text
 🚀 TypescriptService.handleTypeAlias(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-cli/src/modules/typescript/typescript.service.ts:313]
@@ -496,7 +597,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
     └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-cli/src/modules/typescript/typescript.service.ts:352]
 ```
 
-**9. `TypescriptService.handleVariable`** — depth 3 · orphan-root
+**8. `TypescriptService.handleVariable`** — depth 3 · orphan-root
 
 ```text
 🚀 TypescriptService.handleVariable(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-cli/src/modules/typescript/typescript.service.ts:322]
@@ -506,30 +607,31 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
     └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-cli/src/modules/typescript/typescript.service.ts:352]
 ```
 
-**10. `OutputMarkdownService.syncAnchoredBlock`** — depth ≥ 3 · orphan-root
+**9. `OutputMarkdownService.syncAnchoredBlock`** — depth ≥ 3 · orphan-root
 
 ```text
-🚀 OutputMarkdownService.syncAnchoredBlock(args: SyncAnchoredBlockArguments): boolean [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:109]
+🚀 OutputMarkdownService.syncAnchoredBlock(args: SyncAnchoredBlockArguments): boolean [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:163]
    ↳ Splice the anchored block into a file, or report whether it is current.
-  └─> OutputMarkdownService.buildBlockRegex(args: { endMarker: string; startMarker: string; }): RegExp [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:75]
+  └─> OutputMarkdownService.buildBlockRegex(args: { endMarker: string; startMarker: string; }): RegExp [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:109]
      ↳ Build the matcher for a block delimited by the configured markers.
-    └─> OutputMarkdownService.escapeRegex(input: string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:87]
+    └─> OutputMarkdownService.escapeRegex(input: string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:121]
        ↳ Escape a configured marker so it can be searched for literally.
 ```
 
-**11. `main`** — depth ≥ 2 · module-bootstrap
+**10. `main`** — depth ≥ 2 · module-bootstrap
 
 ```text
-🚀 main(): Promise<void> [packages/codometer-cli/src/main.ts:11]
+🚀 main(): Promise<void> [packages/codometer-cli/src/main.ts:17]
    ↳ Bootstraps the codometer CLI command application.
-  └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:36]
+  └─> LoggerService.logToStandardError(): void [packages/logger/src/modules/logger/logger.service.ts:197]
+     ↳ Sends every subsequent line to standard error instead of standard output.
 ```
 
-**12. `CodometerCommand.constructor`** — depth ≥ 2 · orphan-root
+**11. `CodometerCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 CodometerCommand.constructor(…): CodometerCommand [packages/codometer-cli/src/modules/codometer/codometer.command.ts:40]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+🚀 CodometerCommand.constructor(…): CodometerCommand [packages/codometer-cli/src/modules/codometer/codometer.command.ts:38]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -539,7 +641,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CodometerService.measureTarget` | 17 | `codometer-cli:modules/file-discovery`, `codometer-cli:modules/size-analysis`, `codometer-cli:modules/targets` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:188` |
+| `CodometerService.measureTarget` | 17 | `codometer-cli:modules/file-discovery`, `codometer-cli:modules/size-analysis`, `codometer-cli:modules/targets` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:272` |
 | `LanguagesService.analyze` | 12 | `codometer-cli:modules/css`, `codometer-cli:modules/hcl`, `codometer-cli:modules/json`, `codometer-cli:modules/jupyter`, `codometer-cli:modules/markdown`, `codometer-cli:modules/python`, `codometer-cli:modules/shell`, `codometer-cli:modules/sql`, `codometer-cli:modules/toml`, `codometer-cli:modules/typescript`, `codometer-cli:modules/yaml` | `packages/codometer-cli/src/modules/languages/languages.service.ts:54` |
 
 ### Possibly misplaced

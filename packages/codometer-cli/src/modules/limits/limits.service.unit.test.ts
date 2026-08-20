@@ -3,12 +3,14 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { buildCodeStatistics } from "../../../testing/mocks";
 
-import { DuplicateTargetError } from "./duplicate-target.errors";
-import { EmptyTargetError } from "./empty-target.errors";
-import { UnboundMetricError } from "./limits.errors";
 import { LimitsService } from "./limits.service";
+import { MetricIndexService } from "./metric-index.service";
 
-import type { EvaluateLimitsArguments, MeasuredTarget } from "./limits.types";
+import type {
+  LimitsEvaluation,
+  MeasuredTarget,
+  TargetMetricIndex,
+} from "./limits.types";
 import type {
   CodometerSeverity,
   ResolvedCodometerConfiguration,
@@ -73,25 +75,34 @@ function buildLimit(
 
 describe(LimitsService, () => {
   let service: LimitsService;
+  let metricIndexService: MetricIndexService;
+
+  /** Indexes the given targets the way the measurement pipeline does. */
+  function index(
+    targets: MeasuredTarget[],
+  ): ReadonlyMap<string, TargetMetricIndex> {
+    return metricIndexService.index(targets).indexes;
+  }
 
   /** Holds one limit against the codebase and the compiled target. */
   function evaluate(
     limit: ResolvedCodometerLimit,
-    overrides: Partial<EvaluateLimitsArguments> = {},
-  ): ReturnType<LimitsService["evaluate"]> {
+    targets: MeasuredTarget[] = [codebaseTarget, compiledTarget],
+    defaultTarget?: string,
+  ): LimitsEvaluation {
     return service.evaluate({
-      configuration: buildConfiguration([limit]),
-      targets: [codebaseTarget, compiledTarget],
-      ...overrides,
+      configuration: buildConfiguration([limit], defaultTarget),
+      indexes: index(targets),
     });
   }
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [LimitsService],
+      providers: [LimitsService, MetricIndexService],
     }).compile();
 
     service = await module.resolve(LimitsService);
+    metricIndexService = await module.resolve(MetricIndexService);
   });
 
   it("is defined", () => {
@@ -107,7 +118,9 @@ describe(LimitsService, () => {
     ["Compiled JavaScript.size", 4529],
     ["Compiled JavaScript.files", 2],
   ])("reads %s as the metric measuring %i", (metric, measured) => {
-    expect(evaluate(buildLimit(metric, 1_000_000))[0]?.measured).toBe(measured);
+    expect(evaluate(buildLimit(metric, 1_000_000)).limits[0]?.measured).toBe(
+      measured,
+    );
   });
 
   it("reports a fail breach with the metric, its limit, and its value", () => {
@@ -121,29 +134,27 @@ describe(LimitsService, () => {
             value: 4000,
           },
         ]),
-        targets: [codebaseTarget, compiledTarget],
+        indexes: index([codebaseTarget, compiledTarget]),
       }),
-    ).toStrictEqual([
-      {
-        breached: true,
-        label: "Compiled bundle",
-        limit: 4000,
-        measured: 4529,
-        metric: "size",
-        severity: "fail",
-        target: "Compiled JavaScript",
-      },
-    ]);
+    ).toStrictEqual({
+      failures: [],
+      limits: [
+        {
+          breached: true,
+          label: "Compiled bundle",
+          limit: 4000,
+          measured: 4529,
+          metric: "size",
+          severity: "fail",
+          target: "Compiled JavaScript",
+        },
+      ],
+    });
   });
 
   it("reports a warn breach the same way, carrying its severity", () => {
     expect(
-      service.evaluate({
-        configuration: buildConfiguration([
-          buildLimit("codebase.typescript.interfaces", 40, "warn"),
-        ]),
-        targets: [codebaseTarget, compiledTarget],
-      }),
+      evaluate(buildLimit("codebase.typescript.interfaces", 40, "warn")).limits,
     ).toStrictEqual([
       {
         breached: true,
@@ -167,7 +178,7 @@ describe(LimitsService, () => {
     "holds 42 interfaces to a limit of %i as breached=%s",
     (value, breached) => {
       expect(
-        evaluate(buildLimit("codebase.typescript.interfaces", value))[0]
+        evaluate(buildLimit("codebase.typescript.interfaces", value)).limits[0]
           ?.breached,
       ).toBe(breached);
     },
@@ -177,19 +188,17 @@ describe(LimitsService, () => {
     expect(
       service.evaluate({
         configuration: buildConfiguration([]),
-        targets: [codebaseTarget, compiledTarget],
+        indexes: index([codebaseTarget, compiledTarget]),
       }),
-    ).toStrictEqual([]);
+    ).toStrictEqual({ failures: [], limits: [] });
   });
 
   it("reads an unqualified path as the default target's metric", () => {
-    const [evaluated] = service.evaluate({
-      configuration: buildConfiguration(
-        [buildLimit("typescript.interfaces", 100)],
-        "codebase",
-      ),
-      targets: [codebaseTarget, compiledTarget],
-    });
+    const [evaluated] = evaluate(
+      buildLimit("typescript.interfaces", 100),
+      [codebaseTarget, compiledTarget],
+      "codebase",
+    ).limits;
 
     expect(evaluated?.target).toBe("codebase");
     expect(evaluated?.measured).toBe(42);
@@ -200,11 +209,10 @@ describe(LimitsService, () => {
       ...compiledTarget,
       name: "dist.old",
     };
-
-    const [evaluated] = service.evaluate({
-      configuration: buildConfiguration([buildLimit("dist.old.size", 5000)]),
-      targets: [codebaseTarget, legacyTarget],
-    });
+    const [evaluated] = evaluate(buildLimit("dist.old.size", 5000), [
+      codebaseTarget,
+      legacyTarget,
+    ]).limits;
 
     expect(evaluated?.target).toBe("dist.old");
     expect(evaluated?.metric).toBe("size");
@@ -215,16 +223,13 @@ describe(LimitsService, () => {
       ...compiledTarget,
       name: "markdown",
     };
+    const { failures } = evaluate(
+      buildLimit("markdown.files", 20),
+      [codebaseTarget, markdownTarget],
+      "codebase",
+    );
 
-    expect(() =>
-      service.evaluate({
-        configuration: buildConfiguration(
-          [buildLimit("markdown.files", 20)],
-          "codebase",
-        ),
-        targets: [codebaseTarget, markdownTarget],
-      }),
-    ).toThrow(
+    expect(failures[0]?.reason).toMatch(
       /could be the "markdown" target's "files" metric, or the "codebase" target's "markdown.files" metric/,
     );
   });
@@ -239,15 +244,13 @@ describe(LimitsService, () => {
         ],
       }),
     };
+    const { failures } = evaluate(buildLimit("codebase.custom.Tests", 10), [
+      doubledTarget,
+    ]);
 
-    expect(() =>
-      service.evaluate({
-        configuration: buildConfiguration([
-          buildLimit("codebase.custom.Tests", 10),
-        ]),
-        targets: [doubledTarget],
-      }),
-    ).toThrow(/more than one metric called "custom.Tests"/);
+    expect(failures[0]?.reason).toMatch(
+      /more than one metric called "custom.Tests"/,
+    );
   });
 
   it("indexes nothing from a statistic that holds no number", () => {
@@ -257,25 +260,30 @@ describe(LimitsService, () => {
     // steps over whatever else it is handed rather than indexing it.
     Reflect.set(language, "sourceFiles", "many");
     const oddTarget: MeasuredTarget = { ...codebaseTarget, language };
+    const { failures } = evaluate(buildLimit("codebase.sourceFiles", 1), [
+      oddTarget,
+    ]);
 
-    expect(() =>
-      service.evaluate({
-        configuration: buildConfiguration([
-          buildLimit("codebase.sourceFiles", 1),
-        ]),
-        targets: [oddTarget],
-      }),
-    ).toThrow(UnboundMetricError);
+    expect(failures[0]?.reason).toMatch(/nothing measured answers to it/);
   });
 
   it("refuses a path nothing measured answers to", () => {
-    expect(() =>
-      evaluate(buildLimit("codebase.typescript.traits", 10)),
-    ).toThrow(UnboundMetricError);
+    expect(
+      evaluate(buildLimit("codebase.typescript.traits", 10)).failures,
+    ).toStrictEqual([
+      {
+        metric: "codebase.typescript.traits",
+        reason: expect.stringContaining(
+          "Cannot bind the limit written against",
+        ) as string,
+      },
+    ]);
   });
 
   it("refuses an unqualified path when no default target is configured", () => {
-    expect(() => evaluate(buildLimit("typescript.interfaces", 10))).toThrow(
+    expect(
+      evaluate(buildLimit("typescript.interfaces", 10)).failures[0]?.reason,
+    ).toMatch(
       /nothing measured answers to it. Measured targets: "codebase", "Compiled JavaScript"/,
     );
   });
@@ -283,58 +291,54 @@ describe(LimitsService, () => {
   // The target ran size analysis alone, so its language counters were never
   // measured — a limit on one would otherwise be held against a zero.
   it("refuses a metric from an analysis the target never ran", () => {
-    expect(() =>
-      evaluate(buildLimit("Compiled JavaScript.typescript.interfaces", 10)),
-    ).toThrow(UnboundMetricError);
+    expect(
+      evaluate(buildLimit("Compiled JavaScript.typescript.interfaces", 10))
+        .failures,
+    ).toHaveLength(1);
   });
 
   it("refuses a default target that was never measured", () => {
-    expect(() =>
-      service.evaluate({
-        configuration: buildConfiguration(
-          [buildLimit("typescript.interfaces", 10)],
-          "web",
-        ),
-        targets: [codebaseTarget],
-      }),
-    ).toThrow(/default target "web" was never measured/);
-  });
-
-  // A configuration that gates nothing has nothing to say about the targets,
-  // so nothing about them can fail the run.
-  it("leaves two targets sharing one name alone when nothing limits them", () => {
     expect(
-      service.evaluate({
-        configuration: buildConfiguration([]),
-        targets: [codebaseTarget, codebaseTarget],
-      }),
-    ).toStrictEqual([]);
+      evaluate(buildLimit("typescript.interfaces", 10), [codebaseTarget], "web")
+        .failures[0]?.reason,
+    ).toMatch(/default target "web" was never measured/);
   });
 
-  it("refuses two measured targets sharing one name", () => {
-    expect(() =>
-      service.evaluate({
-        configuration: buildConfiguration([buildLimit("codebase.files", 10)]),
-        targets: [codebaseTarget, codebaseTarget],
-      }),
-    ).toThrow(DuplicateTargetError);
+  // One run has to name every limit that cannot be bound. Reporting only the
+  // first turns one repair into as many runs as there are mistakes.
+  it("collects every limit that binds to nothing rather than stopping at the first", () => {
+    const { failures, limits } = service.evaluate({
+      configuration: buildConfiguration([
+        buildLimit("codebase.typescript.traits", 10),
+        buildLimit("codebase.files", 100),
+        buildLimit("nowhere.at.all", 10),
+      ]),
+      indexes: index([codebaseTarget, compiledTarget]),
+    });
+
+    expect(failures.map((failure) => failure.metric)).toStrictEqual([
+      "codebase.typescript.traits",
+      "nowhere.at.all",
+    ]);
+    expect(limits).toHaveLength(1);
   });
 
   it("fails a target that matched nothing while carrying a limit", () => {
-    expect(() =>
-      evaluate(buildLimit("Compiled JavaScript.size", 10_000), {
-        targets: [codebaseTarget, { ...compiledTarget, files: 0 }],
-      }),
-    ).toThrow(EmptyTargetError);
+    const { failures } = evaluate(
+      buildLimit("Compiled JavaScript.size", 10_000),
+      [codebaseTarget, { ...compiledTarget, files: 0 }],
+    );
+
+    expect(failures[0]?.reason).toMatch(/matched no files/);
   });
 
   // Without a limit there is nothing to assert the files exist, so an empty
   // match is a measurement of zero and unremarkable.
   it("leaves a target that matched nothing alone when nothing limits it", () => {
-    const [evaluated] = service.evaluate({
-      configuration: buildConfiguration([buildLimit("codebase.files", 20)]),
-      targets: [codebaseTarget, { ...compiledTarget, files: 0 }],
-    });
+    const [evaluated] = evaluate(buildLimit("codebase.files", 20), [
+      codebaseTarget,
+      { ...compiledTarget, files: 0 },
+    ]).limits;
 
     expect(evaluated?.breached).toBe(false);
   });

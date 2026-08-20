@@ -17,6 +17,12 @@ export interface BindMetricArguments {
   target: string;
 }
 
+/** A target name that answered to more than one measured target. */
+export interface DuplicateTargetFinding {
+  reason: string;
+  target: string;
+}
+
 /**
  * What one limit found once it was pointed at its metric.
  *
@@ -41,7 +47,32 @@ export interface EvaluatedLimit {
 /** Arguments accepted when evaluating every declared limit. */
 export interface EvaluateLimitsArguments {
   configuration: ResolvedCodometerConfiguration;
-  targets: readonly MeasuredTarget[];
+  indexes: ReadonlyMap<string, TargetMetricIndex>;
+}
+
+/**
+ * One limit that could not be held against anything.
+ *
+ * Collected rather than thrown. A configuration carrying three limits that
+ * bind to nothing is three mistakes to fix, and reporting only the first turns
+ * one repair into three runs.
+ */
+export interface LimitFailure {
+  /** The dotted path exactly as the limit was written. */
+  metric: string;
+  reason: string;
+}
+
+/**
+ * What every declared limit found, alongside the ones that bound to nothing.
+ *
+ * Both lists are always present. A limit that could not be bound is neither a
+ * breach nor a pass, and reporting it as either would be a gate whose verdict
+ * nobody could trust.
+ */
+export interface LimitsEvaluation {
+  failures: LimitFailure[];
+  limits: EvaluatedLimit[];
 }
 
 /**
@@ -71,6 +102,13 @@ export interface MetricBinding {
   measured: number;
   metric: string;
   target: string;
+}
+
+/** Every measured target's metrics, and the names two targets fought over. */
+export interface MetricIndexResult {
+  /** Collisions found while indexing, in the order they were found. */
+  duplicates: DuplicateTargetFinding[];
+  indexes: Map<string, TargetMetricIndex>;
 }
 
 /** Arguments accepted when resolving one limit's path to a single metric. */

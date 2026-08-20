@@ -35,11 +35,6 @@ applications/lexico-ingestion/src/modules/literature/literature.constants.ts
 notepads/
 templates/
 
-# 📊 Codometer's own output target. Measuring it makes the report an input to
-# itself: every badge the last run wrote counts toward the next run's markdown
-# metrics, so a written block is stale the moment it lands.
-/README.md
-
 # 🧩 Installed agent skills, one entry per skill in skills-lock.json. Owned
 # upstream rather than authored here, and the largest carries half a megabyte
 # of bundled browser JavaScript that would otherwise dominate every counter.

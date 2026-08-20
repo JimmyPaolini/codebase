@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
@@ -24,11 +24,16 @@ import {
 import type {
   BuildAnchorHelpersArguments,
   RenderBadgesArguments,
+  RenderDocumentArguments,
   SyncAnchoredBlockArguments,
+  SyncDocumentArguments,
   SyncMarkdownArguments,
   WrapInAnchorsArguments,
 } from "./output-markdown.types";
-import type { MarkdownAnchorHelpers } from "@codometer/configuration";
+import type {
+  CodeStatisticsResult,
+  MarkdownAnchorHelpers,
+} from "@codometer/configuration";
 
 /**
  * Writes generated code statistics badges into a markdown file.
@@ -70,6 +75,35 @@ export class OutputMarkdownService {
   }
 
   /**
+   * Assemble the badge groups, in the order they are rendered.
+   *
+   * Every counter the measurement pipeline produces gets a badge, grouped
+   * under a heading naming the language it was measured from. Only the
+   * `Repository` group spans languages; the rest report one language each, so
+   * a number that moves can be traced to the analyzer that produced it rather
+   * than to a sum that silently mixes several.
+   */
+  private buildBadgeGroups(statistics: CodeStatisticsResult): string {
+    return [
+      buildRepositoryGroup(statistics),
+      buildTypescriptGroup(statistics),
+      buildPythonGroup(statistics),
+      buildJsonGroup(statistics),
+      buildYamlGroup(statistics),
+      buildTomlGroup(statistics),
+      buildShellGroup(statistics),
+      buildSqlGroup(statistics),
+      buildHclGroup(statistics),
+      buildCssGroup(statistics),
+      buildCustomGroup(statistics),
+      buildJupyterGroup(statistics),
+      buildMarkdownGroup(statistics),
+    ]
+      .filter((group) => group !== "")
+      .join("\n\n");
+  }
+
+  /**
    * Build the matcher for a block delimited by the configured markers.
    */
   private buildBlockRegex(args: {
@@ -97,6 +131,26 @@ export class OutputMarkdownService {
     } catch {
       return "";
     }
+  }
+
+  /**
+   * The markdown a destination produces, whoever produced it.
+   *
+   * A configured `render` replaces the built-in badges and is handed them
+   * anyway, so a renderer that wants to add to the default report never has to
+   * reimplement it.
+   */
+  private renderContent(args: RenderBadgesArguments): string {
+    const { destination } = args;
+    const renderBadges = (): string => this.renderBadges(args);
+
+    return destination.render === undefined
+      ? renderBadges()
+      : destination.render({
+          description: destination.description,
+          renderBadges,
+          statistics: args.statistics,
+        });
   }
 
   /**
@@ -154,60 +208,60 @@ export class OutputMarkdownService {
   // 🌎 Public Methods
 
   /**
-   * Render the built-in badge report for the measured statistics.
+   * Render the badge block for a destination, description and all.
    *
-   * Every counter the measurement pipeline produces gets a badge, grouped
-   * under a heading naming the language it was measured from. Only the
-   * `Repository` group spans languages; the rest report one language each, so
-   * a number that moves can be traced to the analyzer that produced it rather
-   * than to a sum that silently mixes several.
+   * The block a splice destination places between its markers, and the body of
+   * the document a whole-file destination writes. Both are the same markdown,
+   * which is why the two sinks never disagree about a number.
    */
   renderBadges(args: RenderBadgesArguments): string {
-    const { statistics } = args;
-    const groups = [
-      buildRepositoryGroup(statistics),
-      buildTypescriptGroup(statistics),
-      buildPythonGroup(statistics),
-      buildJsonGroup(statistics),
-      buildYamlGroup(statistics),
-      buildTomlGroup(statistics),
-      buildShellGroup(statistics),
-      buildSqlGroup(statistics),
-      buildHclGroup(statistics),
-      buildCssGroup(statistics),
-      buildCustomGroup(statistics),
-      buildJupyterGroup(statistics),
-      buildMarkdownGroup(statistics),
-    ]
-      .filter((group) => group !== "")
-      .join("\n\n");
-    const { description } = args.destination;
-
-    return description === undefined ? groups : `${description}\n\n${groups}`;
+    return this.renderDocument({
+      description: args.destination.description,
+      statistics: args.statistics,
+    });
   }
 
   /**
-   * Sync a markdown destination with the current statistics.
+   * Render the badge block wrapped in its destination's anchor markers.
+   *
+   * What a splice would place, without placing it — the form a run that writes
+   * nothing shows on the console.
+   */
+  renderBlock(args: RenderBadgesArguments): string {
+    return this.wrapInAnchors({
+      content: this.renderContent(args),
+      destination: args.destination,
+    });
+  }
+
+  /**
+   * Render the badges as a document of their own.
+   *
+   * No anchor markers: nothing else is in the file, so there is nothing to
+   * anchor the block against.
+   */
+  renderDocument(args: RenderDocumentArguments): string {
+    const groups = this.buildBadgeGroups(args.statistics);
+
+    return args.description === undefined
+      ? groups
+      : `${args.description}\n\n${groups}`;
+  }
+
+  /**
+   * Sync a splice destination with the current statistics.
    *
    * Rendering and writing are separate seams, each replaceable from the
    * configuration on its own: `render` decides what the markdown says, `write`
    * decides which file it lands in and how. The built-in pair renders badges
    * and splices them between the configured anchor markers.
    *
-   * Returns `false` only in check mode, and only when the destination is
+   * Returns `false` only when checking, and only when the destination is
    * missing or stale.
    */
   sync(args: SyncMarkdownArguments): boolean {
-    const { destination, statistics } = args;
-    const renderBadges = (): string => this.renderBadges(args);
-    const content =
-      destination.render === undefined
-        ? renderBadges()
-        : destination.render({
-            description: destination.description,
-            renderBadges,
-            statistics,
-          });
+    const { destination } = args;
+    const content = this.renderContent(args);
     const anchors = this.buildAnchorHelpers({
       check: args.check,
       content,
@@ -225,7 +279,27 @@ export class OutputMarkdownService {
       check: args.check,
       content,
       path: destination.path,
-      statistics,
+      statistics: args.statistics,
     });
+  }
+
+  /**
+   * Sync a whole markdown document with the rendered badges.
+   *
+   * The file is the content and nothing else, so it is replaced outright
+   * rather than spliced into.
+   */
+  syncDocument(args: SyncDocumentArguments): boolean {
+    const resolvedPath = path.resolve(args.path);
+    const document = `${args.content}\n`;
+
+    if (args.check) {
+      return this.readExisting(resolvedPath) === document;
+    }
+
+    mkdirSync(path.dirname(resolvedPath), { recursive: true });
+    writeFileSync(resolvedPath, document, "utf8");
+
+    return true;
   }
 }

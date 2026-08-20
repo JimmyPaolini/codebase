@@ -298,14 +298,14 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
 ```text
 🚀 main(): Promise<void> [tools/reporting/src/main.ts:9]
    ↳ Bootstraps the bundle sizes CLI application.
-  └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:36]
+  └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:38]
 ```
 
 **13. `ReportingService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 ReportingService.constructor(…): ReportingService [tools/reporting/src/modules/reporting/reporting.service.ts:27]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -313,7 +313,7 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
 
 ```text
 🚀 BundlesCommand.constructor(…): BundlesCommand [tools/reporting/src/modules/bundles/bundles.command.ts:33]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -321,7 +321,7 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
 
 ```text
 🚀 ReportingCommand.constructor(…): ReportingCommand [tools/reporting/src/modules/reporting/reporting.command.ts:33]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 

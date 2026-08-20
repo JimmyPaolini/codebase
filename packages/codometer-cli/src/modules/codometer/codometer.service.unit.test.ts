@@ -6,6 +6,7 @@ import { CustomStatisticsService } from "../custom-statistics/custom-statistics.
 import { FileDiscoveryService } from "../file-discovery/file-discovery.service";
 import { LanguagesService } from "../languages/languages.service";
 import { LimitsService } from "../limits/limits.service";
+import { MetricIndexService } from "../limits/metric-index.service";
 import { SizeAnalysisService } from "../size-analysis/size-analysis.service";
 import { TargetsService } from "../targets/targets.service";
 
@@ -88,6 +89,7 @@ describe(CodometerService, () => {
   let fileDiscoveryService: FileDiscoveryService;
   let languagesService: LanguagesService;
   let limitsService: LimitsService;
+  let metricIndexService: MetricIndexService;
   let sizeAnalysisService: SizeAnalysisService;
   let targetsService: TargetsService;
 
@@ -100,6 +102,7 @@ describe(CodometerService, () => {
       targetsService,
       sizeAnalysisService,
       limitsService,
+      metricIndexService,
     );
   }
 
@@ -117,6 +120,7 @@ describe(CodometerService, () => {
         },
         { provide: LanguagesService, useValue: createMock<LanguagesService>() },
         { provide: LimitsService, useValue: createMock<LimitsService>() },
+        { provide: MetricIndexService, useValue: new MetricIndexService() },
         {
           provide: SizeAnalysisService,
           useValue: createMock<SizeAnalysisService>(),
@@ -133,7 +137,12 @@ describe(CodometerService, () => {
     fileDiscoveryService = createMock<FileDiscoveryService>();
     languagesService = createMock<LanguagesService>();
     limitsService = createMock<LimitsService>();
+    metricIndexService = new MetricIndexService();
     sizeAnalysisService = createMock<SizeAnalysisService>();
+    vi.mocked(limitsService.evaluate).mockReturnValue({
+      failures: [],
+      limits: [],
+    });
     targetsService = createMock<TargetsService>();
     vi.mocked(targetsService.matchFiles).mockReturnValue([
       "dist/index.js",
@@ -165,7 +174,11 @@ describe(CodometerService, () => {
   });
 
   it("passes the configured exclusions to discovery", () => {
-    buildService().measure({ configuration, workingDirectory: "/repo" });
+    buildService().measure({
+      configuration,
+      outputPaths: [],
+      workingDirectory: "/repo",
+    });
 
     expect(fileDiscoveryService.discoverFiles).toHaveBeenCalledExactlyOnceWith({
       exclude: ["**/node_modules/**"],
@@ -175,7 +188,11 @@ describe(CodometerService, () => {
   });
 
   it("hands the discovered files to every language analyzer at once", () => {
-    buildService().measure({ configuration, workingDirectory: "/repo" });
+    buildService().measure({
+      configuration,
+      outputPaths: [],
+      workingDirectory: "/repo",
+    });
 
     expect(languagesService.analyze).toHaveBeenCalledExactlyOnceWith({
       configuration,
@@ -188,6 +205,7 @@ describe(CodometerService, () => {
   it("counts the configured conventions over the tracked files", () => {
     const result = buildService().measure({
       configuration,
+      outputPaths: [],
       workingDirectory: "/repo",
     });
 
@@ -209,6 +227,7 @@ describe(CodometerService, () => {
   it("projects the TypeScript analyzer onto both language groups", () => {
     const result = buildService().measure({
       configuration,
+      outputPaths: [],
       workingDirectory: "/repo",
     });
 
@@ -222,6 +241,7 @@ describe(CodometerService, () => {
   it("counts notebook code toward the repository total exactly once", () => {
     const result = buildService().measure({
       configuration,
+      outputPaths: [],
       workingDirectory: "/repo",
     });
 
@@ -233,6 +253,7 @@ describe(CodometerService, () => {
   it("reports the codebase as a target of its own", () => {
     const result = buildService().measure({
       configuration,
+      outputPaths: [],
       workingDirectory: "/repo",
     });
 
@@ -250,6 +271,7 @@ describe(CodometerService, () => {
   it("measures the size of a declared target and leaves its language alone", () => {
     const result = buildService().measure({
       configuration: { ...configuration, targets: [compiledTarget] },
+      outputPaths: [],
       workingDirectory: "/repo",
     });
 
@@ -276,15 +298,151 @@ describe(CodometerService, () => {
         ...configuration,
         targets: [{ ...compiledTarget, analyses: ["language"] }],
       },
+      outputPaths: [],
       workingDirectory: "/repo",
     });
 
     // The same analyzers the codebase gets, over the files the globs claimed.
-    expect(fileDiscoveryService.categorize).toHaveBeenCalledExactlyOnceWith([
+    expect(fileDiscoveryService.categorize).toHaveBeenCalledWith([
       "dist/index.js",
       "dist/nested/deep.js",
     ]);
     expect(sizeAnalysisService.analyze).not.toHaveBeenCalled();
     expect(result.targets[1]?.language?.linesOfCode).toBe(70);
+  });
+
+  // One unreadable file used to take the whole run with it, including the
+  // codebase's own statistics, which the failing target had nothing to do with.
+  it("steps over a target it cannot measure and keeps the rest", () => {
+    vi.mocked(targetsService.matchFiles).mockImplementation(({ target }) => {
+      if (target.name === "broken") {
+        throw new Error("dist/ vanished mid-walk");
+      }
+
+      return ["dist/index.js", "dist/nested/deep.js"];
+    });
+
+    const result = buildService().measure({
+      configuration: {
+        ...configuration,
+        targets: [{ ...compiledTarget, name: "broken" }, compiledTarget],
+      },
+      outputPaths: [],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.failures).toStrictEqual([
+      {
+        kind: "target",
+        reason: "dist/ vanished mid-walk",
+        subject: "broken",
+      },
+    ]);
+    expect(result.statistics.linesOfCode).toBe(70);
+    expect(result.targets.map((target) => target.name)).toStrictEqual([
+      "codebase",
+      "compiled",
+    ]);
+  });
+
+  it("collects a failure from every target that could not be measured", () => {
+    vi.mocked(targetsService.matchFiles).mockImplementation(({ target }) => {
+      throw new Error(`${target.name} is gone`);
+    });
+
+    const result = buildService().measure({
+      configuration: {
+        ...configuration,
+        targets: [
+          { ...compiledTarget, name: "first" },
+          { ...compiledTarget, name: "second" },
+        ],
+      },
+      outputPaths: [],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.failures.map((failure) => failure.subject)).toStrictEqual([
+      "first",
+      "second",
+    ]);
+  });
+
+  it("reports the limits layer's failures in the report's vocabulary", () => {
+    vi.mocked(limitsService.evaluate).mockReturnValue({
+      failures: [{ metric: "codebase.nowhere", reason: "nothing answers" }],
+      limits: [],
+    });
+
+    const result = buildService().measure({
+      configuration,
+      outputPaths: [],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.failures).toStrictEqual([
+      { kind: "limit", reason: "nothing answers", subject: "codebase.nowhere" },
+    ]);
+  });
+
+  it("reports two targets sharing one name without dropping the run", () => {
+    const result = buildService().measure({
+      configuration: {
+        ...configuration,
+        targets: [compiledTarget, compiledTarget],
+      },
+      outputPaths: [],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.failures).toStrictEqual([
+      {
+        kind: "target",
+        reason: expect.stringContaining(
+          'Two measured targets are called "compiled"',
+        ) as string,
+        subject: "compiled",
+      },
+    ]);
+    expect([...result.indexes.keys()]).toStrictEqual(["codebase", "compiled"]);
+  });
+
+  // Codometer's reports are made of what it measured, so measuring them makes
+  // every report an input to the next one.
+  it("never measures the files it writes itself", () => {
+    vi.mocked(fileDiscoveryService.discoverFiles).mockReturnValue({
+      ...discoveredFiles,
+      files: ["README.md", "src/app.ts"],
+    });
+
+    buildService().measure({
+      configuration,
+      outputPaths: ["README.md"],
+      workingDirectory: "/repo",
+    });
+
+    expect(fileDiscoveryService.categorize).toHaveBeenCalledExactlyOnceWith([
+      "src/app.ts",
+    ]);
+  });
+
+  it("keeps a written file out of a declared target's matches too", () => {
+    vi.mocked(targetsService.matchFiles).mockReturnValue([
+      "dist/index.js",
+      "dist/report.json",
+    ]);
+
+    const result = buildService().measure({
+      configuration: { ...configuration, targets: [compiledTarget] },
+      outputPaths: ["dist/report.json"],
+      workingDirectory: "/repo",
+    });
+
+    expect(sizeAnalysisService.analyze).toHaveBeenCalledExactlyOnceWith({
+      compression: "gzip",
+      files: ["dist/index.js"],
+      workingDirectory: "/repo",
+    });
+    expect(result.targets[1]?.files).toBe(1);
   });
 });

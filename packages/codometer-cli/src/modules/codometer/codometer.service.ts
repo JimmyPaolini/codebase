@@ -8,9 +8,12 @@ import { CustomStatisticsService } from "../custom-statistics/custom-statistics.
 import { FileDiscoveryService } from "../file-discovery/file-discovery.service";
 import { LanguagesService } from "../languages/languages.service";
 import { LimitsService } from "../limits/limits.service";
+import { MetricIndexService } from "../limits/metric-index.service";
 import { SizeAnalysisService } from "../size-analysis/size-analysis.service";
 import { TargetsService } from "../targets/targets.service";
 
+import type { LimitFailure } from "../limits/limits.types";
+import type { ReportFailure } from "../report/report.types";
 import type { TypescriptResult } from "../typescript/typescript.types";
 import type {
   AnalyzeLanguageArguments,
@@ -41,6 +44,7 @@ export class CodometerService {
     private readonly targetsService: TargetsService,
     private readonly sizeAnalysisService: SizeAnalysisService,
     private readonly limitsService: LimitsService,
+    private readonly metricIndexService: MetricIndexService,
   ) {}
 
   // 🔐 Private Fields
@@ -144,6 +148,49 @@ export class CodometerService {
     };
   }
 
+  /** Reads whatever a target's measurement threw as a printable sentence. */
+  private describeFailure(error: unknown): string {
+    return error instanceof Error ? error.message : String(error);
+  }
+
+  /**
+   * Discovers the codebase's files, minus the ones codometer writes itself.
+   *
+   * The exclusion is applied here rather than handed to discovery as a glob,
+   * so a destination is removed by being that exact file and not by matching
+   * a pattern that might claim another.
+   */
+  private discoverCodebase(args: MeasureArguments): string[] {
+    const discovered = this.fileDiscoveryService.discoverFiles({
+      exclude: args.configuration.exclude,
+      excludeFrom: args.configuration.excludeFrom,
+      workingDirectory: args.workingDirectory,
+    });
+
+    return this.excludeOutputPaths(discovered.files, args.outputPaths);
+  }
+
+  /**
+   * Drops the files codometer writes from a list of measured ones.
+   *
+   * Codometer's reports are made of what it measured, so measuring them makes
+   * every report an input to the next one: a badge block changes the markdown
+   * counters, which changes the badges. Removing them is what makes a second
+   * run over an untouched tree produce the same bytes as the first.
+   */
+  private excludeOutputPaths(
+    files: string[],
+    outputPaths: readonly string[],
+  ): string[] {
+    if (outputPaths.length === 0) {
+      return files;
+    }
+
+    const excluded = new Set(outputPaths);
+
+    return files.filter((filePath) => !excluded.has(filePath));
+  }
+
   /**
    * Count the unique folders the target's files sit in.
    */
@@ -179,6 +226,43 @@ export class CodometerService {
   }
 
   /**
+   * Measure every declared target, keeping whatever the failures leave.
+   *
+   * A target that cannot be measured — a glob pointing at a directory that
+   * vanished, a file that will not open — is recorded and stepped over. One
+   * unreadable file used to take the whole run with it, including the
+   * codebase's own statistics, which no target had anything to do with.
+   */
+  private measureDeclaredTargets(args: MeasureArguments): {
+    failures: ReportFailure[];
+    targets: TargetMeasurement[];
+  } {
+    const failures: ReportFailure[] = [];
+    const targets: TargetMeasurement[] = [];
+
+    for (const target of args.configuration.targets) {
+      try {
+        targets.push(
+          this.measureTarget({
+            configuration: args.configuration,
+            outputPaths: args.outputPaths,
+            target,
+            workingDirectory: args.workingDirectory,
+          }),
+        );
+      } catch (error: unknown) {
+        failures.push({
+          kind: "target",
+          reason: this.describeFailure(error),
+          subject: target.name,
+        });
+      }
+    }
+
+    return { failures, targets };
+  }
+
+  /**
    * Measure one declared target with whichever analyses it asked for.
    *
    * An analysis nobody asked for is not run at all. Compressing a source tree
@@ -187,10 +271,13 @@ export class CodometerService {
    */
   private measureTarget(args: MeasureTargetArguments): TargetMeasurement {
     const { target } = args;
-    const files = this.targetsService.matchFiles({
-      target,
-      workingDirectory: args.workingDirectory,
-    });
+    const files = this.excludeOutputPaths(
+      this.targetsService.matchFiles({
+        target,
+        workingDirectory: args.workingDirectory,
+      }),
+      args.outputPaths,
+    );
 
     return {
       files: files.length,
@@ -212,6 +299,17 @@ export class CodometerService {
     };
   }
 
+  /** Restates the limits layer's failures in the report's own vocabulary. */
+  private readLimitFailures(
+    failures: readonly LimitFailure[],
+  ): ReportFailure[] {
+    return failures.map((failure) => ({
+      kind: "limit",
+      reason: failure.reason,
+      subject: failure.metric,
+    }));
+  }
+
   /** Whether a target asked for one of the analyses. */
   private runsAnalysis(
     target: ResolvedCodometerTarget,
@@ -226,43 +324,49 @@ export class CodometerService {
    * Measure the codebase and every target declared alongside it.
    *
    * The codebase is measured first and always: it is the one target no glob
-   * can name, being whatever the repository's ignore files leave behind.
+   * can name, being whatever the repository's ignore files leave behind. It is
+   * also the one target measured without a net — if the directory it was
+   * pointed at cannot be read there is no report to salvage, whereas a
+   * declared target that fails leaves everything else worth reporting.
    */
   measure(args: MeasureArguments): MeasurementResult {
-    const discoveredFiles = this.fileDiscoveryService.discoverFiles({
-      exclude: args.configuration.exclude,
-      excludeFrom: args.configuration.excludeFrom,
-      workingDirectory: args.workingDirectory,
-    });
+    const files = this.discoverCodebase(args);
     const statistics = this.analyzeLanguage({
       configuration: args.configuration,
-      discoveredFiles,
+      discoveredFiles: this.fileDiscoveryService.categorize(files),
       workingDirectory: args.workingDirectory,
     });
-    const targets = [
+    const declared = this.measureDeclaredTargets(args);
+    const targets: TargetMeasurement[] = [
       {
-        files: discoveredFiles.files.length,
+        files: files.length,
         language: statistics,
         name: DEFAULT_TARGET_NAME,
         size: undefined,
       },
-      ...args.configuration.targets.map((target) =>
-        this.measureTarget({
-          configuration: args.configuration,
-          target,
-          workingDirectory: args.workingDirectory,
-        }),
-      ),
+      ...declared.targets,
     ];
+    const { duplicates, indexes } = this.metricIndexService.index(targets);
+    // Evaluated here rather than by whoever renders the report, so that a
+    // limit addressing a metric nothing measured is a failure of the
+    // measurement rather than of one output format.
+    const evaluation = this.limitsService.evaluate({
+      configuration: args.configuration,
+      indexes,
+    });
 
     return {
-      // Evaluated here rather than by whoever renders the report, so that a
-      // limit addressing a metric nothing measured is a failure of the
-      // measurement rather than of one output format.
-      limits: this.limitsService.evaluate({
-        configuration: args.configuration,
-        targets,
-      }),
+      failures: [
+        ...declared.failures,
+        ...duplicates.map((duplicate) => ({
+          kind: "target" as const,
+          reason: duplicate.reason,
+          subject: duplicate.target,
+        })),
+        ...this.readLimitFailures(evaluation.failures),
+      ],
+      indexes,
+      limits: evaluation.limits,
       statistics,
       targets,
     };

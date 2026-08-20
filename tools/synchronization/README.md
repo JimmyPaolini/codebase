@@ -330,13 +330,13 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                    ↳ Compares skill marker values against source values and logs any mismatch.
                   └─> ConventionalConfigValidatorsService.showDifference(source: string[], target: string[], targetName: string): void [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:102]
                      ↳ Logs the items missing from and extra in the target compared to the source.
-                    └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+                    └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
                        ↳ Logs an informational message at the `info` level.
-                      └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+                      └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
                          ↳ Assembles the object pino merges into the line.
-                        └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+                        └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
                            ↳ Fails a malformed message in development, and never in production.
-                          └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+                          └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                              ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -361,13 +361,13 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                  ↳ Compares skill marker values against source values and logs any mismatch.
                 └─> ConventionalConfigValidatorsService.showDifference(source: string[], target: string[], targetName: string): void [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:102]
                    ↳ Logs the items missing from and extra in the target compared to the source.
-                  └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+                  └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
                      ↳ Logs an informational message at the `info` level.
-                    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+                    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
                        ↳ Assembles the object pino merges into the line.
-                      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+                      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
                          ↳ Fails a malformed message in development, and never in production.
-                        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+                        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                            ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -383,13 +383,13 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
       └─> NestjsModuleGraphsCommand.filter(…)(fileName: string): boolean [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:155]
         └─> NestjsModuleGraphsCommand.synchronizeFile(…): boolean [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:91]
            ↳ Checks or rewrites one markdown file's graph block.
-          └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+          └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
              ↳ Logs an informational message at the `info` level.
-            └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+            └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
                ↳ Assembles the object pino merges into the line.
-              └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+              └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
                  ↳ Fails a malformed message in development, and never in production.
-                └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+                └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                    ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -408,13 +408,13 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
          ↳ Checks or rewrites one project's README graph block.
         └─> NxProjectGraphsCommand.applyMode(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:64]
            ↳ Reports drift in check mode, or rewrites the block in write mode.
-          └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+          └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
              ↳ Logs an informational message at the `info` level.
-            └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+            └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
                ↳ Assembles the object pino merges into the line.
-              └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+              └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
                  ↳ Fails a malformed message in development, and never in production.
-                └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+                └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                    ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -430,13 +430,13 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
       └─> PullRequestTemplateCommand.filter(…)(targetFile: string): boolean [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:133]
         └─> PullRequestTemplateCommand.checkTargetSync(templateContent: string, targetFile: string): boolean [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:55]
            ↳ Checks whether the target file's marker block matches the current PR template.
-          └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+          └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
              ↳ Logs an informational message at the `info` level.
-            └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+            └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
                ↳ Assembles the object pino merges into the line.
-              └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+              └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
                  ↳ Fails a malformed message in development, and never in production.
-                └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+                └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                    ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -451,13 +451,13 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
        ↳ Compares the expected merged config against the current cloud config file and reports field differences.
       └─> DevcontainerConfigurationCommand.reportDifferences(…): void [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:139]
          ↳ Logs each field that differs between the expected and current config.
-        └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+        └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
            ↳ Logs an informational message at the `info` level.
-          └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+          └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
              ↳ Assembles the object pino merges into the line.
-            └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+            └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
                ↳ Fails a malformed message in development, and never in production.
-              └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+              └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                  ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -470,13 +470,13 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Resolves synchronization mode or exits the process when the mode is invalid.
     └─> SynchronizationService.exitInvalidMode(…): never [tools/synchronization/src/modules/synchronization/synchronization.service.ts:22]
        ↳ Logs invalid mode details and exits with status code 1.
-      └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:206]
+      └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:244]
          ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
-        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
            ↳ Assembles the object pino merges into the line.
-          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
              ↳ Fails a malformed message in development, and never in production.
-            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -485,14 +485,14 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 ```text
 🚀 main(): Promise<void> [tools/synchronization/src/main.ts:9]
    ↳ Bootstraps the synchronization CLI application.
-  └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:36]
+  └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:38]
 ```
 
 **9. `ConformetryGeneratorsCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 ConformetryGeneratorsCommand.constructor(…): ConformetryGeneratorsCommand [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:34]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -500,7 +500,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 
 ```text
 🚀 ConventionalConfigIoService.constructor(loggerService: LoggerService): ConventionalConfigIoService [tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:31]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -508,7 +508,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 
 ```text
 🚀 ConventionalConfigValidatorsService.constructor(…): ConventionalConfigValidatorsService [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:25]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -516,7 +516,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 
 ```text
 🚀 ConventionalConfigService.constructor(…): ConventionalConfigService [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:36]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -524,7 +524,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 
 ```text
 🚀 ConventionalConfigCommand.constructor(…): ConventionalConfigCommand [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:31]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -532,7 +532,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 
 ```text
 🚀 DevcontainerConfigurationCommand.constructor(…): DevcontainerConfigurationCommand [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:40]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -557,7 +557,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 
 ```text
 🚀 NestjsModuleGraphsCommand.constructor(…): NestjsModuleGraphsCommand [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:47]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -583,7 +583,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 
 ```text
 🚀 NxProjectGraphsCommand.constructor(…): NxProjectGraphsCommand [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:45]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -591,7 +591,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 
 ```text
 🚀 PullRequestTemplateCommand.constructor(…): PullRequestTemplateCommand [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:36]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -599,7 +599,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 
 ```text
 🚀 SynchronizationCommand.constructor(…): SynchronizationCommand [tools/synchronization/src/modules/synchronization/synchronization.command.ts:36]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 

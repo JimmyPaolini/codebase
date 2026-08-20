@@ -1,20 +1,46 @@
 import { ConfigurationService } from "@codometer/configuration";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
 import { buildCodeStatistics } from "../../../testing/mocks";
 import { OutputJsonService } from "../output-json/output-json.service";
 import { OutputMarkdownService } from "../output-markdown/output-markdown.service";
+import { ReportService } from "../report/report.service";
 
 import { CodometerCommand } from "./codometer.command";
 import { CodometerService } from "./codometer.service";
+import { RunPlanService } from "./run-plan.service";
 
+import type { EvaluatedLimit } from "../limits/limits.types";
+import type { CodometerCommandOptions } from "./codometer.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
+import type { MockInstance } from "vitest";
 
 const statistics = buildCodeStatistics();
+
+/** Builds a limit that came out over its value. */
+function buildBreach(severity: EvaluatedLimit["severity"]): EvaluatedLimit {
+  return {
+    breached: true,
+    label: "Bundle",
+    limit: 4000,
+    measured: 4529,
+    metric: "size",
+    severity,
+    target: "compiled",
+  };
+}
 
 /** Builds a resolved configuration with no output destination. */
 function buildConfiguration(
@@ -50,16 +76,35 @@ describe(CodometerCommand, () => {
   let loggerService: LoggerService;
   let outputJsonService: OutputJsonService;
   let outputMarkdownService: OutputMarkdownService;
+  let stdoutWriteSpy: MockInstance<typeof process.stdout.write>;
 
-  /** Builds a command whose dependencies are all mocked. */
+  /** Builds a command whose measurement and output are mocked. */
   function buildCommand(): CodometerCommand {
     return new CodometerCommand(
       configurationService,
       codometerService,
       outputJsonService,
       outputMarkdownService,
+      new ReportService(),
+      new RunPlanService(),
       loggerService,
     );
+  }
+
+  /** Runs the command over a repository at `/repo`. */
+  async function run(options: CodometerCommandOptions = {}): Promise<void> {
+    await buildCommand().run([], { directory: "/repo", ...options });
+  }
+
+  /** Reports the limits the measurement found breached. */
+  function measured(limits: EvaluatedLimit[]): void {
+    vi.mocked(codometerService.measure).mockReturnValue({
+      failures: [],
+      indexes: new Map(),
+      limits,
+      statistics,
+      targets: [],
+    });
   }
 
   beforeAll(async () => {
@@ -80,6 +125,8 @@ describe(CodometerCommand, () => {
           provide: OutputMarkdownService,
           useValue: createMock<OutputMarkdownService>(),
         },
+        { provide: ReportService, useValue: new ReportService() },
+        { provide: RunPlanService, useValue: new RunPlanService() },
       ],
     }).compile();
 
@@ -87,21 +134,28 @@ describe(CodometerCommand, () => {
   });
 
   beforeEach(() => {
+    process.exitCode = 0;
     configurationService = createMock<ConfigurationService>();
     codometerService = createMock<CodometerService>();
     loggerService = createMock<LoggerService>();
     outputJsonService = createMock<OutputJsonService>();
     outputMarkdownService = createMock<OutputMarkdownService>();
+    stdoutWriteSpy = vi.spyOn(process.stdout, "write").mockReturnValue(true);
     vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
       buildConfiguration(),
     );
-    vi.mocked(codometerService.measure).mockReturnValue({
-      limits: [],
-      statistics,
-      targets: [],
-    });
+    measured([]);
+    vi.mocked(outputJsonService.render).mockReturnValue("{}\n");
     vi.mocked(outputJsonService.sync).mockReturnValue(true);
+    vi.mocked(outputMarkdownService.renderBlock).mockReturnValue("block");
+    vi.mocked(outputMarkdownService.renderDocument).mockReturnValue("document");
     vi.mocked(outputMarkdownService.sync).mockReturnValue(true);
+    vi.mocked(outputMarkdownService.syncDocument).mockReturnValue(true);
+  });
+
+  afterEach(() => {
+    stdoutWriteSpy.mockRestore();
+    process.exitCode = 0;
   });
 
   it("is defined", () => {
@@ -126,6 +180,8 @@ describe(CodometerCommand, () => {
           provide: OutputMarkdownService,
           useValue: createMock<OutputMarkdownService>(),
         },
+        { provide: ReportService, useValue: new ReportService() },
+        { provide: RunPlanService, useValue: new RunPlanService() },
       ],
     }).compile();
 
@@ -134,303 +190,510 @@ describe(CodometerCommand, () => {
     expect(logger.setContext).toHaveBeenCalledWith("CodometerCommand");
   });
 
-  it("parses check values from boolean and string inputs", () => {
-    const localCommand = buildCommand();
-
-    expect(localCommand.parseCheck(true)).toBe(true);
-    expect(localCommand.parseCheck("true")).toBe(true);
-    expect(localCommand.parseCheck("false")).toBe(false);
-    // A valueless `--check` reaches the parser as undefined, and the parser
-    // runs only when the flag is present. Reading that as false is what made
-    // check mode rewrite the README and exit 0 instead of failing.
-    expect(localCommand.parseCheck(undefined)).toBe(true);
-  });
-
-  it("defaults directory to process cwd", () => {
-    const localCommand = buildCommand();
-
-    expect(localCommand.parseDirectory(undefined)).toBe(process.cwd());
-  });
-
-  it("passes the configured exclusions to the measurement", async () => {
-    const localCommand = buildCommand();
-    const stdoutWriteSpy = vi
-      .spyOn(process.stdout, "write")
-      .mockReturnValue(true);
-
-    await localCommand.run([], { check: false, directory: "/repo" });
-
-    expect(configurationService.loadConfiguration).toHaveBeenCalledWith({
-      configurationPath: undefined,
-      searchDirectory: "/repo",
-    });
-    expect(codometerService.measure).toHaveBeenCalledWith({
-      configuration: buildConfiguration(),
-      workingDirectory: "/repo",
+  describe("the flag table", () => {
+    beforeEach(() => {
+      vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
+        buildConfiguration({ markdown: markdownDestination }),
+      );
+      vi.mocked(outputMarkdownService.sync).mockReturnValue(false);
+      measured([buildBreach("fail")]);
     });
 
-    stdoutWriteSpy.mockRestore();
-  });
+    it("writes nothing and fails nothing with no flags", async () => {
+      await run();
 
-  it("writes json statistics to stdout when nothing is configured", async () => {
-    const localCommand = buildCommand();
-    const stdoutWriteSpy = vi
-      .spyOn(process.stdout, "write")
-      .mockReturnValue(true);
-
-    await localCommand.run([], { check: false, directory: "/repo" });
-
-    expect(stdoutWriteSpy).toHaveBeenCalledWith(
-      `${JSON.stringify(statistics, null, 2)}\n`,
-    );
-    expect(outputMarkdownService.sync).not.toHaveBeenCalled();
-    expect(outputJsonService.sync).not.toHaveBeenCalled();
-
-    stdoutWriteSpy.mockRestore();
-  });
-
-  it("writes both configured destinations relative to the analyzed directory", async () => {
-    vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
-      buildConfiguration({
-        json: jsonDestination,
-        markdown: markdownDestination,
-      }),
-    );
-    const localCommand = buildCommand();
-
-    await localCommand.run([], { check: false, directory: "/repo" });
-
-    expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
-      check: false,
-      destination: { ...markdownDestination, path: "/repo/README.md" },
-      statistics,
-    });
-    expect(outputJsonService.sync).toHaveBeenCalledExactlyOnceWith({
-      check: false,
-      destination: { ...jsonDestination, path: "/repo/output/codometer.json" },
-      statistics,
-    });
-  });
-
-  it("lets command-line paths override the configured destinations", async () => {
-    vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
-      buildConfiguration({ markdown: markdownDestination }),
-    );
-    const localCommand = buildCommand();
-
-    await localCommand.run([], {
-      directory: "/repo",
-      json: "reports/statistics.json",
-      markdown: "docs/metrics.md",
+      expect(outputMarkdownService.sync).not.toHaveBeenCalled();
+      expect(stdoutWriteSpy).toHaveBeenCalledWith("block\n");
+      expect(process.exitCode).toBe(0);
     });
 
-    expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
-      check: false,
-      destination: { ...markdownDestination, path: "/repo/docs/metrics.md" },
-      statistics,
+    it("fails on a breach and not on staleness with --check limits", async () => {
+      await run({ check: "limits" });
+
+      expect(outputMarkdownService.sync).not.toHaveBeenCalled();
+      expect(process.exitCode).toBe(1);
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Breached a failing limit",
+        undefined,
+        { limits: [buildBreach("fail")] },
+      );
+      expect(loggerService.error).not.toHaveBeenCalledWith(
+        "📊 Found stale reports",
+        undefined,
+        expect.anything(),
+      );
     });
-    expect(outputJsonService.sync).toHaveBeenCalledExactlyOnceWith({
-      check: false,
-      destination: { indentation: 2, path: "/repo/reports/statistics.json" },
-      statistics,
+
+    it("fails on staleness and not on a breach with --check reports", async () => {
+      measured([buildBreach("fail")]);
+
+      await run({ check: "reports" });
+
+      expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
+        check: true,
+        destination: { ...markdownDestination, path: "/repo/README.md" },
+        statistics,
+      });
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Found stale reports",
+        undefined,
+        { paths: ["/repo/README.md"] },
+      );
+      expect(process.exitCode).toBe(1);
+    });
+
+    it("fails on staleness and on a breach with --check reports,limits", async () => {
+      await run({ check: "reports,limits" });
+
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Found stale reports",
+        undefined,
+        { paths: ["/repo/README.md"] },
+      );
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Breached a failing limit",
+        undefined,
+        { limits: [buildBreach("fail")] },
+      );
+      expect(process.exitCode).toBe(1);
+    });
+
+    it("writes and fails nothing with --write", async () => {
+      await run({ write: true });
+
+      expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
+        check: false,
+        destination: { ...markdownDestination, path: "/repo/README.md" },
+        statistics,
+      });
+      expect(process.exitCode).toBe(0);
+    });
+
+    it("writes every report before failing with --write --check limits", async () => {
+      await run({ check: "limits", write: true });
+
+      expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
+        check: false,
+        destination: { ...markdownDestination, path: "/repo/README.md" },
+        statistics,
+      });
+      expect(process.exitCode).toBe(1);
     });
   });
 
-  it("writes only the JSON report when no markdown destination exists", async () => {
-    vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
-      buildConfiguration({ json: jsonDestination }),
-    );
-    const localCommand = buildCommand();
+  describe("flags it refuses", () => {
+    it("refuses --write together with --check reports", async () => {
+      await run({ check: "reports", write: true });
 
-    await localCommand.run([], { check: false, directory: "/repo" });
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Rejected the command line",
+        undefined,
+        {
+          reasons: [
+            expect.stringContaining(
+              "--write cannot be combined with --check reports",
+            ) as string,
+          ],
+        },
+      );
+      expect(codometerService.measure).not.toHaveBeenCalled();
+      expect(process.exitCode).toBe(1);
+    });
 
-    expect(outputMarkdownService.sync).not.toHaveBeenCalled();
-    expect(outputJsonService.sync).toHaveBeenCalledExactlyOnceWith({
-      check: false,
-      destination: { ...jsonDestination, path: "/repo/output/codometer.json" },
-      statistics,
+    it("refuses a --check value it does not know, naming the ones it does", async () => {
+      await run({ check: "everything" });
+
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Rejected the command line",
+        undefined,
+        {
+          reasons: [
+            '--check does not accept "everything". It takes a comma-separated set drawn from "limits" and "reports", as in "--check limits,reports".',
+          ],
+        },
+      );
+      expect(process.exitCode).toBe(1);
+    });
+
+    it("names every unknown --check value in one run", async () => {
+      await run({ check: "everything,anything" });
+
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Rejected the command line",
+        undefined,
+        {
+          reasons: [
+            expect.stringContaining('does not accept "everything"') as string,
+            expect.stringContaining('does not accept "anything"') as string,
+          ],
+        },
+      );
+    });
+
+    it("refuses a configuration nothing can read", async () => {
+      vi.mocked(configurationService.loadConfiguration).mockRejectedValue(
+        new Error('Cannot read the limit on "size" from "8 K"'),
+      );
+
+      await run();
+
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Rejected the configuration",
+        undefined,
+        { reason: 'Cannot read the limit on "size" from "8 K"' },
+      );
+      expect(codometerService.measure).not.toHaveBeenCalled();
+      expect(process.exitCode).toBe(1);
+    });
+
+    it("refuses a --check carrying no value at all", async () => {
+      await run({ check: true });
+
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Rejected the command line",
+        undefined,
+        {
+          reasons: [expect.stringContaining("--check needs a value") as string],
+        },
+      );
+      expect(process.exitCode).toBe(1);
     });
   });
 
-  it("applies the default markers to a path passed on the command line", async () => {
-    const localCommand = buildCommand();
+  describe("the output sinks", () => {
+    it("renders the badges to the console when nothing is configured", async () => {
+      await run();
 
-    await localCommand.run([], {
-      directory: "/repo",
-      markdown: "docs/metrics.md",
+      expect(outputMarkdownService.renderDocument).toHaveBeenCalledWith({
+        description: undefined,
+        statistics,
+      });
+      expect(stdoutWriteSpy).toHaveBeenCalledWith("document\n");
+      expect(outputMarkdownService.syncDocument).not.toHaveBeenCalled();
     });
 
-    expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
-      check: false,
-      destination: { ...markdownDestination, path: "/repo/docs/metrics.md" },
-      statistics,
+    it("writes the badge document where --markdown named", async () => {
+      await run({ markdown: "docs/metrics.md", write: true });
+
+      expect(
+        outputMarkdownService.syncDocument,
+      ).toHaveBeenCalledExactlyOnceWith({
+        check: false,
+        content: "document",
+        path: "/repo/docs/metrics.md",
+      });
+    });
+
+    it("sends the badge document to the console for a pathless --markdown", async () => {
+      await run({ markdown: true, write: true });
+
+      expect(outputMarkdownService.syncDocument).not.toHaveBeenCalled();
+      expect(stdoutWriteSpy).toHaveBeenCalledWith("document\n");
+    });
+
+    it("writes the report where --json named", async () => {
+      await run({ json: "reports/statistics.json", write: true });
+
+      expect(outputJsonService.sync).toHaveBeenCalledExactlyOnceWith({
+        check: false,
+        indentation: 2,
+        path: "/repo/reports/statistics.json",
+        report: { failures: [], targets: [] },
+      });
+    });
+
+    it("sends the report to the console for a pathless --json", async () => {
+      await run({ json: true, write: true });
+
+      expect(outputJsonService.sync).not.toHaveBeenCalled();
+      expect(stdoutWriteSpy).toHaveBeenCalledWith("{}\n");
+    });
+
+    it("splices into the file --readme named, and nowhere else", async () => {
+      await run({ readme: "docs/statistics.md", write: true });
+
+      expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
+        check: false,
+        destination: {
+          ...markdownDestination,
+          path: "/repo/docs/statistics.md",
+        },
+        statistics,
+      });
+      expect(outputMarkdownService.syncDocument).not.toHaveBeenCalled();
+    });
+
+    it("produces only the sink the command line named", async () => {
+      vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
+        buildConfiguration({
+          json: jsonDestination,
+          markdown: markdownDestination,
+        }),
+      );
+
+      await run({ json: true });
+
+      expect(stdoutWriteSpy).toHaveBeenCalledExactlyOnceWith("{}\n");
+      expect(outputMarkdownService.sync).not.toHaveBeenCalled();
+      expect(outputMarkdownService.renderBlock).not.toHaveBeenCalled();
+    });
+
+    it("writes the configured destinations relative to the analyzed directory", async () => {
+      vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
+        buildConfiguration({
+          json: jsonDestination,
+          markdown: markdownDestination,
+        }),
+      );
+
+      await run({ write: true });
+
+      expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
+        check: false,
+        destination: { ...markdownDestination, path: "/repo/README.md" },
+        statistics,
+      });
+      expect(outputJsonService.sync).toHaveBeenCalledExactlyOnceWith({
+        check: false,
+        indentation: 2,
+        path: "/repo/output/codometer.json",
+        report: { failures: [], targets: [] },
+      });
+    });
+
+    it("names a stale report the run was checking", async () => {
+      vi.mocked(outputJsonService.sync).mockReturnValue(false);
+
+      await run({ check: "reports", json: "reports/statistics.json" });
+
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Found stale reports",
+        undefined,
+        { paths: ["/repo/reports/statistics.json"] },
+      );
+      expect(process.exitCode).toBe(1);
+    });
+
+    it("names a stale badge document the run was checking", async () => {
+      vi.mocked(outputMarkdownService.syncDocument).mockReturnValue(false);
+
+      await run({ check: "reports", markdown: "docs/metrics.md" });
+
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Found stale reports",
+        undefined,
+        { paths: ["/repo/docs/metrics.md"] },
+      );
+      expect(process.exitCode).toBe(1);
+    });
+
+    it("keeps a configured write function as a destination of its own", async () => {
+      const write = vi.fn(() => true);
+      vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
+        buildConfiguration({
+          markdown: { ...markdownDestination, path: undefined, write },
+        }),
+      );
+      vi.mocked(outputMarkdownService.sync).mockReturnValue(false);
+
+      await run({ check: "reports" });
+
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Found stale reports",
+        undefined,
+        { paths: ["markdown output"] },
+      );
+      expect(process.exitCode).toBe(1);
     });
   });
 
-  it("flags stale output and exits non-zero in check mode", async () => {
-    vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
-      buildConfiguration({ markdown: markdownDestination }),
-    );
-    vi.mocked(outputMarkdownService.sync).mockReturnValue(false);
-    const localCommand = buildCommand();
-    process.exitCode = 0;
+  describe("what it refuses to measure", () => {
+    it("keeps every file it writes out of what it measures", async () => {
+      vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
+        buildConfiguration({
+          json: jsonDestination,
+          markdown: markdownDestination,
+        }),
+      );
 
-    await localCommand.run([], {
-      check: true,
-      directory: "/repo",
+      await run({ write: true });
+
+      expect(codometerService.measure).toHaveBeenCalledExactlyOnceWith({
+        configuration: expect.anything() as ResolvedCodometerConfiguration,
+        outputPaths: ["output/codometer.json", "README.md"],
+        workingDirectory: "/repo",
+      });
     });
 
-    expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
-      check: true,
-      destination: { ...markdownDestination, path: "/repo/README.md" },
-      statistics,
+    it("says on the console which files it left out", async () => {
+      vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
+        buildConfiguration({ markdown: markdownDestination }),
+      );
+
+      await run();
+
+      expect(loggerService.log).toHaveBeenCalledWith(
+        "📊 Excluded the files codometer writes from what it measures",
+        undefined,
+        { paths: ["README.md"] },
+      );
     });
-    expect(loggerService.error).toHaveBeenCalledWith(
-      "📊 Found stale statistics",
-      undefined,
-      { paths: ["/repo/README.md"] },
-    );
-    expect(process.exitCode).toBe(1);
 
-    process.exitCode = 0;
-  });
+    it("says nothing when it writes nothing at all", async () => {
+      await run();
 
-  it("keeps a configured write function as a destination of its own", async () => {
-    const write = vi.fn(() => true);
-    vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
-      buildConfiguration({
-        markdown: { ...markdownDestination, path: undefined, write },
-      }),
-    );
-    // The writer belongs to the destination the command hands over; whether it
-    // reported the file current is the output service's answer, not its own.
-    vi.mocked(outputMarkdownService.sync).mockReturnValue(false);
-    const localCommand = buildCommand();
-    process.exitCode = 0;
-
-    await localCommand.run([], { check: true, directory: "/repo" });
-
-    expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
-      check: true,
-      destination: { ...markdownDestination, path: undefined, write },
-      statistics,
-    });
-    expect(loggerService.error).toHaveBeenCalledWith(
-      "📊 Found stale statistics",
-      undefined,
-      { paths: ["markdown output"] },
-    );
-    expect(process.exitCode).toBe(1);
-
-    process.exitCode = 0;
-  });
-
-  it("names every stale destination in check mode", async () => {
-    vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
-      buildConfiguration({
-        json: jsonDestination,
-        markdown: markdownDestination,
-      }),
-    );
-    vi.mocked(outputMarkdownService.sync).mockReturnValue(false);
-    vi.mocked(outputJsonService.sync).mockReturnValue(false);
-    const localCommand = buildCommand();
-    process.exitCode = 0;
-
-    await localCommand.run([], { check: true, directory: "/repo" });
-
-    expect(loggerService.error).toHaveBeenCalledWith(
-      "📊 Found stale statistics",
-      undefined,
-      { paths: ["/repo/README.md", "/repo/output/codometer.json"] },
-    );
-    expect(process.exitCode).toBe(1);
-
-    process.exitCode = 0;
-  });
-
-  it("does not set an exit code when the output is current in check mode", async () => {
-    vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
-      buildConfiguration({ markdown: markdownDestination }),
-    );
-    const localCommand = buildCommand();
-    process.exitCode = 0;
-
-    await localCommand.run([], { check: true, directory: "/repo" });
-
-    expect(process.exitCode).toBe(0);
-  });
-
-  it("writes when the check flag is absent entirely", async () => {
-    vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
-      buildConfiguration({ markdown: markdownDestination }),
-    );
-    const localCommand = buildCommand();
-
-    // nest-commander omits the key rather than passing false, so this is the
-    // ordinary `nx run codebase:codometer` path, not an edge case.
-    await localCommand.run([], { directory: "/repo" });
-
-    expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
-      check: false,
-      destination: { ...markdownDestination, path: "/repo/README.md" },
-      statistics,
+      expect(loggerService.log).not.toHaveBeenCalled();
     });
   });
 
-  it("passes an explicit configuration path through to the loader", async () => {
-    const localCommand = buildCommand();
-    const stdoutWriteSpy = vi
-      .spyOn(process.stdout, "write")
-      .mockReturnValue(true);
+  describe("what it reports", () => {
+    it("reports a warn breach without touching the exit code", async () => {
+      measured([buildBreach("warn")]);
 
-    await localCommand.run([], {
-      config: "configuration/codometer.config.ts",
-      directory: "/repo",
+      await run({ check: "limits" });
+
+      expect(loggerService.warn).toHaveBeenCalledWith(
+        "📊 Breached a warning limit",
+        undefined,
+        { limits: [buildBreach("warn")] },
+      );
+      expect(process.exitCode).toBe(0);
     });
 
-    expect(configurationService.loadConfiguration).toHaveBeenCalledWith({
-      configurationPath: "configuration/codometer.config.ts",
-      searchDirectory: "/repo",
+    it("reports a fail breach without failing a run that gates nothing", async () => {
+      measured([buildBreach("fail")]);
+
+      await run();
+
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Breached a failing limit",
+        undefined,
+        { limits: [buildBreach("fail")] },
+      );
+      expect(process.exitCode).toBe(0);
     });
 
-    stdoutWriteSpy.mockRestore();
+    it("tells staleness and a breach apart in what it prints", async () => {
+      vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
+        buildConfiguration({ markdown: markdownDestination }),
+      );
+      vi.mocked(outputMarkdownService.sync).mockReturnValue(false);
+      measured([buildBreach("fail")]);
+
+      await run({ check: "reports,limits" });
+
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Found stale reports",
+        undefined,
+        { paths: ["/repo/README.md"] },
+      );
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Breached a failing limit",
+        undefined,
+        { limits: [buildBreach("fail")] },
+      );
+    });
+
+    it("reports what it could not measure and fails a gating run", async () => {
+      vi.mocked(codometerService.measure).mockReturnValue({
+        failures: [{ kind: "target", reason: "dist/ is gone", subject: "web" }],
+        indexes: new Map(),
+        limits: [],
+        statistics,
+        targets: [],
+      });
+
+      await run({ check: "limits" });
+
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Failed to measure part of the run",
+        undefined,
+        {
+          failures: [
+            { kind: "target", reason: "dist/ is gone", subject: "web" },
+          ],
+        },
+      );
+      expect(process.exitCode).toBe(1);
+    });
+
+    it("reports what it could not measure without failing a bare run", async () => {
+      vi.mocked(codometerService.measure).mockReturnValue({
+        failures: [{ kind: "target", reason: "dist/ is gone", subject: "web" }],
+        indexes: new Map(),
+        limits: [],
+        statistics,
+        targets: [],
+      });
+
+      await run();
+
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Failed to measure part of the run",
+        undefined,
+        expect.anything(),
+      );
+      expect(process.exitCode).toBe(0);
+    });
   });
 
-  it("returns the parsed value for every optional path flag", () => {
-    const localCommand = buildCommand();
+  describe("the flags themselves", () => {
+    it("defaults directory to process cwd", () => {
+      expect(buildCommand().parseDirectory(undefined)).toBe(process.cwd());
+    });
 
-    expect(localCommand.parseConfig("codometer.config.ts")).toBe(
-      "codometer.config.ts",
-    );
-    expect(localCommand.parseConfig(undefined)).toBeUndefined();
-    expect(localCommand.parseJson("statistics.json")).toBe("statistics.json");
-    expect(localCommand.parseJson(undefined)).toBeUndefined();
-    expect(localCommand.parseMarkdown("README.md")).toBe("README.md");
-    expect(localCommand.parseMarkdown(undefined)).toBeUndefined();
-  });
+    it("passes an explicit configuration path through to the loader", async () => {
+      await run({ config: "configuration/codometer.config.ts" });
 
-  it("registers each CLI flag through the Option decorator", () => {
-    const flags = [
-      "parseCheck",
-      "parseConfig",
-      "parseDirectory",
-      "parseJson",
-      "parseMarkdown",
-    ].map(
-      (parser) =>
-        Reflect.getMetadata(
-          "CommandBuilder:Option:Meta",
-          Reflect.get(CodometerCommand.prototype, parser) as object,
-        ) as undefined | { flags: string },
-    );
+      expect(configurationService.loadConfiguration).toHaveBeenCalledWith({
+        configurationPath: "configuration/codometer.config.ts",
+        searchDirectory: "/repo",
+      });
+    });
 
-    expect(flags.map((option) => option?.flags)).toStrictEqual([
-      "--check",
-      "--config [config]",
-      "-d, --directory [directory]",
-      "--json [json]",
-      "-m, --markdown [markdown]",
-    ]);
+    it("returns the parsed value for every path flag", () => {
+      const localCommand = buildCommand();
+
+      expect(localCommand.parseCheck("limits")).toBe("limits");
+      expect(localCommand.parseConfig("codometer.config.ts")).toBe(
+        "codometer.config.ts",
+      );
+      expect(localCommand.parseConfig(undefined)).toBeUndefined();
+      expect(localCommand.parseJson("statistics.json")).toBe("statistics.json");
+      expect(localCommand.parseJson(undefined)).toBeUndefined();
+      expect(localCommand.parseMarkdown("README.md")).toBe("README.md");
+      expect(localCommand.parseMarkdown(undefined)).toBeUndefined();
+      expect(localCommand.parseReadme("README.md")).toBe("README.md");
+      expect(localCommand.parseWrite(undefined)).toBe(true);
+      expect(localCommand.parseWrite(false)).toBe(false);
+    });
+
+    it("registers each CLI flag through the Option decorator", () => {
+      const flags = [
+        "parseCheck",
+        "parseConfig",
+        "parseDirectory",
+        "parseJson",
+        "parseMarkdown",
+        "parseReadme",
+        "parseWrite",
+      ].map(
+        (parser) =>
+          Reflect.getMetadata(
+            "CommandBuilder:Option:Meta",
+            Reflect.get(CodometerCommand.prototype, parser) as object,
+          ) as undefined | { flags: string },
+      );
+
+      expect(flags.map((option) => option?.flags)).toStrictEqual([
+        "--check [check]",
+        "--config [config]",
+        "-d, --directory [directory]",
+        "--json [json]",
+        "-m, --markdown [markdown]",
+        "--readme <readme>",
+        "--write",
+      ]);
+    });
   });
 });

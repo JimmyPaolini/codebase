@@ -1,13 +1,12 @@
 // 🏷️ Types
 
 import type { FileDiscoveryResult } from "../file-discovery/file-discovery.types";
-import type { EvaluatedLimit } from "../limits/limits.types";
+import type { EvaluatedLimit, TargetMetricIndex } from "../limits/limits.types";
+import type { ReportFailure } from "../report/report.types";
 import type { SizeResult } from "../size-analysis/size-analysis.types";
 import type {
   CodeStatisticsResult,
   ResolvedCodometerConfiguration,
-  ResolvedCodometerJsonOutputConfiguration,
-  ResolvedCodometerMarkdownOutputConfiguration,
   ResolvedCodometerTarget,
 } from "@codometer/configuration";
 
@@ -23,16 +22,23 @@ export interface AnalyzeLanguageArguments {
 /**
  * Options accepted by the codometer command.
  *
- * Every path option overrides the matching destination in the configuration
- * file, which is what lets a task runner point one invocation somewhere else
- * without a second configuration file.
+ * `--write` and `--check` are independent: neither implies the other, and no
+ * combination of them is inferred. A flag carrying an optional value arrives
+ * as `true` when it was passed without one, which is how "to the console" is
+ * told apart from "not asked for".
  */
 export interface CodometerCommandOptions {
-  check?: boolean;
-  config?: string;
-  directory?: string;
-  json?: string;
-  markdown?: string;
+  /** The comma-separated set of things to fail on, as it was written. */
+  check?: string | true | undefined;
+  config?: string | undefined;
+  directory?: string | undefined;
+  /** Where the report goes; `true` for the console. */
+  json?: string | true | undefined;
+  /** Where the rendered badges go as a whole document; `true` for the console. */
+  markdown?: string | true | undefined;
+  /** The file to splice the badge block into. Never defaulted. */
+  readme?: string | undefined;
+  write?: boolean | undefined;
 }
 
 /**
@@ -40,6 +46,14 @@ export interface CodometerCommandOptions {
  */
 export interface MeasureArguments {
   configuration: ResolvedCodometerConfiguration;
+  /**
+   * Files codometer writes itself, relative to the measured directory.
+   *
+   * Never measured, whether or not this particular run writes them: a run that
+   * measured a different tree depending on its flags could not tell a stale
+   * report from a report written by a differently-flagged run.
+   */
+  outputPaths: readonly string[];
   workingDirectory: string;
 }
 
@@ -51,6 +65,16 @@ export interface MeasureArguments {
  * out separately so nothing downstream has to know which target it came from.
  */
 export interface MeasurementResult {
+  /**
+   * Whatever the run could not do, collected rather than thrown.
+   *
+   * A target that will not measure and a limit that binds to nothing are both
+   * recorded here and stepped over, so one run names every one of them instead
+   * of stopping at the first and hiding the rest behind it.
+   */
+  failures: ReportFailure[];
+  /** Every metric each measured target counted, addressable by dotted path. */
+  indexes: Map<string, TargetMetricIndex>;
   /**
    * What every declared limit found, in the order they were declared.
    *
@@ -67,27 +91,9 @@ export interface MeasurementResult {
  */
 export interface MeasureTargetArguments {
   configuration: ResolvedCodometerConfiguration;
+  outputPaths: readonly string[];
   target: ResolvedCodometerTarget;
   workingDirectory: string;
-}
-
-/**
- * Arguments accepted when resolving where an output file is written.
- */
-export interface ResolveDestinationArguments {
-  configuration: ResolvedCodometerConfiguration;
-  options: CodometerCommandOptions;
-  workingDirectory: string;
-}
-
-/**
- * Arguments accepted when syncing every resolved output destination.
- */
-export interface SyncDestinationsArguments {
-  check: boolean;
-  json: ResolvedCodometerJsonOutputConfiguration | undefined;
-  markdown: ResolvedCodometerMarkdownOutputConfiguration | undefined;
-  statistics: CodeStatisticsResult;
 }
 
 /**

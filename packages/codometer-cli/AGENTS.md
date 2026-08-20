@@ -72,6 +72,7 @@ flowchart LR
     OutputJsonModule
     OutputMarkdownModule
     PythonModule
+    ReportModule
     ShellModule
     SizeAnalysisModule
     SqlModule
@@ -95,6 +96,7 @@ flowchart LR
   CodometerModule --> LimitsModule
   CodometerModule --> OutputJsonModule
   CodometerModule --> OutputMarkdownModule
+  CodometerModule --> ReportModule
   CodometerModule --> SizeAnalysisModule
   CodometerModule --> TargetsModule
   JupyterModule --> JsonModule

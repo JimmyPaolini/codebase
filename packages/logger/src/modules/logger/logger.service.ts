@@ -8,6 +8,8 @@ import {
   FIRST_WORD_PATTERN,
   IRREGULAR_PAST_VERBS,
   LEADING_EMOJI_PATTERN,
+  STANDARD_ERROR_DESCRIPTOR,
+  STANDARD_OUTPUT_DESCRIPTOR,
   UNVALIDATED_LOG_CONTEXTS,
 } from "./logger.constants";
 
@@ -42,7 +44,16 @@ export class LoggerService extends ConsoleLogger {
   private static readonly isProduction =
     process.env["NODE_ENV"] === "production";
 
-  private static readonly root = pino(LoggerService.createPinoOptions());
+  /**
+   * Built on first use, not when this file is evaluated.
+   *
+   * A destination fixed at import time could only ever be chosen by this
+   * package, since every consumer's own code runs after its imports.
+   */
+  private static rootLogger: pino.Logger | undefined;
+
+  /** Whether lines go to standard error instead of standard output. */
+  private static writesToStandardError = false;
 
   private child: pino.Logger = LoggerService.root;
 
@@ -50,17 +61,31 @@ export class LoggerService extends ConsoleLogger {
 
   // 🔏 Private Methods
 
-  /** Build pino options for production or local development output modes. */
-  private static createPinoOptions(): pino.LoggerOptions {
+  /** The pino instance every logger's child is taken from. */
+  private static get root(): pino.Logger {
+    LoggerService.rootLogger ??= LoggerService.createRootLogger();
+
+    return LoggerService.rootLogger;
+  }
+
+  /** Build the pino instance for production or local development output. */
+  private static createRootLogger(): pino.Logger {
+    const level = process.env["LOG_LEVEL"] ?? "info";
+
     if (LoggerService.isProduction) {
-      return { level: process.env["LOG_LEVEL"] ?? "info" };
+      return LoggerService.writesToStandardError
+        ? pino({ level }, pino.destination(STANDARD_ERROR_DESCRIPTOR))
+        : pino({ level });
     }
 
-    return {
-      level: process.env["LOG_LEVEL"] ?? "info",
+    return pino({
+      level,
       transport: {
         options: {
           colorize: true,
+          destination: LoggerService.writesToStandardError
+            ? STANDARD_ERROR_DESCRIPTOR
+            : STANDARD_OUTPUT_DESCRIPTOR,
           // The emoji is a field, not part of the message, so the console can
           // show it while telemetry stores unadorned prose. `ignore` then keeps
           // it from being printed a second time in the trailing object.
@@ -70,7 +95,7 @@ export class LoggerService extends ConsoleLogger {
         },
         target: "pino-pretty",
       },
-    };
+    });
   }
 
   /**
@@ -159,6 +184,19 @@ export class LoggerService extends ConsoleLogger {
   }
 
   // 🌎 Public Methods
+
+  /**
+   * Sends every subsequent line to standard error instead of standard output.
+   *
+   * For a command-line application whose standard output *is* its result. A log
+   * line sharing that stream is not a diagnostic beside the data, it is a
+   * corruption of it. Call it before anything logs — the pino instance is built
+   * on first use, and a later call leaves the destination where it is rather
+   * than tearing down a transport somebody is writing through.
+   */
+  static logToStandardError(): void {
+    LoggerService.writesToStandardError = true;
+  }
 
   /** Normalizes unknown errors into a stable message and timestamped log line. */
   buildErrorLogEntry(

@@ -547,13 +547,13 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 
 ```text
 🚀 errorHandler(error: Error): void [packages/conformetry-cli/src/main.ts:17]
-  └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:206]
+  └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:244]
      ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
-    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
        ↳ Assembles the object pino merges into the line.
-      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
          ↳ Fails a malformed message in development, and never in production.
-        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
            ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -564,13 +564,13 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 
 ```text
 🚀 serviceErrorHandler(error: Error): void [packages/conformetry-cli/src/main.ts:22]
-  └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:206]
+  └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:244]
      ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
-    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
        ↳ Assembles the object pino merges into the line.
-      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
          ↳ Fails a malformed message in development, and never in production.
-        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
            ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -646,14 +646,14 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 ```text
 🚀 main(): Promise<void> [packages/conformetry-cli/src/main.ts:11]
    ↳ Bootstraps the NestJS command application.
-  └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:36]
+  └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:38]
 ```
 
 **13. `GenerateCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 GenerateCommand.constructor(…): GenerateCommand [packages/conformetry-cli/src/modules/generate/generate.command.ts:32]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -661,7 +661,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 
 ```text
 🚀 ValidateCommand.constructor(…): ValidateCommand [packages/conformetry-cli/src/modules/validate/validate.command.ts:42]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 

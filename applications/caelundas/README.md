@@ -361,13 +361,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
            ↳ Builds progressive bodies meta.
           └─> TripleAspectsComposerService.resolveProgressiveMeta(…): ProgressiveBodiesMeta | null [applications/caelundas/src/modules/triple-aspects/triple-aspects-composer.service.ts:227]
              ↳ Resolves progressive meta.
-            └─> LoggerService.warn(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:250]
+            └─> LoggerService.warn(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:288]
                ↳ Logs a warning message at the `warn` level.
-              └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+              └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
                  ↳ Assembles the object pino merges into the line.
-                └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+                └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
                    ↳ Fails a malformed message in development, and never in production.
-                  └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+                  └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                      ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -382,13 +382,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
        ↳ Resolves and builds a typed major-aspect event for two body longitudes.
       └─> MajorAspectEventService.assembleMajorAspectEvent(…): Event [applications/caelundas/src/modules/major-aspects/major-aspect-event.service.ts:54]
          ↳ Assembles one major-aspect event payload.
-        └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+        └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
            ↳ Logs an informational message at the `info` level.
-          └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+          └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
              ↳ Assembles the object pino merges into the line.
-            └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+            └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
                ↳ Fails a malformed message in development, and never in production.
-              └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+              └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                  ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -422,13 +422,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
      ↳ Creates a lunar eclipse calendar event.
     └─> EclipseEventService.buildEclipseEvent(…): Event [applications/caelundas/src/modules/eclipses/eclipse-event.service.ts:37]
        ↳ Builds eclipse event.
-      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
          ↳ Logs an informational message at the `info` level.
-        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
            ↳ Assembles the object pino merges into the line.
-          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
              ↳ Fails a malformed message in development, and never in production.
-            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -441,13 +441,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
      ↳ Creates a solar eclipse calendar event.
     └─> EclipseEventService.buildEclipseEvent(…): Event [applications/caelundas/src/modules/eclipses/eclipse-event.service.ts:37]
        ↳ Builds eclipse event.
-      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
          ↳ Logs an informational message at the `info` level.
-        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
            ↳ Assembles the object pino merges into the line.
-          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
              ↳ Fails a malformed message in development, and never in production.
-            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -460,13 +460,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
      ↳ Builds the instant when Sun crosses -18 degrees upward.
     └─> TwilightsBuilderService.buildTransitionEvent(date: Moment, description: string, emoji: string): Event [applications/caelundas/src/modules/twilights/twilights-builder.service.ts:32]
        ↳ Creates a timestamped twilight transition event and logs the detected boundary.
-      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
          ↳ Logs an informational message at the `info` level.
-        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
            ↳ Assembles the object pino merges into the line.
-          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
              ↳ Fails a malformed message in development, and never in production.
-            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -479,13 +479,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
      ↳ Builds the instant when Sun crosses -18 degrees downward.
     └─> TwilightsBuilderService.buildTransitionEvent(date: Moment, description: string, emoji: string): Event [applications/caelundas/src/modules/twilights/twilights-builder.service.ts:32]
        ↳ Creates a timestamped twilight transition event and logs the detected boundary.
-      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
          ↳ Logs an informational message at the `info` level.
-        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
            ↳ Assembles the object pino merges into the line.
-          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
              ↳ Fails a malformed message in development, and never in production.
-            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -498,13 +498,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
      ↳ Builds the instant when Sun crosses -6 degrees upward.
     └─> TwilightsBuilderService.buildTransitionEvent(date: Moment, description: string, emoji: string): Event [applications/caelundas/src/modules/twilights/twilights-builder.service.ts:32]
        ↳ Creates a timestamped twilight transition event and logs the detected boundary.
-      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
          ↳ Logs an informational message at the `info` level.
-        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
            ↳ Assembles the object pino merges into the line.
-          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
              ↳ Fails a malformed message in development, and never in production.
-            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -517,13 +517,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
      ↳ Builds the instant when Sun crosses -6 degrees downward.
     └─> TwilightsBuilderService.buildTransitionEvent(date: Moment, description: string, emoji: string): Event [applications/caelundas/src/modules/twilights/twilights-builder.service.ts:32]
        ↳ Creates a timestamped twilight transition event and logs the detected boundary.
-      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
          ↳ Logs an informational message at the `info` level.
-        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
            ↳ Assembles the object pino merges into the line.
-          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
              ↳ Fails a malformed message in development, and never in production.
-            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -536,13 +536,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
      ↳ Builds the instant when Sun crosses -12 degrees upward.
     └─> TwilightsBuilderService.buildTransitionEvent(date: Moment, description: string, emoji: string): Event [applications/caelundas/src/modules/twilights/twilights-builder.service.ts:32]
        ↳ Creates a timestamped twilight transition event and logs the detected boundary.
-      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
          ↳ Logs an informational message at the `info` level.
-        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
            ↳ Assembles the object pino merges into the line.
-          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
              ↳ Fails a malformed message in development, and never in production.
-            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -555,13 +555,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
      ↳ Builds the instant when Sun crosses -12 degrees downward.
     └─> TwilightsBuilderService.buildTransitionEvent(date: Moment, description: string, emoji: string): Event [applications/caelundas/src/modules/twilights/twilights-builder.service.ts:32]
        ↳ Creates a timestamped twilight transition event and logs the detected boundary.
-      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
          ↳ Logs an informational message at the `info` level.
-        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
            ↳ Assembles the object pino merges into the line.
-          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
              ↳ Fails a malformed message in development, and never in production.
-            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -572,13 +572,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
    ↳ Creates a sign peak ingress calendar event.
   └─> IngressesComposerService.buildPeakIngressEvent(args: { body: Body; date: Moment; longitude: number; }): Event [applications/caelundas/src/modules/ingresses/ingresses-composer.service.ts:142]
      ↳ Creates a sign peak ingress calendar event.
-    └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+    └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
        ↳ Logs an informational message at the `info` level.
-      └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+      └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
          ↳ Assembles the object pino merges into the line.
-        └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+        └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
            ↳ Fails a malformed message in development, and never in production.
-          └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+          └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
              ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -589,13 +589,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
    ↳ Creates a zodiac sign ingress calendar event.
   └─> IngressesComposerService.buildSignIngressEvent(args: { body: Body; date: Moment; longitude: number; }): Event [applications/caelundas/src/modules/ingresses/ingresses-composer.service.ts:204]
      ↳ Creates a zodiac sign ingress calendar event.
-    └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+    └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
        ↳ Logs an informational message at the `info` level.
-      └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+      └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
          ↳ Assembles the object pino merges into the line.
-        └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+        └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
            ↳ Fails a malformed message in development, and never in production.
-          └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+          └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
              ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -606,13 +606,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
    ↳ Detects a minor-aspect event for one body pair at a specific minute window.
   └─> MinorAspectsService.buildMinorAspectEvent(…): Event [applications/caelundas/src/modules/minor-aspects/minor-aspects.service.ts:126]
      ↳ Creates a calendar event for a specific minor aspect occurrence.
-    └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:206]
+    └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:244]
        ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
-      └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+      └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
          ↳ Assembles the object pino merges into the line.
-        └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+        └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
            ↳ Fails a malformed message in development, and never in production.
-          └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+          └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
              ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -638,13 +638,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
    ↳ Detects a specialty-aspect event for one body pair using three-point longitude sampling.
   └─> SpecialtyAspectsService.buildSpecialtyAspectEvent(…): Event [applications/caelundas/src/modules/specialty-aspects/specialty-aspects.service.ts:148]
      ↳ Creates a calendar event for a specific specialty aspect occurrence.
-    └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:206]
+    └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:244]
        ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
-      └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+      └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
          ↳ Assembles the object pino merges into the line.
-        └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+        └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
            ↳ Fails a malformed message in development, and never in production.
-          └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+          └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
              ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -689,13 +689,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
    ↳ Processes aspect group.
   └─> ProgressiveUtilitiesService.pairProgressiveEvents(beginnings: Event[], endings: Event[], label: string): [Event, Event][] [applications/caelundas/src/modules/progressive/progressive-utilities.service.ts:33]
      ↳ Pairs beginning and ending events into tuples.
-    └─> LoggerService.warn(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:250]
+    └─> LoggerService.warn(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:288]
        ↳ Logs a warning message at the `warn` level.
-      └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+      └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
          ↳ Assembles the object pino merges into the line.
-        └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+        └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
            ↳ Fails a malformed message in development, and never in production.
-          └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+          └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
              ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -788,13 +788,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 MinorAspectsEventService.log(message: string, data: LogData | undefined): void [applications/caelundas/src/modules/minor-aspects/minor-aspects-event.service.ts:61]
-  └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+  └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
      ↳ Logs an informational message at the `info` level.
-    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
        ↳ Assembles the object pino merges into the line.
-      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
          ↳ Fails a malformed message in development, and never in production.
-        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
            ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -854,13 +854,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 SpecialtyAspectsEventService.log(message: string, data: LogData | undefined): void [applications/caelundas/src/modules/specialty-aspects/specialty-aspects-event.service.ts:61]
-  └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+  └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
      ↳ Logs an informational message at the `info` level.
-    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
        ↳ Assembles the object pino merges into the line.
-      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
          ↳ Fails a malformed message in development, and never in production.
-        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
            ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -927,13 +927,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 ```text
 🚀 MinorAspectsComposerService.assembleMinorAspectEvent(args: AssembleMinorAspectEventArguments): Event [applications/caelundas/src/modules/minor-aspects/minor-aspects-composer.service.ts:59]
    ↳ Assembles minor aspect event.
-  └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+  └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
      ↳ Logs an informational message at the `info` level.
-    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
        ↳ Assembles the object pino merges into the line.
-      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
          ↳ Fails a malformed message in development, and never in production.
-        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
            ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -942,13 +942,13 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 ```text
 🚀 SpecialtyAspectsComposerService.buildSpecialtyAspectEventFromParts(…): Event [applications/caelundas/src/modules/specialty-aspects/specialty-aspects-composer.service.ts:52]
    ↳ Builds and logs one specialty-aspect boundary event from pre-resolved display parts.
-  └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:226]
+  └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:264]
      ↳ Logs an informational message at the `info` level.
-    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:115]
+    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
        ↳ Assembles the object pino merges into the line.
-      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:82]
+      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
          ↳ Fails a malformed message in development, and never in production.
-        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:140]
+        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
            ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
@@ -1335,14 +1335,14 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 ```text
 🚀 main(): Promise<void> [applications/caelundas/src/main.ts:9]
    ↳ Bootstraps the NestJS CLI application via `nest-commander`, wiring up pino logging before the module initializes.
-  └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:36]
+  └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:38]
 ```
 
 **74. `CalendarService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 CalendarService.constructor(…): CalendarService [applications/caelundas/src/modules/calendar/calendar.service.ts:27]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1367,7 +1367,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 IngressesComposerService.constructor(…): IngressesComposerService [applications/caelundas/src/modules/ingresses/ingresses-composer.service.ts:34]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1383,7 +1383,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 MajorAspectEventService.constructor(…): MajorAspectEventService [applications/caelundas/src/modules/major-aspects/major-aspect-event.service.ts:29]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1391,7 +1391,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 ProgressiveUtilitiesService.constructor(logger: LoggerService): ProgressiveUtilitiesService [applications/caelundas/src/modules/progressive/progressive-utilities.service.ts:18]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1399,7 +1399,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 MajorAspectsService.constructor(…): MajorAspectsService [applications/caelundas/src/modules/major-aspects/major-aspects.service.ts:33]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1407,7 +1407,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 AnnualSolarCycleEventsService.constructor(logger: LoggerService): AnnualSolarCycleEventsService [applications/caelundas/src/modules/annual-solar-cycle/annual-solar-cycle-events.service.ts:27]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1415,7 +1415,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 AnnualSolarCycleService.constructor(…): AnnualSolarCycleService [applications/caelundas/src/modules/annual-solar-cycle/annual-solar-cycle.service.ts:43]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1423,7 +1423,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 MinorAspectsEventService.constructor(…): MinorAspectsEventService [applications/caelundas/src/modules/minor-aspects/minor-aspects-event.service.ts:27]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1431,7 +1431,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 MinorAspectsService.constructor(…): MinorAspectsService [applications/caelundas/src/modules/minor-aspects/minor-aspects.service.ts:37]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1448,7 +1448,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 SpecialtyAspectsEventService.constructor(…): SpecialtyAspectsEventService [applications/caelundas/src/modules/specialty-aspects/specialty-aspects-event.service.ts:27]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1456,7 +1456,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 SpecialtyAspectsService.constructor(…): SpecialtyAspectsService [applications/caelundas/src/modules/specialty-aspects/specialty-aspects.service.ts:37]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1464,7 +1464,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 TripleAspectsComposerService.constructor(…): TripleAspectsComposerService [applications/caelundas/src/modules/triple-aspects/triple-aspects-composer.service.ts:32]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1504,7 +1504,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 DailyCyclesBuilderService.constructor(…): DailyCyclesBuilderService [applications/caelundas/src/modules/daily-cycles/daily-cycles-builder.service.ts:18]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1512,7 +1512,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 EclipseEventService.constructor(…): EclipseEventService [applications/caelundas/src/modules/eclipses/eclipse-event.service.ts:19]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1520,7 +1520,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 EclipseGeometryService.constructor(…): EclipseGeometryService [applications/caelundas/src/modules/eclipses/eclipse-geometry.service.ts:23]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1528,7 +1528,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 EclipseTopocentricService.constructor(…): EclipseTopocentricService [applications/caelundas/src/modules/eclipses/eclipse-topocentric.service.ts:23]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1536,7 +1536,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 EclipseCalculationService.constructor(…): EclipseCalculationService [applications/caelundas/src/modules/eclipses/eclipse-calculation.service.ts:28]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1544,7 +1544,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 EclipsesService.constructor(…): EclipsesService [applications/caelundas/src/modules/eclipses/eclipses.service.ts:25]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1552,7 +1552,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 MonthlyLunarCycleService.constructor(…): MonthlyLunarCycleService [applications/caelundas/src/modules/monthly-lunar-cycle/monthly-lunar-cycle.service.ts:28]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1560,7 +1560,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 TwilightsBuilderService.constructor(logger: LoggerService): TwilightsBuilderService [applications/caelundas/src/modules/twilights/twilights-builder.service.ts:15]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1568,7 +1568,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 PhaseCalculationService.constructor(…): PhaseCalculationService [applications/caelundas/src/modules/phases/phase-calculation.service.ts:33]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1576,7 +1576,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 MartianPhaseService.constructor(…): MartianPhaseService [applications/caelundas/src/modules/phases/martian-phase.service.ts:42]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1584,7 +1584,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 MercurianPhaseService.constructor(…): MercurianPhaseService [applications/caelundas/src/modules/phases/mercurian-phase.service.ts:42]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1592,7 +1592,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 VenusianPhaseService.constructor(…): VenusianPhaseService [applications/caelundas/src/modules/phases/venusian-phase.service.ts:42]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1600,7 +1600,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 PhasesService.constructor(…): PhasesService [applications/caelundas/src/modules/phases/phases.service.ts:30]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1608,7 +1608,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 RetrogradesService.constructor(…): RetrogradesService [applications/caelundas/src/modules/retrogrades/retrogrades.service.ts:36]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1616,7 +1616,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 CaelundasCommand.constructor(…): CaelundasCommand [applications/caelundas/src/modules/caelundas/caelundas.command.ts:27]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1624,7 +1624,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 MinorAspectsComposerService.constructor(…): MinorAspectsComposerService [applications/caelundas/src/modules/minor-aspects/minor-aspects-composer.service.ts:40]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -1632,7 +1632,7 @@ Call stacks traced through `caelundas`, deepest first. Each frame shows what it 
 
 ```text
 🚀 SpecialtyAspectsComposerService.constructor(…): SpecialtyAspectsComposerService [applications/caelundas/src/modules/specialty-aspects/specialty-aspects-composer.service.ts:34]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 

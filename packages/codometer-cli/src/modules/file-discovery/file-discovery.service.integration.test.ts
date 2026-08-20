@@ -49,6 +49,7 @@ describe(`${FileDiscoveryService.name} over a real directory`, () => {
       ".codometerignore",
       ".gitignore",
       "AGENTS.md",
+      "README.md",
       "nested/.gitignore",
       "nested/deep/deeper.ts",
       "nested/keep.md",
@@ -102,8 +103,10 @@ describe(`${FileDiscoveryService.name} over a real directory`, () => {
 
   it("excludes what the configured ignore file claims", () => {
     expect.hasAssertions();
-    // `/README.md` is anchored, `vendor/` is a whole directory.
-    expect(result.files).not.toContain("README.md");
+    // `vendor/` is a whole directory. `README.md` is not named there and is
+    // discovered here: the file codometer splices into is left out by the
+    // measurement that knows it writes to it, not by an ignore rule.
+    expect(result.files).toContain("README.md");
     expect(result.files).not.toContain("vendor/vendored.ts");
   });
 
@@ -111,6 +114,10 @@ describe(`${FileDiscoveryService.name} over a real directory`, () => {
     expect.hasAssertions();
     // CLAUDE.md is a link to AGENTS.md; following it would report one document
     // as two.
-    expect(result.markdownFiles).toStrictEqual(["AGENTS.md", "nested/keep.md"]);
+    expect(result.markdownFiles).toStrictEqual([
+      "AGENTS.md",
+      "README.md",
+      "nested/keep.md",
+    ]);
   });
 });

@@ -85,6 +85,46 @@ describe(LoggerService, () => {
       vi.resetModules();
     });
 
+    // That the bytes actually leave on file descriptor 2 is proved where it can
+    // be observed — `codometer-cli`'s end-to-end suite runs the CLI as a real
+    // process and reads the two streams apart. Here the branches are covered
+    // and the destination is built without complaint.
+    it("sends production output to standard error when asked to", async () => {
+      process.env["NODE_ENV"] = "production";
+      process.env["LOG_LEVEL"] = "silent";
+      vi.resetModules();
+
+      const { LoggerService: LoggerServiceForEnvironment } =
+        await import("./logger.service");
+
+      LoggerServiceForEnvironment.logToStandardError();
+
+      const logger = new LoggerServiceForEnvironment();
+
+      expect(() => {
+        logger.setContext("StandardErrorContext");
+        logger.log("🚀 Started on standard error");
+      }).not.toThrow();
+    });
+
+    it("sends development output to standard error when asked to", async () => {
+      process.env["NODE_ENV"] = "development";
+      process.env["LOG_LEVEL"] = "silent";
+      vi.resetModules();
+
+      const { LoggerService: LoggerServiceForEnvironment } =
+        await import("./logger.service");
+
+      LoggerServiceForEnvironment.logToStandardError();
+
+      const logger = new LoggerServiceForEnvironment();
+
+      expect(() => {
+        logger.setContext("StandardErrorContext");
+        logger.log("🚀 Started on standard error");
+      }).not.toThrow();
+    });
+
     it("initializes logger in production mode with explicit log level", async () => {
       process.env["NODE_ENV"] = "production";
       process.env["LOG_LEVEL"] = "debug";

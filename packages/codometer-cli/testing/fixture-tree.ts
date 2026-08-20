@@ -16,7 +16,9 @@ import path from "node:path";
  * holds, which of them are symlinks, and which ignore files sit beside them.
  */
 const FIXTURE_FILES: Readonly<Record<string, string>> = {
-  ".codometerignore": ["/README.md", "vendor/", ""].join("\n"),
+  // `README.md` is not named here on purpose. Codometer splices into it, so
+  // it excludes it from what it measures without being told.
+  ".codometerignore": ["vendor/", ""].join("\n"),
   ".gitignore": ["build/", "*.log", "nested/generated/", ""].join("\n"),
   "AGENTS.md": "# Agents\n",
   "build/output.js": "export const built = 1;\n",
@@ -27,7 +29,8 @@ const FIXTURE_FILES: Readonly<Record<string, string>> = {
   "nested/generated/thing.ts": "export const generated = 1;\n",
   "nested/keep.md": "# Keep\n",
   "node_modules/library/index.ts": "export const library = 1;\n",
-  "README.md": "# Readme\n",
+  "README.md":
+    "# Readme\n\n<!-- CODE_STATISTICS_START -->\n\nold\n<!-- CODE_STATISTICS_END -->\n",
   "redistribute/index.ts": "export const redistributed = 1;\n",
   "src/app.ts": "export const app = 1;\n",
   "src/app.unit.test.ts": "export const appTest = 1;\n",

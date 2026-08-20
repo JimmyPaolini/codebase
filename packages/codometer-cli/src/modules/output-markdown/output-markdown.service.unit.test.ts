@@ -644,4 +644,96 @@ describe(OutputMarkdownService, () => {
       }),
     ).toThrow(MissingMarkdownPathError);
   });
+
+  it("renders a document of badges with no anchor markers around it", () => {
+    const document = service.renderDocument({
+      description: "Repository statistics.",
+      statistics: sampleStatistics,
+    });
+
+    expect(document.startsWith("Repository statistics.\n\n")).toBe(true);
+    expect(document).toContain("![Lines of Code]");
+    expect(document).not.toContain("<!-- CODE_STATISTICS_START -->");
+  });
+
+  it("renders a document with no description when none was configured", () => {
+    const document = service.renderDocument({
+      description: undefined,
+      statistics: sampleStatistics,
+    });
+
+    expect(document.startsWith("### Repository")).toBe(true);
+  });
+
+  // What a splice would place, without placing it — the form a run that writes
+  // nothing shows on the console.
+  it("renders the anchored block without touching a file", () => {
+    const block = service.renderBlock({
+      destination: buildDestination("README.md"),
+      statistics: sampleStatistics,
+    });
+
+    expect(block.startsWith("<!-- CODE_STATISTICS_START -->")).toBe(true);
+    expect(block.endsWith("<!-- CODE_STATISTICS_END -->")).toBe(true);
+    expect(block).toContain("![Lines of Code]");
+  });
+
+  it("renders the anchored block through a configured render function", () => {
+    const block = service.renderBlock({
+      destination: buildDestination("README.md", {
+        render: () => "## Metrics",
+      }),
+      statistics: sampleStatistics,
+    });
+
+    expect(block).toContain("## Metrics");
+    expect(block).not.toContain("![Lines of Code]");
+  });
+
+  it("writes a whole document, creating missing parent directories", () => {
+    const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
+    temporaryDirectories.push(temporaryDirectory);
+    const documentPath = path.join(temporaryDirectory, "docs/metrics.md");
+
+    expect(
+      service.syncDocument({
+        check: false,
+        content: "# Metrics",
+        path: documentPath,
+      }),
+    ).toBe(true);
+    expect(readFileSync(documentPath, "utf8")).toBe("# Metrics\n");
+  });
+
+  it.each([
+    ["# Metrics\n", true],
+    ["# Stale\n", false],
+  ])("checks a document holding %j as current=%s", (existing, isCurrent) => {
+    const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
+    temporaryDirectories.push(temporaryDirectory);
+    const documentPath = path.join(temporaryDirectory, "metrics.md");
+
+    writeFileSync(documentPath, existing, "utf8");
+
+    expect(
+      service.syncDocument({
+        check: true,
+        content: "# Metrics",
+        path: documentPath,
+      }),
+    ).toBe(isCurrent);
+  });
+
+  it("reports a document that does not exist as stale", () => {
+    const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
+    temporaryDirectories.push(temporaryDirectory);
+
+    expect(
+      service.syncDocument({
+        check: true,
+        content: "# Metrics",
+        path: path.join(temporaryDirectory, "absent.md"),
+      }),
+    ).toBe(false);
+  });
 });

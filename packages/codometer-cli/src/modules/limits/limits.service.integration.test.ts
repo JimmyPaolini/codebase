@@ -10,6 +10,7 @@ import { removeFixtureTree } from "../../../testing/fixture-tree";
 import { buildCodeStatistics } from "../../../testing/mocks";
 
 import { LimitsService } from "./limits.service";
+import { MetricIndexService } from "./metric-index.service";
 
 import type { EvaluatedLimit, MeasuredTarget } from "./limits.types";
 
@@ -56,15 +57,17 @@ describe("limits written in a configuration file", () => {
     );
 
     const module = await Test.createTestingModule({
-      providers: [ConfigurationService, LimitsService],
+      providers: [ConfigurationService, LimitsService, MetricIndexService],
     }).compile();
     const configuration = await module
       .get(ConfigurationService)
       .loadConfiguration({ configurationPath });
 
+    const { indexes } = module.get(MetricIndexService).index(TARGETS);
+
     evaluated = module
       .get(LimitsService)
-      .evaluate({ configuration, targets: TARGETS });
+      .evaluate({ configuration, indexes }).limits;
   });
 
   afterAll(() => {

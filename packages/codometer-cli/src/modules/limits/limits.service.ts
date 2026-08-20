@@ -1,25 +1,19 @@
 import { Injectable } from "@nestjs/common";
 
-import { DuplicateTargetError } from "./duplicate-target.errors";
 import { EmptyTargetError } from "./empty-target.errors";
-import {
-  CUSTOM_METRIC_PREFIX,
-  FILES_METRIC_PATH,
-  METRIC_PATH_SEPARATOR,
-  SIZE_METRIC_PATH,
-} from "./limits.constants";
+import { METRIC_PATH_SEPARATOR } from "./limits.constants";
 import { UnboundMetricError } from "./limits.errors";
 
 import type {
   BindMetricArguments,
   EvaluatedLimit,
   EvaluateLimitsArguments,
-  MeasuredTarget,
+  LimitFailure,
+  LimitsEvaluation,
   MetricBinding,
   ResolveMetricArguments,
   TargetMetricIndex,
 } from "./limits.types";
-import type { CodeStatisticsResult } from "@codometer/configuration";
 
 /**
  * Holds measured metrics to the limits declared against them.
@@ -40,27 +34,6 @@ export class LimitsService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
-
-  /**
-   * Records one metric, or marks its path as answered by more than one.
-   *
-   * Two counters sharing a path is a configuration mistake rather than a
-   * measurement one — two statistics with the same label — and it is caught
-   * here so that a limit addressing that path is refused instead of being
-   * given whichever counter was indexed first.
-   */
-  private addMetric(
-    index: TargetMetricIndex,
-    metricPath: string,
-    value: number,
-  ): void {
-    if (index.metrics.has(metricPath)) {
-      index.ambiguous.add(metricPath);
-      return;
-    }
-
-    index.metrics.set(metricPath, value);
-  }
 
   /** Binds one metric path within one target, if that target measured it. */
   private bind(args: BindMetricArguments): MetricBinding | undefined {
@@ -83,53 +56,14 @@ export class LimitsService {
         };
   }
 
-  /** Indexes every measured target, by name. */
-  private buildIndexes(
-    targets: readonly MeasuredTarget[],
-  ): Map<string, TargetMetricIndex> {
-    const indexes = new Map<string, TargetMetricIndex>();
-
-    for (const target of targets) {
-      if (indexes.has(target.name)) {
-        throw new DuplicateTargetError(target.name);
-      }
-
-      indexes.set(target.name, this.buildTargetIndex(target));
-    }
-
-    return indexes;
-  }
-
-  /**
-   * Indexes every metric one target measured, by its path within that target.
-   *
-   * An analysis the target never ran contributes nothing, so a limit written
-   * against it is refused rather than being compared against a zero the target
-   * never reported.
-   */
-  private buildTargetIndex(target: MeasuredTarget): TargetMetricIndex {
-    const index: TargetMetricIndex = {
-      ambiguous: new Set(),
-      files: target.files,
-      metrics: new Map(),
-    };
-
-    this.addMetric(index, FILES_METRIC_PATH, target.files);
-
-    if (target.size !== undefined) {
-      this.addMetric(index, SIZE_METRIC_PATH, target.size.bytes);
-    }
-
-    if (target.language !== undefined) {
-      this.indexLanguage(index, target.language);
-    }
-
-    return index;
-  }
-
   /** Names one binding the way an error message reads it out. */
   private describeBinding(binding: MetricBinding): string {
     return `the "${binding.target}" target's "${binding.metric}" metric`;
+  }
+
+  /** Reads whatever a failed binding threw as the sentence a report prints. */
+  private describeFailure(error: unknown): string {
+    return error instanceof Error ? error.message : String(error);
   }
 
   /** Names every measured target, for an error that has to list them. */
@@ -209,53 +143,6 @@ export class LimitsService {
     });
   }
 
-  /** Indexes a group of counters, descending into the nested ones. */
-  private indexCounters(
-    index: TargetMetricIndex,
-    counters: Record<string, unknown>,
-    prefix: string,
-  ): void {
-    for (const [name, value] of Object.entries(counters)) {
-      const metricPath =
-        prefix === "" ? name : `${prefix}${METRIC_PATH_SEPARATOR}${name}`;
-
-      if (typeof value === "number") {
-        this.addMetric(index, metricPath, value);
-      } else if (this.isCounterGroup(value)) {
-        this.indexCounters(index, value, metricPath);
-      }
-    }
-  }
-
-  /**
-   * Indexes everything language analysis counted.
-   *
-   * Configured counters are indexed under a prefix rather than beside the
-   * built-in ones, so a counter labelled `files` cannot take the path the file
-   * count already answers to.
-   */
-  private indexLanguage(
-    index: TargetMetricIndex,
-    language: CodeStatisticsResult,
-  ): void {
-    const { custom, ...groups } = language;
-
-    this.indexCounters(index, groups, "");
-
-    for (const statistic of custom) {
-      this.addMetric(
-        index,
-        `${CUSTOM_METRIC_PREFIX}${METRIC_PATH_SEPARATOR}${statistic.label}`,
-        statistic.count,
-      );
-    }
-  }
-
-  /** Whether a statistics entry holds counters of its own. */
-  private isCounterGroup(value: unknown): value is Record<string, unknown> {
-    return typeof value === "object" && value !== null && !Array.isArray(value);
-  }
-
   /**
    * Points one written path at exactly one measured metric.
    *
@@ -304,36 +191,39 @@ export class LimitsService {
    * through untouched: whether a breach stops the run is a decision about the
    * run, not about the measurement.
    *
-   * A configuration declaring no limits is answered without the measurement
-   * being examined at all, so nothing this layer objects to can fail a run
-   * that gates nothing.
+   * A limit that binds to nothing joins `failures` and the rest are evaluated
+   * anyway, so one run names every path in a configuration that binds to
+   * nothing instead of the first one and nothing after it.
    */
-  evaluate(args: EvaluateLimitsArguments): EvaluatedLimit[] {
-    // Nothing is indexed, and so nothing about the targets is objected to,
-    // until a limit asks a question of them. A run that gates nothing is a run
-    // this layer has no business failing.
-    if (args.configuration.limits.length === 0) {
-      return [];
+  evaluate(args: EvaluateLimitsArguments): LimitsEvaluation {
+    const failures: LimitFailure[] = [];
+    const limits: EvaluatedLimit[] = [];
+
+    for (const limit of args.configuration.limits) {
+      try {
+        const binding = this.resolve({
+          defaultTarget: args.configuration.defaultTarget,
+          indexes: args.indexes,
+          path: limit.metric,
+        });
+
+        limits.push({
+          breached: binding.measured > limit.value,
+          label: limit.label,
+          limit: limit.value,
+          measured: binding.measured,
+          metric: binding.metric,
+          severity: limit.severity,
+          target: binding.target,
+        });
+      } catch (error: unknown) {
+        failures.push({
+          metric: limit.metric,
+          reason: this.describeFailure(error),
+        });
+      }
     }
 
-    const indexes = this.buildIndexes(args.targets);
-
-    return args.configuration.limits.map((limit) => {
-      const binding = this.resolve({
-        defaultTarget: args.configuration.defaultTarget,
-        indexes,
-        path: limit.metric,
-      });
-
-      return {
-        breached: binding.measured > limit.value,
-        label: limit.label,
-        limit: limit.value,
-        measured: binding.measured,
-        metric: binding.metric,
-        severity: limit.severity,
-        target: binding.target,
-      };
-    });
+    return { failures, limits };
   }
 }

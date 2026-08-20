@@ -468,7 +468,7 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 ```text
 🚀 main(): Promise<void> [packages/callidescope-cli/src/main.ts:11]
    ↳ Bootstraps the callidescope CLI command application.
-  └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:36]
+  └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:38]
 ```
 
 **9. `WorkspaceService.isExcluded`** — depth 2 · orphan-root
@@ -508,7 +508,7 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 
 ```text
 🚀 CallidescopeCommand.constructor(…): CallidescopeCommand [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:44]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
