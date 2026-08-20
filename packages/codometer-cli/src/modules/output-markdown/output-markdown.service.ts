@@ -3,7 +3,10 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { REGEX_SPECIAL_CHARACTERS } from "./output-markdown.constants";
+import {
+  REGEX_SPECIAL_CHARACTERS,
+  TRAILING_NEWLINES,
+} from "./output-markdown.constants";
 import { MissingMarkdownPathError } from "./output-markdown.errors";
 import {
   buildCssGroup,
@@ -16,6 +19,7 @@ import {
   buildRepositoryGroup,
   buildShellGroup,
   buildSqlGroup,
+  buildTargetsGroup,
   buildTomlGroup,
   buildTypescriptGroup,
   buildYamlGroup,
@@ -30,10 +34,7 @@ import type {
   SyncMarkdownArguments,
   WrapInAnchorsArguments,
 } from "./output-markdown.types";
-import type {
-  CodeStatisticsResult,
-  MarkdownAnchorHelpers,
-} from "@codometer/configuration";
+import type { MarkdownAnchorHelpers } from "@codometer/configuration";
 
 /**
  * Writes generated code statistics badges into a markdown file.
@@ -82,10 +83,19 @@ export class OutputMarkdownService {
    * `Repository` group spans languages; the rest report one language each, so
    * a number that moves can be traced to the analyzer that produced it rather
    * than to a sum that silently mixes several.
+   *
+   * `Measured Targets` is the one group not counting anything the language analyzers
+   * produced: it reports the size of each declared target this run measured,
+   * which is how a project's README carries the compressed size of what it
+   * ships. It renders nothing when the run declared no target, so the
+   * whole-repository report is byte for byte what it was.
    */
-  private buildBadgeGroups(statistics: CodeStatisticsResult): string {
+  private buildBadgeGroups(args: RenderDocumentArguments): string {
+    const { statistics } = args;
+
     return [
       buildRepositoryGroup(statistics),
+      buildTargetsGroup(args.targets),
       buildTypescriptGroup(statistics),
       buildPythonGroup(statistics),
       buildJsonGroup(statistics),
@@ -176,11 +186,17 @@ export class OutputMarkdownService {
     }
 
     if (!existingMarkdown.includes(args.destination.startMarker)) {
-      writeFileSync(
-        resolvedPath,
-        `${existingMarkdown}\n\n${generatedBlock}\n`,
-        "utf8",
-      );
+      // Exactly one blank line between what was already there and the block,
+      // whatever the file ended with. Appending to text that already ended in a
+      // newline used to leave two, which `MD012/no-multiple-blanks` fails and
+      // `markdownlint --fix` does not repair — so every README the block was
+      // first written into failed lint for whoever ran it next.
+      const preamble =
+        existingMarkdown === ""
+          ? ""
+          : `${existingMarkdown.replace(TRAILING_NEWLINES, "")}\n\n`;
+
+      writeFileSync(resolvedPath, `${preamble}${generatedBlock}\n`, "utf8");
       return true;
     }
 
@@ -218,6 +234,7 @@ export class OutputMarkdownService {
     return this.renderDocument({
       description: args.destination.description,
       statistics: args.statistics,
+      targets: args.targets,
     });
   }
 
@@ -241,7 +258,7 @@ export class OutputMarkdownService {
    * anchor the block against.
    */
   renderDocument(args: RenderDocumentArguments): string {
-    const groups = this.buildBadgeGroups(args.statistics);
+    const groups = this.buildBadgeGroups(args);
 
     return args.description === undefined
       ? groups

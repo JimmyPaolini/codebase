@@ -233,6 +233,7 @@ describe(CodometerCommand, () => {
         check: true,
         destination: { ...markdownDestination, path: "/repo/README.md" },
         statistics,
+        targets: [],
       });
       expect(loggerService.error).toHaveBeenCalledWith(
         "📊 Found stale reports",
@@ -258,6 +259,38 @@ describe(CodometerCommand, () => {
       expect(process.exitCode).toBe(1);
     });
 
+    // The badge block is what carries a project's compressed size, so what a
+    // target measured has to reach the renderer — and a target the run
+    // measured no size for has to not, rather than arriving as a zero.
+    it("hands the renderer the size of every target it measured", async () => {
+      vi.mocked(codometerService.measure).mockReturnValue({
+        failures: [],
+        indexes: new Map(),
+        limits: [],
+        statistics,
+        targets: [
+          {
+            files: 5,
+            language: undefined,
+            name: "Compiled JavaScript",
+            size: { bytes: 5324, compression: "gzip", files: 5 },
+          },
+          { files: 0, language: undefined, name: "Unsized", size: undefined },
+        ],
+      });
+
+      await run({ write: true });
+
+      expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
+        check: false,
+        destination: { ...markdownDestination, path: "/repo/README.md" },
+        statistics,
+        targets: [
+          { bytes: 5324, compression: "gzip", name: "Compiled JavaScript" },
+        ],
+      });
+    });
+
     it("writes and fails nothing with --write", async () => {
       await run({ write: true });
 
@@ -265,6 +298,7 @@ describe(CodometerCommand, () => {
         check: false,
         destination: { ...markdownDestination, path: "/repo/README.md" },
         statistics,
+        targets: [],
       });
       expect(process.exitCode).toBe(0);
     });
@@ -288,6 +322,7 @@ describe(CodometerCommand, () => {
         check: false,
         destination: { ...markdownDestination, path: "/repo/README.md" },
         statistics,
+        targets: [],
       });
       // Nothing had failed the run yet at the moment the report was written.
       expect(breachReportedWhileWriting).toBe(false);
@@ -382,6 +417,7 @@ describe(CodometerCommand, () => {
       expect(outputMarkdownService.renderDocument).toHaveBeenCalledWith({
         description: undefined,
         statistics,
+        targets: [],
       });
       expect(stdoutWriteSpy).toHaveBeenCalledWith("document\n");
       expect(outputMarkdownService.syncDocument).not.toHaveBeenCalled();
@@ -434,6 +470,7 @@ describe(CodometerCommand, () => {
           path: "/repo/docs/statistics.md",
         },
         statistics,
+        targets: [],
       });
       expect(outputMarkdownService.syncDocument).not.toHaveBeenCalled();
     });
@@ -467,6 +504,7 @@ describe(CodometerCommand, () => {
         check: false,
         destination: { ...markdownDestination, path: "/repo/README.md" },
         statistics,
+        targets: [],
       });
       expect(outputJsonService.sync).toHaveBeenCalledExactlyOnceWith({
         check: false,

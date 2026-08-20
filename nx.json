@@ -130,6 +130,36 @@
       },
       "outputs": ["{projectRoot}/size-limit-report.json"]
     },
+    "codometer": {
+      "cache": true,
+      "configurations": {
+        "check": {
+          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts codometer --directory {projectRoot} --json codometer-report.json --write --check limits && sh scripts/check-codometer-report.sh {projectRoot}/codometer-report.json"
+        },
+        "write": {
+          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts codometer --directory {projectRoot} --json codometer-report.json --readme README.md --write && sh scripts/check-codometer-report.sh {projectRoot}/codometer-report.json"
+        }
+      },
+      "defaultConfiguration": "check",
+      "dependsOn": ["build"],
+      "description": "Measure one project and gate the limit it declares, writing the report the pull request's 🎒 Bundles section reads. This default depends on `build` because size analysis reads compiled output; the workspace-root `codebase:codometer` target must NOT, because it measures source and waiting on every build would be both slow and circular — it pins `dependsOn` to an empty list of its own so this default can never reach it, and neither half of that asymmetry may be collapsed into the other. Both configurations pass `--write` because a run that touches no file renders its report to the console instead of writing it; `check` adds `--check limits` so a breach fails only after the report is on disk. Neither checks staleness: project READMEs are written on main by the release workflow, so they are expected to be stale on a branch.",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "^production",
+        "{workspaceRoot}/codometer.config.ts",
+        "{workspaceRoot}/configuration/.codometerignore",
+        "{workspaceRoot}/configuration/codometer.config.ts",
+        "{workspaceRoot}/scripts/check-codometer-report.sh",
+        "production"
+      ],
+      "options": {
+        "cwd": "{workspaceRoot}"
+      },
+      "outputs": [
+        "{projectRoot}/codometer-report.json",
+        "{projectRoot}/README.md"
+      ]
+    },
     "dependency-cruiser": [
       {
         "cache": true,
@@ -307,8 +337,8 @@
     },
     "make-projects": {
       "cache": false,
-      "dependsOn": ["build", "bundlesize"],
-      "description": "Build every buildable project and measure its bundle. An nx:noop aggregator; `build` carries its own ^build dependency.",
+      "dependsOn": ["build", "codometer"],
+      "description": "Build every buildable project and measure it. An nx:noop aggregator; `build` carries its own ^build dependency, and `codometer` gates each project's declared limit.",
       "executor": "nx:noop"
     },
     "markdown-lint": [

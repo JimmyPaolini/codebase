@@ -254,6 +254,7 @@ describe(OutputMarkdownService, () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
       statistics: sampleStatistics,
+      targets: [],
     });
 
     expect(block).toContain("### Repository\n\n");
@@ -270,6 +271,7 @@ describe(OutputMarkdownService, () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
       statistics: sampleStatistics,
+      targets: [],
     });
     const typescriptGroup = block.split("### ")[2] ?? "";
 
@@ -289,6 +291,7 @@ describe(OutputMarkdownService, () => {
           (statistic) => statistic.group === "typescript",
         ),
       },
+      targets: [],
     });
 
     expect(block).not.toContain("### Conventions");
@@ -301,6 +304,7 @@ describe(OutputMarkdownService, () => {
         description: "Measured every push.",
       }),
       statistics: sampleStatistics,
+      targets: [],
     });
 
     expect(block.startsWith("Measured every push.\n\n### Repository")).toBe(
@@ -312,6 +316,7 @@ describe(OutputMarkdownService, () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
       statistics: sampleStatistics,
+      targets: [],
     });
 
     expect(block.startsWith("### Repository")).toBe(true);
@@ -321,6 +326,7 @@ describe(OutputMarkdownService, () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
       statistics: sampleStatistics,
+      targets: [],
     });
     const badgeCount = (block.match(/^!\[/gmu) ?? []).length;
     const measuredCount =
@@ -350,6 +356,7 @@ describe(OutputMarkdownService, () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
       statistics: sampleStatistics,
+      targets: [],
     });
 
     // Classes are 2 in TypeScript and 33 in Python; neither is the sum, 35.
@@ -366,6 +373,7 @@ describe(OutputMarkdownService, () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
       statistics: sampleStatistics,
+      targets: [],
     });
 
     expect(block).toContain(
@@ -391,6 +399,7 @@ describe(OutputMarkdownService, () => {
       check: false,
       destination: buildDestination(readmePath),
       statistics: sampleStatistics,
+      targets: [],
     });
 
     const written = readFileSync(readmePath, "utf8");
@@ -412,6 +421,7 @@ describe(OutputMarkdownService, () => {
       check: false,
       destination: buildDestination(readmePath),
       statistics: sampleStatistics,
+      targets: [],
     });
 
     const written = readFileSync(readmePath, "utf8");
@@ -422,6 +432,91 @@ describe(OutputMarkdownService, () => {
     expect(written.indexOf("# Project")).toBeLessThan(
       written.indexOf("<!-- CODE_STATISTICS_START -->"),
     );
+  });
+
+  it("separates an appended block from the document with one blank line", () => {
+    const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
+    temporaryDirectories.push(temporaryDirectory);
+    const readmePath = path.join(temporaryDirectory, "README.md");
+
+    // Trailing newlines are the ordinary case — every markdown file this
+    // repository lints ends with one — and appending to them naively leaves a
+    // second blank line, which `MD012/no-multiple-blanks` fails.
+    writeFileSync(readmePath, "# Project\n\n\n", "utf8");
+
+    service.sync({
+      check: false,
+      destination: buildDestination(readmePath),
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(readFileSync(readmePath, "utf8")).toContain(
+      "# Project\n\n<!-- CODE_STATISTICS_START -->",
+    );
+  });
+
+  it("writes only the block when the file did not exist", () => {
+    const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
+    temporaryDirectories.push(temporaryDirectory);
+    const readmePath = path.join(temporaryDirectory, "README.md");
+
+    service.sync({
+      check: false,
+      destination: buildDestination(readmePath),
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(readFileSync(readmePath, "utf8").startsWith("<!-- CODE_")).toBe(
+      true,
+    );
+  });
+
+  it("renders a size badge for every target the run measured", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md"),
+      statistics: sampleStatistics,
+      targets: [
+        { bytes: 5324, compression: "gzip", name: "Compiled JavaScript" },
+        { bytes: 1_500_000, compression: "none", name: "Raw assets" },
+      ],
+    });
+
+    expect(block).toContain("### Measured Targets");
+    expect(block).toContain(
+      "![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-5.32_kB_gzip-",
+    );
+    // Decimal megabytes, and no compression named where there was none.
+    expect(block).toContain(
+      "![Raw assets Size](https://img.shields.io/badge/Raw_assets_Size-1.50_MB-",
+    );
+  });
+
+  it("omits the Measured Targets group when the run measured no target", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md"),
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    // What the whole-repository run renders: one `Repository Size`, and no
+    // second size figure beside it.
+    expect(block).not.toContain("### Measured Targets");
+    expect(block).toContain("![Repository Size]");
+  });
+
+  it("renders the same block twice for the same measurement", () => {
+    const render = (): string =>
+      service.renderBadges({
+        destination: buildDestination("README.md"),
+        statistics: sampleStatistics,
+        targets: [
+          { bytes: 5324, compression: "gzip", name: "Compiled JavaScript" },
+        ],
+      });
+
+    expect(render()).toBe(render());
   });
 
   it("returns false in check mode when no markers exist", () => {
@@ -436,6 +531,7 @@ describe(OutputMarkdownService, () => {
         check: true,
         destination: buildDestination(readmePath),
         statistics: sampleStatistics,
+        targets: [],
       }),
     ).toBe(false);
   });
@@ -444,6 +540,7 @@ describe(OutputMarkdownService, () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
       statistics: sampleStatistics,
+      targets: [],
     });
     const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
     temporaryDirectories.push(temporaryDirectory);
@@ -460,6 +557,7 @@ describe(OutputMarkdownService, () => {
         check: true,
         destination: buildDestination(readmePath),
         statistics: sampleStatistics,
+        targets: [],
       }),
     ).toBe(true);
   });
@@ -480,6 +578,7 @@ describe(OutputMarkdownService, () => {
         check: true,
         destination: buildDestination(readmePath),
         statistics: sampleStatistics,
+        targets: [],
       }),
     ).toBe(false);
   });
@@ -494,6 +593,7 @@ describe(OutputMarkdownService, () => {
         check: false,
         destination: buildDestination(readmePath),
         statistics: sampleStatistics,
+        targets: [],
       }),
     ).toBe(true);
 
@@ -517,7 +617,12 @@ describe(OutputMarkdownService, () => {
       "utf8",
     );
 
-    service.sync({ check: false, destination, statistics: sampleStatistics });
+    service.sync({
+      check: false,
+      destination,
+      statistics: sampleStatistics,
+      targets: [],
+    });
 
     const written = readFileSync(markdownPath, "utf8");
 
@@ -525,7 +630,12 @@ describe(OutputMarkdownService, () => {
     expect(written).not.toContain("\nold\n");
     expect(written).not.toContain("CODE_STATISTICS_START");
     expect(
-      service.sync({ check: true, destination, statistics: sampleStatistics }),
+      service.sync({
+        check: true,
+        destination,
+        statistics: sampleStatistics,
+        targets: [],
+      }),
     ).toBe(true);
   });
 
@@ -542,6 +652,7 @@ describe(OutputMarkdownService, () => {
           `${renderArguments.description ?? ""}\n\nLines: ${renderArguments.statistics.linesOfCode}`,
       }),
       statistics: sampleStatistics,
+      targets: [],
     });
 
     const written = readFileSync(markdownPath, "utf8");
@@ -555,6 +666,7 @@ describe(OutputMarkdownService, () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
       statistics: sampleStatistics,
+      targets: [],
     });
     const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
     temporaryDirectories.push(temporaryDirectory);
@@ -567,6 +679,7 @@ describe(OutputMarkdownService, () => {
           `## Metrics\n\n${renderArguments.renderBadges()}`,
       }),
       statistics: sampleStatistics,
+      targets: [],
     });
 
     expect(readFileSync(markdownPath, "utf8")).toContain(
@@ -593,6 +706,7 @@ describe(OutputMarkdownService, () => {
         },
       }),
       statistics: sampleStatistics,
+      targets: [],
     });
 
     expect(isCurrent).toBe(true);
@@ -615,6 +729,7 @@ describe(OutputMarkdownService, () => {
           writeArguments.anchors.syncAnchoredBlock({ path: chosenPath }),
       }),
       statistics: sampleStatistics,
+      targets: [],
     });
 
     const written = readFileSync(chosenPath, "utf8");
@@ -628,6 +743,7 @@ describe(OutputMarkdownService, () => {
       check: true,
       destination: buildDestination(undefined, { write: () => false }),
       statistics: sampleStatistics,
+      targets: [],
     });
 
     expect(isCurrent).toBe(false);
@@ -641,6 +757,7 @@ describe(OutputMarkdownService, () => {
           write: (writeArguments) => writeArguments.anchors.syncAnchoredBlock(),
         }),
         statistics: sampleStatistics,
+        targets: [],
       }),
     ).toThrow(MissingMarkdownPathError);
   });
@@ -649,6 +766,7 @@ describe(OutputMarkdownService, () => {
     const document = service.renderDocument({
       description: "Repository statistics.",
       statistics: sampleStatistics,
+      targets: [],
     });
 
     expect(document.startsWith("Repository statistics.\n\n")).toBe(true);
@@ -660,6 +778,7 @@ describe(OutputMarkdownService, () => {
     const document = service.renderDocument({
       description: undefined,
       statistics: sampleStatistics,
+      targets: [],
     });
 
     expect(document.startsWith("### Repository")).toBe(true);
@@ -671,6 +790,7 @@ describe(OutputMarkdownService, () => {
     const block = service.renderBlock({
       destination: buildDestination("README.md"),
       statistics: sampleStatistics,
+      targets: [],
     });
 
     expect(block.startsWith("<!-- CODE_STATISTICS_START -->")).toBe(true);
@@ -684,6 +804,7 @@ describe(OutputMarkdownService, () => {
         render: () => "## Metrics",
       }),
       statistics: sampleStatistics,
+      targets: [],
     });
 
     expect(block).toContain("## Metrics");

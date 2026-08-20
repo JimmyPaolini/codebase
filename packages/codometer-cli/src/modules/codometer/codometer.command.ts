@@ -13,6 +13,7 @@ import { ReportService } from "../report/report.service";
 import { CodometerService } from "./codometer.service";
 import { RunPlanService } from "./run-plan.service";
 
+import type { TargetSize } from "../output-markdown/output-markdown.types";
 import type {
   CodometerCommandOptions,
   MeasurementResult,
@@ -132,6 +133,7 @@ export class CodometerCommand extends CommandRunner {
     const content = this.outputMarkdownService.renderDocument({
       description: destination.description,
       statistics: args.measurement.statistics,
+      targets: this.readTargetSizes(args.measurement),
     });
     const destinationPath = destination.path;
 
@@ -160,10 +162,11 @@ export class CodometerCommand extends CommandRunner {
     }
 
     const { statistics } = args.measurement;
+    const targets = this.readTargetSizes(args.measurement);
 
     if (!this.touchesFiles(args.mode)) {
       process.stdout.write(
-        `${this.outputMarkdownService.renderBlock({ destination, statistics })}\n`,
+        `${this.outputMarkdownService.renderBlock({ destination, statistics, targets })}\n`,
       );
       return;
     }
@@ -172,6 +175,7 @@ export class CodometerCommand extends CommandRunner {
       check: args.mode.checksReports,
       destination,
       statistics,
+      targets,
     });
 
     if (!isCurrent && args.mode.checksReports) {
@@ -205,6 +209,28 @@ export class CodometerCommand extends CommandRunner {
       process.exitCode = 1;
       return undefined;
     }
+  }
+
+  /**
+   * The size of every target this run measured, in declaration order.
+   *
+   * A target that ran no size analysis is left out rather than reported as
+   * zero bytes, so the badges say what was measured and never invent a figure
+   * for what was not. A run that declared no target at all — the whole
+   * repository — produces an empty list and no size badges.
+   */
+  private readTargetSizes(measurement: MeasurementResult): TargetSize[] {
+    return measurement.targets.flatMap((target) =>
+      target.size === undefined
+        ? []
+        : [
+            {
+              bytes: target.size.bytes,
+              compression: target.size.compression,
+              name: target.name,
+            },
+          ],
+    );
   }
 
   /** Report every breached limit, and say whether one of them fails the run. */

@@ -18,6 +18,7 @@
       "outputs": ["{options.outputPath}"]
     },
     "bundlesize": {},
+    "codometer": {},
     "dependency-cruiser": {},
     "knip": {},
     "lint-codebase": {},
