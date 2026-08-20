@@ -121,14 +121,18 @@ gh pr list --head <branch> --state open
    - **📝 Details**: Bulleted list of meaningful changes
    - **🧪 Testing**: Relevant `nx run <project>:<target>` commands and manual steps
    - **🔗 Related**: Issue links discovered from branch name, commits, or `gh issue list --search`
-3. Create the PR:
+3. Labels: One `type:*` label matching the title's type, one `scope:*` label per title scope, and `source:agent` — this automation is opening the pull request, not a human.
+4. Create the PR:
 
    ```bash
    gh pr create \
      --title "<type>(<scope>): <gitmoji> <subject>" \
      --body "<generated body>" \
      --base main \
-     --assignee @me
+     --assignee @me \
+     --label type:<type> \
+     --label scope:<scope> \
+     --label source:agent
    ```
 
 For complete PR conventions and description guidelines, see [create-pull-request skill](../create-pull-request/SKILL.md).

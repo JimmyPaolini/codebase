@@ -156,6 +156,32 @@ Required sections (exact heading text): `## 🌰 Summary`, `## 📝 Details`, `#
 
 Fix: Edit the PR description in the GitHub UI to include all four sections.
 
+#### 🏷️ Ensure Pull Request Labels
+
+Script: [scripts/git/ensure-pull-request-labels.sh](../../../scripts/git/ensure-pull-request-labels.sh)
+
+Runs only on `opened`/`reopened`, with `continue-on-error: true`, so it never fails the job by itself. It reconciles the repository's `type:*`, `scope:*`, `do-not-merge`, `source:agent`, and `source:human` labels against [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs) — creating or updating whichever ones drifted.
+
+Fix: A `⚠️ Unable to reconcile labels` warning here (for example on a fork pull request without `issues: write`) does not block the job — the next step still runs and reports its own failure if a label it needs is missing.
+
+#### 🧾 Validate Pull Request Metadata
+
+Script: [scripts/git/validate-pull-request-metadata.sh](../../../scripts/git/validate-pull-request-metadata.sh)
+
+Checks that labels and assignees agree with the title: exactly one `type:*` label equal to the title's type, exactly the `scope:*` labels named by the title's scopes (commitlint allows several, split on `,` or `/`), no `do-not-merge` label, at least one assignee, and exactly one `source:*` label (`source:agent` or `source:human`) declaring who opened the pull request.
+
+Fix, by failure mode:
+
+- Missing or mismatched type label — `❌ Expected exactly one type label: type:feat (found: none)` — `gh pr edit <number> --add-label type:feat`, removing any extra type label first.
+- Missing scope label — `❌ Missing scope label: scope:callidescope` — `gh pr edit <number> --add-label scope:callidescope`.
+- Unexpected scope label — `❌ Unexpected scope label: scope:tools` — `gh pr edit <number> --remove-label scope:tools`.
+- No scope in the title at all, such as `chore: 🔧 tidy the workspace` — this passes Validate Pull Request Title (commitlint has no `scope-empty` rule) and only fails here: `❌ No scope in title: retitle as chore(<scope>): …` — retitle the pull request.
+- `do-not-merge` label present — `❌ Blocked by the do-not-merge label` — `gh pr edit <number> --remove-label do-not-merge`.
+- No assignee — `❌ No assignee` — `gh pr edit <number> --add-assignee @me`.
+- Missing, extra, or duplicate source label — `❌ Expected exactly one source label: source:agent or source:human (found: none)` — remove any stray `source:*` label and add exactly one of `gh pr edit <number> --add-label source:agent` or `gh pr edit <number> --add-label source:human`.
+
+Every failure line in the step output comes with its own `gh pr edit` remediation command — run the printed commands rather than retyping them.
+
 #### 🏛️ Validate Convention Configuration
 
 Failing command: `npx nx run synchronization:start:conventional-config-check`

@@ -287,6 +287,16 @@ Always assign PRs to yourself:
 gh pr create --assignee @me
 ```
 
+## Labels
+
+Validate Conventions checks that labels agree with the title: exactly one `type:*` label matching the title's type, one `scope:*` label per scope named in the title (no extras), exactly one `source:*` label (`source:agent` or `source:human`) declaring who opened the pull request, and no `do-not-merge` label. Set them at creation time rather than waiting for the reconciliation step to backfill them:
+
+```bash
+gh pr create --label type:feat --label scope:lexico --label source:human
+```
+
+See the [triage-deployment skill](../triage-deployment/SKILL.md) for the full label vocabulary, the reconciliation step that creates missing labels on `opened`/`reopened`, and how to fix each metadata failure.
+
 ## Review Requests
 
 Request reviews from appropriate team members:
