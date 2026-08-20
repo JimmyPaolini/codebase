@@ -4,7 +4,7 @@ The workspace ran two measurement tools with one purpose between them:
 codometer measured roughly two hundred metrics and could gate none of them,
 while `size-limit` gated bundle sizes and measured nothing else. We folded
 size-limit's job into codometer as a general capability — any metric may carry a
-**limit**, and a build artifact is just another **target** — so that a ceiling on
+**limit**, and a build artifact is just another **target** — so that a limit on
 lines of code, on interface count, or on a convention counter is as expressible
 as one on compressed bytes.
 

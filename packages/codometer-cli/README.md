@@ -391,7 +391,7 @@ not, so a consumer can render the headroom rather than only the failures.
 short of a `fail` on a single metric on purpose — that is how a repository sees
 a number coming before it stops a change — and the gate enforces all of them, so
 the report lists all of them. A consumer deciding what to show picks
-deliberately: the `fail` limit is the ceiling that stops a change, and a
+deliberately: the `fail` limit is what stops a change, and a
 breached `warn` beneath it is advice, not a failure.
 
 **Byte values are raw and decimal.** A renderer showing kilobytes divides by
@@ -536,9 +536,9 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Measure | Value |
 | --- | --- |
-| Callables | 318 |
+| Callables | 320 |
 | Files | 104 |
-| Calls traced | 500 |
+| Calls traced | 502 |
 | Call stacks | 11 |
 | Deepest stack | 13 |
 | Stacks through recursion | 1 |
@@ -549,7 +549,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 **1. `CodometerCommand.run`** — depth ≥ 13 · decorated-method
 
 ```text
-🚀 CodometerCommand.run(_passedParameters: string[], options: CodometerCommandOptions): Promise<void> [packages/codometer-cli/src/modules/codometer/codometer.command.ts:424]
+🚀 CodometerCommand.run(_passedParameters: string[], options: CodometerCommandOptions): Promise<void> [packages/codometer-cli/src/modules/codometer/codometer.command.ts:426]
    ↳ Measure the repository and produce every resolved output.
   └─> CodometerService.measure(args: MeasureArguments): MeasurementResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:316]
      ↳ Measure the codebase and every target declared alongside it.
@@ -580,18 +580,18 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 **2. `OutputMarkdownService.renderBadges`** — depth 7 · orphan-root
 
 ```text
-🚀 OutputMarkdownService.renderBadges(args: RenderBadgesArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:233]
+🚀 OutputMarkdownService.renderBadges(args: RenderBadgesArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:234]
    ↳ Render the badge block for a destination, description and all.
-  └─> OutputMarkdownService.renderDocument(args: RenderDocumentArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:260]
+  └─> OutputMarkdownService.renderDocument(args: RenderDocumentArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:262]
      ↳ Render the badges as a document of their own.
-    └─> OutputMarkdownService.buildBadgeGroups(args: RenderDocumentArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:93]
+    └─> OutputMarkdownService.buildBadgeGroups(args: RenderDocumentArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:94]
        ↳ Assemble the badge groups, in the order they are rendered.
-      └─> buildTargetsGroup(targets: readonly TargetSize[]): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:273]
+      └─> buildTargetsGroup(targets: readonly TargetSize[]): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:283]
          ↳ Renders the Measured Targets badge group, one badge per measured target.
-        └─> map(…)(target: TargetSize): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:284]
-          └─> formatTargetSize(target: TargetSize): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:401]
+        └─> map(…)(target: TargetSize): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:294]
+          └─> formatTargetSize(target: TargetSize): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:411]
              ↳ Formats one target's measured size, naming the compression it was measured under unless there was none.
-            └─> formatBytes(bytes: number): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:385]
+            └─> formatBytes(bytes: number): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:395]
                ↳ Formats a byte count in decimal units, switching to megabytes once kilobytes read awkwardly.
 ```
 
@@ -661,11 +661,11 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 **9. `OutputMarkdownService.syncAnchoredBlock`** — depth ≥ 3 · orphan-root
 
 ```text
-🚀 OutputMarkdownService.syncAnchoredBlock(args: SyncAnchoredBlockArguments): boolean [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:173]
+🚀 OutputMarkdownService.syncAnchoredBlock(args: SyncAnchoredBlockArguments): boolean [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:174]
    ↳ Splice the anchored block into a file, or report whether it is current.
-  └─> OutputMarkdownService.buildBlockRegex(args: { endMarker: string; startMarker: string; }): RegExp [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:119]
+  └─> OutputMarkdownService.buildBlockRegex(args: { endMarker: string; startMarker: string; }): RegExp [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:120]
      ↳ Build the matcher for a block delimited by the configured markers.
-    └─> OutputMarkdownService.escapeRegex(input: string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:131]
+    └─> OutputMarkdownService.escapeRegex(input: string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:132]
        ↳ Escape a configured marker so it can be searched for literally.
 ```
 
@@ -705,37 +705,37 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 <!-- CODE_STATISTICS_START -->
 
-### Repository
+### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-16146-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-500.58_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-16260-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-504.34_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-24-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-144-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-143-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-75.68_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-76.20_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript & JavaScript
 
 ![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-141-3178c6?style=flat-square)
-![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-2-f7df1e?style=flat-square)
+![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-1-f7df1e?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-33-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-26-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-52-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-607-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-263-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-791-4ade80?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-612-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-265-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-798-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-79-059669?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-84-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-751-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-580-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-586-0284c7?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-55-db2777?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-238-ea580c?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-239-ea580c?style=flat-square)
 ![Doc Comments](https://img.shields.io/badge/Doc_Comments-437-6366f1?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-864-64748b?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-858-64748b?style=flat-square)
 ![Comment Lines](https://img.shields.io/badge/Comment_Lines-1598-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-4-ca8a04?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
@@ -757,17 +757,17 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 ### JSON
 
-![JSON Files](https://img.shields.io/badge/JSON_Files-5-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-174-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-37-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-13-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-117-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-93-16a34a?style=flat-square)
-![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-3-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-9-0ea5e9?style=flat-square)
+![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-163-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-35-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-12-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-110-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-90-16a34a?style=flat-square)
+![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-8-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-33-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-155-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-32-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-146-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-7-ea580c?style=flat-square)
 
 ### YAML

@@ -13,9 +13,19 @@ export interface BuildAnchorHelpersArguments {
   destination: ResolvedCodometerMarkdownOutputConfiguration;
 }
 
+/**
+ * What a run measured: one project, or the repository holding it.
+ *
+ * Carried into the rendering because the first badge group is named after it.
+ * A run scoped to `packages/logger` reporting a `Repository` heading names the
+ * whole workspace for figures that only ever covered one package.
+ */
+export type MeasurementScope = "project" | "repository";
+
 /** Arguments accepted when rendering the built-in badge report. */
 export interface RenderBadgesArguments {
   destination: ResolvedCodometerMarkdownOutputConfiguration;
+  scope: MeasurementScope;
   statistics: CodeStatisticsResult;
   targets: readonly TargetSize[];
 }
@@ -24,6 +34,7 @@ export interface RenderBadgesArguments {
 export interface RenderDocumentArguments {
   /** Placed above the badges, exactly as a spliced block places it. */
   description: string | undefined;
+  scope: MeasurementScope;
   statistics: CodeStatisticsResult;
   targets: readonly TargetSize[];
 }
@@ -47,6 +58,7 @@ export interface SyncDocumentArguments {
 export interface SyncMarkdownArguments {
   check: boolean;
   destination: ResolvedCodometerMarkdownOutputConfiguration;
+  scope: MeasurementScope;
   statistics: CodeStatisticsResult;
   targets: readonly TargetSize[];
 }

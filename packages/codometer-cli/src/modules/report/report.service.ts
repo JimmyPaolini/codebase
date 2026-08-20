@@ -81,7 +81,7 @@ export class ReportService {
    * default target — and still address the same metric.
    *
    * Collected rather than overwritten. Several limits may land on one metric,
-   * and keeping only the last would report a ceiling the gate is not the only
+   * and keeping only the last would report a limit the gate is not the only
    * one enforcing.
    */
   private indexLimits(

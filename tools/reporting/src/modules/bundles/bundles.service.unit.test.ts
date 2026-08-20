@@ -325,7 +325,7 @@ describe(BundlesService, () => {
       workingDirectory,
     }).rows;
 
-    // Advisory, not failing — and the enforced ceiling is still the fail limit.
+    // Advisory, not failing — and the enforced limit is still the fail limit.
     expect(row?.breach).toBe("warn");
     expect(row?.limit).toBe(200_000);
   });
@@ -352,7 +352,7 @@ describe(BundlesService, () => {
     expect(row?.limit).toBe(50);
   });
 
-  it("falls back to the advisory ceiling when nothing fails the metric", () => {
+  it("falls back to the advisory limit when nothing fails the metric", () => {
     const workingDirectory = writeWorkspace({
       "packages/logger/codometer-report.json": buildReport([
         buildSizeTarget({

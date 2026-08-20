@@ -1,6 +1,6 @@
 // 🛠️ Utilities
 
-import type { TargetSize } from "./output-markdown.types";
+import type { MeasurementScope, TargetSize } from "./output-markdown.types";
 import type {
   CodeStatisticsResult,
   CodometerStatisticGroup,
@@ -201,9 +201,19 @@ export function buildPythonGroup(statistics: CodeStatisticsResult): string {
   ]);
 }
 
-/** Renders the Repository badge group. */
-export function buildRepositoryGroup(statistics: CodeStatisticsResult): string {
-  return buildGroup("Repository", [
+/**
+ * Renders the whole-tree badge group, named after what the run measured.
+ *
+ * `Repository` only when the measured directory is the repository. A run
+ * scoped to one project heads the same badges `Project`, because the figures
+ * beneath cover that project and nothing else — the badges themselves are
+ * unchanged, only what they are said to be about.
+ */
+export function buildRepositoryGroup(
+  statistics: CodeStatisticsResult,
+  scope: MeasurementScope,
+): string {
+  return buildGroup(scope === "repository" ? "Repository" : "Project", [
     buildBadge("Lines of Code", statistics.linesOfCode, "22c55e"),
     buildBadge(
       "Repository Size",

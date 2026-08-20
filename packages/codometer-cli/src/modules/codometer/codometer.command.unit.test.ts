@@ -232,6 +232,7 @@ describe(CodometerCommand, () => {
       expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
         check: true,
         destination: { ...markdownDestination, path: "/repo/README.md" },
+        scope: "project",
         statistics,
         targets: [],
       });
@@ -284,6 +285,7 @@ describe(CodometerCommand, () => {
       expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
         check: false,
         destination: { ...markdownDestination, path: "/repo/README.md" },
+        scope: "project",
         statistics,
         targets: [
           { bytes: 5324, compression: "gzip", name: "Compiled JavaScript" },
@@ -316,6 +318,7 @@ describe(CodometerCommand, () => {
       expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
         check: false,
         destination: { ...markdownDestination, path: "/repo/README.md" },
+        scope: "project",
         statistics,
         targets: [],
       });
@@ -327,6 +330,7 @@ describe(CodometerCommand, () => {
       expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
         check: false,
         destination: { ...markdownDestination, path: "/repo/README.md" },
+        scope: "project",
         statistics,
         targets: [],
       });
@@ -351,6 +355,7 @@ describe(CodometerCommand, () => {
       expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
         check: false,
         destination: { ...markdownDestination, path: "/repo/README.md" },
+        scope: "project",
         statistics,
         targets: [],
       });
@@ -446,6 +451,7 @@ describe(CodometerCommand, () => {
 
       expect(outputMarkdownService.renderDocument).toHaveBeenCalledWith({
         description: undefined,
+        scope: "project",
         statistics,
         targets: [],
       });
@@ -499,6 +505,7 @@ describe(CodometerCommand, () => {
           ...markdownDestination,
           path: "/repo/docs/statistics.md",
         },
+        scope: "project",
         statistics,
         targets: [],
       });
@@ -533,6 +540,7 @@ describe(CodometerCommand, () => {
       expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
         check: false,
         destination: { ...markdownDestination, path: "/repo/README.md" },
+        scope: "project",
         statistics,
         targets: [],
       });

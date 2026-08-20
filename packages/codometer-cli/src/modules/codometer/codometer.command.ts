@@ -132,6 +132,7 @@ export class CodometerCommand extends CommandRunner {
 
     const content = this.outputMarkdownService.renderDocument({
       description: destination.description,
+      scope: args.scope,
       statistics: args.measurement.statistics,
       targets: this.readTargetSizes(args.measurement),
     });
@@ -166,7 +167,7 @@ export class CodometerCommand extends CommandRunner {
 
     if (!this.touchesFiles(args.mode)) {
       process.stdout.write(
-        `${this.outputMarkdownService.renderBlock({ destination, statistics, targets })}\n`,
+        `${this.outputMarkdownService.renderBlock({ destination, scope: args.scope, statistics, targets })}\n`,
       );
       return;
     }
@@ -174,6 +175,7 @@ export class CodometerCommand extends CommandRunner {
     const isCurrent = this.outputMarkdownService.sync({
       check: args.mode.checksReports,
       destination,
+      scope: args.scope,
       statistics,
       targets,
     });
@@ -470,6 +472,7 @@ export class CodometerCommand extends CommandRunner {
       measurement,
       mode,
       report,
+      scope: this.runPlanService.selectScope(workingDirectory),
     });
 
     this.reportFindings({ measurement, mode, stalePaths });

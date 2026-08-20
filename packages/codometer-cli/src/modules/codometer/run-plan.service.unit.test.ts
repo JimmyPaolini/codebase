@@ -1,3 +1,7 @@
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -319,6 +323,38 @@ describe(RunPlanService, () => {
           workingDirectory: "/repo",
         }),
       ).toStrictEqual([]);
+    });
+  });
+
+  describe("what the run is measuring", () => {
+    // Real directories rather than a mocked filesystem: the whole question is
+    // whether a marker is on disk beside the measured directory.
+    const root = mkdtempSync(path.join(tmpdir(), "codometer-scope-"));
+
+    it("calls a directory carrying a repository marker a repository", () => {
+      mkdirSync(path.join(root, ".git"), { recursive: true });
+
+      expect(service.selectScope(root)).toBe("repository");
+    });
+
+    it("calls a workspace file a repository marker too", () => {
+      const workspace = mkdtempSync(path.join(tmpdir(), "codometer-scope-"));
+
+      writeFileSync(
+        path.join(workspace, "pnpm-workspace.yaml"),
+        "packages: []\n",
+        "utf8",
+      );
+
+      expect(service.selectScope(workspace)).toBe("repository");
+    });
+
+    it("calls a directory beneath one a project", () => {
+      const project = path.join(root, "packages", "logger");
+
+      mkdirSync(project, { recursive: true });
+
+      expect(service.selectScope(project)).toBe("project");
     });
   });
 });

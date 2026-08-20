@@ -79,10 +79,11 @@ export class OutputMarkdownService {
    * Assemble the badge groups, in the order they are rendered.
    *
    * Every counter the measurement pipeline produces gets a badge, grouped
-   * under a heading naming the language it was measured from. Only the
-   * `Repository` group spans languages; the rest report one language each, so
-   * a number that moves can be traced to the analyzer that produced it rather
-   * than to a sum that silently mixes several.
+   * under a heading naming the language it was measured from. Only the first
+   * group spans languages; the rest report one language each, so a number
+   * that moves can be traced to the analyzer that produced it rather than to
+   * a sum that silently mixes several. That first group is named for the
+   * run's scope — `Repository` for the whole tree, `Project` for one project.
    *
    * `Measured Targets` is the one group not counting anything the language analyzers
    * produced: it reports the size of each declared target this run measured,
@@ -94,7 +95,7 @@ export class OutputMarkdownService {
     const { statistics } = args;
 
     return [
-      buildRepositoryGroup(statistics),
+      buildRepositoryGroup(statistics, args.scope),
       buildTargetsGroup(args.targets),
       buildTypescriptGroup(statistics),
       buildPythonGroup(statistics),
@@ -233,6 +234,7 @@ export class OutputMarkdownService {
   renderBadges(args: RenderBadgesArguments): string {
     return this.renderDocument({
       description: args.destination.description,
+      scope: args.scope,
       statistics: args.statistics,
       targets: args.targets,
     });

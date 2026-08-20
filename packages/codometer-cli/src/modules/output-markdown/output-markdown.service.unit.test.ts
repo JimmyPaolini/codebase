@@ -253,6 +253,7 @@ describe(OutputMarkdownService, () => {
   it("heads each language group with a third-level heading", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -265,11 +266,27 @@ describe(OutputMarkdownService, () => {
     expect(block).not.toContain("**Repository**");
   });
 
+  // A package README carries figures about that package. Heading them
+  // `Repository` names the whole workspace for numbers that never covered it.
+  it("heads the whole-tree group `Project` when a project was measured", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md"),
+      scope: "project",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(block).toContain("### Project\n\n");
+    expect(block).not.toContain("### Repository\n\n");
+    expect(block).toContain("![Lines of Code]");
+  });
+
   // A counter naming a language group belongs beside the built-in counters
   // it extends, not in a separate list at the bottom of the report.
   it("renders a counter into the group it names", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -285,6 +302,7 @@ describe(OutputMarkdownService, () => {
   it("omits the Conventions group when no counter belongs to it", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: {
         ...sampleStatistics,
         custom: sampleStatistics.custom.filter(
@@ -303,6 +321,7 @@ describe(OutputMarkdownService, () => {
       destination: buildDestination("README.md", {
         description: "Measured every push.",
       }),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -315,6 +334,7 @@ describe(OutputMarkdownService, () => {
   it("omits the description paragraph when none is configured", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -325,6 +345,7 @@ describe(OutputMarkdownService, () => {
   it("renders one badge for every measured statistic", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -355,6 +376,7 @@ describe(OutputMarkdownService, () => {
   it("reports each language's counters separately rather than summed", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -372,6 +394,7 @@ describe(OutputMarkdownService, () => {
   it("renders the JSON statistics the badge block previously dropped", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -398,6 +421,7 @@ describe(OutputMarkdownService, () => {
     service.sync({
       check: false,
       destination: buildDestination(readmePath),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -420,6 +444,7 @@ describe(OutputMarkdownService, () => {
     service.sync({
       check: false,
       destination: buildDestination(readmePath),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -447,6 +472,7 @@ describe(OutputMarkdownService, () => {
     service.sync({
       check: false,
       destination: buildDestination(readmePath),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -464,6 +490,7 @@ describe(OutputMarkdownService, () => {
     service.sync({
       check: false,
       destination: buildDestination(readmePath),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -476,6 +503,7 @@ describe(OutputMarkdownService, () => {
   it("renders a size badge for every target the run measured", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [
         { bytes: 5324, compression: "gzip", name: "Compiled JavaScript" },
@@ -496,6 +524,7 @@ describe(OutputMarkdownService, () => {
   it("omits the Measured Targets group when the run measured no target", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -510,6 +539,7 @@ describe(OutputMarkdownService, () => {
     const render = (): string =>
       service.renderBadges({
         destination: buildDestination("README.md"),
+        scope: "repository",
         statistics: sampleStatistics,
         targets: [
           { bytes: 5324, compression: "gzip", name: "Compiled JavaScript" },
@@ -530,6 +560,7 @@ describe(OutputMarkdownService, () => {
       service.sync({
         check: true,
         destination: buildDestination(readmePath),
+        scope: "repository",
         statistics: sampleStatistics,
         targets: [],
       }),
@@ -539,6 +570,7 @@ describe(OutputMarkdownService, () => {
   it("returns true when block is already current in check mode", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -556,6 +588,7 @@ describe(OutputMarkdownService, () => {
       service.sync({
         check: true,
         destination: buildDestination(readmePath),
+        scope: "repository",
         statistics: sampleStatistics,
         targets: [],
       }),
@@ -577,6 +610,7 @@ describe(OutputMarkdownService, () => {
       service.sync({
         check: true,
         destination: buildDestination(readmePath),
+        scope: "repository",
         statistics: sampleStatistics,
         targets: [],
       }),
@@ -592,6 +626,7 @@ describe(OutputMarkdownService, () => {
       service.sync({
         check: false,
         destination: buildDestination(readmePath),
+        scope: "repository",
         statistics: sampleStatistics,
         targets: [],
       }),
@@ -620,6 +655,7 @@ describe(OutputMarkdownService, () => {
     service.sync({
       check: false,
       destination,
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -633,6 +669,7 @@ describe(OutputMarkdownService, () => {
       service.sync({
         check: true,
         destination,
+        scope: "repository",
         statistics: sampleStatistics,
         targets: [],
       }),
@@ -651,6 +688,7 @@ describe(OutputMarkdownService, () => {
         render: (renderArguments) =>
           `${renderArguments.description ?? ""}\n\nLines: ${renderArguments.statistics.linesOfCode}`,
       }),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -665,6 +703,7 @@ describe(OutputMarkdownService, () => {
   it("hands a render function the built-in rendering to build on", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -678,6 +717,7 @@ describe(OutputMarkdownService, () => {
         render: (renderArguments) =>
           `## Metrics\n\n${renderArguments.renderBadges()}`,
       }),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -705,6 +745,7 @@ describe(OutputMarkdownService, () => {
           return true;
         },
       }),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -728,6 +769,7 @@ describe(OutputMarkdownService, () => {
         write: (writeArguments) =>
           writeArguments.anchors.syncAnchoredBlock({ path: chosenPath }),
       }),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -742,6 +784,7 @@ describe(OutputMarkdownService, () => {
     const isCurrent = service.sync({
       check: true,
       destination: buildDestination(undefined, { write: () => false }),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -756,6 +799,7 @@ describe(OutputMarkdownService, () => {
         destination: buildDestination(undefined, {
           write: (writeArguments) => writeArguments.anchors.syncAnchoredBlock(),
         }),
+        scope: "repository",
         statistics: sampleStatistics,
         targets: [],
       }),
@@ -765,6 +809,7 @@ describe(OutputMarkdownService, () => {
   it("renders a document of badges with no anchor markers around it", () => {
     const document = service.renderDocument({
       description: "Repository statistics.",
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -777,6 +822,7 @@ describe(OutputMarkdownService, () => {
   it("renders a document with no description when none was configured", () => {
     const document = service.renderDocument({
       description: undefined,
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -789,6 +835,7 @@ describe(OutputMarkdownService, () => {
   it("renders the anchored block without touching a file", () => {
     const block = service.renderBlock({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });
@@ -803,6 +850,7 @@ describe(OutputMarkdownService, () => {
       destination: buildDestination("README.md", {
         render: () => "## Metrics",
       }),
+      scope: "repository",
       statistics: sampleStatistics,
       targets: [],
     });

@@ -15,6 +15,7 @@
     "build": {
       "command": "echo 'lexico-ingestion is a development tool and does not require building'"
     },
+    "codometer": {},
     "dependency-cruiser": {},
     "knip": {},
     "lint-codebase": {},

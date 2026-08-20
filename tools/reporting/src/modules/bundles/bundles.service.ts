@@ -146,9 +146,9 @@ export class BundlesService {
   /**
    * The severity of the worst limit a metric breached, if it breached one.
    *
-   * A failing breach outranks an advisory one, so a metric that passed its
-   * ceiling while also passing an advisory limit below it reads as failing
-   * rather than as merely advised.
+   * A failing breach outranks an advisory one, so a metric that went past
+   * its `fail` limit while also going past an advisory limit below it reads
+   * as failing rather than as merely advised.
    */
   private readBreach(
     limits: readonly ReportLimit[],
@@ -163,12 +163,12 @@ export class BundlesService {
   }
 
   /**
-   * The ceiling a metric is actually held to.
+   * The limit a metric is actually held to.
    *
    * The lowest `fail` limit, because that is the one that stops a change, and
    * the lowest of them when several are written because that is the one that
    * binds first. A metric limited only by advice falls back to its lowest
-   * `warn` limit — the only ceiling it has — rather than reporting none.
+   * `warn` limit — the only limit it has — rather than reporting none.
    */
   private readGoverningLimit(
     limits: readonly ReportLimit[],

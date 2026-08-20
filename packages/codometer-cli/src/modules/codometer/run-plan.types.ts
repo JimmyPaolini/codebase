@@ -1,5 +1,6 @@
 // 🏷️ Types
 
+import type { MeasurementScope } from "../output-markdown/output-markdown.types";
 import type { CodometerReport } from "../report/report.types";
 import type {
   CodometerCommandOptions,
@@ -16,6 +17,7 @@ export interface DeliverArguments {
   measurement: MeasurementResult;
   mode: RunMode;
   report: CodometerReport;
+  scope: MeasurementScope;
 }
 
 /**

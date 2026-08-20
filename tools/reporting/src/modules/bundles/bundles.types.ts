@@ -112,7 +112,7 @@ export interface SizeMetric {
   /** What the row is called in the table: the written label, else its target. */
   label: string;
   /**
-   * The enforced ceiling in bytes, absent where nothing limits the metric.
+   * The enforced limit in bytes, absent where nothing limits the metric.
    *
    * The lowest `fail` limit when there is one, else the lowest `warn` limit.
    * This is the number the `Limit` and `Used` columns report, so `Used` means

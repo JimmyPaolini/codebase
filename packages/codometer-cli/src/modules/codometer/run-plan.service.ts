@@ -1,9 +1,11 @@
+import { existsSync } from "node:fs";
 import path from "node:path";
 
 import {
   DEFAULT_JSON_INDENTATION,
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
+  REPOSITORY_ROOT_MARKERS,
 } from "@codometer/configuration";
 import { Injectable } from "@nestjs/common";
 
@@ -14,6 +16,7 @@ import {
   CHECK_SEPARATOR,
 } from "./run-plan.constants";
 
+import type { MeasurementScope } from "../output-markdown/output-markdown.types";
 import type { CodometerCommandOptions } from "./codometer.types";
 import type {
   JsonDestination,
@@ -316,5 +319,22 @@ export class RunPlanService {
         writes,
       },
     };
+  }
+
+  /**
+   * Whether a run covers a whole repository or one project inside one.
+   *
+   * Decided from the measured directory alone, not by walking upward: a
+   * directory carrying a repository marker is a repository, and anything
+   * beneath one is a project. The first badge group is headed by this, so a
+   * project README saying `Repository` over figures that only ever covered
+   * that project is the thing it exists to prevent.
+   */
+  selectScope(workingDirectory: string): MeasurementScope {
+    const isRepository = REPOSITORY_ROOT_MARKERS.some((marker) =>
+      existsSync(path.join(workingDirectory, marker)),
+    );
+
+    return isRepository ? "repository" : "project";
   }
 }
