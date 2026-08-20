@@ -8,6 +8,7 @@
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
+    "ignore": "catalog:",
     "nest-commander": "catalog:",
     "postcss": "catalog:",
     "reflect-metadata": "catalog:",

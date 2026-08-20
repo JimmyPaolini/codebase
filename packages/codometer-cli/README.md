@@ -2,7 +2,7 @@
 
 **Measure a repository and report what it found.**
 
-Codometer walks a git repository, parses everything it recognizes, and writes
+Codometer walks a directory, parses everything it recognizes, and writes
 what it counted as a markdown badge block, a JSON report, or both. It counts
 languages the way you would expect — files, lines, classes, functions — and it
 also counts the conventions a repository holds _itself_ to, which is usually
@@ -65,9 +65,14 @@ report no longer matches what the repository would produce.
 
 ## What gets measured
 
-Discovery enumerates through `git ls-files`, so **`.gitignore` is already in
-force** — an ignored file is an untracked file, and no exclusion has to name
-it.
+Discovery walks the directory itself and reads every `.gitignore` it passes,
+so **`.gitignore` is already in force** — a build directory or a virtual
+environment is pruned where its ignore file names it, and no exclusion has to
+name it again. Git is never invoked, so a directory that is not a repository
+at all is measured the same way as one that is.
+
+What is measured is the working tree rather than the index: a file that exists
+and is not ignored counts, whether or not it has been committed yet.
 
 | Group | Counts |
 | ----- | ------ |
@@ -268,9 +273,9 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Measure | Value |
 | --- | --- |
-| Callables | 197 |
-| Files | 78 |
-| Calls traced | 350 |
+| Callables | 205 |
+| Files | 80 |
+| Calls traced | 362 |
 | Call stacks | 11 |
 | Deepest stack | 10 |
 | Stacks through recursion | 1 |

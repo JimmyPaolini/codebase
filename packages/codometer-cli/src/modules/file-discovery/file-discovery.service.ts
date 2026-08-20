@@ -1,16 +1,18 @@
-import { execFileSync } from "node:child_process";
-import { existsSync, lstatSync } from "node:fs";
+import { readdirSync } from "node:fs";
 import path from "node:path";
 
 import { Injectable, Logger } from "@nestjs/common";
 
 import {
   CSS_EXTENSIONS,
+  GIT_DIRECTORY_NAME,
+  GITIGNORE_FILE_NAME,
   HCL_EXTENSIONS,
   JS_EXTENSIONS,
   JSON_EXTENSIONS,
   MARKDOWN_EXTENSIONS,
   NOTEBOOK_EXTENSIONS,
+  RECURSIVE_GLOB_SUFFIX,
   SHELL_EXTENSIONS,
   SQL_EXTENSIONS,
   TEST_FILE_REGEX,
@@ -18,18 +20,22 @@ import {
   TS_EXTENSIONS,
   YAML_EXTENSIONS,
 } from "./file-discovery.constants";
+import { IgnoreRulesService } from "./ignore-rules.service";
 
 import type {
   DiscoverFilesArguments,
   FileDiscoveryResult,
+  WalkDirectoryArguments,
+  WalkSubdirectoryArguments,
 } from "./file-discovery.types";
+import type { IgnoreScope } from "./ignore-rules.types";
 
-/** Discovers and categorizes git-tracked files within a codebase directory. */
+/** Discovers and categorizes the files of a codebase directory. */
 @Injectable()
 export class FileDiscoveryService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly ignoreRulesService: IgnoreRulesService) {}
 
   // 🔐 Private Fields
 
@@ -39,7 +45,28 @@ export class FileDiscoveryService {
 
   // 🔏 Private Methods
 
-  /** Selects the tracked files whose extension belongs to a category. */
+  /**
+   * Folds a directory's own `.gitignore` into the rule sets already in force.
+   *
+   * Appended last so its patterns outrank the ones above it, which is how git
+   * resolves a nested ignore file: the closest one to the file wins.
+   */
+  private applyDirectoryIgnoreFile(
+    args: WalkDirectoryArguments,
+  ): WalkDirectoryArguments {
+    const scope = this.ignoreRulesService.readScope({
+      directory: args.relativeDirectory,
+      filePath: path.join(args.absoluteDirectory, GITIGNORE_FILE_NAME),
+    });
+
+    if (scope === undefined) {
+      return args;
+    }
+
+    return { ...args, ignoreScopes: [...args.ignoreScopes, scope] };
+  }
+
+  /** Selects the discovered files whose extension belongs to a category. */
   private filterByExtension(
     trackedFiles: string[],
     extensions: Set<string>,
@@ -61,84 +88,165 @@ export class FileDiscoveryService {
   }
 
   /**
-   * Whether a tracked path is a real file this run should measure.
+   * Whether every file beneath a directory is excluded by a glob already.
    *
-   * Symlinks are skipped: git tracks them as their own entries, and following
-   * one counts its target a second time. `CLAUDE.md` pointing at `AGENTS.md`
-   * is not a second document, and reading through the link reported it as one.
+   * A pattern ending in `/**` claims every descendant without exception, so a
+   * directory matching the pattern with that suffix removed cannot contribute
+   * a single file and never has to be read. This is a shortcut and not a rule
+   * of its own: the same files would be dropped one by one afterwards either
+   * way. It matters in a directory with no `.gitignore` to prune
+   * `node_modules`, where reading it dwarfs reading the codebase.
    */
-  private isMeasurableFile(
-    args: DiscoverFilesArguments,
-    filePath: string,
+  private isExhaustivelyExcluded(
+    directoryPath: string,
+    exclude: string[],
   ): boolean {
-    const resolvedPath = path.resolve(args.workingDirectory, filePath);
-
-    if (!existsSync(resolvedPath)) {
-      return false;
-    }
-
-    return !lstatSync(resolvedPath).isSymbolicLink();
+    return exclude.some(
+      (pattern) =>
+        pattern.endsWith(RECURSIVE_GLOB_SUFFIX) &&
+        path.matchesGlob(
+          directoryPath,
+          pattern.slice(0, -RECURSIVE_GLOB_SUFFIX.length),
+        ),
+    );
   }
 
   /**
-   * Collect the tracked files the configured ignore files exclude.
+   * Whether either set of ignore rules claims a path.
    *
-   * Git does the matching. An ignore file is gitignore syntax — negations,
-   * directory patterns, anchoring and all — and `git ls-files --ignored`
-   * against it is the only reading of that syntax guaranteed to agree with
-   * every other tool the repository points at the same file.
-   *
-   * Run through `execFileSync` with the arguments as an array, never a command
-   * string: the path comes from a configuration file, and a shell would read a
-   * quote or a `$(...)` in it as syntax rather than as part of a filename.
+   * The two sets are answered independently and the answers combined, rather
+   * than merged into one set. A configured ignore file subtracts from what the
+   * repository's own `.gitignore` files leave behind, exactly as the two git
+   * invocations this replaced did; a negation in one cannot resurrect a file
+   * the other removed.
    */
-  private listIgnoredFiles(args: DiscoverFilesArguments): Set<string> {
-    const ignoredFiles = new Set<string>();
+  private isIgnoredPath(
+    args: WalkDirectoryArguments,
+    relativePath: string,
+  ): boolean {
+    return (
+      this.ignoreRulesService.isIgnored(args.ignoreScopes, relativePath) ||
+      this.ignoreRulesService.isIgnored(args.excludeFromScopes, relativePath)
+    );
+  }
+
+  /**
+   * Lists every measurable file in the given directory, in sorted order.
+   *
+   * Sorted because the walk visits directories in whatever order the
+   * filesystem reports them, and every consumer downstream deserves the same
+   * list from the same tree on any machine.
+   */
+  private listDiscoveredFiles(args: DiscoverFilesArguments): string[] {
+    const files = this.walkDirectory({
+      absoluteDirectory: args.workingDirectory,
+      exclude: args.exclude,
+      excludeFromScopes: this.readExcludeFromScopes(args),
+      ignoreScopes: [],
+      relativeDirectory: "",
+    });
+
+    return files
+      .filter((filePath) => !this.isExcluded(filePath, args.exclude))
+      .toSorted();
+  }
+
+  /**
+   * Reads the configured ignore files into rule sets anchored at the root.
+   *
+   * A missing file is a warning rather than a failure: a repository that has
+   * renamed its ignore file should hear about it, but a report is still worth
+   * more than a crash.
+   */
+  private readExcludeFromScopes(args: DiscoverFilesArguments): IgnoreScope[] {
+    const scopes: IgnoreScope[] = [];
 
     for (const ignoreFilePath of args.excludeFrom) {
-      const resolvedPath = path.resolve(args.workingDirectory, ignoreFilePath);
+      const scope = this.ignoreRulesService.readScope({
+        directory: "",
+        filePath: path.resolve(args.workingDirectory, ignoreFilePath),
+      });
 
-      if (!existsSync(resolvedPath)) {
+      if (scope === undefined) {
         this.logger.warn(`🙈 Skipped missing ignore file`, undefined, {
           path: ignoreFilePath,
         });
         continue;
       }
 
-      const output = execFileSync(
-        "git",
-        ["ls-files", "--cached", "--ignored", `--exclude-from=${resolvedPath}`],
-        { cwd: args.workingDirectory },
-      );
-
-      for (const filePath of output.toString().trim().split("\n")) {
-        if (filePath !== "") {
-          ignoredFiles.add(filePath);
-        }
-      }
+      scopes.push(scope);
     }
 
-    return ignoredFiles;
+    return scopes;
   }
 
   /**
-   * Lists the files git tracks in the given directory.
+   * Collects every measurable file under one directory.
    *
-   * Enumerating through git is also what enforces `.gitignore`: an ignored
-   * file is an untracked file, so it never reaches an analyzer in the first
-   * place and no exclusion has to name it.
+   * Walked directory by directory rather than matched by a single recursive
+   * glob, because an ignored directory then costs one decision instead of an
+   * enumeration: `node_modules/` is pruned where it is named, not discovered
+   * in full and thrown away.
    */
-  private listTrackedFiles(args: DiscoverFilesArguments): string[] {
-    const ignoredFiles = this.listIgnoredFiles(args);
+  private walkDirectory(args: WalkDirectoryArguments): string[] {
+    const entries = readdirSync(args.absoluteDirectory, {
+      withFileTypes: true,
+    });
+    const walkArguments = this.applyDirectoryIgnoreFile(args);
+    const files: string[] = [];
 
-    return execFileSync("git", ["ls-files"], { cwd: args.workingDirectory })
-      .toString()
-      .trim()
-      .split("\n")
-      .filter(Boolean)
-      .filter((filePath) => this.isMeasurableFile(args, filePath))
-      .filter((filePath) => !ignoredFiles.has(filePath))
-      .filter((filePath) => !this.isExcluded(filePath, args.exclude));
+    for (const entry of entries) {
+      // Symlinks are skipped rather than followed: following one counts its
+      // target a second time, and `CLAUDE.md` pointing at `AGENTS.md` is not a
+      // second document.
+      if (entry.isSymbolicLink() || entry.name === GIT_DIRECTORY_NAME) {
+        continue;
+      }
+
+      const absolutePath = path.join(args.absoluteDirectory, entry.name);
+      const relativePath =
+        args.relativeDirectory === ""
+          ? entry.name
+          : `${args.relativeDirectory}/${entry.name}`;
+
+      if (entry.isDirectory()) {
+        files.push(
+          ...this.walkSubdirectory({
+            ...walkArguments,
+            absolutePath,
+            relativePath,
+          }),
+        );
+      } else if (
+        entry.isFile() &&
+        !this.isIgnoredPath(walkArguments, relativePath)
+      ) {
+        files.push(relativePath);
+      }
+    }
+
+    return files;
+  }
+
+  /**
+   * Descends into one subdirectory, or skips it when nothing there counts.
+   *
+   * The trailing slash is what makes a `coverage/` pattern claim the directory
+   * itself: without it the pattern only ever matches a file of that name.
+   */
+  private walkSubdirectory(args: WalkSubdirectoryArguments): string[] {
+    if (
+      this.isExhaustivelyExcluded(args.relativePath, args.exclude) ||
+      this.isIgnoredPath(args, `${args.relativePath}/`)
+    ) {
+      return [];
+    }
+
+    return this.walkDirectory({
+      ...args,
+      absoluteDirectory: args.absolutePath,
+      relativeDirectory: args.relativePath,
+    });
   }
 
   // 🌎 Public Methods
@@ -146,7 +254,7 @@ export class FileDiscoveryService {
   /** Returns categorized file path lists for the given codebase root. */
   discoverFiles(args: DiscoverFilesArguments): FileDiscoveryResult {
     const allExtensions = new Set([...TS_EXTENSIONS, ...JS_EXTENSIONS]);
-    const trackedFiles = this.listTrackedFiles(args);
+    const trackedFiles = this.listDiscoveredFiles(args);
     const sourceFiles = trackedFiles.filter((filePath) =>
       allExtensions.has(path.extname(filePath)),
     );

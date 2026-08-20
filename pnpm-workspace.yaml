@@ -197,3 +197,4 @@ catalog:
   zod: ^4.4.3
   openwiki: ^0.2.3
   skills: ^1.5.20
+  ignore: ^7.0.6

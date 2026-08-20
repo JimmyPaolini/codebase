@@ -9,9 +9,9 @@ import { type CodometerConfiguration } from "@codometer/configuration";
  */
 const codometerConfiguration: CodometerConfiguration = {
   // What this repository does not measure lives in an ignore file, the way
-  // every other tool here keeps its exclusions. Files git never tracked are
-  // already absent — discovery enumerates through `git ls-files` — so the
-  // ignore file only has to name what is committed but generated.
+  // every other tool here keeps its exclusions. Files `.gitignore` covers are
+  // already absent — discovery reads those files itself — so the ignore file
+  // only has to name what is committed but generated.
   excludeFrom: ["configuration/.codometerignore"],
   output: {
     markdown: {
