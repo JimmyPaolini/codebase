@@ -414,6 +414,9 @@
         "name": "applications"
       },
       {
+        "name": "codometer.config.ts"
+      },
+      {
         "children": [
           {
             "ruleId": "kebab-case-folder"

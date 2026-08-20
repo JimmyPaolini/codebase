@@ -123,6 +123,24 @@ export class TargetsService {
     }
   }
 
+  /**
+   * The measured-directory-relative prefix every matched path carries.
+   *
+   * Empty when the target starts where the run does. Otherwise it is the walk
+   * root written relative to the measured directory — `../../dist` and the
+   * like — so that every path leaving this service is relative to the same
+   * directory whether or not the target reached outside it.
+   */
+  private readTargetPrefix(
+    walkDirectory: string,
+    workingDirectory: string,
+  ): string {
+    return path
+      .relative(workingDirectory, walkDirectory)
+      .split(path.sep)
+      .join(PATH_SEPARATOR);
+  }
+
   /** What a directory entry counts as, once any link has been followed. */
   private resolveEntryKind(
     absolutePath: string,
@@ -202,20 +220,38 @@ export class TargetsService {
   // 🌎 Public Methods
 
   /**
-   * Lists the files a target holds, sorted.
+   * Lists the files a target holds, sorted, relative to the measured directory.
+   *
+   * The walk starts at the target's own directory, which is the measured one
+   * unless the target named a way out of it. Where a repository builds is a
+   * convention its configuration states and this service is told, never one
+   * inferred here from a project's position.
    *
    * Sorted because the walk visits directories in whatever order the
    * filesystem reports them, and a size is a sum of every file either way —
    * but a list nobody can predict is one nobody can compare.
    */
   matchFiles(args: MatchTargetFilesArguments): string[] {
-    return this.walk({
-      absoluteDirectory: args.workingDirectory,
+    const walkDirectory = path.resolve(
+      args.workingDirectory,
+      args.target.directory,
+    );
+    const prefix = this.readTargetPrefix(walkDirectory, args.workingDirectory);
+    const matched = this.walk({
+      absoluteDirectory: walkDirectory,
       includeBases: args.target.include.map((pattern) =>
         this.toIncludeBase(pattern),
       ),
       relativeDirectory: "",
       target: args.target,
     }).toSorted();
+
+    if (prefix === "") {
+      return matched;
+    }
+
+    return matched.map(
+      (relativePath) => `${prefix}${PATH_SEPARATOR}${relativePath}`,
+    );
   }
 }

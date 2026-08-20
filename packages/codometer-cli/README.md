@@ -79,6 +79,29 @@ exits 1, but only where `--check limits` asked for a gate.
 - run: npx codometer --check reports,limits
 ```
 
+## One folder at a time
+
+Codometer measures **one directory**, and knows nothing about workspaces, task
+runners, or project graphs. Run it in a project and that project is what gets
+measured — its own sources, and whatever targets the configuration declares for
+it:
+
+```bash
+cd packages/logger && codometer --check limits
+```
+
+With no `--config`, the configuration is found by walking upward from that
+folder and taking the **first** file found. The nearest one wins outright:
+nothing from a further ancestor is folded into it, because a merged
+configuration leaves a limit that never applied looking exactly like one that
+did.
+
+So a project needs no configuration file of its own. One file at the top of a
+workspace can describe every project beneath it by [exporting a
+function](../codometer-configuration/README.md#a-configuration-that-answers-for-every-folder)
+that reads the folder it was pointed at, and a project whose targets do not
+follow that convention writes a configuration file that replaces it.
+
 ## What gets measured
 
 Discovery walks the directory itself and reads every `.gitignore` it passes,
@@ -141,6 +164,7 @@ targets: [
 | `exclude` | no | none | Globs that remove files |
 | `analyses` | yes | — | `language`, `size`, or both. At least one |
 | `compression` | no | `gzip` | `gzip`, `brotli`, or `none` for the bytes on disk |
+| `directory` | no | `.` | Where the target's globs start, relative to the measured directory |
 
 `language` runs the analyzers above over the target's files. `size` compresses
 each matched file on its own and sums the results — never all of them together
@@ -486,9 +510,9 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Measure | Value |
 | --- | --- |
-| Callables | 306 |
+| Callables | 308 |
 | Files | 103 |
-| Calls traced | 485 |
+| Calls traced | 487 |
 | Call stacks | 11 |
 | Deepest stack | 13 |
 | Stacks through recursion | 1 |

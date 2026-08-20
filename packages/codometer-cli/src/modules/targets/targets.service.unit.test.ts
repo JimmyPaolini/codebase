@@ -48,6 +48,7 @@ function buildTarget(
   return {
     analyses: ["size"],
     compression: "gzip",
+    directory: ".",
     exclude: [],
     include: ["dist/**/*.js"],
     name: "compiled",
@@ -105,6 +106,25 @@ describe(TargetsService, () => {
       "dist/bundle.min.js",
       "dist/nested/deep.js",
     ]);
+  });
+
+  it("starts where the target says, and reports what it found from the measured directory", () => {
+    // A project measured in its own folder while its build output is written
+    // to a tree above it. Where that tree sits is the configuration's to say:
+    // the target names the way out, and nothing here knows the convention.
+    const matched = service.matchFiles({
+      target: buildTarget({ directory: "../.." }),
+      workingDirectory: "/repo/packages/project",
+    });
+
+    expect(matched).toStrictEqual([
+      "../../dist/bundle.js",
+      "../../dist/bundle.min.js",
+      "../../dist/nested/deep.js",
+    ]);
+    expect(readdirSyncMock).toHaveBeenCalledWith("/repo/dist", {
+      withFileTypes: true,
+    });
   });
 
   it("leaves out a file no include glob claims", () => {

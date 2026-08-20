@@ -82,6 +82,45 @@ export interface CodometerConfiguration {
 }
 
 /**
+ * What a configuration file authored as a function is handed.
+ *
+ * Two absolute directories and nothing else. `directory` is what this run
+ * measures and `configurationDirectory` is where the file deciding that sits,
+ * which between them let one configuration serve every folder beneath it:
+ * the difference of the two is the measured folder's position, and every path
+ * convention a repository holds — where its build output lands, where a
+ * package's manifest sits — is derivable from that position by the
+ * configuration rather than being known by codometer.
+ *
+ * Nothing about the run's flags is here on purpose. A configuration that could
+ * see whether the run writes or gates could describe a different repository to
+ * each, and then no two runs would be measuring the same thing.
+ */
+export interface CodometerConfigurationContext {
+  /**
+   * Absolute directory holding the configuration file being loaded.
+   *
+   * The nearest ancestor carrying one, unless a path was named outright.
+   */
+  configurationDirectory: string;
+  /** Absolute directory this run measures. */
+  directory: string;
+}
+
+/**
+ * A configuration file that decides what to say from where it is being run.
+ *
+ * The alternative to a static object, and the reason a workspace of twenty
+ * near-identical projects needs one configuration file rather than twenty:
+ * the convention is written once and each folder's targets and limits fall out
+ * of its position. Returning a promise is allowed, so a factory may read a
+ * manifest or an ignore file before answering.
+ */
+export type CodometerConfigurationFactory = (
+  context: CodometerConfigurationContext,
+) => CodometerConfiguration | Promise<CodometerConfiguration>;
+
+/**
  * One configured counter.
  *
  * A counter measures one of two things. With `patterns` alone it counts
@@ -247,10 +286,10 @@ export type CodometerSymbolModifier =
 /**
  * A named set of files, declared by include and exclude globs.
  *
- * Globs are relative to the measured directory, and a leading `!` on an
- * include glob excludes instead of including. Negations are collected rather
- * than applied in order, so moving one within the array cannot change which
- * files the target holds.
+ * Globs are relative to `directory`, and a leading `!` on an include glob
+ * excludes instead of including. Negations are collected rather than applied
+ * in order, so moving one within the array cannot change which files the
+ * target holds.
  *
  * Ignore files are not consulted. A target names its files outright, which is
  * what lets one measure compiled output — a directory `.gitignore` claims, and
@@ -260,6 +299,16 @@ export interface CodometerTarget {
   /** Which analyses run over the matched files. At least one. */
   analyses: CodometerAnalysis[];
   compression?: CodometerCompression | undefined;
+  /**
+   * Where the target's globs start, relative to the measured directory.
+   *
+   * Defaults to the measured directory itself. A repository that builds into
+   * one tree while measuring a project in another names the way out here —
+   * `"../.."` for a project two levels down from a workspace-level `dist` —
+   * so that codometer never has to know a build output convention to find the
+   * files a target claims.
+   */
+  directory?: string | undefined;
   exclude?: string[] | undefined;
   include: string[];
   name: string;
@@ -405,6 +454,8 @@ export interface ResolvedCodometerPythonConfiguration {
 export interface ResolvedCodometerTarget {
   analyses: CodometerAnalysis[];
   compression: CodometerCompression;
+  /** `"."` when the target never named one, meaning the measured directory. */
+  directory: string;
   exclude: string[];
   include: string[];
   name: string;

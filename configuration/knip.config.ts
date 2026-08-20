@@ -101,6 +101,10 @@ const config: KnipConfig = {
         "configuration/prettier.config.ts",
         "configuration/stylelint.config.cjs",
         "configuration/syncpack.config.cjs",
+        // Read by codometer's nearest-ancestor search rather than imported;
+        // it re-exports configuration/codometer.config.ts from the workspace
+        // root, which is the only place that search can reach.
+        "codometer.config.ts",
         "release.config.cjs",
         "validate-branch-name.config.cjs",
         ".pnpmfile.mjs",

@@ -19,6 +19,7 @@ import {
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_PYTHON_COMMAND,
   DEFAULT_TARGET_COMPRESSION,
+  DEFAULT_TARGET_DIRECTORY,
   LIMIT_UNIT_MULTIPLIERS,
   LIMIT_VALUE_PATTERN,
   NEGATION_PREFIX,
@@ -31,6 +32,8 @@ import { InvalidLimitValueError } from "./limit-value.errors";
 
 import type {
   CodometerConfiguration,
+  CodometerConfigurationContext,
+  CodometerConfigurationFactory,
   CodometerCustomStatistic,
   CodometerLimit,
   CodometerOutputConfiguration,
@@ -64,6 +67,25 @@ export class ConfigurationService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /**
+   * Calls a configuration file that was authored as a function.
+   *
+   * Anything else is already the configuration and is passed through. The
+   * context is built here rather than by the caller so that every reader of a
+   * configuration file — a command, a host embedding codometer — hands a
+   * factory the same two directories.
+   */
+  private async applyRunContext(
+    configurationExport: unknown,
+    context: CodometerConfigurationContext,
+  ): Promise<unknown> {
+    if (!this.isConfigurationFactory(configurationExport)) {
+      return configurationExport;
+    }
+
+    return configurationExport(context);
+  }
 
   /**
    * Walks upward from a directory looking for a configuration file.
@@ -125,6 +147,18 @@ export class ConfigurationService {
     }
   }
 
+  /**
+   * Whether a configuration file exported a function rather than an object.
+   *
+   * The only thing separating the two: what a function does with the context
+   * is the author's business, and no schema could inspect it anyway.
+   */
+  private isConfigurationFactory(
+    configurationExport: unknown,
+  ): configurationExport is CodometerConfigurationFactory {
+    return typeof configurationExport === "function";
+  }
+
   /** Loads a configuration module, choosing the reader by extension. */
   private async loadConfigurationModule(args: {
     configurationPath: string;
@@ -135,19 +169,10 @@ export class ConfigurationService {
     }
 
     const jiti = createJiti(fileURLToPath(import.meta.url));
-    const importedModule: unknown = await jiti.import(args.configurationPath, {
-      default: true,
-    });
 
-    if (typeof importedModule !== "object" || importedModule === null) {
-      return {};
-    }
-
-    const defaultExport = (importedModule as { default?: unknown }).default;
-
-    return typeof defaultExport === "object" && defaultExport !== null
-      ? defaultExport
-      : importedModule;
+    return this.readDefaultExport(
+      await jiti.import(args.configurationPath, { default: true }),
+    );
   }
 
   /** Reads a JSON or JSONC configuration file. */
@@ -207,6 +232,33 @@ export class ConfigurationService {
     }
 
     return Math.round(Number(amount) * multiplier);
+  }
+
+  /**
+   * Reads what a configuration module exported, through either interop shape.
+   *
+   * A function survives as itself: a configuration file may be authored as one
+   * and calling it is what turns it into a configuration, which happens once
+   * the run context is known rather than here.
+   */
+  private readDefaultExport(importedModule: unknown): unknown {
+    if (typeof importedModule === "function") {
+      return importedModule;
+    }
+
+    if (typeof importedModule !== "object" || importedModule === null) {
+      return {};
+    }
+
+    const defaultExport = (importedModule as { default?: unknown }).default;
+
+    if (typeof defaultExport === "function") {
+      return defaultExport;
+    }
+
+    return typeof defaultExport === "object" && defaultExport !== null
+      ? defaultExport
+      : importedModule;
   }
 
   /**
@@ -337,6 +389,7 @@ export class ConfigurationService {
     return (targets ?? []).map((target) => ({
       analyses: [...target.analyses],
       compression: target.compression ?? DEFAULT_TARGET_COMPRESSION,
+      directory: target.directory ?? DEFAULT_TARGET_DIRECTORY,
       exclude: [
         ...new Set([
           ...target.include
@@ -359,15 +412,21 @@ export class ConfigurationService {
    *
    * A path that was named explicitly must exist — a typo in a task runner's
    * arguments should fail rather than quietly measure the repository with
-   * defaults it never asked for. A path that was not named is searched for,
-   * and its absence is legal.
+   * defaults it never asked for. A path that was not named is searched for
+   * from the measured directory upward, and its absence is legal.
+   *
+   * The nearest configuration file wins outright: nothing from a further
+   * ancestor is folded into it. Merging the two would leave a limit that never
+   * applied looking exactly like one that did, and the only way to tell them
+   * apart would be to know which of several files each field came from.
    */
   public async loadConfiguration(
     args: LoadConfigurationArguments = {},
   ): Promise<ResolvedCodometerConfiguration> {
+    const searchDirectory = path.resolve(args.searchDirectory ?? process.cwd());
     const resolvedPath =
       args.configurationPath === undefined
-        ? this.findConfigurationFile(args.searchDirectory ?? process.cwd())
+        ? this.findConfigurationFile(searchDirectory)
         : this.resolveConfigurationPath(args.configurationPath);
 
     if (resolvedPath === undefined) {
@@ -380,10 +439,16 @@ export class ConfigurationService {
       throw new UnknownConfigurationFileTypeError(resolvedPath);
     }
 
-    const configurationModule = await this.loadConfigurationModule({
-      configurationPath: resolvedPath,
-      extension,
-    });
+    const configurationModule = await this.applyRunContext(
+      await this.loadConfigurationModule({
+        configurationPath: resolvedPath,
+        extension,
+      }),
+      {
+        configurationDirectory: path.dirname(resolvedPath),
+        directory: searchDirectory,
+      },
+    );
 
     return this.resolveConfiguration(
       codometerConfigurationSchema.parse(configurationModule),

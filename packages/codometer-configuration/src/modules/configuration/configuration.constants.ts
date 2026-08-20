@@ -96,6 +96,15 @@ export const DEFAULT_CUSTOM_STATISTIC_GROUP = "conventions";
 export const DEFAULT_TARGET_COMPRESSION = "gzip" satisfies CodometerCompression;
 
 /**
+ * Where a target's globs start when it names no directory of its own.
+ *
+ * The measured directory. A target that means to reach outside it says so,
+ * which keeps "measure what I was pointed at" the thing that needs no writing
+ * down.
+ */
+export const DEFAULT_TARGET_DIRECTORY = ".";
+
+/**
  * Name of the target every run measures: the codebase itself.
  *
  * Not declarable, because it is not a glob match. It is every file the
@@ -347,6 +356,7 @@ export const codometerConfigurationSchema = z.object({
         .object({
           analyses: z.array(z.enum(CODOMETER_ANALYSES)).min(1),
           compression: z.enum(CODOMETER_COMPRESSIONS).optional(),
+          directory: z.string().min(1).optional(),
           // A `!` here would read as a negation and match nothing instead,
           // since every pattern in this list already removes files.
           exclude: z

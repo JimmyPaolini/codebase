@@ -40,6 +40,7 @@ const configuration: ResolvedCodometerConfiguration = {
 const compiledTarget: ResolvedCodometerTarget = {
   analyses: ["size"],
   compression: "gzip",
+  directory: ".",
   exclude: ["dist/**/*.map.js"],
   include: ["dist/**/*.js"],
   name: "compiled",

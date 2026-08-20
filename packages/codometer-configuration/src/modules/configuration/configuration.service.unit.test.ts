@@ -1,4 +1,4 @@
-import { mkdtemp, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -14,6 +14,7 @@ import {
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_PYTHON_COMMAND,
   DEFAULT_TARGET_COMPRESSION,
+  DEFAULT_TARGET_DIRECTORY,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
 import { ConfigurationFileNotFoundError } from "./configuration.errors";
@@ -39,6 +40,25 @@ async function writeConfigurationFile(
   await writeFile(configurationPath, contents, "utf8");
 
   return configurationPath;
+}
+
+/**
+ * Writes a configuration file, and returns a folder two levels beneath it.
+ *
+ * The nested folder is what an ancestor search has to climb out of, which is
+ * the whole of what a project carrying no configuration file of its own does.
+ */
+async function writeConfigurationTree(
+  fileName: string,
+  contents: string,
+): Promise<{ nestedDirectory: string; rootDirectory: string }> {
+  const configurationPath = await writeConfigurationFile(fileName, contents);
+  const rootDirectory = path.dirname(configurationPath);
+  const nestedDirectory = path.join(rootDirectory, "packages", "project");
+
+  await mkdir(nestedDirectory, { recursive: true });
+
+  return { nestedDirectory, rootDirectory };
 }
 
 describe(ConfigurationService, () => {
@@ -337,6 +357,7 @@ describe(ConfigurationService, () => {
     expect(target).toStrictEqual({
       analyses: ["size"],
       compression: DEFAULT_TARGET_COMPRESSION,
+      directory: DEFAULT_TARGET_DIRECTORY,
       exclude: [],
       include: ["dist/**/*.js"],
       name: "compiled",
@@ -485,6 +506,7 @@ describe(ConfigurationService, () => {
       {
         analyses: ["size"],
         compression: "brotli",
+        directory: DEFAULT_TARGET_DIRECTORY,
         exclude: [],
         include: ["dist/**/*.js"],
         name: "compiled",
@@ -821,6 +843,123 @@ describe(ConfigurationService, () => {
       configurationPath: "configuration/codometer.config.ts",
     });
 
-    expect(configuration.output.markdown?.path).toBe("README.md");
+    // Asserted on a setting this repository's configuration states however it
+    // is run: the file is a factory, and which folder it was pointed at is
+    // what decides the rest of what it says.
+    expect(configuration.python.command).toBe("uv run python");
+  });
+
+  it("calls a configuration exported as a function with the run context", async () => {
+    const { nestedDirectory, rootDirectory } = await writeConfigurationTree(
+      "codometer.config.cjs",
+      `module.exports = (context) => ({
+        exclude: [context.configurationDirectory, context.directory],
+      });`,
+    );
+
+    const configuration = await service.loadConfiguration({
+      searchDirectory: nestedDirectory,
+    });
+
+    expect(configuration.exclude).toContain(rootDirectory);
+    expect(configuration.exclude).toContain(nestedDirectory);
+  });
+
+  it("unwraps a CommonJS module's nested default factory", async () => {
+    const configurationPath = await writeConfigurationFile(
+      "codometer.config.cjs",
+      'module.exports = { default: () => ({ python: { command: "nested python" } }) };',
+    );
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+
+    expect(configuration.python.command).toBe("nested python");
+  });
+
+  it("awaits a configuration factory that answers with a promise", async () => {
+    const configurationPath = await writeConfigurationFile(
+      "codometer.config.cjs",
+      'module.exports = async () => ({ python: { command: "awaited python" } });',
+    );
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+
+    expect(configuration.python.command).toBe("awaited python");
+  });
+
+  it("measures a folder carrying no configuration through its nearest ancestor's", async () => {
+    const { nestedDirectory } = await writeConfigurationTree(
+      "codometer.config.json",
+      JSON.stringify({ python: { command: "inherited python" } }),
+    );
+
+    const configuration = await service.loadConfiguration({
+      searchDirectory: nestedDirectory,
+    });
+
+    expect(configuration.python.command).toBe("inherited python");
+  });
+
+  it("lets a folder's own configuration replace an inherited one outright", async () => {
+    const { nestedDirectory } = await writeConfigurationTree(
+      "codometer.config.json",
+      JSON.stringify({
+        exclude: ["ancestor/**"],
+        python: { command: "ancestor python" },
+      }),
+    );
+
+    await writeFile(
+      path.join(nestedDirectory, "codometer.config.json"),
+      JSON.stringify({ exclude: ["folder/**"] }),
+      "utf8",
+    );
+
+    const configuration = await service.loadConfiguration({
+      searchDirectory: nestedDirectory,
+    });
+
+    // Nothing of the ancestor's survives: a merged configuration would leave a
+    // limit that never applied looking exactly like one that did.
+    expect(configuration.exclude).toContain("folder/**");
+    expect(configuration.exclude).not.toContain("ancestor/**");
+    expect(configuration.python.command).toBe(DEFAULT_PYTHON_COMMAND);
+  });
+
+  it("defaults a target's directory to the measured one", async () => {
+    const configurationPath = await writeConfiguration({
+      targets: [
+        { analyses: ["size"], include: ["dist/**/*.js"], name: "compiled" },
+      ],
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+
+    expect(configuration.targets[0]?.directory).toBe(DEFAULT_TARGET_DIRECTORY);
+  });
+
+  it("keeps the directory a target reaches its globs from", async () => {
+    const configurationPath = await writeConfiguration({
+      targets: [
+        {
+          analyses: ["size"],
+          directory: "../..",
+          include: ["dist/packages/logger/**/*.js"],
+          name: "compiled",
+        },
+      ],
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+
+    expect(configuration.targets[0]?.directory).toBe("../..");
   });
 });

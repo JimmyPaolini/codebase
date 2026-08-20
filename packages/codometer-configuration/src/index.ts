@@ -17,6 +17,7 @@ export {
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_PYTHON_COMMAND,
   DEFAULT_TARGET_COMPRESSION,
+  DEFAULT_TARGET_DIRECTORY,
   DEFAULT_TARGET_NAME,
   UnknownConfigurationFileTypeError,
 } from "./modules/configuration/configuration.constants";
@@ -27,6 +28,8 @@ export type {
   CodometerAnalysis,
   CodometerCompression,
   CodometerConfiguration,
+  CodometerConfigurationContext,
+  CodometerConfigurationFactory,
   CodometerCustomStatistic,
   CodometerJsonOutputConfiguration,
   CodometerLimit,

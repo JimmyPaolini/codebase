@@ -67,6 +67,73 @@ Output paths are resolved relative to the directory being measured, not to the
 configuration file, so a configuration kept in a `configuration/` folder still
 writes to the repository root.
 
+## Resolution
+
+The search starts at the directory being measured and walks upward, taking the
+first configuration file it finds. **The nearest one wins outright**: nothing
+from a further ancestor is folded into it. Merging the two would leave a limit
+that never applied looking exactly like one that did, and telling them apart
+would mean knowing which of several files each field came from.
+
+So a folder carrying no configuration file of its own is measured by the
+nearest ancestor that does, and a folder that writes one is measured by that
+alone.
+
+## A Configuration That Answers For Every Folder
+
+A configuration file may export a **function** instead of an object. It is
+handed the run context and returns the configuration, which is what lets one
+file at the top of a workspace describe every project beneath it — each
+project's build output derived from where the project sits, and each project's
+limit read from its own manifest.
+
+```ts
+import path from "node:path";
+
+import {
+  type CodometerConfiguration,
+  type CodometerConfigurationFactory,
+} from "@codometer/configuration";
+
+const codometerConfiguration: CodometerConfigurationFactory = (context) => {
+  const projectPath = path.relative(
+    context.configurationDirectory,
+    context.directory,
+  );
+
+  return {
+    limits: [{ metric: "Compiled JavaScript.size", value: "8 KB" }],
+    targets: [
+      {
+        analyses: ["size"],
+        // Build output sits above the project being measured, so the target
+        // says how to get back out to it.
+        directory: path.relative(context.directory, context.configurationDirectory),
+        include: [`dist/${projectPath}/**/*.js`],
+        name: "Compiled JavaScript",
+      },
+    ],
+  } satisfies CodometerConfiguration;
+};
+
+export default codometerConfiguration;
+```
+
+| Context field | Meaning |
+| ------------- | ------- |
+| `directory` | Absolute directory this run measures |
+| `configurationDirectory` | Absolute directory holding the configuration file being loaded |
+
+Two directories and nothing else. Their difference is the measured folder's
+position, and every path convention a repository holds — where its build output
+lands, where a package's manifest sits — falls out of that position, stated by
+the configuration rather than known by codometer. Nothing about the run's flags
+is in the context on purpose: a configuration that could see whether the run
+writes or gates could describe a different repository to each.
+
+A factory may return a promise, so it can read a manifest or an ignore file
+before answering.
+
 ## What Gets Measured
 
 Discovery walks the directory itself and reads every `.gitignore` it passes, so
@@ -123,6 +190,7 @@ targets: [
 | `exclude` | no | none | Globs that remove files |
 | `analyses` | yes | — | `language`, `size`, or both. At least one |
 | `compression` | no | `gzip` | `gzip`, `brotli`, or `none` for the bytes on disk |
+| `directory` | no | `.` | Where the target's globs start, relative to the measured directory |
 
 `language` runs the same analyzers the codebase gets. `size` compresses each
 matched file **on its own** and sums the results — never all of them together,
@@ -365,28 +433,28 @@ Call stacks traced through `codometer-configuration`, deepest first. Each frame 
 
 | Measure | Value |
 | --- | --- |
-| Callables | 34 |
+| Callables | 37 |
 | Files | 10 |
-| Calls traced | 29 |
+| Calls traced | 32 |
 | Call stacks | 2 |
 | Deepest stack | 2 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 3 |
+| Unfollowable calls | 4 |
 
 ### Call stacks
 
 **1. `superRefine(…)`** — depth 2 · orphan-root
 
 ```text
-🚀 superRefine(…)(…): void [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:368]
-  └─> some(…)(pattern: string): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:370]
+🚀 superRefine(…)(…): void [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:378]
+  └─> some(…)(pattern: string): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:380]
 ```
 
 **2. `refine(…)`** — depth 2 · orphan-root
 
 ```text
-🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:395]
-  └─> map(…)(…): string [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:396]
+🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:405]
+  └─> map(…)(…): string [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:406]
 ```
 
 ### Module spread

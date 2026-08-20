@@ -18,6 +18,7 @@ function buildTarget(
   return {
     analyses: ["size"],
     compression: "gzip",
+    directory: ".",
     exclude: [],
     include: ["dist/**/*.js"],
     name: "compiled",
