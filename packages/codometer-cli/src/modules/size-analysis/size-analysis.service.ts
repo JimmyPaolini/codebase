@@ -2,9 +2,10 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { brotliCompressSync, gzipSync } from "node:zlib";
 
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 
 import { BROTLI_OPTIONS, GZIP_LEVEL } from "./size-analysis.constants";
+import { UnreadableTargetFileError } from "./size-analysis.errors";
 
 import type { AnalyzeSizeArguments, SizeResult } from "./size-analysis.types";
 import type { CodometerCompression } from "@codometer/configuration";
@@ -17,8 +18,6 @@ export class SizeAnalysisService {
   constructor() {}
 
   // 🔐 Private Fields
-
-  private readonly logger = new Logger(SizeAnalysisService.name);
 
   // 🔑 Public Fields
 
@@ -45,11 +44,12 @@ export class SizeAnalysisService {
   }
 
   /**
-   * Measures one file, or nothing when it cannot be read.
+   * Measures one file, or fails the run.
    *
    * A file can vanish between being matched and being read — a build running
-   * beside the measurement is enough. Reporting the rest of the target is
-   * worth more than abandoning the run over one file.
+   * beside the measurement is enough. Skipping it would report a total short
+   * by that file while still counting it, which is a number that looks
+   * consistent and lets a real breach through. Failing is the lesser harm.
    */
   private measureFile(
     absolutePath: string,
@@ -58,11 +58,7 @@ export class SizeAnalysisService {
     try {
       return this.compress(readFileSync(absolutePath), compression);
     } catch (error: unknown) {
-      this.logger.warn(`📦 Skipped unreadable file`, undefined, {
-        path: absolutePath,
-        reason: String(error),
-      });
-      return 0;
+      throw new UnreadableTargetFileError(absolutePath, String(error));
     }
   }
 

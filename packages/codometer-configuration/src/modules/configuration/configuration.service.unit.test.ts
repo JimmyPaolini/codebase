@@ -394,6 +394,28 @@ describe(ConfigurationService, () => {
     ]);
   });
 
+  // Every pattern removing files leaves no pattern that adds any, so the
+  // target would hold nothing for good — and a limit on it could never breach.
+  it("rejects a target whose include globs only ever remove files", async () => {
+    const configurationPath = await writeConfiguration({
+      targets: [
+        {
+          analyses: ["size"],
+          include: ["!dist/**/*.map.js"],
+          name: "compiled",
+        },
+      ],
+    });
+
+    // Zod serializes its issues into the error message, so the target's name
+    // arrives quoted and escaped rather than as it was written.
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toThrow(
+      /Target .*compiled.* has no include glob that adds files/,
+    );
+  });
+
   it("rejects two targets sharing one name", async () => {
     const configurationPath = await writeConfiguration({
       targets: [

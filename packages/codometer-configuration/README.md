@@ -42,6 +42,15 @@ const codometerConfiguration: CodometerConfiguration = {
   },
   // Interpreter used for Python analysis; defaults to `python3`.
   python: { command: "uv run python" },
+  // Named sets of files measured alongside the codebase itself.
+  targets: [
+    {
+      analyses: ["size"],
+      compression: "gzip",
+      include: ["dist/**/*.js", "!dist/**/*.map.js"],
+      name: "compiled",
+    },
+  ],
 };
 
 export default codometerConfiguration;
@@ -53,26 +62,78 @@ writes to the repository root.
 
 ## What Gets Measured
 
-Discovery enumerates through `git ls-files`, so **`.gitignore` is already in
-force**: an ignored file is an untracked file, and no exclusion has to name it.
-What the two exclusion options are for is the opposite case — files that are
-committed but nobody wrote.
+Discovery walks the directory itself and reads every `.gitignore` it passes, so
+**`.gitignore` is already in force**: a build directory or a virtual environment
+is pruned where its ignore file names it, and no exclusion has to name it again.
+Git is never invoked, so a directory that is not a repository at all is measured
+the same way as one that is, and what is measured is the working tree rather
+than the index — a file that exists and is not ignored counts, whether or not it
+has been committed yet. What the two exclusion options are for is the opposite
+case: files that are kept but that nobody wrote.
 
 | Option | Syntax | Use it for |
 | ------ | ------ | ---------- |
 | `exclude` | Globs, matched with `path.matchesGlob` | A handful of paths named inline, appended to the built-in defaults |
 | `excludeFrom` | Paths to ignore files, in gitignore syntax | Lockfiles, vendored bundles, generated documentation — the list a repository would rather keep in a file |
 
-`excludeFrom` matching is done by git itself (`git ls-files --ignored
---exclude-from`), so negations, anchoring, and directory patterns behave exactly
-as they do in a `.gitignore`, and pointing codometer at a file another tool
-already reads gives the same answer that tool gets.
+`excludeFrom` files are read as gitignore syntax and matched natively, so
+negations, anchoring, and directory patterns behave exactly as they do in a
+`.gitignore`, and pointing codometer at a file another tool already reads gives
+the same answer that tool gets. Matching is case-sensitive on every platform,
+deliberately: git takes that from whichever filesystem it finds itself on, and a
+measurement that disagrees with itself between a laptop and CI is worse than a
+strict one.
 
 One caution when reusing an existing ignore file: most are written for one
 tool's concerns, not for measurement. A `.prettierignore` typically ignores all
 markdown because a markdown linter handles it — point codometer at that and the
 prose metrics vanish. A dedicated `.codometerignore` is usually the better
 answer.
+
+## Targets
+
+A **target** is a named set of files, declared by include and exclude globs,
+together with the analyses run over it. The codebase itself is always measured
+as a target of its own — everything the ignore files leave behind, under the
+name `codebase` — and `targets` names the others.
+
+```ts
+targets: [
+  {
+    analyses: ["size"],
+    compression: "gzip",
+    exclude: ["dist/vendor/**"],
+    include: ["dist/**/*.js", "!dist/**/*.map.js"],
+    name: "compiled",
+  },
+],
+```
+
+| Field | Required | Default | Meaning |
+| ----- | -------- | ------- | ------- |
+| `name` | yes | — | What the target is called. Two targets may not share one |
+| `include` | yes | — | Globs that add files. At least one must add rather than remove |
+| `exclude` | no | none | Globs that remove files |
+| `analyses` | yes | — | `language`, `size`, or both. At least one |
+| `compression` | no | `gzip` | `gzip`, `brotli`, or `none` for the bytes on disk |
+
+`language` runs the same analyzers the codebase gets. `size` compresses each
+matched file **on its own** and sums the results — never all of them together,
+which would find matches across file boundaries and report a total no client
+ever receives. Gzip compresses at level 9 and brotli at quality 11, both stated
+explicitly rather than left to a library default.
+
+A `!` prefix in `include` removes files instead of adding them. Negations are
+collected into one set applied to the whole target rather than in the order
+they were written, so rearranging the array cannot change which files the
+target holds. A `!` in `exclude` is rejected: that list already removes files,
+so there is nothing there to negate.
+
+Ignore files are not consulted for a target. That is deliberate, and it is what
+lets one measure compiled output — a directory every `.gitignore` claims, which
+is exactly why no ignore rule may reach it. A file a target matched but cannot
+be read fails the run rather than counting as zero bytes: a total quietly short
+by one file is worse than no total at all.
 
 ## Custom Statistics
 
@@ -245,21 +306,28 @@ Call stacks traced through `codometer-configuration`, deepest first. Each frame 
 
 | Measure | Value |
 | --- | --- |
-| Callables | 27 |
+| Callables | 29 |
 | Files | 9 |
-| Calls traced | 21 |
-| Call stacks | 1 |
+| Calls traced | 22 |
+| Call stacks | 2 |
 | Deepest stack | 2 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 2 |
 
 ### Call stacks
 
-**1. `refine(…)`** — depth 2 · orphan-root
+**1. `superRefine(…)`** — depth 2 · orphan-root
 
 ```text
-🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:303]
-  └─> map(…)(…): string [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:304]
+🚀 superRefine(…)(…): void [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:305]
+  └─> some(…)(pattern: string): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:307]
+```
+
+**2. `refine(…)`** — depth 2 · orphan-root
+
+```text
+🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:321]
+  └─> map(…)(…): string [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:322]
 ```
 
 ### Module spread

@@ -1,3 +1,4 @@
+import { ConfigurationService } from "@codometer/configuration";
 import { Test } from "@nestjs/testing";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -25,6 +26,7 @@ function buildTarget(
 }
 
 describe(`${TargetsService.name} over a real directory`, () => {
+  let configurationService: ConfigurationService;
   let service: TargetsService;
   let workingDirectory: string;
 
@@ -35,9 +37,10 @@ describe(`${TargetsService.name} over a real directory`, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [TargetsService],
+      providers: [ConfigurationService, TargetsService],
     }).compile();
 
+    configurationService = await module.resolve(ConfigurationService);
     service = await module.resolve(TargetsService);
     workingDirectory = createTargetTree();
   });
@@ -67,22 +70,22 @@ describe(`${TargetsService.name} over a real directory`, () => {
   });
 
   // The tool this replaced applied negations in the order they were written,
-  // so the same patterns rearranged could hold a different set of files.
+  // so the same patterns rearranged could hold a different set of files. The
+  // globs go through the real resolution rather than being partitioned here,
+  // because partitioning them in the test is the very step an order-dependent
+  // implementation would need in order to pass anyway.
   it.each([
     ["last", ["dist/**/*.js", "dist/nested/**/*.js", "!dist/**/*.min.js"]],
     ["first", ["!dist/**/*.min.js", "dist/**/*.js", "dist/nested/**/*.js"]],
     ["between", ["dist/**/*.js", "!dist/**/*.min.js", "dist/nested/**/*.js"]],
-  ])("holds the same files with the negation written %s", (_, patterns) => {
+  ])("holds the same files with the negation written %s", (_, include) => {
     expect.hasAssertions();
 
-    const target = buildTarget({
-      exclude: patterns
-        .filter((pattern) => pattern.startsWith("!"))
-        .map((pattern) => pattern.slice(1)),
-      include: patterns.filter((pattern) => !pattern.startsWith("!")),
-    });
+    const [target] = configurationService.resolveConfiguration({
+      targets: [{ analyses: ["size"], include, name: "compiled" }],
+    }).targets;
 
-    expect(matchFiles(target)).toStrictEqual([
+    expect(target && matchFiles(target)).toStrictEqual([
       "dist/index.js",
       "dist/link.js",
       "dist/nested/deep.js",

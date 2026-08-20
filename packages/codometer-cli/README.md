@@ -99,6 +99,43 @@ Python analysis runs through an interpreter, `python3` by default. Point it
 elsewhere with `python: { command: "uv run python" }` when Python lives in a
 virtual environment.
 
+## Targets
+
+The codebase is measured as a **target** — a named set of files — and `targets`
+declares the others. A target names its files by glob, which is what lets one
+measure compiled output: a directory every `.gitignore` claims, and therefore
+the one place ignore rules must not reach.
+
+```ts
+targets: [
+  {
+    analyses: ["size"],
+    compression: "gzip",
+    exclude: ["dist/vendor/**"],
+    include: ["dist/**/*.js", "!dist/**/*.map.js"],
+    name: "compiled",
+  },
+],
+```
+
+| Field | Required | Default | Meaning |
+| ----- | -------- | ------- | ------- |
+| `name` | yes | — | What the target is called. Two targets may not share one |
+| `include` | yes | — | Globs that add files. At least one must add rather than remove |
+| `exclude` | no | none | Globs that remove files |
+| `analyses` | yes | — | `language`, `size`, or both. At least one |
+| `compression` | no | `gzip` | `gzip`, `brotli`, or `none` for the bytes on disk |
+
+`language` runs the analyzers above over the target's files. `size` compresses
+each matched file on its own and sums the results — never all of them together
+— at gzip level 9 or brotli quality 11, both stated rather than defaulted.
+
+A `!` prefix in `include` removes files. Negations form one set applied to the
+whole target rather than being read in order, so rearranging the array cannot
+change what the target holds. Dot files are excluded unless a glob spells one
+out, directories never match, and a file that was matched but cannot be read
+fails the run rather than counting as zero bytes.
+
 ## Custom statistics
 
 A repository that names files by convention has a vocabulary no analyzer knows
@@ -277,13 +314,13 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Measure | Value |
 | --- | --- |
-| Callables | 234 |
-| Files | 88 |
-| Calls traced | 389 |
+| Callables | 235 |
+| Files | 89 |
+| Calls traced | 390 |
 | Call stacks | 12 |
 | Deepest stack | 11 |
 | Stacks through recursion | 2 |
-| Unfollowable calls | 7 |
+| Unfollowable calls | 8 |
 
 ### Call stacks
 

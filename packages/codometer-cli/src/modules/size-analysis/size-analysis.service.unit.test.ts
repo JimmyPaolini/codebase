@@ -1,7 +1,7 @@
-import { Logger } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { UnreadableTargetFileError } from "./size-analysis.errors";
 import { SizeAnalysisService } from "./size-analysis.service";
 
 import type { CodometerCompression } from "@codometer/configuration";
@@ -52,8 +52,7 @@ describe(SizeAnalysisService, () => {
   });
 
   beforeEach(() => {
-    vi.restoreAllMocks();
-    vi.spyOn(Logger.prototype, "warn").mockReturnValue(undefined);
+    readFileSyncMock.mockReset();
     readFileSyncMock.mockImplementation((filePath: string) => {
       const contents = FILE_CONTENTS[filePath];
 
@@ -93,15 +92,28 @@ describe(SizeAnalysisService, () => {
     expect(readFileSyncMock).toHaveBeenCalledWith("/repo/dist/alpha.js");
   });
 
-  it("counts a file it cannot read as no bytes at all", () => {
-    const result = service.analyze({
-      compression: "gzip",
-      files: ["dist/alpha.js", "dist/gone.js"],
-      workingDirectory: "/repo",
-    });
+  // Reporting the other files and calling the total a measurement would be a
+  // number short by one file that still looks internally consistent, which is
+  // exactly how a real breach passes.
+  it("fails rather than reporting a total it could not measure", () => {
+    expect(() =>
+      service.analyze({
+        compression: "gzip",
+        files: ["dist/alpha.js", "dist/gone.js"],
+        workingDirectory: "/repo",
+      }),
+    ).toThrow(UnreadableTargetFileError);
+  });
 
-    // The file is still one of the target's, so it is still counted as one.
-    expect(result.bytes).toBe(44);
-    expect(result.files).toBe(2);
+  it("names the file it could not read and why", () => {
+    expect(() =>
+      service.analyze({
+        compression: "gzip",
+        files: ["dist/gone.js"],
+        workingDirectory: "/repo",
+      }),
+    ).toThrow(
+      "Cannot measure /repo/dist/gone.js: Error: ENOENT: /repo/dist/gone.js",
+    );
   });
 });

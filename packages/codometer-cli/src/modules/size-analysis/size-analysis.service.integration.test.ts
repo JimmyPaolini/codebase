@@ -10,6 +10,7 @@ import {
 } from "../../../testing/target-tree";
 
 import { GZIP_LEVEL } from "./size-analysis.constants";
+import { UnreadableTargetFileError } from "./size-analysis.errors";
 import { SizeAnalysisService } from "./size-analysis.service";
 
 import type { CodometerCompression } from "@codometer/configuration";
@@ -107,23 +108,13 @@ describe(`${SizeAnalysisService.name} over real files`, () => {
     ).toStrictEqual({ bytes: 0, compression: "gzip", files: 0 });
   });
 
-  it("keeps counting when one file cannot be read", () => {
+  it("fails when a matched file has gone missing", () => {
     expect.hasAssertions();
-    // A build running beside the measurement is enough to lose a file
-    // between matching it and reading it.
-    expect(analyze("gzip", [...MEASURED_FILES, "dist/vanished.js"])).toBe(
-      PINNED_BYTES.gzip,
-    );
-  });
-
-  it("counts every file it was handed, read or not", () => {
-    expect.hasAssertions();
-    expect(
-      service.analyze({
-        compression: "gzip",
-        files: [...MEASURED_FILES, "dist/vanished.js"],
-        workingDirectory,
-      }).files,
-    ).toBe(3);
+    // A build running beside the measurement is enough to lose a file between
+    // matching it and reading it, and the total would then be short by that
+    // file with nothing in the report to say so.
+    expect(() =>
+      analyze("gzip", [...MEASURED_FILES, "dist/vanished.js"]),
+    ).toThrow(UnreadableTargetFileError);
   });
 });

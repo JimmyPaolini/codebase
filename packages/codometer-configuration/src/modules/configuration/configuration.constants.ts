@@ -280,22 +280,40 @@ export const codometerConfigurationSchema = z.object({
     .optional(),
   targets: z
     .array(
-      z.object({
-        analyses: z.array(z.enum(CODOMETER_ANALYSES)).min(1),
-        compression: z.enum(CODOMETER_COMPRESSIONS).optional(),
-        // A `!` here would read as a negation and match nothing instead, since
-        // every pattern in this list already removes files.
-        exclude: z
-          .array(
-            z.string().refine((pattern) => !pattern.startsWith("!"), {
-              message:
-                "An exclude glob already removes files, so a leading `!` has nothing to negate — write the glob without it.",
-            }),
-          )
-          .optional(),
-        include: z.array(z.string()).min(1),
-        name: z.string().min(1),
-      }),
+      z
+        .object({
+          analyses: z.array(z.enum(CODOMETER_ANALYSES)).min(1),
+          compression: z.enum(CODOMETER_COMPRESSIONS).optional(),
+          // A `!` here would read as a negation and match nothing instead,
+          // since every pattern in this list already removes files.
+          exclude: z
+            .array(
+              z
+                .string()
+                .refine((pattern) => !pattern.startsWith(NEGATION_PREFIX), {
+                  message:
+                    "An exclude glob already removes files, so a leading `!` has nothing to negate — write the glob without it.",
+                }),
+            )
+            .optional(),
+          include: z.array(z.string()).min(1),
+          name: z.string().min(1),
+        })
+        // A list of nothing but negations reads as a target and resolves to no
+        // include glob at all, so it would match nothing for good — and a
+        // limit written against it could never breach.
+        .superRefine((target, context) => {
+          const addsFiles = target.include.some(
+            (pattern) => !pattern.startsWith(NEGATION_PREFIX),
+          );
+
+          if (!addsFiles) {
+            context.addIssue({
+              code: "custom",
+              message: `Target "${target.name}" has no include glob that adds files — every pattern in its include list starts with "${NEGATION_PREFIX}", so it would hold nothing to measure.`,
+            });
+          }
+        }),
     )
     // A metric is addressed by its target's name, so two targets sharing one
     // would make every limit on either of them ambiguous.
