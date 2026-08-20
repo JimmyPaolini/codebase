@@ -98,8 +98,22 @@ if [[ "$#" -eq 1 ]]; then
     fail_with_usage_error "❌ Unable to read pull request ${pull_request_number}: gh is not available"
   fi
 
-  if ! pull_request_json="$(gh pr view "${pull_request_number}" --json assignees,labels,title 2>&1)"; then
-    fail_with_usage_error "❌ Unable to read pull request ${pull_request_number}: gh pr view failed (${pull_request_json})"
+  # gh writes its own notices — a new-release announcement, for one — to
+  # standard error even when the call succeeds, so its standard error is kept
+  # in a separate file rather than merged into the captured document. Merging
+  # them would leave a valid pull request with metadata that no longer parses
+  # as JSON, which in a blocking gate is a false failure.
+  if ! gh_error_file="$(mktemp 2>&1)"; then
+    fail_with_usage_error "❌ Unable to read pull request ${pull_request_number}: mktemp failed (${gh_error_file})"
+  fi
+
+  trap 'rm -f "${gh_error_file}" > /dev/null 2>&1 || true' EXIT
+
+  if ! pull_request_json="$(gh pr view "${pull_request_number}" --json assignees,labels,title 2> "${gh_error_file}")"; then
+    if ! gh_error_output="$(< "${gh_error_file}")"; then
+      gh_error_output='the error output could not be read'
+    fi
+    fail_with_usage_error "❌ Unable to read pull request ${pull_request_number}: gh pr view failed (${gh_error_output})"
   fi
 elif [[ -z "${PULL_REQUEST_TITLE:-}" || -z "${PULL_REQUEST_LABELS:-}" || -z "${PULL_REQUEST_ASSIGNEES:-}" ]]; then
   fail_with_usage_error "❌ Expected a pull request number, or PULL_REQUEST_TITLE, PULL_REQUEST_LABELS, and PULL_REQUEST_ASSIGNEES in the environment"
@@ -182,24 +196,30 @@ const nameOf = (entry, propertyName) => {
   return '';
 };
 
-// commitlint's scope-enum splits on both ',' and '/', so one title may name
-// several scopes and each of them is expected to have its own label.
-const titleMatch = /^([a-z][a-z-]*)\(([^()]+)\)!?:\s+(\S.*)\$/.exec(title.trim());
-const titleScopes = titleMatch === null ? [] : [
+// The scope group is optional here even though the convention requires a
+// scope, because commitlint has no scope-empty rule: 'chore: 🔧 tidy' passes
+// the title step and reaches this script. Matching it means the missing scope
+// is reported as the missing scope it is, rather than as a malformed title.
+// commitlint's scope-enum splits on both ',' and '/', so one title may also
+// name several scopes, and each of them is expected to have its own label.
+const titleMatch = /^([a-z][a-z-]*)(?:\(([^()]+)\))?!?:\s+(\S.*)\$/.exec(title.trim());
+
+if (titleMatch === null) {
+  failWithMessage('❌ Unable to parse type and scope from title: ' + title);
+}
+
+const titleScopes = [
   ...new Set(
-    titleMatch[2]
+    (titleMatch[2] || '')
       .split(/[,/]/)
       .map((titleScope) => titleScope.trim().toLowerCase())
       .filter((titleScope) => titleScope.length > 0),
   ),
 ];
 
-if (titleMatch === null || titleScopes.length === 0) {
-  failWithMessage('❌ Unable to parse type and scope from title: ' + title);
-}
-
 const recordLines = [
   ['TITLE_TYPE', titleMatch[1]].join(fieldSeparator),
+  ...(titleScopes.length === 0 ? [['TITLE_SCOPE_MISSING', ''].join(fieldSeparator)] : []),
   ...titleScopes.map((titleScope) => ['TITLE_SCOPE', titleScope].join(fieldSeparator)),
   ...labels
     .map((label) => nameOf(label, 'name'))
@@ -226,6 +246,7 @@ scope_labels=''
 source_labels=''
 assignee_logins=''
 do_not_merge_present='false'
+title_scope_missing='false'
 
 while IFS=$'\x1f' read -r record_kind record_value; do
   case "${record_kind}" in
@@ -250,6 +271,9 @@ while IFS=$'\x1f' read -r record_kind record_value; do
     ;;
   TITLE_SCOPE)
     title_scopes="${title_scopes} ${record_value}"
+    ;;
+  TITLE_SCOPE_MISSING)
+    title_scope_missing='true'
     ;;
   TITLE_TYPE)
     title_type="${record_value}"
@@ -293,19 +317,29 @@ fi
 
 # 2️⃣ The scope labels are exactly the title scopes, in both directions
 
-for title_scope in ${title_scopes}; do
-  if ! contains_name "${scope_labels}" "scope:${title_scope}"; then
-    record_failure "❌ Missing scope label: scope:${title_scope}"
-    record_remediation "gh pr edit ${pull_request_number} --add-label scope:${title_scope}"
-  fi
-done
+# A title with no scope names no expected labels, which would make both loops
+# below vacuous: the forward one would find nothing missing and pass in
+# silence, and the reverse one would denounce every scope label the pull
+# request legitimately carries. So the missing scope is recorded as its own
+# failure and the comparison is skipped entirely — there is nothing to
+# compare against until the title is fixed.
+if [[ "${title_scope_missing}" == 'true' ]]; then
+  record_failure "❌ No scope in title: retitle as ${title_type}(<scope>): …"
+else
+  for title_scope in ${title_scopes}; do
+    if ! contains_name "${scope_labels}" "scope:${title_scope}"; then
+      record_failure "❌ Missing scope label: scope:${title_scope}"
+      record_remediation "gh pr edit ${pull_request_number} --add-label scope:${title_scope}"
+    fi
+  done
 
-for scope_label in ${scope_labels}; do
-  if ! contains_name "${title_scopes}" "${scope_label#scope:}"; then
-    record_failure "❌ Unexpected scope label: ${scope_label}"
-    record_remediation "gh pr edit ${pull_request_number} --remove-label ${scope_label}"
-  fi
-done
+  for scope_label in ${scope_labels}; do
+    if ! contains_name "${title_scopes}" "${scope_label#scope:}"; then
+      record_failure "❌ Unexpected scope label: ${scope_label}"
+      record_remediation "gh pr edit ${pull_request_number} --remove-label ${scope_label}"
+    fi
+  done
+fi
 
 # 3️⃣ The do-not-merge label is absent
 
@@ -346,7 +380,9 @@ if [[ "${source_label_is_valid}" == 'false' ]]; then
     record_remediation "gh pr edit ${pull_request_number} --remove-label ${source_label}"
   done
 
-  record_remediation "gh pr edit ${pull_request_number} --add-label source:agent # or source:human"
+  record_remediation "add exactly one source label, either:"
+  record_remediation "gh pr edit ${pull_request_number} --add-label source:agent"
+  record_remediation "gh pr edit ${pull_request_number} --add-label source:human"
 fi
 
 # 📋 Report
