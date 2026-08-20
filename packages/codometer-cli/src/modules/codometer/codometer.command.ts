@@ -214,14 +214,19 @@ export class CodometerCommand extends CommandRunner {
   /**
    * The size of every target this run measured, in declaration order.
    *
-   * A target that ran no size analysis is left out rather than reported as
-   * zero bytes, so the badges say what was measured and never invent a figure
-   * for what was not. A run that declared no target at all — the whole
-   * repository — produces an empty list and no size badges.
+   * Left out rather than reported as zero bytes: a target that ran no size
+   * analysis, and a target whose globs matched no file. Both would otherwise
+   * publish `0.00 kB` — a figure that is not merely missing but wrong, and
+   * wrong in a README a release commits. A target measured before its build
+   * lands is the ordinary way to reach the second case, and it is caught by a
+   * failing limit only for the targets that happen to declare one.
+   *
+   * A run that declared no target at all — the whole repository — produces an
+   * empty list and no size badges.
    */
   private readTargetSizes(measurement: MeasurementResult): TargetSize[] {
     return measurement.targets.flatMap((target) =>
-      target.size === undefined
+      target.size === undefined || target.size.files === 0
         ? []
         : [
             {

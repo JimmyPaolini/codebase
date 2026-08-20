@@ -75,6 +75,13 @@ A **breach** and **staleness** are different findings and are never reported as
 one. A `warn` breach is printed and leaves the exit code alone; a `fail` breach
 exits 1, but only where `--check limits` asked for a gate.
 
+`--check reports` compares a committed report against a fresh measurement, so it
+is only as stable as the numbers it re-measures. Compressed sizes are
+Node-version dependent — the bundled zlib differs between releases — so a report
+written on one runtime and checked on another reads as stale when nothing
+changed at all. Check on the runtime the repository pins, or expect false
+staleness rather than a real finding.
+
 ```yaml
 - run: npx codometer --check reports,limits
 ```
@@ -542,7 +549,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 **1. `CodometerCommand.run`** — depth ≥ 13 · decorated-method
 
 ```text
-🚀 CodometerCommand.run(_passedParameters: string[], options: CodometerCommandOptions): Promise<void> [packages/codometer-cli/src/modules/codometer/codometer.command.ts:419]
+🚀 CodometerCommand.run(_passedParameters: string[], options: CodometerCommandOptions): Promise<void> [packages/codometer-cli/src/modules/codometer/codometer.command.ts:424]
    ↳ Measure the repository and produce every resolved output.
   └─> CodometerService.measure(args: MeasureArguments): MeasurementResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:316]
      ↳ Measure the codebase and every target declared alongside it.
@@ -700,14 +707,14 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-16111-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-499.22_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-16146-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-500.58_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-24-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-144-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-75.54_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-75.68_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript & JavaScript
 
@@ -716,10 +723,10 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 ![Test Files](https://img.shields.io/badge/Test_Files-33-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-26-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-52-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-606-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-607-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-263-15803d?style=flat-square)
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-791-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-78-059669?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-79-059669?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-84-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
@@ -728,8 +735,8 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 ![Decorators](https://img.shields.io/badge/Decorators-55-db2777?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-238-ea580c?style=flat-square)
 ![Doc Comments](https://img.shields.io/badge/Doc_Comments-437-6366f1?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-860-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1594-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-864-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1598-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-4-ca8a04?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 

@@ -291,6 +291,36 @@ describe(CodometerCommand, () => {
       });
     });
 
+    // A target measured before its build lands matches nothing and sizes at
+    // zero bytes. Declaring a limit turns that into a failure, but a target
+    // that declares none would otherwise publish `0.00 kB gzip` into a README
+    // a release commits — a figure that is wrong rather than merely absent.
+    it("hands the renderer nothing for a target whose globs matched no file", async () => {
+      vi.mocked(codometerService.measure).mockReturnValue({
+        failures: [],
+        indexes: new Map(),
+        limits: [],
+        statistics,
+        targets: [
+          {
+            files: 0,
+            language: undefined,
+            name: "Compiled JavaScript",
+            size: { bytes: 0, compression: "gzip", files: 0 },
+          },
+        ],
+      });
+
+      await run({ write: true });
+
+      expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
+        check: false,
+        destination: { ...markdownDestination, path: "/repo/README.md" },
+        statistics,
+        targets: [],
+      });
+    });
+
     it("writes and fails nothing with --write", async () => {
       await run({ write: true });
 

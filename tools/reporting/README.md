@@ -82,6 +82,12 @@ than the one that produced the baseline, so any version it stamped would be the
 wrong one. CI uses the runtime `.nvmrc` pins on both sides, and the rendered
 guidelines say so.
 
+The same drift is why continuous integration never runs codometer's
+`--check reports`: a report written on the pinned runtime and checked on any
+other reads as stale when nothing changed. Staleness checking is for local use
+on the pinned runtime, and project READMEs are written on the default branch
+where that runtime is the only one in play.
+
 ## Options
 
 | Flag | Does |
