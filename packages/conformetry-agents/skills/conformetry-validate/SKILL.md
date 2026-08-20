@@ -88,15 +88,48 @@ Either give the templates distinguishing files, or narrow the glob so one
 applies.
 
 Those last two are attribution failures rather than content failures, and they
-are the hardest to act on from the report alone. Diagnose them with:
+are the hardest to act on from the report alone. Diagnose them by asking which
+templates explain the path:
 
 ```bash
-conformetry explain <path>
+conformetry templates --instances packages/widgets/src/modules/orders
 ```
 
-which reports the verdict, the overlap ratio, and every template considered.
-[references/template-matching.md](references/template-matching.md) explains how
-attribution works and how to read that ranking.
+```text
+  nestjs-service-module (nsm)
+    Generate a NestJS service module
+    Template: configuration/conformetry-templates/nestjs-service-module
+    Instances:
+      packages/widgets/src/modules/orders 5/5 files 100%
+  nestjs-command-module (ncm)
+    Generate a NestJS command module
+    Template: configuration/conformetry-templates/nestjs-command-module
+    Instances:
+      packages/widgets/src/modules/orders 3/5 files 60%
+```
+
+**Every template that explains the path is listed, not just the winner** — which
+is the point. A path legitimately belongs to more than one template, so a single
+verdict would hide the tie that caused the difference. Read it as a ranking: a
+template you expected near the top sitting low means its files are not where the
+instance has them.
+
+The complement asks the other direction — what generated code exists, and what
+each piece answers to:
+
+```bash
+conformetry instances
+conformetry instances --templates nestjs-service-module
+```
+
+Each path it prints is usable as the `--instances` argument above, so the two
+commands compose. `--templates` narrows to the instances a given template
+explains, which is how you find every instance that would be affected by
+changing that template.
+
+Both accept `--json` for parsing, and `--config` to read a configuration
+elsewhere. [references/template-matching.md](references/template-matching.md)
+explains how attribution works and how to read the ranking.
 
 ## Three behaviors that look like bugs and are not
 

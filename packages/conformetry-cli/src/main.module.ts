@@ -5,9 +5,9 @@ import { DiscoveryModule } from "@nestjs/core";
 import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
-import { ExplainModule } from "./modules/explain/explain.module";
 import { GenerateModule } from "./modules/generate/generate.module";
-import { ListModule } from "./modules/list/list.module";
+import { InstancesModule } from "./modules/instances/instances.module";
+import { TemplatesModule } from "./modules/templates/templates.module";
 import { ValidateModule } from "./modules/validate/validate.module";
 
 /**
@@ -23,9 +23,9 @@ import { ValidateModule } from "./modules/validate/validate.module";
     }),
     DiscoveryModule,
     LoggerModule,
-    ExplainModule,
     GenerateModule,
-    ListModule,
+    InstancesModule,
+    TemplatesModule,
     ValidateModule,
   ],
 })

@@ -2,9 +2,9 @@ import { Test } from "@nestjs/testing";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { MainModule } from "./main.module";
-import { ExplainCommand } from "./modules/explain/explain.command";
 import { GenerateCommand } from "./modules/generate/generate.command";
-import { ListCommand } from "./modules/list/list.command";
+import { InstancesCommand } from "./modules/instances/instances.command";
+import { TemplatesCommand } from "./modules/templates/templates.command";
 import { ValidateCommand } from "./modules/validate/validate.command";
 
 import type { TestingModule } from "@nestjs/testing";
@@ -34,15 +34,6 @@ describe(MainModule, () => {
     expect(module).toBeDefined();
   });
 
-  it("resolves the explain command with every dependency injected", async () => {
-    const command = await module.resolve(ExplainCommand);
-
-    expect(command).toBeDefined();
-    expect(command.parseConfig("custom/conformetry.config.ts")).toBe(
-      "custom/conformetry.config.ts",
-    );
-  });
-
   it("resolves the generate command with every dependency injected", async () => {
     const command = await module.resolve(GenerateCommand);
 
@@ -50,13 +41,20 @@ describe(MainModule, () => {
     expect(command.parseGenerator("example")).toBe("example");
   });
 
-  it("resolves the list command with every dependency injected", async () => {
-    const command = await module.resolve(ListCommand);
+  it("resolves the instances command with every dependency injected", async () => {
+    const command = await module.resolve(InstancesCommand);
 
     expect(command).toBeDefined();
-    expect(command.parseConfig("custom/conformetry.config.ts")).toBe(
-      "custom/conformetry.config.ts",
-    );
+    expect(command.parseTemplates("react-component")).toStrictEqual([
+      "react-component",
+    ]);
+  });
+
+  it("resolves the templates command with every dependency injected", async () => {
+    const command = await module.resolve(TemplatesCommand);
+
+    expect(command).toBeDefined();
+    expect(command.parseInstances("packages/*")).toStrictEqual(["packages/*"]);
   });
 
   it("resolves the validate command with every dependency injected", async () => {

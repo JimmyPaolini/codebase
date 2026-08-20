@@ -32,7 +32,7 @@ field is not an error — it simply does nothing. Check your entry took effect b
 listing the generators:
 
 ```bash
-conformetry list
+conformetry templates
 ```
 
 A generator with neither `inputs` nor `instances` is legal: it renders a fixed

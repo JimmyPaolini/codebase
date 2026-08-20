@@ -113,7 +113,7 @@ project is called `conformetry` — the name means the generator namespace and
 nothing else, and the command-line host is `conformetry-cli`.
 
 This repository's generators, kept in step with the configuration by
-`nx run synchronization:synchronize`. `conformetry list` prints the same thing
+`nx run synchronization:synchronize`. `conformetry templates` prints the same thing
 for any workspace:
 
 <!-- conformetry-generators-table start -->

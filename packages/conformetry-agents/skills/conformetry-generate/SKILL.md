@@ -17,7 +17,7 @@ A generator name you guess at is rejected, so read the registry rather than
 inferring it:
 
 ```bash
-conformetry list
+conformetry templates
 ```
 
 In an Nx workspace, the emitted plugin answers the same question:

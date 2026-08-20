@@ -84,20 +84,31 @@ is not the check contradicting itself — it is the next layer becoming visible.
 ## Diagnosing an attribution failure
 
 ```bash
-conformetry explain <path>
+conformetry templates --instances <path>
 ```
 
-reports the verdict, each considered template, its matched-file count against the
-template's total, and the resulting percentage — the ranking above, for a real
-path:
+reports every template that explains the path, its matched-file count against
+the template's total, and the resulting percentage — the ranking above, for a
+real path:
 
 ```text
-  packages/widgets/src/modules/orders
-    Verdict: matched nestjs-service-module
-    Considered:
-      nestjs-service-module 5/5 files 100%
-      nestjs-command-module 3/5 files 60%
+  nestjs-service-module (nsm)
+    Template: configuration/conformetry-templates/nestjs-service-module
+    Instances:
+      packages/widgets/src/modules/orders 5/5 files 100%
+  nestjs-command-module (ncm)
+    Template: configuration/conformetry-templates/nestjs-command-module
+    Instances:
+      packages/widgets/src/modules/orders 3/5 files 60%
 ```
+
+There is no single verdict line, deliberately: a path can belong to several
+templates at once, and collapsing that to one answer is what makes an ambiguous
+outcome unreadable. The ranking _is_ the answer.
+
+Going the other way, `conformetry instances --templates <name>` lists every
+instance a template explains — which is how you find everything a template
+change would touch before making it.
 
 Read it as a diff of expectations: a template you expected near the top sitting
 low means its files are not where the candidate has them, which is usually a

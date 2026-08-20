@@ -41,9 +41,10 @@ An installed skill is a copied directory with no manifest and no dependencies
 beside it, so a script shipped inside one can import nothing but Node built-ins.
 Rather than ship scripts that work here and fail silently for anyone else,
 capability that an agent needs lives in the conformetry command-line host, where
-it is versioned and tested: `conformetry list` reports the generators a
-workspace declares, and `conformetry explain <path>` reports which template a
-path is an instance of.
+it is versioned and tested: `conformetry templates` reports the templates a
+workspace declares, `conformetry templates --instances <path>` reports which
+templates explain a path, and `conformetry instances` reports the generated code
+the configuration finds.
 
 ## Editing
 

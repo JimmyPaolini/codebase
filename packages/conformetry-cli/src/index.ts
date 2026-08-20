@@ -1,22 +1,22 @@
 // 📤 Exports
 export { MainModule } from "./main.module";
-export { ExplainCommand } from "./modules/explain/explain.command";
-export { ExplainModule } from "./modules/explain/explain.module";
-export type {
-  ConsideredTemplate,
-  ExplainCommandOptions,
-  ExplainedInstance,
-  ExplainVerdict,
-} from "./modules/explain/explain.types";
 export { GenerateCommand } from "./modules/generate/generate.command";
 export { GenerateModule } from "./modules/generate/generate.module";
 export type { GenerateCommandOptions } from "./modules/generate/generate.types";
-export { ListCommand } from "./modules/list/list.command";
-export { ListModule } from "./modules/list/list.module";
+export { InstancesCommand } from "./modules/instances/instances.command";
+export { InstancesModule } from "./modules/instances/instances.module";
+export type { InstancesCommandOptions } from "./modules/instances/instances.types";
+export { InventoryModule } from "./modules/inventory/inventory.module";
+export { InventoryService } from "./modules/inventory/inventory.service";
 export type {
-  ListCommandOptions,
-  ListedGenerator,
-} from "./modules/list/list.types";
+  InventoriedInstance,
+  InventoriedMatch,
+  InventoriedTemplate,
+  ResolveInventoryArguments,
+} from "./modules/inventory/inventory.types";
+export { TemplatesCommand } from "./modules/templates/templates.command";
+export { TemplatesModule } from "./modules/templates/templates.module";
+export type { TemplatesCommandOptions } from "./modules/templates/templates.types";
 export { ValidateCommand } from "./modules/validate/validate.command";
 export { ValidateModule } from "./modules/validate/validate.module";
 export type { ValidateCommandOptions } from "./modules/validate/validate.types";

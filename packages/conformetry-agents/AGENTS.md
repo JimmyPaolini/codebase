@@ -37,7 +37,7 @@ Content rules worth knowing before editing:
 
 - **Describe the toolchain, not this workspace.** A table of this repository's
   generators would read as authoritative and be wrong everywhere else. Point at
-  `conformetry list` instead, which is correct in every workspace.
+  `conformetry templates` instead, which is correct in every workspace.
 - **Cover both entrypoints.** The Nx plugin and the command-line host differ in
   ways that matter — most sharply, the Nx path requires every declared input and
   the command-line host requires none.
