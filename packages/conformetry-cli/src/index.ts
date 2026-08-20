@@ -6,14 +6,6 @@ export type { GenerateCommandOptions } from "./modules/generate/generate.types";
 export { InstancesCommand } from "./modules/instances/instances.command";
 export { InstancesModule } from "./modules/instances/instances.module";
 export type { InstancesCommandOptions } from "./modules/instances/instances.types";
-export { InventoryModule } from "./modules/inventory/inventory.module";
-export { InventoryService } from "./modules/inventory/inventory.service";
-export type {
-  InventoriedInstance,
-  InventoriedMatch,
-  InventoriedTemplate,
-  ResolveInventoryArguments,
-} from "./modules/inventory/inventory.types";
 export { TemplatesCommand } from "./modules/templates/templates.command";
 export { TemplatesModule } from "./modules/templates/templates.module";
 export type { TemplatesCommandOptions } from "./modules/templates/templates.types";

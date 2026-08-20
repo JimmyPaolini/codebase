@@ -7,12 +7,12 @@ import {
   FILE_EXTENSION_PATTERN,
   GLOB_WILDCARD_CHARACTERS,
   INSTANCE_KEY_SEPARATOR,
-} from "./template-discovery.constants";
+} from "./instance-discovery.constants";
 
 import type {
   FindInstancesArguments,
   Instance,
-} from "./template-discovery.types";
+} from "./instance-discovery.types";
 
 /**
  * Expands instance glob patterns into instances.
@@ -22,7 +22,7 @@ import type {
  * previous matcher did and what made it repo-specific.
  */
 @Injectable()
-export class TemplateDiscoveryInstancesService {
+export class InstanceDiscoveryLocatingService {
   // 🏗 Dependency Injection
 
   constructor() {}

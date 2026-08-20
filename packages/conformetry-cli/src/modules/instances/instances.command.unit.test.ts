@@ -1,19 +1,25 @@
-import { InputService } from "@conformetry/configuration";
+import path from "node:path";
+
+import {
+  ConfigurationService,
+  InputService,
+  InstanceDiscoveryService,
+} from "@conformetry/configuration";
+import { InventoryService } from "@conformetry/core";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { InventoryService } from "../inventory/inventory.service";
-
 import { InstancesCommand } from "./instances.command";
 
-import type { InventoriedInstance } from "../inventory/inventory.types.js";
+import type { InventoriedInstance } from "@conformetry/core";
 import type { DeepMocked } from "@golevelup/ts-vitest";
 
 const GEARS: InventoriedInstance = {
-  path: "packages/widgets/src/modules/gears",
+  /** Discovery reports absolute paths, so the fixtures do too. */
+  path: path.join(process.cwd(), "packages/widgets/src/modules/gears"),
   templates: [
     {
       matchedFileCount: 5,
@@ -31,7 +37,7 @@ const GEARS: InventoriedInstance = {
 };
 
 const COGS: InventoriedInstance = {
-  path: "packages/widgets/src/modules/cogs",
+  path: path.join(process.cwd(), "packages/widgets/src/modules/cogs"),
   templates: [
     {
       matchedFileCount: 5,
@@ -51,24 +57,36 @@ const written = (): string => output.join("\n");
 /**
  * Dependencies are mocked here; that the real graph wires is proven by
  * `main.integration.test.ts`, which compiles the whole application.
+ *
+ * The listing renderer is the exception, provided real: it is pure string
+ * formatting with no I/O, and mocking it would leave every assertion below
+ * checking a stub rather than the output a caller sees.
  */
 describe(InstancesCommand, () => {
   let command: InstancesCommand;
-  let inventoryService: DeepMocked<InventoryService>;
+  let instanceDiscoveryService: DeepMocked<InstanceDiscoveryService>;
   let commandLogger: DeepMocked<LoggerService>;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
         InstancesCommand,
+        InventoryService,
+        {
+          provide: ConfigurationService,
+          useValue: createMock<ConfigurationService>(),
+        },
         { provide: InputService, useValue: createMock<InputService>() },
-        { provide: InventoryService, useValue: createMock<InventoryService>() },
+        {
+          provide: InstanceDiscoveryService,
+          useValue: createMock<InstanceDiscoveryService>(),
+        },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
 
     command = await module.resolve(InstancesCommand);
-    inventoryService = await module.resolve(InventoryService);
+    instanceDiscoveryService = await module.resolve(InstanceDiscoveryService);
     commandLogger = await module.resolve(LoggerService);
   });
 
@@ -80,10 +98,10 @@ describe(InstancesCommand, () => {
     vi.spyOn(console, "info").mockImplementation((...data: unknown[]) => {
       output.push(data.map(String).join(" "));
     });
-    inventoryService.resolveInstances.mockResolvedValue([GEARS, COGS]);
-    inventoryService.formatPercentage.mockImplementation(
-      (ratio: number) => `${String(Math.round(ratio * 100))}%`,
-    );
+    instanceDiscoveryService.resolveInventoriedInstances.mockReturnValue([
+      GEARS,
+      COGS,
+    ]);
   });
 
   it("is defined", () => {
@@ -96,8 +114,16 @@ describe(InstancesCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         InstancesCommand,
+        InventoryService,
+        {
+          provide: ConfigurationService,
+          useValue: createMock<ConfigurationService>(),
+        },
         { provide: InputService, useValue: createMock<InputService>() },
-        { provide: InventoryService, useValue: createMock<InventoryService>() },
+        {
+          provide: InstanceDiscoveryService,
+          useValue: createMock<InstanceDiscoveryService>(),
+        },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
@@ -107,12 +133,14 @@ describe(InstancesCommand, () => {
   });
 
   describe("run", () => {
-    it("lists every instance found", async () => {
+    // A path is only readable next to the directory the caller is standing in.
+    it("lists every instance found, shortened against the working directory", async () => {
       await command.run([], {});
       const lines = written();
 
       expect(lines).toContain("packages/widgets/src/modules/gears");
       expect(lines).toContain("packages/widgets/src/modules/cogs");
+      expect(lines).not.toContain(GEARS.path);
     });
 
     it("names the templates that explain each instance, and how well", async () => {
@@ -127,23 +155,39 @@ describe(InstancesCommand, () => {
     it("passes the template filter through", async () => {
       await command.run([], { templates: ["nestjs-service-module"] });
 
-      expect(inventoryService.resolveInstances).toHaveBeenCalledWith(
+      expect(
+        instanceDiscoveryService.resolveInventoriedInstances,
+      ).toHaveBeenCalledWith(
         expect.objectContaining({ templateNames: ["nestjs-service-module"] }),
       );
     });
 
     it("reads the configuration path the caller named", async () => {
-      await command.run([], { config: "custom/conformetry.config.ts" });
+      const configurationService = createMock<ConfigurationService>();
+      const module = await Test.createTestingModule({
+        providers: [
+          InstancesCommand,
+          InventoryService,
+          { provide: ConfigurationService, useValue: configurationService },
+          { provide: InputService, useValue: createMock<InputService>() },
+          {
+            provide: InstanceDiscoveryService,
+            useValue: createMock<InstanceDiscoveryService>(),
+          },
+          { provide: LoggerService, useValue: createMock<LoggerService>() },
+        ],
+      }).compile();
+      const scoped = await module.resolve(InstancesCommand);
 
-      expect(inventoryService.resolveInstances).toHaveBeenCalledWith(
-        expect.objectContaining({
-          configurationPath: "custom/conformetry.config.ts",
-        }),
-      );
+      await scoped.run([], { config: "custom/conformetry.config.ts" });
+
+      expect(
+        configurationService.loadConformetryConfiguration,
+      ).toHaveBeenCalledWith("custom/conformetry.config.ts");
     });
 
     it("says so when the configured globs find nothing", async () => {
-      inventoryService.resolveInstances.mockResolvedValue([]);
+      instanceDiscoveryService.resolveInventoriedInstances.mockReturnValue([]);
 
       await command.run([], {});
 
@@ -151,7 +195,7 @@ describe(InstancesCommand, () => {
     });
 
     it("distinguishes an unmatched filter from an empty workspace", async () => {
-      inventoryService.resolveInstances.mockResolvedValue([]);
+      instanceDiscoveryService.resolveInventoriedInstances.mockReturnValue([]);
 
       await command.run([], { templates: ["react-component"] });
 
@@ -178,15 +222,19 @@ describe(InstancesCommand, () => {
 
   describe("machine-readable output", () => {
     // Each path is usable as the templates command's --instances argument, so
-    // the two commands compose without reformatting.
+    // the two commands compose without reformatting — which means the parseable
+    // listing is shortened too, not only the readable one.
     it("writes parseable output carrying every instance", async () => {
       await command.run([], { json: true });
 
-      expect(JSON.parse(written())).toStrictEqual([GEARS, COGS]);
+      expect(JSON.parse(written())).toStrictEqual([
+        { ...GEARS, path: "packages/widgets/src/modules/gears" },
+        { ...COGS, path: "packages/widgets/src/modules/cogs" },
+      ]);
     });
 
     it("writes an empty collection when nothing is found", async () => {
-      inventoryService.resolveInstances.mockResolvedValue([]);
+      instanceDiscoveryService.resolveInventoriedInstances.mockReturnValue([]);
 
       await command.run([], { json: true });
 

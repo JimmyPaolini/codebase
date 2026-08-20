@@ -3,7 +3,8 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import {
-  TemplateDiscoveryModule,
+  InstanceDiscoveryModule,
+  InstanceDiscoveryService,
   TemplateDiscoveryService,
 } from "@conformetry/configuration";
 import { ErrorsModule } from "@conformetry/core";
@@ -58,13 +59,14 @@ async function createTemplatePath(): Promise<string> {
 }
 
 describe(FilesService, () => {
+  let instanceDiscoveryService: InstanceDiscoveryService;
   let templateDiscoveryService: TemplateDiscoveryService;
   let service: FilesService;
   let template: TemplateDefinition;
 
   /** Matches an instance path against the single `widget` template. */
   function matchInstance(instancePath: string): MatchedInstance[] {
-    const { matched } = templateDiscoveryService.matchInstances({
+    const { matched } = instanceDiscoveryService.matchInstances({
       instances: [{ nameStem: "my-widget", path: instancePath }],
       templates: [template],
     });
@@ -74,11 +76,12 @@ describe(FilesService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [TemplateDiscoveryModule, ErrorsModule],
+      imports: [InstanceDiscoveryModule, ErrorsModule],
       providers: [FilesService],
     }).compile();
 
     service = await module.resolve(FilesService);
+    instanceDiscoveryService = await module.resolve(InstanceDiscoveryService);
     templateDiscoveryService = await module.resolve(TemplateDiscoveryService);
     template = templateDiscoveryService.collectTemplate({
       name: "widget",
@@ -158,7 +161,7 @@ describe(FilesService, () => {
       "utf8",
     );
 
-    const { matched } = templateDiscoveryService.matchInstances({
+    const { matched } = instanceDiscoveryService.matchInstances({
       instances: [{ nameStem: "my-widget", path: instancePath }],
       templates: [nestedTemplate],
     });

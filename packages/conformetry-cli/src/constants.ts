@@ -8,5 +8,13 @@ import { z } from "zod";
  */
 export const DEFAULT_CONFIGURATION_PATH = "configuration/conformetry.config.ts";
 
+/**
+ * Indent width for machine-readable output.
+ *
+ * Shared by every command with a `--json` mode, so the two listings are
+ * parseable the same way.
+ */
+export const JSON_INDENT = 2;
+
 // 🌱 Add environment schema fields here
 export const environmentSchema = z.object({});

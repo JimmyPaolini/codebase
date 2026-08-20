@@ -1,9 +1,12 @@
-import { InputModule } from "@conformetry/configuration";
+import {
+  ConfigurationModule,
+  InputModule,
+  InstanceDiscoveryModule,
+} from "@conformetry/configuration";
+import { InventoryModule } from "@conformetry/core";
 import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";
-
-import { InventoryModule } from "../inventory/inventory.module";
 
 import { TemplatesCommand } from "./templates.command";
 
@@ -13,7 +16,13 @@ import { TemplatesCommand } from "./templates.command";
 @Module({
   controllers: [],
   exports: [TemplatesCommand],
-  imports: [InputModule, InventoryModule, LoggerModule],
+  imports: [
+    ConfigurationModule,
+    InputModule,
+    InstanceDiscoveryModule,
+    InventoryModule,
+    LoggerModule,
+  ],
   providers: [TemplatesCommand],
 })
 export class TemplatesModule {}

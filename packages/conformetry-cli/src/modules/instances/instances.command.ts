@@ -1,25 +1,21 @@
-import { InputService } from "@conformetry/configuration";
+import {
+  ConfigurationService,
+  InputService,
+  InstanceDiscoveryService,
+} from "@conformetry/configuration";
+import { InventoryService } from "@conformetry/core";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { DEFAULT_CONFIGURATION_PATH } from "../../constants.js";
-import {
-  DETAIL_INDENT,
-  ENTRY_INDENT,
-  JSON_INDENT,
-  PAIRING_INDENT,
-} from "../inventory/inventory.constants.js";
-import { InventoryService } from "../inventory/inventory.service";
+import { DEFAULT_CONFIGURATION_PATH, JSON_INDENT } from "../../constants.js";
 
 import {
   NO_INSTANCES_MESSAGE,
   NO_MATCHES_MESSAGE,
-  TEMPLATES_HEADING,
 } from "./instances.constants.js";
 
-import type { InventoriedInstance } from "../inventory/inventory.types.js";
 import type { InstancesCommandOptions } from "./instances.types.js";
 
 /**
@@ -43,7 +39,9 @@ export class InstancesCommand extends CommandRunner {
   // 🏗 Dependency Injection
 
   constructor(
+    private readonly configurationService: ConfigurationService,
     private readonly inputService: InputService,
+    private readonly instanceDiscoveryService: InstanceDiscoveryService,
     private readonly inventoryService: InventoryService,
     private readonly logger: LoggerService,
   ) {
@@ -56,25 +54,6 @@ export class InstancesCommand extends CommandRunner {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
-
-  /** Renders one instance as readable lines. */
-  private describeInstance(instance: InventoriedInstance): string[] {
-    const lines = [
-      `${ENTRY_INDENT}${instance.path}`,
-      `${DETAIL_INDENT}${TEMPLATES_HEADING}`,
-    ];
-
-    for (const template of instance.templates) {
-      lines.push(
-        `${PAIRING_INDENT}${template.name} ` +
-          `${String(template.matchedFileCount)}/${String(template.templateFileCount)} files ${this.inventoryService.formatPercentage(
-            template.matchRatio,
-          )}`,
-      );
-    }
-
-    return lines;
-  }
 
   // 🌎 Public Methods
 
@@ -111,12 +90,20 @@ export class InstancesCommand extends CommandRunner {
     _passedParameters: string[],
     options: InstancesCommandOptions,
   ): Promise<void> {
-    const instances = await this.inventoryService.resolveInstances({
-      configurationPath: options.config ?? DEFAULT_CONFIGURATION_PATH,
-      ...(options.templates === undefined
-        ? {}
-        : { templateNames: options.templates }),
-      workingDirectory: process.cwd(),
+    const workingDirectory = process.cwd();
+    const configuration =
+      await this.configurationService.loadConformetryConfiguration(
+        options.config ?? DEFAULT_CONFIGURATION_PATH,
+      );
+    const instances = this.inventoryService.shortenInstancePaths({
+      instances: this.instanceDiscoveryService.resolveInventoriedInstances({
+        configuration,
+        ...(options.templates === undefined
+          ? {}
+          : { templateNames: options.templates }),
+        workingDirectory,
+      }),
+      workingDirectory,
     });
 
     if (options.json === true) {
@@ -133,8 +120,6 @@ export class InstancesCommand extends CommandRunner {
       return;
     }
 
-    for (const instance of instances) {
-      console.info(this.describeInstance(instance).join("\n"));
-    }
+    console.info(this.inventoryService.describeInstances(instances).join("\n"));
   }
 }

@@ -60,7 +60,6 @@ flowchart LR
   subgraph group0["conformetry-cli"]
     GenerateModule
     InstancesModule
-    InventoryModule
     MainModule
     TemplatesModule
     ValidateModule
@@ -68,10 +67,12 @@ flowchart LR
   subgraph group1["conformetry-configuration"]
     ConfigurationModule
     InputModule
+    InstanceDiscoveryModule
     TemplateDiscoveryModule
   end
   subgraph group2["conformetry-core"]
     ErrorsModule
+    InventoryModule
     LanguageModule
     ReportingModule
     ScoringModule
@@ -92,15 +93,17 @@ flowchart LR
   ConfigModule([ConfigModule])
   DiscoveryModule
   FilesModule --> ErrorsModule
-  FilesModule --> TemplateDiscoveryModule
+  FilesModule --> InstanceDiscoveryModule
   GenerateModule --> ConfigurationModule
   GenerateModule --> GenerationModule
   GenerateModule --> InputModule
   GenerationModule --> RenderingModule
+  InstanceDiscoveryModule --> RenderingModule
+  InstanceDiscoveryModule --> TemplateDiscoveryModule
+  InstancesModule --> ConfigurationModule
   InstancesModule --> InputModule
+  InstancesModule --> InstanceDiscoveryModule
   InstancesModule --> InventoryModule
-  InventoryModule --> ConfigurationModule
-  InventoryModule --> TemplateDiscoveryModule
   MainModule --> DiscoveryModule
   MainModule --> GenerateModule
   MainModule --> InstancesModule
@@ -108,18 +111,21 @@ flowchart LR
   MainModule --> ValidateModule
   ReportingModule --> ScoringModule
   TemplateDiscoveryModule --> RenderingModule
+  TemplatesModule --> ConfigurationModule
   TemplatesModule --> InputModule
+  TemplatesModule --> InstanceDiscoveryModule
   TemplatesModule --> InventoryModule
   ValidateModule --> ConfigurationModule
   ValidateModule --> InputModule
+  ValidateModule --> InstanceDiscoveryModule
   ValidateModule --> ReportingModule
   ValidateModule --> TemplateDiscoveryModule
   ValidateModule --> ValidationModule
   ValidationModule --> FilesModule
+  ValidationModule --> InstanceDiscoveryModule
   ValidationModule --> LanguageModule
   ValidationModule --> ReportingModule
   ValidationModule --> ScoringModule
-  ValidationModule --> TemplateDiscoveryModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._

@@ -1,27 +1,21 @@
-import { InputService } from "@conformetry/configuration";
+import {
+  ConfigurationService,
+  InputService,
+  InstanceDiscoveryService,
+} from "@conformetry/configuration";
+import { InventoryService } from "@conformetry/core";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { DEFAULT_CONFIGURATION_PATH } from "../../constants.js";
-import {
-  ALIAS_SEPARATOR,
-  DETAIL_INDENT,
-  ENTRY_INDENT,
-  JSON_INDENT,
-  PAIRING_INDENT,
-} from "../inventory/inventory.constants.js";
-import { InventoryService } from "../inventory/inventory.service";
+import { DEFAULT_CONFIGURATION_PATH, JSON_INDENT } from "../../constants.js";
 
 import {
-  INSTANCES_HEADING,
   NO_MATCHES_MESSAGE,
   NO_TEMPLATES_MESSAGE,
-  TEMPLATE_LABEL,
 } from "./templates.constants.js";
 
-import type { InventoriedTemplate } from "../inventory/inventory.types.js";
 import type { TemplatesCommandOptions } from "./templates.types.js";
 
 /**
@@ -46,7 +40,9 @@ export class TemplatesCommand extends CommandRunner {
   // 🏗 Dependency Injection
 
   constructor(
+    private readonly configurationService: ConfigurationService,
     private readonly inputService: InputService,
+    private readonly instanceDiscoveryService: InstanceDiscoveryService,
     private readonly inventoryService: InventoryService,
     private readonly logger: LoggerService,
   ) {
@@ -59,44 +55,6 @@ export class TemplatesCommand extends CommandRunner {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
-
-  /**
-   * Renders one template as readable lines.
-   *
-   * The instances are listed only when the caller narrowed by path. A bare
-   * listing is a registry — naming every instance of every template there
-   * would bury the ten names somebody actually asked for.
-   */
-  private describeTemplate(args: {
-    showInstances: boolean;
-    template: InventoriedTemplate;
-  }): string[] {
-    const { template } = args;
-    const lines = [
-      template.aliases.length === 0
-        ? `${ENTRY_INDENT}${template.name}`
-        : `${ENTRY_INDENT}${template.name} (${template.aliases.join(ALIAS_SEPARATOR)})`,
-    ];
-
-    if (template.description !== "") {
-      lines.push(`${DETAIL_INDENT}${template.description}`);
-    }
-    lines.push(`${DETAIL_INDENT}${TEMPLATE_LABEL}${template.templatePath}`);
-
-    if (args.showInstances && template.instances.length > 0) {
-      lines.push(`${DETAIL_INDENT}${INSTANCES_HEADING}`);
-      for (const instance of template.instances) {
-        lines.push(
-          `${PAIRING_INDENT}${instance.name} ` +
-            `${String(instance.matchedFileCount)}/${String(instance.templateFileCount)} files ${this.inventoryService.formatPercentage(
-              instance.matchRatio,
-            )}`,
-        );
-      }
-    }
-
-    return lines;
-  }
 
   // 🌎 Public Methods
 
@@ -133,12 +91,20 @@ export class TemplatesCommand extends CommandRunner {
     _passedParameters: string[],
     options: TemplatesCommandOptions,
   ): Promise<void> {
-    const templates = await this.inventoryService.resolveTemplates({
-      configurationPath: options.config ?? DEFAULT_CONFIGURATION_PATH,
-      ...(options.instances === undefined
-        ? {}
-        : { instancePatterns: options.instances }),
-      workingDirectory: process.cwd(),
+    const workingDirectory = process.cwd();
+    const configuration =
+      await this.configurationService.loadConformetryConfiguration(
+        options.config ?? DEFAULT_CONFIGURATION_PATH,
+      );
+    const templates = this.inventoryService.shortenTemplatePairings({
+      templates: this.instanceDiscoveryService.resolveInventoriedTemplates({
+        configuration,
+        ...(options.instances === undefined
+          ? {}
+          : { instancePatterns: options.instances }),
+        workingDirectory,
+      }),
+      workingDirectory,
     });
 
     if (options.json === true) {
@@ -155,13 +121,13 @@ export class TemplatesCommand extends CommandRunner {
       return;
     }
 
-    for (const template of templates) {
-      console.info(
-        this.describeTemplate({
+    console.info(
+      this.inventoryService
+        .describeTemplates({
           showInstances: options.instances !== undefined,
-          template,
-        }).join("\n"),
-      );
-    }
+          templates,
+        })
+        .join("\n"),
+    );
   }
 }

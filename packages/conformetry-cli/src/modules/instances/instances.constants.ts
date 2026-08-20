@@ -7,6 +7,3 @@ export const NO_INSTANCES_MESSAGE =
 /** Reported when a template filter matches no instance. */
 export const NO_MATCHES_MESSAGE =
   "No instance is explained by those templates.";
-
-/** Heading above the templates that explain an instance. */
-export const TEMPLATES_HEADING = "Templates:";

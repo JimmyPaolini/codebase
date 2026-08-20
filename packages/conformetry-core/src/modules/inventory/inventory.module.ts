@@ -1,18 +1,14 @@
-import {
-  ConfigurationModule,
-  TemplateDiscoveryModule,
-} from "@conformetry/configuration";
 import { Module } from "@nestjs/common";
 
 import { InventoryService } from "./inventory.service";
 
 /**
- * Provides the shared template and instance inventory.
+ * Provides the template and instance inventory renderer.
  */
 @Module({
   controllers: [],
   exports: [InventoryService],
-  imports: [ConfigurationModule, TemplateDiscoveryModule],
+  imports: [],
   providers: [InventoryService],
 })
 export class InventoryModule {}

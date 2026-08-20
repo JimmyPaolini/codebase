@@ -1,6 +1,7 @@
 import {
   ConfigurationService,
   InputService,
+  InstanceDiscoveryService,
   TemplateDiscoveryService,
 } from "@conformetry/configuration";
 import { ReportingService } from "@conformetry/core";
@@ -37,6 +38,7 @@ export class ValidateCommand extends CommandRunner {
 
   constructor(
     private readonly configurationService: ConfigurationService,
+    private readonly instanceDiscoveryService: InstanceDiscoveryService,
     private readonly templateDiscoveryService: TemplateDiscoveryService,
     private readonly inputService: InputService,
     private readonly reportingService: ReportingService,
@@ -89,7 +91,7 @@ export class ValidateCommand extends CommandRunner {
     workingDirectory: string;
   }): Instance[] {
     return args.groups.flatMap((group) => {
-      return this.templateDiscoveryService.findInstances({
+      return this.instanceDiscoveryService.findInstances({
         // A group may name only labels, which this host has nothing to match
         // them against — it locates instances by glob alone.
         patterns: group.patterns ?? [],

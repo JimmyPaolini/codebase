@@ -59,11 +59,14 @@ flowchart LR
   subgraph group0["conformetry-configuration"]
     ConfigurationModule
     InputModule
+    InstanceDiscoveryModule
     TemplateDiscoveryModule
   end
   subgraph group1["conformetry-generation"]
     RenderingModule
   end
+  InstanceDiscoveryModule --> RenderingModule
+  InstanceDiscoveryModule --> TemplateDiscoveryModule
   TemplateDiscoveryModule --> RenderingModule
 ```
 

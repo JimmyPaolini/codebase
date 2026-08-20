@@ -26,7 +26,7 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
-  "sizeLimit": "12 KB",
+  "sizeLimit": "15 KB",
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,

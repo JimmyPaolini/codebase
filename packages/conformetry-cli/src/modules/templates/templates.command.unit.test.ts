@@ -1,16 +1,27 @@
-import { InputService } from "@conformetry/configuration";
+import path from "node:path";
+
+import {
+  ConfigurationService,
+  InputService,
+  InstanceDiscoveryService,
+} from "@conformetry/configuration";
+import { InventoryService } from "@conformetry/core";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { InventoryService } from "../inventory/inventory.service";
-
 import { TemplatesCommand } from "./templates.command";
 
-import type { InventoriedTemplate } from "../inventory/inventory.types.js";
+import type { InventoriedTemplate } from "@conformetry/core";
 import type { DeepMocked } from "@golevelup/ts-vitest";
+
+/** Discovery reports absolute paths, so the fixtures do too. */
+const GEARS_PATH = path.join(
+  process.cwd(),
+  "packages/widgets/src/modules/gears",
+);
 
 const COMMAND_MODULE: InventoriedTemplate = {
   aliases: ["ncm"],
@@ -19,7 +30,7 @@ const COMMAND_MODULE: InventoriedTemplate = {
     {
       matchedFileCount: 5,
       matchRatio: 1,
-      name: "packages/widgets/src/modules/gears",
+      name: GEARS_PATH,
       templateFileCount: 5,
     },
   ],
@@ -34,13 +45,25 @@ const SERVICE_MODULE: InventoriedTemplate = {
     {
       matchedFileCount: 3,
       matchRatio: 0.6,
-      name: "packages/widgets/src/modules/gears",
+      name: GEARS_PATH,
       templateFileCount: 5,
     },
   ],
   name: "nestjs-service-module",
   templatePath: "configuration/templates/nestjs-service-module",
 };
+
+/** The same template with its instance paths shortened, as the command emits. */
+function withShortenedInstances(
+  template: InventoriedTemplate,
+): InventoriedTemplate {
+  return {
+    ...template,
+    instances: template.instances.map((instance) => {
+      return { ...instance, name: "packages/widgets/src/modules/gears" };
+    }),
+  };
+}
 
 /** Standard output collected during one test. */
 const output: string[] = [];
@@ -51,24 +74,36 @@ const written = (): string => output.join("\n");
 /**
  * Dependencies are mocked here; that the real graph wires is proven by
  * `main.integration.test.ts`, which compiles the whole application.
+ *
+ * The listing renderer is the exception, provided real: it is pure string
+ * formatting with no I/O, and mocking it would leave every assertion below
+ * checking a stub rather than the output a caller sees.
  */
 describe(TemplatesCommand, () => {
   let command: TemplatesCommand;
-  let inventoryService: DeepMocked<InventoryService>;
+  let instanceDiscoveryService: DeepMocked<InstanceDiscoveryService>;
   let commandLogger: DeepMocked<LoggerService>;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
         TemplatesCommand,
+        InventoryService,
+        {
+          provide: ConfigurationService,
+          useValue: createMock<ConfigurationService>(),
+        },
         { provide: InputService, useValue: createMock<InputService>() },
-        { provide: InventoryService, useValue: createMock<InventoryService>() },
+        {
+          provide: InstanceDiscoveryService,
+          useValue: createMock<InstanceDiscoveryService>(),
+        },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
 
     command = await module.resolve(TemplatesCommand);
-    inventoryService = await module.resolve(InventoryService);
+    instanceDiscoveryService = await module.resolve(InstanceDiscoveryService);
     commandLogger = await module.resolve(LoggerService);
   });
 
@@ -80,13 +115,10 @@ describe(TemplatesCommand, () => {
     vi.spyOn(console, "info").mockImplementation((...data: unknown[]) => {
       output.push(data.map(String).join(" "));
     });
-    inventoryService.resolveTemplates.mockResolvedValue([
+    instanceDiscoveryService.resolveInventoriedTemplates.mockReturnValue([
       COMMAND_MODULE,
       SERVICE_MODULE,
     ]);
-    inventoryService.formatPercentage.mockImplementation(
-      (ratio: number) => `${String(Math.round(ratio * 100))}%`,
-    );
   });
 
   it("is defined", () => {
@@ -99,8 +131,16 @@ describe(TemplatesCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         TemplatesCommand,
+        InventoryService,
+        {
+          provide: ConfigurationService,
+          useValue: createMock<ConfigurationService>(),
+        },
         { provide: InputService, useValue: createMock<InputService>() },
-        { provide: InventoryService, useValue: createMock<InventoryService>() },
+        {
+          provide: InstanceDiscoveryService,
+          useValue: createMock<InstanceDiscoveryService>(),
+        },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
@@ -134,9 +174,7 @@ describe(TemplatesCommand, () => {
     });
 
     it("reports which templates explain a path, and how well", async () => {
-      await command.run([], {
-        instances: ["packages/widgets/src/modules/gears"],
-      });
+      await command.run([], { instances: [GEARS_PATH] });
       const lines = written();
 
       expect(lines).toContain("Instances:");
@@ -144,12 +182,18 @@ describe(TemplatesCommand, () => {
       expect(lines).toContain("3/5 files 60%");
     });
 
+    // A path is only readable next to the directory the caller is standing in.
+    it("shortens each instance path against the working directory", async () => {
+      await command.run([], { instances: [GEARS_PATH] });
+
+      expect(written()).toContain("packages/widgets/src/modules/gears");
+      expect(written()).not.toContain(GEARS_PATH);
+    });
+
     // Nothing records where an instance came from, so a path legitimately
     // belongs to more than one template and every one is reported.
     it("reports every template a path belongs to, not just the best fit", async () => {
-      await command.run([], {
-        instances: ["packages/widgets/src/modules/gears"],
-      });
+      await command.run([], { instances: [GEARS_PATH] });
       const lines = written();
 
       expect(lines).toContain("nestjs-command-module");
@@ -159,7 +203,9 @@ describe(TemplatesCommand, () => {
     it("passes the path filter through as instance patterns", async () => {
       await command.run([], { instances: ["packages/*", "tools/*"] });
 
-      expect(inventoryService.resolveTemplates).toHaveBeenCalledWith(
+      expect(
+        instanceDiscoveryService.resolveInventoriedTemplates,
+      ).toHaveBeenCalledWith(
         expect.objectContaining({
           instancePatterns: ["packages/*", "tools/*"],
         }),
@@ -167,17 +213,31 @@ describe(TemplatesCommand, () => {
     });
 
     it("reads the configuration path the caller named", async () => {
-      await command.run([], { config: "custom/conformetry.config.ts" });
+      const configurationService = createMock<ConfigurationService>();
+      const module = await Test.createTestingModule({
+        providers: [
+          TemplatesCommand,
+          InventoryService,
+          { provide: ConfigurationService, useValue: configurationService },
+          { provide: InputService, useValue: createMock<InputService>() },
+          {
+            provide: InstanceDiscoveryService,
+            useValue: createMock<InstanceDiscoveryService>(),
+          },
+          { provide: LoggerService, useValue: createMock<LoggerService>() },
+        ],
+      }).compile();
+      const scoped = await module.resolve(TemplatesCommand);
 
-      expect(inventoryService.resolveTemplates).toHaveBeenCalledWith(
-        expect.objectContaining({
-          configurationPath: "custom/conformetry.config.ts",
-        }),
-      );
+      await scoped.run([], { config: "custom/conformetry.config.ts" });
+
+      expect(
+        configurationService.loadConformetryConfiguration,
+      ).toHaveBeenCalledWith("custom/conformetry.config.ts");
     });
 
     it("says so when the configuration declares no templates", async () => {
-      inventoryService.resolveTemplates.mockResolvedValue([]);
+      instanceDiscoveryService.resolveInventoriedTemplates.mockReturnValue([]);
 
       await command.run([], {});
 
@@ -185,7 +245,7 @@ describe(TemplatesCommand, () => {
     });
 
     it("distinguishes an unexplained path from an empty configuration", async () => {
-      inventoryService.resolveTemplates.mockResolvedValue([]);
+      instanceDiscoveryService.resolveInventoriedTemplates.mockReturnValue([]);
 
       await command.run([], { instances: ["packages/widgets/nowhere"] });
 
@@ -209,17 +269,19 @@ describe(TemplatesCommand, () => {
   });
 
   describe("machine-readable output", () => {
+    // Every path the readable listing shortens is shortened here too, so the
+    // two listings name an instance the same way whichever format is read.
     it("writes parseable output carrying every template", async () => {
       await command.run([], { json: true });
 
       expect(JSON.parse(written())).toStrictEqual([
-        COMMAND_MODULE,
-        SERVICE_MODULE,
+        withShortenedInstances(COMMAND_MODULE),
+        withShortenedInstances(SERVICE_MODULE),
       ]);
     });
 
     it("writes an empty collection when nothing is declared", async () => {
-      inventoryService.resolveTemplates.mockResolvedValue([]);
+      instanceDiscoveryService.resolveInventoriedTemplates.mockReturnValue([]);
 
       await command.run([], { json: true });
 
