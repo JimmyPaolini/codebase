@@ -2,6 +2,7 @@
 export {
   CODOMETER_ANALYSES,
   CODOMETER_COMPRESSIONS,
+  CODOMETER_SEVERITIES,
   CODOMETER_STATISTIC_GROUPS,
   CODOMETER_SYMBOL_KINDS,
   CODOMETER_SYMBOL_MODIFIERS,
@@ -11,6 +12,7 @@ export {
   DEFAULT_CUSTOM_STATISTIC_GROUP,
   DEFAULT_EXCLUDE_GLOBS,
   DEFAULT_JSON_INDENTATION,
+  DEFAULT_LIMIT_SEVERITY,
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_PYTHON_COMMAND,
@@ -27,9 +29,11 @@ export type {
   CodometerConfiguration,
   CodometerCustomStatistic,
   CodometerJsonOutputConfiguration,
+  CodometerLimit,
   CodometerMarkdownOutputConfiguration,
   CodometerOutputConfiguration,
   CodometerPythonConfiguration,
+  CodometerSeverity,
   CodometerSymbolKind,
   CodometerSymbolMatcher,
   CodometerSymbolModifier,
@@ -41,6 +45,7 @@ export type {
   ResolvedCodometerConfiguration,
   ResolvedCodometerCustomStatistic,
   ResolvedCodometerJsonOutputConfiguration,
+  ResolvedCodometerLimit,
   ResolvedCodometerMarkdownOutputConfiguration,
   ResolvedCodometerOutputConfiguration,
   ResolvedCodometerPythonConfiguration,
@@ -48,6 +53,7 @@ export type {
   WriteMarkdownArguments,
   WriteMarkdownOutput,
 } from "./modules/configuration/configuration.types";
+export { InvalidLimitValueError } from "./modules/configuration/limit-value.errors";
 export type {
   CodeStatisticsResult,
   CodometerStatisticGroup,

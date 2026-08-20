@@ -5,6 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { CustomStatisticsService } from "../custom-statistics/custom-statistics.service";
 import { FileDiscoveryService } from "../file-discovery/file-discovery.service";
 import { LanguagesService } from "../languages/languages.service";
+import { LimitsService } from "../limits/limits.service";
 import { SizeAnalysisService } from "../size-analysis/size-analysis.service";
 import { TargetsService } from "../targets/targets.service";
 
@@ -18,8 +19,10 @@ import type {
 } from "@codometer/configuration";
 
 const configuration: ResolvedCodometerConfiguration = {
+  defaultTarget: undefined,
   exclude: ["**/node_modules/**"],
   excludeFrom: [],
+  limits: [],
   output: { json: undefined, markdown: undefined },
   python: { command: "uv run python" },
   statistics: [
@@ -84,6 +87,7 @@ describe(CodometerService, () => {
   let customStatisticsService: CustomStatisticsService;
   let fileDiscoveryService: FileDiscoveryService;
   let languagesService: LanguagesService;
+  let limitsService: LimitsService;
   let sizeAnalysisService: SizeAnalysisService;
   let targetsService: TargetsService;
 
@@ -95,6 +99,7 @@ describe(CodometerService, () => {
       customStatisticsService,
       targetsService,
       sizeAnalysisService,
+      limitsService,
     );
   }
 
@@ -111,6 +116,7 @@ describe(CodometerService, () => {
           useValue: createMock<FileDiscoveryService>(),
         },
         { provide: LanguagesService, useValue: createMock<LanguagesService>() },
+        { provide: LimitsService, useValue: createMock<LimitsService>() },
         {
           provide: SizeAnalysisService,
           useValue: createMock<SizeAnalysisService>(),
@@ -126,6 +132,7 @@ describe(CodometerService, () => {
     customStatisticsService = createMock<CustomStatisticsService>();
     fileDiscoveryService = createMock<FileDiscoveryService>();
     languagesService = createMock<LanguagesService>();
+    limitsService = createMock<LimitsService>();
     sizeAnalysisService = createMock<SizeAnalysisService>();
     targetsService = createMock<TargetsService>();
     vi.mocked(targetsService.matchFiles).mockReturnValue([

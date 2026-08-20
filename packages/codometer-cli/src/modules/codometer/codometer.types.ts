@@ -1,6 +1,7 @@
 // 🏷️ Types
 
 import type { FileDiscoveryResult } from "../file-discovery/file-discovery.types";
+import type { EvaluatedLimit } from "../limits/limits.types";
 import type { SizeResult } from "../size-analysis/size-analysis.types";
 import type {
   CodeStatisticsResult,
@@ -50,6 +51,13 @@ export interface MeasureArguments {
  * out separately so nothing downstream has to know which target it came from.
  */
 export interface MeasurementResult {
+  /**
+   * What every declared limit found, in the order they were declared.
+   *
+   * Empty when nothing declared one, which is the ordinary case: a metric with
+   * no limit is measured and reported like every other, and gated by nothing.
+   */
+  limits: EvaluatedLimit[];
   statistics: CodeStatisticsResult;
   targets: TargetMeasurement[];
 }

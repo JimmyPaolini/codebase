@@ -18,6 +18,7 @@ import {
 } from "./configuration.constants";
 import { ConfigurationFileNotFoundError } from "./configuration.errors";
 import { ConfigurationService } from "./configuration.service";
+import { InvalidLimitValueError } from "./limit-value.errors";
 
 /** Writes a JSON configuration holding whatever the caller passes. */
 async function writeConfiguration(configuration: unknown): Promise<string> {
@@ -489,6 +490,159 @@ describe(ConfigurationService, () => {
         name: "compiled",
       },
     ]);
+  });
+
+  it("defaults the limits and the default target to none", () => {
+    const configuration = service.resolveConfiguration({});
+
+    expect(configuration.limits).toStrictEqual([]);
+    expect(configuration.defaultTarget).toBeUndefined();
+  });
+
+  it("reads the default target a configuration file names", async () => {
+    const configurationPath = await writeConfiguration({
+      defaultTarget: "codebase",
+      limits: [{ metric: "typescript.interfaces", value: 500 }],
+    });
+
+    const configuration = await service.loadConfiguration({
+      configurationPath,
+    });
+
+    expect(configuration.defaultTarget).toBe("codebase");
+  });
+
+  it("rejects a declared target called what the codebase is called", async () => {
+    const configurationPath = await writeConfiguration({
+      targets: [
+        { analyses: ["size"], include: ["dist/**/*.js"], name: "codebase" },
+      ],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(ZodError);
+  });
+
+  it("defaults a limit's severity to failing and leaves its label unset", () => {
+    const configuration = service.resolveConfiguration({
+      limits: [{ metric: "codebase.linesOfCode", value: 100_000 }],
+    });
+
+    expect(configuration.limits).toStrictEqual([
+      {
+        label: undefined,
+        metric: "codebase.linesOfCode",
+        severity: "fail",
+        value: 100_000,
+      },
+    ]);
+  });
+
+  it("keeps a limit's declared severity and label", () => {
+    const configuration = service.resolveConfiguration({
+      limits: [
+        {
+          label: "Compiled bundle",
+          metric: "compiled.size",
+          severity: "warn",
+          value: 8000,
+        },
+      ],
+    });
+
+    expect(configuration.limits).toStrictEqual([
+      {
+        label: "Compiled bundle",
+        metric: "compiled.size",
+        severity: "warn",
+        value: 8000,
+      },
+    ]);
+  });
+
+  // A warn short of a fail is how a repository watches a number approach the
+  // one that would stop a change, so one metric may carry both.
+  it("accepts two limits naming one metric", () => {
+    const configuration = service.resolveConfiguration({
+      limits: [
+        { metric: "compiled.size", severity: "warn", value: "8 KB" },
+        { metric: "compiled.size", value: "10 KB" },
+      ],
+    });
+
+    expect(configuration.limits.map((limit) => limit.value)).toStrictEqual([
+      8000, 10_000,
+    ]);
+  });
+
+  it.each([
+    ["512 b", 512],
+    ["8 KB", 8000],
+    ["8kb", 8000],
+    ["8 kB", 8000],
+    ["1 MB", 1_000_000],
+    ["2 GB", 2_000_000_000],
+    ["1 TB", 1_000_000_000_000],
+    // Rounded, because 0.1 * 1000 is 100.00000000000001 in binary floating
+    // point, and a limit nobody can state exactly is one nobody can compare.
+    ["1.5 KB", 1500],
+    ["0.1 KB", 100],
+    // A string carrying no unit at all is the plain number, which is how a
+    // limit on a count of interfaces or files is written.
+    ["200", 200],
+    ["  8 KB  ", 8000],
+  ])("reads %s as %i", (value, expected) => {
+    const configuration = service.resolveConfiguration({
+      limits: [{ metric: "compiled.size", value }],
+    });
+
+    expect(configuration.limits[0]?.value).toBe(expected);
+  });
+
+  // Never coerced to zero, which is what the tool this replaces did before
+  // failing every target holding a single byte.
+  it.each([
+    // The trailing `b` is what makes a unit a size.
+    "8 K",
+    "8 KiB",
+    "8 kilobytes",
+    "KB",
+    "",
+    "eight",
+    "-5",
+    "8 KB gzipped",
+    "1,000 KB",
+    ">8 KB",
+    Number.NaN,
+    Number.POSITIVE_INFINITY,
+    -1,
+  ])("refuses to read %s as a limit", (value) => {
+    expect(() =>
+      service.resolveConfiguration({
+        limits: [{ metric: "compiled.size", value }],
+      }),
+    ).toThrow(InvalidLimitValueError);
+  });
+
+  it("rejects a limit naming a severity nobody reports", async () => {
+    const configurationPath = await writeConfiguration({
+      limits: [{ metric: "compiled.size", severity: "shout", value: 8000 }],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(ZodError);
+  });
+
+  it("rejects a limit naming no metric", async () => {
+    const configurationPath = await writeConfiguration({
+      limits: [{ metric: "", value: 8000 }],
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(ZodError);
   });
 
   it("rejects a counter with no patterns", async () => {

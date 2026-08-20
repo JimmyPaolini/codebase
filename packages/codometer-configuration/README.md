@@ -42,6 +42,13 @@ const codometerConfiguration: CodometerConfiguration = {
   },
   // Interpreter used for Python analysis; defaults to `python3`.
   python: { command: "uv run python" },
+  // Target an unqualified limit path belongs to.
+  defaultTarget: "codebase",
+  // Ceilings the measured metrics are held to.
+  limits: [
+    { metric: "compiled.size", value: "8 KB" },
+    { metric: "typescript.interfaces", severity: "warn", value: 500 },
+  ],
   // Named sets of files measured alongside the codebase itself.
   targets: [
     {
@@ -134,6 +141,52 @@ lets one measure compiled output — a directory every `.gitignore` claims, whic
 is exactly why no ignore rule may reach it. A file a target matched but cannot
 be read fails the run rather than counting as zero bytes: a total quietly short
 by one file is worse than no total at all.
+
+## Limits
+
+A **limit** is a ceiling on one measured metric. Any metric can carry one — a
+compressed size, a line count, a counter for one of the conventions below — and
+a metric nothing limits is measured and reported exactly as before, gated by
+nothing.
+
+```ts
+defaultTarget: "codebase",
+limits: [
+  { metric: "Compiled JavaScript.size", value: "8 KB" },
+  { label: "Interfaces", metric: "typescript.interfaces", value: 500 },
+  { metric: "linesOfCode", severity: "warn", value: 100_000 },
+],
+```
+
+| Field | Required | Default | Meaning |
+| ----- | -------- | ------- | ------- |
+| `metric` | yes | — | Dotted path of the metric this limits |
+| `value` | yes | — | The ceiling, as a number or a string with a unit |
+| `severity` | no | `fail` | `fail` stops the run on a breach; `warn` reports it |
+| `label` | no | the path | What to call the limit in a report |
+
+A metric is addressed by the target's name followed by its path within that
+target — `codebase.typescript.interfaces`, `codebase.markdown.files`,
+`Compiled JavaScript.size`. Every target carries `files`, a target running size
+analysis carries `size`, and one running language analysis carries every
+counter the codebase measurement lists, with configured counters under `custom.<label>`.
+Set `defaultTarget` and a path naming no target is read as that target's.
+
+**Ambiguity is refused, never resolved.** A path that could name two metrics —
+a target called `markdown` beside the codebase's own `markdown.files` — fails
+the run naming both readings, as does a path naming none, or one naming a
+metric from an analysis the target never ran. A limit that quietly bound to the
+wrong metric would look exactly like one that works.
+
+A value written as a string carries a **decimal** unit whose trailing `b` is
+required: `"8 KB"` is 8000 bytes and `"1 MB"` is 1000000, while `"8 K"` is not
+a size and is refused rather than read as anything. A value nothing can read
+fails the run instead of being taken as zero.
+
+A target that matched **no files** fails the run if and only if a limit is
+written against it. Declaring a limit asserts the files are there, so an empty
+match is a glob that stopped matching or a build that never ran — while a
+target nobody limited simply measured zero, which is unremarkable.
 
 ## Custom Statistics
 
@@ -306,28 +359,28 @@ Call stacks traced through `codometer-configuration`, deepest first. Each frame 
 
 | Measure | Value |
 | --- | --- |
-| Callables | 29 |
-| Files | 9 |
-| Calls traced | 22 |
+| Callables | 34 |
+| Files | 10 |
+| Calls traced | 29 |
 | Call stacks | 2 |
 | Deepest stack | 2 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 2 |
+| Unfollowable calls | 3 |
 
 ### Call stacks
 
 **1. `superRefine(…)`** — depth 2 · orphan-root
 
 ```text
-🚀 superRefine(…)(…): void [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:305]
-  └─> some(…)(pattern: string): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:307]
+🚀 superRefine(…)(…): void [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:363]
+  └─> some(…)(pattern: string): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:365]
 ```
 
 **2. `refine(…)`** — depth 2 · orphan-root
 
 ```text
-🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:321]
-  └─> map(…)(…): string [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:322]
+🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:390]
+  └─> map(…)(…): string [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:391]
 ```
 
 ### Module spread

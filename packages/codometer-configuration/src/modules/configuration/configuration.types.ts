@@ -31,6 +31,17 @@ export type CodometerCompression = "brotli" | "gzip" | "none";
  * decided what their exclusions or output destinations should be.
  */
 export interface CodometerConfiguration {
+  /**
+   * Target a limit's metric path belongs to when it names none itself.
+   *
+   * A limit addresses its metric by target name followed by metric path.
+   * Naming a default lets the target that dominates a repository's limits go
+   * unwritten, leaving `typescript.interfaces` where every line would
+   * otherwise repeat the same target name. A path that could be read either
+   * way is rejected rather than resolved, so the shorthand can never bind
+   * somewhere unintended.
+   */
+  defaultTarget?: string | undefined;
   exclude?: string[] | undefined;
   /**
    * Ignore files, in gitignore syntax, whose patterns also exclude files.
@@ -41,6 +52,13 @@ export interface CodometerConfiguration {
    * mention at all: discovery reads those files itself.
    */
   excludeFrom?: string[] | undefined;
+  /**
+   * Ceilings the measured metrics are held to.
+   *
+   * A metric nothing here names is measured and reported like every other one,
+   * and gated by nothing.
+   */
+  limits?: CodometerLimit[] | undefined;
   output?: CodometerOutputConfiguration | undefined;
   python?: CodometerPythonConfiguration | undefined;
   /**
@@ -97,6 +115,46 @@ export interface CodometerJsonOutputConfiguration {
 }
 
 /**
+ * A ceiling one measured metric is held to.
+ *
+ * Limits are absolute: the metric is compared against `value` and nothing
+ * else, with no baseline and no floor. A metric that stays under its limit is
+ * reported the same way it would be without one.
+ */
+export interface CodometerLimit {
+  /** What to call the limit in a report, when the path itself reads poorly. */
+  label?: string | undefined;
+  /**
+   * The metric this limits, as a dotted path.
+   *
+   * Written as the target's name followed by the metric's path within it —
+   * `codebase.typescript.interfaces`, `codebase.markdown.files`, or
+   * `Compiled JavaScript.size`. With a `defaultTarget` configured, a path
+   * naming no target is read as that target's. A path that resolves to more
+   * than one metric, or to none, fails the run rather than binding to
+   * whichever came first.
+   */
+  metric: string;
+  /**
+   * How loudly a breach is reported. Defaults to `fail`.
+   *
+   * Defaulted to the strict one on purpose: a limit exists to gate, and one
+   * that quietly warned because nobody said otherwise would be a gate in name
+   * only.
+   */
+  severity?: CodometerSeverity | undefined;
+  /**
+   * The ceiling itself, as a number or a string carrying a unit.
+   *
+   * Units are decimal and their trailing `b` is required: `"8 KB"` is 8000 and
+   * `"1 MB"` is 1000000, while `"8 K"` is not a size and is rejected. A value
+   * nothing can read fails the run rather than being taken as zero, which
+   * would gate every metric at nothing.
+   */
+  value: number | string;
+}
+
+/**
  * Where and how the markdown report is written.
  *
  * `render` and `write` are the two halves of the built-in behavior, each
@@ -126,6 +184,15 @@ export interface CodometerOutputConfiguration {
 export interface CodometerPythonConfiguration {
   command?: string | undefined;
 }
+
+/**
+ * What a breach costs.
+ *
+ * `fail` is a gate and `warn` is a report — the difference between a limit
+ * that stops a change and one that only says the metric passed it. Both are
+ * reported identically; only the consequence differs.
+ */
+export type CodometerSeverity = "fail" | "warn";
 
 /**
  * A kind of declaration a symbol counter can ask for.
@@ -252,8 +319,11 @@ export type RenderMarkdownOutput = (args: RenderMarkdownArguments) => string;
  * to know which fields a configuration file may omit.
  */
 export interface ResolvedCodometerConfiguration {
+  /** Stays `undefined` when nothing named one, so every path must qualify. */
+  defaultTarget: string | undefined;
   exclude: string[];
   excludeFrom: string[];
+  limits: ResolvedCodometerLimit[];
   output: ResolvedCodometerOutputConfiguration;
   python: ResolvedCodometerPythonConfiguration;
   statistics: ResolvedCodometerCustomStatistic[];
@@ -274,6 +344,21 @@ export interface ResolvedCodometerCustomStatistic {
 export interface ResolvedCodometerJsonOutputConfiguration {
   indentation: number;
   path: string;
+}
+
+/**
+ * A limit with its severity filled in and its value read as a number.
+ *
+ * The unit is gone by this point: a limit written `"8 KB"` arrives here as
+ * 8000, so nothing downstream has to know that limits can be written with
+ * units at all.
+ */
+export interface ResolvedCodometerLimit {
+  /** Stays `undefined` when none was written; a report falls back to the path. */
+  label: string | undefined;
+  metric: string;
+  severity: CodometerSeverity;
+  value: number;
 }
 
 /**

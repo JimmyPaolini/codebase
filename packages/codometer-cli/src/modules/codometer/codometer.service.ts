@@ -7,6 +7,7 @@ import { Injectable } from "@nestjs/common";
 import { CustomStatisticsService } from "../custom-statistics/custom-statistics.service";
 import { FileDiscoveryService } from "../file-discovery/file-discovery.service";
 import { LanguagesService } from "../languages/languages.service";
+import { LimitsService } from "../limits/limits.service";
 import { SizeAnalysisService } from "../size-analysis/size-analysis.service";
 import { TargetsService } from "../targets/targets.service";
 
@@ -39,6 +40,7 @@ export class CodometerService {
     private readonly customStatisticsService: CustomStatisticsService,
     private readonly targetsService: TargetsService,
     private readonly sizeAnalysisService: SizeAnalysisService,
+    private readonly limitsService: LimitsService,
   ) {}
 
   // 🔐 Private Fields
@@ -237,24 +239,32 @@ export class CodometerService {
       discoveredFiles,
       workingDirectory: args.workingDirectory,
     });
+    const targets = [
+      {
+        files: discoveredFiles.files.length,
+        language: statistics,
+        name: DEFAULT_TARGET_NAME,
+        size: undefined,
+      },
+      ...args.configuration.targets.map((target) =>
+        this.measureTarget({
+          configuration: args.configuration,
+          target,
+          workingDirectory: args.workingDirectory,
+        }),
+      ),
+    ];
 
     return {
+      // Evaluated here rather than by whoever renders the report, so that a
+      // limit addressing a metric nothing measured is a failure of the
+      // measurement rather than of one output format.
+      limits: this.limitsService.evaluate({
+        configuration: args.configuration,
+        targets,
+      }),
       statistics,
-      targets: [
-        {
-          files: discoveredFiles.files.length,
-          language: statistics,
-          name: DEFAULT_TARGET_NAME,
-          size: undefined,
-        },
-        ...args.configuration.targets.map((target) =>
-          this.measureTarget({
-            configuration: args.configuration,
-            target,
-            workingDirectory: args.workingDirectory,
-          }),
-        ),
-      ],
+      targets,
     };
   }
 }

@@ -66,6 +66,7 @@ flowchart LR
     JsonModule
     JupyterModule
     LanguagesModule
+    LimitsModule
     MainModule
     MarkdownModule
     OutputJsonModule
@@ -91,6 +92,7 @@ flowchart LR
   CodometerModule --> CustomStatisticsModule
   CodometerModule --> FileDiscoveryModule
   CodometerModule --> LanguagesModule
+  CodometerModule --> LimitsModule
   CodometerModule --> OutputJsonModule
   CodometerModule --> OutputMarkdownModule
   CodometerModule --> SizeAnalysisModule

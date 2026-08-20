@@ -14,26 +14,32 @@ import {
   DEFAULT_CUSTOM_STATISTIC_GROUP,
   DEFAULT_EXCLUDE_GLOBS,
   DEFAULT_JSON_INDENTATION,
+  DEFAULT_LIMIT_SEVERITY,
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_PYTHON_COMMAND,
   DEFAULT_TARGET_COMPRESSION,
+  LIMIT_UNIT_MULTIPLIERS,
+  LIMIT_VALUE_PATTERN,
   NEGATION_PREFIX,
   REPOSITORY_ROOT_MARKERS,
   SUPPORTED_CONFIGURATION_EXTENSIONS,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
 import { ConfigurationFileNotFoundError } from "./configuration.errors";
+import { InvalidLimitValueError } from "./limit-value.errors";
 
 import type {
   CodometerConfiguration,
   CodometerCustomStatistic,
+  CodometerLimit,
   CodometerOutputConfiguration,
   CodometerTarget,
   LoadConfigurationArguments,
   ResolvedCodometerConfiguration,
   ResolvedCodometerCustomStatistic,
   ResolvedCodometerJsonOutputConfiguration,
+  ResolvedCodometerLimit,
   ResolvedCodometerMarkdownOutputConfiguration,
   ResolvedCodometerTarget,
 } from "./configuration.types";
@@ -157,6 +163,53 @@ export class ConfigurationService {
   }
 
   /**
+   * Reads a limit's value, in decimal units when it was written as a string.
+   *
+   * Everything unreadable is refused: a negative number, a unit missing its
+   * `b`, a word, an empty string. The tool this replaces coerced an unreadable
+   * limit to nothing and then failed every target holding a single byte.
+   */
+  private parseLimitValue(limit: CodometerLimit): number {
+    if (typeof limit.value !== "number") {
+      return this.parseLimitValueText(limit.metric, limit.value);
+    }
+
+    if (!Number.isFinite(limit.value) || limit.value < 0) {
+      throw new InvalidLimitValueError(limit.metric, String(limit.value));
+    }
+
+    return limit.value;
+  }
+
+  /**
+   * Reads a limit written as a string, unit and all.
+   *
+   * A unit multiplies and then rounds: `"1.5 KB"` is 1500, and the rounding is
+   * what keeps `"0.1 KB"` from arriving as the 100.00000000000001 floating
+   * point makes of it. A string carrying no unit at all is the plain number,
+   * which is what a limit on a count of interfaces or files is written as.
+   */
+  private parseLimitValueText(metric: string, text: string): number {
+    const [, amount, unit] = LIMIT_VALUE_PATTERN.exec(text.trim()) ?? [];
+
+    if (amount === undefined || unit === undefined) {
+      throw new InvalidLimitValueError(metric, text);
+    }
+
+    if (unit === "") {
+      return Number(amount);
+    }
+
+    const multiplier = LIMIT_UNIT_MULTIPLIERS[unit.toLowerCase()];
+
+    if (multiplier === undefined) {
+      throw new InvalidLimitValueError(metric, text);
+    }
+
+    return Math.round(Number(amount) * multiplier);
+  }
+
+  /**
    * Resolves a configuration path against the cwd, then the repository root.
    */
   private resolveConfigurationPath(configurationPath: string): string {
@@ -228,6 +281,24 @@ export class ConfigurationService {
       indentation: output.json.indentation ?? DEFAULT_JSON_INDENTATION,
       path: output.json.path,
     };
+  }
+
+  /**
+   * Gives every limit its severity and a value read as a number.
+   *
+   * Which metric a limit lands on is decided where the measurement is, since
+   * nothing here knows what was measured — the only thing settled at this
+   * point is what the limit says.
+   */
+  private resolveLimits(
+    limits: CodometerLimit[] | undefined,
+  ): ResolvedCodometerLimit[] {
+    return (limits ?? []).map((limit) => ({
+      label: limit.label,
+      metric: limit.metric,
+      severity: limit.severity ?? DEFAULT_LIMIT_SEVERITY,
+      value: this.parseLimitValue(limit),
+    }));
   }
 
   /** Applies defaults to the markdown output destination, if one was named. */
@@ -329,6 +400,7 @@ export class ConfigurationService {
     configuration: CodometerConfiguration,
   ): ResolvedCodometerConfiguration {
     return {
+      defaultTarget: configuration.defaultTarget,
       // Additive rather than a replacement: the defaults are directories no
       // repository wants counted, so a configuration naming its own noise
       // should not have to restate them to keep them out.
@@ -339,6 +411,7 @@ export class ConfigurationService {
         ]),
       ],
       excludeFrom: configuration.excludeFrom ?? [],
+      limits: this.resolveLimits(configuration.limits),
       output: {
         json: this.resolveJsonOutput(configuration.output),
         markdown: this.resolveMarkdownOutput(configuration.output),

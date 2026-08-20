@@ -21,8 +21,10 @@ function buildConfiguration(
   output: Partial<ResolvedCodometerConfiguration["output"]> = {},
 ): ResolvedCodometerConfiguration {
   return {
+    defaultTarget: undefined,
     exclude: ["**/node_modules/**"],
     excludeFrom: [],
+    limits: [],
     output: { json: undefined, markdown: undefined, ...output },
     python: { command: "python3" },
     statistics: [],
@@ -94,6 +96,7 @@ describe(CodometerCommand, () => {
       buildConfiguration(),
     );
     vi.mocked(codometerService.measure).mockReturnValue({
+      limits: [],
       statistics,
       targets: [],
     });

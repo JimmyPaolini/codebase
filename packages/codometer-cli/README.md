@@ -136,6 +136,52 @@ change what the target holds. Dot files are excluded unless a glob spells one
 out, directories never match, and a file that was matched but cannot be read
 fails the run rather than counting as zero bytes.
 
+## Limits
+
+A **limit** is a ceiling on one measured metric. Any metric can carry one — a
+compressed size, a line count, a counter for one of the conventions below — and
+a metric nothing limits is measured and reported exactly as before, gated by
+nothing.
+
+```ts
+defaultTarget: "codebase",
+limits: [
+  { metric: "Compiled JavaScript.size", value: "8 KB" },
+  { label: "Interfaces", metric: "typescript.interfaces", value: 500 },
+  { metric: "linesOfCode", severity: "warn", value: 100_000 },
+],
+```
+
+| Field | Required | Default | Meaning |
+| ----- | -------- | ------- | ------- |
+| `metric` | yes | — | Dotted path of the metric this limits |
+| `value` | yes | — | The ceiling, as a number or a string with a unit |
+| `severity` | no | `fail` | `fail` stops the run on a breach; `warn` reports it |
+| `label` | no | the path | What to call the limit in a report |
+
+A metric is addressed by the target's name followed by its path within that
+target — `codebase.typescript.interfaces`, `codebase.markdown.files`,
+`Compiled JavaScript.size`. Every target carries `files`, a target running size
+analysis carries `size`, and one running language analysis carries every
+counter the tables above list, with configured counters under `custom.<label>`.
+Set `defaultTarget` and a path naming no target is read as that target's.
+
+**Ambiguity is refused, never resolved.** A path that could name two metrics —
+a target called `markdown` beside the codebase's own `markdown.files` — fails
+the run naming both readings, as does a path naming none, or one naming a
+metric from an analysis the target never ran. A limit that quietly bound to the
+wrong metric would look exactly like one that works.
+
+A value written as a string carries a **decimal** unit whose trailing `b` is
+required: `"8 KB"` is 8000 bytes and `"1 MB"` is 1000000, while `"8 K"` is not
+a size and is refused rather than read as anything. A value nothing can read
+fails the run instead of being taken as zero.
+
+A target that matched **no files** fails the run if and only if a limit is
+written against it. Declaring a limit asserts the files are there, so an empty
+match is a glob that stopped matching or a build that never ran — while a
+target nobody limited simply measured zero, which is unremarkable.
+
 ## Custom statistics
 
 A repository that names files by convention has a vocabulary no analyzer knows
@@ -226,6 +272,7 @@ flowchart LR
     JsonModule
     JupyterModule
     LanguagesModule
+    LimitsModule
     MainModule
     MarkdownModule
     OutputJsonModule
@@ -251,6 +298,7 @@ flowchart LR
   CodometerModule --> CustomStatisticsModule
   CodometerModule --> FileDiscoveryModule
   CodometerModule --> LanguagesModule
+  CodometerModule --> LimitsModule
   CodometerModule --> OutputJsonModule
   CodometerModule --> OutputMarkdownModule
   CodometerModule --> SizeAnalysisModule
@@ -314,13 +362,13 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Measure | Value |
 | --- | --- |
-| Callables | 235 |
-| Files | 89 |
-| Calls traced | 390 |
+| Callables | 255 |
+| Files | 96 |
+| Calls traced | 417 |
 | Call stacks | 12 |
 | Deepest stack | 11 |
 | Stacks through recursion | 2 |
-| Unfollowable calls | 8 |
+| Unfollowable calls | 11 |
 
 ### Call stacks
 
@@ -329,9 +377,9 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 ```text
 🚀 CodometerCommand.run(_passedParameters: string[], options: CodometerCommandOptions): Promise<void> [packages/codometer-cli/src/modules/codometer/codometer.command.ts:220]
    ↳ Measure the repository and write every configured output.
-  └─> CodometerService.measure(args: MeasureArguments): MeasurementResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:229]
+  └─> CodometerService.measure(args: MeasureArguments): MeasurementResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:231]
      ↳ Measure the codebase and every target declared alongside it.
-    └─> CodometerService.analyzeLanguage(args: AnalyzeLanguageArguments): CodeStatisticsResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:56]
+    └─> CodometerService.analyzeLanguage(args: AnalyzeLanguageArguments): CodeStatisticsResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:58]
        ↳ Run every language analyzer over one target's files.
       └─> LanguagesService.analyze(args: AnalyzeLanguagesArguments): LanguageResults [packages/codometer-cli/src/modules/languages/languages.service.ts:54]
          ↳ Analyze every language present in the discovered files.
@@ -354,9 +402,9 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 **2. `CodometerService.measureTarget`** — depth ≥ 10 · orphan-root
 
 ```text
-🚀 CodometerService.measureTarget(args: MeasureTargetArguments): TargetMeasurement [packages/codometer-cli/src/modules/codometer/codometer.service.ts:186]
+🚀 CodometerService.measureTarget(args: MeasureTargetArguments): TargetMeasurement [packages/codometer-cli/src/modules/codometer/codometer.service.ts:188]
    ↳ Measure one declared target with whichever analyses it asked for.
-  └─> CodometerService.analyzeLanguage(args: AnalyzeLanguageArguments): CodeStatisticsResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:56]
+  └─> CodometerService.analyzeLanguage(args: AnalyzeLanguageArguments): CodeStatisticsResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:58]
      ↳ Run every language analyzer over one target's files.
     └─> LanguagesService.analyze(args: AnalyzeLanguagesArguments): LanguageResults [packages/codometer-cli/src/modules/languages/languages.service.ts:54]
        ↳ Analyze every language present in the discovered files.
@@ -485,7 +533,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CodometerService.measureTarget` | 17 | `codometer-cli:modules/file-discovery`, `codometer-cli:modules/size-analysis`, `codometer-cli:modules/targets` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:186` |
+| `CodometerService.measureTarget` | 17 | `codometer-cli:modules/file-discovery`, `codometer-cli:modules/size-analysis`, `codometer-cli:modules/targets` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:188` |
 | `LanguagesService.analyze` | 12 | `codometer-cli:modules/css`, `codometer-cli:modules/hcl`, `codometer-cli:modules/json`, `codometer-cli:modules/jupyter`, `codometer-cli:modules/markdown`, `codometer-cli:modules/python`, `codometer-cli:modules/shell`, `codometer-cli:modules/sql`, `codometer-cli:modules/toml`, `codometer-cli:modules/typescript`, `codometer-cli:modules/yaml` | `packages/codometer-cli/src/modules/languages/languages.service.ts:54` |
 
 ### Possibly misplaced

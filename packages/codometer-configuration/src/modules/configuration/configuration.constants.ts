@@ -5,6 +5,7 @@ import { z } from "zod";
 import type {
   CodometerAnalysis,
   CodometerCompression,
+  CodometerSeverity,
   CodometerSymbolKind,
   CodometerSymbolModifier,
   RenderMarkdownOutput,
@@ -103,6 +104,40 @@ export const DEFAULT_TARGET_COMPRESSION = "gzip" satisfies CodometerCompression;
  */
 export const DEFAULT_TARGET_NAME = "codebase";
 
+/**
+ * Severity a limit that names none carries.
+ *
+ * The strict one. A limit is written to gate, so one that quietly warned
+ * because nobody spelled out the severity would be a gate in name only —
+ * `warn` is the deliberate choice, not the accidental one.
+ */
+export const DEFAULT_LIMIT_SEVERITY = "fail" satisfies CodometerSeverity;
+
+/**
+ * What each unit suffix a limit may carry multiplies its number by.
+ *
+ * Decimal rather than binary — `"8 KB"` is 8000 bytes — matching what every
+ * size limit written against the tool this replaced already means. The
+ * trailing `b` is part of every key, so `"8 K"` finds nothing here and is
+ * rejected instead of being read as 8000 by a parser that shrugged.
+ */
+export const LIMIT_UNIT_MULTIPLIERS: Readonly<Record<string, number>> = {
+  b: 1,
+  gb: 1_000_000_000,
+  kb: 1_000,
+  mb: 1_000_000,
+  tb: 1_000_000_000_000,
+};
+
+/**
+ * Splits a limit written as a string into its number and its unit.
+ *
+ * Anchored at both ends so a value with anything else in it — a comparison, a
+ * second number, a trailing word — matches nothing and is rejected rather than
+ * being read as whichever part happened to parse.
+ */
+export const LIMIT_VALUE_PATTERN = /^(\d+(?:\.\d+)?)\s*([a-z]*)$/i;
+
 /** Spaces used to indent the JSON report when a configuration names none. */
 export const DEFAULT_JSON_INDENTATION = 2;
 
@@ -174,6 +209,12 @@ export const CODOMETER_COMPRESSIONS = [
   "none",
 ] as const satisfies readonly CodometerCompression[];
 
+/** Severities a limit may declare for the breach it would report. */
+export const CODOMETER_SEVERITIES = [
+  "fail",
+  "warn",
+] as const satisfies readonly CodometerSeverity[];
+
 /** Declaration kinds a symbol counter may ask for. */
 export const CODOMETER_SYMBOL_KINDS = [
   "class",
@@ -218,8 +259,25 @@ const callbackSchema = <CallbackType>(): z.ZodType<CallbackType> =>
  * failing on a field it has no opinion about.
  */
 export const codometerConfigurationSchema = z.object({
+  defaultTarget: z.string().min(1).optional(),
   exclude: z.array(z.string()).optional(),
   excludeFrom: z.array(z.string()).optional(),
+  // Two limits may name one metric on purpose — a `warn` short of a `fail` is
+  // how a repository sees a number coming before it stops a change — so
+  // nothing here asks the paths to be distinct.
+  limits: z
+    .array(
+      z.object({
+        label: z.string().min(1).optional(),
+        metric: z.string().min(1),
+        severity: z.enum(CODOMETER_SEVERITIES).optional(),
+        // Read rather than validated here: what a unit means is the
+        // configuration service's to say, and saying it twice is how the two
+        // answers drift apart.
+        value: z.union([z.number(), z.string()]),
+      }),
+    )
+    .optional(),
   output: z
     .object({
       json: z
@@ -311,6 +369,17 @@ export const codometerConfigurationSchema = z.object({
             context.addIssue({
               code: "custom",
               message: `Target "${target.name}" has no include glob that adds files — every pattern in its include list starts with "${NEGATION_PREFIX}", so it would hold nothing to measure.`,
+            });
+          }
+
+          // The codebase is measured under this name by every run, and a
+          // metric is addressed by its target's name, so a second target
+          // answering to it would take limits written against the repository
+          // itself.
+          if (target.name === DEFAULT_TARGET_NAME) {
+            context.addIssue({
+              code: "custom",
+              message: `Target "${DEFAULT_TARGET_NAME}" is the repository itself, which every run measures — a declared target needs a name of its own.`,
             });
           }
         }),
