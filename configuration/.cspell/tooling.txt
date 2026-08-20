@@ -37,6 +37,7 @@ cursorrules
 cutover
 Cython
 dataloaders
+demilestoned
 depcruise
 deps
 devdeps
@@ -112,6 +113,7 @@ mattpocock
 mcp
 metatype
 middlewares
+milestoned
 Modelfile
 multiset
 multivalued

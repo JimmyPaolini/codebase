@@ -1,19 +1,43 @@
 name: 🧑‍⚖️ Validate Conventions
 
-# Pull request metadata only — branch name, title, and body. These are not Nx
-# targets and have no project graph to build, so this workflow deliberately
-# skips `setup-codebase`: no Nx cache, no uv, no Homebrew, no full install.
+# Pull request metadata only — branch name, title, body, labels, and
+# assignees. These are not Nx targets and have no project graph to build, so
+# this workflow deliberately skips `setup-codebase`: no Nx cache, no uv, no
+# Homebrew, no full install.
 #
 # The repository-convention checks that used to live here (conformetry,
 # codometer, and the synchronization checks) are `lint-codebase` dependsOn
 # leaves now, so they run once per change instead of once per workflow.
+#
+# On `opened`/`reopened` the conventional label vocabulary is reconciled
+# against the repository before metadata validation runs, so a freshly
+# opened pull request has the labels it needs to pass.
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, edited]
+    types:
+      [
+        opened,
+        reopened,
+        synchronize,
+        edited,
+        labeled,
+        unlabeled,
+        assigned,
+        unassigned,
+        milestoned,
+        demilestoned,
+        ready_for_review,
+        converted_to_draft,
+        review_requested,
+        review_request_removed,
+      ]
 
 permissions:
   contents: read
+  # Label creation and updates are issues-scoped endpoints, not pull-request
+  # ones, so this write permission exists solely for that reconciliation step.
+  issues: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -88,12 +112,55 @@ jobs:
             MISSING="$MISSING 🧪 Testing"
           printf '%s' "$PULL_REQUEST_BODY" | grep -q "^## 🔗 Related" || \
             MISSING="$MISSING 🔗 Related"
+          UNFILLED=""
+          printf '%s' "$PULL_REQUEST_BODY" \
+            | grep -q "<!-- Brief description of what this PR does" && \
+            UNFILLED="$UNFILLED
+          - <!-- Brief description of what this PR does ... -->"
+          printf '%s' "$PULL_REQUEST_BODY" \
+            | grep -q "<!-- List of specific changes made" && \
+            UNFILLED="$UNFILLED
+          - <!-- List of specific changes made -->"
+          printf '%s' "$PULL_REQUEST_BODY" \
+            | grep -q "<!-- How to manually verify these changes work" && \
+            UNFILLED="$UNFILLED
+          - <!-- How to manually verify these changes work ... -->"
+          printf '%s' "$PULL_REQUEST_BODY" \
+            | grep -q "<!-- Link any relevant documentation or related" && \
+            UNFILLED="$UNFILLED
+          - <!-- Link any relevant documentation or related ... -->"
+          if [ -z "$MISSING" ] && [ -z "$UNFILLED" ]; then
+            echo "✅ All required sections present"
+            exit 0
+          fi
           if [ -n "$MISSING" ]; then
             echo "❌ Missing required sections:$MISSING"
             echo ""
-            echo "PR description must include: ## 🌰 Summary, " \
-              "## 📝 Details, ## 🧪 Testing, ## 🔗 Related"
-            echo "See: .github/PULL_REQUEST_TEMPLATE.md"
-            exit 1
           fi
-          echo "✅ All required sections present"
+          if [ -n "$UNFILLED" ]; then
+            echo "❌ Unfilled template comments remain:$UNFILLED"
+            echo ""
+          fi
+          echo "PR description must include: ## 🌰 Summary, " \
+            "## 📝 Details, ## 🧪 Testing, ## 🔗 Related, " \
+            "with every template comment replaced by real content."
+          echo "See: .github/PULL_REQUEST_TEMPLATE.md"
+          exit 1
+
+      - name: 🏷️ Ensure Pull Request Labels
+        if: >-
+          github.event.action == 'opened' ||
+          github.event.action == 'reopened'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/git/ensure-pull-request-labels.sh
+
+      - name: 🧾 Validate Pull Request Metadata
+        env:
+          PULL_REQUEST_ASSIGNEES: >-
+            ${{ toJSON(github.event.pull_request.assignees) }}
+          PULL_REQUEST_LABELS: ${{ toJSON(github.event.pull_request.labels) }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+          PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
+        run: bash scripts/git/validate-pull-request-metadata.sh
