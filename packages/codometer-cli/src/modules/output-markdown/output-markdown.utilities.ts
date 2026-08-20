@@ -337,6 +337,14 @@ export function encodeValue(input: number | string): string {
  * Decimal because every other size in this project is: a limit written as
  * `"8 KB"` parses as 8000 bytes, and dividing by 1024 here would print this
  * badge as a number no limit in the workspace ever mentions.
+ *
+ * Deliberately a second implementation of `formatBytes` in
+ * `tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts`
+ * rather than a shared one: the two packages have no dependency edge, and
+ * adding one for a formatter would cost more than the duplication. The two
+ * must keep the same divisors and the same switch-over point, or this
+ * badge and the pull request bundle table will disagree about what a
+ * kilobyte is.
  */
 export function formatRepositoryBytes(bytes: number): string {
   if (bytes >= 1_000_000) {

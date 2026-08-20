@@ -133,32 +133,32 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-170916-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-170950-22c55e?style=flat-square)
 ![Repository Size](https://img.shields.io/badge/Repository_Size-7.89_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-346-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-1287-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-1288-3178c6?style=flat-square)
 
 ### TypeScript & JavaScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-1222-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-1223-3178c6?style=flat-square)
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-39-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-311-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-312-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-109-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-439-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-6671-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-6674-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-2597-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-7810-4ade80?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-7813-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-1458-059669?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-524-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-31-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-9940-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-5619-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-5621-0284c7?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-755-db2777?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-1687-ea580c?style=flat-square)
 ![Doc Comments](https://img.shields.io/badge/Doc_Comments-3281-6366f1?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-7047-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-13361-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-7053-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-13367-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-50-ca8a04?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-14-166534?style=flat-square)
 
@@ -278,7 +278,7 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-9-0ea5e9?style=flat-square)
 ![Errors Files](https://img.shields.io/badge/Errors_Files-11-059669?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-33-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-282-7c3aed?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-283-7c3aed?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-18-0284c7?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-9-16a34a?style=flat-square)
 
