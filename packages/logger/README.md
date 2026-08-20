@@ -145,7 +145,7 @@ Call stacks traced through `logger`, deepest first. Each frame shows what it tak
 **1. `LoggerService.verbose`** — depth 4 · orphan-root
 
 ```text
-🚀 LoggerService.verbose(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:279]
+🚀 LoggerService.verbose(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:291]
    ↳ Logs a verbose message at the `trace` level.
   └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
      ↳ Assembles the object pino merges into the line.

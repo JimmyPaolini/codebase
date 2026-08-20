@@ -91,6 +91,16 @@ export class RunPlanService {
       .map((name) => name.trim())
       .filter((name) => name !== "");
 
+    // An empty or comma-only value is the same mistake as a valueless flag and
+    // is refused the same way. Read as "gate nothing" it would be a gate that
+    // cannot fail — `--check "$GATES"` with the variable unset would pass
+    // forever against a stale report, which is worse than no gate at all
+    // because it looks like protection.
+    if (names.length === 0) {
+      errors.push(this.describeAcceptedCheckNames("--check needs a value"));
+      return new Set();
+    }
+
     return this.validateCheckNames(names, errors);
   }
 

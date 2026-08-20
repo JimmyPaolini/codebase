@@ -125,6 +125,35 @@ describe(LoggerService, () => {
       }).not.toThrow();
     });
 
+    // The next adopter's hazard: a second command-line tool calling this after
+    // its first log line would otherwise get no signal and quietly corrupt its
+    // own piped output.
+    it("warns rather than pretending when asked too late", async () => {
+      process.env["NODE_ENV"] = "development";
+      process.env["LOG_LEVEL"] = "silent";
+      vi.resetModules();
+
+      const { LoggerService: LoggerServiceForEnvironment } =
+        await import("./logger.service");
+      const emitWarningSpy = vi
+        .spyOn(process, "emitWarning")
+        .mockImplementation(() => undefined);
+
+      // Building a logger is what fixes the destination, first line or not.
+      const logger = new LoggerServiceForEnvironment();
+      logger.setContext("TooLateContext");
+
+      LoggerServiceForEnvironment.logToStandardError();
+
+      expect(emitWarningSpy).toHaveBeenCalledExactlyOnceWith(
+        expect.stringContaining(
+          "was called after the first log line",
+        ) as string,
+      );
+
+      emitWarningSpy.mockRestore();
+    });
+
     it("initializes logger in production mode with explicit log level", async () => {
       process.env["NODE_ENV"] = "production";
       process.env["LOG_LEVEL"] = "debug";

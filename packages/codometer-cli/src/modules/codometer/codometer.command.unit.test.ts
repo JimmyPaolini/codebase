@@ -269,7 +269,19 @@ describe(CodometerCommand, () => {
       expect(process.exitCode).toBe(0);
     });
 
+    // Ordering is the whole point: the report has to exist even when the gate
+    // trips. Asserted in time rather than by reading `run()`, so reordering
+    // `deliver` after `reportFindings` breaks a test and not just a paragraph.
     it("writes every report before failing with --write --check limits", async () => {
+      let exitCodeWhileWriting: null | number | string | undefined;
+      let breachReportedWhileWriting = true;
+      vi.mocked(outputMarkdownService.sync).mockImplementation(() => {
+        exitCodeWhileWriting = process.exitCode;
+        breachReportedWhileWriting =
+          vi.mocked(loggerService).error.mock.calls.length > 0;
+        return true;
+      });
+
       await run({ check: "limits", write: true });
 
       expect(outputMarkdownService.sync).toHaveBeenCalledExactlyOnceWith({
@@ -277,6 +289,9 @@ describe(CodometerCommand, () => {
         destination: { ...markdownDestination, path: "/repo/README.md" },
         statistics,
       });
+      // Nothing had failed the run yet at the moment the report was written.
+      expect(breachReportedWhileWriting).toBe(false);
+      expect(exitCodeWhileWriting).toBe(0);
       expect(process.exitCode).toBe(1);
     });
   });

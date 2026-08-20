@@ -488,7 +488,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 | --- | --- |
 | Callables | 306 |
 | Files | 103 |
-| Calls traced | 484 |
+| Calls traced | 485 |
 | Call stacks | 11 |
 | Deepest stack | 13 |
 | Stacks through recursion | 1 |
@@ -623,7 +623,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 ```text
 🚀 main(): Promise<void> [packages/codometer-cli/src/main.ts:17]
    ↳ Bootstraps the codometer CLI command application.
-  └─> LoggerService.logToStandardError(): void [packages/logger/src/modules/logger/logger.service.ts:197]
+  └─> LoggerService.logToStandardError(): void [packages/logger/src/modules/logger/logger.service.ts:202]
      ↳ Sends every subsequent line to standard error instead of standard output.
 ```
 
@@ -631,7 +631,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 ```text
 🚀 CodometerCommand.constructor(…): CodometerCommand [packages/codometer-cli/src/modules/codometer/codometer.command.ts:38]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
      ↳ Sets the context label included in every subsequent log line.
 ```
 

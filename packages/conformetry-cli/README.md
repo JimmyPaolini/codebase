@@ -547,7 +547,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 
 ```text
 🚀 errorHandler(error: Error): void [packages/conformetry-cli/src/main.ts:17]
-  └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:244]
+  └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:256]
      ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
     └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
        ↳ Assembles the object pino merges into the line.
@@ -564,7 +564,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 
 ```text
 🚀 serviceErrorHandler(error: Error): void [packages/conformetry-cli/src/main.ts:22]
-  └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:244]
+  └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:256]
      ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
     └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
        ↳ Assembles the object pino merges into the line.
@@ -653,7 +653,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 
 ```text
 🚀 GenerateCommand.constructor(…): GenerateCommand [packages/conformetry-cli/src/modules/generate/generate.command.ts:32]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -661,7 +661,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 
 ```text
 🚀 ValidateCommand.constructor(…): ValidateCommand [packages/conformetry-cli/src/modules/validate/validate.command.ts:42]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:273]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
      ↳ Sets the context label included in every subsequent log line.
 ```
 

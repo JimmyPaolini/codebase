@@ -111,6 +111,32 @@ describe(RunPlanService, () => {
       ]);
     });
 
+    // The scenario this exists for: CI runs `--check "$GATES"` with the
+    // variable unset or misspelled. Read as "gate nothing" the run would pass
+    // forever against a stale report, which is worse than no gate because it
+    // looks like one.
+    it.each([[""], [","], ["  "], [" , "]])(
+      "refuses a --check value of %j, which names nothing",
+      (check) => {
+        const selection = service.selectMode({ check });
+
+        expect(selection.errors).toStrictEqual([
+          '--check needs a value. It takes a comma-separated set drawn from "limits" and "reports", as in "--check limits,reports".',
+        ]);
+        expect(selection.mode).toStrictEqual({
+          checksLimits: false,
+          checksReports: false,
+          writes: false,
+        });
+      },
+    );
+
+    it("complains once about an unknown value rather than also about emptiness", () => {
+      expect(service.selectMode({ check: "bogus" }).errors).toStrictEqual([
+        expect.stringContaining('does not accept "bogus"') as string,
+      ]);
+    });
+
     it("reads --write as off when the flag never arrived", () => {
       expect(service.selectMode({ write: false }).mode.writes).toBe(false);
     });
