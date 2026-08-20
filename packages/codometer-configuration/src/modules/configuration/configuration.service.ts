@@ -200,7 +200,7 @@ export class ConfigurationService {
       return Number(amount);
     }
 
-    const multiplier = LIMIT_UNIT_MULTIPLIERS[unit.toLowerCase()];
+    const multiplier = LIMIT_UNIT_MULTIPLIERS.get(unit.toLowerCase());
 
     if (multiplier === undefined) {
       throw new InvalidLimitValueError(metric, text);

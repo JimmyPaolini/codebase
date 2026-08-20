@@ -303,8 +303,19 @@ export class LimitsService {
    * Returns what each limit found rather than a verdict. Severity is carried
    * through untouched: whether a breach stops the run is a decision about the
    * run, not about the measurement.
+   *
+   * A configuration declaring no limits is answered without the measurement
+   * being examined at all, so nothing this layer objects to can fail a run
+   * that gates nothing.
    */
   evaluate(args: EvaluateLimitsArguments): EvaluatedLimit[] {
+    // Nothing is indexed, and so nothing about the targets is objected to,
+    // until a limit asks a question of them. A run that gates nothing is a run
+    // this layer has no business failing.
+    if (args.configuration.limits.length === 0) {
+      return [];
+    }
+
     const indexes = this.buildIndexes(args.targets);
 
     return args.configuration.limits.map((limit) => {

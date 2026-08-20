@@ -157,7 +157,8 @@ describe(LimitsService, () => {
     ]);
   });
 
-  // A ceiling is a ceiling: sitting exactly on it is not going over it.
+  // A limit is the highest the metric may be, so sitting exactly on it is
+  // not going over it.
   it.each([
     [42, false],
     [41, true],
@@ -297,6 +298,17 @@ describe(LimitsService, () => {
         targets: [codebaseTarget],
       }),
     ).toThrow(/default target "web" was never measured/);
+  });
+
+  // A configuration that gates nothing has nothing to say about the targets,
+  // so nothing about them can fail the run.
+  it("leaves two targets sharing one name alone when nothing limits them", () => {
+    expect(
+      service.evaluate({
+        configuration: buildConfiguration([]),
+        targets: [codebaseTarget, codebaseTarget],
+      }),
+    ).toStrictEqual([]);
   });
 
   it("refuses two measured targets sharing one name", () => {

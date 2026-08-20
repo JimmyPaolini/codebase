@@ -25,8 +25,8 @@ dotted path.
 _Avoid_: Statistic, measurement, count, stat
 
 **Limit**:
-A declared ceiling on a metric. A metric without one is measured and reported,
-never gated.
+A declared value a metric may not exceed. A metric without one is measured and
+reported, never gated.
 _Avoid_: Budget, threshold, ceiling, maximum, cap, size limit
 
 **Breach**:
@@ -49,7 +49,7 @@ Each quality tool owns one gating word, and they are not interchangeable.
 
 **Threshold**:
 Conformetry's zero-to-one score for how closely an instance matches the template
-it was generated from. Never used for codometer's ceilings.
+it was generated from. Never used for codometer's limits.
 
 **Depth**:
 Callidescope's call-stack length, and the thing it flags as too deep. Never used

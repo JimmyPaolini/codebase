@@ -120,14 +120,19 @@ export const DEFAULT_LIMIT_SEVERITY = "fail" satisfies CodometerSeverity;
  * size limit written against the tool this replaced already means. The
  * trailing `b` is part of every key, so `"8 K"` finds nothing here and is
  * rejected instead of being read as 8000 by a parser that shrugged.
+ *
+ * A map rather than an object literal, so that a unit spelling an inherited
+ * property — `constructor` is the one the pattern can reach — finds nothing
+ * either, instead of a function that multiplies the limit into `NaN` and
+ * quietly stops it ever being exceeded.
  */
-export const LIMIT_UNIT_MULTIPLIERS: Readonly<Record<string, number>> = {
-  b: 1,
-  gb: 1_000_000_000,
-  kb: 1_000,
-  mb: 1_000_000,
-  tb: 1_000_000_000_000,
-};
+export const LIMIT_UNIT_MULTIPLIERS: ReadonlyMap<string, number> = new Map([
+  ["b", 1],
+  ["gb", 1_000_000_000],
+  ["kb", 1_000],
+  ["mb", 1_000_000],
+  ["tb", 1_000_000_000_000],
+]);
 
 /**
  * Splits a limit written as a string into its number and its unit.

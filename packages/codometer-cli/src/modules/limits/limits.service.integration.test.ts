@@ -4,8 +4,9 @@ import path from "node:path";
 
 import { ConfigurationService } from "@codometer/configuration";
 import { Test } from "@nestjs/testing";
-import { beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
+import { removeFixtureTree } from "../../../testing/fixture-tree";
 import { buildCodeStatistics } from "../../../testing/mocks";
 
 import { LimitsService } from "./limits.service";
@@ -32,9 +33,10 @@ const TARGETS: MeasuredTarget[] = [
 
 describe("limits written in a configuration file", () => {
   let evaluated: EvaluatedLimit[];
+  let directory: string;
 
   beforeAll(async () => {
-    const directory = await mkdtemp(path.join(tmpdir(), "codometer-limits-"));
+    directory = await mkdtemp(path.join(tmpdir(), "codometer-limits-"));
     const configurationPath = path.join(directory, "codometer.config.json");
 
     await writeFile(
@@ -63,6 +65,10 @@ describe("limits written in a configuration file", () => {
     evaluated = module
       .get(LimitsService)
       .evaluate({ configuration, targets: TARGETS });
+  });
+
+  afterAll(() => {
+    removeFixtureTree(directory);
   });
 
   it("holds an unqualified path against the default target", () => {

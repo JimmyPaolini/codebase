@@ -44,7 +44,7 @@ const codometerConfiguration: CodometerConfiguration = {
   python: { command: "uv run python" },
   // Target an unqualified limit path belongs to.
   defaultTarget: "codebase",
-  // Ceilings the measured metrics are held to.
+  // How high each measured metric may go.
   limits: [
     { metric: "compiled.size", value: "8 KB" },
     { metric: "typescript.interfaces", severity: "warn", value: 500 },
@@ -144,7 +144,7 @@ by one file is worse than no total at all.
 
 ## Limits
 
-A **limit** is a ceiling on one measured metric. Any metric can carry one — a
+A **limit** is how high one measured metric may go. Any metric can carry one — a
 compressed size, a line count, a counter for one of the conventions below — and
 a metric nothing limits is measured and reported exactly as before, gated by
 nothing.
@@ -161,7 +161,7 @@ limits: [
 | Field | Required | Default | Meaning |
 | ----- | -------- | ------- | ------- |
 | `metric` | yes | — | Dotted path of the metric this limits |
-| `value` | yes | — | The ceiling, as a number or a string with a unit |
+| `value` | yes | — | How high the metric may go, as a number or a string with a unit |
 | `severity` | no | `fail` | `fail` stops the run on a breach; `warn` reports it |
 | `label` | no | the path | What to call the limit in a report |
 
@@ -171,6 +171,12 @@ target — `codebase.typescript.interfaces`, `codebase.markdown.files`,
 analysis carries `size`, and one running language analysis carries every
 counter the codebase measurement lists, with configured counters under `custom.<label>`.
 Set `defaultTarget` and a path naming no target is read as that target's.
+
+Where a `defaultTarget` is set, a path is read as that target's whenever no
+target name prefixes it — so with `defaultTarget: "codebase"` and a target
+called `typescript`, `typescript.interfaces` is the codebase's, because the
+`typescript` target has no `interfaces` metric of its own to compete with it.
+Write the target name in full wherever a target and a metric group share one.
 
 **Ambiguity is refused, never resolved.** A path that could name two metrics —
 a target called `markdown` beside the codebase's own `markdown.files` — fails
@@ -372,15 +378,15 @@ Call stacks traced through `codometer-configuration`, deepest first. Each frame 
 **1. `superRefine(…)`** — depth 2 · orphan-root
 
 ```text
-🚀 superRefine(…)(…): void [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:363]
-  └─> some(…)(pattern: string): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:365]
+🚀 superRefine(…)(…): void [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:368]
+  └─> some(…)(pattern: string): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:370]
 ```
 
 **2. `refine(…)`** — depth 2 · orphan-root
 
 ```text
-🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:390]
-  └─> map(…)(…): string [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:391]
+🚀 refine(…)(…): boolean [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:395]
+  └─> map(…)(…): string [packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:396]
 ```
 
 ### Module spread

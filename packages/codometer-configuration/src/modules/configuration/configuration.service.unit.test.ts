@@ -606,6 +606,12 @@ describe(ConfigurationService, () => {
     // The trailing `b` is what makes a unit a size.
     "8 K",
     "8 KiB",
+    // Spells an inherited property of every object literal, and the only one
+    // an all-lowercase unit can reach. Read from an object rather than a map
+    // it would multiply the limit into NaN, which nothing ever exceeds.
+    "8 constructor",
+    "8 valueOf",
+    "8 toString",
     "8 kilobytes",
     "KB",
     "",

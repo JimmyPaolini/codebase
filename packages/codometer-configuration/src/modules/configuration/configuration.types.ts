@@ -53,7 +53,7 @@ export interface CodometerConfiguration {
    */
   excludeFrom?: string[] | undefined;
   /**
-   * Ceilings the measured metrics are held to.
+   * How high each measured metric may go.
    *
    * A metric nothing here names is measured and reported like every other one,
    * and gated by nothing.
@@ -115,7 +115,7 @@ export interface CodometerJsonOutputConfiguration {
 }
 
 /**
- * A ceiling one measured metric is held to.
+ * How high one measured metric may go.
  *
  * Limits are absolute: the metric is compared against `value` and nothing
  * else, with no baseline and no floor. A metric that stays under its limit is
@@ -144,7 +144,7 @@ export interface CodometerLimit {
    */
   severity?: CodometerSeverity | undefined;
   /**
-   * The ceiling itself, as a number or a string carrying a unit.
+   * How high the metric may go, as a number or a string carrying a unit.
    *
    * Units are decimal and their trailing `b` is required: `"8 KB"` is 8000 and
    * `"1 MB"` is 1000000, while `"8 K"` is not a size and is rejected. A value
