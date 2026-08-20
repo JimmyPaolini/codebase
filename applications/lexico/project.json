@@ -20,7 +20,6 @@
         "cwd": "applications/lexico"
       }
     },
-    "bundlesize": {},
     "codometer": {},
     "dependency-cruiser": {},
     "develop": {

@@ -13,8 +13,8 @@
 // React and Radix inside it rather than leaving them external, even though
 // React is a peer dependency. Until that is fixed the limit exists to catch
 // growth, not to express an intended size. The original 25 KB target has never
-// been met, and nothing enforced it: the build workflow measured sizes with
-// `size-limit --json || echo '[]'`, which swallowed the failure.
+// been met, and nothing enforced it: the build workflow discarded the failure
+// the measurement reported, so the breach never reached anyone.
 //
 // A folder's own configuration fully replaces the workspace one, so everything
 // this project is measured by is written here.

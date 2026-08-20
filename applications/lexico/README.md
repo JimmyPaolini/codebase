@@ -53,7 +53,7 @@ nx run lexico:develop     # http://localhost:3000
 | `build` | Production SSR bundle |
 | `start` | Serve a built bundle |
 | `preview` | Preview the production build locally |
-| `bundlesize` | Check the entry, route, CSS, and server bundles against their size budgets |
+| `codometer` | Measure the entry, route, CSS, and server bundles and gate the limit each declares |
 | `vitest` | Tests — `:unit`, `:integration`, `:end-to-end` |
 | `lint-codebase` | All static analysis; `--configuration=write` to auto-fix |
 

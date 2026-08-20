@@ -118,18 +118,6 @@
         "inputs": ["^production", "production"]
       }
     ],
-    "bundlesize": {
-      "cache": true,
-      "dependsOn": ["build"],
-      "description": "Measure built bundle sizes against the limits in .size-limit.cjs, writing a JSON report the pull request comment reads.",
-      "executor": "nx:run-commands",
-      "inputs": ["^production", "{projectRoot}/.size-limit.cjs", "production"],
-      "options": {
-        "command": "size-limit --json > size-limit-report.json",
-        "cwd": "{projectRoot}"
-      },
-      "outputs": ["{projectRoot}/size-limit-report.json"]
-    },
     "codometer": {
       "cache": true,
       "configurations": {

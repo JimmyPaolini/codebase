@@ -88,7 +88,7 @@ export class BundlesCommand extends CommandRunner implements ReportableCommand {
     return this.reportingService.readOptionalText(value);
   }
 
-  /** Renders the report body from whatever the `bundlesize` target measured. */
+  /** Renders the report body from whatever the `codometer` target measured. */
   renderReport(options: ReportOptions): string {
     const collection = this.bundlesService.collect({
       baselineDirectory: options.baseline,

@@ -44,12 +44,10 @@
     "vaul": "catalog:"
   },
   "devDependencies": {
-    "@size-limit/file": "catalog:",
     "@types/react": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "autoprefixer": "catalog:",
     "postcss": "catalog:",
-    "size-limit": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",

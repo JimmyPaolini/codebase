@@ -29,7 +29,6 @@
         "{options.outputPath}"
       ]
     },
-    "bundlesize": {},
     "codometer": {},
     "dependency-cruiser": {},
     "knip": {},

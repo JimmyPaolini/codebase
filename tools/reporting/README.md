@@ -209,7 +209,7 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
   └─> ReportingService.emit(…): Promise<void> [tools/reporting/src/modules/reporting/reporting.service.ts:57]
      ↳ Renders one report and writes it wherever the destination says.
     └─> BundlesCommand.renderReport(options: ReportOptions): string [tools/reporting/src/modules/bundles/bundles.command.ts:92]
-       ↳ Renders the report body from whatever the `bundlesize` target measured.
+       ↳ Renders the report body from whatever the `codometer` target measured.
       └─> BundleMarkdownService.renderSection(args: RenderSectionArguments): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:409]
          ↳ Renders the report body: its heading, and everything under it.
         └─> BundleMarkdownService.renderMeasuredTable(rows: readonly MetricRow[]): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:248]
@@ -231,7 +231,7 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
   └─> ReportingService.emit(…): Promise<void> [tools/reporting/src/modules/reporting/reporting.service.ts:57]
      ↳ Renders one report and writes it wherever the destination says.
     └─> BundlesCommand.renderReport(options: ReportOptions): string [tools/reporting/src/modules/bundles/bundles.command.ts:92]
-       ↳ Renders the report body from whatever the `bundlesize` target measured.
+       ↳ Renders the report body from whatever the `codometer` target measured.
       └─> BundleMarkdownService.renderSection(args: RenderSectionArguments): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:409]
          ↳ Renders the report body: its heading, and everything under it.
         └─> BundleMarkdownService.renderMeasuredTable(rows: readonly MetricRow[]): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:248]

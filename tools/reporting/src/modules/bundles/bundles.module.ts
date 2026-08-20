@@ -10,8 +10,8 @@ import { BundlesCommand } from "./bundles.command";
 import { BundlesService } from "./bundles.service";
 
 /**
- * Owns the bundle size report: reading what `bundlesize` measured, and saying
- * what it means.
+ * Owns the bundle size report: reading what the `codometer` target measured,
+ * and saying what it means.
  *
  * The shared reporting services are provided here rather than imported from
  * the reporting module, which imports this one — they are stateless, so a

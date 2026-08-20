@@ -19,7 +19,6 @@
     "threshold": 6,
   },
   "entry": [
-    "**/.size-limit.cjs",
     "**/scripts/**/*.{js,mjs,ts,sh}",
     ".pnpmfile.mjs",
     "{applications,packages,tools}/*/src/index.ts",
@@ -83,7 +82,6 @@
     "@semantic-release/github",
     "@semantic-release/npm",
     "@semantic-release/release-notes-generator",
-    "@size-limit/file",
     "@swc/helpers",
     "@swc-node/register",
     "@testcontainers/postgresql",
