@@ -14,9 +14,10 @@ set -euo pipefail
 # and run it manually.
 #
 # Always exits 0: a missing or drifted label is a fact about the repository
-# under review, not a defect in the pull request itself. A gh failure — a
-# read-only token on a fork pull request, a network error — is reported as a
-# warning rather than a script failure.
+# under review, not a defect in the pull request itself. A gh or node
+# failure — a read-only token on a fork pull request, a network error, a
+# missing node binary, a sparse checkout without the config file — is
+# reported as a warning rather than a script failure.
 
 script_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repository_root="$(cd "${script_directory}/../.." && pwd)"
@@ -41,88 +42,148 @@ write_report_to_step_summary() {
   printf '%s\n' "${report_lines[@]}" >> "${GITHUB_STEP_SUMMARY}"
 }
 
-# 📖 Expected label vocabulary
-
-# configuration/conventional.config.cjs is the single source of truth for
-# types and scopes. Read it fresh every run instead of duplicating the
-# vocabulary here, so a config change never needs a matching script change.
-expected_labels_table="$(cd "${repository_root}" && node -p "
-const { types, scopes } = require('./configuration/conventional.config.cjs');
-[
-  ...types.map((type) => ['type:' + type.name, 'd93f0b', type.description].join('\t')),
-  ...scopes.map((scope) => ['scope:' + scope.name.toLowerCase(), '1d76db', scope.description].join('\t')),
-  'do-not-merge\tb60205\tDo not merge this pull request yet',
-  'source:agent\te99695\tOpened by a coding agent',
-  'source:human\te99695\tOpened by a human',
-].join('\n')
-")"
-
 # 🔎 Current repository labels
 
 if ! current_labels_json="$(gh label list --limit 500 --json name,color,description 2>&1)"; then
-  append_to_report "⚠️ Unable to reconcile labels: gh label list failed (${current_labels_json})"
+  append_to_report "- ⚠️ Unable to reconcile labels: gh label list failed (${current_labels_json})"
   write_report_to_step_summary
   exit 0
 fi
 
-# 🔁 Reconcile expected labels
+# 🧮 Reconciliation plan
 
-expected_label_names=()
+# configuration/conventional.config.cjs is the single source of truth for
+# types and scopes. Read it fresh every run instead of duplicating the
+# vocabulary here, so a config change never needs a matching script change.
+# The comparison against the repository's current labels also happens here,
+# in node, rather than round-tripping values through jq: color and
+# description equality stays a plain JavaScript string comparison, with no
+# intermediate text encoding (such as jq's @tsv, which escapes tabs and
+# newlines) that could make an identical value compare unequal. Node is
+# already a hard dependency for reading the config, so this removes jq as a
+# dependency rather than adding one.
+if ! reconciliation_plan="$(
+  cd "${repository_root}" \
+    && printf '%s' "${current_labels_json}" | node -e "
+const fieldSeparator = '\u001f';
 
-while IFS=$'\t' read -r label_name label_color label_description; do
-  if [[ -z "${label_name}" ]]; then
-    continue
-  fi
-  expected_label_names+=("${label_name}")
+const { types, scopes } = require('./configuration/conventional.config.cjs');
 
-  current_label_fields="$(printf '%s' "${current_labels_json}" | jq -r --arg name "${label_name}" '.[] | select(.name == $name) | [.color, .description] | @tsv')"
+const expectedLabels = [
+  ...types.map((type) => ({
+    color: 'd93f0b',
+    description: type.description,
+    name: 'type:' + type.name,
+  })),
+  ...scopes.map((scope) => ({
+    color: '1d76db',
+    description: scope.description,
+    name: 'scope:' + scope.name.toLowerCase(),
+  })),
+  {
+    color: 'b60205',
+    description: 'Do not merge this pull request yet',
+    name: 'do-not-merge',
+  },
+  {
+    color: 'e99695',
+    description: 'Opened by a coding agent',
+    name: 'source:agent',
+  },
+  {
+    color: 'e99695',
+    description: 'Opened by a human',
+    name: 'source:human',
+  },
+];
 
-  if [[ -z "${current_label_fields}" ]]; then
+const trackedPrefixes = ['type:', 'scope:', 'source:'];
+
+const stdinChunks = [];
+process.stdin.on('data', (chunk) => stdinChunks.push(chunk));
+process.stdin.on('end', () => {
+  const currentLabels = JSON.parse(Buffer.concat(stdinChunks).toString('utf8'));
+  const currentLabelsByName = new Map(
+    currentLabels.map((label) => [label.name, label]),
+  );
+  const expectedNames = new Set(expectedLabels.map((label) => label.name));
+
+  const planLines = [];
+
+  for (const expectedLabel of expectedLabels) {
+    const currentLabel = currentLabelsByName.get(expectedLabel.name);
+    if (!currentLabel) {
+      planLines.push(
+        ['CREATE', expectedLabel.name, expectedLabel.color, expectedLabel.description].join(fieldSeparator),
+      );
+      continue;
+    }
+    if (
+      currentLabel.color !== expectedLabel.color
+      || currentLabel.description !== expectedLabel.description
+    ) {
+      planLines.push(
+        ['UPDATE', expectedLabel.name, expectedLabel.color, expectedLabel.description].join(fieldSeparator),
+      );
+    }
+  }
+
+  for (const currentLabel of currentLabels) {
+    const hasTrackedPrefix = trackedPrefixes.some((prefix) => currentLabel.name.startsWith(prefix));
+    if (hasTrackedPrefix && !expectedNames.has(currentLabel.name)) {
+      planLines.push(['STALE', currentLabel.name].join(fieldSeparator));
+    }
+  }
+
+  process.stdout.write(planLines.join('\n'));
+});
+" 2>&1
+)"; then
+  append_to_report "- ⚠️ Unable to reconcile labels: label comparison failed (${reconciliation_plan})"
+  write_report_to_step_summary
+  exit 0
+fi
+
+# 🔁 Create and update labels
+
+# Processed as its own pass (rather than interleaved with the stale report
+# below) so "nothing needed creating or updating" can be reported on its own
+# — the two permanent stale labels in this repository mean the overall
+# report is otherwise never fully empty, even on a perfectly reconciled run.
+reconciliation_action_taken='false'
+
+while IFS=$'\x1f' read -r plan_action label_name label_color label_description; do
+  case "${plan_action}" in
+  CREATE)
+    reconciliation_action_taken='true'
     if ! create_output="$(gh label create "${label_name}" --color "${label_color}" --description "${label_description}" 2>&1)"; then
-      append_to_report "⚠️ Unable to reconcile labels: gh label create failed for ${label_name} (${create_output})"
+      append_to_report "- ⚠️ Unable to reconcile labels: gh label create failed for ${label_name} (${create_output})"
       continue
     fi
-    append_to_report "✅ Created label: ${label_name}"
-    continue
-  fi
+    append_to_report "- ✅ Created label: ${label_name}"
+    ;;
+  UPDATE)
+    reconciliation_action_taken='true'
+    if ! edit_output="$(gh label edit "${label_name}" --color "${label_color}" --description "${label_description}" 2>&1)"; then
+      append_to_report "- ⚠️ Unable to reconcile labels: gh label edit failed for ${label_name} (${edit_output})"
+      continue
+    fi
+    append_to_report "- ✅ Updated label: ${label_name}"
+    ;;
+  esac
+done <<< "${reconciliation_plan}"
 
-  IFS=$'\t' read -r current_label_color current_label_description <<< "${current_label_fields}"
-
-  if [[ "${current_label_color}" == "${label_color}" && "${current_label_description}" == "${label_description}" ]]; then
-    continue
-  fi
-
-  if ! edit_output="$(gh label edit "${label_name}" --color "${label_color}" --description "${label_description}" 2>&1)"; then
-    append_to_report "⚠️ Unable to reconcile labels: gh label edit failed for ${label_name} (${edit_output})"
-    continue
-  fi
-  append_to_report "✅ Updated label: ${label_name}"
-done <<< "${expected_labels_table}"
+if [[ "${reconciliation_action_taken}" == 'false' ]]; then
+  append_to_report "- ✅ All conventional labels are present and match the configuration"
+fi
 
 # 🕸️ Stale label report
 
-while IFS= read -r existing_label_name; do
-  if [[ -z "${existing_label_name}" ]]; then
-    continue
+while IFS=$'\x1f' read -r plan_action label_name; do
+  if [[ "${plan_action}" == 'STALE' ]]; then
+    append_to_report "- ⚠️ Stale label (not in conventional.config.cjs): ${label_name} — remove with: gh label delete \"${label_name}\""
   fi
-
-  case "${existing_label_name}" in
-  type:* | scope:* | source:*) ;;
-  *) continue ;;
-  esac
-
-  is_expected_label='false'
-  for expected_label_name in "${expected_label_names[@]}"; do
-    if [[ "${existing_label_name}" == "${expected_label_name}" ]]; then
-      is_expected_label='true'
-      break
-    fi
-  done
-
-  if [[ "${is_expected_label}" == 'false' ]]; then
-    append_to_report "⚠️ Stale label (not in conventional.config.cjs): ${existing_label_name} — remove with: gh label delete \"${existing_label_name}\""
-  fi
-done < <(printf '%s' "${current_labels_json}" | jq -r '.[].name')
+done <<< "${reconciliation_plan}"
 
 # 📋 Summary
 
