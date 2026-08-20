@@ -218,17 +218,17 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Shell
 
-![Shell Files](https://img.shields.io/badge/Shell_Files-36-89e051?style=flat-square)
-![Shell Lines](https://img.shields.io/badge/Shell_Lines-2366-4eaa25?style=flat-square)
-![Shell Functions](https://img.shields.io/badge/Shell_Functions-20-16a34a?style=flat-square)
-![Shell Variables](https://img.shields.io/badge/Shell_Variables-211-0284c7?style=flat-square)
+![Shell Files](https://img.shields.io/badge/Shell_Files-37-89e051?style=flat-square)
+![Shell Lines](https://img.shields.io/badge/Shell_Lines-2498-4eaa25?style=flat-square)
+![Shell Functions](https://img.shields.io/badge/Shell_Functions-22-16a34a?style=flat-square)
+![Shell Variables](https://img.shields.io/badge/Shell_Variables-221-0284c7?style=flat-square)
 ![Shell Exports](https://img.shields.io/badge/Shell_Exports-9-ea580c?style=flat-square)
-![Shell Conditionals](https://img.shields.io/badge/Shell_Conditionals-157-7c3aed?style=flat-square)
-![Shell Loops](https://img.shields.io/badge/Shell_Loops-16-8b5cf6?style=flat-square)
-![Shell Pipelines](https://img.shields.io/badge/Shell_Pipelines-98-059669?style=flat-square)
-![Shebangs](https://img.shields.io/badge/Shebangs-36-6b7280?style=flat-square)
-![Shell Comments](https://img.shields.io/badge/Shell_Comments-509-64748b?style=flat-square)
-![Shell Comment Lines](https://img.shields.io/badge/Shell_Comment_Lines-509-475569?style=flat-square)
+![Shell Conditionals](https://img.shields.io/badge/Shell_Conditionals-169-7c3aed?style=flat-square)
+![Shell Loops](https://img.shields.io/badge/Shell_Loops-19-8b5cf6?style=flat-square)
+![Shell Pipelines](https://img.shields.io/badge/Shell_Pipelines-105-059669?style=flat-square)
+![Shebangs](https://img.shields.io/badge/Shebangs-37-6b7280?style=flat-square)
+![Shell Comments](https://img.shields.io/badge/Shell_Comments-532-64748b?style=flat-square)
+![Shell Comment Lines](https://img.shields.io/badge/Shell_Comment_Lines-532-475569?style=flat-square)
 
 ### SQL
 
