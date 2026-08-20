@@ -41,7 +41,13 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Deliberately not cancelling. One `gh pr edit` that adds a few labels and
+  # an assignee fires several of the events above within a second, and this
+  # workflow is a required check: were a `cancelled` conclusion to land after
+  # a successful one, the check would sit red with no further event left to
+  # clear it, leaving the pull request unmergeable. These runs take about
+  # thirty seconds and build no Nx graph, so cancelling saves almost nothing.
+  cancel-in-progress: false
 
 jobs:
   validate-conventions:

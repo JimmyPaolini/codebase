@@ -154,7 +154,12 @@ Template: [.github/PULL_REQUEST_TEMPLATE.md](../../PULL_REQUEST_TEMPLATE.md)
 
 Required sections (exact heading text): `## 🌰 Summary`, `## 📝 Details`, `## 🧪 Testing`, `## 🔗 Related`
 
-Fix: Edit the PR description in the GitHub UI to include all four sections.
+Two failure modes, and a body that hits both is reported against both:
+
+- A required heading is absent — `❌ Missing required sections: 🧪 Testing` — add the heading and its content.
+- A template comment survives unfilled — `❌ Unfilled template comments remain:` followed by one line per offending comment, such as `- <!-- Brief description of what this PR does ... -->` — every `<!-- … -->` prompt in the template is a placeholder, so each one has to be replaced by real content rather than left in place beside it.
+
+Fix: Edit the PR description in the GitHub UI so all four sections are present and no template comment remains.
 
 #### 🏷️ Ensure Pull Request Labels
 
@@ -163,6 +168,8 @@ Script: [scripts/git/ensure-pull-request-labels.sh](../../../scripts/git/ensure-
 Runs only on `opened`/`reopened`, with `continue-on-error: true`, so it never fails the job by itself. It reconciles the repository's `type:*`, `scope:*`, `do-not-merge`, `source:agent`, and `source:human` labels against [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs) — creating or updating whichever ones drifted.
 
 Fix: A `⚠️ Unable to reconcile labels` warning here (for example on a fork pull request without `issues: write`) does not block the job — the next step still runs and reports its own failure if a label it needs is missing.
+
+On a pull request from a fork, `GITHUB_TOKEN` is read-only no matter what the `permissions:` block asks for, so this step can only warn and an outside contributor can neither create labels nor label or assign themselves in this repository. Someone with write access here has to add the labels and an assignee on their behalf before 🧾 Validate Pull Request Metadata can go green.
 
 #### 🧾 Validate Pull Request Metadata
 

@@ -40,7 +40,15 @@ write_report_to_step_summary() {
     return 0
   fi
 
-  printf '%s\n' "${report_lines[@]}" >> "${GITHUB_STEP_SUMMARY}"
+  # The report is a courtesy, the verdict is not. A full disk, or a summary
+  # file that cannot be opened for appending, must never turn a passing pull
+  # request into a failing one, so the write is guarded and its failure only
+  # noted — under `set -e` an unguarded append would exit non-zero here.
+  if ! printf '%s\n' "${report_lines[@]}" >> "${GITHUB_STEP_SUMMARY}"; then
+    echo "⚠️ Unable to write the report to GITHUB_STEP_SUMMARY"
+  fi
+
+  return 0
 }
 
 fail_with_message() {
