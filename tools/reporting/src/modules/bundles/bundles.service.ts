@@ -3,24 +3,38 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { REPORT_GLOBS, sizeLimitReportSchema } from "./bundles.constants";
+import {
+  BYTES_UNIT,
+  codometerReportSchema,
+  REPORT_GLOBS,
+} from "./bundles.constants";
 
 import type {
-  BundleRow,
+  BundleCollection,
   CollectProjectRowsArguments,
   CollectRowsArguments,
-  SizeLimitEntry,
+  MetricRow,
+  MetricSeverity,
+  ProjectReport,
+  ReportLimit,
+  ReportTarget,
+  SizeMetric,
 } from "./bundles.types";
 
 /**
- * Reads what the `bundlesize` target measured and joins it to a baseline.
+ * Reads what each project's codometer run measured and joins it to a baseline.
+ *
+ * Codometer is stateless: it measures the tree in front of it and never looks
+ * at another branch. Comparing two runs is this tool's job, because a baseline
+ * needs branches, workflow artifacts, and pull request context — exactly the
+ * knowledge a measurement tool has to stay free of.
  *
  * The baseline is a snapshot downloaded from the latest successful `main` run
  * rather than a second build of the base branch, which used to cost a full
  * extra checkout, install, and build on every pull request.
  *
  * Because CI runs `nx affected`, a pull request measures only the projects it
- * touched. Bundles the baseline knows about but this run did not rebuild are
+ * touched. Metrics the baseline knows about but this run did not rebuild are
  * still collected — flagged as unmeasured, carrying their `main` size — so a
  * report can cover the whole workspace instead of only the change's blast
  * radius.
@@ -37,80 +51,124 @@ export class BundlesService {
 
   // 🔏 Private Methods
 
-  /** Builds the row for a bundle only the baseline knows about. */
+  /** Builds the row for a metric only the baseline knows about. */
   private buildBaselineRow(
-    entry: SizeLimitEntry,
+    metric: SizeMetric,
     project: string,
     removed: boolean,
-  ): BundleRow {
+  ): MetricRow {
     return {
-      baseSize: entry.size,
+      ...metric,
+      baseSize: metric.size,
       measured: false,
-      missing: false,
-      name: entry.name,
-      passed: true,
       project,
       removed,
-      size: removed ? 0 : entry.size,
-      sizeLimit: entry.sizeLimit,
+      size: removed ? 0 : metric.size,
     };
   }
 
-  /** Builds the row for a bundle this run measured. */
+  /** Builds the row for a metric this run measured. */
   private buildMeasuredRow(
-    entry: SizeLimitEntry,
-    baseline: SizeLimitEntry | undefined,
+    metric: SizeMetric,
+    baseline: SizeMetric | undefined,
     project: string,
-  ): BundleRow {
-    const { size } = entry;
-
+  ): MetricRow {
     return {
+      ...metric,
       baseSize: baseline?.size,
       measured: true,
-      missing: size === 0,
-      name: entry.name,
-      passed: entry.passed !== false,
       project,
       removed: false,
-      size,
-      sizeLimit: entry.sizeLimit,
     };
   }
 
   /**
    * Joins one project's current report to its baseline.
    *
-   * A baseline bundle with no current counterpart was removed when this run
+   * A baseline metric with no current counterpart was removed when this run
    * rebuilt the project, and merely skipped when it did not.
    */
-  private collectProjectRows(args: CollectProjectRowsArguments): BundleRow[] {
+  private collectProjectRows(
+    args: CollectProjectRowsArguments,
+  ): BundleCollection {
     const project = this.readProjectName(args.reportPath);
     const baseline = this.readBaseline(args);
-    const entries = this.readReport(args.workingDirectory, args.reportPath);
+    const { failures, metrics } = this.readReport(
+      args.workingDirectory,
+      args.reportPath,
+    );
 
-    const rows = entries.map((entry) =>
-      this.buildMeasuredRow(entry, baseline.get(entry.name), project),
+    const rows = metrics.map((metric) =>
+      this.buildMeasuredRow(metric, baseline.get(metric.name), project),
     );
     const seen = new Set(rows.map((row) => row.name));
 
-    for (const [name, entry] of baseline) {
+    for (const [name, metric] of baseline) {
       if (seen.has(name)) continue;
-      rows.push(this.buildBaselineRow(entry, project, entries.length > 0));
+      rows.push(this.buildBaselineRow(metric, project, metrics.length > 0));
     }
 
-    return rows;
+    return {
+      failures: failures.map((failure) => ({ ...failure, project })),
+      rows,
+    };
   }
 
-  /** Reads a baseline report into a name-to-entry lookup. */
+  /** Reads a baseline report into a name-to-metric lookup. */
   private readBaseline(
     args: CollectProjectRowsArguments,
-  ): Map<string, SizeLimitEntry> {
+  ): Map<string, SizeMetric> {
     if (args.baselineDirectory === undefined) return new Map();
-    const entries = this.readReport(
+    // Only the sizes are taken from the baseline. Whatever the run on `main`
+    // could not measure is that run's problem and was reported there; repeating
+    // it here would blame this change for it.
+    const { metrics } = this.readReport(
       args.workingDirectory,
       path.join(args.baselineDirectory, args.reportPath),
     );
-    return new Map(entries.map((entry) => [entry.name, entry]));
+    return new Map(metrics.map((metric) => [metric.name, metric]));
+  }
+
+  /**
+   * The severity of the worst limit a metric breached, if it breached one.
+   *
+   * A failing breach outranks an advisory one, so a metric that passed its
+   * ceiling while also passing an advisory limit below it reads as failing
+   * rather than as merely advised.
+   */
+  private readBreach(
+    limits: readonly ReportLimit[],
+  ): MetricSeverity | undefined {
+    const breached = limits.filter((limit) => limit.breached);
+
+    if (breached.length === 0) return undefined;
+
+    return breached.some((limit) => limit.severity === "fail")
+      ? "fail"
+      : "warn";
+  }
+
+  /**
+   * The ceiling a metric is actually held to.
+   *
+   * The lowest `fail` limit, because that is the one that stops a change, and
+   * the lowest of them when several are written because that is the one that
+   * binds first. A metric limited only by advice falls back to its lowest
+   * `warn` limit — the only ceiling it has — rather than reporting none.
+   */
+  private readGoverningLimit(
+    limits: readonly ReportLimit[],
+  ): number | undefined {
+    const failing = limits.filter((limit) => limit.severity === "fail");
+    const governing = failing.length > 0 ? failing : limits;
+    const values = governing.map((limit) => limit.value);
+
+    return values.length === 0 ? undefined : Math.min(...values);
+  }
+
+  /** The first label any limit wrote, which names the row in the table. */
+  private readLabel(limits: readonly ReportLimit[]): string | undefined {
+    return limits.find((limit) => limit.label !== null)?.label ?? undefined;
   }
 
   /** Derives the Nx project name from a report path. */
@@ -118,22 +176,29 @@ export class BundlesService {
     return path.basename(path.dirname(reportPath));
   }
 
-  /** Parses a size-limit report, tolerating an absent or malformed file. */
+  /** Parses a codometer report, tolerating an absent or malformed file. */
   private readReport(
     workingDirectory: string,
     reportPath: string,
-  ): SizeLimitEntry[] {
+  ): ProjectReport {
+    const empty: ProjectReport = { failures: [], metrics: [] };
+
     try {
-      const parsed = sizeLimitReportSchema.safeParse(
+      const parsed = codometerReportSchema.safeParse(
         JSON.parse(
           readFileSync(path.join(workingDirectory, reportPath), "utf8"),
         ),
       );
-      if (!parsed.success) return [];
+      if (!parsed.success) return empty;
 
-      return parsed.data.map((entry) => ({ ...entry, size: entry.size ?? 0 }));
+      return {
+        failures: parsed.data.failures ?? [],
+        metrics: parsed.data.targets.flatMap((target) =>
+          this.readSizeMetrics(target),
+        ),
+      };
     } catch {
-      return [];
+      return empty;
     }
   }
 
@@ -158,12 +223,41 @@ export class BundlesService {
     return [...new Set([...current, ...baseline])].toSorted();
   }
 
+  /**
+   * Pulls one target's byte-counting metrics out of the report.
+   *
+   * A codometer report carries everything a project measures — files, symbols,
+   * lines — and a size table wants only the numbers denominated in bytes, which
+   * the report says outright rather than leaving to be guessed from a name.
+   *
+   * The row is labelled with whatever the limit was written under, falling back
+   * to the target's own name. The metric's name stays the join key either way,
+   * so relabelling a limit never reads as a removal plus an addition.
+   */
+  private readSizeMetrics(target: ReportTarget): SizeMetric[] {
+    return target.metrics
+      .filter((metric) => metric.unit === BYTES_UNIT)
+      .map((metric) => ({
+        breach: this.readBreach(metric.limits),
+        empty: target.empty,
+        label: this.readLabel(metric.limits) ?? target.name,
+        limit: this.readGoverningLimit(metric.limits),
+        name: metric.name,
+        size: metric.value,
+      }));
+  }
+
   // 🌎 Public Methods
 
   /** Joins every current report to the baseline snapshot. */
-  collectRows(args: CollectRowsArguments): BundleRow[] {
-    return this.readReportPaths(args).flatMap((reportPath) =>
+  collect(args: CollectRowsArguments): BundleCollection {
+    const collections = this.readReportPaths(args).map((reportPath) =>
       this.collectProjectRows({ ...args, reportPath }),
     );
+
+    return {
+      failures: collections.flatMap((collection) => collection.failures),
+      rows: collections.flatMap((collection) => collection.rows),
+    };
   }
 }

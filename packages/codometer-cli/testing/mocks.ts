@@ -210,7 +210,7 @@ export function buildCodometerReport(
         files: 3,
         metrics: [
           {
-            limit: null,
+            limits: [],
             name: "codebase.files",
             path: "files",
             unit: null,

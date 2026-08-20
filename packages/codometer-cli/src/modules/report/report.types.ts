@@ -73,8 +73,18 @@ export interface ReportLimit {
 
 /** One measured number, and whatever limits it. */
 export interface ReportMetric {
-  /** Stays `null` where nothing limits the metric, never absent. */
-  limit: null | ReportLimit;
+  /**
+   * Every limit declared on the metric, in the order they were written.
+   *
+   * A list because the configuration accepts more than one limit on a single
+   * metric on purpose — a `warn` short of a `fail` is how a repository sees a
+   * number coming before it stops a change — and the gate already enforces all
+   * of them. A single field could only carry the last one written, which made
+   * the report unable to say what the gate was actually enforcing.
+   *
+   * Stays an empty array where nothing limits the metric, never absent.
+   */
+  limits: ReportLimit[];
   /**
    * The metric's name across runs: its target's name, then its path.
    *

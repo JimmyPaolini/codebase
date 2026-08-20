@@ -54,14 +54,14 @@ describe(ReportService, () => {
   it("names every metric by its target and its path", () => {
     expect(build().targets[0]?.metrics).toStrictEqual([
       {
-        limit: null,
+        limits: [],
         name: "codebase.files",
         path: "files",
         unit: null,
         value: 12,
       },
       {
-        limit: null,
+        limits: [],
         name: "codebase.typescript.interfaces",
         path: "typescript.interfaces",
         unit: null,
@@ -96,13 +96,15 @@ describe(ReportService, () => {
     const metrics = build(limits).targets[1]?.metrics;
 
     expect(
-      metrics?.find((metric) => metric.path === "size")?.limit,
-    ).toStrictEqual({
-      breached: false,
-      label: "Bundle",
-      severity: "fail",
-      value: 8000,
-    });
+      metrics?.find((metric) => metric.path === "size")?.limits,
+    ).toStrictEqual([
+      {
+        breached: false,
+        label: "Bundle",
+        severity: "fail",
+        value: 8000,
+      },
+    ]);
   });
 
   it("carries a breach with the severity it was declared at", () => {
@@ -120,14 +122,51 @@ describe(ReportService, () => {
     const metrics = build(limits).targets[0]?.metrics;
 
     expect(
-      metrics?.find((metric) => metric.path === "typescript.interfaces")?.limit,
-    ).toStrictEqual({
-      breached: true,
-      // Nothing labelled it, so the report says so rather than leaving the key out.
-      label: null,
-      severity: "warn",
-      value: 40,
-    });
+      metrics?.find((metric) => metric.path === "typescript.interfaces")
+        ?.limits,
+    ).toStrictEqual([
+      {
+        breached: true,
+        // Nothing labelled it, so the report says so rather than leaving the key out.
+        label: null,
+        severity: "warn",
+        value: 40,
+      },
+    ]);
+  });
+
+  it("carries every limit on one metric, not merely the last written", () => {
+    // The configuration accepts a `warn` short of a `fail` on one metric on
+    // purpose, and the gate enforces both. A report holding one of them could
+    // not say what was actually being enforced.
+    const limits: EvaluatedLimit[] = [
+      {
+        breached: true,
+        label: undefined,
+        limit: 7000,
+        measured: 4529,
+        metric: "size",
+        severity: "warn",
+        target: "compiled",
+      },
+      {
+        breached: false,
+        label: undefined,
+        limit: 8000,
+        measured: 4529,
+        metric: "size",
+        severity: "fail",
+        target: "compiled",
+      },
+    ];
+    const metrics = build(limits).targets[1]?.metrics;
+
+    expect(
+      metrics?.find((metric) => metric.path === "size")?.limits,
+    ).toStrictEqual([
+      { breached: true, label: null, severity: "warn", value: 7000 },
+      { breached: false, label: null, severity: "fail", value: 8000 },
+    ]);
   });
 
   // Three mutually contradictory signals is what the tool this replaces
@@ -144,7 +183,7 @@ describe(ReportService, () => {
       files: 0,
       metrics: [
         {
-          limit: null,
+          limits: [],
           name: "compiled.files",
           path: "files",
           unit: null,

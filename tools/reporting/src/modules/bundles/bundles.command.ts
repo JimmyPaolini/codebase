@@ -90,12 +90,15 @@ export class BundlesCommand extends CommandRunner implements ReportableCommand {
 
   /** Renders the report body from whatever the `bundlesize` target measured. */
   renderReport(options: ReportOptions): string {
+    const collection = this.bundlesService.collect({
+      baselineDirectory: options.baseline,
+      workingDirectory: process.cwd(),
+    });
+
     return this.bundleMarkdownService.renderSection({
       baselineUrl: options.baselineUrl,
-      rows: this.bundlesService.collectRows({
-        baselineDirectory: options.baseline,
-        workingDirectory: process.cwd(),
-      }),
+      failures: collection.failures,
+      rows: collection.rows,
     });
   }
 

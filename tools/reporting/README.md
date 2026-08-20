@@ -31,21 +31,56 @@ workspace tool and not a publishable package.
 
 ### 🎒 Bundles
 
-Reads the `size-limit-report.json` each project's `bundlesize` target wrote and
+Reads the `codometer-report.json` each project's `codometer` target wrote and
 compares it to a baseline snapshot of the same reports. It reads the JSON that
-[size-limit](https://github.com/ai/size-limit) writes — a file format, not a
-dependency; nothing here imports it.
+[codometer](../../packages/codometer-cli/README.md) writes — a file format, not
+a dependency; nothing here imports it. Every metric denominated in bytes becomes
+a row; every other metric a codometer report carries belongs to a different
+report than this one.
 
-The section reports every measured bundle with its size, baseline size, byte and
+The section reports every measured metric with its size, baseline size, byte and
 percentage change, limit, and share of that limit; a per-project subtotal; a
 headline total with a callout for whatever grew most; bundles that were not
 rebuilt, at their baseline size, collapsed; and separate counts of bundles that
 appeared or disappeared.
 
-Totals only ever compare bundles both sides measured. A renamed bundle is
-reported as one addition and one removal rather than a saving, because counting
-the removal without its replacement would invent a reduction that never
-happened.
+A row is marked ❌ when it breached a `fail` limit and ❗ when it breached a
+`warn` one, so "close to full" is declared per project in the codometer
+configuration rather than assumed by this renderer.
+
+A metric may carry several limits — a `warn` short of a `fail` is the point of
+the feature — so precedence is fixed rather than incidental. The **glyph** takes
+the worst breach: a breached `fail` outranks a breached `warn`, which outranks
+growth. The **`Limit` and `Used` columns** take the enforced ceiling, meaning
+the lowest `fail` limit, or the lowest `warn` limit when nothing fails the
+metric at all. So `Used` means the same thing on every row — the share of what
+actually stops a change — while the advisory state is carried by the glyph. A
+breached `warn` beneath a `fail` that held therefore reads as ❗ with the `fail`
+limit still in the column: neither reads as passing, and neither reads as
+failing. A target whose globs matched
+nothing is marked ⁉️ — the report says an empty match outright, which is what
+keeps it distinct from a target that genuinely measured zero bytes.
+
+Comparing against a baseline lives here and not in codometer. Codometer is
+stateless and measures only the tree in front of it; a baseline needs branches,
+workflow artifacts, and pull request context, which are facts about this
+repository rather than settings a measurement tool should carry.
+
+Metrics join to their baseline on the metric's name, which codometer builds from
+the target's name and the metric's path within it — both written in the
+configuration, so the key is stable across runs. Totals only ever compare
+metrics both sides measured. A renamed target is reported as one addition and
+one removal rather than a saving, because counting the removal without its
+replacement would invent a reduction that never happened.
+
+Byte counts are Node-version dependent: the bundled zlib differs between
+releases, so a baseline captured on one runtime and compared against a run on
+another shifts every number. Neither the report nor this table records the
+runtime — codometer's report deliberately holds nothing that varies between two
+runs over the same tree, and this tool renders on the pull request runner rather
+than the one that produced the baseline, so any version it stamped would be the
+wrong one. CI uses the runtime `.nvmrc` pins on both sides, and the rendered
+guidelines say so.
 
 ## Options
 
@@ -150,10 +185,10 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
 
 | Measure | Value |
 | --- | --- |
-| Callables | 89 |
+| Callables | 108 |
 | Files | 22 |
-| Calls traced | 111 |
-| Call stacks | 15 |
+| Calls traced | 131 |
+| Call stacks | 16 |
 | Deepest stack | 9 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 2 |
@@ -163,22 +198,22 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
 **1. `BundlesCommand.run`** — depth 9 · decorated-method
 
 ```text
-🚀 BundlesCommand.run(_passedParameters: string[], options: BundlesCommandOptions): Promise<void> [tools/reporting/src/modules/bundles/bundles.command.ts:103]
+🚀 BundlesCommand.run(_passedParameters: string[], options: BundlesCommandOptions): Promise<void> [tools/reporting/src/modules/bundles/bundles.command.ts:106]
    ↳ Renders this report alone, to wherever the flags point.
   └─> ReportingService.emit(…): Promise<void> [tools/reporting/src/modules/reporting/reporting.service.ts:57]
      ↳ Renders one report and writes it wherever the destination says.
     └─> BundlesCommand.renderReport(options: ReportOptions): string [tools/reporting/src/modules/bundles/bundles.command.ts:92]
        ↳ Renders the report body from whatever the `bundlesize` target measured.
-      └─> BundleMarkdownService.renderSection(args: RenderSectionArguments): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:336]
+      └─> BundleMarkdownService.renderSection(args: RenderSectionArguments): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:397]
          ↳ Renders the report body: its heading, and everything under it.
-        └─> BundleMarkdownService.renderMeasuredTable(rows: readonly BundleRow[]): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:178]
+        └─> BundleMarkdownService.renderMeasuredTable(rows: readonly MetricRow[]): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:236]
            ↳ Renders the table of everything this run rebuilt.
-          └─> BundleMarkdownService.flatMap(…)(this: undefined, group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:186]
-            └─> BundleMarkdownService.renderSubtotal(group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:214]
+          └─> BundleMarkdownService.flatMap(…)(this: undefined, group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:244]
+            └─> BundleMarkdownService.renderSubtotal(group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:270]
                ↳ Renders a project's rollup, which earns its line only with siblings.
-              └─> formatDelta(delta: number | undefined): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts:26]
+              └─> formatDelta(delta: number | undefined): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts:24]
                  ↳ Formats a signed delta, or an em dash when there is no baseline.
-                └─> formatBytes(bytes: number): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts:13]
+                └─> formatBytes(bytes: number): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts:11]
                    ↳ Formats a byte count, switching to megabytes once kilobytes get unwieldy.
 ```
 
@@ -191,46 +226,57 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
      ↳ Renders one report and writes it wherever the destination says.
     └─> BundlesCommand.renderReport(options: ReportOptions): string [tools/reporting/src/modules/bundles/bundles.command.ts:92]
        ↳ Renders the report body from whatever the `bundlesize` target measured.
-      └─> BundleMarkdownService.renderSection(args: RenderSectionArguments): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:336]
+      └─> BundleMarkdownService.renderSection(args: RenderSectionArguments): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:397]
          ↳ Renders the report body: its heading, and everything under it.
-        └─> BundleMarkdownService.renderMeasuredTable(rows: readonly BundleRow[]): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:178]
+        └─> BundleMarkdownService.renderMeasuredTable(rows: readonly MetricRow[]): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:236]
            ↳ Renders the table of everything this run rebuilt.
-          └─> BundleMarkdownService.flatMap(…)(this: undefined, group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:186]
-            └─> BundleMarkdownService.renderSubtotal(group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:214]
+          └─> BundleMarkdownService.flatMap(…)(this: undefined, group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:244]
+            └─> BundleMarkdownService.renderSubtotal(group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:270]
                ↳ Renders a project's rollup, which earns its line only with siblings.
-              └─> formatDelta(delta: number | undefined): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts:26]
+              └─> formatDelta(delta: number | undefined): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts:24]
                  ↳ Formats a signed delta, or an em dash when there is no baseline.
-                └─> formatBytes(bytes: number): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts:13]
+                └─> formatBytes(bytes: number): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts:11]
                    ↳ Formats a byte count, switching to megabytes once kilobytes get unwieldy.
 ```
 
 **3. `BundlesService.collectProjectRows`** — depth 4 · orphan-root
 
 ```text
-🚀 BundlesService.collectProjectRows(args: CollectProjectRowsArguments): BundleRow[] [tools/reporting/src/modules/bundles/bundles.service.ts:86]
+🚀 BundlesService.collectProjectRows(args: CollectProjectRowsArguments): BundleCollection [tools/reporting/src/modules/bundles/bundles.service.ts:91]
    ↳ Joins one project's current report to its baseline.
-  └─> BundlesService.readBaseline(args: CollectProjectRowsArguments): Map<string, SizeLimitEntry> [tools/reporting/src/modules/bundles/bundles.service.ts:105]
-     ↳ Reads a baseline report into a name-to-entry lookup.
-    └─> BundlesService.readReport(workingDirectory: string, reportPath: string): SizeLimitEntry[] [tools/reporting/src/modules/bundles/bundles.service.ts:122]
-       ↳ Parses a size-limit report, tolerating an absent or malformed file.
-      └─> BundlesService.map(…)(…): { size: number; name: string; passed?: boolean | undefined; sizeLimit?: number | undefined; } [tools/reporting/src/modules/bundles/bundles.service.ts:134]
+  └─> BundlesService.readBaseline(args: CollectProjectRowsArguments): Map<string, SizeMetric> [tools/reporting/src/modules/bundles/bundles.service.ts:118]
+     ↳ Reads a baseline report into a name-to-metric lookup.
+    └─> BundlesService.readReport(workingDirectory: string, reportPath: string): ProjectReport [tools/reporting/src/modules/bundles/bundles.service.ts:180]
+       ↳ Parses a codometer report, tolerating an absent or malformed file.
+      └─> BundlesService.flatMap(…)(…): SizeMetric[] [tools/reporting/src/modules/bundles/bundles.service.ts:196]
 ```
 
 <details>
-<summary>12 more call stacks</summary>
+<summary>13 more call stacks</summary>
 
-**4. `BundleMarkdownService.renderRow`** — depth 3 · orphan-root
+**4. `BundlesService.readSizeMetrics`** — depth 4 · orphan-root
 
 ```text
-🚀 BundleMarkdownService.renderRow(row: BundleRow): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:195]
+🚀 BundlesService.readSizeMetrics(target: ReportTarget): SizeMetric[] [tools/reporting/src/modules/bundles/bundles.service.ts:237]
+   ↳ Pulls one target's byte-counting metrics out of the report.
+  └─> BundlesService.map(…)(…): { breach: MetricSeverity | undefined; empty: boolean; label: string; limit: number | undefined; name: string; size: number; } [tools/reporting/src/modules/bundles/bundles.service.ts:240]
+    └─> BundlesService.readBreach(limits: readonly ReportLimit[]): MetricSeverity | undefined [tools/reporting/src/modules/bundles/bundles.service.ts:139]
+       ↳ The severity of the worst limit a metric breached, if it breached one.
+      └─> BundlesService.filter(…)(…): boolean [tools/reporting/src/modules/bundles/bundles.service.ts:142]
+```
+
+**5. `BundleMarkdownService.renderRow`** — depth 3 · orphan-root
+
+```text
+🚀 BundleMarkdownService.renderRow(row: MetricRow): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:253]
    ↳ Renders one table row.
-  └─> BundleMarkdownService.readStatus(row: BundleRow): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:146]
+  └─> BundleMarkdownService.readStatus(row: MetricRow): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:167]
      ↳ Picks the status icon for one row of the measured table.
-    └─> BundleMarkdownService.readGrowthStatus(row: BundleRow): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:123]
+    └─> BundleMarkdownService.readGrowthStatus(row: MetricRow): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:142]
        ↳ Picks the icon for a rebuilt bundle, from how far it moved.
 ```
 
-**5. `BundlesCommand.parseBaseline`** — depth 2 · decorated-method
+**6. `BundlesCommand.parseBaseline`** — depth 2 · decorated-method
 
 ```text
 🚀 BundlesCommand.parseBaseline(value: unknown): string | undefined [tools/reporting/src/modules/bundles/bundles.command.ts:56]
@@ -239,7 +285,7 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
      ↳ Narrows an option that carries text, or nothing at all.
 ```
 
-**6. `BundlesCommand.parseBaselineUrl`** — depth 2 · decorated-method
+**7. `BundlesCommand.parseBaselineUrl`** — depth 2 · decorated-method
 
 ```text
 🚀 BundlesCommand.parseBaselineUrl(value: unknown): string | undefined [tools/reporting/src/modules/bundles/bundles.command.ts:65]
@@ -248,7 +294,7 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
      ↳ Narrows an option that carries text, or nothing at all.
 ```
 
-**7. `BundlesCommand.parseMarkdown`** — depth 2 · decorated-method
+**8. `BundlesCommand.parseMarkdown`** — depth 2 · decorated-method
 
 ```text
 🚀 BundlesCommand.parseMarkdown(value: unknown): string | undefined [tools/reporting/src/modules/bundles/bundles.command.ts:74]
@@ -257,7 +303,7 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
      ↳ Narrows an option that carries text, or nothing at all.
 ```
 
-**8. `BundlesCommand.parseOutput`** — depth 2 · decorated-method
+**9. `BundlesCommand.parseOutput`** — depth 2 · decorated-method
 
 ```text
 🚀 BundlesCommand.parseOutput(value: unknown): string | undefined [tools/reporting/src/modules/bundles/bundles.command.ts:83]
@@ -266,7 +312,7 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
      ↳ Narrows an option that carries text, or nothing at all.
 ```
 
-**9. `ReportingCommand.parseBaseline`** — depth 2 · decorated-method
+**10. `ReportingCommand.parseBaseline`** — depth 2 · decorated-method
 
 ```text
 🚀 ReportingCommand.parseBaseline(value: unknown): string | undefined [tools/reporting/src/modules/reporting/reporting.command.ts:56]
@@ -275,7 +321,7 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
      ↳ Narrows an option that carries text, or nothing at all.
 ```
 
-**10. `ReportingCommand.parseBaselineUrl`** — depth 2 · decorated-method
+**11. `ReportingCommand.parseBaselineUrl`** — depth 2 · decorated-method
 
 ```text
 🚀 ReportingCommand.parseBaselineUrl(value: unknown): string | undefined [tools/reporting/src/modules/reporting/reporting.command.ts:65]
@@ -284,7 +330,7 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
      ↳ Narrows an option that carries text, or nothing at all.
 ```
 
-**11. `ReportingCommand.parseMarkdown`** — depth 2 · decorated-method
+**12. `ReportingCommand.parseMarkdown`** — depth 2 · decorated-method
 
 ```text
 🚀 ReportingCommand.parseMarkdown(value: unknown): string | undefined [tools/reporting/src/modules/reporting/reporting.command.ts:74]
@@ -293,7 +339,7 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
      ↳ Narrows an option that carries text, or nothing at all.
 ```
 
-**12. `main`** — depth ≥ 2 · module-bootstrap
+**13. `main`** — depth ≥ 2 · module-bootstrap
 
 ```text
 🚀 main(): Promise<void> [tools/reporting/src/main.ts:9]
@@ -301,7 +347,7 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
   └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:38]
 ```
 
-**13. `ReportingService.constructor`** — depth 2 · orphan-root
+**14. `ReportingService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 ReportingService.constructor(…): ReportingService [tools/reporting/src/modules/reporting/reporting.service.ts:27]
@@ -309,7 +355,7 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**14. `BundlesCommand.constructor`** — depth ≥ 2 · orphan-root
+**15. `BundlesCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 BundlesCommand.constructor(…): BundlesCommand [tools/reporting/src/modules/bundles/bundles.command.ts:33]
@@ -317,7 +363,7 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**15. `ReportingCommand.constructor`** — depth ≥ 2 · orphan-root
+**16. `ReportingCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 ReportingCommand.constructor(…): ReportingCommand [tools/reporting/src/modules/reporting/reporting.command.ts:33]

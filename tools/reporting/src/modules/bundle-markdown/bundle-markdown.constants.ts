@@ -1,8 +1,5 @@
 // ♟️ Constants
 
-/** Fraction of a limit above which a bundle is called out as nearly full. */
-export const CROWDED_LIMIT = 0.9;
-
 /** Heading the rendered section is filed under. */
 export const HEADING = "## 🎒 Bundles";
 

@@ -123,7 +123,7 @@ describe("codometer command over a fixture directory", () => {
     expect(
       codebase?.metrics.find((metric) => metric.path === "typescript.files"),
     ).toStrictEqual({
-      limit: null,
+      limits: [],
       name: "codebase.typescript.files",
       path: "typescript.files",
       unit: null,

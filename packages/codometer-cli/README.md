@@ -339,14 +339,17 @@ not, so a consumer can render the headroom rather than only the failures.
       "files": 1,
       "metrics": [
         {
-          "limit": null,
+          "limits": [],
           "name": "compiled.files",
           "path": "files",
           "unit": null,
           "value": 1
         },
         {
-          "limit": { "breached": true, "label": "Bundle", "severity": "fail", "value": 1000 },
+          "limits": [
+            { "breached": true, "label": null, "severity": "warn", "value": 900 },
+            { "breached": true, "label": "Bundle", "severity": "fail", "value": 1000 }
+          ],
           "name": "compiled.size",
           "path": "size",
           "unit": "bytes",
@@ -364,9 +367,16 @@ not, so a consumer can render the headroom rather than only the failures.
 | `name` | The metric's name across runs — its target, then its path. The join key a later run is compared on |
 | `path` | The metric's path within its target, with no target name on the front |
 | `unit` | `"bytes"` where the value counts bytes, `null` for a plain count |
-| `limit` | `null` where nothing limits the metric — never an absent key |
+| `limits` | Every limit declared on the metric, in the order written. Empty where nothing limits it — never an absent key |
 | `empty` | Said outright when a target's globs matched nothing |
 | `failures` | Whatever the run could not do: a target that would not measure, a limit that bound to nothing |
+
+**A metric may carry more than one limit.** The configuration accepts a `warn`
+short of a `fail` on a single metric on purpose — that is how a repository sees
+a number coming before it stops a change — and the gate enforces all of them, so
+the report lists all of them. A consumer deciding what to show picks
+deliberately: the `fail` limit is the ceiling that stops a change, and a
+breached `warn` beneath it is advice, not a failure.
 
 **Byte values are raw and decimal.** A renderer showing kilobytes divides by
 1000, the same units a limit written `"8 KB"` is read in.
@@ -510,7 +520,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Measure | Value |
 | --- | --- |
-| Callables | 312 |
+| Callables | 313 |
 | Files | 104 |
 | Calls traced | 491 |
 | Call stacks | 11 |

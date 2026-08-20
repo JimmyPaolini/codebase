@@ -23,7 +23,16 @@
 // which sits two levels above this project.
 
 module.exports = {
-  limits: [{ metric: "Library bundle.size", value: "200 KB" }],
+  // Two limits on one metric: the advisory one at 90% of the ceiling is what
+  // used to be a constant inside the pull request renderer, which meant every
+  // project got the same 90% whether or not that suited it and nobody could
+  // see or change it. Declared here it is visible, per project, and the report
+  // carries both — the advisory state and the real ceiling — so neither masks
+  // the other.
+  limits: [
+    { metric: "Library bundle.size", severity: "warn", value: "180 KB" },
+    { metric: "Library bundle.size", value: "200 KB" },
+  ],
   targets: [
     {
       analyses: ["size"],

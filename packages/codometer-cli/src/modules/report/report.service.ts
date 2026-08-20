@@ -51,17 +51,18 @@ export class ReportService {
   /** Writes out every metric one target measured, in the order counted. */
   private buildMetrics(args: {
     index: TargetMetricIndex;
-    limits: ReadonlyMap<string, EvaluatedLimit>;
+    limits: ReadonlyMap<string, EvaluatedLimit[]>;
     target: string;
   }): ReportMetric[] {
     const metrics: ReportMetric[] = [];
 
     for (const [path, value] of args.index.metrics) {
       const name = this.buildMetricName(args.target, path);
-      const limit = args.limits.get(name);
 
       metrics.push({
-        limit: limit === undefined ? null : this.buildLimit(limit),
+        limits: (args.limits.get(name) ?? []).map((limit) =>
+          this.buildLimit(limit),
+        ),
         name,
         path,
         unit: this.readUnit(path),
@@ -78,14 +79,25 @@ export class ReportService {
    * Keyed by the joined name rather than by the written path, because two
    * limits may be written differently — one qualified, one leaning on the
    * default target — and still address the same metric.
+   *
+   * Collected rather than overwritten. Several limits may land on one metric,
+   * and keeping only the last would report a ceiling the gate is not the only
+   * one enforcing.
    */
   private indexLimits(
     limits: readonly EvaluatedLimit[],
-  ): Map<string, EvaluatedLimit> {
-    const indexed = new Map<string, EvaluatedLimit>();
+  ): Map<string, EvaluatedLimit[]> {
+    const indexed = new Map<string, EvaluatedLimit[]>();
 
     for (const limit of limits) {
-      indexed.set(this.buildMetricName(limit.target, limit.metric), limit);
+      const name = this.buildMetricName(limit.target, limit.metric);
+      const existing = indexed.get(name);
+
+      if (existing === undefined) {
+        indexed.set(name, [limit]);
+      } else {
+        existing.push(limit);
+      }
     }
 
     return indexed;

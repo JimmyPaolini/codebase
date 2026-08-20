@@ -23,23 +23,27 @@ import { ReportingService } from "../reporting/reporting.service";
 import { BundlesCommand } from "./bundles.command";
 import { BundlesService } from "./bundles.service";
 
-import type { BundleRow } from "./bundles.types";
+import type { BundleCollection, MetricRow } from "./bundles.types";
 
-const row: BundleRow = {
+const row: MetricRow = {
   baseSize: undefined,
+  breach: undefined,
+  empty: false,
+  label: "Compiled JavaScript",
+  limit: 2000,
   measured: true,
-  missing: false,
-  name: "Compiled JavaScript",
-  passed: true,
+  name: "Compiled JavaScript.size",
   project: "logger",
   removed: false,
   size: 1000,
-  sizeLimit: 2000,
 };
 
 describe(BundlesCommand, () => {
   let command: BundlesCommand;
-  const collectRows = vi.fn<() => BundleRow[]>(() => [row]);
+  const collect = vi.fn<() => BundleCollection>(() => ({
+    failures: [],
+    rows: [row],
+  }));
   const temporaryDirectories: string[] = [];
 
   /** A throwaway directory that cleans itself up after the suite. */
@@ -56,7 +60,7 @@ describe(BundlesCommand, () => {
         BundleMarkdownService,
         ReportingMarkersService,
         ReportingService,
-        { provide: BundlesService, useValue: { collectRows } },
+        { provide: BundlesService, useValue: { collect } },
         {
           provide: LoggerService,
           useValue: createMock<LoggerService>(),
@@ -68,7 +72,7 @@ describe(BundlesCommand, () => {
   });
 
   afterEach(() => {
-    collectRows.mockClear();
+    collect.mockClear();
   });
 
   afterAll(() => {
@@ -88,7 +92,7 @@ describe(BundlesCommand, () => {
         BundleMarkdownService,
         ReportingMarkersService,
         ReportingService,
-        { provide: BundlesService, useValue: { collectRows } },
+        { provide: BundlesService, useValue: { collect } },
         {
           provide: LoggerService,
           useValue: createMock<LoggerService>(),
@@ -204,7 +208,7 @@ describe(BundlesCommand, () => {
       output: path.join(makeDirectory(), "section.md"),
     });
 
-    expect(collectRows).toHaveBeenCalledWith({
+    expect(collect).toHaveBeenCalledWith({
       baselineDirectory: ".baseline",
       workingDirectory: process.cwd(),
     });
