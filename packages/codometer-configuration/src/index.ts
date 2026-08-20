@@ -19,6 +19,7 @@ export {
   DEFAULT_TARGET_COMPRESSION,
   DEFAULT_TARGET_DIRECTORY,
   DEFAULT_TARGET_NAME,
+  REPOSITORY_ROOT_MARKERS,
   UnknownConfigurationFileTypeError,
 } from "./modules/configuration/configuration.constants";
 export { ConfigurationFileNotFoundError } from "./modules/configuration/configuration.errors";

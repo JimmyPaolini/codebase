@@ -510,13 +510,13 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Measure | Value |
 | --- | --- |
-| Callables | 308 |
-| Files | 103 |
-| Calls traced | 487 |
+| Callables | 312 |
+| Files | 104 |
+| Calls traced | 491 |
 | Call stacks | 11 |
 | Deepest stack | 13 |
 | Stacks through recursion | 1 |
-| Unfollowable calls | 10 |
+| Unfollowable calls | 11 |
 
 ### Call stacks
 

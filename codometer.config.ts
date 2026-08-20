@@ -9,5 +9,8 @@
  * root. This is that file, and its whole job is to be found: the configuration
  * itself, including the convention that lets a project be measured without any
  * configuration file of its own, is written in `configuration/`.
+ *
+ * The `.js` extension is the repository's rule for a relative import and is
+ * what the configuration loader resolves to the TypeScript source beside it.
  */
-export { default } from "./configuration/codometer.config.ts";
+export { default } from "./configuration/codometer.config.js";

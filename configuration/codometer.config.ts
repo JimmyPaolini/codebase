@@ -61,21 +61,33 @@ const findWorkspaceDirectory = (searchDirectory: string): string => {
   }
 };
 
+/** Whether a directory is a project rather than an ordinary folder. */
+const isProjectDirectory = (directory: string): boolean =>
+  existsSync(path.join(directory, MANIFEST_FILE));
+
 /**
  * Reads the limit a project declares for its own compiled JavaScript.
  *
  * It lives in the project's manifest beside `typeCoverage`, which is where
  * every other per-project gate in this repository is written. A project that
  * declares none is measured and reported like the rest, and gated by nothing.
+ *
+ * A manifest nothing can parse stops the run and names itself. Read as "no
+ * limit declared" it would silently leave the project with no limit at all,
+ * which is the one failure a size gate must never have.
  */
 const readDeclaredLimit = (projectDirectory: string): string | undefined => {
   const manifestPath = path.join(projectDirectory, MANIFEST_FILE);
+  let manifest: unknown;
 
-  if (!existsSync(manifestPath)) {
-    return undefined;
+  try {
+    manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+  } catch (error: unknown) {
+    const reason = error instanceof Error ? error.message : String(error);
+
+    throw new Error(`Could not read ${manifestPath}: ${reason}`);
   }
 
-  const manifest: unknown = JSON.parse(readFileSync(manifestPath, "utf8"));
   const declared = (manifest as { sizeLimit?: unknown }).sizeLimit;
 
   return typeof declared === "string" ? declared : undefined;
@@ -196,15 +208,24 @@ const buildWorkspaceConfiguration = (): CodometerConfiguration => ({
  * A project whose targets are not derivable this way — one emitting several
  * bundles, or declaring its limit inline — carries a configuration file of its
  * own, which fully replaces this one for that folder.
+ *
+ * A folder that is no project at all gets no target rather than one over a
+ * build nobody emits. A project that has not been built yet and a folder that
+ * was never going to have a build must not read alike: the first is an empty
+ * target, which is what the empty-match rule exists to report on.
  */
 const codometerConfiguration: CodometerConfigurationFactory = (context) => {
   const workspaceDirectory = findWorkspaceDirectory(
     context.configurationDirectory,
   );
 
-  return context.directory === workspaceDirectory
-    ? buildWorkspaceConfiguration()
-    : buildProjectConfiguration(context, workspaceDirectory);
+  if (context.directory === workspaceDirectory) {
+    return buildWorkspaceConfiguration();
+  }
+
+  return isProjectDirectory(context.directory)
+    ? buildProjectConfiguration(context, workspaceDirectory)
+    : { ...sharedConfiguration };
 };
 
 export default codometerConfiguration;

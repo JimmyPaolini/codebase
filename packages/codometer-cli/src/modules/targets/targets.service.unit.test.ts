@@ -2,6 +2,7 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { TargetOutsideRepositoryError } from "./targets.errors";
 import { TargetsService } from "./targets.service";
 
 import type { ResolvedCodometerTarget } from "@codometer/configuration";
@@ -11,12 +12,14 @@ import type { Dirent } from "node:fs";
 // tree, which is what lets these assertions read which directories it entered.
 // Real trees, links, and unreadable directories are walked in
 // `targets.service.integration.test.ts`.
-const { readdirSyncMock } = vi.hoisted(() => ({
+const { existsSyncMock, readdirSyncMock } = vi.hoisted(() => ({
+  existsSyncMock: vi.fn<(candidatePath: string) => boolean>(),
   readdirSyncMock: vi.fn<(directory: string) => Dirent[]>(),
 }));
 
 vi.mock("node:fs", async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
+  existsSync: existsSyncMock,
   readdirSync: readdirSyncMock,
 }));
 
@@ -88,6 +91,12 @@ describe(TargetsService, () => {
   });
 
   beforeEach(() => {
+    existsSyncMock.mockReset();
+    // The mocked tree is a repository rooted at `/repo`, which is how far out
+    // of the measured folder a target is allowed to reach.
+    existsSyncMock.mockImplementation(
+      (candidatePath: string) => candidatePath === "/repo/.git",
+    );
     readdirSyncMock.mockReset();
     readdirSyncMock.mockImplementation((directory: string) =>
       (TREE[directory] ?? []).map(([name, isFile]) =>
@@ -125,6 +134,15 @@ describe(TargetsService, () => {
     expect(readdirSyncMock).toHaveBeenCalledWith("/repo/dist", {
       withFileTypes: true,
     });
+  });
+
+  it("refuses a target whose directory lands outside the repository", () => {
+    expect(() =>
+      service.matchFiles({
+        target: buildTarget({ directory: "../../.." }),
+        workingDirectory: "/repo/packages/project",
+      }),
+    ).toThrow(TargetOutsideRepositoryError);
   });
 
   it("leaves out a file no include glob claims", () => {

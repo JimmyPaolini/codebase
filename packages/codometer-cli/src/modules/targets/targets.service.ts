@@ -1,9 +1,11 @@
-import { type Dirent, readdirSync, statSync } from "node:fs";
+import { type Dirent, existsSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 
+import { REPOSITORY_ROOT_MARKERS } from "@codometer/configuration";
 import { Injectable, Logger } from "@nestjs/common";
 
 import { GLOB_MAGIC_CHARACTERS, PATH_SEPARATOR } from "./targets.constants";
+import { TargetOutsideRepositoryError } from "./targets.errors";
 
 import type {
   MatchTargetFilesArguments,
@@ -52,6 +54,38 @@ export class TargetsService {
         : this.leadsToBase(base, relativeDirectory) ||
           this.sitsInsideBase(base, relativeDirectory),
     );
+  }
+
+  /**
+   * The furthest out a target is allowed to reach, from where the run started.
+   *
+   * The repository holding the measured directory, or that directory itself
+   * when nothing above it looks like one. Found by marker rather than by
+   * asking git, which is never invoked here, and generic to every repository —
+   * it says where measuring stops, not how any tree beneath it is arranged.
+   */
+  private findBoundary(workingDirectory: string): string {
+    let candidateDirectory = path.resolve(workingDirectory);
+
+    for (;;) {
+      const directory = candidateDirectory;
+
+      if (
+        REPOSITORY_ROOT_MARKERS.some((marker) =>
+          existsSync(path.join(directory, marker)),
+        )
+      ) {
+        return directory;
+      }
+
+      const parentDirectory = path.dirname(candidateDirectory);
+
+      if (parentDirectory === candidateDirectory) {
+        return path.resolve(workingDirectory);
+      }
+
+      candidateDirectory = parentDirectory;
+    }
   }
 
   /** Whether the last segment of a path starts with a dot. */
@@ -168,6 +202,13 @@ export class TargetsService {
     );
   }
 
+  /** Whether a directory is the boundary or sits somewhere beneath it. */
+  private sitsInsideBoundary(boundary: string, directory: string): boolean {
+    return (
+      directory === boundary || directory.startsWith(`${boundary}${path.sep}`)
+    );
+  }
+
   /**
    * The literal path prefix of a glob, up to its first magic character.
    *
@@ -225,7 +266,9 @@ export class TargetsService {
    * The walk starts at the target's own directory, which is the measured one
    * unless the target named a way out of it. Where a repository builds is a
    * convention its configuration states and this service is told, never one
-   * inferred here from a project's position.
+   * inferred here from a project's position — but the reach is bounded: a
+   * directory landing outside the repository fails the target by name rather
+   * than measuring whatever it found there.
    *
    * Sorted because the walk visits directories in whatever order the
    * filesystem reports them, and a size is a sum of every file either way —
@@ -236,6 +279,16 @@ export class TargetsService {
       args.workingDirectory,
       args.target.directory,
     );
+    const boundary = this.findBoundary(args.workingDirectory);
+
+    if (!this.sitsInsideBoundary(boundary, walkDirectory)) {
+      throw new TargetOutsideRepositoryError(
+        args.target.name,
+        walkDirectory,
+        boundary,
+      );
+    }
+
     const prefix = this.readTargetPrefix(walkDirectory, args.workingDirectory);
     const matched = this.walk({
       absoluteDirectory: walkDirectory,
