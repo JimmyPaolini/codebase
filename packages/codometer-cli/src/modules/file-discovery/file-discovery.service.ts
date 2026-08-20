@@ -1,4 +1,4 @@
-import { readdirSync } from "node:fs";
+import { type Dirent, readdirSync } from "node:fs";
 import path from "node:path";
 
 import { Injectable, Logger } from "@nestjs/common";
@@ -152,6 +152,27 @@ export class FileDiscoveryService {
   }
 
   /**
+   * Reads a directory's entries, or none when the directory cannot be read.
+   *
+   * A directory can vanish or refuse to open partway through a walk — one
+   * being cleaned up by another process, a mount the caller has no permission
+   * on. Shelling out to git never failed for either reason, so letting one
+   * unreadable directory abort the whole measurement would be a regression:
+   * warn, skip it, and keep counting the rest.
+   */
+  private readDirectoryEntries(args: WalkDirectoryArguments): Dirent[] {
+    try {
+      return readdirSync(args.absoluteDirectory, { withFileTypes: true });
+    } catch (error: unknown) {
+      this.logger.warn(`📂 Skipped unreadable directory`, undefined, {
+        path: args.absoluteDirectory,
+        reason: String(error),
+      });
+      return [];
+    }
+  }
+
+  /**
    * Reads the configured ignore files into rule sets anchored at the root.
    *
    * A missing file is a warning rather than a failure: a repository that has
@@ -189,9 +210,7 @@ export class FileDiscoveryService {
    * in full and thrown away.
    */
   private walkDirectory(args: WalkDirectoryArguments): string[] {
-    const entries = readdirSync(args.absoluteDirectory, {
-      withFileTypes: true,
-    });
+    const entries = this.readDirectoryEntries(args);
     const walkArguments = this.applyDirectoryIgnoreFile(args);
     const files: string[] = [];
 

@@ -2,9 +2,12 @@ import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { Test } from "@nestjs/testing";
-import { beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { createFixtureTree } from "../../../testing/fixture-tree";
+import {
+  createFixtureTree,
+  removeFixtureTree,
+} from "../../../testing/fixture-tree";
 import { MainModule } from "../../main.module";
 
 import { CodometerCommand } from "./codometer.command";
@@ -15,9 +18,10 @@ const REPORT_FILE_NAME = "codometer-report.json";
 
 describe("codometer command over a fixture directory", () => {
   let statistics: CodeStatisticsResult;
+  let workingDirectory: string;
 
   beforeAll(async () => {
-    const workingDirectory = createFixtureTree();
+    workingDirectory = createFixtureTree();
 
     // The fixture is not a git repository and never becomes one. Discovery
     // that shelled out to `git ls-files` could not measure it at all.
@@ -40,6 +44,10 @@ describe("codometer command over a fixture directory", () => {
       readFileSync(path.join(workingDirectory, REPORT_FILE_NAME), "utf8"),
     ) as CodeStatisticsResult;
   }, 60_000);
+
+  afterAll(() => {
+    removeFixtureTree(workingDirectory);
+  });
 
   it("measures the files discovery kept", () => {
     expect.hasAssertions();

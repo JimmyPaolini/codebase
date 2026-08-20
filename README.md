@@ -133,32 +133,32 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-163234-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-163485-22c55e?style=flat-square)
 ![Repo Size](https://img.shields.io/badge/Repo_Size-7_MiB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-342-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-1248-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-1249-3178c6?style=flat-square)
 
 ### TypeScript & JavaScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-1185-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-1186-3178c6?style=flat-square)
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-37-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-301-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-302-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-108-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-424-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-6352-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-2466-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-7415-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-1403-059669?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-6375-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-2467-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-7437-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-1405-059669?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-482-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-31-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-9633-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-5457-0284c7?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-9638-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-5462-0284c7?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-743-db2777?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-1585-ea580c?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-3036-6366f1?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-6609-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-12208-475569?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-1586-ea580c?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-3042-6366f1?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-6613-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-12222-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-50-ca8a04?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-13-166534?style=flat-square)
 
@@ -279,7 +279,7 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ![Errors Files](https://img.shields.io/badge/Errors_Files-6-059669?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-33-ca8a04?style=flat-square)
 ![Unit Tests](https://img.shields.io/badge/Unit_Tests-276-7c3aed?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-14-0284c7?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-15-0284c7?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-9-16a34a?style=flat-square)
 
 ### Jupyter

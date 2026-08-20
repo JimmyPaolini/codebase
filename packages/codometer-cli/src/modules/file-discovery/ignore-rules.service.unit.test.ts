@@ -1,13 +1,16 @@
-import { mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import path from "node:path";
+import * as fs from "node:fs";
 
 import { Test } from "@nestjs/testing";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { IgnoreRulesService } from "./ignore-rules.service";
 
 import type { IgnoreScope } from "./ignore-rules.types";
+
+// Pattern matching is pure, so the only I/O this service does — reading an
+// ignore file — is mocked rather than staged on disk. Real trees are walked in
+// `file-discovery.service.integration.test.ts`.
+vi.mock("node:fs");
 
 describe(IgnoreRulesService, () => {
   let service: IgnoreRulesService;
@@ -166,29 +169,59 @@ describe(IgnoreRulesService, () => {
   });
 
   describe("reading a rule set from a file", () => {
-    it("reads the patterns a file holds", () => {
+    beforeEach(() => {
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readFileSync).mockReturnValue(
+        "# Generated\npnpm-lock.yaml\n\n/CHANGELOG.md\n",
+      );
+    });
+
+    it("reads every pattern the file holds", () => {
       expect.hasAssertions();
 
-      const directory = mkdtempSync(path.join(tmpdir(), "codometer-ignore-"));
-      const filePath = path.join(directory, ".codometerignore");
-      writeFileSync(filePath, "# Generated\npnpm-lock.yaml\n\n/CHANGELOG.md\n");
+      const scope = service.readScope({
+        directory: "",
+        filePath: "/repository/.codometerignore",
+      });
+      const scopes = scope === undefined ? [] : [scope];
 
-      const scope = service.readScope({ directory: "", filePath });
+      expect(fs.readFileSync).toHaveBeenCalledWith(
+        "/repository/.codometerignore",
+        "utf8",
+      );
+      expect(service.isIgnored(scopes, "pnpm-lock.yaml")).toBe(true);
+      expect(service.isIgnored(scopes, "CHANGELOG.md")).toBe(true);
+      // The comment line is a comment, not a pattern claiming a file.
+      expect(service.isIgnored(scopes, "Generated")).toBe(false);
+    });
 
-      expect(scope).toBeDefined();
-      expect(
-        service.isIgnored(scope === undefined ? [] : [scope], "pnpm-lock.yaml"),
-      ).toBe(true);
+    it("anchors the patterns at the directory it is given", () => {
+      expect.hasAssertions();
+
+      const scope = service.readScope({
+        directory: "applications/app",
+        filePath: "/repository/applications/app/.codometerignore",
+      });
+      const scopes = scope === undefined ? [] : [scope];
+
+      expect(service.isIgnored(scopes, "applications/app/CHANGELOG.md")).toBe(
+        true,
+      );
+      expect(service.isIgnored(scopes, "CHANGELOG.md")).toBe(false);
     });
 
     it("returns nothing when the file is absent", () => {
       expect.hasAssertions();
+
+      vi.mocked(fs.existsSync).mockReturnValue(false);
+
       expect(
         service.readScope({
           directory: "",
           filePath: "/nowhere/.codometerignore",
         }),
       ).toBeUndefined();
+      expect(fs.readFileSync).not.toHaveBeenCalled();
     });
   });
 });

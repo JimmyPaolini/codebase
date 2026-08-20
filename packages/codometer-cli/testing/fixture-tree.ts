@@ -1,4 +1,10 @@
-import { mkdirSync, mkdtempSync, symlinkSync, writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -42,6 +48,9 @@ const FIXTURE_FILES: Readonly<Record<string, string>> = {
  *
  * `CLAUDE.md` is a symlink to `AGENTS.md`, the shape the repository's own tree
  * has and the one that used to be counted twice.
+ *
+ * Every caller owes the tree a `removeFixtureTree` — a suite that forgets
+ * leaves its trees behind in the system temporary directory for good.
  */
 export function createFixtureTree(): string {
   const root = mkdtempSync(path.join(tmpdir(), "codometer-fixture-"));
@@ -55,4 +64,9 @@ export function createFixtureTree(): string {
   symlinkSync(path.join(root, "AGENTS.md"), path.join(root, "CLAUDE.md"));
 
   return root;
+}
+
+/** Removes a fixture tree, whether or not the suite that made it succeeded. */
+export function removeFixtureTree(root: string): void {
+  rmSync(root, { force: true, recursive: true });
 }
