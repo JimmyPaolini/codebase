@@ -131,7 +131,7 @@ export function buildCodeStatistics(
       lines: 0,
       protocols: 0,
     },
-    repoSizeMiB: 0,
+    repositoryBytes: 0,
     shell: {
       commentLines: 0,
       comments: 0,

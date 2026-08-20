@@ -186,7 +186,7 @@ describe(OutputMarkdownService, () => {
       lines: 39,
       protocols: 40,
     },
-    repoSizeMiB: 2,
+    repositoryBytes: 2_048_000,
     shell: {
       commentLines: 219,
       comments: 220,

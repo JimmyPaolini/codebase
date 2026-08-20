@@ -204,7 +204,11 @@ export function buildPythonGroup(statistics: CodeStatisticsResult): string {
 export function buildRepositoryGroup(statistics: CodeStatisticsResult): string {
   return buildGroup("Repository", [
     buildBadge("Lines of Code", statistics.linesOfCode, "22c55e"),
-    buildBadge("Repo Size", `${statistics.repoSizeMiB} MiB`, "6b7280"),
+    buildBadge(
+      "Repository Size",
+      formatRepositoryBytes(statistics.repositoryBytes),
+      "6b7280",
+    ),
     buildBadge("Folders", statistics.folders, "4a4a4a"),
     buildBadge("Source Files", statistics.sourceFiles, "3178c6"),
     ...buildCustomBadges(statistics, "repository"),
@@ -324,4 +328,20 @@ export function encodeValue(input: number | string): string {
     .replaceAll("-", "--")
     .replaceAll("_", "__")
     .replaceAll(" ", "_");
+}
+
+/**
+ * Formats a byte count in decimal units, switching to megabytes once
+ * kilobytes read awkwardly.
+ *
+ * Decimal because every other size in this project is: a limit written as
+ * `"8 KB"` parses as 8000 bytes, and dividing by 1024 here would print this
+ * badge as a number no limit in the workspace ever mentions.
+ */
+export function formatRepositoryBytes(bytes: number): string {
+  if (bytes >= 1_000_000) {
+    return `${(bytes / 1_000_000).toFixed(2)} MB`;
+  }
+
+  return `${(bytes / 1000).toFixed(2)} kB`;
 }

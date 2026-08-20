@@ -1,6 +1,3 @@
-import { statSync } from "node:fs";
-import path from "node:path";
-
 import { DEFAULT_TARGET_NAME } from "@codometer/configuration";
 import { Injectable } from "@nestjs/common";
 
@@ -72,7 +69,14 @@ export class CodometerService {
       ),
       workingDirectory: directory,
     });
-    const repoBytes = this.getRepositoryBytes(discoveredFiles.files, directory);
+    // `none` compression is size analysis's own way of saying "uncompressed",
+    // which is what a headline byte total is: the reader is not asking what
+    // this target compresses to, only how large it is.
+    const size = this.sizeAnalysisService.analyze({
+      compression: "none",
+      files: discoveredFiles.files,
+      workingDirectory: directory,
+    });
 
     return {
       css: { ...languages.css },
@@ -96,10 +100,7 @@ export class CodometerService {
         languages.jupyter.codeLines,
       markdown: { ...languages.markdown },
       python: { ...languages.python },
-      // Rounded to a whole MiB on purpose. At one decimal place the total sat
-      // 7 KiB from a rounding boundary, so an ordinary commit flipped the badge
-      // and CI disagreed with whichever machine wrote it last.
-      repoSizeMiB: Math.round(repoBytes / 1024 / 1024),
+      repositoryBytes: size.bytes,
       shell: { ...languages.shell },
       sourceFiles:
         languages.typescript.tsFiles +
@@ -206,23 +207,6 @@ export class CodometerService {
     }
 
     return folders.size;
-  }
-
-  /**
-   * Sum the on-disk sizes of the target's files.
-   */
-  private getRepositoryBytes(files: string[], directory: string): number {
-    let repositoryBytes = 0;
-
-    for (const filePath of files) {
-      try {
-        repositoryBytes += statSync(path.resolve(directory, filePath)).size;
-      } catch {
-        continue;
-      }
-    }
-
-    return repositoryBytes;
   }
 
   /**

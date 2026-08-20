@@ -263,10 +263,30 @@ describe(CodometerService, () => {
         files: 2,
         language: result.statistics,
         name: "codebase",
-        // Nobody asked what the codebase compresses to, so nothing answered.
+        // Nobody asked what the codebase compresses to, so nothing answered —
+        // its byte-precise total lives on `language.repositoryBytes` instead,
+        // from the same size analysis measured with no compression.
         size: undefined,
       },
     ]);
+  });
+
+  it("measures the codebase's own bytes with no compression", () => {
+    const result = buildService().measure({
+      configuration,
+      outputPaths: [],
+      workingDirectory: "/repo",
+    });
+
+    // No declared targets here, so the codebase's own language analysis is
+    // the only thing that could have called it — pinned exactly, not just
+    // "at least once with these args".
+    expect(sizeAnalysisService.analyze).toHaveBeenCalledExactlyOnceWith({
+      compression: "none",
+      files: discoveredFiles.files,
+      workingDirectory: "/repo",
+    });
+    expect(result.statistics.repositoryBytes).toBe(4529);
   });
 
   it("measures the size of a declared target and leaves its language alone", () => {
@@ -280,7 +300,11 @@ describe(CodometerService, () => {
       target: compiledTarget,
       workingDirectory: "/repo",
     });
-    expect(sizeAnalysisService.analyze).toHaveBeenCalledExactlyOnceWith({
+    // Exactly two calls: the codebase's own uncompressed total first, then
+    // this declared target's compressed `size` metric — not "at least one
+    // matching call", which would pass even if size analysis ran twice.
+    expect(sizeAnalysisService.analyze).toHaveBeenCalledTimes(2);
+    expect(sizeAnalysisService.analyze).toHaveBeenNthCalledWith(2, {
       compression: "gzip",
       files: ["dist/index.js", "dist/nested/deep.js"],
       workingDirectory: "/repo",
@@ -308,8 +332,26 @@ describe(CodometerService, () => {
       "dist/index.js",
       "dist/nested/deep.js",
     ]);
-    expect(sizeAnalysisService.analyze).not.toHaveBeenCalled();
+    // Language analysis measures its own byte-precise total the same way the
+    // codebase does — with no compression — rather than a declared target's
+    // own compressed `size` metric, which nothing here asked for. The files
+    // are the categorized set language analysis works from, not the raw
+    // matched paths. Exactly two calls: the codebase's own, then this
+    // target's — never a third, which is what a declared `size` analysis
+    // running alongside "language" here would look like.
+    expect(sizeAnalysisService.analyze).toHaveBeenCalledTimes(2);
+    expect(sizeAnalysisService.analyze).toHaveBeenNthCalledWith(1, {
+      compression: "none",
+      files: discoveredFiles.files,
+      workingDirectory: "/repo",
+    });
+    expect(sizeAnalysisService.analyze).toHaveBeenNthCalledWith(2, {
+      compression: "none",
+      files: discoveredFiles.files,
+      workingDirectory: "/repo",
+    });
     expect(result.targets[1]?.language?.linesOfCode).toBe(70);
+    expect(result.targets[1]?.language?.repositoryBytes).toBe(4529);
   });
 
   // One unreadable file used to take the whole run with it, including the
@@ -439,7 +481,11 @@ describe(CodometerService, () => {
       workingDirectory: "/repo",
     });
 
-    expect(sizeAnalysisService.analyze).toHaveBeenCalledExactlyOnceWith({
+    // Exactly two calls: the codebase's own uncompressed total first, then
+    // this declared target's compressed `size` metric over the one file left
+    // once the written report is excluded.
+    expect(sizeAnalysisService.analyze).toHaveBeenCalledTimes(2);
+    expect(sizeAnalysisService.analyze).toHaveBeenNthCalledWith(2, {
       compression: "gzip",
       files: ["dist/index.js"],
       workingDirectory: "/repo",

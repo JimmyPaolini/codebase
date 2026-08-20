@@ -23,7 +23,16 @@ export interface CodeStatisticsResult {
   linesOfCode: number;
   markdown: MarkdownStatistics;
   python: PythonStatistics;
-  repoSizeMiB: number;
+  /**
+   * Byte-precise total of this target's files, uncompressed.
+   *
+   * Produced by the same size analysis a declared target's `size` metric
+   * uses — with `none` as its compression — rather than a rounded stat sum,
+   * so the workspace headline moves by the byte instead of by the whole
+   * binary unit and stays comparable with every other size in the workspace,
+   * which are all decimal.
+   */
+  repositoryBytes: number;
   shell: ShellStatistics;
   sourceFiles: number;
   sql: SqlStatistics;

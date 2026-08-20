@@ -522,7 +522,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 | --- | --- |
 | Callables | 313 |
 | Files | 104 |
-| Calls traced | 491 |
+| Calls traced | 492 |
 | Call stacks | 11 |
 | Deepest stack | 13 |
 | Stacks through recursion | 1 |
@@ -535,13 +535,13 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 ```text
 🚀 CodometerCommand.run(_passedParameters: string[], options: CodometerCommandOptions): Promise<void> [packages/codometer-cli/src/modules/codometer/codometer.command.ts:393]
    ↳ Measure the repository and produce every resolved output.
-  └─> CodometerService.measure(args: MeasureArguments): MeasurementResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:332]
+  └─> CodometerService.measure(args: MeasureArguments): MeasurementResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:316]
      ↳ Measure the codebase and every target declared alongside it.
-    └─> CodometerService.measureDeclaredTargets(…): { failures: ReportFailure[]; targets: TargetMeasurement[]; } [packages/codometer-cli/src/modules/codometer/codometer.service.ts:236]
+    └─> CodometerService.measureDeclaredTargets(…): { failures: ReportFailure[]; targets: TargetMeasurement[]; } [packages/codometer-cli/src/modules/codometer/codometer.service.ts:220]
        ↳ Measure every declared target, keeping whatever the failures leave.
-      └─> CodometerService.measureTarget(args: MeasureTargetArguments): TargetMeasurement [packages/codometer-cli/src/modules/codometer/codometer.service.ts:272]
+      └─> CodometerService.measureTarget(args: MeasureTargetArguments): TargetMeasurement [packages/codometer-cli/src/modules/codometer/codometer.service.ts:256]
          ↳ Measure one declared target with whichever analyses it asked for.
-        └─> CodometerService.analyzeLanguage(args: AnalyzeLanguageArguments): CodeStatisticsResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:62]
+        └─> CodometerService.analyzeLanguage(args: AnalyzeLanguageArguments): CodeStatisticsResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:59]
            ↳ Run every language analyzer over one target's files.
           └─> LanguagesService.analyze(args: AnalyzeLanguagesArguments): LanguageResults [packages/codometer-cli/src/modules/languages/languages.service.ts:54]
              ↳ Analyze every language present in the discovered files.
@@ -574,7 +574,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
          ↳ Renders the Repository badge group.
         └─> buildBadge(label: string, value: number | string, color: string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:11]
            ↳ Build a single shields.io badge markdown image.
-          └─> encodeValue(input: number | string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:322]
+          └─> encodeValue(input: number | string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:326]
              ↳ Encode a value so it can safely appear in a badge URL.
 ```
 
@@ -675,10 +675,13 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CodometerService.measureTarget` | 17 | `codometer-cli:modules/file-discovery`, `codometer-cli:modules/size-analysis`, `codometer-cli:modules/targets` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:272` |
+| `CodometerService.measureTarget` | 17 | `codometer-cli:modules/file-discovery`, `codometer-cli:modules/size-analysis`, `codometer-cli:modules/targets` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:256` |
+| `CodometerService.analyzeLanguage` | 15 | `codometer-cli:modules/custom-statistics`, `codometer-cli:modules/languages`, `codometer-cli:modules/size-analysis` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:59` |
 | `LanguagesService.analyze` | 12 | `codometer-cli:modules/css`, `codometer-cli:modules/hcl`, `codometer-cli:modules/json`, `codometer-cli:modules/jupyter`, `codometer-cli:modules/markdown`, `codometer-cli:modules/python`, `codometer-cli:modules/shell`, `codometer-cli:modules/sql`, `codometer-cli:modules/toml`, `codometer-cli:modules/typescript`, `codometer-cli:modules/yaml` | `packages/codometer-cli/src/modules/languages/languages.service.ts:54` |
 
 ### Possibly misplaced
 
-None.
+| Callable | Declared in | Called from | Callers |
+| --- | --- | --- | --- |
+| `SizeAnalysisService.analyze` | `codometer-cli:modules/size-analysis` | `codometer-cli:modules/codometer` | 2/2 |
 <!-- CALL_STACKS_END -->
