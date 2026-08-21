@@ -59,6 +59,9 @@ dist/** linguist-generated
 .agents/skills/ask-matt/** linguist-vendored
 .agents/skills/code-review/** linguist-vendored
 .agents/skills/codebase-design/** linguist-vendored
+.agents/skills/conformetry-configure/** linguist-vendored
+.agents/skills/conformetry-generate/** linguist-vendored
+.agents/skills/conformetry-validate/** linguist-vendored
 .agents/skills/diagnosing-bugs/** linguist-vendored
 .agents/skills/dispatching-parallel-agents/** linguist-vendored
 .agents/skills/domain-modeling/** linguist-vendored
