@@ -1,213 +1,232 @@
-import * as fs from "node:fs";
-
 import { createMock } from "@golevelup/ts-vitest";
 import { Logger } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { FileDiscoveryService } from "./file-discovery.service";
+import { IgnoreRulesService } from "./ignore-rules.service";
 
-const { execFileSyncMock } = vi.hoisted(() => ({
-  execFileSyncMock:
-    vi.fn<(file: string, args?: string[], options?: object) => Buffer>(),
+import type { FileDiscoveryResult } from "./file-discovery.types";
+import type { Dirent } from "node:fs";
+
+// The walk is mocked down to the three filesystem calls it makes, so this
+// stays a unit test. Real directories are walked in
+// `file-discovery.service.integration.test.ts`.
+const { existsSyncMock, readdirSyncMock, readFileSyncMock } = vi.hoisted(
+  () => ({
+    existsSyncMock: vi.fn<(filePath: string) => boolean>(),
+    readdirSyncMock: vi.fn<(directory: string) => Dirent[]>(),
+    readFileSyncMock: vi.fn<(filePath: string) => string>(),
+  }),
+);
+
+vi.mock("node:fs", async (importOriginal) => ({
+  // Everything else the module graph reaches for stays real; only the three
+  // calls the walk makes are answered from the in-memory tree below.
+  ...(await importOriginal<Record<string, unknown>>()),
+  existsSync: existsSyncMock,
+  readdirSync: readdirSyncMock,
+  readFileSync: readFileSyncMock,
 }));
 
-vi.mock("node:child_process", () => ({ execFileSync: execFileSyncMock }));
-vi.mock("node:fs");
+const DEFAULT_EXCLUDE = [
+  "**/.nx/**",
+  "**/build/**",
+  "**/coverage/**",
+  "**/dist/**",
+  "**/node_modules/**",
+];
 
-const DEFAULT_EXCLUDE = ["**/node_modules/**", "**/dist/**"];
+/** What a directory entry is, as far as the walk is concerned. */
+type EntryKind = "directory" | "file" | "symlink";
+
+/** An in-memory tree, keyed by absolute directory path. */
+const TREE: Readonly<
+  Record<string, readonly (readonly [string, EntryKind])[]>
+> = {
+  "/repo": [
+    [".gitignore", "file"],
+    ["AGENTS.md", "file"],
+    ["CLAUDE.md", "symlink"],
+    ["build", "directory"],
+    ["node_modules", "directory"],
+    ["redistribute", "directory"],
+    ["src", "directory"],
+  ],
+  "/repo/build": [["output.js", "file"]],
+  "/repo/node_modules": [["library", "directory"]],
+  "/repo/node_modules/library": [["index.ts", "file"]],
+  "/repo/redistribute": [["index.ts", "file"]],
+  "/repo/src": [
+    ["app.ts", "file"],
+    ["app.unit.test.ts", "file"],
+    ["data.json", "file"],
+    ["notes.md", "file"],
+    ["script.py", "file"],
+    ["styles.css", "file"],
+    ["utility.js", "file"],
+  ],
+};
+
+/** Ignore files the mocked filesystem holds, keyed by absolute path. */
+const IGNORE_FILES: Readonly<Record<string, string>> = {
+  "/repo/.codometerignore": "/AGENTS.md\n",
+  "/repo/.gitignore": "build/\n",
+};
+
+/** Builds the directory entry the mocked `readdirSync` hands back. */
+function createEntry(name: string, kind: EntryKind): Dirent {
+  return createMock<Dirent>({
+    isDirectory: () => kind === "directory",
+    isFile: () => kind === "file",
+    isSymbolicLink: () => kind === "symlink",
+    name,
+  });
+}
 
 describe(FileDiscoveryService, () => {
   let service: FileDiscoveryService;
 
+  /** Discovers the in-memory tree with the repository's default exclusions. */
+  function discover(exclude = DEFAULT_EXCLUDE): FileDiscoveryResult {
+    return service.discoverFiles({
+      exclude,
+      excludeFrom: [".codometerignore"],
+      workingDirectory: "/repo",
+    });
+  }
+
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [FileDiscoveryService],
+      providers: [FileDiscoveryService, IgnoreRulesService],
     }).compile();
     service = await module.resolve(FileDiscoveryService);
   });
 
   beforeEach(() => {
-    vi.clearAllMocks();
-    vi.mocked(fs.existsSync).mockReturnValue(true);
-    vi.mocked(fs.lstatSync).mockReturnValue(
-      createMock<fs.Stats>({ isSymbolicLink: () => false }),
+    readdirSyncMock.mockImplementation((directory) => {
+      const entries = TREE[directory];
+
+      if (entries === undefined) {
+        throw new Error(`ENOENT: no such file or directory, ${directory}`);
+      }
+
+      return entries.map(([name, kind]) => createEntry(name, kind));
+    });
+    existsSyncMock.mockImplementation((filePath) => filePath in IGNORE_FILES);
+    readFileSyncMock.mockImplementation(
+      (filePath) => IGNORE_FILES[filePath] ?? "",
     );
   });
 
   it("is defined", () => {
+    expect.hasAssertions();
     expect(service).toBeDefined();
   });
 
-  it("categorizes TypeScript, JavaScript, Python, and test files", () => {
-    execFileSyncMock.mockReturnValue(
-      Buffer.from(
-        [
-          "src/app.ts",
-          "src/app.test.ts",
-          "src/utility.js",
-          "src/script.py",
-          "node_modules/lib/index.ts",
-          "dist/bundle.js",
-        ].join("\n"),
-      ),
-    );
-
-    const result = service.discoverFiles({
-      exclude: DEFAULT_EXCLUDE,
-      excludeFrom: [],
-      workingDirectory: "/repo",
-    });
-
-    expect(result.tsFiles).toStrictEqual(["src/app.ts", "src/app.test.ts"]);
-    expect(result.jsFiles).toStrictEqual(["src/utility.js"]);
-    expect(result.testFiles).toStrictEqual(["src/app.test.ts"]);
-    expect(result.pyFiles).toStrictEqual(["src/script.py"]);
-    expect(result.sourceFiles).toStrictEqual([
+  it("discovers every measurable file, sorted, and nothing else", () => {
+    expect.hasAssertions();
+    expect(discover().files).toStrictEqual([
+      ".gitignore",
+      "redistribute/index.ts",
       "src/app.ts",
-      "src/app.test.ts",
+      "src/app.unit.test.ts",
+      "src/data.json",
+      "src/notes.md",
+      "src/script.py",
+      "src/styles.css",
       "src/utility.js",
     ]);
-    expect(result.trackedFiles).not.toContain("node_modules/lib/index.ts");
-    expect(result.trackedFiles).not.toContain("dist/bundle.js");
   });
 
-  it("categorizes markdown files by extension", () => {
-    execFileSyncMock.mockReturnValue(
-      Buffer.from(
-        ["README.md", "docs/guide.MD", "notes.mdx", "src/app.ts"].join("\n"),
-      ),
-    );
+  it("categorizes TypeScript, JavaScript, Python, and test files", () => {
+    expect.hasAssertions();
 
-    const result = service.discoverFiles({
-      exclude: [],
-      excludeFrom: [],
-      workingDirectory: "/repo",
-    });
+    const result = discover();
 
-    expect(result.markdownFiles).toStrictEqual([
-      "README.md",
-      "docs/guide.MD",
-      "notes.mdx",
+    expect(result.tsFiles).toStrictEqual([
+      "redistribute/index.ts",
+      "src/app.ts",
+      "src/app.unit.test.ts",
+    ]);
+    expect(result.jsFiles).toStrictEqual(["src/utility.js"]);
+    expect(result.testFiles).toStrictEqual(["src/app.unit.test.ts"]);
+    expect(result.pyFiles).toStrictEqual(["src/script.py"]);
+    expect(result.sourceFiles).toStrictEqual([
+      "redistribute/index.ts",
+      "src/app.ts",
+      "src/app.unit.test.ts",
+      "src/utility.js",
     ]);
   });
 
-  it("categorizes notebooks apart from plain JSON", () => {
-    execFileSyncMock.mockReturnValue(
-      Buffer.from(
-        ["src/explore.ipynb", "package.json", "README.md"].join("\n"),
-      ),
-    );
+  it("categorizes the remaining files by extension", () => {
+    expect.hasAssertions();
 
-    const result = service.discoverFiles({
-      exclude: [],
-      excludeFrom: [],
-      workingDirectory: "/repo",
-    });
+    const result = discover();
 
-    expect(result.notebookFiles).toStrictEqual(["src/explore.ipynb"]);
-    // A notebook is JSON on disk, but the jupyter analyzer takes it apart
-    // instead, so it must not also be counted as a plain JSON document.
-    expect(result.jsonFiles).toStrictEqual(["package.json"]);
+    expect(result.cssFiles).toStrictEqual(["src/styles.css"]);
+    expect(result.jsonFiles).toStrictEqual(["src/data.json"]);
+    expect(result.markdownFiles).toStrictEqual(["src/notes.md"]);
+    expect(result.notebookFiles).toStrictEqual([]);
   });
 
-  it("excludes every category's files with the configured globs", () => {
-    execFileSyncMock.mockReturnValue(
-      Buffer.from(
-        [
-          "README.md",
-          "applications/lexico-ingestion/data/library/ovid.md",
-          "applications/affirmations/output/affirmations/one.md",
-          "applications/affirmations/output/affirmations/one.json",
-        ].join("\n"),
-      ),
+  it("prunes a directory the repository's gitignore file names", () => {
+    expect.hasAssertions();
+
+    const { files } = discover();
+
+    expect(files).not.toContain("build/output.js");
+    // Pruned rather than enumerated and discarded: the walk never read it.
+    expect(readdirSyncMock).not.toHaveBeenCalledWith(
+      "/repo/build",
+      expect.anything(),
     );
-
-    const result = service.discoverFiles({
-      exclude: [
-        "applications/lexico-ingestion/data/**",
-        "applications/affirmations/output/**",
-      ],
-      excludeFrom: [],
-      workingDirectory: "/repo",
-    });
-
-    expect(result.markdownFiles).toStrictEqual(["README.md"]);
-    expect(result.jsonFiles).toStrictEqual([]);
-    expect(result.trackedFiles).toStrictEqual(["README.md"]);
   });
 
   it("keeps a path that merely contains an excluded name", () => {
-    execFileSyncMock.mockReturnValue(
-      Buffer.from(["src/redistribute/index.ts", "dist/bundle.js"].join("\n")),
+    expect.hasAssertions();
+
+    const { files } = discover();
+
+    expect(files).toContain("redistribute/index.ts");
+    expect(files).not.toContain("node_modules/library/index.ts");
+    expect(readdirSyncMock).not.toHaveBeenCalledWith(
+      "/repo/node_modules",
+      expect.anything(),
     );
+  });
 
-    const result = service.discoverFiles({
-      exclude: DEFAULT_EXCLUDE,
-      excludeFrom: [],
-      workingDirectory: "/repo",
-    });
+  it("excludes files with a glob that names no directory", () => {
+    expect.hasAssertions();
 
-    expect(result.trackedFiles).toStrictEqual(["src/redistribute/index.ts"]);
+    const { files, jsonFiles } = discover([...DEFAULT_EXCLUDE, "src/*.json"]);
+
+    expect(jsonFiles).toStrictEqual([]);
+    expect(files).not.toContain("src/data.json");
   });
 
   it("excludes what a configured ignore file claims", () => {
-    execFileSyncMock.mockImplementation((_file: string, args?: string[]) =>
-      args?.includes("--ignored") === true
-        ? Buffer.from("pnpm-lock.yaml\nCHANGELOG.md")
-        : Buffer.from(
-            ["src/app.ts", "pnpm-lock.yaml", "CHANGELOG.md"].join("\n"),
-          ),
-    );
-
-    const result = service.discoverFiles({
-      exclude: [],
-      excludeFrom: ["configuration/.prettierignore"],
-      workingDirectory: "/repo",
-    });
-
-    // Arguments as an array, so a path is a path and never shell syntax.
-    expect(execFileSyncMock).toHaveBeenCalledWith(
-      "git",
-      [
-        "ls-files",
-        "--cached",
-        "--ignored",
-        "--exclude-from=/repo/configuration/.prettierignore",
-      ],
-      { cwd: "/repo" },
-    );
-    expect(result.trackedFiles).toStrictEqual(["src/app.ts"]);
+    expect.hasAssertions();
+    // `/AGENTS.md` is anchored at the root the ignore file was read for.
+    expect(discover().files).not.toContain("AGENTS.md");
   });
 
-  it("keeps every file when an ignore file matches nothing", () => {
-    execFileSyncMock.mockImplementation((_file: string, args?: string[]) =>
-      // Git prints nothing when no tracked file matches the ignore patterns.
-      args?.includes("--ignored") === true
-        ? Buffer.from("")
-        : Buffer.from("src/app.ts"),
-    );
-
-    const result = service.discoverFiles({
-      exclude: [],
-      excludeFrom: ["configuration/.codometerignore"],
-      workingDirectory: "/repo",
-    });
-
-    expect(result.trackedFiles).toStrictEqual(["src/app.ts"]);
+  it("skips symlinks so a mirrored file is not counted twice", () => {
+    expect.hasAssertions();
+    // CLAUDE.md is a link to AGENTS.md; following it would report one document
+    // as two.
+    expect(discover().files).not.toContain("CLAUDE.md");
   });
 
-  it("warns and continues when an ignore file is missing", () => {
+  it("warns and continues when a configured ignore file is missing", () => {
+    expect.hasAssertions();
+
     const loggerWarnSpy = vi
       .spyOn(Logger.prototype, "warn")
       .mockReturnValue(undefined);
-    execFileSyncMock.mockReturnValue(Buffer.from("src/app.ts"));
-    vi.mocked(fs.existsSync).mockImplementation(
-      (filePath) => filePath !== "/repo/.nope-ignore",
-    );
-
     const result = service.discoverFiles({
-      exclude: [],
+      exclude: DEFAULT_EXCLUDE,
       excludeFrom: [".nope-ignore"],
       workingDirectory: "/repo",
     });
@@ -217,59 +236,34 @@ describe(FileDiscoveryService, () => {
       undefined,
       { path: ".nope-ignore" },
     );
-    expect(result.trackedFiles).toStrictEqual(["src/app.ts"]);
+    // Nothing was subtracted, so what that ignore file would have claimed is
+    // still there.
+    expect(result.files).toContain("AGENTS.md");
+
+    loggerWarnSpy.mockRestore();
   });
 
-  it("skips symlinks so a mirrored file is not counted twice", () => {
-    execFileSyncMock.mockReturnValue(
-      Buffer.from(["AGENTS.md", "CLAUDE.md"].join("\n")),
-    );
-    vi.mocked(fs.lstatSync).mockImplementation((filePath) =>
-      createMock<fs.Stats>({
-        isSymbolicLink: () => String(filePath).endsWith("CLAUDE.md"),
-      }),
-    );
+  it("warns and keeps going when a directory cannot be read", () => {
+    expect.hasAssertions();
 
+    const loggerWarnSpy = vi
+      .spyOn(Logger.prototype, "warn")
+      .mockReturnValue(undefined);
     const result = service.discoverFiles({
-      exclude: [],
+      exclude: DEFAULT_EXCLUDE,
       excludeFrom: [],
-      workingDirectory: "/repo",
+      workingDirectory: "/gone",
     });
 
-    // CLAUDE.md is a link to AGENTS.md; following it would report one document
-    // as two.
-    expect(result.trackedFiles).toStrictEqual(["AGENTS.md"]);
-    expect(result.markdownFiles).toStrictEqual(["AGENTS.md"]);
-  });
-
-  it("excludes files that do not exist on disk", () => {
-    execFileSyncMock.mockReturnValue(
-      Buffer.from("src/missing.ts\nsrc/present.ts"),
+    // One unreadable directory must not abort the whole measurement, which is
+    // what shelling out to git could never fail at.
+    expect(loggerWarnSpy).toHaveBeenCalledWith(
+      "📂 Skipped unreadable directory",
+      undefined,
+      expect.objectContaining({ path: "/gone" }),
     );
-    vi.mocked(fs.existsSync).mockImplementation(
-      (filePath) => filePath === "/repo/src/present.ts",
-    );
+    expect(result.files).toStrictEqual([]);
 
-    const result = service.discoverFiles({
-      exclude: [],
-      excludeFrom: [],
-      workingDirectory: "/repo",
-    });
-
-    expect(result.trackedFiles).toStrictEqual(["src/present.ts"]);
-  });
-
-  it("passes the working directory to git ls-files", () => {
-    execFileSyncMock.mockReturnValue(Buffer.from(""));
-
-    service.discoverFiles({
-      exclude: [],
-      excludeFrom: [],
-      workingDirectory: "/my/project",
-    });
-
-    expect(execFileSyncMock).toHaveBeenCalledWith("git", ["ls-files"], {
-      cwd: "/my/project",
-    });
+    loggerWarnSpy.mockRestore();
   });
 });

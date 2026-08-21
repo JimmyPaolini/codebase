@@ -51,7 +51,7 @@ testing/                            # Shared test utilities
 
 ### Module Graph
 
-The modules this project defines and the imports between them, published by `nx run synchronization:synchronize --configuration=publish`.
+The modules this project defines and the imports between them, published by `nx run synchronization:synchronize --configuration=write`.
 
 <!-- nestjs-module-graph-start -->
 
@@ -66,13 +66,17 @@ flowchart LR
     JsonModule
     JupyterModule
     LanguagesModule
+    LimitsModule
     MainModule
     MarkdownModule
     OutputJsonModule
     OutputMarkdownModule
     PythonModule
+    ReportModule
     ShellModule
+    SizeAnalysisModule
     SqlModule
+    TargetsModule
     TomlModule
     TypescriptModule
     YamlModule
@@ -89,8 +93,12 @@ flowchart LR
   CodometerModule --> CustomStatisticsModule
   CodometerModule --> FileDiscoveryModule
   CodometerModule --> LanguagesModule
+  CodometerModule --> LimitsModule
   CodometerModule --> OutputJsonModule
   CodometerModule --> OutputMarkdownModule
+  CodometerModule --> ReportModule
+  CodometerModule --> SizeAnalysisModule
+  CodometerModule --> TargetsModule
   JupyterModule --> JsonModule
   JupyterModule --> MarkdownModule
   JupyterModule --> PythonModule

@@ -9,15 +9,12 @@
         "check": {
           "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directory . --config configuration/callidescope.config.ts --check depth"
         },
-        "publish": {
-          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directory . --config configuration/callidescope.config.ts --write"
-        },
         "write": {
-          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directory . --config configuration/callidescope.config.ts --check depth"
+          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directory . --config configuration/callidescope.config.ts --write"
         }
       },
       "defaultConfiguration": "check",
-      "description": "Trace call stacks and fail on any deeper than the configured limit. Runs as part of lint-codebase, which is why `write` gates exactly like `check` rather than writing: a stack that is too deep is not something a formatter can fix, and publishing the report from a branch is what made every pull request carry a regenerated block. `publish` writes the report, and only the release workflow runs it. The README glob is an input because `publish` splices into those files: without it, a hand-edited report replays a cached run.",
+      "description": "Trace call stacks and fail on any deeper than the configured limit. Two configurations and no third: `check` gates depth and `write` publishes the report on the default branch. That split only holds because this target is absent from `lint-codebase`'s `dependsOn`, exactly as `codebase:codometer` is — Nx forwards an explicit configuration down `dependsOn`, so a target reachable from there would take `write` from `lint-codebase --configuration=write` and publish the report from a branch, which is what made every pull request carry a regenerated block. Nothing forwards anything here, so the depth gate is named on its own wherever it runs: the Lint Codebase workflow and `configuration/lint-staged.config.ts` each name `check` alongside `lint-codebase` in one `nx affected` invocation, so a pull request and a commit both still trace depth, and the release workflow runs `write`. Leaving `dependsOn` costs no gating, only the convenience of one target name covering it. The README glob is an input because `write` splices into those files: without it, a hand-edited report replays a cached run.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/**/*.{cts,mts,ts,tsx}",
@@ -66,14 +63,15 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts codometer --directory . --config configuration/codometer.config.ts --check"
+          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts codometer --directory . --config configuration/codometer.config.ts --check reports"
         },
         "write": {
-          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts codometer --directory . --config configuration/codometer.config.ts"
+          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts codometer --directory . --config configuration/codometer.config.ts --write"
         }
       },
       "defaultConfiguration": "check",
-      "description": "Analyze codebase and write README.md statistics badges. Run on main by the release workflow, which commits the result alongside the changelog; pull requests do not check it.",
+      "dependsOn": [],
+      "description": "Measure the whole repository and write its README.md statistics badges. Written out as an empty list rather than left to the `codometer` targetDefault, which depends on `build`: a per-project run measures compiled output and must wait for it, while this one measures source and would otherwise wait on every build in the workspace — slow, and circular, since the tools it would be waiting for are measured by it. The two are deliberately different and must not be collapsed into one. Run on main by the release workflow, which commits the result alongside the changelog; pull requests do not check it, and `check` here means staleness because the repository declares no limit of its own.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/**/*.{cjs,cts,js,json,jsx,mjs,mts,py,ts,tsx}",

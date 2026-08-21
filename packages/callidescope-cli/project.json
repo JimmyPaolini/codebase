@@ -28,6 +28,7 @@
       },
       "outputs": ["{options.outputPath}"]
     },
+    "codometer": {},
     "dependency-cruiser": {},
     "knip": {},
     "lint-codebase": {},

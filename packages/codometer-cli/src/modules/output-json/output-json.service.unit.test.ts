@@ -11,16 +11,11 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 
-import { buildCodeStatistics } from "../../../testing/mocks";
+import { buildCodometerReport } from "../../../testing/mocks";
 
 import { OutputJsonService } from "./output-json.service";
 
-const sampleStatistics = buildCodeStatistics({
-  folders: 13,
-  linesOfCode: 31,
-  repoSizeMiB: 2,
-  sourceFiles: 41,
-});
+const sampleReport = buildCodometerReport();
 
 describe(OutputJsonService, () => {
   let service: OutputJsonService;
@@ -52,14 +47,11 @@ describe(OutputJsonService, () => {
     expect(service).toBeDefined();
   });
 
-  it("renders the statistics with the configured indentation", () => {
-    const report = service.buildReport({
-      destination: { indentation: 4, path: "statistics.json" },
-      statistics: sampleStatistics,
-    });
+  it("renders the report with the configured indentation", () => {
+    const rendered = service.render({ indentation: 4, report: sampleReport });
 
-    expect(report).toBe(`${JSON.stringify(sampleStatistics, null, 4)}\n`);
-    expect(report.endsWith("\n")).toBe(true);
+    expect(rendered).toBe(`${JSON.stringify(sampleReport, null, 4)}\n`);
+    expect(rendered.endsWith("\n")).toBe(true);
   });
 
   it("writes the report, creating missing parent directories", () => {
@@ -71,28 +63,38 @@ describe(OutputJsonService, () => {
     expect(
       service.sync({
         check: false,
-        destination: { indentation: 2, path: reportPath },
-        statistics: sampleStatistics,
+        indentation: 2,
+        path: reportPath,
+        report: sampleReport,
       }),
     ).toBe(true);
     expect(existsSync(reportPath)).toBe(true);
     expect(JSON.parse(readFileSync(reportPath, "utf8"))).toStrictEqual(
-      sampleStatistics,
+      sampleReport,
     );
   });
 
-  it("returns true in check mode when the report is current", () => {
+  it("returns true when checking a report that is current", () => {
     const reportPath = path.join(createTemporaryDirectory(), "codometer.json");
-    const destination = { indentation: 2, path: reportPath };
 
-    service.sync({ check: false, destination, statistics: sampleStatistics });
+    service.sync({
+      check: false,
+      indentation: 2,
+      path: reportPath,
+      report: sampleReport,
+    });
 
     expect(
-      service.sync({ check: true, destination, statistics: sampleStatistics }),
+      service.sync({
+        check: true,
+        indentation: 2,
+        path: reportPath,
+        report: sampleReport,
+      }),
     ).toBe(true);
   });
 
-  it("returns false in check mode when the report is stale", () => {
+  it("returns false when checking a report that is stale", () => {
     const reportPath = path.join(createTemporaryDirectory(), "codometer.json");
 
     writeFileSync(reportPath, "{}\n", "utf8");
@@ -100,20 +102,22 @@ describe(OutputJsonService, () => {
     expect(
       service.sync({
         check: true,
-        destination: { indentation: 2, path: reportPath },
-        statistics: sampleStatistics,
+        indentation: 2,
+        path: reportPath,
+        report: sampleReport,
       }),
     ).toBe(false);
   });
 
-  it("returns false in check mode when the report is missing", () => {
+  it("returns false when checking a report that is missing", () => {
     const reportPath = path.join(createTemporaryDirectory(), "codometer.json");
 
     expect(
       service.sync({
         check: true,
-        destination: { indentation: 2, path: reportPath },
-        statistics: sampleStatistics,
+        indentation: 2,
+        path: reportPath,
+        report: sampleReport,
       }),
     ).toBe(false);
   });

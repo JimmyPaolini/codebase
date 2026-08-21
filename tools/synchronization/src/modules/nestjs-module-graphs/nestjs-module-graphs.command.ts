@@ -81,7 +81,7 @@ export class NestjsModuleGraphsCommand
 
     this.logger.log("🕸️ Detected out-of-sync NestJS module graphs", undefined, {
       files: outOfSyncFiles,
-      hint: "Run 'nx run synchronization:synchronize:publish' to publish",
+      hint: "Run 'nx run synchronization:synchronize:write' to publish",
     });
     return false;
   }

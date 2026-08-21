@@ -1,8 +1,8 @@
 # Files codometer does not measure, in gitignore syntax.
 #
-# Untracked files need no mention: discovery enumerates through `git ls-files`,
-# so everything .gitignore covers is already absent. What belongs here is the
-# opposite — files that are committed but nobody wrote.
+# Ignored files need no mention: discovery reads the repository's .gitignore
+# files itself, so everything they cover is already absent. What belongs here
+# is the opposite — files that are committed but nobody wrote.
 
 # 🔒 Lock files
 pnpm-lock.yaml
@@ -13,7 +13,6 @@ skills-lock.json
 /CHANGELOG.md
 openwiki/
 **/routeTree.gen.ts
-projectStructure.cache.json
 
 # 🧩 Vendored by shadcn, not authored here
 packages/lexico-components/src/components/
@@ -21,7 +20,7 @@ packages/lexico-components/src/hooks/
 packages/lexico-components/src/lib/
 
 # 📚 Ingested corpus and generated output rather than authored source. They are
-# committed, so `git ls-files` reports them, and they are overwhelmingly
+# committed rather than ignored, so discovery finds them, and they are overwhelmingly
 # markdown: left in, they supply 88% of the repository's markdown files and bury
 # every prose metric under the data payload. `markdownlint` and `cspell` already
 # ignore both for the same reason.
@@ -34,11 +33,6 @@ applications/lexico-ingestion/src/modules/literature/literature.constants.ts
 # 📓 Scratch notes and generator templates
 notepads/
 templates/
-
-# 📊 Codometer's own output target. Measuring it makes the report an input to
-# itself: every badge the last run wrote counts toward the next run's markdown
-# metrics, so a written block is stale the moment it lands.
-/README.md
 
 # 🧩 Installed agent skills, one entry per skill in skills-lock.json. Owned
 # upstream rather than authored here, and the largest carries half a megabyte

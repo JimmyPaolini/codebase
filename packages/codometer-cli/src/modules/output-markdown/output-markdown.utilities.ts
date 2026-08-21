@@ -1,5 +1,6 @@
 // 🛠️ Utilities
 
+import type { MeasurementScope, TargetSize } from "./output-markdown.types";
 import type {
   CodeStatisticsResult,
   CodometerStatisticGroup,
@@ -200,11 +201,25 @@ export function buildPythonGroup(statistics: CodeStatisticsResult): string {
   ]);
 }
 
-/** Renders the Repository badge group. */
-export function buildRepositoryGroup(statistics: CodeStatisticsResult): string {
-  return buildGroup("Repository", [
+/**
+ * Renders the whole-tree badge group, named after what the run measured.
+ *
+ * `Repository` only when the measured directory is the repository. A run
+ * scoped to one project heads the same badges `Project`, because the figures
+ * beneath cover that project and nothing else — the badges themselves are
+ * unchanged, only what they are said to be about.
+ */
+export function buildRepositoryGroup(
+  statistics: CodeStatisticsResult,
+  scope: MeasurementScope,
+): string {
+  return buildGroup(scope === "repository" ? "Repository" : "Project", [
     buildBadge("Lines of Code", statistics.linesOfCode, "22c55e"),
-    buildBadge("Repo Size", `${statistics.repoSizeMiB} MiB`, "6b7280"),
+    buildBadge(
+      "Repository Size",
+      formatBytes(statistics.repositoryBytes),
+      "6b7280",
+    ),
     buildBadge("Folders", statistics.folders, "4a4a4a"),
     buildBadge("Source Files", statistics.sourceFiles, "3178c6"),
     ...buildCustomBadges(statistics, "repository"),
@@ -249,6 +264,37 @@ export function buildSqlGroup(statistics: CodeStatisticsResult): string {
     buildBadge("SQL Comments", sql.comments, "64748b"),
     ...buildCustomBadges(statistics, "sql"),
   ]);
+}
+
+/**
+ * Renders the Measured Targets badge group, one badge per measured target.
+ *
+ * The group exists only when a run measured a declared target's size, which is
+ * what tells a run measuring one project from the run measuring the whole
+ * repository: a project declares build output to size, the repository declares
+ * none and keeps the single `Repository Size` badge it already had. A target
+ * that asked for no size analysis contributes no badge rather than a zero,
+ * because "not measured" and "measured as empty" must not read alike.
+ *
+ * The compression rides in the value, since a gzipped figure and a raw one are
+ * not the same measurement and a badge showing only the number would let them
+ * be compared as though they were.
+ */
+export function buildTargetsGroup(targets: readonly TargetSize[]): string {
+  if (targets.length === 0) {
+    return "";
+  }
+
+  // "Measured Targets" rather than "Targets": codometer's own documentation
+  // carries a `Targets` heading explaining the configuration field, and a
+  // badge group by the same name would collide with it in the one README that
+  // is both.
+  return buildGroup(
+    "Measured Targets",
+    targets.map((target) =>
+      buildBadge(`${target.name} Size`, formatTargetSize(target), "6b7280"),
+    ),
+  );
 }
 
 /** Renders the Toml badge group. */
@@ -324,4 +370,46 @@ export function encodeValue(input: number | string): string {
     .replaceAll("-", "--")
     .replaceAll("_", "__")
     .replaceAll(" ", "_");
+}
+
+/**
+ * Formats a byte count in decimal units, switching to megabytes once
+ * kilobytes read awkwardly.
+ *
+ * The one formatter every byte figure in a badge goes through — the
+ * repository's own size and each measured target's — so two numbers rendered
+ * side by side can never be in different units.
+ *
+ * Decimal because every other size in this project is: a limit written as
+ * `"8 KB"` parses as 8000 bytes, and dividing by 1024 here would print this
+ * badge as a number no limit in the workspace ever mentions.
+ *
+ * Deliberately a second implementation of `formatBytes` in
+ * `tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts`
+ * rather than a shared one: the two packages have no dependency edge, and
+ * adding one for a formatter would cost more than the duplication. The two
+ * must keep the same divisors and the same switch-over point, or this
+ * badge and the pull request bundle table will disagree about what a
+ * kilobyte is.
+ */
+export function formatBytes(bytes: number): string {
+  if (bytes >= 1_000_000) {
+    return `${(bytes / 1_000_000).toFixed(2)} MB`;
+  }
+
+  return `${(bytes / 1000).toFixed(2)} kB`;
+}
+
+/**
+ * Formats one target's measured size, naming the compression it was measured
+ * under unless there was none.
+ *
+ * An uncompressed figure is left unqualified because that is what a plain byte
+ * count means everywhere else in this report; a compressed one says so, so
+ * that 5.32 kB gzipped is never read as 5.32 kB on disk.
+ */
+export function formatTargetSize(target: TargetSize): string {
+  const size = formatBytes(target.bytes);
+
+  return target.compression === "none" ? size : `${size} ${target.compression}`;
 }

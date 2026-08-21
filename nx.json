@@ -118,17 +118,35 @@
         "inputs": ["^production", "production"]
       }
     ],
-    "bundlesize": {
+    "codometer": {
       "cache": true,
-      "dependsOn": ["build"],
-      "description": "Measure built bundle sizes against the limits in .size-limit.cjs, writing a JSON report the pull request comment reads.",
-      "executor": "nx:run-commands",
-      "inputs": ["^production", "{projectRoot}/.size-limit.cjs", "production"],
-      "options": {
-        "command": "size-limit --json > size-limit-report.json",
-        "cwd": "{projectRoot}"
+      "configurations": {
+        "check": {
+          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts codometer --directory {projectRoot} --json codometer-report.json --write --check limits"
+        },
+        "write": {
+          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts codometer --directory {projectRoot} --json codometer-report.json --readme README.md --write"
+        }
       },
-      "outputs": ["{projectRoot}/size-limit-report.json"]
+      "defaultConfiguration": "check",
+      "dependsOn": ["build"],
+      "description": "Measure one project and gate the limit it declares, writing the report the pull request's 🎒 Bundles section reads. This default depends on `build` because size analysis reads compiled output; the workspace-root `codebase:codometer` target must NOT, because it measures source and waiting on every build would be both slow and circular — it pins `dependsOn` to an empty list of its own so this default can never reach it, and neither half of that asymmetry may be collapsed into the other. Both configurations pass `--write` because a run naming a report path without it would render the report to the console and leave that file unwritten \u2014 codometer refuses that command line outright, so a target that loses `--write` fails here rather than contributing no rows to the \ud83c\udf92 Bundles section and looking like a project that changed nothing; `check` adds `--check limits` so a breach fails only after the report is on disk. Neither checks staleness: project READMEs are written on main by the release workflow, so they are expected to be stale on a branch. The report this target writes is subtracted from its own inputs, because `production` would otherwise glob it back in and every run would rewrite the hash it was just cached under \u2014 a local run could never hit its own cache, and a fresh checkout could never match one. `README.md` stays an input despite also being an output: codometer measures markdown, so an edit to it genuinely changes the measurement, and restoring it from cache writes back the identical bytes.",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "!{projectRoot}/codometer-report.json",
+        "^production",
+        "{workspaceRoot}/codometer.config.ts",
+        "{workspaceRoot}/configuration/.codometerignore",
+        "{workspaceRoot}/configuration/codometer.config.ts",
+        "production"
+      ],
+      "options": {
+        "cwd": "{workspaceRoot}"
+      },
+      "outputs": [
+        "{projectRoot}/codometer-report.json",
+        "{projectRoot}/README.md"
+      ]
     },
     "dependency-cruiser": [
       {
@@ -274,7 +292,6 @@
       },
       "defaultConfiguration": "check",
       "dependsOn": [
-        "callidescope",
         "check-catalog-manifests",
         "check-lockfile",
         "check-skill-exclusions",
@@ -295,20 +312,19 @@
         "squawk",
         "stylelint",
         "sync-vscode-extensions",
-        "synchronize",
         "syncpack",
         "type-coverage",
         "typecheck",
         "vulture",
         "yaml-lint"
       ],
-      "description": "Static code analysis: every check that reads the source without executing it. An nx:noop aggregator \u2014 the work is the dependsOn targets, which Nx schedules in one graph rather than spawning a process per tool.",
+      "description": "Static code analysis: every check that reads the source without executing it. An nx:noop aggregator \u2014 the work is the dependsOn targets, which Nx schedules in one graph rather than spawning a process per tool. Three targets are deliberately not among them: `codebase:codometer`, `codebase:callidescope`, and `synchronization:synchronize` each publish a report on the default branch, and Nx forwards an explicit configuration down `dependsOn`, so listing one here would make `--configuration=write` publish that report from a branch. What each one gates is named directly by whatever gates it instead: `callidescope:check` and `synchronize:check` join this target in one `nx affected` invocation, in the Lint Codebase workflow and in `configuration/lint-staged.config.ts` alike, and the per-project `codometer` limits belong to Make Projects, which builds first. A pull request and a commit therefore still trace depth and check derivation drift — what this target alone no longer covers, the invocation around it does.",
       "executor": "nx:noop"
     },
     "make-projects": {
       "cache": false,
-      "dependsOn": ["build", "bundlesize"],
-      "description": "Build every buildable project and measure its bundle. An nx:noop aggregator; `build` carries its own ^build dependency.",
+      "dependsOn": ["build", "codometer"],
+      "description": "Build every buildable project and measure it. An nx:noop aggregator; `build` carries its own ^build dependency, and `codometer` gates each project's declared limit.",
       "executor": "nx:noop"
     },
     "markdown-lint": [

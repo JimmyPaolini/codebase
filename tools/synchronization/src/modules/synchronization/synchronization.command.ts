@@ -99,7 +99,7 @@ export class SynchronizationCommand extends CommandRunner {
 
     this.logger.log("🔗 Detected out-of-sync synchronizations", undefined, {
       count: failed.length,
-      hint: "Run 'nx run synchronization:synchronize:write' for a derivation, or ':publish' for a report",
+      hint: "Run 'nx run synchronization:synchronize:write' to write derivations and publish reports",
       total: results.length,
     });
   }

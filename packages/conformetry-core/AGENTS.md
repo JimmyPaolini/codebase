@@ -48,7 +48,7 @@ testing/                            # Shared test utilities
 
 ### Module Graph
 
-The modules this project defines and the imports between them, published by `nx run synchronization:synchronize --configuration=publish`.
+The modules this project defines and the imports between them, published by `nx run synchronization:synchronize --configuration=write`.
 
 <!-- nestjs-module-graph-start -->
 

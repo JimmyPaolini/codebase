@@ -31,14 +31,14 @@ export class CustomStatisticsService {
   // 🔏 Private Methods
 
   /**
-   * Counts the tracked files at least one of the globs claims.
+   * Counts the target's files that at least one of the globs claims.
    *
    * A file matching several globs of the same counter is one file, not
    * several: the counter asks how many files there are, not how many times
    * they matched.
    */
-  private countMatches(trackedFiles: string[], patterns: string[]): number {
-    return trackedFiles.filter((filePath) =>
+  private countMatches(files: string[], patterns: string[]): number {
+    return files.filter((filePath) =>
       patterns.some((pattern) => path.matchesGlob(filePath, pattern)),
     ).length;
   }
@@ -47,15 +47,15 @@ export class CustomStatisticsService {
 
   /** Count every configured statistic over the discovered files. */
   analyze({
+    files,
     statistics,
     symbolCounts,
-    trackedFiles,
   }: CustomStatisticsInput): CustomStatisticResult[] {
     return statistics.map((statistic) => ({
       color: statistic.color,
       count:
         statistic.symbols === undefined
-          ? this.countMatches(trackedFiles, statistic.patterns)
+          ? this.countMatches(files, statistic.patterns)
           : (symbolCounts[statistic.label] ?? 0),
       group: statistic.group,
       label: statistic.label,

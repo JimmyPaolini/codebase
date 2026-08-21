@@ -2,7 +2,7 @@
 
 **Measure a repository and report what it found.**
 
-Codometer walks a git repository, parses everything it recognizes, and writes
+Codometer walks a directory, parses everything it recognizes, and writes
 what it counted as a markdown badge block, a JSON report, or both. It counts
 languages the way you would expect — files, lines, classes, functions — and it
 also counts the conventions a repository holds _itself_ to, which is usually
@@ -45,29 +45,80 @@ codometer --directory . --config configuration/codometer.config.ts
 
 | Flag | Purpose |
 | ---- | ------- |
-| `--check` | Report whether the outputs are current, write nothing, exit non-zero when stale |
+| `--check <set>` | Fail on a comma-separated set drawn from `reports` and `limits` |
 | `--config [path]` | Configuration file to read; searched for when omitted |
 | `-d, --directory [path]` | Directory to measure; defaults to the current one |
-| `--json [path]` | Write the JSON report here, overriding the configured path |
-| `-m, --markdown [path]` | Write the badge block here, overriding the configured path |
+| `--json [path]` | The report goes here; the console when the path is omitted |
+| `-m, --markdown [path]` | The rendered badges go here as a whole document; the console when the path is omitted |
+| `--readme <path>` | Markdown file the badge block is spliced into, between its markers |
+| `--write` | Write every resolved destination |
 
-With no markdown or JSON destination — from either the configuration or the
-flags — the statistics are written to stdout instead. A repository with no
-configuration file at all is still measurable, which is what makes the tool
-usable before anyone has decided what their exclusions should be.
+**`--write` and `--check` are independent.** Neither implies the other and no
+combination of them is inferred, which is the whole of the surface:
 
-`--check` is the CI form: it fails when the committed badge block or JSON
-report no longer matches what the repository would produce.
+| Invocation | Writes | Fails on staleness | Fails on a breach |
+| ---------- | ------ | ------------------ | ----------------- |
+| `codometer` | no | no | no |
+| `codometer --check limits` | no | no | yes |
+| `codometer --check reports` | no | yes | no |
+| `codometer --check reports,limits` | no | yes | yes |
+| `codometer --write` | yes | no | no |
+| `codometer --write --check limits` | yes | no | yes, after writing |
+
+A `--write` run that also gates produces **every** report before it fails, so
+the report is on disk even when the gate trips. `--write --check reports` is
+refused rather than obeyed: nothing can be stale in the run that just wrote it.
+So is a `--check` value the tool does not know, and every complaint about one
+command line is reported together rather than one run at a time.
+
+A **breach** and **staleness** are different findings and are never reported as
+one. A `warn` breach is printed and leaves the exit code alone; a `fail` breach
+exits 1, but only where `--check limits` asked for a gate.
+
+`--check reports` compares a committed report against a fresh measurement, so it
+is only as stable as the numbers it re-measures. Compressed sizes are
+Node-version dependent — the bundled zlib differs between releases — so a report
+written on one runtime and checked on another reads as stale when nothing
+changed at all. Check on the runtime the repository pins, or expect false
+staleness rather than a real finding.
 
 ```yaml
-- run: npx codometer --check
+- run: npx codometer --check reports,limits
 ```
+
+## One folder at a time
+
+Codometer measures **one directory**, and knows nothing about workspaces, task
+runners, or project graphs. Run it in a project and that project is what gets
+measured — its own sources, and whatever targets the configuration declares for
+it:
+
+```bash
+cd packages/logger && codometer --check limits
+```
+
+With no `--config`, the configuration is found by walking upward from that
+folder and taking the **first** file found. The nearest one wins outright:
+nothing from a further ancestor is folded into it, because a merged
+configuration leaves a limit that never applied looking exactly like one that
+did.
+
+So a project needs no configuration file of its own. One file at the top of a
+workspace can describe every project beneath it by [exporting a
+function](../codometer-configuration/README.md#a-configuration-that-answers-for-every-folder)
+that reads the folder it was pointed at, and a project whose targets do not
+follow that convention writes a configuration file that replaces it.
 
 ## What gets measured
 
-Discovery enumerates through `git ls-files`, so **`.gitignore` is already in
-force** — an ignored file is an untracked file, and no exclusion has to name
-it.
+Discovery walks the directory itself and reads every `.gitignore` it passes,
+so **`.gitignore` is already in force** — a build directory or a virtual
+environment is pruned where its ignore file names it, and no exclusion has to
+name it again. Git is never invoked, so a directory that is not a repository
+at all is measured the same way as one that is.
+
+What is measured is the working tree rather than the index: a file that exists
+and is not ignored counts, whether or not it has been committed yet.
 
 | Group | Counts |
 | ----- | ------ |
@@ -93,6 +144,96 @@ and executions for the notebook analyzer itself.
 Python analysis runs through an interpreter, `python3` by default. Point it
 elsewhere with `python: { command: "uv run python" }` when Python lives in a
 virtual environment.
+
+## Targets
+
+The codebase is measured as a **target** — a named set of files — and `targets`
+declares the others. A target names its files by glob, which is what lets one
+measure compiled output: a directory every `.gitignore` claims, and therefore
+the one place ignore rules must not reach.
+
+```ts
+targets: [
+  {
+    analyses: ["size"],
+    compression: "gzip",
+    exclude: ["dist/vendor/**"],
+    include: ["dist/**/*.js", "!dist/**/*.map.js"],
+    name: "compiled",
+  },
+],
+```
+
+| Field | Required | Default | Meaning |
+| ----- | -------- | ------- | ------- |
+| `name` | yes | — | What the target is called. Two targets may not share one |
+| `include` | yes | — | Globs that add files. At least one must add rather than remove |
+| `exclude` | no | none | Globs that remove files |
+| `analyses` | yes | — | `language`, `size`, or both. At least one |
+| `compression` | no | `gzip` | `gzip`, `brotli`, or `none` for the bytes on disk |
+| `directory` | no | `.` | Where the target's globs start, relative to the measured directory |
+
+`language` runs the analyzers above over the target's files. `size` compresses
+each matched file on its own and sums the results — never all of them together
+— at gzip level 9 or brotli quality 11, both stated rather than defaulted.
+
+A `!` prefix in `include` removes files. Negations form one set applied to the
+whole target rather than being read in order, so rearranging the array cannot
+change what the target holds. Dot files are excluded unless a glob spells one
+out, directories never match, and a file that was matched but cannot be read
+fails the run rather than counting as zero bytes.
+
+## Limits
+
+A **limit** is how high one measured metric may go. Any metric can carry one — a
+compressed size, a line count, a counter for one of the conventions below — and
+a metric nothing limits is measured and reported exactly as before, gated by
+nothing.
+
+```ts
+defaultTarget: "codebase",
+limits: [
+  { metric: "Compiled JavaScript.size", value: "8 KB" },
+  { label: "Interfaces", metric: "typescript.interfaces", value: 500 },
+  { metric: "linesOfCode", severity: "warn", value: 100_000 },
+],
+```
+
+| Field | Required | Default | Meaning |
+| ----- | -------- | ------- | ------- |
+| `metric` | yes | — | Dotted path of the metric this limits |
+| `value` | yes | — | How high the metric may go, as a number or a string with a unit |
+| `severity` | no | `fail` | `fail` stops the run on a breach; `warn` reports it |
+| `label` | no | the path | What to call the limit in a report |
+
+A metric is addressed by the target's name followed by its path within that
+target — `codebase.typescript.interfaces`, `codebase.markdown.files`,
+`Compiled JavaScript.size`. Every target carries `files`, a target running size
+analysis carries `size`, and one running language analysis carries every
+counter the tables above list, with configured counters under `custom.<label>`.
+Set `defaultTarget` and a path naming no target is read as that target's.
+
+Where a `defaultTarget` is set, a path is read as that target's whenever no
+target name prefixes it — so with `defaultTarget: "codebase"` and a target
+called `typescript`, `typescript.interfaces` is the codebase's, because the
+`typescript` target has no `interfaces` metric of its own to compete with it.
+Write the target name in full wherever a target and a metric group share one.
+
+**Ambiguity is refused, never resolved.** A path that could name two metrics —
+a target called `markdown` beside the codebase's own `markdown.files` — fails
+the run naming both readings, as does a path naming none, or one naming a
+metric from an analysis the target never ran. A limit that quietly bound to the
+wrong metric would look exactly like one that works.
+
+A value written as a string carries a **decimal** unit whose trailing `b` is
+required: `"8 KB"` is 8000 bytes and `"1 MB"` is 1000000, while `"8 K"` is not
+a size and is refused rather than read as anything. A value nothing can read
+fails the run instead of being taken as zero.
+
+A target that matched **no files** fails the run if and only if a limit is
+written against it. Declaring a limit asserts the files are there, so an empty
+match is a glob that stopped matching or a build that never ran — while a
+target nobody limited simply measured zero, which is unremarkable.
 
 ## Custom statistics
 
@@ -130,13 +271,62 @@ narrows a symbol counter rather than being what it counts — is in
 
 ## Output
 
-The default markdown report is a description paragraph followed by shields.io
-badges under one `###` heading per language, spliced between two anchor
-markers:
+Three sinks, none of which implies another:
+
+| Sink | Flag | What lands there |
+| ---- | ---- | ---------------- |
+| Report | `--json [path]` | The structured report below |
+| Document | `-m, --markdown [path]` | The rendered badges as a whole file |
+| Splice | `--readme <path>` | The badge block, between two markers in a file somebody else wrote |
+
+A sink whose path is omitted goes to the console, and so does any sink on a run
+that neither writes nor compares — except the report, whose path is refused
+outright on such a run rather than quietly diverted. With nothing named anywhere
+— no flag, no configured destination — the badges go to the console, which is
+what a bare `codometer` does.
+
+**`--json <path>` is refused unless the run writes or compares it.** The path
+names a file, and a run doing neither would render the report to the console and
+leave that file unwritten — which is not noticed here at all, but downstream, by
+whatever reads the report finding nothing and reporting a project that changed
+nothing. The command line is refused before anything is measured, naming the
+flag to add. A pathless `--json` is untouched: the console is what it asked for.
+
+**A named destination stands for all of them.** `--json` on its own asks for
+the report and nothing else, whatever the configuration file also describes.
+Adding to the configured set instead would put a second document on the stream
+the first one was piped out of.
+
+**Standard output carries the result; every diagnostic goes to standard error.**
+`codometer --json > report.json` has to produce a file something can parse, so a
+log line never shares that stream — including the exclusion notice below, which
+is still on the console and still in front of a human, just not inside the data.
+
+**The splice sink's path is never defaulted.** Splicing rewrites a file
+somebody else wrote the rest of, so a run that guessed the filename would edit
+a document nobody pointed it at.
+
+The rendered badges are a description paragraph followed by shields.io badges
+under one `###` heading per language. A run scoped to one project puts its own
+`##` section heading above all of it, inside the markers, because that block
+lands in a document somebody else wrote the rest of and `###` groups with
+nothing above them would read as a continuation of whatever section came
+before. A run measuring a whole repository renders none: that README titles the
+section above the markers itself. Beyond the language groups there is also —
+for a run that measured a declared target — a `Measured Targets` group carrying
+each target's size under the
+compression it was measured with. That group is how a project's README reports
+the size of what it ships; a run that declared no target renders no such group,
+which is why the whole-repository report carries only its own `Repository Size`.
+
+Spliced, the badges sit between two markers,
+named `CODE_STATISTICS_START` and `CODE_STATISTICS_END` unless a configuration
+renames them — as this example does, so that documenting the markers does not
+make this document splice its own badges into the example:
 
 ```markdown
-<!-- CODE_STATISTICS_START -->
-<!-- CODE_STATISTICS_END -->
+<!-- STATISTICS_START -->
+<!-- STATISTICS_END -->
 ```
 
 The block is appended when the markers are absent, and the file is created when
@@ -145,8 +335,92 @@ it does not exist. Both halves of that behavior are replaceable on their own —
 lands in and how — and supplying one keeps the built-in other. See
 [markdown output](../codometer-configuration/README.md#markdown-output).
 
-JSON output writes the same statistics as a structured document, for anything
-that wants to chart them rather than read them.
+### What codometer writes, it does not measure
+
+Every file a run would write is left out of what it measures, and the run says
+so on the console. No configuration, and no ignore-file entry: codometer knows
+its own destinations.
+
+A badge is an image inside a link, so a spliced block moves `markdown.images`,
+`markdown.links`, and `markdown.lines`, which moves the badges, which moves the
+counts. Left in, a written report would be stale the moment it landed. The
+exclusion is applied identically whatever the flags say, so a `--write` run and
+a `--check reports` run always measure the same tree.
+
+### The report
+
+Codometer's own shape rather than any other tool's. Every metric carries its
+value, and where something limits it, that limit's value, severity, and whether
+it was breached — a limit that held is written out exactly like one that did
+not, so a consumer can render the headroom rather than only the failures.
+
+```json
+{
+  "failures": [
+    {
+      "kind": "limit",
+      "reason": "Cannot bind the limit written against \"nowhere.at.all\": nothing measured answers to it.",
+      "subject": "nowhere.at.all"
+    }
+  ],
+  "targets": [
+    {
+      "empty": false,
+      "files": 1,
+      "metrics": [
+        {
+          "limits": [],
+          "name": "compiled.files",
+          "path": "files",
+          "unit": null,
+          "value": 1
+        },
+        {
+          "limits": [
+            { "breached": true, "label": null, "severity": "warn", "value": 900 },
+            { "breached": true, "label": "Bundle", "severity": "fail", "value": 1000 }
+          ],
+          "name": "compiled.size",
+          "path": "size",
+          "unit": "bytes",
+          "value": 5195
+        }
+      ],
+      "name": "compiled"
+    }
+  ]
+}
+```
+
+| Field | Meaning |
+| ----- | ------- |
+| `name` | The metric's name across runs — its target, then its path. The join key a later run is compared on |
+| `path` | The metric's path within its target, with no target name on the front |
+| `unit` | `"bytes"` where the value counts bytes, `null` for a plain count |
+| `limits` | Every limit declared on the metric, in the order written. Empty where nothing limits it — never an absent key |
+| `empty` | Said outright when a target's globs matched nothing |
+| `failures` | Whatever the run could not do: a target that would not measure, a limit that bound to nothing |
+
+**A metric may carry more than one limit.** The configuration accepts a `warn`
+short of a `fail` on a single metric on purpose — that is how a repository sees
+a number coming before it stops a change — and the gate enforces all of them, so
+the report lists all of them. A consumer deciding what to show picks
+deliberately: the `fail` limit is what stops a change, and a
+breached `warn` beneath it is advice, not a failure.
+
+**Byte values are raw and decimal.** A renderer showing kilobytes divides by
+1000, the same units a limit written `"8 KB"` is read in.
+
+**Nothing is signalled by a missing field.** A target that matched nothing says
+`"empty": true` and any limit written against it joins `failures`, rather than
+leaving a consumer to infer an empty match from an absent limit beside a
+passing verdict.
+
+A failure is neither a breach nor staleness: it is the run not having finished.
+Every one of them is collected and reported together, so a configuration with
+three broken limits is one run to diagnose rather than three. A failure fails
+any run that writes or gates; a bare run reports it and exits clean, exactly as
+the flag table promises.
 
 ## Project Graph
 
@@ -169,7 +443,7 @@ flowchart LR
 
 ## Module Graph
 
-The modules this project defines and the imports between them, published by `nx run synchronization:synchronize --configuration=publish`.
+The modules this project defines and the imports between them, published by `nx run synchronization:synchronize --configuration=write`.
 
 <!-- nestjs-module-graph-start -->
 
@@ -184,13 +458,17 @@ flowchart LR
     JsonModule
     JupyterModule
     LanguagesModule
+    LimitsModule
     MainModule
     MarkdownModule
     OutputJsonModule
     OutputMarkdownModule
     PythonModule
+    ReportModule
     ShellModule
+    SizeAnalysisModule
     SqlModule
+    TargetsModule
     TomlModule
     TypescriptModule
     YamlModule
@@ -207,8 +485,12 @@ flowchart LR
   CodometerModule --> CustomStatisticsModule
   CodometerModule --> FileDiscoveryModule
   CodometerModule --> LanguagesModule
+  CodometerModule --> LimitsModule
   CodometerModule --> OutputJsonModule
   CodometerModule --> OutputMarkdownModule
+  CodometerModule --> ReportModule
+  CodometerModule --> SizeAnalysisModule
+  CodometerModule --> TargetsModule
   JupyterModule --> JsonModule
   JupyterModule --> MarkdownModule
   JupyterModule --> PythonModule
@@ -268,52 +550,63 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Measure | Value |
 | --- | --- |
-| Callables | 197 |
-| Files | 78 |
-| Calls traced | 350 |
+| Callables | 321 |
+| Files | 104 |
+| Calls traced | 503 |
 | Call stacks | 11 |
-| Deepest stack | 10 |
+| Deepest stack | 13 |
 | Stacks through recursion | 1 |
-| Unfollowable calls | 6 |
+| Unfollowable calls | 11 |
 
 ### Call stacks
 
-**1. `CodometerCommand.run`** — depth ≥ 10 · decorated-method
+**1. `CodometerCommand.run`** — depth ≥ 13 · decorated-method
 
 ```text
-🚀 CodometerCommand.run(_passedParameters: string[], options: CodometerCommandOptions): Promise<void> [packages/codometer-cli/src/modules/codometer/codometer.command.ts:220]
-   ↳ Measure the repository and write every configured output.
-  └─> CodometerService.measure(args: MeasureArguments): CodeStatisticsResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:115]
-     ↳ Measure aggregated repository statistics for the provided directory.
-    └─> LanguagesService.analyze(args: AnalyzeLanguagesArguments): LanguageResults [packages/codometer-cli/src/modules/languages/languages.service.ts:54]
-       ↳ Analyze every language present in the discovered files.
-      └─> JupyterService.analyze(args: AnalyzeJupyterArguments): JupyterResult [packages/codometer-cli/src/modules/jupyter/jupyter.service.ts:166]
-         ↳ Analyze the given notebooks, resolved against the directory.
-        └─> JsonService.analyze(input: JsonInput): JsonResult [packages/codometer-cli/src/modules/json/json.service.ts:304]
-           ↳ Analyze JSON files and return structural metrics for their contents.
-          └─> JsonService.countArrayNode(node: unknown[], stats: JsonResult, depth: number): void (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:89]
-             ↳ Count array nodes and their child values.
-            └─> JsonService.countNode(node: unknown, stats: JsonResult, depth: number): void (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:105]
-               ↳ Recursively count JSON containers, primitives, and nesting depth.
-              └─> JsonService.countRecordNode(node: Record<string, unknown>, stats: JsonResult, depth: number): void (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:156]
-                 ↳ Count object nodes and their child values.
-                └─> JsonService.countPrimitiveNode(node: unknown, stats: JsonResult, depth: number): void [packages/codometer-cli/src/modules/json/json.service.ts:120]
-                   ↳ Count scalar values and update primitive stats.
-                  └─> JsonService.countPrimitiveValue(node: unknown, stats: JsonResult): void [packages/codometer-cli/src/modules/json/json.service.ts:137]
-                     ↳ Increment stats for a scalar JSON value.
+🚀 CodometerCommand.run(_passedParameters: string[], options: CodometerCommandOptions): Promise<void> [packages/codometer-cli/src/modules/codometer/codometer.command.ts:426]
+   ↳ Measure the repository and produce every resolved output.
+  └─> CodometerService.measure(args: MeasureArguments): MeasurementResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:316]
+     ↳ Measure the codebase and every target declared alongside it.
+    └─> CodometerService.measureDeclaredTargets(…): { failures: ReportFailure[]; targets: TargetMeasurement[]; } [packages/codometer-cli/src/modules/codometer/codometer.service.ts:220]
+       ↳ Measure every declared target, keeping whatever the failures leave.
+      └─> CodometerService.measureTarget(args: MeasureTargetArguments): TargetMeasurement [packages/codometer-cli/src/modules/codometer/codometer.service.ts:256]
+         ↳ Measure one declared target with whichever analyses it asked for.
+        └─> CodometerService.analyzeLanguage(args: AnalyzeLanguageArguments): CodeStatisticsResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:59]
+           ↳ Run every language analyzer over one target's files.
+          └─> LanguagesService.analyze(args: AnalyzeLanguagesArguments): LanguageResults [packages/codometer-cli/src/modules/languages/languages.service.ts:54]
+             ↳ Analyze every language present in the discovered files.
+            └─> JupyterService.analyze(args: AnalyzeJupyterArguments): JupyterResult [packages/codometer-cli/src/modules/jupyter/jupyter.service.ts:166]
+               ↳ Analyze the given notebooks, resolved against the directory.
+              └─> JsonService.analyze(input: JsonInput): JsonResult [packages/codometer-cli/src/modules/json/json.service.ts:304]
+                 ↳ Analyze JSON files and return structural metrics for their contents.
+                └─> JsonService.countArrayNode(node: unknown[], stats: JsonResult, depth: number): void (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:89]
+                   ↳ Count array nodes and their child values.
+                  └─> JsonService.countNode(node: unknown, stats: JsonResult, depth: number): void (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:105]
+                     ↳ Recursively count JSON containers, primitives, and nesting depth.
+                    └─> JsonService.countRecordNode(node: Record<string, unknown>, stats: JsonResult, depth: number): void (cycle) [packages/codometer-cli/src/modules/json/json.service.ts:156]
+                       ↳ Count object nodes and their child values.
+                      └─> JsonService.countPrimitiveNode(node: unknown, stats: JsonResult, depth: number): void [packages/codometer-cli/src/modules/json/json.service.ts:120]
+                         ↳ Count scalar values and update primitive stats.
+                        └─> JsonService.countPrimitiveValue(node: unknown, stats: JsonResult): void [packages/codometer-cli/src/modules/json/json.service.ts:137]
+                           ↳ Increment stats for a scalar JSON value.
 ```
 
-**2. `OutputMarkdownService.renderBadges`** — depth 4 · orphan-root
+**2. `OutputMarkdownService.renderBadges`** — depth 7 · orphan-root
 
 ```text
-🚀 OutputMarkdownService.renderBadges(args: RenderBadgesArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:165]
-   ↳ Render the built-in badge report for the measured statistics.
-  └─> buildRepositoryGroup(statistics: CodeStatisticsResult): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:204]
-     ↳ Renders the Repository badge group.
-    └─> buildBadge(label: string, value: number | string, color: string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:11]
-       ↳ Build a single shields.io badge markdown image.
-      └─> encodeValue(input: number | string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:322]
-         ↳ Encode a value so it can safely appear in a badge URL.
+🚀 OutputMarkdownService.renderBadges(args: RenderBadgesArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:235]
+   ↳ Render the badge block for a destination, description and all.
+  └─> OutputMarkdownService.renderDocument(args: RenderDocumentArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:269]
+     ↳ Render the badges as a document of their own.
+    └─> OutputMarkdownService.buildBadgeGroups(args: RenderDocumentArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:95]
+       ↳ Assemble the badge groups, in the order they are rendered.
+      └─> buildTargetsGroup(targets: readonly TargetSize[]): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:283]
+         ↳ Renders the Measured Targets badge group, one badge per measured target.
+        └─> map(…)(target: TargetSize): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:294]
+          └─> formatTargetSize(target: TargetSize): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:411]
+             ↳ Formats one target's measured size, naming the compression it was measured under unless there was none.
+            └─> formatBytes(bytes: number): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:395]
+               ↳ Formats a byte count in decimal units, switching to megabytes once kilobytes read awkwardly.
 ```
 
 **3. `TypescriptService.handleEnum`** — depth 3 · orphan-root
@@ -382,27 +675,28 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 **9. `OutputMarkdownService.syncAnchoredBlock`** — depth ≥ 3 · orphan-root
 
 ```text
-🚀 OutputMarkdownService.syncAnchoredBlock(args: SyncAnchoredBlockArguments): boolean [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:109]
+🚀 OutputMarkdownService.syncAnchoredBlock(args: SyncAnchoredBlockArguments): boolean [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:175]
    ↳ Splice the anchored block into a file, or report whether it is current.
-  └─> OutputMarkdownService.buildBlockRegex(args: { endMarker: string; startMarker: string; }): RegExp [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:75]
+  └─> OutputMarkdownService.buildBlockRegex(args: { endMarker: string; startMarker: string; }): RegExp [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:121]
      ↳ Build the matcher for a block delimited by the configured markers.
-    └─> OutputMarkdownService.escapeRegex(input: string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:87]
+    └─> OutputMarkdownService.escapeRegex(input: string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:133]
        ↳ Escape a configured marker so it can be searched for literally.
 ```
 
 **10. `main`** — depth ≥ 2 · module-bootstrap
 
 ```text
-🚀 main(): Promise<void> [packages/codometer-cli/src/main.ts:11]
+🚀 main(): Promise<void> [packages/codometer-cli/src/main.ts:17]
    ↳ Bootstraps the codometer CLI command application.
-  └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:36]
+  └─> LoggerService.logToStandardError(): void [packages/logger/src/modules/logger/logger.service.ts:202]
+     ↳ Sends every subsequent line to standard error instead of standard output.
 ```
 
 **11. `CodometerCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 CodometerCommand.constructor(…): CodometerCommand [packages/codometer-cli/src/modules/codometer/codometer.command.ts:40]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
+🚀 CodometerCommand.constructor(…): CodometerCommand [packages/codometer-cli/src/modules/codometer/codometer.command.ts:39]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -412,10 +706,219 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CodometerService.measure` | 15 | `codometer-cli:modules/custom-statistics`, `codometer-cli:modules/file-discovery`, `codometer-cli:modules/languages` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:115` |
+| `CodometerService.measureTarget` | 17 | `codometer-cli:modules/file-discovery`, `codometer-cli:modules/size-analysis`, `codometer-cli:modules/targets` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:256` |
+| `CodometerService.analyzeLanguage` | 15 | `codometer-cli:modules/custom-statistics`, `codometer-cli:modules/languages`, `codometer-cli:modules/size-analysis` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:59` |
 | `LanguagesService.analyze` | 12 | `codometer-cli:modules/css`, `codometer-cli:modules/hcl`, `codometer-cli:modules/json`, `codometer-cli:modules/jupyter`, `codometer-cli:modules/markdown`, `codometer-cli:modules/python`, `codometer-cli:modules/shell`, `codometer-cli:modules/sql`, `codometer-cli:modules/toml`, `codometer-cli:modules/typescript`, `codometer-cli:modules/yaml` | `packages/codometer-cli/src/modules/languages/languages.service.ts:54` |
 
 ### Possibly misplaced
 
-None.
+| Callable | Declared in | Called from | Callers |
+| --- | --- | --- | --- |
+| `SizeAnalysisService.analyze` | `codometer-cli:modules/size-analysis` | `codometer-cli:modules/codometer` | 2/2 |
 <!-- CALL_STACKS_END -->
+
+<!-- CODE_STATISTICS_START -->
+
+## ⏲️ Codometer
+
+### Project
+
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-16436-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-510.92_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-24-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-143-3178c6?style=flat-square)
+
+### Measured Targets
+
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-77.13_kB_gzip-6b7280?style=flat-square)
+
+### TypeScript & JavaScript
+
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-141-3178c6?style=flat-square)
+![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-1-f7df1e?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-33-10b981?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-26-8b5cf6?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-52-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-620-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-266-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-807-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-79-059669?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-84-0ea5e9?style=flat-square)
+![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
+![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-760-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-586-0284c7?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-55-db2777?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-240-ea580c?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-431-6366f1?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-866-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1599-475569?style=flat-square)
+![TODO Comments](https://img.shields.io/badge/TODO_Comments-4-ca8a04?style=flat-square)
+![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
+
+### Python
+
+![Python Files](https://img.shields.io/badge/Python_Files-1-3776ab?style=flat-square)
+![Python Lines](https://img.shields.io/badge/Python_Lines-79-4b8bbe?style=flat-square)
+![Python Classes](https://img.shields.io/badge/Python_Classes-0-7c3aed?style=flat-square)
+![Python Functions](https://img.shields.io/badge/Python_Functions-2-16a34a?style=flat-square)
+![Python Protocols](https://img.shields.io/badge/Python_Protocols-0-0ea5e9?style=flat-square)
+![Python Constants](https://img.shields.io/badge/Python_Constants-0-dc2626?style=flat-square)
+![Python Imports](https://img.shields.io/badge/Python_Imports-6-0284c7?style=flat-square)
+![Python Decorators](https://img.shields.io/badge/Python_Decorators-0-db2777?style=flat-square)
+![Docstrings](https://img.shields.io/badge/Docstrings-1-6366f1?style=flat-square)
+![Docstring Lines](https://img.shields.io/badge/Docstring_Lines-6-818cf8?style=flat-square)
+![Python Comments](https://img.shields.io/badge/Python_Comments-1-64748b?style=flat-square)
+![Python Comment Lines](https://img.shields.io/badge/Python_Comment_Lines-1-475569?style=flat-square)
+
+### JSON
+
+![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-163-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-35-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-12-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-110-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-90-16a34a?style=flat-square)
+![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-8-0ea5e9?style=flat-square)
+![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-32-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-146-dc2626?style=flat-square)
+![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-7-ea580c?style=flat-square)
+
+### YAML
+
+![YAML Files](https://img.shields.io/badge/YAML_Files-0-cb171e?style=flat-square)
+![YAML Lines](https://img.shields.io/badge/YAML_Lines-0-e34c26?style=flat-square)
+![YAML Documents](https://img.shields.io/badge/YAML_Documents-0-f97316?style=flat-square)
+![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-0-7c3aed?style=flat-square)
+![YAML Sequences](https://img.shields.io/badge/YAML_Sequences-0-8b5cf6?style=flat-square)
+![YAML Keys](https://img.shields.io/badge/YAML_Keys-0-0284c7?style=flat-square)
+![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-0-16a34a?style=flat-square)
+![YAML Anchors](https://img.shields.io/badge/YAML_Anchors-0-059669?style=flat-square)
+![YAML Aliases](https://img.shields.io/badge/YAML_Aliases-0-10b981?style=flat-square)
+![YAML Comments](https://img.shields.io/badge/YAML_Comments-0-64748b?style=flat-square)
+![YAML Max Depth](https://img.shields.io/badge/YAML_Max_Depth-0-ea580c?style=flat-square)
+
+### TOML
+
+![TOML Files](https://img.shields.io/badge/TOML_Files-0-9c4221?style=flat-square)
+![TOML Lines](https://img.shields.io/badge/TOML_Lines-0-b45309?style=flat-square)
+![TOML Tables](https://img.shields.io/badge/TOML_Tables-0-7c3aed?style=flat-square)
+![TOML Array Tables](https://img.shields.io/badge/TOML_Array_Tables-0-8b5cf6?style=flat-square)
+![TOML Keys](https://img.shields.io/badge/TOML_Keys-0-0284c7?style=flat-square)
+![TOML Arrays](https://img.shields.io/badge/TOML_Arrays-0-16a34a?style=flat-square)
+![TOML Comments](https://img.shields.io/badge/TOML_Comments-0-64748b?style=flat-square)
+
+### Shell
+
+![Shell Files](https://img.shields.io/badge/Shell_Files-0-89e051?style=flat-square)
+![Shell Lines](https://img.shields.io/badge/Shell_Lines-0-4eaa25?style=flat-square)
+![Shell Functions](https://img.shields.io/badge/Shell_Functions-0-16a34a?style=flat-square)
+![Shell Variables](https://img.shields.io/badge/Shell_Variables-0-0284c7?style=flat-square)
+![Shell Exports](https://img.shields.io/badge/Shell_Exports-0-ea580c?style=flat-square)
+![Shell Conditionals](https://img.shields.io/badge/Shell_Conditionals-0-7c3aed?style=flat-square)
+![Shell Loops](https://img.shields.io/badge/Shell_Loops-0-8b5cf6?style=flat-square)
+![Shell Pipelines](https://img.shields.io/badge/Shell_Pipelines-0-059669?style=flat-square)
+![Shebangs](https://img.shields.io/badge/Shebangs-0-6b7280?style=flat-square)
+![Shell Comments](https://img.shields.io/badge/Shell_Comments-0-64748b?style=flat-square)
+![Shell Comment Lines](https://img.shields.io/badge/Shell_Comment_Lines-0-475569?style=flat-square)
+
+### SQL
+
+![SQL Files](https://img.shields.io/badge/SQL_Files-0-e38c00?style=flat-square)
+![SQL Lines](https://img.shields.io/badge/SQL_Lines-0-f29111?style=flat-square)
+![SQL Statements](https://img.shields.io/badge/SQL_Statements-0-7c3aed?style=flat-square)
+![SQL Selects](https://img.shields.io/badge/SQL_Selects-0-16a34a?style=flat-square)
+![SQL Inserts](https://img.shields.io/badge/SQL_Inserts-0-22c55e?style=flat-square)
+![SQL Updates](https://img.shields.io/badge/SQL_Updates-0-0ea5e9?style=flat-square)
+![SQL Deletes](https://img.shields.io/badge/SQL_Deletes-0-dc2626?style=flat-square)
+![SQL Creates](https://img.shields.io/badge/SQL_Creates-0-0284c7?style=flat-square)
+![SQL Joins](https://img.shields.io/badge/SQL_Joins-0-8b5cf6?style=flat-square)
+![SQL CTEs](https://img.shields.io/badge/SQL_CTEs-0-059669?style=flat-square)
+![SQL Comments](https://img.shields.io/badge/SQL_Comments-0-64748b?style=flat-square)
+
+### HCL
+
+![HCL Files](https://img.shields.io/badge/HCL_Files-0-844fba?style=flat-square)
+![HCL Lines](https://img.shields.io/badge/HCL_Lines-0-a78bfa?style=flat-square)
+![HCL Blocks](https://img.shields.io/badge/HCL_Blocks-0-7c3aed?style=flat-square)
+![HCL Resources](https://img.shields.io/badge/HCL_Resources-0-0284c7?style=flat-square)
+![HCL Variables](https://img.shields.io/badge/HCL_Variables-0-16a34a?style=flat-square)
+![HCL Outputs](https://img.shields.io/badge/HCL_Outputs-0-059669?style=flat-square)
+![HCL Attributes](https://img.shields.io/badge/HCL_Attributes-0-0ea5e9?style=flat-square)
+![HCL Interpolations](https://img.shields.io/badge/HCL_Interpolations-0-db2777?style=flat-square)
+![HCL Comments](https://img.shields.io/badge/HCL_Comments-0-64748b?style=flat-square)
+
+### CSS
+
+![CSS Files](https://img.shields.io/badge/CSS_Files-0-264de4?style=flat-square)
+![CSS Lines](https://img.shields.io/badge/CSS_Lines-0-2965f1?style=flat-square)
+![CSS Rules](https://img.shields.io/badge/CSS_Rules-0-7c3aed?style=flat-square)
+![CSS Selectors](https://img.shields.io/badge/CSS_Selectors-0-8b5cf6?style=flat-square)
+![CSS Declarations](https://img.shields.io/badge/CSS_Declarations-0-0284c7?style=flat-square)
+![CSS At Rules](https://img.shields.io/badge/CSS_At_Rules-0-f97316?style=flat-square)
+![CSS Media Queries](https://img.shields.io/badge/CSS_Media_Queries-0-ea580c?style=flat-square)
+![CSS Custom Properties](https://img.shields.io/badge/CSS_Custom_Properties-0-16a34a?style=flat-square)
+![CSS Comments](https://img.shields.io/badge/CSS_Comments-0-64748b?style=flat-square)
+
+### Conventions
+
+![Module Files](https://img.shields.io/badge/Module_Files-22-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-24-0284c7?style=flat-square)
+![Command Files](https://img.shields.io/badge/Command_Files-1-16a34a?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-22-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-23-db2777?style=flat-square)
+![Utilities Files](https://img.shields.io/badge/Utilities_Files-1-0ea5e9?style=flat-square)
+![Errors Files](https://img.shields.io/badge/Errors_Files-5-059669?style=flat-square)
+![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-27-7c3aed?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-5-0284c7?style=flat-square)
+![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-16a34a?style=flat-square)
+
+### Jupyter
+
+![Notebooks](https://img.shields.io/badge/Notebooks-0-f37626?style=flat-square)
+![Notebook Cells](https://img.shields.io/badge/Notebook_Cells-0-e8a33d?style=flat-square)
+![Code Cells](https://img.shields.io/badge/Code_Cells-0-3776ab?style=flat-square)
+![Markdown Cells](https://img.shields.io/badge/Markdown_Cells-0-083fa1?style=flat-square)
+![Raw Cells](https://img.shields.io/badge/Raw_Cells-0-9ca3af?style=flat-square)
+![Executed Cells](https://img.shields.io/badge/Executed_Cells-0-16a34a?style=flat-square)
+![Cell Outputs](https://img.shields.io/badge/Cell_Outputs-0-059669?style=flat-square)
+![Notebook Code Lines](https://img.shields.io/badge/Notebook_Code_Lines-0-4b8bbe?style=flat-square)
+![Notebook Classes](https://img.shields.io/badge/Notebook_Classes-0-7c3aed?style=flat-square)
+![Notebook Functions](https://img.shields.io/badge/Notebook_Functions-0-22c55e?style=flat-square)
+![Notebook Imports](https://img.shields.io/badge/Notebook_Imports-0-0284c7?style=flat-square)
+![Notebook Decorators](https://img.shields.io/badge/Notebook_Decorators-0-db2777?style=flat-square)
+![Notebook Prose Lines](https://img.shields.io/badge/Notebook_Prose_Lines-0-1f6feb?style=flat-square)
+![Notebook Headings](https://img.shields.io/badge/Notebook_Headings-0-a78bfa?style=flat-square)
+![Notebook Links](https://img.shields.io/badge/Notebook_Links-0-10b981?style=flat-square)
+![Notebook Images](https://img.shields.io/badge/Notebook_Images-0-34d399?style=flat-square)
+![Notebook Code Blocks](https://img.shields.io/badge/Notebook_Code_Blocks-0-dc2626?style=flat-square)
+![Notebook Properties](https://img.shields.io/badge/Notebook_Properties-0-ca8a04?style=flat-square)
+![Notebook Nodes](https://img.shields.io/badge/Notebook_Nodes-0-a16207?style=flat-square)
+![Notebook Max Depth](https://img.shields.io/badge/Notebook_Max_Depth-0-ea580c?style=flat-square)
+
+### Markdown
+
+![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-325-1f6feb?style=flat-square)
+![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
+![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
+![H3](https://img.shields.io/badge/H3-15-a78bfa?style=flat-square)
+![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
+![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
+![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-51-64748b?style=flat-square)
+![Lists](https://img.shields.io/badge/Lists-6-16a34a?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-28-22c55e?style=flat-square)
+![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
+![Tables](https://img.shields.io/badge/Tables-2-0284c7?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-10-0ea5e9?style=flat-square)
+![Links](https://img.shields.io/badge/Links-9-059669?style=flat-square)
+![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-14-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-79-ef4444?style=flat-square)
+![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
+![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
+<!-- CODE_STATISTICS_END -->

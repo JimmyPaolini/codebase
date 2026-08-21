@@ -5,7 +5,7 @@ import { CustomStatisticsService } from "./custom-statistics.service";
 
 import type { ResolvedCodometerCustomStatistic } from "@codometer/configuration";
 
-const trackedFiles = [
+const files = [
   "packages/lexico-components/src/button.component.tsx",
   "tools/synchronization/src/modules/logger/logger.module.ts",
   "tools/synchronization/src/modules/logger/logger.service.ts",
@@ -45,6 +45,7 @@ describe(CustomStatisticsService, () => {
 
   it("counts the files each configured glob claims", () => {
     const result = service.analyze({
+      files,
       statistics: [
         buildStatistic({ label: "Services", patterns: ["**/*.service.ts"] }),
         buildStatistic({
@@ -54,7 +55,6 @@ describe(CustomStatisticsService, () => {
         }),
       ],
       symbolCounts: {},
-      trackedFiles,
     });
 
     expect(result).toStrictEqual([
@@ -65,11 +65,11 @@ describe(CustomStatisticsService, () => {
 
   it("keeps a suffixed test file out of the counter it extends", () => {
     const result = service.analyze({
+      files,
       statistics: [
         buildStatistic({ label: "Services", patterns: ["**/*.service.ts"] }),
       ],
       symbolCounts: {},
-      trackedFiles,
     });
 
     // `logger.service.unit.test.ts` is a test, not a service, and the glob
@@ -79,6 +79,7 @@ describe(CustomStatisticsService, () => {
 
   it("counts a file matching several of one counter's globs once", () => {
     const result = service.analyze({
+      files,
       statistics: [
         buildStatistic({
           label: "Tests",
@@ -86,7 +87,6 @@ describe(CustomStatisticsService, () => {
         }),
       ],
       symbolCounts: {},
-      trackedFiles,
     });
 
     expect(result[0]?.count).toBe(2);
@@ -94,11 +94,11 @@ describe(CustomStatisticsService, () => {
 
   it("reports zero for a counter that matches nothing", () => {
     const result = service.analyze({
+      files,
       statistics: [
         buildStatistic({ label: "Resolvers", patterns: ["**/*.resolver.ts"] }),
       ],
       symbolCounts: {},
-      trackedFiles,
     });
 
     expect(result[0]?.count).toBe(0);
@@ -106,12 +106,13 @@ describe(CustomStatisticsService, () => {
 
   it("returns nothing when no counters are configured", () => {
     expect(
-      service.analyze({ statistics: [], symbolCounts: {}, trackedFiles }),
+      service.analyze({ files, statistics: [], symbolCounts: {} }),
     ).toStrictEqual([]);
   });
 
   it("labels a symbol counter with what the analyzer tallied", () => {
     const result = service.analyze({
+      files,
       statistics: [
         buildStatistic({
           group: "typescript",
@@ -120,7 +121,6 @@ describe(CustomStatisticsService, () => {
         }),
       ],
       symbolCounts: { "Static Methods": 12 },
-      trackedFiles,
     });
 
     expect(result).toStrictEqual([
@@ -137,6 +137,7 @@ describe(CustomStatisticsService, () => {
   // it must not fall through to counting the files those patterns matched.
   it("never counts files for a counter that matches symbols", () => {
     const result = service.analyze({
+      files,
       statistics: [
         buildStatistic({
           label: "Service Methods",
@@ -145,7 +146,6 @@ describe(CustomStatisticsService, () => {
         }),
       ],
       symbolCounts: {},
-      trackedFiles,
     });
 
     expect(result[0]?.count).toBe(0);

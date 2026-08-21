@@ -14,8 +14,11 @@ import { type CallidescopeConfiguration } from "@callidescope/configuration";
  * So the two are split at the flag rather than by leaving the destination unset.
  * `nx run codebase:callidescope:check` passes `--check depth`, which reads no
  * destination at all, so its exit code is purely the depth verdict.
- * `nx run codebase:callidescope:publish` passes `--write`, and the release
- * workflow runs it on main.
+ * `nx run codebase:callidescope:write` passes `--write`, and the release
+ * workflow runs it on main. Two configurations carry that split with no third,
+ * because the target hangs off nothing: `lint-codebase` does not depend on it,
+ * so no run of it ever forwards `write` here, and the pull request names
+ * `check` itself.
  */
 const callidescopeConfiguration: CallidescopeConfiguration = {
   excludeFrom: ["configuration/.callidescopeignore"],
@@ -23,7 +26,7 @@ const callidescopeConfiguration: CallidescopeConfiguration = {
     /**
      * A section in every traced project's own README.
      *
-     * Published by `nx run codebase:callidescope:publish` on main. Deliberately
+     * Published by `nx run codebase:callidescope:write` on main. Deliberately
      * not checked on pull requests: the block moves whenever the call graph
      * does, so gating on its freshness would fail branches for being out of
      * date with `main` rather than for anything they did.

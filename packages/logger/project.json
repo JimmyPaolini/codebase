@@ -27,8 +27,8 @@
       },
       "outputs": ["{options.outputPath}"]
     },
-    "bundlesize": {},
     "clean": {},
+    "codometer": {},
     "dependency-cruiser": {},
     "format": {},
     "knip": {},

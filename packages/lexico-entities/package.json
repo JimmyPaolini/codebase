@@ -16,10 +16,8 @@
   },
   "devDependencies": {
     "@nestjs/testing": "catalog:",
-    "@size-limit/file": "catalog:",
     "@types/node": "catalog:",
     "@types/pluralize": "catalog:",
-    "size-limit": "catalog:",
     "typescript": "catalog:"
   },
   "exports": {

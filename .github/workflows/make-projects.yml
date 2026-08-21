@@ -40,10 +40,16 @@ jobs:
           # Builds and bundle sizing touch no Python-backed tool.
           python-dependencies: "false"
 
-      # A breached size limit fails `bundlesize`, and the whole point of the
-      # report is to say which bundle broke. So the failure is recorded here and
-      # re-raised once the report is written, rather than ending the job while
-      # the developer still has nothing to read.
+      # A breached limit fails `codometer`, and the whole point of the report is
+      # to say which bundle broke. So the failure is recorded here and re-raised
+      # once the report is written, rather than ending the job while the
+      # developer still has nothing to read. `codometer` writes each project's
+      # report before it weighs any limit, so the breach that fails this step
+      # has already left the numbers behind for the section below to render.
+      #
+      # Limits only: `codometer` is never asked to check report staleness here.
+      # Project READMEs are written on main by the release workflow, so on a
+      # branch they are expected to be behind and there is nothing to gate.
       - name: 👷 Make Projects
         id: make-projects
         continue-on-error: true
@@ -53,6 +59,12 @@ jobs:
       # compares against, which is what removes the second checkout, install,
       # and full build this job used to run just to size the base branch. A
       # failed build would publish a partial baseline, so it is skipped.
+      #
+      # The artifact name is unchanged so the download below keeps working
+      # across the switch, but its contents are now codometer reports. The
+      # first pull request after that switch finds a baseline holding only the
+      # old filename, matches nothing, and renders every bundle as new once;
+      # the next main run replaces the artifact and it self-corrects.
       - name: 📤 Upload Bundle Sizes
         if: >-
           github.ref == 'refs/heads/main'
@@ -61,9 +73,9 @@ jobs:
         with:
           name: bundle-sizes-main
           path: |
-            applications/**/size-limit-report.json
-            packages/**/size-limit-report.json
-            tools/**/size-limit-report.json
+            applications/**/codometer-report.json
+            packages/**/codometer-report.json
+            tools/**/codometer-report.json
           retention-days: 90
           if-no-files-found: ignore
 
@@ -110,5 +122,5 @@ jobs:
       - name: 🚦 Enforce Build And Bundle Limits
         if: steps.make-projects.outcome == 'failure'
         run: |
-          echo "::error::A project failed to build or exceeded its size limit."
+          echo "::error::A project failed to build or breached its limit."
           exit 1
