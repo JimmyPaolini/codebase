@@ -182,7 +182,7 @@ Fix, by failure mode:
 - Missing or mismatched type label — `❌ Expected exactly one type label: type:feat (found: none)` — `gh pr edit <number> --add-label type:feat`, removing any extra type label first.
 - Missing scope label — `❌ Missing scope label: scope:callidescope` — `gh pr edit <number> --add-label scope:callidescope`.
 - Unexpected scope label — `❌ Unexpected scope label: scope:tools` — `gh pr edit <number> --remove-label scope:tools`.
-- No scope in the title at all, such as `chore: 🔧 tidy the workspace` — this passes Validate Pull Request Title (commitlint has no `scope-empty` rule) and only fails here: `❌ No scope in title: retitle as chore(<scope>): …` — retitle the pull request.
+- No scope in the title at all, such as `chore: 🔧 tidy the workspace` — commitlint's `scope-empty` rule rejects this in 📝 Validate Pull Request Title, so in a workflow run this step is never reached; running the script by hand still reports `❌ No scope in title: retitle as chore(<scope>): …` — retitle the pull request.
 - `do-not-merge` label present — `❌ Blocked by the do-not-merge label` — `gh pr edit <number> --remove-label do-not-merge`.
 - No assignee — `❌ No assignee` — `gh pr edit <number> --add-assignee @me`.
 - Missing, extra, or duplicate source label — `❌ Expected exactly one source label: source:agent or source:human (found: none)` — remove any stray `source:*` label and add exactly one of `gh pr edit <number> --add-label source:agent` or `gh pr edit <number> --add-label source:human`.
