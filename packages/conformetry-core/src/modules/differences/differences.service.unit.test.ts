@@ -1,37 +1,37 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { ErrorsService } from "./errors.service";
+import { DifferencesService } from "./differences.service";
 
-describe(ErrorsService, () => {
-  let service: ErrorsService;
+describe(DifferencesService, () => {
+  let service: DifferencesService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [ErrorsService],
+      providers: [DifferencesService],
     }).compile();
 
-    service = await module.resolve(ErrorsService);
+    service = await module.resolve(DifferencesService);
   });
 
   it("is defined", () => {
     expect(service).toBeDefined();
   });
 
-  describe("buildMissingFileError", () => {
+  describe("buildMissingFileDifference", () => {
     it("reports the instance path and points the fix at the template", () => {
-      const error = service.buildMissingFileError({
+      const error = service.buildMissingFileDifference({
         instanceFilePath: "packages/example/src/index.ts",
         templateFilePath: "templates/example/src/index.ts",
       });
 
-      expect(error.errorType).toBe("file");
+      expect(error.differenceType).toBe("file");
       expect(error.message).toContain("packages/example/src/index.ts");
       expect(error.fix).toContain("templates/example/src/index.ts");
     });
 
     it("omits language, because a missing file has no format", () => {
-      const error = service.buildMissingFileError({
+      const error = service.buildMissingFileDifference({
         instanceFilePath: "a",
         templateFilePath: "b",
       });
@@ -40,14 +40,14 @@ describe(ErrorsService, () => {
     });
   });
 
-  describe("buildMissingDirectoryError", () => {
+  describe("buildMissingDirectoryDifference", () => {
     it("reports the directory category", () => {
-      const error = service.buildMissingDirectoryError({
+      const error = service.buildMissingDirectoryDifference({
         instanceDirectoryPath: "packages/example/src/modules",
         templateDirectoryPath: "templates/example/src/modules",
       });
 
-      expect(error.errorType).toBe("directory");
+      expect(error.differenceType).toBe("directory");
       expect(error.message).toContain("packages/example/src/modules");
     });
   });
@@ -64,14 +64,14 @@ describe(ErrorsService, () => {
     });
   });
 
-  describe("resolveErrorType", () => {
+  describe("resolveDifferenceType", () => {
     it("passes through a recognized category", () => {
-      expect(service.resolveErrorType("comment")).toBe("comment");
+      expect(service.resolveDifferenceType("comment")).toBe("comment");
     });
 
     it("falls back to code so one bad payload cannot fail the run", () => {
-      expect(service.resolveErrorType("nonsense")).toBe("code");
-      expect(service.resolveErrorType(null)).toBe("code");
+      expect(service.resolveDifferenceType("nonsense")).toBe("code");
+      expect(service.resolveDifferenceType(null)).toBe("code");
     });
   });
 });

@@ -306,7 +306,7 @@ describe(ValidateCommand, () => {
         checkedPaths: [],
         fileResults: [
           {
-            errors: [],
+            differences: [],
             filename: "gears.ts",
             instanceFilePath: "/w/gears.ts",
             templateFilePath: "/w/template.ts",

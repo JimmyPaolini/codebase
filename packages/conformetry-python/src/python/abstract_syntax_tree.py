@@ -9,7 +9,7 @@ from python.nodes import (
     get_children,
     get_key,
 )
-from python.types import ConformetryError, TreeComparison
+from python.types import ConformetryDifference, TreeComparison
 
 
 def _get_node_location(node: ast.AST) -> tuple[int | None, int | None]:
@@ -20,14 +20,14 @@ def _get_node_location(node: ast.AST) -> tuple[int | None, int | None]:
 
 def _build_error(
     template_child: ast.AST, instance_node: ast.AST, filename: str
-) -> ConformetryError:
+) -> ConformetryDifference:
     kind = type(template_child).__name__
     key = get_key(template_child)
     breadcrumb = f'{kind} "{key}"' if key is not None else kind
     instance_line, instance_column = _get_node_location(instance_node)
     template_line, template_column = _get_node_location(template_child)
-    return ConformetryError(
-        error_type="code",
+    return ConformetryDifference(
+        difference_type="code",
         language="python",
         message=f"Missing {breadcrumb}",
         instance_line=instance_line,
@@ -39,8 +39,8 @@ def _build_error(
     )
 
 
-def _failed_weight(errors: list[ConformetryError]) -> int:
-    return sum(error.weight for error in errors)
+def _failed_weight(differences: list[ConformetryDifference]) -> int:
+    return sum(difference.weight for difference in differences)
 
 
 def _compare_child(
@@ -63,8 +63,8 @@ def _compare_child(
         matches = filter_by_same_type(instance_children, template_child)
 
     if not matches:
-        error = _build_error(template_child, instance_node, filename)
-        return TreeComparison(errors=[error], total_weight=error.weight)
+        difference = _build_error(template_child, instance_node, filename)
+        return TreeComparison(differences=[difference], total_weight=difference.weight)
 
     candidates = [
         validate_depth_first_search(
@@ -72,9 +72,9 @@ def _compare_child(
         )
         for match in matches
     ]
-    # Weighed by failed weight rather than error count: one finding standing in
+    # Weighed by failed weight rather than difference count: one finding standing in
     # for a whole missing class is a worse match than two missing decorators.
-    return min(candidates, key=lambda comparison: _failed_weight(comparison.errors))
+    return min(candidates, key=lambda comparison: _failed_weight(comparison.differences))
 
 
 def validate_depth_first_search(
@@ -89,7 +89,7 @@ def validate_depth_first_search(
     Alongside the differences, the walk counts what it asked for: every
     template node it weighs is one requirement.
     """
-    errors: list[ConformetryError] = []
+    differences: list[ConformetryDifference] = []
     instance_children = get_children(instance_node)
     # The node itself is the one requirement its own level contributes; its
     # children add theirs.
@@ -103,6 +103,6 @@ def validate_depth_first_search(
             instance_source,
             filename,
         )
-        errors.extend(comparison.errors)
+        differences.extend(comparison.differences)
         total_weight += comparison.total_weight
-    return TreeComparison(errors=errors, total_weight=total_weight)
+    return TreeComparison(differences=differences, total_weight=total_weight)

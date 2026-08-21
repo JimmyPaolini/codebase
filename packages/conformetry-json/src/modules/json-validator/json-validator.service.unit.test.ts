@@ -50,17 +50,17 @@ describe(JsonValidatorService, () => {
           instance: '{"a": 1, "b": 2}',
           renderedTemplate: '{"a": 1}',
         }),
-      ).errors,
+      ).differences,
     ).toStrictEqual([]);
   });
 
   it("reports a missing key", () => {
-    const { errors } = service.validateDocument(
+    const { differences } = service.validateDocument(
       createDocument({ instance: "{}", renderedTemplate: '{"a": 1}' }),
     );
 
-    expect(errors).toHaveLength(1);
-    expect(errors[0]?.message).toBe('Missing required key "a"');
+    expect(differences).toHaveLength(1);
+    expect(differences[0]?.message).toBe('Missing required key "a"');
   });
 
   it("reads comments, so a commented tsconfig parses", () => {
@@ -70,7 +70,7 @@ describe(JsonValidatorService, () => {
           instance: '{\n  // a comment\n  "a": 1\n}',
           renderedTemplate: '{"a": 1}',
         }),
-      ).errors,
+      ).differences,
     ).toStrictEqual([]);
   });
 });

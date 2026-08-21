@@ -433,8 +433,8 @@ None.
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4679-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-159.11_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4682-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-159.08_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-38-3178c6?style=flat-square)
 
@@ -612,10 +612,10 @@ None.
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-256-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-248-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-14-a78bfa?style=flat-square)
+![H3](https://img.shields.io/badge/H3-13-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
@@ -627,7 +627,7 @@ None.
 ![Table Rows](https://img.shields.io/badge/Table_Rows-10-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-9-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-13-dc2626?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-12-dc2626?style=flat-square)
 ![Inline Code](https://img.shields.io/badge/Inline_Code-74-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)

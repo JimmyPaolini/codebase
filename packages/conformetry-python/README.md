@@ -66,10 +66,10 @@ flowchart LR
     PythonValidatorModule
   end
   subgraph group1["conformetry-core"]
-    ErrorsModule
+    DifferencesModule
     ScoringModule
   end
-  PythonValidatorModule --> ErrorsModule
+  PythonValidatorModule --> DifferencesModule
   PythonValidatorModule --> ScoringModule
 ```
 
@@ -113,14 +113,14 @@ Call stacks traced through `conformetry-python`, deepest first. Each frame shows
 ```text
 🚀 PythonValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-python/src/modules/python-validator/python-validator.service.ts:38]
    ↳ Reports every declaration and comment the template requires.
-  └─> PythonBridgeService.validatePythonSource(args: RunPythonBridgeArguments): DocumentValidationResult [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:154]
+  └─> PythonBridgeService.validatePythonSource(args: RunPythonBridgeArguments): DocumentValidationResult [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:160]
      ↳ Compares one Python source against its rendered template.
-    └─> PythonBridgeService.map(…)(error: Readonly<Record<string, unknown>>): ConformetryError [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:179]
-      └─> PythonBridgeService.toConformetryError(error: PythonBridgeError): ConformetryError [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:130]
+    └─> PythonBridgeService.map(…)(error: Readonly<Record<string, unknown>>): ConformetryDifference [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:185]
+      └─> PythonBridgeService.toConformetryDifference(error: PythonBridgeError): ConformetryDifference [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:132]
          ↳ Maps one snake_case bridge error onto the shared error shape.
-        └─> PythonBridgeService.readValues(error: PythonBridgeError): Partial<ConformetryError> [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:119]
+        └─> PythonBridgeService.readValues(error: PythonBridgeError): Partial<ConformetryDifference> [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:121]
            ↳ Reads the optional expected and actual values.
-          └─> PythonBridgeService.readString(error: PythonBridgeError, key: string): string | undefined [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:109]
+          └─> PythonBridgeService.readString(error: PythonBridgeError, key: string): string | undefined [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:111]
              ↳ Narrows an untrusted string field from the bridge payload.
 ```
 
@@ -137,14 +137,14 @@ None.
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1226-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-75.89_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1232-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-76.38_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-6-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-21-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-4.35_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-4.37_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript & JavaScript
 
@@ -316,10 +316,10 @@ None.
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-251-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-243-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-14-a78bfa?style=flat-square)
+![H3](https://img.shields.io/badge/H3-13-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
@@ -331,7 +331,7 @@ None.
 ![Table Rows](https://img.shields.io/badge/Table_Rows-10-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-9-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-13-dc2626?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-12-dc2626?style=flat-square)
 ![Inline Code](https://img.shields.io/badge/Inline_Code-74-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)

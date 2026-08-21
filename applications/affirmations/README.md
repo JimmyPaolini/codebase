@@ -354,7 +354,7 @@ MIT — see [LICENSE](../../LICENSE).
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-101-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-102-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-6-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-0-a78bfa?style=flat-square)

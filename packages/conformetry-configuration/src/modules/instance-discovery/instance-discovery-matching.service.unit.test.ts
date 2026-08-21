@@ -151,10 +151,10 @@ describe(InstanceDiscoveryMatchingService, () => {
     it("prefers the larger template when both match completely", async () => {
       const { templatesRootPath } = await createTemplates();
       const templates = collectTemplates(templatesService, templatesRootPath);
-      const instancePath = await createServiceModule("errors");
+      const instancePath = await createServiceModule("differences");
 
       const { matched } = service.matchInstances({
-        instances: [{ nameStem: "errors", path: instancePath }],
+        instances: [{ nameStem: "differences", path: instancePath }],
         templates,
       });
 
@@ -165,10 +165,10 @@ describe(InstanceDiscoveryMatchingService, () => {
     it("rejects a partially matching larger template on ratio", async () => {
       const { templatesRootPath } = await createTemplates();
       const templates = collectTemplates(templatesService, templatesRootPath);
-      const instancePath = await createServiceModule("errors");
+      const instancePath = await createServiceModule("differences");
 
       const { matched } = service.matchInstances({
-        instances: [{ nameStem: "errors", path: instancePath }],
+        instances: [{ nameStem: "differences", path: instancePath }],
         templates,
       });
 
@@ -179,17 +179,17 @@ describe(InstanceDiscoveryMatchingService, () => {
     it("selects a two-file template when a file scope narrows the instance", async () => {
       const { templatesRootPath } = await createTemplates();
       const templates = collectTemplates(templatesService, templatesRootPath);
-      const instancePath = await createServiceModule("errors");
+      const instancePath = await createServiceModule("differences");
 
-      const modulePath = path.join(instancePath, "errors");
+      const modulePath = path.join(instancePath, "differences");
       const { matched } = service.matchInstances({
         instances: [
           {
             fileScope: [
-              path.join(modulePath, "errors.service.ts"),
-              path.join(modulePath, "errors.service.unit.test.ts"),
+              path.join(modulePath, "differences.service.ts"),
+              path.join(modulePath, "differences.service.unit.test.ts"),
             ],
-            nameStem: "errors",
+            nameStem: "differences",
             path: modulePath,
           },
         ],
@@ -240,9 +240,9 @@ describe(InstanceDiscoveryMatchingService, () => {
         }
       }
 
-      const instancePath = await createServiceModule("errors");
+      const instancePath = await createServiceModule("differences");
       const { unmatched } = service.matchInstances({
-        instances: [{ nameStem: "errors", path: instancePath }],
+        instances: [{ nameStem: "differences", path: instancePath }],
         templates: collectTemplates(templatesService, templatesRootPath),
       });
 
@@ -266,9 +266,9 @@ describe(InstanceDiscoveryMatchingService, () => {
         await writeFile(filePath, "", "utf8");
       }
 
-      const instancePath = await createServiceModule("errors");
+      const instancePath = await createServiceModule("differences");
       const { matched, unmatched } = service.matchInstances({
-        instances: [{ nameStem: "errors", path: instancePath }],
+        instances: [{ nameStem: "differences", path: instancePath }],
         templates: collectTemplates(templatesService, templatesRootPath),
       });
 

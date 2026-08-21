@@ -1,12 +1,12 @@
 import { spawnSync } from "node:child_process";
 
-import { ErrorsModule, ScoringModule } from "@conformetry/core";
+import { DifferencesModule, ScoringModule } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { PythonBridgeService } from "./python-bridge.service";
 
-import type { ConformetryError } from "@conformetry/core";
+import type { ConformetryDifference } from "@conformetry/core";
 import type childProcess from "node:child_process";
 
 // Calls through by default so most tests exercise the real bridge; the
@@ -24,7 +24,7 @@ describe(PythonBridgeService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [ErrorsModule, ScoringModule],
+      imports: [DifferencesModule, ScoringModule],
       providers: [PythonBridgeService],
     }).compile();
 
@@ -42,19 +42,19 @@ describe(PythonBridgeService, () => {
           filename: "alpha.py",
           instance: "import os\n\n\ndef alpha():\n    return os\n",
           template: "import os\n",
-        }).errors,
+        }).differences,
       ).toStrictEqual([]);
     });
 
     it("reports an import the instance lacks", () => {
-      const { errors } = service.validatePythonSource({
+      const { differences } = service.validatePythonSource({
         filename: "alpha.py",
         instance: "def alpha():\n    return 1\n",
         template: "import os\n",
       });
 
-      expect(errors.length).toBeGreaterThan(0);
-      expect(errors[0]?.language).toBe("python");
+      expect(differences.length).toBeGreaterThan(0);
+      expect(differences[0]?.language).toBe("python");
     });
 
     it("ignores statements the template does not declare", () => {
@@ -63,7 +63,7 @@ describe(PythonBridgeService, () => {
           filename: "alpha.py",
           instance: "import os\nimport sys\n",
           template: "import os\n",
-        }).errors,
+        }).differences,
       ).toStrictEqual([]);
     });
   });
@@ -74,12 +74,12 @@ describe(PythonBridgeService, () => {
     });
 
     /** Compares a file against itself, so only the staged failure shows up. */
-    function runBridge(): ConformetryError[] {
+    function runBridge(): ConformetryDifference[] {
       return service.validatePythonSource({
         filename: "alpha.py",
         instance: "import os\n",
         template: "import os\n",
-      }).errors;
+      }).differences;
     }
 
     function weighBridge(): number {
@@ -137,7 +137,7 @@ describe(PythonBridgeService, () => {
         signal: null,
         status: 0,
         stderr: "",
-        stdout: JSON.stringify({ errors: [{}] }),
+        stdout: JSON.stringify({ differences: [{}] }),
       });
 
       const [error] = runBridge();
@@ -157,10 +157,10 @@ describe(PythonBridgeService, () => {
         status: 0,
         stderr: "",
         stdout: JSON.stringify({
-          errors: [
+          differences: [
             {
               actual: "def beta()",
-              error_type: "code",
+              difference_type: "code",
               expected: "def alpha()",
               fix: "Rename it.",
               language: "python",
@@ -185,7 +185,7 @@ describe(PythonBridgeService, () => {
         status: 0,
         stderr: "",
         stdout: JSON.stringify({
-          errors: [{ message: "Missing ClassDef", weight: 24 }],
+          differences: [{ message: "Missing ClassDef", weight: 24 }],
           total_weight: 30,
         }),
       });
@@ -203,7 +203,7 @@ describe(PythonBridgeService, () => {
         signal: null,
         status: 0,
         stderr: "",
-        stdout: JSON.stringify({ errors: [{}], total_weight: 5 }),
+        stdout: JSON.stringify({ differences: [{}], total_weight: 5 }),
       });
 
       expect(runBridge()[0]?.weight).toBe(1);
@@ -216,7 +216,7 @@ describe(PythonBridgeService, () => {
         signal: null,
         status: 0,
         stderr: "",
-        stdout: JSON.stringify({ errors: [{ weight: 4 }, { weight: 3 }] }),
+        stdout: JSON.stringify({ differences: [{ weight: 4 }, { weight: 3 }] }),
       });
 
       // A bridge reporting findings but no denominator would otherwise score a

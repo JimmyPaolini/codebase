@@ -1,6 +1,6 @@
 // 🏷️ Types
 
-import type { ConformetryError } from "../errors/errors.types";
+import type { ConformetryDifference } from "../differences/differences.types";
 
 /**
  * A validator for one language or file format.
@@ -35,7 +35,7 @@ export interface ConformetryLanguageValidator {
  * only against the files it got wrong.
  */
 export interface DocumentValidationResult {
-  readonly errors: ConformetryError[];
+  readonly differences: ConformetryDifference[];
   /** Combined weight of the template requirements this document imposes. */
   readonly totalWeight: number;
 }
@@ -102,7 +102,7 @@ export interface RunLanguageValidatorArguments {
  * print a per-file heading with its originating template.
  */
 export interface ValidationFileResult {
-  readonly errors: ConformetryError[];
+  readonly differences: ConformetryDifference[];
   readonly filename: string;
   readonly instanceFilePath: string;
   readonly templateFilePath: string;

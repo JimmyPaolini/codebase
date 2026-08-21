@@ -18,7 +18,7 @@ import {
   SCORE_PERCENTAGE_SCALE,
 } from "./reporting.constants";
 
-import type { ConformetryError } from "../errors/errors.types";
+import type { ConformetryDifference } from "../differences/differences.types";
 import type { ValidationFileResult } from "../language/language.types";
 import type { InstanceScore } from "../scoring/scoring.types";
 import type {
@@ -27,7 +27,7 @@ import type {
 } from "./reporting.types";
 
 /**
- * Renders structured conformance errors as human-readable text.
+ * Renders structured conformance differences as human-readable text.
  *
  * Reports are grouped by file and then by error, and every error prints the
  * template requirement that produced it plus a concrete `fix` line. That last
@@ -51,7 +51,7 @@ export class ReportingService {
    * and the template, the expected and actual values when known, and the fix.
    */
   private formatError(args: {
-    error: ConformetryError;
+    error: ConformetryDifference;
     index: number;
     totalWeight: number;
   }): string[] {
@@ -92,7 +92,7 @@ export class ReportingService {
 
   /**
    * Renders one failing file: a numbered heading, the instance and template
-   * paths relative to the working directory, then each of its errors.
+   * paths relative to the working directory, then each of its differences.
    */
   private formatFileResult(args: {
     fileResult: ValidationFileResult;
@@ -105,13 +105,13 @@ export class ReportingService {
       "",
       `${REPORT_FILE_INDENT}${String(args.index + 1)}. file: ${fileResult.filename}${this.formatFraction(
         {
-          failedWeight: this.scoringService.sumWeights(fileResult.errors),
+          failedWeight: this.scoringService.sumWeights(fileResult.differences),
           totalWeight: fileResult.totalWeight,
         },
       )}`,
       `${REPORT_FILE_DETAIL_INDENT}Instance: ${path.relative(args.workingDirectory, fileResult.instanceFilePath)}`,
       `${REPORT_FILE_DETAIL_INDENT}Template: ${path.relative(args.workingDirectory, fileResult.templateFilePath)}`,
-      ...fileResult.errors.flatMap((error, index) => {
+      ...fileResult.differences.flatMap((error, index) => {
         return this.formatError({
           error,
           index,
@@ -140,7 +140,7 @@ export class ReportingService {
   /**
    * Renders a single location line, preferring line/column over a JSON path.
    * Returns nothing when the error carries neither, which is normal for
-   * whole-file errors such as a missing file.
+   * whole-file differences such as a missing file.
    */
   private formatLocation(args: FormatLocationArguments): string[] {
     if (args.line !== undefined) {

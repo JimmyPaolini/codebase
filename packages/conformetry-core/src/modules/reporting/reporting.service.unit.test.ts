@@ -11,10 +11,10 @@ import type { InstanceScore } from "../scoring/scoring.types";
 const WORKING_DIRECTORY = "/workspace";
 
 function createFileResult(
-  errors: ValidationFileResult["errors"],
+  differences: ValidationFileResult["differences"],
 ): ValidationFileResult {
   return {
-    errors,
+    differences,
     filename: "example.ts",
     instanceFilePath: "/workspace/packages/example/src/example.ts",
     templateFilePath: "/workspace/templates/example/src/example.ts",
@@ -50,7 +50,7 @@ describe(ReportingService, () => {
     const report = service.formatReport({
       fileResults: [
         createFileResult([
-          { errorType: "code", fix: "Add it.", message: "Missing thing" },
+          { differenceType: "code", fix: "Add it.", message: "Missing thing" },
         ]),
       ],
       workingDirectory: WORKING_DIRECTORY,
@@ -65,8 +65,16 @@ describe(ReportingService, () => {
     const report = service.formatReport({
       fileResults: [
         createFileResult([
-          { errorType: "code", fix: "Add the import.", message: "Missing A" },
-          { errorType: "comment", fix: "Add the comment.", message: "No B" },
+          {
+            differenceType: "code",
+            fix: "Add the import.",
+            message: "Missing A",
+          },
+          {
+            differenceType: "comment",
+            fix: "Add the comment.",
+            message: "No B",
+          },
         ]),
       ],
       workingDirectory: WORKING_DIRECTORY,
@@ -83,7 +91,7 @@ describe(ReportingService, () => {
       fileResults: [
         createFileResult([
           {
-            errorType: "code",
+            differenceType: "code",
             fix: "Fix it.",
             instanceColumn: 3,
             instanceLine: 12,
@@ -106,7 +114,7 @@ describe(ReportingService, () => {
       fileResults: [
         createFileResult([
           {
-            errorType: "code",
+            differenceType: "code",
             fix: "Fix it.",
             instancePath: "scripts.build[0]",
             message: "Missing key",
@@ -125,7 +133,7 @@ describe(ReportingService, () => {
         createFileResult([
           {
             actual: "esnext",
-            errorType: "code",
+            differenceType: "code",
             expected: "es2023",
             fix: "Change it.",
             message: "Wrong target",
@@ -145,7 +153,7 @@ describe(ReportingService, () => {
         {
           ...createFileResult([
             {
-              errorType: "code",
+              differenceType: "code",
               fix: "Add it.",
               message: "Missing ClassDeclaration",
               weight: 38,
@@ -168,7 +176,11 @@ describe(ReportingService, () => {
     const report = service.formatReport({
       fileResults: [
         createFileResult([
-          { errorType: "comment", fix: "Add it.", message: "Missing comment" },
+          {
+            differenceType: "comment",
+            fix: "Add it.",
+            message: "Missing comment",
+          },
         ]),
       ],
       workingDirectory: WORKING_DIRECTORY,
@@ -184,7 +196,7 @@ describe(ReportingService, () => {
         {
           ...createFileResult([
             {
-              errorType: "comment",
+              differenceType: "comment",
               fix: "Add it.",
               message: "Missing comment",
             },
@@ -295,7 +307,11 @@ describe(ReportingService, () => {
       const report = service.formatReport({
         fileResults: [
           createFileResult([
-            { errorType: "code", fix: "Add it.", message: "Missing thing" },
+            {
+              differenceType: "code",
+              fix: "Add it.",
+              message: "Missing thing",
+            },
           ]),
         ],
         scores: [createScore({ ok: true, threshold: 0.75 })],

@@ -67,7 +67,7 @@ flowchart LR
     JupyterValidatorModule
   end
   subgraph group1["conformetry-core"]
-    ErrorsModule
+    DifferencesModule
     ScoringModule
   end
   subgraph group2["conformetry-json"]
@@ -84,7 +84,7 @@ flowchart LR
   JupyterValidatorModule --> MarkdownValidatorModule
   JupyterValidatorModule --> PythonValidatorModule
   MarkdownValidatorModule --> ScoringModule
-  PythonValidatorModule --> ErrorsModule
+  PythonValidatorModule --> DifferencesModule
   PythonValidatorModule --> ScoringModule
 ```
 
@@ -126,25 +126,25 @@ Call stacks traced through `conformetry-jupyter`, deepest first. Each frame show
 **1. `JupyterValidatorService.validateDocument`** — depth 13 · orphan-root
 
 ```text
-🚀 JupyterValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:146]
+🚀 JupyterValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:152]
    ↳ Reports every notebook difference: envelope, missing cells, cell contents.
-  └─> JupyterValidatorService.map(…)(…): { error: { errorType: "code"; expected: string; fix: string; language: "python"; message: string; weight: number; }; weight: number; } [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:166]
-    └─> JupyterValidatorService.weighMissingCell(args: { cell: PairedCells; document: PreparedValidationDocument; }): number [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:133]
+  └─> JupyterValidatorService.map(…)(…): { error: { differenceType: "code"; expected: string; fix: string; language: "python"; message: string; weight: number; }; weight: number; } [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:172]
+    └─> JupyterValidatorService.weighMissingCell(args: { cell: PairedCells; document: PreparedValidationDocument; }): number [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:139]
        ↳ Weighs a cell the notebook does not have.
       └─> JupyterValidatorService.validateCell(…): DocumentValidationResult [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:89]
          ↳ Validates one paired cell with the validator matching its kind.
         └─> MarkdownValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-markdown/src/modules/markdown-validator/markdown-validator.service.ts:48]
            ↳ Reports every markdown structure the template requires and the file lacks.
-          └─> MarkdownTreeService.compareChildren(args: CompareChildrenArguments): CompareChildrenResult (cycle) [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:142]
+          └─> MarkdownTreeService.compareChildren(args: CompareChildrenArguments): CompareChildrenResult (cycle) [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:146]
              ↳ Compares one level of two trees, descending into containers.
             └─> MarkdownTreeService.compareContainer(args: CompareNodeArguments): CompareNodeResult (cycle) [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:64]
                ↳ Matches a container node, then descends into it.
-              └─> MarkdownTreeService.map(…)(…): { errors: MarkdownComparisonError[]; lastMatchedNode: MarkdownNode; totalWeight: number; } (cycle) [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:86]
-                └─> MarkdownTreeService.compareLeaf(args: CompareNodeArguments): CompareNodeResult [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:110]
+              └─> MarkdownTreeService.map(…)(…): { differences: MarkdownComparisonError[]; lastMatchedNode: MarkdownNode; totalWeight: number; } (cycle) [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:90]
+                └─> MarkdownTreeService.compareLeaf(args: CompareNodeArguments): CompareNodeResult [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:114]
                    ↳ Matches a leaf node on its own identity, without descending.
-                  └─> MarkdownTreeService.findCandidates(args: CompareNodeArguments): MarkdownNode[] [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:130]
+                  └─> MarkdownTreeService.findCandidates(args: CompareNodeArguments): MarkdownNode[] [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:134]
                      ↳ Finds every instance sibling satisfying the template node.
-                    └─> MarkdownTreeService.filter(…)(instanceNode: MarkdownNode): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:131]
+                    └─> MarkdownTreeService.filter(…)(instanceNode: MarkdownNode): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:135]
                       └─> MarkdownNodesService.matches(args: { instanceNode: MarkdownNode; templateNode: MarkdownNode; }): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:140]
                          ↳ Returns whether an instance node satisfies a template node.
                         └─> MarkdownNodesService.readText(node: MarkdownNode): string [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:163]
@@ -164,14 +164,14 @@ None.
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-849-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-37.38_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-857-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-37.49_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-4-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-13-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-4.57_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-4.59_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript & JavaScript
 
@@ -343,10 +343,10 @@ None.
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-265-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-257-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-14-a78bfa?style=flat-square)
+![H3](https://img.shields.io/badge/H3-13-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
@@ -358,7 +358,7 @@ None.
 ![Table Rows](https://img.shields.io/badge/Table_Rows-10-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-9-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-13-dc2626?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-12-dc2626?style=flat-square)
 ![Inline Code](https://img.shields.io/badge/Inline_Code-74-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)

@@ -1,5 +1,5 @@
 import { InstanceDiscoveryModule } from "@conformetry/configuration";
-import { ErrorsModule } from "@conformetry/core";
+import { DifferencesModule } from "@conformetry/core";
 import { Module } from "@nestjs/common";
 
 import { FilesService } from "./files.service";
@@ -13,7 +13,7 @@ import { FilesService } from "./files.service";
 @Module({
   controllers: [],
   exports: [FilesService],
-  imports: [InstanceDiscoveryModule, ErrorsModule],
+  imports: [InstanceDiscoveryModule, DifferencesModule],
   providers: [FilesService],
 })
 export class FilesModule {}

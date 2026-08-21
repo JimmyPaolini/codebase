@@ -17,9 +17,9 @@ function buildGroup(args: {
   return {
     fileResults: [
       {
-        errors: [
+        differences: [
           {
-            errorType: "code",
+            differenceType: "code",
             fix: `Match ${args.templateFilePath}.`,
             message: "Missing statement",
           },

@@ -50,8 +50,8 @@ export class ScoringService {
   }
 
   /** Adds up what a set of findings costs, defaulting each to its own weight. */
-  public sumWeights(errors: readonly WeightedFinding[]): number {
-    return errors.reduce((total, error) => {
+  public sumWeights(differences: readonly WeightedFinding[]): number {
+    return differences.reduce((total, error) => {
       return total + (error.weight ?? DEFAULT_ERROR_WEIGHT);
     }, 0);
   }

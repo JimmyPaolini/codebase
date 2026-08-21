@@ -1,6 +1,6 @@
 // 🏷️ Types
 
-import type { ConformetryError } from "@conformetry/core";
+import type { ConformetryDifference } from "@conformetry/core";
 
 /** Arguments for comparing two JSON values. */
 export interface CompareJsonArguments {
@@ -12,7 +12,7 @@ export interface CompareJsonArguments {
 
 /** What structurally comparing two JSON values produced. */
 export interface JsonComparison {
-  readonly errors: ConformetryError[];
+  readonly differences: ConformetryDifference[];
   /** Template nodes the walk weighed the instance against. */
   readonly totalWeight: number;
 }
@@ -20,7 +20,7 @@ export interface JsonComparison {
 /**
  * Which validator is asking for the comparison.
  *
- * The walk is shared between JSON files and Jupyter notebooks, and the errors
+ * The walk is shared between JSON files and Jupyter notebooks, and the differences
  * it emits must be attributed to whichever one raised them.
  */
 export type JsonComparisonLanguage = "json" | "python";

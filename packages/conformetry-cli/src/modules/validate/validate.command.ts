@@ -29,7 +29,8 @@ import type { RunValidationResult } from "@conformetry/validation";
  * a meaningful default rather than a missing answer.
  */
 @Command({
-  description: "Run the validate command",
+  description:
+    "Measure instances against their templates and report every difference",
   name: "validate",
 })
 @Injectable()

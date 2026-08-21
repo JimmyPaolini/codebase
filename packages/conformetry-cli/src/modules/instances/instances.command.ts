@@ -31,7 +31,8 @@ import type { InstancesCommandOptions } from "./instances.types.js";
  * for a listing.
  */
 @Command({
-  description: "Run the instances command",
+  description:
+    "List the generated code the configuration finds, and what explains it",
   name: "instances",
 })
 @Injectable()

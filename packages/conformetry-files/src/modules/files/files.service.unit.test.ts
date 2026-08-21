@@ -7,7 +7,7 @@ import {
   InstanceDiscoveryService,
   TemplateDiscoveryService,
 } from "@conformetry/configuration";
-import { ErrorsModule } from "@conformetry/core";
+import { DifferencesModule } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -76,7 +76,7 @@ describe(FilesService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [InstanceDiscoveryModule, ErrorsModule],
+      imports: [InstanceDiscoveryModule, DifferencesModule],
       providers: [FilesService],
     }).compile();
 
@@ -141,8 +141,8 @@ describe(FilesService, () => {
     expect(results.map((result) => result.filename)).toStrictEqual([
       ".gitignore",
     ]);
-    expect(results[0]?.errors[0]?.errorType).toBe("file");
-    expect(results[0]?.errors[0]?.fix).toContain("Create the");
+    expect(results[0]?.differences[0]?.differenceType).toBe("file");
+    expect(results[0]?.differences[0]?.fix).toContain("Create the");
   });
 
   it("reports a missing directory once however many files it holds", async () => {
@@ -170,7 +170,7 @@ describe(FilesService, () => {
     });
 
     expect(results).toHaveLength(1);
-    expect(results[0]?.errors[0]?.errorType).toBe("directory");
+    expect(results[0]?.differences[0]?.differenceType).toBe("directory");
   });
 
   it("collapses a missing directory into one finding", async () => {
@@ -189,6 +189,6 @@ describe(FilesService, () => {
     });
 
     expect(results).toHaveLength(1);
-    expect(results[0]?.errors[0]?.errorType).toBe("directory");
+    expect(results[0]?.differences[0]?.differenceType).toBe("directory");
   });
 });

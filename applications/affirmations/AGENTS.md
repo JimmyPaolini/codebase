@@ -46,14 +46,15 @@ applications/affirmations/
 
 ```bash
 # Lint, format, typecheck, test
-nx run affirmations:lint               # ruff-lint via targetDefault
-nx run affirmations:format             # ruff-format via targetDefault
-nx run affirmations:typecheck          # pyright + ty (parallel)
-nx run affirmations:test               # all tests via pytest targetDefault
-nx run affirmations:test:unit          # only unit tests
-nx run affirmations:test:integration   # only integration tests
-nx run affirmations:test:coverage      # all tests + coverage report
-nx run affirmations:vulture            # dead code detection via targetDefault
+nx run affirmations:lint-codebase       # every static check, in one graph
+nx run affirmations:ruff-lint           # linting
+nx run affirmations:ruff-format         # formatting
+nx run affirmations:typecheck           # pyright + ty (parallel)
+nx run affirmations:pytest              # all tests
+nx run affirmations:pytest:unit         # only unit tests
+nx run affirmations:pytest:integration  # only integration tests
+nx run affirmations:test-coverage       # all tests + coverage report
+nx run affirmations:vulture             # dead code detection
 nx run affirmations:ty                 # ty type checker (standalone)
 nx run affirmations:bandit             # security linter
 
