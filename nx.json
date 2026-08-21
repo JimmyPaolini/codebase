@@ -830,6 +830,8 @@
         "inputs": [
           "{projectRoot}/**/*.{yaml,yml}",
           "{workspaceRoot}/configuration/yamllint.yaml",
+          "{workspaceRoot}/pyproject.toml",
+          "{workspaceRoot}/uv.lock",
           "shared-globals"
         ],
         "options": {
