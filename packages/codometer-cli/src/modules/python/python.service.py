@@ -11,9 +11,9 @@ def read_paths() -> list[Path]:
     """Read the newline-delimited file list the caller supplies on stdin.
 
     The caller owns discovery so that every language is measured over the same
-    set of git-tracked files. Walking the tree here instead would also count
-    untracked Python -- build output, virtual environments, and sibling git
-    worktrees -- so the totals depended on whatever sat in the directory.
+    set of files. Walking the tree here instead would also count ignored
+    Python -- build output, virtual environments, and sibling git worktrees --
+    so the totals depended on whatever sat in the directory.
     """
     return [Path(line.strip()) for line in sys.stdin if line.strip()]
 

@@ -11,6 +11,7 @@
     "type:package"
   ],
   "targets": {
+    "codometer": {},
     "dependency-cruiser": {},
     "knip": {},
     "lint-codebase": {},

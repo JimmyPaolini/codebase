@@ -694,7 +694,6 @@
   "material-icon-theme.files.associations": {
     ".code-workspace*": "vscode",
     ".pnpmfile.mjs": "pnpm",
-    ".size-limit.cjs": "disc",
     ".sqlfluffignore": "git",
     ".yamllint": "yaml",
     "*.args.js": "excalidraw",

@@ -14,7 +14,11 @@ import {
   groupByProject,
 } from "./bundle-markdown.utilities";
 
-import type { BundleRow, ComparableBundleRow } from "../bundles/bundles.types";
+import type {
+  ComparableMetricRow,
+  MetricRow,
+  ProjectFailure,
+} from "../bundles/bundles.types";
 import type {
   ProjectGroup,
   RenderSectionArguments,
@@ -35,6 +39,30 @@ export class BundleMarkdownService {
   // 🔏 Private Methods
 
   /**
+   * Whether any row this run measured breached a limit, at either severity.
+   *
+   * A breach must never sit behind a click — that visibility was added
+   * deliberately after a review found failed targets vanishing silently, and
+   * a collapsed table would recreate the same problem for limits instead of
+   * failures. With nothing breached, the table opens collapsed instead, which
+   * is the entire point of this change: 23 passing rows should not dominate
+   * the description.
+   *
+   * Filtered to `row.measured` on purpose, the same way `readBreachStatus`
+   * is a few lines below: a removed row is never expected to carry a breach
+   * — `buildBaselineRow` clears it — but that guarantee lives in another
+   * file entirely. Trusting it here instead of re-checking it locally is
+   * exactly the shape of bug a past review caught, where the collector's
+   * fix alone was not enough because the renderer was quietly assuming the
+   * same invariant.
+   */
+  private hasBreach(rows: readonly MetricRow[]): boolean {
+    return rows
+      .filter((row) => row.measured)
+      .some((row) => row.breach !== undefined);
+  }
+
+  /**
    * True when this run rebuilt the bundle and the baseline knew it, which is
    * the only case where a change is like-for-like.
    *
@@ -42,7 +70,7 @@ export class BundleMarkdownService {
    * one removal and one addition, and counting the removal without its
    * replacement turns a rename into a phantom saving.
    */
-  private isComparable(row: BundleRow): row is ComparableBundleRow {
+  private isComparable(row: MetricRow): row is ComparableMetricRow {
     return row.measured && row.baseSize !== undefined;
   }
 
@@ -50,9 +78,9 @@ export class BundleMarkdownService {
    * Finds the bundle that grew most, proportionally, for the callout line.
    * Ties break on absolute bytes, so uniform growth names the costliest one.
    */
-  private readBiggestGrowth(rows: readonly BundleRow[]): BundleRow | undefined {
+  private readBiggestGrowth(rows: readonly MetricRow[]): MetricRow | undefined {
     const grown = rows
-      .filter((row: BundleRow) => this.isComparable(row))
+      .filter((row: MetricRow) => this.isComparable(row))
       .filter((row) => row.size > row.baseSize);
 
     return grown.toSorted(
@@ -64,11 +92,35 @@ export class BundleMarkdownService {
   }
 
   /**
+   * Picks the icon for whatever the report found wrong, if anything.
+   *
+   * Severity is what separates the two glyphs, and it comes from the limit
+   * itself rather than from anything decided here. An advisory breach is the
+   * declared, configurable replacement for a renderer that used to invent its
+   * own idea of "nearly full".
+   *
+   * Only rows this run measured are weighed. A row standing at its `main` size
+   * is reporting what the default branch was doing, and a headline sourced
+   * from one sends the reader hunting for a glyph that is not on screen —
+   * unmeasured rows sit in the collapsed table and removed ones print 🗑️. The
+   * collector already clears those verdicts; this is the same rule enforced
+   * where it is consumed, so neither layer alone has to be trusted.
+   */
+  private readBreachStatus(rows: readonly MetricRow[]): string | undefined {
+    const measured = rows.filter((row) => row.measured);
+
+    if (measured.some((row) => row.empty)) return "❌";
+    if (measured.some((row) => row.breach === "fail")) return "❌";
+    if (measured.some((row) => row.breach !== undefined)) return "❗";
+    return undefined;
+  }
+
+  /**
    * Describes the change against the baseline, and counts whatever appeared or
    * disappeared rather than folding it into the change.
    */
   private readComparison(
-    rows: readonly BundleRow[],
+    rows: readonly MetricRow[],
     summary: SizeSummary,
     baselineUrl: string | undefined,
   ): string {
@@ -100,14 +152,14 @@ export class BundleMarkdownService {
    * The byte change against the baseline, when both sizes are known. A removed
    * bundle counts as a saving of its whole baseline size.
    */
-  private readDelta(row: BundleRow): number | undefined {
+  private readDelta(row: MetricRow): number | undefined {
     if (row.baseSize === undefined) return undefined;
     if (!row.measured && !row.removed) return undefined;
     return row.size - row.baseSize;
   }
 
   /** The proportional change against the baseline, when it is meaningful. */
-  private readFraction(row: BundleRow): number | undefined {
+  private readFraction(row: MetricRow): number | undefined {
     const delta = this.readDelta(row);
     if (
       delta === undefined ||
@@ -120,7 +172,7 @@ export class BundleMarkdownService {
   }
 
   /** Picks the icon for a rebuilt bundle, from how far it moved. */
-  private readGrowthStatus(row: BundleRow): string {
+  private readGrowthStatus(row: MetricRow): string {
     const { baseSize } = row;
     if (baseSize === undefined) return "🆕";
     if (row.size <= baseSize) return "✅";
@@ -129,10 +181,12 @@ export class BundleMarkdownService {
 
   /** Picks the icon for the report as a whole. */
   private readOverallStatus(
-    rows: readonly BundleRow[],
+    args: RenderSectionArguments,
     summary: SizeSummary,
   ): string {
-    if (rows.some((row) => !row.passed || row.missing)) return "❌";
+    if (args.failures.length > 0) return "❌";
+    const breach = this.readBreachStatus(args.rows);
+    if (breach !== undefined) return breach;
     if (summary.delta === undefined || summary.delta <= 0) return "✅";
     return (summary.fraction ?? 0) > SIGNIFICANT_GROWTH ? "📈" : "⚠️";
   }
@@ -143,11 +197,40 @@ export class BundleMarkdownService {
    * Rows this run did not rebuild never reach here — they are listed in their
    * own collapsed table instead — so there is no unmeasured case to answer.
    */
-  private readStatus(row: BundleRow): string {
+  private readStatus(row: MetricRow): string {
     if (row.removed) return "🗑️";
-    if (row.missing) return "⁉️";
-    if (!row.passed) return "❌";
+    if (row.empty) return "⁉️";
+    if (row.breach !== undefined) return row.breach === "warn" ? "❗" : "❌";
     return this.readGrowthStatus(row);
+  }
+
+  /**
+   * Names everything the run could not do, above the table rather than below.
+   *
+   * A failed target produces no row at all, so without this the section is a
+   * table that quietly holds fewer rows than the workspace has targets — and
+   * nothing in it says so. The reader would have to compare row counts against
+   * a list of projects to notice, which is not noticing.
+   *
+   * A failure is neither a breach nor staleness. It is the run not having
+   * finished, so it is reported as its own thing and never folded into a size.
+   */
+  private renderFailures(failures: readonly ProjectFailure[]): string[] {
+    if (failures.length === 0) return [];
+
+    return [
+      `> [!CAUTION]`,
+      `> **${formatCount(failures.length, "target")} could not be measured**, ` +
+        `so ${failures.length === 1 ? "it has" : "they have"} no row below.`,
+      ">",
+      "> | | Project | Subject | Why |",
+      "> |--|---------|---------|-----|",
+      ...failures.map(
+        (failure) =>
+          `> | 🚫 | \`${failure.project}\` | ${failure.subject} | ${failure.reason} |`,
+      ),
+      "",
+    ];
   }
 
   /** Renders the legend that explains every icon the table can show. */
@@ -162,48 +245,66 @@ export class BundleMarkdownService {
       "- 🆕 No baseline for this bundle",
       "- 💤 Not rebuilt by this change, shown at its `main` size",
       "- 🗑️ Removed since the baseline",
-      "- ❌ Exceeds its configured limit",
-      "- ⁉️ Its `path` glob matched no files",
-      "- ❗ Within 10% of its limit",
+      "- ❌ Breached a `fail` limit",
+      "- ❗ Breached a `warn` limit, which advises rather than fails",
+      "- ⁉️ Its globs matched no files, so nothing was measured at all",
+      "- 🚫 Could not be measured at all, so it has no row above",
       "",
-      "Sizes are gzipped. `Used` is the share of a bundle's limit it consumes.",
-      "Packages declare their limit as `sizeLimit` in their package.json. Add a",
-      "`.size-limit.cjs` and a `bundlesize` target to include a project here.",
+      "Sizes are gzipped, and kilobytes are decimal. `Limit` is what a bundle",
+      "is enforced against — its `fail` limit, or its `warn` limit where that",
+      "is the only one declared — and `Used` is the share of that limit it",
+      "consumes. Where a `warn` limit sits below a `fail` one, breaching it",
+      "shows as ❗ while the columns keep reporting the `fail` limit, so",
+      "`Used` means the same thing on every row. How full is too full is",
+      "declared per project rather than assumed here. Packages declare a limit as",
+      "`sizeLimit` in their package.json, or in a `codometer.config.cjs` of",
+      "their own; add a `codometer` target to include a project here.",
+      "",
+      "Both sides are measured on the Node version `.nvmrc` pins. The bundled",
+      "zlib differs between Node releases, so a baseline captured on another",
+      "runtime shifts every number in this table.",
       "</details>",
       "",
     ];
   }
 
-  /** Renders the table of everything this run rebuilt. */
-  private renderMeasuredTable(rows: readonly BundleRow[]): string[] {
+  /** Renders the table of everything this run rebuilt, collapsed by default. */
+  private renderMeasuredTable(rows: readonly MetricRow[]): string[] {
     const measured = rows.filter((row) => row.measured || row.removed);
     if (measured.length === 0) {
       return ["This change rebuilt no measured project.", ""];
     }
 
+    const projectCount = new Set(measured.map((row) => row.project)).size;
+    const open = this.hasBreach(measured) ? " open" : "";
+
     return [
+      `<details${open}>`,
+      `<summary>📦 Measured by this pull request — ` +
+        `${formatCount(measured.length, "bundle")} across ` +
+        `${formatCount(projectCount, "project")}</summary>`,
+      "",
       ...TABLE_HEADER,
       ...groupByProject(measured).flatMap((group) => [
         ...group.rows.map((row) => this.renderRow(row)),
         ...this.renderSubtotal(group),
       ]),
+      "</details>",
       "",
     ];
   }
 
   /** Renders one table row. */
-  private renderRow(row: BundleRow): string {
+  private renderRow(row: MetricRow): string {
     const cells = [
       this.readStatus(row),
       `\`${row.project}\``,
-      row.removed ? `~~${row.name}~~` : row.name,
+      row.removed ? `~~${row.label}~~` : row.label,
       row.removed ? "—" : formatBytes(row.size),
       row.baseSize === undefined ? "—" : formatBytes(row.baseSize),
       formatDelta(this.readDelta(row)),
       formatPercent(this.readFraction(row)),
-      row.sizeLimit === undefined || row.removed
-        ? "—"
-        : formatBytes(row.sizeLimit),
+      row.limit === undefined || row.removed ? "—" : formatBytes(row.limit),
       row.removed ? "—" : formatUsage(row),
     ];
 
@@ -216,7 +317,7 @@ export class BundleMarkdownService {
     if (live.length < 2) return [];
 
     const total = live.reduce((sum, row) => sum + row.size, 0);
-    const comparable = group.rows.filter((row: BundleRow) =>
+    const comparable = group.rows.filter((row: MetricRow) =>
       this.isComparable(row),
     );
     const baseTotal = comparable.reduce((sum, row) => sum + row.baseSize, 0);
@@ -252,7 +353,7 @@ export class BundleMarkdownService {
     const projectCount = new Set(rows.map((row) => row.project)).size;
 
     const lines = [
-      `${this.readOverallStatus(rows, summary)} ` +
+      `${this.readOverallStatus(args, summary)} ` +
         `**${formatBytes(summary.total)}** across ` +
         `${formatCount(bundleCount, "bundle")} in ` +
         `${formatCount(projectCount, "project")} ${this.readComparison(
@@ -266,7 +367,7 @@ export class BundleMarkdownService {
     const biggest = this.readBiggestGrowth(rows);
     if (biggest !== undefined) {
       lines.push(
-        `**Biggest increase:** \`${biggest.project}\` ${biggest.name} ` +
+        `**Biggest increase:** \`${biggest.project}\` ${biggest.label} ` +
           `${formatDelta(this.readDelta(biggest))} ` +
           `(${formatPercent(this.readFraction(biggest))})`,
         "",
@@ -277,7 +378,7 @@ export class BundleMarkdownService {
   }
 
   /** Renders the collapsed list of projects `nx affected` skipped. */
-  private renderUnmeasured(rows: readonly BundleRow[]): string[] {
+  private renderUnmeasured(rows: readonly MetricRow[]): string[] {
     const skipped = rows.filter((row) => !row.measured && !row.removed);
     if (skipped.length === 0) return [];
 
@@ -295,9 +396,8 @@ export class BundleMarkdownService {
       "| Project | Bundle | Size on `main` | Limit |",
       "|---------|--------|----------------|-------|",
       ...skipped.map((row) => {
-        const limit =
-          row.sizeLimit === undefined ? "—" : formatBytes(row.sizeLimit);
-        return `| \`${row.project}\` | ${row.name} | ${formatBytes(row.size)} | ${limit} |`;
+        const limit = row.limit === undefined ? "—" : formatBytes(row.limit);
+        return `| \`${row.project}\` | ${row.label} | ${formatBytes(row.size)} | ${limit} |`;
       }),
       "</details>",
       "",
@@ -309,9 +409,9 @@ export class BundleMarkdownService {
    * measured, so neither a newly added bundle nor a renamed one reads as a
    * workspace-wide swing.
    */
-  private summarizeRows(rows: readonly BundleRow[]): SizeSummary {
+  private summarizeRows(rows: readonly MetricRow[]): SizeSummary {
     const total = rows.reduce((sum, row) => sum + row.size, 0);
-    const comparable = rows.filter((row: BundleRow) => this.isComparable(row));
+    const comparable = rows.filter((row: MetricRow) => this.isComparable(row));
 
     if (comparable.length === 0) {
       return { delta: undefined, fraction: undefined, total };
@@ -332,13 +432,23 @@ export class BundleMarkdownService {
 
   // 🌎 Public Methods
 
-  /** Renders the report body: its heading, and everything under it. */
+  /**
+   * Renders the report body: its heading, and everything under it.
+   *
+   * A run that measured nothing still reports what it could not measure. "No
+   * bundles were measured" and "every target failed" look identical from the
+   * row count alone, and only one of them is fine.
+   */
   renderSection(args: RenderSectionArguments): string {
     const body =
       args.rows.length === 0
-        ? ["No bundles were measured for this change."]
+        ? [
+            ...this.renderFailures(args.failures),
+            "No bundles were measured for this change.",
+          ]
         : [
             ...this.renderSummary(args),
+            ...this.renderFailures(args.failures),
             ...this.renderMeasuredTable(args.rows),
             ...this.renderUnmeasured(args.rows),
             ...this.renderGuidelines(),

@@ -14,24 +14,37 @@ import {
   DEFAULT_CUSTOM_STATISTIC_GROUP,
   DEFAULT_EXCLUDE_GLOBS,
   DEFAULT_JSON_INDENTATION,
+  DEFAULT_LIMIT_SEVERITY,
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_PYTHON_COMMAND,
+  DEFAULT_TARGET_COMPRESSION,
+  DEFAULT_TARGET_DIRECTORY,
+  LIMIT_UNIT_MULTIPLIERS,
+  LIMIT_VALUE_PATTERN,
+  NEGATION_PREFIX,
   REPOSITORY_ROOT_MARKERS,
   SUPPORTED_CONFIGURATION_EXTENSIONS,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
 import { ConfigurationFileNotFoundError } from "./configuration.errors";
+import { InvalidLimitValueError } from "./limit-value.errors";
 
 import type {
   CodometerConfiguration,
+  CodometerConfigurationContext,
+  CodometerConfigurationFactory,
   CodometerCustomStatistic,
+  CodometerLimit,
   CodometerOutputConfiguration,
+  CodometerTarget,
   LoadConfigurationArguments,
   ResolvedCodometerConfiguration,
   ResolvedCodometerCustomStatistic,
   ResolvedCodometerJsonOutputConfiguration,
+  ResolvedCodometerLimit,
   ResolvedCodometerMarkdownOutputConfiguration,
+  ResolvedCodometerTarget,
 } from "./configuration.types";
 import type { CodometerStatisticGroup } from "./statistics.types";
 
@@ -54,6 +67,25 @@ export class ConfigurationService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /**
+   * Calls a configuration file that was authored as a function.
+   *
+   * Anything else is already the configuration and is passed through. The
+   * context is built here rather than by the caller so that every reader of a
+   * configuration file — a command, a host embedding codometer — hands a
+   * factory the same two directories.
+   */
+  private async applyRunContext(
+    configurationExport: unknown,
+    context: CodometerConfigurationContext,
+  ): Promise<unknown> {
+    if (!this.isConfigurationFactory(configurationExport)) {
+      return configurationExport;
+    }
+
+    return configurationExport(context);
+  }
 
   /**
    * Walks upward from a directory looking for a configuration file.
@@ -115,6 +147,18 @@ export class ConfigurationService {
     }
   }
 
+  /**
+   * Whether a configuration file exported a function rather than an object.
+   *
+   * The only thing separating the two: what a function does with the context
+   * is the author's business, and no schema could inspect it anyway.
+   */
+  private isConfigurationFactory(
+    configurationExport: unknown,
+  ): configurationExport is CodometerConfigurationFactory {
+    return typeof configurationExport === "function";
+  }
+
   /** Loads a configuration module, choosing the reader by extension. */
   private async loadConfigurationModule(args: {
     configurationPath: string;
@@ -125,19 +169,10 @@ export class ConfigurationService {
     }
 
     const jiti = createJiti(fileURLToPath(import.meta.url));
-    const importedModule: unknown = await jiti.import(args.configurationPath, {
-      default: true,
-    });
 
-    if (typeof importedModule !== "object" || importedModule === null) {
-      return {};
-    }
-
-    const defaultExport = (importedModule as { default?: unknown }).default;
-
-    return typeof defaultExport === "object" && defaultExport !== null
-      ? defaultExport
-      : importedModule;
+    return this.readDefaultExport(
+      await jiti.import(args.configurationPath, { default: true }),
+    );
   }
 
   /** Reads a JSON or JSONC configuration file. */
@@ -150,6 +185,80 @@ export class ConfigurationService {
     return args.extension === ".jsonc"
       ? parseJsonc(configurationContent)
       : JSON.parse(configurationContent);
+  }
+
+  /**
+   * Reads a limit's value, in decimal units when it was written as a string.
+   *
+   * Everything unreadable is refused: a negative number, a unit missing its
+   * `b`, a word, an empty string. The tool this replaces coerced an unreadable
+   * limit to nothing and then failed every target holding a single byte.
+   */
+  private parseLimitValue(limit: CodometerLimit): number {
+    if (typeof limit.value !== "number") {
+      return this.parseLimitValueText(limit.metric, limit.value);
+    }
+
+    if (!Number.isFinite(limit.value) || limit.value < 0) {
+      throw new InvalidLimitValueError(limit.metric, String(limit.value));
+    }
+
+    return limit.value;
+  }
+
+  /**
+   * Reads a limit written as a string, unit and all.
+   *
+   * A unit multiplies and then rounds: `"1.5 KB"` is 1500, and the rounding is
+   * what keeps `"0.1 KB"` from arriving as the 100.00000000000001 floating
+   * point makes of it. A string carrying no unit at all is the plain number,
+   * which is what a limit on a count of interfaces or files is written as.
+   */
+  private parseLimitValueText(metric: string, text: string): number {
+    const [, amount, unit] = LIMIT_VALUE_PATTERN.exec(text.trim()) ?? [];
+
+    if (amount === undefined || unit === undefined) {
+      throw new InvalidLimitValueError(metric, text);
+    }
+
+    if (unit === "") {
+      return Number(amount);
+    }
+
+    const multiplier = LIMIT_UNIT_MULTIPLIERS.get(unit.toLowerCase());
+
+    if (multiplier === undefined) {
+      throw new InvalidLimitValueError(metric, text);
+    }
+
+    return Math.round(Number(amount) * multiplier);
+  }
+
+  /**
+   * Reads what a configuration module exported, through either interop shape.
+   *
+   * A function survives as itself: a configuration file may be authored as one
+   * and calling it is what turns it into a configuration, which happens once
+   * the run context is known rather than here.
+   */
+  private readDefaultExport(importedModule: unknown): unknown {
+    if (typeof importedModule === "function") {
+      return importedModule;
+    }
+
+    if (typeof importedModule !== "object" || importedModule === null) {
+      return {};
+    }
+
+    const defaultExport = (importedModule as { default?: unknown }).default;
+
+    if (typeof defaultExport === "function") {
+      return defaultExport;
+    }
+
+    return typeof defaultExport === "object" && defaultExport !== null
+      ? defaultExport
+      : importedModule;
   }
 
   /**
@@ -226,6 +335,24 @@ export class ConfigurationService {
     };
   }
 
+  /**
+   * Gives every limit its severity and a value read as a number.
+   *
+   * Which metric a limit lands on is decided where the measurement is, since
+   * nothing here knows what was measured — the only thing settled at this
+   * point is what the limit says.
+   */
+  private resolveLimits(
+    limits: CodometerLimit[] | undefined,
+  ): ResolvedCodometerLimit[] {
+    return (limits ?? []).map((limit) => ({
+      label: limit.label,
+      metric: limit.metric,
+      severity: limit.severity ?? DEFAULT_LIMIT_SEVERITY,
+      value: this.parseLimitValue(limit),
+    }));
+  }
+
   /** Applies defaults to the markdown output destination, if one was named. */
   private resolveMarkdownOutput(
     output: CodometerOutputConfiguration | undefined,
@@ -248,6 +375,36 @@ export class ConfigurationService {
     };
   }
 
+  /**
+   * Splits every target's globs into what they add and what they remove.
+   *
+   * A `!` prefix in an include glob is what the tool this replaced used to
+   * subtract a file, and there it mattered where in the array it sat. Here the
+   * negations join the exclude globs in a single set, so a target holds the
+   * same files however its patterns are arranged.
+   */
+  private resolveTargets(
+    targets: CodometerTarget[] | undefined,
+  ): ResolvedCodometerTarget[] {
+    return (targets ?? []).map((target) => ({
+      analyses: [...target.analyses],
+      compression: target.compression ?? DEFAULT_TARGET_COMPRESSION,
+      directory: target.directory ?? DEFAULT_TARGET_DIRECTORY,
+      exclude: [
+        ...new Set([
+          ...target.include
+            .filter((pattern) => pattern.startsWith(NEGATION_PREFIX))
+            .map((pattern) => pattern.slice(NEGATION_PREFIX.length)),
+          ...(target.exclude ?? []),
+        ]),
+      ],
+      include: target.include.filter(
+        (pattern) => !pattern.startsWith(NEGATION_PREFIX),
+      ),
+      name: target.name,
+    }));
+  }
+
   // 🌎 Public Methods
 
   /**
@@ -255,15 +412,21 @@ export class ConfigurationService {
    *
    * A path that was named explicitly must exist — a typo in a task runner's
    * arguments should fail rather than quietly measure the repository with
-   * defaults it never asked for. A path that was not named is searched for,
-   * and its absence is legal.
+   * defaults it never asked for. A path that was not named is searched for
+   * from the measured directory upward, and its absence is legal.
+   *
+   * The nearest configuration file wins outright: nothing from a further
+   * ancestor is folded into it. Merging the two would leave a limit that never
+   * applied looking exactly like one that did, and the only way to tell them
+   * apart would be to know which of several files each field came from.
    */
   public async loadConfiguration(
     args: LoadConfigurationArguments = {},
   ): Promise<ResolvedCodometerConfiguration> {
+    const searchDirectory = path.resolve(args.searchDirectory ?? process.cwd());
     const resolvedPath =
       args.configurationPath === undefined
-        ? this.findConfigurationFile(args.searchDirectory ?? process.cwd())
+        ? this.findConfigurationFile(searchDirectory)
         : this.resolveConfigurationPath(args.configurationPath);
 
     if (resolvedPath === undefined) {
@@ -276,10 +439,16 @@ export class ConfigurationService {
       throw new UnknownConfigurationFileTypeError(resolvedPath);
     }
 
-    const configurationModule = await this.loadConfigurationModule({
-      configurationPath: resolvedPath,
-      extension,
-    });
+    const configurationModule = await this.applyRunContext(
+      await this.loadConfigurationModule({
+        configurationPath: resolvedPath,
+        extension,
+      }),
+      {
+        configurationDirectory: path.dirname(resolvedPath),
+        directory: searchDirectory,
+      },
+    );
 
     return this.resolveConfiguration(
       codometerConfigurationSchema.parse(configurationModule),
@@ -296,6 +465,7 @@ export class ConfigurationService {
     configuration: CodometerConfiguration,
   ): ResolvedCodometerConfiguration {
     return {
+      defaultTarget: configuration.defaultTarget,
       // Additive rather than a replacement: the defaults are directories no
       // repository wants counted, so a configuration naming its own noise
       // should not have to restate them to keep them out.
@@ -306,6 +476,7 @@ export class ConfigurationService {
         ]),
       ],
       excludeFrom: configuration.excludeFrom ?? [],
+      limits: this.resolveLimits(configuration.limits),
       output: {
         json: this.resolveJsonOutput(configuration.output),
         markdown: this.resolveMarkdownOutput(configuration.output),
@@ -314,6 +485,7 @@ export class ConfigurationService {
         command: configuration.python?.command ?? DEFAULT_PYTHON_COMMAND,
       },
       statistics: this.resolveCustomStatistics(configuration.statistics),
+      targets: this.resolveTargets(configuration.targets),
     };
   }
 }

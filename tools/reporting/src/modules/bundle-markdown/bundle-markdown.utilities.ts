@@ -1,14 +1,12 @@
-import { CROWDED_LIMIT } from "./bundle-markdown.constants";
-
-import type { BundleRow } from "../bundles/bundles.types";
+import type { MetricRow } from "../bundles/bundles.types";
 import type { ProjectGroup } from "./bundle-markdown.types";
 
 /**
  * Formats a byte count, switching to megabytes once kilobytes get unwieldy.
  *
- * Kilobytes are decimal, matching what size-limit itself parses out of a limit
- * written as `"8 KB"`. Dividing by 1024 here would print a limit as a number
- * the configuration never mentions.
+ * Kilobytes are decimal, matching what codometer parses out of a limit written
+ * as `"8 KB"`. Dividing by 1024 here would print a limit as a number the
+ * configuration never mentions.
  */
 export function formatBytes(bytes: number): string {
   if (Math.abs(bytes) >= 1_000_000) {
@@ -34,17 +32,22 @@ export function formatPercent(fraction: number | undefined): string {
   return `${fraction >= 0 ? "+" : ""}${(fraction * 100).toFixed(1)}%`;
 }
 
-/** Formats how much of a bundle's limit it consumes, flagging a near-full one. */
-export function formatUsage(row: BundleRow): string {
-  if (row.sizeLimit === undefined || row.sizeLimit === 0) return "—";
-  const usage = row.size / row.sizeLimit;
-  const marker = row.passed && usage >= CROWDED_LIMIT ? " ❗" : "";
-  return `${(usage * 100).toFixed(0)}%${marker}`;
+/**
+ * Formats how much of its limit a metric consumes.
+ *
+ * Only the share, with nothing appended. How close to full is worth warning
+ * about is a question the configuration answers with a `warn`-severity limit —
+ * declared, visible, and per project — rather than one this renderer answers
+ * with a constant nobody can see or change.
+ */
+export function formatUsage(row: MetricRow): string {
+  if (row.limit === undefined || row.limit === 0) return "—";
+  return `${((row.size / row.limit) * 100).toFixed(0)}%`;
 }
 
 /** Groups rows by project, preserving the order each report declared. */
-export function groupByProject(rows: readonly BundleRow[]): ProjectGroup[] {
-  const groups = new Map<string, BundleRow[]>();
+export function groupByProject(rows: readonly MetricRow[]): ProjectGroup[] {
+  const groups = new Map<string, MetricRow[]>();
 
   for (const row of rows) {
     const existing = groups.get(row.project);

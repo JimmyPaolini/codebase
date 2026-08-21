@@ -1,5 +1,24 @@
 // ♟️ Constants
 
+/**
+ * Directory entry holding git's own database, never measured.
+ *
+ * Skipped by name rather than by an ignore rule: `.gitignore` never mentions
+ * it, because git has no need to ignore what it never looks at.
+ */
+export const GIT_DIRECTORY_NAME = ".git";
+
+/** File name a directory's own gitignore-syntax rules are read from. */
+export const GITIGNORE_FILE_NAME = ".gitignore";
+
+/**
+ * Glob suffix claiming everything beneath the directory a pattern names.
+ *
+ * A pattern ending in it excludes every descendant without exception, which
+ * is what makes the directory safe to skip rather than walk and discard.
+ */
+export const RECURSIVE_GLOB_SUFFIX = "/**";
+
 /** File extensions treated as TypeScript source. */
 export const TS_EXTENSIONS = new Set([".cts", ".mts", ".ts", ".tsx"]);
 
