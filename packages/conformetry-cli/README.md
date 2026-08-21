@@ -860,7 +860,7 @@ None.
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2375-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-89.87_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-89.81_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-34-3178c6?style=flat-square)
 
