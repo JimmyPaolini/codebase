@@ -79,9 +79,12 @@ const config = {
   // instances need not match a template-pattern glob to have drifted, so it
   // cannot be scoped to `affected`.
   //
-  // `nx sync:check` runs from the Husky hook instead: it needs NX_DAEMON=false,
-  // and lint-staged spawns commands without a shell, so an environment prefix
-  // here would be parsed as the executable name.
+  // `nx sync:check` no longer runs anywhere, on commit or otherwise: the
+  // generator plugin it checked is emitted into .conformetry on install
+  // rather than committed, so no commit can stage it out of date. Every
+  // conformetry command re-checks the emitted plugin against the
+  // configuration instead. See configuration/.husky/pre-commit for the
+  // retirement note.
   "*": (files: string[]): string[] => [
     `pnpm exec nx affected --target=lint-codebase --configuration=check --parallel=${String(ANALYSIS_PARALLELISM)} --outputStyle=static ${getStagedFilesFlags(files)}`,
     "pnpm exec nx run-many --targets=conformetry-validate --outputStyle=static",

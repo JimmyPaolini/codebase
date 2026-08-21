@@ -25,10 +25,17 @@ Diagnose and fix failures from the Husky pre-commit, commit-msg, and pre-push ho
 File: [configuration/.husky/pre-commit](../../../configuration/.husky/pre-commit)
 
 ```sh
-nx run codebase:lint-staged
-# resolves to:
-NODE_OPTIONS='--import=tsx' lint-staged --config configuration/lint-staged.config.ts --continue-on-error
+NX_PERF_LOGGING=false lint-staged --config configuration/lint-staged.config.ts --continue-on-error
 ```
+
+Invoked directly rather than through `nx run codebase:lint-staged`. That target's own command
+still carries `NODE_OPTIONS='--import=tsx'`, which the hook deliberately drops: the flag is
+inherited by every command lint-staged runs, and its `--import=tsx` loader preempts the
+transpiler Nx uses for workspace plugins. esbuild emits no `design:paramtypes`, so the
+conformetry plugin's NestJS constructor injection would silently resolve to `undefined` and the
+project graph would fail to build. Node reads the TypeScript config natively instead. The hook
+also measures code (`nx run codebase:codometer:write`) and clears staged notepad files before
+running lint-staged.
 
 lint-staged config: [configuration/lint-staged.config.ts](../../../configuration/lint-staged.config.ts)
 
@@ -118,7 +125,7 @@ This file is written automatically after every commit attempt (git-ignored, work
 
 Identify from the output:
 
-- Which **Nx target** failed (e.g., `format`, `lint`, `typecheck`, `spell-check`)
+- Which **Nx target** failed (e.g., `oxfmt`, `eslint`, `typecheck`, `spell-check`)
 - Which **project(s)** failed (e.g., `lexico`, `caelundas`, `codebase`)
 - The **specific error messages** from the underlying tool
 
@@ -126,23 +133,29 @@ Identify from the output:
 
 Use the table below to find the exact config file and command for the failing tool. Read the config file before proposing a fix.
 
-#### `format` (composite: `prettier` + `oxfmt`)
+#### `prettier` and `oxfmt` (formatting — no composite `format` target exists)
 
-| Sub-target | Check command                                                                                            | Write command       | Config file                                                                                                                |
-| ---------- | -------------------------------------------------------------------------------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `prettier` | `prettier --check --config configuration/prettier.config.ts --ignore-path .prettierignore {projectRoot}` | same with `--write` | [configuration/prettier.config.ts](../../../configuration/prettier.config.ts), [.prettierignore](../../../.prettierignore) |
-| `oxfmt`    | `oxfmt -c configuration/oxfmt.config.ts --check {projectRoot}` (cwd: workspaceRoot)                      | same with `--write` | [configuration/oxfmt.config.ts](../../../configuration/oxfmt.config.ts)                                                    |
+Both are independent leaf targets that `lint-codebase` depends on directly.
 
-Python projects: `format` runs `ruff format` (config: [pyproject.toml](../../../pyproject.toml))
+| Target     | Check command                                                                                                                               | Write command       | Config file                                                                                                                |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `prettier` | `prettier --check --config configuration/prettier.config.ts --ignore-path configuration/.prettierignore {projectRoot}` (cwd: workspaceRoot) | same with `--write` | [configuration/prettier.config.ts](../../../configuration/prettier.config.ts), [.prettierignore](../../../.prettierignore) |
+| `oxfmt`    | `oxfmt -c configuration/oxfmt.config.ts --ignore-path configuration/.oxfmtignore --check {projectRoot}` (cwd: workspaceRoot)                | same with `--write` | [configuration/oxfmt.config.ts](../../../configuration/oxfmt.config.ts)                                                    |
 
-#### `lint` (composite: `eslint` + `oxlint`)
+Python projects run `ruff-format` instead — `uv run ruff format --check .` (cwd: projectRoot),
+config: [pyproject.toml](../../../pyproject.toml)
 
-| Sub-target | Check command                                                                           | Write command     | Config file                                                                                                        |
-| ---------- | --------------------------------------------------------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `eslint`   | `eslint . {args}` (cwd: projectRoot)                                                    | same with `--fix` | project `eslint.config.ts` which extends [configuration/eslint.config.ts](../../../configuration/eslint.config.ts) |
-| `oxlint`   | `oxlint --config configuration/oxlint.config.ts {projectRoot}/src` (cwd: workspaceRoot) | same with `--fix` | [configuration/oxlint.config.ts](../../../configuration/oxlint.config.ts)                                          |
+#### `eslint` and `oxlint` (linting — no composite `lint` target exists)
 
-Python projects: `lint` runs `ruff check` (config: [pyproject.toml](../../../pyproject.toml))
+Both are independent leaf targets that `lint-codebase` depends on directly.
+
+| Target   | Check command                                                                                                                     | Write command     | Config file                                                                                                        |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `eslint` | `eslint . {args}` (cwd: projectRoot)                                                                                              | same with `--fix` | project `eslint.config.ts` which extends [configuration/eslint.config.ts](../../../configuration/eslint.config.ts) |
+| `oxlint` | `oxlint --config configuration/oxlint.config.ts --ignore-path configuration/.oxlintignore {projectRoot}/src` (cwd: workspaceRoot) | same with `--fix` | [configuration/oxlint.config.ts](../../../configuration/oxlint.config.ts)                                          |
+
+Python projects run `ruff-lint` instead — `uv run ruff check .` (cwd: projectRoot), config:
+[pyproject.toml](../../../pyproject.toml)
 
 #### `typecheck`
 
@@ -176,9 +189,12 @@ Config: [configuration/yamllint.yaml](../../../configuration/yamllint.yaml)
 | check | `stylelint --config ../../configuration/stylelint.config.cjs 'src/**/*.css'` (cwd: projectRoot) | [configuration/stylelint.config.cjs](../../../configuration/stylelint.config.cjs) |
 | write | same with `--fix`                                                                               |                                                                                   |
 
-#### `clean` (composite: `knip` for TS, `vulture` for Python)
+#### `knip` and `vulture` (dead-code detection — no composite `clean` target exists)
 
-| Sub-target         | Check command                                                                                | Config                                                                                                                    |
+`knip` runs on TypeScript projects and `vulture` on Python projects; there is no `clean` target
+on any project.
+
+| Target             | Check command                                                                                | Config                                                                                                                    |
 | ------------------ | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `knip` (TS)        | `knip --config configuration/knip.config.ts --workspace {projectRoot}` (cwd: workspaceRoot)  | [configuration/knip.config.ts](../../../configuration/knip.config.ts)                                                     |
 | `vulture` (Python) | `uv run python -m vulture src/ .vulture_whitelist.py --min-confidence 80` (cwd: projectRoot) | project `.vulture_whitelist.py`, global [configuration/vulture_whitelist.py](../../../configuration/vulture_whitelist.py) |
@@ -230,7 +246,7 @@ Config: [configuration/commitlint.config.ts](../../../configuration/commitlint.c
 **DO validate that fixes work:**
 
 - ✅ Run the exact failing Nx target with `--configuration=check` to verify it passes now
-- ✅ Example: if `format` failed, run `pnpm exec nx affected --target=format --configuration=check --files=<staged-files>`
+- ✅ Example: if `oxfmt` failed, run `pnpm exec nx affected --target=oxfmt --configuration=check --files=<staged-files>`
 - ✅ If validation passes, all fixes are confirmed working
 
 **Then proceed:**
@@ -244,17 +260,17 @@ Config: [configuration/commitlint.config.ts](../../../configuration/commitlint.c
 For these targets, run the Nx target with `--configuration=write` to auto-fix. Do NOT stage the modified files — leave them unstaged so the user can review the changes before staging.
 
 ```bash
-# Format errors (oxfmt, prettier)
-pnpm exec nx affected --target=format --configuration=write --files=<staged-files>
+# Format errors (oxfmt, prettier — no composite `format` target exists)
+pnpm exec nx affected --target=oxfmt,prettier --configuration=write --files=<staged-files>
 
-# Lint errors with auto-fix (ESLint --fix, oxlint --fix)
-pnpm exec nx affected --target=lint --configuration=write --files=<staged-files>
+# Lint errors with auto-fix (ESLint --fix, oxlint --fix — no composite `lint` target exists)
+pnpm exec nx affected --target=eslint,oxlint --configuration=write --files=<staged-files>
 
 # Markdown lint with auto-fix
 pnpm exec nx affected --target=markdown-lint --configuration=write --files=<staged-files>
 
-# Unused code (knip --fix, vulture whitelist)
-pnpm exec nx affected --target=clean --configuration=write --files=<staged-files>
+# Unused code (knip --fix, vulture whitelist — no composite `clean` target exists)
+pnpm exec nx affected --target=knip,vulture --configuration=write --files=<staged-files>
 
 # Sync checks: run the write variant to regenerate the out-of-sync file
 pnpm exec nx run synchronization:start:conformetry-generators-write
@@ -275,16 +291,16 @@ After applying fixes with `--configuration=write`, run the exact failing target 
 
 ```bash
 # Validate format fixes worked
-pnpm exec nx affected --target=format --configuration=check --files=<staged-files>
+pnpm exec nx affected --target=oxfmt,prettier --configuration=check --files=<staged-files>
 
 # Validate lint fixes worked
-pnpm exec nx affected --target=lint --configuration=check --files=<staged-files>
+pnpm exec nx affected --target=eslint,oxlint --configuration=check --files=<staged-files>
 
 # Validate markdown-lint fixes worked
 pnpm exec nx affected --target=markdown-lint --configuration=check --files=<staged-files>
 
-# Validate clean/knip fixes worked
-pnpm exec nx affected --target=clean --configuration=check --files=<staged-files>
+# Validate knip/vulture fixes worked
+pnpm exec nx affected --target=knip,vulture --configuration=check --files=<staged-files>
 
 # Validate sync checks fixed themselves (re-run the check variant)
 pnpm exec nx run synchronization:synchronize --configuration=check
@@ -312,7 +328,7 @@ pnpm exec nx run codebase:check-skill-exclusions
 | `check-lockfile`                               | Run `pnpm install` to regenerate `pnpm-lock.yaml`. Do NOT stage the lockfile — leave it unstaged for the user to review. **Lesson**: Any manual change to a `package.json` or workspace config often requires this.                                                                                                                                                                                                                                                                              |
 | `commitlint`                                   | Fix the commit message. See format below.                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | `validate-branch-name`                         | Rename the branch with `git branch -m <new-valid-name>`. See format above.                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| `clean` (Python/`vulture`)                     | Fix the flagged unused code, or add a `# noqa` comment. The project-local `.vulture_whitelist.py` and global `configuration/vulture_whitelist.py` are both read. Min-confidence is 80.                                                                                                                                                                                                                                                                                                           |
+| `vulture` (Python)                             | Fix the flagged unused code, or add a `# noqa` comment. The project-local `.vulture_whitelist.py` and global `configuration/vulture_whitelist.py` are both read. Min-confidence is 80.                                                                                                                                                                                                                                                                                                           |
 
 #### Invalid Branch Name (pre-push hook)
 
@@ -440,8 +456,8 @@ Remaining Actions
 
 | Symptom                                   | Cause                                   | Fix                                                                                                                                                                                                                                                                                                                                                                                            |
 | ----------------------------------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Unexpected token`, `Expected whitespace` | oxfmt/prettier format check failed      | `nx affected --target=format --configuration=write`                                                                                                                                                                                                                                                                                                                                            |
-| `error  ...  @typescript-eslint/...`      | ESLint rule violation                   | `nx affected --target=lint --configuration=write` or manual fix                                                                                                                                                                                                                                                                                                                                |
+| `Unexpected token`, `Expected whitespace` | oxfmt/prettier format check failed      | `nx affected --target=oxfmt,prettier --configuration=write`                                                                                                                                                                                                                                                                                                                                    |
+| `error  ...  @typescript-eslint/...`      | ESLint rule violation                   | `nx affected --target=eslint,oxlint --configuration=write` or manual fix                                                                                                                                                                                                                                                                                                                       |
 | `MD024/no-duplicate-heading`              | Duplicate markdown heading in same file | If duplicated content is identical, remove one block; if content differs, keep both and rename one heading                                                                                                                                                                                                                                                                                     |
 | `Type 'X' is not assignable to 'Y'`       | TypeScript type error                   | Manual fix — check `tsconfig.json` strict settings                                                                                                                                                                                                                                                                                                                                             |
 | `Unknown word` in cspell                  | Unrecognized word                       | Add it to the most relevant dictionary in `configuration/.cspell/` (e.g. `lexico.txt`, `tooling.txt`). If a suitable category doesn't exist, create a new dictionary file, register it in `configuration/cspell.config.yaml`, and refactor existing dictionaries to move any relevant words into the new dictionary. As a fallback, add it to `configuration/cspell.config.yaml` `words` list. |
@@ -454,13 +470,13 @@ Remaining Actions
 
 ### Hooks
 
-- [configuration/.husky/pre-commit](../../../configuration/.husky/pre-commit) — runs `nx run codebase:lint-staged`
+- [configuration/.husky/pre-commit](../../../configuration/.husky/pre-commit) — runs `lint-staged` directly, bypassing `nx run codebase:lint-staged`
 - [configuration/.husky/commit-msg](../../../configuration/.husky/commit-msg) — runs `nx run codebase:commitlint`
 - [configuration/.husky/pre-push](../../../configuration/.husky/pre-push) — runs `nx run codebase:validate-branch-name`
 - [configuration/lint-staged.config.ts](../../../configuration/lint-staged.config.ts) — file-pattern → Nx target mapping
 - [validate-branch-name.config.cjs](../../../validate-branch-name.config.cjs) — branch name regex, error message, exempt patterns
 - [project.json](../../../project.json) — `lint-staged`, `commitlint`, and `validate-branch-name` target definitions
-- [nx.json](../../../nx.json) — default target definitions for `format`, `lint`, `typecheck`, `spell-check`, `clean`, etc.
+- [nx.json](../../../nx.json) — default target definitions for `oxfmt`, `eslint`, `typecheck`, `spell-check`, `knip`, `vulture`, etc.
 
 ### Tool Configurations
 
