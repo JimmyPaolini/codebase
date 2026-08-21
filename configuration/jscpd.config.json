@@ -1,14 +1,22 @@
 {
   "gitignore": true,
   "ignore": [
-    "**/.git/**",
+    "**/.agents/skills/**",
+    "**/.claude/skills/**",
     "**/.conformetry/**",
+    "**/.git/**",
+    "**/.github/skills/**",
     "**/.nx/**",
+    "**/conformetry-templates/**",
     "**/coverage/**",
     "**/dist/**",
     "**/node_modules/**",
+    "**/notepads/**",
     "**/output/**",
     "**/pnpm-lock.yaml",
+    "**/src/**/*.constants.ts",
+    "**/src/**/*.types.ts",
+    "**/testing/mocks.ts",
     "**/tmp/**"
   ],
   "minLines": 12,
