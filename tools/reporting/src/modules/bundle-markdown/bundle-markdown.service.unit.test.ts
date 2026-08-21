@@ -378,6 +378,81 @@ describe(BundleMarkdownService, () => {
     });
   });
 
+  describe("measured table collapsibility", () => {
+    it("collapses the measured table and names what is inside when nothing breached", () => {
+      const section = service.renderSection({
+        baselineUrl: undefined,
+        failures: [],
+        rows: [buildRow(), buildRow({ label: "Second", project: "other" })],
+      });
+
+      expect(section).toContain(
+        "<details>\n<summary>📦 Measured by this pull request — " +
+          "2 bundles across 2 projects</summary>",
+      );
+      expect(section).not.toContain("<details open>");
+    });
+
+    it("opens the measured table when a row breached a warn limit", () => {
+      const section = service.renderSection({
+        baselineUrl: undefined,
+        failures: [],
+        rows: [buildRow({ breach: "warn", limit: 500 })],
+      });
+
+      expect(section).toContain("<details open>\n<summary>📦 Measured");
+    });
+
+    it("opens the measured table when a row breached a fail limit", () => {
+      const section = service.renderSection({
+        baselineUrl: undefined,
+        failures: [],
+        rows: [buildRow({ breach: "fail", limit: 500 })],
+      });
+
+      expect(section).toContain("<details open>\n<summary>📦 Measured");
+    });
+
+    // The collector (buildBaselineRow in bundles.service.ts) always clears
+    // `breach` on a removed row, so this fixture is impossible in practice —
+    // it is built by hand here to pin the invariant locally rather than
+    // trust that guarantee from a different file, the same defect a past
+    // review already found once in this table's headline.
+    it("does not open the table for a breach on a removed row, even though the collector never produces one", () => {
+      const section = service.renderSection({
+        baselineUrl: undefined,
+        failures: [],
+        rows: [
+          buildRow(),
+          buildRow({
+            baseSize: 2000,
+            breach: "fail",
+            label: "Retired",
+            measured: false,
+            removed: true,
+            size: 0,
+          }),
+        ],
+      });
+
+      expect(section).toContain("<details>\n<summary>📦 Measured");
+      expect(section).not.toContain("<details open>");
+    });
+
+    it("closes the measured table's own details block, distinct from the guidelines block", () => {
+      const section = service.renderSection({
+        baselineUrl: undefined,
+        failures: [],
+        rows: [buildRow()],
+      });
+
+      // One for the measured table, one for the 📊 Guidelines block that
+      // always follows it.
+      expect(section.match(/<details/gu)).toHaveLength(2);
+      expect(section.match(/<\/details>/gu)).toHaveLength(2);
+    });
+  });
+
   describe("status icons", () => {
     it.each([
       { expected: "🆕", row: buildRow() },

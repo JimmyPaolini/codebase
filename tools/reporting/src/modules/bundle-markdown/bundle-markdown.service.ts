@@ -39,6 +39,30 @@ export class BundleMarkdownService {
   // 🔏 Private Methods
 
   /**
+   * Whether any row this run measured breached a limit, at either severity.
+   *
+   * A breach must never sit behind a click — that visibility was added
+   * deliberately after a review found failed targets vanishing silently, and
+   * a collapsed table would recreate the same problem for limits instead of
+   * failures. With nothing breached, the table opens collapsed instead, which
+   * is the entire point of this change: 23 passing rows should not dominate
+   * the description.
+   *
+   * Filtered to `row.measured` on purpose, the same way `readBreachStatus`
+   * is a few lines below: a removed row is never expected to carry a breach
+   * — `buildBaselineRow` clears it — but that guarantee lives in another
+   * file entirely. Trusting it here instead of re-checking it locally is
+   * exactly the shape of bug a past review caught, where the collector's
+   * fix alone was not enough because the renderer was quietly assuming the
+   * same invariant.
+   */
+  private hasBreach(rows: readonly MetricRow[]): boolean {
+    return rows
+      .filter((row) => row.measured)
+      .some((row) => row.breach !== undefined);
+  }
+
+  /**
    * True when this run rebuilt the bundle and the baseline knew it, which is
    * the only case where a change is like-for-like.
    *
@@ -244,19 +268,28 @@ export class BundleMarkdownService {
     ];
   }
 
-  /** Renders the table of everything this run rebuilt. */
+  /** Renders the table of everything this run rebuilt, collapsed by default. */
   private renderMeasuredTable(rows: readonly MetricRow[]): string[] {
     const measured = rows.filter((row) => row.measured || row.removed);
     if (measured.length === 0) {
       return ["This change rebuilt no measured project.", ""];
     }
 
+    const projectCount = new Set(measured.map((row) => row.project)).size;
+    const open = this.hasBreach(measured) ? " open" : "";
+
     return [
+      `<details${open}>`,
+      `<summary>📦 Measured by this pull request — ` +
+        `${formatCount(measured.length, "bundle")} across ` +
+        `${formatCount(projectCount, "project")}</summary>`,
+      "",
       ...TABLE_HEADER,
       ...groupByProject(measured).flatMap((group) => [
         ...group.rows.map((row) => this.renderRow(row)),
         ...this.renderSubtotal(group),
       ]),
+      "</details>",
       "",
     ];
   }
