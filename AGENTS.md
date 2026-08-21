@@ -5,7 +5,7 @@
 ```bash
 # Run tasks via Nx (always prefer this)
 nx run <project>:<target>:<configuration>
-nx run-many --target=lint --all
+nx run-many --target=lint-codebase --all
 nx affected --target=vitest --base=main
 
 # Install dependencies
@@ -614,6 +614,27 @@ skill in the lockfile is missing from any of the five, and
 on every install — between them they close the gap that `skills update` adding a
 skill would otherwise leave open silently. Every other tool scopes itself with
 explicit globs that never include `.agents/`.
+
+Three details of that machinery are worth knowing before changing it:
+
+- **A wholesale pattern fails the check too**, not just a missing entry.
+  Re-adding `**/.agents/skills/**` outside a managed block leaves every
+  per-skill entry in place while quietly taking this repository's own 26 skills
+  back out of scope, so the missing-entry half would report nothing. Exclude a
+  vendored skill by name.
+- **A skill name must match `/^[a-z0-9-]+$/`.** The generator interpolates the
+  name into five formats with no escaping, so an out-of-convention name is
+  skipped with a warning rather than written; a visibly missing exclusion beats
+  a `.markdownlint-cli2.jsonc` that no longer parses. The five files are also
+  staged and swapped in together, so a read-only file cannot leave four of them
+  regenerated and the fifth stale.
+- **The root `project.json` mirrors the exclusions as cache negations.** Its
+  `vendored-skills` named input drops the vendored skills from the `spell-check`
+  and `markdown-lint` `inputs`, because a tool that ignores a file has no reason
+  to rehash on it. Only stale negations are checked, not missing ones: a
+  vendored skill with no negation merely over-invalidates, while a negation for
+  a skill the lockfile has dropped would stop a file those tools do read from
+  invalidating anything.
 
 `scripts/install-skills.sh` still exists, run by the root `postinstall` and by
 `codebase:install-skills`. It always regenerates the five exclusion blocks from
