@@ -131,7 +131,7 @@ mock; the `NODE_ENV` branches are covered by re-importing the module under a
 mutated environment with `vi.resetModules()`.
 
 ```bash
-nx run logger:test:unit
+nx run logger:vitest:unit
 ```
 
 ## Best Practices
