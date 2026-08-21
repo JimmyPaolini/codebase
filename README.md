@@ -179,17 +179,17 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### JSON
 
-![JSON Files](https://img.shields.io/badge/JSON_Files-157-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-9265-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-1632-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-566-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-4490-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-3732-16a34a?style=flat-square)
-![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-111-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-339-0ea5e9?style=flat-square)
+![JSON Files](https://img.shields.io/badge/JSON_Files-137-a16207?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-9087-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-1609-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-546-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-4398-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-3709-16a34a?style=flat-square)
+![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-65-059669?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-316-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-1740-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-6380-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-1717-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-6245-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-10-ea580c?style=flat-square)
 
 ### YAML
@@ -219,16 +219,16 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ### Shell
 
 ![Shell Files](https://img.shields.io/badge/Shell_Files-36-89e051?style=flat-square)
-![Shell Lines](https://img.shields.io/badge/Shell_Lines-2366-4eaa25?style=flat-square)
-![Shell Functions](https://img.shields.io/badge/Shell_Functions-20-16a34a?style=flat-square)
-![Shell Variables](https://img.shields.io/badge/Shell_Variables-211-0284c7?style=flat-square)
+![Shell Lines](https://img.shields.io/badge/Shell_Lines-2394-4eaa25?style=flat-square)
+![Shell Functions](https://img.shields.io/badge/Shell_Functions-21-16a34a?style=flat-square)
+![Shell Variables](https://img.shields.io/badge/Shell_Variables-212-0284c7?style=flat-square)
 ![Shell Exports](https://img.shields.io/badge/Shell_Exports-9-ea580c?style=flat-square)
-![Shell Conditionals](https://img.shields.io/badge/Shell_Conditionals-157-7c3aed?style=flat-square)
+![Shell Conditionals](https://img.shields.io/badge/Shell_Conditionals-158-7c3aed?style=flat-square)
 ![Shell Loops](https://img.shields.io/badge/Shell_Loops-16-8b5cf6?style=flat-square)
 ![Shell Pipelines](https://img.shields.io/badge/Shell_Pipelines-98-059669?style=flat-square)
 ![Shebangs](https://img.shields.io/badge/Shebangs-36-6b7280?style=flat-square)
-![Shell Comments](https://img.shields.io/badge/Shell_Comments-509-64748b?style=flat-square)
-![Shell Comment Lines](https://img.shields.io/badge/Shell_Comment_Lines-509-475569?style=flat-square)
+![Shell Comments](https://img.shields.io/badge/Shell_Comments-528-64748b?style=flat-square)
+![Shell Comment Lines](https://img.shields.io/badge/Shell_Comment_Lines-528-475569?style=flat-square)
 
 ### SQL
 
@@ -308,7 +308,7 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-148-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-42392-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-42398-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-143-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-1136-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-1390-a78bfa?style=flat-square)
