@@ -19,7 +19,7 @@ export const DEFAULT_BRIDGE_WEIGHT = 1;
  */
 export const PYTHON_VALIDATOR_FILE_EXTENSIONS = [".py"];
 
-/** Identifies the Python validator to the orchestrator and `--rules` filter. */
+/** Identifies the Python language to the orchestrator and the `--languages` filter. */
 export const PYTHON_VALIDATOR_DESCRIPTOR: LanguageValidatorDescriptor = {
   description: "Checks Python structure and comments against templates",
   fileExtensions: PYTHON_VALIDATOR_FILE_EXTENSIONS,

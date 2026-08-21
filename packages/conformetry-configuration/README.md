@@ -264,11 +264,14 @@ flowchart LR
   subgraph group0["conformetry-configuration"]
     ConfigurationModule
     InputModule
+    InstanceDiscoveryModule
     TemplateDiscoveryModule
   end
   subgraph group1["conformetry-generation"]
     RenderingModule
   end
+  InstanceDiscoveryModule --> RenderingModule
+  InstanceDiscoveryModule --> TemplateDiscoveryModule
   TemplateDiscoveryModule --> RenderingModule
 ```
 
@@ -311,10 +314,10 @@ Call stacks traced through `conformetry-configuration`, deepest first. Each fram
 
 | Measure | Value |
 | --- | --- |
-| Callables | 99 |
-| Files | 22 |
-| Calls traced | 80 |
-| Call stacks | 3 |
+| Callables | 119 |
+| Files | 25 |
+| Calls traced | 101 |
+| Call stacks | 6 |
 | Deepest stack | 8 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 5 |
@@ -341,7 +344,44 @@ Call stacks traced through `conformetry-configuration`, deepest first. Each fram
               └─> InputSchemaService.find(…)([entryKey]: [string, any]): boolean [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:31]
 ```
 
-**2. `InputPromptingService.validate`** — depth 6 · orphan-root
+**2. `InstanceDiscoveryService.weighInstance`** — depth 7 · orphan-root
+
+```text
+🚀 InstanceDiscoveryService.weighInstance(…): { instance: Instance; pairings: InventoriedPairing[]; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:53]
+   ↳ Weighs one instance against every template, best fit first.
+  └─> InstanceDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:154]
+     ↳ Weighs every template that shares at least one file with the instance, best-first.
+    └─> InstanceDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160]
+      └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:121]
+         ↳ Counts how many of a template's files the instance path already has.
+        └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:130]
+          └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:178]
+             ↳ Maps a template file path to the instance file path it governs.
+            └─> RenderingService.renderPath(args: { substitutions: Substitutions; templatePath: string; }): string [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:80]
+               ↳ Renders a template path with mustache, the same way contents are rendered.
+```
+
+**3. `InstanceDiscoveryService.matchTemplates`** — depth 7 · orphan-root
+
+```text
+🚀 InstanceDiscoveryService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:100]
+   ↳ Ranks every template that shares a file with one instance, best first.
+  └─> InstanceDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:154]
+     ↳ Weighs every template that shares at least one file with the instance, best-first.
+    └─> InstanceDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160]
+      └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:121]
+         ↳ Counts how many of a template's files the instance path already has.
+        └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:130]
+          └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:178]
+             ↳ Maps a template file path to the instance file path it governs.
+            └─> RenderingService.renderPath(args: { substitutions: Substitutions; templatePath: string; }): string [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:80]
+               ↳ Renders a template path with mustache, the same way contents are rendered.
+```
+
+<details>
+<summary>3 more call stacks</summary>
+
+**4. `InputPromptingService.validate`** — depth 6 · orphan-root
 
 ```text
 🚀 InputPromptingService.validate(value: unknown): string | true [packages/conformetry-configuration/src/modules/input/input-prompting.service.ts:51]
@@ -356,7 +396,7 @@ Call stacks traced through `conformetry-configuration`, deepest first. Each fram
           └─> InputSchemaService.find(…)([entryKey]: [string, any]): boolean [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:31]
 ```
 
-**3. `assertNoCollisions`** — depth ≥ 4 · orphan-root
+**5. `assertNoCollisions`** — depth ≥ 4 · orphan-root
 
 ```text
 🚀 assertNoCollisions(…): void [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:26]
@@ -366,6 +406,19 @@ Call stacks traced through `conformetry-configuration`, deepest first. Each fram
     └─> flatMap(…)(…): { message: string; path: number[]; }[] [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:102]
       └─> map(…)(handle: string): { message: string; path: number[]; } [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:105]
 ```
+
+**6. `InstanceDiscoveryService.buildSubstitutions`** — depth 3 · orphan-root
+
+```text
+🚀 InstanceDiscoveryService.buildSubstitutions(…): Substitutions [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:80]
+   ↳ Builds the substitutions an instance's template is rendered with.
+  └─> InstanceDiscoveryMatchingService.buildSubstitutions(instance: Instance): Substitutions [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:72]
+     ↳ Builds the substitutions an instance's template is rendered with.
+    └─> RenderingService.buildNameSubstitutions(name: string): Substitutions [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:38]
+       ↳ Derives the case variants every template can reference from one name.
+```
+
+</details>
 
 ### Module spread
 

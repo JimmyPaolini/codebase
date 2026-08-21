@@ -4,7 +4,7 @@ import path from "node:path";
 
 import {
   ConfigurationModule,
-  TemplateDiscoveryModule,
+  InstanceDiscoveryModule,
 } from "@conformetry/configuration";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
@@ -67,7 +67,7 @@ describe(InstancesService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [ConfigurationModule, TemplateDiscoveryModule, ScopeModule],
+      imports: [ConfigurationModule, InstanceDiscoveryModule, ScopeModule],
       providers: [InstancesService],
     }).compile();
 

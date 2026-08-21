@@ -6,6 +6,8 @@ import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
 import { GenerateModule } from "./modules/generate/generate.module";
+import { InstancesModule } from "./modules/instances/instances.module";
+import { TemplatesModule } from "./modules/templates/templates.module";
 import { ValidateModule } from "./modules/validate/validate.module";
 
 /**
@@ -22,6 +24,8 @@ import { ValidateModule } from "./modules/validate/validate.module";
     DiscoveryModule,
     LoggerModule,
     GenerateModule,
+    InstancesModule,
+    TemplatesModule,
     ValidateModule,
   ],
 })

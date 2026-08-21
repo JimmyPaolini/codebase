@@ -83,33 +83,38 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 
 ## Conformetry
 
-The conformetry toolchain provides two workflows that should be used together:
+Conformetry generators scaffold projects, modules, and components from
+**templates**; conformance then measures the generated **instances** back against
+those templates. The two are one workflow: code hand-written in a shape a
+template already describes starts life failing conformance.
 
-- **Generators** create standardized project and module scaffolding from templates.
-- **Validation** checks generated (and manually edited) files against those templates to keep structure and conventions consistent.
-
-### Generation
-
-Conformetry generators are declared in `configuration/conformetry.config.ts` and executed through the `@conformetry/nx` Nx plugin.
-
-Use generators when creating new applications/modules/components so the initial file set, naming, and conventions are correct from the start.
+**Generate rather than hand-craft**, then check conformance. Reach for a
+generator whenever creating a new application, package, module, or component.
 
 ```bash
-nx generate conformetry:<generator-name> [options]
-# or
-nx g conformetry:<generator-name> [options]
+nx g conformetry:<generator-or-alias> [options]
+pnpm nx run-many --targets=conformetry-validate
 ```
 
-The `conformetry` generator namespace is emitted from the configuration into
-the gitignored `.conformetry/` directory on `pnpm install`, so it is never
+Three skills carry the detail — how the two entrypoints differ, what a template
+may declare, and how to act on a difference. Load the one that fits the task:
+
+- [conformetry-generate](packages/conformetry-agents/skills/conformetry-generate/SKILL.md)
+  — scaffolding with a generator
+- [conformetry-configure](packages/conformetry-agents/skills/conformetry-configure/SKILL.md)
+  — adding a generator, or writing its template
+- [conformetry-validate](packages/conformetry-agents/skills/conformetry-validate/SKILL.md)
+  — running conformance and fixing differences
+
+The generator namespace is emitted from `configuration/conformetry.config.ts`
+into the gitignored `.conformetry/` directory on `pnpm install`, so it is never
 committed. If Nx reports it is not installed, run `pnpm install` again. No
 project is called `conformetry` — the name means the generator namespace and
 nothing else, and the command-line host is `conformetry-cli`.
 
-Prefer generator aliases for speed when you already know them (for example, `nsm`, `ngm`, `c`).
-After scaffolding, implement domain-specific logic in the generated files rather than hand-crafting parallel structures.
-
-The table below reflects the conformetry generator registry in `configuration/conformetry.config.ts`.
+This repository's generators, kept in step with the configuration by
+`nx run synchronization:synchronize`. `conformetry templates` prints the same thing
+for any workspace:
 
 <!-- conformetry-generators-table start -->
 | Generator | Alias | Description |
@@ -125,35 +130,6 @@ The table below reflects the conformetry generator registry in `configuration/co
 | `nestjs-service-module` | `nsm` | Generate a NestJS service module with module, service, types, constants, and unit test files |
 | `react-component` | `c` | Generate a React component with test file |
 <!-- conformetry-generators-table end -->
-
-### Validation
-
-Conformetry validation is run via the workspace wrapper target and returns a JSON result summary.
-It evaluates selected projects against validator rules derived from the conformetry configuration.
-
-```bash
-pnpm nx run codebase:conformetry-validate
-```
-
-Use filters when you want targeted checks:
-
-```bash
-pnpm nx run codebase:conformetry-validate -- --projects=<project-a>,<project-b>
-pnpm nx run codebase:conformetry-validate -- --rules=<rule-a>,<rule-b>
-pnpm nx run codebase:conformetry-validate -- --projects=<project> --rules=<rule>
-```
-
-How validation works:
-
-- By default, it validates all selected workspace projects using all configured rule names.
-- Rules map to generator families (for example `nestjs-service-module`, `react-component`).
-- A rule runs only where applicable based on project tags and discovered file patterns.
-- Each matched instance is scored by how much of its template it honours, and fails when that score falls below its threshold. Any failing instance fails the command, which is intended for CI and pre-merge quality gates.
-- The threshold defaults to `1` — a perfect match — so validation is strict unless a threshold is lowered deliberately.
-- Three levels set it, narrowest first: an instance group's `threshold`, then the generator's `threshold`, then a run-level `--threshold`. Lower one when migrating existing instances onto a new template rather than converting the whole workspace in one change.
-- Findings print whether or not the instance cleared its threshold: a lowered threshold permits the drift, it does not hide it.
-
-Use this flow for best results: generate with conformetry first, then run validation after custom edits to confirm the result still matches the repository's conformetry standards.
 
 ## Work Scope
 

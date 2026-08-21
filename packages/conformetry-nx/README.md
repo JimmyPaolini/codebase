@@ -170,6 +170,7 @@ flowchart LR
   end
   subgraph group1["conformetry-configuration"]
     ConfigurationModule
+    InstanceDiscoveryModule
     TemplateDiscoveryModule
   end
   subgraph group2["conformetry-core"]
@@ -192,13 +193,15 @@ flowchart LR
     LoggerModule([LoggerModule])
   end
   FilesModule --> ErrorsModule
-  FilesModule --> TemplateDiscoveryModule
+  FilesModule --> InstanceDiscoveryModule
   GenerationModule --> RenderingModule
   GeneratorModule --> ConfigurationModule
   GeneratorModule --> ScopeModule
+  InstanceDiscoveryModule --> RenderingModule
+  InstanceDiscoveryModule --> TemplateDiscoveryModule
   InstancesModule --> ConfigurationModule
+  InstancesModule --> InstanceDiscoveryModule
   InstancesModule --> ScopeModule
-  InstancesModule --> TemplateDiscoveryModule
   MainModule --> GeneratorModule
   MainModule --> PluginModule
   PathsModule --> ConfigurationModule
@@ -208,6 +211,7 @@ flowchart LR
   PluginModule --> ConfigurationModule
   PluginModule --> GenerationModule
   PluginModule --> GeneratorModule
+  PluginModule --> InstanceDiscoveryModule
   PluginModule --> InstancesModule
   PluginModule --> OptionsModule
   PluginModule --> PathsModule
@@ -219,10 +223,10 @@ flowchart LR
   ReportingModule --> ScoringModule
   TemplateDiscoveryModule --> RenderingModule
   ValidationModule --> FilesModule
+  ValidationModule --> InstanceDiscoveryModule
   ValidationModule --> LanguageModule
   ValidationModule --> ReportingModule
   ValidationModule --> ScoringModule
-  ValidationModule --> TemplateDiscoveryModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
@@ -372,13 +376,13 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
     └─> InstancesService.findProjectInstances(args: FindProjectInstancesArguments): Promise<Instance[]> [packages/conformetry-nx/src/modules/instances/instances.service.ts:74]
        ↳ Expands every instance group that applies to a project, keeping only the instances that live inside it.
       └─> InstancesService.flatMap(…)(this: undefined, group: ConformetryInstanceGroup): Instance[] [packages/conformetry-nx/src/modules/instances/instances.service.ts:90]
-        └─> TemplateDiscoveryService.findInstances(args: FindInstancesArguments): Instance[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:56]
-           ↳ Expands instance glob patterns into instances.
-          └─> TemplateDiscoveryInstancesService.findInstances(args: FindInstancesArguments): Instance[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-instances.service.ts:121]
+        └─> InstanceDiscoveryService.findInstances(args: FindInstancesArguments): Instance[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:87]
+           ↳ Expands instance globs into the instances that exist.
+          └─> InstanceDiscoveryLocatingService.findInstances(args: FindInstancesArguments): Instance[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:121]
              ↳ Expands every pattern and returns one instance per distinct path, name, and scope kind.
-            └─> TemplateDiscoveryInstancesService.resolveGlobSuffix(pattern: string): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-instances.service.ts:73]
+            └─> InstanceDiscoveryLocatingService.resolveGlobSuffix(pattern: string): string [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:73]
                ↳ Returns the literal filename suffix a pattern ends with, such as `.service.ts` for `**\/*.service.ts`, or `""` when the…
-              └─> TemplateDiscoveryInstancesService.map(…)(character: string): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery-instances.service.ts:76]
+              └─> InstanceDiscoveryLocatingService.map(…)(character: string): number [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:76]
 ```
 
 **6. `AdapterService.listDirectory`** — depth 3 · orphan-root
@@ -415,7 +419,7 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `PluginService.runValidation` | 15 | `conformetry-core:modules/reporting`, `conformetry-nx:modules/instances`, `conformetry-validation:modules/validation` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:344` |
+| `PluginService.runValidation` | 16 | `conformetry-core:modules/reporting`, `conformetry-nx:modules/instances`, `conformetry-validation:modules/validation` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:344` |
 | `PluginService.runGenerator` | 12 | `conformetry-configuration:modules/configuration`, `conformetry-generation:modules/generation`, `conformetry-nx:modules/adapter`, `conformetry-nx:modules/options`, `conformetry-nx:modules/paths` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:291` |
 | `syncGenerator` | 7 | `conformetry-nx:modules/generator`, `conformetry-nx:modules/options`, `conformetry-nx:modules/projects`, `conformetry-nx:src` | `packages/conformetry-nx/src/generators/sync/generator.ts:26` |
 | `bootstrapPlugin` | 6 | `conformetry-nx:modules/generator`, `conformetry-nx:modules/options`, `conformetry-nx:modules/projects` | `packages/conformetry-nx/src/bootstrap.utilities.ts:38` |

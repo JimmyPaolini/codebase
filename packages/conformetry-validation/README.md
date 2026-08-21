@@ -123,6 +123,7 @@ flowchart LR
     ValidationModule
   end
   subgraph group1["conformetry-configuration"]
+    InstanceDiscoveryModule
     TemplateDiscoveryModule
   end
   subgraph group2["conformetry-core"]
@@ -156,10 +157,13 @@ flowchart LR
     TypescriptValidatorModule
   end
   FilesModule --> ErrorsModule
-  FilesModule --> TemplateDiscoveryModule
+  FilesModule --> InstanceDiscoveryModule
+  InstanceDiscoveryModule --> RenderingModule
+  InstanceDiscoveryModule --> TemplateDiscoveryModule
   ReportingModule --> ScoringModule
   TemplateDiscoveryModule --> RenderingModule
   ValidationModule --> FilesModule
+  ValidationModule --> InstanceDiscoveryModule
   ValidationModule -.-> JsonValidatorModule
   ValidationModule -.-> JupyterValidatorModule
   ValidationModule --> LanguageModule
@@ -167,7 +171,6 @@ flowchart LR
   ValidationModule -.-> PythonValidatorModule
   ValidationModule --> ReportingModule
   ValidationModule --> ScoringModule
-  ValidationModule --> TemplateDiscoveryModule
   ValidationModule -.-> TextValidatorModule
   ValidationModule -.-> TypescriptValidatorModule
 ```

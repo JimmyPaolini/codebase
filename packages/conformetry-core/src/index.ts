@@ -6,6 +6,13 @@ export type {
   ConformetryErrorLanguage,
   ConformetryErrorType,
 } from "./modules/errors/errors.types";
+export { InventoryModule } from "./modules/inventory/inventory.module";
+export { InventoryService } from "./modules/inventory/inventory.service";
+export type {
+  InventoriedInstance,
+  InventoriedPairing,
+  InventoriedTemplate,
+} from "./modules/inventory/inventory.types";
 export { LanguageModule } from "./modules/language/language.module";
 export { LanguageService } from "./modules/language/language.service";
 export type {
