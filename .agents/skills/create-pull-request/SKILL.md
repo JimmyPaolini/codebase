@@ -226,24 +226,25 @@ gh pr merge --squash --delete-branch
 
 All PRs must pass these checks before merging:
 
-| Check       | Command                          | Description                                                       |
-| ----------- | -------------------------------- | ----------------------------------------------------------------- |
-| Branch Name | `validate-branch-name`           | Branch follows naming conventions                                 |
-| PR Title    | `commitlint`                     | Title follows commit message format                               |
-| PR Body     | Section validation               | Required sections: 🌰 Summary, 📝 Details, 🧪 Testing, 🔗 Related |
-| Lint        | `nx affected --target=lint`      | ESLint validation                                                 |
-| Typecheck   | `nx affected --target=typecheck` | TypeScript compilation                                            |
-| Test        | `nx affected --target=vitest`    | Unit and integration tests                                        |
-| Format      | `nx format:check`                | Oxfmt (primary), Prettier formatting                              |
+| Check       | Command                                                | Description                                                                       |
+| ----------- | ------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| Branch Name | `validate-branch-name`                                 | Branch follows naming conventions                                                 |
+| PR Title    | `commitlint`                                           | Title follows commit message format                                               |
+| PR Body     | Section validation                                     | Required sections: 🌰 Summary, 📝 Details, 🧪 Testing, 🔗 Related                 |
+| Lint        | `nx affected --target=lint-codebase`                   | Every static check: ESLint, oxlint, oxfmt, typecheck, spell-check, knip, and more |
+| Test        | `nx affected --target=vitest --configuration=coverage` | Unit and integration tests against the coverage gates                             |
+
+There is no `lint`, `format`, or `clean` target in this workspace. `nx affected
+--target=lint` exits 0 printing "No tasks were run", so it is a check that
+passes without checking anything — always name a real target.
 
 Run locally before pushing:
 
 ```bash
 # Run all checks on affected projects
-nx affected --target=lint
-nx affected --target=typecheck
-nx affected --target=vitest
-pnpm format
+nx affected --target=lint-codebase --configuration=write --base=main
+nx affected --target=lint-codebase --configuration=check --base=main
+nx affected --target=vitest --configuration=coverage --base=main
 ```
 
 ## Draft PRs
@@ -338,7 +339,7 @@ Before creating the PR, verify:
 - [ ] Subject uses imperative mood and lowercase after gitmoji
 - [ ] Description includes Summary, Details, and Testing sections
 - [ ] Related issues and documentation are linked in the Related section
-- [ ] Local CI checks pass: `nx affected --target=lint && nx affected --target=typecheck && nx affected --target=vitest`
+- [ ] Local CI checks pass: `nx affected --target=lint-codebase --configuration=check --base=main && nx affected --target=vitest --configuration=coverage --base=main`
 
 ## Common Patterns
 
@@ -475,7 +476,8 @@ git checkout -b <type>/<scope>-<description>
 gh pr create --title "<type>(<scope>): <gitmoji> <subject>" --assignee @me --body "..."
 
 # Run CI checks locally
-nx affected --target=lint && nx affected --target=typecheck && nx affected --target=vitest
+nx affected --target=lint-codebase --configuration=check --base=main &&
+  nx affected --target=vitest --configuration=coverage --base=main
 
 # Update branch
 git fetch origin main && git rebase origin/main && git push --force-with-lease
