@@ -4,10 +4,11 @@ import { Command, CommandRunner } from "nest-commander";
 import { LoggerService } from "@codebase/logger";
 
 /**
- * TODO: Document the {{nameCamelCase}} command.
+ * TODO: Document the {{nameCamelCase}} command, and give its `@Command` a
+ * `description` — the template declares none, because a string literal in a
+ * template is required verbatim in every instance forever.
  */
 @Command({
-  description: "Run the {{nameKebabCase}} command",
   name: "{{nameKebabCase}}",
 })
 @Injectable()

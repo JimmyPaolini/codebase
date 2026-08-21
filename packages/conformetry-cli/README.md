@@ -588,7 +588,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 **1. `ValidateCommand.run`** — depth ≥ 10 · decorated-method
 
 ```text
-🚀 ValidateCommand.run(_passedParameters: string[], options: ValidateCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/validate/validate.command.ts:151]
+🚀 ValidateCommand.run(_passedParameters: string[], options: ValidateCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/validate/validate.command.ts:152]
    ↳ Runs validation and reports every difference found.
   └─> ValidationService.validate(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-validation/src/modules/validation/validation.service.ts:134]
      ↳ Validates every instance and returns the differences found.
@@ -633,7 +633,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 **3. `InstancesCommand.run`** — depth ≥ 7 · decorated-method
 
 ```text
-🚀 InstancesCommand.run(_passedParameters: string[], options: InstancesCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/instances/instances.command.ts:89]
+🚀 InstancesCommand.run(_passedParameters: string[], options: InstancesCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/instances/instances.command.ts:90]
    ↳ Writes every instance found, filtered to the given templates.
   └─> InstanceDiscoveryService.resolveInventoriedInstances(args: ResolveInventoryArguments): InventoriedInstance[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:160]
      ↳ Lists every instance found, paired with the templates that explain it. `templateNames` narrows the pairing rather than…
@@ -654,7 +654,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 **4. `TemplatesCommand.run`** — depth ≥ 7 · decorated-method
 
 ```text
-🚀 TemplatesCommand.run(_passedParameters: string[], options: TemplatesCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/templates/templates.command.ts:90]
+🚀 TemplatesCommand.run(_passedParameters: string[], options: TemplatesCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/templates/templates.command.ts:91]
    ↳ Writes every declared template, filtered to the given instances.
   └─> InstanceDiscoveryService.resolveInventoriedTemplates(args: ResolveInventoryArguments): InventoriedTemplate[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:185]
      ↳ Lists every template declared, paired with the instances it explains. `instancePatterns` narrows which instances are…
@@ -700,7 +700,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 **7. `InstancesCommand.parseTemplates`** — depth 3 · decorated-method
 
 ```text
-🚀 InstancesCommand.parseTemplates(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/instances/instances.command.ts:79]
+🚀 InstancesCommand.parseTemplates(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/instances/instances.command.ts:80]
    ↳ Parses the optional template filter.
   └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:125]
      ↳ Splits a comma-delimited filter option into its values.
@@ -710,7 +710,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 **8. `TemplatesCommand.parseInstances`** — depth 3 · decorated-method
 
 ```text
-🚀 TemplatesCommand.parseInstances(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/templates/templates.command.ts:71]
+🚀 TemplatesCommand.parseInstances(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/templates/templates.command.ts:72]
    ↳ Parses the optional instance filter.
   └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:125]
      ↳ Splits a comma-delimited filter option into its values.
@@ -720,7 +720,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 **9. `ValidateCommand.parseInstances`** — depth 3 · decorated-method
 
 ```text
-🚀 ValidateCommand.parseInstances(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:122]
+🚀 ValidateCommand.parseInstances(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:123]
    ↳ Parses the optional instance glob override.
   └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:125]
      ↳ Splits a comma-delimited filter option into its values.
@@ -730,7 +730,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 **10. `ValidateCommand.parseLanguages`** — depth 3 · decorated-method
 
 ```text
-🚀 ValidateCommand.parseLanguages(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:132]
+🚀 ValidateCommand.parseLanguages(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:133]
    ↳ Parses the optional language filter.
   └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:125]
      ↳ Splits a comma-delimited filter option into its values.
@@ -740,7 +740,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 **11. `ValidateCommand.parseThreshold`** — depth 3 · decorated-method
 
 ```text
-🚀 ValidateCommand.parseThreshold(value: string | undefined): number | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:141]
+🚀 ValidateCommand.parseThreshold(value: string | undefined): number | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:142]
    ↳ Parses the optional run-level conformance threshold.
   └─> InputService.parseThresholdOption(value: string | undefined): number | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:168]
      ↳ Parses a threshold option as a ratio from 0 to 1.
@@ -778,7 +778,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 **15. `InstancesCommand.parseConfig`** — depth 2 · decorated-method
 
 ```text
-🚀 InstancesCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/instances/instances.command.ts:61]
+🚀 InstancesCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/instances/instances.command.ts:62]
    ↳ Parses the optional configuration path.
   └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:141]
      ↳ Trims an optional string option, treating blank as absent.
@@ -787,7 +787,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 **16. `TemplatesCommand.parseConfig`** — depth 2 · decorated-method
 
 ```text
-🚀 TemplatesCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/templates/templates.command.ts:62]
+🚀 TemplatesCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/templates/templates.command.ts:63]
    ↳ Parses the optional configuration path.
   └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:141]
      ↳ Trims an optional string option, treating blank as absent.
@@ -796,7 +796,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 **17. `ValidateCommand.parseConfig`** — depth 2 · decorated-method
 
 ```text
-🚀 ValidateCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:113]
+🚀 ValidateCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:114]
    ↳ Parses the optional configuration path.
   └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/conformetry-configuration/src/modules/input/input.service.ts:141]
      ↳ Trims an optional string option, treating blank as absent.
@@ -821,7 +821,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 **20. `InstancesCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 InstancesCommand.constructor(…): InstancesCommand [packages/conformetry-cli/src/modules/instances/instances.command.ts:41]
+🚀 InstancesCommand.constructor(…): InstancesCommand [packages/conformetry-cli/src/modules/instances/instances.command.ts:42]
   └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
      ↳ Sets the context label included in every subsequent log line.
 ```
@@ -829,7 +829,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 **21. `TemplatesCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 TemplatesCommand.constructor(…): TemplatesCommand [packages/conformetry-cli/src/modules/templates/templates.command.ts:42]
+🚀 TemplatesCommand.constructor(…): TemplatesCommand [packages/conformetry-cli/src/modules/templates/templates.command.ts:43]
   └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
      ↳ Sets the context label included in every subsequent log line.
 ```
@@ -837,7 +837,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 **22. `ValidateCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 ValidateCommand.constructor(…): ValidateCommand [packages/conformetry-cli/src/modules/validate/validate.command.ts:39]
+🚀 ValidateCommand.constructor(…): ValidateCommand [packages/conformetry-cli/src/modules/validate/validate.command.ts:40]
   └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:235]
      ↳ Sets the context label included in every subsequent log line.
 ```

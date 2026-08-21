@@ -24,7 +24,7 @@ import type { JsonSchemaDefinition } from "@conformetry/configuration";
  */
 @Command({
   allowUnknownOptions: true,
-  description: "Run the generate command",
+  description: "Render a generator's template into a new instance",
   name: "generate",
 })
 @Injectable()

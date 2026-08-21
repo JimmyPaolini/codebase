@@ -32,7 +32,8 @@ import type { TemplatesCommandOptions } from "./templates.types.js";
  * for a listing.
  */
 @Command({
-  description: "Run the templates command",
+  description:
+    "Name the templates the configuration declares, or which ones explain a path",
   name: "templates",
 })
 @Injectable()
