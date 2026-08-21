@@ -147,34 +147,6 @@ The devcontainer handles equivalent setup automatically.
 - `0` - Lockfile is valid
 - `1` - Lockfile is out of sync
 
-### check-skill-exclusions.sh
-
-**Purpose:** Verify that every skill in `skills-lock.json` is excluded from `prettier`, `codometer`, and GitHub Linguist — the three things that reach `.agents/`
-
-**Usage:**
-
-```bash
-# Via Nx (recommended)
-pnpm exec nx run codebase:check-skill-exclusions
-
-# Direct
-./scripts/check-skill-exclusions.sh
-```
-
-**Use cases:**
-
-- `lint-codebase` (runs on every commit and in the Lint Codebase workflow)
-- After `skills update` adds a skill to the lockfile
-
-**Why it exists:**
-
-Installed skills are committed so a fresh worktree has them, but they are owned upstream. All three files list skills one per line rather than excluding `.agents/skills/` wholesale, so this repository's own skills in the same directory keep being checked, measured, and attributed. That makes a skill added by `skills update` invisible to all three until someone adds it, and nothing else would notice — the symptom is a silently reformatted upstream file, a badge counting somebody else's code, or a language bar dominated by a vendored bundle.
-
-**Exit codes:**
-
-- `0` - Every locked skill is excluded from all three
-- `1` - A skill is missing from one of them, reported with the exact line to add
-
 ### install-skills.sh
 
 **Purpose:** Restore the skills declared in `skills-lock.json` into their gitignored `.agents/skills/<name>/` folders, so every environment that installs node dependencies holds the skills that `AGENTS.md` links to

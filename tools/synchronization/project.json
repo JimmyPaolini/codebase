@@ -63,6 +63,12 @@
         "pull-request-template-write": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts pull-request-template write"
         },
+        "skill-exclusions-check": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts skill-exclusions check"
+        },
+        "skill-exclusions-write": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts skill-exclusions write"
+        },
         "write": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization write"
         }
@@ -93,6 +99,7 @@
         "{workspaceRoot}/.agents/skills/**",
         "{workspaceRoot}/.devcontainer/cloud/devcontainer.json",
         "{workspaceRoot}/.devcontainer/local/devcontainer.json",
+        "{workspaceRoot}/.gitattributes",
         "{workspaceRoot}/.github/agents/**",
         "{workspaceRoot}/.github/ISSUE_TEMPLATE/**",
         "{workspaceRoot}/.github/PULL_REQUEST_TEMPLATE.md",
@@ -102,6 +109,8 @@
         "{workspaceRoot}/applications/*/project.json",
         "{workspaceRoot}/applications/*/README.md",
         "{workspaceRoot}/applications/*/src/**/*.module.ts",
+        "{workspaceRoot}/configuration/.codometerignore",
+        "{workspaceRoot}/configuration/.prettierignore",
         "{workspaceRoot}/configuration/conformetry.config.ts",
         "{workspaceRoot}/configuration/conventional.config.cjs",
         "{workspaceRoot}/nx.json",
@@ -110,6 +119,7 @@
         "{workspaceRoot}/packages/*/README.md",
         "{workspaceRoot}/packages/*/src/**/*.module.ts",
         "{workspaceRoot}/release.config.cjs",
+        "{workspaceRoot}/skills-lock.json",
         "{workspaceRoot}/tools/*/AGENTS.md",
         "{workspaceRoot}/tools/*/project.json",
         "{workspaceRoot}/tools/*/README.md",

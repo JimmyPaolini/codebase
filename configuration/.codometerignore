@@ -39,8 +39,10 @@ templates/
 # of bundled browser JavaScript that would otherwise dominate every counter.
 # Listed individually rather than as `.agents/skills/` so this repository's
 # own skills in the same directory keep being measured.
-# Verified by `nx run codebase:check-skill-exclusions`.
+# Verified by `nx run synchronization:synchronize`, which
+# also generates the block below.
 .agents/licenses/
+# installed-skills-start
 .agents/skills/ask-matt/
 .agents/skills/code-review/
 .agents/skills/codebase-design/
@@ -84,3 +86,4 @@ templates/
 .agents/skills/wayfinder/
 .agents/skills/wizard/
 .agents/skills/writing-for-agents/
+# installed-skills-end
