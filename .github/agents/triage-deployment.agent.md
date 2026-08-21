@@ -178,7 +178,7 @@ Fix: Edit the PR description in the GitHub UI to include all four sections.
 
 Failing command: `npx nx run synchronization:start:conventional-config-check`
 
-Config: [scripts/sync-conventional-config.ts](../../../scripts/sync-conventional-config.ts)
+Config: [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts](../../../tools/synchronization/src/modules/conventional-config/conventional-config.service.ts)
 
 Fix: Run `npx nx run synchronization:start:conventional-config-write` and commit the generated changes.
 
@@ -188,11 +188,15 @@ Failing command: `npx nx run synchronization:start:pull-request-template-check`
 
 Fix: Run `npx nx run synchronization:start:pull-request-template-write` and commit.
 
-#### 🎯 Validate Agent Skills
+#### 🧩 Check Skill Exclusions
 
-Failing command: `npx nx run synchronization:start:agent-skills-check`
+Failing command: `pnpm exec nx run codebase:check-skill-exclusions`
 
-Fix: Run `npx nx run synchronization:start:agent-skills-write` and commit.
+Config: [scripts/check-skill-exclusions.sh](../../../scripts/check-skill-exclusions.sh), reading [skills-lock.json](../../../skills-lock.json) against [configuration/.prettierignore](../../../configuration/.prettierignore), [configuration/.codometerignore](../../../configuration/.codometerignore), and [.gitattributes](../../../.gitattributes)
+
+This check verifies that every skill in `skills-lock.json` is excluded from the three tools whose scan reaches `.agents/`: `prettier` (scans `.`), `codometer` (scans `--directory .`), and GitHub Linguist (reads every committed file). It fails when a skill in the lockfile is missing its exclusion line from any of the three, which is what `skills update` adding a new skill would otherwise do silently.
+
+Fix: Add the missing line(s) reported in the failure output — `**/.agents/skills/<name>/**` to `.prettierignore`, `.agents/skills/<name>/` to `.codometerignore`, and `.agents/skills/<name>/** linguist-vendored` to `.gitattributes` — then commit.
 
 ---
 
@@ -282,7 +286,7 @@ pnpm exec nx affected -t vitest --configuration=coverage --parallel=3
 # Validate conventions (config sync checks only)
 npx nx run synchronization:start:conventional-config-check
 npx nx run synchronization:start:pull-request-template-check
-npx nx run synchronization:start:agent-skills-check
+pnpm exec nx run codebase:check-skill-exclusions
 
 # Security
 pnpm exec nx run codebase:gitleaks
