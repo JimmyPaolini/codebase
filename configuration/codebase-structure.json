@@ -177,6 +177,17 @@
               "ruleId": "any-file"
             }
           ],
+          "name": "skills"
+        },
+        {
+          "children": [
+            {
+              "ruleId": "kebab-case-folder"
+            },
+            {
+              "ruleId": "any-file"
+            }
+          ],
           "name": "data"
         },
         {

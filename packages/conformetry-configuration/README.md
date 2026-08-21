@@ -264,11 +264,14 @@ flowchart LR
   subgraph group0["conformetry-configuration"]
     ConfigurationModule
     InputModule
+    InstanceDiscoveryModule
     TemplateDiscoveryModule
   end
   subgraph group1["conformetry-generation"]
     RenderingModule
   end
+  InstanceDiscoveryModule --> RenderingModule
+  InstanceDiscoveryModule --> TemplateDiscoveryModule
   TemplateDiscoveryModule --> RenderingModule
 ```
 
@@ -311,10 +314,10 @@ Call stacks traced through `conformetry-configuration`, deepest first. Each fram
 
 | Measure | Value |
 | --- | --- |
-| Callables | 99 |
-| Files | 22 |
-| Calls traced | 80 |
-| Call stacks | 3 |
+| Callables | 119 |
+| Files | 25 |
+| Calls traced | 101 |
+| Call stacks | 6 |
 | Deepest stack | 8 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 5 |
@@ -341,7 +344,44 @@ Call stacks traced through `conformetry-configuration`, deepest first. Each fram
               └─> InputSchemaService.find(…)([entryKey]: [string, any]): boolean [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:31]
 ```
 
-**2. `InputPromptingService.validate`** — depth 6 · orphan-root
+**2. `InstanceDiscoveryService.weighInstance`** — depth 7 · orphan-root
+
+```text
+🚀 InstanceDiscoveryService.weighInstance(…): { instance: Instance; pairings: InventoriedPairing[]; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:53]
+   ↳ Weighs one instance against every template, best fit first.
+  └─> InstanceDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:154]
+     ↳ Weighs every template that shares at least one file with the instance, best-first.
+    └─> InstanceDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160]
+      └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:121]
+         ↳ Counts how many of a template's files the instance path already has.
+        └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:130]
+          └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:178]
+             ↳ Maps a template file path to the instance file path it governs.
+            └─> RenderingService.renderPath(args: { substitutions: Substitutions; templatePath: string; }): string [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:80]
+               ↳ Renders a template path with mustache, the same way contents are rendered.
+```
+
+**3. `InstanceDiscoveryService.matchTemplates`** — depth 7 · orphan-root
+
+```text
+🚀 InstanceDiscoveryService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:100]
+   ↳ Ranks every template that shares a file with one instance, best first.
+  └─> InstanceDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:154]
+     ↳ Weighs every template that shares at least one file with the instance, best-first.
+    └─> InstanceDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160]
+      └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:121]
+         ↳ Counts how many of a template's files the instance path already has.
+        └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:130]
+          └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:178]
+             ↳ Maps a template file path to the instance file path it governs.
+            └─> RenderingService.renderPath(args: { substitutions: Substitutions; templatePath: string; }): string [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:80]
+               ↳ Renders a template path with mustache, the same way contents are rendered.
+```
+
+<details>
+<summary>3 more call stacks</summary>
+
+**4. `InputPromptingService.validate`** — depth 6 · orphan-root
 
 ```text
 🚀 InputPromptingService.validate(value: unknown): string | true [packages/conformetry-configuration/src/modules/input/input-prompting.service.ts:51]
@@ -356,7 +396,7 @@ Call stacks traced through `conformetry-configuration`, deepest first. Each fram
           └─> InputSchemaService.find(…)([entryKey]: [string, any]): boolean [packages/conformetry-configuration/src/modules/input/input-schema.service.ts:31]
 ```
 
-**3. `assertNoCollisions`** — depth ≥ 4 · orphan-root
+**5. `assertNoCollisions`** — depth ≥ 4 · orphan-root
 
 ```text
 🚀 assertNoCollisions(…): void [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:26]
@@ -366,6 +406,19 @@ Call stacks traced through `conformetry-configuration`, deepest first. Each fram
     └─> flatMap(…)(…): { message: string; path: number[]; }[] [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:102]
       └─> map(…)(handle: string): { message: string; path: number[]; } [packages/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:105]
 ```
+
+**6. `InstanceDiscoveryService.buildSubstitutions`** — depth 3 · orphan-root
+
+```text
+🚀 InstanceDiscoveryService.buildSubstitutions(…): Substitutions [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:80]
+   ↳ Builds the substitutions an instance's template is rendered with.
+  └─> InstanceDiscoveryMatchingService.buildSubstitutions(instance: Instance): Substitutions [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:72]
+     ↳ Builds the substitutions an instance's template is rendered with.
+    └─> RenderingService.buildNameSubstitutions(name: string): Substitutions [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:38]
+       ↳ Derives the case variants every template can reference from one name.
+```
+
+</details>
 
 ### Module spread
 
@@ -380,36 +433,36 @@ None.
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4123-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-140.95_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-6-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-35-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4679-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-159.11_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-38-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-21.03_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-22.76_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript & JavaScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-35-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-38-3178c6?style=flat-square)
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-11-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-15-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-13-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-211-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-76-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-212-4ade80?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-14-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-249-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-96-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-270-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-75-059669?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-16-0ea5e9?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-17-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-1-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-210-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-143-0284c7?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-12-db2777?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-49-ea580c?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-115-6366f1?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-207-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-518-475569?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-245-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-152-0284c7?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-13-db2777?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-51-ea580c?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-126-6366f1?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-224-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-568-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
@@ -521,11 +574,11 @@ None.
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-3-7c3aed?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-4-7c3aed?style=flat-square)
 ![Service Files](https://img.shields.io/badge/Service_Files-9-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-0-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-3-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-3-db2777?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-4-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-4-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-1-0ea5e9?style=flat-square)
 ![Errors Files](https://img.shields.io/badge/Errors_Files-0-059669?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
@@ -559,7 +612,7 @@ None.
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-253-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-256-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-14-a78bfa?style=flat-square)

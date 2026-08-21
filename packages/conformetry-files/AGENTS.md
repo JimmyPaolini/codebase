@@ -60,6 +60,7 @@ flowchart LR
     FilesModule
   end
   subgraph group1["conformetry-configuration"]
+    InstanceDiscoveryModule
     TemplateDiscoveryModule
   end
   subgraph group2["conformetry-core"]
@@ -69,7 +70,9 @@ flowchart LR
     RenderingModule
   end
   FilesModule --> ErrorsModule
-  FilesModule --> TemplateDiscoveryModule
+  FilesModule --> InstanceDiscoveryModule
+  InstanceDiscoveryModule --> RenderingModule
+  InstanceDiscoveryModule --> TemplateDiscoveryModule
   TemplateDiscoveryModule --> RenderingModule
 ```
 

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { TemplateDiscoveryService } from "@conformetry/configuration";
+import { InstanceDiscoveryService } from "@conformetry/configuration";
 import { ErrorsService } from "@conformetry/core";
 import { Injectable } from "@nestjs/common";
 
@@ -29,7 +29,7 @@ export class FilesService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly templateDiscoveryService: TemplateDiscoveryService,
+    private readonly instanceDiscoveryService: InstanceDiscoveryService,
     private readonly errorsService: ErrorsService,
   ) {}
 
@@ -95,7 +95,7 @@ export class FilesService {
   public checkInstanceFiles(
     args: CheckInstanceFilesArguments,
   ): FilesCheckResult {
-    const expectedFiles = this.templateDiscoveryService.resolveInstanceFiles(
+    const expectedFiles = this.instanceDiscoveryService.resolveInstanceFiles(
       args.instances,
     );
     const reportedDirectories = new Set<string>();

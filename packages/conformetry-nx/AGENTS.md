@@ -69,6 +69,7 @@ flowchart LR
   end
   subgraph group1["conformetry-configuration"]
     ConfigurationModule
+    InstanceDiscoveryModule
     TemplateDiscoveryModule
   end
   subgraph group2["conformetry-core"]
@@ -91,13 +92,15 @@ flowchart LR
     LoggerModule([LoggerModule])
   end
   FilesModule --> ErrorsModule
-  FilesModule --> TemplateDiscoveryModule
+  FilesModule --> InstanceDiscoveryModule
   GenerationModule --> RenderingModule
   GeneratorModule --> ConfigurationModule
   GeneratorModule --> ScopeModule
+  InstanceDiscoveryModule --> RenderingModule
+  InstanceDiscoveryModule --> TemplateDiscoveryModule
   InstancesModule --> ConfigurationModule
+  InstancesModule --> InstanceDiscoveryModule
   InstancesModule --> ScopeModule
-  InstancesModule --> TemplateDiscoveryModule
   MainModule --> GeneratorModule
   MainModule --> PluginModule
   PathsModule --> ConfigurationModule
@@ -107,6 +110,7 @@ flowchart LR
   PluginModule --> ConfigurationModule
   PluginModule --> GenerationModule
   PluginModule --> GeneratorModule
+  PluginModule --> InstanceDiscoveryModule
   PluginModule --> InstancesModule
   PluginModule --> OptionsModule
   PluginModule --> PathsModule
@@ -118,10 +122,10 @@ flowchart LR
   ReportingModule --> ScoringModule
   TemplateDiscoveryModule --> RenderingModule
   ValidationModule --> FilesModule
+  ValidationModule --> InstanceDiscoveryModule
   ValidationModule --> LanguageModule
   ValidationModule --> ReportingModule
   ValidationModule --> ScoringModule
-  ValidationModule --> TemplateDiscoveryModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._

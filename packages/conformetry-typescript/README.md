@@ -151,7 +151,7 @@ None.
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-8.42_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-8.43_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript & JavaScript
 

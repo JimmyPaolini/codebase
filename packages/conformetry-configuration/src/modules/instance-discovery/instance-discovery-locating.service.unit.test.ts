@@ -5,7 +5,7 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { TemplateDiscoveryInstancesService } from "./template-discovery-instances.service";
+import { InstanceDiscoveryLocatingService } from "./instance-discovery-locating.service";
 
 /**
  * Builds a workspace holding two module directories, so directory globs and
@@ -37,16 +37,16 @@ async function createWorkspace(): Promise<string> {
   return workingDirectory;
 }
 
-describe(TemplateDiscoveryInstancesService, () => {
-  let service: TemplateDiscoveryInstancesService;
+describe(InstanceDiscoveryLocatingService, () => {
+  let service: InstanceDiscoveryLocatingService;
   let workingDirectory: string;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [TemplateDiscoveryInstancesService],
+      providers: [InstanceDiscoveryLocatingService],
     }).compile();
 
-    service = await module.resolve(TemplateDiscoveryInstancesService);
+    service = await module.resolve(InstanceDiscoveryLocatingService);
     workingDirectory = await createWorkspace();
   });
 

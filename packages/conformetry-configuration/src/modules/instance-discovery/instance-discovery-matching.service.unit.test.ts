@@ -7,14 +7,15 @@ import { RenderingService } from "@conformetry/generation";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { TemplateDiscoveryMatchingService } from "./template-discovery-matching.service";
-import { TemplateDiscoveryTemplatesService } from "./template-discovery-templates.service";
+import { TemplateDiscoveryService } from "../template-discovery/template-discovery.service";
 
-import type { TemplateDefinition } from "./template-discovery.types";
+import { InstanceDiscoveryMatchingService } from "./instance-discovery-matching.service";
+
+import type { TemplateDefinition } from "../template-discovery/template-discovery.types";
 
 /** Reads every template folder directly under a root. */
 function collectTemplates(
-  templatesService: TemplateDiscoveryTemplatesService,
+  templatesService: TemplateDiscoveryService,
   templatesRootPath: string,
 ): TemplateDefinition[] {
   return readdirSync(templatesRootPath, { withFileTypes: true })
@@ -98,21 +99,21 @@ async function createTemplates(): Promise<{
   return { templates: [], templatesRootPath };
 }
 
-describe(TemplateDiscoveryMatchingService, () => {
-  let service: TemplateDiscoveryMatchingService;
-  let templatesService: TemplateDiscoveryTemplatesService;
+describe(InstanceDiscoveryMatchingService, () => {
+  let service: InstanceDiscoveryMatchingService;
+  let templatesService: TemplateDiscoveryService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        TemplateDiscoveryMatchingService,
-        TemplateDiscoveryTemplatesService,
+        InstanceDiscoveryMatchingService,
+        TemplateDiscoveryService,
         RenderingService,
       ],
     }).compile();
 
-    service = await module.resolve(TemplateDiscoveryMatchingService);
-    templatesService = await module.resolve(TemplateDiscoveryTemplatesService);
+    service = await module.resolve(InstanceDiscoveryMatchingService);
+    templatesService = await module.resolve(TemplateDiscoveryService);
   });
 
   it("is defined", () => {

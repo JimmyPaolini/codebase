@@ -1,26 +1,10 @@
 import type { KnipConfig } from "knip";
 
-// Shared by every NestJS service/command package (conformetry and codometer).
-const NESTJS_PACKAGE_IGNORE_DEPENDENCIES = [
-  "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
-  "@nestjs/testing",
-  "vitest",
-] as const;
-
 const config: KnipConfig = {
   $schema: "https://unpkg.com/knip@5/schema.json",
 
   // Globally ignored file patterns (tests, build output, caches)
-  ignore: [
-    "**/*.test.ts",
-    "**/*.spec.ts",
-    "**/dist/**",
-    "**/node_modules/**",
-    "**/.conformetry/**",
-    "**/.nx/**",
-    "**/coverage/**",
-    "notepads/**",
-  ],
+  ignore: ["**/*.test.ts", "notepads/**"],
 
   // Blank constants/types files are conformance placeholders; keep them out of unused-file checks only.
   // testing/mocks.ts files are conformance placeholders for project-level test utilities (used by future tests).
@@ -33,17 +17,9 @@ const config: KnipConfig = {
   // Binaries invoked via project.json targets or scripts, not imported in code
   ignoreBinaries: [
     "terraform", // Terraform CLI, used for infrastructure provisioning
-    "oxfmt", // Oxfmt CLI, invoked via nx:run-commands oxfmt target
-    "oxlint", // Oxlint CLI, invoked via nx:run-commands oxlint target
     "gitleaks", // Gitleaks CLI, used for detecting hardcoded secrets
     "trivy", // Trivy CLI, used for security scanning (container images & infrastructure)
     "uv", // uv Python package manager, used in lint-staged for nbstripout
-    "unset", // Shell builtin, used in project.json pre-commit command
-    "diff", // Used by root scripts and shell checks
-    "squawk",
-    "gh", // GitHub CLI, used by scripts/orchestrate-agents.ts to run Copilot sessions
-    "openwiki",
-    "@conformetry/nx", // Referenced in nx.json plugin configuration
   ],
 
   // devDependencies used via npx, CLI, or ESLint config (not directly imported)
@@ -55,7 +31,10 @@ const config: KnipConfig = {
     "@commitlint/config-conventional", // commitlint preset, referenced as string in extends array
     "@golevelup/ts-vitest", // Conformance-scaffolded test mock utility — imported in testing/mocks.ts which is in ignoreFiles
     "@nx/eslint-plugin", // Loaded dynamically by Nx ESLint integration
-    "@nx/js", // Nx JavaScript/TypeScript plugin (auto-detected by Nx)
+    // Kept despite knip hinting it is redundant: the hint comes from a
+    // full-workspace run, and the Nx target runs knip scoped to one workspace,
+    // where nothing imports this.
+    "@nx/js",
     "@nx/web", // Nx web plugin (auto-detected by Nx)
     "@semantic-release/commit-analyzer", // semantic-release plugin, referenced in release.config.cjs
     "@semantic-release/github", // semantic-release plugin
@@ -72,8 +51,6 @@ const config: KnipConfig = {
     "tslib", // TypeScript helper library, implicit runtime dependency for compiled TS
     "unplugin-swc", // Vite plugin for SWC transformation with emitDecoratorMetadata support (caelundas/vitest.config.ts)
     "squawk-cli",
-    "skills", // skills.sh CLI, invoked via pnpm exec skills for skill management
-    "view", // pnpm sub-command used as `pnpm view pnpm version` in upgrade-dependencies workflow
   ],
 
   // Allow exports that are only used in the same file (common for barrel re-exports)
@@ -93,7 +70,6 @@ const config: KnipConfig = {
         "configuration/commitlint.config.ts",
         "configuration/dependency-cruiser.cjs",
         "configuration/eslint.config.ts",
-        "configuration/eslint.config.js",
         "configuration/lint-staged.config.ts",
         "configuration/oxfmt.config.ts",
         "configuration/oxlint.config.ts",
@@ -107,7 +83,6 @@ const config: KnipConfig = {
         "codometer.config.ts",
         "release.config.cjs",
         "validate-branch-name.config.cjs",
-        ".pnpmfile.mjs",
       ],
       ignore: [
         "**/*.test.ts",
@@ -131,9 +106,6 @@ const config: KnipConfig = {
     // caelundas: Node.js CLI for astronomical calendar generation
     "applications/caelundas": {
       ignore: [
-        "src/**/*.test.ts",
-        "src/**/*.integration.test.ts",
-        "src/**/*.end-to-end.test.ts",
         "output/**", // Generated calendar output files
         "testing/**", // Test fixtures and setup
       ],
@@ -180,9 +152,6 @@ const config: KnipConfig = {
     // lexico-ingestion: Data ingestion CLI for the Lexico database
     "applications/lexico-ingestion": {
       ignore: [
-        "src/**/*.test.ts",
-        "src/**/*.integration.test.ts",
-        "src/**/*.end-to-end.test.ts",
         "testing/**", // Test fixtures and setup
       ],
       ignoreDependencies: [
@@ -210,7 +179,6 @@ const config: KnipConfig = {
     "tools/synchronization": {
       entry: ["src/main.ts", "src/files.ts"], // Main CLI entry + public file-list constant exports
       ignore: [
-        "src/**/*.test.ts",
         "testing/**", // Test fixtures and setup
       ],
       ignoreDependencies: [
@@ -226,7 +194,6 @@ const config: KnipConfig = {
       entry: ["src/main.mjs", "src/main.ts", "src/repl.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       ignoreDependencies: [
-        ...NESTJS_PACKAGE_IGNORE_DEPENDENCIES,
         // Registered by src/main.mjs and named on Nx command lines as strings,
         // so nothing knip can see imports either of them.
         "@swc-node/register",
@@ -237,7 +204,6 @@ const config: KnipConfig = {
     "packages/callidescope-configuration": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     // codometer packages: the measurement CLI and the configuration it reads
@@ -245,7 +211,6 @@ const config: KnipConfig = {
       entry: ["src/main.mjs", "src/main.ts", "src/repl.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       ignoreDependencies: [
-        ...NESTJS_PACKAGE_IGNORE_DEPENDENCIES,
         "@swc-node/register", // Registered by src/main.mjs as a string, and used in Nx run-commands strings
         "@swc/core", // Required peer/runtime for @swc-node/register loaded via CLI string command
       ],
@@ -254,7 +219,6 @@ const config: KnipConfig = {
     "packages/codometer-configuration": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
 
@@ -266,74 +230,62 @@ const config: KnipConfig = {
     "packages/conformetry-core": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-files": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-configuration": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-generation": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-jupyter": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-json": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-markdown": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-nx": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "src/**/templates/**", "testing/**"],
-      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-python": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-text": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-typescript": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [...NESTJS_PACKAGE_IGNORE_DEPENDENCIES],
       project: "src/**/*.ts",
     },
     "packages/conformetry-validation": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       ignoreDependencies: [
-        ...NESTJS_PACKAGE_IGNORE_DEPENDENCIES,
         // Named as a string in the language registry and imported on demand,
         // so no static import proves it is used.
         "@conformetry/text",

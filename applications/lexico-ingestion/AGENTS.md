@@ -12,7 +12,7 @@ Ingest Wiktionary Latin dictionary data into PostgreSQL, parsing HTML pages into
 
 ```bash
 cp .env.default .env  # Fill in required environment variables
-nx run lexico-ingestion:develop
+nx run lexico-ingestion:start
 ```
 
 ## Architecture Overview
@@ -217,11 +217,10 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run lexico-ingestion:develop        # Run CLI (tsx, watch mode)
-nx run lexico-ingestion:lint           # ESLint
-nx run lexico-ingestion:typecheck      # tsc --noEmit
-nx run lexico-ingestion:format         # oxfmt formatting
-nx run lexico-ingestion:build          # Compile for production
+nx run lexico-ingestion:start           # Run the command-line application
+nx run lexico-ingestion:lint-codebase   # Every static check, in one graph
+nx run lexico-ingestion:typecheck       # tsc --noEmit
+nx run lexico-ingestion:oxfmt           # Formatting
 ```
 
 ### Testing
@@ -229,9 +228,9 @@ nx run lexico-ingestion:build          # Compile for production
 Follow the codebase's strict three-tier testing strategy. Co-locate test files with the source they test.
 
 ```bash
-nx run lexico-ingestion:test:unit          # Fast (<100ms) — pure logic, mocked DI
-nx run lexico-ingestion:test:integration   # Moderate (1-2s) — real database/API I/O
-nx run lexico-ingestion:test:end-to-end    # Slow (30-60s) — full CLI execution
+nx run lexico-ingestion:vitest:unit          # Fast (<100ms) — pure logic, mocked DI
+nx run lexico-ingestion:vitest:integration   # Moderate (1-2s) — real database/API I/O
+nx run lexico-ingestion:vitest:end-to-end    # Slow (30-60s) — full CLI execution
 ```
 
 | Tier | File pattern | What to test |
@@ -355,10 +354,10 @@ export class MainModule {}
 
 ### Conformetry validation
 
-Conformetry validation is run centrally through the workspace wrapper target, which validates generated and existing module structures against templates across the workspace (including generated command applications).
+Conformetry validation measures generated and existing module structures against the templates they came from. It runs for one project, or for every project at once.
 
 ```bash
-pnpm nx run codebase:conformetry-validate
+pnpm nx run-many --targets=conformetry-validate
 ```
 
 ## Best Practices

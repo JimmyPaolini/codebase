@@ -147,7 +147,6 @@
   "ignorePatterns": [
     "**/*.min.js",
     "**/.agents/skills/**/scripts/**",
-    "**/.agents/skills/**/scripts/**",
     "**/.claude/skills/**/scripts/**",
     "**/.conformetry/**",
     "**/.github/skills/**/scripts/**",

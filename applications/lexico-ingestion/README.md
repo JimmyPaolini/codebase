@@ -1124,7 +1124,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1226-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-1865492-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-1865491-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1226-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-8-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-16-a78bfa?style=flat-square)

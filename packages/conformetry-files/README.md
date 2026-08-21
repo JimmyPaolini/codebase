@@ -62,6 +62,7 @@ flowchart LR
     FilesModule
   end
   subgraph group1["conformetry-configuration"]
+    InstanceDiscoveryModule
     TemplateDiscoveryModule
   end
   subgraph group2["conformetry-core"]
@@ -71,7 +72,9 @@ flowchart LR
     RenderingModule
   end
   FilesModule --> ErrorsModule
-  FilesModule --> TemplateDiscoveryModule
+  FilesModule --> InstanceDiscoveryModule
+  InstanceDiscoveryModule --> RenderingModule
+  InstanceDiscoveryModule --> TemplateDiscoveryModule
   TemplateDiscoveryModule --> RenderingModule
 ```
 
@@ -124,14 +127,14 @@ None.
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-511-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-26.74_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-514-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-27.03_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-4-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-11-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-2.22_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-2.21_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript & JavaScript
 
@@ -303,7 +306,7 @@ None.
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-257-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-260-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-14-a78bfa?style=flat-square)
