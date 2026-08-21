@@ -32,11 +32,16 @@ NODE_OPTIONS='--import=tsx' lint-staged --config configuration/lint-staged.confi
 
 lint-staged config: [configuration/lint-staged.config.ts](../../../configuration/lint-staged.config.ts)
 
-For each pattern of staged files, lint-staged runs:
+Almost every check reaches the staged files through one `nx affected` run over the
+`lint-codebase` target:
 
 ```bash
-nx affected --target=<targets> --configuration=check --files=<comma-separated-staged-paths>
+nx affected --target=lint-codebase --configuration=check --parallel=8 --outputStyle=static --files=<path> --files=<path> …
 ```
+
+One `--files=` flag per staged path, never one comma-separated value: Node is
+killed by the operating system on a single argument past 1011 bytes, and
+lint-staged reports that as `Task failed to spawn: undefined` with no output.
 
 ### commit-msg hook
 
@@ -61,25 +66,35 @@ validate-branch-name
 
 Config: [validate-branch-name.config.cjs](../../../validate-branch-name.config.cjs)
 
-### lint-staged file-type → target matrix
+### lint-staged pattern → command matrix
 
-| Staged file pattern                                                                                     | `nx affected` targets                                                |
-| ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `*.ts, *.tsx, *.js, *.jsx, *.mts, *.cts, *.mjs, *.cjs`                                                  | `clean,format,lint,typecheck,spell-check`                            |
-| `*.py`                                                                                                  | `clean,format,lint,spell-check,typecheck`                            |
-| `*.ipynb`                                                                                               | `nbstripout` (first), then `clean,format,lint,typecheck,spell-check` |
-| `*.json, *.jsonc, *.json5, *.html`                                                                      | `format,lint,spell-check`                                            |
-| `*.css`                                                                                                 | `stylelint,format,lint,spell-check`                                  |
-| `*.md, *.mdx`                                                                                           | `format,lint,markdown-lint,spell-check`                              |
-| `*.yml, *.yaml` (not pnpm-lock)                                                                         | `format,yaml-lint,spell-check`                                       |
-| `**/package.json`                                                                                       | `./scripts/check-lockfile.sh` (direct script, not Nx)                |
-| `pnpm-workspace.yaml`                                                                                   | `./scripts/check-lockfile.sh`                                        |
-| `configuration/knip.config.ts`                                                                          | `nx run codebase:clean:check`                                        |
-| `.vscode/extensions.json`, `.devcontainer/local/devcontainer.json`                                      | `nx run codebase:sync-vscode-extensions:check`                       |
-| `.devcontainer/cloud/devcontainer.json`, `.devcontainer/local/devcontainer.json`                        | `nx run synchronization:start:devcontainer-configuration-check`      |
-| Conventional config files (see lint-staged.config.ts)                                                   | `nx run synchronization:start:conventional-config-check`             |
-| PR template files                                                                                       | `nx run synchronization:start:pull-request-template-check`           |
-| `skills-lock.json`, `configuration/.prettierignore`, `configuration/.codometerignore`, `.gitattributes` | `nx run codebase:check-skill-exclusions`                             |
+`configuration/lint-staged.config.ts` declares three patterns, in this order. A
+staged `package.json` matches all three, so all four commands run.
+
+| Staged file pattern                     | Commands lint-staged runs                                                                                                            |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `{**/package.json,pnpm-workspace.yaml}` | `./scripts/check-lockfile.sh` — a direct script, not an Nx target                                                                    |
+| `**/package.json`                       | `nx run-many --projects=codebase --targets=check-catalog-manifests,sherif,syncpack`                                                  |
+| `*` (every staged path)                 | `nx affected --target=lint-codebase --configuration=check --parallel=8 --files=…`, then `nx run-many --targets=conformetry-validate` |
+
+There is deliberately no per-file-type row any more. `lint-codebase` is an
+`nx:noop` aggregator whose `dependsOn` list holds every static check, and each
+leaf target declares the config files it reads in its own `inputs` — so staging
+`configuration/knip.config.ts` re-runs `knip` and cache-hits the rest, with no
+hand-written mapping to drift. Anything the old table routed by hand
+(`check-skill-exclusions`, `sync-vscode-extensions`, `synchronize`,
+`markdown-lint`, `yaml-lint`, `spell-check`) is now reached through that
+`dependsOn` list.
+
+Conformetry is the one exception to `affected`: a generated instance can drift
+without matching any changed-file glob, so it validates the whole workspace on
+every commit.
+
+`nx sync:check` no longer runs on commit at all — the pre-commit hook says so in
+place of the call it used to make. The generator plugin it checked is emitted
+into `.conformetry` on install rather than committed, so no commit can stage it
+out of date, and every conformetry command re-checks the emitted plugin against
+the configuration itself.
 
 ## Triage Procedure
 
