@@ -92,7 +92,6 @@
         "{workspaceRoot}/.agents/skills/**",
         "{workspaceRoot}/.devcontainer/cloud/devcontainer.json",
         "{workspaceRoot}/.devcontainer/local/devcontainer.json",
-        "{workspaceRoot}/.github/agents/**",
         "{workspaceRoot}/.github/ISSUE_TEMPLATE/**",
         "{workspaceRoot}/.github/PULL_REQUEST_TEMPLATE.md",
         "{workspaceRoot}/.vscode/settings.json",

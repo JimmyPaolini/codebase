@@ -673,8 +673,11 @@ terms and decisions actually get resolved. Do not scaffold them upfront.
 
 ### Agents
 
-Custom agent definitions live in [`.github/agents/`](.github/agents), and are
-loaded from there rather than from a list kept in this file.
+This repository keeps no custom agent definitions. The four it used to hold each
+duplicated a skill in [`.agents/skills/`](.agents/skills) with nothing to keep
+the copies in step, and they drifted. Every agent entrypoint is a symlink to that
+one directory, so a skill is the only place a behavior needs to be written down.
+Add a skill rather than reintroducing an agent file.
 
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->
