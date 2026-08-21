@@ -847,6 +847,8 @@
         "{projectRoot}/scripts/**/*.py",
         "{workspaceRoot}/applications/affirmations/pyproject.toml",
         "{workspaceRoot}/configuration/vulture_whitelist.py",
+        "{workspaceRoot}/pyproject.toml",
+        "{workspaceRoot}/uv.lock",
         "default"
       ],
       "options": {

@@ -101,7 +101,11 @@
         "filter": {
           "projects": ["tag:language:python"]
         },
-        "inputs": ["python-source"],
+        "inputs": [
+          "{workspaceRoot}/pyproject.toml",
+          "{workspaceRoot}/uv.lock",
+          "python-source"
+        ],
         "options": {
           "command": "uv run bandit -c pyproject.toml -r src/",
           "cwd": "{projectRoot}"
@@ -354,7 +358,11 @@
         "filter": {
           "projects": ["tag:language:python"]
         },
-        "inputs": ["{projectRoot}/src/**/*.ipynb"],
+        "inputs": [
+          "{projectRoot}/src/**/*.ipynb",
+          "{workspaceRoot}/pyproject.toml",
+          "{workspaceRoot}/uv.lock"
+        ],
         "options": {
           "command": "find src -name '*.ipynb' -exec uv run nbstripout {args} {} +",
           "cwd": "{projectRoot}"
@@ -813,7 +821,12 @@
         "filter": {
           "projects": ["tag:language:python"]
         },
-        "inputs": ["{projectRoot}/.vulture_whitelist.py", "python-source"],
+        "inputs": [
+          "{projectRoot}/.vulture_whitelist.py",
+          "{workspaceRoot}/pyproject.toml",
+          "{workspaceRoot}/uv.lock",
+          "python-source"
+        ],
         "options": {
           "command": "uv run python -m vulture src/ .vulture_whitelist.py --min-confidence 80",
           "cwd": "{projectRoot}"
