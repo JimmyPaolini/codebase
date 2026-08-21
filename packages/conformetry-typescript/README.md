@@ -109,7 +109,7 @@ Call stacks traced through `conformetry-typescript`, deepest first. Each frame s
 **1. `TypescriptValidatorService.validateDocument`** — depth 12 · orphan-root
 
 ```text
-🚀 TypescriptValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:168]
+🚀 TypescriptValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:170]
    ↳ Reports every declaration and comment the template requires.
   └─> TypescriptValidatorService.validateStructure(…): DocumentValidationResult [packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:111]
      ↳ Compares the syntax trees and describes each missing declaration.

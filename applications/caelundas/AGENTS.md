@@ -12,7 +12,7 @@ Generate astronomical event calendars using NASA's JPL Horizons API (Outputs: iC
 
 ```bash
 cp .env.default .env  # Fill in required environment variables
-nx run caelundas:develop
+nx run caelundas:start
 ```
 
 ## Architecture Overview
@@ -274,11 +274,10 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run caelundas:develop        # Run CLI (tsx, watch mode)
-nx run caelundas:lint           # ESLint
-nx run caelundas:typecheck      # tsc --noEmit
-nx run caelundas:format         # oxfmt formatting
-nx run caelundas:build          # Compile for production
+nx run caelundas:start           # Run the command-line application
+nx run caelundas:lint-codebase   # Every static check, in one graph
+nx run caelundas:typecheck       # tsc --noEmit
+nx run caelundas:oxfmt           # Formatting
 ```
 
 ### Testing
@@ -286,9 +285,9 @@ nx run caelundas:build          # Compile for production
 Follow the codebase's strict three-tier testing strategy. Co-locate test files with the source they test.
 
 ```bash
-nx run caelundas:test:unit          # Fast (<100ms) — pure logic, mocked DI
-nx run caelundas:test:integration   # Moderate (1-2s) — real database/API I/O
-nx run caelundas:test:end-to-end    # Slow (30-60s) — full CLI execution
+nx run caelundas:vitest:unit          # Fast (<100ms) — pure logic, mocked DI
+nx run caelundas:vitest:integration   # Moderate (1-2s) — real database/API I/O
+nx run caelundas:vitest:end-to-end    # Slow (30-60s) — full CLI execution
 ```
 
 | Tier | File pattern | What to test |
@@ -518,10 +517,10 @@ export class MainModule {}
 
 ### Conformetry validation
 
-Conformetry validation is run centrally through the workspace wrapper target, which validates generated and existing module structures against templates across the workspace (including generated command applications).
+Conformetry validation measures generated and existing module structures against the templates they came from. It runs for one project, or for every project at once.
 
 ```bash
-pnpm nx run codebase:conformetry-validate
+pnpm nx run-many --targets=conformetry-validate
 ```
 
 ## Best Practices

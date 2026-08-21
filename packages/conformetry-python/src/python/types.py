@@ -1,10 +1,10 @@
-"""🔎 Conformance error types for Python validators."""
+"""🔎 Conformance difference types for Python validators."""
 
 from dataclasses import dataclass
 from typing import Literal
 
-ConformetryErrorType = Literal["comment", "directory", "file", "code"]
-ConformetryErrorLanguage = Literal["javascript", "json", "markdown", "python", "text"]
+ConformetryDifferenceType = Literal["comment", "directory", "file", "code"]
+ConformetryDifferenceLanguage = Literal["javascript", "json", "markdown", "python", "text"]
 
 StringCaseValue = Literal["CAMEL_CASE", "KEBAB_CASE", "PASCAL_CASE", "SNAKE_CASE"]
 
@@ -25,18 +25,18 @@ class TreeComparison:
     instance only against the parts of itself that are wrong.
     """
 
-    errors: "list[ConformetryError]"
+    differences: "list[ConformetryDifference]"
     total_weight: int
 
 
 @dataclass
-class ConformetryError:
-    """A structured conformance error produced by any Python validator."""
+class ConformetryDifference:
+    """A structured conformance difference produced by any Python validator."""
 
-    error_type: ConformetryErrorType
+    difference_type: ConformetryDifferenceType
     fix: str
     message: str
-    language: ConformetryErrorLanguage | None = None
+    language: ConformetryDifferenceLanguage | None = None
     instance_line: int | None = None
     instance_column: int | None = None
     instance_path: str | None = None

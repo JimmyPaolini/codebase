@@ -12,7 +12,7 @@ import {
 
 import type { PairedCells } from "./jupyter-validator.types";
 import type {
-  ConformetryError,
+  ConformetryDifference,
   ConformetryLanguageValidator,
   DocumentValidationResult,
   PreparedValidationDocument,
@@ -50,9 +50,9 @@ export class JupyterValidatorService implements ConformetryLanguageValidator {
   /** Prefixes an error's message so a reader knows which cell it came from. */
   private attributeToCell(args: {
     cell: PairedCells;
-    errors: ConformetryError[];
-  }): ConformetryError[] {
-    return args.errors.map((error) => {
+    differences: ConformetryDifference[];
+  }): ConformetryDifference[] {
+    return args.differences.map((error) => {
       return {
         ...error,
         message: `Cell ${String(args.cell.index + 1)} (${args.cell.kind}): ${error.message}`,
@@ -100,7 +100,10 @@ export class JupyterValidatorService implements ConformetryLanguageValidator {
       });
 
       return {
-        errors: this.attributeToCell({ cell, errors: result.errors }),
+        differences: this.attributeToCell({
+          cell,
+          differences: result.differences,
+        }),
         totalWeight: result.totalWeight,
       };
     }
@@ -113,12 +116,15 @@ export class JupyterValidatorService implements ConformetryLanguageValidator {
       });
 
       return {
-        errors: this.attributeToCell({ cell, errors: result.errors }),
+        differences: this.attributeToCell({
+          cell,
+          differences: result.differences,
+        }),
         totalWeight: result.totalWeight,
       };
     }
 
-    return { errors: [], totalWeight: 0 };
+    return { differences: [], totalWeight: 0 };
   }
 
   /**
@@ -168,7 +174,7 @@ export class JupyterValidatorService implements ConformetryLanguageValidator {
 
       return {
         error: {
-          errorType: "code" as const,
+          differenceType: "code" as const,
           expected: cell.templateSource,
           fix: `Add a ${cell.kind} cell matching the template's cell ${String(cell.index + 1)}.`,
           language: "python" as const,
@@ -183,10 +189,10 @@ export class JupyterValidatorService implements ConformetryLanguageValidator {
     });
 
     return {
-      errors: [
-        ...envelope.errors,
+      differences: [
+        ...envelope.differences,
         ...missing.map((entry) => entry.error),
-        ...paired.flatMap((result) => result.errors),
+        ...paired.flatMap((result) => result.differences),
       ],
       totalWeight: [
         envelope.totalWeight,

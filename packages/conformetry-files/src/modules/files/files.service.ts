@@ -1,14 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { TemplateDiscoveryService } from "@conformetry/configuration";
-import { ErrorsService } from "@conformetry/core";
+import { InstanceDiscoveryService } from "@conformetry/configuration";
+import { DifferencesService } from "@conformetry/core";
 import { Injectable } from "@nestjs/common";
 
 import type {
   CheckInstanceFilesArguments,
   FilesCheckResult,
-  WeighedConformetryError,
+  WeighedConformetryDifference,
 } from "./files.types";
 import type { InstanceFile } from "@conformetry/configuration";
 import type { ValidationFileResult } from "@conformetry/core";
@@ -29,8 +29,8 @@ export class FilesService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly templateDiscoveryService: TemplateDiscoveryService,
-    private readonly errorsService: ErrorsService,
+    private readonly instanceDiscoveryService: InstanceDiscoveryService,
+    private readonly errorsService: DifferencesService,
   ) {}
 
   // 🔐 Private Fields
@@ -48,22 +48,22 @@ export class FilesService {
    * Reporting the absent directory once is more useful than reporting each of
    * the twenty files inside it.
    */
-  private buildMissingError(args: {
+  private buildMissingDifference(args: {
     expectedFileCount: number;
     instanceFilePath: string;
     templateFilePath: string;
-  }): WeighedConformetryError {
+  }): WeighedConformetryDifference {
     const parentDirectoryPath = path.dirname(args.instanceFilePath);
 
     if (fs.existsSync(parentDirectoryPath)) {
       return {
-        ...this.errorsService.buildMissingFileError(args),
+        ...this.errorsService.buildMissingFileDifference(args),
         weight: 1,
       };
     }
 
     return {
-      ...this.errorsService.buildMissingDirectoryError({
+      ...this.errorsService.buildMissingDirectoryDifference({
         instanceDirectoryPath: parentDirectoryPath,
         templateDirectoryPath: path.dirname(args.templateFilePath),
       }),
@@ -95,7 +95,7 @@ export class FilesService {
   public checkInstanceFiles(
     args: CheckInstanceFilesArguments,
   ): FilesCheckResult {
-    const expectedFiles = this.templateDiscoveryService.resolveInstanceFiles(
+    const expectedFiles = this.instanceDiscoveryService.resolveInstanceFiles(
       args.instances,
     );
     const reportedDirectories = new Set<string>();
@@ -112,7 +112,7 @@ export class FilesService {
         continue;
       }
 
-      const error = this.buildMissingError({
+      const error = this.buildMissingDifference({
         expectedFileCount: this.countExpectedFiles({
           expectedFiles,
           parentDirectoryPath,
@@ -120,12 +120,12 @@ export class FilesService {
         ...expectedFile,
       });
 
-      if (error.errorType === "directory") {
+      if (error.differenceType === "directory") {
         reportedDirectories.add(parentDirectoryPath);
       }
 
       fileResults.push({
-        errors: [error],
+        differences: [error],
         filename: path.basename(expectedFile.instanceFilePath),
         instanceFilePath: expectedFile.instanceFilePath,
         templateFilePath: expectedFile.templateFilePath,

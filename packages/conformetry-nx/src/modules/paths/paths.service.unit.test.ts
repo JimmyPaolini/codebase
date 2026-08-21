@@ -20,7 +20,7 @@ async function createWorkspace(): Promise<string> {
     path.join(tmpdir(), "conformetry-nx-paths-"),
   );
 
-  for (const moduleName of ["errors", "logger"]) {
+  for (const moduleName of ["differences", "logger"]) {
     const modulePath = path.join(
       workspaceRoot,
       "packages/widgets/src/modules",
@@ -173,12 +173,16 @@ describe(PathsService, () => {
       await expect(
         service.resolveGenerationPath({
           configurationPath,
-          inputs: { module: "errors", name: "my-widget", project: "widgets" },
+          inputs: {
+            module: "differences",
+            name: "my-widget",
+            project: "widgets",
+          },
           tree,
           workspaceRoot,
         }),
       ).resolves.toBe(
-        path.join(workspaceRoot, "packages/widgets/src/modules/errors"),
+        path.join(workspaceRoot, "packages/widgets/src/modules/differences"),
       );
     });
 

@@ -10,7 +10,7 @@
 
 ```bash
 cp .env.default .env  # Fill in required environment variables
-nx run codometer-cli:develop
+nx run codometer-cli:start
 ```
 
 ## Architecture Overview
@@ -147,11 +147,10 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run codometer-cli:develop        # Run CLI (tsx, watch mode)
-nx run codometer-cli:lint           # ESLint
-nx run codometer-cli:typecheck      # tsc --noEmit
-nx run codometer-cli:format         # oxfmt formatting
-nx run codometer-cli:build          # Compile for production
+nx run codometer-cli:start           # Run the command-line application
+nx run codometer-cli:lint-codebase   # Every static check, in one graph
+nx run codometer-cli:typecheck       # tsc --noEmit
+nx run codometer-cli:oxfmt           # Formatting
 ```
 
 ### Testing
@@ -159,9 +158,9 @@ nx run codometer-cli:build          # Compile for production
 Follow the codebase's strict three-tier testing strategy. Co-locate test files with the source they test.
 
 ```bash
-nx run codometer-cli:test:unit          # Fast (<100ms) — pure logic, mocked DI
-nx run codometer-cli:test:integration   # Moderate (1-2s) — real database/API I/O
-nx run codometer-cli:test:end-to-end    # Slow (30-60s) — full CLI execution
+nx run codometer-cli:vitest:unit          # Fast (<100ms) — pure logic, mocked DI
+nx run codometer-cli:vitest:integration   # Moderate (1-2s) — real database/API I/O
+nx run codometer-cli:vitest:end-to-end    # Slow (30-60s) — full CLI execution
 ```
 
 | Tier | File pattern | What to test |
@@ -282,10 +281,10 @@ export class MainModule {}
 
 ### Conformetry validation
 
-Conformetry validation is run centrally through the workspace wrapper target, which validates generated and existing module structures against templates across the workspace (including generated command applications).
+Conformetry validation measures generated and existing module structures against the templates they came from. It runs for one project, or for every project at once.
 
 ```bash
-pnpm nx run codebase:conformetry-validate
+pnpm nx run-many --targets=conformetry-validate
 ```
 
 ## Best Practices

@@ -4,7 +4,7 @@ import io
 import tokenize
 
 from python.constants import TODO_LINE_REGEX
-from python.types import ConformetryError, TreeComparison
+from python.types import ConformetryDifference, TreeComparison
 
 
 def extract_comments(source: str) -> list[tuple[str, int, int]]:
@@ -28,7 +28,7 @@ def validate_comments(template_source: str, instance_source: str) -> TreeCompari
     """
     template_comments = extract_comments(template_source)
     instance_comment_texts = [c[0] for c in extract_comments(instance_source)]
-    errors = []
+    differences = []
     start_pos = 0
     for comment_text, template_line, template_column in template_comments:
         is_todo = bool(TODO_LINE_REGEX.search(comment_text))
@@ -41,9 +41,9 @@ def validate_comments(template_source: str, instance_source: str) -> TreeCompari
             -1,
         )
         if index == -1:
-            errors.append(
-                ConformetryError(
-                    error_type="comment",
+            differences.append(
+                ConformetryDifference(
+                    difference_type="comment",
                     language="python",
                     message=f'Missing comment: "{comment_text}"',
                     template_line=template_line,
@@ -54,4 +54,4 @@ def validate_comments(template_source: str, instance_source: str) -> TreeCompari
             )
         else:
             start_pos += index + 1
-    return TreeComparison(errors=errors, total_weight=len(template_comments))
+    return TreeComparison(differences=differences, total_weight=len(template_comments))

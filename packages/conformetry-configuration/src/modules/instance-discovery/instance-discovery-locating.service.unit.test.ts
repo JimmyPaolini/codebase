@@ -5,7 +5,7 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { TemplateDiscoveryInstancesService } from "./template-discovery-instances.service";
+import { InstanceDiscoveryLocatingService } from "./instance-discovery-locating.service";
 
 /**
  * Builds a workspace holding two module directories, so directory globs and
@@ -16,7 +16,7 @@ async function createWorkspace(): Promise<string> {
     path.join(tmpdir(), "conformetry-workspace-"),
   );
 
-  for (const stem of ["errors", "logger"]) {
+  for (const stem of ["differences", "logger"]) {
     const instancePath = path.join(
       workingDirectory,
       "packages/widgets/src/modules",
@@ -37,16 +37,16 @@ async function createWorkspace(): Promise<string> {
   return workingDirectory;
 }
 
-describe(TemplateDiscoveryInstancesService, () => {
-  let service: TemplateDiscoveryInstancesService;
+describe(InstanceDiscoveryLocatingService, () => {
+  let service: InstanceDiscoveryLocatingService;
   let workingDirectory: string;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [TemplateDiscoveryInstancesService],
+      providers: [InstanceDiscoveryLocatingService],
     }).compile();
 
-    service = await module.resolve(TemplateDiscoveryInstancesService);
+    service = await module.resolve(InstanceDiscoveryLocatingService);
     workingDirectory = await createWorkspace();
   });
 
@@ -62,7 +62,7 @@ describe(TemplateDiscoveryInstancesService, () => {
       });
 
       expect(instances.map((instance) => instance.nameStem)).toStrictEqual([
-        "errors",
+        "differences",
         "logger",
       ]);
       expect(instances[0]?.fileScope).toBeUndefined();
@@ -109,17 +109,20 @@ describe(TemplateDiscoveryInstancesService, () => {
       });
 
       expect(instances).toHaveLength(2);
-      expect(instances[0]?.nameStem).toBe("errors");
+      expect(instances[0]?.nameStem).toBe("differences");
       expect(
         instances[0]?.fileScope?.map((filePath) => path.basename(filePath)),
-      ).toStrictEqual(["errors.service.ts", "errors.service.unit.test.ts"]);
+      ).toStrictEqual([
+        "differences.service.ts",
+        "differences.service.unit.test.ts",
+      ]);
     });
 
     it("keeps a directory instance separate from a file instance", () => {
       const instances = service.findInstances({
         patterns: [
-          "packages/*/src/modules/errors",
-          "packages/*/src/modules/errors/*.service.ts",
+          "packages/*/src/modules/differences",
+          "packages/*/src/modules/differences/*.service.ts",
         ],
         workingDirectory,
       });
@@ -132,11 +135,11 @@ describe(TemplateDiscoveryInstancesService, () => {
 
     it("falls back to the filename extension when a pattern names a file exactly", () => {
       const instances = service.findInstances({
-        patterns: ["packages/*/src/modules/*/errors.module.ts"],
+        patterns: ["packages/*/src/modules/*/differences.module.ts"],
         workingDirectory,
       });
 
-      expect(instances[0]?.nameStem).toBe("errors.module");
+      expect(instances[0]?.nameStem).toBe("differences.module");
     });
 
     it("applies caller substitutions to every instance", () => {

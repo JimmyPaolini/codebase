@@ -11,7 +11,7 @@ import { TypescriptTreeService } from "./typescript-tree.service";
 import { TYPESCRIPT_VALIDATOR_DESCRIPTOR } from "./typescript-validator.constants";
 
 import type {
-  ConformetryError,
+  ConformetryDifference,
   ConformetryLanguageValidator,
   DocumentValidationResult,
   PreparedValidationDocument,
@@ -80,7 +80,7 @@ export class TypescriptValidatorService implements ConformetryLanguageValidator 
     templateSourceFile: SourceFile;
   }): DocumentValidationResult {
     const comparison = this.typeScriptCommentsService.compareComments(args);
-    const errors: ConformetryError[] = comparison.missingComments.map(
+    const differences: ConformetryDifference[] = comparison.missingComments.map(
       (comment) => {
         const templateLocation = this.readLocation({
           position: comment.position,
@@ -88,7 +88,7 @@ export class TypescriptValidatorService implements ConformetryLanguageValidator 
         });
 
         return {
-          errorType: "comment",
+          differenceType: "comment",
           expected: comment.text,
           fix: `Add the comment ${comment.text} to the instance file, in the order the template declares it.`,
           language: "typescript",
@@ -104,7 +104,7 @@ export class TypescriptValidatorService implements ConformetryLanguageValidator 
       },
     );
 
-    return { errors, totalWeight: comparison.totalWeight };
+    return { differences, totalWeight: comparison.totalWeight };
   }
 
   /** Compares the syntax trees and describes each missing declaration. */
@@ -116,44 +116,46 @@ export class TypescriptValidatorService implements ConformetryLanguageValidator 
       instanceNode: args.instanceSourceFile,
       templateNode: args.templateSourceFile,
     });
-    const errors: ConformetryError[] = comparison.errors.map((error) => {
-      const described =
-        error.nodeKey === undefined
-          ? error.kindLabel
-          : `${error.kindLabel} "${error.nodeKey}"`;
-      const instanceLocation = this.readLocation({
-        position: error.instancePosition,
-        sourceFile: args.instanceSourceFile,
-      });
-      const templateLocation = this.readLocation({
-        position: error.templatePosition,
-        sourceFile: args.templateSourceFile,
-      });
+    const differences: ConformetryDifference[] = comparison.differences.map(
+      (error) => {
+        const described =
+          error.nodeKey === undefined
+            ? error.kindLabel
+            : `${error.kindLabel} "${error.nodeKey}"`;
+        const instanceLocation = this.readLocation({
+          position: error.instancePosition,
+          sourceFile: args.instanceSourceFile,
+        });
+        const templateLocation = this.readLocation({
+          position: error.templatePosition,
+          sourceFile: args.templateSourceFile,
+        });
 
-      return {
-        errorType: "code",
-        fix: `Add the missing ${described} to the instance file. See the template for the expected structure.`,
-        /* v8 ignore next -- a parsed node always resolves a location */
-        ...(instanceLocation === undefined
-          ? {}
-          : {
-              instanceColumn: instanceLocation.column,
-              instanceLine: instanceLocation.line,
-            }),
-        language: "typescript",
-        message: `Missing ${described}`,
-        /* v8 ignore next -- a parsed node always resolves a location */
-        ...(templateLocation === undefined
-          ? {}
-          : {
-              templateColumn: templateLocation.column,
-              templateLine: templateLocation.line,
-            }),
-        weight: error.weight,
-      };
-    });
+        return {
+          differenceType: "code",
+          fix: `Add the missing ${described} to the instance file. See the template for the expected structure.`,
+          /* v8 ignore next -- a parsed node always resolves a location */
+          ...(instanceLocation === undefined
+            ? {}
+            : {
+                instanceColumn: instanceLocation.column,
+                instanceLine: instanceLocation.line,
+              }),
+          language: "typescript",
+          message: `Missing ${described}`,
+          /* v8 ignore next -- a parsed node always resolves a location */
+          ...(templateLocation === undefined
+            ? {}
+            : {
+                templateColumn: templateLocation.column,
+                templateLine: templateLocation.line,
+              }),
+          weight: error.weight,
+        };
+      },
+    );
 
-    return { errors, totalWeight: comparison.totalWeight };
+    return { differences, totalWeight: comparison.totalWeight };
   }
 
   // 🌎 Public Methods
@@ -182,7 +184,7 @@ export class TypescriptValidatorService implements ConformetryLanguageValidator 
     const comments = this.validateComments(sourceFiles);
 
     return {
-      errors: [...structure.errors, ...comments.errors],
+      differences: [...structure.differences, ...comments.differences],
       totalWeight: structure.totalWeight + comments.totalWeight,
     };
   }

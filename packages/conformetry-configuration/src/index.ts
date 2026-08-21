@@ -18,11 +18,10 @@ export type {
   ResolveGeneratorInputsArguments,
   ResolveInputsFromValuesArguments,
 } from "./modules/input/input.types";
-export { TemplateDiscoveryInstancesService } from "./modules/template-discovery/template-discovery-instances.service";
-export { TemplateDiscoveryMatchingService } from "./modules/template-discovery/template-discovery-matching.service";
-export { TemplateDiscoveryTemplatesService } from "./modules/template-discovery/template-discovery-templates.service";
-export { TemplateDiscoveryModule } from "./modules/template-discovery/template-discovery.module";
-export { TemplateDiscoveryService } from "./modules/template-discovery/template-discovery.service";
+export { InstanceDiscoveryLocatingService } from "./modules/instance-discovery/instance-discovery-locating.service";
+export { InstanceDiscoveryMatchingService } from "./modules/instance-discovery/instance-discovery-matching.service";
+export { InstanceDiscoveryModule } from "./modules/instance-discovery/instance-discovery.module";
+export { InstanceDiscoveryService } from "./modules/instance-discovery/instance-discovery.service";
 export type {
   FindInstancesArguments,
   Instance,
@@ -31,8 +30,11 @@ export type {
   PreparedInstanceDocuments,
   PrepareDocumentsArguments,
   ResolvedInstances,
-  TemplateDefinition,
+  ResolveInventoryArguments,
   TemplateMatch,
   UnmatchedInstance,
   UnmatchedReason,
-} from "./modules/template-discovery/template-discovery.types";
+} from "./modules/instance-discovery/instance-discovery.types";
+export { TemplateDiscoveryModule } from "./modules/template-discovery/template-discovery.module";
+export { TemplateDiscoveryService } from "./modules/template-discovery/template-discovery.service";
+export type { TemplateDefinition } from "./modules/template-discovery/template-discovery.types";

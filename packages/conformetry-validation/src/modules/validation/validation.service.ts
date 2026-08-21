@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { TemplateDiscoveryService } from "@conformetry/configuration";
+import { InstanceDiscoveryService } from "@conformetry/configuration";
 import { LanguageService } from "@conformetry/core";
 import { FilesService } from "@conformetry/files";
 import { Injectable } from "@nestjs/common";
@@ -33,7 +33,7 @@ export class ValidationService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly templateDiscoveryService: TemplateDiscoveryService,
+    private readonly instanceDiscoveryService: InstanceDiscoveryService,
     private readonly filesService: FilesService,
     private readonly languageService: LanguageService,
     private readonly validationDeduplicationService: ValidationDeduplicationService,
@@ -90,7 +90,7 @@ export class ValidationService {
     instance: MatchedInstance;
     validators: ConformetryLanguageValidator[];
   }): InstanceFileResults {
-    const [prepared] = this.templateDiscoveryService.prepareDocuments({
+    const [prepared] = this.instanceDiscoveryService.prepareDocuments({
       fileExtensions: args.validators.flatMap((validator) => {
         return [...validator.descriptor.fileExtensions];
       }),
@@ -134,7 +134,7 @@ export class ValidationService {
   public async validate(
     args: RunValidationArguments,
   ): Promise<RunValidationResult> {
-    const { matched, unmatched } = this.templateDiscoveryService.matchInstances(
+    const { matched, unmatched } = this.instanceDiscoveryService.matchInstances(
       {
         instances: args.instances,
         templates: args.templates,

@@ -16,18 +16,18 @@ export interface BuildMissingFileErrorArguments {
  * A structured conformance error produced by any validator.
  *
  * Two discriminating fields identify the error category:
- * - `errorType` — what kind of element is missing
+ * - `differenceType` — what kind of element is missing
  * - `language` — which validator / file format produced the error.
  *
- * All errors represent a *missing* or *mismatched* element; there is no
+ * All differences represent a *missing* or *mismatched* element; there is no
  * separate action field. Consumers render these through `ReportingService`
  * rather than formatting them ad hoc, so every validator reports identically.
  */
-export interface ConformetryError {
-  /** Actual value found in the instance (populated for value-mismatch errors). */
+export interface ConformetryDifference {
+  /** Actual value found in the instance (populated for value-mismatch differences). */
   readonly actual?: string;
   /** Category of missing element. */
-  readonly errorType: ConformetryErrorType;
+  readonly differenceType: ConformetryDifferenceType;
   /** Snippet of the template content that should be present in the instance. */
   readonly expected?: string;
   /** One-line actionable suggestion for the reader (human or coding agent). */
@@ -40,9 +40,9 @@ export interface ConformetryError {
   readonly instancePath?: string;
   /**
    * File format of the validator that produced this error.
-   * Absent for `"file"` and `"directory"` errors.
+   * Absent for `"file"` and `"directory"` differences.
    */
-  readonly language?: ConformetryErrorLanguage;
+  readonly language?: ConformetryDifferenceLanguage;
   /** Short human-readable description of what is missing. */
   readonly message: string;
   /** 1-based column number in the rendered template that defines the requirement. */
@@ -67,10 +67,10 @@ export interface ConformetryError {
 
 /**
  * The language / file format processed by the validator that produced the
- * error. Absent for `"file"` and `"directory"` errors, which are language
+ * error. Absent for `"file"` and `"directory"` differences, which are language
  * agnostic and raised by `conformetry-files`.
  */
-export type ConformetryErrorLanguage =
+export type ConformetryDifferenceLanguage =
   | "javascript"
   | "json"
   | "markdown"
@@ -85,7 +85,7 @@ export type ConformetryErrorLanguage =
  * file but a directory or file the caller declared to be generated code, which
  * conformetry could not attribute to any single template.
  */
-export type ConformetryErrorType =
+export type ConformetryDifferenceType =
   | "code"
   | "comment"
   | "directory"

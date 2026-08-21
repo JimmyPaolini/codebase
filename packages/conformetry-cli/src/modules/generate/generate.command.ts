@@ -5,6 +5,8 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
+import { DEFAULT_CONFIGURATION_PATH } from "../../constants.js";
+
 import { DEFAULT_GENERATED_DIRECTORY } from "./generate.constants";
 
 import type { GenerateCommandOptions } from "./generate.types";
@@ -22,7 +24,7 @@ import type { JsonSchemaDefinition } from "@conformetry/configuration";
  */
 @Command({
   allowUnknownOptions: true,
-  description: "Run the generate command",
+  description: "Render a generator's template into a new instance",
   name: "generate",
 })
 @Injectable()
@@ -109,7 +111,7 @@ export class GenerateCommand extends CommandRunner {
   ): Promise<void> {
     const configuration =
       await this.configurationService.loadConformetryConfiguration(
-        options.config ?? "configuration/conformetry.config.ts",
+        options.config ?? DEFAULT_CONFIGURATION_PATH,
       );
     const definition = configuration.find((generator) => {
       return generator.name === options.generator;

@@ -36,30 +36,30 @@ describe(TypescriptTreeService, () => {
         service.compareTree({
           instanceNode: parse('import { a } from "alpha";\nclass Widget {}\n'),
           templateNode: parse('import { a } from "alpha";\n'),
-        }).errors,
+        }).differences,
       ).toStrictEqual([]);
     });
 
     it("reports an import the instance lacks", () => {
-      const { errors } = service.compareTree({
+      const { differences } = service.compareTree({
         instanceNode: parse("class Widget {}\n"),
         templateNode: parse('import { a } from "alpha";\n'),
       });
 
-      expect(errors).toHaveLength(1);
-      expect(errors[0]?.kindLabel).toBe("ImportDeclaration");
-      expect(errors[0]?.nodeKey).toContain("alpha");
+      expect(differences).toHaveLength(1);
+      expect(differences[0]?.kindLabel).toBe("ImportDeclaration");
+      expect(differences[0]?.nodeKey).toContain("alpha");
     });
 
     it("reports a class member the instance lacks", () => {
-      const { errors } = service.compareTree({
+      const { differences } = service.compareTree({
         instanceNode: parse("class Widget {}\n"),
         templateNode: parse("class Widget { alpha() {} }\n"),
       });
 
-      expect(errors.some((error) => error.nodeKey?.includes("alpha"))).toBe(
-        true,
-      );
+      expect(
+        differences.some((error) => error.nodeKey?.includes("alpha")),
+      ).toBe(true);
     });
 
     it("weighs a missing class by its whole subtree", () => {
@@ -77,10 +77,10 @@ describe(TypescriptTreeService, () => {
       // Both report exactly one finding. Without subtree weighting a deleted
       // class would cost the same as a deleted import, which is the whole
       // reason the weight exists.
-      expect(leaf.errors).toHaveLength(1);
-      expect(subtree.errors).toHaveLength(1);
-      expect(subtree.errors[0]?.weight).toBeGreaterThan(
-        leaf.errors[0]?.weight ?? 0,
+      expect(leaf.differences).toHaveLength(1);
+      expect(subtree.differences).toHaveLength(1);
+      expect(subtree.differences[0]?.weight).toBeGreaterThan(
+        leaf.differences[0]?.weight ?? 0,
       );
     });
 
@@ -90,7 +90,7 @@ describe(TypescriptTreeService, () => {
         templateNode: parse("class Widget { alpha() {} }\n"),
       });
 
-      expect(comparison.errors).toStrictEqual([]);
+      expect(comparison.differences).toStrictEqual([]);
       expect(comparison.totalWeight).toBeGreaterThan(1);
     });
 
@@ -108,7 +108,7 @@ describe(TypescriptTreeService, () => {
       // The denominator must not move with the instance: a template asks for
       // the same amount whether or not the instance supplied any of it.
       expect(absent.totalWeight).toBe(present.totalWeight);
-      expect(absent.errors[0]?.weight).toBe(present.totalWeight - 1);
+      expect(absent.differences[0]?.weight).toBe(present.totalWeight - 1);
     });
 
     it("ignores extra members the template does not declare", () => {
@@ -116,7 +116,7 @@ describe(TypescriptTreeService, () => {
         service.compareTree({
           instanceNode: parse("class Widget { alpha() {} beta() {} }\n"),
           templateNode: parse("class Widget { alpha() {} }\n"),
-        }).errors,
+        }).differences,
       ).toStrictEqual([]);
     });
   });

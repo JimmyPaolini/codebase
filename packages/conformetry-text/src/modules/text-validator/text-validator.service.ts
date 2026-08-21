@@ -4,7 +4,7 @@ import { TEXT_VALIDATOR_DESCRIPTOR } from "./text-validator.constants";
 
 import type { MissingLine } from "./text-validator.types";
 import type {
-  ConformetryError,
+  ConformetryDifference,
   ConformetryLanguageValidator,
   DocumentValidationResult,
   PreparedValidationDocument,
@@ -76,21 +76,21 @@ export class TextValidatorService implements ConformetryLanguageValidator {
   public validateDocument(
     document: PreparedValidationDocument,
   ): DocumentValidationResult {
-    const errors: ConformetryError[] = this.findMissingLines(document).map(
-      (missingLine) => {
-        return {
-          errorType: "code",
-          expected: missingLine.line,
-          fix: `Add the line \`${missingLine.line}\` to the instance file.`,
-          language: "text",
-          message: `Missing line: ${missingLine.line}`,
-          templateLine: missingLine.templateLine,
-        };
-      },
-    );
+    const differences: ConformetryDifference[] = this.findMissingLines(
+      document,
+    ).map((missingLine) => {
+      return {
+        differenceType: "code",
+        expected: missingLine.line,
+        fix: `Add the line \`${missingLine.line}\` to the instance file.`,
+        language: "text",
+        message: `Missing line: ${missingLine.line}`,
+        templateLine: missingLine.templateLine,
+      };
+    });
 
     return {
-      errors,
+      differences,
       totalWeight: document.renderedTemplate.split("\n").length,
     };
   }

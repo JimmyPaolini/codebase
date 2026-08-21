@@ -3,10 +3,11 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import {
-  TemplateDiscoveryModule,
+  InstanceDiscoveryModule,
+  InstanceDiscoveryService,
   TemplateDiscoveryService,
 } from "@conformetry/configuration";
-import { ErrorsModule } from "@conformetry/core";
+import { DifferencesModule } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -58,13 +59,14 @@ async function createTemplatePath(): Promise<string> {
 }
 
 describe(FilesService, () => {
+  let instanceDiscoveryService: InstanceDiscoveryService;
   let templateDiscoveryService: TemplateDiscoveryService;
   let service: FilesService;
   let template: TemplateDefinition;
 
   /** Matches an instance path against the single `widget` template. */
   function matchInstance(instancePath: string): MatchedInstance[] {
-    const { matched } = templateDiscoveryService.matchInstances({
+    const { matched } = instanceDiscoveryService.matchInstances({
       instances: [{ nameStem: "my-widget", path: instancePath }],
       templates: [template],
     });
@@ -74,11 +76,12 @@ describe(FilesService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [TemplateDiscoveryModule, ErrorsModule],
+      imports: [InstanceDiscoveryModule, DifferencesModule],
       providers: [FilesService],
     }).compile();
 
     service = await module.resolve(FilesService);
+    instanceDiscoveryService = await module.resolve(InstanceDiscoveryService);
     templateDiscoveryService = await module.resolve(TemplateDiscoveryService);
     template = templateDiscoveryService.collectTemplate({
       name: "widget",
@@ -138,8 +141,8 @@ describe(FilesService, () => {
     expect(results.map((result) => result.filename)).toStrictEqual([
       ".gitignore",
     ]);
-    expect(results[0]?.errors[0]?.errorType).toBe("file");
-    expect(results[0]?.errors[0]?.fix).toContain("Create the");
+    expect(results[0]?.differences[0]?.differenceType).toBe("file");
+    expect(results[0]?.differences[0]?.fix).toContain("Create the");
   });
 
   it("reports a missing directory once however many files it holds", async () => {
@@ -158,7 +161,7 @@ describe(FilesService, () => {
       "utf8",
     );
 
-    const { matched } = templateDiscoveryService.matchInstances({
+    const { matched } = instanceDiscoveryService.matchInstances({
       instances: [{ nameStem: "my-widget", path: instancePath }],
       templates: [nestedTemplate],
     });
@@ -167,7 +170,7 @@ describe(FilesService, () => {
     });
 
     expect(results).toHaveLength(1);
-    expect(results[0]?.errors[0]?.errorType).toBe("directory");
+    expect(results[0]?.differences[0]?.differenceType).toBe("directory");
   });
 
   it("collapses a missing directory into one finding", async () => {
@@ -186,6 +189,6 @@ describe(FilesService, () => {
     });
 
     expect(results).toHaveLength(1);
-    expect(results[0]?.errors[0]?.errorType).toBe("directory");
+    expect(results[0]?.differences[0]?.differenceType).toBe("directory");
   });
 });

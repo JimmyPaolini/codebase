@@ -6,13 +6,6 @@
 
 **Purpose**: <!-- Briefly describe the specific purpose of this service application -->
 
-### Run Locally
-
-```bash
-cp .env.default .env  # Fill in required environment variables
-nx run {{nameKebabCase}}:develop
-```
-
 ## Architecture Overview
 
 ### Tech Stack
@@ -83,11 +76,10 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run {{nameKebabCase}}:develop        # Run service (tsx, watch mode)
-nx run {{nameKebabCase}}:lint           # ESLint
-nx run {{nameKebabCase}}:typecheck      # tsc --noEmit
-nx run {{nameKebabCase}}:format         # oxfmt formatting
-nx run {{nameKebabCase}}:build          # Compile for production
+nx run {{nameKebabCase}}:lint-codebase   # Every static check, in one graph
+nx run {{nameKebabCase}}:typecheck       # tsc --noEmit
+nx run {{nameKebabCase}}:oxfmt           # Formatting
+nx run {{nameKebabCase}}:build           # Compile for publication
 ```
 
 ### Testing
@@ -95,9 +87,9 @@ nx run {{nameKebabCase}}:build          # Compile for production
 Follow the codebase's strict three-tier testing strategy. Co-locate test files with the source they test.
 
 ```bash
-nx run {{nameKebabCase}}:test:unit          # Fast (<100ms) — pure logic, mocked DI
-nx run {{nameKebabCase}}:test:integration   # Moderate (1-2s) — real database/API I/O
-nx run {{nameKebabCase}}:test:end-to-end    # Slow (30-60s) — full service initialization
+nx run {{nameKebabCase}}:vitest:unit          # Fast (<100ms) — pure logic, mocked DI
+nx run {{nameKebabCase}}:vitest:integration   # Moderate (1-2s) — real database/API I/O
+nx run {{nameKebabCase}}:vitest:end-to-end    # Slow (30-60s) — full service initialization
 ```
 
 | Tier | File pattern | What to test |

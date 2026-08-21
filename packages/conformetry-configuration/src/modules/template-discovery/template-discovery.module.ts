@@ -1,32 +1,19 @@
 import { RenderingModule } from "@conformetry/generation";
 import { Module } from "@nestjs/common";
 
-import { TemplateDiscoveryInstancesService } from "./template-discovery-instances.service";
-import { TemplateDiscoveryMatchingService } from "./template-discovery-matching.service";
-import { TemplateDiscoveryTemplatesService } from "./template-discovery-templates.service";
 import { TemplateDiscoveryService } from "./template-discovery.service";
 
 /**
- * Owns template discovery: reading template folders, deciding which template a
- * directory is an instance of, and pairing their files.
+ * Provides template discovery: reading template folders and rendering their
+ * files against an instance.
  *
  * Imports `RenderingModule` rather than substituting locally, so discovery
  * renders a template exactly as generation did.
  */
 @Module({
   controllers: [],
-  exports: [
-    TemplateDiscoveryInstancesService,
-    TemplateDiscoveryMatchingService,
-    TemplateDiscoveryService,
-    TemplateDiscoveryTemplatesService,
-  ],
+  exports: [TemplateDiscoveryService],
   imports: [RenderingModule],
-  providers: [
-    TemplateDiscoveryInstancesService,
-    TemplateDiscoveryMatchingService,
-    TemplateDiscoveryService,
-    TemplateDiscoveryTemplatesService,
-  ],
+  providers: [TemplateDiscoveryService],
 })
 export class TemplateDiscoveryModule {}

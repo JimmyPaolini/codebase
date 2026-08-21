@@ -1,17 +1,17 @@
 import { Module } from "@nestjs/common";
 
-import { ErrorsService } from "./errors.service";
+import { DifferencesService } from "./differences.service";
 
 /**
- * Owns construction and narrowing of structured conformance errors.
+ * Owns construction and narrowing of structured conformance differences.
  *
  * Imported by every validator package so error shapes stay identical across
  * languages, and by `conformetry-files` for the file and directory categories.
  */
 @Module({
   controllers: [],
-  exports: [ErrorsService],
+  exports: [DifferencesService],
   imports: [],
-  providers: [ErrorsService],
+  providers: [DifferencesService],
 })
-export class ErrorsModule {}
+export class DifferencesModule {}

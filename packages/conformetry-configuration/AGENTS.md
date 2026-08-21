@@ -6,13 +6,6 @@
 
 **Purpose**: <!-- Briefly describe the specific purpose of this service application -->
 
-### Run Locally
-
-```bash
-cp .env.default .env  # Fill in required environment variables
-nx run conformetry-configuration:develop
-```
-
 ## Architecture Overview
 
 ### Tech Stack
@@ -59,11 +52,14 @@ flowchart LR
   subgraph group0["conformetry-configuration"]
     ConfigurationModule
     InputModule
+    InstanceDiscoveryModule
     TemplateDiscoveryModule
   end
   subgraph group1["conformetry-generation"]
     RenderingModule
   end
+  InstanceDiscoveryModule --> RenderingModule
+  InstanceDiscoveryModule --> TemplateDiscoveryModule
   TemplateDiscoveryModule --> RenderingModule
 ```
 
@@ -98,11 +94,10 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run conformetry-configuration:develop        # Run service (tsx, watch mode)
-nx run conformetry-configuration:lint           # ESLint
-nx run conformetry-configuration:typecheck      # tsc --noEmit
-nx run conformetry-configuration:format         # oxfmt formatting
-nx run conformetry-configuration:build          # Compile for production
+nx run conformetry-configuration:lint-codebase   # Every static check, in one graph
+nx run conformetry-configuration:typecheck       # tsc --noEmit
+nx run conformetry-configuration:oxfmt           # Formatting
+nx run conformetry-configuration:build           # Compile for publication
 ```
 
 ### Testing
@@ -110,9 +105,9 @@ nx run conformetry-configuration:build          # Compile for production
 Follow the codebase's strict three-tier testing strategy. Co-locate test files with the source they test.
 
 ```bash
-nx run conformetry-configuration:test:unit          # Fast (<100ms) — pure logic, mocked DI
-nx run conformetry-configuration:test:integration   # Moderate (1-2s) — real database/API I/O
-nx run conformetry-configuration:test:end-to-end    # Slow (30-60s) — full service initialization
+nx run conformetry-configuration:vitest:unit          # Fast (<100ms) — pure logic, mocked DI
+nx run conformetry-configuration:vitest:integration   # Moderate (1-2s) — real database/API I/O
+nx run conformetry-configuration:vitest:end-to-end    # Slow (30-60s) — full service initialization
 ```
 
 | Tier | File pattern | What to test |

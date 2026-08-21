@@ -1,8 +1,7 @@
-import path from "node:path";
-
 import {
   ConfigurationService,
   InputService,
+  InstanceDiscoveryService,
   TemplateDiscoveryService,
 } from "@conformetry/configuration";
 import { ReportingService } from "@conformetry/core";
@@ -12,14 +11,12 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { DEFAULT_CONFIGURATION_PATH } from "./validate.constants";
+import { DEFAULT_CONFIGURATION_PATH } from "../../constants.js";
 
 import type { ValidateCommandOptions } from "./validate.types.js";
 import type {
-  ConformetryConfiguration,
   ConformetryInstanceGroup,
   Instance,
-  TemplateDefinition,
 } from "@conformetry/configuration";
 import type { RunValidationResult } from "@conformetry/validation";
 
@@ -32,7 +29,8 @@ import type { RunValidationResult } from "@conformetry/validation";
  * a meaningful default rather than a missing answer.
  */
 @Command({
-  description: "Run the validate command",
+  description:
+    "Measure instances against their templates and report every difference",
   name: "validate",
 })
 @Injectable()
@@ -41,6 +39,7 @@ export class ValidateCommand extends CommandRunner {
 
   constructor(
     private readonly configurationService: ConfigurationService,
+    private readonly instanceDiscoveryService: InstanceDiscoveryService,
     private readonly templateDiscoveryService: TemplateDiscoveryService,
     private readonly inputService: InputService,
     private readonly reportingService: ReportingService,
@@ -93,7 +92,7 @@ export class ValidateCommand extends CommandRunner {
     workingDirectory: string;
   }): Instance[] {
     return args.groups.flatMap((group) => {
-      return this.templateDiscoveryService.findInstances({
+      return this.instanceDiscoveryService.findInstances({
         // A group may name only labels, which this host has nothing to match
         // them against — it locates instances by glob alone.
         patterns: group.patterns ?? [],
@@ -109,22 +108,6 @@ export class ValidateCommand extends CommandRunner {
   }
 
   /** Reads every configured generator's template folder. */
-  private resolveTemplates(args: {
-    configuration: ConformetryConfiguration;
-    workingDirectory: string;
-  }): TemplateDefinition[] {
-    return args.configuration.map((generator) => {
-      return this.templateDiscoveryService.collectTemplate({
-        name: generator.name,
-        templatePath: path.resolve(
-          args.workingDirectory,
-          generator.templatePath,
-        ),
-        threshold: generator.threshold,
-      });
-    });
-  }
-
   // 🌎 Public Methods
 
   /** Parses the optional configuration path. */
@@ -189,7 +172,10 @@ export class ValidateCommand extends CommandRunner {
       ...(options.languages === undefined
         ? {}
         : { languageNames: options.languages }),
-      templates: this.resolveTemplates({ configuration, workingDirectory }),
+      templates: this.templateDiscoveryService.collectTemplates({
+        configuration,
+        workingDirectory,
+      }),
     });
 
     // The report is the command's product, not a log line: it is a multi-line

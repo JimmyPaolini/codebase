@@ -1,11 +1,18 @@
 // 📤 Exports
-export { ErrorsModule } from "./modules/errors/errors.module";
-export { ErrorsService } from "./modules/errors/errors.service";
+export { DifferencesModule } from "./modules/differences/differences.module";
+export { DifferencesService } from "./modules/differences/differences.service";
 export type {
-  ConformetryError,
-  ConformetryErrorLanguage,
-  ConformetryErrorType,
-} from "./modules/errors/errors.types";
+  ConformetryDifference,
+  ConformetryDifferenceLanguage,
+  ConformetryDifferenceType,
+} from "./modules/differences/differences.types";
+export { InventoryModule } from "./modules/inventory/inventory.module";
+export { InventoryService } from "./modules/inventory/inventory.service";
+export type {
+  InventoriedInstance,
+  InventoriedPairing,
+  InventoriedTemplate,
+} from "./modules/inventory/inventory.types";
 export { LanguageModule } from "./modules/language/language.module";
 export { LanguageService } from "./modules/language/language.service";
 export type {

@@ -4,7 +4,7 @@ import path from "node:path";
 
 import {
   ConfigurationModule,
-  TemplateDiscoveryModule,
+  InstanceDiscoveryModule,
 } from "@conformetry/configuration";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
@@ -35,11 +35,15 @@ async function createWorkspace(): Promise<string> {
       workspaceRoot,
       "packages",
       projectName,
-      "src/modules/errors",
+      "src/modules/differences",
     );
 
     await mkdir(modulePath, { recursive: true });
-    await writeFile(path.join(modulePath, "errors.service.ts"), "", "utf8");
+    await writeFile(
+      path.join(modulePath, "differences.service.ts"),
+      "",
+      "utf8",
+    );
   }
 
   await writeFile(
@@ -67,7 +71,7 @@ describe(InstancesService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [ConfigurationModule, TemplateDiscoveryModule, ScopeModule],
+      imports: [ConfigurationModule, InstanceDiscoveryModule, ScopeModule],
       providers: [InstancesService],
     }).compile();
 
@@ -89,7 +93,7 @@ describe(InstancesService, () => {
 
       expect(instances).toHaveLength(1);
       expect(instances[0]?.path).toContain("packages/widgets/src/modules");
-      expect(instances[0]?.nameStem).toBe("errors");
+      expect(instances[0]?.nameStem).toBe("differences");
     });
 
     it("resolves an untagged group as a workspace glob", async () => {
@@ -114,7 +118,7 @@ describe(InstancesService, () => {
       });
 
       expect(instances).toHaveLength(1);
-      expect(instances[0]?.nameStem).toBe("errors");
+      expect(instances[0]?.nameStem).toBe("differences");
     });
 
     it("carries an instance group's threshold onto the instances it locates", async () => {

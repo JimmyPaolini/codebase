@@ -29,13 +29,13 @@ function createValidator(args: {
       args.seen?.push(document.filename);
 
       if (args.cleanFilenames?.includes(document.filename) === true) {
-        return { errors: [], totalWeight: 10 };
+        return { differences: [], totalWeight: 10 };
       }
 
       return {
-        errors: [
+        differences: [
           {
-            errorType: "code",
+            differenceType: "code",
             fix: "Fix it.",
             message: `problem in ${document.filename}`,
           },
@@ -78,7 +78,7 @@ describe(LanguageService, () => {
     expect(result.fileResults).toHaveLength(2);
   });
 
-  it("groups errors under the file and template they came from", () => {
+  it("groups differences under the file and template they came from", () => {
     const result = service.runValidator({
       checkedPaths: ["/project"],
       documents: [createDocument("a.ts")],
@@ -86,8 +86,8 @@ describe(LanguageService, () => {
     });
 
     expect(result.fileResults[0]).toStrictEqual({
-      errors: [
-        { errorType: "code", fix: "Fix it.", message: "problem in a.ts" },
+      differences: [
+        { differenceType: "code", fix: "Fix it.", message: "problem in a.ts" },
       ],
       filename: "a.ts",
       instanceFilePath: "/project/a.ts",

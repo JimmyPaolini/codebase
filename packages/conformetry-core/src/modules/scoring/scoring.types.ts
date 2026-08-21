@@ -33,8 +33,8 @@ export interface InstanceScore {
 /**
  * Anything that carries a weight.
  *
- * Deliberately narrower than `ConformetryError`: a language package weighs its
- * own internal findings before they are ever described as conformetry errors,
+ * Deliberately narrower than `ConformetryDifference`: a language package weighs its
+ * own internal findings before they are ever described as conformetry differences,
  * and requiring the full error shape would force it to build messages just to
  * count.
  */

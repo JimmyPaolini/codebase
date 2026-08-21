@@ -5,7 +5,7 @@ import type { LanguageValidatorDescriptor } from "@conformetry/core";
 /** Extensions the Jupyter validator claims. */
 export const JUPYTER_VALIDATOR_FILE_EXTENSIONS = [".ipynb"];
 
-/** Identifies the Jupyter validator to the orchestrator and `--rules` filter. */
+/** Identifies the Jupyter language to the orchestrator and the `--languages` filter. */
 export const JUPYTER_VALIDATOR_DESCRIPTOR: LanguageValidatorDescriptor = {
   description:
     "Checks Jupyter notebook structure, markdown cells, and code cells",

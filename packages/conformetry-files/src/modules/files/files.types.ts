@@ -1,7 +1,10 @@
 // 🏷️ Types
 
 import type { MatchedInstance } from "@conformetry/configuration";
-import type { ConformetryError, ValidationFileResult } from "@conformetry/core";
+import type {
+  ConformetryDifference,
+  ValidationFileResult,
+} from "@conformetry/core";
 
 /** Arguments for checking matched instances against the templates they matched. */
 export interface CheckInstanceFilesArguments {
@@ -24,10 +27,10 @@ export interface FilesCheckResult {
 /**
  * A conformance error this pass always weighs.
  *
- * `ConformetryError.weight` is optional because most validators leave it to
+ * `ConformetryDifference.weight` is optional because most validators leave it to
  * default. Every finding here carries one, so narrowing the type removes a
  * fallback that could never be reached.
  */
-export interface WeighedConformetryError extends ConformetryError {
+export interface WeighedConformetryDifference extends ConformetryDifference {
   readonly weight: number;
 }

@@ -7,12 +7,12 @@ import {
   FILE_EXTENSION_PATTERN,
   GLOB_WILDCARD_CHARACTERS,
   INSTANCE_KEY_SEPARATOR,
-} from "./template-discovery.constants";
+} from "./instance-discovery.constants";
 
 import type {
   FindInstancesArguments,
   Instance,
-} from "./template-discovery.types";
+} from "./instance-discovery.types";
 
 /**
  * Expands instance glob patterns into instances.
@@ -22,7 +22,7 @@ import type {
  * previous matcher did and what made it repo-specific.
  */
 @Injectable()
-export class TemplateDiscoveryInstancesService {
+export class InstanceDiscoveryLocatingService {
   // 🏗 Dependency Injection
 
   constructor() {}
@@ -85,9 +85,9 @@ export class TemplateDiscoveryInstancesService {
    * Derives the name an instance's substitutions are built from.
    *
    * A directory is named by itself. A file is named by what remains once the
-   * glob's literal suffix is removed, so `errors.service.ts` matched by
-   * `*.service.ts` and `errors.service.unit.test.ts` matched by
-   * `*.service.unit.test.ts` both yield `errors` — which is what collapses the
+   * glob's literal suffix is removed, so `differences.service.ts` matched by
+   * `*.service.ts` and `differences.service.unit.test.ts` matched by
+   * `*.service.unit.test.ts` both yield `differences` — which is what collapses the
    * two into a single two-file instance.
    */
   private resolveNameStem(args: {

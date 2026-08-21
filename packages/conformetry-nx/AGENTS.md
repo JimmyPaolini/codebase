@@ -6,13 +6,6 @@
 
 **Purpose**: <!-- Briefly describe the specific purpose of this service application -->
 
-### Run Locally
-
-```bash
-cp .env.default .env  # Fill in required environment variables
-nx run conformetry-nx:develop
-```
-
 ## Architecture Overview
 
 ### Tech Stack
@@ -69,10 +62,11 @@ flowchart LR
   end
   subgraph group1["conformetry-configuration"]
     ConfigurationModule
+    InstanceDiscoveryModule
     TemplateDiscoveryModule
   end
   subgraph group2["conformetry-core"]
-    ErrorsModule
+    DifferencesModule
     LanguageModule
     ReportingModule
     ScoringModule
@@ -90,14 +84,16 @@ flowchart LR
   subgraph group6["logger"]
     LoggerModule([LoggerModule])
   end
-  FilesModule --> ErrorsModule
-  FilesModule --> TemplateDiscoveryModule
+  FilesModule --> DifferencesModule
+  FilesModule --> InstanceDiscoveryModule
   GenerationModule --> RenderingModule
   GeneratorModule --> ConfigurationModule
   GeneratorModule --> ScopeModule
+  InstanceDiscoveryModule --> RenderingModule
+  InstanceDiscoveryModule --> TemplateDiscoveryModule
   InstancesModule --> ConfigurationModule
+  InstancesModule --> InstanceDiscoveryModule
   InstancesModule --> ScopeModule
-  InstancesModule --> TemplateDiscoveryModule
   MainModule --> GeneratorModule
   MainModule --> PluginModule
   PathsModule --> ConfigurationModule
@@ -107,6 +103,7 @@ flowchart LR
   PluginModule --> ConfigurationModule
   PluginModule --> GenerationModule
   PluginModule --> GeneratorModule
+  PluginModule --> InstanceDiscoveryModule
   PluginModule --> InstancesModule
   PluginModule --> OptionsModule
   PluginModule --> PathsModule
@@ -118,10 +115,10 @@ flowchart LR
   ReportingModule --> ScoringModule
   TemplateDiscoveryModule --> RenderingModule
   ValidationModule --> FilesModule
+  ValidationModule --> InstanceDiscoveryModule
   ValidationModule --> LanguageModule
   ValidationModule --> ReportingModule
   ValidationModule --> ScoringModule
-  ValidationModule --> TemplateDiscoveryModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
@@ -157,11 +154,10 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run conformetry-nx:develop        # Run service (tsx, watch mode)
-nx run conformetry-nx:lint           # ESLint
-nx run conformetry-nx:typecheck      # tsc --noEmit
-nx run conformetry-nx:format         # oxfmt formatting
-nx run conformetry-nx:build          # Compile for production
+nx run conformetry-nx:lint-codebase   # Every static check, in one graph
+nx run conformetry-nx:typecheck       # tsc --noEmit
+nx run conformetry-nx:oxfmt           # Formatting
+nx run conformetry-nx:build           # Compile for publication
 ```
 
 ### Testing
@@ -169,9 +165,9 @@ nx run conformetry-nx:build          # Compile for production
 Follow the codebase's strict three-tier testing strategy. Co-locate test files with the source they test.
 
 ```bash
-nx run conformetry-nx:test:unit          # Fast (<100ms) — pure logic, mocked DI
-nx run conformetry-nx:test:integration   # Moderate (1-2s) — real database/API I/O
-nx run conformetry-nx:test:end-to-end    # Slow (30-60s) — full service initialization
+nx run conformetry-nx:vitest:unit          # Fast (<100ms) — pure logic, mocked DI
+nx run conformetry-nx:vitest:integration   # Moderate (1-2s) — real database/API I/O
+nx run conformetry-nx:vitest:end-to-end    # Slow (30-60s) — full service initialization
 ```
 
 | Tier | File pattern | What to test |
