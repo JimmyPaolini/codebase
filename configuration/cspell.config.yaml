@@ -185,7 +185,7 @@ patterns:
   # config files in `overrides` — plain strings in those files stay checked.
   - name: editor-configuration-identifier
     pattern: /"[a-z\d][\w-]*(?:\.[\w-]+)+"/gi
-  # cspell:enable
+# cspell:enable
 ignoreRegExpList:
   - postcss-declaration-property
   - temporary-directory-path
@@ -224,7 +224,7 @@ overrides:
   - filename: "**/configuration/codebase-structure.json"
     ignoreRegExpList:
       - /\(\?![^)]*\)/g
-  # cspell:enable
+# cspell:enable
 words:
   # The rc-style conformetry config filenames the Nx plugin looks for.
   - conformetryrc
