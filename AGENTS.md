@@ -99,12 +99,18 @@ pnpm nx run-many --targets=conformetry-validate
 Three skills carry the detail — how the two entrypoints differ, what a template
 may declare, and how to act on a difference. Load the one that fits the task:
 
-- [conformetry-generate](packages/conformetry-agents/skills/conformetry-generate/SKILL.md)
+- [conformetry-generate](.agents/skills/conformetry-generate/SKILL.md)
   — scaffolding with a generator
-- [conformetry-configure](packages/conformetry-agents/skills/conformetry-configure/SKILL.md)
+- [conformetry-configure](.agents/skills/conformetry-configure/SKILL.md)
   — adding a generator, or writing its template
-- [conformetry-validate](packages/conformetry-agents/skills/conformetry-validate/SKILL.md)
+- [conformetry-validate](.agents/skills/conformetry-validate/SKILL.md)
   — running conformance and fixing differences
+
+These three are authored in
+[`packages/conformetry-agents`](packages/conformetry-agents) and installed back
+from the lockfile like any other vendored skill, so what this repository loads is
+exactly what another workspace gets. Edit the package, never the installed copy —
+`skills update` overwrites it.
 
 The generator namespace is emitted from `configuration/conformetry.config.ts`
 into the gitignored `.conformetry/` directory on `pnpm install`, so it is never
@@ -554,7 +560,9 @@ pnpm exec skills update
 
 Their upstream licenses are vendored alongside them in
 [`.agents/licenses/`](.agents/licenses), as MIT and Apache-2.0 both require the
-license to travel with the copy:
+license to travel with the copy. The last row is this repository consuming its
+own published skills, so its license is the root [`LICENSE`](LICENSE) rather than
+a vendored copy:
 
 | Source | License | Skills |
 | ------ | ------- | ------ |
@@ -564,6 +572,7 @@ license to travel with the copy:
 | [github/gh-stack](https://github.com/github/gh-stack) | MIT | 1 |
 | [github/awesome-copilot](https://github.com/github/awesome-copilot) | MIT | 1 |
 | [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | Apache-2.0 | 1 |
+| [JimmyPaolini/codebase](https://github.com/JimmyPaolini/codebase) | MIT | 3, the `conformetry-*` skills this repository publishes |
 
 `skills-lock.json` maps each individual skill to its source.
 
