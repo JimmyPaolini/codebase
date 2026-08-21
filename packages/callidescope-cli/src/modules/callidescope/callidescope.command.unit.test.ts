@@ -24,6 +24,7 @@ import { ReportService } from "../report/report.service";
 
 import { CallidescopeCommand } from "./callidescope.command";
 import { CallidescopeService } from "./callidescope.service";
+import { RunPlanService } from "./run-plan.service";
 
 import type {
   CallGraphResult,
@@ -90,10 +91,43 @@ describe(CallidescopeCommand, () => {
   let command: CallidescopeCommand;
   let configurationService: ReturnType<typeof createMock<ConfigurationService>>;
   let callidescopeService: ReturnType<typeof createMock<CallidescopeService>>;
+  let logger: ReturnType<typeof createMock<LoggerService>>;
   let outputJsonService: ReturnType<typeof createMock<OutputJsonService>>;
   let outputMarkdownService: ReturnType<
     typeof createMock<OutputMarkdownService>
   >;
+
+  /** Configures a report destination, the one output every mode can reach. */
+  function configureJsonDestination(): void {
+    configurationService.loadConfiguration.mockResolvedValue(
+      buildConfiguration({
+        output: {
+          format: "markdown",
+          json: { indentation: 2, path: "output/report.json" },
+          markdown: undefined,
+          mermaid: undefined,
+          projectReadmes: undefined,
+        },
+      }),
+    );
+  }
+
+  /** Points the trace at a result holding one stack past the limit. */
+  function stubDeepStack(): void {
+    stubTrace(
+      buildCallGraphResult({
+        deepStacks: [
+          {
+            depth: 9,
+            entryPointKind: "orphan-root",
+            frames: [],
+            isLowerBound: false,
+            limit: 6,
+          },
+        ],
+      }),
+    );
+  }
 
   /** Points the trace at a prepared result. */
   function stubTrace(result: CallGraphResult = buildCallGraphResult()): void {
@@ -132,6 +166,7 @@ describe(CallidescopeCommand, () => {
           ),
         },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
+        RunPlanService,
       ],
     }).compile();
 
@@ -145,6 +180,7 @@ describe(CallidescopeCommand, () => {
   beforeEach(async () => {
     configurationService = createMock<ConfigurationService>();
     callidescopeService = createMock<CallidescopeService>();
+    logger = createMock<LoggerService>();
     outputJsonService = createMock<OutputJsonService>();
     outputMarkdownService = createMock<OutputMarkdownService>();
 
@@ -162,7 +198,8 @@ describe(CallidescopeCommand, () => {
             new ReportService(),
           ),
         },
-        { provide: LoggerService, useValue: createMock<LoggerService>() },
+        { provide: LoggerService, useValue: logger },
+        RunPlanService,
       ],
     }).compile();
 
@@ -199,6 +236,7 @@ describe(CallidescopeCommand, () => {
           ),
         },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
+        RunPlanService,
       ],
     }).compile();
 
@@ -213,12 +251,16 @@ describe(CallidescopeCommand, () => {
 
   // 🎛️ Option parsing
 
-  it("treats a valueless check flag as turning check mode on", () => {
-    expect(command.parseCheck(undefined)).toBe(true);
+  it("keeps the check set exactly as it was written", () => {
+    expect(command.parseCheck("depth,reports")).toBe("depth,reports");
   });
 
-  it("lets check mode be turned off explicitly", () => {
-    expect(command.parseCheck("false")).toBe(false);
+  it("reads a valueless write flag as asking to write", () => {
+    expect(command.parseWrite(undefined)).toBe(true);
+  });
+
+  it("keeps a written write flag as it was given", () => {
+    expect(command.parseWrite(false)).toBe(false);
   });
 
   it("resolves a relative directory to an absolute path", () => {
@@ -378,7 +420,7 @@ describe(CallidescopeCommand, () => {
     );
     outputMarkdownService.sync.mockReturnValue(true);
 
-    await command.run([], {});
+    await command.run([], { write: true });
 
     const written = outputMarkdownService.sync.mock.calls.map(
       ([call]) => call.destination.path,
@@ -426,7 +468,7 @@ describe(CallidescopeCommand, () => {
       }),
     );
 
-    await command.run([], {});
+    await command.run([], { write: true });
 
     const [report, diagram] = outputMarkdownService.sync.mock.calls.map(
       ([call]) => call.content,
@@ -464,7 +506,7 @@ describe(CallidescopeCommand, () => {
       }),
     );
 
-    await command.run([], {});
+    await command.run([], { write: true });
 
     const [sent] = outputMarkdownService.syncProjectReadmes.mock.calls[0] ?? [];
 
@@ -495,7 +537,7 @@ describe(CallidescopeCommand, () => {
       buildCallGraphResult({ projects: [buildProjectReport("example")] }),
     );
 
-    await command.run([], {});
+    await command.run([], { write: true });
 
     const [sent] = outputMarkdownService.syncProjectReadmes.mock.calls[0] ?? [];
 
@@ -524,7 +566,7 @@ describe(CallidescopeCommand, () => {
       "packages/example/README.md",
     ]);
 
-    await command.run([], { check: true });
+    await command.run([], { check: "reports" });
 
     expect(process.exitCode).toBe(1);
   });
@@ -536,23 +578,90 @@ describe(CallidescopeCommand, () => {
   });
 
   it("fails when a stack exceeded the limit", async () => {
-    stubTrace(
-      buildCallGraphResult({
-        deepStacks: [
-          {
-            depth: 9,
-            entryPointKind: "orphan-root",
-            frames: [],
-            isLowerBound: false,
-            limit: 6,
-          },
-        ],
-      }),
+    stubDeepStack();
+
+    await command.run([], { check: "depth" });
+
+    expect(process.exitCode).toBe(1);
+  });
+
+  it("names a stack that is too deep as its own finding", async () => {
+    stubDeepStack();
+
+    await command.run([], { check: "depth" });
+
+    // Never worded as staleness: one says the code calls too far down, the
+    // other says the checkout has not caught up, and they are fixed
+    // differently.
+    expect(logger.error).toHaveBeenCalledWith(
+      "🔭 Found call stacks too deep",
+      undefined,
+      expect.objectContaining({ count: 1, deepest: 9 }),
     );
+  });
+
+  it("passes over a stack that is too deep when only reports are checked", async () => {
+    stubDeepStack();
+
+    await command.run([], { check: "reports" });
+
+    expect(process.exitCode).toBeUndefined();
+  });
+
+  it("reads no destination when only depth is checked", async () => {
+    configureJsonDestination();
+    // The committed report is out of date, which is what a pull request whose
+    // call graph has moved looks like. The depth gate has no opinion about it.
+    outputJsonService.sync.mockReturnValue(false);
+
+    await command.run([], { check: "depth" });
+
+    expect(outputJsonService.sync).not.toHaveBeenCalled();
+    expect(process.exitCode).toBeUndefined();
+  });
+
+  it("leaves every configured destination alone on a bare run", async () => {
+    configureJsonDestination();
 
     await command.run([], {});
 
+    expect(outputJsonService.sync).not.toHaveBeenCalled();
+  });
+
+  it("refuses a check flag carrying no value", async () => {
+    await command.run([], { check: true });
+
     expect(process.exitCode).toBe(1);
+    expect(callidescopeService.trace).not.toHaveBeenCalled();
+  });
+
+  it("refuses an empty check set", async () => {
+    await command.run([], { check: "" });
+
+    expect(process.exitCode).toBe(1);
+    expect(callidescopeService.trace).not.toHaveBeenCalled();
+  });
+
+  it("refuses a check name it does not accept, and says what it takes", async () => {
+    await command.run([], { check: "limits" });
+
+    expect(process.exitCode).toBe(1);
+    expect(logger.error).toHaveBeenCalledWith(
+      "🔭 Rejected the command line",
+      undefined,
+      {
+        reasons: [
+          `--check does not accept "limits". It takes a comma-separated set drawn from "depth" and "reports", as in "--check depth,reports".`,
+        ],
+      },
+    );
+  });
+
+  it("refuses writing and checking reports in one run", async () => {
+    await command.run([], { check: "reports", write: true });
+
+    expect(process.exitCode).toBe(1);
+    expect(callidescopeService.trace).not.toHaveBeenCalled();
   });
 
   it("writes a JSON report when a path is configured", async () => {
@@ -569,7 +678,7 @@ describe(CallidescopeCommand, () => {
     );
     outputJsonService.sync.mockReturnValue(true);
 
-    await command.run([], {});
+    await command.run([], { write: true });
 
     expect(outputJsonService.sync).toHaveBeenCalledTimes(1);
   });
@@ -577,7 +686,7 @@ describe(CallidescopeCommand, () => {
   it("prefers the JSON path a flag names over the configured one", async () => {
     outputJsonService.sync.mockReturnValue(true);
 
-    await command.run([], { json: "flagged.json" });
+    await command.run([], { json: "flagged.json", write: true });
 
     expect(outputJsonService.sync.mock.calls[0]?.[0].destination).toStrictEqual(
       {
@@ -608,7 +717,7 @@ describe(CallidescopeCommand, () => {
     );
     outputMarkdownService.sync.mockReturnValue(true);
 
-    await command.run([], { markdown: "flagged.md" });
+    await command.run([], { markdown: "flagged.md", write: true });
 
     expect(outputMarkdownService.sync.mock.calls[0]?.[0].destination.path).toBe(
       "flagged.md",
@@ -616,7 +725,7 @@ describe(CallidescopeCommand, () => {
   });
 
   it("writes nothing when no destination is configured", async () => {
-    await command.run([], {});
+    await command.run([], { write: true });
 
     expect(outputJsonService.sync).not.toHaveBeenCalled();
     expect(outputMarkdownService.sync).not.toHaveBeenCalled();
@@ -636,7 +745,7 @@ describe(CallidescopeCommand, () => {
     );
     outputJsonService.sync.mockReturnValue(false);
 
-    await command.run([], { check: true });
+    await command.run([], { check: "reports" });
 
     expect(process.exitCode).toBe(1);
   });
@@ -662,7 +771,7 @@ describe(CallidescopeCommand, () => {
     );
     outputMarkdownService.sync.mockReturnValue(false);
 
-    await command.run([], { check: true });
+    await command.run([], { check: "reports" });
 
     expect(process.exitCode).toBe(1);
   });
@@ -683,7 +792,7 @@ describe(CallidescopeCommand, () => {
     );
     outputJsonService.sync.mockReturnValue(true);
 
-    await command.run([], {});
+    await command.run([], { write: true });
 
     expect(outputJsonService.sync.mock.calls[0]?.[0].check).toBe(false);
   });

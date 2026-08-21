@@ -57,10 +57,26 @@ jobs:
       - name: 🔎 Check Commit Signing Configuration
         run: bash scripts/git/check-commit-signing-configuration.sh
 
-      # Measured here rather than on pull requests: the badge block is
-      # regenerated from whatever main now holds, and `@semantic-release/git`
-      # commits it with the changelog. A release that does not happen leaves
-      # the rewrite uncommitted, which is the same thing the changelog does.
+      # Every report is published here rather than on pull requests: each one
+      # is regenerated from whatever main now holds, and
+      # `@semantic-release/git` commits it with the changelog. A release that
+      # does not happen leaves the rewrites uncommitted, which is the same
+      # thing the changelog does.
+      #
+      # Ordering matters for the same reason the projects are measured before
+      # the workspace aggregate: a run that counts files another run writes has
+      # to go second. Both report writers splice blocks into project README.md
+      # and AGENTS.md files, and codometer counts the lines of those same
+      # files, so codometer goes last — measuring first would publish figures
+      # one release behind the documents they describe. The two writers can go
+      # in either order relative to each other: each splices between its own
+      # markers and leaves the rest of the file as it found it.
+      - name: 🔭 Trace Call Stacks
+        run: pnpm exec nx run codebase:callidescope:publish
+
+      - name: 🕸️ Publish Module Graphs
+        run: pnpm exec nx run synchronization:synchronize:publish
+
       - name: 📊 Measure Codebase
         run: pnpm exec nx run codebase:codometer:write
 

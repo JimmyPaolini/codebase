@@ -146,12 +146,27 @@ module.exports = {
     [
       "@semantic-release/git",
       {
-        // README.md rides along because the codometer step regenerates its
-        // badge block just before this commit. Measuring on a branch instead
-        // made every pull request rewrite the same block and conflict with
-        // every other one; measuring on main makes it a release artifact,
-        // updated exactly when the changelog is.
-        assets: ["CHANGELOG.md", "README.md", "package.json", "pnpm-lock.yaml"],
+        // Every markdown file a report is spliced into rides along, because
+        // the steps just before this commit regenerate all of them: codometer
+        // rewrites the root README.md badge block, callidescope rewrites a
+        // call-stack section in each project's README.md, and the module-graph
+        // synchronization rewrites a diagram in each project's README.md and
+        // AGENTS.md. Publishing on a branch instead made every pull request
+        // rewrite the same blocks and conflict with every other one;
+        // publishing on main makes them release artifacts, updated exactly
+        // when the changelog is.
+        assets: [
+          "CHANGELOG.md",
+          "README.md",
+          "applications/*/AGENTS.md",
+          "applications/*/README.md",
+          "package.json",
+          "packages/*/AGENTS.md",
+          "packages/*/README.md",
+          "pnpm-lock.yaml",
+          "tools/*/AGENTS.md",
+          "tools/*/README.md",
+        ],
         message: "chore(release): 🔖 version ${nextRelease.version}",
       },
     ],

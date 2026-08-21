@@ -7,14 +7,17 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directory . --config configuration/callidescope.config.ts --check"
+          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directory . --config configuration/callidescope.config.ts --check depth"
+        },
+        "publish": {
+          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directory . --config configuration/callidescope.config.ts --write"
         },
         "write": {
-          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directory . --config configuration/callidescope.config.ts"
+          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directory . --config configuration/callidescope.config.ts --check depth"
         }
       },
       "defaultConfiguration": "check",
-      "description": "Trace call stacks and fail on any deeper than the configured limit, or on a stale report. Runs as part of lint-codebase. The README glob is an input because the check compares those files against the traced source: without it, a hand-edited report replays a cached pass.",
+      "description": "Trace call stacks and fail on any deeper than the configured limit. Runs as part of lint-codebase, which is why `write` gates exactly like `check` rather than writing: a stack that is too deep is not something a formatter can fix, and publishing the report from a branch is what made every pull request carry a regenerated block. `publish` writes the report, and only the release workflow runs it. The README glob is an input because `publish` splices into those files: without it, a hand-edited report replays a cached run.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/**/*.{cts,mts,ts,tsx}",

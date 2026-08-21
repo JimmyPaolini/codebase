@@ -8,13 +8,20 @@ import type {
 
 /** Options the CLI accepts. */
 export interface CallidescopeCommandOptions {
-  readonly check?: boolean | undefined;
+  /**
+   * The written `--check` set, or `true` for the flag passed without one.
+   *
+   * Kept as written rather than read into booleans here, so the one place that
+   * knows which names exist is the only place that decides what they mean.
+   */
+  readonly check?: string | true | undefined;
   readonly config?: string | undefined;
   readonly directory?: string | undefined;
   readonly format?: CallidescopeOutputFormat | undefined;
   readonly json?: string | undefined;
   readonly markdown?: string | undefined;
   readonly projects?: string[] | undefined;
+  readonly write?: boolean | undefined;
 }
 
 /** Arguments for writing every configured destination. */

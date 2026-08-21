@@ -9,6 +9,7 @@ import { NestjsModuleGraphsModule } from "../nestjs-module-graphs/nestjs-module-
 import { NxProjectGraphsModule } from "../nx-project-graphs/nx-project-graphs.module";
 import { PullRequestTemplateModule } from "../pull-request-template/pull-request-template.module";
 
+import { SynchronizationKindsService } from "./synchronization-kinds.service";
 import { SynchronizationCommand } from "./synchronization.command";
 import { SynchronizationService } from "./synchronization.service";
 
@@ -17,7 +18,11 @@ import { SynchronizationService } from "./synchronization.service";
  */
 @Module({
   controllers: [],
-  exports: [SynchronizationCommand, SynchronizationService],
+  exports: [
+    SynchronizationCommand,
+    SynchronizationKindsService,
+    SynchronizationService,
+  ],
   imports: [
     LoggerModule,
     ConformetryGeneratorsModule,
@@ -27,6 +32,10 @@ import { SynchronizationService } from "./synchronization.service";
     NxProjectGraphsModule,
     PullRequestTemplateModule,
   ],
-  providers: [SynchronizationCommand, SynchronizationService],
+  providers: [
+    SynchronizationCommand,
+    SynchronizationKindsService,
+    SynchronizationService,
+  ],
 })
 export class SynchronizationModule {}

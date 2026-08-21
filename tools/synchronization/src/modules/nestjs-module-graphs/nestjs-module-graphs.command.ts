@@ -7,6 +7,7 @@ import { Command, CommandRunner } from "nest-commander";
 import { LoggerService } from "@codebase/logger";
 
 import { SynchronizationMarkersService } from "../synchronization/synchronization-markers.service";
+import { SYNCHRONIZATION_KIND_REPORT } from "../synchronization/synchronization.constants";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import { NestjsModuleGraphsGraphService } from "./nestjs-module-graphs-graph.service";
@@ -59,6 +60,9 @@ export class NestjsModuleGraphsCommand
 
   // 🔑 Public Fields
 
+  /** A report of the code, so it is published on the default branch. */
+  readonly synchronizationKind = SYNCHRONIZATION_KIND_REPORT;
+
   readonly synchronizationLabel = "nestjs-module-graphs";
 
   // 🔏 Private Methods
@@ -77,7 +81,7 @@ export class NestjsModuleGraphsCommand
 
     this.logger.log("🕸️ Detected out-of-sync NestJS module graphs", undefined, {
       files: outOfSyncFiles,
-      hint: "Run 'nx run synchronization:synchronize:write' to sync",
+      hint: "Run 'nx run synchronization:synchronize:publish' to publish",
     });
     return false;
   }

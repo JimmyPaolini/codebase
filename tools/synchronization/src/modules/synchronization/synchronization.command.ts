@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Command, CommandRunner } from "nest-commander";
+import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
@@ -10,10 +10,14 @@ import { NestjsModuleGraphsCommand } from "../nestjs-module-graphs/nestjs-module
 import { NxProjectGraphsCommand } from "../nx-project-graphs/nx-project-graphs.command";
 import { PullRequestTemplateCommand } from "../pull-request-template/pull-request-template.command";
 
+import { SynchronizationKindsService } from "./synchronization-kinds.service";
+import { SYNCHRONIZATION_KINDS } from "./synchronization.constants";
 import { SynchronizationService } from "./synchronization.service";
 
 import type {
   SynchronizableCommand,
+  SynchronizationCommandOptions,
+  SynchronizationKind,
   SynchronizationMode,
   SynchronizationResult,
 } from "./synchronization.types";
@@ -41,6 +45,7 @@ export class SynchronizationCommand extends CommandRunner {
     private readonly nestjsModuleGraphsCommand: NestjsModuleGraphsCommand,
     private readonly nxProjectGraphsCommand: NxProjectGraphsCommand,
     private readonly pullRequestTemplateCommand: PullRequestTemplateCommand,
+    private readonly synchronizationKindsService: SynchronizationKindsService,
     private readonly synchronizationModeService: SynchronizationService,
   ) {
     super();
@@ -53,7 +58,12 @@ export class SynchronizationCommand extends CommandRunner {
 
   // 🔏 Private Methods
 
-  /** The commands this aggregate drives, in a stable reporting order. */
+  /**
+   * The commands this aggregate drives, in a stable reporting order.
+   *
+   * Every one of them, whatever kind it is. Which of them a given run drives
+   * is decided by the selected kinds, not by anything left out here.
+   */
   private getCommands(): SynchronizableCommand[] {
     return [
       this.conformetryGeneratorsCommand,
@@ -89,17 +99,48 @@ export class SynchronizationCommand extends CommandRunner {
 
     this.logger.log("🔗 Detected out-of-sync synchronizations", undefined, {
       count: failed.length,
-      hint: "Run 'nx run synchronization:synchronize:write' to sync",
+      hint: "Run 'nx run synchronization:synchronize:write' for a derivation, or ':publish' for a report",
       total: results.length,
     });
   }
 
+  /**
+   * The commands whose declared kind this run asked for.
+   *
+   * A selection matching nothing is a failure rather than a clean run: a
+   * command line asking for a kind no command declares synchronized nothing,
+   * and reporting that as success is how a gate stops gating without anybody
+   * noticing.
+   */
+  private selectCommands(
+    kinds: ReadonlySet<SynchronizationKind>,
+  ): SynchronizableCommand[] {
+    return this.getCommands().filter((command) =>
+      kinds.has(command.synchronizationKind),
+    );
+  }
+
   // 🌎 Public Methods
 
-  /** Runs every synchronization command, exiting once if any reported drift. */
+  /**
+   * Parses the kinds of synchronization this run drives.
+   *
+   * The parser runs only when `--kinds` carries a value, so anything reaching
+   * it is a written set. A `--kinds` with no value never arrives here and is
+   * refused later.
+   */
+  @Option({
+    description: `Run only a comma-separated set drawn from ${SYNCHRONIZATION_KINDS.map((kind) => `"${kind}"`).join(" and ")}`,
+    flags: "--kinds [kinds]",
+  })
+  public parseKinds(value: string): string {
+    return value;
+  }
+
+  /** Runs the selected synchronizations, exiting once if any reported drift. */
   async run(
     passedParameters: string[],
-    _options?: Record<string, unknown>,
+    options?: SynchronizationCommandOptions,
   ): Promise<void> {
     const mode =
       this.synchronizationModeService.resolveSynchronizationModeOrExit({
@@ -109,23 +150,47 @@ export class SynchronizationCommand extends CommandRunner {
         usageMessage:
           "💡 Usage: nx run synchronization:synchronize (or synchronization:synchronize:write)",
       });
+    const { errors, kinds } = this.synchronizationKindsService.select(
+      options?.kinds,
+    );
 
-    if (!(await this.synchronize(mode))) {
+    if (errors.length > 0) {
+      this.logger.error("🚦 Rejected the command line", undefined, {
+        reasons: errors,
+      });
+      process.exit(1);
+    }
+
+    if (!(await this.synchronize(mode, kinds))) {
       process.exit(1);
     }
   }
 
   /**
-   * Runs every synchronization command and reports whether all succeeded.
+   * Runs the selected synchronizations and reports whether all succeeded.
    *
    * Commands run in sequence and every one runs even after an earlier failure,
    * so a single run surfaces all drift instead of only the first instance.
    * They are not parallelized: several write to AGENTS.md.
+   *
+   * Every kind by default, so a caller that has nothing to say about kinds
+   * still drives the whole set.
    */
-  async synchronize(mode: SynchronizationMode): Promise<boolean> {
+  async synchronize(
+    mode: SynchronizationMode,
+    kinds: ReadonlySet<SynchronizationKind> = new Set(SYNCHRONIZATION_KINDS),
+  ): Promise<boolean> {
+    const commands = this.selectCommands(kinds);
     const results: SynchronizationResult[] = [];
 
-    for (const command of this.getCommands()) {
+    if (commands.length === 0) {
+      this.logger.error("🚦 Selected no synchronization at all", undefined, {
+        kinds: [...kinds],
+      });
+      return false;
+    }
+
+    for (const command of commands) {
       this.logger.log(`🔄 Synchronizing ${command.synchronizationLabel}`);
       results.push({
         label: command.synchronizationLabel,

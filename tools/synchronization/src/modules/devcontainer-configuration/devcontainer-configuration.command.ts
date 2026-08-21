@@ -8,6 +8,7 @@ import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
+import { SYNCHRONIZATION_KIND_DERIVATION } from "../synchronization/synchronization.constants";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import {
@@ -49,6 +50,9 @@ export class DevcontainerConfigurationCommand
 
   // 🔑 Public Fields
 
+  /** Derived from configuration, so its drift is answered on a pull request. */
+  readonly synchronizationKind = SYNCHRONIZATION_KIND_DERIVATION;
+
   readonly synchronizationLabel = "devcontainer-configuration";
 
   // 🔏 Private Methods
@@ -81,16 +85,15 @@ export class DevcontainerConfigurationCommand
     expectedConfig: DevcontainerConfiguration,
     cloudConfigFile: string,
   ): boolean {
+    if (this.isCurrent(expectedConfig, cloudConfigFile)) {
+      return true;
+    }
+
     const workspaceRoot = process.cwd();
     const relativeFilePath = path.relative(workspaceRoot, cloudConfigFile);
     const currentConfig: DevcontainerConfiguration = JSON5.parse(
       readFileSync(cloudConfigFile, "utf8"),
     );
-    const expectedConfigCopy = structuredClone(expectedConfig);
-
-    if (_.isEqual(expectedConfigCopy, currentConfig)) {
-      return true;
-    }
 
     this.logger.log(
       `📦 Detected out-of-sync common fields in ${relativeFilePath}`,
@@ -98,9 +101,29 @@ export class DevcontainerConfigurationCommand
       { hint: "Run: nx run synchronization:synchronize:write" },
     );
 
-    this.reportDifferences(expectedConfigCopy, currentConfig);
+    this.reportDifferences(structuredClone(expectedConfig), currentConfig);
 
     return false;
+  }
+
+  /**
+   * Whether the cloud file already holds the merged configuration.
+   *
+   * Compared as parsed values rather than as text, so how the formatter laid
+   * the JSON out never reads as drift. Write mode asks the same question before
+   * rewriting anything, which is what stops a write from producing a diff a
+   * check had already passed: `JSON.stringify` puts every array element on its
+   * own line, and the formatter then collapses the short ones back.
+   */
+  private isCurrent(
+    expectedConfig: DevcontainerConfiguration,
+    cloudConfigFile: string,
+  ): boolean {
+    const currentConfig: DevcontainerConfiguration = JSON5.parse(
+      readFileSync(cloudConfigFile, "utf8"),
+    );
+
+    return _.isEqual(structuredClone(expectedConfig), currentConfig);
   }
 
   /**
@@ -206,6 +229,33 @@ export class DevcontainerConfigurationCommand
     this.logger.log(`📦 Updated ${relativeFilePath}`);
   }
 
+  /**
+   * Rewrites the cloud file, unless it already holds what a write would put there.
+   *
+   * The same comparison check mode makes, asked before writing rather than
+   * instead of writing. A write that rewrote regardless produced a diff on
+   * every run that check had already passed, so the two modes disagreed about
+   * the same file.
+   */
+  private writeWhenDrifted(
+    mergedConfig: DevcontainerConfiguration,
+    cloudConfigFile: string,
+  ): boolean {
+    if (this.isCurrent(mergedConfig, cloudConfigFile)) {
+      this.logger.log(
+        "📦 Left the cloud devcontainer config as the local config already implies",
+      );
+      return true;
+    }
+
+    this.write(mergedConfig, cloudConfigFile);
+    this.logger.log(
+      "📦 Updated the cloud devcontainer config from the local config",
+    );
+
+    return true;
+  }
+
   // 🌎 Public Methods
 
   /**
@@ -258,10 +308,6 @@ export class DevcontainerConfigurationCommand
       return true;
     }
 
-    this.write(mergedConfig, cloudConfigFile);
-    this.logger.log(
-      "📦 Updated the cloud devcontainer config from the local config",
-    );
-    return true;
+    return this.writeWhenDrifted(mergedConfig, cloudConfigFile);
   }
 }
