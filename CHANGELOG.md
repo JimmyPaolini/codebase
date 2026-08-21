@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.28.0](https://github.com/JimmyPaolini/codebase/compare/v1.27.0...v1.28.0) (2026-08-21)
+
 ## [1.27.0](https://github.com/JimmyPaolini/codebase/compare/v1.26.0...v1.27.0) (2026-08-18)
 
 ## [1.26.0](https://github.com/JimmyPaolini/codebase/compare/v1.25.0...v1.26.0) (2026-08-18)
