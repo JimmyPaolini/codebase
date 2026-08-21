@@ -34,7 +34,7 @@ Diagnose and fix failures from the Husky pre-commit, commit-msg, and pre-push ho
 - Errors from tools like ESLint, oxfmt, prettier, oxlint, TypeScript, cspell, markdownlint, yamllint, knip, or vulture appear during a commit or push
 - `commitlint` rejects the commit message format
 - `validate-branch-name` rejects the current branch name on push
-- Sync checks fail (agent skills, conventional config, PR template, devcontainer, lockfile)
+- Sync checks fail (conventional config, PR template, devcontainer, generator and graph tables, lockfile)
 
 ## Hook Architecture
 
@@ -81,23 +81,23 @@ Config: [validate-branch-name.config.cjs](../../../validate-branch-name.config.c
 
 ### lint-staged file-type → target matrix
 
-| Staged file pattern                                                              | `nx affected` targets                                                  |
-| -------------------------------------------------------------------------------- | --------------------------------------------------------------------   |
-| `*.ts, *.tsx, *.js, *.jsx, *.mts, *.cts, *.mjs, *.cjs`                           | `clean,format,lint,typecheck,spell-check`                              |
-| `*.py`                                                                           | `clean,format,lint,spell-check,typecheck`                              |
-| `*.ipynb`                                                                        | `nbstripout` (first), then `clean,format,lint,typecheck,spell-check`   |
-| `*.json, *.jsonc, *.json5, *.html`                                               | `format,lint,spell-check`                                              |
-| `*.css`                                                                          | `stylelint,format,lint,spell-check`                                    |
-| `*.md, *.mdx`                                                                    | `format,lint,markdown-lint,spell-check`                                |
-| `*.yml, *.yaml` (not pnpm-lock)                                                  | `format,yaml-lint,spell-check`                                         |
-| `**/package.json`                                                                | `./scripts/check-lockfile.sh` (direct script, not Nx)                  |
-| `pnpm-workspace.yaml`                                                            | `./scripts/check-lockfile.sh`                                          |
-| `configuration/knip.config.ts`                                                   | `nx run codebase:clean:check`                                          |
-| `.vscode/extensions.json`, `.devcontainer/local/devcontainer.json`               | `nx run codebase:sync-vscode-extensions:check`                         |
-| `.devcontainer/cloud/devcontainer.json`, `.devcontainer/local/devcontainer.json` | `nx run synchronization:start:devcontainer-configuration-check`        |
-| Conventional config files (see lint-staged.config.ts)                            | `nx run synchronization:start:conventional-config-check`               |
-| PR template files                                                                | `nx run synchronization:start:pull-request-template-check`             |
-| `AGENTS.md`, `documentation/skills/**/*.md`                                      | `nx run synchronization:start:agent-skills-check`                      |
+| Staged file pattern                                                                                     | `nx affected` targets                                                |
+| ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `*.ts, *.tsx, *.js, *.jsx, *.mts, *.cts, *.mjs, *.cjs`                                                  | `clean,format,lint,typecheck,spell-check`                            |
+| `*.py`                                                                                                  | `clean,format,lint,spell-check,typecheck`                            |
+| `*.ipynb`                                                                                               | `nbstripout` (first), then `clean,format,lint,typecheck,spell-check` |
+| `*.json, *.jsonc, *.json5, *.html`                                                                      | `format,lint,spell-check`                                            |
+| `*.css`                                                                                                 | `stylelint,format,lint,spell-check`                                  |
+| `*.md, *.mdx`                                                                                           | `format,lint,markdown-lint,spell-check`                              |
+| `*.yml, *.yaml` (not pnpm-lock)                                                                         | `format,yaml-lint,spell-check`                                       |
+| `**/package.json`                                                                                       | `./scripts/check-lockfile.sh` (direct script, not Nx)                |
+| `pnpm-workspace.yaml`                                                                                   | `./scripts/check-lockfile.sh`                                        |
+| `configuration/knip.config.ts`                                                                          | `nx run codebase:clean:check`                                        |
+| `.vscode/extensions.json`, `.devcontainer/local/devcontainer.json`                                      | `nx run codebase:sync-vscode-extensions:check`                       |
+| `.devcontainer/cloud/devcontainer.json`, `.devcontainer/local/devcontainer.json`                        | `nx run synchronization:start:devcontainer-configuration-check`      |
+| Conventional config files (see lint-staged.config.ts)                                                   | `nx run synchronization:start:conventional-config-check`             |
+| PR template files                                                                                       | `nx run synchronization:start:pull-request-template-check`           |
+| `skills-lock.json`, `configuration/.prettierignore`, `configuration/.codometerignore`, `.gitattributes` | `nx run codebase:check-skill-exclusions`                             |
 
 ## Triage Procedure
 
@@ -193,16 +193,21 @@ Config: [applications/affirmations/project.json](../../../applications/affirmati
 
 #### Sync checks
 
-| Target                            | Check command                                          | Write command | What it validates                                                                                                                                           |
-| --------------------------------- | ------------------------------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sync-agent-skills`               | `tsx scripts/sync-agent-skills.ts check`               | `...write`    | AGENTS.md skills ToC matches `documentation/skills/*/SKILL.md`                                                                                              |
-| `sync-conformance-generators`     | `tsx scripts/sync-conformance-generators.ts check`     | `...write`    | AGENTS.md generators table matches `tools/conformance/generators.json`                                                                                      |
-| `sync-conventional-config`        | `tsx scripts/sync-conventional-config.ts check`        | `...write`    | Types/scopes consistent across [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs), `.vscode/settings.json`, skill docs |
-| `sync-pull-request-template`      | `tsx scripts/sync-pull-request-template.ts check`      | `...write`    | [.github/PULL_REQUEST_TEMPLATE.md](../../../.github/PULL_REQUEST_TEMPLATE.md) in sync with skills and prompts                                               |
-| `sync-devcontainer-configuration` | `tsx scripts/sync-devcontainer-configuration.ts check` | `...write`    | Cloud and local devcontainer configs share common fields                                                                                                    |
+Every synchronization command is a named configuration of one Nx target, `synchronization:start`. There is no `sync-*` target and no `scripts/sync-*.ts` script — those were retired when the work moved into [tools/synchronization](../../../tools/synchronization). The `synchronize` target runs all six in one process, which is what `lint-codebase` depends on; `start` runs them individually.
 
-> **Lesson**: If sync checks fail, it means a source of truth was edited without updating its counterpart. Example: editing `tools/conformance/generators.json` requires updating `AGENTS.md`. Editing `configuration/conventional.config.cjs` requires updating `.vscode/settings.json` and PR templates.
-> | `sync-vscode-extensions` | `tsx .devcontainer/scripts/sync-vscode-extensions.ts check` | `...write` | `.vscode/extensions.json` matches devcontainer extension lists |
+| Check command                                                   | Write command | What it validates                                                                                                                                           |
+| --------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `nx run synchronization:start:conformetry-generators-check`     | `...-write`   | AGENTS.md generators table matches [configuration/conformetry.config.ts](../../../configuration/conformetry.config.ts)                                      |
+| `nx run synchronization:start:conventional-config-check`        | `...-write`   | Types/scopes consistent across [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs), `.vscode/settings.json`, skill docs |
+| `nx run synchronization:start:devcontainer-configuration-check` | `...-write`   | Cloud and local devcontainer configs share common fields                                                                                                    |
+| `nx run synchronization:start:nestjs-module-graphs-check`       | `...-write`   | Each NestJS project's README module graph matches its `*.module.ts` files                                                                                   |
+| `nx run synchronization:start:nx-project-graphs-check`          | `...-write`   | Each project's README neighborhood graph matches the Nx project graph                                                                                       |
+| `nx run synchronization:start:pull-request-template-check`      | `...-write`   | [.github/PULL_REQUEST_TEMPLATE.md](../../../.github/PULL_REQUEST_TEMPLATE.md) in sync with skills and prompts                                               |
+| `nx run codebase:sync-vscode-extensions:check`                  | `:write`      | `.vscode/extensions.json` matches devcontainer extension lists                                                                                              |
+
+> **Lesson**: If sync checks fail, it means a source of truth was edited without updating its counterpart. Example: editing `configuration/conformetry.config.ts` requires regenerating the `AGENTS.md` generators table. Editing `configuration/conventional.config.cjs` requires regenerating `.vscode/settings.json`, the PR template, and the types/scopes tables in AGENTS.md and the branch and commit skills.
+
+There is no command that regenerates a skills table of contents. The synchronization module that once maintained the `AGENTS.md` skills list was retired along with the list itself: agents are handed the installed skills directly, so reading [.agents/skills](../../../.agents/skills) is what tells you which ones exist. A new skill needs no synchronization run — only `nx run codebase:check-skill-exclusions` if it came from `skills-lock.json`.
 
 #### `check-lockfile` (package.json / pnpm-workspace.yaml changes)
 
@@ -255,11 +260,16 @@ pnpm exec nx affected --target=markdown-lint --configuration=write --files=<stag
 pnpm exec nx affected --target=clean --configuration=write --files=<staged-files>
 
 # Sync checks: run the write variant to regenerate the out-of-sync file
-pnpm exec nx run synchronization:start:agent-skills-write
+pnpm exec nx run synchronization:start:conformetry-generators-write
 pnpm exec nx run synchronization:start:conventional-config-write
+pnpm exec nx run synchronization:start:devcontainer-configuration-write
+pnpm exec nx run synchronization:start:nestjs-module-graphs-write
+pnpm exec nx run synchronization:start:nx-project-graphs-write
 pnpm exec nx run synchronization:start:pull-request-template-write
 pnpm exec nx run codebase:sync-vscode-extensions:write
-pnpm exec nx run synchronization:start:devcontainer-configuration-write
+
+# Or all six synchronization commands at once
+pnpm exec nx run synchronization:synchronize --configuration=write
 ```
 
 #### Validate Fixes Passed
@@ -280,11 +290,11 @@ pnpm exec nx affected --target=markdown-lint --configuration=check --files=<stag
 pnpm exec nx affected --target=clean --configuration=check --files=<staged-files>
 
 # Validate sync checks fixed themselves (re-run the check variant)
-pnpm exec nx run synchronization:start:agent-skills-check
-pnpm exec nx run synchronization:start:conventional-config-check
-pnpm exec nx run synchronization:start:pull-request-template-check
+pnpm exec nx run synchronization:synchronize --configuration=check
 pnpm exec nx run codebase:sync-vscode-extensions:check
-pnpm exec nx run synchronization:start:devcontainer-configuration-check
+
+# And, when the failure named a skill exclusion rather than a synchronized file
+pnpm exec nx run codebase:check-skill-exclusions
 ```
 
 **If all `--configuration=check` commands pass**, the fixes are confirmed working. Proceed to Step 5.
@@ -377,7 +387,8 @@ Read `configuration/commitlint.config.ts` for the full rule set before amending.
 | `lexico-entities` | Shared TypeORM entities and GraphQL types |
 | `lexico-ingestion` | Data ingestion scripts for Lexico |
 | `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
-| `codometer` | NestJS command-line application for codometer metric collection and reporting |
+| `callidescope` | Call stack tracing and linting CLI and the configuration package it reads |
+| `codometer` | Code statistics measurement CLI and the configuration package it reads |
 | `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
 | `no-release` | Escape hatch: suppress semantic-release for any commit type |
 | `packages` | Changes spanning multiple shared packages in packages/ |
@@ -386,6 +397,7 @@ Read `configuration/commitlint.config.ts` for the full rule set before amending.
 | `testing` | Vitest configuration, shared test utilities, and coverage setup |
 | `tools` | Changes spanning multiple tool projects in tools/ |
 | `synchronization` | Synchronization application and commands for automating workflows |
+| `reporting` | Internal reporting CLI and the reports it renders, such as 🎒 Bundles |
 
 <!-- scopes-end -->
 

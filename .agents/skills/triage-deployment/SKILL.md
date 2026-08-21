@@ -69,17 +69,18 @@ Identify which **step** within the job failed (visible in the log as `##[error]`
 
 The `lint-codebase` target is an `nx:noop` whose `dependsOn` leaves do the work. Identify which sub-target failed:
 
-| Sub-target      | Underlying tool   | Config file                                                                                                                                                                                         |
-| --------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `typecheck`     | `tsc --noEmit`    | Per-project `tsconfig.json`, base: [configuration/tsconfig.base.json](../../../configuration/tsconfig.base.json)                                                                                    |
-| `lint`          | ESLint            | Per-project `eslint.config.ts`, base: [configuration/eslint.config.ts](../../../configuration/eslint.config.ts)                                                                                     |
-| `format`        | prettier + oxfmt  | [configuration/prettier.config.ts](../../../configuration/prettier.config.ts), [configuration/oxfmt.config.ts](../../../configuration/oxfmt.config.ts), [.prettierignore](../../../.prettierignore) |
-| `spell-check`   | cspell            | [configuration/cspell.config.yaml](../../../configuration/cspell.config.yaml)                                                                                                                       |
-| `knip`          | knip              | [configuration/knip.config.ts](../../../configuration/knip.config.ts)                                                                                                                               |
-| `markdown-lint` | markdownlint-cli2 | `.markdownlint.json` (workspace root)                                                                                                                                                               |
-| `yaml-lint`     | yamllint          | [configuration/yamllint.yaml](../../../configuration/yamllint.yaml)                                                                                                                                 |
-| `synchronize`   | synchronization   | [tools/synchronization/project.json](../../../tools/synchronization/project.json)                                                                                                                    |
-| `type-coverage` | type-coverage     | Per-project `package.json` scripts                                                                                                                                                                  |
+| Sub-target               | Underlying tool                     | Config file                                                                                                                                                                                                                                  |
+| ------------------------ | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `typecheck`              | `tsc --noEmit`                      | Per-project `tsconfig.json`, base: [configuration/tsconfig.base.json](../../../configuration/tsconfig.base.json)                                                                                                                             |
+| `lint`                   | ESLint                              | Per-project `eslint.config.ts`, base: [configuration/eslint.config.ts](../../../configuration/eslint.config.ts)                                                                                                                              |
+| `format`                 | prettier + oxfmt                    | [configuration/prettier.config.ts](../../../configuration/prettier.config.ts), [configuration/oxfmt.config.ts](../../../configuration/oxfmt.config.ts), [.prettierignore](../../../.prettierignore)                                          |
+| `spell-check`            | cspell                              | [configuration/cspell.config.yaml](../../../configuration/cspell.config.yaml)                                                                                                                                                                |
+| `knip`                   | knip                                | [configuration/knip.config.ts](../../../configuration/knip.config.ts)                                                                                                                                                                        |
+| `markdown-lint`          | markdownlint-cli2                   | `.markdownlint.json` (workspace root)                                                                                                                                                                                                        |
+| `yaml-lint`              | yamllint                            | [configuration/yamllint.yaml](../../../configuration/yamllint.yaml)                                                                                                                                                                          |
+| `synchronize`            | synchronization                     | [tools/synchronization/project.json](../../../tools/synchronization/project.json)                                                                                                                                                            |
+| `check-skill-exclusions` | `scripts/check-skill-exclusions.sh` | [skills-lock.json](../../../skills-lock.json), [configuration/.prettierignore](../../../configuration/.prettierignore), [configuration/.codometerignore](../../../configuration/.codometerignore), [.gitattributes](../../../.gitattributes) |
+| `type-coverage`          | type-coverage                       | Per-project `package.json` scripts                                                                                                                                                                                                           |
 
 **Common fixes:**
 
@@ -95,7 +96,8 @@ The `lint-codebase` target is an `nx:noop` whose `dependsOn` leaves do the work.
 - **`markdown-lint`**: Fix against [configuration/.markdownlint-cli2.jsonc](../../../configuration/.markdownlint-cli2.jsonc) rules — check MD049 style (`underscore`), MD013 line length, and fenced code block languages.
   > **Lesson**: If MD049 violations appear _after_ running the formatter — oxfmt/prettier converts `*emphasis*` → `_emphasis_`. The `.markdownlint-cli2.jsonc` MD049 rule must use `style: underscore` (not `asterisk`) to match formatter output; using `asterisk` will conflict on every formatted file.
 - **`yaml-lint`**: Fix indentation, trailing spaces, or document-start issues as reported.
-- **`synchronize`**: Re-run the matching `-write` command from the named checks below and commit what it generates — never hand-edit a synchronized file.
+- **`synchronize`**: Re-run the matching `-write` configuration of `synchronization:start` and commit what it generates — never hand-edit a synchronized file.
+- **`check-skill-exclusions`**: Add the exclusion lines the failure names to `.prettierignore`, `.codometerignore`, and `.gitattributes`. There is no `-write` command for this one.
 
 **Verify:**
 
@@ -103,7 +105,10 @@ The `lint-codebase` target is an `nx:noop` whose `dependsOn` leaves do the work.
 pnpm exec nx affected -t lint-codebase
 ```
 
-The `synchronize` leaf runs the checks below, each with its own command. They read as convention checks but they are not part of Validate Conventions — a failure here shows up in a Lint Codebase run.
+The three sections below read as convention checks, but none of them is part of Validate Conventions — a failure in any of them shows up in a Lint Codebase run. They do not all come from the same leaf, and that decides how each one is fixed:
+
+- The `synchronize` leaf runs all six synchronization commands in one process: `conformetry-generators`, `conventional-config`, `devcontainer-configuration`, `nestjs-module-graphs`, `nx-project-graphs`, and `pull-request-template`. Only the two that fail most often are written up below; every one of them is fixed the same way, by running its `-write` configuration of `synchronization:start` and committing what it generates. Read the failure output to see which command reported the drift.
+- `check-skill-exclusions` is its own `lint-codebase` leaf, not a synchronization command. It has no `-write` counterpart and generates nothing, so it is fixed by adding the exclusion lines it names by hand.
 
 #### 🏛️ Validate Convention Configuration
 
