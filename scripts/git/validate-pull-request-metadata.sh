@@ -208,9 +208,12 @@ const nameOf = (entry, propertyName) => {
 // scope. commitlint's scope-empty rule now rejects a subject with no scope,
 // such as 'chore: 🔧 tidy', so in a workflow run 📝 Validate Pull Request
 // Title fails first and this script never sees that title. The script can
-// still run locally as `bash scripts/git/validate-pull-request-metadata.sh
-// <number>`, ahead of any title check, so matching the scope as optional
-// keeps this check correct there too and as defense in depth. commitlint's
+// still run locally with a pull request number, ahead of any title check,
+// so matching the scope as optional keeps this check correct there too and
+// as defense in depth. This comment carries no backticks on purpose: it
+// lives inside a double-quoted node -e argument, where bash would read a
+// backtick pair as command substitution and run the text between them.
+// A quoted command name here made the script invoke itself. commitlint's
 // scope-enum splits on both ',' and '/', so one title may also name several
 // scopes, and each of them is expected to have its own label.
 const titleMatch = /^([a-z][a-z-]*)(?:\(([^()]+)\))?!?:\s+(\S.*)\$/.exec(title.trim());
