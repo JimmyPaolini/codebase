@@ -596,7 +596,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 ```text
 🚀 OutputMarkdownService.renderBadges(args: RenderBadgesArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:235]
    ↳ Render the badge block for a destination, description and all.
-  └─> OutputMarkdownService.renderDocument(args: RenderDocumentArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:271]
+  └─> OutputMarkdownService.renderDocument(args: RenderDocumentArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:269]
      ↳ Render the badges as a document of their own.
     └─> OutputMarkdownService.buildBadgeGroups(args: RenderDocumentArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:95]
        ↳ Assemble the badge groups, in the order they are rendered.
@@ -723,14 +723,14 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-16435-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-511.01_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-16438-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-510.94_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-24-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-143-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-77.19_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-77.13_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript & JavaScript
 
@@ -752,7 +752,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-240-ea580c?style=flat-square)
 ![Doc Comments](https://img.shields.io/badge/Doc_Comments-431-6366f1?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-866-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1600-475569?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1599-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-4-ca8a04?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 

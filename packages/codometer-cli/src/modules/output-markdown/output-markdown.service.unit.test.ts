@@ -294,9 +294,9 @@ describe(OutputMarkdownService, () => {
     expect(block.startsWith("## ⏲️ Codometer\n\n### Project\n\n")).toBe(true);
   });
 
-  // The whole-repository README titles this section above the markers itself,
-  // so a heading rendered inside them would be a second title for one block.
-  it("renders no section heading when a whole repository was measured", () => {
+  // The heading lives inside the markers for a whole-repository run too, so
+  // the README carries no hand-maintained heading of its own above them.
+  it("heads a repository's block with the same section heading", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
       scope: "repository",
@@ -304,8 +304,9 @@ describe(OutputMarkdownService, () => {
       targets: [],
     });
 
-    expect(block).not.toContain("## ⏲️ Codometer");
-    expect(block.startsWith("### Repository\n\n")).toBe(true);
+    expect(block.startsWith("## ⏲️ Codometer\n\n### Repository\n\n")).toBe(
+      true,
+    );
   });
 
   // A description belongs under the heading naming the section, not above it.
@@ -369,9 +370,11 @@ describe(OutputMarkdownService, () => {
       targets: [],
     });
 
-    expect(block.startsWith("Measured every push.\n\n### Repository")).toBe(
-      true,
-    );
+    expect(
+      block.startsWith(
+        "## ⏲️ Codometer\n\nMeasured every push.\n\n### Repository",
+      ),
+    ).toBe(true);
   });
 
   it("omits the description paragraph when none is configured", () => {
@@ -382,7 +385,7 @@ describe(OutputMarkdownService, () => {
       targets: [],
     });
 
-    expect(block.startsWith("### Repository")).toBe(true);
+    expect(block.startsWith("## ⏲️ Codometer\n\n### Repository")).toBe(true);
   });
 
   it("renders one badge for every measured statistic", () => {
@@ -893,7 +896,9 @@ describe(OutputMarkdownService, () => {
       targets: [],
     });
 
-    expect(document.startsWith("Repository statistics.\n\n")).toBe(true);
+    expect(
+      document.startsWith("## ⏲️ Codometer\n\nRepository statistics.\n\n"),
+    ).toBe(true);
     expect(document).toContain("![Lines of Code]");
     expect(document).not.toContain("<!-- CODE_STATISTICS_START -->");
   });
@@ -906,7 +911,7 @@ describe(OutputMarkdownService, () => {
       targets: [],
     });
 
-    expect(document.startsWith("### Repository")).toBe(true);
+    expect(document.startsWith("## ⏲️ Codometer\n\n### Repository")).toBe(true);
   });
 
   // What a splice would place, without placing it — the form a run that writes
