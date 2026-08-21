@@ -77,8 +77,8 @@ jobs:
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore(codebase): ✂️ Remove deprecations"
-          title: "chore(codebase): ✂️ Remove deprecations"
+          commit-message: "chore(codebase): 🔥 remove deprecations"
+          title: "chore(codebase): 🔥 remove deprecations"
           body: |
             ## 🌰 Summary
 
