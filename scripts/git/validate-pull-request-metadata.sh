@@ -205,11 +205,14 @@ const nameOf = (entry, propertyName) => {
 };
 
 // The scope group is optional here even though the convention requires a
-// scope, because commitlint has no scope-empty rule: 'chore: 🔧 tidy' passes
-// the title step and reaches this script. Matching it means the missing scope
-// is reported as the missing scope it is, rather than as a malformed title.
-// commitlint's scope-enum splits on both ',' and '/', so one title may also
-// name several scopes, and each of them is expected to have its own label.
+// scope. commitlint's scope-empty rule now rejects a subject with no scope,
+// such as 'chore: 🔧 tidy', so in a workflow run 📝 Validate Pull Request
+// Title fails first and this script never sees that title. The script can
+// still run locally as `bash scripts/git/validate-pull-request-metadata.sh
+// <number>`, ahead of any title check, so matching the scope as optional
+// keeps this check correct there too and as defense in depth. commitlint's
+// scope-enum splits on both ',' and '/', so one title may also name several
+// scopes, and each of them is expected to have its own label.
 const titleMatch = /^([a-z][a-z-]*)(?:\(([^()]+)\))?!?:\s+(\S.*)\$/.exec(title.trim());
 
 if (titleMatch === null) {
