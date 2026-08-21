@@ -92,7 +92,7 @@ Branch name format: `<type>/<scope>-<description>` (kebab-case, 2–4 keyword de
    ```
 
 > ✅ **Best practice:** Let Husky run signing checks automatically. The pre-commit hook runs `check-commit-signing-configuration.sh`, and the pre-push hook runs `check-push-commit-signatures.sh`.
-
+>
 > ⚠️ **Warning:** Do not invoke `scripts/git/check-push-commit-signatures.sh` directly during normal submits. It is designed for hook stdin input and can block or fail when run without ref-update data.
 
 ### If pre-commit hooks fail

@@ -233,7 +233,7 @@ All PRs must pass these checks before merging:
 | PR Body     | Section validation               | Required sections: 🌰 Summary, 📝 Details, 🧪 Testing, 🔗 Related |
 | Lint        | `nx affected --target=lint`      | ESLint validation                                                 |
 | Typecheck   | `nx affected --target=typecheck` | TypeScript compilation                                            |
-| Test        | `nx affected --target=vitest`      | Unit and integration tests                                        |
+| Test        | `nx affected --target=vitest`    | Unit and integration tests                                        |
 | Format      | `nx format:check`                | Oxfmt (primary), Prettier formatting                              |
 
 Run locally before pushing:

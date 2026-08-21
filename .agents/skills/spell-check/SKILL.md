@@ -80,7 +80,7 @@ When in doubt for Lexico-family projects, prefer `configuration/.cspell/lexico.t
 
 ### 3.1 Break Out a New Dictionary File
 
-Create a new dictionary txt file only when vocabulary is clearly domain-bounded and continuing to use an existing file would reduce maintainability.
+Create a new dictionary `.txt` file only when vocabulary is clearly domain-bounded and continuing to use an existing file would reduce maintainability.
 
 Use this decision rule:
 

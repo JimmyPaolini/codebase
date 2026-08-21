@@ -143,7 +143,7 @@ Analyze the evidence for patterns that were missing, applied incorrectly, or cor
 
 | # | Gap | Signal to Look For |
 | - | --- | ------------------ |
-| 1 | **Missing naming convention** | Inconsistent names, abbreviations used (`req`, `res`, `i`, `e`), or names corrected after first draft |
+| 1 | **Missing naming convention** | Inconsistent names, abbreviated identifiers where the codebase requires explicit ones, or names corrected after first draft |
 | 2 | **Wrong TypeScript pattern** | `any` used, non-null assertion `!` used, or type narrowing done with a cast instead of a guard |
 | 3 | **Error handling gap** | Bare `catch`, swallowed error, or error surfaced as `string` instead of typed error |
 | 4 | **Module structure inconsistency** | New module organized differently from existing modules without a deliberate reason |
