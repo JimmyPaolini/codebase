@@ -78,6 +78,7 @@ The `lint-codebase` target is an `nx:noop` whose `dependsOn` leaves do the work.
 | `knip`          | knip              | [configuration/knip.config.ts](../../../configuration/knip.config.ts)                                                                                                                               |
 | `markdown-lint` | markdownlint-cli2 | `.markdownlint.json` (workspace root)                                                                                                                                                               |
 | `yaml-lint`     | yamllint          | [configuration/yamllint.yaml](../../../configuration/yamllint.yaml)                                                                                                                                 |
+| `synchronize`   | synchronization   | [tools/synchronization/project.json](../../../tools/synchronization/project.json)                                                                                                                    |
 | `type-coverage` | type-coverage     | Per-project `package.json` scripts                                                                                                                                                                  |
 
 **Common fixes:**
@@ -94,12 +95,35 @@ The `lint-codebase` target is an `nx:noop` whose `dependsOn` leaves do the work.
 - **`markdown-lint`**: Fix against [configuration/.markdownlint-cli2.jsonc](../../../configuration/.markdownlint-cli2.jsonc) rules — check MD049 style (`underscore`), MD013 line length, and fenced code block languages.
   > **Lesson**: If MD049 violations appear _after_ running the formatter — oxfmt/prettier converts `*emphasis*` → `_emphasis_`. The `.markdownlint-cli2.jsonc` MD049 rule must use `style: underscore` (not `asterisk`) to match formatter output; using `asterisk` will conflict on every formatted file.
 - **`yaml-lint`**: Fix indentation, trailing spaces, or document-start issues as reported.
+- **`synchronize`**: Re-run the matching `-write` command from the named checks below and commit what it generates — never hand-edit a synchronized file.
 
 **Verify:**
 
 ```bash
 pnpm exec nx affected -t lint-codebase
 ```
+
+The `synchronize` leaf runs the checks below, each with its own command. They read as convention checks but they are not part of Validate Conventions — a failure here shows up in a Lint Codebase run.
+
+#### 🏛️ Validate Convention Configuration
+
+Failing command: `npx nx run synchronization:start:conventional-config-check`
+
+Config: [scripts/sync-conventional-config.ts](../../../scripts/sync-conventional-config.ts)
+
+Fix: Run `npx nx run synchronization:start:conventional-config-write` and commit the generated changes.
+
+#### 📋 Validate Pull Request Template
+
+Failing command: `npx nx run synchronization:start:pull-request-template-check`
+
+Fix: Run `npx nx run synchronization:start:pull-request-template-write` and commit.
+
+#### 🎯 Validate Agent Skills
+
+Failing command: `npx nx run synchronization:start:agent-skills-check`
+
+Fix: Run `npx nx run synchronization:start:agent-skills-write` and commit.
 
 ---
 
@@ -188,26 +212,6 @@ Fix, by failure mode:
 - Missing, extra, or duplicate source label — `❌ Expected exactly one source label: source:agent or source:human (found: none)` — remove any stray `source:*` label and add exactly one of `gh pr edit <number> --add-label source:agent` or `gh pr edit <number> --add-label source:human`.
 
 Every failure line in the step output comes with its own `gh pr edit` remediation command — run the printed commands rather than retyping them.
-
-#### 🏛️ Validate Convention Configuration
-
-Failing command: `npx nx run synchronization:start:conventional-config-check`
-
-Config: [scripts/sync-conventional-config.ts](../../../scripts/sync-conventional-config.ts)
-
-Fix: Run `npx nx run synchronization:start:conventional-config-write` and commit the generated changes.
-
-#### 📋 Validate Pull Request Template
-
-Failing command: `npx nx run synchronization:start:pull-request-template-check`
-
-Fix: Run `npx nx run synchronization:start:pull-request-template-write` and commit.
-
-#### 🎯 Validate Agent Skills
-
-Failing command: `npx nx run synchronization:start:agent-skills-check`
-
-Fix: Run `npx nx run synchronization:start:agent-skills-write` and commit.
 
 ---
 
