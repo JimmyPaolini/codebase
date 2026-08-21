@@ -583,10 +583,18 @@ JavaScript that would otherwise dominate the language bar, so `.gitattributes`
 marks them `linguist-vendored`. All three list the skills one per line rather
 than excluding `.agents/skills/` wholesale, so this repository's own skills in
 the same directory keep being checked, measured, and attributed.
-`codebase:check-skill-exclusions` runs inside `lint-codebase` and fails when a
-skill in the lockfile is missing from any of the three — which is what
-`skills update` adding a skill would otherwise do silently. Every other tool
-scopes itself with explicit globs that never include `.agents/`.
+The entries are generated rather than hand-maintained: each file marks its block
+with `# installed-skills-start` and `# installed-skills-end`, and the
+`skill-exclusions` synchronizer rewrites what sits between them from the
+lockfile. `synchronize` runs inside `lint-codebase`, so a stale list fails there
+— which is what `skills update` adding a skill would otherwise do silently:
+
+```bash
+pnpm exec nx run synchronization:synchronize:write
+```
+
+Every other tool scopes itself with explicit globs that never include
+`.agents/`.
 
 `scripts/install-skills.sh` still exists, run by the root `postinstall` and by
 `codebase:install-skills`. With the skills committed it is a no-op in the normal

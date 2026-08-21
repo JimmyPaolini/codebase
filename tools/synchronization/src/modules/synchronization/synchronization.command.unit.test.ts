@@ -11,6 +11,7 @@ import { DevcontainerConfigurationCommand } from "../devcontainer-configuration/
 import { NestjsModuleGraphsCommand } from "../nestjs-module-graphs/nestjs-module-graphs.command";
 import { NxProjectGraphsCommand } from "../nx-project-graphs/nx-project-graphs.command";
 import { PullRequestTemplateCommand } from "../pull-request-template/pull-request-template.command";
+import { SkillExclusionsCommand } from "../skill-exclusions/skill-exclusions.command";
 
 import { SynchronizationCommand } from "./synchronization.command";
 import { SynchronizationService } from "./synchronization.service";
@@ -26,6 +27,7 @@ describe(SynchronizationCommand, () => {
   let nestjsModuleGraphs: NestjsModuleGraphsCommand;
   let nxProjectGraphs: NxProjectGraphsCommand;
   let pullRequestTemplate: PullRequestTemplateCommand;
+  let skillExclusions: SkillExclusionsCommand;
 
   /** The delegates in the order the aggregate reports them. */
   function getDelegates(): SynchronizableCommand[] {
@@ -91,6 +93,12 @@ describe(SynchronizationCommand, () => {
             synchronizationLabel: "pull-request-template",
           }),
         },
+        {
+          provide: SkillExclusionsCommand,
+          useValue: createMock<SkillExclusionsCommand>({
+            synchronizationLabel: "skill-exclusions",
+          }),
+        },
       ],
     }).compile();
 
@@ -104,6 +112,7 @@ describe(SynchronizationCommand, () => {
     nestjsModuleGraphs = await module.resolve(NestjsModuleGraphsCommand);
     nxProjectGraphs = await module.resolve(NxProjectGraphsCommand);
     pullRequestTemplate = await module.resolve(PullRequestTemplateCommand);
+    skillExclusions = await module.resolve(SkillExclusionsCommand);
   });
 
   beforeEach(() => {
@@ -146,6 +155,10 @@ describe(SynchronizationCommand, () => {
         {
           provide: PullRequestTemplateCommand,
           useValue: createMock<PullRequestTemplateCommand>(),
+        },
+        {
+          provide: SkillExclusionsCommand,
+          useValue: createMock<SkillExclusionsCommand>(),
         },
       ],
     }).compile();
@@ -211,6 +224,16 @@ describe(SynchronizationCommand, () => {
     await command.run([]);
 
     expect(conformetryGenerators.synchronize).toHaveBeenCalledWith("check");
+  });
+
+  // A command registered in the module but left out of the aggregate's own list
+  // would never run, and nothing else would notice.
+  it("drives every registered command, including skill-exclusions", async () => {
+    stubAllDelegates(true);
+
+    await command.run(["check"]);
+
+    expect(skillExclusions.synchronize).toHaveBeenCalledWith("check");
   });
 
   it("exits with code 1 when any command reports drift", async () => {

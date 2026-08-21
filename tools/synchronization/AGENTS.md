@@ -90,6 +90,7 @@ flowchart LR
     NestjsModuleGraphsModule
     NxProjectGraphsModule
     PullRequestTemplateModule
+    SkillExclusionsModule
     SynchronizationModule
     SyntheticRootModule
   end
@@ -120,6 +121,7 @@ flowchart LR
   SynchronizationModule --> NestjsModuleGraphsModule
   SynchronizationModule --> NxProjectGraphsModule
   SynchronizationModule --> PullRequestTemplateModule
+  SynchronizationModule --> SkillExclusionsModule
   SyntheticRootModule -.-> FilesModule
   SyntheticRootModule -.-> JsonValidatorModule
   SyntheticRootModule -.-> SyntheticRootModule
