@@ -20,7 +20,7 @@
         "cwd": "applications/lexico"
       }
     },
-    "bundlesize": {},
+    "codometer": {},
     "dependency-cruiser": {},
     "develop": {
       "description": "Start development server with hot reload",

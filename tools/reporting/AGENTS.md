@@ -1,4 +1,4 @@
-# BundleSizes: NestJS Command-Line Application
+# Reporting: NestJS Command-Line Application
 
 ## Quick Start
 

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, vi } from "vitest";
 
+import type { CodometerReport } from "../src/modules/report/report.types";
 import type { CodeStatisticsResult } from "@codometer/configuration";
 
 /**
@@ -130,7 +131,7 @@ export function buildCodeStatistics(
       lines: 0,
       protocols: 0,
     },
-    repoSizeMiB: 0,
+    repositoryBytes: 0,
     shell: {
       commentLines: 0,
       comments: 0,
@@ -188,6 +189,37 @@ export function buildCodeStatistics(
       scalars: 0,
       sequences: 0,
     },
+    ...overrides,
+  };
+}
+
+/**
+ * Builds a report holding one target and one unlimited metric.
+ *
+ * Enough shape for anything that only carries a report through, and small
+ * enough that a test asserting on the whole document stays readable.
+ */
+export function buildCodometerReport(
+  overrides: Partial<CodometerReport> = {},
+): CodometerReport {
+  return {
+    failures: [],
+    targets: [
+      {
+        empty: false,
+        files: 3,
+        metrics: [
+          {
+            limits: [],
+            name: "codebase.files",
+            path: "files",
+            unit: null,
+            value: 3,
+          },
+        ],
+        name: "codebase",
+      },
+    ],
     ...overrides,
   };
 }

@@ -1,5 +1,8 @@
 // 📤 Exports
 export {
+  CODOMETER_ANALYSES,
+  CODOMETER_COMPRESSIONS,
+  CODOMETER_SEVERITIES,
   CODOMETER_STATISTIC_GROUPS,
   CODOMETER_SYMBOL_KINDS,
   CODOMETER_SYMBOL_MODIFIERS,
@@ -9,24 +12,36 @@ export {
   DEFAULT_CUSTOM_STATISTIC_GROUP,
   DEFAULT_EXCLUDE_GLOBS,
   DEFAULT_JSON_INDENTATION,
+  DEFAULT_LIMIT_SEVERITY,
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_PYTHON_COMMAND,
+  DEFAULT_TARGET_COMPRESSION,
+  DEFAULT_TARGET_DIRECTORY,
+  DEFAULT_TARGET_NAME,
+  REPOSITORY_ROOT_MARKERS,
   UnknownConfigurationFileTypeError,
 } from "./modules/configuration/configuration.constants";
 export { ConfigurationFileNotFoundError } from "./modules/configuration/configuration.errors";
 export { ConfigurationModule } from "./modules/configuration/configuration.module";
 export { ConfigurationService } from "./modules/configuration/configuration.service";
 export type {
+  CodometerAnalysis,
+  CodometerCompression,
   CodometerConfiguration,
+  CodometerConfigurationContext,
+  CodometerConfigurationFactory,
   CodometerCustomStatistic,
   CodometerJsonOutputConfiguration,
+  CodometerLimit,
   CodometerMarkdownOutputConfiguration,
   CodometerOutputConfiguration,
   CodometerPythonConfiguration,
+  CodometerSeverity,
   CodometerSymbolKind,
   CodometerSymbolMatcher,
   CodometerSymbolModifier,
+  CodometerTarget,
   LoadConfigurationArguments,
   MarkdownAnchorHelpers,
   RenderMarkdownArguments,
@@ -34,12 +49,15 @@ export type {
   ResolvedCodometerConfiguration,
   ResolvedCodometerCustomStatistic,
   ResolvedCodometerJsonOutputConfiguration,
+  ResolvedCodometerLimit,
   ResolvedCodometerMarkdownOutputConfiguration,
   ResolvedCodometerOutputConfiguration,
   ResolvedCodometerPythonConfiguration,
+  ResolvedCodometerTarget,
   WriteMarkdownArguments,
   WriteMarkdownOutput,
 } from "./modules/configuration/configuration.types";
+export { InvalidLimitValueError } from "./modules/configuration/limit-value.errors";
 export type {
   CodeStatisticsResult,
   CodometerStatisticGroup,

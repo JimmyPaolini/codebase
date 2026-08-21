@@ -23,9 +23,12 @@ EXIT_CODE=0
 # stage it out of date. Every conformetry command re-checks the emitted plugin
 # against the configuration and refuses to run against a stale one instead.
 
-# 📏 Measure code
-nx run codebase:codometer:write || EXIT_CODE=$?
-git add README.md
+# `codebase:codometer:write` used to run here, staging README.md into every
+# commit. It no longer does. Codometer's reports are published on main by the
+# release workflow, so writing them here only made every branch carry badge
+# churn that collides with every other branch on the same block — the reason
+# the workspace aggregate was moved to main in the first place. Nothing checks
+# those reports on a pull request, so a branch is expected to hold stale ones.
 
 # 🧹 Check staged files
 # NODE_OPTIONS deliberately unset: it is inherited by every command lint-staged

@@ -63,14 +63,15 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts codometer --directory . --config configuration/codometer.config.ts --check"
+          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts codometer --directory . --config configuration/codometer.config.ts --check reports"
         },
         "write": {
-          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts codometer --directory . --config configuration/codometer.config.ts"
+          "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts codometer --directory . --config configuration/codometer.config.ts --write"
         }
       },
       "defaultConfiguration": "check",
-      "description": "Analyze codebase and write README.md statistics badges. Run on main by the release workflow, which commits the result alongside the changelog; pull requests do not check it.",
+      "dependsOn": [],
+      "description": "Measure the whole repository and write its README.md statistics badges. Written out as an empty list rather than left to the `codometer` targetDefault, which depends on `build`: a per-project run measures compiled output and must wait for it, while this one measures source and would otherwise wait on every build in the workspace — slow, and circular, since the tools it would be waiting for are measured by it. The two are deliberately different and must not be collapsed into one. Run on main by the release workflow, which commits the result alongside the changelog; pull requests do not check it, and `check` here means staleness because the repository declares no limit of its own.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/**/*.{cjs,cts,js,json,jsx,mjs,mts,py,ts,tsx}",

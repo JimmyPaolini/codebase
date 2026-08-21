@@ -186,7 +186,7 @@ describe(OutputMarkdownService, () => {
       lines: 39,
       protocols: 40,
     },
-    repoSizeMiB: 2,
+    repositoryBytes: 2_048_000,
     shell: {
       commentLines: 219,
       comments: 220,
@@ -253,7 +253,9 @@ describe(OutputMarkdownService, () => {
   it("heads each language group with a third-level heading", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
+      targets: [],
     });
 
     expect(block).toContain("### Repository\n\n");
@@ -264,12 +266,73 @@ describe(OutputMarkdownService, () => {
     expect(block).not.toContain("**Repository**");
   });
 
+  // A package README carries figures about that package. Heading them
+  // `Repository` names the whole workspace for numbers that never covered it.
+  it("heads the whole-tree group `Project` when a project was measured", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md"),
+      scope: "project",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(block).toContain("### Project\n\n");
+    expect(block).not.toContain("### Repository\n\n");
+    expect(block).toContain("![Lines of Code]");
+  });
+
+  // The heading is inside the markers, so every run rewrites it along with the
+  // figures beneath it and no project README has to carry one by hand.
+  it("heads a project's block with a section heading of its own", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md"),
+      scope: "project",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(block.startsWith("## ⏲️ Codometer\n\n### Project\n\n")).toBe(true);
+  });
+
+  // The heading lives inside the markers for a whole-repository run too, so
+  // the README carries no hand-maintained heading of its own above them.
+  it("heads a repository's block with the same section heading", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md"),
+      scope: "repository",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(block.startsWith("## ⏲️ Codometer\n\n### Repository\n\n")).toBe(
+      true,
+    );
+  });
+
+  // A description belongs under the heading naming the section, not above it.
+  it("puts a project's description between its heading and its badges", () => {
+    const document = service.renderDocument({
+      description: "Project statistics.",
+      scope: "project",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(
+      document.startsWith(
+        "## ⏲️ Codometer\n\nProject statistics.\n\n### Project\n\n",
+      ),
+    ).toBe(true);
+  });
+
   // A counter naming a language group belongs beside the built-in counters
   // it extends, not in a separate list at the bottom of the report.
   it("renders a counter into the group it names", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
+      targets: [],
     });
     const typescriptGroup = block.split("### ")[2] ?? "";
 
@@ -283,12 +346,14 @@ describe(OutputMarkdownService, () => {
   it("omits the Conventions group when no counter belongs to it", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: {
         ...sampleStatistics,
         custom: sampleStatistics.custom.filter(
           (statistic) => statistic.group === "typescript",
         ),
       },
+      targets: [],
     });
 
     expect(block).not.toContain("### Conventions");
@@ -300,27 +365,35 @@ describe(OutputMarkdownService, () => {
       destination: buildDestination("README.md", {
         description: "Measured every push.",
       }),
+      scope: "repository",
       statistics: sampleStatistics,
+      targets: [],
     });
 
-    expect(block.startsWith("Measured every push.\n\n### Repository")).toBe(
-      true,
-    );
+    expect(
+      block.startsWith(
+        "## ⏲️ Codometer\n\nMeasured every push.\n\n### Repository",
+      ),
+    ).toBe(true);
   });
 
   it("omits the description paragraph when none is configured", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
+      targets: [],
     });
 
-    expect(block.startsWith("### Repository")).toBe(true);
+    expect(block.startsWith("## ⏲️ Codometer\n\n### Repository")).toBe(true);
   });
 
   it("renders one badge for every measured statistic", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
+      targets: [],
     });
     const badgeCount = (block.match(/^!\[/gmu) ?? []).length;
     const measuredCount =
@@ -349,7 +422,9 @@ describe(OutputMarkdownService, () => {
   it("reports each language's counters separately rather than summed", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
+      targets: [],
     });
 
     // Classes are 2 in TypeScript and 33 in Python; neither is the sum, 35.
@@ -365,7 +440,9 @@ describe(OutputMarkdownService, () => {
   it("renders the JSON statistics the badge block previously dropped", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
+      targets: [],
     });
 
     expect(block).toContain(
@@ -390,7 +467,9 @@ describe(OutputMarkdownService, () => {
     service.sync({
       check: false,
       destination: buildDestination(readmePath),
+      scope: "repository",
       statistics: sampleStatistics,
+      targets: [],
     });
 
     const written = readFileSync(readmePath, "utf8");
@@ -399,6 +478,42 @@ describe(OutputMarkdownService, () => {
     expect(written).toContain("<!-- CODE_STATISTICS_END -->");
     expect(written).toContain("![Lines of Code]");
     expect(written).not.toContain("\nold\n");
+  });
+
+  // The section heading sits inside the markers, so a second run has to
+  // replace it rather than append another one above the block.
+  it("leaves a project README byte-identical on a second write", () => {
+    const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
+    temporaryDirectories.push(temporaryDirectory);
+    const readmePath = path.join(temporaryDirectory, "README.md");
+
+    writeFileSync(readmePath, "# Project\n", "utf8");
+
+    const write = (): string => {
+      service.sync({
+        check: false,
+        destination: buildDestination(readmePath),
+        scope: "project",
+        statistics: sampleStatistics,
+        targets: [],
+      });
+
+      return readFileSync(readmePath, "utf8");
+    };
+    const first = write();
+    const second = write();
+
+    expect(second).toBe(first);
+    expect(second.split("## ⏲️ Codometer")).toHaveLength(2);
+    expect(
+      service.sync({
+        check: true,
+        destination: buildDestination(readmePath),
+        scope: "project",
+        statistics: sampleStatistics,
+        targets: [],
+      }),
+    ).toBe(true);
   });
 
   it("appends the badge block when no markers exist", () => {
@@ -411,7 +526,9 @@ describe(OutputMarkdownService, () => {
     service.sync({
       check: false,
       destination: buildDestination(readmePath),
+      scope: "repository",
       statistics: sampleStatistics,
+      targets: [],
     });
 
     const written = readFileSync(readmePath, "utf8");
@@ -422,6 +539,96 @@ describe(OutputMarkdownService, () => {
     expect(written.indexOf("# Project")).toBeLessThan(
       written.indexOf("<!-- CODE_STATISTICS_START -->"),
     );
+  });
+
+  it("separates an appended block from the document with one blank line", () => {
+    const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
+    temporaryDirectories.push(temporaryDirectory);
+    const readmePath = path.join(temporaryDirectory, "README.md");
+
+    // Trailing newlines are the ordinary case — every markdown file this
+    // repository lints ends with one — and appending to them naively leaves a
+    // second blank line, which `MD012/no-multiple-blanks` fails.
+    writeFileSync(readmePath, "# Project\n\n\n", "utf8");
+
+    service.sync({
+      check: false,
+      destination: buildDestination(readmePath),
+      scope: "repository",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(readFileSync(readmePath, "utf8")).toContain(
+      "# Project\n\n<!-- CODE_STATISTICS_START -->",
+    );
+  });
+
+  it("writes only the block when the file did not exist", () => {
+    const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
+    temporaryDirectories.push(temporaryDirectory);
+    const readmePath = path.join(temporaryDirectory, "README.md");
+
+    service.sync({
+      check: false,
+      destination: buildDestination(readmePath),
+      scope: "repository",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(readFileSync(readmePath, "utf8").startsWith("<!-- CODE_")).toBe(
+      true,
+    );
+  });
+
+  it("renders a size badge for every target the run measured", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md"),
+      scope: "repository",
+      statistics: sampleStatistics,
+      targets: [
+        { bytes: 5324, compression: "gzip", name: "Compiled JavaScript" },
+        { bytes: 1_500_000, compression: "none", name: "Raw assets" },
+      ],
+    });
+
+    expect(block).toContain("### Measured Targets");
+    expect(block).toContain(
+      "![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-5.32_kB_gzip-",
+    );
+    // Decimal megabytes, and no compression named where there was none.
+    expect(block).toContain(
+      "![Raw assets Size](https://img.shields.io/badge/Raw_assets_Size-1.50_MB-",
+    );
+  });
+
+  it("omits the Measured Targets group when the run measured no target", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md"),
+      scope: "repository",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    // What the whole-repository run renders: one `Repository Size`, and no
+    // second size figure beside it.
+    expect(block).not.toContain("### Measured Targets");
+    expect(block).toContain("![Repository Size]");
+  });
+
+  it("renders the same block twice for the same measurement", () => {
+    const render = (): string =>
+      service.renderBadges({
+        destination: buildDestination("README.md"),
+        scope: "repository",
+        statistics: sampleStatistics,
+        targets: [
+          { bytes: 5324, compression: "gzip", name: "Compiled JavaScript" },
+        ],
+      });
+
+    expect(render()).toBe(render());
   });
 
   it("returns false in check mode when no markers exist", () => {
@@ -435,7 +642,9 @@ describe(OutputMarkdownService, () => {
       service.sync({
         check: true,
         destination: buildDestination(readmePath),
+        scope: "repository",
         statistics: sampleStatistics,
+        targets: [],
       }),
     ).toBe(false);
   });
@@ -443,7 +652,9 @@ describe(OutputMarkdownService, () => {
   it("returns true when block is already current in check mode", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
+      targets: [],
     });
     const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
     temporaryDirectories.push(temporaryDirectory);
@@ -459,7 +670,9 @@ describe(OutputMarkdownService, () => {
       service.sync({
         check: true,
         destination: buildDestination(readmePath),
+        scope: "repository",
         statistics: sampleStatistics,
+        targets: [],
       }),
     ).toBe(true);
   });
@@ -479,7 +692,9 @@ describe(OutputMarkdownService, () => {
       service.sync({
         check: true,
         destination: buildDestination(readmePath),
+        scope: "repository",
         statistics: sampleStatistics,
+        targets: [],
       }),
     ).toBe(false);
   });
@@ -493,7 +708,9 @@ describe(OutputMarkdownService, () => {
       service.sync({
         check: false,
         destination: buildDestination(readmePath),
+        scope: "repository",
         statistics: sampleStatistics,
+        targets: [],
       }),
     ).toBe(true);
 
@@ -517,7 +734,13 @@ describe(OutputMarkdownService, () => {
       "utf8",
     );
 
-    service.sync({ check: false, destination, statistics: sampleStatistics });
+    service.sync({
+      check: false,
+      destination,
+      scope: "repository",
+      statistics: sampleStatistics,
+      targets: [],
+    });
 
     const written = readFileSync(markdownPath, "utf8");
 
@@ -525,7 +748,13 @@ describe(OutputMarkdownService, () => {
     expect(written).not.toContain("\nold\n");
     expect(written).not.toContain("CODE_STATISTICS_START");
     expect(
-      service.sync({ check: true, destination, statistics: sampleStatistics }),
+      service.sync({
+        check: true,
+        destination,
+        scope: "repository",
+        statistics: sampleStatistics,
+        targets: [],
+      }),
     ).toBe(true);
   });
 
@@ -541,7 +770,9 @@ describe(OutputMarkdownService, () => {
         render: (renderArguments) =>
           `${renderArguments.description ?? ""}\n\nLines: ${renderArguments.statistics.linesOfCode}`,
       }),
+      scope: "repository",
       statistics: sampleStatistics,
+      targets: [],
     });
 
     const written = readFileSync(markdownPath, "utf8");
@@ -554,7 +785,9 @@ describe(OutputMarkdownService, () => {
   it("hands a render function the built-in rendering to build on", () => {
     const block = service.renderBadges({
       destination: buildDestination("README.md"),
+      scope: "repository",
       statistics: sampleStatistics,
+      targets: [],
     });
     const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
     temporaryDirectories.push(temporaryDirectory);
@@ -566,7 +799,9 @@ describe(OutputMarkdownService, () => {
         render: (renderArguments) =>
           `## Metrics\n\n${renderArguments.renderBadges()}`,
       }),
+      scope: "repository",
       statistics: sampleStatistics,
+      targets: [],
     });
 
     expect(readFileSync(markdownPath, "utf8")).toContain(
@@ -592,7 +827,9 @@ describe(OutputMarkdownService, () => {
           return true;
         },
       }),
+      scope: "repository",
       statistics: sampleStatistics,
+      targets: [],
     });
 
     expect(isCurrent).toBe(true);
@@ -614,7 +851,9 @@ describe(OutputMarkdownService, () => {
         write: (writeArguments) =>
           writeArguments.anchors.syncAnchoredBlock({ path: chosenPath }),
       }),
+      scope: "repository",
       statistics: sampleStatistics,
+      targets: [],
     });
 
     const written = readFileSync(chosenPath, "utf8");
@@ -627,7 +866,9 @@ describe(OutputMarkdownService, () => {
     const isCurrent = service.sync({
       check: true,
       destination: buildDestination(undefined, { write: () => false }),
+      scope: "repository",
       statistics: sampleStatistics,
+      targets: [],
     });
 
     expect(isCurrent).toBe(false);
@@ -640,8 +881,112 @@ describe(OutputMarkdownService, () => {
         destination: buildDestination(undefined, {
           write: (writeArguments) => writeArguments.anchors.syncAnchoredBlock(),
         }),
+        scope: "repository",
         statistics: sampleStatistics,
+        targets: [],
       }),
     ).toThrow(MissingMarkdownPathError);
+  });
+
+  it("renders a document of badges with no anchor markers around it", () => {
+    const document = service.renderDocument({
+      description: "Repository statistics.",
+      scope: "repository",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(
+      document.startsWith("## ⏲️ Codometer\n\nRepository statistics.\n\n"),
+    ).toBe(true);
+    expect(document).toContain("![Lines of Code]");
+    expect(document).not.toContain("<!-- CODE_STATISTICS_START -->");
+  });
+
+  it("renders a document with no description when none was configured", () => {
+    const document = service.renderDocument({
+      description: undefined,
+      scope: "repository",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(document.startsWith("## ⏲️ Codometer\n\n### Repository")).toBe(true);
+  });
+
+  // What a splice would place, without placing it — the form a run that writes
+  // nothing shows on the console.
+  it("renders the anchored block without touching a file", () => {
+    const block = service.renderBlock({
+      destination: buildDestination("README.md"),
+      scope: "repository",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(block.startsWith("<!-- CODE_STATISTICS_START -->")).toBe(true);
+    expect(block.endsWith("<!-- CODE_STATISTICS_END -->")).toBe(true);
+    expect(block).toContain("![Lines of Code]");
+  });
+
+  it("renders the anchored block through a configured render function", () => {
+    const block = service.renderBlock({
+      destination: buildDestination("README.md", {
+        render: () => "## Metrics",
+      }),
+      scope: "repository",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(block).toContain("## Metrics");
+    expect(block).not.toContain("![Lines of Code]");
+  });
+
+  it("writes a whole document, creating missing parent directories", () => {
+    const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
+    temporaryDirectories.push(temporaryDirectory);
+    const documentPath = path.join(temporaryDirectory, "docs/metrics.md");
+
+    expect(
+      service.syncDocument({
+        check: false,
+        content: "# Metrics",
+        path: documentPath,
+      }),
+    ).toBe(true);
+    expect(readFileSync(documentPath, "utf8")).toBe("# Metrics\n");
+  });
+
+  it.each([
+    ["# Metrics\n", true],
+    ["# Stale\n", false],
+  ])("checks a document holding %j as current=%s", (existing, isCurrent) => {
+    const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
+    temporaryDirectories.push(temporaryDirectory);
+    const documentPath = path.join(temporaryDirectory, "metrics.md");
+
+    writeFileSync(documentPath, existing, "utf8");
+
+    expect(
+      service.syncDocument({
+        check: true,
+        content: "# Metrics",
+        path: documentPath,
+      }),
+    ).toBe(isCurrent);
+  });
+
+  it("reports a document that does not exist as stale", () => {
+    const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
+    temporaryDirectories.push(temporaryDirectory);
+
+    expect(
+      service.syncDocument({
+        check: true,
+        content: "# Metrics",
+        path: path.join(temporaryDirectory, "absent.md"),
+      }),
+    ).toBe(false);
   });
 });

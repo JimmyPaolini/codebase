@@ -7,7 +7,8 @@
  * Branch strategy: Only `main` triggers releases.
  * NPM publishing: Disabled — packages are not published to any registry.
  * Versioning: Fixed (entire codebase shares one version).
- * Auto-committed files: CHANGELOG.md, package.json, pnpm-lock.yaml
+ * Auto-committed files: CHANGELOG.md, package.json, pnpm-lock.yaml, and every
+ * measured README.md — the workspace one and one per project.
  *
  * Usage:
  *   pnpm semantic-release            # Manual release (requires GITHUB_TOKEN)
@@ -146,12 +147,22 @@ module.exports = {
     [
       "@semantic-release/git",
       {
-        // README.md rides along because the codometer step regenerates its
-        // badge block just before this commit. Measuring on a branch instead
-        // made every pull request rewrite the same block and conflict with
-        // every other one; measuring on main makes it a release artifact,
-        // updated exactly when the changelog is.
-        assets: ["CHANGELOG.md", "README.md", "package.json", "pnpm-lock.yaml"],
+        // The READMEs ride along because the codometer step regenerates their
+        // badge blocks just before this commit — the workspace one, and one
+        // per project measured. Measuring on a branch instead made every pull
+        // request rewrite the same blocks and conflict with every other one;
+        // measuring on main makes them release artifacts, updated exactly when
+        // the changelog is. A project that grew no block yet matches nothing
+        // and is simply not staged.
+        assets: [
+          "CHANGELOG.md",
+          "README.md",
+          "applications/*/README.md",
+          "package.json",
+          "packages/*/README.md",
+          "pnpm-lock.yaml",
+          "tools/*/README.md",
+        ],
         message: "chore(release): 🔖 version ${nextRelease.version}",
       },
     ],

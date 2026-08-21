@@ -57,7 +57,7 @@ coverage/*
 type-coverage-report.txt
 
 # Bundle Size 📦
-size-limit-report.json
+codometer-report.json
 .bundle-baseline
 .bundle-report.md
 .pull-request-body.md

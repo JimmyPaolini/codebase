@@ -71,7 +71,6 @@ catalog:
   "@semantic-release/github": ^12.0.8
   "@semantic-release/npm": ^13.1.5
   "@semantic-release/release-notes-generator": ^14.1.1
-  "@size-limit/file": ^12.1.0
   "@swc-node/register": ^1.11.1
   "@swc/core": ^1.15.40
   "@swc/helpers": ^0.5.21
@@ -167,7 +166,6 @@ catalog:
   remark-frontmatter: ^5.0.0
   remark-gfm: ^4.0.1
   semantic-release: ^25.0.3
-  size-limit: ^12.1.0
   sonner: ^2.0.7
   squawk-cli: ^2.55.0
   sweph: ^2.10.3-b-1
@@ -197,3 +195,4 @@ catalog:
   zod: ^4.4.3
   openwiki: ^0.2.3
   skills: ^1.5.20
+  ignore: ^7.0.6

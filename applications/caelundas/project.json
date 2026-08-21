@@ -12,6 +12,7 @@
     "type:application"
   ],
   "targets": {
+    "codometer": {},
     "dependency-cruiser": {},
     "download-ephemeris": {
       "cache": false,
