@@ -1,4 +1,4 @@
-import { ErrorsService, ScoringService } from "@conformetry/core";
+import { DifferencesService, ScoringService } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -6,7 +6,7 @@ import { PythonBridgeService } from "./python-bridge.service";
 import { PythonValidatorService } from "./python-validator.service";
 
 import type {
-  ConformetryError,
+  ConformetryDifference,
   PreparedValidationDocument,
 } from "@conformetry/core";
 
@@ -36,16 +36,16 @@ function createDocument(args: {
 describe(PythonValidatorService, () => {
   let service: PythonValidatorService;
 
-  function validate(instance: string): ConformetryError[] {
+  function validate(instance: string): ConformetryDifference[] {
     return service.validateDocument(
       createDocument({ instance, renderedTemplate: TEMPLATE }),
-    ).errors;
+    ).differences;
   }
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        ErrorsService,
+        DifferencesService,
         PythonBridgeService,
         PythonValidatorService,
         ScoringService,
@@ -91,31 +91,31 @@ describe(PythonValidatorService, () => {
   });
 
   it("reports a missing class", () => {
-    const errors = validate("import os\n");
+    const differences = validate("import os\n");
 
-    expect(errors).toHaveLength(1);
-    expect(errors[0]?.message).toBe('Missing ClassDef "Widget"');
-    expect(errors[0]?.language).toBe("python");
+    expect(differences).toHaveLength(1);
+    expect(differences[0]?.message).toBe('Missing ClassDef "Widget"');
+    expect(differences[0]?.language).toBe("python");
   });
 
   it("reports a missing method within a present class", () => {
-    const errors = validate("import os\n\n\nclass Widget:\n    pass\n");
+    const differences = validate("import os\n\n\nclass Widget:\n    pass\n");
 
-    expect(errors).toHaveLength(1);
-    expect(errors[0]?.message).toContain("run");
+    expect(differences).toHaveLength(1);
+    expect(differences[0]?.message).toContain("run");
   });
 
   it("carries template and instance locations", () => {
-    const errors = validate("import os\n");
+    const differences = validate("import os\n");
 
-    expect(errors[0]?.templateLine).toBeGreaterThan(0);
-    expect(errors[0]?.fix).toContain("Add the missing");
+    expect(differences[0]?.templateLine).toBeGreaterThan(0);
+    expect(differences[0]?.fix).toContain("Add the missing");
   });
 
   it("reports a syntax error in the instance", () => {
-    const errors = validate("class Widget(:\n");
+    const differences = validate("class Widget(:\n");
 
-    expect(errors).toHaveLength(1);
-    expect(errors[0]?.message).toContain("Instance syntax error");
+    expect(differences).toHaveLength(1);
+    expect(differences[0]?.message).toContain("Instance syntax error");
   });
 });

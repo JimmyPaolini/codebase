@@ -7,7 +7,7 @@ import { MarkdownTreeService } from "./markdown-tree.service";
 import { MARKDOWN_VALIDATOR_DESCRIPTOR } from "./markdown-validator.constants";
 
 import type {
-  ConformetryError,
+  ConformetryDifference,
   ConformetryLanguageValidator,
   DocumentValidationResult,
   PreparedValidationDocument,
@@ -58,20 +58,22 @@ export class MarkdownValidatorService implements ConformetryLanguageValidator {
         templateTree.children,
       ),
     });
-    const errors: ConformetryError[] = comparison.errors.map((error) => {
-      return {
-        errorType: "code",
-        expected: error.text,
-        fix: `Add the ${error.nodeType} "${error.text}" to the instance file.`,
-        ...(error.instanceLine === undefined
-          ? {}
-          : { instanceLine: error.instanceLine }),
-        language: "markdown",
-        message: `Missing markdown ${error.nodeType}: "${error.text}"`,
-        weight: error.weight,
-      };
-    });
+    const differences: ConformetryDifference[] = comparison.differences.map(
+      (error) => {
+        return {
+          differenceType: "code",
+          expected: error.text,
+          fix: `Add the ${error.nodeType} "${error.text}" to the instance file.`,
+          ...(error.instanceLine === undefined
+            ? {}
+            : { instanceLine: error.instanceLine }),
+          language: "markdown",
+          message: `Missing markdown ${error.nodeType}: "${error.text}"`,
+          weight: error.weight,
+        };
+      },
+    );
 
-    return { errors, totalWeight: comparison.totalWeight };
+    return { differences, totalWeight: comparison.totalWeight };
   }
 }

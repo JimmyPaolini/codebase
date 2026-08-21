@@ -53,10 +53,10 @@ flowchart LR
     PythonValidatorModule
   end
   subgraph group1["conformetry-core"]
-    ErrorsModule
+    DifferencesModule
     ScoringModule
   end
-  PythonValidatorModule --> ErrorsModule
+  PythonValidatorModule --> DifferencesModule
   PythonValidatorModule --> ScoringModule
 ```
 

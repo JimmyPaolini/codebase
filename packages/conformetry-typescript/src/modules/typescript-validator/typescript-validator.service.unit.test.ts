@@ -8,7 +8,7 @@ import { TypescriptTreeService } from "./typescript-tree.service";
 import { TypescriptValidatorService } from "./typescript-validator.service";
 
 import type {
-  ConformetryError,
+  ConformetryDifference,
   PreparedValidationDocument,
 } from "@conformetry/core";
 
@@ -34,10 +34,10 @@ describe(TypescriptValidatorService, () => {
   function validate(
     renderedTemplate: string,
     instance: string,
-  ): ConformetryError[] {
+  ): ConformetryDifference[] {
     return service.validateDocument(
       createDocument({ instance, renderedTemplate }),
-    ).errors;
+    ).differences;
   }
 
   function weigh(renderedTemplate: string, instance: string): number {
@@ -98,42 +98,45 @@ describe(TypescriptValidatorService, () => {
     });
 
     it("reports a missing class", () => {
-      const errors = validate("export class Widget {}\n", "");
+      const differences = validate("export class Widget {}\n", "");
 
-      expect(errors).toHaveLength(1);
-      expect(errors[0]?.message).toContain('"Widget"');
-      expect(errors[0]?.language).toBe("typescript");
+      expect(differences).toHaveLength(1);
+      expect(differences[0]?.message).toContain('"Widget"');
+      expect(differences[0]?.language).toBe("typescript");
     });
 
     it("reports a missing import by module specifier", () => {
-      const errors = validate('import { A } from "./a";\n', "");
+      const differences = validate('import { A } from "./a";\n', "");
 
-      expect(errors[0]?.message).toContain('"./a"');
+      expect(differences[0]?.message).toContain('"./a"');
     });
 
     it("reports a missing decorator", () => {
-      const errors = validate(
+      const differences = validate(
         'import { Injectable } from "@nestjs/common";\n@Injectable()\nexport class A {}\n',
         'import { Injectable } from "@nestjs/common";\nexport class A {}\n',
       );
 
-      expect(errors.some((error) => error.message.includes("Injectable"))).toBe(
-        true,
-      );
+      expect(
+        differences.some((error) => error.message.includes("Injectable")),
+      ).toBe(true);
     });
 
     it("carries instance and template locations", () => {
-      const errors = validate("export class Widget {}\n", "const x = 1;\n");
+      const differences = validate(
+        "export class Widget {}\n",
+        "const x = 1;\n",
+      );
 
-      expect(errors[0]?.templateLine).toBe(1);
-      expect(errors[0]?.instanceLine).toBe(1);
-      expect(errors[0]?.instanceColumn).toBeGreaterThan(0);
+      expect(differences[0]?.templateLine).toBe(1);
+      expect(differences[0]?.instanceLine).toBe(1);
+      expect(differences[0]?.instanceColumn).toBeGreaterThan(0);
     });
 
     it("carries an actionable fix", () => {
-      const errors = validate("export class Widget {}\n", "");
+      const differences = validate("export class Widget {}\n", "");
 
-      expect(errors[0]?.fix).toContain("Add the missing");
+      expect(differences[0]?.fix).toContain("Add the missing");
     });
   });
 
@@ -154,18 +157,18 @@ describe(TypescriptValidatorService, () => {
     });
 
     it("reports a missing section marker", () => {
-      const errors = validate(
+      const differences = validate(
         SECTIONED_TEMPLATE,
         "export class A {\n  // 🏗 Dependency Injection\n  // 🌎 Public Methods\n}\n",
       );
 
-      expect(errors).toHaveLength(1);
-      expect(errors[0]?.errorType).toBe("comment");
-      expect(errors[0]?.message).toContain("🔏 Private Methods");
+      expect(differences).toHaveLength(1);
+      expect(differences[0]?.differenceType).toBe("comment");
+      expect(differences[0]?.message).toContain("🔏 Private Methods");
     });
 
     it("reports markers present but out of order", () => {
-      const errors = validate(
+      const differences = validate(
         SECTIONED_TEMPLATE,
         [
           "export class A {",
@@ -177,8 +180,10 @@ describe(TypescriptValidatorService, () => {
         ].join("\n"),
       );
 
-      expect(errors.length).toBeGreaterThan(0);
-      expect(errors.every((error) => error.errorType === "comment")).toBe(true);
+      expect(differences.length).toBeGreaterThan(0);
+      expect(
+        differences.every((error) => error.differenceType === "comment"),
+      ).toBe(true);
     });
 
     it("treats a TODO template comment as a placeholder", () => {
@@ -344,7 +349,7 @@ describe(TypescriptValidatorService, () => {
             instance: source,
             renderedTemplate: source,
           }),
-        ).errors,
+        ).differences,
       ).toStrictEqual([]);
     });
 

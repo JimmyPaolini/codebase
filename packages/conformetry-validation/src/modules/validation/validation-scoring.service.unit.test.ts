@@ -12,9 +12,9 @@ const INSTANCE_PATH = "/w/packages/widgets/src/modules";
 /** Builds a file result whose findings weigh `failedWeight` in total. */
 function buildFileResult(failedWeight: number): ValidationFileResult {
   return {
-    errors: [
+    differences: [
       {
-        errorType: "code",
+        differenceType: "code",
         fix: "Add it.",
         message: "Missing statement",
         weight: failedWeight,

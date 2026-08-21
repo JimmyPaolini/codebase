@@ -15,7 +15,7 @@ import type {
  *
  * This is the shared envelope every language package used to reimplement:
  * select the documents this validator claims, compare each one, group the
- * errors under their file, and assemble the result. Centralizing it means a
+ * differences under their file, and assemble the result. Centralizing it means a
  * language package contains only its comparison logic, and that every
  * validator reports its outcome identically.
  */
@@ -49,12 +49,12 @@ export class LanguageService {
     document: PreparedValidationDocument;
     validator: ConformetryLanguageValidator;
   }): ValidationFileResult {
-    const { errors, totalWeight } = args.validator.validateDocument(
+    const { differences, totalWeight } = args.validator.validateDocument(
       args.document,
     );
 
     return {
-      errors,
+      differences,
       filename: args.document.filename,
       instanceFilePath: args.document.instanceFilePath,
       templateFilePath: args.document.templateFilePath,
@@ -89,7 +89,7 @@ export class LanguageService {
         return this.validateDocument({ document, validator: args.validator });
       });
     const fileResults = documentResults.filter((fileResult) => {
-      return fileResult.errors.length > 0;
+      return fileResult.differences.length > 0;
     });
 
     return {

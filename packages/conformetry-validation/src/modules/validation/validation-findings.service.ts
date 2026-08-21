@@ -80,9 +80,9 @@ export class ValidationFindingsService {
       );
 
       return {
-        errors: [
+        differences: [
           {
-            errorType: "instance" as const,
+            differenceType: "instance" as const,
             ...this.describeReason({
               reason: instance.reason,
               tiedTemplateNames: instance.tiedTemplateNames,

@@ -80,8 +80,8 @@ export class TypescriptTreeService {
       })
       .reduce((best, candidate) => {
         /* v8 ignore next -- a tie keeps the earlier candidate */
-        return this.scoringService.sumWeights(candidate.errors) <
-          this.scoringService.sumWeights(best.errors)
+        return this.scoringService.sumWeights(candidate.differences) <
+          this.scoringService.sumWeights(best.differences)
           ? candidate
           : best;
       });
@@ -115,7 +115,7 @@ export class TypescriptTreeService {
       // The subtree is both what the finding costs and what was asked for:
       // nothing below a missing node can be compared, so the walk stops here
       // and counts the whole thing as required and absent.
-      return { errors: [error], totalWeight: error.weight };
+      return { differences: [error], totalWeight: error.weight };
     }
 
     return this.compareBestCandidate({
@@ -144,13 +144,13 @@ export class TypescriptTreeService {
       .reduce<TreeComparison>(
         (combined, comparison) => {
           return {
-            errors: [...combined.errors, ...comparison.errors],
+            differences: [...combined.differences, ...comparison.differences],
             totalWeight: combined.totalWeight + comparison.totalWeight,
           };
         },
         // The node itself is the one requirement its own level contributes;
         // its children add theirs.
-        { errors: [], totalWeight: 1 },
+        { differences: [], totalWeight: 1 },
       );
   }
 }

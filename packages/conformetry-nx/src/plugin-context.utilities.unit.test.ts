@@ -80,7 +80,7 @@ describe("plugin context", () => {
     expect(createApplicationContext).toHaveBeenCalledTimes(1);
   });
 
-  it("keeps the daemon quiet and lets errors surface", async () => {
+  it("keeps the daemon quiet and lets differences surface", async () => {
     await resolvePluginService();
 
     expect(createApplicationContext).toHaveBeenCalledWith(

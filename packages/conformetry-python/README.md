@@ -66,10 +66,10 @@ flowchart LR
     PythonValidatorModule
   end
   subgraph group1["conformetry-core"]
-    ErrorsModule
+    DifferencesModule
     ScoringModule
   end
-  PythonValidatorModule --> ErrorsModule
+  PythonValidatorModule --> DifferencesModule
   PythonValidatorModule --> ScoringModule
 ```
 
@@ -113,14 +113,14 @@ Call stacks traced through `conformetry-python`, deepest first. Each frame shows
 ```text
 🚀 PythonValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-python/src/modules/python-validator/python-validator.service.ts:38]
    ↳ Reports every declaration and comment the template requires.
-  └─> PythonBridgeService.validatePythonSource(args: RunPythonBridgeArguments): DocumentValidationResult [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:154]
+  └─> PythonBridgeService.validatePythonSource(args: RunPythonBridgeArguments): DocumentValidationResult [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:160]
      ↳ Compares one Python source against its rendered template.
-    └─> PythonBridgeService.map(…)(error: Readonly<Record<string, unknown>>): ConformetryError [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:179]
-      └─> PythonBridgeService.toConformetryError(error: PythonBridgeError): ConformetryError [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:130]
+    └─> PythonBridgeService.map(…)(error: Readonly<Record<string, unknown>>): ConformetryDifference [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:185]
+      └─> PythonBridgeService.toConformetryDifference(error: PythonBridgeError): ConformetryDifference [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:132]
          ↳ Maps one snake_case bridge error onto the shared error shape.
-        └─> PythonBridgeService.readValues(error: PythonBridgeError): Partial<ConformetryError> [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:119]
+        └─> PythonBridgeService.readValues(error: PythonBridgeError): Partial<ConformetryDifference> [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:121]
            ↳ Reads the optional expected and actual values.
-          └─> PythonBridgeService.readString(error: PythonBridgeError, key: string): string | undefined [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:109]
+          └─> PythonBridgeService.readString(error: PythonBridgeError, key: string): string | undefined [packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:111]
              ↳ Narrows an untrusted string field from the bridge payload.
 ```
 

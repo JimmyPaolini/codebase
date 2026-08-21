@@ -73,7 +73,7 @@ export class ValidationScoringService {
   /** Scores one matched instance against the threshold that applies to it. */
   public scoreInstance(args: ScoreInstanceArguments): InstanceScore {
     const failedWeight = args.fileResults.reduce((total, fileResult) => {
-      return total + this.scoringService.sumWeights(fileResult.errors);
+      return total + this.scoringService.sumWeights(fileResult.differences);
     }, 0);
     const totalWeight = args.totalWeight;
     const score = this.scoringService.calculateScore({

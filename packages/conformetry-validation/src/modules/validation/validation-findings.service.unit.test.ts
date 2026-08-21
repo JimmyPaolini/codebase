@@ -69,8 +69,8 @@ describe(ValidationFindingsService, () => {
         ],
       });
 
-      expect(result?.errors[0]?.errorType).toBe("instance");
-      expect(result?.errors[0]?.message).toContain("no template explains");
+      expect(result?.differences[0]?.differenceType).toBe("instance");
+      expect(result?.differences[0]?.message).toContain("no template explains");
     });
 
     it("names the templates that tied when the match is ambiguous", () => {
@@ -84,8 +84,8 @@ describe(ValidationFindingsService, () => {
         ],
       });
 
-      expect(result?.errors[0]?.message).toContain("alpha, beta");
-      expect(result?.errors[0]?.fix).toContain("distinguishing files");
+      expect(result?.differences[0]?.message).toContain("alpha, beta");
+      expect(result?.differences[0]?.fix).toContain("distinguishing files");
     });
 
     it("points at the directory the templates share", () => {

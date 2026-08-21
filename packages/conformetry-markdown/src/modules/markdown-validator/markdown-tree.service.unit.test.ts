@@ -33,19 +33,19 @@ describe(MarkdownTreeService, () => {
         service.compareChildren({
           instanceChildren: [paragraph("alpha"), paragraph("beta")],
           templateChildren: [paragraph("alpha"), paragraph("beta")],
-        }).errors,
+        }).differences,
       ).toStrictEqual([]);
     });
 
     it("reports a template node the instance lacks", () => {
-      const { errors } = service.compareChildren({
+      const { differences } = service.compareChildren({
         instanceChildren: [paragraph("alpha")],
         templateChildren: [paragraph("alpha"), paragraph("beta")],
       });
 
-      expect(errors).toHaveLength(1);
-      expect(errors[0]?.text).toBe("beta");
-      expect(errors[0]?.nodeType).toBe("paragraph");
+      expect(differences).toHaveLength(1);
+      expect(differences[0]?.text).toBe("beta");
+      expect(differences[0]?.nodeType).toBe("paragraph");
     });
 
     it("ignores extra instance nodes the template does not mention", () => {
@@ -53,7 +53,7 @@ describe(MarkdownTreeService, () => {
         service.compareChildren({
           instanceChildren: [paragraph("alpha"), paragraph("extra")],
           templateChildren: [paragraph("alpha")],
-        }).errors,
+        }).differences,
       ).toStrictEqual([]);
     });
 
@@ -62,7 +62,7 @@ describe(MarkdownTreeService, () => {
         service.compareChildren({
           instanceChildren: [paragraph("alpha")],
           templateChildren: [],
-        }).errors,
+        }).differences,
       ).toStrictEqual([]);
     });
 
@@ -79,7 +79,7 @@ describe(MarkdownTreeService, () => {
             },
           ],
           templateChildren: [{ children: [], ordered: false, type: "list" }],
-        }).errors,
+        }).differences,
       ).toStrictEqual([]);
     });
   });

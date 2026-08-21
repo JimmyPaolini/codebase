@@ -68,7 +68,7 @@ export class MarkdownTreeService {
       const error = this.buildError(args);
 
       return {
-        errors: [error],
+        differences: [error],
         lastMatchedNode: args.lastMatchedNode,
         totalWeight: error.weight,
       };
@@ -79,7 +79,11 @@ export class MarkdownTreeService {
     );
 
     if (templateGrandchildren.length === 0) {
-      return { errors: [], lastMatchedNode: candidates.at(-1), totalWeight: 1 };
+      return {
+        differences: [],
+        lastMatchedNode: candidates.at(-1),
+        totalWeight: 1,
+      };
     }
 
     return candidates
@@ -90,7 +94,7 @@ export class MarkdownTreeService {
         });
 
         return {
-          errors: comparison.errors,
+          differences: comparison.differences,
           lastMatchedNode: candidate,
           // The container itself is one requirement; its children add theirs.
           totalWeight: comparison.totalWeight + 1,
@@ -99,8 +103,8 @@ export class MarkdownTreeService {
       .reduce((best, candidate) => {
         // Weighed by failed weight, not error count: one finding standing in
         // for a whole missing list is a worse match than two missing headings.
-        return this.scoringService.sumWeights(candidate.errors) <
-          this.scoringService.sumWeights(best.errors)
+        return this.scoringService.sumWeights(candidate.differences) <
+          this.scoringService.sumWeights(best.differences)
           ? candidate
           : best;
       });
@@ -115,12 +119,12 @@ export class MarkdownTreeService {
 
     return candidates.length === 0
       ? {
-          errors: [this.buildError(args)],
+          differences: [this.buildError(args)],
           lastMatchedNode: args.lastMatchedNode,
           totalWeight: weight,
         }
       : {
-          errors: [],
+          differences: [],
           lastMatchedNode: candidates.at(-1),
           totalWeight: weight,
         };
@@ -142,7 +146,7 @@ export class MarkdownTreeService {
   public compareChildren(
     args: CompareChildrenArguments,
   ): CompareChildrenResult {
-    const errors: MarkdownComparisonError[] = [];
+    const differences: MarkdownComparisonError[] = [];
     let lastMatchedNode: MarkdownNode | undefined;
     let totalWeight = 0;
 
@@ -163,11 +167,11 @@ export class MarkdownTreeService {
             templateChild,
           });
 
-      errors.push(...result.errors);
+      differences.push(...result.differences);
       lastMatchedNode = result.lastMatchedNode;
       totalWeight += result.totalWeight;
     }
 
-    return { errors, totalWeight };
+    return { differences, totalWeight };
   }
 }

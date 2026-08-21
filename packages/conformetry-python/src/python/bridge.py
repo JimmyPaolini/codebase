@@ -22,24 +22,24 @@ def main() -> None:
             instance=payload["instance"],
             template=payload["template"],
         )
-    except ModuleNotFoundError as error:
+    except ModuleNotFoundError as difference:
         result = {
-            "errors": [
+            "differences": [
                 {
-                    "error_type": "code",
+                    "difference_type": "code",
                     "language": "python",
-                    "message": f"Python validator dependency missing: {error}",
+                    "message": f"Python validator dependency missing: {difference}",
                     "fix": "Reinstall the conformetry-python package.",
                 }
             ],
             "total_weight": 1,
         }
 
-    errors = [
-        asdict(error) if hasattr(error, "__dataclass_fields__") else error
-        for error in result.get("errors", [])
+    differences = [
+        asdict(difference) if hasattr(difference, "__dataclass_fields__") else difference
+        for difference in result.get("differences", [])
     ]
-    print(json.dumps({"errors": errors, "total_weight": result.get("total_weight", 0)}))
+    print(json.dumps({"differences": differences, "total_weight": result.get("total_weight", 0)}))
 
 
 if __name__ == "__main__":

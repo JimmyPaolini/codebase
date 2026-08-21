@@ -57,7 +57,7 @@ flowchart LR
     TemplateDiscoveryModule
   end
   subgraph group2["conformetry-core"]
-    ErrorsModule
+    DifferencesModule
     LanguageModule
     ReportingModule
     ScoringModule
@@ -86,7 +86,7 @@ flowchart LR
   subgraph group10["conformetry-typescript"]
     TypescriptValidatorModule
   end
-  FilesModule --> ErrorsModule
+  FilesModule --> DifferencesModule
   FilesModule --> InstanceDiscoveryModule
   InstanceDiscoveryModule --> RenderingModule
   InstanceDiscoveryModule --> TemplateDiscoveryModule

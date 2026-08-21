@@ -67,7 +67,7 @@ flowchart LR
     JupyterValidatorModule
   end
   subgraph group1["conformetry-core"]
-    ErrorsModule
+    DifferencesModule
     ScoringModule
   end
   subgraph group2["conformetry-json"]
@@ -84,7 +84,7 @@ flowchart LR
   JupyterValidatorModule --> MarkdownValidatorModule
   JupyterValidatorModule --> PythonValidatorModule
   MarkdownValidatorModule --> ScoringModule
-  PythonValidatorModule --> ErrorsModule
+  PythonValidatorModule --> DifferencesModule
   PythonValidatorModule --> ScoringModule
 ```
 
@@ -126,25 +126,25 @@ Call stacks traced through `conformetry-jupyter`, deepest first. Each frame show
 **1. `JupyterValidatorService.validateDocument`** — depth 13 · orphan-root
 
 ```text
-🚀 JupyterValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:146]
+🚀 JupyterValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:152]
    ↳ Reports every notebook difference: envelope, missing cells, cell contents.
-  └─> JupyterValidatorService.map(…)(…): { error: { errorType: "code"; expected: string; fix: string; language: "python"; message: string; weight: number; }; weight: number; } [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:166]
-    └─> JupyterValidatorService.weighMissingCell(args: { cell: PairedCells; document: PreparedValidationDocument; }): number [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:133]
+  └─> JupyterValidatorService.map(…)(…): { error: { differenceType: "code"; expected: string; fix: string; language: "python"; message: string; weight: number; }; weight: number; } [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:172]
+    └─> JupyterValidatorService.weighMissingCell(args: { cell: PairedCells; document: PreparedValidationDocument; }): number [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:139]
        ↳ Weighs a cell the notebook does not have.
       └─> JupyterValidatorService.validateCell(…): DocumentValidationResult [packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:89]
          ↳ Validates one paired cell with the validator matching its kind.
         └─> MarkdownValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-markdown/src/modules/markdown-validator/markdown-validator.service.ts:48]
            ↳ Reports every markdown structure the template requires and the file lacks.
-          └─> MarkdownTreeService.compareChildren(args: CompareChildrenArguments): CompareChildrenResult (cycle) [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:142]
+          └─> MarkdownTreeService.compareChildren(args: CompareChildrenArguments): CompareChildrenResult (cycle) [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:146]
              ↳ Compares one level of two trees, descending into containers.
             └─> MarkdownTreeService.compareContainer(args: CompareNodeArguments): CompareNodeResult (cycle) [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:64]
                ↳ Matches a container node, then descends into it.
-              └─> MarkdownTreeService.map(…)(…): { errors: MarkdownComparisonError[]; lastMatchedNode: MarkdownNode; totalWeight: number; } (cycle) [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:86]
-                └─> MarkdownTreeService.compareLeaf(args: CompareNodeArguments): CompareNodeResult [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:110]
+              └─> MarkdownTreeService.map(…)(…): { differences: MarkdownComparisonError[]; lastMatchedNode: MarkdownNode; totalWeight: number; } (cycle) [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:90]
+                └─> MarkdownTreeService.compareLeaf(args: CompareNodeArguments): CompareNodeResult [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:114]
                    ↳ Matches a leaf node on its own identity, without descending.
-                  └─> MarkdownTreeService.findCandidates(args: CompareNodeArguments): MarkdownNode[] [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:130]
+                  └─> MarkdownTreeService.findCandidates(args: CompareNodeArguments): MarkdownNode[] [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:134]
                      ↳ Finds every instance sibling satisfying the template node.
-                    └─> MarkdownTreeService.filter(…)(instanceNode: MarkdownNode): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:131]
+                    └─> MarkdownTreeService.filter(…)(instanceNode: MarkdownNode): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:135]
                       └─> MarkdownNodesService.matches(args: { instanceNode: MarkdownNode; templateNode: MarkdownNode; }): boolean [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:140]
                          ↳ Returns whether an instance node satisfies a template node.
                         └─> MarkdownNodesService.readText(node: MarkdownNode): string [packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:163]
