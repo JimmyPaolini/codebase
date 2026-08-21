@@ -46,12 +46,14 @@
     },
     "check-skill-exclusions": {
       "cache": true,
-      "description": "Verify that every skill in skills-lock.json is excluded from prettier, codometer, and GitHub Linguist, the three tools whose scan reaches .agents/. Every file the script reads is an input, .gitattributes included: an exclusion deleted from a file the target does not declare would replay a cached pass.",
+      "description": "Verify that every skill in skills-lock.json is excluded from prettier, codometer, GitHub Linguist, cspell, and markdownlint, the five tools whose scan reaches .agents/. Every file the script reads is an input, .gitattributes included: an exclusion deleted from a file the target does not declare would replay a cached pass.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/.gitattributes",
         "{workspaceRoot}/configuration/.codometerignore",
+        "{workspaceRoot}/configuration/.markdownlint-cli2.jsonc",
         "{workspaceRoot}/configuration/.prettierignore",
+        "{workspaceRoot}/configuration/cspell.config.yaml",
         "{workspaceRoot}/scripts/check-skill-exclusions.sh",
         "{workspaceRoot}/skills-lock.json"
       ],
@@ -378,17 +380,18 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "markdownlint-cli2 --config configuration/.markdownlint-cli2.jsonc '*.md' 'docs/**/*.md' 'scripts/**/*.md' 'documentation/**/*.md' 'infrastructure/**/*.md'"
+          "command": "markdownlint-cli2 --config configuration/.markdownlint-cli2.jsonc '*.md' '.agents/**/*.md' 'docs/**/*.md' 'documentation/**/*.md' 'infrastructure/**/*.md' 'scripts/**/*.md'"
         },
         "write": {
-          "command": "markdownlint-cli2 --fix --config configuration/.markdownlint-cli2.jsonc '*.md' 'docs/**/*.md' 'scripts/**/*.md' 'documentation/**/*.md' 'infrastructure/**/*.md'"
+          "command": "markdownlint-cli2 --fix --config configuration/.markdownlint-cli2.jsonc '*.md' '.agents/**/*.md' 'docs/**/*.md' 'documentation/**/*.md' 'infrastructure/**/*.md' 'scripts/**/*.md'"
         }
       },
       "defaultConfiguration": "check",
-      "description": "Lint markdown files in workspace root (scripts, documentation, infrastructure)",
+      "description": "Lint markdown files in workspace root (agents, scripts, documentation, infrastructure). Reaches .agents/ so this repository's own skills are linted like any other documentation; the vendored skills in skills-lock.json are excluded per skill in the markdownlint configuration.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/*.md",
+        "{projectRoot}/.agents/**/*.md",
         "{projectRoot}/docs/**/*.md",
         "{projectRoot}/documentation/**/*.md",
         "{projectRoot}/infrastructure/**/*.md",
@@ -619,10 +622,11 @@
     },
     "spell-check": {
       "cache": true,
-      "description": "Check spelling in every workspace root file no project owns (configuration, documentation, infrastructure, notepads, openwiki, planning, scripts, and the .devcontainer, .github, and .vscode directories)",
+      "description": "Check spelling in every workspace root file no project owns (configuration, documentation, infrastructure, notepads, openwiki, planning, scripts, and the .agents, .devcontainer, .github, and .vscode directories). Reaches .agents/ so this repository's own skills are spell-checked like any other documentation; the vendored skills in skills-lock.json are excluded per skill in the cspell configuration.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/*.{ts,tsx,js,jsx,md,yaml,yml,json}",
+        "{projectRoot}/.agents/**",
         "{projectRoot}/.devcontainer/**",
         "{projectRoot}/.github/**",
         "{projectRoot}/.vscode/**",
@@ -639,7 +643,7 @@
         "default"
       ],
       "options": {
-        "command": "cspell --config configuration/cspell.config.yaml '*.{ts,tsx,js,jsx,md,yaml,yml,json}' '.devcontainer/**' '.github/**' '.vscode/**' 'configuration/**' 'docs/**' 'documentation/**' 'infrastructure/**' 'notepads/**' 'openwiki/**' 'planning/**' 'scripts/**' --no-progress --gitignore --gitignore-root .",
+        "command": "cspell --config configuration/cspell.config.yaml '*.{ts,tsx,js,jsx,md,yaml,yml,json}' '.agents/**' '.devcontainer/**' '.github/**' '.vscode/**' 'configuration/**' 'docs/**' 'documentation/**' 'infrastructure/**' 'notepads/**' 'openwiki/**' 'planning/**' 'scripts/**' --no-progress --gitignore --gitignore-root .",
         "cwd": "{projectRoot}"
       }
     },

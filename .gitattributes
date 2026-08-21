@@ -56,6 +56,7 @@ dist/** linguist-generated
 # pull request. One entry per skill in skills-lock.json, verified by
 # `nx run codebase:check-skill-exclusions`.
 .agents/licenses/** linguist-vendored
+# <!-- skill-exclusions-start -->
 .agents/skills/ask-matt/** linguist-vendored
 .agents/skills/code-review/** linguist-vendored
 .agents/skills/codebase-design/** linguist-vendored
@@ -96,3 +97,4 @@ dist/** linguist-generated
 .agents/skills/wayfinder/** linguist-vendored
 .agents/skills/wizard/** linguist-vendored
 .agents/skills/writing-for-agents/** linguist-vendored
+# <!-- skill-exclusions-end -->
