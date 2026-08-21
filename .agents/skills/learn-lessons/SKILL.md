@@ -212,7 +212,7 @@ Use this pattern whenever a skill is becoming too large:
 
 (a repeatable workflow not yet covered):
 
-- Follow the [agent-skills instructions](../../instructions/agent-skills.instructions.md) template precisely
+- Follow the [agent-skills instructions](../../../.github/instructions/agent-skills.instructions.md) template precisely
 - Place at `.github/skills/<name>/SKILL.md`
 - Write a keyword-rich `description` field — this is the primary discovery surface
 - Include a step-by-step workflow, not just a description
@@ -296,7 +296,7 @@ When in doubt, prefer a **memory note** over a skill update — it is lower over
 
 ## References
 
-- [agent-skills instructions](../../instructions/agent-skills.instructions.md) — Template and quality rules for SKILL.md files
+- [agent-skills instructions](../../../.github/instructions/agent-skills.instructions.md) — Template and quality rules for SKILL.md files
 - [validate-code](../validate-code/SKILL.md) — Full validation workflow before committing
 - [spell-check](../spell-check/SKILL.md) — Fix cspell errors in modified files
 - [submit-changes](../submit-changes/SKILL.md) — Branch, commit, and PR workflow for the updates

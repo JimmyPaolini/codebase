@@ -137,10 +137,10 @@ Use the table below to find the exact config file and command for the failing to
 
 Both are independent leaf targets that `lint-codebase` depends on directly.
 
-| Target     | Check command                                                                                                                               | Write command       | Config file                                                                                                                |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `prettier` | `prettier --check --config configuration/prettier.config.ts --ignore-path configuration/.prettierignore {projectRoot}` (cwd: workspaceRoot) | same with `--write` | [configuration/prettier.config.ts](../../../configuration/prettier.config.ts), [.prettierignore](../../../.prettierignore) |
-| `oxfmt`    | `oxfmt -c configuration/oxfmt.config.ts --ignore-path configuration/.oxfmtignore --check {projectRoot}` (cwd: workspaceRoot)                | same with `--write` | [configuration/oxfmt.config.ts](../../../configuration/oxfmt.config.ts)                                                    |
+| Target     | Check command                                                                                                                               | Write command       | Config file                                                                                                                                            |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `prettier` | `prettier --check --config configuration/prettier.config.ts --ignore-path configuration/.prettierignore {projectRoot}` (cwd: workspaceRoot) | same with `--write` | [configuration/prettier.config.ts](../../../configuration/prettier.config.ts), [configuration/.prettierignore](../../../configuration/.prettierignore) |
+| `oxfmt`    | `oxfmt -c configuration/oxfmt.config.ts --ignore-path configuration/.oxfmtignore --check {projectRoot}` (cwd: workspaceRoot)                | same with `--write` | [configuration/oxfmt.config.ts](../../../configuration/oxfmt.config.ts)                                                                                |
 
 Python projects run `ruff-format` instead — `uv run ruff format --check .` (cwd: projectRoot),
 config: [pyproject.toml](../../../pyproject.toml)
@@ -480,31 +480,31 @@ Remaining Actions
 
 ### Tool Configurations
 
-| Tool                                | Config File                                                                                                                |
-| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| ESLint (base)                       | [configuration/eslint.config.ts](../../../configuration/eslint.config.ts)                                                  |
-| oxlint                              | [configuration/oxlint.config.ts](../../../configuration/oxlint.config.ts)                                                  |
-| oxfmt                               | [configuration/oxfmt.config.ts](../../../configuration/oxfmt.config.ts)                                                    |
-| Prettier                            | [configuration/prettier.config.ts](../../../configuration/prettier.config.ts), [.prettierignore](../../../.prettierignore) |
-| TypeScript (base)                   | [configuration/tsconfig.json](../../../configuration/tsconfig.json)                                                        |
-| cspell                              | [configuration/cspell.config.yaml](../../../configuration/cspell.config.yaml)                                              |
-| markdownlint                        | [configuration/.markdownlint-cli2.jsonc](../../../configuration/.markdownlint-cli2.jsonc)                                  |
-| yamllint                            | [configuration/yamllint.yaml](../../../configuration/yamllint.yaml)                                                        |
-| stylelint                           | [configuration/stylelint.config.cjs](../../../configuration/stylelint.config.cjs)                                          |
-| knip                                | [configuration/knip.config.ts](../../../configuration/knip.config.ts)                                                      |
-| Ruff + pyright                      | [pyproject.toml](../../../pyproject.toml)                                                                                  |
-| commitlint                          | [configuration/commitlint.config.ts](../../../configuration/commitlint.config.ts)                                          |
-| validate-branch-name                | [validate-branch-name.config.cjs](../../../validate-branch-name.config.cjs)                                                |
-| Conventional commits (types/scopes) | [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs)                                    |
-| check-lockfile                      | [scripts/check-lockfile.sh](../../../scripts/check-lockfile.sh)                                                            |
+| Tool                                | Config File                                                                                                                                            |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ESLint (base)                       | [configuration/eslint.config.ts](../../../configuration/eslint.config.ts)                                                                              |
+| oxlint                              | [configuration/oxlint.config.ts](../../../configuration/oxlint.config.ts)                                                                              |
+| oxfmt                               | [configuration/oxfmt.config.ts](../../../configuration/oxfmt.config.ts)                                                                                |
+| Prettier                            | [configuration/prettier.config.ts](../../../configuration/prettier.config.ts), [configuration/.prettierignore](../../../configuration/.prettierignore) |
+| TypeScript (base)                   | [configuration/tsconfig.json](../../../configuration/tsconfig.json)                                                                                    |
+| cspell                              | [configuration/cspell.config.yaml](../../../configuration/cspell.config.yaml)                                                                          |
+| markdownlint                        | [configuration/.markdownlint-cli2.jsonc](../../../configuration/.markdownlint-cli2.jsonc)                                                              |
+| yamllint                            | [configuration/yamllint.yaml](../../../configuration/yamllint.yaml)                                                                                    |
+| stylelint                           | [configuration/stylelint.config.cjs](../../../configuration/stylelint.config.cjs)                                                                      |
+| knip                                | [configuration/knip.config.ts](../../../configuration/knip.config.ts)                                                                                  |
+| Ruff + pyright                      | [pyproject.toml](../../../pyproject.toml)                                                                                                              |
+| commitlint                          | [configuration/commitlint.config.ts](../../../configuration/commitlint.config.ts)                                                                      |
+| validate-branch-name                | [validate-branch-name.config.cjs](../../../validate-branch-name.config.cjs)                                                                            |
+| Conventional commits (types/scopes) | [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs)                                                                |
+| check-lockfile                      | [scripts/check-lockfile.sh](../../../scripts/check-lockfile.sh)                                                                                        |
 
 ### Git Conventions
 
-- [documentation/skills/commit-code/SKILL.md](../../../documentation/skills/commit-code/SKILL.md)
-- [documentation/skills/checkout-branch/SKILL.md](../../../documentation/skills/checkout-branch/SKILL.md)
-- [documentation/skills/create-pull-request/SKILL.md](../../../documentation/skills/create-pull-request/SKILL.md)
-- [documentation/skills/update-pull-request/SKILL.md](../../../documentation/skills/update-pull-request/SKILL.md)
-- [documentation/skills/submit-changes/SKILL.md](../../../documentation/skills/submit-changes/SKILL.md)
+- [commit-code](../commit-code/SKILL.md)
+- [checkout-branch](../checkout-branch/SKILL.md)
+- [create-pull-request](../create-pull-request/SKILL.md)
+- [update-pull-request](../update-pull-request/SKILL.md)
+- [submit-changes](../submit-changes/SKILL.md)
 
 ## Root Cause & Prevention
 
