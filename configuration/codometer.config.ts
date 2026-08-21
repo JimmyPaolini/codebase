@@ -7,6 +7,18 @@ import {
   type CodometerConfigurationFactory,
 } from "@codometer/configuration";
 
+// 🏷️ Types
+
+/**
+ * The one field this configuration reads out of a project's manifest.
+ *
+ * `unknown` because the manifest is parsed JSON: a `sizeLimit` written as a
+ * number has to be read before it can be refused.
+ */
+interface ProjectManifest {
+  sizeLimit?: unknown;
+}
+
 // ♟️ Conventions
 
 /** File whose presence marks the directory every project path is written from. */
@@ -61,23 +73,26 @@ const findWorkspaceDirectory = (searchDirectory: string): string => {
   }
 };
 
-/** Whether a directory is a project rather than an ordinary folder. */
-const isProjectDirectory = (directory: string): boolean =>
-  existsSync(path.join(directory, MANIFEST_FILE));
-
 /**
- * Reads the limit a project declares for its own compiled JavaScript.
+ * Reads a directory's project manifest, or nothing when it holds no project.
  *
- * It lives in the project's manifest beside `typeCoverage`, which is where
- * every other per-project gate in this repository is written. A project that
- * declares none is measured and reported like the rest, and gated by nothing.
+ * One read answers both questions this configuration asks of a directory. A
+ * folder carrying no manifest is no project, so it gets no target rather than
+ * one over a build nobody emits; a project's manifest is where its limit is
+ * declared, beside `typeCoverage`, which is where every other per-project gate
+ * in this repository is written.
  *
  * A manifest nothing can parse stops the run and names itself. Read as "no
- * limit declared" it would silently leave the project with no limit at all,
- * which is the one failure a size gate must never have.
+ * project here" it would silently leave a project measured by nothing and
+ * gated by nothing, which is the one failure a size gate must never have.
  */
-const readDeclaredLimit = (projectDirectory: string): string | undefined => {
-  const manifestPath = path.join(projectDirectory, MANIFEST_FILE);
+const readManifest = (directory: string): ProjectManifest | undefined => {
+  const manifestPath = path.join(directory, MANIFEST_FILE);
+
+  if (!existsSync(manifestPath)) {
+    return undefined;
+  }
+
   let manifest: unknown;
 
   try {
@@ -88,9 +103,7 @@ const readDeclaredLimit = (projectDirectory: string): string | undefined => {
     throw new Error(`Could not read ${manifestPath}: ${reason}`);
   }
 
-  const declared = (manifest as { sizeLimit?: unknown }).sizeLimit;
-
-  return typeof declared === "string" ? declared : undefined;
+  return manifest as ProjectManifest;
 };
 
 // 🧱 Shared Configuration
@@ -143,11 +156,15 @@ const sharedConfiguration = {
 const buildProjectConfiguration = (
   context: CodometerConfigurationContext,
   workspaceDirectory: string,
+  manifest: ProjectManifest,
 ): CodometerConfiguration => {
   const projectPath = toConfiguredPath(
     path.relative(workspaceDirectory, context.directory),
   );
-  const declaredLimit = readDeclaredLimit(context.directory);
+  // A project declaring no limit, or one in a shape no limit can be written
+  // in, is measured and reported like the rest and gated by nothing.
+  const declaredLimit =
+    typeof manifest.sizeLimit === "string" ? manifest.sizeLimit : undefined;
 
   return {
     ...sharedConfiguration,
@@ -223,9 +240,11 @@ const codometerConfiguration: CodometerConfigurationFactory = (context) => {
     return buildWorkspaceConfiguration();
   }
 
-  return isProjectDirectory(context.directory)
-    ? buildProjectConfiguration(context, workspaceDirectory)
-    : { ...sharedConfiguration };
+  const manifest = readManifest(context.directory);
+
+  return manifest === undefined
+    ? { ...sharedConfiguration }
+    : buildProjectConfiguration(context, workspaceDirectory, manifest);
 };
 
 export default codometerConfiguration;

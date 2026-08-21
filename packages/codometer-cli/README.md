@@ -280,9 +280,17 @@ Three sinks, none of which implies another:
 | Splice | `--readme <path>` | The badge block, between two markers in a file somebody else wrote |
 
 A sink whose path is omitted goes to the console, and so does any sink on a run
-that neither writes nor compares. With nothing named anywhere — no flag, no
-configured destination — the badges go to the console, which is what a bare
-`codometer` does.
+that neither writes nor compares — except the report, whose path is refused
+outright on such a run rather than quietly diverted. With nothing named anywhere
+— no flag, no configured destination — the badges go to the console, which is
+what a bare `codometer` does.
+
+**`--json <path>` is refused unless the run writes or compares it.** The path
+names a file, and a run doing neither would render the report to the console and
+leave that file unwritten — which is not noticed here at all, but downstream, by
+whatever reads the report finding nothing and reporting a project that changed
+nothing. The command line is refused before anything is measured, naming the
+flag to add. A pathless `--json` is untouched: the console is what it asked for.
 
 **A named destination stands for all of them.** `--json` on its own asks for
 the report and nothing else, whatever the configuration file also describes.
@@ -299,8 +307,14 @@ somebody else wrote the rest of, so a run that guessed the filename would edit
 a document nobody pointed it at.
 
 The rendered badges are a description paragraph followed by shields.io badges
-under one `###` heading per language, and — for a run that measured a declared
-target — a `Measured Targets` group carrying each target's size under the
+under one `###` heading per language. A run scoped to one project puts its own
+`##` section heading above all of it, inside the markers, because that block
+lands in a document somebody else wrote the rest of and `###` groups with
+nothing above them would read as a continuation of whatever section came
+before. A run measuring a whole repository renders none: that README titles the
+section above the markers itself. Beyond the language groups there is also —
+for a run that measured a declared target — a `Measured Targets` group carrying
+each target's size under the
 compression it was measured with. That group is how a project's README reports
 the size of what it ships; a run that declared no target renders no such group,
 which is why the whole-repository report carries only its own `Repository Size`.
@@ -536,9 +550,9 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Measure | Value |
 | --- | --- |
-| Callables | 320 |
+| Callables | 321 |
 | Files | 104 |
-| Calls traced | 502 |
+| Calls traced | 503 |
 | Call stacks | 11 |
 | Deepest stack | 13 |
 | Stacks through recursion | 1 |
@@ -580,11 +594,11 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 **2. `OutputMarkdownService.renderBadges`** — depth 7 · orphan-root
 
 ```text
-🚀 OutputMarkdownService.renderBadges(args: RenderBadgesArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:234]
+🚀 OutputMarkdownService.renderBadges(args: RenderBadgesArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:235]
    ↳ Render the badge block for a destination, description and all.
-  └─> OutputMarkdownService.renderDocument(args: RenderDocumentArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:262]
+  └─> OutputMarkdownService.renderDocument(args: RenderDocumentArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:271]
      ↳ Render the badges as a document of their own.
-    └─> OutputMarkdownService.buildBadgeGroups(args: RenderDocumentArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:94]
+    └─> OutputMarkdownService.buildBadgeGroups(args: RenderDocumentArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:95]
        ↳ Assemble the badge groups, in the order they are rendered.
       └─> buildTargetsGroup(targets: readonly TargetSize[]): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:283]
          ↳ Renders the Measured Targets badge group, one badge per measured target.
@@ -661,11 +675,11 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 **9. `OutputMarkdownService.syncAnchoredBlock`** — depth ≥ 3 · orphan-root
 
 ```text
-🚀 OutputMarkdownService.syncAnchoredBlock(args: SyncAnchoredBlockArguments): boolean [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:174]
+🚀 OutputMarkdownService.syncAnchoredBlock(args: SyncAnchoredBlockArguments): boolean [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:175]
    ↳ Splice the anchored block into a file, or report whether it is current.
-  └─> OutputMarkdownService.buildBlockRegex(args: { endMarker: string; startMarker: string; }): RegExp [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:120]
+  └─> OutputMarkdownService.buildBlockRegex(args: { endMarker: string; startMarker: string; }): RegExp [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:121]
      ↳ Build the matcher for a block delimited by the configured markers.
-    └─> OutputMarkdownService.escapeRegex(input: string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:132]
+    └─> OutputMarkdownService.escapeRegex(input: string): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:133]
        ↳ Escape a configured marker so it can be searched for literally.
 ```
 
@@ -705,16 +719,18 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 <!-- CODE_STATISTICS_START -->
 
+## ⏲️ Codometer
+
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-16260-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-504.27_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-16435-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-511.01_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-24-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-143-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-76.20_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-77.19_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript & JavaScript
 
@@ -723,20 +739,20 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 ![Test Files](https://img.shields.io/badge/Test_Files-33-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-26-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-52-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-612-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-265-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-798-4ade80?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-620-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-266-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-807-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-79-059669?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-84-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-751-dc2626?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-760-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-586-0284c7?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-55-db2777?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-239-ea580c?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-437-6366f1?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-858-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1598-475569?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-240-ea580c?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-431-6366f1?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-866-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1600-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-4-ca8a04?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 

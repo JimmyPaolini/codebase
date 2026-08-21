@@ -144,6 +144,39 @@ describe(RunPlanService, () => {
     it("reads --write as off when the flag never arrived", () => {
       expect(service.selectMode({ write: false }).mode.writes).toBe(false);
     });
+
+    // The failure this exists for: an nx target that named a report path but
+    // lost `--write`. The report went to the console, the run exited clean, and
+    // the first thing to notice was a pull request section rendering as though
+    // the project had changed nothing.
+    it.each([
+      [{ json: "codometer-report.json" }],
+      [{ check: "limits", json: "codometer-report.json" }],
+    ])(
+      "refuses %j, which names a report file nothing would write",
+      (options) => {
+        expect(service.selectMode(options).errors).toStrictEqual([
+          expect.stringContaining(
+            "--json codometer-report.json needs --write or --check reports",
+          ) as string,
+        ]);
+      },
+    );
+
+    // A path the run does write, and a path it compares, are both accounted
+    // for. Neither is the mistake above.
+    it.each([
+      [{ json: "codometer-report.json", write: true }],
+      [{ check: "reports", json: "codometer-report.json" }],
+    ])("accepts %j, which does produce that file", (options) => {
+      expect(service.selectMode(options).errors).toStrictEqual([]);
+    });
+
+    // The console is what a pathless --json asked for, not a file that failed
+    // to appear.
+    it("says nothing about a pathless --json on a run that writes nothing", () => {
+      expect(service.selectMode({ json: true }).errors).toStrictEqual([]);
+    });
   });
 
   describe("where the output goes", () => {

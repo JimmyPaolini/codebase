@@ -13,7 +13,6 @@ skills-lock.json
 /CHANGELOG.md
 openwiki/
 **/routeTree.gen.ts
-projectStructure.cache.json
 
 # 🧩 Vendored by shadcn, not authored here
 packages/lexico-components/src/components/

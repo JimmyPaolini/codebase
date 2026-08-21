@@ -530,6 +530,8 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 
 <!-- CODE_STATISTICS_START -->
 
+## ⏲️ Codometer
+
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-13359-22c55e?style=flat-square)

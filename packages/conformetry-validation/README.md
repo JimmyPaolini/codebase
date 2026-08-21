@@ -228,6 +228,8 @@ None.
 
 <!-- CODE_STATISTICS_START -->
 
+## ⏲️ Codometer
+
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2099-22c55e?style=flat-square)

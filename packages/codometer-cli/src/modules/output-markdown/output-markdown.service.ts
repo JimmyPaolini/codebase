@@ -4,6 +4,7 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 
 import {
+  PROJECT_SECTION_HEADING,
   REGEX_SPECIAL_CHARACTERS,
   TRAILING_NEWLINES,
 } from "./output-markdown.constants";
@@ -258,13 +259,26 @@ export class OutputMarkdownService {
    *
    * No anchor markers: nothing else is in the file, so there is nothing to
    * anchor the block against.
+   *
+   * A run scoped to one project heads its figures with a section heading of
+   * its own, because a project README carries the block inside a document
+   * somebody else wrote and a run of `###` groups with nothing above them
+   * would read as a continuation of whatever section came before it. The
+   * whole-repository run renders none: that README titles the section above
+   * the markers already, and a second heading would be two titles for one
+   * block.
    */
   renderDocument(args: RenderDocumentArguments): string {
-    const groups = this.buildBadgeGroups(args);
+    const sections: string[] =
+      args.scope === "project" ? [PROJECT_SECTION_HEADING] : [];
 
-    return args.description === undefined
-      ? groups
-      : `${args.description}\n\n${groups}`;
+    if (args.description !== undefined) {
+      sections.push(args.description);
+    }
+
+    sections.push(this.buildBadgeGroups(args));
+
+    return sections.join("\n\n");
   }
 
   /**

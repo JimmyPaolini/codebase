@@ -25,6 +25,7 @@ import type {
   ModeSelection,
   ResolveDestinationsArguments,
   RunDestinations,
+  RunMode,
 } from "./run-plan.types";
 import type { ResolvedCodometerMarkdownOutputConfiguration } from "@codometer/configuration";
 
@@ -123,6 +124,37 @@ export class RunPlanService {
     }
 
     return flag === true ? undefined : flag;
+  }
+
+  /**
+   * Refuses a report path no mode of this run would ever put a report at.
+   *
+   * `--json <path>` asks for a file, and only a run that writes or compares
+   * one produces it. Without either, the report goes to the console and the
+   * file stays unwritten — and because the run exits clean, the first thing to
+   * notice used to be the pull request's bundle section, rendering as though
+   * the project had changed nothing. Refused here instead, before anything is
+   * measured, naming the flag that has to be added.
+   *
+   * A pathless `--json` is untouched. The console is what it asked for, not a
+   * file that failed to appear.
+   */
+  private requireWrittenReport(
+    options: CodometerCommandOptions,
+    mode: RunMode,
+    errors: string[],
+  ): void {
+    if (typeof options.json !== "string") {
+      return;
+    }
+
+    if (mode.writes || mode.checksReports) {
+      return;
+    }
+
+    errors.push(
+      `--json ${options.json} needs --write or --check ${CHECK_REPORTS}: a run that neither writes the report nor compares it would render it to the console and leave that file unwritten. Add --write to write it, --check ${CHECK_REPORTS} to fail on a stale one, or drop the path to ask for the console.`,
+    );
   }
 
   /** Where the report goes, if anywhere. */
@@ -299,26 +331,28 @@ export class RunPlanService {
    * `--write --check reports` is refused rather than obeyed: nothing can be
    * stale immediately after being written, so a run asking for both has
    * misunderstood one of them and would pass whatever it was meant to catch.
+   *
+   * A `--json` path with neither flag is refused for the mirror-image reason:
+   * it names a file the run was never going to write.
    */
   selectMode(options: CodometerCommandOptions): ModeSelection {
     const errors: string[] = [];
     const names = this.readCheckNames(options.check, errors);
-    const writes = options.write === true;
+    const mode: RunMode = {
+      checksLimits: names.has(CHECK_LIMITS),
+      checksReports: names.has(CHECK_REPORTS),
+      writes: options.write === true,
+    };
 
-    if (writes && names.has(CHECK_REPORTS)) {
+    if (mode.writes && mode.checksReports) {
       errors.push(
         `--write cannot be combined with --check ${CHECK_REPORTS}: a report cannot be stale in the run that just wrote it. Drop one of them, or run --write and --check ${CHECK_REPORTS} separately.`,
       );
     }
 
-    return {
-      errors,
-      mode: {
-        checksLimits: names.has(CHECK_LIMITS),
-        checksReports: names.has(CHECK_REPORTS),
-        writes,
-      },
-    };
+    this.requireWrittenReport(options, mode, errors);
+
+    return { errors, mode };
   }
 
   /**

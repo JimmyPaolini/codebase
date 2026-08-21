@@ -281,6 +281,49 @@ describe(OutputMarkdownService, () => {
     expect(block).toContain("![Lines of Code]");
   });
 
+  // The heading is inside the markers, so every run rewrites it along with the
+  // figures beneath it and no project README has to carry one by hand.
+  it("heads a project's block with a section heading of its own", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md"),
+      scope: "project",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(block.startsWith("## ⏲️ Codometer\n\n### Project\n\n")).toBe(true);
+  });
+
+  // The whole-repository README titles this section above the markers itself,
+  // so a heading rendered inside them would be a second title for one block.
+  it("renders no section heading when a whole repository was measured", () => {
+    const block = service.renderBadges({
+      destination: buildDestination("README.md"),
+      scope: "repository",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(block).not.toContain("## ⏲️ Codometer");
+    expect(block.startsWith("### Repository\n\n")).toBe(true);
+  });
+
+  // A description belongs under the heading naming the section, not above it.
+  it("puts a project's description between its heading and its badges", () => {
+    const document = service.renderDocument({
+      description: "Project statistics.",
+      scope: "project",
+      statistics: sampleStatistics,
+      targets: [],
+    });
+
+    expect(
+      document.startsWith(
+        "## ⏲️ Codometer\n\nProject statistics.\n\n### Project\n\n",
+      ),
+    ).toBe(true);
+  });
+
   // A counter naming a language group belongs beside the built-in counters
   // it extends, not in a separate list at the bottom of the report.
   it("renders a counter into the group it names", () => {
@@ -432,6 +475,42 @@ describe(OutputMarkdownService, () => {
     expect(written).toContain("<!-- CODE_STATISTICS_END -->");
     expect(written).toContain("![Lines of Code]");
     expect(written).not.toContain("\nold\n");
+  });
+
+  // The section heading sits inside the markers, so a second run has to
+  // replace it rather than append another one above the block.
+  it("leaves a project README byte-identical on a second write", () => {
+    const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "codometer-"));
+    temporaryDirectories.push(temporaryDirectory);
+    const readmePath = path.join(temporaryDirectory, "README.md");
+
+    writeFileSync(readmePath, "# Project\n", "utf8");
+
+    const write = (): string => {
+      service.sync({
+        check: false,
+        destination: buildDestination(readmePath),
+        scope: "project",
+        statistics: sampleStatistics,
+        targets: [],
+      });
+
+      return readFileSync(readmePath, "utf8");
+    };
+    const first = write();
+    const second = write();
+
+    expect(second).toBe(first);
+    expect(second.split("## ⏲️ Codometer")).toHaveLength(2);
+    expect(
+      service.sync({
+        check: true,
+        destination: buildDestination(readmePath),
+        scope: "project",
+        statistics: sampleStatistics,
+        targets: [],
+      }),
+    ).toBe(true);
   });
 
   it("appends the badge block when no markers exist", () => {
