@@ -39,7 +39,7 @@ Do not use this skill on non-macOS systems.
 
 ## Workflow
 
-### 1) Prefer process-coupled caffeination
+### 1) Prefer a process-coupled wake lock
 
 If the shell or long-running command process ID is available, tie the assertion to that process:
 
@@ -118,7 +118,7 @@ When the user has not specified a wake-lock strategy, ask in this order:
 ## Red Flags
 
 - Starting with bare `caffeinate` when PID or timeout is available
-- Backgrounding `caffeinate` without saving its PID
+- Running `caffeinate` in the background without saving its PID
 - Ending session without confirming wake-lock cleanup
 
 If any red flag appears, switch to `-w`, switch to `-t`, or clean up the fallback process immediately.

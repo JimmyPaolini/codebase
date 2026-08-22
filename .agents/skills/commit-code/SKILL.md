@@ -86,6 +86,7 @@ This skill teaches how to write commit messages for this codebase. All commits *
 | `tools` | Changes spanning multiple tool projects in tools/ |
 | `synchronization` | Synchronization application and commands for automating workflows |
 | `reporting` | Internal reporting CLI and the reports it renders, such as 🎒 Bundles |
+| `validation` | Validation CLI and the checks it runs, such as pull request metadata |
 
 <!-- scopes-end -->
 
@@ -117,7 +118,7 @@ This skill teaches how to write commit messages for this codebase. All commits *
 
 ### Character Budget & Multi-Change Commits
 
-The prefix `type(scope): <gitmoji>` eats into the 128-char header limit. Long scopes like `infrastructure` (~27 chars) or `lexico-components` (~35 chars) leave as few as **93–101 characters** for the subject. Always count the full header.
+The prefix `type(scope): <gitmoji>` eats into the 128-character header limit. Long scopes like `infrastructure` (~27 characters) or `lexico-components` (~35 characters) leave as few as **93–101 characters** for the subject. Always count the full header.
 
 When a commit touches multiple concerns, **summarize or split** — never list changes with commas/"and":
 
@@ -231,7 +232,7 @@ git verify-commit HEAD
 Use `-S` and fail immediately if `git verify-commit HEAD` does not succeed.
 
 > ✅ **Best practice:** Let Husky run signing checks automatically in normal workflows. The pre-commit hook runs `check-commit-signing-configuration.sh` and the pre-push hook runs `check-push-commit-signatures.sh`.
-
+>
 > ⚠️ **Warning:** Avoid manually running `scripts/git/check-push-commit-signatures.sh` in routine command-line flows. It is intended for pre-push hook stdin data and may fail or appear to hang when called directly.
 
 ### Common Pitfalls

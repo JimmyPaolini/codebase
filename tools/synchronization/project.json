@@ -57,6 +57,12 @@
         "nx-project-graphs-write": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts nx-project-graphs write"
         },
+        "pull-request-labels-check": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts pull-request-labels check"
+        },
+        "pull-request-labels-write": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts pull-request-labels write"
+        },
         "pull-request-template-check": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts pull-request-template check"
         },
@@ -110,9 +116,11 @@
         "{workspaceRoot}/applications/*/README.md",
         "{workspaceRoot}/applications/*/src/**/*.module.ts",
         "{workspaceRoot}/configuration/.codometerignore",
+        "{workspaceRoot}/configuration/.markdownlint-cli2.jsonc",
         "{workspaceRoot}/configuration/.prettierignore",
         "{workspaceRoot}/configuration/conformetry.config.ts",
         "{workspaceRoot}/configuration/conventional.config.cjs",
+        "{workspaceRoot}/configuration/cspell.config.yaml",
         "{workspaceRoot}/nx.json",
         "{workspaceRoot}/packages/*/AGENTS.md",
         "{workspaceRoot}/packages/*/project.json",

@@ -1,23 +1,65 @@
 name: 🧑‍⚖️ Validate Conventions
 
-# Pull request metadata only — branch name, title, and body. These are not Nx
-# targets and have no project graph to build, so this workflow deliberately
-# skips `setup-codebase`: no Nx cache, no uv, no Homebrew, no full install.
+# Pull request metadata only — branch name, title, body, labels, and
+# assignees. These are not Nx targets and have no project graph to build, so
+# this workflow deliberately skips `setup-codebase`: no Nx cache, no uv, no
+# Homebrew, no full install.
 #
 # The repository-convention checks that used to live here (conformetry,
 # codometer, and the synchronization checks) are `lint-codebase` dependsOn
 # leaves now, so they run once per change instead of once per workflow.
+#
+# On `opened`/`reopened` the conventional label vocabulary is reconciled
+# against the repository before metadata validation runs, so a freshly
+# opened pull request has the labels it needs to pass.
+#
+# That reconciliation is a nest-commander command in `tools/synchronization`,
+# run through node directly rather than through Nx — the same invocation that
+# project's own targets use — so this workflow still builds no project graph.
+# It is the `repository` synchronization kind, which nothing else selects:
+# `lint-codebase` checks `derivation` and the release workflow writes
+# `derivation,report`, so neither of them needs a token.
+#
+# The metadata and body checks are nest-commander commands in
+# `tools/validation`, invoked the same way and for the same reason. Both are
+# one-sided — a `check` with no `write` to reconcile against — which is why
+# they live there rather than beside the label synchronizer.
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, edited]
+    types:
+      [
+        opened,
+        reopened,
+        synchronize,
+        edited,
+        labeled,
+        unlabeled,
+        assigned,
+        unassigned,
+        milestoned,
+        demilestoned,
+        ready_for_review,
+        converted_to_draft,
+        review_requested,
+        review_request_removed,
+      ]
 
 permissions:
   contents: read
+  # Label creation and updates are issues-scoped endpoints, not pull-request
+  # ones, so this write permission exists solely for that reconciliation step.
+  issues: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Deliberately not cancelling. One `gh pr edit` that adds a few labels and
+  # an assignee fires several of the events above within a second, and this
+  # workflow is a required check: were a `cancelled` conclusion to land after
+  # a successful one, the check would sit red with no further event left to
+  # clear it, leaving the pull request unmergeable. These runs take about
+  # thirty seconds and build no Nx graph, so cancelling saves almost nothing.
+  cancel-in-progress: false
 
 jobs:
   validate-conventions:
@@ -42,12 +84,19 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
 
-      # commitlint and validate-branch-name are the only dependencies these
-      # checks need, and both live in the root manifest.
+      # commitlint and validate-branch-name live in the root manifest; the label
+      # reconciliation step and the two validation steps below run their CLIs
+      # directly through node rather than through Nx, so those two projects and
+      # the workspace packages they import are all this needs on top. The
+      # trailing `...` on each filter resolves those transitively, so nothing
+      # here names `@codebase/logger` or the conformetry packages by hand.
+      # Still no Nx cache, no uv, and no Homebrew: there is no project graph to
+      # build.
       - name: 📚 Install Root Dependencies
         run: |
           CI=true pnpm install --frozen-lockfile --reporter=append-only \
-            --filter . --ignore-scripts
+            --filter . --filter synchronization... --filter validation... \
+            --ignore-scripts
 
       - name: 🎋 Validate Branch Name
         env:
@@ -75,25 +124,28 @@ jobs:
         env:
           PULL_REQUEST_BODY: ${{ github.event.pull_request.body }}
         run: |
-          if [ -z "$PULL_REQUEST_BODY" ]; then
-            echo "❌ Unable to determine Pull Request Body"
-            exit 1
-          fi
-          MISSING=""
-          printf '%s' "$PULL_REQUEST_BODY" | grep -q "^## 🌰 Summary" || \
-            MISSING="$MISSING 🌰 Summary"
-          printf '%s' "$PULL_REQUEST_BODY" | grep -q "^## 📝 Details" || \
-            MISSING="$MISSING 📝 Details"
-          printf '%s' "$PULL_REQUEST_BODY" | grep -q "^## 🧪 Testing" || \
-            MISSING="$MISSING 🧪 Testing"
-          printf '%s' "$PULL_REQUEST_BODY" | grep -q "^## 🔗 Related" || \
-            MISSING="$MISSING 🔗 Related"
-          if [ -n "$MISSING" ]; then
-            echo "❌ Missing required sections:$MISSING"
-            echo ""
-            echo "PR description must include: ## 🌰 Summary, " \
-              "## 📝 Details, ## 🧪 Testing, ## 🔗 Related"
-            echo "See: .github/PULL_REQUEST_TEMPLATE.md"
-            exit 1
-          fi
-          echo "✅ All required sections present"
+          NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+            tools/validation/src/main.ts pull-request-body
+
+      - name: 🏷️ Ensure Pull Request Labels
+        if: >-
+          github.event.action == 'opened' ||
+          github.event.action == 'reopened'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+            tools/synchronization/src/main.ts synchronization write \
+            --kinds repository
+
+      - name: 🧾 Validate Pull Request Metadata
+        env:
+          PULL_REQUEST_ASSIGNEES: >-
+            ${{ toJSON(github.event.pull_request.assignees) }}
+          PULL_REQUEST_LABELS: ${{ toJSON(github.event.pull_request.labels) }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+          PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+            tools/validation/src/main.ts pull-request-metadata

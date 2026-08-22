@@ -21,6 +21,19 @@ export const SYNCHRONIZATION_KIND_DERIVATION: SynchronizationKind =
 export const SYNCHRONIZATION_KIND_REPORT: SynchronizationKind = "report";
 
 /**
+ * A synchronization that reconciles state living outside the working tree.
+ *
+ * Its source is configuration a pull request can change, but its destination
+ * is the repository itself rather than a file, so reaching it needs
+ * credentials that neither a fork nor a developer's `lint-codebase` run has.
+ * Drift is therefore not a defect in the change under review and not
+ * something the release workflow publishes: the one caller holding a token
+ * asks for this kind by name.
+ */
+export const SYNCHRONIZATION_KIND_REPOSITORY: SynchronizationKind =
+  "repository";
+
+/**
  * Every kind `--kinds` accepts, in the order an error message lists them.
  *
  * Named here rather than spelled into each message, so the list a mistake is
@@ -29,6 +42,7 @@ export const SYNCHRONIZATION_KIND_REPORT: SynchronizationKind = "report";
 export const SYNCHRONIZATION_KINDS: SynchronizationKind[] = [
   SYNCHRONIZATION_KIND_DERIVATION,
   SYNCHRONIZATION_KIND_REPORT,
+  SYNCHRONIZATION_KIND_REPOSITORY,
 ];
 
 /**

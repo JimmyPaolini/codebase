@@ -111,7 +111,7 @@ jobs:
         run: |
           gh pr view "${PULL_REQUEST}" --json body --jq '.body' \
             >.pull-request-body.md
-          pnpm exec nx run reporting:report:bundles -- \
+          pnpm exec nx run reporting:start:bundles -- \
             --baseline .bundle-baseline \
             --baseline-url "${BASELINE_URL}" \
             --markdown .pull-request-body.md

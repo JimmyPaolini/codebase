@@ -8,6 +8,7 @@ import { ConventionalConfigCommand } from "../conventional-config/conventional-c
 import { DevcontainerConfigurationCommand } from "../devcontainer-configuration/devcontainer-configuration.command";
 import { NestjsModuleGraphsCommand } from "../nestjs-module-graphs/nestjs-module-graphs.command";
 import { NxProjectGraphsCommand } from "../nx-project-graphs/nx-project-graphs.command";
+import { PullRequestLabelsCommand } from "../pull-request-labels/pull-request-labels.command";
 import { PullRequestTemplateCommand } from "../pull-request-template/pull-request-template.command";
 import { SkillExclusionsCommand } from "../skill-exclusions/skill-exclusions.command";
 
@@ -45,6 +46,7 @@ export class SynchronizationCommand extends CommandRunner {
     private readonly logger: LoggerService,
     private readonly nestjsModuleGraphsCommand: NestjsModuleGraphsCommand,
     private readonly nxProjectGraphsCommand: NxProjectGraphsCommand,
+    private readonly pullRequestLabelsCommand: PullRequestLabelsCommand,
     private readonly pullRequestTemplateCommand: PullRequestTemplateCommand,
     private readonly skillExclusionsCommand: SkillExclusionsCommand,
     private readonly synchronizationKindsService: SynchronizationKindsService,
@@ -73,6 +75,7 @@ export class SynchronizationCommand extends CommandRunner {
       this.devcontainerConfigurationCommand,
       this.nestjsModuleGraphsCommand,
       this.nxProjectGraphsCommand,
+      this.pullRequestLabelsCommand,
       this.pullRequestTemplateCommand,
       this.skillExclusionsCommand,
     ];

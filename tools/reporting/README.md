@@ -8,8 +8,8 @@ the NestJS CLI that renders those reports, and splices each one into a document
 between its own markers.
 
 ```bash
-nx run reporting:report                      # every report
-nx run reporting:report:bundles              # just the bundle sizes report
+nx run reporting:start           # every report
+nx run reporting:start:bundles   # just the bundle sizes report
 ```
 
 It is the reporting counterpart to

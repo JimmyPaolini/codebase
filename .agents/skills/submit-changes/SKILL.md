@@ -92,7 +92,7 @@ Branch name format: `<type>/<scope>-<description>` (kebab-case, 2–4 keyword de
    ```
 
 > ✅ **Best practice:** Let Husky run signing checks automatically. The pre-commit hook runs `check-commit-signing-configuration.sh`, and the pre-push hook runs `check-push-commit-signatures.sh`.
-
+>
 > ⚠️ **Warning:** Do not invoke `scripts/git/check-push-commit-signatures.sh` directly during normal submits. It is designed for hook stdin input and can block or fail when run without ref-update data.
 
 ### If pre-commit hooks fail
@@ -121,14 +121,18 @@ gh pr list --head <branch> --state open
    - **📝 Details**: Bulleted list of meaningful changes
    - **🧪 Testing**: Relevant `nx run <project>:<target>` commands and manual steps
    - **🔗 Related**: Issue links discovered from branch name, commits, or `gh issue list --search`
-3. Create the PR:
+3. Labels: One `type:*` label matching the title's type, one `scope:*` label per title scope, and `source:agent` — this automation is opening the pull request, not a human.
+4. Create the PR:
 
    ```bash
    gh pr create \
      --title "<type>(<scope>): <gitmoji> <subject>" \
      --body "<generated body>" \
      --base main \
-     --assignee @me
+     --assignee @me \
+     --label type:<type> \
+     --label scope:<scope> \
+     --label source:agent
    ```
 
 For complete PR conventions and description guidelines, see [create-pull-request skill](../create-pull-request/SKILL.md).

@@ -10,8 +10,8 @@ import { SYNCHRONIZATION_KIND_DERIVATION } from "../synchronization/synchronizat
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import {
-  BLOCK_END_MARKER,
-  BLOCK_START_MARKER,
+  BLOCK_END_LABEL,
+  BLOCK_START_LABEL,
   SKILL_EXCLUSION_FILES,
 } from "./skill-exclusions.constants";
 
@@ -27,16 +27,19 @@ import type { SkillExclusionFile } from "./skill-exclusions.types";
  *
  * Installed skills are committed so a fresh worktree holds them, but they are
  * owned upstream, so anything that reaches `.agents/` has to skip them:
- * prettier scans `.`, codometer scans `--directory .`, and GitHub Linguist
- * reads every committed file. Each of the three lists one skill per line rather
- * than excluding `.agents/skills/` wholesale, so this repository's own skills in
- * the same directory keep being formatted, measured, and attributed.
+ * prettier scans `.`, codometer scans `--directory .`, GitHub Linguist reads
+ * every committed file, and cspell and markdownlint both reach `.agents/`
+ * because this repository's own skills there are documentation. Each of the
+ * five lists one skill per line rather than excluding `.agents/skills/`
+ * wholesale, so this repository's own skills in the same directory keep being
+ * formatted, measured, attributed, spell-checked, and markdown-linted.
  *
- * Generating them is what keeps the three in step with the lockfile. A skill
- * `skills update` adds is committed but invisible to all three until someone
+ * Generating them is what keeps the five in step with the lockfile. A skill
+ * `skills update` adds is committed but invisible to all five until someone
  * adds it, and nothing else would notice — the symptom is a silently reformatted
- * upstream file, a badge counting somebody else's code, or a language bar
- * dominated by a vendored bundle.
+ * upstream file, a badge counting somebody else's code, a language bar dominated
+ * by a vendored bundle, or a spelling and markdown gate failing on prose this
+ * repository has no right to correct.
  */
 @Command({
   description: "Run the skill-exclusions command",
@@ -62,7 +65,7 @@ export class SkillExclusionsCommand
   // 🔑 Public Fields
 
   /**
-   * A derivation: the three lists are generated from `skills-lock.json`, and
+   * A derivation: the five lists are generated from `skills-lock.json`, and
    * drift is the author of a lockfile change not having regenerated them — hers
    * to fix in the same change, so it is checked on the pull request.
    */
@@ -93,21 +96,26 @@ export class SkillExclusionsCommand
       path.join(process.cwd(), file.filePath),
       "utf8",
     );
-    const startIndex = content.indexOf(BLOCK_START_MARKER);
-    const endIndex = content.indexOf(BLOCK_END_MARKER);
+    const startMarker = this.renderStartMarker(file);
+    const endMarker = this.renderEndMarker(file);
+    const startIndex = content.indexOf(startMarker);
+    const endIndex = content.indexOf(endMarker);
 
     if (startIndex === -1 || endIndex === -1 || endIndex < startIndex) {
       throw new Error(
-        `Markers not found in ${file.filePath}. Expected to find "${BLOCK_START_MARKER}" and "${BLOCK_END_MARKER}"`,
+        `Markers not found in ${file.filePath}. Expected to find "${startMarker}" and "${endMarker}"`,
       );
     }
 
-    const contentStart = startIndex + BLOCK_START_MARKER.length;
+    const contentStart = startIndex + startMarker.length;
+    // The closing marker keeps whatever indentation its line carries, which is
+    // what lets a block sit inside an indented YAML sequence or JSONC array.
+    const endLineStart = content.lastIndexOf("\n", endIndex) + 1;
 
     return {
-      afterMarker: content.slice(endIndex),
+      afterMarker: content.slice(endLineStart),
       beforeMarker: content.slice(0, contentStart),
-      generatedContent: content.slice(contentStart, endIndex),
+      generatedContent: content.slice(contentStart, endLineStart),
     };
   }
 
@@ -128,6 +136,16 @@ export class SkillExclusionsCommand
     return skillNames
       .map((skillName) => file.renderEntry(skillName))
       .join("\n");
+  }
+
+  /** The comment closing this file's generated block, in its own syntax. */
+  private renderEndMarker(file: SkillExclusionFile): string {
+    return `${file.commentPrefix} ${BLOCK_END_LABEL}`;
+  }
+
+  /** The comment opening this file's generated block, in its own syntax. */
+  private renderStartMarker(file: SkillExclusionFile): string {
+    return `${file.commentPrefix} ${BLOCK_START_LABEL}`;
   }
 
   /** Rewrites every file's generated block. */

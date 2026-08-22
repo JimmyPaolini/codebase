@@ -76,5 +76,12 @@ jobs:
             openwiki/**
             AGENTS.md
             .github/workflows/refresh-documentation.yml
+          # The type:, scope:, and source: labels and the assignee are what
+          # 🧑‍⚖️ Validate Conventions requires of every pull request, this
+          # one included. The type and scope mirror the title above.
           labels: |
             automated
+            type:docs
+            scope:documentation
+            source:agent
+          assignees: JimmyPaolini

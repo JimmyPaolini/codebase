@@ -31,9 +31,8 @@ Use this skill when:
 
 ## Related Skills
 
-- [Imports conventions](../imports-conventions/SKILL.md)
-- [Handle error](../handle-error/SKILL.md)
-- [Write comment](../write-comment/SKILL.md)
+- [Handle error](../handle-errors/SKILL.md)
+- [Write comment](../write-comments/SKILL.md)
 - [Validate code](../validate-code/SKILL.md)
 
 ## Verification
