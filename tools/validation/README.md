@@ -110,6 +110,7 @@ The modules this project defines and the imports between them, published by `nx 
 ```mermaid
 flowchart LR
   subgraph group0["validation"]
+    CatalogManifestsModule
     MainModule
     PullRequestMetadataModule
   end
@@ -118,6 +119,7 @@ flowchart LR
   end
   ConfigModule([ConfigModule])
   DiscoveryModule
+  MainModule --> CatalogManifestsModule
   MainModule --> DiscoveryModule
   MainModule --> PullRequestMetadataModule
 ```

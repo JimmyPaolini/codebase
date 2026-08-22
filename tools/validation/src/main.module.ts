@@ -5,6 +5,7 @@ import { DiscoveryModule } from "@nestjs/core";
 import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
+import { CatalogManifestsModule } from "./modules/catalog-manifests/catalog-manifests.module";
 import { PullRequestMetadataModule } from "./modules/pull-request-metadata/pull-request-metadata.module";
 
 /**
@@ -18,6 +19,7 @@ import { PullRequestMetadataModule } from "./modules/pull-request-metadata/pull-
       validate: (config: Record<string, unknown>) =>
         environmentSchema.parse(config),
     }),
+    CatalogManifestsModule,
     DiscoveryModule,
     LoggerModule,
     PullRequestMetadataModule,
