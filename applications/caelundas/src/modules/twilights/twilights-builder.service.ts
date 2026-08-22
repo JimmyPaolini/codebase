@@ -36,8 +36,9 @@ export class TwilightsBuilderService {
   ): Event {
     const summary = `${emoji} ${description}`;
     const dateString = date.clone().tz("America/New_York").toISOString(true);
-    this.logger.log(`🗓️ Built ${summary}`, undefined, {
+    this.logger.info("🗓️ Built a calendar event", undefined, {
       at: dateString,
+      summary,
     });
 
     return {

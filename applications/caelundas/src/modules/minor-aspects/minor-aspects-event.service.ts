@@ -59,7 +59,7 @@ export class MinorAspectsEventService {
       body1,
       body2,
       log: (message, data) => {
-        this.logger.log(message, undefined, data);
+        this.logger.info(message, undefined, data);
       },
       phase,
       timestamp,

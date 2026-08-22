@@ -298,7 +298,7 @@ describe("main end-to-end suite", () => {
           aspectsUtilitiesService,
         );
         const majorAspectProgressiveService = new MajorAspectProgressiveService(
-          new ProgressiveAspectService(),
+          new ProgressiveAspectService(new LoggerService()),
           progressiveUtilitiesService,
         );
         const ephemerisService = new EphemerisService(

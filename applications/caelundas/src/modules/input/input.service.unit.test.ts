@@ -1,7 +1,10 @@
+import { createMock } from "@golevelup/ts-vitest";
 import { ConfigService } from "@nestjs/config";
 import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
+
+import { LoggerService } from "@codebase/logger";
 
 import { mockDates } from "../../../testing/mocks";
 import { environmentSchema } from "../../constants";
@@ -10,9 +13,11 @@ import { inputSchema } from "./input.constants";
 import { InputService } from "./input.service";
 
 import type { Environment } from "./input.types";
+import type { DeepMocked } from "@golevelup/ts-vitest";
 
 describe(InputService, () => {
   let service: InputService;
+  let mockLoggerService: DeepMocked<LoggerService>;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -22,9 +27,11 @@ describe(InputService, () => {
           provide: ConfigService,
           useValue: { get: vi.fn<ConfigService["get"]>() },
         },
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
     service = await module.resolve(InputService);
+    mockLoggerService = module.get(LoggerService);
   });
 
   it("is defined", () => {
@@ -102,7 +109,7 @@ describe(InputService, () => {
           (key: string) => environment[key as keyof Environment],
         ),
       } as unknown as ConfigService<Environment>;
-      return new InputService(configService);
+      return new InputService(configService, createMock<LoggerService>());
     }
 
     it("parses valid environment into an Input domain object", () => {
@@ -119,6 +126,22 @@ describe(InputService, () => {
       expect(result.timezone).toBe("America/New_York");
       expect(moment.isMoment(result.start)).toBe(true);
       expect(moment.isMoment(result.end)).toBe(true);
+    });
+
+    it("logs the parsed input configuration on success", () => {
+      const result = service.parse();
+
+      expect(mockLoggerService.debug).toHaveBeenCalledWith(
+        "📥 Parsed input configuration",
+        undefined,
+        {
+          endDate: result.end.toISOString(),
+          latitude: result.latitude,
+          longitude: result.longitude,
+          startDate: result.start.toISOString(),
+          timezone: result.timezone,
+        },
+      );
     });
 
     it("uses Philadelphia defaults when coordinates are omitted", () => {

@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { LoggerService } from "@codebase/logger";
+
 import type { Event } from "../calendar/calendar.types";
 import type { TypedAspectParts } from "./progressive.types";
 
@@ -11,7 +13,9 @@ import type { TypedAspectParts } from "./progressive.types";
 export class ProgressiveAspectService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext(ProgressiveAspectService.name);
+  }
 
   // 🔐 Private Fields
 
@@ -291,8 +295,15 @@ export class ProgressiveAspectService {
         isAspect,
         isBody,
       });
-    } catch {
-      throw new Error(errorMessage);
+    } catch (originalError) {
+      this.logger.error("📐 Failed extracting typed aspect parts", undefined, {
+        categories,
+        reason:
+          originalError instanceof Error
+            ? originalError.message
+            : String(originalError),
+      });
+      throw new Error(errorMessage, { cause: originalError });
     }
   }
 }

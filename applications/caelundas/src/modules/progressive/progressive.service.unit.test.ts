@@ -215,9 +215,9 @@ describe(ProgressiveService, () => {
       );
 
       expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining("my-label"),
+        "🔀 Mismatched progressive event counts",
         undefined,
-        expect.any(Object),
+        { beginnings: 2, endings: 1, label: "my-label" },
       );
 
       warnSpy.mockRestore();

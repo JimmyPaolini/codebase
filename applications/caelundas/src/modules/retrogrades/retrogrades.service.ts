@@ -256,8 +256,9 @@ export class RetrogradesService {
     const description = `${bodyCapitalized} Stationary ${orbitalDirectionCapitalized}`;
     const summary = `${retrogradeBodySymbol} ${orbitalDirectionSymbol} ${description}`;
 
-    this.logger.log(`🗓️ Built ${summary}`, undefined, {
+    this.logger.info("🗓️ Built a calendar event", undefined, {
       at: timestamp.toISOString(),
+      summary,
     });
 
     const retrogradeEvent: Event = {
