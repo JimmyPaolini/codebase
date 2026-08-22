@@ -204,11 +204,11 @@ Fix: Edit the PR description in the GitHub UI so all four sections are present a
 
 #### 🏷️ Ensure Pull Request Labels
 
-Script: [scripts/git/ensure-pull-request-labels.sh](../../../scripts/git/ensure-pull-request-labels.sh)
+Command: `synchronization write --kinds repository`, the [pull-request-labels](../../../tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts) synchronizer
 
-Runs only on `opened`/`reopened`, with `continue-on-error: true`, so it never fails the job by itself. It reconciles the repository's `type:*`, `scope:*`, `do-not-merge`, `source:agent`, and `source:human` labels against [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs) — creating or updating whichever ones drifted.
+Runs only on `opened`/`reopened`, with `continue-on-error: true`, so it never fails the job by itself. It reconciles the repository's `type:*`, `scope:*`, `do-not-merge`, `source:agent`, and `source:human` labels against [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs) — creating or updating whichever ones drifted. It never deletes: a stale label is reported with the `gh label delete` command that would remove it, for a human to run.
 
-Fix: A `⚠️ Unable to reconcile labels` warning here (for example on a fork pull request without `issues: write`) does not block the job — the next step still runs and reports its own failure if a label it needs is missing.
+Fix: A `⚠️ Unable to reconcile labels` warning here (for example on a fork pull request without `issues: write`) does not block the job — the next step still runs and reports its own failure if a label it needs is missing. Reproduce it locally, without mutating anything, with `nx run synchronization:start:pull-request-labels-check`.
 
 On a pull request from a fork, `GITHUB_TOKEN` is read-only no matter what the `permissions:` block asks for, so this step can only warn and an outside contributor can neither create labels nor label or assign themselves in this repository. Someone with write access here has to add the labels and an assignee on their behalf before 🧾 Validate Pull Request Metadata can go green.
 
