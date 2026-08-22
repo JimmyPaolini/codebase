@@ -18,6 +18,7 @@ import { WorkspaceModule } from "../workspace/workspace.module";
 
 import { CallidescopeCommand } from "./callidescope.command";
 import { CallidescopeService } from "./callidescope.service";
+import { RunPlanService } from "./run-plan.service";
 
 /**
  * NestJS module that wires the callidescope command and its analysis services.
@@ -41,6 +42,6 @@ import { CallidescopeService } from "./callidescope.service";
     ReportModule,
     WorkspaceModule,
   ],
-  providers: [CallidescopeCommand, CallidescopeService],
+  providers: [CallidescopeCommand, CallidescopeService, RunPlanService],
 })
 export class CallidescopeModule {}

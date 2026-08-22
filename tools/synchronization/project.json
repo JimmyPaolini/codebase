@@ -79,14 +79,14 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization check"
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization check --kinds derivation"
         },
         "write": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization write"
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization write --kinds derivation,report"
         }
       },
       "defaultConfiguration": "check",
-      "description": "Run every synchronization command in one process. This is what lint-codebase depends on \u2014 it cannot depend on `start`, because other projects use that name to launch an application. `start` (default configuration) runs the same thing for interactive use.",
+      "description": "Run synchronizations in one process rather than one `nx run` per command. It exists alongside `start` because other projects use that target name to launch an application. Two configurations and no third: `check` drives the `derivation` kind alone, because a derived file's drift is the author's to fix in the same change while a report's drift is only the branch being behind the default branch; `write` names both kinds, so it writes derivations and publishes reports, and the release workflow runs it on the default branch. Which kind a synchronization is, its own command declares. This target is absent from `lint-codebase`'s `dependsOn`, exactly as `codebase:codometer` is: Nx forwards an explicit configuration down `dependsOn`, so a target reachable from there would take `write` from `lint-codebase --configuration=write` and publish report blocks from a branch. Nothing forwards anything here, so the derivation gate is named on its own wherever it runs: the Lint Codebase workflow and `configuration/lint-staged.config.ts` each name `check` alongside `lint-codebase` in one `nx affected` invocation, so a pull request and a commit both still check drift. One gap the commit path cannot close: nothing in `inputs` globs `package.json`, so a commit staging only a manifest changes the Nx project graph, drifts `nx-project-graphs`, and never selects this project. The pull request catches it, resolving `affected` against the merge base rather than a staged path list. `write` names its kinds rather than omitting `--kinds`, so the target says what it writes; the absent flag meaning every kind is what `start` uses for interactive runs.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.ts",
