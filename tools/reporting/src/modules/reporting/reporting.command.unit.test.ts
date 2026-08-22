@@ -16,6 +16,7 @@ import { ReportingService } from "./reporting.service";
 
 describe(ReportingCommand, () => {
   let command: ReportingCommand;
+  let logger: LoggerService;
   const renderReport = vi.fn<() => string>(() => "## 🎒 Bundles\n\nmeasured");
   const temporaryDirectories: string[] = [];
 
@@ -47,6 +48,7 @@ describe(ReportingCommand, () => {
     }).compile();
 
     command = await module.resolve(ReportingCommand);
+    logger = await module.resolve(LoggerService);
   });
 
   afterAll(() => {
@@ -94,6 +96,27 @@ describe(ReportingCommand, () => {
 
     expect(written).toContain("<!-- bundle-sizes:start -->");
     expect(written).toContain("measured");
+  });
+
+  it("logs an entry marker before rendering and a summary after", async () => {
+    const markdown = path.join(makeDirectory(), "document.md");
+
+    await command.run([], { markdown });
+
+    expect(logger.debug).toHaveBeenCalledWith(
+      "📝 Rendering reports",
+      undefined,
+      {
+        count: 1,
+      },
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      "📝 Rendered the reports",
+      undefined,
+      {
+        count: 1,
+      },
+    );
   });
 
   it("passes the baseline options down to each report", async () => {

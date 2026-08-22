@@ -94,11 +94,16 @@ export class ReportingCommand extends CommandRunner {
       output: undefined,
     };
 
+    this.logger.debug("📝 Rendering reports", undefined, {
+      count: reports.length,
+    });
+
     for (const report of reports) {
       await this.reportingService.emit(report, reportOptions, destination);
     }
 
-    const plural = reports.length === 1 ? "report" : "reports";
-    this.logger.log(`📝 Rendered ${reports.length} ${plural}`);
+    this.logger.info("📝 Rendered the reports", undefined, {
+      count: reports.length,
+    });
   }
 }

@@ -95,6 +95,11 @@ export class BundlesCommand extends CommandRunner implements ReportableCommand {
       workingDirectory: process.cwd(),
     });
 
+    this.logger.info("🎒 Collected the bundle report", undefined, {
+      failures: collection.failures.length,
+      rows: collection.rows.length,
+    });
+
     return this.bundleMarkdownService.renderSection({
       baselineUrl: options.baselineUrl,
       failures: collection.failures,
