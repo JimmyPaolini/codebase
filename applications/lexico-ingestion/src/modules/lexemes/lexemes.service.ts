@@ -152,9 +152,10 @@ export class LexemesService {
 
     if (!validPOS.has(partOfSpeech)) {
       if (!skipPOS.has(partOfSpeech)) {
-        this.logger.debug(
-          `🏷️ Skipping part of speech "${partOfSpeech}" for "${word}"`,
-        );
+        this.logger.debug("🏷️ Skipping unsupported part of speech", undefined, {
+          partOfSpeech,
+          word,
+        });
       }
       return null;
     }
@@ -163,9 +164,9 @@ export class LexemesService {
       this.partOfSpeechService.getFirstPrincipalPartName(partOfSpeech);
     if (firstPrincipalPartName === undefined) {
       this.logger.debug(
-        `🏷️ Skipping "${word}" without a principal-part name`,
+        "🏷️ Skipping word without a principal-part name",
         undefined,
-        { partOfSpeech },
+        { partOfSpeech, word },
       );
       return null;
     }
@@ -182,13 +183,11 @@ export class LexemesService {
       });
       return lexeme;
     } catch (error) {
-      this.logger.warn(
-        `🧩 Failed parsing ${lexeme.lemma}:${lexeme.disambiguator}`,
-        undefined,
-        {
-          reason: String(error),
-        },
-      );
+      this.logger.warn("🧩 Failed parsing lexeme", undefined, {
+        disambiguator: lexeme.disambiguator,
+        lemma: lexeme.lemma,
+        reason: String(error),
+      });
       return null;
     }
   }
@@ -313,7 +312,9 @@ export class LexemesService {
     const headwordElements = $("p:has(strong.Latn.headword)").toArray();
 
     if (headwordElements.length === 0) {
-      this.logger.warn(`🔤 Missing headwords for "${wiktionaryPage.word}"`);
+      this.logger.warn("🔤 Missing headwords for word", undefined, {
+        word: wiktionaryPage.word,
+      });
       return [];
     }
 
@@ -339,8 +340,9 @@ export class LexemesService {
 
     await this.saveLexemeRelations(lexeme, savedLexeme);
 
-    this.logger.debug(`🔑 Upserted lexeme "${lexeme.lemma}"`, undefined, {
+    this.logger.debug("🔑 Upserted lexeme", undefined, {
       disambiguator: lexeme.disambiguator,
+      lemma: lexeme.lemma,
     });
     return savedLexeme;
   }

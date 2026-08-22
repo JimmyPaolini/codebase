@@ -637,6 +637,9 @@ describe(LiteratureService, () => {
     expect(first.get("amo")).toBe("word-1");
     expect(second.get("cano")).toBe("word-2");
     expect(wordRepository.find).toHaveBeenCalledTimes(1);
+    expect(logger.info).toHaveBeenCalledWith("📖 Cached words", undefined, {
+      count: 2,
+    });
   });
 
   it("should extract tokens and attach mapped word ids", () => {
@@ -879,6 +882,11 @@ describe(LiteratureService, () => {
     );
 
     expect(tokenRepository.upsert).toHaveBeenCalledTimes(1);
+    expect(logger.info).toHaveBeenCalledWith(
+      "💾 Saving tokens for text",
+      undefined,
+      { count: 2, title: "Aeneid" },
+    );
   });
 
   it("should warn when ingesting text without paragraphs", async () => {
@@ -909,7 +917,9 @@ describe(LiteratureService, () => {
 
     expect(getWordsCacheSpy).toHaveBeenCalledTimes(1);
     expect(logger.warn).toHaveBeenCalledWith(
-      "📜 Missing lines in vergil/aeneid",
+      "📜 Missing lines in text",
+      undefined,
+      { slug: "vergil/aeneid" },
     );
   });
 
@@ -993,6 +1003,11 @@ describe(LiteratureService, () => {
     expect(upsertTokensSpy).toHaveBeenCalledWith(
       [{ data: "amo", index: 0 }],
       text,
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      "📜 Parsing lines for text",
+      undefined,
+      { title: "Aeneid" },
     );
   });
 
@@ -1150,6 +1165,9 @@ describe(LiteratureService, () => {
     );
     expect(ensureParentTextsSpy).toHaveBeenCalledTimes(1);
     expect(ingestTextChunksSpy).toHaveBeenCalledTimes(1);
+    expect(logger.info).toHaveBeenCalledWith("👤 Starting author", undefined, {
+      authorSlug: "unknown-author",
+    });
   });
 
   it("should save text metadata and parent relation when present", async () => {
@@ -1418,5 +1436,11 @@ describe(LiteratureService, () => {
 
     expect(result).toStrictEqual(entries);
     expect(ingestAuthorGroupSpy).toHaveBeenCalledTimes(2);
+    expect(logger.info).toHaveBeenCalledWith("👤 Completed author", undefined, {
+      authorSlug: "ovid",
+      current: 2,
+      percent: 100,
+      total: 2,
+    });
   });
 });

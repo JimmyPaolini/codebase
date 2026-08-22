@@ -194,12 +194,12 @@ export class DictionaryCommand extends CommandRunner {
   private loadWiktionaryPageForWord(word: string): null | WiktionaryPage {
     const filePath = this.getWiktionaryFilePathForWord(word);
     if (!filePath) {
-      this.logger.warn(`📄 Missing data file for "${word}"`);
+      this.logger.warn("📄 Missing data file for word", undefined, { word });
       return null;
     }
     const page = this.readWiktionaryPageFromFile(filePath);
     if (!page) {
-      this.logger.warn(`📄 Missing data file for "${word}"`);
+      this.logger.warn("📄 Missing data file for word", undefined, { word });
       return null;
     }
     return page;
@@ -236,7 +236,7 @@ export class DictionaryCommand extends CommandRunner {
       });
     } catch (error: unknown) {
       const { logLine } = this.logger.buildErrorLogEntry(file, error);
-      this.logger.error(`📄 Failed processing ${file}`);
+      this.logger.error("📄 Failed processing file", undefined, { file });
       fs.appendFileSync(this.errorLogFilePath, logLine);
     }
   }
@@ -264,7 +264,9 @@ export class DictionaryCommand extends CommandRunner {
       ) ?? lexemes[0];
 
     if (!lexeme) {
-      this.logger.warn(`🔑 Missing lexeme for reference "${reference}"`);
+      this.logger.warn("🔑 Missing lexeme for reference", undefined, {
+        reference,
+      });
       return;
     }
 
@@ -316,11 +318,10 @@ export class DictionaryCommand extends CommandRunner {
    */
   async ingestAll(startLemma?: string, endLemma?: string): Promise<void> {
     if (!fs.existsSync(this.dataDirectory)) {
-      this.logger.warn(
-        `📁 Missing data directory ${this.dataDirectory}`,
-        undefined,
-        { hint: "Run the Wikipedia dump extraction first" },
-      );
+      this.logger.warn("📁 Missing data directory", undefined, {
+        dataDirectory: this.dataDirectory,
+        hint: "Run the Wikipedia dump extraction first",
+      });
       return;
     }
 
@@ -330,7 +331,9 @@ export class DictionaryCommand extends CommandRunner {
 
     const files = this.getLemmaFileRange(allFiles, startLemma, endLemma);
 
-    this.logger.log(`📖 Processing ${files.length} lexemes`);
+    this.logger.info("📖 Processing lexemes", undefined, {
+      count: files.length,
+    });
 
     let current = 0;
     const total = files.length;
@@ -340,7 +343,7 @@ export class DictionaryCommand extends CommandRunner {
       await this.processFile(file, current, total);
     }
 
-    this.logger.log("📖 Ingested dictionary");
+    this.logger.info("📖 Ingested dictionary");
   }
 
   /**
@@ -360,11 +363,20 @@ export class DictionaryCommand extends CommandRunner {
         throw new Error(`Missing HTML data in file for word: ${word}`);
       }
 
-      const progressString = progress
-        ? ` (${((progress.current / progress.total) * 100).toFixed(2)}%, ${progress.current}/${progress.total})`
-        : "";
+      const progressData = progress
+        ? {
+            current: progress.current,
+            percent: Number(
+              ((progress.current / progress.total) * 100).toFixed(2),
+            ),
+            total: progress.total,
+          }
+        : {};
 
-      this.logger.log(`📝 Ingesting lexeme "${word}"${progressString}`);
+      this.logger.info("📝 Ingesting lexeme", undefined, {
+        word,
+        ...progressData,
+      });
       const parsedLexemes = await this.lexemesService.parseLexemes(page);
       for (const lexeme of parsedLexemes) {
         const saved = await this.lexemesService.saveParsedLexeme(lexeme);
@@ -372,7 +384,10 @@ export class DictionaryCommand extends CommandRunner {
 
         await this.processTranslationReferences(saved);
       }
-      this.logger.log(`📝 Ingested lexeme "${word}"${progressString}`);
+      this.logger.info("📝 Ingested lexeme", undefined, {
+        word,
+        ...progressData,
+      });
     } finally {
       this.inProgressWords.delete(word);
     }
@@ -458,8 +473,8 @@ export class DictionaryCommand extends CommandRunner {
     _arguments: string[],
     options: DictionaryCommandOptions,
   ): Promise<void> {
-    this.logger.log(`📖 Ingesting dictionary...`);
-    this.logger.log(`⚙️ Parsed command options`, undefined, { options });
+    this.logger.info("📖 Ingesting dictionary");
+    this.logger.info("⚙️ Parsed command options", undefined, { options });
     const startTime = performance.now();
 
     const startLemma = await this.parseStartLemma(
@@ -475,6 +490,8 @@ export class DictionaryCommand extends CommandRunner {
 
     const endTime = performance.now();
     const duration = ((endTime - startTime) / 1000).toFixed(2);
-    this.logger.log(`📖 Ingested dictionary in ${duration} seconds`);
+    this.logger.info("📖 Ingested dictionary", undefined, {
+      durationSeconds: duration,
+    });
   }
 }

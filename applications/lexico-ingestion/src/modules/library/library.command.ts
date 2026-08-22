@@ -119,6 +119,16 @@ export class LibraryCommand extends CommandRunner {
   }
 
   /**
+   * Returns whether an unknown error is Node's "file or directory not found" error.
+   */
+  private isMissingDirectoryError(error: unknown): boolean {
+    return (
+      error instanceof Error &&
+      (error as NodeJS.ErrnoException).code === "ENOENT"
+    );
+  }
+
+  /**
    * Parses and normalizes inputs for library provider orchestration.
    */
   private async parseIngestOptions(options: LibraryCommandOptions): Promise<{
@@ -152,19 +162,24 @@ export class LibraryCommand extends CommandRunner {
   }): Promise<void> {
     const { current, ingestOptions, provider, total } = args;
     const providerName = provider.name;
-    this.logger.log(`🏛️ Starting ingestion for provider: ${providerName}`);
+    this.logger.info("🏛️ Starting ingestion for provider", undefined, {
+      providerName,
+    });
     try {
       await provider.ingest(ingestOptions);
 
-      const progressString = ` (${((current / total) * 100).toFixed(2)}%, ${current}/${total})`;
-      this.logger.log(
-        `🏛️ Completed ingestion for provider: ${providerName}${progressString}`,
-      );
+      this.logger.info("🏛️ Completed ingestion for provider", undefined, {
+        current,
+        percent: Number(((current / total) * 100).toFixed(2)),
+        providerName,
+        total,
+      });
     } catch (error: unknown) {
       const { logLine } = this.logger.buildErrorLogEntry(provider.name, error);
       this.logger.error(
-        `🔌 Failed running provider ${providerName}`,
+        "🔌 Failed running provider",
         error instanceof Error ? error.stack : undefined,
+        { providerName },
       );
       await fs.appendFile(this.logFilePath, logLine);
     }
@@ -237,8 +252,13 @@ export class LibraryCommand extends CommandRunner {
         if (!provider.isDirectory()) continue;
         await this.scanLibraryProvider(dataDirectory, provider.name, texts);
       }
-    } catch {
-      // Ignore if data directory doesn't exist yet
+    } catch (error) {
+      if (!this.isMissingDirectoryError(error)) {
+        this.logger.warn("⚠️ Failed reading the library directory", undefined, {
+          dataDirectory,
+          reason: error instanceof Error ? error.message : String(error),
+        });
+      }
     }
     return texts;
   }
@@ -447,8 +467,8 @@ export class LibraryCommand extends CommandRunner {
     _arguments: string[],
     options: LibraryCommandOptions,
   ): Promise<void> {
-    this.logger.log("📚 Starting library ingestion...");
-    this.logger.log(`⚙️ Parsed command options`, undefined, { options });
+    this.logger.info("📚 Starting library ingestion");
+    this.logger.info("⚙️ Parsed command options", undefined, { options });
     const startTime = performance.now();
 
     const dataPath = path.resolve("data", "library");
@@ -478,7 +498,7 @@ export class LibraryCommand extends CommandRunner {
 
     const endTime = performance.now();
     const duration = ((endTime - startTime) / 1000).toFixed(2);
-    this.logger.log(`📚 Ingested library`, undefined, {
+    this.logger.info("📚 Ingested library", undefined, {
       durationSeconds: duration,
     });
   }

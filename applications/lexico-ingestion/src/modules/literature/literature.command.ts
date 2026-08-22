@@ -258,12 +258,12 @@ export class LiteratureCommand extends CommandRunner {
     _arguments: string[],
     options: LiteratureCommandOptions,
   ): Promise<void> {
-    this.logger.log(`📚 Starting literature ingestion...`);
-    this.logger.log(`⚙️ Parsed command options`, undefined, { options });
+    this.logger.info("📚 Starting literature ingestion");
+    this.logger.info("⚙️ Parsed command options", undefined, { options });
     const startTime = performance.now();
     const library = await this.helper.scanLibrary();
     if (library.length === 0) {
-      this.logger.warn(`📚 Missing texts in the data/library directory`);
+      this.logger.warn("📚 Missing texts in the data/library directory");
       return;
     }
     const provider = await this.parseProvider(options.provider ?? undefined);
@@ -282,11 +282,13 @@ export class LiteratureCommand extends CommandRunner {
       provider,
       text,
     });
-    this.logger.log(`📚 Selected ${textsToIngest.length} texts for ingestion.`);
+    this.logger.info("📚 Selected texts for ingestion", undefined, {
+      count: textsToIngest.length,
+    });
     await this.helper.ingestAllAuthors(textsToIngest);
     const endTime = performance.now();
     const duration = ((endTime - startTime) / 1000).toFixed(2);
-    this.logger.log(`📚 Ingested literature`, undefined, {
+    this.logger.info("📚 Ingested literature", undefined, {
       durationSeconds: duration,
     });
   }

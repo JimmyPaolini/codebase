@@ -49,7 +49,9 @@ export class LatinLibraryCommand extends CommandRunner {
   ): Promise<string> {
     const response = await fetch(parsedUrl.href);
     if (!response.ok) {
-      this.logger.warn(`📥 Failed fetching ${parsedUrl.href}`);
+      this.logger.warn("📥 Failed fetching", undefined, {
+        url: parsedUrl.href,
+      });
       return "";
     }
     const text = await response.text();
@@ -95,11 +97,13 @@ export class LatinLibraryCommand extends CommandRunner {
       // File does not exist, continue to download
     }
 
-    this.logger.log(`📥 Downloading: ${parsed.href}`);
+    this.logger.info("📥 Downloading", undefined, { url: parsed.href });
     try {
       return await this.downloadAndSaveLatinLibraryFile(parsed, targetPath);
     } catch (error) {
-      this.logger.error(`📥 Failed downloading ${parsed.href}`, String(error));
+      this.logger.error("📥 Failed downloading", String(error), {
+        url: parsed.href,
+      });
       return "";
     }
   }
@@ -353,7 +357,9 @@ export class LatinLibraryCommand extends CommandRunner {
       }
     } catch (error: unknown) {
       const { logLine } = this.logger.buildErrorLogEntry(urlString, error);
-      this.logger.error(`📜 Failed processing ${urlString}`, String(error));
+      this.logger.error("📜 Failed processing", String(error), {
+        urlString,
+      });
       await fs.appendFile(this.errorLogFilePath, logLine);
     }
   }
@@ -374,7 +380,9 @@ export class LatinLibraryCommand extends CommandRunner {
    */
   async run(): Promise<void> {
     const host = this.sourceHost;
-    this.logger.log(`🕷️ Starting to scrape The Latin Library from ${host}`);
+    this.logger.info("🕷️ Starting to scrape The Latin Library", undefined, {
+      host,
+    });
 
     await fs.mkdir(this.sourceDataDirectory, { recursive: true });
 
@@ -402,8 +410,10 @@ export class LatinLibraryCommand extends CommandRunner {
 
     this.enqueueAuthorUrls(finalAuthorUrls, host, enqueue);
 
-    this.logger.log(
-      `🕸️ Queueing ${queue.length} author root pages for deep crawl...`,
+    this.logger.info(
+      "🕸️ Queueing author root pages for deep crawl",
+      undefined,
+      { count: queue.length },
     );
 
     const worker = async (): Promise<void> => {
@@ -417,6 +427,6 @@ export class LatinLibraryCommand extends CommandRunner {
     // Process queue with concurrency
     await Promise.all(Array.from({ length: 5 }, async () => worker()));
 
-    this.logger.log("🕷️ Scraped The Latin Library");
+    this.logger.info("🕷️ Scraped The Latin Library");
   }
 }

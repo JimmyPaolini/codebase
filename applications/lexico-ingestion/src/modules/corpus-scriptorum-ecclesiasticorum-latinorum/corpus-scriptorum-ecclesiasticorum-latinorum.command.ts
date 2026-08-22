@@ -49,21 +49,23 @@ export class CorpusScriptorumEcclesiasticorumLatinorumCommand extends CommandRun
 
     try {
       await fs.access(targetPath);
-      this.logger.log(`⏭️ Skipping already downloaded: ${xmlPath}`);
+      this.logger.info("⏭️ Skipping already downloaded", undefined, {
+        xmlPath,
+      });
       return;
     } catch {
       // file does not exist
     }
 
     await fs.mkdir(path.dirname(targetPath), { recursive: true });
-    this.logger.log(`📥 Downloading: ${xmlPath}`);
+    this.logger.info("📥 Downloading", undefined, { xmlPath });
 
     try {
       const fileUrl = this.sourceHost + xmlPath;
       await this.fetchAndWriteXmlFile(fileUrl, targetPath);
     } catch (error: unknown) {
       const { logLine } = this.logger.buildErrorLogEntry(xmlPath, error);
-      this.logger.error(`📥 Failed downloading ${xmlPath}`, String(error));
+      this.logger.error("📥 Failed downloading", String(error), { xmlPath });
       await fs.appendFile(this.errorLogFilePath, logLine);
     }
   }
@@ -77,7 +79,7 @@ export class CorpusScriptorumEcclesiasticorumLatinorumCommand extends CommandRun
   ): Promise<void> {
     const response = await fetch(fileUrl);
     if (!response.ok) {
-      this.logger.warn(`📥 Failed fetching ${fileUrl}`);
+      this.logger.warn("📥 Failed fetching", undefined, { fileUrl });
       return;
     }
 
@@ -98,7 +100,7 @@ export class CorpusScriptorumEcclesiasticorumLatinorumCommand extends CommandRun
   private async fetchTree(
     treeUrl: string,
   ): Promise<CorpusScriptorumTreeNode[] | null> {
-    this.logger.log(`🌳 Fetching CSEL tree from ${treeUrl}`);
+    this.logger.info("🌳 Fetching CSEL tree", undefined, { treeUrl });
     const treeResponse = await fetch(treeUrl);
 
     if (!treeResponse.ok) {
@@ -141,13 +143,15 @@ export class CorpusScriptorumEcclesiasticorumLatinorumCommand extends CommandRun
       )
       .map((node) => node.path);
 
-    this.logger.log(`🗂️ Found ${xmlPaths.length} Latin XML files in CSEL repo`);
+    this.logger.info("🗂️ Found Latin XML files in CSEL repo", undefined, {
+      count: xmlPaths.length,
+    });
     await fs.mkdir(this.sourceDataDirectory, { recursive: true });
 
     for (const xmlPath of xmlPaths) {
       await this.downloadSourceXmlFileIfMissing(xmlPath);
     }
 
-    this.logger.log("📥 Downloaded CSEL source files");
+    this.logger.info("📥 Downloaded CSEL source files");
   }
 }

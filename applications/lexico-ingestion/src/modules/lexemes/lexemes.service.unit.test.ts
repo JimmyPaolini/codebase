@@ -258,7 +258,11 @@ describe(LexemesService, () => {
     const result = await service.parseLexemes(page);
 
     expect(result).toStrictEqual([]);
-    expect(logger.warn).toHaveBeenCalledWith('🔤 Missing headwords for "amo"');
+    expect(logger.warn).toHaveBeenCalledWith(
+      "🔤 Missing headwords for word",
+      undefined,
+      { word: "amo" },
+    );
   });
 
   it("should parse lexemes from headword elements", async () => {
@@ -372,6 +376,10 @@ describe(LexemesService, () => {
 
     expect(result).toBe(savedLexeme);
     expect(saveLexemeRelationsSpy).toHaveBeenCalledWith(lexeme, savedLexeme);
+    expect(logger.debug).toHaveBeenCalledWith("🔑 Upserted lexeme", undefined, {
+      disambiguator: 0,
+      lemma: "amo",
+    });
   });
 
   it("should parse lexeme element and return null for invalid part of speech", async () => {
@@ -405,7 +413,9 @@ describe(LexemesService, () => {
 
     expect(result).toBeNull();
     expect(logger.debug).toHaveBeenCalledWith(
-      '🏷️ Skipping part of speech "invalid-pos" for "amo"',
+      "🏷️ Skipping unsupported part of speech",
+      undefined,
+      { partOfSpeech: "invalid-pos", word: "amo" },
     );
   });
 
@@ -471,6 +481,40 @@ describe(LexemesService, () => {
     expect(result).not.toBeNull();
   });
 
+  it("should skip and debug-log when principal part name is undefined", async () => {
+    partOfSpeechService.getPartOfSpeech.mockReturnValue("noun");
+    partOfSpeechService.getFirstPrincipalPartName.mockReturnValue(undefined);
+
+    const $ = cheerio.load("<p><strong class='Latn headword'>amo</strong></p>");
+    const element = $("p").toArray()[0];
+    if (!element) {
+      throw new Error("Missing element for undefined principal-part test");
+    }
+
+    const result = await (
+      service as unknown as {
+        parseLexemeFromElement: (args: {
+          $: cheerio.CheerioAPI;
+          elt: unknown;
+          index: number;
+          word: string;
+        }) => Promise<Lexeme | null>;
+      }
+    ).parseLexemeFromElement({
+      $,
+      elt: element,
+      index: 0,
+      word: "amo",
+    });
+
+    expect(result).toBeNull();
+    expect(logger.debug).toHaveBeenCalledWith(
+      "🏷️ Skipping word without a principal-part name",
+      undefined,
+      { partOfSpeech: "noun", word: "amo" },
+    );
+  });
+
   it("should parse lexeme element and return null when enrichment throws", async () => {
     partOfSpeechService.getPartOfSpeech.mockReturnValue("noun");
     partOfSpeechService.getFirstPrincipalPartName.mockReturnValue("first");
@@ -511,7 +555,15 @@ describe(LexemesService, () => {
     });
 
     expect(result).toBeNull();
-    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      "🧩 Failed parsing lexeme",
+      undefined,
+      {
+        disambiguator: 0,
+        lemma: "amo",
+        reason: "Error: parse failure",
+      },
+    );
   });
 
   it("should save inflection relation when inflection exists", async () => {

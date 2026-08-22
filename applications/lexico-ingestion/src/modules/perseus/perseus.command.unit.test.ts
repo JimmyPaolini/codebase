@@ -178,8 +178,9 @@ describe(PerseusCommand, () => {
     ).appendSourceDownloadErrorLog("a/file-lat.xml", new Error("boom"));
 
     expect(logger.error).toHaveBeenCalledWith(
-      "📥 Failed downloading a/file-lat.xml",
+      "📥 Failed downloading",
       expect.any(String),
+      { xmlPath: "a/file-lat.xml" },
     );
     expect(appendFileMock).toHaveBeenCalledTimes(1);
   });
@@ -193,8 +194,10 @@ describe(PerseusCommand, () => {
       }
     ).downloadSourceXmlFileIfMissing("a/file-lat.xml");
 
-    expect(logger.log).toHaveBeenCalledWith(
-      "⏭️ Skipping already downloaded: a/file-lat.xml",
+    expect(logger.info).toHaveBeenCalledWith(
+      "⏭️ Skipping already downloaded",
+      undefined,
+      { xmlPath: "a/file-lat.xml" },
     );
   });
 
@@ -278,9 +281,9 @@ describe(PerseusCommand, () => {
       }
     ).fetchAndWriteXmlFile("https://example.com/file.xml", "/tmp/file.xml");
 
-    expect(logger.warn).toHaveBeenCalledWith(
-      "📥 Failed fetching https://example.com/file.xml",
-    );
+    expect(logger.warn).toHaveBeenCalledWith("📥 Failed fetching", undefined, {
+      fileUrl: "https://example.com/file.xml",
+    });
     expect(writeFileMock).not.toHaveBeenCalled();
   });
 
@@ -399,8 +402,9 @@ describe(PerseusCommand, () => {
     ).appendSourceDownloadErrorLog("a/file-lat.xml", "text failure");
 
     expect(logger.error).toHaveBeenCalledWith(
-      "📥 Failed downloading a/file-lat.xml",
+      "📥 Failed downloading",
       expect.any(String),
+      { xmlPath: "a/file-lat.xml" },
     );
     expect(appendFileMock).toHaveBeenCalledWith(
       expect.any(String),

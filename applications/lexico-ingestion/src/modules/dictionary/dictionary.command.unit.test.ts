@@ -649,7 +649,9 @@ describe(DictionaryCommand, () => {
     expect(getWiktionaryFilePathForWordSpy).toHaveBeenCalledWith("missing");
     expect(page).toBeNull();
     expect(logger.warn).toHaveBeenCalledWith(
-      '📄 Missing data file for "missing"',
+      "📄 Missing data file for word",
+      undefined,
+      { word: "missing" },
     );
   });
 
@@ -685,7 +687,11 @@ describe(DictionaryCommand, () => {
     ).loadWiktionaryPageForWord("amo");
 
     expect(page).toBeNull();
-    expect(logger.warn).toHaveBeenCalledWith('📄 Missing data file for "amo"');
+    expect(logger.warn).toHaveBeenCalledWith(
+      "📄 Missing data file for word",
+      undefined,
+      { word: "amo" },
+    );
   });
 
   it("should load and return wiktionary page data when file path and read succeed", () => {
@@ -897,7 +903,9 @@ describe(DictionaryCommand, () => {
     ).ingestTranslationReference(targetTranslation);
 
     expect(logger.warn).toHaveBeenCalledWith(
-      '🔑 Missing lexeme for reference "unknown"',
+      "🔑 Missing lexeme for reference",
+      undefined,
+      { reference: "unknown" },
     );
   });
 
@@ -1089,7 +1097,9 @@ describe(DictionaryCommand, () => {
         ).processFile("amo.json", 1, 1);
 
         expect(logger.error).toHaveBeenCalledWith(
-          "📄 Failed processing amo.json",
+          "📄 Failed processing file",
+          undefined,
+          { file: "amo.json" },
         );
         expect(appendFileSyncMock).toHaveBeenCalledWith(
           expect.any(String),
@@ -1258,7 +1268,9 @@ describe(DictionaryCommand, () => {
           lexemesService.findLexemesByLemmaWithTranslations,
         ).toHaveBeenCalledWith("");
         expect(logger.warn).toHaveBeenCalledWith(
-          '🔑 Missing lexeme for reference ""',
+          "🔑 Missing lexeme for reference",
+          undefined,
+          { reference: "" },
         );
       });
     });
