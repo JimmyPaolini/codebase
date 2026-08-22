@@ -8,6 +8,7 @@ import { DevcontainerConfigurationModule } from "../devcontainer-configuration/d
 import { NestjsModuleGraphsModule } from "../nestjs-module-graphs/nestjs-module-graphs.module";
 import { NxProjectGraphsModule } from "../nx-project-graphs/nx-project-graphs.module";
 import { PullRequestTemplateModule } from "../pull-request-template/pull-request-template.module";
+import { SkillExclusionsModule } from "../skill-exclusions/skill-exclusions.module";
 
 import { SynchronizationKindsService } from "./synchronization-kinds.service";
 import { SynchronizationCommand } from "./synchronization.command";
@@ -31,6 +32,7 @@ import { SynchronizationService } from "./synchronization.service";
     NestjsModuleGraphsModule,
     NxProjectGraphsModule,
     PullRequestTemplateModule,
+    SkillExclusionsModule,
   ],
   providers: [
     SynchronizationCommand,

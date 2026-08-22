@@ -69,19 +69,18 @@ Identify which **step** within the job failed (visible in the log as `##[error]`
 
 The `lint-codebase` target is an `nx:noop` whose `dependsOn` leaves do the work. Identify which sub-target failed:
 
-| Sub-target               | Underlying tool                     | Config file                                                                                                                                                                                                                                                                                                                                                                                                            |
-| ------------------------ | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `typecheck`              | `tsc --noEmit`                      | Per-project `tsconfig.json`, base: [configuration/tsconfig.json](../../../configuration/tsconfig.json)                                                                                                                                                                                                                                                                                                                 |
-| `eslint`                 | ESLint                              | Per-project `eslint.config.ts`, base: [configuration/eslint.config.ts](../../../configuration/eslint.config.ts)                                                                                                                                                                                                                                                                                                        |
-| `oxlint`                 | oxlint                              | [configuration/oxlint.config.ts](../../../configuration/oxlint.config.ts)                                                                                                                                                                                                                                                                                                                                              |
-| `oxfmt`                  | oxfmt                               | [configuration/oxfmt.config.ts](../../../configuration/oxfmt.config.ts)                                                                                                                                                                                                                                                                                                                                                |
-| `spell-check`            | cspell                              | [configuration/cspell.config.yaml](../../../configuration/cspell.config.yaml)                                                                                                                                                                                                                                                                                                                                          |
-| `knip`                   | knip                                | [configuration/knip.config.ts](../../../configuration/knip.config.ts)                                                                                                                                                                                                                                                                                                                                                  |
-| `markdown-lint`          | markdownlint-cli2                   | [configuration/.markdownlint-cli2.jsonc](../../../configuration/.markdownlint-cli2.jsonc)                                                                                                                                                                                                                                                                                                                              |
-| `yaml-lint`              | yamllint                            | [configuration/yamllint.yaml](../../../configuration/yamllint.yaml)                                                                                                                                                                                                                                                                                                                                                    |
-| `synchronize`            | synchronization                     | [tools/synchronization/project.json](../../../tools/synchronization/project.json)                                                                                                                                                                                                                                                                                                                                      |
-| `check-skill-exclusions` | `scripts/check-skill-exclusions.sh` | [skills-lock.json](../../../skills-lock.json), [configuration/.prettierignore](../../../configuration/.prettierignore), [configuration/.codometerignore](../../../configuration/.codometerignore), [.gitattributes](../../../.gitattributes), [configuration/cspell.config.yaml](../../../configuration/cspell.config.yaml), [configuration/.markdownlint-cli2.jsonc](../../../configuration/.markdownlint-cli2.jsonc) |
-| `type-coverage`          | type-coverage                       | Per-project `package.json` `typeCoverage.atLeast`                                                                                                                                                                                                                                                                                                                                                                      |
+| Sub-target      | Underlying tool   | Config file                                                                                                     |
+| --------------- | ----------------- | --------------------------------------------------------------------------------------------------------------- |
+| `typecheck`     | `tsc --noEmit`    | Per-project `tsconfig.json`, base: [configuration/tsconfig.json](../../../configuration/tsconfig.json)          |
+| `eslint`        | ESLint            | Per-project `eslint.config.ts`, base: [configuration/eslint.config.ts](../../../configuration/eslint.config.ts) |
+| `oxlint`        | oxlint            | [configuration/oxlint.config.ts](../../../configuration/oxlint.config.ts)                                       |
+| `oxfmt`         | oxfmt             | [configuration/oxfmt.config.ts](../../../configuration/oxfmt.config.ts)                                         |
+| `spell-check`   | cspell            | [configuration/cspell.config.yaml](../../../configuration/cspell.config.yaml)                                   |
+| `knip`          | knip              | [configuration/knip.config.ts](../../../configuration/knip.config.ts)                                           |
+| `markdown-lint` | markdownlint-cli2 | [configuration/.markdownlint-cli2.jsonc](../../../configuration/.markdownlint-cli2.jsonc)                       |
+| `yaml-lint`     | yamllint          | [configuration/yamllint.yaml](../../../configuration/yamllint.yaml)                                             |
+| `synchronize`   | synchronization   | [tools/synchronization/project.json](../../../tools/synchronization/project.json)                               |
+| `type-coverage` | type-coverage     | Per-project `package.json` `typeCoverage.atLeast`                                                               |
 
 There is no `lint` or `format` leaf, and no `lint` or `format` target anywhere in
 the workspace: `nx affected --target=lint` exits 0 printing "No tasks were run".
@@ -108,7 +107,6 @@ list, which also covers `callidescope`, `check-catalog-manifests`,
   > **Lesson**: If MD049 violations appear _after_ running the formatter — oxfmt/prettier converts `*emphasis*` → `_emphasis_`. The `.markdownlint-cli2.jsonc` MD049 rule must use `style: underscore` (not `asterisk`) to match formatter output; using `asterisk` will conflict on every formatted file.
 - **`yaml-lint`**: Fix indentation, trailing spaces, or document-start issues as reported.
 - **`synchronize`**: Re-run the matching `-write` configuration of `synchronization:start` and commit what it generates — never hand-edit a synchronized file.
-- **`check-skill-exclusions`**: Run `pnpm exec nx run codebase:install-skills`, which regenerates every managed block, or add the exclusion lines the failure names to `configuration/.prettierignore`, `configuration/.codometerignore`, `.gitattributes`, `configuration/cspell.config.yaml`, and `configuration/.markdownlint-cli2.jsonc` by hand.
 
 **Verify:**
 
@@ -118,8 +116,7 @@ pnpm exec nx affected -t lint-codebase
 
 The three sections below read as convention checks, but none of them is part of Validate Conventions — a failure in any of them shows up in a Lint Codebase run. They do not all come from the same leaf, and that decides how each one is fixed:
 
-- The `synchronize` leaf runs all six synchronization commands in one process: `conformetry-generators`, `conventional-config`, `devcontainer-configuration`, `nestjs-module-graphs`, `nx-project-graphs`, and `pull-request-template`. Only the two that fail most often are written up below; every one of them is fixed the same way, by running its `-write` configuration of `synchronization:start` and committing what it generates. Read the failure output to see which command reported the drift.
-- `check-skill-exclusions` is its own `lint-codebase` leaf, not a synchronization command. It has no `-write` counterpart and generates nothing, so it is fixed by adding the exclusion lines it names by hand.
+- The `synchronize` leaf runs all seven synchronization commands in one process: `conformetry-generators`, `conventional-config`, `devcontainer-configuration`, `nestjs-module-graphs`, `nx-project-graphs`, `pull-request-template`, and `skill-exclusions`. Only the two that fail most often are written up below; every one of them is fixed the same way, by running its `-write` configuration of `synchronization:start` and committing what it generates. Read the failure output to see which command reported the drift.
 
 #### 🏛️ Validate Convention Configuration
 
@@ -135,15 +132,15 @@ Failing command: `npx nx run synchronization:start:pull-request-template-check`
 
 Fix: Run `npx nx run synchronization:start:pull-request-template-write` and commit.
 
-#### 🧩 Check Skill Exclusions
+#### 🧩 Validate Skill Exclusions
 
-Failing command: `pnpm exec nx run codebase:check-skill-exclusions`
+Failing command: `npx nx run synchronization:start:skill-exclusions-check`
 
-Config: [scripts/check-skill-exclusions.sh](../../../scripts/check-skill-exclusions.sh), reading [skills-lock.json](../../../skills-lock.json) against [configuration/.prettierignore](../../../configuration/.prettierignore), [configuration/.codometerignore](../../../configuration/.codometerignore), and [.gitattributes](../../../.gitattributes)
+Config: [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.constants.ts](../../../tools/synchronization/src/modules/skill-exclusions/skill-exclusions.constants.ts), deriving the blocks in [configuration/.prettierignore](../../../configuration/.prettierignore), [configuration/.codometerignore](../../../configuration/.codometerignore), [.gitattributes](../../../.gitattributes), [configuration/cspell.config.yaml](../../../configuration/cspell.config.yaml), and [configuration/.markdownlint-cli2.jsonc](../../../configuration/.markdownlint-cli2.jsonc) from [skills-lock.json](../../../skills-lock.json)
 
-This check verifies that every skill in `skills-lock.json` is excluded from the three tools whose scan reaches `.agents/`: `prettier` (scans `.`), `codometer` (scans `--directory .`), and GitHub Linguist (reads every committed file). It fails when a skill in the lockfile is missing its exclusion line from any of the three, which is what `skills update` adding a new skill would otherwise do silently.
+This synchronization generates the marker-delimited block in each of the five files whose tool reaches `.agents/`: `prettier` (scans `.`), `codometer` (scans `--directory .`), GitHub Linguist (reads every committed file), `cspell`, and `markdownlint`. It fails when a block does not match the lockfile, which is what `skills update` adding a new skill would otherwise do silently.
 
-Fix: Add the missing line(s) reported in the failure output — `**/.agents/skills/<name>/**` to `.prettierignore`, `.agents/skills/<name>/` to `.codometerignore`, and `.agents/skills/<name>/** linguist-vendored` to `.gitattributes` — then commit.
+Fix: Run `npx nx run synchronization:start:skill-exclusions-write` and commit the regenerated blocks — never hand-edit one.
 
 ---
 
@@ -321,7 +318,7 @@ pnpm exec nx affected -t vitest --configuration=coverage --parallel=3
 # Validate conventions (config sync checks only)
 npx nx run synchronization:start:conventional-config-check
 npx nx run synchronization:start:pull-request-template-check
-pnpm exec nx run codebase:check-skill-exclusions
+npx nx run synchronization:start:skill-exclusions-check
 
 # Security
 pnpm exec nx run codebase:gitleaks

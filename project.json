@@ -88,25 +88,6 @@
         "cwd": "{projectRoot}"
       }
     },
-    "check-skill-exclusions": {
-      "cache": true,
-      "description": "Verify that every skill in skills-lock.json is excluded from prettier, codometer, GitHub Linguist, cspell, and markdownlint, the five tools whose scan reaches .agents/, that no wholesale .agents/skills/ pattern has crept back into any of them, and that this file's vendored-skills cache negations name no skill the lockfile has dropped. Every file the script reads is an input, .gitattributes and this project.json included: an exclusion deleted from a file the target does not declare would replay a cached pass.",
-      "executor": "nx:run-commands",
-      "inputs": [
-        "{workspaceRoot}/.gitattributes",
-        "{workspaceRoot}/configuration/.codometerignore",
-        "{workspaceRoot}/configuration/.markdownlint-cli2.jsonc",
-        "{workspaceRoot}/configuration/.prettierignore",
-        "{workspaceRoot}/configuration/cspell.config.yaml",
-        "{workspaceRoot}/project.json",
-        "{workspaceRoot}/scripts/check-skill-exclusions.sh",
-        "{workspaceRoot}/skills-lock.json"
-      ],
-      "options": {
-        "command": "bash scripts/check-skill-exclusions.sh",
-        "cwd": "{projectRoot}"
-      }
-    },
     "codometer": {
       "cache": true,
       "configurations": {

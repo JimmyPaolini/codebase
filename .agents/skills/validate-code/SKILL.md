@@ -126,8 +126,9 @@ A skill is one directory, `.agents/skills/<skill-name>/SKILL.md`. `.claude/skill
 The only extra command applies to a skill installed from another repository, which `skills update` records in `skills-lock.json`:
 
 ```bash
-# Confirm every locked skill is excluded from prettier, codometer, and Linguist
-pnpm exec nx run codebase:check-skill-exclusions
+# Regenerate the exclusion blocks that keep locked skills out of prettier,
+# codometer, Linguist, cspell, and markdownlint
+pnpm exec nx run synchronization:synchronize:write
 ```
 
 ### AGENTS.md edited

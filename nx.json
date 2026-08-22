@@ -298,7 +298,6 @@
       "dependsOn": [
         "check-catalog-manifests",
         "check-lockfile",
-        "check-skill-exclusions",
         "conformetry-validate",
         "dependency-cruiser",
         "eslint",

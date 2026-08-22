@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# Restore the skills declared in skills-lock.json into their gitignored
-# .agents/skills/<name>/ folders, and regenerate the vendored-skill exclusion
-# blocks that keep those skills out of the five tools whose scan reaches
-# `.agents/`.
+# Restore the skills declared in skills-lock.json into their .agents/skills/<name>/
+# folders.
 #
 # Invoked from the root postinstall so every environment that installs node
 # dependencies — local clones, devcontainers, CI jobs, Claude Code worktrees —
@@ -11,26 +9,19 @@
 # Without this the skills are declared but absent, and every skill link in
 # AGENTS.md dangles.
 #
-# The exclusion blocks are regenerated on every run, before the restoration
-# shortcut, so a skill that `skills update` adds to the lockfile is excluded in
-# the same install rather than staying exposed to those tools until someone
-# notices. The generator owns only the region between its marker comments, so
-# hand-written entries around it are never disturbed, and
-# `nx run codebase:check-skill-exclusions` verifies the result.
+# Keeping those skills out of the five tools whose scan reaches `.agents/` is a
+# separate job, owned by the `skill-exclusions` synchronizer in
+# tools/synchronization — `nx run synchronization:synchronize` generates and
+# verifies the marker-delimited blocks, so a skill `skills update` adds to the
+# lockfile fails the check until the same change regenerates them.
 #
-# Three properties matter:
+# Four properties matter:
 #
 #   - Idempotent. Returns in milliseconds when every locked skill is already
-#     present, rather than re-cloning every source repository, and rewrites an
-#     exclusion file only when its managed block would actually change. Set
+#     present, rather than re-cloning every source repository. Set
 #     SKILLS_INSTALL_FORCE=1 to re-run anyway and repair a damaged skill.
-#   - All or nothing. The five exclusion files are staged beside their targets
-#     and swapped in together, so a read-only file or a full disk cannot leave
-#     four of them regenerated and the fifth stale.
 #   - Honest about failure. A lockfile that cannot be read or parsed is
-#     reported as such and never reported as "already restored"; a skill name
-#     outside /^[a-z0-9-]+$/ is skipped by name rather than interpolated
-#     unescaped into five different file formats.
+#     reported as such and never reported as "already restored".
 #   - Leaves tracked files alone. `skills experimental_install` rewrites
 #     skills-lock.json with whatever hash each source holds right now, and
 #     rewrites every skill folder with whatever content its source holds right
@@ -67,149 +58,6 @@ fi
 if [ ! -f "$LOCKFILE" ]; then
   exit 0
 fi
-
-# Rewrite the marker-delimited block in every exclusion file from the lockfile,
-# printing the paths it actually changed. Each file gets the entry syntax its
-# own tool reads, and only the lines between the markers are replaced.
-#
-# Names are checked against /^[a-z0-9-]+$/ before being interpolated, and the
-# whole set of replacements is staged before any of them is swapped in, so a
-# hostile name never corrupts a config and a failure never leaves the five
-# files disagreeing with each other. Both reasons are spelled out in the node
-# script below.
-regenerate_skill_exclusions() {
-  local changed status
-  changed="$(node -e '
-const fs = require("fs");
-
-const LOCKFILE = "skills-lock.json";
-const START = "<!-- skill-exclusions-start -->";
-const END = "<!-- skill-exclusions-end -->";
-
-// prettier resolves ignore patterns relative to the ignore file, hence the **/
-// prefix; codometer matches from the root; .gitattributes pairs a pattern with
-// the attribute Linguist reads; cspell and markdownlint-cli2 take a list entry
-// in their own configuration syntax, indented to sit inside it.
-const files = [
-  { path: ".gitattributes", comment: "#", entry: (name) => `.agents/skills/${name}/** linguist-vendored` },
-  { path: "configuration/.codometerignore", comment: "#", entry: (name) => `.agents/skills/${name}/` },
-  { path: "configuration/.markdownlint-cli2.jsonc", comment: "//", indent: "    ", entry: (name) => `".agents/skills/${name}/**",` },
-  { path: "configuration/.prettierignore", comment: "#", entry: (name) => `**/.agents/skills/${name}/**` },
-  { path: "configuration/cspell.config.yaml", comment: "#", indent: "  ", entry: (name) => `- "**/.agents/skills/${name}/**"` },
-];
-
-// A name reaches five different file formats with no escaping, so only the
-// conventional shape is written. A name holding a double quote would produce
-// invalid JSON in .markdownlint-cli2.jsonc and a broken scalar in
-// cspell.config.yaml; a name holding a space would split the .gitattributes
-// pattern from its attribute; either one breaks markdown-lint and spell-check
-// for the whole workspace on the next install. Escaping five syntaxes
-// correctly is not worth it for a shape no source repository uses, so an
-// out-of-convention name is skipped with a warning: a visibly missing
-// exclusion beats a silently corrupted config.
-const SKILL_NAME = /^[a-z0-9-]+$/;
-
-function readUsableSkillNames() {
-  let raw;
-  try {
-    raw = fs.readFileSync(LOCKFILE, "utf8");
-  } catch (error) {
-    throw new Error(`${LOCKFILE} could not be read: ${error.message}`);
-  }
-  let parsed;
-  try {
-    parsed = JSON.parse(raw);
-  } catch (error) {
-    throw new Error(`${LOCKFILE} is not valid JSON: ${error.message}`);
-  }
-  const { skills = {} } = parsed ?? {};
-  const usable = [];
-  for (const name of Object.keys(skills).sort()) {
-    if (SKILL_NAME.test(name)) {
-      usable.push(name);
-      continue;
-    }
-    process.stderr.write(
-      `⚠️  Skipped the skill named ${JSON.stringify(name)} in ${LOCKFILE}: a skill name must match /^[a-z0-9-]+$/ to be written into an ignore file, a .gitattributes pattern, a JSONC list, and a YAML list without escaping\n`,
-    );
-  }
-  return usable;
-}
-
-// Compute every replacement first. A file whose markers were edited away is
-// reported and left alone rather than guessed at.
-function planReplacements(names) {
-  const pending = [];
-  for (const { comment, entry, indent = "", path } of files) {
-    const original = fs.readFileSync(path, "utf8");
-    const startMarker = `${indent}${comment} ${START}`;
-    const endMarker = `${indent}${comment} ${END}`;
-    const startIndex = original.indexOf(startMarker);
-    const endIndex = original.indexOf(endMarker);
-    if (startIndex === -1 || endIndex === -1 || endIndex < startIndex) {
-      process.stderr.write(`⚠️  ${path} has no ${START} block, so its exclusions were left alone\n`);
-      continue;
-    }
-    const block = names.map((name) => `${indent}${entry(name)}`).join("\n");
-    const updated = `${original.slice(0, startIndex)}${startMarker}\n${block}\n${original.slice(endIndex)}`;
-    if (updated !== original) {
-      pending.push({ path, updated });
-    }
-  }
-  return pending;
-}
-
-// Stage each replacement beside its target, then swap them all in. Writing in
-// place would leave a truncated file behind on a failure part-way through, and
-// writing the files one at a time would leave the five disagreeing when the
-// third one failed. A rename inside a directory that already accepted the
-// temporary file does not fail, so the set lands together or not at all, and
-// the original mode rides along with it.
-function applyReplacements(pending) {
-  const staged = [];
-  try {
-    for (const { path, updated } of pending) {
-      const { mode } = fs.statSync(path);
-      const temporaryPath = `${path}.skill-exclusions-${process.pid}`;
-      fs.writeFileSync(temporaryPath, updated, { mode });
-      fs.chmodSync(temporaryPath, mode);
-      staged.push({ path, temporaryPath });
-    }
-  } catch (error) {
-    for (const { temporaryPath } of staged) {
-      fs.rmSync(temporaryPath, { force: true });
-    }
-    throw new Error(`no exclusion file was changed: ${error.message}`);
-  }
-  for (const { path, temporaryPath } of staged) {
-    fs.renameSync(temporaryPath, path);
-  }
-  return staged.map(({ path }) => path);
-}
-
-// One catch at the top so a failure reads as a sentence in the install log
-// rather than a node stack trace in every pnpm install output.
-try {
-  process.stdout.write(applyReplacements(planReplacements(readUsableSkillNames())).join(", "));
-} catch (error) {
-  process.stderr.write(`⚠️  ${error.message}\n`);
-  process.exit(1);
-}
-')"
-  status=$?
-
-  if [ "$status" -ne 0 ]; then
-    echo "⚠️  Could not regenerate the vendored-skill exclusions from $LOCKFILE"
-    echo "$RETRY_HINT"
-    return 0
-  fi
-
-  if [ -n "$changed" ]; then
-    echo "🧩 Regenerated the vendored-skill exclusions in $changed"
-  fi
-}
-
-regenerate_skill_exclusions
 
 # Locked skills whose SKILL.md is not on disk, space separated. Exits non-zero
 # when the lockfile itself could not be read or parsed, so "nothing is missing"

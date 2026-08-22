@@ -89,8 +89,8 @@ There is deliberately no per-file-type row any more. `lint-codebase` is an
 leaf target declares the config files it reads in its own `inputs` — so staging
 `configuration/knip.config.ts` re-runs `knip` and cache-hits the rest, with no
 hand-written mapping to drift. Anything the old table routed by hand
-(`check-skill-exclusions`, `sync-vscode-extensions`, `markdown-lint`,
-`yaml-lint`, `spell-check`) is now reached through that `dependsOn` list.
+(`sync-vscode-extensions`, `markdown-lint`, `yaml-lint`, `spell-check`) is now
+reached through that `dependsOn` list.
 
 `callidescope` and `synchronize` are the exceptions, named in the same
 invocation rather than reached through `dependsOn`. Both also publish a report
@@ -227,7 +227,7 @@ Every synchronization command is a named configuration of one Nx target, `synchr
 
 > **Lesson**: If sync checks fail, it means a source of truth was edited without updating its counterpart. Example: editing `configuration/conformetry.config.ts` requires regenerating the `AGENTS.md` generators table. Editing `configuration/conventional.config.cjs` requires regenerating `.vscode/settings.json`, the PR template, and the types/scopes tables in AGENTS.md and the branch and commit skills.
 
-There is no command that regenerates a skills table of contents. The synchronization module that once maintained the `AGENTS.md` skills list was retired along with the list itself: agents are handed the installed skills directly, so reading [.agents/skills](../../../.agents/skills) is what tells you which ones exist. A new skill needs no synchronization run — only `nx run codebase:check-skill-exclusions` if it came from `skills-lock.json`.
+There is no command that regenerates a skills table of contents. The synchronization module that once maintained the `AGENTS.md` skills list was retired along with the list itself: agents are handed the installed skills directly, so reading [.agents/skills](../../../.agents/skills) is what tells you which ones exist. A new skill needs no synchronization run — a skill added to `skills-lock.json` does, because `skill-exclusions` derives the exclusion blocks from it.
 
 #### `check-lockfile` (package.json / pnpm-workspace.yaml changes)
 
@@ -312,9 +312,6 @@ pnpm exec nx affected --target=knip,vulture --configuration=check --files=<stage
 # Validate sync checks fixed themselves (re-run the check variant)
 pnpm exec nx run synchronization:synchronize --configuration=check
 pnpm exec nx run codebase:sync-vscode-extensions:check
-
-# And, when the failure named a skill exclusion rather than a synchronized file
-pnpm exec nx run codebase:check-skill-exclusions
 ```
 
 **If all `--configuration=check` commands pass**, the fixes are confirmed working. Proceed to Step 5.

@@ -66,9 +66,10 @@ projectStructure.cache.json
 # upstream rather than authored here, so they are formatted as their sources
 # formatted them. Listed individually rather than as `.agents/skills/` so this
 # repository's own skills in the same directory keep being checked.
-# Verified by `nx run codebase:check-skill-exclusions`.
+# Verified by `nx run synchronization:synchronize`, which
+# also generates the block below.
 **/.agents/licenses/**
-# <!-- skill-exclusions-start -->
+# installed-skills-start
 **/.agents/skills/ask-matt/**
 **/.agents/skills/code-review/**
 **/.agents/skills/codebase-design/**
@@ -112,4 +113,4 @@ projectStructure.cache.json
 **/.agents/skills/wayfinder/**
 **/.agents/skills/wizard/**
 **/.agents/skills/writing-for-agents/**
-# <!-- skill-exclusions-end -->
+# installed-skills-end

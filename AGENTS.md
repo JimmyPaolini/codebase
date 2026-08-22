@@ -593,40 +593,40 @@ make, while its own skills are held to the same standards as the rest of its
 prose. All five list the skills one per line rather than excluding
 `.agents/skills/` wholesale, so this repository's own skills in the same
 directory keep being checked, measured, corrected, and attributed.
-`codebase:check-skill-exclusions` runs inside `lint-codebase` and fails when a
-skill in the lockfile is missing from any of the five, and
-`scripts/install-skills.sh` regenerates all five blocks from `skills-lock.json`
-on every install — between them they close the gap that `skills update` adding a
-skill would otherwise leave open silently. Every other tool scopes itself with
-explicit globs that never include `.agents/`.
+The entries are generated rather than hand-maintained: each file marks its block
+with an `installed-skills-start` and an `installed-skills-end` comment in its
+own syntax — `#` for the three ignore files and the cspell YAML, `//` for the
+markdownlint JSONC — and the `skill-exclusions` synchronizer rewrites what sits
+between them from the lockfile. `synchronize` runs inside `lint-codebase`, so a
+stale list fails there — which is what `skills update` adding a skill would
+otherwise do silently:
 
-Three details of that machinery are worth knowing before changing it:
+```bash
+pnpm exec nx run synchronization:synchronize:write
+```
 
-- **A wholesale pattern fails the check too**, not just a missing entry.
-  Re-adding `**/.agents/skills/**` outside a managed block leaves every
+Every other tool scopes itself with explicit globs that never include
+`.agents/`.
+
+Two details of that machinery are worth knowing before changing it:
+
+- **A wholesale pattern defeats the whole arrangement**, and no check catches
+  it. Re-adding `**/.agents/skills/**` outside a managed block leaves every
   per-skill entry in place while quietly taking this repository's own 26 skills
-  back out of scope, so the missing-entry half would report nothing. Exclude a
-  vendored skill by name.
-- **A skill name must match `/^[a-z0-9-]+$/`.** The generator interpolates the
-  name into five formats with no escaping, so an out-of-convention name is
-  skipped with a warning rather than written; a visibly missing exclusion beats
-  a `.markdownlint-cli2.jsonc` that no longer parses. The five files are also
-  staged and swapped in together, so a read-only file cannot leave four of them
-  regenerated and the fifth stale.
+  back out of scope, and the synchronizer reports nothing because its own block
+  still matches the lockfile. Exclude a vendored skill by name.
 - **The root `project.json` mirrors the exclusions as cache negations.** Its
   `vendored-skills` named input drops the vendored skills from the `spell-check`
   and `markdown-lint` `inputs`, because a tool that ignores a file has no reason
-  to rehash on it. Only stale negations are checked, not missing ones: a
-  vendored skill with no negation merely over-invalidates, while a negation for
-  a skill the lockfile has dropped would stop a file those tools do read from
+  to rehash on it. They are a cache optimization rather than a correctness gate:
+  a vendored skill with no negation merely over-invalidates, and one for a skill
+  the lockfile has dropped only stops a file those tools do read from
   invalidating anything.
 
-`scripts/install-skills.sh` still exists, run by the root `postinstall` and by
-`codebase:install-skills`. It always regenerates the five exclusion blocks from
-`skills-lock.json`, writing only when a block would actually change; restoring a
-skill folder is the part that matters only when one is genuinely absent — after
-`skills update` adds a new entry to the lockfile, or when a folder has been
-deleted:
+`scripts/install-skills.sh` restores the skill folders, run by the root
+`postinstall` and by `codebase:install-skills`. It matters only when a folder is
+genuinely absent — after `skills update` adds a new entry to the lockfile, or
+when one has been deleted:
 
 ```bash
 pnpm exec nx run codebase:install-skills
@@ -635,9 +635,8 @@ pnpm exec nx run codebase:install-skills
 Four behaviors are worth knowing before changing any of this:
 
 - **It is idempotent.** With every locked skill already on disk it returns in
-  milliseconds instead of re-cloning every source repository, and it rewrites an
-  exclusion file only when that file's managed block would actually change. Use
-  the `force` configuration to re-restore a skill that is present but damaged.
+  milliseconds instead of re-cloning every source repository. Use the `force`
+  configuration to re-restore a skill that is present but damaged.
 - **It never leaves tracked files dirty.** `skills experimental_install`
   rewrites `skills-lock.json` with whatever hash each source holds now, and
   rewrites every skill folder with whatever content its source holds now — one

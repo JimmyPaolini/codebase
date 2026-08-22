@@ -281,6 +281,7 @@ flowchart LR
     NestjsModuleGraphsModule
     NxProjectGraphsModule
     PullRequestTemplateModule
+    SkillExclusionsModule
     SynchronizationModule
     SyntheticRootModule
   end
@@ -311,6 +312,7 @@ flowchart LR
   SynchronizationModule --> NestjsModuleGraphsModule
   SynchronizationModule --> NxProjectGraphsModule
   SynchronizationModule --> PullRequestTemplateModule
+  SynchronizationModule --> SkillExclusionsModule
   SyntheticRootModule -.-> FilesModule
   SyntheticRootModule -.-> JsonValidatorModule
   SyntheticRootModule -.-> SyntheticRootModule
@@ -370,22 +372,22 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 
 | Measure | Value |
 | --- | --- |
-| Callables | 249 |
-| Files | 45 |
-| Calls traced | 330 |
-| Call stacks | 22 |
+| Callables | 265 |
+| Files | 49 |
+| Calls traced | 350 |
+| Call stacks | 24 |
 | Deepest stack | 14 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 9 |
+| Unfollowable calls | 10 |
 
 ### Call stacks
 
 **1. `SynchronizationCommand.run`** — depth ≥ 14 · decorated-method
 
 ```text
-🚀 SynchronizationCommand.run(…): Promise<void> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:141]
+🚀 SynchronizationCommand.run(…): Promise<void> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:144]
    ↳ Runs the selected synchronizations, exiting once if any reported drift.
-  └─> SynchronizationCommand.synchronize(…): Promise<boolean> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:179]
+  └─> SynchronizationCommand.synchronize(…): Promise<boolean> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:182]
      ↳ Runs the selected synchronizations and reports whether all succeeded.
     └─> ConventionalConfigCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:74]
        ↳ Synchronizes conventional-commit config and reports success without exiting.
@@ -467,7 +469,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 ```
 
 <details>
-<summary>19 more call stacks</summary>
+<summary>21 more call stacks</summary>
 
 **4. `NxProjectGraphsCommand.run`** — depth 9 · decorated-method
 
@@ -553,7 +555,26 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-**8. `main`** — depth ≥ 2 · module-bootstrap
+**8. `SkillExclusionsCommand.run`** — depth 7 · decorated-method
+
+```text
+🚀 SkillExclusionsCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:147]
+   ↳ Runs the skill-exclusions sync command in check or write mode.
+  └─> SynchronizationService.resolveSynchronizationModeOrExit(options: SynchronizationModeResolutionOptions): SynchronizationMode [tools/synchronization/src/modules/synchronization/synchronization.service.ts:59]
+     ↳ Resolves synchronization mode or exits the process when the mode is invalid.
+    └─> SynchronizationService.exitInvalidMode(…): never [tools/synchronization/src/modules/synchronization/synchronization.service.ts:22]
+       ↳ Logs invalid mode details and exits with status code 1.
+      └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:256]
+         ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
+        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
+           ↳ Assembles the object pino merges into the line.
+          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
+             ↳ Fails a malformed message in development, and never in production.
+            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
+               ↳ Whether a word is a verb in one of the two tenses the convention allows.
+```
+
+**9. `main`** — depth ≥ 2 · module-bootstrap
 
 ```text
 🚀 main(): Promise<void> [tools/synchronization/src/main.ts:9]
@@ -561,7 +582,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
   └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:38]
 ```
 
-**9. `ConformetryGeneratorsCommand.constructor`** — depth ≥ 2 · orphan-root
+**10. `ConformetryGeneratorsCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 ConformetryGeneratorsCommand.constructor(…): ConformetryGeneratorsCommand [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:35]
@@ -569,7 +590,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**10. `ConventionalConfigIoService.constructor`** — depth 2 · orphan-root
+**11. `ConventionalConfigIoService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 ConventionalConfigIoService.constructor(loggerService: LoggerService): ConventionalConfigIoService [tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:31]
@@ -577,7 +598,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**11. `ConventionalConfigValidatorsService.constructor`** — depth 2 · orphan-root
+**12. `ConventionalConfigValidatorsService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 ConventionalConfigValidatorsService.constructor(…): ConventionalConfigValidatorsService [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:25]
@@ -585,7 +606,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**12. `ConventionalConfigService.constructor`** — depth 2 · orphan-root
+**13. `ConventionalConfigService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 ConventionalConfigService.constructor(…): ConventionalConfigService [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:36]
@@ -593,7 +614,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**13. `ConventionalConfigCommand.constructor`** — depth ≥ 2 · orphan-root
+**14. `ConventionalConfigCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 ConventionalConfigCommand.constructor(…): ConventionalConfigCommand [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:32]
@@ -601,7 +622,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**14. `DevcontainerConfigurationCommand.constructor`** — depth ≥ 2 · orphan-root
+**15. `DevcontainerConfigurationCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 DevcontainerConfigurationCommand.constructor(…): DevcontainerConfigurationCommand [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:41]
@@ -609,7 +630,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**15. `NestjsModuleGraphsGraphService.compareGroups`** — depth 2 · orphan-root
+**16. `NestjsModuleGraphsGraphService.compareGroups`** — depth 2 · orphan-root
 
 ```text
 🚀 NestjsModuleGraphsGraphService.compareGroups(…): number [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:79]
@@ -618,7 +639,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Ranks a group into the graphed project, another project, or ungrouped.
 ```
 
-**16. `NestjsModuleGraphsService.loadModuleClasses`** — depth ≥ 2 · orphan-root
+**17. `NestjsModuleGraphsService.loadModuleClasses`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 NestjsModuleGraphsService.loadModuleClasses(file: string): Promise<Type<unknown>[]> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:91]
@@ -626,7 +647,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
   └─> NestjsModuleGraphsService.map(…)(…): Type<unknown> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:102]
 ```
 
-**17. `NestjsModuleGraphsCommand.constructor`** — depth ≥ 2 · orphan-root
+**18. `NestjsModuleGraphsCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 NestjsModuleGraphsCommand.constructor(…): NestjsModuleGraphsCommand [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:48]
@@ -634,7 +655,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**18. `NxProjectGraphsService.renderEdge`** — depth 2 · orphan-root
+**19. `NxProjectGraphsService.renderEdge`** — depth 2 · orphan-root
 
 ```text
 🚀 NxProjectGraphsService.renderEdge(edge: NxProjectGraphEdge): string [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:50]
@@ -643,7 +664,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Turns a project name into an identifier mermaid accepts.
 ```
 
-**19. `NxProjectGraphsService.renderNode`** — depth 2 · orphan-root
+**20. `NxProjectGraphsService.renderNode`** — depth 2 · orphan-root
 
 ```text
 🚀 NxProjectGraphsService.renderNode(projectName: string): string [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:57]
@@ -652,7 +673,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Turns a project name into an identifier mermaid accepts.
 ```
 
-**20. `NxProjectGraphsCommand.constructor`** — depth ≥ 2 · orphan-root
+**21. `NxProjectGraphsCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 NxProjectGraphsCommand.constructor(…): NxProjectGraphsCommand [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:46]
@@ -660,7 +681,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**21. `PullRequestTemplateCommand.constructor`** — depth ≥ 2 · orphan-root
+**22. `PullRequestTemplateCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 PullRequestTemplateCommand.constructor(…): PullRequestTemplateCommand [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:37]
@@ -668,10 +689,18 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**22. `SynchronizationCommand.constructor`** — depth ≥ 2 · orphan-root
+**23. `SkillExclusionsCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 SynchronizationCommand.constructor(…): SynchronizationCommand [tools/synchronization/src/modules/synchronization/synchronization.command.ts:40]
+🚀 SkillExclusionsCommand.constructor(…): SkillExclusionsCommand [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:51]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+     ↳ Sets the context label included in every subsequent log line.
+```
+
+**24. `SynchronizationCommand.constructor`** — depth ≥ 2 · orphan-root
+
+```text
+🚀 SynchronizationCommand.constructor(…): SynchronizationCommand [tools/synchronization/src/modules/synchronization/synchronization.command.ts:41]
   └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
      ↳ Sets the context label included in every subsequent log line.
 ```

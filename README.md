@@ -180,16 +180,16 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-137-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-9087-ca8a04?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-9085-ca8a04?style=flat-square)
 ![JSON Objects](https://img.shields.io/badge/JSON_Objects-1609-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-546-8b5cf6?style=flat-square)
 ![JSON Properties](https://img.shields.io/badge/JSON_Properties-4398-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-3709-16a34a?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-3707-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-65-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-316-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-1717-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-6245-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-1715-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-6243-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-10-ea580c?style=flat-square)
 
 ### YAML
@@ -308,7 +308,7 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-148-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-42398-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-42521-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-143-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-1137-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-1391-a78bfa?style=flat-square)
