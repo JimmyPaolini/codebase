@@ -2,7 +2,9 @@ import { type Dirent, existsSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 
 import { REPOSITORY_ROOT_MARKERS } from "@codometer/configuration";
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+
+import { LoggerService } from "@codebase/logger";
 
 import { GLOB_MAGIC_CHARACTERS, PATH_SEPARATOR } from "./targets.constants";
 import { TargetOutsideRepositoryError } from "./targets.errors";
@@ -14,6 +16,7 @@ import type {
 } from "./targets.types";
 import type { ResolvedCodometerTarget } from "@codometer/configuration";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Lists the files a target holds.
  *
@@ -22,14 +25,15 @@ import type { ResolvedCodometerTarget } from "@codometer/configuration";
  * output, which every repository's ignore files claim.
  */
 @Injectable()
+/* v8 ignore stop */
 export class TargetsService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext(TargetsService.name);
+  }
 
   // 🔐 Private Fields
-
-  private readonly logger = new Logger(TargetsService.name);
 
   // 🔑 Public Fields
 

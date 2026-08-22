@@ -92,6 +92,10 @@ export class TemplatesCommand extends CommandRunner {
     _passedParameters: string[],
     options: TemplatesCommandOptions,
   ): Promise<void> {
+    this.logger.debug("📋 Listing conformetry templates", undefined, {
+      instanceFilter: options.instances,
+    });
+
     const workingDirectory = process.cwd();
     const configuration =
       await this.configurationService.loadConformetryConfiguration(

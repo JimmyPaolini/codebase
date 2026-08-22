@@ -1,5 +1,8 @@
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
+
+import { LoggerService } from "@codebase/logger";
 
 import { ANALYSIS_MODULES } from "../../../testing/modules";
 import {
@@ -19,11 +22,14 @@ import { ProjectReportsService } from "../project-reports/project-reports.servic
 import { SignaturesService } from "../signatures/signatures.service";
 
 import { CallidescopeService } from "./callidescope.service";
+import { GraphAssemblyService } from "./graph-assembly.service";
 
+import type { FixtureServices } from "../../../testing/programs";
 import type {
   CallGraphResult,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
+import type { DeepMocked } from "@golevelup/ts-vitest";
 
 /** Analyzes in-memory files end to end, short of reading the disk. */
 function analyze(args: {
@@ -36,24 +42,8 @@ function analyze(args: {
     projectProgram,
     services: fixture,
   });
-  const subject = new CallidescopeService(
-    fixture.callables,
-    new CohesionService(),
-    new ComponentsService(),
-    fixture.hierarchy,
-    new DepthService(),
-    fixture.edges,
-    new EntryPointsService(),
-    fixture.external,
-    new GraphService(),
-    new ProjectReportsService(
-      new PathsService(new DocumentationService(), new SignaturesService()),
-    ),
-    fixture.programService,
-    fixture.workspace,
-  );
 
-  return subject.analyze({
+  return buildSubject({ fixture }).analyze({
     callablesById: collection.byId,
     configuration: args.configuration ?? buildConfiguration(),
     fileCount: collection.fileCount,
@@ -98,13 +88,43 @@ function buildConfiguration(
   };
 }
 
+/** Wires a `CallidescopeService` to fixture collaborators. */
+function buildSubject(args: {
+  fixture: FixtureServices;
+  logger?: DeepMocked<LoggerService>;
+}): CallidescopeService {
+  return new CallidescopeService(
+    args.fixture.callables,
+    args.fixture.hierarchy,
+    new CohesionService(),
+    new EntryPointsService(createMock<LoggerService>()),
+    args.fixture.external,
+    new GraphAssemblyService(
+      new ComponentsService(),
+      new DepthService(),
+      args.fixture.edges,
+      new GraphService(),
+    ),
+    args.fixture.programService,
+    new ProjectReportsService(
+      new PathsService(new DocumentationService(), new SignaturesService()),
+    ),
+    args.fixture.workspace,
+    args.logger ?? createMock<LoggerService>(),
+  );
+}
+
 describe(CallidescopeService, () => {
   let service: CallidescopeService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [...ANALYSIS_MODULES],
-      providers: [CallidescopeService],
+      providers: [
+        CallidescopeService,
+        GraphAssemblyService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(CallidescopeService);
@@ -112,6 +132,41 @@ describe(CallidescopeService, () => {
 
   it("is defined", () => {
     expect(service).toBeDefined();
+  });
+
+  it("logs a summary when the analysis finishes", () => {
+    const projectProgram = buildFixtureProgram({
+      "packages/example/src/index.ts": "export function one(): void {}",
+    });
+    const fixture = buildFixtureServices({ projectProgram });
+    const collection = collectFixtureCallables({
+      projectProgram,
+      services: fixture,
+    });
+    const logger = createMock<LoggerService>();
+
+    buildSubject({ fixture, logger }).analyze({
+      callablesById: collection.byId,
+      configuration: buildConfiguration(),
+      fileCount: collection.fileCount,
+      fileCountByProject: collection.fileCountByProject,
+      projectCount: 1,
+      projectNames: ["example"],
+      workspaceRoot: FIXTURE_ROOT,
+    });
+
+    expect(logger.info).toHaveBeenCalledWith(
+      "🔭 Finished an analysis",
+      undefined,
+      {
+        callableCount: 1,
+        edgeCount: 0,
+        entryPointCount: 1,
+        maximumDepth: 1,
+        misplacedCount: 0,
+        spreadCount: 0,
+      },
+    );
   });
 
   it("reports a stack deeper than the configured limit", () => {

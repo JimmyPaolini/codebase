@@ -309,6 +309,28 @@ describe(CallidescopeCommand, () => {
     expect(process.stdout.write).toHaveBeenCalledTimes(1);
   });
 
+  it("logs the start of a trace with the resolved workspace root", async () => {
+    await command.run([], { directory: "." });
+
+    expect(logger.debug).toHaveBeenCalledWith(
+      "🔭 Starting a call-stack trace",
+      undefined,
+      { format: undefined, workspaceRoot: path.resolve(".") },
+    );
+  });
+
+  it("logs the finish of a trace with its findings", async () => {
+    stubDeepStack();
+
+    await command.run([], {});
+
+    expect(logger.info).toHaveBeenCalledWith(
+      "🔭 Finished a call-stack trace",
+      undefined,
+      { deepStackCount: 1, staleReportCount: 0 },
+    );
+  });
+
   it("prints markdown by default", async () => {
     const write = vi.spyOn(process.stdout, "write").mockReturnValue(true);
 

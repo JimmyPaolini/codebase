@@ -10,6 +10,8 @@ import { GenerationService } from "@conformetry/generation";
 import { ValidationService } from "@conformetry/validation";
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import { AdapterService } from "../adapter/adapter.service";
 import {
   DEFAULT_OUTPUT_PATH,
@@ -66,7 +68,10 @@ export class PluginService {
     private readonly projectsService: ProjectsService,
     private readonly reportingService: ReportingService,
     private readonly validationService: ValidationService,
-  ) {}
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(PluginService.name);
+  }
 
   // 🔐 Private Fields
 
@@ -104,6 +109,11 @@ export class PluginService {
         : undefined;
 
       if (onDisk !== emittedFile.content) {
+        this.logger.warn(
+          "🚫 Rejected a stale conformetry generator plugin",
+          undefined,
+          { filePath: emittedFile.filePath },
+        );
         throw new Error(
           `${emittedFile.filePath} is out of date with ${args.configurationPath}. Run \`nx sync\` to regenerate the conformetry generator plugin.`,
         );
@@ -144,6 +154,11 @@ export class PluginService {
       );
 
       if (!existsSync(templateDirectoryPath)) {
+        this.logger.warn(
+          "🚫 Rejected a generator with a missing template",
+          undefined,
+          { generator: generator.name, templatePath: generator.templatePath },
+        );
         throw new Error(
           `Generator ${generator.name} names a template at ${generator.templatePath}, which does not exist.`,
         );
@@ -307,6 +322,9 @@ export class PluginService {
     });
 
     if (definition === undefined) {
+      this.logger.error("🚫 Rejected an unknown generator", undefined, {
+        generator: args.generatorName,
+      });
       throw new Error(
         `Unknown conformetry generator: ${args.generatorName}. Configured generators: ${configuration.map((generator) => generator.name).join(", ")}.`,
       );
@@ -335,6 +353,11 @@ export class PluginService {
         tree: args.tree,
         workspaceRoot: args.workspaceRoot,
       }),
+    });
+
+    this.logger.info("✨ Generated instance files", undefined, {
+      count: generatedFilePaths.length,
+      generator: args.generatorName,
     });
 
     return generatedFilePaths;
@@ -368,6 +391,10 @@ export class PluginService {
         workspaceRoot: args.workspaceRoot,
       }),
       ...(args.threshold === undefined ? {} : { threshold: args.threshold }),
+    });
+
+    this.logger.info("👔 Validated conformetry instances", undefined, {
+      ok: result.ok,
     });
 
     return {

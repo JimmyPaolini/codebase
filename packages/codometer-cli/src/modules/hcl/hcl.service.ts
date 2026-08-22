@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+
+import { LoggerService } from "@codebase/logger";
 
 import {
   EMPTY_HCL_RESULT,
@@ -12,6 +14,7 @@ import {
 
 import type { HclInput, HclResult } from "./hcl.types";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Counts the blocks and attributes an HCL configuration declares.
  *
@@ -20,14 +23,15 @@ import type { HclInput, HclResult } from "./hcl.types";
  * knowing how many of each is what makes the count worth reading.
  */
 @Injectable()
+/* v8 ignore stop */
 export class HclService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext(HclService.name);
+  }
 
   // 🔐 Private Fields
-
-  private readonly logger = new Logger(HclService.name);
 
   // 🔑 Public Fields
 
@@ -99,7 +103,8 @@ export class HclService {
         }
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
-        this.logger.warn(`🏗️ Skipped HCL analysis for ${filePath}`, undefined, {
+        this.logger.warn("🏗️ Skipped HCL analysis", undefined, {
+          filePath,
           reason: message,
         });
         continue;

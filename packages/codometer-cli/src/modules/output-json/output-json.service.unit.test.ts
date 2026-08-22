@@ -8,17 +8,23 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
+
+import { LoggerService } from "@codebase/logger";
 
 import { buildCodometerReport } from "../../../testing/mocks";
 
 import { OutputJsonService } from "./output-json.service";
 
+import type { DeepMocked } from "@golevelup/ts-vitest";
+
 const sampleReport = buildCodometerReport();
 
 describe(OutputJsonService, () => {
   let service: OutputJsonService;
+  let loggerService: DeepMocked<LoggerService>;
   const temporaryDirectories: string[] = [];
 
   /** Creates a temp directory that is removed after the test. */
@@ -31,10 +37,14 @@ describe(OutputJsonService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [OutputJsonService],
+      providers: [
+        OutputJsonService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(OutputJsonService);
+    loggerService = await module.resolve(LoggerService);
   });
 
   afterEach(() => {
@@ -71,6 +81,11 @@ describe(OutputJsonService, () => {
     expect(existsSync(reportPath)).toBe(true);
     expect(JSON.parse(readFileSync(reportPath, "utf8"))).toStrictEqual(
       sampleReport,
+    );
+    expect(loggerService.info).toHaveBeenCalledWith(
+      "📝 Wrote the JSON report",
+      undefined,
+      { path: reportPath },
     );
   });
 

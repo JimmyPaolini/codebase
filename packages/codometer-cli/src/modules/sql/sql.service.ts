@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+
+import { LoggerService } from "@codebase/logger";
 
 import {
   EMPTY_SQL_RESULT,
@@ -12,6 +14,7 @@ import {
 
 import type { SqlInput, SqlResult } from "./sql.types";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Counts the statements and clauses a SQL script is built from.
  *
@@ -20,14 +23,15 @@ import type { SqlInput, SqlResult } from "./sql.types";
  * semicolons, which is what the dialect-agnostic reading of a script is.
  */
 @Injectable()
+/* v8 ignore stop */
 export class SqlService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext(SqlService.name);
+  }
 
   // 🔐 Private Fields
-
-  private readonly logger = new Logger(SqlService.name);
 
   // 🔑 Public Fields
 
@@ -77,7 +81,8 @@ export class SqlService {
         this.countKeywords(source, result);
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
-        this.logger.warn(`🗄️ Skipped SQL analysis for ${filePath}`, undefined, {
+        this.logger.warn("🗄️ Skipped SQL analysis", undefined, {
+          filePath,
           reason: message,
         });
         continue;

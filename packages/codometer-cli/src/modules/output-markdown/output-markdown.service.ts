@@ -3,6 +3,8 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import {
   CODOMETER_SECTION_HEADING,
   REGEX_SPECIAL_CHARACTERS,
@@ -37,14 +39,18 @@ import type {
 } from "./output-markdown.types";
 import type { MarkdownAnchorHelpers } from "@codometer/configuration";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Writes generated code statistics badges into a markdown file.
  */
 @Injectable()
+/* v8 ignore stop */
 export class OutputMarkdownService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext(OutputMarkdownService.name);
+  }
 
   // 🔐 Private Fields
 
@@ -198,16 +204,15 @@ export class OutputMarkdownService {
           ? ""
           : `${existingMarkdown.replace(TRAILING_NEWLINES, "")}\n\n`;
 
-      writeFileSync(resolvedPath, `${preamble}${generatedBlock}\n`, "utf8");
+      this.writeMarkdownFile(resolvedPath, `${preamble}${generatedBlock}\n`);
       return true;
     }
 
     // Replaced through a function so that a `$` in the rendered markdown stays
     // a `$` rather than being read as a replacement pattern.
-    writeFileSync(
+    this.writeMarkdownFile(
       resolvedPath,
       existingMarkdown.replace(blockRegex, () => generatedBlock),
-      "utf8",
     );
     return true;
   }
@@ -221,6 +226,14 @@ export class OutputMarkdownService {
     // permanently one reformat away from clean, and `prettier --check` fails
     // on a file no human edited.
     return `${args.destination.startMarker}\n\n${args.content}\n${args.destination.endMarker}`;
+  }
+
+  /** Write markdown to a file, and record that it happened. */
+  private writeMarkdownFile(resolvedPath: string, content: string): void {
+    writeFileSync(resolvedPath, content, "utf8");
+    this.logger.info("📝 Wrote the markdown badges", undefined, {
+      path: resolvedPath,
+    });
   }
 
   // 🌎 Public Methods
@@ -328,7 +341,7 @@ export class OutputMarkdownService {
     }
 
     mkdirSync(path.dirname(resolvedPath), { recursive: true });
-    writeFileSync(resolvedPath, document, "utf8");
+    this.writeMarkdownFile(resolvedPath, document);
 
     return true;
   }

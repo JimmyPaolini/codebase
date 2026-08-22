@@ -2,12 +2,16 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
+
+import { LoggerService } from "@codebase/logger";
 
 import { ANALYSIS_MODULES } from "../../../testing/modules";
 
 import { CallidescopeService } from "./callidescope.service";
+import { GraphAssemblyService } from "./graph-assembly.service";
 
 import type {
   CallGraphResult,
@@ -112,14 +116,27 @@ async function buildWorkspace(): Promise<string> {
 describe(`${CallidescopeService.name} (integration)`, () => {
   let result: CallGraphResult;
   let frames: string[];
+  let logger: ReturnType<typeof createMock<LoggerService>>;
+  let service: CallidescopeService;
+  let tracedWorkspaceRoot: string;
 
   beforeAll(async () => {
     const workspaceRoot = await buildWorkspace();
+
+    tracedWorkspaceRoot = workspaceRoot;
+    logger = createMock<LoggerService>();
+
     const module = await Test.createTestingModule({
       imports: [...ANALYSIS_MODULES],
-      providers: [CallidescopeService],
+      providers: [
+        CallidescopeService,
+        GraphAssemblyService,
+        { provide: LoggerService, useValue: logger },
+      ],
     }).compile();
-    const service = await module.resolve(CallidescopeService);
+
+    service = await module.resolve(CallidescopeService);
+
     const outcome = service.trace({
       configuration: buildConfiguration(),
       projectNames: [],
@@ -134,6 +151,25 @@ describe(`${CallidescopeService.name} (integration)`, () => {
   it("discovers the project from its tsconfig on disk", () => {
     expect(result.summary.projectCount).toBe(1);
     expect(result.summary.fileCount).toBe(2);
+  });
+
+  it("logs the workspace it traces", () => {
+    // The global test setup clears mocks before every `it`, so the trace
+    // recorded in `beforeAll` is invisible here — this exercises the same
+    // resolved service again to see its own logger calls.
+    service.trace({
+      configuration: buildConfiguration(),
+      projectNames: [],
+      workspaceRoot: tracedWorkspaceRoot,
+    });
+
+    expect(logger.info).toHaveBeenCalledWith(
+      "🔭 Tracing a workspace",
+      undefined,
+      {
+        workspaceRoot: tracedWorkspaceRoot,
+      },
+    );
   });
 
   it("traces a stack from the command down to the repository", () => {

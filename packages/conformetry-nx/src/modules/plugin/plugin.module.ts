@@ -8,6 +8,8 @@ import { GenerationModule } from "@conformetry/generation";
 import { ValidationModule } from "@conformetry/validation";
 import { Module } from "@nestjs/common";
 
+import { LoggerModule } from "@codebase/logger";
+
 import { AdapterModule } from "../adapter/adapter.module";
 import { GeneratorModule } from "../generator/generator.module";
 import { InstancesModule } from "../instances/instances.module";
@@ -35,6 +37,7 @@ import { PluginService } from "./plugin.service";
     InstanceDiscoveryModule,
     TemplateDiscoveryModule,
     GenerationModule,
+    LoggerModule,
     OptionsModule,
     PathsModule,
     PluginService,
@@ -51,6 +54,7 @@ import { PluginService } from "./plugin.service";
     InstanceDiscoveryModule,
     TemplateDiscoveryModule,
     GenerationModule,
+    LoggerModule,
     OptionsModule,
     PathsModule,
     ProjectsModule,

@@ -1,3 +1,4 @@
+import { createMock } from "@golevelup/ts-vitest";
 import ts from "typescript";
 
 import { CallableIdentityService } from "../src/modules/callables/callable-identity.service";
@@ -12,6 +13,7 @@ import { ProgramService } from "../src/modules/program/program.service";
 import { WorkspaceService } from "../src/modules/workspace/workspace.service";
 
 import type { ProjectProgram } from "../src/modules/program/program.types";
+import type { LoggerService } from "@codebase/logger";
 
 /** Root every in-memory fixture file is written under. */
 export const FIXTURE_ROOT = "/workspace";
@@ -102,11 +104,14 @@ export function buildFixtureServices(args: {
   maximumFanOut?: number;
   projectProgram: ProjectProgram;
 }): FixtureServices {
-  const workspace = new WorkspaceService();
+  const workspace = new WorkspaceService(createMock<LoggerService>());
   const identity = new CallableIdentityService();
   // A real one, though nothing here ever asks it for a file: fixture programs
   // bring their own host, and a stub would only need casting into place.
-  const programService = new ProgramService(new CompilerHostService());
+  const programService = new ProgramService(
+    new CompilerHostService(),
+    createMock<LoggerService>(),
+  );
   const external = new ExternalService();
   const hierarchy = new ClassHierarchyService(external);
 
@@ -128,6 +133,7 @@ export function buildFixtureServices(args: {
       programService,
       new SymbolResolutionService(hierarchy, external),
       workspace,
+      createMock<LoggerService>(),
     ),
     external,
     hierarchy,
