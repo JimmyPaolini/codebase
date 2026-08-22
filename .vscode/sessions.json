@@ -5,100 +5,27 @@
   "keepExistingTerminals": false,
   "noClear": false,
   "sessions": {
-    "affirmations": [
-      {
-        "color": "terminal.ansiBlue",
-        "commands": [],
-        "cwd": "codebase",
-        "icon": "repo",
-        "name": "codebase"
-      },
-      {
-        "color": "terminal.ansiBrightYellow",
-        "commands": [
-          "source ../../.venv/bin/activate"
-        ],
-        "cwd": "applications/affirmations",
-        "icon": "compass",
-        "name": "affirmations"
-      },
-      {
-        "color": "terminal.ansiBrightYellow",
-        "commands": [
-          "source ../../.venv/bin/activate"
-        ],
-        "cwd": "applications/affirmations",
-        "icon": "compass",
-        "name": "affirmations"
-      }
-    ],
-    "caelundas": [
-      {
-        "color": "terminal.ansiBlue",
-        "commands": [],
-        "cwd": "codebase",
-        "icon": "repo",
-        "name": "codebase"
-      },
-      {
-        "color": "terminal.ansiCyan",
-        "commands": [],
-        "cwd": "applications/caelundas",
-        "icon": "telescope",
-        "name": "caelundas"
-      },
-      {
-        "color": "terminal.ansiCyan",
-        "commands": [],
-        "cwd": "applications/caelundas",
-        "icon": "telescope",
-        "name": "caelundas"
-      }
-    ],
     "default": [
       {
-        "color": "terminal.ansiBlue",
+        "color": "terminal.ansiRed",
         "commands": [],
         "cwd": "codebase",
         "icon": "repo",
         "name": "codebase"
       },
       {
-        "color": "terminal.ansiBlue",
+        "color": "terminal.ansiYellow",
         "commands": [],
         "cwd": "codebase",
         "icon": "repo",
         "name": "codebase"
       },
       {
-        "color": "terminal.ansiBlue",
+        "color": "terminal.ansiGreen",
         "commands": [],
         "cwd": "codebase",
         "icon": "repo",
         "name": "codebase"
-      }
-    ],
-    "lexico": [
-      {
-        "color": "terminal.ansiBlue",
-        "commands": [],
-        "cwd": "codebase",
-        "icon": "repo",
-        "name": "codebase"
-      },
-      {
-        "color": "terminal.ansiBrightGreen",
-        "commands": [],
-        "cwd": "packages/lexico-components",
-        "icon": "paintcan",
-        "name": "lexico-components"
-      },
-      {
-        "color": "terminal.ansiBrightMagenta",
-        "commands": [],
-        "cwd": "applications/lexico",
-        "icon": "book",
-        "name": "lexico"
       }
     ]
   },
