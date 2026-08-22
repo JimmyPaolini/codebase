@@ -16,7 +16,6 @@
     "remark-frontmatter": "catalog:",
     "remark-gfm": "catalog:",
     "tslib": "catalog:",
-    "typescript": "catalog:",
     "yaml": "catalog:",
     "zod": "catalog:"
   },
@@ -30,6 +29,7 @@
     "@types/mdast": "catalog:",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
+    "typescript": "catalog:",
     "vitest": "catalog:"
   },
   "exports": {
@@ -38,6 +38,9 @@
   },
   "main": "src/index.ts",
   "name": "@codometer/cli",
+  "peerDependencies": {
+    "typescript": "catalog:"
+  },
   "private": true,
   "publishConfig": {
     "access": "public",

@@ -50,10 +50,17 @@ function getStagedFilesFlags(files: string[]): string {
 
 const config = {
   // 🔒 Lockfile integrity
-  // Not an Nx target: this resolves the manifests against the lockfile with a
-  // real `pnpm install --frozen-lockfile`, which no target models.
+  // Run as the `validation` CLI rather than through its Nx target, which would
+  // cost another project graph build for one command. No environment prefix:
+  // lint-staged spawns commands without a shell, so `NODE_OPTIONS='' node …`
+  // would be parsed as the executable name. The pre-commit hook already clears
+  // `NODE_OPTIONS` for exactly the reason that prefix exists elsewhere, so
+  // there is nothing left here to neutralize.
+  //
+  // What it checks is not a file's contents but whether a resolution still
+  // holds: a real `pnpm install --frozen-lockfile`, which no Nx target models.
   "{**/package.json,pnpm-workspace.yaml}": (): string[] => [
-    "./scripts/check-lockfile.sh",
+    "node --import @swc-node/register/esm-register tools/validation/src/main.ts lockfile",
   ],
 
   // 📦 Manifest consistency
@@ -98,9 +105,15 @@ const config = {
   // problem by staying unscoped; this one stays scoped, because removing that
   // scope would put every synchronization in every commit path.
   //
-  // `nx sync:check` runs from the Husky hook instead: it needs NX_DAEMON=false,
-  // and lint-staged spawns commands without a shell, so an environment prefix
-  // here would be parsed as the executable name.
+  //
+  // `nx sync:check` no longer runs anywhere, on commit or otherwise: the
+  // generator plugin it checked is emitted into .conformetry on install rather
+  // than committed, so no commit can stage it out of date. Every conformetry
+  // command re-checks the emitted plugin against the configuration instead. See
+  // configuration/.husky/pre-commit for the retirement note. Were it ever
+  // reinstated, it could not be prefixed here: lint-staged spawns commands
+  // without a shell, so `NX_DAEMON=false nx ...` would be parsed as the
+  // executable name.
   "*": (files: string[]): string[] => [
     `pnpm exec nx affected --target=lint-codebase --target=callidescope --target=synchronize --configuration=check --parallel=${String(ANALYSIS_PARALLELISM)} --outputStyle=static ${getStagedFilesFlags(files)}`,
     "pnpm exec nx run-many --targets=conformetry-validate --outputStyle=static",

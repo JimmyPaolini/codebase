@@ -77,8 +77,8 @@ jobs:
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore(codebase): ✂️ Remove deprecations"
-          title: "chore(codebase): ✂️ Remove deprecations"
+          commit-message: "chore(codebase): 🔥 remove deprecations"
+          title: "chore(codebase): 🔥 remove deprecations"
           body: |
             ## 🌰 Summary
 
@@ -105,5 +105,12 @@ jobs:
           branch: chore/codebase-remove-deprecations
           delete-branch: true
           reviewers: JimmyPaolini
+          # The type:, scope:, and source: labels and the assignee are what
+          # 🧑‍⚖️ Validate Conventions requires of every pull request, this
+          # one included. The type and scope mirror the title above.
           labels: |
             automated
+            type:chore
+            scope:codebase
+            source:agent
+          assignees: JimmyPaolini

@@ -5,7 +5,7 @@
 ```bash
 # Run tasks via Nx (always prefer this)
 nx run <project>:<target>:<configuration>
-nx run-many --target=lint --all
+nx run-many --target=lint-codebase --all
 nx affected --target=vitest --base=main
 
 # Install dependencies
@@ -80,6 +80,7 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 - **[conformetry-nx](packages/conformetry-nx)**: Nx plugin that exposes the conformetry generator namespace
 - **[reporting](tools/reporting)**: NestJS CLI that renders internal codebase reports into markdown, such as the `🎒 Bundles` pull request section
 - **[synchronization](tools/synchronization)**: NestJS CLI for synchronizing codebase configuration and documentation artifacts
+- **[validation](tools/validation)**: NestJS CLI for the repository's one-sided checks — the ones with a `check` and no `write`, such as the pull request metadata gate
 
 ## Conformetry
 
@@ -275,8 +276,12 @@ PR description template:
 
 ## 🔗 Related
 
-- <!-- Link any relevant issues or documentation -->
+- <!-- Link any relevant documentation or related resources like internal documentation, GitHub issues/pull requests -->
 ```
+
+Labels and assignees must also agree with the title: exactly one `type:*` label matching the title's type, exactly the `scope:*` labels named by the title's scopes with no extras, at least one assignee, and exactly one `source:*` label (`source:agent` or `source:human`) declaring who opened the pull request — this one is not derived from the title. The `do-not-merge` label blocks the pull request while it is present.
+
+The 🧑‍⚖️ Validate Conventions workflow creates any label missing from this vocabulary on `opened`/`reopened`, so a freshly opened pull request already has the labels it needs before the check runs. The vocabulary itself comes from `configuration/conventional.config.cjs`, never hard-coded elsewhere.
 
 ### Conventional Naming
 
@@ -333,6 +338,7 @@ PR description template:
 | `tools` | Changes spanning multiple tool projects in tools/ |
 | `synchronization` | Synchronization application and commands for automating workflows |
 | `reporting` | Internal reporting CLI and the reports it renders, such as 🎒 Bundles |
+| `validation` | Validation CLI and the checks it runs, such as pull request metadata |
 
 <!-- scopes-end -->
 
@@ -460,7 +466,7 @@ Test files are named `*.<kind>.test.ts` and live beside the code they cover. Vit
 - **Test coverage: 96%** for branches, functions, lines, and statements (`configuration/vitest.config.ts`, v8 provider). New code needs tests in the same change to keep a project above the line.
 - **Type coverage** is per project, declared as `typeCoverage.atLeast` in each project's `package.json` — most packages sit at 100 with `strict: true`, and the workspace root requires 95. Run `type-coverage` alongside `typecheck` for any touched project that defines the target; passing `typecheck` alone proves nothing about this gate.
 - **Duplication**: `jscpd` fails above a 6% threshold, counting clones of 12+ lines or 24+ tokens. Extract a shared helper rather than copying a block.
-- **Bundle size** is per project, enforced by the `codometer` target, which builds first and measures the compiled output. Every package declares its gzipped limit as `sizeLimit` in its own `package.json`, next to `typeCoverage`; `lexico` and `lexico-components` declare theirs in a `codometer.config.cjs` of their own because they measure several bundles each. Breaching one fails 👷 Make Projects, and the `## 🎒 Bundles` section names the bundle. That section is rendered by `nx run reporting:report:bundles` from the `codometer-report.json` each project's run leaves behind.
+- **Bundle size** is per project, enforced by the `codometer` target, which builds first and measures the compiled output. Every package declares its gzipped limit as `sizeLimit` in its own `package.json`, next to `typeCoverage`; `lexico` and `lexico-components` declare theirs in a `codometer.config.cjs` of their own because they measure several bundles each. Breaching one fails 👷 Make Projects, and the `## 🎒 Bundles` section names the bundle. That section is rendered by `nx run reporting:start:bundles` from the `codometer-report.json` each project's run leaves behind.
 - Lowering a threshold to make a change pass is not an option — fix the code.
 
 See the [testing-strategy skill](.agents/skills/testing-strategy/SKILL.md) for patterns.
@@ -576,18 +582,26 @@ a vendored copy:
 
 `skills-lock.json` maps each individual skill to its source.
 
-Three things reach `.agents/` and so must skip the installed skills: `prettier`
-scans `.`, `codometer` scans `--directory .`, and GitHub Linguist reads every
+Five things reach `.agents/` and so must skip the installed skills: `prettier`
+scans `.`, `codometer` scans `--directory .`, GitHub Linguist reads every
 committed file — one installed skill ships half a megabyte of bundled browser
 JavaScript that would otherwise dominate the language bar, so `.gitattributes`
-marks them `linguist-vendored`. All three list the skills one per line rather
-than excluding `.agents/skills/` wholesale, so this repository's own skills in
-the same directory keep being checked, measured, and attributed.
+marks them `linguist-vendored` — and `cspell` and `markdownlint` both reach
+`.agents/` because this repository's own 26 skills are documentation and are
+spell-checked and markdown-linted like any other. That is the whole point of the
+split: the vendored skills are owned upstream, so correcting their spelling or
+reflowing their tables here would be a change this repository has no right to
+make, while its own skills are held to the same standards as the rest of its
+prose. All five list the skills one per line rather than excluding
+`.agents/skills/` wholesale, so this repository's own skills in the same
+directory keep being checked, measured, corrected, and attributed.
 The entries are generated rather than hand-maintained: each file marks its block
-with `# installed-skills-start` and `# installed-skills-end`, and the
-`skill-exclusions` synchronizer rewrites what sits between them from the
-lockfile. `synchronize` runs inside `lint-codebase`, so a stale list fails there
-— which is what `skills update` adding a skill would otherwise do silently:
+with an `installed-skills-start` and an `installed-skills-end` comment in its
+own syntax — `#` for the three ignore files and the cspell YAML, `//` for the
+markdownlint JSONC — and the `skill-exclusions` synchronizer rewrites what sits
+between them from the lockfile. `synchronize` runs inside `lint-codebase`, so a
+stale list fails there — which is what `skills update` adding a skill would
+otherwise do silently:
 
 ```bash
 pnpm exec nx run synchronization:synchronize:write
@@ -596,11 +610,25 @@ pnpm exec nx run synchronization:synchronize:write
 Every other tool scopes itself with explicit globs that never include
 `.agents/`.
 
-`scripts/install-skills.sh` still exists, run by the root `postinstall` and by
-`codebase:install-skills`. With the skills committed it is a no-op in the normal
-case, and matters only when a skill folder is genuinely absent — after
-`skills update` adds a new entry to the lockfile, or when a folder has been
-deleted:
+Two details of that machinery are worth knowing before changing it:
+
+- **A wholesale pattern defeats the whole arrangement**, and no check catches
+  it. Re-adding `**/.agents/skills/**` outside a managed block leaves every
+  per-skill entry in place while quietly taking this repository's own 26 skills
+  back out of scope, and the synchronizer reports nothing because its own block
+  still matches the lockfile. Exclude a vendored skill by name.
+- **The root `project.json` mirrors the exclusions as cache negations.** Its
+  `vendored-skills` named input drops the vendored skills from the `spell-check`
+  and `markdown-lint` `inputs`, because a tool that ignores a file has no reason
+  to rehash on it. They are a cache optimization rather than a correctness gate:
+  a vendored skill with no negation merely over-invalidates, and one for a skill
+  the lockfile has dropped only stops a file those tools do read from
+  invalidating anything.
+
+`scripts/install-skills.sh` restores the skill folders, run by the root
+`postinstall` and by `codebase:install-skills`. It matters only when a folder is
+genuinely absent — after `skills update` adds a new entry to the lockfile, or
+when one has been deleted:
 
 ```bash
 pnpm exec nx run codebase:install-skills
@@ -658,8 +686,11 @@ terms and decisions actually get resolved. Do not scaffold them upfront.
 
 ### Agents
 
-Custom agent definitions live in [`.github/agents/`](.github/agents), and are
-loaded from there rather than from a list kept in this file.
+This repository keeps no custom agent definitions. The four it used to hold each
+duplicated a skill in [`.agents/skills/`](.agents/skills) with nothing to keep
+the copies in step, and they drifted. Every agent entrypoint is a symlink to that
+one directory, so a skill is the only place a behavior needs to be written down.
+Add a skill rather than reintroducing an agent file.
 
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->

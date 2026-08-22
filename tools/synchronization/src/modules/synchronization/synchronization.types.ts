@@ -40,9 +40,13 @@ export interface SynchronizationCommandOptions {
  * A derivation is checked on a pull request, because its source is
  * configuration the same change touched. A report is published on the default
  * branch, because its source is the code, and a branch being behind the
- * published report is not a mistake the branch made.
+ * published report is not a mistake the branch made. A repository
+ * synchronization reconciles state the working tree does not contain at all,
+ * so it needs credentials and is neither gated by `lint-codebase` nor
+ * published by the release workflow — whoever holds a token asks for it by
+ * name.
  */
-export type SynchronizationKind = "derivation" | "report";
+export type SynchronizationKind = "derivation" | "report" | "repository";
 
 /**
  * The kinds a command line selected, and what it could not make sense of.

@@ -53,7 +53,7 @@ Files are exported using the custom format (`-Fc`) and saved as `.dump` files in
 4. **Specific Database:**
 
    ```bash
-   nx run codebase:postgres-data:dump-database --database=<db_name>
+   nx run codebase:postgres-data:dump-database --database=<database_name>
 
    ```
 
@@ -106,7 +106,7 @@ Restores are destructive by default. They use the clean flag (`-c`) to drop exis
 4. **Specific Database:**
 
    ```bash
-   nx run codebase:postgres-data:restore-database --database=<db_name>
+   nx run codebase:postgres-data:restore-database --database=<database_name>
 
    ```
 
