@@ -205,10 +205,24 @@ describe(SynchronizationCommand, () => {
       expect(delegate.synchronize).toHaveBeenCalledWith("check");
     }
 
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "🔗 Verified every synchronization",
       undefined,
       expect.any(Object),
+    );
+  });
+
+  it("logs the label of each command it synchronizes", async () => {
+    stubAllDelegates(true);
+
+    await command.synchronize("check");
+
+    expect(logger.info).toHaveBeenCalledWith(
+      "🔄 Synchronizing a command",
+      undefined,
+      {
+        label: "conformetry-generators",
+      },
     );
   });
 
@@ -234,12 +248,12 @@ describe(SynchronizationCommand, () => {
       expect(delegate.synchronize).toHaveBeenCalledTimes(1);
     }
 
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "📋 Summarized the synchronization run",
       undefined,
       expect.any(Object),
     );
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "🔗 Detected out-of-sync synchronizations",
       undefined,
       expect.any(Object),
@@ -272,7 +286,7 @@ describe(SynchronizationCommand, () => {
       await command.run(["check"]);
     });
 
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "🔗 Detected out-of-sync synchronizations",
       undefined,
       expect.any(Object),

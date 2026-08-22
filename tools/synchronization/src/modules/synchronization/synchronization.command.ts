@@ -85,7 +85,7 @@ export class SynchronizationCommand extends CommandRunner {
   ): void {
     const failed = results.filter((result) => !result.succeeded);
 
-    this.logger.log("📋 Summarized the synchronization run", undefined, {
+    this.logger.info("📋 Summarized the synchronization run", undefined, {
       failed: results.filter((result) => !result.succeeded).map((r) => r.label),
       mode,
       succeeded: results
@@ -94,13 +94,13 @@ export class SynchronizationCommand extends CommandRunner {
     });
 
     if (failed.length === 0) {
-      this.logger.log("🔗 Verified every synchronization", undefined, {
+      this.logger.info("🔗 Verified every synchronization", undefined, {
         count: results.length,
       });
       return;
     }
 
-    this.logger.log("🔗 Detected out-of-sync synchronizations", undefined, {
+    this.logger.info("🔗 Detected out-of-sync synchronizations", undefined, {
       count: failed.length,
       hint: "Run 'nx run synchronization:synchronize:write' to write derivations and publish reports",
       total: results.length,
@@ -194,7 +194,9 @@ export class SynchronizationCommand extends CommandRunner {
     }
 
     for (const command of commands) {
-      this.logger.log(`🔄 Synchronizing ${command.synchronizationLabel}`);
+      this.logger.info("🔄 Synchronizing a command", undefined, {
+        label: command.synchronizationLabel,
+      });
       results.push({
         label: command.synchronizationLabel,
         succeeded: await command.synchronize(mode),

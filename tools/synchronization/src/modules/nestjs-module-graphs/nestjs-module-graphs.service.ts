@@ -9,6 +9,8 @@ import * as nestjsCore from "@nestjs/core";
 import { NestFactory } from "@nestjs/core";
 import { SpelunkerModule } from "nestjs-spelunker";
 
+import { LoggerService } from "@codebase/logger";
+
 import { NestjsModuleGraphsGraphService } from "./nestjs-module-graphs-graph.service";
 import { NestjsModuleGraphsImportsService } from "./nestjs-module-graphs-imports.service";
 import { SyntheticRootModule } from "./nestjs-module-graphs-synthetic.module";
@@ -46,7 +48,10 @@ export class NestjsModuleGraphsService {
   constructor(
     private readonly graphService: NestjsModuleGraphsGraphService,
     private readonly importsService: NestjsModuleGraphsImportsService,
-  ) {}
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(NestjsModuleGraphsService.name);
+  }
 
   // 🔐 Private Fields
 
@@ -232,6 +237,9 @@ export class NestjsModuleGraphsService {
         }),
       });
     } finally {
+      this.logger.debug("🚀 Booted a project's container", undefined, {
+        project: project.name,
+      });
       await application.close();
     }
   }
