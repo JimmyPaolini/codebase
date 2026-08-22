@@ -7,14 +7,14 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directory . --config configuration/callidescope.config.ts --check"
+          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directory . --config configuration/callidescope.config.ts --check depth"
         },
         "write": {
-          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directory . --config configuration/callidescope.config.ts"
+          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directory . --config configuration/callidescope.config.ts --write"
         }
       },
       "defaultConfiguration": "check",
-      "description": "Trace call stacks and fail on any deeper than the configured limit, or on a stale report. Runs as part of lint-codebase. The README glob is an input because the check compares those files against the traced source: without it, a hand-edited report replays a cached pass.",
+      "description": "Trace call stacks and fail on any deeper than the configured limit. Two configurations and no third: `check` gates depth and `write` publishes the report on the default branch. That split only holds because this target is absent from `lint-codebase`'s `dependsOn`, exactly as `codebase:codometer` is — Nx forwards an explicit configuration down `dependsOn`, so a target reachable from there would take `write` from `lint-codebase --configuration=write` and publish the report from a branch, which is what made every pull request carry a regenerated block. Nothing forwards anything here, so the depth gate is named on its own wherever it runs: the Lint Codebase workflow and `configuration/lint-staged.config.ts` each name `check` alongside `lint-codebase` in one `nx affected` invocation, so a pull request and a commit both still trace depth, and the release workflow runs `write`. Leaving `dependsOn` costs no gating, only the convenience of one target name covering it. The README glob is an input because `write` splices into those files: without it, a hand-edited report replays a cached run.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/**/*.{cts,mts,ts,tsx}",

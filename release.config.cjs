@@ -7,8 +7,7 @@
  * Branch strategy: Only `main` triggers releases.
  * NPM publishing: Disabled — packages are not published to any registry.
  * Versioning: Fixed (entire codebase shares one version).
- * Auto-committed files: CHANGELOG.md, package.json, pnpm-lock.yaml, and every
- * measured README.md — the workspace one and one per project.
+ * Auto-committed files: CHANGELOG.md, package.json, pnpm-lock.yaml
  *
  * Usage:
  *   pnpm semantic-release            # Manual release (requires GITHUB_TOKEN)
@@ -147,20 +146,25 @@ module.exports = {
     [
       "@semantic-release/git",
       {
-        // The READMEs ride along because the codometer step regenerates their
-        // badge blocks just before this commit — the workspace one, and one
-        // per project measured. Measuring on a branch instead made every pull
-        // request rewrite the same blocks and conflict with every other one;
-        // measuring on main makes them release artifacts, updated exactly when
-        // the changelog is. A project that grew no block yet matches nothing
-        // and is simply not staged.
+        // Every markdown file a report is spliced into rides along, because
+        // the steps just before this commit regenerate all of them: codometer
+        // rewrites the root README.md badge block, callidescope rewrites a
+        // call-stack section in each project's README.md, and the module-graph
+        // synchronization rewrites a diagram in each project's README.md and
+        // AGENTS.md. Publishing on a branch instead made every pull request
+        // rewrite the same blocks and conflict with every other one;
+        // publishing on main makes them release artifacts, updated exactly
+        // when the changelog is.
         assets: [
           "CHANGELOG.md",
           "README.md",
+          "applications/*/AGENTS.md",
           "applications/*/README.md",
           "package.json",
+          "packages/*/AGENTS.md",
           "packages/*/README.md",
           "pnpm-lock.yaml",
+          "tools/*/AGENTS.md",
           "tools/*/README.md",
         ],
         message: "chore(release): 🔖 version ${nextRelease.version}",

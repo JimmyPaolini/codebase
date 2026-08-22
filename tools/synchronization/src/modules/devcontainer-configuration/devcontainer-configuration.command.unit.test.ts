@@ -187,11 +187,35 @@ describe(DevcontainerConfigurationCommand, () => {
     );
   });
 
+  it("rewrites nothing in write mode when the cloud config already agrees", async () => {
+    // The formatter collapses a short array onto one line and JSON.stringify
+    // expands it again, so a write that rewrote regardless of content produced
+    // a diff on every run — one the check had already passed.
+    const config = {
+      $schema: "schema",
+      features: {},
+      forwardPorts: [3000, 3001],
+    };
+
+    fileContents.set(localConfigFile, JSON.stringify(config));
+    fileContents.set(cloudConfigFile, JSON.stringify(config));
+
+    await command.run(["write"]);
+
+    expect(writeFileSync).not.toHaveBeenCalled();
+    expect(logger.log).toHaveBeenCalledWith(
+      "📦 Left the cloud devcontainer config as the local config already implies",
+    );
+  });
+
   it("skips docker features from local config during write sync", async () => {
+    // The schemas differ so that there is something to write at all: with the
+    // docker feature as the only difference the merge is the cloud config
+    // already, and a write with nothing to change writes nothing.
     fileContents.set(
       localConfigFile,
       JSON.stringify({
-        $schema: "schema",
+        $schema: "new-schema",
         features: {
           "ghcr.io/devcontainers/features/docker-in-docker:2": {
             source: "local",
@@ -202,7 +226,7 @@ describe(DevcontainerConfigurationCommand, () => {
     fileContents.set(
       cloudConfigFile,
       JSON.stringify({
-        $schema: "schema",
+        $schema: "old-schema",
         features: {
           "ghcr.io/devcontainers/features/docker-in-docker:2": {
             source: "cloud",
