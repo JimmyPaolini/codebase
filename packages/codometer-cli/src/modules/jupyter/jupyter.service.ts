@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+
+import { LoggerService } from "@codebase/logger";
 
 import { JsonService } from "../json/json.service";
 import { MarkdownService } from "../markdown/markdown.service";
@@ -40,11 +42,12 @@ export class JupyterService {
     private readonly jsonService: JsonService,
     private readonly markdownService: MarkdownService,
     private readonly pythonService: PythonService,
-  ) {}
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(JupyterService.name);
+  }
 
   // 🔐 Private Fields
-
-  private readonly logger = new Logger(JupyterService.name);
 
   // 🔑 Public Fields
 
@@ -139,13 +142,10 @@ export class JupyterService {
       return document.cells ?? [];
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
-      this.logger.warn(
-        `📓 Skipped notebook analysis for ${filePath}`,
-        undefined,
-        {
-          reason: message,
-        },
-      );
+      this.logger.warn("📓 Skipped notebook analysis", undefined, {
+        filePath,
+        reason: message,
+      });
 
       return undefined;
     }

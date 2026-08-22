@@ -2,21 +2,31 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { JsonService } from "./json.service";
+
+import type { DeepMocked } from "@golevelup/ts-vitest";
 
 describe(JsonService, () => {
   let service: JsonService;
+  let loggerService: DeepMocked<LoggerService>;
   let tempDirectory: string;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [JsonService],
+      providers: [
+        JsonService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(JsonService);
+    loggerService = await module.resolve(LoggerService);
   });
 
   beforeEach(() => {
@@ -196,5 +206,36 @@ describe(JsonService, () => {
     expect(result.lines).toBe(0);
     expect(result.objects).toBe(0);
     expect(result.arrays).toBe(0);
+  });
+
+  it("warns and continues when a file cannot be read", () => {
+    const filePath = path.join(tempDirectory, "missing.json");
+
+    service.analyze({
+      jsonFiles: [path.relative(tempDirectory, filePath)],
+      workingDirectory: tempDirectory,
+    });
+
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "🧮 Skipped JSON analysis",
+      undefined,
+      expect.objectContaining({ path: filePath }),
+    );
+  });
+
+  it("warns and continues when a document cannot be parsed", () => {
+    const filePath = path.join(tempDirectory, "broken.json");
+    writeFileSync(filePath, "{ not json", "utf8");
+
+    service.analyze({
+      jsonFiles: [path.relative(tempDirectory, filePath)],
+      workingDirectory: tempDirectory,
+    });
+
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "🧮 Skipped JSON analysis",
+      undefined,
+      expect.objectContaining({ path: filePath }),
+    );
   });
 });

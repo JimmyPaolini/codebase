@@ -2,14 +2,17 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import postcss from "postcss";
+
+import { LoggerService } from "@codebase/logger";
 
 import { CSS_MEDIA_AT_RULE, EMPTY_CSS_RESULT } from "./css.constants";
 
 import type { CssInput, CssResult } from "./css.types";
 import type { ChildNode } from "postcss";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Walks parsed stylesheets to collect structural metrics.
  *
@@ -18,14 +21,15 @@ import type { ChildNode } from "postcss";
  * inside a comment counts not at all.
  */
 @Injectable()
+/* v8 ignore stop */
 export class CssService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext(CssService.name);
+  }
 
   // 🔐 Private Fields
-
-  private readonly logger = new Logger(CssService.name);
 
   // 🔑 Public Fields
 
@@ -86,7 +90,8 @@ export class CssService {
         });
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
-        this.logger.warn(`🎨 Skipped CSS analysis for ${filePath}`, undefined, {
+        this.logger.warn("🎨 Skipped CSS analysis", undefined, {
+          filePath,
           reason: message,
         });
         continue;

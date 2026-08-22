@@ -1,5 +1,8 @@
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+
+import { LoggerService } from "@codebase/logger";
 
 import {
   createFixtureTree,
@@ -25,7 +28,11 @@ describe(`${FileDiscoveryService.name} over a real directory`, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [FileDiscoveryService, IgnoreRulesService],
+      providers: [
+        FileDiscoveryService,
+        IgnoreRulesService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
     const service = await module.resolve(FileDiscoveryService);
 

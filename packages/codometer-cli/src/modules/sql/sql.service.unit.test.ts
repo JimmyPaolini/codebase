@@ -2,12 +2,15 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { Logger } from "@nestjs/common";
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { SqlService } from "./sql.service";
 
+import type { DeepMocked } from "@golevelup/ts-vitest";
 import type * as NodeFileSystem from "node:fs";
 
 // Reads stay real except for one sentinel path, which throws a bare string:
@@ -31,6 +34,7 @@ vi.mock("node:fs", async (importOriginal) => {
 
 describe(SqlService, () => {
   let service: SqlService;
+  let loggerService: DeepMocked<LoggerService>;
   const temporaryDirectories: string[] = [];
 
   /** Writes sources into a fresh directory and returns it with their names. */
@@ -50,10 +54,14 @@ describe(SqlService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [SqlService],
+      providers: [
+        SqlService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(SqlService);
+    loggerService = await module.resolve(LoggerService);
   });
 
   afterEach(() => {
@@ -116,9 +124,6 @@ describe(SqlService, () => {
   });
 
   it("reports a thrown value that is not an Error", () => {
-    const loggerWarnSpy = vi
-      .spyOn(Logger.prototype, "warn")
-      .mockReturnValue(undefined);
     const { sqlFiles, workingDirectory } = writeSources({
       "throws-a-string.sql": "",
     });
@@ -126,28 +131,24 @@ describe(SqlService, () => {
     const result = service.analyze({ sqlFiles, workingDirectory });
 
     expect(result.files).toBe(0);
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
-      "🗄️ Skipped SQL analysis for throws-a-string.sql",
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "🗄️ Skipped SQL analysis",
       undefined,
-      { reason: "not an Error" },
+      { filePath: "throws-a-string.sql", reason: "not an Error" },
     );
   });
 
   it("skips an unreadable file and warns", () => {
-    const loggerWarnSpy = vi
-      .spyOn(Logger.prototype, "warn")
-      .mockReturnValue(undefined);
-
     const result = service.analyze({
       sqlFiles: ["missing.sql"],
       workingDirectory: "/repo",
     });
 
     expect(result.files).toBe(0);
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
-      "🗄️ Skipped SQL analysis for missing.sql",
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "🗄️ Skipped SQL analysis",
       undefined,
-      expect.any(Object),
+      expect.objectContaining({ filePath: "missing.sql" }),
     );
   });
 });

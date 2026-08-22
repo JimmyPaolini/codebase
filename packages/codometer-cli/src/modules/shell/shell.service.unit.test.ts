@@ -2,12 +2,15 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { Logger } from "@nestjs/common";
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { ShellService } from "./shell.service";
 
+import type { DeepMocked } from "@golevelup/ts-vitest";
 import type * as NodeFileSystem from "node:fs";
 
 // Reads stay real except for one sentinel path, which throws a bare string:
@@ -31,6 +34,7 @@ vi.mock("node:fs", async (importOriginal) => {
 
 describe(ShellService, () => {
   let service: ShellService;
+  let loggerService: DeepMocked<LoggerService>;
   const temporaryDirectories: string[] = [];
 
   /** Writes sources into a fresh directory and returns it with their names. */
@@ -52,10 +56,14 @@ describe(ShellService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [ShellService],
+      providers: [
+        ShellService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(ShellService);
+    loggerService = await module.resolve(LoggerService);
   });
 
   afterEach(() => {
@@ -131,9 +139,6 @@ describe(ShellService, () => {
   });
 
   it("reports a thrown value that is not an Error", () => {
-    const loggerWarnSpy = vi
-      .spyOn(Logger.prototype, "warn")
-      .mockReturnValue(undefined);
     const { shellFiles, workingDirectory } = writeSources({
       "throws-a-string.sh": "",
     });
@@ -141,28 +146,24 @@ describe(ShellService, () => {
     const result = service.analyze({ shellFiles, workingDirectory });
 
     expect(result.files).toBe(0);
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
-      "🐚 Skipped shell analysis for throws-a-string.sh",
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "🐚 Skipped shell analysis",
       undefined,
-      { reason: "not an Error" },
+      { filePath: "throws-a-string.sh", reason: "not an Error" },
     );
   });
 
   it("skips an unreadable file and warns", () => {
-    const loggerWarnSpy = vi
-      .spyOn(Logger.prototype, "warn")
-      .mockReturnValue(undefined);
-
     const result = service.analyze({
       shellFiles: ["missing.sh"],
       workingDirectory: "/repo",
     });
 
     expect(result.files).toBe(0);
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
-      "🐚 Skipped shell analysis for missing.sh",
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "🐚 Skipped shell analysis",
       undefined,
-      expect.any(Object),
+      expect.objectContaining({ filePath: "missing.sh" }),
     );
   });
 });

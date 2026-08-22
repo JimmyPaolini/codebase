@@ -67,7 +67,7 @@ export class CodometerCommand extends CommandRunner {
       return;
     }
 
-    this.logger.log(
+    this.logger.info(
       `📊 Excluded the files codometer writes from what it measures`,
       undefined,
       { paths: outputPaths },
@@ -200,10 +200,16 @@ export class CodometerCommand extends CommandRunner {
     workingDirectory: string,
   ): Promise<ResolvedCodometerConfiguration | undefined> {
     try {
-      return await this.configurationService.loadConfiguration({
+      const configuration = await this.configurationService.loadConfiguration({
         configurationPath: options.config,
         searchDirectory: workingDirectory,
       });
+
+      this.logger.debug("🗂️ Loaded the configuration", undefined, {
+        configuredPath: options.config,
+      });
+
+      return configuration;
     } catch (error: unknown) {
       this.logger.error(`📊 Rejected the configuration`, undefined, {
         reason: error instanceof Error ? error.message : String(error),
@@ -284,7 +290,7 @@ export class CodometerCommand extends CommandRunner {
     );
   }
 
-  /** Weigh every finding, and set the exit code once. */
+  /** Weigh every finding, set the exit code once, and say the run is done. */
   private reportFindings(args: ReportFindingsArguments): void {
     const failed = this.reportFailures(args);
     const stale = this.reportStaleness(args);
@@ -293,6 +299,12 @@ export class CodometerCommand extends CommandRunner {
     if (failed || stale || breached) {
       process.exitCode = 1;
     }
+
+    this.logger.info("✅ Finished the codometer run", undefined, {
+      breachCount: args.measurement.limits.filter((limit) => limit.breached)
+        .length,
+      targetCount: args.measurement.targets.length,
+    });
   }
 
   /** Report every stale destination, and say whether that fails the run. */
@@ -306,6 +318,21 @@ export class CodometerCommand extends CommandRunner {
     });
 
     return true;
+  }
+
+  /**
+   * Resolve the directory the run measures, and announce that it started.
+   */
+  private resolveWorkingDirectory(options: CodometerCommandOptions): string {
+    const workingDirectory = path.resolve(
+      this.parseDirectory(options.directory),
+    );
+
+    this.logger.debug("🚀 Started the codometer run", undefined, {
+      directory: workingDirectory,
+    });
+
+    return workingDirectory;
   }
 
   /**
@@ -427,6 +454,7 @@ export class CodometerCommand extends CommandRunner {
     _passedParameters: string[],
     options: CodometerCommandOptions,
   ): Promise<void> {
+    const workingDirectory = this.resolveWorkingDirectory(options);
     const { errors, mode } = this.runPlanService.selectMode(options);
 
     if (errors.length > 0) {
@@ -437,9 +465,6 @@ export class CodometerCommand extends CommandRunner {
       return;
     }
 
-    const workingDirectory = path.resolve(
-      this.parseDirectory(options.directory),
-    );
     const configuration = await this.readConfiguration(
       options,
       workingDirectory,

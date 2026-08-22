@@ -4,7 +4,9 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+
+import { LoggerService } from "@codebase/logger";
 
 import { EMPTY_PYTHON_RESULT } from "./python.constants";
 
@@ -14,18 +16,21 @@ import type {
   PythonResult,
 } from "./python.types";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Executes the Python analysis script and returns aggregated metrics.
  */
 @Injectable()
+/* v8 ignore stop */
 export class PythonService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext(PythonService.name);
+  }
 
   // 🔐 Private Fields
 
-  private readonly logger = new Logger(PythonService.name);
   private readonly scriptPath = path.resolve(
     path.dirname(fileURLToPath(import.meta.url)),
     "python.service.py",

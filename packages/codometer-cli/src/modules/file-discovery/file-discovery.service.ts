@@ -1,7 +1,9 @@
 import { type Dirent, readdirSync } from "node:fs";
 import path from "node:path";
 
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+
+import { LoggerService } from "@codebase/logger";
 
 import {
   CSS_EXTENSIONS,
@@ -35,11 +37,14 @@ import type { IgnoreScope } from "./ignore-rules.types";
 export class FileDiscoveryService {
   // 🏗 Dependency Injection
 
-  constructor(private readonly ignoreRulesService: IgnoreRulesService) {}
+  constructor(
+    private readonly ignoreRulesService: IgnoreRulesService,
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(FileDiscoveryService.name);
+  }
 
   // 🔐 Private Fields
-
-  private readonly logger = new Logger(FileDiscoveryService.name);
 
   // 🔑 Public Fields
 
