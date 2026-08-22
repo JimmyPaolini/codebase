@@ -154,45 +154,59 @@ describe(ConventionalConfigValidatorsService, () => {
   it("detects issue template scope drift and ordering drift", () => {
     const templateFile = path.join(
       workspaceRoot,
-      ".github/ISSUE_TEMPLATE/bug.yml",
+      ".github/ISSUE_TEMPLATE/issue.yml",
     );
     fileContents.set(templateFile, "template-content");
-    vi.mocked(io.parseIssueTemplateScopes).mockReturnValueOnce(["other"]);
+    vi.mocked(io.parseIssueTemplateDropdown)
+      .mockReturnValueOnce(["fix"])
+      .mockReturnValueOnce(["other"]);
 
-    expect(service.checkIssueTemplateSync(["tools"], templateFile)).toBe(false);
+    expect(service.checkIssueTemplateSync(config, templateFile)).toBe(false);
 
-    vi.mocked(io.parseIssueTemplateScopes).mockReturnValueOnce([
-      "tools",
-      "alpha",
-    ]);
+    vi.mocked(io.parseIssueTemplateDropdown)
+      .mockReturnValueOnce(["fix"])
+      .mockReturnValueOnce(["tools", "alpha"]);
 
     expect(
-      service.checkIssueTemplateSync(["alpha", "tools"], templateFile),
+      service.checkIssueTemplateSync(
+        {
+          scopes: [
+            { description: "alpha scope", name: "alpha" },
+            { description: "tools scope", name: "tools" },
+          ],
+          types: config.types,
+        },
+        templateFile,
+      ),
     ).toBe(false);
   });
 
-  it("validates issue template when scopes match exactly", () => {
+  it("validates issue template when types and scopes match exactly", () => {
     const templateFile = path.join(
       workspaceRoot,
-      ".github/ISSUE_TEMPLATE/bug.yml",
+      ".github/ISSUE_TEMPLATE/issue.yml",
     );
     fileContents.set(templateFile, "template-content");
-    vi.mocked(io.parseIssueTemplateScopes).mockReturnValueOnce(["tools"]);
+    vi.mocked(io.parseIssueTemplateDropdown)
+      .mockReturnValueOnce(["fix"])
+      .mockReturnValueOnce(["tools"]);
 
-    expect(service.checkIssueTemplateSync(["tools"], templateFile)).toBe(true);
+    expect(service.checkIssueTemplateSync(config, templateFile)).toBe(true);
   });
 
   it("detects missing issue template markers", () => {
     const templateFile = path.join(
       workspaceRoot,
-      ".github/ISSUE_TEMPLATE/bug.yml",
+      ".github/ISSUE_TEMPLATE/issue.yml",
     );
     fileContents.set(templateFile, "template-content");
-    vi.mocked(io.parseIssueTemplateScopes).mockReturnValueOnce([]);
+    vi.mocked(io.parseIssueTemplateDropdown)
+      .mockReturnValueOnce([])
+      .mockReturnValueOnce(["tools"]);
 
-    expect(service.checkIssueTemplateSync(["tools"], templateFile)).toBe(false);
+    expect(service.checkIssueTemplateSync(config, templateFile)).toBe(false);
     expect(logger.log).toHaveBeenCalledWith(
-      expect.stringContaining("Missing <!-- scopes-start/end --> markers in"),
+      expect.stringContaining("Missing <!-- types-start/end --> markers in"),
     );
   });
 
@@ -300,7 +314,7 @@ describe(ConventionalConfigValidatorsService, () => {
     const skillFile = path.join(workspaceRoot, ".agents/skills/test/SKILL.md");
     const templateFile = path.join(
       workspaceRoot,
-      ".github/ISSUE_TEMPLATE/bug.yml",
+      ".github/ISSUE_TEMPLATE/issue.yml",
     );
 
     const checkSkillSyncSpy = vi
@@ -320,7 +334,7 @@ describe(ConventionalConfigValidatorsService, () => {
       .mockReturnValueOnce(false);
 
     expect(
-      service.checkAllTemplatesSync(["tools"], [templateFile, templateFile]),
+      service.checkAllTemplatesSync(config, [templateFile, templateFile]),
     ).toBe(false);
 
     checkIssueTemplateSyncSpy.mockRestore();

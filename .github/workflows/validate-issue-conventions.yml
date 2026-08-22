@@ -1,0 +1,125 @@
+name: 🧑‍⚖️ Validate Issue Conventions
+
+# GitHub can block a pull request merge on a required check, but it has no
+# equivalent gate for issue creation — an issue is always created, whatever
+# its labels. So unlike 🧑‍⚖️ Validate Conventions, this workflow never fails
+# in a way that blocks anything; it only flags a mismatch for a human to fix,
+# the same way `status:needs-triage` already flags an unlabeled issue.
+#
+# On `opened` the type and scope labels a submitted `issue.yml` body implies
+# are reconciled onto the issue before the check runs, so a freshly filed
+# template issue already carries them. That reconciliation is a
+# nest-commander command in `tools/synchronization` (`issue-labels`), run the
+# same way `pull-request-labels` is in 🧑‍⚖️ Validate Conventions — writes live
+# in `tools/synchronization`, checks live in `tools/validation`, and this
+# workflow keeps that split rather than blurring it for one event handler.
+#
+# The metadata check itself is a nest-commander command in `tools/validation`
+# (`issue-metadata`), invoked through node directly rather than through Nx —
+# no Nx cache, no uv, no Homebrew, no project graph to build, exactly like
+# 🧑‍⚖️ Validate Conventions.
+
+on:
+  issues:
+    types: [opened, edited, labeled, unlabeled]
+
+permissions:
+  contents: read
+  # Label creation and updates are issues-scoped endpoints, so this write
+  # permission covers both the label reconciliation step and the comment /
+  # status-label steps that report a failing check.
+  issues: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  validate-issue-conventions:
+    name: 🧑‍⚖️ Validate Issue Conventions
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.actor != 'dependabot[bot]'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: 🟢 Setup node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      # The label reconciliation step and the metadata check both run their
+      # CLIs directly through node rather than through Nx, so those two
+      # projects and the workspace packages they import are all this needs.
+      # The trailing `...` on each filter resolves that transitively. Still no
+      # Nx cache, no uv, and no Homebrew: there is no project graph to build.
+      - name: 📚 Install Root Dependencies
+        run: |
+          CI=true pnpm install --frozen-lockfile --reporter=append-only \
+            --filter . --filter synchronization... --filter validation... \
+            --ignore-scripts
+
+      # Only on the event that creates an issue — an edit or a label change
+      # never adds a field the body didn't already have, and re-adding labels
+      # on every edit would fight a human who removed one on purpose.
+      - name: 🏷️ Reconcile Issue Labels
+        if: github.event.action == 'opened'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_LABELS: ${{ toJSON(github.event.issue.labels) }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+            tools/synchronization/src/main.ts issue-labels
+
+      - name: 🧾 Validate Issue Metadata
+        id: issue-metadata
+        # This check can only ever flag, never block — GitHub has no gate on
+        # issue creation the way it has one on a pull request merge — so a
+        # failing exit code must not fail the workflow run itself. The next
+        # two steps read this step's own outcome to report or clear the flag.
+        continue-on-error: true
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_LABELS: ${{ toJSON(github.event.issue.labels) }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+            tools/validation/src/main.ts issue-metadata \
+            | tee issue-metadata-report.txt
+
+      - name: 💬 Report A Failing Check
+        if: steps.issue-metadata.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          {
+            echo "### 🧑‍⚖️ Validate Issue Conventions"
+            echo
+            echo '```'
+            cat issue-metadata-report.txt
+            echo '```'
+          } > issue-metadata-comment.md
+          gh issue comment "$ISSUE_NUMBER" --body-file issue-metadata-comment.md
+          gh issue edit "$ISSUE_NUMBER" --add-label status:needs-info
+
+      # Clears a stale flag once the labels catch up with the body — a human
+      # fixing the labels by hand should see the flag disappear on its own
+      # rather than staying stuck from a comment nobody re-checks.
+      - name: 🧹 Clear A Resolved Flag
+        if: >-
+          steps.issue-metadata.outcome == 'success' &&
+          contains(github.event.issue.labels.*.name, 'status:needs-info')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          gh issue edit "$ISSUE_NUMBER" --remove-label status:needs-info

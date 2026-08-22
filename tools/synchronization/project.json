@@ -45,6 +45,9 @@
         "devcontainer-configuration-write": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts devcontainer-configuration write"
         },
+        "issue-labels": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts issue-labels"
+        },
         "nestjs-module-graphs-check": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts nestjs-module-graphs check"
         },

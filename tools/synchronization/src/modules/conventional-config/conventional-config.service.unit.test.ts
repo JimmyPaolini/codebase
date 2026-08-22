@@ -245,7 +245,7 @@ describe(ConventionalConfigService, () => {
     }
     for (const templateFile of templateFiles) {
       expect(io.writeIssueTemplateSync).toHaveBeenCalledWith(
-        ["tools"],
+        conventionalConfig,
         templateFile,
       );
     }

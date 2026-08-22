@@ -6,10 +6,12 @@ Issues and specs for this repository live as GitHub issues in [JimmyPaolini/code
 
 Two repository rules override the generic guidance below.
 
-- **Issue and spec titles follow the commit convention** — `<type>(<scope>): <gitmoji> <subject>`, with `type` and `scope` taken from the Conventional Naming tables in [AGENTS.md](../../AGENTS.md). A pull request opened against an issue is validated against the same commitlint configuration, so matching the format on the issue keeps the two aligned.
-- **Apply the `type:*` and `scope:*` labels** that correspond to the title, alongside the triage labels in [triage-labels.md](./triage-labels.md).
+- **Issue and spec titles follow the commit convention** — `<type>(<scope>): <gitmoji> <subject>`, with `type` and `scope` taken from the Conventional Naming tables in [AGENTS.md](../../AGENTS.md). A pull request opened against an issue is validated against the same commitlint configuration, so matching the format on the issue keeps the two aligned. Unlike a pull request title, this is not enforced — a quick backlog-idea title is a normal, intentional shape for an issue.
+- **Apply the `type:*` and `scope:*` labels** that correspond to the title, alongside the triage labels in [triage-labels.md](./triage-labels.md), and one `source:*` label (`source:agent` for an issue an agent files, `source:human` for one a person files through the template).
 
-Issue templates live in `.github/ISSUE_TEMPLATE/` (`bug-report.yml`, `feature-request.yml`). Prefer `gh issue create --template` when the new issue fits one of them.
+The single issue template lives at `.github/ISSUE_TEMPLATE/issue.yml`, with required Type and Scope dropdowns kept in sync with `configuration/conventional.config.cjs` by `nx run synchronization:synchronize:write`. `blank_issues_enabled: false` in `.github/ISSUE_TEMPLATE/config.yml` means every human-filed issue goes through it — `gh issue create --template issue.yml` fills it in from the terminal. An agent creating an issue directly through `gh issue create --title ... --body ...` bypasses the form entirely, which is expected: this is the human path, and an agent applies its own `source:agent`, `type:*`, and `scope:*` labels by hand as described above.
+
+The 🧑‍⚖️ Validate Issue Conventions GitHub Actions workflow enforces this convention two ways: the template's required dropdowns and disabled blank issues stop most drift at the source, and an `issue-metadata` check (`tools/validation`) flags — but, since GitHub has no way to block an issue's creation, never blocks — an issue whose labels disagree with its own `issue.yml` submission or carry more than one `type:*`/`source:*` label. On `opened` an `issue-labels` command (`tools/synchronization`) reconciles the labels a submitted form implies onto the issue first, so a freshly filed template issue already carries them before the check runs.
 
 ### GitHub Projects is not currently reachable
 
