@@ -5,8 +5,8 @@ import { SynchronizationKindsService } from "./synchronization-kinds.service";
 
 /** What `--kinds` says it accepts, quoted the way every message quotes it. */
 const ACCEPTED =
-  `It takes a comma-separated set drawn from "derivation" and "report", ` +
-  `as in "--kinds derivation,report".`;
+  `It takes a comma-separated set drawn from "derivation", "report", and ` +
+  `"repository", as in "--kinds derivation,report,repository".`;
 
 describe(SynchronizationKindsService, () => {
   let service: SynchronizationKindsService;
@@ -27,7 +27,7 @@ describe(SynchronizationKindsService, () => {
     const { errors, kinds } = service.select(undefined);
 
     expect(errors).toStrictEqual([]);
-    expect([...kinds]).toStrictEqual(["derivation", "report"]);
+    expect([...kinds]).toStrictEqual(["derivation", "report", "repository"]);
   });
 
   it("selects one kind when one was named", () => {
@@ -37,10 +37,28 @@ describe(SynchronizationKindsService, () => {
     expect([...kinds]).toStrictEqual(["derivation"]);
   });
 
-  it("selects both when both were named", () => {
-    const { kinds } = service.select("derivation,report");
+  it("selects every kind that was named", () => {
+    const { kinds } = service.select("derivation,report,repository");
 
-    expect([...kinds]).toStrictEqual(["derivation", "report"]);
+    expect([...kinds]).toStrictEqual(["derivation", "report", "repository"]);
+  });
+
+  // The kind whose destination is GitHub rather than a file, so nothing that
+  // runs without a token may ever select it by accident.
+  it("selects the repository kind on its own", () => {
+    const { errors, kinds } = service.select("repository");
+
+    expect(errors).toStrictEqual([]);
+    expect([...kinds]).toStrictEqual(["repository"]);
+  });
+
+  // "report" is a prefix of "repository", so a set naming one must never be
+  // read as naming the other.
+  it("keeps report and repository apart", () => {
+    expect([...service.select("report").kinds]).toStrictEqual(["report"]);
+    expect([...service.select("repository").kinds]).toStrictEqual([
+      "repository",
+    ]);
   });
 
   it("ignores the spaces somebody wrote around a name", () => {
