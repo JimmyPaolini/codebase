@@ -639,10 +639,16 @@ Four behaviors are worth knowing before changing any of this:
   exclusion file only when that file's managed block would actually change. Use
   the `force` configuration to re-restore a skill that is present but damaged.
 - **It never leaves tracked files dirty.** `skills experimental_install`
-  rewrites `skills-lock.json` with whatever hash each source holds now, so the
-  script reverts that rewrite. Otherwise every CI job would end with a dirty
-  tree and `upgrade-dependencies.yml` — which gates its pull request on
+  rewrites `skills-lock.json` with whatever hash each source holds now, and
+  rewrites every skill folder with whatever content its source holds now — one
+  absent folder is enough to refresh every skill whose upstream has moved. The
+  script reverts both. Otherwise every CI job would end with a dirty tree and
+  `upgrade-dependencies.yml` — which gates its pull request on
   `git diff --quiet` — would open an empty upgrade pull request on every run.
+  A skill the lockfile names but the repository has not committed is left as
+  fetched, because git has nothing to return it to, and an edit to an installed
+  copy is reported as discarded rather than silently replaced by upstream
+  content.
 - **It never fails an install.** Skills are agent context, not a build input, so
   a GitHub outage or rate limit prints a warning and the retry command rather
   than breaking `pnpm install` for everyone. A missing skill is a broken agent
