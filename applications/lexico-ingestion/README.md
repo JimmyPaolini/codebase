@@ -364,7 +364,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
              ↳ Parses latin section during Wiktionary ingestion.
             └─> WiktionaryCommand.fetchWithRetry(url: string, retries?: number): Promise<Response> [applications/lexico-ingestion/src/modules/wiktionary/wiktionary.command.ts:82]
                ↳ Fetch with retry for Wiktionary ingestion.
-              └─> LoggerService.warn(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:300]
+              └─> LoggerService.warn(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:312]
                  ↳ Logs a warning message at the `warn` level.
                 └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
                    ↳ Assembles the object pino merges into the line.
@@ -374,30 +374,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
                        ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-**5. `LatinLibraryCommand.run`** — depth ≥ 9 · decorated-method
-
-```text
-🚀 LatinLibraryCommand.run(): Promise<void> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:375]
-   ↳ Crawls The Latin Library and caches discovered HTML pages locally.
-  └─> LatinLibraryCommand.getFinalAuthorUrls(host: string, authorUrls: string[]): Promise<string[]> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:145]
-     ↳ Resolves derived values needed by Latin Library source crawling.
-    └─> LatinLibraryCommand.processCategoryHref(href: string, host: string, finalAuthorUrls: string[]): Promise<void> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:286]
-       ↳ Processes one workflow step for Latin Library source crawling.
-      └─> LatinLibraryCommand.fetchAndCachePage(urlString: string, host: string): Promise<string> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:84]
-         ↳ Loads source data required by Latin Library source crawling.
-        └─> LatinLibraryCommand.downloadAndSaveLatinLibraryFile(parsedUrl: URL, targetPath: string): Promise<string> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:46]
-           ↳ Handles an internal workflow step for Latin Library source crawling.
-          └─> LoggerService.warn(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:300]
-             ↳ Logs a warning message at the `warn` level.
-            └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Assembles the object pino merges into the line.
-              └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-                 ↳ Fails a malformed message in development, and never in production.
-                └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                   ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-**6. `LiteratureCommand.run`** — depth ≥ 9 · decorated-method
+**5. `LiteratureCommand.run`** — depth ≥ 10 · decorated-method
 
 ```text
 🚀 LiteratureCommand.run(_arguments: string[], options: LiteratureCommandOptions): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature.command.ts:257]
@@ -410,17 +387,19 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
          ↳ Ingests text chunks in the literature ingestion pipeline.
         └─> LiteratureTextIngestionService.ingestTextWithLogging(…): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature-text-ingestion.service.ts:57]
            ↳ Runs ingestion for one text entry with standardized start, error, and completion logs.
-          └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+          └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
              ↳ Logs an informational message at the `info` level.
-            └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Assembles the object pino merges into the line.
-              └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-                 ↳ Fails a malformed message in development, and never in production.
-                └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                   ↳ Whether a word is a verb in one of the two tenses the convention allows.
+            └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+               ↳ Logs an informational message at the `info` level.
+              └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
+                 ↳ Assembles the object pino merges into the line.
+                └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
+                   ↳ Fails a malformed message in development, and never in production.
+                  └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
+                     ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-**7. `EpigraphikDatenbankClaussSlabyCommand.run`** — depth 8 · decorated-method
+**6. `EpigraphikDatenbankClaussSlabyCommand.run`** — depth 9 · decorated-method
 
 ```text
 🚀 EpigraphikDatenbankClaussSlabyCommand.run(): Promise<void> [applications/lexico-ingestion/src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts:136]
@@ -431,14 +410,39 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
        ↳ Handles an internal workflow step for EDCS chunk ingestion.
       └─> EpigraphikDatenbankClaussSlabyCommand.saveChunkData(start: number, chunkFile: string): Promise<boolean> [applications/lexico-ingestion/src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts:96]
          ↳ Persists generated output for EDCS chunk ingestion.
-        └─> LoggerService.warn(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:300]
-           ↳ Logs a warning message at the `warn` level.
-          └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-             ↳ Assembles the object pino merges into the line.
-            └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-               ↳ Fails a malformed message in development, and never in production.
-              └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                 ↳ Whether a word is a verb in one of the two tenses the convention allows.
+        └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
+           ↳ Logs an informational message at the `info` level.
+          └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+             ↳ Logs an informational message at the `info` level.
+            └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
+               ↳ Assembles the object pino merges into the line.
+              └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
+                 ↳ Fails a malformed message in development, and never in production.
+                └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
+                   ↳ Whether a word is a verb in one of the two tenses the convention allows.
+```
+
+**7. `LatinLibraryCommand.run`** — depth ≥ 9 · decorated-method
+
+```text
+🚀 LatinLibraryCommand.run(): Promise<void> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:375]
+   ↳ Crawls The Latin Library and caches discovered HTML pages locally.
+  └─> LatinLibraryCommand.getFinalAuthorUrls(host: string, authorUrls: string[]): Promise<string[]> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:145]
+     ↳ Resolves derived values needed by Latin Library source crawling.
+    └─> LatinLibraryCommand.processCategoryHref(href: string, host: string, finalAuthorUrls: string[]): Promise<void> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:286]
+       ↳ Processes one workflow step for Latin Library source crawling.
+      └─> LatinLibraryCommand.fetchAndCachePage(urlString: string, host: string): Promise<string> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:84]
+         ↳ Loads source data required by Latin Library source crawling.
+        └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
+           ↳ Logs an informational message at the `info` level.
+          └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+             ↳ Logs an informational message at the `info` level.
+            └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
+               ↳ Assembles the object pino merges into the line.
+              └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
+                 ↳ Fails a malformed message in development, and never in production.
+                └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
+                   ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **8. `LatinLibraryCommand.worker`** — depth ≥ 8 · orphan-root
@@ -449,10 +453,10 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
      ↳ Processes one workflow step for Latin Library source crawling.
     └─> LatinLibraryCommand.fetchAndCachePage(urlString: string, host: string): Promise<string> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:84]
        ↳ Loads source data required by Latin Library source crawling.
-      └─> LatinLibraryCommand.downloadAndSaveLatinLibraryFile(parsedUrl: URL, targetPath: string): Promise<string> [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:46]
-         ↳ Handles an internal workflow step for Latin Library source crawling.
-        └─> LoggerService.warn(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:300]
-           ↳ Logs a warning message at the `warn` level.
+      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
+         ↳ Logs an informational message at the `info` level.
+        └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+           ↳ Logs an informational message at the `info` level.
           └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
              ↳ Assembles the object pino merges into the line.
             └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
@@ -461,17 +465,38 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
                  ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-**9. `CorpusScriptorumEcclesiasticorumLatinorumCommand.run`** — depth 7 · decorated-method
+**9. `LiteratureService.ingestText`** — depth 8 · orphan-root
 
 ```text
-🚀 CorpusScriptorumEcclesiasticorumLatinorumCommand.run(): Promise<void> [applications/lexico-ingestion/src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts:125]
-   ↳ Downloads all eligible CSEL Latin XML source files into the local cache.
-  └─> CorpusScriptorumEcclesiasticorumLatinorumCommand.downloadSourceXmlFileIfMissing(xmlPath: string): Promise<void> [applications/lexico-ingestion/src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts:47]
-     ↳ Downloads one XML file unless it is already present in the local source cache.
-    └─> CorpusScriptorumEcclesiasticorumLatinorumCommand.fetchAndWriteXmlFile(fileUrl: string, targetPath: string): Promise<void> [applications/lexico-ingestion/src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts:74]
-       ↳ Loads source data required by CSEL source ingestion.
-      └─> LoggerService.warn(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:300]
-         ↳ Logs a warning message at the `warn` level.
+🚀 LiteratureService.ingestText(args: IngestTextArguments): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:262]
+   ↳ Ingests text in the literature ingestion pipeline.
+  └─> LiteratureService.ingestLines(text: Text, ast: Root): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:239]
+     ↳ Ingests lines in the literature ingestion pipeline.
+    └─> LiteratureService.getWordsCache(): Promise<Map<string, string>> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:195]
+       ↳ Gets words cache used by literature ingestion.
+      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
+         ↳ Logs an informational message at the `info` level.
+        └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+           ↳ Logs an informational message at the `info` level.
+          └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
+             ↳ Assembles the object pino merges into the line.
+            └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
+               ↳ Fails a malformed message in development, and never in production.
+              └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
+                 ↳ Whether a word is a verb in one of the two tenses the convention allows.
+```
+
+**10. `ClearCommand.run`** — depth 7 · decorated-method
+
+```text
+🚀 ClearCommand.run(_passedParameters: string[], options: ClearCommandOptions): Promise<void> [applications/lexico-ingestion/src/modules/clear/clear.command.ts:138]
+   ↳ Runs the clear pipeline for the options provided. If no options are specified, it prompts the user.
+  └─> ClearCommand.clearLiterature(): Promise<void> [applications/lexico-ingestion/src/modules/clear/clear.command.ts:72]
+     ↳ Deletes all literature data
+    └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
+       ↳ Logs an informational message at the `info` level.
+      └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+         ↳ Logs an informational message at the `info` level.
         └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
            ↳ Assembles the object pino merges into the line.
           └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
@@ -480,7 +505,26 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
                ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-**10. `LibraryCommand.parseAuthor`** — depth 7 · decorated-method
+**11. `CorpusScriptorumEcclesiasticorumLatinorumCommand.run`** — depth 7 · decorated-method
+
+```text
+🚀 CorpusScriptorumEcclesiasticorumLatinorumCommand.run(): Promise<void> [applications/lexico-ingestion/src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts:125]
+   ↳ Downloads all eligible CSEL Latin XML source files into the local cache.
+  └─> CorpusScriptorumEcclesiasticorumLatinorumCommand.fetchTree(treeUrl: string): Promise<CorpusScriptorumTreeNode[] | null> [applications/lexico-ingestion/src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts:98]
+     ↳ Loads the Git tree payload used to discover downloadable XML blobs.
+    └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
+       ↳ Logs an informational message at the `info` level.
+      └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+         ↳ Logs an informational message at the `info` level.
+        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
+           ↳ Assembles the object pino merges into the line.
+          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
+             ↳ Fails a malformed message in development, and never in production.
+            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
+               ↳ Whether a word is a verb in one of the two tenses the convention allows.
+```
+
+**12. `LibraryCommand.parseAuthor`** — depth 7 · decorated-method
 
 ```text
 🚀 LibraryCommand.parseAuthor(author?: string, provider?: string): Promise<string | undefined> [applications/lexico-ingestion/src/modules/library/library.command.ts:348]
@@ -499,7 +543,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
                ↳ Handles an internal workflow step for library provider orchestration.
 ```
 
-**11. `LibraryCommand.parseText`** — depth 7 · decorated-method
+**13. `LibraryCommand.parseText`** — depth 7 · decorated-method
 
 ```text
 🚀 LibraryCommand.parseText(…): Promise<string | undefined> [applications/lexico-ingestion/src/modules/library/library.command.ts:411]
@@ -518,35 +562,16 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
                ↳ Handles an internal workflow step for library provider orchestration.
 ```
 
-**12. `PerseusCommand.run`** — depth 7 · decorated-method
+**14. `PerseusCommand.run`** — depth 7 · decorated-method
 
 ```text
 🚀 PerseusCommand.run(): Promise<void> [applications/lexico-ingestion/src/modules/perseus/perseus.command.ts:131]
    ↳ Discovers eligible Perseus XML files and stores missing files in the local cache.
-  └─> PerseusCommand.downloadSourceXmlFileIfMissing(xmlPath: string): Promise<void> [applications/lexico-ingestion/src/modules/perseus/perseus.command.ts:58]
-     ↳ Download source xml file if missing for Perseus source ingestion.
-    └─> PerseusCommand.fetchAndWriteXmlFile(fileUrl: string, targetPath: string): Promise<void> [applications/lexico-ingestion/src/modules/perseus/perseus.command.ts:79]
-       ↳ Fetch and write xml file for Perseus source ingestion.
-      └─> LoggerService.warn(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:300]
-         ↳ Logs a warning message at the `warn` level.
-        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-           ↳ Assembles the object pino merges into the line.
-          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-             ↳ Fails a malformed message in development, and never in production.
-            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-               ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-**13. `LiteratureService.ingestText`** — depth 7 · orphan-root
-
-```text
-🚀 LiteratureService.ingestText(args: IngestTextArguments): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:262]
-   ↳ Ingests text in the literature ingestion pipeline.
-  └─> LiteratureService.ingestLines(text: Text, ast: Root): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:239]
-     ↳ Ingests lines in the literature ingestion pipeline.
-    └─> LiteratureService.getWordsCache(): Promise<Map<string, string>> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:195]
-       ↳ Gets words cache used by literature ingestion.
-      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+  └─> PerseusCommand.fetchSourceXmlPaths(): Promise<null | string[]> [applications/lexico-ingestion/src/modules/perseus/perseus.command.ts:98]
+     ↳ Fetch source xml paths for Perseus source ingestion.
+    └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
+       ↳ Logs an informational message at the `info` level.
+      └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
          ↳ Logs an informational message at the `info` level.
         └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
            ↳ Assembles the object pino merges into the line.
@@ -554,23 +579,6 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
              ↳ Fails a malformed message in development, and never in production.
             └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-**14. `ClearCommand.run`** — depth 6 · decorated-method
-
-```text
-🚀 ClearCommand.run(_passedParameters: string[], options: ClearCommandOptions): Promise<void> [applications/lexico-ingestion/src/modules/clear/clear.command.ts:138]
-   ↳ Runs the clear pipeline for the options provided. If no options are specified, it prompts the user.
-  └─> ClearCommand.clearLiterature(): Promise<void> [applications/lexico-ingestion/src/modules/clear/clear.command.ts:72]
-     ↳ Deletes all literature data
-    └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
-       ↳ Logs an informational message at the `info` level.
-      └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-         ↳ Assembles the object pino merges into the line.
-        └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-           ↳ Fails a malformed message in development, and never in production.
-          └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-             ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **15. `LiteratureCommand.parseAuthor`** — depth 5 · decorated-method
@@ -757,7 +765,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 ```text
 🚀 ClearCommand.constructor(…): ClearCommand [applications/lexico-ingestion/src/modules/clear/clear.command.ts:31]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -765,7 +773,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 ```text
 🚀 CorpusScriptorumEcclesiasticorumLatinorumCommand.constructor(logger: LoggerService): CorpusScriptorumEcclesiasticorumLatinorumCommand [applications/lexico-ingestion/src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts:24]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -813,7 +821,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 ```text
 🚀 PrincipalPartsService.constructor(…): PrincipalPartsService [applications/lexico-ingestion/src/modules/principal-parts/principal-parts.service.ts:19]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -821,7 +829,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 ```text
 🚀 PronunciationService.constructor(…): PronunciationService [applications/lexico-ingestion/src/modules/pronunciation/pronunciation.service.ts:26]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -829,7 +837,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 ```text
 🚀 TranslationsService.constructor(…): TranslationsService [applications/lexico-ingestion/src/modules/translations/translations.service.ts:23]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -837,7 +845,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 ```text
 🚀 LexemesService.constructor(…): LexemesService [applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:32]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -845,7 +853,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 ```text
 🚀 DictionaryCommand.constructor(…): DictionaryCommand [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:30]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -853,7 +861,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 ```text
 🚀 EpigraphikDatenbankClaussSlabyCommand.constructor(logger: LoggerService): EpigraphikDatenbankClaussSlabyCommand [applications/lexico-ingestion/src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts:24]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -861,7 +869,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 ```text
 🚀 LatinLibraryCommand.constructor(logger: LoggerService): LatinLibraryCommand [applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:22]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -869,7 +877,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 ```text
 🚀 LibraryCommand.constructor(logger: LoggerService, providers: LibrarySourceProvider[]): LibraryCommand [applications/lexico-ingestion/src/modules/library/library.command.ts:31]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -885,7 +893,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 ```text
 🚀 LiteratureTextIngestionService.constructor(logger: LoggerService): LiteratureTextIngestionService [applications/lexico-ingestion/src/modules/literature/literature-text-ingestion.service.ts:15]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -893,7 +901,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 ```text
 🚀 LiteratureService.constructor(…): LiteratureService [applications/lexico-ingestion/src/modules/literature/literature.service.ts:48]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -901,7 +909,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 ```text
 🚀 LiteratureCommand.constructor(logger: LoggerService, helper: LiteratureService): LiteratureCommand [applications/lexico-ingestion/src/modules/literature/literature.command.ts:26]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -909,7 +917,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 ```text
 🚀 PerseusCommand.constructor(logger: LoggerService): PerseusCommand [applications/lexico-ingestion/src/modules/perseus/perseus.command.ts:24]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -917,7 +925,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 ```text
 🚀 WiktionaryCommand.constructor(logger: LoggerService): WiktionaryCommand [applications/lexico-ingestion/src/modules/wiktionary/wiktionary.command.ts:29]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -925,7 +933,7 @@ Call stacks traced through `lexico-ingestion`, deepest first. Each frame shows w
 
 ```text
 🚀 LexicoIngestionCommand.constructor(…): LexicoIngestionCommand [applications/lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.command.ts:30]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
