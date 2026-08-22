@@ -84,8 +84,8 @@
       "description": "Verify that pnpm-lock.yaml is in sync with package.json files",
       "executor": "nx:run-commands",
       "options": {
-        "command": "bash scripts/check-lockfile.sh",
-        "cwd": "{projectRoot}"
+        "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts lockfile",
+        "cwd": "{workspaceRoot}"
       }
     },
     "codometer": {

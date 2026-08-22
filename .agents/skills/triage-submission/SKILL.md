@@ -80,7 +80,7 @@ staged `package.json` matches all three, so all four commands run.
 
 | Staged file pattern                     | Commands lint-staged runs                                                                                                                                                       |
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `{**/package.json,pnpm-workspace.yaml}` | `./scripts/check-lockfile.sh` — a direct script, not an Nx target                                                                                                               |
+| `{**/package.json,pnpm-workspace.yaml}` | `validation lockfile`, run as the CLI directly rather than through its Nx target                                                                                                |
 | `**/package.json`                       | `nx run-many --projects=codebase --targets=check-catalog-manifests,sherif,syncpack`                                                                                             |
 | `*` (every staged path)                 | `nx affected --target=lint-codebase --target=callidescope --target=synchronize --configuration=check --parallel=8 --files=…`, then `nx run-many --targets=conformetry-validate` |
 
@@ -231,8 +231,13 @@ There is no command that regenerates a skills table of contents. The synchroniza
 
 #### `check-lockfile` (package.json / pnpm-workspace.yaml changes)
 
-Command: `bash scripts/check-lockfile.sh` (not an Nx target — run directly by lint-staged)
-Script: [scripts/check-lockfile.sh](../../../scripts/check-lockfile.sh)
+Command: `validation lockfile`, the [lockfile](../../../tools/validation/src/modules/lockfile/lockfile.command.ts) check
+
+lint-staged runs it as the CLI directly rather than through its `codebase:check-lockfile` Nx target, so one command does not cost another project graph build. Run it by hand through the target:
+
+```bash
+pnpm exec nx run codebase:check-lockfile
+```
 
 #### `commitlint` (commit-msg hook)
 
@@ -501,7 +506,7 @@ Remaining Actions
 | commitlint                          | [configuration/commitlint.config.ts](../../../configuration/commitlint.config.ts)                                                                      |
 | validate-branch-name                | [validate-branch-name.config.cjs](../../../validate-branch-name.config.cjs)                                                                            |
 | Conventional commits (types/scopes) | [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs)                                                                |
-| check-lockfile                      | [scripts/check-lockfile.sh](../../../scripts/check-lockfile.sh)                                                                                        |
+| check-lockfile                      | [tools/validation/src/modules/lockfile/lockfile.constants.ts](../../../tools/validation/src/modules/lockfile/lockfile.constants.ts)                    |
 
 ### Git Conventions
 

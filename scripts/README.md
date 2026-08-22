@@ -121,32 +121,6 @@ The devcontainer handles equivalent setup automatically.
 - Appends `LOCAL_WORKSPACE_FOLDER=$(pwd)` to root `.env` for docker-compose volume mounts
 - Sources `.env` file and exports environment variables
 
-### check-lockfile.sh
-
-**Purpose:** Validate `pnpm-lock.yaml` is in sync with `package.json` files
-
-**Usage:**
-
-```bash
-./scripts/check-lockfile.sh
-```
-
-**Use cases:**
-
-- Pre-commit hook (automatically run by Husky)
-- CI/CD validation
-- Manual verification
-
-**Output:**
-
-- ✅ Success: Lockfile is in sync
-- ❌ Error: Lockfile is out of sync (suggests running `pnpm install`)
-
-**Exit codes:**
-
-- `0` - Lockfile is valid
-- `1` - Lockfile is out of sync
-
 ### install-skills.sh
 
 **Purpose:** Restore the skills declared in `skills-lock.json` into their gitignored `.agents/skills/<name>/` folders, so every environment that installs node dependencies holds the skills that `AGENTS.md` links to
@@ -545,7 +519,7 @@ pnpm clean
 Check if lockfile needs updating:
 
 ```bash
-./scripts/check-lockfile.sh
+pnpm exec nx run codebase:check-lockfile
 ```
 
 If out of sync:
@@ -666,7 +640,7 @@ pnpm install
 Verify sync:
 
 ```bash
-./scripts/check-lockfile.sh
+pnpm exec nx run codebase:check-lockfile
 ```
 
 ## Contributing
@@ -709,7 +683,7 @@ Verify sync:
 
 **File naming:**
 
-- Use kebab-case: `check-lockfile.sh`
+- Use kebab-case: `install-skills.sh`
 - Add `.sh` extension
 - Descriptive names
 

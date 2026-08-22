@@ -50,10 +50,17 @@ function getStagedFilesFlags(files: string[]): string {
 
 const config = {
   // 🔒 Lockfile integrity
-  // Not an Nx target: this resolves the manifests against the lockfile with a
-  // real `pnpm install --frozen-lockfile`, which no target models.
+  // Run as the `validation` CLI rather than through its Nx target, which would
+  // cost another project graph build for one command. No environment prefix:
+  // lint-staged spawns commands without a shell, so `NODE_OPTIONS='' node …`
+  // would be parsed as the executable name. The pre-commit hook already clears
+  // `NODE_OPTIONS` for exactly the reason that prefix exists elsewhere, so
+  // there is nothing left here to neutralize.
+  //
+  // What it checks is not a file's contents but whether a resolution still
+  // holds: a real `pnpm install --frozen-lockfile`, which no Nx target models.
   "{**/package.json,pnpm-workspace.yaml}": (): string[] => [
-    "./scripts/check-lockfile.sh",
+    "node --import @swc-node/register/esm-register tools/validation/src/main.ts lockfile",
   ],
 
   // 📦 Manifest consistency
