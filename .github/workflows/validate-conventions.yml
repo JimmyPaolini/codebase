@@ -12,6 +12,13 @@ name: 🧑‍⚖️ Validate Conventions
 # On `opened`/`reopened` the conventional label vocabulary is reconciled
 # against the repository before metadata validation runs, so a freshly
 # opened pull request has the labels it needs to pass.
+#
+# That reconciliation is a nest-commander command in `tools/synchronization`,
+# run through node directly rather than through Nx — the same invocation that
+# project's own targets use — so this workflow still builds no project graph.
+# It is the `repository` synchronization kind, which nothing else selects:
+# `lint-codebase` checks `derivation` and the release workflow writes
+# `derivation,report`, so neither of them needs a token.
 
 on:
   pull_request:
@@ -72,12 +79,17 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
 
-      # commitlint and validate-branch-name are the only dependencies these
-      # checks need, and both live in the root manifest.
+      # commitlint and validate-branch-name live in the root manifest; the label
+      # reconciliation step below runs the synchronization CLI directly through
+      # node rather than through Nx, so that project and the workspace packages
+      # it imports are all this needs on top. `--filter synchronization...`
+      # resolves those transitively, so nothing here names `@codebase/logger`
+      # or the conformetry packages by hand. Still no Nx cache, no uv, and no
+      # Homebrew: there is no project graph to build.
       - name: 📚 Install Root Dependencies
         run: |
           CI=true pnpm install --frozen-lockfile --reporter=append-only \
-            --filter . --ignore-scripts
+            --filter . --filter synchronization... --ignore-scripts
 
       - name: 🎋 Validate Branch Name
         env:
@@ -160,7 +172,10 @@ jobs:
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
-        run: bash scripts/git/ensure-pull-request-labels.sh
+        run: |
+          NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+            tools/synchronization/src/main.ts synchronization write \
+            --kinds repository
 
       - name: 🧾 Validate Pull Request Metadata
         env:
