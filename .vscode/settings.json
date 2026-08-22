@@ -54,7 +54,7 @@
   "chat.agent.thinkingStyle": "collapsedPreview",
   "chat.agentFilesLocations": {
     ".claude/agents": false,
-    ".github/agents": true,
+    ".github/agents": false,
     "~/.copilot/agents": false
   },
   "chat.agentsControl.enabled": "compact",
@@ -213,7 +213,8 @@
     "testing", // Vitest configuration, shared test utilities, and coverage setup
     "tools", // Changes spanning multiple tool projects in tools/
     "synchronization", // Synchronization application and commands for automating workflows
-    "reporting" // Internal reporting CLI and the reports it renders, such as 🎒 Bundles
+    "reporting", // Internal reporting CLI and the reports it renders, such as 🎒 Bundles
+    "validation" // Validation CLI and the checks it runs, such as pull request metadata
   ],
   "conventionalCommits.showEditor": true,
   "conventionalCommits.showNewVersionNotes": false,

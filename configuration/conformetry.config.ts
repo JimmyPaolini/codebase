@@ -59,15 +59,7 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
         .string()
         .describe("Project type (application, package, or tools)"),
     }),
-    instances: [
-      {
-        patterns: [
-          "applications/{caelundas,lexico-ingestion}",
-          "packages/conformetry-cli",
-          "tools/synchronization",
-        ],
-      },
-    ],
+    instances: [{ patterns: ["."], tags: ["framework:nest-commander"] }],
     name: "nestjs-command-project",
     templatePath: "configuration/conformetry-templates/nestjs-command-project",
   },
@@ -179,6 +171,10 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
     name: "nestjs-service-module",
     templatePath: "configuration/conformetry-templates/nestjs-service-module",
   },
+  // Tags select projects and patterns select the instances inside them, so a
+  // group naming tags alone registers nothing and this template is measured
+  // against no instance at all. That is deliberate while `lexico` is still in
+  // progress, and adding patterns here is what would start validating it.
   {
     aliases: ["c"],
     description: "Generate a React component with test file",

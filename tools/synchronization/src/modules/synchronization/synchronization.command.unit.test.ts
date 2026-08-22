@@ -10,6 +10,7 @@ import { ConventionalConfigCommand } from "../conventional-config/conventional-c
 import { DevcontainerConfigurationCommand } from "../devcontainer-configuration/devcontainer-configuration.command";
 import { NestjsModuleGraphsCommand } from "../nestjs-module-graphs/nestjs-module-graphs.command";
 import { NxProjectGraphsCommand } from "../nx-project-graphs/nx-project-graphs.command";
+import { PullRequestLabelsCommand } from "../pull-request-labels/pull-request-labels.command";
 import { PullRequestTemplateCommand } from "../pull-request-template/pull-request-template.command";
 import { SkillExclusionsCommand } from "../skill-exclusions/skill-exclusions.command";
 
@@ -18,6 +19,7 @@ import { SynchronizationCommand } from "./synchronization.command";
 import {
   SYNCHRONIZATION_KIND_DERIVATION,
   SYNCHRONIZATION_KIND_REPORT,
+  SYNCHRONIZATION_KIND_REPOSITORY,
 } from "./synchronization.constants";
 import { SynchronizationService } from "./synchronization.service";
 
@@ -31,6 +33,7 @@ describe(SynchronizationCommand, () => {
   let logger: LoggerService;
   let nestjsModuleGraphs: NestjsModuleGraphsCommand;
   let nxProjectGraphs: NxProjectGraphsCommand;
+  let pullRequestLabels: PullRequestLabelsCommand;
   let pullRequestTemplate: PullRequestTemplateCommand;
   let skillExclusions: SkillExclusionsCommand;
 
@@ -42,6 +45,7 @@ describe(SynchronizationCommand, () => {
       devcontainerConfiguration,
       nestjsModuleGraphs,
       nxProjectGraphs,
+      pullRequestLabels,
       pullRequestTemplate,
     ];
   }
@@ -99,6 +103,13 @@ describe(SynchronizationCommand, () => {
           }),
         },
         {
+          provide: PullRequestLabelsCommand,
+          useValue: createMock<PullRequestLabelsCommand>({
+            synchronizationKind: SYNCHRONIZATION_KIND_REPOSITORY,
+            synchronizationLabel: "pull-request-labels",
+          }),
+        },
+        {
           provide: PullRequestTemplateCommand,
           useValue: createMock<PullRequestTemplateCommand>({
             synchronizationKind: SYNCHRONIZATION_KIND_DERIVATION,
@@ -124,6 +135,7 @@ describe(SynchronizationCommand, () => {
     logger = await module.resolve(LoggerService);
     nestjsModuleGraphs = await module.resolve(NestjsModuleGraphsCommand);
     nxProjectGraphs = await module.resolve(NxProjectGraphsCommand);
+    pullRequestLabels = await module.resolve(PullRequestLabelsCommand);
     pullRequestTemplate = await module.resolve(PullRequestTemplateCommand);
     skillExclusions = await module.resolve(SkillExclusionsCommand);
   });
@@ -174,6 +186,12 @@ describe(SynchronizationCommand, () => {
           provide: NxProjectGraphsCommand,
           useValue: createMock<NxProjectGraphsCommand>({
             synchronizationKind: SYNCHRONIZATION_KIND_DERIVATION,
+          }),
+        },
+        {
+          provide: PullRequestLabelsCommand,
+          useValue: createMock<PullRequestLabelsCommand>({
+            synchronizationKind: SYNCHRONIZATION_KIND_REPOSITORY,
           }),
         },
         {
@@ -345,7 +363,7 @@ describe(SynchronizationCommand, () => {
       undefined,
       {
         reasons: [
-          `--kinds does not accept "reports". It takes a comma-separated set drawn from "derivation" and "report", as in "--kinds derivation,report".`,
+          `--kinds does not accept "reports". It takes a comma-separated set drawn from "derivation", "report", and "repository", as in "--kinds derivation,report,repository".`,
         ],
       },
     );
@@ -370,6 +388,35 @@ describe(SynchronizationCommand, () => {
       undefined,
       { kinds: [] },
     );
+  });
+
+  // The whole reason the repository kind exists: neither the pull request gate
+  // nor the release write may reach a command that needs a token.
+  it("leaves the repository synchronization out of a derivation run", async () => {
+    stubAllDelegates(true);
+
+    await command.run(["check"], { kinds: "derivation" });
+
+    expect(pullRequestLabels.synchronize).not.toHaveBeenCalled();
+  });
+
+  it("leaves the repository synchronization out of the release write", async () => {
+    stubAllDelegates(true);
+
+    await command.run(["write"], { kinds: "derivation,report" });
+
+    expect(pullRequestLabels.synchronize).not.toHaveBeenCalled();
+    expect(nestjsModuleGraphs.synchronize).toHaveBeenCalledWith("write");
+  });
+
+  it("runs the repository synchronization alone when it was named", async () => {
+    stubAllDelegates(true);
+
+    await command.run(["write"], { kinds: "repository" });
+
+    expect(pullRequestLabels.synchronize).toHaveBeenCalledWith("write");
+    expect(conformetryGenerators.synchronize).not.toHaveBeenCalled();
+    expect(nestjsModuleGraphs.synchronize).not.toHaveBeenCalled();
   });
 
   it("drives every kind when a caller says nothing about kinds", async () => {

@@ -36,7 +36,7 @@ themselves rather than reaching it through
 here publishes reports and Nx forwards an explicit configuration down
 `dependsOn`.
 
-## Two kinds of synchronization
+## Three kinds of synchronization
 
 A mode says what a run does. A **kind** says which runs a synchronization
 belongs in, and each command declares its own:
@@ -45,6 +45,7 @@ belongs in, and each command declares its own:
 | ---- | -------------------- | --------------------------- |
 | `derivation` | A committed file derived from configuration | Checked on a pull request. The change that touched the configuration is the change that regenerates the file |
 | `report` | A report generated from the code it describes | Published on the default branch. A branch being behind the published report is not a mistake the branch made |
+| `repository` | State the working tree does not contain at all | Reconciled by whoever holds a token. Nothing gates on it, because nothing that runs without credentials can even look |
 
 `--kinds` narrows a run to a comma-separated set of them:
 
@@ -67,6 +68,16 @@ same trap [codometer](../../packages/codometer-cli/README.md) and
 [callidescope](../../packages/callidescope-cli/README.md) publish on `main` to
 avoid.
 
+Only `pull-request-labels` is a `repository` synchronization today, and it is
+the reason the kind exists. Neither of the other two fits: it must not run in
+`lint-codebase`, which every developer and every fork runs with no GitHub
+token, and it must not wait for the default branch either — a change
+introducing a new scope needs that scope's label to exist before 🧾 Validate
+Pull Request Metadata runs on the very same pull request. So it is neither
+gated nor published: `check` drives `derivation`, `write` drives
+`derivation,report`, and the one caller holding a token asks for `repository`
+by name.
+
 ## What it synchronizes
 
 | Command | Source | Destination |
@@ -76,6 +87,7 @@ avoid.
 | `devcontainer-configuration` | `.devcontainer/local/devcontainer.json` | The shared fields of `.devcontainer/cloud/devcontainer.json` |
 | `nestjs-module-graphs` | The NestJS container each project builds | The mermaid module graph in that project's `AGENTS.md` and `README.md`. A `report`, published on `main` |
 | `nx-project-graphs` | The Nx project graph | The mermaid project graph in every project's `README.md` |
+| `pull-request-labels` | `configuration/conventional.config.cjs` | This repository's `type:`, `scope:`, and `source:` labels on GitHub. A `repository` synchronization |
 | `pull-request-template` | `.github/PULL_REQUEST_TEMPLATE.md` | The template embedded in the PR skill files |
 
 ### Module graphs
@@ -187,6 +199,30 @@ three NestJS ones. The projects no template governs (`lexico`,
 `lexico-components`, `lexico-entities`, and `logger`) still get a graph; there
 is simply no template to fail them if they drop the block.
 
+### Pull request labels
+
+`pull-request-labels` is the odd one out: its destination is GitHub rather than
+a file. It reads `configuration/conventional.config.cjs` and reconciles the
+repository's labels against it — every `type:<name>`, every lowercased
+`scope:<name>`, and the three `do-not-merge`, `source:agent`, and
+`source:human` labels that no configuration derives. It creates what is missing
+and edits whatever color or description drifted.
+
+It never deletes. A label the configuration dropped may still be on open pull
+requests, and removing it there loses information no run can put back, so a
+stale `type:`, `scope:`, or `source:` label is reported with the
+`gh label delete` command that would remove it, for a human to decide on. This
+repository has one standing already, which is why "nothing needed creating or
+updating" is said explicitly rather than inferred from an empty report — the
+report is never fully empty even on a perfectly reconciled run.
+
+It also always succeeds. A missing label is a fact about the repository under
+review rather than a defect in the pull request, and a `gh` that is absent,
+read-only on a fork, or rate-limited is an environment rather than an answer —
+both are warnings, so this can never be why a pull request goes red. Reads and
+writes both go through the `gh` client, which already resolves the repository
+from the checkout and the token from the environment.
+
 Run one on its own with its named configuration:
 
 ```bash
@@ -196,9 +232,9 @@ nx run synchronization:start:devcontainer-configuration-check
 
 ## Why one aggregate command
 
-The `synchronization` command drives all six in a single process. Each `nx
-run` rebuilds the project graph, so six targets cost six graph builds where one
-costs one.
+The `synchronization` command drives all seven in a single process. Each `nx
+run` rebuilds the project graph, so seven targets cost seven graph builds where
+one costs one.
 
 The aggregate also reports _all_ drift at once rather than stopping at the
 first failure: each command's `synchronize` returns whether it succeeded, and
@@ -280,6 +316,7 @@ flowchart LR
     MainModule
     NestjsModuleGraphsModule
     NxProjectGraphsModule
+    PullRequestLabelsModule
     PullRequestTemplateModule
     SkillExclusionsModule
     SynchronizationModule
@@ -311,6 +348,7 @@ flowchart LR
   SynchronizationModule --> DevcontainerConfigurationModule
   SynchronizationModule --> NestjsModuleGraphsModule
   SynchronizationModule --> NxProjectGraphsModule
+  SynchronizationModule --> PullRequestLabelsModule
   SynchronizationModule --> PullRequestTemplateModule
   SynchronizationModule --> SkillExclusionsModule
   SyntheticRootModule -.-> FilesModule
@@ -333,10 +371,11 @@ _Dotted edges are modules named for a runtime load rather than imported._
    `synchronizationKind`, and a `synchronize(mode)` returning whether the
    destination was already current.
 3. Pick the kind: `SYNCHRONIZATION_KIND_DERIVATION` when the destination is
-   derived from configuration a pull request can also change, and
+   derived from configuration a pull request can also change,
    `SYNCHRONIZATION_KIND_REPORT` when it is generated from the code it
-   describes. That one field is the whole declaration — no workflow file, Nx
-   target, or central list names it again.
+   describes, and `SYNCHRONIZATION_KIND_REPOSITORY` when the destination is not
+   in the working tree at all. That one field is the whole declaration — no
+   workflow file, Nx target, or central list names it again.
 4. Register the command in `SynchronizationCommand.getCommands()`.
 5. Add the source path to the `synchronize` target's `inputs` in
    `project.json`, or Nx will serve a stale cached result when it changes.

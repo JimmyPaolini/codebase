@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Restore the skills declared in skills-lock.json into their gitignored
-# .agents/skills/<name>/ folders.
+# Restore the skills declared in skills-lock.json into their .agents/skills/<name>/
+# folders.
 #
 # Invoked from the root postinstall so every environment that installs node
 # dependencies — local clones, devcontainers, CI jobs, Claude Code worktrees —
@@ -9,11 +9,19 @@
 # Without this the skills are declared but absent, and every skill link in
 # AGENTS.md dangles.
 #
-# Three properties matter:
+# Keeping those skills out of the five tools whose scan reaches `.agents/` is a
+# separate job, owned by the `skill-exclusions` synchronizer in
+# tools/synchronization — `nx run synchronization:synchronize` generates and
+# verifies the marker-delimited blocks, so a skill `skills update` adds to the
+# lockfile fails the check until the same change regenerates them.
+#
+# Four properties matter:
 #
 #   - Idempotent. Returns in milliseconds when every locked skill is already
 #     present, rather than re-cloning every source repository. Set
 #     SKILLS_INSTALL_FORCE=1 to re-run anyway and repair a damaged skill.
+#   - Honest about failure. A lockfile that cannot be read or parsed is
+#     reported as such and never reported as "already restored".
 #   - Leaves tracked files alone. `skills experimental_install` rewrites
 #     skills-lock.json with whatever hash each source holds right now, and
 #     rewrites every skill folder with whatever content its source holds right
@@ -51,19 +59,39 @@ if [ ! -f "$LOCKFILE" ]; then
   exit 0
 fi
 
-# Locked skills whose SKILL.md is not on disk, space separated.
-missing_skills() {
+# Locked skills whose SKILL.md is not on disk, space separated. Exits non-zero
+# when the lockfile itself could not be read or parsed, so "nothing is missing"
+# is never confused with "nothing could be read" — the old version swallowed
+# both into an empty result and then reported success over a corrupt lockfile.
+locked_skills_missing_from_disk() {
   node -e '
 const fs = require("fs");
-const { skills = {} } = JSON.parse(fs.readFileSync("skills-lock.json", "utf8"));
-const absent = Object.keys(skills).filter(
-  (name) => !fs.existsSync(".agents/skills/" + name + "/SKILL.md"),
-);
-process.stdout.write(absent.join(" "));
-' 2>/dev/null
+try {
+  const parsed = JSON.parse(fs.readFileSync("skills-lock.json", "utf8"));
+  const { skills = {} } = parsed ?? {};
+  const absent = Object.keys(skills).filter(
+    (name) => !fs.existsSync(".agents/skills/" + name + "/SKILL.md"),
+  );
+  process.stdout.write(absent.join(" "));
+} catch (error) {
+  process.stderr.write(`⚠️  skills-lock.json could not be listed: ${error.message}\n`);
+  process.exit(1);
+}
+'
 }
 
-MISSING="$(missing_skills)"
+if MISSING="$(locked_skills_missing_from_disk)"; then
+  LOCKFILE_READABLE=true
+else
+  LOCKFILE_READABLE=false
+  MISSING=""
+fi
+
+if [ "$LOCKFILE_READABLE" = false ]; then
+  echo "⚠️  $LOCKFILE could not be read, so no skill was restored and none was verified"
+  echo "$RETRY_HINT"
+  exit 0
+fi
 
 if [ -z "$MISSING" ] && [ -z "${SKILLS_INSTALL_FORCE:-}" ]; then
   echo "🤹 Skills already restored from $LOCKFILE"
@@ -125,7 +153,11 @@ if in_work_tree && ! git diff --quiet -- "$SKILLS_DIRECTORY" &>/dev/null; then
     echo "🤹 Returned the skill folders to the committed content"
 fi
 
-STILL_MISSING="$(missing_skills)"
+if ! STILL_MISSING="$(locked_skills_missing_from_disk)"; then
+  echo "⚠️  Restoration ran, but $LOCKFILE could not be re-read to confirm the result"
+  echo "$RETRY_HINT"
+  exit 0
+fi
 if [ -n "$STILL_MISSING" ]; then
   echo "⚠️  Skills still missing: $STILL_MISSING"
   echo "$RETRY_HINT"

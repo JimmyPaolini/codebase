@@ -341,6 +341,7 @@ flowchart LR
     LoggerModule([LoggerModule])
   end
   ConfigModule([ConfigModule])
+  DiscoveryModule
   CallablesModule --> ProgramModule
   CallablesModule --> WorkspaceModule
   CallidescopeModule --> CallablesModule
@@ -364,6 +365,7 @@ flowchart LR
   GraphModule --> SignaturesModule
   MainModule --> CallidescopeModule
   MainModule --> ConfigurationModule
+  MainModule --> DiscoveryModule
   ProgramModule --> WorkspaceModule
   ProjectReportsModule --> GraphModule
 ```
@@ -379,15 +381,19 @@ _Rounded modules are global: every module can inject them, so their edges are le
 | [`@callidescope/cli`](.) | Builds the graph, measures it, and reports |
 | [`@callidescope/configuration`](../callidescope-configuration/README.md) | Reads `callidescope.config.ts` and resolves the limits |
 
-## Contributing
+## Start
 
 ```bash
 nx run callidescope-cli:start
 ```
 
+## Test
+
 ```bash
 nx run callidescope-cli:vitest
 ```
+
+## Contributing
 
 ```bash
 nx run callidescope-cli:lint-codebase --configuration=check

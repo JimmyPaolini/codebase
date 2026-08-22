@@ -135,7 +135,7 @@ import { cn } from "@codebase/lexico-components";
 
 ## TanStack Router (lexico)
 
-See [tanstack-start-ssr skill](../tanstack-start-ssr/SKILL.md) for full SSR patterns. Key patterns:
+There is no dedicated SSR skill; the router conventions live here. Key patterns:
 
 ```typescript
 // routes/word.$id.tsx
