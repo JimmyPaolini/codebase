@@ -188,6 +188,20 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
 
+    // validation: NestJS CLI tool for the repository's one-sided checks
+    "tools/validation": {
+      entry: ["src/main.ts", "src/repl.ts"], // Main CLI entry + the REPL its own target runs
+      ignore: [
+        "testing/**", // Test fixtures and setup
+      ],
+      ignoreDependencies: [
+        "@nestjs/testing", // Used by unit tests; tests are excluded from knip project scope
+        "@swc-node/register", // Used in Nx run-commands strings (`node --import @swc-node/register/esm-register`)
+        "@swc/core", // Required peer/runtime for @swc-node/register loaded via CLI string command
+      ],
+      project: "src/**/*.ts",
+    },
+
     // callidescope packages: the call-stack linting CLI and the configuration
     // it reads.
     "packages/callidescope-cli": {

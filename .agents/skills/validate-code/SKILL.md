@@ -64,7 +64,8 @@ pnpm exec nx affected --target=lint-codebase --configuration=check --base=main
 - **Typecheck**: Fix type errors — see [write-typescript skill](../write-typescript/SKILL.md) for patterns.
 - **Spell-check**: Either fix the typo, or add the word to the appropriate dictionary in `configuration/.cspell/`.
 - **Knip (unused code)**: Remove the unused export/file/dependency, or add an exception in `configuration/knip.config.ts`.
-- **Sync checks**: Run the relevant `write` variant (e.g., `nx run synchronization:start:agent-skills-write`).
+- **Sync checks**: Run the relevant `write` variant (e.g., `nx run synchronization:start:conventional-config-write`), or `nx run synchronization:synchronize --configuration=write` for all six at once.
+- **Check skill exclusions**: Add the exclusion lines the failure names to `configuration/.prettierignore`, `configuration/.codometerignore`, and `.gitattributes`. This leaf has no `write` variant.
 
 See [triage-submission](../triage-submission/SKILL.md) for detailed per-tool fix instructions.
 
@@ -118,22 +119,28 @@ pnpm exec nx run <project>:typecheck
 pnpm exec nx run <project>:type-coverage
 ```
 
-### New skill or AGENTS.md edited
+### New skill added
+
+A skill is one directory, `.agents/skills/<skill-name>/SKILL.md`. `.claude/skills` and `.github/skills` are symlinks to `.agents/skills`, so that one copy already serves both harnesses — there is no second copy to create and no table of contents to regenerate. AGENTS.md deliberately does not list the skills; agents are handed the installed set directly.
+
+The only extra command applies to a skill installed from another repository, which `skills update` records in `skills-lock.json`:
 
 ```bash
-# Sync the agent skills table of contents
-pnpm exec nx run synchronization:start:agent-skills-write
-pnpm exec nx run synchronization:start:agent-skills-check
+# Regenerate the exclusion blocks that keep locked skills out of prettier,
+# codometer, Linguist, cspell, and markdownlint
+pnpm exec nx run synchronization:synchronize:write
 ```
 
-### New documentation/skills entry added
+### AGENTS.md edited
 
-New skills must live in BOTH:
+The types and scopes tables in AGENTS.md are generated between marker comments from [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs). Edit the config, never the table, then regenerate:
 
-- `.github/skills/<skill-name>/SKILL.md` — loaded by GitHub Copilot
-- `documentation/skills/<skill-name>/SKILL.md` — identical copy, read by the sync script
+```bash
+pnpm exec nx run synchronization:start:conventional-config-write
+pnpm exec nx run synchronization:start:conventional-config-check
+```
 
-After creating both, run `nx run synchronization:start:agent-skills-write` to update the AGENTS.md table of contents.
+Everything outside those markers is hand-written and needs no synchronization run.
 
 ## Resources
 

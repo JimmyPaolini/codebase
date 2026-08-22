@@ -85,6 +85,7 @@ flowchart LR
   logger["logger"]
   reporting["reporting"]
   synchronization["synchronization"]
+  validation["validation"]
   caelundas --> logger
   callidescope_cli --> logger
   codometer_cli --> logger
@@ -93,6 +94,7 @@ flowchart LR
   lexico_ingestion --> logger
   reporting --> logger
   synchronization --> logger
+  validation --> logger
   classDef subject stroke-width:3px
   class logger subject
 ```

@@ -143,7 +143,7 @@ Analyze the evidence for patterns that were missing, applied incorrectly, or cor
 
 | # | Gap | Signal to Look For |
 | - | --- | ------------------ |
-| 1 | **Missing naming convention** | Inconsistent names, abbreviations used (`req`, `res`, `i`, `e`), or names corrected after first draft |
+| 1 | **Missing naming convention** | Inconsistent names, abbreviated identifiers where the codebase requires explicit ones, or names corrected after first draft |
 | 2 | **Wrong TypeScript pattern** | `any` used, non-null assertion `!` used, or type narrowing done with a cast instead of a guard |
 | 3 | **Error handling gap** | Bare `catch`, swallowed error, or error surfaced as `string` instead of typed error |
 | 4 | **Module structure inconsistency** | New module organized differently from existing modules without a deliberate reason |
@@ -212,7 +212,7 @@ Use this pattern whenever a skill is becoming too large:
 
 (a repeatable workflow not yet covered):
 
-- Follow the [agent-skills instructions](../../instructions/agent-skills.instructions.md) template precisely
+- Follow the [agent-skills instructions](../../../.github/instructions/agent-skills.instructions.md) template precisely
 - Place at `.github/skills/<name>/SKILL.md`
 - Write a keyword-rich `description` field — this is the primary discovery surface
 - Include a step-by-step workflow, not just a description
@@ -296,7 +296,7 @@ When in doubt, prefer a **memory note** over a skill update — it is lower over
 
 ## References
 
-- [agent-skills instructions](../../instructions/agent-skills.instructions.md) — Template and quality rules for SKILL.md files
+- [agent-skills instructions](../../../.github/instructions/agent-skills.instructions.md) — Template and quality rules for SKILL.md files
 - [validate-code](../validate-code/SKILL.md) — Full validation workflow before committing
 - [spell-check](../spell-check/SKILL.md) — Fix cspell errors in modified files
 - [submit-changes](../submit-changes/SKILL.md) — Branch, commit, and PR workflow for the updates

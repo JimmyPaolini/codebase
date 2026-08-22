@@ -1,6 +1,7 @@
 import { ConfigurationModule } from "@callidescope/configuration";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { DiscoveryModule } from "@nestjs/core";
 
 import { LoggerModule } from "@codebase/logger";
 
@@ -18,6 +19,7 @@ import { CallidescopeModule } from "./modules/callidescope/callidescope.module";
       validate: (config: Record<string, unknown>) =>
         environmentSchema.parse(config),
     }),
+    DiscoveryModule,
     LoggerModule,
     CallidescopeModule,
     ConfigurationModule,

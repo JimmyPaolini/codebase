@@ -76,6 +76,9 @@ const configuration: UserConfig = {
     "scope-enum": [2, "always", scopes.map((scope) => scope.name)],
     "type-enum": [2, "always", types.map((type) => type.name)],
 
+    // 🎯 Require a scope, so scope-enum always has something to check
+    "scope-empty": [2, "never"],
+
     // 📏 Limit lengths
     "header-max-length": [2, "always", 128],
 

@@ -80,6 +80,7 @@ This skill teaches how to name Git branches for this codebase. All branch names 
 | `tools` | Changes spanning multiple tool projects in tools/ |
 | `synchronization` | Synchronization application and commands for automating workflows |
 | `reporting` | Internal reporting CLI and the reports it renders, such as 🎒 Bundles |
+| `validation` | Validation CLI and the checks it runs, such as pull request metadata |
 
 <!-- scopes-end -->
 

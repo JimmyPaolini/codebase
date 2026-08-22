@@ -219,6 +219,11 @@ const scopes = [
       "Internal reporting CLI and the reports it renders, such as 🎒 Bundles",
     name: "reporting",
   },
+  {
+    description:
+      "Validation CLI and the checks it runs, such as pull request metadata",
+    name: "validation",
+  },
 ];
 
 module.exports = { scopes, types };
