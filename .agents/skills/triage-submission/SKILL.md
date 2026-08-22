@@ -78,20 +78,27 @@ Config: [validate-branch-name.config.cjs](../../../validate-branch-name.config.c
 `configuration/lint-staged.config.ts` declares three patterns, in this order. A
 staged `package.json` matches all three, so all four commands run.
 
-| Staged file pattern                     | Commands lint-staged runs                                                                                                            |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `{**/package.json,pnpm-workspace.yaml}` | `./scripts/check-lockfile.sh` — a direct script, not an Nx target                                                                    |
-| `**/package.json`                       | `nx run-many --projects=codebase --targets=check-catalog-manifests,sherif,syncpack`                                                  |
-| `*` (every staged path)                 | `nx affected --target=lint-codebase --configuration=check --parallel=8 --files=…`, then `nx run-many --targets=conformetry-validate` |
+| Staged file pattern                     | Commands lint-staged runs                                                                                                                                                       |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `{**/package.json,pnpm-workspace.yaml}` | `./scripts/check-lockfile.sh` — a direct script, not an Nx target                                                                                                               |
+| `**/package.json`                       | `nx run-many --projects=codebase --targets=check-catalog-manifests,sherif,syncpack`                                                                                             |
+| `*` (every staged path)                 | `nx affected --target=lint-codebase --target=callidescope --target=synchronize --configuration=check --parallel=8 --files=…`, then `nx run-many --targets=conformetry-validate` |
 
 There is deliberately no per-file-type row any more. `lint-codebase` is an
 `nx:noop` aggregator whose `dependsOn` list holds every static check, and each
 leaf target declares the config files it reads in its own `inputs` — so staging
 `configuration/knip.config.ts` re-runs `knip` and cache-hits the rest, with no
 hand-written mapping to drift. Anything the old table routed by hand
-(`check-skill-exclusions`, `sync-vscode-extensions`, `synchronize`,
-`markdown-lint`, `yaml-lint`, `spell-check`) is now reached through that
-`dependsOn` list.
+(`check-skill-exclusions`, `sync-vscode-extensions`, `markdown-lint`,
+`yaml-lint`, `spell-check`) is now reached through that `dependsOn` list.
+
+`callidescope` and `synchronize` are the exceptions, named in the same
+invocation rather than reached through `dependsOn`. Both also publish a report
+on the default branch, and Nx forwards an explicit configuration down
+`dependsOn` — so an edge there would let `lint-codebase --configuration=write`
+publish from a branch. Naming them alongside keeps a commit gating call-stack
+depth and derivation drift without a second `nx affected` call and the extra
+project graph build it would cost.
 
 Conformetry is the one exception to `affected`: a generated instance can drift
 without matching any changed-file glob, so it validates the whole workspace on

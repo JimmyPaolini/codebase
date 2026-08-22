@@ -79,14 +79,36 @@ const config = {
   // instances need not match a template-pattern glob to have drifted, so it
   // cannot be scoped to `affected`.
   //
+  // `callidescope` and `synchronize` are named alongside `lint-codebase` rather
+  // than reached through its `dependsOn`, for the reason the Lint Codebase
+  // workflow names them: both also publish a report on the default branch, and
+  // Nx forwards an explicit configuration down `dependsOn`, so an edge there
+  // would let `lint-codebase --configuration=write` publish from a branch.
+  // Naming them in this same invocation is what keeps a commit gating call-stack
+  // depth and derivation drift; a second `nx affected` call would have cost
+  // another project graph build for nothing.
+  //
+  // One gap worth knowing, because `affected` cannot close it. `synchronize`
+  // declares `project.json`, `AGENTS.md`, `README.md`, `*.module.ts` and the
+  // configuration files it reads as inputs, but no `package.json` glob — so a
+  // commit that stages only a manifest changes the Nx project graph, drifts the
+  // `nx-project-graphs` derivation, and never selects this project. The pull
+  // request still catches it, since Lint Codebase resolves `affected` against
+  // the merge base rather than a staged path list. Conformetry answers the same
+  // problem by staying unscoped; this one stays scoped, because removing that
+  // scope would put every synchronization in every commit path.
+  //
+  //
   // `nx sync:check` no longer runs anywhere, on commit or otherwise: the
-  // generator plugin it checked is emitted into .conformetry on install
-  // rather than committed, so no commit can stage it out of date. Every
-  // conformetry command re-checks the emitted plugin against the
-  // configuration instead. See configuration/.husky/pre-commit for the
-  // retirement note.
+  // generator plugin it checked is emitted into .conformetry on install rather
+  // than committed, so no commit can stage it out of date. Every conformetry
+  // command re-checks the emitted plugin against the configuration instead. See
+  // configuration/.husky/pre-commit for the retirement note. Were it ever
+  // reinstated, it could not be prefixed here: lint-staged spawns commands
+  // without a shell, so `NX_DAEMON=false nx ...` would be parsed as the
+  // executable name.
   "*": (files: string[]): string[] => [
-    `pnpm exec nx affected --target=lint-codebase --configuration=check --parallel=${String(ANALYSIS_PARALLELISM)} --outputStyle=static ${getStagedFilesFlags(files)}`,
+    `pnpm exec nx affected --target=lint-codebase --target=callidescope --target=synchronize --configuration=check --parallel=${String(ANALYSIS_PARALLELISM)} --outputStyle=static ${getStagedFilesFlags(files)}`,
     "pnpm exec nx run-many --targets=conformetry-validate --outputStyle=static",
   ],
 };

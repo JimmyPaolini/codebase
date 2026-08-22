@@ -16,12 +16,15 @@ import { MarkdownReportService } from "../report/markdown-report.service";
 
 import { PROJECT_README_NAME } from "./callidescope.constants";
 import { CallidescopeService } from "./callidescope.service";
+import { CHECK_NAMES } from "./run-plan.constants";
+import { RunPlanService } from "./run-plan.service";
 
 import type { ProjectSection } from "../output-markdown/output-markdown.types";
 import type {
   CallidescopeCommandOptions,
   SyncDestinationsArguments,
 } from "./callidescope.types";
+import type { ReportFindingsArguments } from "./run-plan.types";
 import type {
   CallGraphResult,
   CallidescopeOutputFormat,
@@ -47,6 +50,7 @@ export class CallidescopeCommand extends CommandRunner {
     private readonly outputJsonService: OutputJsonService,
     private readonly outputMarkdownService: OutputMarkdownService,
     private readonly markdownReportService: MarkdownReportService,
+    private readonly runPlanService: RunPlanService,
     private readonly logger: LoggerService,
   ) {
     super();
@@ -134,6 +138,59 @@ export class CallidescopeCommand extends CommandRunner {
     );
   }
 
+  /**
+   * Names the stacks that ran deeper than callidescope allows.
+   *
+   * Reported whether or not the run gates on them — a stack this long is worth
+   * saying out loud even in a run that only wrote a report — but only a run
+   * asked to fail on depth fails on it.
+   */
+  private reportDeepStacks(args: ReportFindingsArguments): boolean {
+    const { deepStacks } = args.result;
+
+    if (deepStacks.length === 0) {
+      return false;
+    }
+
+    this.logger.error(`🔭 Found call stacks too deep`, undefined, {
+      count: deepStacks.length,
+      deepest: Math.max(...deepStacks.map((stack) => stack.depth)),
+      entryPoints: deepStacks.map((stack) => stack.frames[0]?.displayName),
+    });
+
+    return args.mode.checksDepth;
+  }
+
+  /**
+   * Weighs both findings a run can produce, and fails on either.
+   *
+   * They are weighed separately and announced separately. A stack that is too
+   * deep is something the code does; a stale report is something the checkout
+   * has not caught up with. Reading one as the other sends the author to fix
+   * the wrong thing.
+   */
+  private reportFindings(args: ReportFindingsArguments): void {
+    const stale = this.reportStaleness(args);
+    const deep = this.reportDeepStacks(args);
+
+    if (deep || stale) {
+      process.exitCode = 1;
+    }
+  }
+
+  /** Names the destinations that no longer hold what a fresh run would write. */
+  private reportStaleness(args: ReportFindingsArguments): boolean {
+    if (args.stalePaths.length === 0) {
+      return false;
+    }
+
+    this.logger.error(`🔭 Found stale reports`, undefined, {
+      paths: args.stalePaths,
+    });
+
+    return true;
+  }
+
   /** Merges the markdown destination a flag named over the configured one. */
   private resolveMarkdownDestination(args: {
     configuration: ResolvedCallidescopeConfiguration;
@@ -211,18 +268,19 @@ export class CallidescopeCommand extends CommandRunner {
   // 🌎 Public Methods
 
   /**
-   * Parses `--check`.
+   * Parses the set of things the run fails on.
    *
-   * A valueless flag arrives as `undefined`, so presence is what the flag
-   * means. Note that `run` reads the raw option rather than calling this again:
-   * doing so would turn every run into a check.
+   * The parser runs only when `--check` carries a value, so anything reaching
+   * it is a written set. A `--check` with no value never arrives here and is
+   * refused later: a set with nothing in it is indistinguishable from the flag
+   * having been left off, which is how one flag came to gate two findings.
    */
   @Option({
-    description: "Fail instead of writing, when a destination is stale",
-    flags: "--check",
+    description: `Fail on a comma-separated set drawn from ${CHECK_NAMES.map((name) => `"${name}"`).join(" and ")}`,
+    flags: "--check [check]",
   })
-  public parseCheck(value: string | undefined): boolean {
-    return value === undefined ? true : value !== "false";
+  public parseCheck(value: string): string {
+    return value;
   }
 
   /** Parses `--config`. */
@@ -298,11 +356,44 @@ export class CallidescopeCommand extends CommandRunner {
           .filter(Boolean);
   }
 
-  /** Traces the workspace, reports, and sets the exit code. */
+  /**
+   * Parses `--write`, which asks for every configured destination to be
+   * rewritten.
+   *
+   * A boolean flag reaches the parser as `undefined` when it carries no value,
+   * and the parser runs only when the flag is present, so presence is the whole
+   * signal.
+   */
+  @Option({
+    description: "Write every configured destination",
+    flags: "--write",
+  })
+  public parseWrite(value: boolean | undefined): boolean {
+    return value ?? true;
+  }
+
+  /**
+   * Traces the workspace, reports, and sets the exit code.
+   *
+   * The flags are independent: `--write` writes, `--check reports` fails on a
+   * stale report, `--check depth` fails on a stack that ran too deep, and none
+   * of them turns another on. A run given neither `--write` nor
+   * `--check reports` leaves every file alone.
+   */
   public async run(
     _passedParameters: string[],
     options: CallidescopeCommandOptions,
   ): Promise<void> {
+    const { errors, mode } = this.runPlanService.selectMode(options);
+
+    if (errors.length > 0) {
+      this.logger.error(`🔭 Rejected the command line`, undefined, {
+        reasons: errors,
+      });
+      process.exitCode = 1;
+      return;
+    }
+
     // Resolved again rather than trusting the parser: the flag may be absent,
     // in which case no parser ran at all.
     const workspaceRoot = path.resolve(options.directory ?? process.cwd());
@@ -335,20 +426,17 @@ export class CallidescopeCommand extends CommandRunner {
 
     this.report({ configuration, result: outcome.result });
 
-    const stale = this.syncDestinations({
-      check: options.check ?? false,
-      configuration,
-      projectRoots: outcome.projectRoots,
-      result: outcome.result,
-    });
+    // Reports are produced before either finding is weighed, so a run that
+    // writes and gates leaves its reports behind even when the gate trips.
+    const stalePaths = this.runPlanService.touchesFiles(mode)
+      ? this.syncDestinations({
+          check: mode.checksReports,
+          configuration,
+          projectRoots: outcome.projectRoots,
+          result: outcome.result,
+        })
+      : [];
 
-    if (stale.length > 0) {
-      this.logger.error("🔭 Found stale reports", undefined, { paths: stale });
-      process.exitCode = 1;
-    }
-
-    if (outcome.result.deepStacks.length > 0) {
-      process.exitCode = 1;
-    }
+    this.reportFindings({ mode, result: outcome.result, stalePaths });
   }
 }

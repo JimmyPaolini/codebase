@@ -7,6 +7,7 @@ import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
+import { SYNCHRONIZATION_KIND_DERIVATION } from "../synchronization/synchronization.constants";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import type {
@@ -43,6 +44,9 @@ export class ConformetryGeneratorsCommand
   // 🔐 Private Fields
 
   // 🔑 Public Fields
+
+  /** Derived from configuration, so its drift is answered on a pull request. */
+  readonly synchronizationKind = SYNCHRONIZATION_KIND_DERIVATION;
 
   readonly synchronizationLabel = "conformetry-generators";
 

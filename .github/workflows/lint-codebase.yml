@@ -39,11 +39,23 @@ jobs:
       - name: 🕋 Setup Codebase
         uses: ./.github/actions/setup-codebase
 
+      # `callidescope` and `synchronize` are named alongside `lint-codebase`
+      # rather than hanging off its `dependsOn`, because each also publishes a
+      # report on the default branch and Nx forwards an explicit configuration
+      # down `dependsOn` — reachable from `lint-codebase`, either would take
+      # `write` from `lint-codebase --configuration=write` and publish its
+      # report from a branch. Naming them here is what keeps their gates on
+      # every pull request: depth for callidescope, derivation drift for
+      # synchronize, neither of which writes a file. They join the same
+      # `nx affected` invocation rather than taking steps of their own, so one
+      # task graph and one scheduler still own the whole run, and `affected`
+      # still decides whether either has anything to look at.
       - name: 🧑‍💻 Lint Codebase
         env:
           NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
         run: |
           pnpm exec nx affected --target=lint-codebase \
+            --target=callidescope --target=synchronize \
             --configuration=check --parallel=4
 
       - name: 📊 Upload Type Coverage

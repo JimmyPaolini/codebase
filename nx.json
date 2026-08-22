@@ -296,7 +296,6 @@
       },
       "defaultConfiguration": "check",
       "dependsOn": [
-        "callidescope",
         "check-catalog-manifests",
         "check-lockfile",
         "check-skill-exclusions",
@@ -317,14 +316,13 @@
         "squawk",
         "stylelint",
         "sync-vscode-extensions",
-        "synchronize",
         "syncpack",
         "type-coverage",
         "typecheck",
         "vulture",
         "yaml-lint"
       ],
-      "description": "Static code analysis: every check that reads the source without executing it. An nx:noop aggregator \u2014 the work is the dependsOn targets, which Nx schedules in one graph rather than spawning a process per tool.",
+      "description": "Static code analysis: every check that reads the source without executing it. An nx:noop aggregator \u2014 the work is the dependsOn targets, which Nx schedules in one graph rather than spawning a process per tool. Three targets are deliberately not among them: `codebase:codometer`, `codebase:callidescope`, and `synchronization:synchronize` each publish a report on the default branch, and Nx forwards an explicit configuration down `dependsOn`, so listing one here would make `--configuration=write` publish that report from a branch. What each one gates is named directly by whatever gates it instead: `callidescope:check` and `synchronize:check` join this target in one `nx affected` invocation, in the Lint Codebase workflow and in `configuration/lint-staged.config.ts` alike, and the per-project `codometer` limits belong to Make Projects, which builds first. A pull request and a commit therefore still trace depth and check derivation drift — what this target alone no longer covers, the invocation around it does.",
       "executor": "nx:noop"
     },
     "make-projects": {
