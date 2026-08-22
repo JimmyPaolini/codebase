@@ -187,6 +187,7 @@
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml}",
+          "{workspaceRoot}/configuration/codebase-structure.json",
           "{workspaceRoot}/configuration/eslint.config.ts",
           "shared-globals"
         ],
@@ -428,6 +429,7 @@
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
+          "{workspaceRoot}/configuration/.oxlintignore",
           "{workspaceRoot}/configuration/oxlint.config.ts",
           "shared-globals"
         ],
@@ -716,7 +718,8 @@
         },
         "inputs": [
           "{projectRoot}/src/**/*.css",
-          "{workspaceRoot}/configuration/stylelint.config.cjs"
+          "{workspaceRoot}/configuration/stylelint.config.cjs",
+          "shared-globals"
         ],
         "options": {
           "command": "stylelint --allow-empty-input --config ../../configuration/stylelint.config.cjs 'src/**/*.css'",
@@ -764,6 +767,7 @@
         "inputs": [
           "{projectRoot}/**/*.ts",
           "{projectRoot}/**/*.tsx",
+          "{projectRoot}/package.json",
           "{projectRoot}/tsconfig.json",
           "shared-globals"
         ],
