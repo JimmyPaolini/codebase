@@ -41,8 +41,9 @@ export class AnnualSolarCycleEventsService {
       .clone()
       .tz(SOLAR_CYCLE_EVENT_TIMEZONE)
       .toISOString(true);
-    this.logger.log(`🗓️ Built ${summary}`, undefined, {
+    this.logger.info("🗓️ Built a calendar event", undefined, {
       at: dateString,
+      summary,
     });
     return {
       categories: [...categories],

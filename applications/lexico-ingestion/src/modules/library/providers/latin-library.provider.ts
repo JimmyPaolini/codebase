@@ -181,11 +181,13 @@ export class LatinLibraryProvider {
     const nickname = this.getMetadataString(author.metadata, "nickname") ?? "";
     const authorPath = this.getMetadataString(author.metadata, "sourceUrl");
     if (!authorPath) {
-      this.logger.warn(`🔗 Missing source URL for author ${author.slug}`);
+      this.logger.warn("🔗 Missing source URL for author", undefined, {
+        authorSlug: author.slug,
+      });
       return;
     }
 
-    this.logger.log(`👤 Starting author metadata: ${nickname}`);
+    this.logger.info("👤 Starting author metadata", undefined, { nickname });
     const authorUrlObject = new URL(authorPath, host);
     const authorText = await this.readSourceCacheFile(
       authorUrlObject.href,
@@ -200,7 +202,7 @@ export class LatinLibraryProvider {
       author.metadata = { ...author.metadata, ...additionalMetadata };
     }
     this.collectAuthorTexts(author, $, authorUrlObject);
-    this.logger.log(`👤 Completed author metadata: ${nickname}`);
+    this.logger.info("👤 Completed author metadata", undefined, { nickname });
   }
 
   /**
@@ -257,7 +259,7 @@ export class LatinLibraryProvider {
     if (textFilter && textSlug !== textFilter) {
       return;
     }
-    this.logger.log(`📜 Starting work: ${textSlug}`);
+    this.logger.info("📜 Starting work", undefined, { textSlug });
     try {
       const written = await this.writeWorkText({
         author,
@@ -268,12 +270,17 @@ export class LatinLibraryProvider {
       if (!written) {
         return;
       }
-      const progress = ` (${(((index + 1) / total) * 100).toFixed(2)}%, ${index + 1}/${total})`;
-      this.logger.log(`📜 Completed work: ${textSlug}${progress}`);
+      this.logger.info("📜 Completed work", undefined, {
+        current: index + 1,
+        percent: Number((((index + 1) / total) * 100).toFixed(2)),
+        textSlug,
+        total,
+      });
     } catch (error) {
       this.logger.error(
-        `📕 Failed fetching work ${work.title}`,
+        "📕 Failed fetching work",
         error instanceof Error ? error.stack : undefined,
+        { title: work.title },
       );
     }
   }
@@ -368,7 +375,9 @@ export class LatinLibraryProvider {
     const workBook = this.getMetadataString(work.metadata, "book");
     const workPath = this.getMetadataString(work.metadata, "sourceUrl");
     if (!workPath) {
-      this.logger.warn(`🔗 Missing source URL for work ${work.slug}`);
+      this.logger.warn("🔗 Missing source URL for work", undefined, {
+        slug: work.slug,
+      });
       return false;
     }
 
@@ -376,7 +385,9 @@ export class LatinLibraryProvider {
     const $work = cheerio.load(workHtml);
     const paragraphs = this.builder.parseWorkParagraphs($work);
     if (!hasValidTextContent(paragraphs)) {
-      this.logger.warn(`📜 Skipping empty or invalid text ${work.slug}`);
+      this.logger.warn("📜 Skipping empty or invalid text", undefined, {
+        slug: work.slug,
+      });
       return false;
     }
     const markdown = this.builder.buildWorkMarkdownContent({
@@ -398,7 +409,7 @@ export class LatinLibraryProvider {
     text?: string;
   }): Promise<Author[]> {
     const host = "https://www.thelatinlibrary.com/";
-    this.logger.log(`🗂️ Reading Latin Library from local cache`);
+    this.logger.info("🗂️ Reading Latin Library from local cache");
     const indexHtml = await this.readSourceCacheFile(host, host);
     const rootAuthors = this.buildRootAuthors(indexHtml);
     const authors = await this.expandCategoryAuthors(rootAuthors, host);

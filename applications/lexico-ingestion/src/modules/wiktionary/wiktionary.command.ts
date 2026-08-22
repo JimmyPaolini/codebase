@@ -104,6 +104,11 @@ export class WiktionaryCommand extends CommandRunner {
       });
     }
 
+    this.logger.warn("🚫 Exhausted retries after a rate limit", undefined, {
+      retries,
+      url,
+    });
+
     // Final attempt — let caller handle non-ok response
     return fetch(url);
   }
@@ -118,11 +123,10 @@ export class WiktionaryCommand extends CommandRunner {
   ): void {
     const errorMessage =
       error instanceof Error ? error.stack || error.message : String(error);
-    this.logger.error(
-      `🌐 Failed ingesting category "${category}"`,
-      errorMessage,
-      { url: `${this.host}${urlPath}` },
-    );
+    this.logger.error("🌐 Failed ingesting category", errorMessage, {
+      category,
+      url: `${this.host}${urlPath}`,
+    });
     fs.appendFileSync(
       this.errorLogFilePath,
       `[${new Date().toISOString()}] category ${category}: ${errorMessage}\n`,
@@ -136,14 +140,16 @@ export class WiktionaryCommand extends CommandRunner {
     category: Category = "lemma",
     startPath?: string,
   ): Promise<void> {
-    this.logger.log(`🗂️ Ingesting category "${category}"`);
+    this.logger.info("🗂️ Ingesting category", undefined, { category });
     let urlPath: string =
       startPath ??
       `/w/index.php?title=Category:${categories[category]}&pagefrom=a`;
 
     try {
       while (urlPath) {
-        this.logger.log(`📄 Ingesting page "${this.host}${urlPath}"`);
+        this.logger.info("📄 Ingesting page", undefined, {
+          url: `${this.host}${urlPath}`,
+        });
         const $ = await this.fetchCategoryPage(urlPath);
 
         for (const a of $(
@@ -154,9 +160,11 @@ export class WiktionaryCommand extends CommandRunner {
 
         urlPath = $('a:contains("next page")').eq(0).attr("href") ?? "";
 
-        this.logger.log(`📄 Ingested page "${this.host}${urlPath}"`);
+        this.logger.info("📄 Ingested page", undefined, {
+          url: `${this.host}${urlPath}`,
+        });
       }
-      this.logger.log(`🗂️ Ingested category "${category}"`);
+      this.logger.info("🗂️ Ingested category", undefined, { category });
     } catch (error: unknown) {
       this.handleCategoryError(category, urlPath, error);
     }
@@ -178,16 +186,20 @@ export class WiktionaryCommand extends CommandRunner {
       word,
     };
 
-    this.logger.log(`💬 Ingesting word "${entry.word}"`);
+    this.logger.info("💬 Ingesting word", undefined, { word: entry.word });
 
     if (entry.href.includes("/w/index.php")) {
-      this.logger.warn(`🌐 Missing wiktionary page for "${entry.word}"`);
+      this.logger.warn("🌐 Missing wiktionary page for word", undefined, {
+        word: entry.word,
+      });
       return;
     }
 
     const parsed = await this.parseLatinSection(entry.href);
     if (!parsed) {
-      this.logger.warn(`🌐 Missing latin entry for "${entry.word}"`);
+      this.logger.warn("🌐 Missing latin entry for word", undefined, {
+        word: entry.word,
+      });
       return;
     }
 
@@ -237,10 +249,9 @@ export class WiktionaryCommand extends CommandRunner {
         wordError instanceof Error
           ? wordError.stack || wordError.message
           : String(wordError);
-      this.logger.error(
-        `🔤 Failed ingesting word "${word}"`,
-        String(wordError),
-      );
+      this.logger.error("🔤 Failed ingesting word", String(wordError), {
+        word,
+      });
       fs.appendFileSync(
         this.errorLogFilePath,
         `[${new Date().toISOString()}] ${word}: ${errorMessage}\n`,
@@ -265,7 +276,7 @@ export class WiktionaryCommand extends CommandRunner {
       `${this.escapeCapitals(entry.word)}.json`,
     );
     fs.writeFileSync(filePath, JSON.stringify(entryWithHtml));
-    this.logger.log(`💬 Ingested word "${entry.word}"`);
+    this.logger.info("💬 Ingested word", undefined, { word: entry.word });
   }
 
   // 🌎 Public Methods
@@ -274,7 +285,7 @@ export class WiktionaryCommand extends CommandRunner {
    * article's HTML as a JSON file under `./data/wiktionary`, following
    * pagination until all pages in each category are exhausted. */
   async ingestWiktionary(): Promise<void> {
-    this.logger.log(`🌐 Ingesting wiktionary`);
+    this.logger.info("🌐 Ingesting wiktionary");
     if (!fs.existsSync(this.directory)) {
       fs.mkdirSync(this.directory, { recursive: true });
     }
@@ -284,7 +295,7 @@ export class WiktionaryCommand extends CommandRunner {
     )) {
       await this.ingestCategory(category);
     }
-    this.logger.log(`🌐 Ingested wiktionary`);
+    this.logger.info("🌐 Ingested wiktionary");
   }
 
   /** Runs the Wiktionary ingestion pipeline. */

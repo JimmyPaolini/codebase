@@ -160,15 +160,13 @@ export class SpecialtyAspectsService {
       longitudeBody2,
     });
     if (!specialtyAspect) {
-      this.logger.error(
-        `📐 Missing specialty aspect between ${body1} and ${body2}`,
-        undefined,
-        {
-          at: timestamp.toISOString(),
-          longitudeBody1,
-          longitudeBody2,
-        },
-      );
+      this.logger.error("📐 Missing specialty aspect", undefined, {
+        at: timestamp.toISOString(),
+        body1,
+        body2,
+        longitudeBody1,
+        longitudeBody2,
+      });
       throw new Error("No specialty aspect found");
     }
     return this.specialtyAspectsEventService.assembleSpecialtyAspectEvent({

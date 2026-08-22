@@ -97,15 +97,15 @@ describe(LiteratureTextIngestionService, () => {
         textSlugName: "work",
         title: "Work",
       });
-      expect(logger.log).toHaveBeenCalledWith(
-        "📜 Ingesting Work",
+      expect(logger.info).toHaveBeenCalledWith(
+        "📜 Ingesting text",
         undefined,
-        expect.any(Object),
+        expect.objectContaining({ hierarchy: "", title: "Work" }),
       );
-      expect(logger.log).toHaveBeenCalledWith(
-        "📜 Ingested Work",
+      expect(logger.info).toHaveBeenCalledWith(
+        "📜 Ingested text",
         undefined,
-        expect.any(Object),
+        expect.objectContaining({ hierarchy: "", title: "Work" }),
       );
       expect(logger.error).not.toHaveBeenCalled();
     });
@@ -149,15 +149,15 @@ describe(LiteratureTextIngestionService, () => {
         textSlugName: "chapter-1",
         title: "Chapter 1",
       });
-      expect(logger.log).toHaveBeenCalledWith(
-        "📜 Ingesting book-1 / Chapter 1",
+      expect(logger.info).toHaveBeenCalledWith(
+        "📜 Ingesting text",
         undefined,
-        expect.any(Object),
+        expect.objectContaining({ hierarchy: "book-1 / ", title: "Chapter 1" }),
       );
-      expect(logger.log).toHaveBeenCalledWith(
-        "📜 Ingested book-1 / Chapter 1",
+      expect(logger.info).toHaveBeenCalledWith(
+        "📜 Ingested text",
         undefined,
-        expect.any(Object),
+        expect.objectContaining({ hierarchy: "book-1 / ", title: "Chapter 1" }),
       );
     });
 
@@ -194,18 +194,18 @@ describe(LiteratureTextIngestionService, () => {
       );
 
       expect(logger.error).toHaveBeenCalledWith(
-        "📜 Failed processing Work",
+        "📜 Failed processing text",
         expect.any(String),
-        expect.any(Object),
+        expect.objectContaining({ title: "Work" }),
       );
       expect(appendFile).toHaveBeenCalledWith(
         "/tmp/literature-errors.log",
         expect.stringContaining("data/library/provider/author/work.md"),
       );
-      expect(logger.log).toHaveBeenCalledWith(
-        "📜 Ingested Work",
+      expect(logger.info).toHaveBeenCalledWith(
+        "📜 Ingested text",
         undefined,
-        expect.any(Object),
+        expect.objectContaining({ title: "Work" }),
       );
     });
 
@@ -239,9 +239,9 @@ describe(LiteratureTextIngestionService, () => {
       );
 
       expect(logger.error).toHaveBeenCalledWith(
-        "📜 Failed processing Work",
+        "📜 Failed processing text",
         expect.any(String),
-        expect.any(Object),
+        expect.objectContaining({ title: "Work" }),
       );
       expect(appendFile).toHaveBeenCalledWith(
         "/tmp/literature-errors.log",

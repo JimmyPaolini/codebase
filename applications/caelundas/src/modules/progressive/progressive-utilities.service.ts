@@ -38,11 +38,11 @@ export class ProgressiveUtilitiesService {
     const pairCount = Math.min(beginnings.length, endings.length);
 
     if (beginnings.length !== endings.length) {
-      this.logger.warn(
-        `🔀 Mismatched progressive event counts for "${label}"`,
-        undefined,
-        { beginnings: beginnings.length, endings: endings.length },
-      );
+      this.logger.warn("🔀 Mismatched progressive event counts", undefined, {
+        beginnings: beginnings.length,
+        endings: endings.length,
+        label,
+      });
     }
 
     const pairs: [Event, Event][] = [];

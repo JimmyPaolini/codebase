@@ -133,7 +133,9 @@ describe(WiktionaryCommand, () => {
     ).saveWiktionaryEntry(entry, section, $);
 
     expect(writeFileSyncMock).toHaveBeenCalledTimes(1);
-    expect(logger.log).toHaveBeenCalledWith('💬 Ingested word "Amo"');
+    expect(logger.info).toHaveBeenCalledWith("💬 Ingested word", undefined, {
+      word: "Amo",
+    });
   });
 
   it("should skip reconstruction and appendix links", async () => {
@@ -206,7 +208,9 @@ describe(WiktionaryCommand, () => {
     ).ingestWord("amo", "/w/index.php?title=amo", "lemma");
 
     expect(logger.warn).toHaveBeenCalledWith(
-      '🌐 Missing wiktionary page for "amo"',
+      "🌐 Missing wiktionary page for word",
+      undefined,
+      { word: "amo" },
     );
   });
 
@@ -232,7 +236,9 @@ describe(WiktionaryCommand, () => {
     ).ingestWord("amo", "/wiki/amo", "lemma");
 
     expect(logger.warn).toHaveBeenCalledWith(
-      '🌐 Missing latin entry for "amo"',
+      "🌐 Missing latin entry for word",
+      undefined,
+      { word: "amo" },
     );
   });
 
@@ -405,7 +411,12 @@ describe(WiktionaryCommand, () => {
 
     expect(response.status).toBe(429);
     expect(fetchMock).toHaveBeenCalledTimes(3);
-    expect(logger.warn).toHaveBeenCalledTimes(2);
+    expect(logger.warn).toHaveBeenCalledTimes(3);
+    expect(logger.warn).toHaveBeenCalledWith(
+      "🚫 Exhausted retries after a rate limit",
+      undefined,
+      { retries: 1, url: "https://example.com" },
+    );
 
     vi.useRealTimers();
   });
@@ -557,8 +568,9 @@ describe(WiktionaryCommand, () => {
     ).processWiktionaryCategoryLink(anchor, $, "lemma");
 
     expect(logger.error).toHaveBeenCalledWith(
-      '🔤 Failed ingesting word "amo"',
+      "🔤 Failed ingesting word",
       expect.any(String),
+      { word: "amo" },
     );
     expect(appendFileSyncMock).toHaveBeenCalledTimes(1);
   });
@@ -592,8 +604,9 @@ describe(WiktionaryCommand, () => {
     ).processWiktionaryCategoryLink(anchor, cheerioApi, "lemma");
 
     expect(logger.error).toHaveBeenCalledWith(
-      '🔤 Failed ingesting word "amo"',
+      "🔤 Failed ingesting word",
       expect.any(String),
+      { word: "amo" },
     );
     expect(appendFileSyncMock).toHaveBeenCalledTimes(1);
   });
@@ -656,9 +669,9 @@ describe(WiktionaryCommand, () => {
     ).ingestCategory("lemma", "/wiki/start");
 
     expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining('🌐 Failed ingesting category "lemma"'),
+      "🌐 Failed ingesting category",
       expect.any(String),
-      expect.any(Object),
+      expect.objectContaining({ category: "lemma" }),
     );
     expect(appendFileSyncMock).toHaveBeenCalledTimes(1);
   });
@@ -680,6 +693,24 @@ describe(WiktionaryCommand, () => {
     expect(appendFileSyncMock).toHaveBeenCalledWith(
       expect.any(String),
       expect.stringContaining("category message fallback"),
+    );
+  });
+
+  it("should stringify non-Error category failures", () => {
+    (
+      command as unknown as {
+        handleCategoryError: (
+          category: "lemma",
+          urlPath: string,
+          error: unknown,
+        ) => void;
+      }
+    ).handleCategoryError("lemma", "/wiki/start", "category failure string");
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "🌐 Failed ingesting category",
+      "category failure string",
+      expect.objectContaining({ category: "lemma" }),
     );
   });
 

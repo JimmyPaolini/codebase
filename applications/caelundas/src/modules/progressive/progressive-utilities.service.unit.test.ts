@@ -69,9 +69,9 @@ describe(ProgressiveUtilitiesService, () => {
 
     expect(pairs).toStrictEqual([[beginning, ending]]);
     expect(logger.warn).toHaveBeenCalledWith(
-      '🔀 Mismatched progressive event counts for "unequal"',
+      "🔀 Mismatched progressive event counts",
       undefined,
-      expect.any(Object),
+      { beginnings: 2, endings: 3, label: "unequal" },
     );
   });
 });

@@ -51,9 +51,10 @@ export class EpigraphikDatenbankClaussSlabyCommand extends CommandRunner {
     start: number,
     chunkFile: string,
   ): Promise<boolean> {
-    this.logger.log(
-      `📥 Fetching records ${start} to ${start + this.batchSize}...`,
-    );
+    this.logger.info("📥 Fetching records", undefined, {
+      end: start + this.batchSize,
+      start,
+    });
 
     try {
       return await this.saveChunkData(start, chunkFile);
@@ -62,7 +63,7 @@ export class EpigraphikDatenbankClaussSlabyCommand extends CommandRunner {
         `chunk-${start}`,
         error,
       );
-      this.logger.error(`🌐 Failed fetching chunk`, String(error), { start });
+      this.logger.error("🌐 Failed fetching chunk", String(error), { start });
       await fs.appendFile(this.errorLogFilePath, logLine);
       return true;
     }
@@ -79,7 +80,7 @@ export class EpigraphikDatenbankClaussSlabyCommand extends CommandRunner {
 
     try {
       await fs.access(chunkFile);
-      this.logger.log(`⏭️ Skipping chunk that already exists`, undefined, {
+      this.logger.info("⏭️ Skipping chunk that already exists", undefined, {
         start,
       });
       return true; // continue to next chunk
@@ -116,7 +117,7 @@ export class EpigraphikDatenbankClaussSlabyCommand extends CommandRunner {
     const data: EpigraphikDatenbankChunkResponse = parsedChunkResponse.data;
 
     if (Array.isArray(data.data) && data.data.length === 0) {
-      this.logger.log(`🛑 Stopping after the last record`, undefined, {
+      this.logger.info("🛑 Stopping after the last record", undefined, {
         start,
       });
       return false;
@@ -134,13 +135,13 @@ export class EpigraphikDatenbankClaussSlabyCommand extends CommandRunner {
 
   /** Runs the ingestion of epigraphs by downloading chunks to the filesystem */
   async run(): Promise<void> {
-    this.logger.log(
-      `📁 Ensuring data directory exists at ${this.sourceDataDirectory}`,
-    );
+    this.logger.info("📁 Ensuring data directory exists", undefined, {
+      sourceDataDirectory: this.sourceDataDirectory,
+    });
     await fs.mkdir(this.sourceDataDirectory, { recursive: true });
 
-    this.logger.log(
-      `🕷️ Starting Epigraphik-Datenbank Clauss-Slaby JSON ingestion...`,
+    this.logger.info(
+      "🕷️ Starting Epigraphik-Datenbank Clauss-Slaby JSON ingestion",
     );
 
     for (let start = 0; start < this.limit; start += this.batchSize) {
@@ -150,6 +151,6 @@ export class EpigraphikDatenbankClaussSlabyCommand extends CommandRunner {
       }
     }
 
-    this.logger.log("📥 Downloaded chunks");
+    this.logger.info("📥 Downloaded chunks");
   }
 }

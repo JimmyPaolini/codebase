@@ -108,15 +108,17 @@ export class MonthlyLunarCycleService {
     );
     if (!lunarPhaseCapitalized) {
       this.logger.warn(
-        `🌙 Skipping progressive event for ${enteringSummary} without a lunar phase`,
+        "🌙 Skipping progressive event without a lunar phase",
         undefined,
-        { categories },
+        { categories, enteringSummary },
       );
       return null;
     }
     const lunarPhaseLower = lunarPhaseCapitalized.toLowerCase();
     if (!isLunarPhase(lunarPhaseLower)) {
-      this.logger.warn(`🌙 Skipping unknown lunar phase "${lunarPhaseLower}"`);
+      this.logger.warn("🌙 Skipping unknown lunar phase", undefined, {
+        lunarPhaseLower,
+      });
       return null;
     }
     return lunarPhaseLower;

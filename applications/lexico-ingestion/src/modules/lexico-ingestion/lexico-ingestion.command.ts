@@ -57,35 +57,35 @@ export class LexicoIngestionCommand extends CommandRunner {
     let step = 1;
 
     if (options.wikipedia) {
-      this.logger.log(`🌐 Ingesting Wikipedia (Wiktionary) pages`, undefined, {
+      this.logger.info("🌐 Ingesting Wikipedia (Wiktionary) pages", undefined, {
         step: step++,
       });
       await this.wiktionaryCommand.run();
     }
 
     if (options.dictionary) {
-      this.logger.log(`📖 Processing dictionary lexemes`, undefined, {
+      this.logger.info("📖 Processing dictionary lexemes", undefined, {
         step: step++,
       });
       await this.dictionaryCommand.ingestAll();
     }
 
     if (options.librarySources) {
-      this.logger.log(`📥 Downloading library sources`, undefined, {
+      this.logger.info("📥 Downloading library sources", undefined, {
         step: step++,
       });
       await this.runLibrarySourcesStage();
     }
 
     if (options.library) {
-      this.logger.log(`📝 Parsing library into markdown`, undefined, {
+      this.logger.info("📝 Parsing library into markdown", undefined, {
         step: step++,
       });
       await this.libraryCommand.run([], {});
     }
 
     if (options.literature) {
-      this.logger.log(`📜 Ingesting literature texts`, undefined, { step });
+      this.logger.info("📜 Ingesting literature texts", undefined, { step });
       await this.literatureCommand.run([], {});
     }
   }
@@ -222,11 +222,16 @@ export class LexicoIngestionCommand extends CommandRunner {
   ): Promise<void> {
     await this.promptForMissingOptions(options);
 
-    this.logger.log("🚀 Starting full ingestion pipeline");
-    this.logger.log(`⚙️ Parsed command options`, undefined, { options });
+    this.logger.info("🚀 Starting full ingestion pipeline");
+    this.logger.info("⚙️ Parsed command options", undefined, { options });
+    const startTime = performance.now();
 
     await this.executeStages(options);
 
-    this.logger.log("🎉 Completed the full ingestion pipeline");
+    const endTime = performance.now();
+    const durationSeconds = ((endTime - startTime) / 1000).toFixed(2);
+    this.logger.info("🎉 Completed the full ingestion pipeline", undefined, {
+      durationSeconds,
+    });
   }
 }

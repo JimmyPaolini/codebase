@@ -1,5 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import {
   ingressBodies as decanIngressBodies,
   ingressBodies as peakIngressBodies,
@@ -26,7 +28,10 @@ export class IngressesService {
 
   constructor(
     private readonly ingressesComposerService: IngressesComposerService,
-  ) {}
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(IngressesService.name);
+  }
 
   // 🔐 Private Fields
 
@@ -127,11 +132,15 @@ export class IngressesService {
     coordinateEphemerisByBody: Record<Body, CoordinateEphemeris>;
     minute: Moment;
   }): Event[] {
-    return [
+    const events = [
       ...this.getSignIngressEvents(args),
       ...this.getDecanIngressEvents(args),
       ...this.getPeakIngressEvents(args),
     ];
+    this.logger.debug("🔍 Detected ingress events", undefined, {
+      count: events.length,
+    });
+    return events;
   }
 
   /**
@@ -165,6 +174,10 @@ export class IngressesService {
         ),
       );
     }
+
+    this.logger.debug("🔍 Detected progressive ingress events", undefined, {
+      count: progressiveEvents.length,
+    });
 
     return progressiveEvents;
   }
