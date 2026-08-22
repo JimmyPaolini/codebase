@@ -530,12 +530,26 @@ Which paths to skip, where the output goes, and how Python is reached are all
 configuration. That split is what lets the CLI be a general tool rather than
 one repository's script.
 
+## Start
+
+```bash
+nx run codometer-cli:start
+```
+
+Pass the flags from [Usage](#usage) after `--`, so
+`nx run codometer-cli:start -- --directory .` measures the current directory
+from source.
+
+## Test
+
+```bash
+nx run codometer-cli:vitest
+```
+
 ## Contributing
 
 ```bash
-nx run codometer-cli:start -- --directory .   # Run the CLI from source
-nx run codometer-cli:vitest                   # Test
-nx run codometer-cli:build                    # Compile
+nx run codometer-cli:build   # Compile
 ```
 
 ## License

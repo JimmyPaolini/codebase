@@ -89,6 +89,7 @@ flowchart LR
     MainModule
     NestjsModuleGraphsModule
     NxProjectGraphsModule
+    PullRequestLabelsModule
     PullRequestTemplateModule
     SkillExclusionsModule
     SynchronizationModule
@@ -120,6 +121,7 @@ flowchart LR
   SynchronizationModule --> DevcontainerConfigurationModule
   SynchronizationModule --> NestjsModuleGraphsModule
   SynchronizationModule --> NxProjectGraphsModule
+  SynchronizationModule --> PullRequestLabelsModule
   SynchronizationModule --> PullRequestTemplateModule
   SynchronizationModule --> SkillExclusionsModule
   SyntheticRootModule -.-> FilesModule

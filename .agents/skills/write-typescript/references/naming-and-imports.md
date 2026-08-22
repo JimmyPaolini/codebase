@@ -4,6 +4,9 @@
 
 Never use abbreviations or acronyms in identifiers.
 
+<!-- The wrong example has to spell the abbreviations the rule bans, and cspell reads raw text, so it cannot tell a demonstration from a real identifier. `configuration/cspell.config.yaml` fences its own `flagWords` list for exactly the same reason. -->
+<!-- cspell:ignore req res -->
+
 ```typescript
 // ❌ WRONG
 function handleReq(req: Request, res: Response): void { ... }
