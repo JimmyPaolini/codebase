@@ -1,31 +1,26 @@
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import { CallablesService } from "../callables/callables.service";
 import { ClassHierarchyService } from "../class-hierarchy/class-hierarchy.service";
 import { ExternalService } from "../class-hierarchy/external.service";
 import { CohesionService } from "../cohesion/cohesion.service";
-import { EdgesService } from "../edges/edges.service";
 import { EntryPointsService } from "../entry-points/entry-points.service";
-import { ComponentsService } from "../graph/components.service";
-import { DepthService } from "../graph/depth.service";
-import { GraphService } from "../graph/graph.service";
 import { ProgramService } from "../program/program.service";
 import { ProjectReportsService } from "../project-reports/project-reports.service";
 import { WorkspaceService } from "../workspace/workspace.service";
 
 import { INCLUDE_CONSTRUCTOR_EDGES } from "./callidescope.constants";
+import { GraphAssemblyService } from "./graph-assembly.service";
 
 import type { DiscoveredCallable } from "../callables/callables.types";
-import type {
-  CallGraph,
-  CondensedGraph,
-  DepthMeasurement,
-} from "../graph/graph.types";
+import type { DepthMeasurement } from "../graph/graph.types";
 import type { TraceArguments, TraceOutcome } from "./callidescope.types";
 import type {
   CallableId,
   CallGraphResult,
-  ModuleId,
+  CallGraphSummary,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
 
@@ -38,62 +33,24 @@ export class CallidescopeService {
 
   constructor(
     private readonly callablesService: CallablesService,
-    private readonly cohesionService: CohesionService,
-    private readonly componentsService: ComponentsService,
     private readonly classHierarchyService: ClassHierarchyService,
-    private readonly depthService: DepthService,
-    private readonly edgesService: EdgesService,
+    private readonly cohesionService: CohesionService,
     private readonly entryPointsService: EntryPointsService,
     private readonly externalService: ExternalService,
-    private readonly graphService: GraphService,
-    private readonly projectReportsService: ProjectReportsService,
+    private readonly graphAssemblyService: GraphAssemblyService,
     private readonly programService: ProgramService,
+    private readonly projectReportsService: ProjectReportsService,
     private readonly workspaceService: WorkspaceService,
-  ) {}
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(CallidescopeService.name);
+  }
 
   // 🔐 Private Fields
 
   // 🔑 Public Fields
 
   // 🔏 Private Methods
-
-  /** Builds the call graph and everything derived from it. */
-  private buildGraph(args: {
-    callablesById: ReadonlyMap<CallableId, DiscoveredCallable>;
-    workspaceRoot: string;
-  }): {
-    condensed: CondensedGraph;
-    graph: CallGraph;
-    measurement: DepthMeasurement;
-  } {
-    const graph = this.graphService.assemble(
-      this.edgesService.build({
-        callablesById: args.callablesById,
-        includeConstructorEdges: INCLUDE_CONSTRUCTOR_EDGES,
-        workspaceRoot: args.workspaceRoot,
-      }),
-    );
-    const condensed = this.componentsService.condense({
-      callableIds: args.callablesById.keys(),
-      graph,
-    });
-    const moduleIdByCallable = new Map<CallableId, ModuleId>(
-      [...args.callablesById].map(([callableId, callable]) => [
-        callableId,
-        callable.node.moduleId,
-      ]),
-    );
-
-    return {
-      condensed,
-      graph,
-      measurement: this.depthService.measure({
-        condensed,
-        graph,
-        moduleIdByCallable,
-      }),
-    };
-  }
 
   /** Reads the deepest depth any component reached. */
   private readMaximumDepth(measurement: DepthMeasurement): number {
@@ -115,7 +72,12 @@ export class CallidescopeService {
     projectNames: readonly string[];
     workspaceRoot: string;
   }): CallGraphResult {
-    const { condensed, graph, measurement } = this.buildGraph(args);
+    const { condensed, graph, measurement } =
+      this.graphAssemblyService.assemble({
+        callablesById: args.callablesById,
+        includeConstructorEdges: INCLUDE_CONSTRUCTOR_EDGES,
+        workspaceRoot: args.workspaceRoot,
+      });
     const entryPoints = this.entryPointsService.resolve({
       callablesById: args.callablesById,
       decorators: new Set(args.configuration.entryPoints.decorators),
@@ -153,6 +115,28 @@ export class CallidescopeService {
       typeDepths,
     });
 
+    const summary: CallGraphSummary = {
+      callableCount: args.callablesById.size,
+      cyclicComponentCount: condensed.memberIdsByComponent.filter(
+        (members) => members.length > 1,
+      ).length,
+      edgeCount: graph.edges.length,
+      entryPointCount: entryPoints.entryPoints.length,
+      fileCount: args.fileCount,
+      maximumDepth: this.readMaximumDepth(measurement),
+      projectCount: args.projectCount,
+      unresolvedCallCount: graph.unresolvedCalls.length,
+    };
+
+    this.logger.info("🔭 Finished an analysis", undefined, {
+      callableCount: summary.callableCount,
+      edgeCount: summary.edgeCount,
+      entryPointCount: summary.entryPointCount,
+      maximumDepth: summary.maximumDepth,
+      misplacedCount: misplacedCallables.length,
+      spreadCount: moduleSpreads.length,
+    });
+
     return {
       deepStacks: this.projectReportsService.findDeepStacks({
         limit: args.configuration.limits.maximumDepth,
@@ -161,24 +145,17 @@ export class CallidescopeService {
       misplacedCallables,
       moduleSpreads,
       projects,
-      summary: {
-        callableCount: args.callablesById.size,
-        cyclicComponentCount: condensed.memberIdsByComponent.filter(
-          (members) => members.length > 1,
-        ).length,
-        edgeCount: graph.edges.length,
-        entryPointCount: entryPoints.entryPoints.length,
-        fileCount: args.fileCount,
-        maximumDepth: this.readMaximumDepth(measurement),
-        projectCount: args.projectCount,
-        unresolvedCallCount: graph.unresolvedCalls.length,
-      },
+      summary,
       typeDepths,
     };
   }
 
   /** Traces a workspace and returns everything the run found. */
   public trace(args: TraceArguments): TraceOutcome {
+    this.logger.info("🔭 Tracing a workspace", undefined, {
+      workspaceRoot: args.workspaceRoot,
+    });
+
     const projects = this.workspaceService.discoverProjects({
       projectNames: args.projectNames,
       workspaceRoot: args.workspaceRoot,

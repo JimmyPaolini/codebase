@@ -2,6 +2,7 @@ import { mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -9,6 +10,9 @@ import { buildCallGraphResult } from "../../../testing/mocks";
 import { ANALYSIS_MODULES } from "../../../testing/modules";
 
 import { OutputJsonService } from "./output-json.service";
+
+import type { LoggerService } from "@codebase/logger";
+import type { DeepMocked } from "@golevelup/ts-vitest";
 
 describe(OutputJsonService, () => {
   let service: OutputJsonService;
@@ -26,7 +30,8 @@ describe(OutputJsonService, () => {
     expect(service).toBeDefined();
   });
 
-  const subject = new OutputJsonService();
+  const subjectLogger: DeepMocked<LoggerService> = createMock<LoggerService>();
+  const subject = new OutputJsonService(subjectLogger);
   const destination = { indentation: 2, path: "" };
   const result = buildCallGraphResult();
 
@@ -69,6 +74,11 @@ describe(OutputJsonService, () => {
 
     expect(JSON.parse(await readFile(reportPath, "utf8"))).toStrictEqual(
       result,
+    );
+    expect(subjectLogger.info).toHaveBeenCalledWith(
+      "🔭 Wrote a report",
+      undefined,
+      { path: path.resolve(reportPath) },
     );
   });
 

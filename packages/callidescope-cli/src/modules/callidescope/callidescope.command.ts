@@ -397,6 +397,12 @@ export class CallidescopeCommand extends CommandRunner {
     // Resolved again rather than trusting the parser: the flag may be absent,
     // in which case no parser ran at all.
     const workspaceRoot = path.resolve(options.directory ?? process.cwd());
+
+    this.logger.debug("🔭 Starting a call-stack trace", undefined, {
+      format: options.format,
+      workspaceRoot,
+    });
+
     const loaded = await this.configurationService.loadConfiguration({
       configurationPath: options.config,
       searchDirectory: workspaceRoot,
@@ -436,6 +442,11 @@ export class CallidescopeCommand extends CommandRunner {
           result: outcome.result,
         })
       : [];
+
+    this.logger.info("🔭 Finished a call-stack trace", undefined, {
+      deepStackCount: outcome.result.deepStacks.length,
+      staleReportCount: stalePaths.length,
+    });
 
     this.reportFindings({ mode, result: outcome.result, stalePaths });
   }

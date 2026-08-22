@@ -2,6 +2,7 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -10,6 +11,8 @@ import { ANALYSIS_MODULES } from "../../../testing/modules";
 import { WorkspaceService } from "./workspace.service";
 
 import type { WorkspaceProject } from "./workspace.types";
+import type { LoggerService } from "@codebase/logger";
+import type { DeepMocked } from "@golevelup/ts-vitest";
 
 const PROJECT: WorkspaceProject = {
   configurationPath: "/workspace/packages/example/tsconfig.json",
@@ -54,7 +57,8 @@ describe(WorkspaceService, () => {
     expect(service).toBeDefined();
   });
 
-  const subject = new WorkspaceService();
+  const subjectLogger: DeepMocked<LoggerService> = createMock<LoggerService>();
+  const subject = new WorkspaceService(subjectLogger);
 
   // 📂 Project discovery
 
@@ -131,10 +135,15 @@ describe(WorkspaceService, () => {
     ]);
 
     expect(
-      service
+      subject
         .discoverProjects({ projectNames: [], workspaceRoot: root })
         .map((project) => project.name),
     ).toStrictEqual(["broken"]);
+    expect(subjectLogger.warn).toHaveBeenCalledWith(
+      "🔭 Skipped an unreadable project manifest",
+      undefined,
+      { manifestPath: path.join(root, "packages", "broken", "project.json") },
+    );
   });
 
   it("falls back to the directory name when a manifest names nothing", async () => {
@@ -247,6 +256,11 @@ describe(WorkspaceService, () => {
     });
 
     expect(filter.isExcluded("packages/example/src/a.ts")).toBe(false);
+    expect(subjectLogger.warn).toHaveBeenCalledWith(
+      "🔭 Skipped a missing ignore file",
+      undefined,
+      { ignoreFile: "configuration/.callidescopeignore" },
+    );
   });
 
   it("survives an ignore file git cannot apply", async () => {
@@ -270,6 +284,13 @@ describe(WorkspaceService, () => {
     });
 
     expect(filter.isExcluded("packages/example/src/a.ts")).toBe(false);
+    expect(subjectLogger.warn).toHaveBeenCalledWith(
+      "🔭 Skipped an unreadable ignore file",
+      undefined,
+      {
+        ignorePath: path.join(root, "configuration", ".callidescopeignore"),
+      },
+    );
   });
 
   it("applies an ignore file through git", () => {

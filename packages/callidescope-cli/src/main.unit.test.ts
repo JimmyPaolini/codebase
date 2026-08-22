@@ -1,10 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+interface CommandFactoryRunOptions {
+  logger: { error: (message: unknown) => void };
+}
+
 const mockLoggerError =
   vi.fn<(message: unknown, context: undefined, data: unknown) => void>();
 const mockLoggerSetContext = vi.fn<(context: string) => void>();
+const mockCommandFactoryRun = vi.fn<
+  (_module: unknown, _options: CommandFactoryRunOptions) => Promise<void>
+>(async () => {});
 
-// `repl.ts` only reaches NestJS through `@codebase/logger`, so the logger
+// `main.ts` only reaches NestJS through `@codebase/logger`, so the logger
 // package is the mock boundary — the real `LoggerService` is covered by its
 // own package's tests.
 vi.mock("@codebase/logger", () => {
@@ -23,40 +30,49 @@ vi.mock("@codebase/logger", () => {
   };
 });
 
-const replMock = vi.fn<() => Promise<void>>(async (): Promise<void> => {});
+vi.mock("nest-commander", () => {
+  return {
+    CommandFactory: {
+      run: mockCommandFactoryRun,
+    },
+  };
+});
 
-vi.mock("@nestjs/core", () => ({
-  repl: replMock,
-}));
+vi.mock("./main.module.js", () => {
+  function MockMainModule(): void {}
 
-vi.mock("./main.module.js", () => ({
-  MainModule: (): void => {},
-}));
+  return {
+    MainModule: MockMainModule,
+  };
+});
 
-describe("repl bootstrap", () => {
+async function importMainModule(): Promise<void> {
+  await import("./main.js");
+}
+
+describe("main", () => {
   beforeEach(() => {
     vi.resetModules();
-    replMock.mockReset().mockImplementation(async (): Promise<void> => {});
     mockLoggerError.mockClear();
     mockLoggerSetContext.mockClear();
+    mockCommandFactoryRun.mockReset().mockResolvedValue(undefined);
     process.exitCode = undefined;
   });
 
-  it("starts NestJS repl with main module", async () => {
-    await import("./repl.js");
+  it("bootstraps the command factory and sets the logger context", async () => {
+    await importMainModule();
 
     await vi.waitFor(() => {
-      expect(replMock).toHaveBeenCalledTimes(1);
+      expect(mockCommandFactoryRun).toHaveBeenCalledTimes(1);
     });
 
-    expect(replMock).toHaveBeenCalledWith(expect.any(Function));
-    expect(mockLoggerSetContext).toHaveBeenCalledWith("Repl");
-  }, 15_000);
+    expect(mockLoggerSetContext).toHaveBeenCalledWith("CommandFactory");
+  });
 
-  it("logs and marks the process failed when the repl crashes", async () => {
-    replMock.mockRejectedValueOnce(new Error("boom"));
+  it("logs and marks the process failed when bootstrapping crashes", async () => {
+    mockCommandFactoryRun.mockRejectedValueOnce(new Error("boom"));
 
-    await import("./repl.js");
+    await importMainModule();
 
     await vi.waitFor(() => {
       expect(mockLoggerError).toHaveBeenCalledTimes(1);
@@ -68,12 +84,12 @@ describe("repl bootstrap", () => {
       { reason: "boom" },
     );
     expect(process.exitCode).toBe(1);
-  }, 15_000);
+  });
 
   it("normalizes a non-error crash reason to its string form", async () => {
-    replMock.mockRejectedValueOnce("boom");
+    mockCommandFactoryRun.mockRejectedValueOnce("boom");
 
-    await import("./repl.js");
+    await importMainModule();
 
     await vi.waitFor(() => {
       expect(mockLoggerError).toHaveBeenCalledTimes(1);
@@ -84,5 +100,5 @@ describe("repl bootstrap", () => {
       undefined,
       { reason: "boom" },
     );
-  }, 15_000);
+  });
 });

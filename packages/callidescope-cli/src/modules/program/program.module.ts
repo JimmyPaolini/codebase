@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 
+import { LoggerModule } from "@codebase/logger";
+
 import { WorkspaceModule } from "../workspace/workspace.module";
 
 import { CompilerHostService } from "./compiler-host.service";
@@ -11,7 +13,7 @@ import { ProgramService } from "./program.service";
 @Module({
   controllers: [],
   exports: [CompilerHostService, ProgramService],
-  imports: [WorkspaceModule],
+  imports: [LoggerModule, WorkspaceModule],
   providers: [CompilerHostService, ProgramService],
 })
 export class ProgramModule {}
