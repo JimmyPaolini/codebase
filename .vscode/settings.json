@@ -54,7 +54,7 @@
   "chat.agent.thinkingStyle": "collapsedPreview",
   "chat.agentFilesLocations": {
     ".claude/agents": false,
-    ".github/agents": true,
+    ".github/agents": false,
     "~/.copilot/agents": false
   },
   "chat.agentsControl.enabled": "compact",

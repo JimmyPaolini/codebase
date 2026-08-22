@@ -1,6 +1,50 @@
 {
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "name": "codebase",
+  "namedInputs": {
+    "vendored-skills": [
+      "!{projectRoot}/.agents/skills/ask-matt/**",
+      "!{projectRoot}/.agents/skills/code-review/**",
+      "!{projectRoot}/.agents/skills/codebase-design/**",
+      "!{projectRoot}/.agents/skills/diagnosing-bugs/**",
+      "!{projectRoot}/.agents/skills/dispatching-parallel-agents/**",
+      "!{projectRoot}/.agents/skills/domain-modeling/**",
+      "!{projectRoot}/.agents/skills/gh-stack/**",
+      "!{projectRoot}/.agents/skills/github-issues/**",
+      "!{projectRoot}/.agents/skills/grill-me/**",
+      "!{projectRoot}/.agents/skills/grill-with-docs/**",
+      "!{projectRoot}/.agents/skills/grilling/**",
+      "!{projectRoot}/.agents/skills/handoff/**",
+      "!{projectRoot}/.agents/skills/impeccable/**",
+      "!{projectRoot}/.agents/skills/implement/**",
+      "!{projectRoot}/.agents/skills/improve-codebase-architecture/**",
+      "!{projectRoot}/.agents/skills/link-workspace-packages/**",
+      "!{projectRoot}/.agents/skills/monitor-ci/**",
+      "!{projectRoot}/.agents/skills/nx-generate/**",
+      "!{projectRoot}/.agents/skills/nx-import/**",
+      "!{projectRoot}/.agents/skills/nx-plugins/**",
+      "!{projectRoot}/.agents/skills/nx-run-tasks/**",
+      "!{projectRoot}/.agents/skills/nx-workspace/**",
+      "!{projectRoot}/.agents/skills/prototype/**",
+      "!{projectRoot}/.agents/skills/receiving-code-review/**",
+      "!{projectRoot}/.agents/skills/research/**",
+      "!{projectRoot}/.agents/skills/resolving-merge-conflicts/**",
+      "!{projectRoot}/.agents/skills/setup-matt-pocock-skills/**",
+      "!{projectRoot}/.agents/skills/subagent-driven-development/**",
+      "!{projectRoot}/.agents/skills/tdd/**",
+      "!{projectRoot}/.agents/skills/teach/**",
+      "!{projectRoot}/.agents/skills/to-questionnaire/**",
+      "!{projectRoot}/.agents/skills/to-spec/**",
+      "!{projectRoot}/.agents/skills/to-tickets/**",
+      "!{projectRoot}/.agents/skills/triage/**",
+      "!{projectRoot}/.agents/skills/using-git-worktrees/**",
+      "!{projectRoot}/.agents/skills/verification-before-completion/**",
+      "!{projectRoot}/.agents/skills/wait-what/**",
+      "!{projectRoot}/.agents/skills/wayfinder/**",
+      "!{projectRoot}/.agents/skills/wizard/**",
+      "!{projectRoot}/.agents/skills/writing-for-agents/**"
+    ]
+  },
   "projectType": "application",
   "targets": {
     "callidescope": {
@@ -46,11 +90,15 @@
     },
     "check-skill-exclusions": {
       "cache": true,
-      "description": "Verify that every skill in skills-lock.json is excluded from prettier and codometer, the two tools whose scan reaches .agents/",
+      "description": "Verify that every skill in skills-lock.json is excluded from prettier, codometer, GitHub Linguist, cspell, and markdownlint, the five tools whose scan reaches .agents/, that no wholesale .agents/skills/ pattern has crept back into any of them, and that this file's vendored-skills cache negations name no skill the lockfile has dropped. Every file the script reads is an input, .gitattributes and this project.json included: an exclusion deleted from a file the target does not declare would replay a cached pass.",
       "executor": "nx:run-commands",
       "inputs": [
+        "{workspaceRoot}/.gitattributes",
         "{workspaceRoot}/configuration/.codometerignore",
+        "{workspaceRoot}/configuration/.markdownlint-cli2.jsonc",
         "{workspaceRoot}/configuration/.prettierignore",
+        "{workspaceRoot}/configuration/cspell.config.yaml",
+        "{workspaceRoot}/project.json",
         "{workspaceRoot}/scripts/check-skill-exclusions.sh",
         "{workspaceRoot}/skills-lock.json"
       ],
@@ -378,23 +426,25 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "markdownlint-cli2 --config configuration/.markdownlint-cli2.jsonc '*.md' 'docs/**/*.md' 'scripts/**/*.md' 'documentation/**/*.md' 'infrastructure/**/*.md'"
+          "command": "markdownlint-cli2 --config configuration/.markdownlint-cli2.jsonc '*.md' '.agents/**/*.md' 'docs/**/*.md' 'documentation/**/*.md' 'infrastructure/**/*.md' 'scripts/**/*.md'"
         },
         "write": {
-          "command": "markdownlint-cli2 --fix --config configuration/.markdownlint-cli2.jsonc '*.md' 'docs/**/*.md' 'scripts/**/*.md' 'documentation/**/*.md' 'infrastructure/**/*.md'"
+          "command": "markdownlint-cli2 --fix --config configuration/.markdownlint-cli2.jsonc '*.md' '.agents/**/*.md' 'docs/**/*.md' 'documentation/**/*.md' 'infrastructure/**/*.md' 'scripts/**/*.md'"
         }
       },
       "defaultConfiguration": "check",
-      "description": "Lint markdown files in workspace root (scripts, documentation, infrastructure)",
+      "description": "Lint markdown files in workspace root (agents, scripts, documentation, infrastructure). Reaches .agents/ so this repository's own skills are linted like any other documentation; the vendored skills in skills-lock.json are excluded per skill in the markdownlint configuration. The inputs enumerate exactly the globs the command lints, plus the markdownlint configuration and shared-globals \u2014 the latter carries pnpm-lock.yaml, so a markdownlint upgrade cannot replay a cached pass. The workspace-wide default input is deliberately absent: it resolves to {projectRoot}/**/* for the root project, which made every root-owned file the tool never reads invalidate this cache. The vendored-skills negations then drop the 40 skills markdownlint already ignores, so editing one of them no longer busts the cache for nothing.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/*.md",
+        "{projectRoot}/.agents/**/*.md",
         "{projectRoot}/docs/**/*.md",
         "{projectRoot}/documentation/**/*.md",
         "{projectRoot}/infrastructure/**/*.md",
         "{projectRoot}/scripts/**/*.md",
         "{workspaceRoot}/configuration/.markdownlint-cli2.jsonc",
-        "default"
+        "shared-globals",
+        "vendored-skills"
       ],
       "options": {
         "cwd": "{projectRoot}"
@@ -619,10 +669,11 @@
     },
     "spell-check": {
       "cache": true,
-      "description": "Check spelling in every workspace root file no project owns (configuration, documentation, infrastructure, notepads, openwiki, planning, scripts, and the .devcontainer, .github, and .vscode directories)",
+      "description": "Check spelling in every workspace root file no project owns (configuration, documentation, infrastructure, notepads, openwiki, planning, scripts, and the .agents, .devcontainer, .github, and .vscode directories). Reaches .agents/ so this repository's own skills are spell-checked like any other documentation; the vendored skills in skills-lock.json are excluded per skill in the cspell configuration. The inputs enumerate exactly the globs the command checks, plus the cspell configuration and dictionaries and shared-globals \u2014 the latter carries pnpm-lock.yaml, so a cspell upgrade cannot replay a cached pass. The workspace-wide default input is deliberately absent: it resolves to {projectRoot}/**/* for the root project, which made every root-owned file the tool never reads invalidate this cache. The vendored-skills negations then drop the 40 skills cspell already ignores, so editing one of them no longer busts the cache for nothing.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/*.{ts,tsx,js,jsx,md,yaml,yml,json}",
+        "{projectRoot}/.agents/**",
         "{projectRoot}/.devcontainer/**",
         "{projectRoot}/.github/**",
         "{projectRoot}/.vscode/**",
@@ -636,10 +687,11 @@
         "{projectRoot}/scripts/**",
         "{workspaceRoot}/configuration/.cspell/**",
         "{workspaceRoot}/configuration/cspell.config.yaml",
-        "default"
+        "shared-globals",
+        "vendored-skills"
       ],
       "options": {
-        "command": "cspell --config configuration/cspell.config.yaml '*.{ts,tsx,js,jsx,md,yaml,yml,json}' '.devcontainer/**' '.github/**' '.vscode/**' 'configuration/**' 'docs/**' 'documentation/**' 'infrastructure/**' 'notepads/**' 'openwiki/**' 'planning/**' 'scripts/**' --no-progress --gitignore --gitignore-root .",
+        "command": "cspell --config configuration/cspell.config.yaml '*.{ts,tsx,js,jsx,md,yaml,yml,json}' '.agents/**' '.devcontainer/**' '.github/**' '.vscode/**' 'configuration/**' 'docs/**' 'documentation/**' 'infrastructure/**' 'notepads/**' 'openwiki/**' 'planning/**' 'scripts/**' --no-progress --gitignore --gitignore-root .",
         "cwd": "{projectRoot}"
       }
     },
@@ -843,6 +895,8 @@
         "{projectRoot}/scripts/**/*.py",
         "{workspaceRoot}/applications/affirmations/pyproject.toml",
         "{workspaceRoot}/configuration/vulture_whitelist.py",
+        "{workspaceRoot}/pyproject.toml",
+        "{workspaceRoot}/uv.lock",
         "default"
       ],
       "options": {
@@ -850,6 +904,25 @@
         "cwd": "{projectRoot}"
       }
     },
-    "yaml-lint": {}
+    "yaml-lint": {
+      "cache": true,
+      "description": "Lint the workspace-root YAML no project reaches: the GitHub Actions workflows, composite action, and issue templates, the devcontainer and infrastructure compose files, the Helm chart and its values, the shared cspell and yamllint configuration, and the pnpm workspace files. The generated pnpm-lock.yaml is left out on purpose, and the Helm templates are skipped by the `**/templates/` ignore in yamllint.yaml because their Go template directives are not valid YAML. The installed skills under .agents/ are owned upstream and stay out. pyproject.toml and uv.lock are inputs because they pin yamllint itself: without them, a yamllint upgrade replays a cached pass and stops linting. Defined here rather than in the nx.json targetDefaults entry, which is filtered to language tags this project does not carry.",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{workspaceRoot}/.devcontainer/**/*.{yaml,yml}",
+        "{workspaceRoot}/.github/**/*.{yaml,yml}",
+        "{workspaceRoot}/configuration/cspell.config.yaml",
+        "{workspaceRoot}/configuration/yamllint.yaml",
+        "{workspaceRoot}/infrastructure/**/*.{yaml,yml}",
+        "{workspaceRoot}/pnpm.yaml",
+        "{workspaceRoot}/pnpm-workspace.yaml",
+        "{workspaceRoot}/pyproject.toml",
+        "{workspaceRoot}/uv.lock"
+      ],
+      "options": {
+        "command": "uv run yamllint -c configuration/yamllint.yaml .devcontainer .github configuration/cspell.config.yaml configuration/yamllint.yaml infrastructure pnpm-workspace.yaml pnpm.yaml",
+        "cwd": "{workspaceRoot}"
+      }
+    }
   }
 }

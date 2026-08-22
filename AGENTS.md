@@ -5,7 +5,7 @@
 ```bash
 # Run tasks via Nx (always prefer this)
 nx run <project>:<target>:<configuration>
-nx run-many --target=lint --all
+nx run-many --target=lint-codebase --all
 nx affected --target=vitest --base=main
 
 # Install dependencies
@@ -275,8 +275,12 @@ PR description template:
 
 ## 🔗 Related
 
-- <!-- Link any relevant issues or documentation -->
+- <!-- Link any relevant documentation or related resources like internal documentation, GitHub issues/pull requests -->
 ```
+
+Labels and assignees must also agree with the title: exactly one `type:*` label matching the title's type, exactly the `scope:*` labels named by the title's scopes with no extras, at least one assignee, and exactly one `source:*` label (`source:agent` or `source:human`) declaring who opened the pull request — this one is not derived from the title. The `do-not-merge` label blocks the pull request while it is present.
+
+The 🧑‍⚖️ Validate Conventions workflow creates any label missing from this vocabulary on `opened`/`reopened`, so a freshly opened pull request already has the labels it needs before the check runs. The vocabulary itself comes from `configuration/conventional.config.cjs`, never hard-coded elsewhere.
 
 ### Conventional Naming
 
@@ -576,21 +580,51 @@ a vendored copy:
 
 `skills-lock.json` maps each individual skill to its source.
 
-Three things reach `.agents/` and so must skip the installed skills: `prettier`
-scans `.`, `codometer` scans `--directory .`, and GitHub Linguist reads every
+Five things reach `.agents/` and so must skip the installed skills: `prettier`
+scans `.`, `codometer` scans `--directory .`, GitHub Linguist reads every
 committed file — one installed skill ships half a megabyte of bundled browser
 JavaScript that would otherwise dominate the language bar, so `.gitattributes`
-marks them `linguist-vendored`. All three list the skills one per line rather
-than excluding `.agents/skills/` wholesale, so this repository's own skills in
-the same directory keep being checked, measured, and attributed.
+marks them `linguist-vendored` — and `cspell` and `markdownlint` both reach
+`.agents/` because this repository's own 26 skills are documentation and are
+spell-checked and markdown-linted like any other. That is the whole point of the
+split: the vendored skills are owned upstream, so correcting their spelling or
+reflowing their tables here would be a change this repository has no right to
+make, while its own skills are held to the same standards as the rest of its
+prose. All five list the skills one per line rather than excluding
+`.agents/skills/` wholesale, so this repository's own skills in the same
+directory keep being checked, measured, corrected, and attributed.
 `codebase:check-skill-exclusions` runs inside `lint-codebase` and fails when a
-skill in the lockfile is missing from any of the three — which is what
-`skills update` adding a skill would otherwise do silently. Every other tool
-scopes itself with explicit globs that never include `.agents/`.
+skill in the lockfile is missing from any of the five, and
+`scripts/install-skills.sh` regenerates all five blocks from `skills-lock.json`
+on every install — between them they close the gap that `skills update` adding a
+skill would otherwise leave open silently. Every other tool scopes itself with
+explicit globs that never include `.agents/`.
+
+Three details of that machinery are worth knowing before changing it:
+
+- **A wholesale pattern fails the check too**, not just a missing entry.
+  Re-adding `**/.agents/skills/**` outside a managed block leaves every
+  per-skill entry in place while quietly taking this repository's own 26 skills
+  back out of scope, so the missing-entry half would report nothing. Exclude a
+  vendored skill by name.
+- **A skill name must match `/^[a-z0-9-]+$/`.** The generator interpolates the
+  name into five formats with no escaping, so an out-of-convention name is
+  skipped with a warning rather than written; a visibly missing exclusion beats
+  a `.markdownlint-cli2.jsonc` that no longer parses. The five files are also
+  staged and swapped in together, so a read-only file cannot leave four of them
+  regenerated and the fifth stale.
+- **The root `project.json` mirrors the exclusions as cache negations.** Its
+  `vendored-skills` named input drops the vendored skills from the `spell-check`
+  and `markdown-lint` `inputs`, because a tool that ignores a file has no reason
+  to rehash on it. Only stale negations are checked, not missing ones: a
+  vendored skill with no negation merely over-invalidates, while a negation for
+  a skill the lockfile has dropped would stop a file those tools do read from
+  invalidating anything.
 
 `scripts/install-skills.sh` still exists, run by the root `postinstall` and by
-`codebase:install-skills`. With the skills committed it is a no-op in the normal
-case, and matters only when a skill folder is genuinely absent — after
+`codebase:install-skills`. It always regenerates the five exclusion blocks from
+`skills-lock.json`, writing only when a block would actually change; restoring a
+skill folder is the part that matters only when one is genuinely absent — after
 `skills update` adds a new entry to the lockfile, or when a folder has been
 deleted:
 
@@ -601,8 +635,9 @@ pnpm exec nx run codebase:install-skills
 Four behaviors are worth knowing before changing any of this:
 
 - **It is idempotent.** With every locked skill already on disk it returns in
-  milliseconds instead of re-cloning every source repository. Use the `force`
-  configuration to re-restore a skill that is present but damaged.
+  milliseconds instead of re-cloning every source repository, and it rewrites an
+  exclusion file only when that file's managed block would actually change. Use
+  the `force` configuration to re-restore a skill that is present but damaged.
 - **It never leaves tracked files dirty.** `skills experimental_install`
   rewrites `skills-lock.json` with whatever hash each source holds now, and
   rewrites every skill folder with whatever content its source holds now — one
@@ -650,8 +685,11 @@ terms and decisions actually get resolved. Do not scaffold them upfront.
 
 ### Agents
 
-Custom agent definitions live in [`.github/agents/`](.github/agents), and are
-loaded from there rather than from a list kept in this file.
+This repository keeps no custom agent definitions. The four it used to hold each
+duplicated a skill in [`.agents/skills/`](.agents/skills) with nothing to keep
+the copies in step, and they drifted. Every agent entrypoint is a symlink to that
+one directory, so a skill is the only place a behavior needs to be written down.
+Add a skill rather than reintroducing an agent file.
 
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->

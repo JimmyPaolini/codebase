@@ -98,9 +98,15 @@ const config = {
   // problem by staying unscoped; this one stays scoped, because removing that
   // scope would put every synchronization in every commit path.
   //
-  // `nx sync:check` runs from the Husky hook instead: it needs NX_DAEMON=false,
-  // and lint-staged spawns commands without a shell, so an environment prefix
-  // here would be parsed as the executable name.
+  //
+  // `nx sync:check` no longer runs anywhere, on commit or otherwise: the
+  // generator plugin it checked is emitted into .conformetry on install rather
+  // than committed, so no commit can stage it out of date. Every conformetry
+  // command re-checks the emitted plugin against the configuration instead. See
+  // configuration/.husky/pre-commit for the retirement note. Were it ever
+  // reinstated, it could not be prefixed here: lint-staged spawns commands
+  // without a shell, so `NX_DAEMON=false nx ...` would be parsed as the
+  // executable name.
   "*": (files: string[]): string[] => [
     `pnpm exec nx affected --target=lint-codebase --target=callidescope --target=synchronize --configuration=check --parallel=${String(ANALYSIS_PARALLELISM)} --outputStyle=static ${getStagedFilesFlags(files)}`,
     "pnpm exec nx run-many --targets=conformetry-validate --outputStyle=static",
