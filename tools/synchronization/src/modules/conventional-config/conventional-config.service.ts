@@ -161,7 +161,7 @@ export class ConventionalConfigService {
       !presetOk
     ) {
       this.loggerService.log("💡 Suggested a fix", undefined, {
-        hint: "Run 'nx run synchronization:synchronize:write' to sync",
+        hint: "Run 'nx run synchronization:conventional-config:write' to sync",
       });
       return false;
     }

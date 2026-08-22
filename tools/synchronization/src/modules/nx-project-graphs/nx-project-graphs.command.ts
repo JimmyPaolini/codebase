@@ -7,7 +7,6 @@ import { Command, CommandRunner } from "nest-commander";
 import { LoggerService } from "@codebase/logger";
 
 import { SynchronizationMarkersService } from "../synchronization/synchronization-markers.service";
-import { SYNCHRONIZATION_KIND_DERIVATION } from "../synchronization/synchronization.constants";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import {
@@ -56,9 +55,6 @@ export class NxProjectGraphsCommand
   // 🔐 Private Fields
 
   // 🔑 Public Fields
-
-  /** Derived from configuration, so its drift is answered on a pull request. */
-  readonly synchronizationKind = SYNCHRONIZATION_KIND_DERIVATION;
 
   readonly synchronizationLabel = "nx-project-graphs";
 
@@ -109,7 +105,7 @@ export class NxProjectGraphsCommand
 
     this.logger.log("🧭 Detected out-of-sync Nx project graphs", undefined, {
       files: outOfSyncFiles,
-      hint: "Run 'nx run synchronization:synchronize:write' to sync",
+      hint: "Run 'nx run synchronization:nx-project-graphs:write' to sync",
     });
     return false;
   }
@@ -158,7 +154,7 @@ export class NxProjectGraphsCommand
         loggerService: this.logger,
         passedParameters,
         usageMessage:
-          "💡 Usage: nx run synchronization:start:nx-project-graphs-check (or synchronization:start:nx-project-graphs-write)",
+          "💡 Usage: nx run synchronization:nx-project-graphs:check (or synchronization:nx-project-graphs:write)",
       });
 
     if (!(await this.synchronize(mode))) {

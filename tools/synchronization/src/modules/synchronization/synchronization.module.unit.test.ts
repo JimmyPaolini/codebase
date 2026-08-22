@@ -9,12 +9,13 @@ import { NestjsModuleGraphsModule } from "../nestjs-module-graphs/nestjs-module-
 import { NxProjectGraphsModule } from "../nx-project-graphs/nx-project-graphs.module";
 import { PullRequestLabelsModule } from "../pull-request-labels/pull-request-labels.module";
 import { PullRequestTemplateModule } from "../pull-request-template/pull-request-template.module";
+import { SkillExclusionsModule } from "../skill-exclusions/skill-exclusions.module";
 
 import { SynchronizationModule } from "./synchronization.module";
 import { SynchronizationService } from "./synchronization.service";
 
 describe(SynchronizationModule, () => {
-  it("registers expected imports and providers", () => {
+  it("registers every synchronization command's module as an import", () => {
     const imports = Reflect.getMetadata("imports", SynchronizationModule) as
       | undefined
       | unknown[];
@@ -32,6 +33,7 @@ describe(SynchronizationModule, () => {
     expect(imports).toContain(NxProjectGraphsModule);
     expect(imports).toContain(PullRequestLabelsModule);
     expect(imports).toContain(PullRequestTemplateModule);
+    expect(imports).toContain(SkillExclusionsModule);
 
     expect(providers).toBeDefined();
     expect(providers).toContain(SynchronizationService);

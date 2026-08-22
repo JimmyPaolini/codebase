@@ -64,7 +64,7 @@ pnpm exec nx affected --target=lint-codebase --configuration=check --base=main
 - **Typecheck**: Fix type errors — see [write-typescript skill](../write-typescript/SKILL.md) for patterns.
 - **Spell-check**: Either fix the typo, or add the word to the appropriate dictionary in `configuration/.cspell/`.
 - **Knip (unused code)**: Remove the unused export/file/dependency, or add an exception in `configuration/knip.config.ts`.
-- **Sync checks**: Run the relevant `write` variant (e.g., `nx run synchronization:start:conventional-config-write`), or `nx run synchronization:synchronize --configuration=write` for all six at once.
+- **Sync checks**: Run the failing synchronization's own `write` configuration (e.g., `nx run synchronization:conventional-config:write`), or `nx run-many --targets=conformetry-generators,conventional-config,devcontainer-configuration,nx-project-graphs,pull-request-template,skill-exclusions --configuration=write` for every derivation at once.
 - **Check skill exclusions**: Add the exclusion lines the failure names to `configuration/.prettierignore`, `configuration/.codometerignore`, and `.gitattributes`. This leaf has no `write` variant.
 
 See [triage-submission](../triage-submission/SKILL.md) for detailed per-tool fix instructions.
@@ -128,7 +128,7 @@ The only extra command applies to a skill installed from another repository, whi
 ```bash
 # Regenerate the exclusion blocks that keep locked skills out of prettier,
 # codometer, Linguist, cspell, and markdownlint
-pnpm exec nx run synchronization:synchronize:write
+pnpm exec nx run synchronization:skill-exclusions:write
 ```
 
 ### AGENTS.md edited
@@ -136,8 +136,8 @@ pnpm exec nx run synchronization:synchronize:write
 The types and scopes tables in AGENTS.md are generated between marker comments from [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs). Edit the config, never the table, then regenerate:
 
 ```bash
-pnpm exec nx run synchronization:start:conventional-config-write
-pnpm exec nx run synchronization:start:conventional-config-check
+pnpm exec nx run synchronization:conventional-config:write
+pnpm exec nx run synchronization:conventional-config:check
 ```
 
 Everything outside those markers is hand-written and needs no synchronization run.

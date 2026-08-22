@@ -107,8 +107,8 @@ pnpm exec nx run-many --target=spell-check
 Editing a skill doc needs no synchronization run of its own — the command that regenerated a skills table of contents was retired with the table. The one exception is the generated types and scopes tables that several skill docs carry between marker comments: those come from [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs), so if a word landed inside one, change the config and regenerate rather than editing the table.
 
 ```bash
-pnpm exec nx run synchronization:start:conventional-config-write
-pnpm exec nx run synchronization:start:conventional-config-check
+pnpm exec nx run synchronization:conventional-config:write
+pnpm exec nx run synchronization:conventional-config:check
 ```
 
 ### 4. Add Words Safely

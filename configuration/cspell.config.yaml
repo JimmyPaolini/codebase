@@ -34,7 +34,7 @@ ignorePaths:
   # upstream rather than authored here, so their prose stays spelled the way
   # their sources spelled it. Listed individually rather than as
   # `.agents/skills/` so this repository's own skills in the same directory keep
-  # being checked. Verified by `nx run synchronization:synchronize`, which
+  # being checked. Verified by `nx run synchronization:skill-exclusions`, which
   # also generates the block below.
   - "**/.agents/licenses/**"
   # installed-skills-start

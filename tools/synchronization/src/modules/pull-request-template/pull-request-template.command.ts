@@ -6,7 +6,6 @@ import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { SYNCHRONIZATION_KIND_DERIVATION } from "../synchronization/synchronization.constants";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import {
@@ -45,9 +44,6 @@ export class PullRequestTemplateCommand
   // 🔐 Private Fields
 
   // 🔑 Public Fields
-
-  /** Derived from configuration, so its drift is answered on a pull request. */
-  readonly synchronizationKind = SYNCHRONIZATION_KIND_DERIVATION;
 
   readonly synchronizationLabel = "pull-request-template";
 
@@ -118,7 +114,7 @@ export class PullRequestTemplateCommand
     }
     if (!allInSync) {
       this.logger.log("💡 Suggested a fix", undefined, {
-        hint: "Run 'nx run synchronization:synchronize:write' to sync",
+        hint: "Run 'nx run synchronization:pull-request-template:write' to sync",
       });
       return false;
     }
@@ -208,7 +204,7 @@ export class PullRequestTemplateCommand
         loggerService: this.logger,
         passedParameters,
         usageMessage:
-          "💡 Usage: nx run synchronization:start:pull-request-template-check (or synchronization:start:pull-request-template-write)",
+          "💡 Usage: nx run synchronization:pull-request-template:check (or synchronization:pull-request-template:write)",
       });
 
     if (!(await this.synchronize(mode))) {

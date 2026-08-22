@@ -7,7 +7,6 @@ import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { SYNCHRONIZATION_KIND_DERIVATION } from "../synchronization/synchronization.constants";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import type {
@@ -45,9 +44,6 @@ export class ConformetryGeneratorsCommand
 
   // 🔑 Public Fields
 
-  /** Derived from configuration, so its drift is answered on a pull request. */
-  readonly synchronizationKind = SYNCHRONIZATION_KIND_DERIVATION;
-
   readonly synchronizationLabel = "conformetry-generators";
 
   // 🔏 Private Methods
@@ -68,7 +64,7 @@ export class ConformetryGeneratorsCommand
         undefined,
         {
           count: generators.length,
-          hint: "Run 'nx run synchronization:synchronize:write' to sync",
+          hint: "Run 'nx run synchronization:conformetry-generators:write' to sync",
         },
       );
       return false;

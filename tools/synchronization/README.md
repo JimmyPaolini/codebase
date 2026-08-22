@@ -13,9 +13,15 @@ fails when someone edits the copy instead of the source.
 
 ## Usage
 
+Every synchronization command is its own Nx target on this project, run
+directly rather than through a shared aggregate — the same way
+[`codebase:codometer`](../../packages/codometer-cli/README.md) and
+[`codebase:callidescope`](../../packages/callidescope-cli/README.md) are named
+by their own callers instead of looping through one process:
+
 ```bash
-nx run synchronization:start            # Check every source (default)
-nx run synchronization:start:write      # Regenerate every derived file
+nx run synchronization:conformetry-generators          # check (the default)
+nx run synchronization:conformetry-generators:write     # regenerate
 ```
 
 Every command runs in one of two modes:
@@ -25,58 +31,47 @@ Every command runs in one of two modes:
 | `check` | Compares, writes nothing, exits non-zero on drift. The default |
 | `write` | Regenerates the derived file from its source |
 
-`check` is what the [🧑‍💻 Lint Codebase](../../.github/workflows/lint-codebase.yml)
-workflow runs, so drift fails a pull request rather than surviving into `main` —
-for the synchronizations whose drift a pull request should answer for. Which
-those are is the second axis, below. It is also what
-[`configuration/lint-staged.config.ts`](../../configuration/lint-staged.config.ts)
-runs, so a commit catches drift too. Both name the `synchronize` target
-themselves rather than reaching it through
-[`lint-codebase`](../../AGENTS.md#code-quality)'s `dependsOn`, because `write`
-here publishes reports and Nx forwards an explicit configuration down
-`dependsOn`.
-
-## Three kinds of synchronization
-
-A mode says what a run does. A **kind** says which runs a synchronization
-belongs in, and each command declares its own:
-
-| Kind | What it synchronizes | Where its drift is answered |
-| ---- | -------------------- | --------------------------- |
-| `derivation` | A committed file derived from configuration | Checked on a pull request. The change that touched the configuration is the change that regenerates the file |
-| `report` | A report generated from the code it describes | Published on the default branch. A branch being behind the published report is not a mistake the branch made |
-| `repository` | State the working tree does not contain at all | Reconciled by whoever holds a token. Nothing gates on it, because nothing that runs without credentials can even look |
-
-`--kinds` narrows a run to a comma-separated set of them:
+`start` launches the CLI directly with no subcommand, printing every
+synchronization's own `--help` usage — useful for discovering what exists, but
+running one on its own means invoking its own Nx target as above.
 
 ```bash
-nx run synchronization:synchronize                # check every derivation
-nx run synchronization:synchronize:write          # write derivations, publish reports
-nx run synchronization:start                      # every kind, interactively
+nx run synchronization:start
 ```
 
-Absent, `--kinds` selects every kind, because the flag narrows a run rather
-than enabling one. A flag carrying no value is refused: read as "every kind" it
-would publish reports from a pull request, and read as "none" it would report
-success over a synchronization nobody ran. A selection matching no command
-fails for the same reason.
+## Where each synchronization's drift is answered
 
-Only `nestjs-module-graphs` is a `report` today. Its diagram moves whenever any
-module gains or loses an import, so gating a pull request on its freshness
-failed branches for being behind `main` rather than for anything they did — the
-same trap [codometer](../../packages/codometer-cli/README.md) and
+Which runs check which synchronization is a property of the caller, not a
+taxonomy the commands declare about themselves. Six of the seven — every one
+except `nestjs-module-graphs` and `pull-request-labels` — are **derivations**:
+committed files derived from configuration a pull request can also change, so
+`check` runs on a pull request and `write` runs on the default branch's
+release. The [🧑‍💻 Lint Codebase](../../.github/workflows/lint-codebase.yml)
+workflow and
+[`configuration/lint-staged.config.ts`](../../configuration/lint-staged.config.ts)
+each name every derivation target directly alongside `lint-codebase` in one
+`nx affected` invocation, rather than reaching them through
+[`lint-codebase`](../../AGENTS.md#code-quality)'s `dependsOn` — Nx forwards an
+explicit configuration down `dependsOn`, so an edge there would let
+`lint-codebase --configuration=write` publish from a branch.
+
+`nestjs-module-graphs` is a **report**: its diagram moves whenever any module
+gains or loses an import, so gating a pull request on its freshness would fail
+branches for being behind `main` rather than for anything they did — the same
+trap [codometer](../../packages/codometer-cli/README.md) and
 [callidescope](../../packages/callidescope-cli/README.md) publish on `main` to
-avoid.
+avoid. Nothing checks it on a pull request; the release workflow runs its
+`write` configuration directly.
 
-Only `pull-request-labels` is a `repository` synchronization today, and it is
-the reason the kind exists. Neither of the other two fits: it must not run in
-`lint-codebase`, which every developer and every fork runs with no GitHub
-token, and it must not wait for the default branch either — a change
+`pull-request-labels` needs credentials: its destination is GitHub's label set
+rather than a file in the tree, so reaching it needs a token that neither a
+fork nor a developer's `lint-codebase` run has. It must not run in
+`lint-codebase`, and it must not wait for the default branch either — a change
 introducing a new scope needs that scope's label to exist before 🧾 Validate
-Pull Request Metadata runs on the very same pull request. So it is neither
-gated nor published: `check` drives `derivation`, `write` drives
-`derivation,report`, and the one caller holding a token asks for `repository`
-by name.
+Pull Request Metadata runs on the very same pull request. So the one caller
+holding a token, [validate-conventions.yml](../../.github/workflows/validate-conventions.yml),
+runs its `write` mode directly through `node` rather than through this Nx
+target, on `opened`/`reopened`, and nothing else names it.
 
 ## What it synchronizes
 
@@ -85,10 +80,11 @@ by name.
 | `conformetry-generators` | `configuration/conformetry.config.ts` | The generator table in `AGENTS.md`, between marker comments |
 | `conventional-config` | `configuration/conventional.config.cjs` | The commit type and scope tables, commitlint, and release configuration |
 | `devcontainer-configuration` | `.devcontainer/local/devcontainer.json` | The shared fields of `.devcontainer/cloud/devcontainer.json` |
-| `nestjs-module-graphs` | The NestJS container each project builds | The mermaid module graph in that project's `AGENTS.md` and `README.md`. A `report`, published on `main` |
+| `nestjs-module-graphs` | The NestJS container each project builds | The mermaid module graph in that project's `AGENTS.md` and `README.md`. A report, published on `main` |
 | `nx-project-graphs` | The Nx project graph | The mermaid project graph in every project's `README.md` |
-| `pull-request-labels` | `configuration/conventional.config.cjs` | This repository's `type:`, `scope:`, and `source:` labels on GitHub. A `repository` synchronization |
+| `pull-request-labels` | `configuration/conventional.config.cjs` | This repository's `type:`, `scope:`, and `source:` labels on GitHub. Needs credentials |
 | `pull-request-template` | `.github/PULL_REQUEST_TEMPLATE.md` | The template embedded in the PR skill files |
+| `skill-exclusions` | `skills-lock.json` | The installed-skill exclusion lists in five ignore files |
 
 ### Module graphs
 
@@ -223,68 +219,54 @@ both are warnings, so this can never be why a pull request goes red. Reads and
 writes both go through the `gh` client, which already resolves the repository
 from the checkout and the token from the environment.
 
-Run one on its own with its named configuration:
+Run it on its own through its own Nx target:
 
 ```bash
-nx run synchronization:start:conformetry-generators-write
-nx run synchronization:start:devcontainer-configuration-check
+nx run synchronization:pull-request-labels:write
 ```
 
-## Why one aggregate command
+## Why no aggregate command
 
-The `synchronization` command drives all seven in a single process. Each `nx
-run` rebuilds the project graph, so seven targets cost seven graph builds where
-one costs one.
+Every synchronization command used to run through a shared aggregate that
+looped over all of them in one process, avoiding the cost of one `nx run` — and
+one project-graph build — per command. That traded a real cost for a worse one:
+the aggregate needed a taxonomy describing which commands each caller wanted,
+and the taxonomy kept stretching every time a new caller's requirements did not
+fit the existing values.
 
-The aggregate also reports _all_ drift at once rather than stopping at the
-first failure: each command's `synchronize` returns whether it succeeded, and
-exiting stays in each command's own `run`, where it belongs. A contributor gets
-one list of what to regenerate instead of discovering the next problem after
-fixing the last.
+Each command is its own Nx target instead, run directly the way
+[`codebase:codometer`](../../packages/codometer-cli/README.md) and
+[`codebase:callidescope`](../../packages/callidescope-cli/README.md) are named
+by their own callers. Which commands a caller wants is a property of the
+caller — the list of `--target` flags it passes — rather than something the
+commands declare about themselves centrally. Each target declares its own
+sources as `inputs`, so `nx affected` only reruns it when a file it actually
+reads has changed, and each caller decides for itself which targets belong in
+which invocation:
 
-## The `synchronize` target
-
-```bash
-nx run synchronization:synchronize                            # check derivations
-nx run synchronization:synchronize --configuration=write      # write derivations, publish reports
-```
-
-This exists alongside `start` because other projects use that target name to
-launch an application, and a workflow naming `start` would be naming a target
-whose meaning changes per project. It is cached and declares its sources as
-inputs, so it only reruns when one of the files it watches actually changes.
-
-Two configurations, and no third for the release. `check` passes `--kinds
-derivation`, so a pull request answers only for drift its author caused, and a
-report block that has fallen behind `main` fails nothing. `write` passes
-`--kinds derivation,report`, so it both regenerates derivations and publishes
-reports, and the release workflow is what runs it on the default branch. It
-names both kinds rather than leaving `--kinds` off, so the target states what it
-writes; the absent flag meaning every kind is what `start` uses interactively.
-
-There is no `publish` configuration because there is no `dependsOn` edge to
-defend against. `lint-codebase` does not depend on this target — Nx forwards an
-explicit configuration down `dependsOn`, so if it did, `lint-codebase
---configuration=write` would publish report blocks from a branch. The same
-reasoning already keeps `codebase:codometer` out of that list. Losing the edge
-costs no gating: the
-[🧑‍💻 Lint Codebase](../../.github/workflows/lint-codebase.yml) workflow and
-[`configuration/lint-staged.config.ts`](../../configuration/lint-staged.config.ts)
-each name `synchronize` alongside `lint-codebase` in one `nx affected`
-invocation, so a pull request and a commit both check drift.
+- [🧑‍💻 Lint Codebase](../../.github/workflows/lint-codebase.yml) and
+  [`configuration/lint-staged.config.ts`](../../configuration/lint-staged.config.ts)
+  each name every derivation target directly alongside `lint-codebase` in one
+  `nx affected` invocation, so a pull request and a commit both check drift.
+- The release workflow runs every derivation's `write` configuration together
+  with `nestjs-module-graphs:write` through `nx run-many`, so one command still
+  publishes everything the old aggregate did.
+- [validate-conventions.yml](../../.github/workflows/validate-conventions.yml)
+  runs `pull-request-labels write` directly through `node`, bypassing Nx
+  entirely, since it is the one caller with a token and needs no project graph.
 
 One gap the commit path cannot close. `affected` selects this project from the
-staged paths, and nothing in its `inputs` globs `package.json` — so a commit
-staging only a manifest changes the Nx project graph, drifts
+staged paths, and no derivation target's `inputs` globs `package.json` — so a
+commit staging only a manifest changes the Nx project graph, drifts
 `nx-project-graphs`, and never selects it. The pull request catches that,
 resolving `affected` against the merge base rather than a staged path list.
-Conformetry answers the same problem by running unscoped on every commit; this
-target stays scoped, because removing that scope would put every
+Conformetry answers the same problem by running unscoped on every commit; these
+targets stay scoped, because removing that scope would put every
 synchronization in every commit path.
 
 ## Project Graph
 
-Where this project sits in the Nx project graph: what it depends on, and what depends on it. Regenerated by `nx run synchronization:synchronize --configuration=write`.
+Where this project sits in the Nx project graph: what it depends on, and what depends on it. Regenerated by `nx run synchronization:nx-project-graphs:write`.
 
 <!-- nx-project-graph-start -->
 
@@ -303,7 +285,7 @@ flowchart LR
 
 ## Module Graph
 
-The modules this project defines and the imports between them, published by `nx run synchronization:synchronize --configuration=write`.
+The modules this project defines and the imports between them, published by `nx run synchronization:nestjs-module-graphs:write`.
 
 <!-- nestjs-module-graph-start -->
 
@@ -367,18 +349,14 @@ _Dotted edges are modules named for a runtime load rather than imported._
 ## Adding a synchronizer
 
 1. Generate a module: `nx g conformetry:nestjs-command-module --name=<domain> --project=synchronization`
-2. Implement `SynchronizableCommand` — a `synchronizationLabel`, a
-   `synchronizationKind`, and a `synchronize(mode)` returning whether the
-   destination was already current.
-3. Pick the kind: `SYNCHRONIZATION_KIND_DERIVATION` when the destination is
-   derived from configuration a pull request can also change,
-   `SYNCHRONIZATION_KIND_REPORT` when it is generated from the code it
-   describes, and `SYNCHRONIZATION_KIND_REPOSITORY` when the destination is not
-   in the working tree at all. That one field is the whole declaration — no
-   workflow file, Nx target, or central list names it again.
-4. Register the command in `SynchronizationCommand.getCommands()`.
-5. Add the source path to the `synchronize` target's `inputs` in
-   `project.json`, or Nx will serve a stale cached result when it changes.
+2. Implement `SynchronizableCommand` — a `synchronizationLabel` and a
+   `synchronize(mode)` returning whether the destination was already current.
+3. Add a top-level target for it in `project.json`, with `check`/`write`
+   configurations and its own source paths as `inputs`, the same shape as the
+   existing eight. That target is the whole declaration of where the command
+   runs: name it directly wherever it belongs — `lint-codebase`'s dependents
+   for a derivation, the release workflow's `run-many` for a report, or a
+   caller with its own credentials for anything needing them.
 
 ## Start
 
@@ -411,55 +389,22 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 
 | Measure | Value |
 | --- | --- |
-| Callables | 265 |
-| Files | 49 |
-| Calls traced | 350 |
+| Callables | 276 |
+| Files | 52 |
+| Calls traced | 363 |
 | Call stacks | 24 |
-| Deepest stack | 14 |
+| Deepest stack | 13 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 10 |
 
 ### Call stacks
 
-**1. `SynchronizationCommand.run`** — depth ≥ 14 · decorated-method
+**1. `ConventionalConfigCommand.run`** — depth 13 · decorated-method
 
 ```text
-🚀 SynchronizationCommand.run(…): Promise<void> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:144]
-   ↳ Runs the selected synchronizations, exiting once if any reported drift.
-  └─> SynchronizationCommand.synchronize(…): Promise<boolean> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:182]
-     ↳ Runs the selected synchronizations and reports whether all succeeded.
-    └─> ConventionalConfigCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:74]
-       ↳ Synchronizes conventional-commit config and reports success without exiting.
-      └─> ConventionalConfigService.runSynchronization(mode: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:233]
-         ↳ Runs the workflow in check or write mode, reporting whether it succeeded.
-        └─> ConventionalConfigService.handleCheckMode(context: SyncContext): boolean [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:126]
-           ↳ Check mode: validates all configuration files are in sync with conventional.config.cjs, reporting success rather than…
-          └─> ConventionalConfigValidatorsService.checkAllSkillsSync(config: ConventionalConfig, skillFiles: string[]): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:149]
-             ↳ Validates that every configured skill file has synchronized type/scope tables.
-            └─> ConventionalConfigValidatorsService.checkSkillSync(config: ConventionalConfig, skillFile: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:281]
-               ↳ Validates a skill file's type/scope markdown tables against source config.
-              └─> ConventionalConfigValidatorsService.checkMarkerSync(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:41]
-                 ↳ Checks that a named marker block in a skill file matches the source config values.
-                └─> ConventionalConfigValidatorsService.validateMarkerValues(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:121]
-                   ↳ Compares skill marker values against source values and logs any mismatch.
-                  └─> ConventionalConfigValidatorsService.showDifference(source: string[], target: string[], targetName: string): void [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:102]
-                     ↳ Logs the items missing from and extra in the target compared to the source.
-                    └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
-                       ↳ Logs an informational message at the `info` level.
-                      └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-                         ↳ Assembles the object pino merges into the line.
-                        └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-                           ↳ Fails a malformed message in development, and never in production.
-                          └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                             ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-**2. `ConventionalConfigCommand.run`** — depth 13 · decorated-method
-
-```text
-🚀 ConventionalConfigCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:55]
+🚀 ConventionalConfigCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:51]
    ↳ Runs the conventional-config sync command, delegating to helpers and exiting 1 on drift.
-  └─> ConventionalConfigCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:74]
+  └─> ConventionalConfigCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:70]
      ↳ Synchronizes conventional-commit config and reports success without exiting.
     └─> ConventionalConfigService.runSynchronization(mode: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:233]
        ↳ Runs the workflow in check or write mode, reporting whether it succeeded.
@@ -485,18 +430,40 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                            ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-**3. `NestjsModuleGraphsCommand.run`** — depth ≥ 9 · decorated-method
+**2. `NestjsModuleGraphsCommand.run`** — depth ≥ 9 · decorated-method
 
 ```text
-🚀 NestjsModuleGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:169]
+🚀 NestjsModuleGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:165]
    ↳ Runs the nestjs-module-graphs sync command in check or write mode.
-  └─> NestjsModuleGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:188]
+  └─> NestjsModuleGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:184]
      ↳ Synchronizes every project's module graph and reports success without exiting.
-    └─> NestjsModuleGraphsCommand.synchronizeProject(…): Promise<string[]> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:138]
+    └─> NestjsModuleGraphsCommand.synchronizeProject(…): Promise<string[]> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:134]
        ↳ Explores one project and syncs its graph into every target markdown file.
-      └─> NestjsModuleGraphsCommand.filter(…)(fileName: string): boolean [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:159]
-        └─> NestjsModuleGraphsCommand.synchronizeFile(…): boolean [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:95]
+      └─> NestjsModuleGraphsCommand.filter(…)(fileName: string): boolean [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:155]
+        └─> NestjsModuleGraphsCommand.synchronizeFile(…): boolean [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:91]
            ↳ Checks or rewrites one markdown file's graph block.
+          └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+             ↳ Logs an informational message at the `info` level.
+            └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
+               ↳ Assembles the object pino merges into the line.
+              └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
+                 ↳ Fails a malformed message in development, and never in production.
+                └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
+                   ↳ Whether a word is a verb in one of the two tenses the convention allows.
+```
+
+**3. `NxProjectGraphsCommand.run`** — depth 9 · decorated-method
+
+```text
+🚀 NxProjectGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:147]
+   ↳ Runs the nx-project-graphs sync command in check or write mode.
+  └─> NxProjectGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:166]
+     ↳ Synchronizes every project's graph and reports success without exiting.
+    └─> NxProjectGraphsCommand.filter(…)(project: NxProject): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:180]
+      └─> NxProjectGraphsCommand.synchronizeProject(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:114]
+         ↳ Checks or rewrites one project's README graph block.
+        └─> NxProjectGraphsCommand.applyMode(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:64]
+           ↳ Reports drift in check mode, or rewrites the block in write mode.
           └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
              ↳ Logs an informational message at the `info` level.
             └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
@@ -510,39 +477,17 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 <details>
 <summary>21 more call stacks</summary>
 
-**4. `NxProjectGraphsCommand.run`** — depth 9 · decorated-method
+**4. `PullRequestTemplateCommand.run`** — depth 9 · decorated-method
 
 ```text
-🚀 NxProjectGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:151]
-   ↳ Runs the nx-project-graphs sync command in check or write mode.
-  └─> NxProjectGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:170]
-     ↳ Synchronizes every project's graph and reports success without exiting.
-    └─> NxProjectGraphsCommand.filter(…)(project: NxProject): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:184]
-      └─> NxProjectGraphsCommand.synchronizeProject(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:118]
-         ↳ Checks or rewrites one project's README graph block.
-        └─> NxProjectGraphsCommand.applyMode(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:68]
-           ↳ Reports drift in check mode, or rewrites the block in write mode.
-          └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
-             ↳ Logs an informational message at the `info` level.
-            └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Assembles the object pino merges into the line.
-              └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-                 ↳ Fails a malformed message in development, and never in production.
-                └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                   ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-**5. `PullRequestTemplateCommand.run`** — depth 9 · decorated-method
-
-```text
-🚀 PullRequestTemplateCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:201]
+🚀 PullRequestTemplateCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:197]
    ↳ Runs the pull-request-template sync command in check or write mode.
-  └─> PullRequestTemplateCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:220]
+  └─> PullRequestTemplateCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:216]
      ↳ Synchronizes the PR template and reports success without exiting.
-    └─> PullRequestTemplateCommand.handleWriteMode(templateContent: string, targetFiles: string[]): void [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:132]
+    └─> PullRequestTemplateCommand.handleWriteMode(templateContent: string, targetFiles: string[]): void [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:128]
        ↳ Writes the current PR template into any target files that are out of sync.
-      └─> PullRequestTemplateCommand.filter(…)(targetFile: string): boolean [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:137]
-        └─> PullRequestTemplateCommand.checkTargetSync(templateContent: string, targetFile: string): boolean [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:59]
+      └─> PullRequestTemplateCommand.filter(…)(targetFile: string): boolean [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:133]
+        └─> PullRequestTemplateCommand.checkTargetSync(templateContent: string, targetFile: string): boolean [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:55]
            ↳ Checks whether the target file's marker block matches the current PR template.
           └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
              ↳ Logs an informational message at the `info` level.
@@ -554,16 +499,16 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                    ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-**6. `DevcontainerConfigurationCommand.run`** — depth 8 · decorated-method
+**5. `DevcontainerConfigurationCommand.run`** — depth 8 · decorated-method
 
 ```text
-🚀 DevcontainerConfigurationCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:264]
+🚀 DevcontainerConfigurationCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:260]
    ↳ Runs the devcontainer-configuration sync command in check or write mode.
-  └─> DevcontainerConfigurationCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:283]
+  └─> DevcontainerConfigurationCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:279]
      ↳ Synchronizes the cloud devcontainer config and reports success without exiting.
-    └─> DevcontainerConfigurationCommand.check(expectedConfig: DevcontainerConfiguration, cloudConfigFile: string): boolean [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:84]
+    └─> DevcontainerConfigurationCommand.check(expectedConfig: DevcontainerConfiguration, cloudConfigFile: string): boolean [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:80]
        ↳ Compares the expected merged config against the current cloud config file and reports field differences.
-      └─> DevcontainerConfigurationCommand.reportDifferences(…): void [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:162]
+      └─> DevcontainerConfigurationCommand.reportDifferences(…): void [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:158]
          ↳ Logs each field that differs between the expected and current config.
         └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
            ↳ Logs an informational message at the `info` level.
@@ -575,11 +520,30 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                  ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-**7. `ConformetryGeneratorsCommand.run`** — depth ≥ 7 · decorated-method
+**6. `ConformetryGeneratorsCommand.run`** — depth ≥ 7 · decorated-method
 
 ```text
-🚀 ConformetryGeneratorsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:176]
+🚀 ConformetryGeneratorsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:172]
    ↳ Runs the conformetry-generators sync command in check or write mode.
+  └─> SynchronizationService.resolveSynchronizationModeOrExit(options: SynchronizationModeResolutionOptions): SynchronizationMode [tools/synchronization/src/modules/synchronization/synchronization.service.ts:59]
+     ↳ Resolves synchronization mode or exits the process when the mode is invalid.
+    └─> SynchronizationService.exitInvalidMode(…): never [tools/synchronization/src/modules/synchronization/synchronization.service.ts:22]
+       ↳ Logs invalid mode details and exits with status code 1.
+      └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:256]
+         ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
+        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
+           ↳ Assembles the object pino merges into the line.
+          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
+             ↳ Fails a malformed message in development, and never in production.
+            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
+               ↳ Whether a word is a verb in one of the two tenses the convention allows.
+```
+
+**7. `PullRequestLabelsCommand.run`** — depth 7 · decorated-method
+
+```text
+🚀 PullRequestLabelsCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:281]
+   ↳ Runs the pull-request-labels reconciliation in check or write mode.
   └─> SynchronizationService.resolveSynchronizationModeOrExit(options: SynchronizationModeResolutionOptions): SynchronizationMode [tools/synchronization/src/modules/synchronization/synchronization.service.ts:59]
      ↳ Resolves synchronization mode or exits the process when the mode is invalid.
     └─> SynchronizationService.exitInvalidMode(…): never [tools/synchronization/src/modules/synchronization/synchronization.service.ts:22]
@@ -597,7 +561,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 **8. `SkillExclusionsCommand.run`** — depth 7 · decorated-method
 
 ```text
-🚀 SkillExclusionsCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:155]
+🚀 SkillExclusionsCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:165]
    ↳ Runs the skill-exclusions sync command in check or write mode.
   └─> SynchronizationService.resolveSynchronizationModeOrExit(options: SynchronizationModeResolutionOptions): SynchronizationMode [tools/synchronization/src/modules/synchronization/synchronization.service.ts:59]
      ↳ Resolves synchronization mode or exits the process when the mode is invalid.
@@ -624,7 +588,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 **10. `ConformetryGeneratorsCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 ConformetryGeneratorsCommand.constructor(…): ConformetryGeneratorsCommand [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:35]
+🚀 ConformetryGeneratorsCommand.constructor(…): ConformetryGeneratorsCommand [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:34]
   └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
      ↳ Sets the context label included in every subsequent log line.
 ```
@@ -656,7 +620,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 **14. `ConventionalConfigCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 ConventionalConfigCommand.constructor(…): ConventionalConfigCommand [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:32]
+🚀 ConventionalConfigCommand.constructor(…): ConventionalConfigCommand [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:31]
   └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
      ↳ Sets the context label included in every subsequent log line.
 ```
@@ -664,7 +628,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 **15. `DevcontainerConfigurationCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 DevcontainerConfigurationCommand.constructor(…): DevcontainerConfigurationCommand [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:41]
+🚀 DevcontainerConfigurationCommand.constructor(…): DevcontainerConfigurationCommand [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:40]
   └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
      ↳ Sets the context label included in every subsequent log line.
 ```
@@ -689,7 +653,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 **18. `NestjsModuleGraphsCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 NestjsModuleGraphsCommand.constructor(…): NestjsModuleGraphsCommand [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:48]
+🚀 NestjsModuleGraphsCommand.constructor(…): NestjsModuleGraphsCommand [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:47]
   └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
      ↳ Sets the context label included in every subsequent log line.
 ```
@@ -715,31 +679,31 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 **21. `NxProjectGraphsCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 NxProjectGraphsCommand.constructor(…): NxProjectGraphsCommand [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:46]
+🚀 NxProjectGraphsCommand.constructor(…): NxProjectGraphsCommand [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:45]
   └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**22. `PullRequestTemplateCommand.constructor`** — depth ≥ 2 · orphan-root
+**22. `PullRequestLabelsCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 PullRequestTemplateCommand.constructor(…): PullRequestTemplateCommand [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:37]
+🚀 PullRequestLabelsCommand.constructor(…): PullRequestLabelsCommand [tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:60]
   └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**23. `SkillExclusionsCommand.constructor`** — depth ≥ 2 · orphan-root
+**23. `PullRequestTemplateCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 SkillExclusionsCommand.constructor(…): SkillExclusionsCommand [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:52]
+🚀 PullRequestTemplateCommand.constructor(…): PullRequestTemplateCommand [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:36]
   └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**24. `SynchronizationCommand.constructor`** — depth ≥ 2 · orphan-root
+**24. `SkillExclusionsCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 SynchronizationCommand.constructor(…): SynchronizationCommand [tools/synchronization/src/modules/synchronization/synchronization.command.ts:41]
+🚀 SkillExclusionsCommand.constructor(…): SkillExclusionsCommand [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:54]
   └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
      ↳ Sets the context label included in every subsequent log line.
 ```

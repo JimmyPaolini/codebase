@@ -11,20 +11,19 @@ import { PullRequestLabelsModule } from "../pull-request-labels/pull-request-lab
 import { PullRequestTemplateModule } from "../pull-request-template/pull-request-template.module";
 import { SkillExclusionsModule } from "../skill-exclusions/skill-exclusions.module";
 
-import { SynchronizationKindsService } from "./synchronization-kinds.service";
-import { SynchronizationCommand } from "./synchronization.command";
 import { SynchronizationService } from "./synchronization.service";
 
 /**
  * Root NestJS application module.
+ *
+ * Every synchronization command is its own Nx target and its own CLI
+ * subcommand, run on its own rather than through a shared aggregate. This
+ * module exists only so `MainModule` discovers every one of them in a single
+ * import.
  */
 @Module({
   controllers: [],
-  exports: [
-    SynchronizationCommand,
-    SynchronizationKindsService,
-    SynchronizationService,
-  ],
+  exports: [SynchronizationService],
   imports: [
     LoggerModule,
     ConformetryGeneratorsModule,
@@ -36,10 +35,6 @@ import { SynchronizationService } from "./synchronization.service";
     PullRequestTemplateModule,
     SkillExclusionsModule,
   ],
-  providers: [
-    SynchronizationCommand,
-    SynchronizationKindsService,
-    SynchronizationService,
-  ],
+  providers: [SynchronizationService],
 })
 export class SynchronizationModule {}

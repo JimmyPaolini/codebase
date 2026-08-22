@@ -8,7 +8,6 @@ import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { SYNCHRONIZATION_KIND_DERIVATION } from "../synchronization/synchronization.constants";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import {
@@ -49,9 +48,6 @@ export class DevcontainerConfigurationCommand
   // 🔐 Private Fields
 
   // 🔑 Public Fields
-
-  /** Derived from configuration, so its drift is answered on a pull request. */
-  readonly synchronizationKind = SYNCHRONIZATION_KIND_DERIVATION;
 
   readonly synchronizationLabel = "devcontainer-configuration";
 
@@ -98,7 +94,7 @@ export class DevcontainerConfigurationCommand
     this.logger.log(
       `📦 Detected out-of-sync common fields in ${relativeFilePath}`,
       undefined,
-      { hint: "Run: nx run synchronization:synchronize:write" },
+      { hint: "Run: nx run synchronization:devcontainer-configuration:write" },
     );
 
     this.reportDifferences(structuredClone(expectedConfig), currentConfig);
@@ -271,7 +267,7 @@ export class DevcontainerConfigurationCommand
         loggerService: this.logger,
         passedParameters,
         usageMessage:
-          "💡 Usage: nx run synchronization:start:devcontainer-configuration-check (or synchronization:start:devcontainer-configuration-write)",
+          "💡 Usage: nx run synchronization:devcontainer-configuration:check (or synchronization:devcontainer-configuration:write)",
       });
 
     if (!(await this.synchronize(mode))) {
