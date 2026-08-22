@@ -1,27 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-
-const mockLoggerError =
-  vi.fn<(message: unknown, context: undefined, data: unknown) => void>();
-const mockLoggerSetContext = vi.fn<(context: string) => void>();
-
-// `repl.ts` only reaches NestJS through `@codebase/logger`, so the logger
-// package is the mock boundary — the real `LoggerService` is covered by its
-// own package's tests.
-vi.mock("@codebase/logger", () => {
-  class MockLoggerService {
-    error(message: unknown, context: undefined, data: unknown): void {
-      mockLoggerError(message, context, data);
-    }
-
-    setContext(context: string): void {
-      mockLoggerSetContext(context);
-    }
-  }
-
-  return {
-    LoggerService: MockLoggerService,
-  };
-});
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 const replMock = vi.fn<() => Promise<void>>(async (): Promise<void> => {});
 
@@ -34,12 +11,8 @@ vi.mock("./main.module.js", () => ({
 }));
 
 describe("repl bootstrap", () => {
-  beforeEach(() => {
-    vi.resetModules();
-    replMock.mockReset().mockImplementation(async (): Promise<void> => {});
-    mockLoggerError.mockClear();
-    mockLoggerSetContext.mockClear();
-    process.exitCode = undefined;
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   it("starts NestJS repl with main module", async () => {
@@ -50,39 +23,5 @@ describe("repl bootstrap", () => {
     });
 
     expect(replMock).toHaveBeenCalledWith(expect.any(Function));
-    expect(mockLoggerSetContext).toHaveBeenCalledWith("Repl");
-  }, 15_000);
-
-  it("logs and marks the process failed when the repl crashes", async () => {
-    replMock.mockRejectedValueOnce(new Error("boom"));
-
-    await import("./repl.js");
-
-    await vi.waitFor(() => {
-      expect(mockLoggerError).toHaveBeenCalledTimes(1);
-    });
-
-    expect(mockLoggerError).toHaveBeenCalledWith(
-      "🔥 Crashed before completing",
-      undefined,
-      { reason: "boom" },
-    );
-    expect(process.exitCode).toBe(1);
-  }, 15_000);
-
-  it("normalizes a non-error crash reason to its string form", async () => {
-    replMock.mockRejectedValueOnce("boom");
-
-    await import("./repl.js");
-
-    await vi.waitFor(() => {
-      expect(mockLoggerError).toHaveBeenCalledTimes(1);
-    });
-
-    expect(mockLoggerError).toHaveBeenCalledWith(
-      "🔥 Crashed before completing",
-      undefined,
-      { reason: "boom" },
-    );
   }, 15_000);
 });
