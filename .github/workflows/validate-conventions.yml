@@ -124,53 +124,8 @@ jobs:
         env:
           PULL_REQUEST_BODY: ${{ github.event.pull_request.body }}
         run: |
-          if [ -z "$PULL_REQUEST_BODY" ]; then
-            echo "❌ Unable to determine Pull Request Body"
-            exit 1
-          fi
-          MISSING=""
-          printf '%s' "$PULL_REQUEST_BODY" | grep -q "^## 🌰 Summary" || \
-            MISSING="$MISSING 🌰 Summary"
-          printf '%s' "$PULL_REQUEST_BODY" | grep -q "^## 📝 Details" || \
-            MISSING="$MISSING 📝 Details"
-          printf '%s' "$PULL_REQUEST_BODY" | grep -q "^## 🧪 Testing" || \
-            MISSING="$MISSING 🧪 Testing"
-          printf '%s' "$PULL_REQUEST_BODY" | grep -q "^## 🔗 Related" || \
-            MISSING="$MISSING 🔗 Related"
-          UNFILLED=""
-          printf '%s' "$PULL_REQUEST_BODY" \
-            | grep -q "<!-- Brief description of what this PR does" && \
-            UNFILLED="$UNFILLED
-          - <!-- Brief description of what this PR does ... -->"
-          printf '%s' "$PULL_REQUEST_BODY" \
-            | grep -q "<!-- List of specific changes made" && \
-            UNFILLED="$UNFILLED
-          - <!-- List of specific changes made -->"
-          printf '%s' "$PULL_REQUEST_BODY" \
-            | grep -q "<!-- How to manually verify these changes work" && \
-            UNFILLED="$UNFILLED
-          - <!-- How to manually verify these changes work ... -->"
-          printf '%s' "$PULL_REQUEST_BODY" \
-            | grep -q "<!-- Link any relevant documentation or related" && \
-            UNFILLED="$UNFILLED
-          - <!-- Link any relevant documentation or related ... -->"
-          if [ -z "$MISSING" ] && [ -z "$UNFILLED" ]; then
-            echo "✅ All required sections present"
-            exit 0
-          fi
-          if [ -n "$MISSING" ]; then
-            echo "❌ Missing required sections:$MISSING"
-            echo ""
-          fi
-          if [ -n "$UNFILLED" ]; then
-            echo "❌ Unfilled template comments remain:$UNFILLED"
-            echo ""
-          fi
-          echo "PR description must include: ## 🌰 Summary, " \
-            "## 📝 Details, ## 🧪 Testing, ## 🔗 Related, " \
-            "with every template comment replaced by real content."
-          echo "See: .github/PULL_REQUEST_TEMPLATE.md"
-          exit 1
+          NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+            tools/validation/src/main.ts pull-request-body
 
       - name: 🏷️ Ensure Pull Request Labels
         if: >-

@@ -191,6 +191,8 @@ Fix: Update the PR title in the GitHub UI.
 
 #### 🪢 Validate Pull Request Body
 
+Command: `validation pull-request-body`, the [pull-request-body](../../../tools/validation/src/modules/pull-request-body/pull-request-body.command.ts) check
+
 Template: [.github/PULL_REQUEST_TEMPLATE.md](../../../.github/PULL_REQUEST_TEMPLATE.md)
 
 Required sections (exact heading text): `## 🌰 Summary`, `## 📝 Details`, `## 🧪 Testing`, `## 🔗 Related`
@@ -198,9 +200,18 @@ Required sections (exact heading text): `## 🌰 Summary`, `## 📝 Details`, `#
 Two failure modes, and a body that hits both is reported against both:
 
 - A required heading is absent — `❌ Missing required sections: 🧪 Testing` — add the heading and its content.
-- A template comment survives unfilled — `❌ Unfilled template comments remain:` followed by one line per offending comment, such as `- <!-- Brief description of what this PR does ... -->` — every `<!-- … -->` prompt in the template is a placeholder, so each one has to be replaced by real content rather than left in place beside it.
+- A template comment survives unfilled — `❌ Unfilled template comments remain:` followed by one line per offending comment, such as `- <!-- List of specific changes made -->` — every `<!-- … -->` prompt in the template is a placeholder, so each one has to be replaced by real content rather than left in place beside it.
+
+The prompts are read out of the template at runtime rather than listed in the check, so one added to the template is checked from then on with no code change.
 
 Fix: Edit the PR description in the GitHub UI so all four sections are present and no template comment remains.
+
+Reproduce it locally against a description saved to a file — the raw template is itself a usable input:
+
+```bash
+NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+  tools/validation/src/main.ts pull-request-body <path-to-the-body>
+```
 
 #### 🏷️ Ensure Pull Request Labels
 

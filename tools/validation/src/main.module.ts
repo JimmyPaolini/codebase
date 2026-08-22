@@ -6,6 +6,7 @@ import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
 import { CatalogManifestsModule } from "./modules/catalog-manifests/catalog-manifests.module";
+import { PullRequestBodyModule } from "./modules/pull-request-body/pull-request-body.module";
 import { PullRequestMetadataModule } from "./modules/pull-request-metadata/pull-request-metadata.module";
 
 /**
@@ -22,6 +23,7 @@ import { PullRequestMetadataModule } from "./modules/pull-request-metadata/pull-
     CatalogManifestsModule,
     DiscoveryModule,
     LoggerModule,
+    PullRequestBodyModule,
     PullRequestMetadataModule,
   ],
 })

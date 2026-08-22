@@ -88,6 +88,7 @@ flowchart LR
   subgraph group0["validation"]
     CatalogManifestsModule
     MainModule
+    PullRequestBodyModule
     PullRequestMetadataModule
   end
   subgraph group1["logger"]
@@ -97,6 +98,7 @@ flowchart LR
   DiscoveryModule
   MainModule --> CatalogManifestsModule
   MainModule --> DiscoveryModule
+  MainModule --> PullRequestBodyModule
   MainModule --> PullRequestMetadataModule
 ```
 

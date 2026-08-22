@@ -27,6 +27,9 @@
         "catalog-manifests": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts catalog-manifests"
         },
+        "pull-request-body": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts pull-request-body"
+        },
         "pull-request-metadata": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts pull-request-metadata"
         }
