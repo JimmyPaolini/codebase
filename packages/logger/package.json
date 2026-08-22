@@ -13,10 +13,12 @@
     "@swc/helpers": "catalog:",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
+    "eslint": "catalog:",
     "vitest": "catalog:"
   },
   "exports": {
     ".": "./src/index.ts",
+    "./eslint": "./src/lib/conventional-log-message.eslint-rule.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
