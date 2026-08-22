@@ -1,0 +1,43 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "validation",
+  "projectType": "application",
+  "sourceRoot": "tools/validation",
+  "tags": [
+    "framework:nest-commander",
+    "framework:nestjs",
+    "generator:nestjs-command-project",
+    "language:typescript",
+    "type:package"
+  ],
+  "targets": {
+    "codometer": {},
+    "dependency-cruiser": {},
+    "knip": {},
+    "lint-codebase": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "oxlint": {},
+    "prettier": {},
+    "repl": {},
+    "spell-check": {},
+    "start": {
+      "cache": false,
+      "configurations": {
+        "pull-request-metadata": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts pull-request-metadata"
+        }
+      },
+      "description": "Run one validation check by name.",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "test-coverage": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}

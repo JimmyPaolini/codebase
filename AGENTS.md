@@ -80,6 +80,7 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 - **[conformetry-nx](packages/conformetry-nx)**: Nx plugin that exposes the conformetry generator namespace
 - **[reporting](tools/reporting)**: NestJS CLI that renders internal codebase reports into markdown, such as the `🎒 Bundles` pull request section
 - **[synchronization](tools/synchronization)**: NestJS CLI for synchronizing codebase configuration and documentation artifacts
+- **[validation](tools/validation)**: NestJS CLI for the repository's one-sided checks — the ones with a `check` and no `write`, such as the pull request metadata gate
 
 ## Conformetry
 

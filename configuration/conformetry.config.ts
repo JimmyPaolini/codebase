@@ -64,7 +64,7 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
         patterns: [
           "applications/{caelundas,lexico-ingestion}",
           "packages/conformetry-cli",
-          "tools/synchronization",
+          "tools/{synchronization,validation}",
         ],
       },
     ],

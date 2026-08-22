@@ -19,6 +19,11 @@ name: 🧑‍⚖️ Validate Conventions
 # It is the `repository` synchronization kind, which nothing else selects:
 # `lint-codebase` checks `derivation` and the release workflow writes
 # `derivation,report`, so neither of them needs a token.
+#
+# The metadata and body checks are nest-commander commands in
+# `tools/validation`, invoked the same way and for the same reason. Both are
+# one-sided — a `check` with no `write` to reconcile against — which is why
+# they live there rather than beside the label synchronizer.
 
 on:
   pull_request:
@@ -80,16 +85,18 @@ jobs:
           cache: pnpm
 
       # commitlint and validate-branch-name live in the root manifest; the label
-      # reconciliation step below runs the synchronization CLI directly through
-      # node rather than through Nx, so that project and the workspace packages
-      # it imports are all this needs on top. `--filter synchronization...`
-      # resolves those transitively, so nothing here names `@codebase/logger`
-      # or the conformetry packages by hand. Still no Nx cache, no uv, and no
-      # Homebrew: there is no project graph to build.
+      # reconciliation step and the two validation steps below run their CLIs
+      # directly through node rather than through Nx, so those two projects and
+      # the workspace packages they import are all this needs on top. The
+      # trailing `...` on each filter resolves those transitively, so nothing
+      # here names `@codebase/logger` or the conformetry packages by hand.
+      # Still no Nx cache, no uv, and no Homebrew: there is no project graph to
+      # build.
       - name: 📚 Install Root Dependencies
         run: |
           CI=true pnpm install --frozen-lockfile --reporter=append-only \
-            --filter . --filter synchronization... --ignore-scripts
+            --filter . --filter synchronization... --filter validation... \
+            --ignore-scripts
 
       - name: 🎋 Validate Branch Name
         env:
@@ -184,4 +191,6 @@ jobs:
           PULL_REQUEST_LABELS: ${{ toJSON(github.event.pull_request.labels) }}
           PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
           PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
-        run: bash scripts/git/validate-pull-request-metadata.sh
+        run: |
+          NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+            tools/validation/src/main.ts pull-request-metadata
