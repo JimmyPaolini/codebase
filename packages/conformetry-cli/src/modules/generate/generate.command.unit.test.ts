@@ -28,6 +28,7 @@ describe(GenerateCommand, () => {
   let configurationService: ConfigurationService;
   let generationService: GenerationService;
   let inputService: InputService;
+  let commandLogger: LoggerService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -50,6 +51,7 @@ describe(GenerateCommand, () => {
     configurationService = await module.resolve(ConfigurationService);
     generationService = await module.resolve(GenerationService);
     inputService = await module.resolve(InputService);
+    commandLogger = await module.resolve(LoggerService);
   });
 
   // The shared setup clears every mock before each test, so the return values
@@ -139,6 +141,28 @@ describe(GenerateCommand, () => {
     it("names the available generators when asked for an unknown one", async () => {
       await expect(command.run([], { generator: "nope" })).rejects.toThrow(
         'Unknown generator "nope". Available: widget',
+      );
+    });
+
+    it("logs a debug entry marker naming the generator", async () => {
+      await command.run([], { generator: "widget" });
+
+      expect(commandLogger.debug).toHaveBeenCalledWith(
+        "🏗 Generating a conformetry instance",
+        undefined,
+        { generator: "widget" },
+      );
+    });
+
+    it("logs and rejects an unknown generator", async () => {
+      await expect(command.run([], { generator: "nope" })).rejects.toThrow(
+        'Unknown generator "nope"',
+      );
+
+      expect(commandLogger.error).toHaveBeenCalledWith(
+        "🚫 Rejected an unknown generator",
+        undefined,
+        { generator: "nope" },
       );
     });
 

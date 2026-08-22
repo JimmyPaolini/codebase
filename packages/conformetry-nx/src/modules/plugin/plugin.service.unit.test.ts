@@ -5,7 +5,9 @@ import path from "node:path";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { createTree } from "nx/src/generators/testing-utils/create-tree";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
+
+import { LoggerService } from "@codebase/logger";
 
 import {
   DEFAULT_OUTPUT_PATH,
@@ -18,6 +20,7 @@ import { PluginService } from "./plugin.service";
 
 import type { ProjectScope } from "../instances/instances.types";
 import type { Tree } from "@nx/devkit";
+import type { MockInstance } from "vitest";
 
 const WIDGETS: ProjectScope = {
   name: "widgets",
@@ -124,11 +127,33 @@ async function createWorkspace(): Promise<string> {
 }
 
 describe(PluginService, () => {
+  // Spied on the shared class prototype rather than injected as a mock: the
+  // conformetry template for this file expects `Test.createTestingModule`
+  // chained straight into `.compile()`, which an `overrideProvider` call
+  // would break. A prototype spy intercepts every instance's calls no matter
+  // which testing module constructed it.
+  let errorSpy: MockInstance<typeof LoggerService.prototype.error>;
+  let infoSpy: MockInstance<typeof LoggerService.prototype.info>;
+  let setContextSpy: MockInstance<typeof LoggerService.prototype.setContext>;
+  let warnSpy: MockInstance<typeof LoggerService.prototype.warn>;
   let options: { configurationPath: string };
   let service: PluginService;
   let workspaceRoot: string;
 
   beforeAll(async () => {
+    errorSpy = vi
+      .spyOn(LoggerService.prototype, "error")
+      .mockImplementation(() => {});
+    infoSpy = vi
+      .spyOn(LoggerService.prototype, "info")
+      .mockImplementation(() => {});
+    setContextSpy = vi
+      .spyOn(LoggerService.prototype, "setContext")
+      .mockImplementation(() => {});
+    warnSpy = vi
+      .spyOn(LoggerService.prototype, "warn")
+      .mockImplementation(() => {});
+
     const module = await Test.createTestingModule({
       imports: [PluginModule],
       providers: [PluginService],
@@ -159,6 +184,19 @@ describe(PluginService, () => {
 
   it("is defined", () => {
     expect(service).toBeDefined();
+  });
+
+  it("sets logger context", async () => {
+    // Its own module: the shared setup clears mocks between tests, so a
+    // constructor call recorded during `beforeAll` is no longer observable.
+    const module = await Test.createTestingModule({
+      imports: [PluginModule],
+      providers: [PluginService],
+    }).compile();
+
+    await module.resolve(PluginService);
+
+    expect(setContextSpy).toHaveBeenCalledWith("PluginService");
   });
 
   describe("inferTargets", () => {
@@ -250,6 +288,11 @@ describe(PluginService, () => {
 
       expect(result.ok).toBe(false);
       expect(result.report).toContain("gears.config.json");
+      expect(infoSpy).toHaveBeenCalledWith(
+        "👔 Validated conformetry instances",
+        undefined,
+        { ok: false },
+      );
     });
 
     it("passes a project with nothing to validate", async () => {
@@ -260,6 +303,11 @@ describe(PluginService, () => {
       });
 
       expect(result.ok).toBe(true);
+      expect(infoSpy).toHaveBeenCalledWith(
+        "👔 Validated conformetry instances",
+        undefined,
+        { ok: true },
+      );
     });
   });
 
@@ -300,6 +348,11 @@ describe(PluginService, () => {
           "utf8",
         ),
       ).toContain('"name": "sprockets"');
+      expect(infoSpy).toHaveBeenCalledWith(
+        "✨ Generated instance files",
+        undefined,
+        { count: 1, generator: "widget" },
+      );
     });
 
     it("rejects a generator the configuration does not declare", async () => {
@@ -311,6 +364,11 @@ describe(PluginService, () => {
           workspaceRoot,
         }),
       ).rejects.toThrow("Unknown conformetry generator: nope");
+      expect(errorSpy).toHaveBeenCalledWith(
+        "🚫 Rejected an unknown generator",
+        undefined,
+        { generator: "nope" },
+      );
     });
   });
 
@@ -332,6 +390,11 @@ describe(PluginService, () => {
       await expect(
         service.runValidation({ options, project: WIDGETS, workspaceRoot }),
       ).rejects.toThrow("Run `nx sync`");
+      expect(warnSpy).toHaveBeenCalledWith(
+        "🚫 Rejected a stale conformetry generator plugin",
+        undefined,
+        { filePath: path.join(DEFAULT_OUTPUT_PATH, "generators.json") },
+      );
 
       await writeFile(manifestPath, original, "utf8");
     });
@@ -358,6 +421,11 @@ describe(PluginService, () => {
           workspaceRoot,
         }),
       ).rejects.toThrow("which does not exist");
+      expect(warnSpy).toHaveBeenCalledWith(
+        "🚫 Rejected a generator with a missing template",
+        undefined,
+        { generator: "widget", templatePath: "templates/not-there" },
+      );
     });
 
     it("falls back to the path the workspace registered the plugin with", async () => {
