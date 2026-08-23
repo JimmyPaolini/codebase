@@ -101,6 +101,28 @@ export function buildHclGroup(statistics: CodeStatisticsResult): string {
   ]);
 }
 
+/** Renders the JavaScript badge group. */
+export function buildJavascriptGroup(statistics: CodeStatisticsResult): string {
+  const { javascript: js } = statistics;
+
+  return buildGroup("JavaScript", [
+    buildBadge("JavaScript Files", js.files, "f7df1e"),
+    buildBadge("Test Files", js.testFiles, "10b981"),
+    buildBadge("External Packages", js.externalPackages, "8b5cf6"),
+    buildBadge("Classes", js.classes, "7c3aed"),
+    buildBadge("Functions", js.functions, "16a34a"),
+    buildBadge("Methods", js.methods, "15803d"),
+    buildBadge("Sync Functions", js.syncFunctions, "4ade80"),
+    buildBadge("Async Functions", js.asyncFunctions, "059669"),
+    buildBadge("Constants", js.constants, "dc2626"),
+    buildBadge("Imports", js.imports, "0284c7"),
+    buildBadge("Exported Symbols", js.exported, "ea580c"),
+    buildBadge("Comments", js.comments, "64748b"),
+    buildBadge("Comment Lines", js.commentLines, "475569"),
+    buildBadge("TODO Comments", js.todos, "ca8a04"),
+  ]);
+}
+
 /** Renders the Json badge group. */
 export function buildJsonGroup(statistics: CodeStatisticsResult): string {
   const { json } = statistics;
@@ -313,31 +335,17 @@ export function buildTomlGroup(statistics: CodeStatisticsResult): string {
   ]);
 }
 
-/** Renders the Typescript badge group. */
+/** Renders the TypeScript badge group. */
 export function buildTypescriptGroup(statistics: CodeStatisticsResult): string {
-  const { javascript: js, typescript: ts } = statistics;
+  const { typescript: ts } = statistics;
 
-  return buildGroup("TypeScript & JavaScript", [
+  return buildGroup("TypeScript", [
     buildBadge("TypeScript Files", ts.files, "3178c6"),
-    buildBadge("JavaScript Files", js.files, "f7df1e"),
-    buildBadge("Test Files", js.testFiles, "10b981"),
-    buildBadge("External Packages", js.externalPackages, "8b5cf6"),
-    buildBadge("Classes", js.classes, "7c3aed"),
-    buildBadge("Functions", js.functions, "16a34a"),
-    buildBadge("Methods", js.methods, "15803d"),
-    buildBadge("Sync Functions", js.syncFunctions, "4ade80"),
-    buildBadge("Async Functions", js.asyncFunctions, "059669"),
     buildBadge("Interfaces", ts.interfaces, "0ea5e9"),
     buildBadge("Generic Declarations", ts.genericDeclarations, "0369a1"),
     buildBadge("Enums", ts.enums, "f97316"),
-    buildBadge("Constants", js.constants, "dc2626"),
-    buildBadge("Imports", js.imports, "0284c7"),
     buildBadge("Decorators", ts.decorators, "db2777"),
-    buildBadge("Exported Symbols", js.exported, "ea580c"),
     buildBadge("Doc Comments", ts.docComments, "6366f1"),
-    buildBadge("Comments", js.comments, "64748b"),
-    buildBadge("Comment Lines", js.commentLines, "475569"),
-    buildBadge("TODO Comments", js.todos, "ca8a04"),
     ...buildCustomBadges(statistics, "typescript"),
   ]);
 }

@@ -5,6 +5,7 @@
   "sourceRoot": "packages/conformetry-agents",
   "tags": ["language:typescript", "name:conformetry-agents", "type:package"],
   "targets": {
+    "codometer": {},
     "knip": {},
     "lint-codebase": {},
     "markdown-lint": {},
