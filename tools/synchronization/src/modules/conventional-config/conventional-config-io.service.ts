@@ -15,6 +15,7 @@ import { LoggerService } from "@codebase/logger";
 import { RELEASE_RULES_SPECIAL_TYPES } from "./conventional-config.constants";
 
 import type {
+  ConventionalConfig,
   EntryWithDescription,
   ReleaseConfig,
   Scope,
@@ -55,6 +56,26 @@ export class ConventionalConfigIoService {
   /** Capitalizes the first character of a string. */
   private capitalize(str: string): string {
     return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  /** Rewrites a single dropdown's options within a marked block. */
+  private writeIssueTemplateDropdown(options: {
+    marker: "scopes" | "types";
+    templateContent: string;
+    templateName: string;
+    values: string[];
+  }): string {
+    const { marker, templateContent, templateName, values } = options;
+    const dropdownOptions = this.generateYamlDropdownOptions(values);
+    const pattern = new RegExp(
+      String.raw`(# <!-- ${marker}-start -->\n[\s\S]*?options:\n)[\s\S]*?(\s*validations:[\s\S]*?# <!-- ${marker}-end -->)`,
+    );
+    const match = pattern.exec(templateContent);
+    if (!match) {
+      throw new Error(`Could not find ${marker} markers in ${templateName}`);
+    }
+
+    return templateContent.replace(pattern, `$1${dropdownOptions}\n$2`);
   }
 
   // 🌎 Public Methods
@@ -144,10 +165,10 @@ export class ConventionalConfigIoService {
   }
 
   /**
-   * Generates YAML list items for scope dropdown options.
+   * Generates YAML list items for a dropdown's options.
    */
-  generateYamlScopeOptions(scopes: string[]): string {
-    return scopes.map((scope) => `        - ${scope}`).join("\n");
+  generateYamlDropdownOptions(values: string[]): string {
+    return values.map((value) => `        - ${value}`).join("\n");
   }
 
   /**
@@ -167,22 +188,26 @@ export class ConventionalConfigIoService {
   }
 
   /**
-   * Parses scope options from an issue template YAML content block.
+   * Parses dropdown options from a marked block of issue template YAML.
    */
-  parseIssueTemplateScopes(content: string): string[] {
-    const pattern =
-      /# <!-- scopes-start -->\n[\s\S]*?options:\n([\s\S]*?)\n\s*validations:[\s\S]*?# <!-- scopes-end -->/;
+  parseIssueTemplateDropdown(
+    content: string,
+    marker: "scopes" | "types",
+  ): string[] {
+    const pattern = new RegExp(
+      String.raw`# <!-- ${marker}-start -->\n[\s\S]*?options:\n([\s\S]*?)\n\s*validations:[\s\S]*?# <!-- ${marker}-end -->`,
+    );
     const match = pattern.exec(content);
     if (!match?.[1]) return [];
 
-    const scopes: string[] = [];
+    const values: string[] = [];
     for (const line of match[1].split("\n")) {
-      const scopeMatch = /^\s{8}-\s+(.+)$/.exec(line);
-      if (scopeMatch?.[1]) {
-        scopes.push(scopeMatch[1]);
+      const valueMatch = /^\s{8}-\s+(.+)$/.exec(line);
+      if (valueMatch?.[1]) {
+        values.push(valueMatch[1]);
       }
     }
-    return scopes;
+    return values;
   }
 
   /**
@@ -228,30 +253,35 @@ export class ConventionalConfigIoService {
   }
 
   /**
-   * Rewrites scope options in a GitHub issue template file.
+   * Rewrites the type and scope dropdown options in a GitHub issue template file.
    */
-  writeIssueTemplateSync(sourceScopes: string[], templateFile: string): void {
+  writeIssueTemplateSync(
+    config: ConventionalConfig,
+    templateFile: string,
+  ): void {
     const templateName = path.relative(this.workspaceRoot, templateFile);
-    this.loggerService.info("🔄 Syncing a scopes dropdown", undefined, {
+    this.loggerService.info("🔄 Syncing type and scope dropdowns", undefined, {
       templateName,
     });
-    const templateContent = readFileSync(templateFile, "utf8");
-    const scopeOptions = this.generateYamlScopeOptions(sourceScopes);
+    let templateContent = readFileSync(templateFile, "utf8");
 
-    const pattern =
-      /(# <!-- scopes-start -->\n[\s\S]*?options:\n)[\s\S]*?(\s*validations:[\s\S]*?# <!-- scopes-end -->)/;
-    const match = pattern.exec(templateContent);
-    if (!match) {
-      throw new Error(`Could not find scopes markers in ${templateName}`);
-    }
+    templateContent = this.writeIssueTemplateDropdown({
+      marker: "types",
+      templateContent,
+      templateName,
+      values: config.types.map((type) => type.name),
+    });
+    templateContent = this.writeIssueTemplateDropdown({
+      marker: "scopes",
+      templateContent,
+      templateName,
+      values: config.scopes.map((scope) => scope.name),
+    });
 
-    const updatedContent = templateContent.replace(
-      pattern,
-      `$1${scopeOptions}\n$2`,
-    );
-
-    writeFileSync(templateFile, updatedContent, "utf8");
-    this.loggerService.info("📇 Synced scopes", undefined, { templateName });
+    writeFileSync(templateFile, templateContent, "utf8");
+    this.loggerService.info("📇 Synced types and scopes", undefined, {
+      templateName,
+    });
   }
 
   /**

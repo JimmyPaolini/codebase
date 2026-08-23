@@ -1,6 +1,7 @@
 import { createMock } from "@golevelup/ts-vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { IssueLabelsModule } from "./modules/issue-labels/issue-labels.module";
 import type { SynchronizationModule } from "./modules/synchronization/synchronization.module";
 import type { LoggerService } from "@codebase/logger";
 
@@ -11,6 +12,7 @@ type CommandFactoryRun = (
 
 const run = vi.fn<CommandFactoryRun>().mockResolvedValue(undefined);
 const loggerServiceMock = createMock<LoggerService>();
+const issueLabelsModuleMock = createMock<IssueLabelsModule>();
 const synchronizationModuleMock = createMock<SynchronizationModule>();
 
 vi.mock("nest-commander", () => ({
@@ -25,6 +27,12 @@ vi.mock("@codebase/logger", () => ({
   LoggerModule: function LoggerModule() {},
   LoggerService: function LoggerService() {
     return loggerServiceMock;
+  },
+}));
+
+vi.mock("./modules/issue-labels/issue-labels.module", () => ({
+  IssueLabelsModule: function IssueLabelsModule() {
+    return issueLabelsModuleMock;
   },
 }));
 
