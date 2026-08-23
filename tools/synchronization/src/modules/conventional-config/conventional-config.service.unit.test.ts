@@ -170,7 +170,18 @@ describe(ConventionalConfigService, () => {
       typeNames: ["fix"],
     });
 
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
+      "📇 Summarized the conventional-config check",
+      undefined,
+      {
+        presetOk: true,
+        releaseRulesOk: true,
+        settingsOk: true,
+        skillsOk: true,
+        templatesOk: true,
+      },
+    );
+    expect(logger.info).toHaveBeenCalledWith(
       "📇 Verified the conventional commit config",
     );
   });
@@ -194,7 +205,18 @@ describe(ConventionalConfigService, () => {
     });
 
     expect(inSync).toBe(false);
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
+      "📇 Summarized the conventional-config check",
+      undefined,
+      {
+        presetOk: true,
+        releaseRulesOk: true,
+        settingsOk: false,
+        skillsOk: true,
+        templatesOk: true,
+      },
+    );
+    expect(logger.info).toHaveBeenCalledWith(
       "💡 Suggested a fix",
       undefined,
       expect.any(Object),
@@ -213,7 +235,7 @@ describe(ConventionalConfigService, () => {
       typeNames: ["fix"],
     });
 
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "📇 Verified everything was already in sync",
     );
     expect(io.writeSettingsSync).not.toHaveBeenCalled();

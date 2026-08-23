@@ -73,16 +73,20 @@ export class NestjsModuleGraphsCommand
     outOfSyncFiles: string[],
   ): boolean {
     if (outOfSyncFiles.length === 0) {
-      this.logger.log("🕸️ Verified every NestJS module graph", undefined, {
+      this.logger.info("🕸️ Verified every NestJS module graph", undefined, {
         projects: projectCount,
       });
       return true;
     }
 
-    this.logger.log("🕸️ Detected out-of-sync NestJS module graphs", undefined, {
-      files: outOfSyncFiles,
-      hint: "Run 'nx run synchronization:synchronize:write' to publish",
-    });
+    this.logger.info(
+      "🕸️ Detected out-of-sync NestJS module graphs",
+      undefined,
+      {
+        files: outOfSyncFiles,
+        hint: "Run 'nx run synchronization:synchronize:write' to publish",
+      },
+    );
     return false;
   }
 
@@ -106,17 +110,18 @@ export class NestjsModuleGraphsCommand
     );
 
     if (existing === undefined) {
-      this.logger.log(
-        `🕸️ Missing ${this.markersService.getStartMarker(NESTJS_MODULE_GRAPH_MARKER)} markers in ${relativeFile}`,
-      );
+      this.logger.info("🕸️ Missing markers", undefined, {
+        marker: this.markersService.getStartMarker(NESTJS_MODULE_GRAPH_MARKER),
+        path: relativeFile,
+      });
       return false;
     }
 
     if (existing.trim() === diagram.trim()) return true;
     if (mode === "check") {
-      this.logger.log(
-        `🕸️ Detected an out-of-sync module graph in ${relativeFile}`,
-      );
+      this.logger.info("🕸️ Detected an out-of-sync module graph", undefined, {
+        path: relativeFile,
+      });
       return false;
     }
 
@@ -129,7 +134,9 @@ export class NestjsModuleGraphsCommand
       ),
       "utf8",
     );
-    this.logger.log(`🕸️ Updated the module graph in ${relativeFile}`);
+    this.logger.info("🕸️ Updated the module graph", undefined, {
+      path: relativeFile,
+    });
 
     return true;
   }
@@ -147,10 +154,11 @@ export class NestjsModuleGraphsCommand
     );
     const diagram = this.graphService.renderMermaid(graph);
 
-    this.logger.log(`🕸️ Explored ${project.name}`, undefined, {
+    this.logger.info("🕸️ Explored a project's module graph", undefined, {
       ambient: graph.ambientModuleNames,
       edges: graph.edges.length,
       modules: graph.moduleNames.length,
+      project: project.name,
     });
 
     // A document a project does not keep is not drift. Which documents a
@@ -187,14 +195,27 @@ export class NestjsModuleGraphsCommand
   /** Synchronizes every project's module graph and reports success without exiting. */
   async synchronize(mode: SynchronizationMode): Promise<boolean> {
     try {
+      this.logger.debug("🔍 Discovering NestJS projects");
       const projects = this.moduleGraphsService.discoverProjects(process.cwd());
       const ownership = this.moduleGraphsService.indexModuleOwners(projects);
       const outOfSyncFiles: string[] = [];
 
       for (const project of projects) {
-        outOfSyncFiles.push(
-          ...(await this.synchronizeProject({ mode, ownership, project })),
-        );
+        try {
+          outOfSyncFiles.push(
+            ...(await this.synchronizeProject({ mode, ownership, project })),
+          );
+        } catch (error) {
+          this.logger.error(
+            "💥 Failed exploring a project's module graph",
+            undefined,
+            {
+              project: project.name,
+              reason: error instanceof Error ? error.message : String(error),
+            },
+          );
+          outOfSyncFiles.push(project.name);
+        }
       }
 
       return this.reportResults(projects.length, outOfSyncFiles);

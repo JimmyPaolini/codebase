@@ -27,6 +27,7 @@ function buildReport(body = "## Heading\n\ncontent"): ReportableCommand {
 
 describe(ReportingService, () => {
   let service: ReportingService;
+  let logger: LoggerService;
   const temporaryDirectories: string[] = [];
 
   /** A throwaway directory that cleans itself up after the suite. */
@@ -46,6 +47,7 @@ describe(ReportingService, () => {
     }).compile();
 
     service = await module.resolve(ReportingService);
+    logger = await module.resolve(LoggerService);
   });
 
   afterAll(() => {
@@ -84,6 +86,11 @@ describe(ReportingService, () => {
 
       expect(printed).toContain("<!-- stand-in:start -->");
       expect(printed).toContain("## Heading");
+      expect(logger.debug).toHaveBeenCalledWith(
+        "🖨️ Printed the report to standard output",
+        undefined,
+        { label: "stand-in" },
+      );
     });
 
     it("writes the section on its own to an output file", async () => {
@@ -96,6 +103,10 @@ describe(ReportingService, () => {
       );
 
       expect(readFileSync(output, "utf8")).toContain("<!-- stand-in:end -->");
+      expect(logger.info).toHaveBeenCalledWith("📝 Wrote a report", undefined, {
+        label: "stand-in",
+        path: output,
+      });
     });
 
     it("splices into a document, keeping the prose around it", async () => {
@@ -113,6 +124,11 @@ describe(ReportingService, () => {
       expect(written).toContain("## Summary");
       expect(written.indexOf("## Summary")).toBeLessThan(
         written.indexOf("## Heading"),
+      );
+      expect(logger.info).toHaveBeenCalledWith(
+        "📝 Spliced a report",
+        undefined,
+        { label: "stand-in", path: markdown },
       );
     });
 
