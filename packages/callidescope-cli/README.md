@@ -647,7 +647,7 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-14505-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-445.39_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-445.33_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-18-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-123-3178c6?style=flat-square)
 
