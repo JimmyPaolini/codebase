@@ -50,7 +50,16 @@
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.ts",
+        "{workspaceRoot}/.agents/skills/checkout-branch/SKILL.md",
+        "{workspaceRoot}/.agents/skills/commit-code/SKILL.md",
+        "{workspaceRoot}/.agents/skills/create-pull-request/SKILL.md",
+        "{workspaceRoot}/.agents/skills/rename-branch/SKILL.md",
+        "{workspaceRoot}/.agents/skills/triage-submission/SKILL.md",
+        "{workspaceRoot}/.github/ISSUE_TEMPLATE/issue.yml",
+        "{workspaceRoot}/.vscode/settings.json",
+        "{workspaceRoot}/AGENTS.md",
         "{workspaceRoot}/configuration/conventional.config.cjs",
+        "{workspaceRoot}/release.config.cjs",
         "shared-globals"
       ],
       "options": {
