@@ -2,6 +2,7 @@ import { createMock } from "@golevelup/ts-vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { CatalogManifestsModule } from "./modules/catalog-manifests/catalog-manifests.module";
+import type { CodometerTargetsModule } from "./modules/codometer-targets/codometer-targets.module";
 import type { LockfileModule } from "./modules/lockfile/lockfile.module";
 import type { PullRequestBodyModule } from "./modules/pull-request-body/pull-request-body.module";
 import type { PullRequestMetadataModule } from "./modules/pull-request-metadata/pull-request-metadata.module";
@@ -15,6 +16,7 @@ type CommandFactoryRun = (
 const run = vi.fn<CommandFactoryRun>().mockResolvedValue(undefined);
 const loggerServiceMock = createMock<LoggerService>();
 const catalogManifestsModuleMock = createMock<CatalogManifestsModule>();
+const codometerTargetsModuleMock = createMock<CodometerTargetsModule>();
 const lockfileModuleMock = createMock<LockfileModule>();
 const pullRequestBodyModuleMock = createMock<PullRequestBodyModule>();
 const pullRequestMetadataModuleMock = createMock<PullRequestMetadataModule>();
@@ -39,6 +41,12 @@ vi.mock("@codebase/logger", () => ({
 vi.mock("./modules/catalog-manifests/catalog-manifests.module", () => ({
   CatalogManifestsModule: function CatalogManifestsModule() {
     return catalogManifestsModuleMock;
+  },
+}));
+
+vi.mock("./modules/codometer-targets/codometer-targets.module", () => ({
+  CodometerTargetsModule: function CodometerTargetsModule() {
+    return codometerTargetsModuleMock;
   },
 }));
 

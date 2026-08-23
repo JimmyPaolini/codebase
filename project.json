@@ -80,6 +80,14 @@
         "cwd": "{workspaceRoot}"
       }
     },
+    "check-codometer-targets": {
+      "description": "Assert every workspace project declares a codometer target, and report which are ungated",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts codometer-targets",
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "check-lockfile": {
       "description": "Verify that pnpm-lock.yaml is in sync with package.json files",
       "executor": "nx:run-commands",

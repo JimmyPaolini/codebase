@@ -284,3 +284,5 @@ words:
   - openwiki
   # The markdown heading style written as text underlined by === or ---.
   - setext
+  # Measured by codometer but with no sizeLimit declared against it.
+  - ungated

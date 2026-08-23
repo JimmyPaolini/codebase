@@ -303,6 +303,7 @@
       "defaultConfiguration": "check",
       "dependsOn": [
         "check-catalog-manifests",
+        "check-codometer-targets",
         "check-lockfile",
         "conformetry-validate",
         "dependency-cruiser",
