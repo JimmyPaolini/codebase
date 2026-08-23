@@ -29,12 +29,13 @@ name: 🧑‍⚖️ Validate Conventions
 #
 # On an issue's `opened`, the type and scope labels a submitted `issue.yml`
 # body implies are reconciled onto the issue the same way, through the
-# `issue-labels` command instead. GitHub can block a pull request merge on a
-# required check, but it has no equivalent gate for issue creation — an issue
-# is always created, whatever its labels — so unlike the pull request job,
-# the issue job never fails in a way that blocks anything; it only flags a
-# mismatch for a human to fix, the same way `status:needs-triage` already
-# flags an unlabeled issue.
+# `issue-labels` command instead. GitHub has no gate on issue creation the
+# way it has one on a pull request merge, so a failing issue-metadata check
+# can never block anything — the issue already exists by the time this
+# workflow runs. It is allowed to fail the job anyway, on purpose: this
+# workflow's own README badge is the signal, the same way a failing pull
+# request job already turns it red, so a mislabeled issue shows up there too
+# rather than only as a comment nobody reads.
 #
 # Every check here is a nest-commander command in `tools/validation`,
 # invoked the same way and for the same reason: one-sided, a `check` with no
@@ -67,7 +68,7 @@ permissions:
   contents: read
   # Label creation and updates are issues-scoped endpoints, not pull-request
   # ones, so this write permission covers the pull request reconciliation
-  # step and the issue job's reconciliation, comment, and status-label steps.
+  # step and the issue job's own label reconciliation step.
   issues: write
 
 concurrency:
@@ -222,46 +223,10 @@ jobs:
             tools/synchronization/src/main.ts issue-labels
 
       - name: 🧾 Validate Issue Metadata
-        id: issue-metadata
-        # This check can only ever flag, never block — GitHub has no gate on
-        # issue creation the way it has one on a pull request merge — so a
-        # failing exit code must not fail the workflow run itself. The next
-        # two steps read this step's own outcome to report or clear the flag.
-        continue-on-error: true
         env:
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE_LABELS: ${{ toJSON(github.event.issue.labels) }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
-            tools/validation/src/main.ts issue-metadata \
-            | tee issue-metadata-report.txt
-
-      - name: 💬 Report A Failing Check
-        if: steps.issue-metadata.outcome == 'failure'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
-        run: |
-          {
-            echo "### 🧑‍⚖️ Validate Issue Conventions"
-            echo
-            echo '```'
-            cat issue-metadata-report.txt
-            echo '```'
-          } > issue-metadata-comment.md
-          gh issue comment "$ISSUE_NUMBER" --body-file issue-metadata-comment.md
-          gh issue edit "$ISSUE_NUMBER" --add-label status:needs-info
-
-      # Clears a stale flag once the labels catch up with the body — a human
-      # fixing the labels by hand should see the flag disappear on its own
-      # rather than staying stuck from a comment nobody re-checks.
-      - name: 🧹 Clear A Resolved Flag
-        if: >-
-          steps.issue-metadata.outcome == 'success' &&
-          contains(github.event.issue.labels.*.name, 'status:needs-info')
-        env:
-          GH_TOKEN: ${{ github.token }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
-        run: |
-          gh issue edit "$ISSUE_NUMBER" --remove-label status:needs-info
+            tools/validation/src/main.ts issue-metadata

@@ -64,7 +64,8 @@ export type IssueMetadataResolution =
  *
  * Both lists rather than a first failure: an issue with several problems is
  * several edits, and finding them one run at a time is several round trips
- * through a check that never blocks anything.
+ * through a check that can fail its own workflow run but never the issue's
+ * creation — the issue already exists by the time this runs.
  */
 export interface MetadataVerdict {
   readonly failures: readonly string[];
