@@ -50,10 +50,13 @@ jobs:
           # `nx run` per tool. One invocation, one graph, same tools.
           pnpm exec nx run-many --projects=codebase \
             --targets=knip,vulture --configuration=write --parallel=4 || true
-          # The advisory analyzers are no longer on the pull request gate, so
-          # this weekly run is where their findings surface.
+          # `fallow-dead-code` is deliberately absent: it is a `lint-codebase`
+          # gate now, so every pull request already fails on what it finds and
+          # a weekly report of it would only ever be empty. What stays here is
+          # the analyzers that are still advisory and so have nowhere else to
+          # surface.
           pnpm exec nx run-many --projects=codebase \
-            --targets=fallow-dead-code,fallow-duplicates,fallow-health,jscpd \
+            --targets=fallow-duplicates,fallow-health,jscpd \
             --parallel=4 || true
           # Safe dry-run only.
           # Previews fallow changes without modifying files.
@@ -86,7 +89,7 @@ jobs:
 
             ## 📝 Details
 
-            - Remove unused files and exports surfaced by knip and fallow
+            - Remove unused files and exports surfaced by knip
             - Preview fallow auto-fix candidates with `fallow fix --dry-run`
             - Optionally apply fallow auto-fix when `FALLOW_APPLY=true`
             - Remove unused dependencies from package manifests via existing clean tooling

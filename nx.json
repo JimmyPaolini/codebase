@@ -307,6 +307,7 @@
         "conformetry-validate",
         "dependency-cruiser",
         "eslint",
+        "fallow-dead-code",
         "knip",
         "markdown-lint",
         "nbstripout",

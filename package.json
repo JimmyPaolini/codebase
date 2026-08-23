@@ -33,7 +33,6 @@
     "@types/eslint-plugin-jsx-a11y": "catalog:",
     "@types/lodash": "catalog:",
     "@types/node": "catalog:",
-    "@typescript-eslint/parser": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "@vitest/eslint-plugin": "catalog:",
     "@vitest/ui": "catalog:",
