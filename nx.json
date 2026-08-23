@@ -187,6 +187,7 @@
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml}",
+          "{workspaceRoot}/configuration/codebase-structure.json",
           "{workspaceRoot}/configuration/eslint.config.ts",
           "shared-globals"
         ],
@@ -198,6 +199,7 @@
     "fallow": [
       {
         "cache": true,
+        "description": "Inert for every project today: this entry has no options.command and no project.json besides the root codebase project declares its own fallow target for Nx to merge it into, so it never resolves to a runnable target anywhere else. Only wire it up with a command once fallow is meant to run per-project; until then the root-level fallow targets in the codebase project's own project.json, which scan the whole repository, are what actually runs.",
         "executor": "nx:run-commands",
         "filter": {
           "projects": ["tag:language:typescript"]
@@ -212,6 +214,7 @@
     "fallow-audit": [
       {
         "cache": false,
+        "description": "Inert for every project today: this entry has no options.command and no project.json besides the root codebase project declares its own fallow-audit target for Nx to merge it into, so it never resolves to a runnable target anywhere else. Only wire it up with a command once fallow-audit is meant to run per-project; until then the root-level fallow-audit target in the codebase project's own project.json, which scans the whole repository, is what actually runs.",
         "executor": "nx:run-commands",
         "filter": {
           "projects": ["tag:language:typescript"]
@@ -226,6 +229,7 @@
     "fallow-dead-code": [
       {
         "cache": true,
+        "description": "Inert for every project today: this entry has no options.command and no project.json besides the root codebase project declares its own fallow-dead-code target for Nx to merge it into, so it never resolves to a runnable target anywhere else. Only wire it up with a command once fallow-dead-code is meant to run per-project; until then the root-level fallow-dead-code target in the codebase project's own project.json, which scans the whole repository, is what actually runs.",
         "executor": "nx:run-commands",
         "filter": {
           "projects": ["tag:language:typescript"]
@@ -240,6 +244,7 @@
     "fallow-duplicates": [
       {
         "cache": true,
+        "description": "Inert for every project today: this entry has no options.command and no project.json besides the root codebase project declares its own fallow-duplicates target for Nx to merge it into, so it never resolves to a runnable target anywhere else. Only wire it up with a command once fallow-duplicates is meant to run per-project; until then the root-level fallow-duplicates target in the codebase project's own project.json, which scans the whole repository, is what actually runs.",
         "executor": "nx:run-commands",
         "filter": {
           "projects": ["tag:language:typescript"]
@@ -254,6 +259,7 @@
     "fallow-health": [
       {
         "cache": true,
+        "description": "Inert for every project today: this entry has no options.command and no project.json besides the root codebase project declares its own fallow-health target for Nx to merge it into, so it never resolves to a runnable target anywhere else. Only wire it up with a command once fallow-health is meant to run per-project; until then the root-level fallow-health target in the codebase project's own project.json, which scans the whole repository, is what actually runs.",
         "executor": "nx:run-commands",
         "filter": {
           "projects": ["tag:language:typescript"]
@@ -428,6 +434,7 @@
         },
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
+          "{workspaceRoot}/configuration/.oxlintignore",
           "{workspaceRoot}/configuration/oxlint.config.ts",
           "shared-globals"
         ],
@@ -716,7 +723,8 @@
         },
         "inputs": [
           "{projectRoot}/src/**/*.css",
-          "{workspaceRoot}/configuration/stylelint.config.cjs"
+          "{workspaceRoot}/configuration/stylelint.config.cjs",
+          "shared-globals"
         ],
         "options": {
           "command": "stylelint --allow-empty-input --config ../../configuration/stylelint.config.cjs 'src/**/*.css'",
@@ -764,6 +772,7 @@
         "inputs": [
           "{projectRoot}/**/*.ts",
           "{projectRoot}/**/*.tsx",
+          "{projectRoot}/package.json",
           "{projectRoot}/tsconfig.json",
           "shared-globals"
         ],
