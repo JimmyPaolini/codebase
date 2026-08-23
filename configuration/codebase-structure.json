@@ -503,9 +503,6 @@
         "name": "pnpm-workspace.yaml"
       },
       {
-        "name": "pnpm.yaml"
-      },
-      {
         "name": "project.json"
       },
       {
