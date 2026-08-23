@@ -2,8 +2,11 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+
+import { LoggerService } from "@codebase/logger";
 
 import { BundlesService } from "./bundles.service";
 
@@ -57,6 +60,7 @@ function buildSizeTarget(overrides: SizeTargetOverrides = {}): ReportTarget {
 
 describe(BundlesService, () => {
   let service: BundlesService;
+  let logger: LoggerService;
   const temporaryDirectories: string[] = [];
 
   /** Lays out codometer reports inside a throwaway workspace. */
@@ -83,10 +87,14 @@ describe(BundlesService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [BundlesService],
+      providers: [
+        BundlesService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(BundlesService);
+    logger = await module.resolve(LoggerService);
   });
 
   afterAll(() => {
@@ -97,6 +105,39 @@ describe(BundlesService, () => {
 
   it("is defined", () => {
     expect(service).toBeDefined();
+  });
+
+  it("sets logger context", async () => {
+    const module = await Test.createTestingModule({
+      providers: [
+        BundlesService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
+    }).compile();
+
+    await module.resolve(BundlesService);
+    const freshLogger = await module.resolve(LoggerService);
+
+    expect(freshLogger.setContext).toHaveBeenCalledWith("BundlesService");
+  });
+
+  it("logs how many reports it found on each side", () => {
+    const workingDirectory = writeWorkspace({
+      ".baseline/packages/logger/codometer-report.json": buildReport([
+        buildSizeTarget({ size: 40 }),
+      ]),
+      "packages/logger/codometer-report.json": buildReport([
+        buildSizeTarget({ size: 50 }),
+      ]),
+    });
+
+    service.collect({ baselineDirectory: ".baseline", workingDirectory });
+
+    expect(logger.debug).toHaveBeenCalledWith(
+      "📂 Found the codometer reports",
+      undefined,
+      { baseline: 1, current: 1 },
+    );
   });
 
   it("reads a report from every workspace directory", () => {
@@ -287,6 +328,14 @@ describe(BundlesService, () => {
     expect(
       service.collect({ baselineDirectory: undefined, workingDirectory }),
     ).toStrictEqual({ failures: [], rows: [] });
+    expect(logger.warn).toHaveBeenCalledWith(
+      "⚠️ Skipped an unreadable codometer report",
+      undefined,
+      {
+        reportPath: "packages/logger/codometer-report.json",
+        workingDirectory,
+      },
+    );
   });
 
   it("leaves a metric nothing limits without a limit or a severity", () => {

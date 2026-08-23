@@ -2,7 +2,9 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
+import ts from "typescript";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { ANALYSIS_MODULES } from "../../../testing/modules";
@@ -12,6 +14,8 @@ import { ProgramConfigurationError } from "./program.errors";
 import { ProgramService } from "./program.service";
 
 import type { WorkspaceProject } from "../workspace/workspace.types";
+import type { LoggerService } from "@codebase/logger";
+import type { DeepMocked } from "@golevelup/ts-vitest";
 
 /** Writes a project holding one source file, and returns its description. */
 async function buildProject(args: {
@@ -67,8 +71,25 @@ describe(ProgramService, () => {
     expect(service).toBeDefined();
   });
 
-  const buildSubject = (): ProgramService =>
-    new ProgramService(new CompilerHostService());
+  let subjectLogger: DeepMocked<LoggerService>;
+
+  const buildSubject = (): ProgramService => {
+    subjectLogger = createMock<LoggerService>();
+
+    return new ProgramService(new CompilerHostService(), subjectLogger);
+  };
+
+  it("logs which project it is reading", async () => {
+    const { project, workspaceRoot } = await buildProject({ name: "example" });
+
+    buildSubject().buildPrograms({ projects: [project], workspaceRoot });
+
+    expect(subjectLogger.debug).toHaveBeenCalledWith(
+      "🔭 Reading a project",
+      undefined,
+      { projectName: "example" },
+    );
+  });
 
   it("builds a program and a checker for a project", async () => {
     const { project, workspaceRoot } = await buildProject({ name: "example" });
@@ -152,5 +173,21 @@ describe(ProgramService, () => {
 
   it("resolves a path that is not a symlink to itself", () => {
     expect(buildSubject().toRealPath("/workspace/a.ts")).toContain("a.ts");
+  });
+
+  it("returns the path unchanged when the host offers no realpath", () => {
+    const realpath = ts.sys.realpath?.bind(ts.sys);
+
+    delete ts.sys.realpath;
+
+    try {
+      expect(buildSubject().toRealPath("/workspace/a.ts")).toBe(
+        "/workspace/a.ts",
+      );
+    } finally {
+      if (realpath !== undefined) {
+        ts.sys.realpath = realpath;
+      }
+    }
   });
 });

@@ -153,6 +153,13 @@ export class ConventionalConfigService {
         this.conventionalConfigIoService.getPresetConfigTypes(releaseConfig),
         "release.config.cjs",
       );
+
+    this.loggerService.info(
+      "📇 Summarized the conventional-config check",
+      undefined,
+      { presetOk, releaseRulesOk, settingsOk, skillsOk, templatesOk },
+    );
+
     if (
       !settingsOk ||
       !skillsOk ||
@@ -160,12 +167,12 @@ export class ConventionalConfigService {
       !releaseRulesOk ||
       !presetOk
     ) {
-      this.loggerService.log("💡 Suggested a fix", undefined, {
+      this.loggerService.info("💡 Suggested a fix", undefined, {
         hint: "Run 'nx run synchronization:conventional-config:write' to sync",
       });
       return false;
     }
-    this.loggerService.log("📇 Verified the conventional commit config");
+    this.loggerService.info("📇 Verified the conventional commit config");
     return true;
   }
 
@@ -199,7 +206,7 @@ export class ConventionalConfigService {
       outOfSyncSkills.length === 0 &&
       outOfSyncTemplates.length === 0
     ) {
-      this.loggerService.log("📇 Verified everything was already in sync");
+      this.loggerService.info("📇 Verified everything was already in sync");
       return;
     }
 

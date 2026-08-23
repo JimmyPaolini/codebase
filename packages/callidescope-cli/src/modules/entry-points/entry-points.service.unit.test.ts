@@ -1,3 +1,4 @@
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -12,7 +13,19 @@ import { GraphService } from "../graph/graph.service";
 
 import { EntryPointsService } from "./entry-points.service";
 
+import type { CallGraph } from "../graph/graph.types";
 import type { EntryPointKind } from "@callidescope/configuration";
+import type { LoggerService } from "@codebase/logger";
+import type { DeepMocked } from "@golevelup/ts-vitest";
+
+/** An empty call graph, for tests that never reach an edge. */
+const EMPTY_GRAPH: CallGraph = {
+  calleeIdsByCaller: new Map(),
+  callerIdsByCallee: new Map(),
+  edges: [],
+  unresolvedCallerIds: new Set(),
+  unresolvedCalls: [],
+};
 
 /** Resolves the entry points of an in-memory workspace. */
 function resolveEntryPoints(args: {
@@ -31,7 +44,7 @@ function resolveEntryPoints(args: {
     }),
   );
 
-  return new EntryPointsService()
+  return new EntryPointsService(createMock<LoggerService>())
     .resolve({
       callablesById: collection.byId,
       decorators: new Set(["Command", "Get", "Option"]),
@@ -61,6 +74,54 @@ describe(EntryPointsService, () => {
 
   it("is defined", () => {
     expect(service).toBeDefined();
+  });
+
+  it("logs how many entry points it resolved, orphans included", () => {
+    const logger = createMock<LoggerService>();
+    const projectProgram = buildFixtureProgram({
+      "packages/example/src/index.ts": "export function publicApi(): void {}",
+    });
+    const services = buildFixtureServices({ projectProgram });
+    const collection = collectFixtureCallables({ projectProgram, services });
+    const graph = new GraphService().assemble(
+      services.edges.build({
+        callablesById: collection.byId,
+        includeConstructorEdges: true,
+        workspaceRoot: FIXTURE_ROOT,
+      }),
+    );
+
+    new EntryPointsService(logger).resolve({
+      callablesById: collection.byId,
+      decorators: new Set(),
+      graph,
+      includeExportedFunctions: true,
+      includeOrphans: true,
+    });
+
+    expect(logger.info).toHaveBeenCalledWith(
+      "🔭 Resolved entry points",
+      undefined,
+      { total: 1 },
+    );
+  });
+
+  it("logs how many entry points it resolved, orphans excluded", () => {
+    const logger: DeepMocked<LoggerService> = createMock<LoggerService>();
+
+    new EntryPointsService(logger).resolve({
+      callablesById: new Map(),
+      decorators: new Set(),
+      graph: EMPTY_GRAPH,
+      includeExportedFunctions: false,
+      includeOrphans: false,
+    });
+
+    expect(logger.info).toHaveBeenCalledWith(
+      "🔭 Resolved entry points",
+      undefined,
+      { total: 0 },
+    );
   });
 
   it("roots a method carrying a configured decorator", () => {

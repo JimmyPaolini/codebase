@@ -293,7 +293,7 @@ describe(CalendarService, () => {
 
   describe("write", () => {
     it("writes ICS output to configured directory", async () => {
-      const logSpy = vi.spyOn(logger, "log").mockReturnValue(undefined);
+      const infoSpy = vi.spyOn(logger, "info").mockReturnValue(undefined);
 
       const events: Event[] = [
         {
@@ -318,8 +318,82 @@ describe(CalendarService, () => {
         expect.stringContaining("caelundas_"),
         expect.any(Uint8Array),
       );
-      expect(logSpy).toHaveBeenCalledWith(
-        expect.stringContaining("Wrote 1 events to file"),
+      expect(infoSpy).toHaveBeenCalledWith(
+        "✏️ Wrote events to file",
+        undefined,
+        {
+          calendarFilename: expect.stringContaining("caelundas_") as string,
+          count: 1,
+        },
+      );
+    });
+
+    it("logs and rethrows when writing the calendar file fails", async () => {
+      const errorSpy = vi.spyOn(logger, "error").mockReturnValue(undefined);
+      const writeFailure = new Error("disk full");
+      vi.mocked(writeFile).mockRejectedValueOnce(writeFailure);
+
+      const events: Event[] = [
+        {
+          categories: ["Astronomy"],
+          description: "Sample event",
+          end: moment.tz("2025-03-20T09:06:00", "America/New_York"),
+          start: moment.tz("2025-03-20T09:06:00", "America/New_York"),
+          summary: "Sample event",
+        },
+      ];
+
+      await expect(
+        service.write(events, {
+          end: moment.tz("2025-03-21T00:00:00", "America/New_York"),
+          latitude: 40.7128,
+          longitude: -74.006,
+          start: moment.tz("2025-03-20T00:00:00", "America/New_York"),
+          timezone: "America/New_York",
+        }),
+      ).rejects.toThrow("disk full");
+
+      expect(errorSpy).toHaveBeenCalledWith(
+        "📝 Failed writing the calendar file",
+        undefined,
+        {
+          path: expect.stringContaining("caelundas_") as string,
+          reason: "disk full",
+        },
+      );
+    });
+
+    it("stringifies a non-Error rejection when logging the failure", async () => {
+      const errorSpy = vi.spyOn(logger, "error").mockReturnValue(undefined);
+      vi.mocked(writeFile).mockRejectedValueOnce("disk full");
+
+      const events: Event[] = [
+        {
+          categories: ["Astronomy"],
+          description: "Sample event",
+          end: moment.tz("2025-03-20T09:06:00", "America/New_York"),
+          start: moment.tz("2025-03-20T09:06:00", "America/New_York"),
+          summary: "Sample event",
+        },
+      ];
+
+      await expect(
+        service.write(events, {
+          end: moment.tz("2025-03-21T00:00:00", "America/New_York"),
+          latitude: 40.7128,
+          longitude: -74.006,
+          start: moment.tz("2025-03-20T00:00:00", "America/New_York"),
+          timezone: "America/New_York",
+        }),
+      ).rejects.toBe("disk full");
+
+      expect(errorSpy).toHaveBeenCalledWith(
+        "📝 Failed writing the calendar file",
+        undefined,
+        {
+          path: expect.stringContaining("caelundas_") as string,
+          reason: "disk full",
+        },
       );
     });
 

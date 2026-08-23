@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import ts from "typescript";
 
+import { LoggerService } from "@codebase/logger";
+
 import { CallableIdentityService } from "../callables/callable-identity.service";
 import { ExternalService } from "../class-hierarchy/external.service";
 import { ProgramService } from "../program/program.service";
@@ -42,7 +44,10 @@ export class EdgesService {
     private readonly programService: ProgramService,
     private readonly symbolResolutionService: SymbolResolutionService,
     private readonly workspaceService: WorkspaceService,
-  ) {}
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(EdgesService.name);
+  }
 
   // 🔐 Private Fields
 
@@ -231,6 +236,10 @@ export class EdgesService {
         unresolvedCalls.push(...result.unresolved);
       }
     }
+
+    this.logger.info("🔭 Built call graph edges", undefined, {
+      edgeCount: edges.length,
+    });
 
     return { edges, unresolvedCalls };
   }

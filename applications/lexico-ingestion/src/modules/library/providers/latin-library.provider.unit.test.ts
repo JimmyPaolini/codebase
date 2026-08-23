@@ -685,10 +685,14 @@ describe(LatinLibraryProvider, () => {
       work,
     });
 
-    expect((logger.log as ReturnType<typeof vi.fn>).mock.calls).toStrictEqual(
+    expect((logger.info as ReturnType<typeof vi.fn>).mock.calls).toStrictEqual(
       expect.arrayContaining([
-        ["📜 Starting work: vergil/aeneid"],
-        ["📜 Completed work: vergil/aeneid (50.00%, 1/2)"],
+        ["📜 Starting work", undefined, { textSlug: "vergil/aeneid" }],
+        [
+          "📜 Completed work",
+          undefined,
+          { current: 1, percent: 50, textSlug: "vergil/aeneid", total: 2 },
+        ],
       ]),
     );
   });
@@ -739,14 +743,20 @@ describe(LatinLibraryProvider, () => {
       work,
     });
 
-    expect((logger.log as ReturnType<typeof vi.fn>).mock.calls).toStrictEqual(
-      expect.arrayContaining([["📜 Starting work: vergil/aeneid"]]),
+    expect((logger.info as ReturnType<typeof vi.fn>).mock.calls).toStrictEqual(
+      expect.arrayContaining([
+        ["📜 Starting work", undefined, { textSlug: "vergil/aeneid" }],
+      ]),
     );
     expect(
-      (logger.log as ReturnType<typeof vi.fn>).mock.calls,
+      (logger.info as ReturnType<typeof vi.fn>).mock.calls,
     ).not.toStrictEqual(
       expect.arrayContaining([
-        ["📜 Completed work: vergil/aeneid (50.00%, 1/2)"],
+        [
+          "📜 Completed work",
+          undefined,
+          { current: 1, percent: 50, textSlug: "vergil/aeneid", total: 2 },
+        ],
       ]),
     );
   });
@@ -848,10 +858,7 @@ describe(LatinLibraryProvider, () => {
 
     expect((logger.error as ReturnType<typeof vi.fn>).mock.calls).toStrictEqual(
       expect.arrayContaining([
-        [
-          expect.stringContaining("📕 Failed fetching work Aeneid"),
-          expect.any(String),
-        ],
+        ["📕 Failed fetching work", expect.any(String), { title: "Aeneid" }],
       ]),
     );
   });
@@ -903,8 +910,9 @@ describe(LatinLibraryProvider, () => {
     });
 
     expect(logger.error).toHaveBeenCalledWith(
-      "📕 Failed fetching work Aeneid",
+      "📕 Failed fetching work",
       undefined,
+      { title: "Aeneid" },
     );
   });
 

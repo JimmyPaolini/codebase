@@ -109,8 +109,9 @@ export class MartianPhaseService {
       timestamp,
       PHASE_EVENT_TIMEZONE,
     );
-    this.logger.log(`🗓️ Built ${summary}`, undefined, {
+    this.logger.info("🗓️ Built a calendar event", undefined, {
       at: dateString,
+      summary,
     });
 
     const martianPhaseEvent: Event = {

@@ -1,11 +1,15 @@
 import { existsSync } from "node:fs";
 
-import { Logger } from "@nestjs/common";
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { EMPTY_PYTHON_RESULT } from "./python.constants";
 import { PythonService } from "./python.service";
+
+import type { DeepMocked } from "@golevelup/ts-vitest";
 
 const { execSyncMock } = vi.hoisted(() => ({
   execSyncMock: vi.fn(),
@@ -17,13 +21,18 @@ vi.mock("node:child_process", () => ({
 
 describe(PythonService, () => {
   let service: PythonService;
+  let loggerService: DeepMocked<LoggerService>;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [PythonService],
+      providers: [
+        PythonService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(PythonService);
+    loggerService = await module.resolve(LoggerService);
   });
 
   beforeEach(() => {
@@ -109,9 +118,6 @@ describe(PythonService, () => {
   });
 
   it("returns empty metrics and logs a warning when execution fails", () => {
-    const loggerWarnSpy = vi
-      .spyOn(Logger.prototype, "warn")
-      .mockReturnValue(undefined);
     execSyncMock.mockImplementation(() => {
       throw new Error("failed to execute");
     });
@@ -136,19 +142,14 @@ describe(PythonService, () => {
       lines: 0,
       protocols: 0,
     });
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
+    expect(loggerService.warn).toHaveBeenCalledWith(
       "🐍 Skipped Python analysis",
       undefined,
       expect.any(Object),
     );
-
-    loggerWarnSpy.mockRestore();
   });
 
   it("handles non-Error exceptions gracefully", () => {
-    const loggerWarnSpy = vi
-      .spyOn(Logger.prototype, "warn")
-      .mockReturnValue(undefined);
     execSyncMock.mockImplementation(() => {
       // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw "string error";
@@ -174,13 +175,11 @@ describe(PythonService, () => {
       lines: 0,
       protocols: 0,
     });
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
+    expect(loggerService.warn).toHaveBeenCalledWith(
       "🐍 Skipped Python analysis",
       undefined,
       expect.any(Object),
     );
-
-    loggerWarnSpy.mockRestore();
   });
 
   it("returns empty metrics for no source text", () => {

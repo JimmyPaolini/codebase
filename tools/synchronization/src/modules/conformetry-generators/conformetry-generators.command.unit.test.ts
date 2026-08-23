@@ -156,7 +156,7 @@ describe(ConformetryGeneratorsCommand, () => {
 
       await command.run(modeArguments);
 
-      expect(logger.log).toHaveBeenCalledWith(
+      expect(logger.info).toHaveBeenCalledWith(
         expectedLogMessage,
         undefined,
         expect.any(Object),
@@ -187,7 +187,10 @@ describe(ConformetryGeneratorsCommand, () => {
       expect.stringContaining("| `alpha` | `a` | first |"),
       "utf8",
     );
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
+      "🔄 Generating the conformetry generators table",
+    );
+    expect(logger.info).toHaveBeenCalledWith(
       "📇 Updated AGENTS.md",
       undefined,
       expect.any(Object),
@@ -230,7 +233,7 @@ describe(ConformetryGeneratorsCommand, () => {
     },
     {
       assertLogs: (loggerService: LoggerService): void => {
-        expect(loggerService.log).toHaveBeenCalledWith(
+        expect(loggerService.info).toHaveBeenCalledWith(
           "📇 Detected an out-of-sync conformetry generators table in AGENTS.md",
           undefined,
           expect.any(Object),

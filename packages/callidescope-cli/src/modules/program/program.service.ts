@@ -1,7 +1,9 @@
 import path from "node:path";
 
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import ts from "typescript";
+
+import { LoggerService } from "@codebase/logger";
 
 import { CompilerHostService } from "./compiler-host.service";
 import { ProgramConfigurationError } from "./program.errors";
@@ -27,11 +29,14 @@ import type {
 export class ProgramService {
   // 🏗 Dependency Injection
 
-  constructor(private readonly compilerHostService: CompilerHostService) {}
+  constructor(
+    private readonly compilerHostService: CompilerHostService,
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(ProgramService.name);
+  }
 
   // 🔐 Private Fields
-
-  private readonly logger = new Logger(ProgramService.name);
 
   // 🔑 Public Fields
 
@@ -134,7 +139,9 @@ export class ProgramService {
     const programs: ProjectProgram[] = [];
 
     for (const project of args.projects) {
-      this.logger.debug(`🔭 Reading ${project.name}`);
+      this.logger.debug("🔭 Reading a project", undefined, {
+        projectName: project.name,
+      });
       programs.push(
         this.buildProgram({ project, workspaceRoot: args.workspaceRoot }),
       );

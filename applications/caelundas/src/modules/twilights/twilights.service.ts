@@ -1,5 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import { MathService } from "../math/math.service";
 
 import { TwilightsBuilderService } from "./twilights-builder.service";
@@ -26,7 +28,10 @@ export class TwilightsService {
     private readonly twilightsBuilderService: TwilightsBuilderService,
     private readonly twilightsComposerService: TwilightsComposerService,
     private readonly twilightsDetectorService: TwilightsDetectorService,
-  ) {}
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(TwilightsService.name);
+  }
 
   // 🔐 Private Fields
 
@@ -134,10 +139,14 @@ export class TwilightsService {
       sunAzimuthElevationEphemeris,
       minute,
     );
-    return this.twilightsDetectorService.buildTwilightTransitionEvents(
+    const events = this.twilightsDetectorService.buildTwilightTransitionEvents(
       sunElevationSnapshot,
       minute,
     );
+    this.logger.debug("🔍 Detected twilight events", undefined, {
+      count: events.length,
+    });
+    return events;
   }
 
   /**
@@ -167,7 +176,7 @@ export class TwilightsService {
     const nauticalDuskEvents = getEventsByCategory("Nautical Dusk");
     const astronomicalDuskEvents = getEventsByCategory("Astronomical Dusk");
 
-    return [
+    const progressiveEvents = [
       ...this.twilightsComposerService.buildDawnProgressiveEvents(
         astronomicalDawnEvents,
         nauticalDawnEvents,
@@ -187,5 +196,9 @@ export class TwilightsService {
         label: "Night",
       }),
     ];
+    this.logger.debug("🔍 Detected progressive twilight events", undefined, {
+      count: progressiveEvents.length,
+    });
+    return progressiveEvents;
   }
 }

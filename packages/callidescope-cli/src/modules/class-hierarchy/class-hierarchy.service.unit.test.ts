@@ -332,6 +332,24 @@ describe(ClassHierarchyService, () => {
     expect(lookup.declarations).toStrictEqual([]);
   });
 
+  it("collects a derived class with no name to revisit", () => {
+    // An anonymous default export still implements the member and still
+    // belongs in the result — it just cannot be walked any further for its
+    // own subclasses, since nothing names it to look them up by.
+    const lookup = resolve({
+      files: {
+        "packages/example/src/modules/a/a.service.ts": `
+          export abstract class Base { public abstract run(): void; }
+          export default class extends Base { public run(): void {} }
+        `,
+      },
+      memberName: "run",
+      ownerName: "Base",
+    });
+
+    expect(lookup.declarations).toHaveLength(1);
+  });
+
   it("leaves out a class whose override is still abstract", () => {
     const lookup = resolve({
       files: {

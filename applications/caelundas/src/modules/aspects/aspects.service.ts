@@ -1,5 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import { bodies } from "../caelundas/caelundas.constants";
 import { isAspect } from "../caelundas/caelundas.types";
 
@@ -38,7 +40,10 @@ export class AspectsService {
     private readonly compositeAspectDetectors: CompositeAspectDetector[],
     @Inject(PROGRESSIVE_ASPECT_DETECTORS_TOKEN)
     private readonly progressiveAspectDetectors: ProgressiveAspectDetector[],
-  ) {}
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(AspectsService.name);
+  }
 
   // 🔐 Private Fields
 
@@ -197,6 +202,9 @@ export class AspectsService {
       previousAspectBodies,
     );
     const events: Event[] = [...simpleAspectEvents, ...compositeEvents];
+    this.logger.debug("🔍 Detected aspect events", undefined, {
+      count: events.length,
+    });
     return { aspectBodies: currentAspectBodies, events };
   }
 
@@ -214,6 +222,9 @@ export class AspectsService {
         ...progressiveAspectDetector.detectProgressive(events),
       );
     }
+    this.logger.debug("🔍 Detected progressive aspect events", undefined, {
+      count: progressiveEvents.length,
+    });
     return progressiveEvents;
   }
 }

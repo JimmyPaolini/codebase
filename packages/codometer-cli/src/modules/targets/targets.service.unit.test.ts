@@ -2,6 +2,8 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { TargetOutsideRepositoryError } from "./targets.errors";
 import { TargetsService } from "./targets.service";
 
@@ -84,7 +86,10 @@ describe(TargetsService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [TargetsService],
+      providers: [
+        TargetsService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(TargetsService);

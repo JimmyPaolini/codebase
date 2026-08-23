@@ -184,8 +184,9 @@ END:VCALENDAR
   buildInstantEvent(args: BuildInstantEventArguments): Event {
     const { categories, date, description, logger, summary, timezone } = args;
     const dateString = date.clone().tz(timezone).toISOString(true);
-    logger.log(`🗓️ Built ${summary}`, undefined, {
+    logger.info("🗓️ Built a calendar event", undefined, {
       at: dateString,
+      summary,
     });
 
     return {
@@ -215,12 +216,22 @@ END:VCALENDAR
     });
     const outputDirectory =
       this.configService.get<string>("OUTPUT_DIRECTORY") ?? "./output";
-    await writeFile(
-      path.join(outputDirectory, calendarFilename),
-      new TextEncoder().encode(calendarFileContent),
-    );
-    this.logger.log(
-      `✏️ Wrote ${events.length} events to file "${calendarFilename}"`,
-    );
+    const outputPath = path.join(outputDirectory, calendarFilename);
+    try {
+      await writeFile(
+        outputPath,
+        new TextEncoder().encode(calendarFileContent),
+      );
+    } catch (error) {
+      this.logger.error("📝 Failed writing the calendar file", undefined, {
+        path: outputPath,
+        reason: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
+    }
+    this.logger.info("✏️ Wrote events to file", undefined, {
+      calendarFilename,
+      count: events.length,
+    });
   }
 }

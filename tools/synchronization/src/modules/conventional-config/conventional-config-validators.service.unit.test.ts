@@ -136,14 +136,18 @@ describe(ConventionalConfigValidatorsService, () => {
         false,
       );
 
-      const calls = vi.mocked(logger).log.mock.calls;
+      const calls = vi.mocked(logger).info.mock.calls;
       const messages = calls.map(([message]) => message);
 
       const difference = calls.find(
-        ([message]) => message === "🔀 Differing values in settings.json",
+        ([message]) => message === "🔀 Differing values",
       );
 
-      expect(difference?.[2]).toStrictEqual(expectedDifference);
+      expect(difference?.[2]).toStrictEqual(
+        expectedDifference === undefined
+          ? undefined
+          : { ...expectedDifference, targetName: "settings.json" },
+      );
 
       expect(messages.includes("🔀 Reordered scopes in settings.json")).toBe(
         expectedReordered,
@@ -191,9 +195,10 @@ describe(ConventionalConfigValidatorsService, () => {
     vi.mocked(io.parseIssueTemplateScopes).mockReturnValueOnce([]);
 
     expect(service.checkIssueTemplateSync(["tools"], templateFile)).toBe(false);
-    expect(logger.log).toHaveBeenCalledWith(
-      expect.stringContaining("Missing <!-- scopes-start/end --> markers in"),
-    );
+    expect(logger.info).toHaveBeenCalledWith("📄 Missing markers", undefined, {
+      marker: "scopes",
+      templateName: path.relative(workspaceRoot, templateFile),
+    });
   });
 
   it.each([

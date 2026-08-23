@@ -1,5 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import { MathService } from "../math/math.service";
 
 import { DailyCyclesBuilderService } from "./daily-cycles-builder.service";
@@ -21,7 +23,10 @@ export class DailyCyclesService {
   constructor(
     private readonly mathService: MathService,
     private readonly dailyCyclesBuilderService: DailyCyclesBuilderService,
-  ) {}
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(DailyCyclesService.name);
+  }
 
   // 🔐 Private Fields
 
@@ -135,10 +140,14 @@ export class DailyCyclesService {
     moonAzimuthElevationEphemeris: AzimuthElevationEphemeris;
     sunAzimuthElevationEphemeris: AzimuthElevationEphemeris;
   }): Event[] {
-    return [
+    const events = [
       ...this.getDailySolarCycleEvents(args),
       ...this.getDailyLunarCycleEvents(args),
     ];
+    this.logger.debug("🔍 Detected daily cycle events", undefined, {
+      count: events.length,
+    });
+    return events;
   }
 
   /**

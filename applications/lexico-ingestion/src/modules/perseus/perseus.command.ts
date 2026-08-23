@@ -48,7 +48,7 @@ export class PerseusCommand extends CommandRunner {
     error: unknown,
   ): Promise<void> {
     const { logLine } = this.logger.buildErrorLogEntry(xmlPath, error);
-    this.logger.error(`📥 Failed downloading ${xmlPath}`, String(error));
+    this.logger.error("📥 Failed downloading", String(error), { xmlPath });
     await fs.appendFile(this.errorLogFilePath, logLine);
   }
 
@@ -59,13 +59,15 @@ export class PerseusCommand extends CommandRunner {
     const targetPath = path.join(this.sourceDataDirectory, xmlPath);
     try {
       await fs.access(targetPath);
-      this.logger.log(`⏭️ Skipping already downloaded: ${xmlPath}`);
+      this.logger.info("⏭️ Skipping already downloaded", undefined, {
+        xmlPath,
+      });
       return;
     } catch {
       // file does not exist
     }
     await fs.mkdir(path.dirname(targetPath), { recursive: true });
-    this.logger.log(`📥 Downloading: ${xmlPath}`);
+    this.logger.info("📥 Downloading", undefined, { xmlPath });
     try {
       await this.fetchAndWriteXmlFile(this.sourceHost + xmlPath, targetPath);
     } catch (error: unknown) {
@@ -82,7 +84,7 @@ export class PerseusCommand extends CommandRunner {
   ): Promise<void> {
     const response = await fetch(fileUrl);
     if (!response.ok) {
-      this.logger.warn(`📥 Failed fetching ${fileUrl}`);
+      this.logger.warn("📥 Failed fetching", undefined, { fileUrl });
       return;
     }
     const xmlContent = await response.text();
@@ -98,7 +100,7 @@ export class PerseusCommand extends CommandRunner {
   private async fetchSourceXmlPaths(): Promise<null | string[]> {
     const treeUrl =
       "https://api.github.com/repos/PerseusDL/canonical-latinLit/git/trees/master?recursive=1";
-    this.logger.log(`🌳 Fetching Perseus tree from ${treeUrl}`);
+    this.logger.info("🌳 Fetching Perseus tree", undefined, { treeUrl });
     const treeResponse = await fetch(treeUrl);
     if (!treeResponse.ok) {
       this.logger.error(`🌳 Failed fetching the Perseus tree`);
@@ -132,15 +134,15 @@ export class PerseusCommand extends CommandRunner {
     const xmlPaths = await this.fetchSourceXmlPaths();
     if (!xmlPaths) return;
 
-    this.logger.log(
-      `🗂️ Found ${xmlPaths.length} Latin XML files in Perseus repo`,
-    );
+    this.logger.info("🗂️ Found Latin XML files in Perseus repo", undefined, {
+      count: xmlPaths.length,
+    });
     await fs.mkdir(this.sourceDataDirectory, { recursive: true });
 
     for (const xmlPath of xmlPaths) {
       await this.downloadSourceXmlFileIfMissing(xmlPath);
     }
 
-    this.logger.log("📥 Downloaded Perseus source files");
+    this.logger.info("📥 Downloaded Perseus source files");
   }
 }

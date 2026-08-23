@@ -156,7 +156,7 @@ describe(ValidateCommand, () => {
       expect(validationService.validate).toHaveBeenCalledWith(
         expect.objectContaining({ instances: [INSTANCE] }),
       );
-      expect(commandLogger.log).toHaveBeenCalledTimes(1);
+      expect(commandLogger.info).toHaveBeenCalledTimes(1);
     });
 
     it("writes the report to stdout rather than through the logger", async () => {
@@ -172,7 +172,7 @@ describe(ValidateCommand, () => {
       // message that does not open with an emoji and a verb — which every
       // report, success message included, does not.
       expect(write).toHaveBeenCalledWith("All checked files conform.\n");
-      expect(commandLogger.log).not.toHaveBeenCalledWith(
+      expect(commandLogger.info).not.toHaveBeenCalledWith(
         expect.stringContaining("All checked files conform."),
       );
     });
@@ -180,10 +180,20 @@ describe(ValidateCommand, () => {
     it("logs the outcome as a conventional message with the counts as data", async () => {
       await command.run([], {});
 
-      expect(commandLogger.log).toHaveBeenCalledWith(
+      expect(commandLogger.info).toHaveBeenCalledWith(
         expect.stringMatching(/^👔 Validated /u),
         undefined,
         { count: 0, failedCount: 0, unmatchedCount: 0 },
+      );
+    });
+
+    it("logs a debug entry marker naming the instance filter", async () => {
+      await command.run([], { instances: ["tools/*"] });
+
+      expect(commandLogger.debug).toHaveBeenCalledWith(
+        "🔍 Validating conformetry instances",
+        undefined,
+        { instanceFilter: ["tools/*"] },
       );
     });
 
@@ -281,6 +291,11 @@ describe(ValidateCommand, () => {
       await expect(command.run([], {})).rejects.toThrow(
         "1 instance(s) matched no template",
       );
+      expect(commandLogger.warn).toHaveBeenCalledWith(
+        "⚠️ Rejected non-conforming instances",
+        undefined,
+        { failedCount: 0, unmatchedCount: 1 },
+      );
 
       process.exitCode = undefined;
     });
@@ -330,6 +345,11 @@ describe(ValidateCommand, () => {
 
       await expect(command.run([], {})).rejects.toThrow("Validation failed");
       expect(process.exitCode).toBe(1);
+      expect(commandLogger.warn).toHaveBeenCalledWith(
+        "⚠️ Rejected non-conforming instances",
+        undefined,
+        { failedCount: 1, unmatchedCount: 0 },
+      );
 
       process.exitCode = undefined;
     });

@@ -65,18 +65,19 @@ export class PullRequestTemplateCommand
     );
 
     if (markerContent === undefined) {
-      this.logger.log(
-        `📄 Missing <!-- ${SYNC_PULL_REQUEST_TEMPLATE_MARKER}-start/end --> markers in ${targetName}`,
-      );
+      this.logger.info("📄 Missing markers", undefined, {
+        marker: SYNC_PULL_REQUEST_TEMPLATE_MARKER,
+        target: targetName,
+      });
       return false;
     }
 
     const expectedCodeBlock = this.wrapInCodeBlock(templateContent);
 
     if (markerContent.trim() !== expectedCodeBlock.trim()) {
-      this.logger.log(
-        `📄 Detected an out-of-sync PR template in ${targetName}`,
-      );
+      this.logger.info("📄 Detected an out-of-sync PR template", undefined, {
+        target: targetName,
+      });
       return false;
     }
 
@@ -113,12 +114,12 @@ export class PullRequestTemplateCommand
       }
     }
     if (!allInSync) {
-      this.logger.log("💡 Suggested a fix", undefined, {
+      this.logger.info("💡 Suggested a fix", undefined, {
         hint: "Run 'nx run synchronization:pull-request-template:write' to sync",
       });
       return false;
     }
-    this.logger.log("📄 Verified the PR template");
+    this.logger.info("📄 Verified the PR template");
     return true;
   }
 
@@ -133,7 +134,7 @@ export class PullRequestTemplateCommand
       (targetFile) => !this.checkTargetSync(templateContent, targetFile),
     );
     if (outOfSyncTargets.length === 0) {
-      this.logger.log("📄 Verified every PR template was already in sync");
+      this.logger.info("📄 Verified every PR template was already in sync");
     } else {
       for (const targetFile of outOfSyncTargets) {
         this.writeTargetSync(templateContent, targetFile);
@@ -175,7 +176,9 @@ export class PullRequestTemplateCommand
   private writeTargetSync(templateContent: string, targetFile: string): void {
     const workspaceRoot = process.cwd();
     const targetName = path.relative(workspaceRoot, targetFile);
-    this.logger.log(`🔄 Syncing ${targetName} PR template...`);
+    this.logger.info("🔄 Syncing a PR template", undefined, {
+      target: targetName,
+    });
 
     const fileContent = readFileSync(targetFile, "utf8");
     const codeBlock = this.wrapInCodeBlock(templateContent);
@@ -186,7 +189,9 @@ export class PullRequestTemplateCommand
     );
 
     writeFileSync(targetFile, updatedContent, "utf8");
-    this.logger.log(`📄 Synced the PR template in ${targetName}`);
+    this.logger.info("📄 Synced the PR template", undefined, {
+      target: targetName,
+    });
   }
 
   // 🌎 Public Methods
@@ -214,23 +219,31 @@ export class PullRequestTemplateCommand
 
   /** Synchronizes the PR template and reports success without exiting. */
   async synchronize(mode: SynchronizationMode): Promise<boolean> {
-    await Promise.resolve();
-    const workspaceRoot = process.cwd();
-    const templateFile = path.join(
-      workspaceRoot,
-      ".github/PULL_REQUEST_TEMPLATE.md",
-    );
-    const targetFiles = SYNC_PULL_REQUEST_TEMPLATE_TARGET_FILES.map((f) =>
-      path.join(workspaceRoot, f),
-    );
+    try {
+      await Promise.resolve();
+      const workspaceRoot = process.cwd();
+      const templateFile = path.join(
+        workspaceRoot,
+        ".github/PULL_REQUEST_TEMPLATE.md",
+      );
+      const targetFiles = SYNC_PULL_REQUEST_TEMPLATE_TARGET_FILES.map((f) =>
+        path.join(workspaceRoot, f),
+      );
 
-    const templateContent = this.loadTemplate(templateFile);
+      const templateContent = this.loadTemplate(templateFile);
 
-    if (mode === "check") {
-      return this.handleCheckMode(templateContent, targetFiles);
+      if (mode === "check") {
+        return this.handleCheckMode(templateContent, targetFiles);
+      }
+
+      this.handleWriteMode(templateContent, targetFiles);
+      return true;
+    } catch (error) {
+      this.logger.error(
+        "💥 Failed synchronizing the PR template",
+        error instanceof Error ? error.stack : String(error),
+      );
+      return false;
     }
-
-    this.handleWriteMode(templateContent, targetFiles);
-    return true;
   }
 }

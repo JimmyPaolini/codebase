@@ -64,9 +64,10 @@ export class ReportingService {
 
     if (destination.output !== undefined) {
       await writeFile(destination.output, `${section}\n`, "utf8");
-      this.logger.log(
-        `📝 Wrote the ${command.reportLabel} report to ${destination.output}`,
-      );
+      this.logger.info("📝 Wrote a report", undefined, {
+        label: command.reportLabel,
+        path: destination.output,
+      });
     }
 
     if (destination.markdown !== undefined) {
@@ -77,9 +78,10 @@ export class ReportingService {
         command.reportMarkers,
       );
       await writeFile(destination.markdown, `${spliced}\n`, "utf8");
-      this.logger.log(
-        `📝 Spliced the ${command.reportLabel} report into ${destination.markdown}`,
-      );
+      this.logger.info("📝 Spliced a report", undefined, {
+        label: command.reportLabel,
+        path: destination.markdown,
+      });
     }
 
     if (
@@ -87,6 +89,9 @@ export class ReportingService {
       destination.markdown === undefined
     ) {
       process.stdout.write(`${section}\n`);
+      this.logger.debug("🖨️ Printed the report to standard output", undefined, {
+        label: command.reportLabel,
+      });
     }
   }
 

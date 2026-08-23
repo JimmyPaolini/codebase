@@ -3,6 +3,8 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import {
   BYTES_UNIT,
   codometerReportSchema,
@@ -10,6 +12,7 @@ import {
 } from "./bundles.constants";
 
 import type {
+  CodometerReport,
   CollectProjectRowsArguments,
   CollectRowsArguments,
   MetricCollection,
@@ -43,7 +46,9 @@ import type {
 export class BundlesService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext(BundlesService.name);
+  }
 
   // 🔐 Private Fields
 
@@ -128,6 +133,23 @@ export class BundlesService {
     };
   }
 
+  /** Parses the report's JSON body, tolerating an absent or malformed file. */
+  private parseReport(
+    workingDirectory: string,
+    reportPath: string,
+  ): CodometerReport | undefined {
+    try {
+      const parsed = codometerReportSchema.safeParse(
+        JSON.parse(
+          readFileSync(path.join(workingDirectory, reportPath), "utf8"),
+        ),
+      );
+      return parsed.success ? parsed.data : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
   /** Reads a baseline report into a name-to-metric lookup. */
   private readBaseline(
     args: CollectProjectRowsArguments,
@@ -195,25 +217,20 @@ export class BundlesService {
     workingDirectory: string,
     reportPath: string,
   ): ProjectReport {
-    const empty: ProjectReport = { failures: [], metrics: [] };
+    const report = this.parseReport(workingDirectory, reportPath);
 
-    try {
-      const parsed = codometerReportSchema.safeParse(
-        JSON.parse(
-          readFileSync(path.join(workingDirectory, reportPath), "utf8"),
-        ),
-      );
-      if (!parsed.success) return empty;
-
-      return {
-        failures: parsed.data.failures ?? [],
-        metrics: parsed.data.targets.flatMap((target) =>
-          this.readSizeMetrics(target),
-        ),
-      };
-    } catch {
-      return empty;
+    if (report === undefined) {
+      this.logger.warn("⚠️ Skipped an unreadable codometer report", undefined, {
+        reportPath,
+        workingDirectory,
+      });
+      return { failures: [], metrics: [] };
     }
+
+    return {
+      failures: report.failures ?? [],
+      metrics: report.targets.flatMap((target) => this.readSizeMetrics(target)),
+    };
   }
 
   /**
@@ -233,6 +250,11 @@ export class BundlesService {
               cwd: workingDirectory,
             }),
           ).map((reportPath) => path.relative(baselineDirectory, reportPath));
+
+    this.logger.debug("📂 Found the codometer reports", undefined, {
+      baseline: baseline.length,
+      current: current.length,
+    });
 
     return [...new Set([...current, ...baseline])].toSorted();
   }

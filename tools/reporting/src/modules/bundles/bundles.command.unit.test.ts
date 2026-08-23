@@ -40,6 +40,7 @@ const row: MetricRow = {
 
 describe(BundlesCommand, () => {
   let command: BundlesCommand;
+  let logger: LoggerService;
   const collect = vi.fn<() => MetricCollection>(() => ({
     failures: [],
     rows: [row],
@@ -69,6 +70,7 @@ describe(BundlesCommand, () => {
     }).compile();
 
     command = await module.resolve(BundlesCommand);
+    logger = await module.resolve(LoggerService);
   });
 
   afterEach(() => {
@@ -155,6 +157,16 @@ describe(BundlesCommand, () => {
 
     expect(body.startsWith("## 🎒 Bundles")).toBe(true);
     expect(body).not.toContain("bundle-sizes:start");
+  });
+
+  it("logs how many rows and failures it collected", () => {
+    command.renderReport({ baseline: undefined, baselineUrl: undefined });
+
+    expect(logger.info).toHaveBeenCalledWith(
+      "🎒 Collected the bundle report",
+      undefined,
+      { failures: 0, rows: 1 },
+    );
   });
 
   it("writes the section alone to an output file", async () => {

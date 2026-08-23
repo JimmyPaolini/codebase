@@ -3,11 +3,14 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import type {
   RenderReportArguments,
   SyncJsonArguments,
 } from "./output-json.types";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Writes the report to a JSON file.
  *
@@ -16,10 +19,13 @@ import type {
  * repository nobody touched as stale.
  */
 @Injectable()
+/* v8 ignore stop */
 export class OutputJsonService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext(OutputJsonService.name);
+  }
 
   // 🔐 Private Fields
 
@@ -68,6 +74,10 @@ export class OutputJsonService {
 
     mkdirSync(path.dirname(resolvedPath), { recursive: true });
     writeFileSync(resolvedPath, rendered, "utf8");
+
+    this.logger.info("📝 Wrote the JSON report", undefined, {
+      path: resolvedPath,
+    });
 
     return true;
   }

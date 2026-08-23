@@ -124,7 +124,7 @@ describe(PullRequestTemplateCommand, () => {
 
     await command.run(modeArguments);
 
-    expect(logger.log).toHaveBeenCalledWith("📄 Verified the PR template");
+    expect(logger.info).toHaveBeenCalledWith("📄 Verified the PR template");
     expect(writeFileSync).not.toHaveBeenCalled();
   });
 
@@ -167,11 +167,17 @@ describe(PullRequestTemplateCommand, () => {
       expect.stringContaining(wrappedTemplate),
       "utf8",
     );
-    expect(logger.log).toHaveBeenCalledWith(
-      `🔄 Syncing ${path.relative(workspaceRoot, firstTarget)} PR template...`,
+    expect(logger.info).toHaveBeenCalledWith(
+      "🔄 Syncing a PR template",
+      undefined,
+      {
+        target: path.relative(workspaceRoot, firstTarget),
+      },
     );
-    expect(logger.log).toHaveBeenCalledWith(
-      `📄 Synced the PR template in ${path.relative(workspaceRoot, firstTarget)}`,
+    expect(logger.info).toHaveBeenCalledWith(
+      "📄 Synced the PR template",
+      undefined,
+      { target: path.relative(workspaceRoot, firstTarget) },
     );
   });
 
@@ -195,7 +201,7 @@ describe(PullRequestTemplateCommand, () => {
 
     await command.run(["write"]);
 
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "📄 Verified every PR template was already in sync",
     );
     expect(writeFileSync).not.toHaveBeenCalled();
@@ -212,15 +218,28 @@ describe(PullRequestTemplateCommand, () => {
 
     await expect(command.run(["check"])).rejects.toThrow("process.exit:1");
 
-    expect(logger.log).toHaveBeenCalledWith(
-      expect.stringContaining(
-        `Missing <!-- ${SYNC_PULL_REQUEST_TEMPLATE_MARKER}-start/end --> markers in`,
-      ),
+    expect(logger.info).toHaveBeenCalledWith(
+      "📄 Missing markers",
+      undefined,
+      expect.objectContaining({ marker: SYNC_PULL_REQUEST_TEMPLATE_MARKER }),
     );
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "💡 Suggested a fix",
       undefined,
       expect.any(Object),
+    );
+
+    processExitSpy.mockRestore();
+  });
+
+  it("reports failure and exits when the template file cannot be read", async () => {
+    const processExitSpy = mockProcessExit();
+
+    await expect(command.run(["check"])).rejects.toThrow("process.exit:1");
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "💥 Failed synchronizing the PR template",
+      expect.stringContaining("File not found"),
     );
 
     processExitSpy.mockRestore();

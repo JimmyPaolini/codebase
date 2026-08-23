@@ -617,6 +617,7 @@
       "query": "repo:${owner}/${repository} -is:open"
     }
   ],
+  "githubPullRequests.showPullRequestNumberInTree": true,
   "gitlens.ai.model": "vscode",
   "gitlens.ai.vscode.model": "copilot:gpt-4.1",
   "gitlens.gitkraken.mcp.autoEnabled": false,

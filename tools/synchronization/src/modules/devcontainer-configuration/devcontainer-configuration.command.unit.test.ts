@@ -134,7 +134,7 @@ describe(DevcontainerConfigurationCommand, () => {
 
     await command.run(modeArguments);
 
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "📦 Verified the cloud devcontainer config against the local config",
     );
     expect(writeFileSync).not.toHaveBeenCalled();
@@ -182,7 +182,7 @@ describe(DevcontainerConfigurationCommand, () => {
       expect.stringContaining('"CODEBASE_ENVIRONMENT": "cloud"'),
       "utf8",
     );
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "📦 Updated the cloud devcontainer config from the local config",
     );
   });
@@ -203,7 +203,7 @@ describe(DevcontainerConfigurationCommand, () => {
     await command.run(["write"]);
 
     expect(writeFileSync).not.toHaveBeenCalled();
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "📦 Left the cloud devcontainer config as the local config already implies",
     );
   });
@@ -247,10 +247,16 @@ describe(DevcontainerConfigurationCommand, () => {
   it.each([
     {
       assertLogs: (loggerService: LoggerService): void => {
-        expect(loggerService.log).toHaveBeenCalledWith(
-          expect.stringContaining("Detected out-of-sync common fields in"),
+        expect(loggerService.info).toHaveBeenCalledWith(
+          "📦 Detected out-of-sync common fields",
           undefined,
-          expect.any(Object),
+          expect.objectContaining({
+            relativeFilePath: path.join(
+              ".devcontainer",
+              "cloud",
+              "devcontainer.json",
+            ),
+          }),
         );
       },
       scenarioName: "reports drift and exits in check mode when configs differ",
@@ -273,8 +279,10 @@ describe(DevcontainerConfigurationCommand, () => {
     },
     {
       assertLogs: (loggerService: LoggerService): void => {
-        expect(loggerService.log).not.toHaveBeenCalledWith(
-          expect.stringContaining("mounts"),
+        expect(loggerService.info).not.toHaveBeenCalledWith(
+          "🔀 Differing field",
+          undefined,
+          expect.objectContaining({ key: "mounts" }),
         );
       },
       scenarioName:
@@ -299,13 +307,15 @@ describe(DevcontainerConfigurationCommand, () => {
     },
     {
       assertLogs: (loggerService: LoggerService): void => {
-        expect(loggerService.log).not.toHaveBeenCalledWith(
-          expect.stringContaining("Field 'customizations' differs"),
-        );
-        expect(loggerService.log).toHaveBeenCalledWith(
-          expect.stringContaining("Differing field '$schema'"),
+        expect(loggerService.info).not.toHaveBeenCalledWith(
+          "🔀 Differing field",
           undefined,
-          expect.any(Object),
+          expect.objectContaining({ key: "customizations" }),
+        );
+        expect(loggerService.info).toHaveBeenCalledWith(
+          "🔀 Differing field",
+          undefined,
+          expect.objectContaining({ key: "$schema" }),
         );
       },
       scenarioName:
@@ -338,6 +348,15 @@ describe(DevcontainerConfigurationCommand, () => {
     assertLogs(logger);
 
     processExitSpy.mockRestore();
+  });
+
+  it("reports failure and exits when a config file cannot be read", async () => {
+    await expectProcessExitOne(async () => command.run(["check"]));
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "💥 Failed synchronizing the devcontainer configuration",
+      expect.stringContaining("File not found"),
+    );
   });
 
   it("exits on invalid mode", async () => {

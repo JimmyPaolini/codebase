@@ -1,5 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import { AnnualSolarCycleService } from "../annual-solar-cycle/annual-solar-cycle.service";
 import { AspectsService } from "../aspects/aspects.service";
 import { MARGIN_MINUTES } from "../caelundas/caelundas.constants";
@@ -42,7 +44,10 @@ export class PerfectiveService {
     private readonly annualSolarCycleService: AnnualSolarCycleService,
     private readonly twilightsService: TwilightsService,
     private readonly phasesService: PhasesService,
-  ) {}
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(PerfectiveService.name);
+  }
 
   // 🔐 Private Fields
 
@@ -214,6 +219,9 @@ export class PerfectiveService {
       previousAspectBodies = result.previousAspectBodies;
       perfectiveEvents.push(...result.events);
     }
+    this.logger.info("🔭 Finished a perfective sweep", undefined, {
+      events: perfectiveEvents.length,
+    });
     return perfectiveEvents;
   }
 }

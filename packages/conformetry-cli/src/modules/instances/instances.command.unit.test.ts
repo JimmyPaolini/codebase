@@ -210,13 +210,23 @@ describe(InstancesCommand, () => {
       await command.run([], {});
 
       expect(output).not.toHaveLength(0);
-      expect(commandLogger.log).not.toHaveBeenCalled();
+      expect(commandLogger.info).not.toHaveBeenCalled();
     });
 
     it("does not fail the command", async () => {
       await command.run([], {});
 
       expect(process.exitCode).toBeUndefined();
+    });
+
+    it("logs a debug entry marker naming the template filter", async () => {
+      await command.run([], { templates: ["nestjs-service-module"] });
+
+      expect(commandLogger.debug).toHaveBeenCalledWith(
+        "📋 Listing conformetry instances",
+        undefined,
+        { templateFilter: ["nestjs-service-module"] },
+      );
     });
   });
 

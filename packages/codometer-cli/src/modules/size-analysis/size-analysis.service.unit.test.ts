@@ -1,10 +1,14 @@
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { LoggerService } from "@codebase/logger";
 
 import { UnreadableTargetFileError } from "./size-analysis.errors";
 import { SizeAnalysisService } from "./size-analysis.service";
 
 import type { CodometerCompression } from "@codometer/configuration";
+import type { DeepMocked } from "@golevelup/ts-vitest";
 
 // Reading is mocked down to the one call the measurement makes, so the bytes
 // under test come from the compression rather than from a temporary directory.
@@ -33,6 +37,7 @@ const PINNED_BYTES: Readonly<Record<CodometerCompression, number>> = {
 
 describe(SizeAnalysisService, () => {
   let service: SizeAnalysisService;
+  let loggerService: DeepMocked<LoggerService>;
 
   /** Measures both fixture files under one compression. */
   function analyze(compression: CodometerCompression): number {
@@ -45,10 +50,14 @@ describe(SizeAnalysisService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [SizeAnalysisService],
+      providers: [
+        SizeAnalysisService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(SizeAnalysisService);
+    loggerService = await module.resolve(LoggerService);
   });
 
   beforeEach(() => {
@@ -114,6 +123,43 @@ describe(SizeAnalysisService, () => {
       }),
     ).toThrow(
       "Cannot measure /repo/dist/gone.js: Error: ENOENT: /repo/dist/gone.js",
+    );
+  });
+
+  it("logs the file it could not measure before rethrowing", () => {
+    expect(() =>
+      service.analyze({
+        compression: "gzip",
+        files: ["dist/gone.js"],
+        workingDirectory: "/repo",
+      }),
+    ).toThrow(UnreadableTargetFileError);
+
+    expect(loggerService.error).toHaveBeenCalledWith(
+      "🗜️ Failed to measure a target file",
+      undefined,
+      expect.objectContaining({ path: "/repo/dist/gone.js" }),
+    );
+  });
+
+  it("logs the reason for a thrown value that is not an Error", () => {
+    readFileSyncMock.mockImplementationOnce(() => {
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
+      throw "not an Error";
+    });
+
+    expect(() =>
+      service.analyze({
+        compression: "gzip",
+        files: ["dist/odd.js"],
+        workingDirectory: "/repo",
+      }),
+    ).toThrow(UnreadableTargetFileError);
+
+    expect(loggerService.error).toHaveBeenCalledWith(
+      "🗜️ Failed to measure a target file",
+      undefined,
+      { path: "/repo/dist/odd.js", reason: "not an Error" },
     );
   });
 });
