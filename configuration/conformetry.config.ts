@@ -80,74 +80,17 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       "Generate a NestJS service package template for internal workspace libraries",
     inputs: defineInputs({
       name: z.string().describe("Project name (kebab-case)"),
-      sizeLimit: z
-        .string()
-        .describe(
-          "Gzipped build output size limit codometer enforces, e.g. '15 KB'",
-        ),
       type: z
         .string()
         .describe("Project type (application, package, or tools)"),
     }),
-    // One group per instance rather than a single glob: `sizeLimit` is a real
-    // gzipped measurement and legitimately differs across every package, so
-    // each needs its own substitution rather than one value shared by all.
     instances: [
       {
-        patterns: ["packages/callidescope-configuration"],
-        substitutions: { sizeLimit: "9 KB" },
-      },
-      {
-        patterns: ["packages/codometer-configuration"],
-        substitutions: { sizeLimit: "13 KB" },
-      },
-      {
-        patterns: ["packages/conformetry-configuration"],
-        substitutions: { sizeLimit: "25 KB" },
-      },
-      {
-        patterns: ["packages/conformetry-core"],
-        substitutions: { sizeLimit: "15 KB" },
-      },
-      {
-        patterns: ["packages/conformetry-files"],
-        substitutions: { sizeLimit: "3 KB" },
-      },
-      {
-        patterns: ["packages/conformetry-generation"],
-        substitutions: { sizeLimit: "6 KB" },
-      },
-      {
-        patterns: ["packages/conformetry-json"],
-        substitutions: { sizeLimit: "5 KB" },
-      },
-      {
-        patterns: ["packages/conformetry-jupyter"],
-        substitutions: { sizeLimit: "6 KB" },
-      },
-      {
-        patterns: ["packages/conformetry-markdown"],
-        substitutions: { sizeLimit: "7 KB" },
-      },
-      {
-        patterns: ["packages/conformetry-nx"],
-        substitutions: { sizeLimit: "40 KB" },
-      },
-      {
-        patterns: ["packages/conformetry-python"],
-        substitutions: { sizeLimit: "5 KB" },
-      },
-      {
-        patterns: ["packages/conformetry-text"],
-        substitutions: { sizeLimit: "3 KB" },
-      },
-      {
-        patterns: ["packages/conformetry-typescript"],
-        substitutions: { sizeLimit: "9 KB" },
-      },
-      {
-        patterns: ["packages/conformetry-validation"],
-        substitutions: { sizeLimit: "14 KB" },
+        patterns: [
+          "packages/callidescope-configuration",
+          "packages/codometer-configuration",
+          "packages/conformetry-{configuration,core,files,generation,json,jupyter,markdown,python,text,typescript,validation,nx}",
+        ],
       },
     ],
     name: "nestjs-service-project",
