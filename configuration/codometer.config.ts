@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import path from "node:path";
 
 import {
@@ -6,18 +6,6 @@ import {
   type CodometerConfigurationContext,
   type CodometerConfigurationFactory,
 } from "@codometer/configuration";
-
-// 🏷️ Types
-
-/**
- * The one field this configuration reads out of a project's manifest.
- *
- * `unknown` because the manifest is parsed JSON: a `sizeLimit` written as a
- * number has to be read before it can be refused.
- */
-interface ProjectManifest {
-  sizeLimit?: unknown;
-}
 
 // ♟️ Conventions
 
@@ -27,7 +15,7 @@ const WORKSPACE_MARKER = "pnpm-workspace.yaml";
 /** Directory every project's build output is emitted beneath. */
 const BUILD_DIRECTORY = "dist";
 
-/** Manifest each project declares its own limit in, beside `typeCoverage`. */
+/** Manifest whose presence is what makes a directory a project. */
 const MANIFEST_FILE = "package.json";
 
 /**
@@ -41,6 +29,50 @@ const COMPILED_TARGET_NAME = "Compiled JavaScript";
 
 /** Path separator every glob and every configured path is written with. */
 const PATH_SEPARATOR = "/";
+
+// 📏 Limits
+
+/**
+ * The limit each project's compiled output is gated against, gzipped.
+ *
+ * Keyed by the project's path beneath the workspace directory, which is both
+ * where its build output is written and the name the pull request's 🎒 Bundles
+ * section shows, so a row here is findable from either. A project this names
+ * nothing for is measured and reported like the rest and gated by nothing.
+ *
+ * Declared here rather than as a `sizeLimit` field in each project's
+ * `package.json`, where these used to sit beside `typeCoverage`. A manifest
+ * says what a package ships and what it depends on; a limit is what codometer
+ * enforces, so it belongs in the file codometer reads. Written together they
+ * are also reviewable as a set, which is what limits ratcheted against a
+ * measured size need — each one is visible beside the others rather than being
+ * eighteen manifest fields nothing lists.
+ *
+ * A project this table cannot describe — one emitting several bundles, or
+ * gated by more than one limit — declares its limits in a
+ * `codometer.config.cjs` of its own, which fully replaces this file for that
+ * folder, so it is absent here.
+ */
+const PROJECT_LIMITS: Record<string, string> = {
+  "packages/callidescope-configuration": "9 KB",
+  "packages/codometer-cli": "84 KB",
+  "packages/codometer-configuration": "13 KB",
+  "packages/conformetry-cli": "14 KB",
+  "packages/conformetry-configuration": "25 KB",
+  "packages/conformetry-core": "15 KB",
+  "packages/conformetry-files": "3 KB",
+  "packages/conformetry-generation": "6 KB",
+  "packages/conformetry-json": "5 KB",
+  "packages/conformetry-jupyter": "6 KB",
+  "packages/conformetry-markdown": "7 KB",
+  "packages/conformetry-nx": "40 KB",
+  "packages/conformetry-python": "5 KB",
+  "packages/conformetry-text": "3 KB",
+  "packages/conformetry-typescript": "9 KB",
+  "packages/conformetry-validation": "14 KB",
+  "packages/lexico-entities": "34 KB",
+  "packages/logger": "6 KB",
+};
 
 // 🔧 Helpers
 
@@ -74,37 +106,16 @@ const findWorkspaceDirectory = (searchDirectory: string): string => {
 };
 
 /**
- * Reads a directory's project manifest, or nothing when it holds no project.
+ * Whether a directory holds a project at all.
  *
- * One read answers both questions this configuration asks of a directory. A
- * folder carrying no manifest is no project, so it gets no target rather than
- * one over a build nobody emits; a project's manifest is where its limit is
- * declared, beside `typeCoverage`, which is where every other per-project gate
- * in this repository is written.
- *
- * A manifest nothing can parse stops the run and names itself. Read as "no
- * project here" it would silently leave a project measured by nothing and
- * gated by nothing, which is the one failure a size gate must never have.
+ * A folder carrying no manifest is no project, so it gets no target rather
+ * than one over a build nobody emits. A project that has not been built yet
+ * and a folder that was never going to have a build must not read alike: the
+ * first is an empty target, which is what the empty-match rule exists to
+ * report on.
  */
-const readManifest = (directory: string): ProjectManifest | undefined => {
-  const manifestPath = path.join(directory, MANIFEST_FILE);
-
-  if (!existsSync(manifestPath)) {
-    return undefined;
-  }
-
-  let manifest: unknown;
-
-  try {
-    manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-  } catch (error: unknown) {
-    const reason = error instanceof Error ? error.message : String(error);
-
-    throw new Error(`Could not read ${manifestPath}: ${reason}`);
-  }
-
-  return manifest as ProjectManifest;
-};
+const holdsProject = (directory: string): boolean =>
+  existsSync(path.join(directory, MANIFEST_FILE));
 
 // 🧱 Shared Configuration
 
@@ -149,22 +160,18 @@ const sharedConfiguration = {
  *
  * This is the convention nineteen near-identical per-project configuration
  * files used to each restate: build output mirrors a project's own path under
- * the workspace directory, and the limit on it is declared in that project's
- * manifest. Written once here, it serves every project that follows it without
- * any of them carrying a configuration file at all.
+ * the workspace directory, and the limit on it is the one this file declares
+ * for that path. Written once here, it serves every project that follows it
+ * without any of them carrying a configuration file at all.
  */
 const buildProjectConfiguration = (
   context: CodometerConfigurationContext,
   workspaceDirectory: string,
-  manifest: ProjectManifest,
 ): CodometerConfiguration => {
   const projectPath = toConfiguredPath(
     path.relative(workspaceDirectory, context.directory),
   );
-  // A project declaring no limit, or one in a shape no limit can be written
-  // in, is measured and reported like the rest and gated by nothing.
-  const declaredLimit =
-    typeof manifest.sizeLimit === "string" ? manifest.sizeLimit : undefined;
+  const declaredLimit = PROJECT_LIMITS[projectPath];
 
   return {
     ...sharedConfiguration,
@@ -222,14 +229,10 @@ const buildWorkspaceConfiguration = (): CodometerConfiguration => ({
  * knows. The measurement itself lives in `@codometer/cli` and knows nothing
  * about this workspace.
  *
- * A project whose targets are not derivable this way — one emitting several
- * bundles, or declaring its limit inline — carries a configuration file of its
- * own, which fully replaces this one for that folder.
- *
- * A folder that is no project at all gets no target rather than one over a
- * build nobody emits. A project that has not been built yet and a folder that
- * was never going to have a build must not read alike: the first is an empty
- * target, which is what the empty-match rule exists to report on.
+ * A project this cannot describe — one emitting several bundles rather than a
+ * single compiled tree, or gated by more than one limit — carries a
+ * configuration file of its own, which fully replaces this one for that folder
+ * and declares its limits there rather than in the table above.
  */
 const codometerConfiguration: CodometerConfigurationFactory = (context) => {
   const workspaceDirectory = findWorkspaceDirectory(
@@ -240,11 +243,9 @@ const codometerConfiguration: CodometerConfigurationFactory = (context) => {
     return buildWorkspaceConfiguration();
   }
 
-  const manifest = readManifest(context.directory);
-
-  return manifest === undefined
-    ? { ...sharedConfiguration }
-    : buildProjectConfiguration(context, workspaceDirectory, manifest);
+  return holdsProject(context.directory)
+    ? buildProjectConfiguration(context, workspaceDirectory)
+    : { ...sharedConfiguration };
 };
 
 export default codometerConfiguration;
