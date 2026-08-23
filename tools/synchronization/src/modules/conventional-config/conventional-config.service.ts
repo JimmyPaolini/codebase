@@ -137,7 +137,7 @@ export class ConventionalConfigService {
       );
     const templatesOk =
       this.conventionalConfigValidatorsService.checkAllTemplatesSync(
-        scopeNames,
+        config,
         this.issueTemplateFiles,
       );
     const releaseConfig = this.loadReleaseConfig();
@@ -196,7 +196,7 @@ export class ConventionalConfigService {
     const outOfSyncTemplates = this.issueTemplateFiles.filter(
       (templateFile) =>
         !this.conventionalConfigValidatorsService.checkIssueTemplateSync(
-          scopeNames,
+          config,
           templateFile,
         ),
     );
@@ -218,7 +218,7 @@ export class ConventionalConfigService {
     }
     for (const templateFile of outOfSyncTemplates) {
       this.conventionalConfigIoService.writeIssueTemplateSync(
-        scopeNames,
+        config,
         templateFile,
       );
     }

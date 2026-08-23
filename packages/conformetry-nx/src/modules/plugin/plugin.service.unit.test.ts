@@ -243,12 +243,14 @@ describe(PluginService, () => {
         "conformetry-validate": {
           cache: true,
           executor: "@conformetry/nx:validate",
-          // The configuration and emitted plugin invalidate the cache, so a
-          // cache hit cannot skip the drift check the executor performs.
+          // The configuration, emitted plugin, and every configured
+          // template invalidate the cache, so a cache hit cannot skip the
+          // drift check the executor performs, nor survive a template edit.
           inputs: [
             "default",
             `{workspaceRoot}/${options.configurationPath}`,
             "{workspaceRoot}/.conformetry/nx-generators/**/*",
+            "{workspaceRoot}/templates/widget/**/*",
           ],
           options: {},
         },

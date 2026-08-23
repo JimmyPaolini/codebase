@@ -1,0 +1,96 @@
+name: 📋 Issue
+description: File a bug, feature request, or task for this repository
+labels: [status:needs-triage, source:human]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing an issue. Titles follow the same convention as
+        commits and pull requests: `<type>(<scope>): <gitmoji> <subject>`
+        (for example `fix(lexico): 🐛 correct the timezone offset`). A quick
+        backlog-idea title is fine too — a CI check will flag this issue if
+        its Type/Scope answers below don't match its labels, but it will
+        never block you from filing it.
+
+  # <!-- types-start -->
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      description: What kind of change is this?
+      options:
+        - feat
+        - fix
+        - docs
+        - test
+        - refactor
+        - style
+        - perf
+        - chore
+        - ci
+        - build
+        - revert
+    validations:
+      required: true
+  # <!-- types-end -->
+
+  # <!-- scopes-start -->
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      description: Which area of the codebase does this apply to?
+      options:
+        - affirmations
+        - applications
+        - caelundas
+        - configuration
+        - conformetry
+        - dependencies
+        - deps
+        - deployments
+        - documentation
+        - infrastructure
+        - JimmyPaolini
+        - lexico
+        - lexico-components
+        - lexico-entities
+        - lexico-ingestion
+        - logger
+        - callidescope
+        - codometer
+        - codebase
+        - no-release
+        - packages
+        - release
+        - scripts
+        - testing
+        - tools
+        - synchronization
+        - reporting
+        - validation
+    validations:
+      required: true
+  # <!-- scopes-end -->
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: |
+        A clear and concise description of the bug, feature, or task. For a
+        bug, include what you expected versus what actually happened.
+      placeholder: Describe the issue...
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: |
+        Steps to reproduce, logs, screenshots, a proposed solution,
+        alternatives considered, or any other relevant context.
+      render: shell
+    validations:
+      required: false
