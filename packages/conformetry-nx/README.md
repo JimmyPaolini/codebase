@@ -445,13 +445,13 @@ None.
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5555-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-195.34_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-195.27_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-15-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-60-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-33.24_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-33.03_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript & JavaScript
 

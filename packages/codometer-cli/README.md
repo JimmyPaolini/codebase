@@ -865,13 +865,13 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-16789-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-523.49_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-523.42_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-24-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-143-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-79.21_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-78.80_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript & JavaScript
 

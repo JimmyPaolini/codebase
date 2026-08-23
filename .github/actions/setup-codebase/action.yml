@@ -62,12 +62,40 @@ runs:
       run: echo "NX_DEFAULT_OUTPUT_STYLE=static" >> "$GITHUB_ENV"
       shell: bash
 
-    - name: 🔧 Setup Homebrew
+    # `Homebrew/actions/setup-homebrew` clones the `Homebrew/brew` git
+    # repository from scratch every run (~20s) before `brew install` even
+    # starts. Caching the whole linuxbrew prefix skips both that clone and the
+    # package install on a cache hit. The key rotates weekly rather than
+    # staying fixed, so `gitleaks`/`trivy` still pick up new releases on
+    # roughly the same cadence as the weekly full-history secret scan, instead
+    # of freezing at whatever version first populated the cache.
+    - name: 🗓️ Resolve Weekly Cache Key
       if: inputs.gitleaks == 'true' || inputs.trivy == 'true'
+      id: homebrew-cache-week
+      run: echo "week=$(date -u +%G-W%V)" >> "$GITHUB_OUTPUT"
+      shell: bash
+
+    - name: ♻️ Sync Homebrew Tools Cache
+      if: inputs.gitleaks == 'true' || inputs.trivy == 'true'
+      id: homebrew-tools-cache
+      uses: actions/cache@v6
+      with:
+        path: /home/linuxbrew/.linuxbrew
+        key: |
+          homebrew-tools-${{ runner.os }}-gitleaks-${{ inputs.gitleaks
+          }}-trivy-${{ inputs.trivy }}-${{
+          steps.homebrew-cache-week.outputs.week }}
+
+    - name: 🔧 Setup Homebrew
+      if: |
+        (inputs.gitleaks == 'true' || inputs.trivy == 'true')
+        && steps.homebrew-tools-cache.outputs.cache-hit != 'true'
       uses: Homebrew/actions/setup-homebrew@main
 
     - name: 🍺 Install Homebrew Tools
-      if: inputs.gitleaks == 'true' || inputs.trivy == 'true'
+      if: |
+        (inputs.gitleaks == 'true' || inputs.trivy == 'true')
+        && steps.homebrew-tools-cache.outputs.cache-hit != 'true'
       env:
         INSTALL_GITLEAKS: ${{ inputs.gitleaks }}
         INSTALL_TRIVY: ${{ inputs.trivy }}
@@ -80,6 +108,16 @@ runs:
           packages+=(trivy)
         fi
         brew install --quiet "${packages[@]}"
+      shell: bash
+
+    # `setup-homebrew` puts the linuxbrew bin directory on PATH as a side
+    # effect of bootstrapping brew itself; skipping that step on a cache hit
+    # means doing the same PATH update by hand.
+    - name: 🛤️ Restore Cached Homebrew PATH
+      if: |
+        (inputs.gitleaks == 'true' || inputs.trivy == 'true')
+        && steps.homebrew-tools-cache.outputs.cache-hit == 'true'
+      run: echo "/home/linuxbrew/.linuxbrew/bin" >> "$GITHUB_PATH"
       shell: bash
 
     # Keyed per job. Every workflow previously shared one key, so concurrent
@@ -148,17 +186,13 @@ runs:
           || echo "No bundled gyp_main.py found; nothing to repair."
       shell: bash
 
+    # The root `postinstall` script already runs `scripts/install-skills.sh`
+    # after this, which is idempotent and returns in milliseconds when every
+    # locked skill is already on disk (true here since skills are committed).
+    # A separate `skills experimental_install` step used to run redundantly
+    # afterward, bypassing that guard and re-cloning every upstream skill
+    # source on every job — that duplicate work is why this step is gone.
     - name: 📚 Install Node Dependencies
       if: inputs.install == 'true'
       run: CI=true pnpm install --frozen-lockfile --reporter=append-only
-      shell: bash
-
-    # Skills installed from other repositories are not committed: the CLI pulls
-    # each one from its source, so tracking them would mean vendoring five
-    # upstream repositories. Restoring them here gives every job the same set a
-    # developer has. The AGENTS.md table deliberately omits them, so a skill
-    # that changed upstream cannot fail a lint run on an unrelated change.
-    - name: 🧩 Install Agent Skills
-      if: inputs.install == 'true'
-      run: pnpm exec skills experimental_install
       shell: bash
