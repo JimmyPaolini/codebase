@@ -168,6 +168,7 @@ const limitsSchema = z
   .object({
     callerMajorityRatio: z.number().gt(0).max(1).optional(),
     directSpreadThreshold: z.number().int().positive().optional(),
+    maximumBreadth: z.number().int().positive().optional(),
     maximumDepth: z.number().int().positive().optional(),
     maximumImplementationFanOut: z.number().int().positive().optional(),
     minimumCallers: z.number().int().positive().optional(),

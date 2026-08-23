@@ -233,6 +233,7 @@ export class ConfigurationService {
         authored.callerMajorityRatio ?? DEFAULT_CALLER_MAJORITY_RATIO,
       directSpreadThreshold:
         authored.directSpreadThreshold ?? DEFAULT_DIRECT_SPREAD_THRESHOLD,
+      maximumBreadth: authored.maximumBreadth,
       maximumDepth: authored.maximumDepth ?? DEFAULT_MAXIMUM_DEPTH,
       maximumImplementationFanOut:
         authored.maximumImplementationFanOut ??

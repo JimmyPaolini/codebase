@@ -87,11 +87,36 @@ describe(ConfigurationService, () => {
     expect(configuration.limits).toStrictEqual({
       callerMajorityRatio: DEFAULT_CALLER_MAJORITY_RATIO,
       directSpreadThreshold: DEFAULT_DIRECT_SPREAD_THRESHOLD,
+      maximumBreadth: undefined,
       maximumDepth: DEFAULT_MAXIMUM_DEPTH,
       maximumImplementationFanOut: DEFAULT_MAXIMUM_IMPLEMENTATION_FAN_OUT,
       minimumCallers: DEFAULT_MINIMUM_CALLERS,
       spreadThreshold: DEFAULT_SPREAD_THRESHOLD,
     });
+  });
+
+  it("leaves the breadth limit unset when no default exists for it", () => {
+    const configuration = service.resolveConfiguration({});
+
+    expect(configuration.limits.maximumBreadth).toBeUndefined();
+  });
+
+  it("keeps an authored breadth limit", () => {
+    const configuration = service.resolveConfiguration({
+      limits: { maximumBreadth: 5 },
+    });
+
+    expect(configuration.limits.maximumBreadth).toBe(5);
+  });
+
+  it("rejects a breadth limit that is not a positive integer", async () => {
+    const configurationPath = await writeConfiguration({
+      limits: { maximumBreadth: 0 },
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toThrow(ZodError);
   });
 
   it("applies every entry-point default", () => {

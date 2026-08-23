@@ -59,6 +59,13 @@ export interface CallidescopeLimits {
   callerMajorityRatio?: number | undefined;
   /** Modules a callable must call directly before spread is reported. */
   directSpreadThreshold?: number | undefined;
+  /**
+   * Distinct callables a callable may call directly before it is reported.
+   *
+   * No default is applied: a project must configure this explicitly before
+   * `--check breadth` can run against it.
+   */
+  maximumBreadth?: number | undefined;
   /** Frames a call stack may hold before it is reported. */
   maximumDepth?: number | undefined;
   /** Implementations one interface member may resolve to before giving up. */
@@ -192,6 +199,14 @@ export interface ResolvedCallidescopeJsonOutputConfiguration {
 export interface ResolvedCallidescopeLimits {
   callerMajorityRatio: number;
   directSpreadThreshold: number;
+  /**
+   * Distinct callables a callable may call directly before it is reported.
+   *
+   * Stays optional even after resolution: unlike every other limit, this one
+   * has no default, so its absence is a fact a `--check breadth` run must act
+   * on rather than something resolution can paper over.
+   */
+  maximumBreadth?: number | undefined;
   maximumDepth: number;
   maximumImplementationFanOut: number;
   minimumCallers: number;
