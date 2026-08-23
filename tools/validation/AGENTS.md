@@ -87,6 +87,7 @@ The modules this project defines and the imports between them, published by `nx 
 flowchart LR
   subgraph group0["validation"]
     CatalogManifestsModule
+    IssueMetadataModule
     LockfileModule
     MainModule
     PullRequestBodyModule
@@ -99,6 +100,7 @@ flowchart LR
   DiscoveryModule
   MainModule --> CatalogManifestsModule
   MainModule --> DiscoveryModule
+  MainModule --> IssueMetadataModule
   MainModule --> LockfileModule
   MainModule --> PullRequestBodyModule
   MainModule --> PullRequestMetadataModule
