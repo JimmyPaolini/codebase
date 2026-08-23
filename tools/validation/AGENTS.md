@@ -92,6 +92,7 @@ flowchart LR
     MainModule
     PullRequestBodyModule
     PullRequestMetadataModule
+    PullRequestReleaseSignificanceModule
   end
   subgraph group1["logger"]
     LoggerModule([LoggerModule])
@@ -104,6 +105,7 @@ flowchart LR
   MainModule --> LockfileModule
   MainModule --> PullRequestBodyModule
   MainModule --> PullRequestMetadataModule
+  MainModule --> PullRequestReleaseSignificanceModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
