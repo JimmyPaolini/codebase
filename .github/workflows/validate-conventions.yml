@@ -12,7 +12,8 @@ name: 🧑‍⚖️ Validate Conventions
 #
 # Two independent jobs, one per trigger. `pull_request` and `issues` never
 # fire together, so exactly one job runs per event — the other reports
-# "skipped" rather than adding to the run's duration. They are folded into
+# "skipped" rather than adding to the run's duration. On `merge_group` both
+# skip, which is the whole point of that trigger; see the note on it below. They are folded into
 # one file because both are thin: checkout, install, run a `tools/validation`
 # check. The README's Validate Conventions badge is this workflow's own
 # status badge — whichever job ran most recently on its trigger.
@@ -66,6 +67,16 @@ on:
         review_requested,
         review_request_removed,
       ]
+  # This workflow is a required status check, so the merge queue waits on its
+  # context before it will fast-forward main. Every check it runs reads the
+  # `pull_request` payload — a title, a body, labels, assignees, a head ref —
+  # and none of that exists on a `merge_group` event, nor can any of it have
+  # changed while the pull request sat in the queue: the queue rebases
+  # commits, never metadata. So the trigger exists purely so the workflow
+  # fires and resolves its context; the job below skips itself on this event,
+  # and a skipped required check counts as satisfied. Without the trigger no
+  # context is ever created and the queue entry waits for the timeout instead.
+  merge_group:
   issues:
     types: [opened, edited, labeled, unlabeled]
 

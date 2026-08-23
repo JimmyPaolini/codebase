@@ -9,6 +9,7 @@ on:
     branches:
       - main
   pull_request:
+  merge_group:
   schedule:
     - cron: 0 6 * * 1 # Weekly Monday 6am UTC
   workflow_dispatch:
@@ -52,9 +53,12 @@ jobs:
       # A full-history scan walks every commit the repository has ever had,
       # which is unnecessary on every push and pull request when the weekly
       # schedule (and workflow_dispatch, for an on-demand audit) already cover
-      # that ground. Push and pull_request events scan only the commits being
-      # introduced (NX_BASE..NX_HEAD) instead, which is what actually needs to
-      # gate before landing — nothing older can have changed.
+      # that ground. Push, pull_request, and merge_group events scan only the
+      # commits being introduced (NX_BASE..NX_HEAD) instead, which is what
+      # actually needs to gate before landing — nothing older can have
+      # changed. merge_group is named explicitly because this is a required
+      # check in the merge queue, and an event matching neither branch would
+      # report a green secret scan having scanned nothing at all.
       - name: 🚰 Scan Secrets (Full History)
         if: |
           github.event_name == 'schedule'
@@ -62,5 +66,8 @@ jobs:
         run: pnpm exec nx run codebase:gitleaks:ci
 
       - name: 🚰 Scan Secrets (Incremental)
-        if: github.event_name == 'push' || github.event_name == 'pull_request'
+        if: >-
+          github.event_name == 'push'
+          || github.event_name == 'pull_request'
+          || github.event_name == 'merge_group'
         run: pnpm exec nx run codebase:gitleaks:ci-incremental

@@ -322,7 +322,7 @@
           "command": "gitleaks git --log-opts=\"${NX_BASE}..${NX_HEAD}\" --verbose --redact --config configuration/gitleaks.toml --gitleaks-ignore-path configuration"
         }
       },
-      "description": "Detect hardcoded secrets in git history using Gitleaks (detection only). The ci-incremental configuration scopes the scan to NX_BASE..NX_HEAD instead of full history, for push/pull_request events where the weekly ci scan already covers everything older.",
+      "description": "Detect hardcoded secrets in git history using Gitleaks (detection only). The ci-incremental configuration scopes the scan to NX_BASE..NX_HEAD instead of full history, for push/pull_request/merge_group events where the weekly ci scan already covers everything older.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/configuration/.gitleaksignore",
@@ -862,11 +862,15 @@
           "command": "pnpm outdated --recursive"
         },
         "write": {
-          "command": "pnpm update --latest --recursive"
+          "commands": [
+            "pnpm update --latest --recursive \"!typescript\"",
+            "pnpm dedupe"
+          ],
+          "parallel": false
         }
       },
       "defaultConfiguration": "check",
-      "description": "Check for dependency updates (check) or upgrade all dependencies to latest versions (write)",
+      "description": "Check for dependency updates (check) or upgrade every dependency to its latest version and dedupe the lockfile (write). `write` holds typescript back, because typescript 7 removed the JavaScript compiler API that nx, typescript-eslint, knip and type-coverage all read: crossing that major is a deliberate migration, not a weekly bump. `check` deliberately still reports typescript as outdated, so the hold stays visible. See .github/workflows/upgrade-dependencies.yml for the full reasoning behind both the hold and the dedupe.",
       "executor": "nx:run-commands",
       "options": {}
     },
