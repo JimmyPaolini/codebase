@@ -315,7 +315,7 @@
           "command": "gitleaks git --log-opts=\"${NX_BASE}..${NX_HEAD}\" --verbose --redact --config configuration/gitleaks.toml --gitleaks-ignore-path configuration"
         }
       },
-      "description": "Detect hardcoded secrets in git history using Gitleaks (detection only). The ci-incremental configuration scopes the scan to NX_BASE..NX_HEAD instead of full history, for push/pull_request events where the weekly ci scan already covers everything older.",
+      "description": "Detect hardcoded secrets in git history using Gitleaks (detection only). The ci-incremental configuration scopes the scan to NX_BASE..NX_HEAD instead of full history, for push/pull_request/merge_group events where the weekly ci scan already covers everything older.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/configuration/.gitleaksignore",
