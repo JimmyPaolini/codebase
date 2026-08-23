@@ -411,17 +411,17 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 
 | Measure | Value |
 | --- | --- |
-| Callables | 300 |
+| Callables | 298 |
 | Files | 55 |
-| Calls traced | 399 |
-| Call stacks | 26 |
-| Deepest stack | 15 |
+| Calls traced | 406 |
+| Call stacks | 27 |
+| Deepest stack | 14 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 11 |
 
 ### Call stacks
 
-**1. `SynchronizationCommand.run`** — depth ≥ 15 · decorated-method
+**1. `SynchronizationCommand.run`** — depth ≥ 14 · decorated-method
 
 ```text
 🚀 SynchronizationCommand.run(…): Promise<void> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:147]
@@ -430,55 +430,20 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Runs the selected synchronizations and reports whether all succeeded.
     └─> ConventionalConfigCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:74]
        ↳ Synchronizes conventional-commit config and reports success without exiting.
-      └─> ConventionalConfigService.runSynchronization(mode: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:233]
+      └─> ConventionalConfigService.runSynchronization(mode: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:240]
          ↳ Runs the workflow in check or write mode, reporting whether it succeeded.
         └─> ConventionalConfigService.handleCheckMode(context: SyncContext): boolean [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:126]
            ↳ Check mode: validates all configuration files are in sync with conventional.config.cjs, reporting success rather than…
-          └─> ConventionalConfigValidatorsService.checkAllSkillsSync(config: ConventionalConfig, skillFiles: string[]): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:149]
+          └─> ConventionalConfigValidatorsService.checkAllSkillsSync(config: ConventionalConfig, skillFiles: string[]): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:155]
              ↳ Validates that every configured skill file has synchronized type/scope tables.
-            └─> ConventionalConfigValidatorsService.checkSkillSync(config: ConventionalConfig, skillFile: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:281]
+            └─> ConventionalConfigValidatorsService.checkSkillSync(config: ConventionalConfig, skillFile: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:293]
                ↳ Validates a skill file's type/scope markdown tables against source config.
               └─> ConventionalConfigValidatorsService.checkMarkerSync(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:41]
                  ↳ Checks that a named marker block in a skill file matches the source config values.
-                └─> ConventionalConfigValidatorsService.validateMarkerValues(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:121]
+                └─> ConventionalConfigValidatorsService.validateMarkerValues(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:123]
                    ↳ Compares skill marker values against source values and logs any mismatch.
-                  └─> ConventionalConfigValidatorsService.showDifference(source: string[], target: string[], targetName: string): void [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:102]
+                  └─> ConventionalConfigValidatorsService.showDifference(source: string[], target: string[], targetName: string): void [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:103]
                      ↳ Logs the items missing from and extra in the target compared to the source.
-                    └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
-                       ↳ Logs an informational message at the `info` level.
-                      └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
-                         ↳ Logs an informational message at the `info` level.
-                        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-                           ↳ Assembles the object pino merges into the line.
-                          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-                             ↳ Fails a malformed message in development, and never in production.
-                            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                               ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-**2. `ConventionalConfigCommand.run`** — depth 14 · decorated-method
-
-```text
-🚀 ConventionalConfigCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:55]
-   ↳ Runs the conventional-config sync command, delegating to helpers and exiting 1 on drift.
-  └─> ConventionalConfigCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:74]
-     ↳ Synchronizes conventional-commit config and reports success without exiting.
-    └─> ConventionalConfigService.runSynchronization(mode: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:233]
-       ↳ Runs the workflow in check or write mode, reporting whether it succeeded.
-      └─> ConventionalConfigService.handleCheckMode(context: SyncContext): boolean [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:126]
-         ↳ Check mode: validates all configuration files are in sync with conventional.config.cjs, reporting success rather than…
-        └─> ConventionalConfigValidatorsService.checkAllSkillsSync(config: ConventionalConfig, skillFiles: string[]): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:149]
-           ↳ Validates that every configured skill file has synchronized type/scope tables.
-          └─> ConventionalConfigValidatorsService.checkSkillSync(config: ConventionalConfig, skillFile: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:281]
-             ↳ Validates a skill file's type/scope markdown tables against source config.
-            └─> ConventionalConfigValidatorsService.checkMarkerSync(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:41]
-               ↳ Checks that a named marker block in a skill file matches the source config values.
-              └─> ConventionalConfigValidatorsService.validateMarkerValues(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:121]
-                 ↳ Compares skill marker values against source values and logs any mismatch.
-                └─> ConventionalConfigValidatorsService.showDifference(source: string[], target: string[], targetName: string): void [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:102]
-                   ↳ Logs the items missing from and extra in the target compared to the source.
-                  └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
-                     ↳ Logs an informational message at the `info` level.
                     └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
                        ↳ Logs an informational message at the `info` level.
                       └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
@@ -489,94 +454,49 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                              ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-**3. `NestjsModuleGraphsCommand.run`** — depth ≥ 10 · decorated-method
+**2. `ConventionalConfigCommand.run`** — depth 13 · decorated-method
 
 ```text
-🚀 NestjsModuleGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:169]
+🚀 ConventionalConfigCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:55]
+   ↳ Runs the conventional-config sync command, delegating to helpers and exiting 1 on drift.
+  └─> ConventionalConfigCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:74]
+     ↳ Synchronizes conventional-commit config and reports success without exiting.
+    └─> ConventionalConfigService.runSynchronization(mode: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:240]
+       ↳ Runs the workflow in check or write mode, reporting whether it succeeded.
+      └─> ConventionalConfigService.handleCheckMode(context: SyncContext): boolean [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:126]
+         ↳ Check mode: validates all configuration files are in sync with conventional.config.cjs, reporting success rather than…
+        └─> ConventionalConfigValidatorsService.checkAllSkillsSync(config: ConventionalConfig, skillFiles: string[]): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:155]
+           ↳ Validates that every configured skill file has synchronized type/scope tables.
+          └─> ConventionalConfigValidatorsService.checkSkillSync(config: ConventionalConfig, skillFile: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:293]
+             ↳ Validates a skill file's type/scope markdown tables against source config.
+            └─> ConventionalConfigValidatorsService.checkMarkerSync(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:41]
+               ↳ Checks that a named marker block in a skill file matches the source config values.
+              └─> ConventionalConfigValidatorsService.validateMarkerValues(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:123]
+                 ↳ Compares skill marker values against source values and logs any mismatch.
+                └─> ConventionalConfigValidatorsService.showDifference(source: string[], target: string[], targetName: string): void [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:103]
+                   ↳ Logs the items missing from and extra in the target compared to the source.
+                  └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+                     ↳ Logs an informational message at the `info` level.
+                    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
+                       ↳ Assembles the object pino merges into the line.
+                      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
+                         ↳ Fails a malformed message in development, and never in production.
+                        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
+                           ↳ Whether a word is a verb in one of the two tenses the convention allows.
+```
+
+**3. `NestjsModuleGraphsCommand.run`** — depth ≥ 9 · decorated-method
+
+```text
+🚀 NestjsModuleGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:177]
    ↳ Runs the nestjs-module-graphs sync command in check or write mode.
-  └─> NestjsModuleGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:188]
+  └─> NestjsModuleGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:196]
      ↳ Synchronizes every project's module graph and reports success without exiting.
-    └─> NestjsModuleGraphsCommand.synchronizeProject(…): Promise<string[]> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:138]
+    └─> NestjsModuleGraphsCommand.synchronizeProject(…): Promise<string[]> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:145]
        ↳ Explores one project and syncs its graph into every target markdown file.
-      └─> NestjsModuleGraphsCommand.filter(…)(fileName: string): boolean [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:159]
-        └─> NestjsModuleGraphsCommand.synchronizeFile(…): boolean [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:95]
+      └─> NestjsModuleGraphsCommand.filter(…)(fileName: string): boolean [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:167]
+        └─> NestjsModuleGraphsCommand.synchronizeFile(…): boolean [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:99]
            ↳ Checks or rewrites one markdown file's graph block.
-          └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
-             ↳ Logs an informational message at the `info` level.
-            └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
-               ↳ Logs an informational message at the `info` level.
-              └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-                 ↳ Assembles the object pino merges into the line.
-                └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-                   ↳ Fails a malformed message in development, and never in production.
-                  └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                     ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-<details>
-<summary>23 more call stacks</summary>
-
-**4. `NxProjectGraphsCommand.run`** — depth 10 · decorated-method
-
-```text
-🚀 NxProjectGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:151]
-   ↳ Runs the nx-project-graphs sync command in check or write mode.
-  └─> NxProjectGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:170]
-     ↳ Synchronizes every project's graph and reports success without exiting.
-    └─> NxProjectGraphsCommand.filter(…)(project: NxProject): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:184]
-      └─> NxProjectGraphsCommand.synchronizeProject(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:118]
-         ↳ Checks or rewrites one project's README graph block.
-        └─> NxProjectGraphsCommand.applyMode(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:68]
-           ↳ Reports drift in check mode, or rewrites the block in write mode.
-          └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
-             ↳ Logs an informational message at the `info` level.
-            └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
-               ↳ Logs an informational message at the `info` level.
-              └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-                 ↳ Assembles the object pino merges into the line.
-                └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-                   ↳ Fails a malformed message in development, and never in production.
-                  └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                     ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-**5. `PullRequestTemplateCommand.run`** — depth 10 · decorated-method
-
-```text
-🚀 PullRequestTemplateCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:201]
-   ↳ Runs the pull-request-template sync command in check or write mode.
-  └─> PullRequestTemplateCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:220]
-     ↳ Synchronizes the PR template and reports success without exiting.
-    └─> PullRequestTemplateCommand.handleWriteMode(templateContent: string, targetFiles: string[]): void [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:132]
-       ↳ Writes the current PR template into any target files that are out of sync.
-      └─> PullRequestTemplateCommand.filter(…)(targetFile: string): boolean [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:137]
-        └─> PullRequestTemplateCommand.checkTargetSync(templateContent: string, targetFile: string): boolean [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:59]
-           ↳ Checks whether the target file's marker block matches the current PR template.
-          └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
-             ↳ Logs an informational message at the `info` level.
-            └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
-               ↳ Logs an informational message at the `info` level.
-              └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-                 ↳ Assembles the object pino merges into the line.
-                └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-                   ↳ Fails a malformed message in development, and never in production.
-                  └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                     ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-**6. `DevcontainerConfigurationCommand.run`** — depth 9 · decorated-method
-
-```text
-🚀 DevcontainerConfigurationCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:264]
-   ↳ Runs the devcontainer-configuration sync command in check or write mode.
-  └─> DevcontainerConfigurationCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:283]
-     ↳ Synchronizes the cloud devcontainer config and reports success without exiting.
-    └─> DevcontainerConfigurationCommand.check(expectedConfig: DevcontainerConfiguration, cloudConfigFile: string): boolean [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:84]
-       ↳ Compares the expected merged config against the current cloud config file and reports field differences.
-      └─> DevcontainerConfigurationCommand.reportDifferences(…): void [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:162]
-         ↳ Logs each field that differs between the expected and current config.
-        └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
-           ↳ Logs an informational message at the `info` level.
           └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
              ↳ Logs an informational message at the `info` level.
             └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
@@ -587,17 +507,42 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                    ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-**7. `ConformetryGeneratorsCommand.run`** — depth ≥ 8 · decorated-method
+<details>
+<summary>24 more call stacks</summary>
+
+**4. `PullRequestTemplateCommand.run`** — depth 9 · decorated-method
 
 ```text
-🚀 ConformetryGeneratorsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:176]
-   ↳ Runs the conformetry-generators sync command in check or write mode.
-  └─> ConformetryGeneratorsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:194]
-     ↳ Synchronizes the generators table and reports success without exiting.
-    └─> ConformetryGeneratorsCommand.checkSync(generators: ConformetryGeneratorMetadata[]): boolean [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:58]
-       ↳ Compares the generated generators table against the stored content in AGENTS.md and reports any differences.
-      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
-         ↳ Logs an informational message at the `info` level.
+🚀 PullRequestTemplateCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:206]
+   ↳ Runs the pull-request-template sync command in check or write mode.
+  └─> PullRequestTemplateCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:225]
+     ↳ Synchronizes the PR template and reports success without exiting.
+    └─> PullRequestTemplateCommand.handleWriteMode(templateContent: string, targetFiles: string[]): void [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:133]
+       ↳ Writes the current PR template into any target files that are out of sync.
+      └─> PullRequestTemplateCommand.filter(…)(targetFile: string): boolean [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:138]
+        └─> PullRequestTemplateCommand.checkTargetSync(templateContent: string, targetFile: string): boolean [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:59]
+           ↳ Checks whether the target file's marker block matches the current PR template.
+          └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+             ↳ Logs an informational message at the `info` level.
+            └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
+               ↳ Assembles the object pino merges into the line.
+              └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
+                 ↳ Fails a malformed message in development, and never in production.
+                └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
+                   ↳ Whether a word is a verb in one of the two tenses the convention allows.
+```
+
+**5. `DevcontainerConfigurationCommand.run`** — depth 8 · decorated-method
+
+```text
+🚀 DevcontainerConfigurationCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:270]
+   ↳ Runs the devcontainer-configuration sync command in check or write mode.
+  └─> DevcontainerConfigurationCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:289]
+     ↳ Synchronizes the cloud devcontainer config and reports success without exiting.
+    └─> DevcontainerConfigurationCommand.check(expectedConfig: DevcontainerConfiguration, cloudConfigFile: string): boolean [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:84]
+       ↳ Compares the expected merged config against the current cloud config file and reports field differences.
+      └─> DevcontainerConfigurationCommand.reportDifferences(…): void [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:161]
+         ↳ Logs each field that differs between the expected and current config.
         └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
            ↳ Logs an informational message at the `info` level.
           └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
@@ -608,7 +553,28 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                  ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-**8. `SkillExclusionsCommand.run`** — depth 8 · decorated-method
+**6. `NxProjectGraphsCommand.run`** — depth 8 · decorated-method
+
+```text
+🚀 NxProjectGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:154]
+   ↳ Runs the nx-project-graphs sync command in check or write mode.
+  └─> NxProjectGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:173]
+     ↳ Synchronizes every project's graph and reports success without exiting.
+    └─> NxProjectGraphsCommand.synchronizeProject(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:120]
+       ↳ Checks or rewrites one project's README graph block.
+      └─> NxProjectGraphsCommand.applyMode(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:68]
+         ↳ Reports drift in check mode, or rewrites the block in write mode.
+        └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+           ↳ Logs an informational message at the `info` level.
+          └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
+             ↳ Assembles the object pino merges into the line.
+            └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
+               ↳ Fails a malformed message in development, and never in production.
+              └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
+                 ↳ Whether a word is a verb in one of the two tenses the convention allows.
+```
+
+**7. `SkillExclusionsCommand.run`** — depth 8 · decorated-method
 
 ```text
 🚀 SkillExclusionsCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:173]
@@ -627,6 +593,25 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                ↳ Fails a malformed message in development, and never in production.
               └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
                  ↳ Whether a word is a verb in one of the two tenses the convention allows.
+```
+
+**8. `ConformetryGeneratorsCommand.run`** — depth ≥ 7 · decorated-method
+
+```text
+🚀 ConformetryGeneratorsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:180]
+   ↳ Runs the conformetry-generators sync command in check or write mode.
+  └─> SynchronizationService.resolveSynchronizationModeOrExit(options: SynchronizationModeResolutionOptions): SynchronizationMode [tools/synchronization/src/modules/synchronization/synchronization.service.ts:59]
+     ↳ Resolves synchronization mode or exits the process when the mode is invalid.
+    └─> SynchronizationService.exitInvalidMode(…): never [tools/synchronization/src/modules/synchronization/synchronization.service.ts:22]
+       ↳ Logs invalid mode details and exits with status code 1.
+      └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:256]
+         ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
+        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
+           ↳ Assembles the object pino merges into the line.
+          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
+             ↳ Fails a malformed message in development, and never in production.
+            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
+               ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
 **9. `PullRequestLabelsCommand.run`** — depth 7 · decorated-method
@@ -713,15 +698,23 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Ranks a group into the graphed project, another project, or ungrouped.
 ```
 
-**18. `NestjsModuleGraphsService.loadModuleClasses`** — depth ≥ 2 · orphan-root
+**18. `NestjsModuleGraphsService.constructor`** — depth 2 · orphan-root
 
 ```text
-🚀 NestjsModuleGraphsService.loadModuleClasses(file: string): Promise<Type<unknown>[]> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:91]
-   ↳ Imports a module file and returns every module class it exports.
-  └─> NestjsModuleGraphsService.map(…)(…): Type<unknown> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:102]
+🚀 NestjsModuleGraphsService.constructor(…): NestjsModuleGraphsService [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:48]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
+     ↳ Sets the context label included in every subsequent log line.
 ```
 
-**19. `NestjsModuleGraphsCommand.constructor`** — depth ≥ 2 · orphan-root
+**19. `NestjsModuleGraphsService.loadModuleClasses`** — depth ≥ 2 · orphan-root
+
+```text
+🚀 NestjsModuleGraphsService.loadModuleClasses(file: string): Promise<Type<unknown>[]> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:96]
+   ↳ Imports a module file and returns every module class it exports.
+  └─> NestjsModuleGraphsService.map(…)(…): Type<unknown> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:107]
+```
+
+**20. `NestjsModuleGraphsCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 NestjsModuleGraphsCommand.constructor(…): NestjsModuleGraphsCommand [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:48]
@@ -729,7 +722,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**20. `NxProjectGraphsService.renderEdge`** — depth 2 · orphan-root
+**21. `NxProjectGraphsService.renderEdge`** — depth 2 · orphan-root
 
 ```text
 🚀 NxProjectGraphsService.renderEdge(edge: NxProjectGraphEdge): string [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:50]
@@ -738,7 +731,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Turns a project name into an identifier mermaid accepts.
 ```
 
-**21. `NxProjectGraphsService.renderNode`** — depth 2 · orphan-root
+**22. `NxProjectGraphsService.renderNode`** — depth 2 · orphan-root
 
 ```text
 🚀 NxProjectGraphsService.renderNode(projectName: string): string [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:57]
@@ -747,7 +740,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Turns a project name into an identifier mermaid accepts.
 ```
 
-**22. `NxProjectGraphsCommand.constructor`** — depth ≥ 2 · orphan-root
+**23. `NxProjectGraphsCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 NxProjectGraphsCommand.constructor(…): NxProjectGraphsCommand [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:46]
@@ -755,7 +748,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**23. `PullRequestLabelsCommand.constructor`** — depth ≥ 2 · orphan-root
+**24. `PullRequestLabelsCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 PullRequestLabelsCommand.constructor(…): PullRequestLabelsCommand [tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:61]
@@ -763,7 +756,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**24. `PullRequestTemplateCommand.constructor`** — depth ≥ 2 · orphan-root
+**25. `PullRequestTemplateCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 PullRequestTemplateCommand.constructor(…): PullRequestTemplateCommand [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:37]
@@ -771,7 +764,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**25. `SkillExclusionsCommand.constructor`** — depth ≥ 2 · orphan-root
+**26. `SkillExclusionsCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 SkillExclusionsCommand.constructor(…): SkillExclusionsCommand [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:55]
@@ -779,7 +772,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**26. `SynchronizationCommand.constructor`** — depth ≥ 2 · orphan-root
+**27. `SynchronizationCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 SynchronizationCommand.constructor(…): SynchronizationCommand [tools/synchronization/src/modules/synchronization/synchronization.command.ts:42]
@@ -804,8 +797,8 @@ None.
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-12162-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-405.74_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-12481-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-414.88_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-12-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-82-3178c6?style=flat-square)
 
@@ -816,20 +809,20 @@ None.
 ![Test Files](https://img.shields.io/badge/Test_Files-25-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-20-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-33-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-577-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-273-15803d?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-590-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-271-15803d?style=flat-square)
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-659-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-191-059669?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-202-059669?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-30-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-667-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-461-0284c7?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-674-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-463-0284c7?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-42-db2777?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-122-ea580c?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-280-6366f1?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-443-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-900-475569?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-306-6366f1?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-476-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-955-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-3-ca8a04?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-1-166534?style=flat-square)
 
