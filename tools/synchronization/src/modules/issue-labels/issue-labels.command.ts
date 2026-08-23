@@ -69,7 +69,7 @@ export class IssueLabelsCommand extends CommandRunner {
     }
 
     this.logger.log(
-      `⚠️ Unable to add ${label} to issue ${issueNumber}: ${this.issueLabelsGithubService.describeFailure(result)}`,
+      `⚠️ Failed to add ${label} to issue ${issueNumber}: ${this.issueLabelsGithubService.describeFailure(result)}`,
     );
   }
 
@@ -132,7 +132,7 @@ export class IssueLabelsCommand extends CommandRunner {
     | { issueNumber: string; missingLabels: string[] } {
     const issueNumber = this.readIssueNumber();
     if (issueNumber === undefined) {
-      this.logger.log("📄 No issue number in the environment, skipping");
+      this.logger.log("📄 Skipping: no issue number in the environment");
       return undefined;
     }
 
@@ -165,7 +165,7 @@ export class IssueLabelsCommand extends CommandRunner {
     }
 
     if (!this.issueLabelsGithubService.isAvailable()) {
-      this.logger.log("⚠️ Unable to add issue labels: gh is not available");
+      this.logger.log("⚠️ Skipping label reconciliation: gh is not available");
       return;
     }
 

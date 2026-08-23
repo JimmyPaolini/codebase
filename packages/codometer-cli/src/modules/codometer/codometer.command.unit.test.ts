@@ -623,17 +623,21 @@ describe(CodometerCommand, () => {
 
       await run();
 
-      expect(loggerService.log).toHaveBeenCalledWith(
+      expect(loggerService.info).toHaveBeenCalledWith(
         "📊 Excluded the files codometer writes from what it measures",
         undefined,
         { paths: ["README.md"] },
       );
     });
 
-    it("says nothing when it writes nothing at all", async () => {
+    it("says nothing about excluded files when it writes nothing at all", async () => {
       await run();
 
-      expect(loggerService.log).not.toHaveBeenCalled();
+      expect(loggerService.info).not.toHaveBeenCalledWith(
+        "📊 Excluded the files codometer writes from what it measures",
+        undefined,
+        expect.anything(),
+      );
     });
   });
 
@@ -725,6 +729,63 @@ describe(CodometerCommand, () => {
         expect.anything(),
       );
       expect(process.exitCode).toBe(0);
+    });
+  });
+
+  describe("what it announces", () => {
+    it("debug-logs the start of the run with the resolved directory", async () => {
+      await run();
+
+      expect(loggerService.debug).toHaveBeenCalledWith(
+        "🚀 Started the codometer run",
+        undefined,
+        { directory: "/repo" },
+      );
+    });
+
+    it("debug-logs the configuration it loaded", async () => {
+      await run({ config: "codometer.config.ts" });
+
+      expect(loggerService.debug).toHaveBeenCalledWith(
+        "🗂️ Loaded the configuration",
+        undefined,
+        { configuredPath: "codometer.config.ts" },
+      );
+    });
+
+    it("logs completion on a fully clean run", async () => {
+      await run();
+
+      expect(loggerService.info).toHaveBeenCalledWith(
+        "✅ Finished the codometer run",
+        undefined,
+        { breachCount: 0, targetCount: 0 },
+      );
+    });
+
+    it("counts every target measured and every limit breached at completion", async () => {
+      vi.mocked(codometerService.measure).mockReturnValue({
+        failures: [],
+        indexes: new Map(),
+        limits: [buildBreach("fail"), buildBreach("warn")],
+        statistics,
+        targets: [
+          {
+            files: 5,
+            language: undefined,
+            name: "Compiled JavaScript",
+            size: { bytes: 5324, compression: "gzip", files: 5 },
+          },
+        ],
+      });
+
+      await run();
+
+      expect(loggerService.info).toHaveBeenCalledWith(
+        "✅ Finished the codometer run",
+        undefined,
+        { breachCount: 2, targetCount: 1 },
+      );
     });
   });
 

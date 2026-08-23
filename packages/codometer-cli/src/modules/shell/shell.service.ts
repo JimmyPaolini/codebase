@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+
+import { LoggerService } from "@codebase/logger";
 
 import {
   EMPTY_SHELL_RESULT,
@@ -15,6 +17,7 @@ import {
 
 import type { ShellInput, ShellResult } from "./shell.types";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Counts the constructs a shell script is built from.
  *
@@ -24,14 +27,15 @@ import type { ShellInput, ShellResult } from "./shell.types";
  * anything else so that a `#` opening a line never reads as code.
  */
 @Injectable()
+/* v8 ignore stop */
 export class ShellService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext(ShellService.name);
+  }
 
   // 🔐 Private Fields
-
-  private readonly logger = new Logger(ShellService.name);
 
   // 🔑 Public Fields
 
@@ -105,13 +109,10 @@ export class ShellService {
         }
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
-        this.logger.warn(
-          `🐚 Skipped shell analysis for ${filePath}`,
-          undefined,
-          {
-            reason: message,
-          },
-        );
+        this.logger.warn("🐚 Skipped shell analysis", undefined, {
+          filePath,
+          reason: message,
+        });
         continue;
       }
     }

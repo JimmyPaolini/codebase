@@ -4,18 +4,24 @@ import { brotliCompressSync, gzipSync } from "node:zlib";
 
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import { BROTLI_OPTIONS, GZIP_LEVEL } from "./size-analysis.constants";
 import { UnreadableTargetFileError } from "./size-analysis.errors";
 
 import type { AnalyzeSizeArguments, SizeResult } from "./size-analysis.types";
 import type { CodometerCompression } from "@codometer/configuration";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /** Measures how many bytes a target's files occupy once compressed. */
 @Injectable()
+/* v8 ignore stop */
 export class SizeAnalysisService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext(SizeAnalysisService.name);
+  }
 
   // 🔐 Private Fields
 
@@ -58,6 +64,10 @@ export class SizeAnalysisService {
     try {
       return this.compress(readFileSync(absolutePath), compression);
     } catch (error: unknown) {
+      this.logger.error("🗜️ Failed to measure a target file", undefined, {
+        path: absolutePath,
+        reason: error instanceof Error ? error.message : String(error),
+      });
       throw new UnreadableTargetFileError(absolutePath, String(error));
     }
   }

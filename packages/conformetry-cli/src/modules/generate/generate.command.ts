@@ -109,6 +109,10 @@ export class GenerateCommand extends CommandRunner {
     passedParameters: string[],
     options: GenerateCommandOptions,
   ): Promise<void> {
+    this.logger.debug("🏗 Generating a conformetry instance", undefined, {
+      generator: options.generator,
+    });
+
     const configuration =
       await this.configurationService.loadConformetryConfiguration(
         options.config ?? DEFAULT_CONFIGURATION_PATH,
@@ -118,6 +122,9 @@ export class GenerateCommand extends CommandRunner {
     });
 
     if (definition === undefined) {
+      this.logger.error("🚫 Rejected an unknown generator", undefined, {
+        generator: options.generator,
+      });
       throw new Error(
         `Unknown generator "${options.generator}". Available: ${configuration.map((generator) => generator.name).join(", ")}`,
       );
@@ -145,7 +152,7 @@ export class GenerateCommand extends CommandRunner {
     process.stdout.write(
       `${result.generatedFilePaths.map((filePath) => `  ${filePath}`).join("\n")}\n`,
     );
-    this.logger.log("✨ Generated instance files", undefined, {
+    this.logger.info("✨ Generated instance files", undefined, {
       count: result.generatedFilePaths.length,
       outputDirectoryPath: result.outputDirectoryPath,
     });

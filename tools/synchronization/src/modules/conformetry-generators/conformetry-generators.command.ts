@@ -7,7 +7,6 @@ import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { SYNCHRONIZATION_KIND_DERIVATION } from "../synchronization/synchronization.constants";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import type {
@@ -45,9 +44,6 @@ export class ConformetryGeneratorsCommand
 
   // 🔑 Public Fields
 
-  /** Derived from configuration, so its drift is answered on a pull request. */
-  readonly synchronizationKind = SYNCHRONIZATION_KIND_DERIVATION;
-
   readonly synchronizationLabel = "conformetry-generators";
 
   // 🔏 Private Methods
@@ -63,20 +59,24 @@ export class ConformetryGeneratorsCommand
     const existing = existingContent.generatedContent.trim();
 
     if (generated !== existing) {
-      this.logger.log(
+      this.logger.info(
         "📇 Detected an out-of-sync conformetry generators table in AGENTS.md",
         undefined,
         {
           count: generators.length,
-          hint: "Run 'nx run synchronization:synchronize:write' to sync",
+          hint: "Run 'nx run synchronization:conformetry-generators:write' to sync",
         },
       );
       return false;
     }
 
-    this.logger.log("📇 Verified the conformetry generators table", undefined, {
-      count: generators.length,
-    });
+    this.logger.info(
+      "📇 Verified the conformetry generators table",
+      undefined,
+      {
+        count: generators.length,
+      },
+    );
     return true;
   }
 
@@ -156,14 +156,14 @@ export class ConformetryGeneratorsCommand
    */
   private writeSync(generators: ConformetryGeneratorMetadata[]): void {
     const agentsFile = path.join(process.cwd(), "AGENTS.md");
-    this.logger.log("🔄 Generating conformetry generators table...");
+    this.logger.info("🔄 Generating the conformetry generators table");
     const generatedTable = this.generateGeneratorsTable(generators);
     const { afterMarker, beforeMarker } = this.readAgentsFile();
 
     const newContent = `${beforeMarker}\n${generatedTable}\n${afterMarker}`;
 
     writeFileSync(agentsFile, newContent, "utf8");
-    this.logger.log("📇 Updated AGENTS.md", undefined, {
+    this.logger.info("📇 Updated AGENTS.md", undefined, {
       count: generators.length,
     });
   }

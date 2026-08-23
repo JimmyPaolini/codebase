@@ -13,82 +13,80 @@ fails when someone edits the copy instead of the source.
 
 ## Usage
 
+Every synchronization command is its own Nx target on this project, run
+directly rather than through a shared aggregate — the same way
+[`codebase:codometer`](../../packages/codometer-cli/README.md) and
+[`codebase:callidescope`](../../packages/callidescope-cli/README.md) are named
+by their own callers instead of looping through one process:
+
 ```bash
-nx run synchronization:start            # Check every source (default)
-nx run synchronization:start:write      # Regenerate every derived file
+nx run synchronization:conformetry-generators          # check (the default)
+nx run synchronization:conformetry-generators:write     # regenerate
 ```
 
 Every command runs in one of two modes:
 
-| Mode | Does |
-| ---- | ---- |
+| Mode    | Does                                                           |
+| ------- | -------------------------------------------------------------- |
 | `check` | Compares, writes nothing, exits non-zero on drift. The default |
-| `write` | Regenerates the derived file from its source |
+| `write` | Regenerates the derived file from its source                   |
 
-`check` is what the [🧑‍💻 Lint Codebase](../../.github/workflows/lint-codebase.yml)
-workflow runs, so drift fails a pull request rather than surviving into `main` —
-for the synchronizations whose drift a pull request should answer for. Which
-those are is the second axis, below. It is also what
-[`configuration/lint-staged.config.ts`](../../configuration/lint-staged.config.ts)
-runs, so a commit catches drift too. Both name the `synchronize` target
-themselves rather than reaching it through
-[`lint-codebase`](../../AGENTS.md#code-quality)'s `dependsOn`, because `write`
-here publishes reports and Nx forwards an explicit configuration down
-`dependsOn`.
-
-## Three kinds of synchronization
-
-A mode says what a run does. A **kind** says which runs a synchronization
-belongs in, and each command declares its own:
-
-| Kind | What it synchronizes | Where its drift is answered |
-| ---- | -------------------- | --------------------------- |
-| `derivation` | A committed file derived from configuration | Checked on a pull request. The change that touched the configuration is the change that regenerates the file |
-| `report` | A report generated from the code it describes | Published on the default branch. A branch being behind the published report is not a mistake the branch made |
-| `repository` | State the working tree does not contain at all | Reconciled by whoever holds a token. Nothing gates on it, because nothing that runs without credentials can even look |
-
-`--kinds` narrows a run to a comma-separated set of them:
+`start` runs every synchronization command in one process instead of one at a
+time — the only target that does. No workflow or `lint-staged` pattern names
+it; it exists purely for a human at a terminal who wants to check or write
+everything in one command:
 
 ```bash
-nx run synchronization:synchronize                # check every derivation
-nx run synchronization:synchronize:write          # write derivations, publish reports
-nx run synchronization:start                      # every kind, interactively
+nx run synchronization:start          # check every synchronization
+nx run synchronization:start:write    # write every synchronization
 ```
 
-Absent, `--kinds` selects every kind, because the flag narrows a run rather
-than enabling one. A flag carrying no value is refused: read as "every kind" it
-would publish reports from a pull request, and read as "none" it would report
-success over a synchronization nobody ran. A selection matching no command
-fails for the same reason.
+## Where each synchronization's drift is answered
 
-Only `nestjs-module-graphs` is a `report` today. Its diagram moves whenever any
-module gains or loses an import, so gating a pull request on its freshness
-failed branches for being behind `main` rather than for anything they did — the
-same trap [codometer](../../packages/codometer-cli/README.md) and
+Which runs check which synchronization is a property of the caller, not a
+taxonomy the commands declare about themselves. Six of the seven — every one
+except `nestjs-module-graphs` and `pull-request-labels` — are **derivations**:
+committed files derived from configuration a pull request can also change, so
+`check` runs on a pull request and `write` runs on the default branch's
+release. The [🧑‍💻 Lint Codebase](../../.github/workflows/lint-codebase.yml)
+workflow and
+[`configuration/lint-staged.config.ts`](../../configuration/lint-staged.config.ts)
+each name every derivation target directly alongside `lint-codebase` in one
+`nx affected` invocation, rather than reaching them through
+[`lint-codebase`](../../AGENTS.md#code-quality)'s `dependsOn` — Nx forwards an
+explicit configuration down `dependsOn`, so an edge there would let
+`lint-codebase --configuration=write` publish from a branch.
+
+`nestjs-module-graphs` is a **report**: its diagram moves whenever any module
+gains or loses an import, so gating a pull request on its freshness would fail
+branches for being behind `main` rather than for anything they did — the same
+trap [codometer](../../packages/codometer-cli/README.md) and
 [callidescope](../../packages/callidescope-cli/README.md) publish on `main` to
-avoid.
+avoid. Nothing checks it on a pull request; the release workflow runs its
+`write` configuration directly.
 
-Only `pull-request-labels` is a `repository` synchronization today, and it is
-the reason the kind exists. Neither of the other two fits: it must not run in
-`lint-codebase`, which every developer and every fork runs with no GitHub
-token, and it must not wait for the default branch either — a change
+`pull-request-labels` needs credentials: its destination is GitHub's label set
+rather than a file in the tree, so reaching it needs a token that neither a
+fork nor a developer's `lint-codebase` run has. It must not run in
+`lint-codebase`, and it must not wait for the default branch either — a change
 introducing a new scope needs that scope's label to exist before 🧾 Validate
-Pull Request Metadata runs on the very same pull request. So it is neither
-gated nor published: `check` drives `derivation`, `write` drives
-`derivation,report`, and the one caller holding a token asks for `repository`
-by name.
+Pull Request Metadata runs on the very same pull request. So the one caller
+holding a token, [validate-conventions.yml](../../.github/workflows/validate-conventions.yml),
+runs its `write` mode directly through `node` rather than through this Nx
+target, on `opened`/`reopened`, and nothing else names it.
 
 ## What it synchronizes
 
-| Command | Source | Destination |
-| ------- | ------ | ----------- |
-| `conformetry-generators` | `configuration/conformetry.config.ts` | The generator table in `AGENTS.md`, between marker comments |
-| `conventional-config` | `configuration/conventional.config.cjs` | The commit type and scope tables, commitlint, and release configuration |
-| `devcontainer-configuration` | `.devcontainer/local/devcontainer.json` | The shared fields of `.devcontainer/cloud/devcontainer.json` |
-| `nestjs-module-graphs` | The NestJS container each project builds | The mermaid module graph in that project's `AGENTS.md` and `README.md`. A `report`, published on `main` |
-| `nx-project-graphs` | The Nx project graph | The mermaid project graph in every project's `README.md` |
-| `pull-request-labels` | `configuration/conventional.config.cjs` | This repository's `type:`, `scope:`, and `source:` labels on GitHub. A `repository` synchronization |
-| `pull-request-template` | `.github/PULL_REQUEST_TEMPLATE.md` | The template embedded in the PR skill files |
+| Command                      | Source                                   | Destination                                                                                           |
+| ---------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `conformetry-generators`     | `configuration/conformetry.config.ts`    | The generator table in `AGENTS.md`, between marker comments                                           |
+| `conventional-config`        | `configuration/conventional.config.cjs`  | The commit type and scope tables, commitlint, and release configuration                               |
+| `devcontainer-configuration` | `.devcontainer/local/devcontainer.json`  | The shared fields of `.devcontainer/cloud/devcontainer.json`                                          |
+| `nestjs-module-graphs`       | The NestJS container each project builds | The mermaid module graph in that project's `AGENTS.md` and `README.md`. A report, published on `main` |
+| `nx-project-graphs`          | The Nx project graph                     | The mermaid project graph in every project's `README.md`                                              |
+| `pull-request-labels`        | `configuration/conventional.config.cjs`  | This repository's `type:`, `scope:`, and `source:` labels on GitHub. Needs credentials                |
+| `pull-request-template`      | `.github/PULL_REQUEST_TEMPLATE.md`       | The template embedded in the PR skill files                                                           |
+| `skill-exclusions`           | `skills-lock.json`                       | The installed-skill exclusion lists in five ignore files                                              |
 
 ### Module graphs
 
@@ -223,68 +221,59 @@ both are warnings, so this can never be why a pull request goes red. Reads and
 writes both go through the `gh` client, which already resolves the repository
 from the checkout and the token from the environment.
 
-Run one on its own with its named configuration:
+Run it on its own through its own Nx target:
 
 ```bash
-nx run synchronization:start:conformetry-generators-write
-nx run synchronization:start:devcontainer-configuration-check
+nx run synchronization:pull-request-labels:write
 ```
 
-## Why one aggregate command
+## Why callers name targets directly
 
-The `synchronization` command drives all seven in a single process. Each `nx
-run` rebuilds the project graph, so seven targets cost seven graph builds where
-one costs one.
+Every synchronization command used to be selected through a shared aggregate's
+`--kinds` flag, so a caller asked for a set of kinds rather than for the
+commands it actually wanted. That flag needed a taxonomy describing which
+commands each caller wanted, and the taxonomy kept stretching every time a new
+caller's requirements did not fit the existing values.
 
-The aggregate also reports _all_ drift at once rather than stopping at the
-first failure: each command's `synchronize` returns whether it succeeded, and
-exiting stays in each command's own `run`, where it belongs. A contributor gets
-one list of what to regenerate instead of discovering the next problem after
-fixing the last.
+Each command is its own Nx target instead, run directly the way
+[`codebase:codometer`](../../packages/codometer-cli/README.md) and
+[`codebase:callidescope`](../../packages/callidescope-cli/README.md) are named
+by their own callers. Which commands a caller wants is a property of the
+caller — the list of `--target` flags it passes — rather than something the
+commands declare about themselves centrally. Each target declares its own
+sources as `inputs`, so `nx affected` only reruns it when a file it actually
+reads has changed, and each caller decides for itself which targets belong in
+which invocation:
 
-## The `synchronize` target
+- [🧑‍💻 Lint Codebase](../../.github/workflows/lint-codebase.yml) and
+  [`configuration/lint-staged.config.ts`](../../configuration/lint-staged.config.ts)
+  each name every derivation target directly alongside `lint-codebase` in one
+  `nx affected` invocation, so a pull request and a commit both check drift.
+- The release workflow runs every derivation's `write` configuration together
+  with `nestjs-module-graphs:write` through `nx run-many`, so one command still
+  publishes everything.
+- [validate-conventions.yml](../../.github/workflows/validate-conventions.yml)
+  runs `pull-request-labels write` directly through `node`, bypassing Nx
+  entirely, since it is the one caller with a token and needs no project graph.
 
-```bash
-nx run synchronization:synchronize                            # check derivations
-nx run synchronization:synchronize --configuration=write      # write derivations, publish reports
-```
-
-This exists alongside `start` because other projects use that target name to
-launch an application, and a workflow naming `start` would be naming a target
-whose meaning changes per project. It is cached and declares its sources as
-inputs, so it only reruns when one of the files it watches actually changes.
-
-Two configurations, and no third for the release. `check` passes `--kinds
-derivation`, so a pull request answers only for drift its author caused, and a
-report block that has fallen behind `main` fails nothing. `write` passes
-`--kinds derivation,report`, so it both regenerates derivations and publishes
-reports, and the release workflow is what runs it on the default branch. It
-names both kinds rather than leaving `--kinds` off, so the target states what it
-writes; the absent flag meaning every kind is what `start` uses interactively.
-
-There is no `publish` configuration because there is no `dependsOn` edge to
-defend against. `lint-codebase` does not depend on this target — Nx forwards an
-explicit configuration down `dependsOn`, so if it did, `lint-codebase
---configuration=write` would publish report blocks from a branch. The same
-reasoning already keeps `codebase:codometer` out of that list. Losing the edge
-costs no gating: the
-[🧑‍💻 Lint Codebase](../../.github/workflows/lint-codebase.yml) workflow and
-[`configuration/lint-staged.config.ts`](../../configuration/lint-staged.config.ts)
-each name `synchronize` alongside `lint-codebase` in one `nx affected`
-invocation, so a pull request and a commit both check drift.
+None of these callers reach for `start`. `SynchronizationCommand` still exists
+and still loops over every command in one process — that part of the old
+design was never the problem, and Nx's own `run-many` gives no way to run a
+plain Node command with no target of its own — but nothing selects a subset
+through it, so it needs no taxonomy: `start` always means all of them.
 
 One gap the commit path cannot close. `affected` selects this project from the
-staged paths, and nothing in its `inputs` globs `package.json` — so a commit
-staging only a manifest changes the Nx project graph, drifts
+staged paths, and no derivation target's `inputs` globs `package.json` — so a
+commit staging only a manifest changes the Nx project graph, drifts
 `nx-project-graphs`, and never selects it. The pull request catches that,
 resolving `affected` against the merge base rather than a staged path list.
-Conformetry answers the same problem by running unscoped on every commit; this
-target stays scoped, because removing that scope would put every
+Conformetry answers the same problem by running unscoped on every commit; these
+targets stay scoped, because removing that scope would put every
 synchronization in every commit path.
 
 ## Project Graph
 
-Where this project sits in the Nx project graph: what it depends on, and what depends on it. Regenerated by `nx run synchronization:synchronize --configuration=write`.
+Where this project sits in the Nx project graph: what it depends on, and what depends on it. Regenerated by `nx run synchronization:nx-project-graphs:write`.
 
 <!-- nx-project-graph-start -->
 
@@ -303,7 +292,7 @@ flowchart LR
 
 ## Module Graph
 
-The modules this project defines and the imports between them, published by `nx run synchronization:synchronize --configuration=write`.
+The modules this project defines and the imports between them, published by `nx run synchronization:nestjs-module-graphs:write`.
 
 <!-- nestjs-module-graph-start -->
 
@@ -367,18 +356,17 @@ _Dotted edges are modules named for a runtime load rather than imported._
 ## Adding a synchronizer
 
 1. Generate a module: `nx g conformetry:nestjs-command-module --name=<domain> --project=synchronization`
-2. Implement `SynchronizableCommand` — a `synchronizationLabel`, a
-   `synchronizationKind`, and a `synchronize(mode)` returning whether the
-   destination was already current.
-3. Pick the kind: `SYNCHRONIZATION_KIND_DERIVATION` when the destination is
-   derived from configuration a pull request can also change,
-   `SYNCHRONIZATION_KIND_REPORT` when it is generated from the code it
-   describes, and `SYNCHRONIZATION_KIND_REPOSITORY` when the destination is not
-   in the working tree at all. That one field is the whole declaration — no
-   workflow file, Nx target, or central list names it again.
-4. Register the command in `SynchronizationCommand.getCommands()`.
-5. Add the source path to the `synchronize` target's `inputs` in
-   `project.json`, or Nx will serve a stale cached result when it changes.
+2. Implement `SynchronizableCommand` — a `synchronizationLabel` and a
+   `synchronize(mode)` returning whether the destination was already current.
+3. Add a top-level target for it in `project.json`, with `check`/`write`
+   configurations and its own source paths as `inputs`, the same shape as the
+   existing eight. That target is the whole declaration of where the command
+   runs: name it directly wherever it belongs — `lint-codebase`'s dependents
+   for a derivation, the release workflow's `run-many` for a report, or a
+   caller with its own credentials for anything needing them.
+4. Register the command in `SynchronizationCommand.getCommands()`, and import
+   its module in `SynchronizationModule`, so `start` still drives it alongside
+   every other synchronization.
 
 ## Start
 
@@ -411,40 +399,40 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 
 | Measure | Value |
 | --- | --- |
-| Callables | 265 |
-| Files | 49 |
-| Calls traced | 350 |
-| Call stacks | 24 |
+| Callables | 285 |
+| Files | 54 |
+| Calls traced | 393 |
+| Call stacks | 27 |
 | Deepest stack | 14 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 10 |
+| Unfollowable calls | 11 |
 
 ### Call stacks
 
 **1. `SynchronizationCommand.run`** — depth ≥ 14 · decorated-method
 
 ```text
-🚀 SynchronizationCommand.run(…): Promise<void> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:144]
-   ↳ Runs the selected synchronizations, exiting once if any reported drift.
-  └─> SynchronizationCommand.synchronize(…): Promise<boolean> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:182]
-     ↳ Runs the selected synchronizations and reports whether all succeeded.
-    └─> ConventionalConfigCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:74]
+🚀 SynchronizationCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:115]
+   ↳ Runs every synchronization, exiting once if any reported drift.
+  └─> SynchronizationCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:137]
+     ↳ Runs every synchronization and reports whether all succeeded.
+    └─> ConventionalConfigCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:70]
        ↳ Synchronizes conventional-commit config and reports success without exiting.
-      └─> ConventionalConfigService.runSynchronization(mode: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:233]
+      └─> ConventionalConfigService.runSynchronization(mode: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:240]
          ↳ Runs the workflow in check or write mode, reporting whether it succeeded.
         └─> ConventionalConfigService.handleCheckMode(context: SyncContext): boolean [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:126]
            ↳ Check mode: validates all configuration files are in sync with conventional.config.cjs, reporting success rather than…
-          └─> ConventionalConfigValidatorsService.checkAllSkillsSync(config: ConventionalConfig, skillFiles: string[]): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:149]
+          └─> ConventionalConfigValidatorsService.checkAllSkillsSync(config: ConventionalConfig, skillFiles: string[]): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:155]
              ↳ Validates that every configured skill file has synchronized type/scope tables.
-            └─> ConventionalConfigValidatorsService.checkSkillSync(config: ConventionalConfig, skillFile: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:281]
+            └─> ConventionalConfigValidatorsService.checkSkillSync(config: ConventionalConfig, skillFile: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:293]
                ↳ Validates a skill file's type/scope markdown tables against source config.
               └─> ConventionalConfigValidatorsService.checkMarkerSync(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:41]
                  ↳ Checks that a named marker block in a skill file matches the source config values.
-                └─> ConventionalConfigValidatorsService.validateMarkerValues(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:121]
+                └─> ConventionalConfigValidatorsService.validateMarkerValues(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:123]
                    ↳ Compares skill marker values against source values and logs any mismatch.
-                  └─> ConventionalConfigValidatorsService.showDifference(source: string[], target: string[], targetName: string): void [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:102]
+                  └─> ConventionalConfigValidatorsService.showDifference(source: string[], target: string[], targetName: string): void [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:103]
                      ↳ Logs the items missing from and extra in the target compared to the source.
-                    └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+                    └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
                        ↳ Logs an informational message at the `info` level.
                       └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
                          ↳ Assembles the object pino merges into the line.
@@ -457,25 +445,25 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 **2. `ConventionalConfigCommand.run`** — depth 13 · decorated-method
 
 ```text
-🚀 ConventionalConfigCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:55]
+🚀 ConventionalConfigCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:51]
    ↳ Runs the conventional-config sync command, delegating to helpers and exiting 1 on drift.
-  └─> ConventionalConfigCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:74]
+  └─> ConventionalConfigCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:70]
      ↳ Synchronizes conventional-commit config and reports success without exiting.
-    └─> ConventionalConfigService.runSynchronization(mode: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:233]
+    └─> ConventionalConfigService.runSynchronization(mode: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:240]
        ↳ Runs the workflow in check or write mode, reporting whether it succeeded.
       └─> ConventionalConfigService.handleCheckMode(context: SyncContext): boolean [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:126]
          ↳ Check mode: validates all configuration files are in sync with conventional.config.cjs, reporting success rather than…
-        └─> ConventionalConfigValidatorsService.checkAllSkillsSync(config: ConventionalConfig, skillFiles: string[]): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:149]
+        └─> ConventionalConfigValidatorsService.checkAllSkillsSync(config: ConventionalConfig, skillFiles: string[]): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:155]
            ↳ Validates that every configured skill file has synchronized type/scope tables.
-          └─> ConventionalConfigValidatorsService.checkSkillSync(config: ConventionalConfig, skillFile: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:281]
+          └─> ConventionalConfigValidatorsService.checkSkillSync(config: ConventionalConfig, skillFile: string): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:293]
              ↳ Validates a skill file's type/scope markdown tables against source config.
             └─> ConventionalConfigValidatorsService.checkMarkerSync(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:41]
                ↳ Checks that a named marker block in a skill file matches the source config values.
-              └─> ConventionalConfigValidatorsService.validateMarkerValues(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:121]
+              └─> ConventionalConfigValidatorsService.validateMarkerValues(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:123]
                  ↳ Compares skill marker values against source values and logs any mismatch.
-                └─> ConventionalConfigValidatorsService.showDifference(source: string[], target: string[], targetName: string): void [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:102]
+                └─> ConventionalConfigValidatorsService.showDifference(source: string[], target: string[], targetName: string): void [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:103]
                    ↳ Logs the items missing from and extra in the target compared to the source.
-                  └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+                  └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
                      ↳ Logs an informational message at the `info` level.
                     └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
                        ↳ Assembles the object pino merges into the line.
@@ -488,16 +476,16 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 **3. `NestjsModuleGraphsCommand.run`** — depth ≥ 9 · decorated-method
 
 ```text
-🚀 NestjsModuleGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:169]
+🚀 NestjsModuleGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:173]
    ↳ Runs the nestjs-module-graphs sync command in check or write mode.
-  └─> NestjsModuleGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:188]
+  └─> NestjsModuleGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:192]
      ↳ Synchronizes every project's module graph and reports success without exiting.
-    └─> NestjsModuleGraphsCommand.synchronizeProject(…): Promise<string[]> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:138]
+    └─> NestjsModuleGraphsCommand.synchronizeProject(…): Promise<string[]> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:141]
        ↳ Explores one project and syncs its graph into every target markdown file.
-      └─> NestjsModuleGraphsCommand.filter(…)(fileName: string): boolean [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:159]
+      └─> NestjsModuleGraphsCommand.filter(…)(fileName: string): boolean [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:163]
         └─> NestjsModuleGraphsCommand.synchronizeFile(…): boolean [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:95]
            ↳ Checks or rewrites one markdown file's graph block.
-          └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+          └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
              ↳ Logs an informational message at the `info` level.
             └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
                ↳ Assembles the object pino merges into the line.
@@ -508,43 +496,21 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 ```
 
 <details>
-<summary>21 more call stacks</summary>
+<summary>24 more call stacks</summary>
 
-**4. `NxProjectGraphsCommand.run`** — depth 9 · decorated-method
-
-```text
-🚀 NxProjectGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:151]
-   ↳ Runs the nx-project-graphs sync command in check or write mode.
-  └─> NxProjectGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:170]
-     ↳ Synchronizes every project's graph and reports success without exiting.
-    └─> NxProjectGraphsCommand.filter(…)(project: NxProject): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:184]
-      └─> NxProjectGraphsCommand.synchronizeProject(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:118]
-         ↳ Checks or rewrites one project's README graph block.
-        └─> NxProjectGraphsCommand.applyMode(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:68]
-           ↳ Reports drift in check mode, or rewrites the block in write mode.
-          └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
-             ↳ Logs an informational message at the `info` level.
-            └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Assembles the object pino merges into the line.
-              └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-                 ↳ Fails a malformed message in development, and never in production.
-                └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                   ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-**5. `PullRequestTemplateCommand.run`** — depth 9 · decorated-method
+**4. `PullRequestTemplateCommand.run`** — depth 9 · decorated-method
 
 ```text
-🚀 PullRequestTemplateCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:201]
+🚀 PullRequestTemplateCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:202]
    ↳ Runs the pull-request-template sync command in check or write mode.
-  └─> PullRequestTemplateCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:220]
+  └─> PullRequestTemplateCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:221]
      ↳ Synchronizes the PR template and reports success without exiting.
-    └─> PullRequestTemplateCommand.handleWriteMode(templateContent: string, targetFiles: string[]): void [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:132]
+    └─> PullRequestTemplateCommand.handleWriteMode(templateContent: string, targetFiles: string[]): void [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:129]
        ↳ Writes the current PR template into any target files that are out of sync.
-      └─> PullRequestTemplateCommand.filter(…)(targetFile: string): boolean [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:137]
-        └─> PullRequestTemplateCommand.checkTargetSync(templateContent: string, targetFile: string): boolean [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:59]
+      └─> PullRequestTemplateCommand.filter(…)(targetFile: string): boolean [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:134]
+        └─> PullRequestTemplateCommand.checkTargetSync(templateContent: string, targetFile: string): boolean [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:55]
            ↳ Checks whether the target file's marker block matches the current PR template.
-          └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+          └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
              ↳ Logs an informational message at the `info` level.
             └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
                ↳ Assembles the object pino merges into the line.
@@ -554,18 +520,18 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                    ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-**6. `DevcontainerConfigurationCommand.run`** — depth 8 · decorated-method
+**5. `DevcontainerConfigurationCommand.run`** — depth 8 · decorated-method
 
 ```text
-🚀 DevcontainerConfigurationCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:264]
+🚀 DevcontainerConfigurationCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:266]
    ↳ Runs the devcontainer-configuration sync command in check or write mode.
-  └─> DevcontainerConfigurationCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:283]
+  └─> DevcontainerConfigurationCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:285]
      ↳ Synchronizes the cloud devcontainer config and reports success without exiting.
-    └─> DevcontainerConfigurationCommand.check(expectedConfig: DevcontainerConfiguration, cloudConfigFile: string): boolean [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:84]
+    └─> DevcontainerConfigurationCommand.check(expectedConfig: DevcontainerConfiguration, cloudConfigFile: string): boolean [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:80]
        ↳ Compares the expected merged config against the current cloud config file and reports field differences.
-      └─> DevcontainerConfigurationCommand.reportDifferences(…): void [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:162]
+      └─> DevcontainerConfigurationCommand.reportDifferences(…): void [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:157]
          ↳ Logs each field that differs between the expected and current config.
-        └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+        └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
            ↳ Logs an informational message at the `info` level.
           └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
              ↳ Assembles the object pino merges into the line.
@@ -575,7 +541,70 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                  ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-**7. `ConformetryGeneratorsCommand.run`** — depth ≥ 7 · decorated-method
+**6. `NxProjectGraphsCommand.run`** — depth 8 · decorated-method
+
+```text
+🚀 NxProjectGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:154]
+   ↳ Runs the nx-project-graphs sync command in check or write mode.
+  └─> NxProjectGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:173]
+     ↳ Synchronizes every project's graph and reports success without exiting.
+    └─> NxProjectGraphsCommand.synchronizeProject(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:120]
+       ↳ Checks or rewrites one project's README graph block.
+      └─> NxProjectGraphsCommand.applyMode(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:68]
+         ↳ Reports drift in check mode, or rewrites the block in write mode.
+        └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+           ↳ Logs an informational message at the `info` level.
+          └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
+             ↳ Assembles the object pino merges into the line.
+            └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
+               ↳ Fails a malformed message in development, and never in production.
+              └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
+                 ↳ Whether a word is a verb in one of the two tenses the convention allows.
+```
+
+**7. `SkillExclusionsCommand.run`** — depth 8 · decorated-method
+
+```text
+🚀 NxProjectGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:150]
+   ↳ Runs the nx-project-graphs sync command in check or write mode.
+  └─> NxProjectGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:169]
+     ↳ Synchronizes every project's graph and reports success without exiting.
+    └─> NxProjectGraphsCommand.synchronizeProject(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:116]
+       ↳ Checks or rewrites one project's README graph block.
+      └─> NxProjectGraphsCommand.applyMode(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:64]
+         ↳ Reports drift in check mode, or rewrites the block in write mode.
+        └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+           ↳ Logs an informational message at the `info` level.
+          └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
+             ↳ Assembles the object pino merges into the line.
+            └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
+               ↳ Fails a malformed message in development, and never in production.
+              └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
+                 ↳ Whether a word is a verb in one of the two tenses the convention allows.
+```
+
+**7. `SkillExclusionsCommand.run`** — depth 8 · decorated-method
+
+```text
+🚀 SkillExclusionsCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:165]
+   ↳ Runs the skill-exclusions sync command in check or write mode.
+  └─> SkillExclusionsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:180]
+     ↳ Synchronizes the exclusion lists and reports success without exiting.
+    └─> SkillExclusionsCommand.writeSync(skillNames: string[]): void [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:144]
+       ↳ Rewrites every file's generated block.
+      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
+         ↳ Logs an informational message at the `info` level.
+        └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
+           ↳ Logs an informational message at the `info` level.
+          └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
+             ↳ Assembles the object pino merges into the line.
+            └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
+               ↳ Fails a malformed message in development, and never in production.
+              └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
+                 ↳ Whether a word is a verb in one of the two tenses the convention allows.
+```
+
+**8. `ConformetryGeneratorsCommand.run`** — depth ≥ 7 · decorated-method
 
 ```text
 🚀 ConformetryGeneratorsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:176]
@@ -594,11 +623,11 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-**8. `SkillExclusionsCommand.run`** — depth 7 · decorated-method
+**9. `PullRequestLabelsCommand.run`** — depth 7 · decorated-method
 
 ```text
-🚀 SkillExclusionsCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:155]
-   ↳ Runs the skill-exclusions sync command in check or write mode.
+🚀 PullRequestLabelsCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:281]
+   ↳ Runs the pull-request-labels reconciliation in check or write mode.
   └─> SynchronizationService.resolveSynchronizationModeOrExit(options: SynchronizationModeResolutionOptions): SynchronizationMode [tools/synchronization/src/modules/synchronization/synchronization.service.ts:59]
      ↳ Resolves synchronization mode or exits the process when the mode is invalid.
     └─> SynchronizationService.exitInvalidMode(…): never [tools/synchronization/src/modules/synchronization/synchronization.service.ts:22]
@@ -613,7 +642,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-**9. `main`** — depth ≥ 2 · module-bootstrap
+**10. `main`** — depth ≥ 2 · module-bootstrap
 
 ```text
 🚀 main(): Promise<void> [tools/synchronization/src/main.ts:9]
@@ -621,55 +650,55 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
   └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:38]
 ```
 
-**10. `ConformetryGeneratorsCommand.constructor`** — depth ≥ 2 · orphan-root
+**11. `ConformetryGeneratorsCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 ConformetryGeneratorsCommand.constructor(…): ConformetryGeneratorsCommand [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:35]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+🚀 ConformetryGeneratorsCommand.constructor(…): ConformetryGeneratorsCommand [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:34]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**11. `ConventionalConfigIoService.constructor`** — depth 2 · orphan-root
+**12. `ConventionalConfigIoService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 ConventionalConfigIoService.constructor(loggerService: LoggerService): ConventionalConfigIoService [tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:31]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**12. `ConventionalConfigValidatorsService.constructor`** — depth 2 · orphan-root
+**13. `ConventionalConfigValidatorsService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 ConventionalConfigValidatorsService.constructor(…): ConventionalConfigValidatorsService [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:25]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**13. `ConventionalConfigService.constructor`** — depth 2 · orphan-root
+**14. `ConventionalConfigService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 ConventionalConfigService.constructor(…): ConventionalConfigService [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:36]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**14. `ConventionalConfigCommand.constructor`** — depth ≥ 2 · orphan-root
+**15. `ConventionalConfigCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 ConventionalConfigCommand.constructor(…): ConventionalConfigCommand [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:32]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+🚀 ConventionalConfigCommand.constructor(…): ConventionalConfigCommand [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:31]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**15. `DevcontainerConfigurationCommand.constructor`** — depth ≥ 2 · orphan-root
+**16. `DevcontainerConfigurationCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 DevcontainerConfigurationCommand.constructor(…): DevcontainerConfigurationCommand [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:41]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+🚀 DevcontainerConfigurationCommand.constructor(…): DevcontainerConfigurationCommand [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:40]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**16. `NestjsModuleGraphsGraphService.compareGroups`** — depth 2 · orphan-root
+**17. `NestjsModuleGraphsGraphService.compareGroups`** — depth 2 · orphan-root
 
 ```text
 🚀 NestjsModuleGraphsGraphService.compareGroups(…): number [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:79]
@@ -678,115 +707,70 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Ranks a group into the graphed project, another project, or ungrouped.
 ```
 
-**17. `NestjsModuleGraphsService.loadModuleClasses`** — depth ≥ 2 · orphan-root
+**18. `NestjsModuleGraphsService.constructor`** — depth 2 · orphan-root
 
 ```text
-🚀 NestjsModuleGraphsService.loadModuleClasses(file: string): Promise<Type<unknown>[]> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:91]
-   ↳ Imports a module file and returns every module class it exports.
-  └─> NestjsModuleGraphsService.map(…)(…): Type<unknown> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:102]
+🚀 NestjsModuleGraphsService.constructor(…): NestjsModuleGraphsService [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:48]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
+     ↳ Sets the context label included in every subsequent log line.
 ```
 
-**18. `NestjsModuleGraphsCommand.constructor`** — depth ≥ 2 · orphan-root
+**19. `NestjsModuleGraphsService.loadModuleClasses`** — depth ≥ 2 · orphan-root
+
+```text
+🚀 NestjsModuleGraphsService.loadModuleClasses(file: string): Promise<Type<unknown>[]> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:96]
+   ↳ Imports a module file and returns every module class it exports.
+  └─> NestjsModuleGraphsService.map(…)(…): Type<unknown> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:107]
+```
+
+**20. `NestjsModuleGraphsCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 NestjsModuleGraphsCommand.constructor(…): NestjsModuleGraphsCommand [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:48]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**19. `NxProjectGraphsService.renderEdge`** — depth 2 · orphan-root
+**19. `NestjsModuleGraphsService.loadModuleClasses`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 NxProjectGraphsService.renderEdge(edge: NxProjectGraphEdge): string [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:50]
-   ↳ Renders one edge, dotted when Nx inferred it from configuration.
-  └─> NxProjectGraphsService.toNodeIdentifier(projectName: string): string [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:62]
-     ↳ Turns a project name into an identifier mermaid accepts.
+🚀 NestjsModuleGraphsService.loadModuleClasses(file: string): Promise<Type<unknown>[]> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:96]
+   ↳ Imports a module file and returns every module class it exports.
+  └─> NestjsModuleGraphsService.map(…)(…): Type<unknown> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:107]
 ```
 
-**20. `NxProjectGraphsService.renderNode`** — depth 2 · orphan-root
+**20. `NestjsModuleGraphsCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
-🚀 NxProjectGraphsService.renderNode(projectName: string): string [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:57]
-   ↳ Declares one node, labelled with the project name it stands for.
-  └─> NxProjectGraphsService.toNodeIdentifier(projectName: string): string [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:62]
-     ↳ Turns a project name into an identifier mermaid accepts.
-```
-
-**21. `NxProjectGraphsCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 NxProjectGraphsCommand.constructor(…): NxProjectGraphsCommand [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:46]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+🚀 NestjsModuleGraphsCommand.constructor(…): NestjsModuleGraphsCommand [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:47]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**22. `PullRequestTemplateCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 PullRequestTemplateCommand.constructor(…): PullRequestTemplateCommand [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:37]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**23. `SkillExclusionsCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 SkillExclusionsCommand.constructor(…): SkillExclusionsCommand [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:52]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**24. `SynchronizationCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 SynchronizationCommand.constructor(…): SynchronizationCommand [tools/synchronization/src/modules/synchronization/synchronization.command.ts:41]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-</details>
-
-### Module spread
-
-None.
-
-### Possibly misplaced
-
-None.
-<!-- CALL_STACKS_END -->
-
-<!-- CODE_STATISTICS_START -->
-
-## ⏲️ Codometer
-
-### Project
-
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-10294-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-342.98_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-11-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-73-3178c6?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-12-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-80-3178c6?style=flat-square)
 
 ### TypeScript & JavaScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-73-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-80-3178c6?style=flat-square)
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-22-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-19-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-29-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-456-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-243-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-546-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-153-059669?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-26-0ea5e9?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-24-10b981?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-20-8b5cf6?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-32-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-561-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-259-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-632-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-188-059669?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-28-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-608-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-408-0284c7?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-37-db2777?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-103-ea580c?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-240-6366f1?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-361-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-694-475569?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-651-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-445-0284c7?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-40-db2777?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-112-ea580c?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-282-6366f1?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-436-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-847-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-3-ca8a04?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-1-166534?style=flat-square)
 
@@ -808,16 +792,16 @@ None.
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-3-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-206-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-47-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-9-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-122-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-111-16a34a?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-299-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-68-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-15-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-182-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-144-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-7-0ea5e9?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-13-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-50-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-175-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-56-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-241-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-6-ea580c?style=flat-square)
 
 ### YAML
@@ -898,15 +882,15 @@ None.
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-10-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-10-0284c7?style=flat-square)
-![Command Files](https://img.shields.io/badge/Command_Files-8-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-8-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-8-db2777?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-11-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-11-0284c7?style=flat-square)
+![Command Files](https://img.shields.io/badge/Command_Files-9-16a34a?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-9-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-9-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![Errors Files](https://img.shields.io/badge/Errors_Files-0-059669?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-21-7c3aed?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-23-7c3aed?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-0284c7?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-16a34a?style=flat-square)
 
@@ -936,7 +920,209 @@ None.
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-356-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-358-1f6feb?style=flat-square)
+![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
+![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
+![H3](https://img.shields.io/badge/H3-15-a78bfa?style=flat-square)
+![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
+![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
+![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-61-64748b?style=flat-square)
+![Lists](https://img.shields.io/badge/Lists-6-16a34a?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-36-22c55e?style=flat-square)
+![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
+![Tables](https://img.shields.io/badge/Tables-2-0284c7?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-10-0ea5e9?style=flat-square)
+![Links](https://img.shields.io/badge/Links-12-059669?style=flat-square)
+![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-17-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-90-ef4444?style=flat-square)
+![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
+![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
+<!-- CODE_STATISTICS_END -->
+
+<!-- CODE_STATISTICS_START -->
+
+## ⏲️ Codometer
+
+### Project
+
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-11892-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-395.87_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-12-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-80-3178c6?style=flat-square)
+
+### TypeScript & JavaScript
+
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-80-3178c6?style=flat-square)
+![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-24-10b981?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-20-8b5cf6?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-32-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-561-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-259-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-632-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-188-059669?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-28-0ea5e9?style=flat-square)
+![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
+![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-651-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-445-0284c7?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-40-db2777?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-112-ea580c?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-282-6366f1?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-436-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-847-475569?style=flat-square)
+![TODO Comments](https://img.shields.io/badge/TODO_Comments-3-ca8a04?style=flat-square)
+![Static Methods](https://img.shields.io/badge/Static_Methods-1-166534?style=flat-square)
+
+### Python
+
+![Python Files](https://img.shields.io/badge/Python_Files-0-3776ab?style=flat-square)
+![Python Lines](https://img.shields.io/badge/Python_Lines-0-4b8bbe?style=flat-square)
+![Python Classes](https://img.shields.io/badge/Python_Classes-0-7c3aed?style=flat-square)
+![Python Functions](https://img.shields.io/badge/Python_Functions-0-16a34a?style=flat-square)
+![Python Protocols](https://img.shields.io/badge/Python_Protocols-0-0ea5e9?style=flat-square)
+![Python Constants](https://img.shields.io/badge/Python_Constants-0-dc2626?style=flat-square)
+![Python Imports](https://img.shields.io/badge/Python_Imports-0-0284c7?style=flat-square)
+![Python Decorators](https://img.shields.io/badge/Python_Decorators-0-db2777?style=flat-square)
+![Docstrings](https://img.shields.io/badge/Docstrings-0-6366f1?style=flat-square)
+![Docstring Lines](https://img.shields.io/badge/Docstring_Lines-0-818cf8?style=flat-square)
+![Python Comments](https://img.shields.io/badge/Python_Comments-0-64748b?style=flat-square)
+![Python Comment Lines](https://img.shields.io/badge/Python_Comment_Lines-0-475569?style=flat-square)
+
+### JSON
+
+![JSON Files](https://img.shields.io/badge/JSON_Files-3-a16207?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-299-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-68-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-15-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-182-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-144-16a34a?style=flat-square)
+![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-13-0ea5e9?style=flat-square)
+![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-56-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-241-dc2626?style=flat-square)
+![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-6-ea580c?style=flat-square)
+
+### YAML
+
+![YAML Files](https://img.shields.io/badge/YAML_Files-0-cb171e?style=flat-square)
+![YAML Lines](https://img.shields.io/badge/YAML_Lines-0-e34c26?style=flat-square)
+![YAML Documents](https://img.shields.io/badge/YAML_Documents-0-f97316?style=flat-square)
+![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-0-7c3aed?style=flat-square)
+![YAML Sequences](https://img.shields.io/badge/YAML_Sequences-0-8b5cf6?style=flat-square)
+![YAML Keys](https://img.shields.io/badge/YAML_Keys-0-0284c7?style=flat-square)
+![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-0-16a34a?style=flat-square)
+![YAML Anchors](https://img.shields.io/badge/YAML_Anchors-0-059669?style=flat-square)
+![YAML Aliases](https://img.shields.io/badge/YAML_Aliases-0-10b981?style=flat-square)
+![YAML Comments](https://img.shields.io/badge/YAML_Comments-0-64748b?style=flat-square)
+![YAML Max Depth](https://img.shields.io/badge/YAML_Max_Depth-0-ea580c?style=flat-square)
+
+### TOML
+
+![TOML Files](https://img.shields.io/badge/TOML_Files-0-9c4221?style=flat-square)
+![TOML Lines](https://img.shields.io/badge/TOML_Lines-0-b45309?style=flat-square)
+![TOML Tables](https://img.shields.io/badge/TOML_Tables-0-7c3aed?style=flat-square)
+![TOML Array Tables](https://img.shields.io/badge/TOML_Array_Tables-0-8b5cf6?style=flat-square)
+![TOML Keys](https://img.shields.io/badge/TOML_Keys-0-0284c7?style=flat-square)
+![TOML Arrays](https://img.shields.io/badge/TOML_Arrays-0-16a34a?style=flat-square)
+![TOML Comments](https://img.shields.io/badge/TOML_Comments-0-64748b?style=flat-square)
+
+### Shell
+
+![Shell Files](https://img.shields.io/badge/Shell_Files-0-89e051?style=flat-square)
+![Shell Lines](https://img.shields.io/badge/Shell_Lines-0-4eaa25?style=flat-square)
+![Shell Functions](https://img.shields.io/badge/Shell_Functions-0-16a34a?style=flat-square)
+![Shell Variables](https://img.shields.io/badge/Shell_Variables-0-0284c7?style=flat-square)
+![Shell Exports](https://img.shields.io/badge/Shell_Exports-0-ea580c?style=flat-square)
+![Shell Conditionals](https://img.shields.io/badge/Shell_Conditionals-0-7c3aed?style=flat-square)
+![Shell Loops](https://img.shields.io/badge/Shell_Loops-0-8b5cf6?style=flat-square)
+![Shell Pipelines](https://img.shields.io/badge/Shell_Pipelines-0-059669?style=flat-square)
+![Shebangs](https://img.shields.io/badge/Shebangs-0-6b7280?style=flat-square)
+![Shell Comments](https://img.shields.io/badge/Shell_Comments-0-64748b?style=flat-square)
+![Shell Comment Lines](https://img.shields.io/badge/Shell_Comment_Lines-0-475569?style=flat-square)
+
+### SQL
+
+![SQL Files](https://img.shields.io/badge/SQL_Files-0-e38c00?style=flat-square)
+![SQL Lines](https://img.shields.io/badge/SQL_Lines-0-f29111?style=flat-square)
+![SQL Statements](https://img.shields.io/badge/SQL_Statements-0-7c3aed?style=flat-square)
+![SQL Selects](https://img.shields.io/badge/SQL_Selects-0-16a34a?style=flat-square)
+![SQL Inserts](https://img.shields.io/badge/SQL_Inserts-0-22c55e?style=flat-square)
+![SQL Updates](https://img.shields.io/badge/SQL_Updates-0-0ea5e9?style=flat-square)
+![SQL Deletes](https://img.shields.io/badge/SQL_Deletes-0-dc2626?style=flat-square)
+![SQL Creates](https://img.shields.io/badge/SQL_Creates-0-0284c7?style=flat-square)
+![SQL Joins](https://img.shields.io/badge/SQL_Joins-0-8b5cf6?style=flat-square)
+![SQL CTEs](https://img.shields.io/badge/SQL_CTEs-0-059669?style=flat-square)
+![SQL Comments](https://img.shields.io/badge/SQL_Comments-0-64748b?style=flat-square)
+
+### HCL
+
+![HCL Files](https://img.shields.io/badge/HCL_Files-0-844fba?style=flat-square)
+![HCL Lines](https://img.shields.io/badge/HCL_Lines-0-a78bfa?style=flat-square)
+![HCL Blocks](https://img.shields.io/badge/HCL_Blocks-0-7c3aed?style=flat-square)
+![HCL Resources](https://img.shields.io/badge/HCL_Resources-0-0284c7?style=flat-square)
+![HCL Variables](https://img.shields.io/badge/HCL_Variables-0-16a34a?style=flat-square)
+![HCL Outputs](https://img.shields.io/badge/HCL_Outputs-0-059669?style=flat-square)
+![HCL Attributes](https://img.shields.io/badge/HCL_Attributes-0-0ea5e9?style=flat-square)
+![HCL Interpolations](https://img.shields.io/badge/HCL_Interpolations-0-db2777?style=flat-square)
+![HCL Comments](https://img.shields.io/badge/HCL_Comments-0-64748b?style=flat-square)
+
+### CSS
+
+![CSS Files](https://img.shields.io/badge/CSS_Files-0-264de4?style=flat-square)
+![CSS Lines](https://img.shields.io/badge/CSS_Lines-0-2965f1?style=flat-square)
+![CSS Rules](https://img.shields.io/badge/CSS_Rules-0-7c3aed?style=flat-square)
+![CSS Selectors](https://img.shields.io/badge/CSS_Selectors-0-8b5cf6?style=flat-square)
+![CSS Declarations](https://img.shields.io/badge/CSS_Declarations-0-0284c7?style=flat-square)
+![CSS At Rules](https://img.shields.io/badge/CSS_At_Rules-0-f97316?style=flat-square)
+![CSS Media Queries](https://img.shields.io/badge/CSS_Media_Queries-0-ea580c?style=flat-square)
+![CSS Custom Properties](https://img.shields.io/badge/CSS_Custom_Properties-0-16a34a?style=flat-square)
+![CSS Comments](https://img.shields.io/badge/CSS_Comments-0-64748b?style=flat-square)
+
+### Conventions
+
+![Module Files](https://img.shields.io/badge/Module_Files-11-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-11-0284c7?style=flat-square)
+![Command Files](https://img.shields.io/badge/Command_Files-9-16a34a?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-9-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-9-db2777?style=flat-square)
+![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
+![Errors Files](https://img.shields.io/badge/Errors_Files-0-059669?style=flat-square)
+![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-23-7c3aed?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-0284c7?style=flat-square)
+![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-16a34a?style=flat-square)
+
+### Jupyter
+
+![Notebooks](https://img.shields.io/badge/Notebooks-0-f37626?style=flat-square)
+![Notebook Cells](https://img.shields.io/badge/Notebook_Cells-0-e8a33d?style=flat-square)
+![Code Cells](https://img.shields.io/badge/Code_Cells-0-3776ab?style=flat-square)
+![Markdown Cells](https://img.shields.io/badge/Markdown_Cells-0-083fa1?style=flat-square)
+![Raw Cells](https://img.shields.io/badge/Raw_Cells-0-9ca3af?style=flat-square)
+![Executed Cells](https://img.shields.io/badge/Executed_Cells-0-16a34a?style=flat-square)
+![Cell Outputs](https://img.shields.io/badge/Cell_Outputs-0-059669?style=flat-square)
+![Notebook Code Lines](https://img.shields.io/badge/Notebook_Code_Lines-0-4b8bbe?style=flat-square)
+![Notebook Classes](https://img.shields.io/badge/Notebook_Classes-0-7c3aed?style=flat-square)
+![Notebook Functions](https://img.shields.io/badge/Notebook_Functions-0-22c55e?style=flat-square)
+![Notebook Imports](https://img.shields.io/badge/Notebook_Imports-0-0284c7?style=flat-square)
+![Notebook Decorators](https://img.shields.io/badge/Notebook_Decorators-0-db2777?style=flat-square)
+![Notebook Prose Lines](https://img.shields.io/badge/Notebook_Prose_Lines-0-1f6feb?style=flat-square)
+![Notebook Headings](https://img.shields.io/badge/Notebook_Headings-0-a78bfa?style=flat-square)
+![Notebook Links](https://img.shields.io/badge/Notebook_Links-0-10b981?style=flat-square)
+![Notebook Images](https://img.shields.io/badge/Notebook_Images-0-34d399?style=flat-square)
+![Notebook Code Blocks](https://img.shields.io/badge/Notebook_Code_Blocks-0-dc2626?style=flat-square)
+![Notebook Properties](https://img.shields.io/badge/Notebook_Properties-0-ca8a04?style=flat-square)
+![Notebook Nodes](https://img.shields.io/badge/Notebook_Nodes-0-a16207?style=flat-square)
+![Notebook Max Depth](https://img.shields.io/badge/Notebook_Max_Depth-0-ea580c?style=flat-square)
+
+### Markdown
+
+![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-358-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-15-a78bfa?style=flat-square)

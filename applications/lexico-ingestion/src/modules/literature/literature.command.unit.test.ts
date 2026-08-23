@@ -395,11 +395,16 @@ describe(LiteratureCommand, () => {
     expect(ingestedTexts).toHaveLength(1);
     expect(ingestedTexts?.[0]?.provider).toBe("perseus");
 
-    expect(logger.log).toHaveBeenCalledWith(
-      "📚 Starting literature ingestion...",
+    expect(logger.info).toHaveBeenCalledWith(
+      "📚 Starting literature ingestion",
     );
-    expect(logger.log).toHaveBeenCalledWith(
-      expect.stringContaining("📚 Ingested literature"),
+    expect(logger.info).toHaveBeenCalledWith(
+      "📚 Selected texts for ingestion",
+      undefined,
+      { count: 1 },
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      "📚 Ingested literature",
       undefined,
       expect.any(Object),
     );

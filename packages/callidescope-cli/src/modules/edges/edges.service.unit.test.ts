@@ -1,3 +1,4 @@
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -9,9 +10,13 @@ import {
   FIXTURE_ROOT,
 } from "../../../testing/programs";
 
+import { CallSitesService } from "./call-sites.service";
 import { EdgesService } from "./edges.service";
+import { SymbolResolutionService } from "./symbol-resolution.service";
 
 import type { CallEdge, UnresolvedCall } from "@callidescope/configuration";
+import type { LoggerService } from "@codebase/logger";
+import type { DeepMocked } from "@golevelup/ts-vitest";
 
 /** Renders the graph as `caller -> callee` pairs, for readable assertions. */
 function readCalls(files: Record<string, string>): string[] {
@@ -64,6 +69,33 @@ describe(EdgesService, () => {
 
   it("is defined", () => {
     expect(service).toBeDefined();
+  });
+
+  it("logs how many edges it built", () => {
+    const projectProgram = buildFixtureProgram({});
+    const fixture = buildFixtureServices({ projectProgram });
+    const logger: DeepMocked<LoggerService> = createMock<LoggerService>();
+    const subject = new EdgesService(
+      new CallSitesService(),
+      fixture.identity,
+      fixture.external,
+      fixture.programService,
+      new SymbolResolutionService(fixture.hierarchy, fixture.external),
+      fixture.workspace,
+      logger,
+    );
+
+    subject.build({
+      callablesById: new Map(),
+      includeConstructorEdges: true,
+      workspaceRoot: FIXTURE_ROOT,
+    });
+
+    expect(logger.info).toHaveBeenCalledWith(
+      "🔭 Built call graph edges",
+      undefined,
+      { edgeCount: 0 },
+    );
   });
 
   // Each case below is one row of the resolution table: the shapes a call can

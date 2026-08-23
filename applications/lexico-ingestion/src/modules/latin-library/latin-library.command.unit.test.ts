@@ -186,8 +186,10 @@ describe(LatinLibraryCommand, () => {
     );
 
     expect(result).toBe("cached html");
-    expect(logger.log).not.toHaveBeenCalledWith(
-      expect.stringContaining("Downloading"),
+    expect(logger.info).not.toHaveBeenCalledWith(
+      "📥 Downloading",
+      expect.anything(),
+      expect.anything(),
     );
   });
 
@@ -214,9 +216,9 @@ describe(LatinLibraryCommand, () => {
     );
 
     expect(firstResult).toBe("downloaded html");
-    expect(logger.log).toHaveBeenCalledWith(
-      "📥 Downloading: https://www.thelatinlibrary.com/vergil/index.html",
-    );
+    expect(logger.info).toHaveBeenCalledWith("📥 Downloading", undefined, {
+      url: "https://www.thelatinlibrary.com/vergil/index.html",
+    });
 
     readFileMock.mockRejectedValueOnce(new Error("missing"));
     vi.spyOn(
@@ -240,8 +242,9 @@ describe(LatinLibraryCommand, () => {
 
     expect(secondResult).toBe("");
     expect(logger.error).toHaveBeenCalledWith(
-      "📥 Failed downloading https://www.thelatinlibrary.com/ovid/index.html",
+      "📥 Failed downloading",
       expect.any(String),
+      { url: "https://www.thelatinlibrary.com/ovid/index.html" },
     );
   });
 
@@ -590,8 +593,9 @@ describe(LatinLibraryCommand, () => {
     );
 
     expect(logger.error).toHaveBeenCalledWith(
-      "📜 Failed processing https://www.thelatinlibrary.com/vergil/",
+      "📜 Failed processing",
       expect.any(String),
+      { urlString: "https://www.thelatinlibrary.com/vergil/" },
     );
     expect(appendFileMock).toHaveBeenCalledTimes(1);
   });
@@ -679,9 +683,9 @@ describe(LatinLibraryCommand, () => {
       "<html>ok</html>",
       "utf8",
     );
-    expect(logger.warn).toHaveBeenCalledWith(
-      "📥 Failed fetching https://www.thelatinlibrary.com/ovid/index.html",
-    );
+    expect(logger.warn).toHaveBeenCalledWith("📥 Failed fetching", undefined, {
+      url: "https://www.thelatinlibrary.com/ovid/index.html",
+    });
 
     vi.useRealTimers();
   });
@@ -728,7 +732,7 @@ describe(LatinLibraryCommand, () => {
 
     expect(mkdirMock).toHaveBeenCalledTimes(1);
     expect(processQueueUrlSpy).toHaveBeenCalledTimes(1);
-    expect(logger.log).toHaveBeenCalledWith("🕷️ Scraped The Latin Library");
+    expect(logger.info).toHaveBeenCalledWith("🕷️ Scraped The Latin Library");
   });
 
   it("should process duplicated author urls only once in run queue", async () => {

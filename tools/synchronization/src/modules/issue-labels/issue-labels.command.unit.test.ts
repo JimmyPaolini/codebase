@@ -94,7 +94,7 @@ describe(IssueLabelsCommand, () => {
 
     expect(githubService.run).not.toHaveBeenCalled();
     expect(logger.log).toHaveBeenCalledWith(
-      "📄 No issue number in the environment, skipping",
+      "📄 Skipping: no issue number in the environment",
     );
   });
 
@@ -206,7 +206,7 @@ describe(IssueLabelsCommand, () => {
     await command.run();
 
     expect(logger.log).toHaveBeenCalledWith(
-      "⚠️ Unable to add issue labels: gh is not available",
+      "⚠️ Skipping label reconciliation: gh is not available",
     );
   });
 
@@ -220,7 +220,7 @@ describe(IssueLabelsCommand, () => {
     await command.run();
 
     expect(logger.log).toHaveBeenCalledWith(
-      "⚠️ Unable to add type:feat to issue 7: HTTP 403",
+      "⚠️ Failed to add type:feat to issue 7: HTTP 403",
     );
   });
 });

@@ -4,6 +4,8 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 import _ from "lodash";
 
+import { LoggerService } from "@codebase/logger";
+
 import type { LibraryEntry } from "./literature.types";
 
 /**
@@ -13,13 +15,25 @@ import type { LibraryEntry } from "./literature.types";
 export class LiteratureLibraryScanService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext(LiteratureLibraryScanService.name);
+  }
 
   // 🔐 Private Fields
 
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /**
+   * Returns whether an unknown error is Node's "file or directory not found" error.
+   */
+  private isMissingDirectoryError(error: unknown): boolean {
+    return (
+      error instanceof Error &&
+      (error as NodeJS.ErrnoException).code === "ENOENT"
+    );
+  }
 
   /**
    * Recursively walks one provider directory and collects markdown entries.
@@ -103,8 +117,13 @@ export class LiteratureLibraryScanService {
           });
         }
       }
-    } catch {
-      // Ignore if data directory doesn't exist yet
+    } catch (error) {
+      if (!this.isMissingDirectoryError(error)) {
+        this.logger.warn("⚠️ Failed reading the library directory", undefined, {
+          dataDirectory,
+          reason: error instanceof Error ? error.message : String(error),
+        });
+      }
     }
 
     return texts;

@@ -2,12 +2,15 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { Logger } from "@nestjs/common";
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { CssService } from "./css.service";
 
+import type { DeepMocked } from "@golevelup/ts-vitest";
 import type * as NodeFileSystem from "node:fs";
 
 // Reads stay real except for one sentinel path, which throws a bare string:
@@ -31,6 +34,7 @@ vi.mock("node:fs", async (importOriginal) => {
 
 describe(CssService, () => {
   let service: CssService;
+  let loggerService: DeepMocked<LoggerService>;
   const temporaryDirectories: string[] = [];
 
   /** Writes sources into a fresh directory and returns it with their names. */
@@ -50,10 +54,14 @@ describe(CssService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [CssService],
+      providers: [
+        CssService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(CssService);
+    loggerService = await module.resolve(LoggerService);
   });
 
   afterEach(() => {
@@ -113,9 +121,6 @@ describe(CssService, () => {
   });
 
   it("reports a thrown value that is not an Error", () => {
-    const loggerWarnSpy = vi
-      .spyOn(Logger.prototype, "warn")
-      .mockReturnValue(undefined);
     const { cssFiles, workingDirectory } = writeSources({
       "throws-a-string.css": "",
     });
@@ -123,28 +128,24 @@ describe(CssService, () => {
     const result = service.analyze({ cssFiles, workingDirectory });
 
     expect(result.files).toBe(0);
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
-      "🎨 Skipped CSS analysis for throws-a-string.css",
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "🎨 Skipped CSS analysis",
       undefined,
-      { reason: "not an Error" },
+      { filePath: "throws-a-string.css", reason: "not an Error" },
     );
   });
 
   it("skips an unreadable file and warns", () => {
-    const loggerWarnSpy = vi
-      .spyOn(Logger.prototype, "warn")
-      .mockReturnValue(undefined);
-
     const result = service.analyze({
       cssFiles: ["missing.css"],
       workingDirectory: "/repo",
     });
 
     expect(result.files).toBe(0);
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
-      "🎨 Skipped CSS analysis for missing.css",
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "🎨 Skipped CSS analysis",
       undefined,
-      expect.any(Object),
+      expect.objectContaining({ filePath: "missing.css" }),
     );
   });
 });

@@ -1,6 +1,9 @@
 import { ConfigurationService } from "@codometer/configuration";
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+
+import { LoggerService } from "@codebase/logger";
 
 import {
   createTargetTree,
@@ -38,7 +41,11 @@ describe(`${TargetsService.name} over a real directory`, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [ConfigurationService, TargetsService],
+      providers: [
+        ConfigurationService,
+        TargetsService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     configurationService = await module.resolve(ConfigurationService);

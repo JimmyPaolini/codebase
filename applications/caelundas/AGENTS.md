@@ -88,7 +88,7 @@ src/modules/
 
 ### Module Graph
 
-The modules this project defines and the imports between them, published by `nx run synchronization:synchronize --configuration=write`.
+The modules this project defines and the imports between them, published by `nx run synchronization:nestjs-module-graphs:write`.
 
 <!-- nestjs-module-graph-start -->
 

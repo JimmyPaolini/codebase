@@ -8,8 +8,11 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
+
+import { LoggerService } from "@codebase/logger";
 
 import { MissingMarkdownPathError } from "./output-markdown.errors";
 import { OutputMarkdownService } from "./output-markdown.service";
@@ -18,6 +21,7 @@ import type {
   CodeStatisticsResult,
   ResolvedCodometerMarkdownOutputConfiguration,
 } from "@codometer/configuration";
+import type { DeepMocked } from "@golevelup/ts-vitest";
 
 /** Builds a markdown destination pointing at the given path. */
 function buildDestination(
@@ -37,14 +41,19 @@ function buildDestination(
 
 describe(OutputMarkdownService, () => {
   let service: OutputMarkdownService;
+  let loggerService: DeepMocked<LoggerService>;
   const temporaryDirectories: string[] = [];
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [OutputMarkdownService],
+      providers: [
+        OutputMarkdownService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(OutputMarkdownService);
+    loggerService = await module.resolve(LoggerService);
   });
 
   afterEach(() => {
@@ -478,6 +487,11 @@ describe(OutputMarkdownService, () => {
     expect(written).toContain("<!-- CODE_STATISTICS_END -->");
     expect(written).toContain("![Lines of Code]");
     expect(written).not.toContain("\nold\n");
+    expect(loggerService.info).toHaveBeenCalledWith(
+      "📝 Wrote the markdown badges",
+      undefined,
+      { path: readmePath },
+    );
   });
 
   // The section heading sits inside the markers, so a second run has to
@@ -538,6 +552,11 @@ describe(OutputMarkdownService, () => {
     expect(written.trimEnd()).toContain("<!-- CODE_STATISTICS_END -->");
     expect(written.indexOf("# Project")).toBeLessThan(
       written.indexOf("<!-- CODE_STATISTICS_START -->"),
+    );
+    expect(loggerService.info).toHaveBeenCalledWith(
+      "📝 Wrote the markdown badges",
+      undefined,
+      { path: readmePath },
     );
   });
 
@@ -956,6 +975,11 @@ describe(OutputMarkdownService, () => {
       }),
     ).toBe(true);
     expect(readFileSync(documentPath, "utf8")).toBe("# Metrics\n");
+    expect(loggerService.info).toHaveBeenCalledWith(
+      "📝 Wrote the markdown badges",
+      undefined,
+      { path: documentPath },
+    );
   });
 
   it.each([

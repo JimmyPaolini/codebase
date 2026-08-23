@@ -2,21 +2,31 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { MarkdownService } from "./markdown.service";
+
+import type { DeepMocked } from "@golevelup/ts-vitest";
 
 describe(MarkdownService, () => {
   let service: MarkdownService;
+  let loggerService: DeepMocked<LoggerService>;
   const temporaryDirectories: string[] = [];
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [MarkdownService],
+      providers: [
+        MarkdownService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(MarkdownService);
+    loggerService = await module.resolve(LoggerService);
   });
 
   afterEach(() => {
@@ -162,6 +172,21 @@ describe(MarkdownService, () => {
 
     expect(result.files).toBe(1);
     expect(result.headingLevel1).toBe(1);
+  });
+
+  it("warns with the file path in the data rather than the message", () => {
+    const workingDirectory = writeDocuments({ "a.md": "# A\n" });
+
+    service.analyze({
+      markdownFiles: ["missing.md"],
+      workingDirectory,
+    });
+
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "📝 Skipped markdown analysis",
+      undefined,
+      expect.objectContaining({ filePath: "missing.md" }),
+    );
   });
 
   it("returns empty metrics when there are no markdown files", () => {

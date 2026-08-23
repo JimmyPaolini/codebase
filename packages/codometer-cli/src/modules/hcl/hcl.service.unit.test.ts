@@ -2,12 +2,15 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { Logger } from "@nestjs/common";
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { HclService } from "./hcl.service";
 
+import type { DeepMocked } from "@golevelup/ts-vitest";
 import type * as NodeFileSystem from "node:fs";
 
 // Reads stay real except for one sentinel path, which throws a bare string:
@@ -31,6 +34,7 @@ vi.mock("node:fs", async (importOriginal) => {
 
 describe(HclService, () => {
   let service: HclService;
+  let loggerService: DeepMocked<LoggerService>;
   const temporaryDirectories: string[] = [];
 
   /** Writes sources into a fresh directory and returns it with their names. */
@@ -50,10 +54,14 @@ describe(HclService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [HclService],
+      providers: [
+        HclService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(HclService);
+    loggerService = await module.resolve(LoggerService);
   });
 
   afterEach(() => {
@@ -130,9 +138,6 @@ describe(HclService, () => {
   });
 
   it("reports a thrown value that is not an Error", () => {
-    const loggerWarnSpy = vi
-      .spyOn(Logger.prototype, "warn")
-      .mockReturnValue(undefined);
     const { hclFiles, workingDirectory } = writeSources({
       "throws-a-string.tf": "",
     });
@@ -140,28 +145,24 @@ describe(HclService, () => {
     const result = service.analyze({ hclFiles, workingDirectory });
 
     expect(result.files).toBe(0);
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
-      "🏗️ Skipped HCL analysis for throws-a-string.tf",
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "🏗️ Skipped HCL analysis",
       undefined,
-      { reason: "not an Error" },
+      { filePath: "throws-a-string.tf", reason: "not an Error" },
     );
   });
 
   it("skips an unreadable file and warns", () => {
-    const loggerWarnSpy = vi
-      .spyOn(Logger.prototype, "warn")
-      .mockReturnValue(undefined);
-
     const result = service.analyze({
       hclFiles: ["missing.tf"],
       workingDirectory: "/repo",
     });
 
     expect(result.files).toBe(0);
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
-      "🏗️ Skipped HCL analysis for missing.tf",
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "🏗️ Skipped HCL analysis",
       undefined,
-      expect.any(Object),
+      expect.objectContaining({ filePath: "missing.tf" }),
     );
   });
 });

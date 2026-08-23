@@ -5,6 +5,8 @@ import { NestFactory } from "@nestjs/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { NestjsModuleGraphsGraphService } from "./nestjs-module-graphs-graph.service";
 import { NestjsModuleGraphsImportsService } from "./nestjs-module-graphs-imports.service";
 import { NestjsModuleGraphsService } from "./nestjs-module-graphs.service";
@@ -76,6 +78,7 @@ vi.mock("nestjs-spelunker", () => ({
 }));
 
 describe(NestjsModuleGraphsService, () => {
+  let logger: LoggerService;
   let service: NestjsModuleGraphsService;
 
   /** Registers a project directory with the given Nx tags. */
@@ -110,9 +113,14 @@ describe(NestjsModuleGraphsService, () => {
         NestjsModuleGraphsGraphService,
         NestjsModuleGraphsImportsService,
         NestjsModuleGraphsService,
+        {
+          provide: LoggerService,
+          useValue: createMock<LoggerService>(),
+        },
       ],
     }).compile();
 
+    logger = await module.resolve(LoggerService);
     service = await module.resolve(NestjsModuleGraphsService);
   });
 
@@ -124,10 +132,31 @@ describe(NestjsModuleGraphsService, () => {
     exploredRootModules.length = 0;
     exploreOptions.length = 0;
     exploredTree = [];
+    vi.clearAllMocks();
   });
 
   it("is defined", () => {
     expect(service).toBeDefined();
+  });
+
+  it("sets logger context", async () => {
+    const module = await Test.createTestingModule({
+      providers: [
+        NestjsModuleGraphsGraphService,
+        NestjsModuleGraphsImportsService,
+        NestjsModuleGraphsService,
+        {
+          provide: LoggerService,
+          useValue: createMock<LoggerService>(),
+        },
+      ],
+    }).compile();
+
+    const localLogger = await module.resolve(LoggerService);
+
+    expect(localLogger.setContext).toHaveBeenCalledWith(
+      "NestjsModuleGraphsService",
+    );
   });
 
   describe("discoverProjects", () => {
@@ -415,6 +444,21 @@ describe(NestjsModuleGraphsService, () => {
 
       expect(graph.moduleNames).toStrictEqual(["MainModule"]);
       expect(exploredRootModules[0]).toHaveProperty("name", "MainModule");
+    });
+
+    it("logs before closing the project's container", async () => {
+      mockApplicationContext();
+
+      await service.exploreProject(
+        buildProject("src/main.module.ts"),
+        ownership,
+      );
+
+      expect(logger.debug).toHaveBeenCalledWith(
+        "🚀 Booted a project's container",
+        undefined,
+        { project: "synchronization" },
+      );
     });
 
     it("builds the container in preview mode so nothing is instantiated", async () => {

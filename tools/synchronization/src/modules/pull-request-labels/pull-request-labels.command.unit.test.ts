@@ -148,11 +148,7 @@ describe(PullRequestLabelsCommand, () => {
     expect(logger.setContext).toHaveBeenCalledWith("PullRequestLabelsCommand");
   });
 
-  // The kind exists so nothing running without a token can select this
-  // command: `lint-codebase` checks `derivation` and the release workflow
-  // writes `derivation,report`.
-  it("declares itself a repository synchronization", () => {
-    expect(command.synchronizationKind).toBe("repository");
+  it("declares its synchronization label", () => {
     expect(command.synchronizationLabel).toBe("pull-request-labels");
   });
 

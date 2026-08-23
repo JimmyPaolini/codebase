@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 
+import { LoggerModule } from "@codebase/logger";
+
 import { OutputJsonService } from "./output-json.service";
 
 /**
@@ -8,7 +10,7 @@ import { OutputJsonService } from "./output-json.service";
 @Module({
   controllers: [],
   exports: [OutputJsonService],
-  imports: [],
+  imports: [LoggerModule],
   providers: [OutputJsonService],
 })
 export class OutputJsonModule {}

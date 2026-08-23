@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import ts from "typescript";
 
+import { LoggerService } from "@codebase/logger";
+
 import {
   BARREL_FILE_SUFFIX,
   BOOTSTRAP_FILE_SUFFIX,
@@ -33,7 +35,9 @@ import type { EntryPoint, EntryPointKind } from "@callidescope/configuration";
 export class EntryPointsService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext(EntryPointsService.name);
+  }
 
   // 🔐 Private Fields
 
@@ -150,6 +154,10 @@ export class EntryPointsService {
     }
 
     if (!args.includeOrphans) {
+      this.logger.info("🔭 Resolved entry points", undefined, {
+        total: entryPoints.length,
+      });
+
       return { entryPoints };
     }
 
@@ -163,6 +171,10 @@ export class EntryPointsService {
         });
       }
     }
+
+    this.logger.info("🔭 Resolved entry points", undefined, {
+      total: entryPoints.length,
+    });
 
     return { entryPoints };
   }

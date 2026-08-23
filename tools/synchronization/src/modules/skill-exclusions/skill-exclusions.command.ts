@@ -6,7 +6,6 @@ import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { SYNCHRONIZATION_KIND_DERIVATION } from "../synchronization/synchronization.constants";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import {
@@ -63,13 +62,6 @@ export class SkillExclusionsCommand
   // 🔐 Private Fields
 
   // 🔑 Public Fields
-
-  /**
-   * A derivation: the five lists are generated from `skills-lock.json`, and
-   * drift is the author of a lockfile change not having regenerated them — hers
-   * to fix in the same change, so it is checked on the pull request.
-   */
-  readonly synchronizationKind = SYNCHRONIZATION_KIND_DERIVATION;
 
   readonly synchronizationLabel = "skill-exclusions";
 
@@ -206,7 +198,7 @@ export class SkillExclusionsCommand
           undefined,
           {
             files: staleFiles,
-            hint: "Run 'nx run synchronization:synchronize:write' to sync",
+            hint: "Run 'nx run synchronization:skill-exclusions:write' to sync",
             skills: skillNames.length,
           },
         );

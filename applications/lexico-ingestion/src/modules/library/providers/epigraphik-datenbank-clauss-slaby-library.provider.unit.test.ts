@@ -179,6 +179,9 @@ describe(EpigraphikDatenbankClaussSlabyLibraryProvider, () => {
 
     expect(files).toStrictEqual(["chunk-0.json", "chunk-1.json"]);
     expect(missing).toBeNull();
+    expect(logger.error).toHaveBeenCalledWith(expect.any(String), undefined, {
+      sourceDataDirectory: "/tmp/missing",
+    });
   });
 
   it("should process chunk file and log progress", async () => {
@@ -241,9 +244,9 @@ describe(EpigraphikDatenbankClaussSlabyLibraryProvider, () => {
     });
 
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining("📄 Failed reading chunk file chunk-1.json"),
+      "📄 Failed reading chunk file",
       undefined,
-      expect.any(Object),
+      expect.objectContaining({ file: "chunk-1.json" }),
     );
   });
 

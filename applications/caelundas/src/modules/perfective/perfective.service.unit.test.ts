@@ -1,6 +1,9 @@
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import moment from "moment-timezone";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { LoggerService } from "@codebase/logger";
 
 import { AnnualSolarCycleService } from "../annual-solar-cycle/annual-solar-cycle.service";
 import { AspectsService } from "../aspects/aspects.service";
@@ -23,6 +26,7 @@ import type {
   MercurianPhaseEventArguments,
   VenusianPhaseEventArguments,
 } from "../phases/phases.types";
+import type { DeepMocked } from "@golevelup/ts-vitest";
 import type { Moment } from "moment-timezone";
 
 vi.mock("fs", () => ({
@@ -49,6 +53,7 @@ const emptyEphemerides = {
 
 describe(PerfectiveService, () => {
   let service: PerfectiveService;
+  let mockLoggerService: DeepMocked<LoggerService>;
 
   const datetimeMock = {
     generateDates:
@@ -99,10 +104,12 @@ describe(PerfectiveService, () => {
         { provide: AnnualSolarCycleService, useValue: annualSolarCycleMock },
         { provide: TwilightsService, useValue: twilightsMock },
         { provide: PhasesService, useValue: phasesMock },
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
 
     service = await module.resolve(PerfectiveService);
+    mockLoggerService = module.get(LoggerService);
   });
 
   beforeEach(() => {
@@ -201,6 +208,21 @@ describe(PerfectiveService, () => {
 
       expect(result).toContain(fakeEvent1);
       expect(result).toContain(fakeEvent2);
+    });
+
+    it("logs a completion summary with the total event count", () => {
+      const date = moment.tz("2025-06-15", "America/New_York");
+      datetimeMock.generateDates.mockReturnValue([date]);
+      ephemerisAggMock.getEphemerides.mockReturnValue(emptyEphemerides);
+      datetimeMock.generateMinutes.mockReturnValue([]);
+
+      const result = service.detect(baseInput);
+
+      expect(mockLoggerService.info).toHaveBeenCalledWith(
+        "🔭 Finished a perfective sweep",
+        undefined,
+        { events: result.length },
+      );
     });
   });
 });

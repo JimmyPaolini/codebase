@@ -315,6 +315,16 @@ describe(ConventionalConfigIoService, () => {
       expect.stringContaining("        - fix"),
       "utf8",
     );
+    expect(logger.info).toHaveBeenCalledWith(
+      "🔄 Syncing type and scope dropdowns",
+      undefined,
+      { templateName: path.relative(workspaceRoot, issueTemplateFile) },
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      "📇 Synced types and scopes",
+      undefined,
+      { templateName: path.relative(workspaceRoot, issueTemplateFile) },
+    );
 
     fileContents.set(
       settingsFile,
@@ -329,6 +339,10 @@ describe(ConventionalConfigIoService, () => {
       settingsFile,
       expect.stringContaining('"alpha", // first'),
       "utf8",
+    );
+    expect(logger.info).toHaveBeenCalledWith("🔄 Syncing settings.json scopes");
+    expect(logger.info).toHaveBeenCalledWith(
+      "📇 Synced scopes in settings.json",
     );
   });
 
@@ -404,6 +418,12 @@ describe(ConventionalConfigIoService, () => {
       expect.stringContaining('{ type: "fix", release: false }'),
       "utf8",
     );
+    expect(logger.info).toHaveBeenCalledWith("🔄 Syncing types", undefined, {
+      relativeFile: path.relative(workspaceRoot, releaseConfigFile),
+    });
+    expect(logger.info).toHaveBeenCalledWith("🏷️ Synced types", undefined, {
+      relativeFile: path.relative(workspaceRoot, releaseConfigFile),
+    });
 
     const skillFile = path.join(workspaceRoot, ".agents/skills/test/SKILL.md");
     fileContents.set(
@@ -432,6 +452,15 @@ describe(ConventionalConfigIoService, () => {
       expect.stringContaining("| `fix` | fixing |"),
       "utf8",
     );
-    expect(logger.log).toHaveBeenCalledWith(expect.any(String));
+    expect(logger.info).toHaveBeenCalledWith(
+      "🔄 Syncing types and scopes",
+      undefined,
+      { skillName: path.relative(workspaceRoot, skillFile) },
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      "📇 Synced types and scopes",
+      undefined,
+      { skillName: path.relative(workspaceRoot, skillFile) },
+    );
   });
 });

@@ -3,16 +3,22 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import { EMPTY_JSON_RESULT } from "./json.constants";
 
 import type { JsoncState, JsonInput, JsonResult } from "./json.types";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /** Walks parsed JSON values to collect structural metrics. */
 @Injectable()
+/* v8 ignore stop */
 export class JsonService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext(JsonService.name);
+  }
 
   // 🔐 Private Fields
 
@@ -322,7 +328,11 @@ export class JsonService {
         for (const parsedDocument of parsedDocuments) {
           this.countNode(parsedDocument, stats, 1);
         }
-      } catch {
+      } catch (error: unknown) {
+        this.logger.warn("🧮 Skipped JSON analysis", undefined, {
+          path: absolutePath,
+          reason: error instanceof Error ? error.message : String(error),
+        });
         continue;
       }
     }

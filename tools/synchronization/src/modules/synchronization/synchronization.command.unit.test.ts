@@ -14,13 +14,7 @@ import { PullRequestLabelsCommand } from "../pull-request-labels/pull-request-la
 import { PullRequestTemplateCommand } from "../pull-request-template/pull-request-template.command";
 import { SkillExclusionsCommand } from "../skill-exclusions/skill-exclusions.command";
 
-import { SynchronizationKindsService } from "./synchronization-kinds.service";
 import { SynchronizationCommand } from "./synchronization.command";
-import {
-  SYNCHRONIZATION_KIND_DERIVATION,
-  SYNCHRONIZATION_KIND_REPORT,
-  SYNCHRONIZATION_KIND_REPOSITORY,
-} from "./synchronization.constants";
 import { SynchronizationService } from "./synchronization.service";
 
 import type { SynchronizableCommand } from "./synchronization.types";
@@ -47,6 +41,7 @@ describe(SynchronizationCommand, () => {
       nxProjectGraphs,
       pullRequestLabels,
       pullRequestTemplate,
+      skillExclusions,
     ];
   }
 
@@ -61,26 +56,22 @@ describe(SynchronizationCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         SynchronizationCommand,
-        SynchronizationKindsService,
         SynchronizationService,
         {
           provide: ConformetryGeneratorsCommand,
           useValue: createMock<ConformetryGeneratorsCommand>({
-            synchronizationKind: SYNCHRONIZATION_KIND_DERIVATION,
             synchronizationLabel: "conformetry-generators",
           }),
         },
         {
           provide: ConventionalConfigCommand,
           useValue: createMock<ConventionalConfigCommand>({
-            synchronizationKind: SYNCHRONIZATION_KIND_DERIVATION,
             synchronizationLabel: "conventional-config",
           }),
         },
         {
           provide: DevcontainerConfigurationCommand,
           useValue: createMock<DevcontainerConfigurationCommand>({
-            synchronizationKind: SYNCHRONIZATION_KIND_DERIVATION,
             synchronizationLabel: "devcontainer-configuration",
           }),
         },
@@ -91,35 +82,30 @@ describe(SynchronizationCommand, () => {
         {
           provide: NestjsModuleGraphsCommand,
           useValue: createMock<NestjsModuleGraphsCommand>({
-            synchronizationKind: SYNCHRONIZATION_KIND_REPORT,
             synchronizationLabel: "nestjs-module-graphs",
           }),
         },
         {
           provide: NxProjectGraphsCommand,
           useValue: createMock<NxProjectGraphsCommand>({
-            synchronizationKind: SYNCHRONIZATION_KIND_DERIVATION,
             synchronizationLabel: "nx-project-graphs",
           }),
         },
         {
           provide: PullRequestLabelsCommand,
           useValue: createMock<PullRequestLabelsCommand>({
-            synchronizationKind: SYNCHRONIZATION_KIND_REPOSITORY,
             synchronizationLabel: "pull-request-labels",
           }),
         },
         {
           provide: PullRequestTemplateCommand,
           useValue: createMock<PullRequestTemplateCommand>({
-            synchronizationKind: SYNCHRONIZATION_KIND_DERIVATION,
             synchronizationLabel: "pull-request-template",
           }),
         },
         {
           provide: SkillExclusionsCommand,
           useValue: createMock<SkillExclusionsCommand>({
-            synchronizationKind: SYNCHRONIZATION_KIND_DERIVATION,
             synchronizationLabel: "skill-exclusions",
           }),
         },
@@ -152,25 +138,18 @@ describe(SynchronizationCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         SynchronizationCommand,
-        SynchronizationKindsService,
         SynchronizationService,
         {
           provide: ConformetryGeneratorsCommand,
-          useValue: createMock<ConformetryGeneratorsCommand>({
-            synchronizationKind: SYNCHRONIZATION_KIND_DERIVATION,
-          }),
+          useValue: createMock<ConformetryGeneratorsCommand>(),
         },
         {
           provide: ConventionalConfigCommand,
-          useValue: createMock<ConventionalConfigCommand>({
-            synchronizationKind: SYNCHRONIZATION_KIND_DERIVATION,
-          }),
+          useValue: createMock<ConventionalConfigCommand>(),
         },
         {
           provide: DevcontainerConfigurationCommand,
-          useValue: createMock<DevcontainerConfigurationCommand>({
-            synchronizationKind: SYNCHRONIZATION_KIND_DERIVATION,
-          }),
+          useValue: createMock<DevcontainerConfigurationCommand>(),
         },
         {
           provide: LoggerService,
@@ -178,33 +157,23 @@ describe(SynchronizationCommand, () => {
         },
         {
           provide: NestjsModuleGraphsCommand,
-          useValue: createMock<NestjsModuleGraphsCommand>({
-            synchronizationKind: SYNCHRONIZATION_KIND_REPORT,
-          }),
+          useValue: createMock<NestjsModuleGraphsCommand>(),
         },
         {
           provide: NxProjectGraphsCommand,
-          useValue: createMock<NxProjectGraphsCommand>({
-            synchronizationKind: SYNCHRONIZATION_KIND_DERIVATION,
-          }),
+          useValue: createMock<NxProjectGraphsCommand>(),
         },
         {
           provide: PullRequestLabelsCommand,
-          useValue: createMock<PullRequestLabelsCommand>({
-            synchronizationKind: SYNCHRONIZATION_KIND_REPOSITORY,
-          }),
+          useValue: createMock<PullRequestLabelsCommand>(),
         },
         {
           provide: PullRequestTemplateCommand,
-          useValue: createMock<PullRequestTemplateCommand>({
-            synchronizationKind: SYNCHRONIZATION_KIND_DERIVATION,
-          }),
+          useValue: createMock<PullRequestTemplateCommand>(),
         },
         {
           provide: SkillExclusionsCommand,
-          useValue: createMock<SkillExclusionsCommand>({
-            synchronizationKind: SYNCHRONIZATION_KIND_DERIVATION,
-          }),
+          useValue: createMock<SkillExclusionsCommand>(),
         },
       ],
     }).compile();
@@ -223,10 +192,24 @@ describe(SynchronizationCommand, () => {
       expect(delegate.synchronize).toHaveBeenCalledWith("check");
     }
 
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "🔗 Verified every synchronization",
       undefined,
       expect.any(Object),
+    );
+  });
+
+  it("logs the label of each command it synchronizes", async () => {
+    stubAllDelegates(true);
+
+    await command.synchronize("check");
+
+    expect(logger.info).toHaveBeenCalledWith(
+      "🔄 Synchronizing a command",
+      undefined,
+      {
+        label: "conformetry-generators",
+      },
     );
   });
 
@@ -252,12 +235,12 @@ describe(SynchronizationCommand, () => {
       expect(delegate.synchronize).toHaveBeenCalledTimes(1);
     }
 
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "📋 Summarized the synchronization run",
       undefined,
       expect.any(Object),
     );
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "🔗 Detected out-of-sync synchronizations",
       undefined,
       expect.any(Object),
@@ -290,7 +273,7 @@ describe(SynchronizationCommand, () => {
       await command.run(["check"]);
     });
 
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "🔗 Detected out-of-sync synchronizations",
       undefined,
       expect.any(Object),
@@ -305,124 +288,5 @@ describe(SynchronizationCommand, () => {
     });
 
     expect(conformetryGenerators.synchronize).not.toHaveBeenCalled();
-  });
-
-  // 🧭 Kind selection
-
-  it("keeps the kinds set exactly as it was written", () => {
-    expect(command.parseKinds("derivation,report")).toBe("derivation,report");
-  });
-
-  it("runs every kind when none was named", async () => {
-    stubAllDelegates(true);
-
-    await command.run(["check"]);
-
-    for (const delegate of getDelegates()) {
-      expect(delegate.synchronize).toHaveBeenCalledWith("check");
-    }
-  });
-
-  it("leaves the report synchronization out of a derivation run", async () => {
-    stubAllDelegates(true);
-
-    await command.run(["check"], { kinds: "derivation" });
-
-    expect(nestjsModuleGraphs.synchronize).not.toHaveBeenCalled();
-    expect(conformetryGenerators.synchronize).toHaveBeenCalledWith("check");
-  });
-
-  it("runs the report synchronization alone when reports were named", async () => {
-    stubAllDelegates(true);
-
-    await command.run(["write"], { kinds: "report" });
-
-    expect(nestjsModuleGraphs.synchronize).toHaveBeenCalledWith("write");
-    expect(conformetryGenerators.synchronize).not.toHaveBeenCalled();
-  });
-
-  it("passes a derivation run whose only drift is in a report", async () => {
-    stubAllDelegates(true);
-    vi.mocked(nestjsModuleGraphs.synchronize).mockResolvedValue(false);
-
-    await expect(
-      command.synchronize("check", new Set([SYNCHRONIZATION_KIND_DERIVATION])),
-    ).resolves.toBe(true);
-  });
-
-  it("exits with code 1 on a kind it does not accept", async () => {
-    stubAllDelegates(true);
-
-    await expectProcessExitOne(async () => {
-      await command.run(["check"], { kinds: "reports" });
-    });
-
-    expect(conformetryGenerators.synchronize).not.toHaveBeenCalled();
-    expect(logger.error).toHaveBeenCalledWith(
-      "🚦 Rejected the command line",
-      undefined,
-      {
-        reasons: [
-          `--kinds does not accept "reports". It takes a comma-separated set drawn from "derivation", "report", and "repository", as in "--kinds derivation,report,repository".`,
-        ],
-      },
-    );
-  });
-
-  it("exits with code 1 on a kinds flag carrying no value", async () => {
-    stubAllDelegates(true);
-
-    await expectProcessExitOne(async () => {
-      await command.run(["check"], { kinds: true });
-    });
-
-    expect(conformetryGenerators.synchronize).not.toHaveBeenCalled();
-  });
-
-  it("fails rather than reporting success when a selection matches nothing", async () => {
-    stubAllDelegates(true);
-
-    await expect(command.synchronize("check", new Set())).resolves.toBe(false);
-    expect(logger.error).toHaveBeenCalledWith(
-      "🚦 Selected no synchronization at all",
-      undefined,
-      { kinds: [] },
-    );
-  });
-
-  // The whole reason the repository kind exists: neither the pull request gate
-  // nor the release write may reach a command that needs a token.
-  it("leaves the repository synchronization out of a derivation run", async () => {
-    stubAllDelegates(true);
-
-    await command.run(["check"], { kinds: "derivation" });
-
-    expect(pullRequestLabels.synchronize).not.toHaveBeenCalled();
-  });
-
-  it("leaves the repository synchronization out of the release write", async () => {
-    stubAllDelegates(true);
-
-    await command.run(["write"], { kinds: "derivation,report" });
-
-    expect(pullRequestLabels.synchronize).not.toHaveBeenCalled();
-    expect(nestjsModuleGraphs.synchronize).toHaveBeenCalledWith("write");
-  });
-
-  it("runs the repository synchronization alone when it was named", async () => {
-    stubAllDelegates(true);
-
-    await command.run(["write"], { kinds: "repository" });
-
-    expect(pullRequestLabels.synchronize).toHaveBeenCalledWith("write");
-    expect(conformetryGenerators.synchronize).not.toHaveBeenCalled();
-    expect(nestjsModuleGraphs.synchronize).not.toHaveBeenCalled();
-  });
-
-  it("drives every kind when a caller says nothing about kinds", async () => {
-    stubAllDelegates(true);
-
-    await expect(command.synchronize("check")).resolves.toBe(true);
-    expect(nestjsModuleGraphs.synchronize).toHaveBeenCalledWith("check");
   });
 });

@@ -310,9 +310,12 @@
       "configurations": {
         "ci": {
           "command": "gitleaks git --verbose --redact --config configuration/gitleaks.toml --gitleaks-ignore-path configuration"
+        },
+        "ci-incremental": {
+          "command": "gitleaks git --log-opts=\"${NX_BASE}..${NX_HEAD}\" --verbose --redact --config configuration/gitleaks.toml --gitleaks-ignore-path configuration"
         }
       },
-      "description": "Detect hardcoded secrets in git history using Gitleaks (detection only)",
+      "description": "Detect hardcoded secrets in git history using Gitleaks (detection only). The ci-incremental configuration scopes the scan to NX_BASE..NX_HEAD instead of full history, for push/pull_request events where the weekly ci scan already covers everything older.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/configuration/.gitleaksignore",
@@ -643,7 +646,10 @@
       "defaultConfiguration": "check",
       "description": "Lint codebase for consistent package.json conventions",
       "executor": "nx:run-commands",
-      "inputs": ["{workspaceRoot}/**/package.json"],
+      "inputs": [
+        "{workspaceRoot}/**/package.json",
+        "{workspaceRoot}/pnpm-workspace.yaml"
+      ],
       "options": {
         "cwd": "{workspaceRoot}"
       }
@@ -738,6 +744,7 @@
       "inputs": [
         "{projectRoot}/.devcontainer/cloud/devcontainer.json",
         "{projectRoot}/.devcontainer/local/devcontainer.json",
+        "{projectRoot}/.devcontainer/scripts/sync-vscode-extensions.ts",
         "{projectRoot}/.vscode/extensions.json"
       ],
       "options": {
@@ -757,7 +764,10 @@
       "defaultConfiguration": "write",
       "description": "Validate that VS Code Machine settings contain all workspace settings (check) or merge workspace settings into Machine settings (write)",
       "executor": "nx:run-commands",
-      "inputs": ["{projectRoot}/.vscode/settings.json"],
+      "inputs": [
+        "{projectRoot}/.devcontainer/scripts/sync-vscode-settings.ts",
+        "{projectRoot}/.vscode/settings.json"
+      ],
       "options": {
         "command": "tsx .devcontainer/scripts/sync-vscode-settings.ts"
       }

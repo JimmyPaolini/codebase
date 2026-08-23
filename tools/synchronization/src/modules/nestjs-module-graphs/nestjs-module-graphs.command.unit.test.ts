@@ -165,12 +165,18 @@ describe(NestjsModuleGraphsCommand, () => {
   it("reports success when every graph is already current", async () => {
     await expect(command.synchronize("check")).resolves.toBe(true);
 
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "🕸️ Verified every NestJS module graph",
       undefined,
       { projects: 1 },
     );
     expect(writeFileSync).not.toHaveBeenCalled();
+  });
+
+  it("logs before discovering NestJS projects", async () => {
+    await command.synchronize("check");
+
+    expect(logger.debug).toHaveBeenCalledWith("🔍 Discovering NestJS projects");
   });
 
   it("reports drift in check mode without writing", async () => {
@@ -179,7 +185,7 @@ describe(NestjsModuleGraphsCommand, () => {
     await expect(command.synchronize("check")).resolves.toBe(false);
 
     expect(writeFileSync).not.toHaveBeenCalled();
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "🕸️ Detected out-of-sync NestJS module graphs",
       undefined,
       expect.objectContaining({ files: [path.join("example", "AGENTS.md")] }),
@@ -204,9 +210,10 @@ describe(NestjsModuleGraphsCommand, () => {
 
     await expect(command.synchronize("write")).resolves.toBe(false);
 
-    expect(logger.log).toHaveBeenCalledWith(
-      expect.stringContaining("Missing <!-- nestjs-module-graph-start -->"),
-    );
+    expect(logger.info).toHaveBeenCalledWith("🕸️ Missing markers", undefined, {
+      marker: `<!-- ${NESTJS_MODULE_GRAPH_MARKER}-start -->`,
+      path: path.join("applications", "example", "AGENTS.md"),
+    });
   });
 
   // Which documents a project must keep is conformetry's rule, enforced from
@@ -216,12 +223,14 @@ describe(NestjsModuleGraphsCommand, () => {
 
     await expect(command.synchronize("check")).resolves.toBe(true);
 
-    expect(logger.log).not.toHaveBeenCalledWith(
-      expect.stringContaining("Missing"),
+    expect(logger.info).not.toHaveBeenCalledWith(
+      "🕸️ Missing markers",
+      undefined,
+      expect.any(Object),
     );
   });
 
-  it("reports failure when a project cannot be explored", async () => {
+  it("reports failure and continues when a project's exploration throws", async () => {
     vi.mocked(moduleGraphsService.exploreProject).mockRejectedValue(
       new Error("boom"),
     );
@@ -229,12 +238,26 @@ describe(NestjsModuleGraphsCommand, () => {
     await expect(command.synchronize("check")).resolves.toBe(false);
 
     expect(logger.error).toHaveBeenCalledWith(
-      "💥 Failed synchronizing NestJS module graphs",
-      expect.stringContaining("boom"),
+      "💥 Failed exploring a project's module graph",
+      undefined,
+      { project: "example", reason: "boom" },
     );
   });
 
-  it("reports a non-Error failure", async () => {
+  it("reports a non-Error project exploration failure", async () => {
+    const failure: unknown = "unusable";
+    vi.mocked(moduleGraphsService.exploreProject).mockRejectedValue(failure);
+
+    await expect(command.synchronize("check")).resolves.toBe(false);
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "💥 Failed exploring a project's module graph",
+      undefined,
+      { project: "example", reason: "unusable" },
+    );
+  });
+
+  it("reports a non-Error failure before any project is explored", async () => {
     const failure: unknown = "unusable";
     vi.mocked(moduleGraphsService.discoverProjects).mockImplementation(() => {
       throw failure;
@@ -265,7 +288,7 @@ describe(NestjsModuleGraphsCommand, () => {
       await command.run(["check"]);
     });
 
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "🕸️ Detected out-of-sync NestJS module graphs",
       undefined,
       expect.any(Object),

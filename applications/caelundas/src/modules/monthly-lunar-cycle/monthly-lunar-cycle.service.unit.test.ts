@@ -75,7 +75,7 @@ describe(MonthlyLunarCycleService, () => {
               date: Moment;
               description: string;
               logger: {
-                log: (
+                info: (
                   message: string,
                   context?: string,
                   data?: LogData,
@@ -93,8 +93,9 @@ describe(MonthlyLunarCycleService, () => {
                 timezone,
               } = args;
               const dateString = date.clone().tz(timezone).toISOString(true);
-              logger.log(`🗓️ Built ${summary}`, undefined, {
+              logger.info("🗓️ Built a calendar event", undefined, {
                 at: dateString,
+                summary,
               });
               return {
                 categories,
@@ -661,7 +662,9 @@ describe(MonthlyLunarCycleService, () => {
 
         expect(result).toBeNull();
         expect(warnSpy).toHaveBeenCalledWith(
-          expect.stringContaining("Skipping unknown lunar phase"),
+          "🌙 Skipping unknown lunar phase",
+          undefined,
+          { lunarPhaseLower: "full" },
         );
 
         lunarPhaseSpy.mockRestore();

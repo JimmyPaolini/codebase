@@ -351,14 +351,14 @@ describe(LoggerService, () => {
     });
   });
 
-  describe("log", () => {
+  describe("info", () => {
     it("should log message with current context", () => {
       const loggerChildMock = createLoggerChildMock();
 
       service.setContext("TestContext");
       setLoggerChildMock(loggerChildMock);
 
-      service.log("📝 Logged a test message");
+      service.info("📝 Logged a test message");
 
       expect(loggerChildMock.info).toHaveBeenCalledWith(
         { context: "TestContext", emoji: "📝" },
@@ -372,12 +372,28 @@ describe(LoggerService, () => {
       service.setContext("InstanceContext");
       setLoggerChildMock(loggerChildMock);
 
-      service.log("📝 Logged a test message", "CustomContext");
+      service.info("📝 Logged a test message", "CustomContext");
 
       expect(loggerChildMock.info).toHaveBeenCalledWith(
         { context: "CustomContext", emoji: "📝" },
         "Logged a test message",
       );
+    });
+  });
+
+  describe("log", () => {
+    it("should delegate to info for NestJS's own LoggerService contract", () => {
+      const infoSpy = vi.spyOn(service, "info").mockReturnValue(undefined);
+
+      service.log("📝 Logged a test message", "CustomContext", { count: 1 });
+
+      expect(infoSpy).toHaveBeenCalledExactlyOnceWith(
+        "📝 Logged a test message",
+        "CustomContext",
+        { count: 1 },
+      );
+
+      infoSpy.mockRestore();
     });
   });
 

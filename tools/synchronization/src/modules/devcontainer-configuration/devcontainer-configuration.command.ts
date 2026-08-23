@@ -8,7 +8,6 @@ import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { SYNCHRONIZATION_KIND_DERIVATION } from "../synchronization/synchronization.constants";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import {
@@ -49,9 +48,6 @@ export class DevcontainerConfigurationCommand
   // 🔐 Private Fields
 
   // 🔑 Public Fields
-
-  /** Derived from configuration, so its drift is answered on a pull request. */
-  readonly synchronizationKind = SYNCHRONIZATION_KIND_DERIVATION;
 
   readonly synchronizationLabel = "devcontainer-configuration";
 
@@ -95,11 +91,10 @@ export class DevcontainerConfigurationCommand
       readFileSync(cloudConfigFile, "utf8"),
     );
 
-    this.logger.log(
-      `📦 Detected out-of-sync common fields in ${relativeFilePath}`,
-      undefined,
-      { hint: "Run: nx run synchronization:synchronize:write" },
-    );
+    this.logger.info("📦 Detected out-of-sync common fields", undefined, {
+      hint: "Run: nx run synchronization:devcontainer-configuration:write",
+      relativeFilePath,
+    });
 
     this.reportDifferences(structuredClone(expectedConfig), currentConfig);
 
@@ -170,9 +165,10 @@ export class DevcontainerConfigurationCommand
     for (const key of allFieldKeys) {
       if (DEVCONTAINER_CLOUD_ONLY_KEYS.has(key)) continue;
       if (!_.isEqual(expectedFields[key], currentFields[key])) {
-        this.logger.log(`🔀 Differing field '${key}'`, undefined, {
+        this.logger.info("🔀 Differing field", undefined, {
           actual: currentFields[key],
           expected: expectedFields[key],
+          key,
         });
       }
     }
@@ -226,7 +222,13 @@ export class DevcontainerConfigurationCommand
       `${JSON.stringify(mergedConfig, null, 2)}\n`,
       "utf8",
     );
-    this.logger.log(`📦 Updated ${relativeFilePath}`);
+    this.logger.info(
+      "📦 Updated the cloud devcontainer config file",
+      undefined,
+      {
+        relativeFilePath,
+      },
+    );
   }
 
   /**
@@ -242,14 +244,14 @@ export class DevcontainerConfigurationCommand
     cloudConfigFile: string,
   ): boolean {
     if (this.isCurrent(mergedConfig, cloudConfigFile)) {
-      this.logger.log(
+      this.logger.info(
         "📦 Left the cloud devcontainer config as the local config already implies",
       );
       return true;
     }
 
     this.write(mergedConfig, cloudConfigFile);
-    this.logger.log(
+    this.logger.info(
       "📦 Updated the cloud devcontainer config from the local config",
     );
 
@@ -271,7 +273,7 @@ export class DevcontainerConfigurationCommand
         loggerService: this.logger,
         passedParameters,
         usageMessage:
-          "💡 Usage: nx run synchronization:start:devcontainer-configuration-check (or synchronization:start:devcontainer-configuration-write)",
+          "💡 Usage: nx run synchronization:devcontainer-configuration:check (or synchronization:devcontainer-configuration:write)",
       });
 
     if (!(await this.synchronize(mode))) {
@@ -281,33 +283,41 @@ export class DevcontainerConfigurationCommand
 
   /** Synchronizes the cloud devcontainer config and reports success without exiting. */
   async synchronize(mode: SynchronizationMode): Promise<boolean> {
-    await Promise.resolve();
-    const workspaceRoot = process.cwd();
-    const localConfigFile = path.join(
-      workspaceRoot,
-      ".devcontainer/local/devcontainer.json",
-    );
-    const cloudConfigFile = path.join(
-      workspaceRoot,
-      ".devcontainer/cloud/devcontainer.json",
-    );
-
-    const localConfig: DevcontainerConfiguration = JSON5.parse(
-      readFileSync(localConfigFile, "utf8"),
-    );
-    const cloudConfig: DevcontainerConfiguration = JSON5.parse(
-      readFileSync(cloudConfigFile, "utf8"),
-    );
-    const mergedConfig = this.applySync(localConfig, cloudConfig);
-
-    if (mode === "check") {
-      if (!this.check(mergedConfig, cloudConfigFile)) return false;
-      this.logger.log(
-        "📦 Verified the cloud devcontainer config against the local config",
+    try {
+      await Promise.resolve();
+      const workspaceRoot = process.cwd();
+      const localConfigFile = path.join(
+        workspaceRoot,
+        ".devcontainer/local/devcontainer.json",
       );
-      return true;
-    }
+      const cloudConfigFile = path.join(
+        workspaceRoot,
+        ".devcontainer/cloud/devcontainer.json",
+      );
 
-    return this.writeWhenDrifted(mergedConfig, cloudConfigFile);
+      const localConfig: DevcontainerConfiguration = JSON5.parse(
+        readFileSync(localConfigFile, "utf8"),
+      );
+      const cloudConfig: DevcontainerConfiguration = JSON5.parse(
+        readFileSync(cloudConfigFile, "utf8"),
+      );
+      const mergedConfig = this.applySync(localConfig, cloudConfig);
+
+      if (mode === "check") {
+        if (!this.check(mergedConfig, cloudConfigFile)) return false;
+        this.logger.info(
+          "📦 Verified the cloud devcontainer config against the local config",
+        );
+        return true;
+      }
+
+      return this.writeWhenDrifted(mergedConfig, cloudConfigFile);
+    } catch (error) {
+      this.logger.error(
+        "💥 Failed synchronizing the devcontainer configuration",
+        error instanceof Error ? error.stack : String(error),
+      );
+      return false;
+    }
   }
 }

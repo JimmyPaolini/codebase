@@ -68,10 +68,13 @@ describe(SpecialtyAspectsComposerService, () => {
       }),
     );
 
-    expect(logger.log).toHaveBeenCalledWith(
-      "🗓️ Built 🎯 ☀️ ⬠ 🌙 Sun quintile Moon",
+    expect(logger.info).toHaveBeenCalledWith(
+      "🗓️ Built a calendar event",
       undefined,
-      expect.any(Object),
+      {
+        at: timestamp.toISOString(),
+        summary: "🎯 ☀️ ⬠ 🌙 Sun quintile Moon",
+      },
     );
   });
 

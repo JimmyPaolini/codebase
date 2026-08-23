@@ -735,8 +735,10 @@ describe(LibraryCommand, () => {
     });
 
     expect(providerPerseus.ingest).toHaveBeenCalledWith({ author: "vergil" });
-    expect(logger.log).toHaveBeenCalledWith(
-      "🏛️ Completed ingestion for provider: perseus (50.00%, 1/2)",
+    expect(logger.info).toHaveBeenCalledWith(
+      "🏛️ Completed ingestion for provider",
+      undefined,
+      { current: 1, percent: 50, providerName: "perseus", total: 2 },
     );
   });
 
@@ -837,8 +839,9 @@ describe(LibraryCommand, () => {
     });
 
     expect(logger.error).toHaveBeenCalledWith(
-      "🔌 Failed running provider string-provider",
+      "🔌 Failed running provider",
       undefined,
+      { providerName: "string-provider" },
     );
     expect(appendFileMock).toHaveBeenCalledWith(
       expect.any(String),
@@ -1108,8 +1111,12 @@ describe(LibraryCommand, () => {
     expect(scanLibraryProviderSpy).not.toHaveBeenCalled();
   });
 
-  it("should return empty list when root library directory cannot be read", async () => {
-    readdirMock.mockRejectedValueOnce(new Error("missing directory"));
+  it("should silently return empty list when the library directory does not exist yet", async () => {
+    const missingDirectoryError = Object.assign(new Error("missing"), {
+      code: "ENOENT",
+    });
+    readdirMock.mockReset();
+    readdirMock.mockRejectedValueOnce(missingDirectoryError);
 
     const result = await (
       command as unknown as {
@@ -1118,6 +1125,43 @@ describe(LibraryCommand, () => {
     ).scanLibrary();
 
     expect(result).toStrictEqual([]);
+    expect(logger.warn).not.toHaveBeenCalled();
+  });
+
+  it("should warn when the root library directory cannot be read for another reason", async () => {
+    readdirMock.mockReset();
+    readdirMock.mockRejectedValueOnce(new Error("permission denied"));
+
+    const result = await (
+      command as unknown as {
+        scanLibrary: () => Promise<unknown[]>;
+      }
+    ).scanLibrary();
+
+    expect(result).toStrictEqual([]);
+    expect(logger.warn).toHaveBeenCalledWith(
+      "⚠️ Failed reading the library directory",
+      undefined,
+      expect.objectContaining({ reason: "permission denied" }),
+    );
+  });
+
+  it("should stringify non-Error rejections when the library directory cannot be read", async () => {
+    readdirMock.mockReset();
+    readdirMock.mockRejectedValueOnce("permission denied string");
+
+    const result = await (
+      command as unknown as {
+        scanLibrary: () => Promise<unknown[]>;
+      }
+    ).scanLibrary();
+
+    expect(result).toStrictEqual([]);
+    expect(logger.warn).toHaveBeenCalledWith(
+      "⚠️ Failed reading the library directory",
+      undefined,
+      expect.objectContaining({ reason: "permission denied string" }),
+    );
   });
 
   it("should skip non-directory authors when scanning provider directory", async () => {

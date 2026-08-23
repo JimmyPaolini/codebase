@@ -2,6 +2,7 @@ import { mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
@@ -15,6 +16,8 @@ import type {
   ResolvedCallidescopeMarkdownOutputConfiguration,
   WriteMarkdownOutput,
 } from "@callidescope/configuration";
+import type { LoggerService } from "@codebase/logger";
+import type { DeepMocked } from "@golevelup/ts-vitest";
 
 /** Builds a markdown destination pointing at the given path. */
 function buildDestination(
@@ -48,7 +51,8 @@ describe(OutputMarkdownService, () => {
     expect(service).toBeDefined();
   });
 
-  const subject = new OutputMarkdownService();
+  const subjectLogger: DeepMocked<LoggerService> = createMock<LoggerService>();
+  const subject = new OutputMarkdownService(subjectLogger);
   const result = buildCallGraphResult();
 
   /** Returns a path inside a fresh temporary directory. */
@@ -91,6 +95,11 @@ describe(OutputMarkdownService, () => {
     expect(written).toContain("new");
     expect(written).not.toContain("old");
     expect(written).toContain("After.");
+    expect(subjectLogger.info).toHaveBeenCalledWith(
+      "🔭 Wrote a report",
+      undefined,
+      { path: path.resolve(filePath) },
+    );
   });
 
   it("appends the block when the file has no anchors", async () => {
@@ -106,6 +115,11 @@ describe(OutputMarkdownService, () => {
 
     await expect(readFile(filePath, "utf8")).resolves.toContain(
       "<!-- CALL_STACKS_START -->",
+    );
+    expect(subjectLogger.info).toHaveBeenCalledWith(
+      "🔭 Wrote a report",
+      undefined,
+      { path: path.resolve(filePath) },
     );
   });
 

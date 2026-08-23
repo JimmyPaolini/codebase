@@ -78,11 +78,11 @@ Config: [validate-branch-name.config.cjs](../../../validate-branch-name.config.c
 `configuration/lint-staged.config.ts` declares three patterns, in this order. A
 staged `package.json` matches all three, so all four commands run.
 
-| Staged file pattern                     | Commands lint-staged runs                                                                                                                                                       |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `{**/package.json,pnpm-workspace.yaml}` | `validation lockfile`, run as the CLI directly rather than through its Nx target                                                                                                |
-| `**/package.json`                       | `nx run-many --projects=codebase --targets=check-catalog-manifests,sherif,syncpack`                                                                                             |
-| `*` (every staged path)                 | `nx affected --target=lint-codebase --target=callidescope --target=synchronize --configuration=check --parallel=8 --files=…`, then `nx run-many --targets=conformetry-validate` |
+| Staged file pattern                     | Commands lint-staged runs                                                                                                                                                                                                                                                                                                                       |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `{**/package.json,pnpm-workspace.yaml}` | `validation lockfile`, run as the CLI directly rather than through its Nx target                                                                                                                                                                                                                                                                |
+| `**/package.json`                       | `nx run-many --projects=codebase --targets=check-catalog-manifests,sherif,syncpack`                                                                                                                                                                                                                                                             |
+| `*` (every staged path)                 | `nx affected --target=lint-codebase --target=callidescope --target=conformetry-generators --target=conventional-config --target=devcontainer-configuration --target=nx-project-graphs --target=pull-request-template --target=skill-exclusions --configuration=check --parallel=8 --files=…`, then `nx run-many --targets=conformetry-validate` |
 
 There is deliberately no per-file-type row any more. `lint-codebase` is an
 `nx:noop` aggregator whose `dependsOn` list holds every static check, and each
@@ -92,13 +92,15 @@ hand-written mapping to drift. Anything the old table routed by hand
 (`sync-vscode-extensions`, `markdown-lint`, `yaml-lint`, `spell-check`) is now
 reached through that `dependsOn` list.
 
-`callidescope` and `synchronize` are the exceptions, named in the same
-invocation rather than reached through `dependsOn`. Both also publish a report
-on the default branch, and Nx forwards an explicit configuration down
-`dependsOn` — so an edge there would let `lint-codebase --configuration=write`
-publish from a branch. Naming them alongside keeps a commit gating call-stack
-depth and derivation drift without a second `nx affected` call and the extra
-project graph build it would cost.
+`callidescope` and each derivation synchronization target are the exceptions,
+named in the same invocation rather than reached through `dependsOn`.
+`callidescope` also publishes a report on the default branch, and Nx forwards
+an explicit configuration down `dependsOn` — so an edge there would let
+`lint-codebase --configuration=write` publish from a branch. There is no
+aggregate `synchronize` target: each synchronization command is its own Nx
+target on the `synchronization` project, named here directly. Naming them
+alongside keeps a commit gating call-stack depth and derivation drift without a
+second `nx affected` call and the extra project graph build it would cost.
 
 Conformetry is the one exception to `affected`: a generated instance can drift
 without matching any changed-file glob, so it validates the whole workspace on
@@ -213,17 +215,18 @@ Config: [applications/affirmations/project.json](../../../applications/affirmati
 
 #### Sync checks
 
-Every synchronization command is a named configuration of one Nx target, `synchronization:start`. There is no `sync-*` target and no `scripts/sync-*.ts` script — those were retired when the work moved into [tools/synchronization](../../../tools/synchronization). The `synchronize` target runs all six in one process, which is what `lint-codebase` depends on; `start` runs them individually.
+Every synchronization command is its own Nx target on the `synchronization` project — `conformetry-generators`, `conventional-config`, `devcontainer-configuration`, `nestjs-module-graphs`, `nx-project-graphs`, `pull-request-template`, and `skill-exclusions` — run directly rather than through a shared aggregate, the same way `codebase:codometer` and `codebase:callidescope` are run. There is no `sync-*` target, no `scripts/sync-*.ts` script, and no `synchronization:synchronize` aggregate target — those were retired when the work moved into [tools/synchronization](../../../tools/synchronization). `lint-codebase`'s dependents name each derivation target directly.
 
-| Check command                                                   | Write command | What it validates                                                                                                                                           |
-| --------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `nx run synchronization:start:conformetry-generators-check`     | `...-write`   | AGENTS.md generators table matches [configuration/conformetry.config.ts](../../../configuration/conformetry.config.ts)                                      |
-| `nx run synchronization:start:conventional-config-check`        | `...-write`   | Types/scopes consistent across [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs), `.vscode/settings.json`, skill docs |
-| `nx run synchronization:start:devcontainer-configuration-check` | `...-write`   | Cloud and local devcontainer configs share common fields                                                                                                    |
-| `nx run synchronization:start:nestjs-module-graphs-check`       | `...-write`   | Each NestJS project's README module graph matches its `*.module.ts` files                                                                                   |
-| `nx run synchronization:start:nx-project-graphs-check`          | `...-write`   | Each project's README neighborhood graph matches the Nx project graph                                                                                       |
-| `nx run synchronization:start:pull-request-template-check`      | `...-write`   | [.github/PULL_REQUEST_TEMPLATE.md](../../../.github/PULL_REQUEST_TEMPLATE.md) in sync with skills and prompts                                               |
-| `nx run codebase:sync-vscode-extensions:check`                  | `:write`      | `.vscode/extensions.json` matches devcontainer extension lists                                                                                              |
+| Check command                                             | Write command | What it validates                                                                                                                                           |
+| --------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `nx run synchronization:conformetry-generators:check`     | `:write`      | AGENTS.md generators table matches [configuration/conformetry.config.ts](../../../configuration/conformetry.config.ts)                                      |
+| `nx run synchronization:conventional-config:check`        | `:write`      | Types/scopes consistent across [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs), `.vscode/settings.json`, skill docs |
+| `nx run synchronization:devcontainer-configuration:check` | `:write`      | Cloud and local devcontainer configs share common fields                                                                                                    |
+| `nx run synchronization:nestjs-module-graphs:check`       | `:write`      | Each NestJS project's README module graph matches its `*.module.ts` files                                                                                   |
+| `nx run synchronization:nx-project-graphs:check`          | `:write`      | Each project's README neighborhood graph matches the Nx project graph                                                                                       |
+| `nx run synchronization:pull-request-template:check`      | `:write`      | [.github/PULL_REQUEST_TEMPLATE.md](../../../.github/PULL_REQUEST_TEMPLATE.md) in sync with skills and prompts                                               |
+| `nx run synchronization:skill-exclusions:check`           | `:write`      | Installed-skill exclusion lists match `skills-lock.json`                                                                                                    |
+| `nx run codebase:sync-vscode-extensions:check`            | `:write`      | `.vscode/extensions.json` matches devcontainer extension lists                                                                                              |
 
 > **Lesson**: If sync checks fail, it means a source of truth was edited without updating its counterpart. Example: editing `configuration/conformetry.config.ts` requires regenerating the `AGENTS.md` generators table. Editing `configuration/conventional.config.cjs` requires regenerating `.vscode/settings.json`, the PR template, and the types/scopes tables in AGENTS.md and the branch and commit skills.
 
@@ -284,17 +287,18 @@ pnpm exec nx affected --target=markdown-lint --configuration=write --files=<stag
 # Unused code (knip --fix, vulture whitelist — no composite `clean` target exists)
 pnpm exec nx affected --target=knip,vulture --configuration=write --files=<staged-files>
 
-# Sync checks: run the write variant to regenerate the out-of-sync file
-pnpm exec nx run synchronization:start:conformetry-generators-write
-pnpm exec nx run synchronization:start:conventional-config-write
-pnpm exec nx run synchronization:start:devcontainer-configuration-write
-pnpm exec nx run synchronization:start:nestjs-module-graphs-write
-pnpm exec nx run synchronization:start:nx-project-graphs-write
-pnpm exec nx run synchronization:start:pull-request-template-write
+# Sync checks: run the write configuration to regenerate the out-of-sync file
+pnpm exec nx run synchronization:conformetry-generators:write
+pnpm exec nx run synchronization:conventional-config:write
+pnpm exec nx run synchronization:devcontainer-configuration:write
+pnpm exec nx run synchronization:nestjs-module-graphs:write
+pnpm exec nx run synchronization:nx-project-graphs:write
+pnpm exec nx run synchronization:pull-request-template:write
+pnpm exec nx run synchronization:skill-exclusions:write
 pnpm exec nx run codebase:sync-vscode-extensions:write
 
-# Or all six synchronization commands at once
-pnpm exec nx run synchronization:synchronize --configuration=write
+# Or every derivation at once
+pnpm exec nx run-many --targets=conformetry-generators,conventional-config,devcontainer-configuration,nx-project-graphs,pull-request-template,skill-exclusions --configuration=write
 ```
 
 #### Validate Fixes Passed
@@ -314,8 +318,8 @@ pnpm exec nx affected --target=markdown-lint --configuration=check --files=<stag
 # Validate knip/vulture fixes worked
 pnpm exec nx affected --target=knip,vulture --configuration=check --files=<staged-files>
 
-# Validate sync checks fixed themselves (re-run the check variant)
-pnpm exec nx run synchronization:synchronize --configuration=check
+# Validate sync checks fixed themselves (re-run the check configuration)
+pnpm exec nx run-many --targets=conformetry-generators,conventional-config,devcontainer-configuration,nx-project-graphs,pull-request-template,skill-exclusions --configuration=check
 pnpm exec nx run codebase:sync-vscode-extensions:check
 ```
 
@@ -373,54 +377,54 @@ Read `configuration/commitlint.config.ts` for the full rule set before amending.
 
 <!-- types-start -->
 
-| Type | Description |
-| ---- | ----------- |
-| `feat` | A new feature or capability that adds value for users |
-| `fix` | A bug fix that addresses a specific issue or problem |
-| `docs` | Documentation, AGENTS.md, SKILL.md, README, and planning files |
-| `test` | Adding or correcting unit, integration, or end-to-end tests |
-| `refactor` | Code restructuring that neither fixes a bug nor adds a feature |
-| `style` | Formatting, whitespace, or code structure changes with no semantic effect |
-| `perf` | A code change that improves performance (caching, query optimization, etc.) |
-| `chore` | Housekeeping that doesn't modify src or test files (gitignore, editor config, etc.) |
-| `ci` | GitHub Actions workflows, composite actions, and CI/CD scripts |
-| `build` | Build system, Vite/Docker/Helm config, or external dependency integration |
-| `revert` | Reverts a previous commit |
+| Type       | Description                                                                         |
+| ---------- | ----------------------------------------------------------------------------------- |
+| `feat`     | A new feature or capability that adds value for users                               |
+| `fix`      | A bug fix that addresses a specific issue or problem                                |
+| `docs`     | Documentation, AGENTS.md, SKILL.md, README, and planning files                      |
+| `test`     | Adding or correcting unit, integration, or end-to-end tests                         |
+| `refactor` | Code restructuring that neither fixes a bug nor adds a feature                      |
+| `style`    | Formatting, whitespace, or code structure changes with no semantic effect           |
+| `perf`     | A code change that improves performance (caching, query optimization, etc.)         |
+| `chore`    | Housekeeping that doesn't modify src or test files (gitignore, editor config, etc.) |
+| `ci`       | GitHub Actions workflows, composite actions, and CI/CD scripts                      |
+| `build`    | Build system, Vite/Docker/Helm config, or external dependency integration           |
+| `revert`   | Reverts a previous commit                                                           |
 
 <!-- types-end -->
 
 <!-- scopes-start -->
 
-| Scope | Description |
-| ----- | ----------- |
-| `affirmations` | Python Jupyter notebook application for LangGraph affirmation generation |
-| `applications` | Changes spanning multiple applications in applications/ (e.g. lexico, caelundas, etc.) |
-| `caelundas` | Node.js CLI for astronomical calendar generation (NASA JPL ephemeris) |
-| `configuration` | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.) |
-| `conformetry` | Code generator templates and validation tests for generated instances |
-| `dependencies` | Dependency version changes (upgrades, additions, removals via pnpm) |
-| `deps` | Dependency version changes (upgrades, additions, removals via pnpm) |
-| `deployments` | GitHub Actions workflows and CI/CD pipeline configuration |
-| `documentation` | Markdown docs, skills, planning files, and AGENTS.md files |
-| `infrastructure` | Helm charts, Terraform configs, and Kubernetes resources |
-| `JimmyPaolini` | Static GitHub profile README project (markdown and assets) |
-| `lexico` | TanStack Start SSR Latin dictionary web app with Supabase backend |
-| `lexico-components` | Shared React/shadcn component library |
-| `lexico-entities` | Shared TypeORM entities and GraphQL types |
-| `lexico-ingestion` | Data ingestion scripts for Lexico |
-| `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
-| `callidescope` | Call stack tracing and linting CLI and the configuration package it reads |
-| `codometer` | Code statistics measurement CLI and the configuration package it reads |
-| `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
-| `no-release` | Escape hatch: suppress semantic-release for any commit type |
-| `packages` | Changes spanning multiple shared packages in packages/ |
-| `release` | Version bumps and release commits generated by semantic-release |
-| `scripts` | Shell and TypeScript scripts in scripts/ (sync, setup, utilities) |
-| `testing` | Vitest configuration, shared test utilities, and coverage setup |
-| `tools` | Changes spanning multiple tool projects in tools/ |
-| `synchronization` | Synchronization application and commands for automating workflows |
-| `reporting` | Internal reporting CLI and the reports it renders, such as 🎒 Bundles |
-| `validation` | Validation CLI and the checks it runs, such as pull request metadata |
+| Scope               | Description                                                                            |
+| ------------------- | -------------------------------------------------------------------------------------- |
+| `affirmations`      | Python Jupyter notebook application for LangGraph affirmation generation               |
+| `applications`      | Changes spanning multiple applications in applications/ (e.g. lexico, caelundas, etc.) |
+| `caelundas`         | Node.js CLI for astronomical calendar generation (NASA JPL ephemeris)                  |
+| `configuration`     | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.)                  |
+| `conformetry`       | Code generator templates and validation tests for generated instances                  |
+| `dependencies`      | Dependency version changes (upgrades, additions, removals via pnpm)                    |
+| `deps`              | Dependency version changes (upgrades, additions, removals via pnpm)                    |
+| `deployments`       | GitHub Actions workflows and CI/CD pipeline configuration                              |
+| `documentation`     | Markdown docs, skills, planning files, and AGENTS.md files                             |
+| `infrastructure`    | Helm charts, Terraform configs, and Kubernetes resources                               |
+| `JimmyPaolini`      | Static GitHub profile README project (markdown and assets)                             |
+| `lexico`            | TanStack Start SSR Latin dictionary web app with Supabase backend                      |
+| `lexico-components` | Shared React/shadcn component library                                                  |
+| `lexico-entities`   | Shared TypeORM entities and GraphQL types                                              |
+| `lexico-ingestion`  | Data ingestion scripts for Lexico                                                      |
+| `logger`            | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention  |
+| `callidescope`      | Call stack tracing and linting CLI and the configuration package it reads              |
+| `codometer`         | Code statistics measurement CLI and the configuration package it reads                 |
+| `codebase`          | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration)          |
+| `no-release`        | Escape hatch: suppress semantic-release for any commit type                            |
+| `packages`          | Changes spanning multiple shared packages in packages/                                 |
+| `release`           | Version bumps and release commits generated by semantic-release                        |
+| `scripts`           | Shell and TypeScript scripts in scripts/ (sync, setup, utilities)                      |
+| `testing`           | Vitest configuration, shared test utilities, and coverage setup                        |
+| `tools`             | Changes spanning multiple tool projects in tools/                                      |
+| `synchronization`   | Synchronization application and commands for automating workflows                      |
+| `reporting`         | Internal reporting CLI and the reports it renders, such as 🎒 Bundles                  |
+| `validation`        | Validation CLI and the checks it runs, such as pull request metadata                   |
 
 <!-- scopes-end -->
 

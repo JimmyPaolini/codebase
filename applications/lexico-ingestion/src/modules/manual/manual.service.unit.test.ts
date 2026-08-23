@@ -4,6 +4,7 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { Lexeme, Word, WordForm, WordLexeme } from "@codebase/lexico-entities";
+import { LoggerService } from "@codebase/logger";
 
 import { createRepositoryMock } from "../../../testing/mocks";
 import { NumeralsService } from "../numerals/numerals.service";
@@ -23,6 +24,7 @@ describe(ManualService, () => {
   let lexemesRepository: DeepMocked<Repository<Lexeme>>;
   let wordsService: Mocked<WordsService>;
   let numeralsService: Mocked<NumeralsService>;
+  let logger: DeepMocked<LoggerService>;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -68,6 +70,10 @@ describe(ManualService, () => {
           provide: getRepositoryToken(WordForm),
           useValue: createRepositoryMock<WordForm>(),
         },
+        {
+          provide: LoggerService,
+          useValue: createMock<LoggerService>(),
+        },
       ],
     }).compile();
 
@@ -75,6 +81,7 @@ describe(ManualService, () => {
     lexemesRepository = module.get(getRepositoryToken(Lexeme));
     wordsService = module.get(WordsService);
     numeralsService = module.get(NumeralsService);
+    logger = await module.resolve(LoggerService);
 
     lexemesRepository.delete.mockResolvedValue({ affected: 1, raw: [] });
   });
@@ -155,6 +162,35 @@ describe(ManualService, () => {
     expect(service).toBeDefined();
   });
 
+  it("sets logger context", async () => {
+    const module = await Test.createTestingModule({
+      providers: [
+        ManualService,
+        {
+          provide: getRepositoryToken(Lexeme),
+          useValue: createRepositoryMock<Lexeme>(),
+        },
+        {
+          provide: WordsService,
+          useValue: createMock<WordsService>(),
+        },
+        {
+          provide: NumeralsService,
+          useValue: createMock<NumeralsService>(),
+        },
+        {
+          provide: LoggerService,
+          useValue: createMock<LoggerService>(),
+        },
+      ],
+    }).compile();
+
+    await module.resolve(ManualService);
+    const scopedLogger = await module.resolve(LoggerService);
+
+    expect(scopedLogger.setContext).toHaveBeenCalledWith("ManualService");
+  });
+
   describe("createManual", () => {
     it("should delete existing lexeme before saving", async () => {
       const lexeme = new Lexeme();
@@ -169,6 +205,16 @@ describe(ManualService, () => {
         disambiguator: 0,
         lemma: "amō",
       });
+      expect(logger.info).toHaveBeenCalledWith(
+        "✏️ Creating lemma:disambiguator",
+        undefined,
+        { disambiguator: 0, lemma: "amō" },
+      );
+      expect(logger.info).toHaveBeenCalledWith(
+        "✏️ Created lemma:disambiguator",
+        undefined,
+        { disambiguator: 0, lemma: "amō" },
+      );
     });
 
     it("should save the lexeme to repository", async () => {
@@ -209,6 +255,16 @@ describe(ManualService, () => {
         disambiguator: 2,
         lemma: "vir",
       });
+      expect(logger.info).toHaveBeenCalledWith(
+        "🗑️ Deleting lemma:disambiguator",
+        undefined,
+        { disambiguator: 2, lemma: "vir" },
+      );
+      expect(logger.info).toHaveBeenCalledWith(
+        "🗑️ Deleted lemma:disambiguator",
+        undefined,
+        { disambiguator: 2, lemma: "vir" },
+      );
     });
   });
 
@@ -257,6 +313,18 @@ describe(ManualService, () => {
       const toRomanCalls = numeralsService.toRoman.mock.calls;
 
       expect(toRomanCalls.length).toBeGreaterThan(0);
+    });
+
+    it("should log a milestone every 500 Roman numerals ingested", async () => {
+      lexemesRepository.save.mockResolvedValue(new Lexeme());
+
+      await service.ingestManual();
+
+      expect(logger.debug).toHaveBeenCalledWith(
+        "🔢 Ingesting Roman numerals",
+        undefined,
+        { current: 500, total: 3999 },
+      );
     });
   });
 

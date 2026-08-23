@@ -111,7 +111,10 @@ export class AspectEventFormattingService {
         phase,
       });
     const summary = `${phaseEmoji} ${symbolByBody[body1]} ${aspectSymbol} ${symbolByBody[body2]} ${description}`;
-    log(`🗓️ Built ${summary}`, { at: timestamp.toISOString() });
+    log("🗓️ Built a calendar event", {
+      at: timestamp.toISOString(),
+      summary,
+    });
 
     return {
       categories,

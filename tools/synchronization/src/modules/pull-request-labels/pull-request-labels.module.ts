@@ -11,9 +11,9 @@ import { PullRequestLabelsService } from "./pull-request-labels.service";
 /**
  * Provides the pull-request-labels synchronization command.
  *
- * `SynchronizationService` is provided here rather than imported from its own
- * module, which the aggregate command owns — importing that module back would
- * close a cycle, since it imports this one.
+ * `SynchronizationService` is provided here directly rather than imported
+ * from a shared module, since no module exports it for reuse across sibling
+ * commands.
  */
 @Module({
   controllers: [],

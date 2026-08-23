@@ -33,7 +33,7 @@ export interface BuildInstantEventArguments {
   date: Moment;
   description: string;
   logger: {
-    log: (message: string, context?: string, data?: LogData) => void;
+    info: (message: string, context?: string, data?: LogData) => void;
   };
   summary: string;
   timezone: string;

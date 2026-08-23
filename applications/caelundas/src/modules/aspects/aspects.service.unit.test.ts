@@ -503,6 +503,7 @@ describe(AspectsService, () => {
         [mockSimpleAspectDetector],
         [mockCompositeAspectDetector],
         [mockProgressiveAspectDetector],
+        new LoggerService(),
       );
       const coordinateEphemerisByBody = {} as Record<Body, CoordinateEphemeris>;
 

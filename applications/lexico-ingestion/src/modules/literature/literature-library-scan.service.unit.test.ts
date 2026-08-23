@@ -1,5 +1,8 @@
+import { createMock, type DeepMocked } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { LoggerService } from "@codebase/logger";
 
 import { LiteratureLibraryScanService } from "./literature-library-scan.service";
 
@@ -28,13 +31,18 @@ function createFileEntry(name: string): Dirent {
 describe(LiteratureLibraryScanService, () => {
   let service: LiteratureLibraryScanService;
   let readdirMock: ReturnType<typeof vi.fn>;
+  let logger: DeepMocked<LoggerService>;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [LiteratureLibraryScanService],
+      providers: [
+        LiteratureLibraryScanService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(LiteratureLibraryScanService);
+    logger = await module.resolve(LoggerService);
   });
 
   beforeEach(async () => {
@@ -43,20 +51,57 @@ describe(LiteratureLibraryScanService, () => {
     readdirMock = vi.mocked(module.readdir);
     readdirMock.mockReset();
 
-    service = new LiteratureLibraryScanService();
+    logger = createMock<LoggerService>();
+    service = new LiteratureLibraryScanService(logger);
   });
 
   it("is defined", () => {
     expect(service).toBeDefined();
   });
 
+  it("sets logger context", () => {
+    expect(logger.setContext).toHaveBeenCalledWith(
+      "LiteratureLibraryScanService",
+    );
+  });
+
   describe("scanLibrary", () => {
-    it("returns empty list when data directory is missing", async () => {
-      readdirMock.mockRejectedValueOnce(new Error("missing"));
+    it("silently returns empty list when data directory does not exist yet", async () => {
+      const missingDirectoryError = Object.assign(new Error("missing"), {
+        code: "ENOENT",
+      });
+      readdirMock.mockRejectedValueOnce(missingDirectoryError);
 
       const entries = await service.scanLibrary();
 
       expect(entries).toStrictEqual([]);
+      expect(logger.warn).not.toHaveBeenCalled();
+    });
+
+    it("warns when the library directory cannot be read for another reason", async () => {
+      readdirMock.mockRejectedValueOnce(new Error("permission denied"));
+
+      const entries = await service.scanLibrary();
+
+      expect(entries).toStrictEqual([]);
+      expect(logger.warn).toHaveBeenCalledWith(
+        "⚠️ Failed reading the library directory",
+        undefined,
+        expect.objectContaining({ reason: "permission denied" }),
+      );
+    });
+
+    it("stringifies non-Error rejections when the library directory cannot be read", async () => {
+      readdirMock.mockRejectedValueOnce("permission denied string");
+
+      const entries = await service.scanLibrary();
+
+      expect(entries).toStrictEqual([]);
+      expect(logger.warn).toHaveBeenCalledWith(
+        "⚠️ Failed reading the library directory",
+        undefined,
+        expect.objectContaining({ reason: "permission denied string" }),
+      );
     });
 
     it("recursively collects markdown files and ignores non-markdown files", async () => {
