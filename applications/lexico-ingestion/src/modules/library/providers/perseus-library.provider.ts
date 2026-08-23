@@ -61,8 +61,10 @@ export class PerseusLibraryProvider {
       const xmlPaths = allFiles
         .filter((f) => f.isFile() && f.name.endsWith(".xml"))
         .map((f) => path.join(f.parentPath, f.name));
-      this.logger.log(
-        `🗂️ Found ${xmlPaths.length} Latin XML files in local Perseus cache`,
+      this.logger.info(
+        "🗂️ Found Latin XML files in local Perseus cache",
+        undefined,
+        { count: xmlPaths.length },
       );
       return xmlPaths;
     } catch {
@@ -188,7 +190,7 @@ export class PerseusLibraryProvider {
       total,
       xmlPath,
     } = args;
-    this.logger.log(`📜 Starting processing: ${xmlPath}`);
+    this.logger.info("📜 Starting processing", undefined, { xmlPath });
     try {
       await this.processSourceXmlFile({
         authorsMap,
@@ -197,11 +199,16 @@ export class PerseusLibraryProvider {
         xmlPath,
         ...(options ? { options } : {}),
       });
-      const progress = ` (${(((index + 1) / total) * 100).toFixed(2)}%, ${index + 1}/${total})`;
-      this.logger.log(`📜 Completed processing: ${xmlPath}${progress}`);
+      this.logger.info("📜 Completed processing", undefined, {
+        current: index + 1,
+        percent: Number((((index + 1) / total) * 100).toFixed(2)),
+        total,
+        xmlPath,
+      });
     } catch (error) {
-      this.logger.warn(`📜 Failed processing ${xmlPath}`, undefined, {
+      this.logger.warn("📜 Failed processing", undefined, {
         reason: String(error),
+        xmlPath,
       });
     }
   }
@@ -222,7 +229,7 @@ export class PerseusLibraryProvider {
       xmlPath,
     });
     if (!rawAuthor || !rawTitle) {
-      this.logger.warn(`🏷️ Missing metadata in ${xmlPath}`);
+      this.logger.warn("🏷️ Missing metadata in file", undefined, { xmlPath });
       return;
     }
     if (this.isFilteredOut(rawAuthor, rawTitle, options)) {
@@ -365,7 +372,7 @@ export class PerseusLibraryProvider {
     author?: string;
     text?: string;
   }): Promise<Author[]> {
-    this.logger.log(`🗂️ Ingesting Perseus from local data`);
+    this.logger.info("🗂️ Ingesting Perseus from local data");
     const sourceDataDirectory = path.resolve("data", "perseus-source");
     const xmlPaths = await this.collectSourceXmlPaths(sourceDataDirectory);
     if (xmlPaths.length === 0) {

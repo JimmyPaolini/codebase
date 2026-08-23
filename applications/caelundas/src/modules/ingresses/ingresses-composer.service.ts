@@ -97,8 +97,9 @@ export class IngressesComposerService {
     longitude: number;
   }): Event {
     const event = this.buildDecanIngressEventObject(args);
-    this.logger.log(`🗓️ Built ${event.summary}`, undefined, {
+    this.logger.info("🗓️ Built a calendar event", undefined, {
       at: args.date.toISOString(),
+      summary: event.summary,
     });
     return event;
   }
@@ -154,8 +155,9 @@ export class IngressesComposerService {
     const description = `${bodyCapitalized} peak ingress ${signCapitalized}`;
     const summary = `${bodySymbol} → ${signSymbol}⛰️ ${description}`;
 
-    this.logger.log(`🗓️ Built ${summary}`, undefined, {
+    this.logger.info("🗓️ Built a calendar event", undefined, {
       at: date.toISOString(),
+      summary,
     });
 
     const peakIngressEvent: Event = {
@@ -216,8 +218,9 @@ export class IngressesComposerService {
     const description = `${bodyCapitalized} ingress ${signCapitalized}`;
     const summary = `${bodySymbol} → ${signSymbol} ${description}`;
 
-    this.logger.log(`🗓️ Built ${summary}`, undefined, {
+    this.logger.info("🗓️ Built a calendar event", undefined, {
       at: date.toISOString(),
+      summary,
     });
 
     const signIngressEvent: Event = {

@@ -57,16 +57,31 @@ export class CaelundasCommand extends CommandRunner {
    * @returns Promise that resolves when the ICS file has been written.
    */
   async run(): Promise<void> {
+    this.logger.debug("🚀 Starting a caelundas run", undefined, {
+      arguments: process.argv.slice(2),
+    });
+
     const input = this.inputService.parse();
 
     const perfectiveEvents = this.perfectiveEventsService.detect(input);
+    this.logger.info("🔎 Detected perfective events", undefined, {
+      count: perfectiveEvents.length,
+    });
+
     const progressiveEvents =
       this.progressiveEventsService.detect(perfectiveEvents);
+    this.logger.info("🔎 Detected progressive events", undefined, {
+      count: progressiveEvents.length,
+    });
 
     const allEvents = [...perfectiveEvents, ...progressiveEvents].toSorted(
       (a, b) => a.start.valueOf() - b.start.valueOf(),
     );
 
     await this.calendarService.write(allEvents, input);
+
+    this.logger.info("🏁 Completed a caelundas run", undefined, {
+      totalEvents: allEvents.length,
+    });
   }
 }

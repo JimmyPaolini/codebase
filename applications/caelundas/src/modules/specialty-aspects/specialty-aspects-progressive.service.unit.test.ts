@@ -4,6 +4,8 @@ import _ from "lodash";
 import moment from "moment-timezone";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { ProgressiveAspectService } from "../progressive/progressive-aspect.service";
 import { ProgressiveUtilitiesService } from "../progressive/progressive-utilities.service";
 
@@ -23,6 +25,7 @@ describe(SpecialtyAspectsProgressiveService, () => {
           provide: ProgressiveUtilitiesService,
           useValue: createMock<ProgressiveUtilitiesService>(),
         },
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
 
@@ -35,7 +38,7 @@ describe(SpecialtyAspectsProgressiveService, () => {
   };
 
   const mockService = new SpecialtyAspectsProgressiveService(
-    new ProgressiveAspectService(),
+    new ProgressiveAspectService(createMock<LoggerService>()),
     progressiveUtilitiesService as never,
   );
   const specialtyAspectsProgressiveService = mockService as unknown as {

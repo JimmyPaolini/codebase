@@ -194,12 +194,14 @@ export class LiteratureService {
    */
   private async getWordsCache(): Promise<Map<string, string>> {
     if (!this.wordsCache) {
-      this.logger.log("📖 Caching dictionary words for token mapping...");
+      this.logger.info("📖 Caching dictionary words for token mapping");
       const words = await this.wordRepository.find({
         select: { data: true, id: true },
       });
       this.wordsCache = new Map(words.map((word) => [word.data, word.id]));
-      this.logger.log(`📖 Cached ${this.wordsCache.size} words.`);
+      this.logger.info("📖 Cached words", undefined, {
+        count: this.wordsCache.size,
+      });
     }
     return this.wordsCache;
   }
@@ -210,7 +212,7 @@ export class LiteratureService {
     authorSlug: string,
     texts: LibraryEntry[],
   ): Promise<void> {
-    this.logger.log(`👤 Starting author: ${authorSlug}`);
+    this.logger.info("👤 Starting author", undefined, { authorSlug });
     await this.authorRepository.upsert(
       {
         name: authorIdToName[authorSlug] || _.startCase(authorSlug),
@@ -237,19 +239,25 @@ export class LiteratureService {
    * Ingests lines in the literature ingestion pipeline.
    */
   private async ingestLines(text: Text, ast: Root): Promise<void> {
-    this.logger.log(`📜 Parsing lines for ${text.title}`);
+    this.logger.info("📜 Parsing lines for text", undefined, {
+      title: text.title,
+    });
     const wordMap = await this.getWordsCache();
     const tokenEntities: QueryDeepPartialEntity<Token>[] = [];
     const paragraphs = ast.children.filter(
       (child): child is Paragraph => child.type === "paragraph",
     );
     if (paragraphs.length === 0)
-      this.logger.warn(`📜 Missing lines in ${text.slug}`);
+      this.logger.warn("📜 Missing lines in text", undefined, {
+        slug: text.slug,
+      });
     const lineEntities = paragraphs.map((paragraph, index) =>
       this.buildLineEntityFromParagraph(paragraph, index, text),
     );
     const savedLines = await this.upsertAndFetchLines(lineEntities, text);
-    this.logger.log(`💾 Saved lines`, undefined, { count: savedLines.length });
+    this.logger.info("💾 Saved lines", undefined, {
+      count: savedLines.length,
+    });
     for (const line of savedLines) {
       const tokens = this.extractTokensFromLine(line, text, wordMap);
       tokenEntities.push(...tokens);
@@ -461,8 +469,9 @@ export class LiteratureService {
     tokenEntities: QueryDeepPartialEntity<Token>[],
     text: Text,
   ): Promise<void> {
-    this.logger.log(`💾 Saving tokens for ${text.title}`, undefined, {
+    this.logger.info("💾 Saving tokens for text", undefined, {
       count: tokenEntities.length,
+      title: text.title,
     });
     const tokenChunks = _.chunk(tokenEntities, DEFAULT_TOKEN_CHUNK_SIZE);
     await Promise.all(
@@ -485,8 +494,12 @@ export class LiteratureService {
     for (const [authorSlug, texts] of authors) {
       await this.ingestAuthorGroup(authorSlug, texts);
       currentAuthor++;
-      const authorProgress = ` (${((currentAuthor / totalAuthors) * 100).toFixed(2)}%, ${currentAuthor}/${totalAuthors})`;
-      this.logger.log(`👤 Completed author: ${authorSlug}${authorProgress}`);
+      this.logger.info("👤 Completed author", undefined, {
+        authorSlug,
+        current: currentAuthor,
+        percent: Number(((currentAuthor / totalAuthors) * 100).toFixed(2)),
+        total: totalAuthors,
+      });
     }
   }
 

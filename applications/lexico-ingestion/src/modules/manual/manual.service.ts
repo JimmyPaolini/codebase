@@ -1,9 +1,10 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import numberToWords from "number-to-words";
 import { Repository } from "typeorm";
 
 import { Lexeme, Translation } from "@codebase/lexico-entities";
+import { LoggerService } from "@codebase/logger";
 
 import { NumeralsService } from "../numerals/numerals.service";
 import { WordsService } from "../words/words.service";
@@ -34,11 +35,12 @@ export class ManualService {
     private readonly lexemesRepository: Repository<Lexeme>,
     private readonly wordsService: WordsService,
     private readonly numeralsService: NumeralsService,
-  ) {}
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(ManualService.name);
+  }
 
   // 🔐 Private Fields
-
-  private readonly logger = new Logger(ManualService.name);
 
   // 🔑 Public Fields
 
@@ -98,7 +100,7 @@ export class ManualService {
    * Ingests praenomen abbreviations in the manual lexeme ingestion pipeline.
    */
   private async ingestPraenomenAbbreviations(): Promise<void> {
-    this.logger.log("🏷️ Ingesting praenomen abbreviations");
+    this.logger.info("🏷️ Ingesting praenomen abbreviations");
     const praenomenEntries = Object.entries(PRAENOMEN_ABBREVIATIONS);
 
     for (const [abbreviation, praenomen] of praenomenEntries) {
@@ -106,14 +108,15 @@ export class ManualService {
         this.buildPraenomenLexeme(abbreviation, praenomen),
       );
     }
-    this.logger.log("🏷️ Ingested praenomen abbreviations");
+    this.logger.info("🏷️ Ingested praenomen abbreviations");
   }
 
   /**
    * Ingests roman numerals in the manual lexeme ingestion pipeline.
    */
   private async ingestRomanNumerals(): Promise<void> {
-    this.logger.log("🔢 Ingesting Roman numerals");
+    this.logger.info("🔢 Ingesting Roman numerals");
+    const total = 3999;
     for (let index = 1; index < 4000; index++) {
       const roman = this.numeralsService.toRoman(index).toLowerCase();
       const lexeme = buildRomanNumeralTemplate();
@@ -128,8 +131,14 @@ export class ManualService {
         ),
       ];
       await this.createManual(lexeme);
+      if (index % 500 === 0) {
+        this.logger.debug("🔢 Ingesting Roman numerals", undefined, {
+          current: index,
+          total,
+        });
+      }
     }
-    this.logger.log("🔢 Ingested Roman numerals");
+    this.logger.info("🔢 Ingested Roman numerals");
   }
 
   /**
@@ -150,24 +159,36 @@ export class ManualService {
    * re-ingests its word search records. */
   async createManual(manual: Lexeme): Promise<void> {
     await this.deleteManual(manual.lemma, manual.disambiguator);
-    this.logger.log(`✏️ Creating "${manual.lemma}:${manual.disambiguator}"`);
+    this.logger.info("✏️ Creating lemma:disambiguator", undefined, {
+      disambiguator: manual.disambiguator,
+      lemma: manual.lemma,
+    });
     const lexeme = await this.lexemesRepository.save(manual, { reload: false });
     await this.wordsService.ingestLexemeWords(lexeme);
-    this.logger.log(`✏️ Created "${manual.lemma}:${manual.disambiguator}"`);
+    this.logger.info("✏️ Created lemma:disambiguator", undefined, {
+      disambiguator: manual.disambiguator,
+      lemma: manual.lemma,
+    });
   }
 
   /** Removes the `Lexeme` row identified by `lemma` and `disambiguator` from the database. */
   async deleteManual(lemma: string, disambiguator: number): Promise<void> {
-    this.logger.log(`🗑️ Deleting "${lemma}:${disambiguator}"`);
+    this.logger.info("🗑️ Deleting lemma:disambiguator", undefined, {
+      disambiguator,
+      lemma,
+    });
     await this.lexemesRepository.delete({ disambiguator, lemma });
-    this.logger.log(`🗑️ Deleted "${lemma}:${disambiguator}"`);
+    this.logger.info("🗑️ Deleted lemma:disambiguator", undefined, {
+      disambiguator,
+      lemma,
+    });
   }
 
   /** Runs the full manual-lexeme pipeline: deletes stale overrides, re-creates
    * hic/ille/omnis lexemes, populates praenomen abbreviations, and ingests
    * Roman numeral lexemes I–MMMCMXCIX. */
   async ingestManual(): Promise<void> {
-    this.logger.log("📋 Ingesting manual lexemes");
+    this.logger.info("📋 Ingesting manual lexemes");
 
     for (const { disambiguator, lemma } of MANUAL_LEXEMES_TO_DELETE) {
       await this.deleteManual(lemma, disambiguator);
@@ -180,6 +201,6 @@ export class ManualService {
     await this.ingestPraenomenAbbreviations();
     await this.ingestRomanNumerals();
 
-    this.logger.log("📋 Ingested manual lexemes");
+    this.logger.info("📋 Ingested manual lexemes");
   }
 }

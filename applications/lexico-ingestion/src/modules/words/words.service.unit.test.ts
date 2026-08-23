@@ -1,3 +1,4 @@
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { beforeAll, describe, expect, it } from "vitest";
@@ -10,6 +11,7 @@ import {
   WordForm,
   WordLexeme,
 } from "@codebase/lexico-entities";
+import { LoggerService } from "@codebase/logger";
 
 import { createRepositoryMock } from "../../../testing/mocks";
 import { LEXICO_INGESTION_BY_ID } from "../lexico-ingestion/lexico-ingestion.constants";
@@ -24,6 +26,7 @@ describe(WordsService, () => {
   let wordRepository: DeepMocked<Repository<Word>>;
   let wordLexemeRepository: DeepMocked<Repository<WordLexeme>>;
   let wordFormRepository: DeepMocked<Repository<WordForm>>;
+  let logger: DeepMocked<LoggerService>;
 
   const mockInsertResult: InsertResult = {
     generatedMaps: [],
@@ -47,6 +50,10 @@ describe(WordsService, () => {
           provide: getRepositoryToken(WordForm),
           useValue: createRepositoryMock<WordForm>(),
         },
+        {
+          provide: LoggerService,
+          useValue: createMock<LoggerService>(),
+        },
       ],
     }).compile();
 
@@ -54,10 +61,40 @@ describe(WordsService, () => {
     wordRepository = module.get(getRepositoryToken(Word));
     wordLexemeRepository = module.get(getRepositoryToken(WordLexeme));
     wordFormRepository = module.get(getRepositoryToken(WordForm));
+    logger = await module.resolve(LoggerService);
   });
 
   it("is defined", () => {
     expect(service).toBeDefined();
+  });
+
+  it("sets logger context", async () => {
+    const module = await Test.createTestingModule({
+      providers: [
+        WordsService,
+        {
+          provide: getRepositoryToken(Word),
+          useValue: createRepositoryMock<Word>(),
+        },
+        {
+          provide: getRepositoryToken(WordLexeme),
+          useValue: createRepositoryMock<WordLexeme>(),
+        },
+        {
+          provide: getRepositoryToken(WordForm),
+          useValue: createRepositoryMock<WordForm>(),
+        },
+        {
+          provide: LoggerService,
+          useValue: createMock<LoggerService>(),
+        },
+      ],
+    }).compile();
+
+    await module.resolve(WordsService);
+    const scopedLogger = await module.resolve(LoggerService);
+
+    expect(scopedLogger.setContext).toHaveBeenCalledWith("WordsService");
   });
 
   describe("getLexemeWords", () => {
@@ -134,6 +171,16 @@ describe(WordsService, () => {
           conflictPaths: ["data"],
           skipUpdateIfNoValuesChanged: true,
         },
+      );
+      expect(logger.info).toHaveBeenCalledWith(
+        "🔤 Ingesting words for lexeme",
+        undefined,
+        { lexemeId: "amor:1" },
+      );
+      expect(logger.info).toHaveBeenCalledWith(
+        "🔤 Ingested words for lexeme",
+        undefined,
+        { lexemeId: "amor:1" },
       );
     });
 
@@ -330,6 +377,16 @@ describe(WordsService, () => {
       expect(
         wordFormRepository.createQueryBuilder.mock.calls.length,
       ).toBeGreaterThan(1);
+      expect(logger.debug).toHaveBeenCalledWith(
+        "🧩 Inserting word form chunks",
+        undefined,
+        { chunkSize: 1000, totalValues: 1500 },
+      );
+      expect(logger.debug).toHaveBeenCalledWith(
+        "🧩 Inserted word form chunks",
+        undefined,
+        { chunksWritten: 2 },
+      );
     });
   });
 });

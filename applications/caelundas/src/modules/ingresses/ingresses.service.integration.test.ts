@@ -66,7 +66,7 @@ const ephemerisService = new EphemerisService(
 );
 const logger = new LoggerService();
 const helperService = new IngressesComposerService(logger, ephemerisService);
-const service = new IngressesService(helperService);
+const service = new IngressesService(helperService, logger);
 
 describe("ingresses.events integration", () => {
   describe("service.getSignIngressEvents", () => {
