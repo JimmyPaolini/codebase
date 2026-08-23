@@ -72,7 +72,7 @@ export class CallidescopeService {
     projectNames: readonly string[];
     workspaceRoot: string;
   }): CallGraphResult {
-    const { condensed, graph, measurement } =
+    const { breadthMeasurement, condensed, graph, measurement } =
       this.graphAssemblyService.assemble({
         callablesById: args.callablesById,
         includeConstructorEdges: INCLUDE_CONSTRUCTOR_EDGES,
@@ -103,6 +103,7 @@ export class CallidescopeService {
       this.cohesionService.summarizeTypeDepths(cohesionArguments);
 
     const projects = this.projectReportsService.build({
+      breadthMeasurement,
       callablesById: args.callablesById,
       condensed,
       entryPoints,
@@ -147,6 +148,13 @@ export class CallidescopeService {
       projects,
       summary,
       typeDepths,
+      // No default exists for `maximumBreadth`: until a project configures
+      // one, nothing can exceed it, so an unset limit reports nothing rather
+      // than picking a number nobody chose.
+      wideCallables: this.projectReportsService.findWideCallables({
+        limit: args.configuration.limits.maximumBreadth ?? Infinity,
+        reports: projects,
+      }),
     };
   }
 

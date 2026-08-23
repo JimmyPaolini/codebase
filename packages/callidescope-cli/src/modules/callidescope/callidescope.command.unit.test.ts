@@ -69,6 +69,7 @@ function buildConfiguration(
 /** Builds an empty report for one named project. */
 function buildProjectReport(projectName: string): ProjectReport {
   return {
+    callableBreadths: [],
     misplacedCallables: [],
     moduleSpreads: [],
     projectName,

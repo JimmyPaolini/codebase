@@ -15,6 +15,7 @@ import type { CallStack, ProjectReport } from "@callidescope/configuration";
 /** A project report carrying the given stacks and nothing else. */
 function report(stacks: CallStack[]): ProjectReport {
   return {
+    callableBreadths: [],
     misplacedCallables: [],
     moduleSpreads: [],
     projectName: "example",

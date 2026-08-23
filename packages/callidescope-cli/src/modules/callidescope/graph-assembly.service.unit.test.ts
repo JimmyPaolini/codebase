@@ -8,6 +8,7 @@ import {
   collectFixtureCallables,
   FIXTURE_ROOT,
 } from "../../../testing/programs";
+import { BreadthService } from "../graph/breadth.service";
 import { ComponentsService } from "../graph/components.service";
 import { DepthService } from "../graph/depth.service";
 import { GraphService } from "../graph/graph.service";
@@ -25,6 +26,7 @@ function assemble(files: Record<string, string>): AssembledGraph {
     services: fixture,
   });
   const subject = new GraphAssemblyService(
+    new BreadthService(),
     new ComponentsService(),
     new DepthService(),
     fixture.edges,
@@ -76,6 +78,25 @@ describe(GraphAssemblyService, () => {
     expect(
       condensed.memberIdsByComponent.some((members) => members.length > 1),
     ).toBe(true);
+  });
+
+  it("measures the breadth of the assembled graph", () => {
+    const { breadthMeasurement } = assemble({
+      "packages/example/src/index.ts": `
+        function first(): void {}
+        function second(): void {}
+        export function entry(): void { first(); second(); }
+      `,
+    });
+
+    const widest = Math.max(
+      0,
+      ...[...breadthMeasurement.byCallable.values()].map(
+        (measured) => measured.breadth,
+      ),
+    );
+
+    expect(widest).toBe(2);
   });
 
   it("measures the depth of the assembled graph", () => {

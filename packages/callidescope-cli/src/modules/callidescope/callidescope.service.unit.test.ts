@@ -14,6 +14,7 @@ import {
 import { CohesionService } from "../cohesion/cohesion.service";
 import { DocumentationService } from "../documentation/documentation.service";
 import { EntryPointsService } from "../entry-points/entry-points.service";
+import { BreadthService } from "../graph/breadth.service";
 import { ComponentsService } from "../graph/components.service";
 import { DepthService } from "../graph/depth.service";
 import { GraphService } from "../graph/graph.service";
@@ -100,6 +101,7 @@ function buildSubject(args: {
     new EntryPointsService(createMock<LoggerService>()),
     args.fixture.external,
     new GraphAssemblyService(
+      new BreadthService(),
       new ComponentsService(),
       new DepthService(),
       args.fixture.edges,

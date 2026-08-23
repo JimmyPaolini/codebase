@@ -65,6 +65,7 @@ export function buildCallGraphResult(
       unresolvedCallCount: 0,
     },
     typeDepths: [],
+    wideCallables: [],
     ...overrides,
   };
 }

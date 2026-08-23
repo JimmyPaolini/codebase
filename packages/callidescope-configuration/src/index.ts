@@ -1,4 +1,5 @@
 export type {
+  CallableBreadthReport,
   CallableDocumentation,
   CallableId,
   CallableKind,
@@ -22,6 +23,8 @@ export type {
   TypeDepthSummary,
   UnresolvedCall,
   UnresolvedReason,
+  WideCallableCallee,
+  WideCallableFinding,
 } from "./modules/configuration/call-graph.types";
 // 📤 Exports
 export {

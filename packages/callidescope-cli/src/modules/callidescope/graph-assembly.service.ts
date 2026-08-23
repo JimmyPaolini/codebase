@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import { EdgesService } from "../edges/edges.service";
+import { BreadthService } from "../graph/breadth.service";
 import { ComponentsService } from "../graph/components.service";
 import { DepthService } from "../graph/depth.service";
 import { GraphService } from "../graph/graph.service";
@@ -24,6 +25,7 @@ export class GraphAssemblyService {
   // 🏗 Dependency Injection
 
   constructor(
+    private readonly breadthService: BreadthService,
     private readonly componentsService: ComponentsService,
     private readonly depthService: DepthService,
     private readonly edgesService: EdgesService,
@@ -59,6 +61,10 @@ export class GraphAssemblyService {
     );
 
     return {
+      breadthMeasurement: this.breadthService.measure({
+        callableIds: [...args.callablesById.keys()],
+        graph,
+      }),
       condensed,
       graph,
       measurement: this.depthService.measure({
