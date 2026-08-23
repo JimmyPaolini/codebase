@@ -1,19 +1,78 @@
+import { ConfigurationService } from "@callidescope/configuration";
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { RunPlanService } from "./run-plan.service";
+
+import type { RunMode } from "./run-plan.types";
+import type { ResolvedCallidescopeConfiguration } from "@callidescope/configuration";
 
 /** What `--check` says it accepts, quoted the way every message quotes it. */
 const ACCEPTED =
-  `It takes a comma-separated set drawn from "depth" and "reports", ` +
-  `as in "--check depth,reports".`;
+  `It takes a comma-separated set drawn from "breadth" and "depth" and "reports", ` +
+  `as in "--check breadth,depth,reports".`;
+
+/** A resolved configuration with the defaults this suite assumes. */
+function buildConfiguration(
+  overrides: Partial<ResolvedCallidescopeConfiguration> = {},
+): ResolvedCallidescopeConfiguration {
+  return {
+    allowSpreadFor: [],
+    entryPoints: {
+      decorators: [],
+      includeExportedFunctions: true,
+      includeOrphans: true,
+      includeTests: false,
+    },
+    exclude: [],
+    excludeFrom: [],
+    limits: {
+      callerMajorityRatio: 0.8,
+      directSpreadThreshold: 3,
+      maximumDepth: 6,
+      maximumImplementationFanOut: 8,
+      minimumCallers: 2,
+      spreadThreshold: 4,
+    },
+    output: {
+      format: "markdown",
+      json: undefined,
+      markdown: undefined,
+      mermaid: undefined,
+      projectReadmes: undefined,
+    },
+    projects: [],
+    ...overrides,
+  };
+}
+
+/** A run mode with every gate off. */
+function buildMode(overrides: Partial<RunMode> = {}): RunMode {
+  return {
+    checksBreadth: false,
+    checksDepth: false,
+    checksReports: false,
+    writes: false,
+    ...overrides,
+  };
+}
 
 describe(RunPlanService, () => {
   let service: RunPlanService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [RunPlanService],
+      providers: [
+        RunPlanService,
+        {
+          provide: ConfigurationService,
+          useValue: createMock<ConfigurationService>(),
+        },
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(RunPlanService);
@@ -30,16 +89,27 @@ describe(RunPlanService, () => {
 
     expect(errors).toStrictEqual([]);
     expect(mode).toStrictEqual({
+      checksBreadth: false,
       checksDepth: false,
       checksReports: false,
       writes: false,
     });
   });
 
+  it("gates breadth alone when breadth alone was named", () => {
+    const { errors, mode } = service.selectMode({ check: "breadth" });
+
+    expect(errors).toStrictEqual([]);
+    expect(mode.checksBreadth).toBe(true);
+    expect(mode.checksDepth).toBe(false);
+    expect(mode.checksReports).toBe(false);
+  });
+
   it("gates depth alone when depth alone was named", () => {
     const { errors, mode } = service.selectMode({ check: "depth" });
 
     expect(errors).toStrictEqual([]);
+    expect(mode.checksBreadth).toBe(false);
     expect(mode.checksDepth).toBe(true);
     expect(mode.checksReports).toBe(false);
   });
@@ -47,16 +117,27 @@ describe(RunPlanService, () => {
   it("gates staleness alone when reports alone was named", () => {
     const { mode } = service.selectMode({ check: "reports" });
 
+    expect(mode.checksBreadth).toBe(false);
     expect(mode.checksDepth).toBe(false);
     expect(mode.checksReports).toBe(true);
   });
 
-  it("gates both when both were named", () => {
-    const { errors, mode } = service.selectMode({ check: "depth,reports" });
+  it("gates all three when all three were named", () => {
+    const { errors, mode } = service.selectMode({
+      check: "breadth,depth,reports",
+    });
 
     expect(errors).toStrictEqual([]);
+    expect(mode.checksBreadth).toBe(true);
     expect(mode.checksDepth).toBe(true);
     expect(mode.checksReports).toBe(true);
+  });
+
+  it("gates depth and breadth independently of one another", () => {
+    const { mode } = service.selectMode({ check: "breadth" });
+
+    expect(mode.checksBreadth).toBe(true);
+    expect(mode.checksDepth).toBe(false);
   });
 
   it("ignores the spaces somebody wrote around a name", () => {
@@ -134,6 +215,7 @@ describe(RunPlanService, () => {
 
     expect(errors).toStrictEqual([]);
     expect(mode).toStrictEqual({
+      checksBreadth: false,
       checksDepth: true,
       checksReports: false,
       writes: true,
@@ -153,6 +235,7 @@ describe(RunPlanService, () => {
   it("touches files when it writes", () => {
     expect(
       service.touchesFiles({
+        checksBreadth: false,
         checksDepth: false,
         checksReports: false,
         writes: true,
@@ -163,6 +246,7 @@ describe(RunPlanService, () => {
   it("touches files when it compares them", () => {
     expect(
       service.touchesFiles({
+        checksBreadth: false,
         checksDepth: false,
         checksReports: true,
         writes: false,
@@ -173,10 +257,44 @@ describe(RunPlanService, () => {
   it("leaves files alone when it only gates depth", () => {
     expect(
       service.touchesFiles({
+        checksBreadth: false,
         checksDepth: true,
         checksReports: false,
         writes: false,
       }),
     ).toBe(false);
+  });
+
+  // 🌐 Validating the configuration
+
+  it("passes a configuration that already sets the breadth limit", () => {
+    expect(
+      service.validateConfiguration({
+        configuration: buildConfiguration({
+          limits: { ...buildConfiguration().limits, maximumBreadth: 3 },
+        }),
+        mode: buildMode({ checksBreadth: true }),
+      }),
+    ).toStrictEqual([]);
+  });
+
+  it("passes an unset breadth limit when breadth is not gated", () => {
+    expect(
+      service.validateConfiguration({
+        configuration: buildConfiguration(),
+        mode: buildMode(),
+      }),
+    ).toStrictEqual([]);
+  });
+
+  it("refuses to gate breadth without a configured limit", () => {
+    expect(
+      service.validateConfiguration({
+        configuration: buildConfiguration(),
+        mode: buildMode({ checksBreadth: true }),
+      }),
+    ).toStrictEqual([
+      "--check breadth requires limits.maximumBreadth to be set. Add `limits: { maximumBreadth: <number> }` to your callidescope.config.ts before running --check breadth.",
+    ]);
   });
 });

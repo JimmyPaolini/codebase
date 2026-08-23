@@ -1,7 +1,6 @@
 import path from "node:path";
 
 import {
-  ConfigurationService,
   DEFAULT_JSON_INDENTATION,
   DEFAULT_PREVIEW_COUNT,
 } from "@callidescope/configuration";
@@ -29,7 +28,6 @@ import type {
   CallGraphResult,
   CallidescopeOutputFormat,
   ResolvedCallidescopeConfiguration,
-  ResolvedCallidescopeMarkdownOutputConfiguration,
   ResolvedCallidescopeProjectReadmeConfiguration,
 } from "@callidescope/configuration";
 
@@ -45,7 +43,6 @@ export class CallidescopeCommand extends CommandRunner {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly configurationService: ConfigurationService,
     private readonly callidescopeService: CallidescopeService,
     private readonly outputJsonService: OutputJsonService,
     private readonly outputMarkdownService: OutputMarkdownService,
@@ -162,18 +159,20 @@ export class CallidescopeCommand extends CommandRunner {
   }
 
   /**
-   * Weighs both findings a run can produce, and fails on either.
+   * Weighs every finding a run can produce, and fails on any of them.
    *
    * They are weighed separately and announced separately. A stack that is too
-   * deep is something the code does; a stale report is something the checkout
-   * has not caught up with. Reading one as the other sends the author to fix
+   * deep is something the code does; a callable calling too many things is
+   * something else the code does; a stale report is something the checkout
+   * has not caught up with. Reading one as another sends the author to fix
    * the wrong thing.
    */
   private reportFindings(args: ReportFindingsArguments): void {
     const stale = this.reportStaleness(args);
     const deep = this.reportDeepStacks(args);
+    const wide = this.reportWideCallables(args);
 
-    if (deep || stale) {
+    if (deep || wide || stale) {
       process.exitCode = 1;
     }
   }
@@ -191,20 +190,31 @@ export class CallidescopeCommand extends CommandRunner {
     return true;
   }
 
-  /** Merges the markdown destination a flag named over the configured one. */
-  private resolveMarkdownDestination(args: {
-    configuration: ResolvedCallidescopeConfiguration;
-    markdown: string | undefined;
-  }): ResolvedCallidescopeMarkdownOutputConfiguration | undefined {
-    const configured = args.configuration.output.markdown;
+  /**
+   * Names the callables that called more things directly than callidescope
+   * allows.
+   *
+   * Reported whether or not the run gates on them, mirroring
+   * `reportDeepStacks` — but only a run asked to fail on breadth fails on it.
+   */
+  private reportWideCallables(args: ReportFindingsArguments): boolean {
+    const { wideCallables } = args.result;
 
-    if (args.markdown === undefined) {
-      return configured;
+    if (wideCallables.length === 0) {
+      return false;
     }
 
-    return this.configurationService.resolveConfiguration({
-      output: { markdown: { path: args.markdown } },
-    }).output.markdown;
+    this.logger.error(
+      `🔭 Found callables calling too much directly`,
+      undefined,
+      {
+        callables: wideCallables.map((finding) => finding.displayName),
+        count: wideCallables.length,
+        widest: Math.max(...wideCallables.map((finding) => finding.breadth)),
+      },
+    );
+
+    return args.mode.checksBreadth;
   }
 
   /** Writes every configured destination, returning the stale ones. */
@@ -384,45 +394,13 @@ export class CallidescopeCommand extends CommandRunner {
     _passedParameters: string[],
     options: CallidescopeCommandOptions,
   ): Promise<void> {
-    const { errors, mode } = this.runPlanService.selectMode(options);
+    const prepared = await this.runPlanService.prepareRun(options);
 
-    if (errors.length > 0) {
-      this.logger.error(`🔭 Rejected the command line`, undefined, {
-        reasons: errors,
-      });
-      process.exitCode = 1;
+    if (prepared === undefined) {
       return;
     }
 
-    // Resolved again rather than trusting the parser: the flag may be absent,
-    // in which case no parser ran at all.
-    const workspaceRoot = path.resolve(options.directory ?? process.cwd());
-
-    this.logger.debug("🔭 Starting a call-stack trace", undefined, {
-      format: options.format,
-      workspaceRoot,
-    });
-
-    const loaded = await this.configurationService.loadConfiguration({
-      configurationPath: options.config,
-      searchDirectory: workspaceRoot,
-    });
-    const configuration: ResolvedCallidescopeConfiguration = {
-      ...loaded,
-      output: {
-        format: options.format ?? loaded.output.format,
-        json:
-          options.json === undefined
-            ? loaded.output.json
-            : { indentation: 2, path: options.json },
-        markdown: this.resolveMarkdownDestination({
-          configuration: loaded,
-          markdown: options.markdown,
-        }),
-        mermaid: loaded.output.mermaid,
-        projectReadmes: loaded.output.projectReadmes,
-      },
-    };
+    const { configuration, mode, workspaceRoot } = prepared;
 
     const outcome = this.callidescopeService.trace({
       configuration,
@@ -446,6 +424,7 @@ export class CallidescopeCommand extends CommandRunner {
     this.logger.info("🔭 Finished a call-stack trace", undefined, {
       deepStackCount: outcome.result.deepStacks.length,
       staleReportCount: stalePaths.length,
+      wideCallableCount: outcome.result.wideCallables.length,
     });
 
     this.reportFindings({ mode, result: outcome.result, stalePaths });

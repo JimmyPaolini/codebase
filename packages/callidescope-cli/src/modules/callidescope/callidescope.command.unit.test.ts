@@ -130,6 +130,28 @@ describe(CallidescopeCommand, () => {
     );
   }
 
+  /** Points the trace at a result holding one callable past the breadth limit. */
+  function stubWideCallable(): void {
+    stubTrace(
+      buildCallGraphResult({
+        wideCallables: [
+          {
+            breadth: 5,
+            callees: [],
+            displayName: "example",
+            id: "packages/example/src/example.ts#0",
+            limit: 3,
+            location: {
+              column: 1,
+              filePath: "packages/example/src/example.ts",
+              line: 1,
+            },
+          },
+        ],
+      }),
+    );
+  }
+
   /** Points the trace at a prepared result. */
   function stubTrace(result: CallGraphResult = buildCallGraphResult()): void {
     callidescopeService.trace.mockReturnValue({
@@ -328,7 +350,7 @@ describe(CallidescopeCommand, () => {
     expect(logger.info).toHaveBeenCalledWith(
       "🔭 Finished a call-stack trace",
       undefined,
-      { deepStackCount: 1, staleReportCount: 0 },
+      { deepStackCount: 1, staleReportCount: 0, wideCallableCount: 0 },
     );
   });
 
@@ -631,6 +653,80 @@ describe(CallidescopeCommand, () => {
     expect(process.exitCode).toBeUndefined();
   });
 
+  // 🌐 The breadth gate
+
+  it("fails when a callable exceeded the breadth limit", async () => {
+    stubWideCallable();
+    configurationService.loadConfiguration.mockResolvedValue(
+      buildConfiguration({
+        limits: { ...buildConfiguration().limits, maximumBreadth: 3 },
+      }),
+    );
+
+    await command.run([], { check: "breadth" });
+
+    expect(process.exitCode).toBe(1);
+  });
+
+  it("names a callable that calls too much directly as its own finding", async () => {
+    stubWideCallable();
+    configurationService.loadConfiguration.mockResolvedValue(
+      buildConfiguration({
+        limits: { ...buildConfiguration().limits, maximumBreadth: 3 },
+      }),
+    );
+
+    await command.run([], { check: "breadth" });
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "🔭 Found callables calling too much directly",
+      undefined,
+      expect.objectContaining({ count: 1, widest: 5 }),
+    );
+  });
+
+  it("passes over a wide callable when only depth is checked", async () => {
+    stubWideCallable();
+    configurationService.loadConfiguration.mockResolvedValue(
+      buildConfiguration({
+        limits: { ...buildConfiguration().limits, maximumBreadth: 3 },
+      }),
+    );
+
+    await command.run([], { check: "depth" });
+
+    expect(process.exitCode).toBeUndefined();
+  });
+
+  it("refuses to check breadth when no limit is configured", async () => {
+    await command.run([], { check: "breadth" });
+
+    expect(process.exitCode).toBe(1);
+    expect(callidescopeService.trace).not.toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalledWith(
+      "🔭 Rejected the configuration",
+      undefined,
+      {
+        reasons: [
+          "--check breadth requires limits.maximumBreadth to be set. Add `limits: { maximumBreadth: <number> }` to your callidescope.config.ts before running --check breadth.",
+        ],
+      },
+    );
+  });
+
+  it("traces normally when breadth is configured but not checked", async () => {
+    configurationService.loadConfiguration.mockResolvedValue(
+      buildConfiguration({
+        limits: { ...buildConfiguration().limits, maximumBreadth: 3 },
+      }),
+    );
+
+    await command.run([], {});
+
+    expect(callidescopeService.trace).toHaveBeenCalledTimes(1);
+    expect(process.exitCode).toBeUndefined();
+  });
+
   it("reads no destination when only depth is checked", async () => {
     configureJsonDestination();
     // The committed report is out of date, which is what a pull request whose
@@ -674,7 +770,7 @@ describe(CallidescopeCommand, () => {
       undefined,
       {
         reasons: [
-          `--check does not accept "limits". It takes a comma-separated set drawn from "depth" and "reports", as in "--check depth,reports".`,
+          `--check does not accept "limits". It takes a comma-separated set drawn from "breadth" and "depth" and "reports", as in "--check breadth,depth,reports".`,
         ],
       },
     );
