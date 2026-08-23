@@ -146,11 +146,20 @@ None.
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-4.37_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-4.38_kB_gzip-6b7280?style=flat-square)
 
-### TypeScript & JavaScript
+### TypeScript
 
 ![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-13-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-2-0ea5e9?style=flat-square)
+![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
+![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-3-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-26-6366f1?style=flat-square)
+![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
+
+### JavaScript
+
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-3-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-9-8b5cf6?style=flat-square)
@@ -159,18 +168,12 @@ None.
 ![Methods](https://img.shields.io/badge/Methods-9-15803d?style=flat-square)
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-51-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-3-059669?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-2-0ea5e9?style=flat-square)
-![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
-![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-34-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-41-0284c7?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-3-db2777?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-14-ea580c?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-26-6366f1?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-54-64748b?style=flat-square)
 ![Comment Lines](https://img.shields.io/badge/Comment_Lines-116-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
-![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### Python
 
