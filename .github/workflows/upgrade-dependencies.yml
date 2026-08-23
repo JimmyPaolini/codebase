@@ -49,8 +49,44 @@ jobs:
           sed -i "s/pythonVersion = \"3\.[0-9][0-9]*/pythonVersion = \"${LATEST_PYTHON}/" pyproject.toml
           sed -i "s/requires-python = \">=3\.[0-9][0-9]*/requires-python = \">=${LATEST_PYTHON}/" applications/affirmations/pyproject.toml
 
+      # `pnpm update --latest --recursive "!typescript"` then `pnpm dedupe`,
+      # via the Nx target rather than as bare `pnpm` lines here, so that a
+      # human upgrading locally gets the same two commands with the same hold.
+      #
+      # The hold on typescript is what unblocked this workflow. typescript 7
+      # is the native compiler: its package entrypoint exports a version
+      # string and nothing else, so the whole JavaScript compiler API is gone.
+      # Everything that reads that API breaks the moment `--latest` crosses
+      # that major — nx, typescript-eslint, knip, type-coverage,
+      # @swc-node/register — and nx breaks first and loudest, failing every
+      # invocation with `tsModule.readConfigFile is not a function` while
+      # registering the transpiler for workspace plugins. Crossing a major
+      # that large is a deliberate migration, never a weekly bump. The
+      # `check` configuration still reports typescript as outdated, so the
+      # hold stays visible rather than becoming a silent pin.
+      #
+      # The dedupe is what makes this workflow reach transitive dependencies
+      # at all. `--latest` moves direct and catalog entries; a transitive
+      # entry that already satisfies its parents' ranges stays pinned in the
+      # lockfile, which is how a vulnerable transitive copy survives an
+      # upgrade that reports success. Observed while resolving 17 Dependabot
+      # alerts: `pnpm install` said `Already up to date` while `pnpm dedupe`
+      # moved 8 packages and dropped 10.
       - name: 📦 Upgrade Dependencies
         run: pnpm exec nx run codebase:upgrade-dependencies:write
+
+      # The cheapest thing that proves the upgrade did not break Nx itself.
+      # Loading the project graph loads every workspace plugin, which is the
+      # step that died for 13 weeks — and it died inside the husky pre-commit
+      # hook of `🔀 Open Pull Request`, reported as `Unexpected error:
+      # pre-commit` five steps after the upgrade that caused it. Failing here
+      # names the upgrade as the cause while the diff is still on disk.
+      #
+      # No `--configuration=check` lint gate here: the commit below fires
+      # pre-commit, which runs the whole gate already. This only has to catch
+      # a toolchain that cannot start.
+      - name: 🩺 Verify Toolchain
+        run: pnpm exec nx show projects
 
       - name: 📦 Upgrade Python Dependencies
         # One lockfile covers every uv workspace member.
@@ -95,7 +131,9 @@ jobs:
 
             - Update node to latest patch of current major
             - Update pnpm to latest version
-            - Update dependencies across all workspace projects
+            - Update dependencies across all workspace projects,
+              holding typescript back
+            - Deduplicate the lockfile so in-range transitive upgrades land
             - Update pnpm lockfile
             - Update Python to latest stable 3.x
             - Update Python dependencies across all projects
