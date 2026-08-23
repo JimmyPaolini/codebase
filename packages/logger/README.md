@@ -78,7 +78,9 @@ Where this project sits in the Nx project graph: what it depends on, and what de
 flowchart LR
   caelundas["caelundas"]
   callidescope_cli["callidescope-cli"]
+  codometer_changes["codometer-changes"]
   codometer_cli["codometer-cli"]
+  codometer_markdown["codometer-markdown"]
   conformetry_cli["conformetry-cli"]
   conformetry_nx["conformetry-nx"]
   lexico_ingestion["lexico-ingestion"]
@@ -88,7 +90,9 @@ flowchart LR
   validation["validation"]
   caelundas --> logger
   callidescope_cli --> logger
+  codometer_changes --> logger
   codometer_cli --> logger
+  codometer_markdown --> logger
   conformetry_cli --> logger
   conformetry_nx --> logger
   lexico_ingestion --> logger
