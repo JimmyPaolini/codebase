@@ -7,6 +7,23 @@ import type {
   UnresolvedCall,
 } from "@callidescope/configuration";
 
+/** Breadth for every callable measured. */
+export interface BreadthMeasurement {
+  readonly byCallable: ReadonlyMap<CallableId, CallableBreadth>;
+}
+
+/**
+ * Direct fan-out for one callable.
+ *
+ * `calleeIds` holds the distinct callables reached, not call sites: `assemble`
+ * already dedupes repeat calls and drops self-edges when it builds
+ * `calleeIdsByCaller`, so breadth inherits both properties for free.
+ */
+export interface CallableBreadth {
+  readonly breadth: number;
+  readonly calleeIds: readonly CallableId[];
+}
+
 /** The assembled call graph, indexed both ways. */
 export interface CallGraph {
   readonly calleeIdsByCaller: ReadonlyMap<CallableId, readonly CallableId[]>;
@@ -43,6 +60,17 @@ export interface CondensedGraph {
 /** Depth and spread for every component in the condensation. */
 export interface DepthMeasurement {
   readonly byComponent: readonly ComponentDepth[];
+}
+
+/**
+ * Arguments for measuring breadth across the graph.
+ *
+ * No condensation is needed: unlike depth, a callable's direct fan-out is well
+ * defined even when it sits in a cycle, so breadth reads `graph` directly.
+ */
+export interface MeasureBreadthArguments {
+  readonly callableIds: readonly CallableId[];
+  readonly graph: CallGraph;
 }
 
 /** Arguments for measuring depth and module spread across the graph. */
