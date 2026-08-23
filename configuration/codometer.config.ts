@@ -46,7 +46,7 @@ const PATH_SEPARATOR = "/";
  * enforces, so it belongs in the file codometer reads. Written together they
  * are also reviewable as a set, which is what limits ratcheted against a
  * measured size need — each one is visible beside the others rather than being
- * eighteen manifest fields nothing lists.
+ * a field per manifest that nothing lists.
  *
  * A project this table cannot describe — one emitting several bundles, or
  * gated by more than one limit — declares its limits in a
@@ -54,6 +54,7 @@ const PATH_SEPARATOR = "/";
  * folder, so it is absent here.
  */
 const PROJECT_LIMITS: Record<string, string> = {
+  "packages/callidescope-cli": "70 KB",
   "packages/callidescope-configuration": "9 KB",
   "packages/codometer-cli": "84 KB",
   "packages/codometer-configuration": "13 KB",
