@@ -248,6 +248,26 @@ NODE_OPTIONS='' node --import @swc-node/register/esm-register \
   tools/validation/src/main.ts pull-request-metadata <number>
 ```
 
+#### 📈 Validate Pull Request Release Significance
+
+Command: `validation pull-request-release-significance`, the [pull-request-release-significance](../../../tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts) check
+
+This repository squash-merges with `PR_TITLE`, so the title is the only thing semantic-release ever sees — every commit is discarded once squashed. This check reads the pull request's own commits through `gh pr view --json title,commits` and fails when the title's type ranks less release-significant than its most significant commit under `release.config.cjs`'s `releaseRules`, or when a commit uses a scope the title's scopes do not name. See [commit-code's Release Significance section](../commit-code/SKILL.md#release-significance) for the full type-to-bump mapping.
+
+Fix, by failure mode:
+
+- Title less significant than a commit — `❌ Commit 44dd0cc (feat(validation): check the pull request metadata) needs a title of at least minor significance (e.g. feat): retitle with a more significant type` — retitle the pull request to the named type (or higher), or move the offending commit to its own branch.
+- Commit scope missing from the title — `❌ Scope "synchronization" is used in commit bbb2222 but missing from the title` — retitle the pull request to include that scope alongside the ones already there.
+
+Neither failure mode carries a `gh pr edit` remediation command — a corrected title changes the subject too, which nothing can infer, so retitle by hand in the GitHub UI.
+
+Reproduce it locally against a real pull request, reading only:
+
+```bash
+NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+  tools/validation/src/main.ts pull-request-release-significance <number>
+```
+
 ---
 
 ### 🕵️ Audit Security

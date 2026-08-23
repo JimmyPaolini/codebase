@@ -10,6 +10,7 @@ import { IssueMetadataModule } from "./modules/issue-metadata/issue-metadata.mod
 import { LockfileModule } from "./modules/lockfile/lockfile.module";
 import { PullRequestBodyModule } from "./modules/pull-request-body/pull-request-body.module";
 import { PullRequestMetadataModule } from "./modules/pull-request-metadata/pull-request-metadata.module";
+import { PullRequestReleaseSignificanceModule } from "./modules/pull-request-release-significance/pull-request-release-significance.module";
 
 /**
  * Root NestJS application module.
@@ -29,6 +30,7 @@ import { PullRequestMetadataModule } from "./modules/pull-request-metadata/pull-
     LoggerModule,
     PullRequestBodyModule,
     PullRequestMetadataModule,
+    PullRequestReleaseSignificanceModule,
   ],
 })
 export class MainModule {}
