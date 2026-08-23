@@ -5,7 +5,6 @@ import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { SYNCHRONIZATION_KIND_REPOSITORY } from "../synchronization/synchronization.constants";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import { PullRequestLabelsGithubService } from "./pull-request-labels-github.service";
@@ -72,14 +71,6 @@ export class PullRequestLabelsCommand
 
   // 🔑 Public Fields
 
-  /**
-   * A repository synchronization: the destination is GitHub's label set rather
-   * than a file in the tree, so reconciling needs a token that neither a fork
-   * nor a developer's `lint-codebase` run has. That is why this kind exists
-   * and why nothing gates on it.
-   */
-  readonly synchronizationKind = SYNCHRONIZATION_KIND_REPOSITORY;
-
   readonly synchronizationLabel = "pull-request-labels";
 
   // 🔏 Private Methods
@@ -141,7 +132,7 @@ export class PullRequestLabelsCommand
 
     this.appendToReport(
       reportLines,
-      "- 🔧 Reconcile with: nx run synchronization:start:pull-request-labels-write",
+      "- 🔧 Reconcile with: nx run synchronization:pull-request-labels:write",
     );
   }
 

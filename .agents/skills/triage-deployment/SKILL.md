@@ -1,6 +1,6 @@
 ---
 name: triage-deployment
-description: "Diagnose and fix failing GitHub Actions CI workflows in this codebase. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: lint-codebase (typecheck, eslint, oxlint, oxfmt, spell-check, knip, markdown-lint, yaml-lint, conformetry-validate, synchronize), test-coverage, validate-conventions (branch name, PR title/body, config sync), scan-security (gitleaks, bandit, dependency audit, licenses, trivy), and make-projects (builds, bundle sizes, devcontainer image)."
+description: "Diagnose and fix failing GitHub Actions CI workflows in this codebase. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: lint-codebase (typecheck, eslint, oxlint, oxfmt, spell-check, knip, markdown-lint, yaml-lint, conformetry-validate, synchronization targets), test-coverage, validate-conventions (branch name, PR title/body, config sync), scan-security (gitleaks, bandit, dependency audit, licenses, trivy), and make-projects (builds, bundle sizes, devcontainer image)."
 argument-hint: "Optional: paste failure logs, or specify a workflow name / run URL to fetch"
 ---
 
@@ -54,12 +54,12 @@ Process all failing runs before moving to Step 4. Each failure may require a sep
 
 Match the log header against the known workflows:
 
-| Workflow name             | Job name               | Trigger                                                |
-| ------------------------- | ---------------------- | ------------------------------------------------------ |
-| `🧑‍💻 Lint Codebase`        | `lint-codebase`        | push / PR / manual                                     |
-| `🧑‍🔬 Test Coverage`        | `test-coverage`        | push / PR / manual                                     |
-| `🧑‍⚖️ Validate Conventions` | `validate-conventions` | PR (opened/sync/edited) / push to main                 |
-| `🕵️ Scan Security`        | `scan-security`        | push / PR / weekly schedule                            |
+| Workflow name             | Job name               | Trigger                                |
+| ------------------------- | ---------------------- | -------------------------------------- |
+| `🧑‍💻 Lint Codebase`        | `lint-codebase`        | push / PR / manual                     |
+| `🧑‍🔬 Test Coverage`        | `test-coverage`        | push / PR / manual                     |
+| `🧑‍⚖️ Validate Conventions` | `validate-conventions` | PR (opened/sync/edited) / push to main |
+| `🕵️ Scan Security`        | `scan-security`        | push / PR / weekly schedule            |
 
 Identify which **step** within the job failed (visible in the log as `##[error]` or step exit code `!= 0`).
 
@@ -69,18 +69,18 @@ Identify which **step** within the job failed (visible in the log as `##[error]`
 
 The `lint-codebase` target is an `nx:noop` whose `dependsOn` leaves do the work. Identify which sub-target failed:
 
-| Sub-target      | Underlying tool   | Config file                                                                                                     |
-| --------------- | ----------------- | --------------------------------------------------------------------------------------------------------------- |
-| `typecheck`     | `tsc --noEmit`    | Per-project `tsconfig.json`, base: [configuration/tsconfig.json](../../../configuration/tsconfig.json)          |
-| `eslint`        | ESLint            | Per-project `eslint.config.ts`, base: [configuration/eslint.config.ts](../../../configuration/eslint.config.ts) |
-| `oxlint`        | oxlint            | [configuration/oxlint.config.ts](../../../configuration/oxlint.config.ts)                                       |
-| `oxfmt`         | oxfmt             | [configuration/oxfmt.config.ts](../../../configuration/oxfmt.config.ts)                                         |
-| `spell-check`   | cspell            | [configuration/cspell.config.yaml](../../../configuration/cspell.config.yaml)                                   |
-| `knip`          | knip              | [configuration/knip.config.ts](../../../configuration/knip.config.ts)                                           |
-| `markdown-lint` | markdownlint-cli2 | [configuration/.markdownlint-cli2.jsonc](../../../configuration/.markdownlint-cli2.jsonc)                       |
-| `yaml-lint`     | yamllint          | [configuration/yamllint.yaml](../../../configuration/yamllint.yaml)                                             |
-| `synchronize`   | synchronization   | [tools/synchronization/project.json](../../../tools/synchronization/project.json)                               |
-| `type-coverage` | type-coverage     | Per-project `package.json` `typeCoverage.atLeast`                                                               |
+| Sub-target                                                                                                                                      | Underlying tool   | Config file                                                                                                     |
+| ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------- |
+| `typecheck`                                                                                                                                     | `tsc --noEmit`    | Per-project `tsconfig.json`, base: [configuration/tsconfig.json](../../../configuration/tsconfig.json)          |
+| `eslint`                                                                                                                                        | ESLint            | Per-project `eslint.config.ts`, base: [configuration/eslint.config.ts](../../../configuration/eslint.config.ts) |
+| `oxlint`                                                                                                                                        | oxlint            | [configuration/oxlint.config.ts](../../../configuration/oxlint.config.ts)                                       |
+| `oxfmt`                                                                                                                                         | oxfmt             | [configuration/oxfmt.config.ts](../../../configuration/oxfmt.config.ts)                                         |
+| `spell-check`                                                                                                                                   | cspell            | [configuration/cspell.config.yaml](../../../configuration/cspell.config.yaml)                                   |
+| `knip`                                                                                                                                          | knip              | [configuration/knip.config.ts](../../../configuration/knip.config.ts)                                           |
+| `markdown-lint`                                                                                                                                 | markdownlint-cli2 | [configuration/.markdownlint-cli2.jsonc](../../../configuration/.markdownlint-cli2.jsonc)                       |
+| `yaml-lint`                                                                                                                                     | yamllint          | [configuration/yamllint.yaml](../../../configuration/yamllint.yaml)                                             |
+| `conformetry-generators`, `conventional-config`, `devcontainer-configuration`, `nx-project-graphs`, `pull-request-template`, `skill-exclusions` | synchronization   | [tools/synchronization/project.json](../../../tools/synchronization/project.json)                               |
+| `type-coverage`                                                                                                                                 | type-coverage     | Per-project `package.json` `typeCoverage.atLeast`                                                               |
 
 There is no `lint` or `format` leaf, and no `lint` or `format` target anywhere in
 the workspace: `nx affected --target=lint` exits 0 printing "No tasks were run".
@@ -106,7 +106,7 @@ list, which also covers `callidescope`, `check-catalog-manifests`,
 - **`markdown-lint`**: Fix against [configuration/.markdownlint-cli2.jsonc](../../../configuration/.markdownlint-cli2.jsonc) rules — check MD049 style (`underscore`), MD013 line length, and fenced code block languages.
   > **Lesson**: If MD049 violations appear _after_ running the formatter — oxfmt/prettier converts `*emphasis*` → `_emphasis_`. The `.markdownlint-cli2.jsonc` MD049 rule must use `style: underscore` (not `asterisk`) to match formatter output; using `asterisk` will conflict on every formatted file.
 - **`yaml-lint`**: Fix indentation, trailing spaces, or document-start issues as reported.
-- **`synchronize`**: Re-run the matching `-write` configuration of `synchronization:start` and commit what it generates — never hand-edit a synchronized file.
+- **A synchronization target** (`conformetry-generators`, `conventional-config`, `devcontainer-configuration`, `nx-project-graphs`, `pull-request-template`, `skill-exclusions`): Re-run its own `:write` configuration and commit what it generates — never hand-edit a synchronized file.
 
 **Verify:**
 
@@ -116,31 +116,31 @@ pnpm exec nx affected -t lint-codebase
 
 The three sections below read as convention checks, but none of them is part of Validate Conventions — a failure in any of them shows up in a Lint Codebase run. They do not all come from the same leaf, and that decides how each one is fixed:
 
-- The `synchronize` leaf runs all seven synchronization commands in one process: `conformetry-generators`, `conventional-config`, `devcontainer-configuration`, `nestjs-module-graphs`, `nx-project-graphs`, `pull-request-template`, and `skill-exclusions`. Only the two that fail most often are written up below; every one of them is fixed the same way, by running its `-write` configuration of `synchronization:start` and committing what it generates. Read the failure output to see which command reported the drift.
+- Six derivation targets on the `synchronization` project join the same `nx affected` invocation as `lint-codebase`: `conformetry-generators`, `conventional-config`, `devcontainer-configuration`, `nx-project-graphs`, `pull-request-template`, and `skill-exclusions` — each its own Nx target rather than a configuration of a shared aggregate. Only the two that fail most often are written up below; every one of them is fixed the same way, by running its own `:write` configuration and committing what it generates. Read the failure output to see which target reported the drift.
 
 #### 🏛️ Validate Convention Configuration
 
-Failing command: `npx nx run synchronization:start:conventional-config-check`
+Failing command: `npx nx run synchronization:conventional-config:check`
 
 Config: [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts](../../../tools/synchronization/src/modules/conventional-config/conventional-config.service.ts)
 
-Fix: Run `npx nx run synchronization:start:conventional-config-write` and commit the generated changes.
+Fix: Run `npx nx run synchronization:conventional-config:write` and commit the generated changes.
 
 #### 📋 Validate Pull Request Template
 
-Failing command: `npx nx run synchronization:start:pull-request-template-check`
+Failing command: `npx nx run synchronization:pull-request-template:check`
 
-Fix: Run `npx nx run synchronization:start:pull-request-template-write` and commit.
+Fix: Run `npx nx run synchronization:pull-request-template:write` and commit.
 
 #### 🧩 Validate Skill Exclusions
 
-Failing command: `npx nx run synchronization:start:skill-exclusions-check`
+Failing command: `npx nx run synchronization:skill-exclusions:check`
 
 Config: [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.constants.ts](../../../tools/synchronization/src/modules/skill-exclusions/skill-exclusions.constants.ts), deriving the blocks in [configuration/.prettierignore](../../../configuration/.prettierignore), [configuration/.codometerignore](../../../configuration/.codometerignore), [.gitattributes](../../../.gitattributes), [configuration/cspell.config.yaml](../../../configuration/cspell.config.yaml), and [configuration/.markdownlint-cli2.jsonc](../../../configuration/.markdownlint-cli2.jsonc) from [skills-lock.json](../../../skills-lock.json)
 
 This synchronization generates the marker-delimited block in each of the five files whose tool reaches `.agents/`: `prettier` (scans `.`), `codometer` (scans `--directory .`), GitHub Linguist (reads every committed file), `cspell`, and `markdownlint`. It fails when a block does not match the lockfile, which is what `skills update` adding a new skill would otherwise do silently.
 
-Fix: Run `npx nx run synchronization:start:skill-exclusions-write` and commit the regenerated blocks — never hand-edit one.
+Fix: Run `npx nx run synchronization:skill-exclusions:write` and commit the regenerated blocks — never hand-edit one.
 
 ---
 
@@ -215,11 +215,11 @@ NODE_OPTIONS='' node --import @swc-node/register/esm-register \
 
 #### 🏷️ Ensure Pull Request Labels
 
-Command: `synchronization write --kinds repository`, the [pull-request-labels](../../../tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts) synchronizer
+Command: `pull-request-labels write`, the [pull-request-labels](../../../tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts) synchronizer
 
 Runs only on `opened`/`reopened`, with `continue-on-error: true`, so it never fails the job by itself. It reconciles the repository's `type:*`, `scope:*`, `do-not-merge`, `source:agent`, and `source:human` labels against [configuration/conventional.config.cjs](../../../configuration/conventional.config.cjs) — creating or updating whichever ones drifted. It never deletes: a stale label is reported with the `gh label delete` command that would remove it, for a human to run.
 
-Fix: A `⚠️ Unable to reconcile labels` warning here (for example on a fork pull request without `issues: write`) does not block the job — the next step still runs and reports its own failure if a label it needs is missing. Reproduce it locally, without mutating anything, with `nx run synchronization:start:pull-request-labels-check`.
+Fix: A `⚠️ Unable to reconcile labels` warning here (for example on a fork pull request without `issues: write`) does not block the job — the next step still runs and reports its own failure if a label it needs is missing. Reproduce it locally, without mutating anything, with `nx run synchronization:pull-request-labels:check`.
 
 On a pull request from a fork, `GITHUB_TOKEN` is read-only no matter what the `permissions:` block asks for, so this step can only warn and an outside contributor can neither create labels nor label or assign themselves in this repository. Someone with write access here has to add the labels and an assignee on their behalf before 🧾 Validate Pull Request Metadata can go green.
 
@@ -334,9 +334,9 @@ pnpm exec nx affected -t lint-codebase
 pnpm exec nx affected -t vitest --configuration=coverage --parallel=3
 
 # Validate conventions (config sync checks only)
-npx nx run synchronization:start:conventional-config-check
-npx nx run synchronization:start:pull-request-template-check
-npx nx run synchronization:start:skill-exclusions-check
+npx nx run synchronization:conventional-config:check
+npx nx run synchronization:pull-request-template:check
+npx nx run synchronization:skill-exclusions:check
 
 # Security
 pnpm exec nx run codebase:gitleaks

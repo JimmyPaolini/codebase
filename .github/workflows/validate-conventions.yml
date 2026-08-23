@@ -16,9 +16,10 @@ name: 🧑‍⚖️ Validate Conventions
 # That reconciliation is a nest-commander command in `tools/synchronization`,
 # run through node directly rather than through Nx — the same invocation that
 # project's own targets use — so this workflow still builds no project graph.
-# It is the `repository` synchronization kind, which nothing else selects:
-# `lint-codebase` checks `derivation` and the release workflow writes
-# `derivation,report`, so neither of them needs a token.
+# It is the only synchronization needing credentials: neither `lint-codebase`
+# nor the release workflow, which run every other synchronization, holds a
+# token, so this is the one caller that asks for `pull-request-labels` by
+# name.
 #
 # The metadata and body checks are nest-commander commands in
 # `tools/validation`, invoked the same way and for the same reason. Both are
@@ -136,8 +137,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
-            tools/synchronization/src/main.ts synchronization write \
-            --kinds repository
+            tools/synchronization/src/main.ts pull-request-labels write
 
       - name: 🧾 Validate Pull Request Metadata
         env:

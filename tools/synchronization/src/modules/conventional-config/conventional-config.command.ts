@@ -3,7 +3,6 @@ import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { SYNCHRONIZATION_KIND_DERIVATION } from "../synchronization/synchronization.constants";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import { ConventionalConfigService } from "./conventional-config.service";
@@ -42,9 +41,6 @@ export class ConventionalConfigCommand
 
   // 🔑 Public Fields
 
-  /** Derived from configuration, so its drift is answered on a pull request. */
-  readonly synchronizationKind = SYNCHRONIZATION_KIND_DERIVATION;
-
   readonly synchronizationLabel = "conventional-config";
 
   // 🔏 Private Methods
@@ -62,7 +58,7 @@ export class ConventionalConfigCommand
         loggerService: this.logger,
         passedParameters,
         usageMessage:
-          "💡 Usage: nx run synchronization:start:conventional-config-check (or synchronization:start:conventional-config-write)",
+          "💡 Usage: nx run synchronization:conventional-config:check (or synchronization:conventional-config:write)",
       });
 
     if (!(await this.synchronize(mode))) {

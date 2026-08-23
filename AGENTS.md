@@ -120,8 +120,8 @@ project is called `conformetry` — the name means the generator namespace and
 nothing else, and the command-line host is `conformetry-cli`.
 
 This repository's generators, kept in step with the configuration by
-`nx run synchronization:synchronize`. `conformetry templates` prints the same thing
-for any workspace:
+`nx run synchronization:conformetry-generators`. `conformetry templates` prints the
+same thing for any workspace:
 
 <!-- conformetry-generators-table start -->
 | Generator | Alias | Description |
@@ -599,12 +599,12 @@ The entries are generated rather than hand-maintained: each file marks its block
 with an `installed-skills-start` and an `installed-skills-end` comment in its
 own syntax — `#` for the three ignore files and the cspell YAML, `//` for the
 markdownlint JSONC — and the `skill-exclusions` synchronizer rewrites what sits
-between them from the lockfile. `synchronize` runs inside `lint-codebase`, so a
-stale list fails there — which is what `skills update` adding a skill would
-otherwise do silently:
+between them from the lockfile. `skill-exclusions` joins `lint-codebase` in the
+same `nx affected` invocation, so a stale list fails there — which is what
+`skills update` adding a skill would otherwise do silently:
 
 ```bash
-pnpm exec nx run synchronization:synchronize:write
+pnpm exec nx run synchronization:skill-exclusions:write
 ```
 
 Every other tool scopes itself with explicit globs that never include
