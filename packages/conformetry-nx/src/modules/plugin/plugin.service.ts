@@ -214,6 +214,31 @@ export class PluginService {
     });
   }
 
+  /**
+   * Builds one input glob per configured generator's template folder.
+   *
+   * A template's own files are not part of `configurationPath` or the emitted
+   * plugin, so without this an instance's validate target would keep a stale
+   * cache hit across an edit to the very template it is measured against —
+   * which is exactly how a broken template placeholder once reached every
+   * matched instance's `package.json` unnoticed.
+   */
+  private async resolveTemplateInputs(args: {
+    configurationPath: string;
+  }): Promise<string[]> {
+    const configuration =
+      await this.configurationService.loadConformetryConfiguration(
+        args.configurationPath,
+      );
+    const templatePaths = new Set(
+      configuration.map((generator) => generator.templatePath),
+    );
+
+    return [...templatePaths].map(
+      (templatePath) => `{workspaceRoot}/${templatePath}/**/*`,
+    );
+  }
+
   /** Reads every configured generator's template folder. */
   private async resolveTemplates(args: {
     configurationPath: string;
@@ -251,6 +276,9 @@ export class PluginService {
       options: args.options,
       workspaceRoot: args.workspaceRoot,
     });
+    const templateInputs = await this.resolveTemplateInputs({
+      configurationPath: pluginOptions.configurationPath,
+    });
     const targetsByProjectRoot = new Map<string, InferredTargets>();
 
     for (const projectConfigurationFile of args.projectConfigurationFiles.filter(
@@ -283,11 +311,14 @@ export class PluginService {
           executor: `${CONFORMETRY_NX_PLUGIN_NAME}:validate`,
           // The executor refuses to run against a drifted plugin, so the
           // configuration and the emitted plugin are inputs: without them a
-          // cache hit would skip that check entirely.
+          // cache hit would skip that check entirely. Every configured
+          // template folder joins them for the same reason — see
+          // `resolveTemplateInputs`.
           inputs: [
             "default",
             `{workspaceRoot}/${pluginOptions.configurationPath}`,
             `{workspaceRoot}/${DEFAULT_OUTPUT_PATH}/**/*`,
+            ...templateInputs,
           ],
           options: {},
         },
