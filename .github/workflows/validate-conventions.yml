@@ -1,30 +1,46 @@
 name: 🧑‍⚖️ Validate Conventions
 
-# Pull request metadata only — branch name, title, body, labels, and
-# assignees. These are not Nx targets and have no project graph to build, so
-# this workflow deliberately skips `setup-codebase`: no Nx cache, no uv, no
-# Homebrew, no full install.
+# Pull request and issue metadata — branch name, title, body, labels, and
+# assignees for a pull request; type/scope/source labels for an issue. These
+# are not Nx targets and have no project graph to build, so this workflow
+# deliberately skips `setup-codebase`: no Nx cache, no uv, no Homebrew, no
+# full install.
 #
 # The repository-convention checks that used to live here (conformetry,
 # codometer, and the synchronization checks) are `lint-codebase` dependsOn
 # leaves now, so they run once per change instead of once per workflow.
 #
-# On `opened`/`reopened` the conventional label vocabulary is reconciled
-# against the repository before metadata validation runs, so a freshly
-# opened pull request has the labels it needs to pass.
+# Two independent jobs, one per trigger. `pull_request` and `issues` never
+# fire together, so exactly one job runs per event — the other reports
+# "skipped" rather than adding to the run's duration. They are folded into
+# one file because both are thin: checkout, install, run a `tools/validation`
+# check. The README's Validate Conventions badge is this workflow's own
+# status badge — whichever job ran most recently on its trigger.
 #
-# That reconciliation is a nest-commander command in `tools/synchronization`,
-# run through node directly rather than through Nx — the same invocation that
-# project's own targets use — so this workflow still builds no project graph.
-# It is the only synchronization needing credentials: neither `lint-codebase`
-# nor the release workflow, which run every other synchronization, holds a
-# token, so this is the one caller that asks for `pull-request-labels` by
-# name.
+# On a pull request's `opened`/`reopened`, the conventional label vocabulary
+# is reconciled against the repository first, so a freshly opened pull
+# request has the labels it needs to pass. That reconciliation is a
+# nest-commander command in `tools/synchronization`, run through node
+# directly rather than through Nx — the same invocation that project's own
+# targets use — so this workflow still builds no project graph. It is the
+# only synchronization needing credentials: neither `lint-codebase` nor the
+# release workflow, which run every other synchronization, holds a token, so
+# this is the one caller that asks for `pull-request-labels` by name.
 #
-# The metadata and body checks are nest-commander commands in
-# `tools/validation`, invoked the same way and for the same reason. Both are
-# one-sided — a `check` with no `write` to reconcile against — which is why
-# they live there rather than beside the label synchronizer.
+# On an issue's `opened`, the type and scope labels a submitted `issue.yml`
+# body implies are reconciled onto the issue the same way, through the
+# `issue-labels` command instead. GitHub has no gate on issue creation the
+# way it has one on a pull request merge, so a failing issue-metadata check
+# can never block anything — the issue already exists by the time this
+# workflow runs. It is allowed to fail the job anyway, on purpose: this
+# workflow's own README badge is the signal, the same way a failing pull
+# request job already turns it red, so a mislabeled issue shows up there too
+# rather than only as a comment nobody reads.
+#
+# Every check here is a nest-commander command in `tools/validation`,
+# invoked the same way and for the same reason: one-sided, a `check` with no
+# `write` to reconcile against, which is why they live there rather than
+# beside the label synchronizers.
 
 on:
   pull_request:
@@ -45,14 +61,22 @@ on:
         review_requested,
         review_request_removed,
       ]
+  issues:
+    types: [opened, edited, labeled, unlabeled]
 
 permissions:
   contents: read
   # Label creation and updates are issues-scoped endpoints, not pull-request
-  # ones, so this write permission exists solely for that reconciliation step.
+  # ones, so this write permission covers the pull request reconciliation
+  # step and the issue job's own label reconciliation step.
   issues: write
 
 concurrency:
+  # `github.ref` already tells the two triggers apart without help: a pull
+  # request's ref is its head ref, distinct per branch, while every issue
+  # event shares the repository's default-branch ref. That collapses all
+  # issue runs into one group — intentional, since `cancel-in-progress` below
+  # queues rather than drops a run, and these runs are seconds long.
   group: ${{ github.workflow }}-${{ github.ref }}
   # Deliberately not cancelling. One `gh pr edit` that adds a few labels and
   # an assignee fires several of the events above within a second, and this
@@ -68,6 +92,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     if: >-
+      github.event_name == 'pull_request' &&
       github.actor != 'dependabot[bot]' &&
       !startsWith(github.head_ref, 'dependabot/') &&
       !startsWith(github.head_ref, 'renovate/')
@@ -149,3 +174,58 @@ jobs:
         run: |
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
             tools/validation/src/main.ts pull-request-metadata
+
+  validate-issue-conventions:
+    name: 🧑‍⚖️ Validate Issue Conventions
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: >-
+      github.event_name == 'issues' &&
+      github.actor != 'dependabot[bot]'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: 🟢 Setup node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      # The label reconciliation step and the metadata check both run their
+      # CLIs directly through node rather than through Nx, so those two
+      # projects and the workspace packages they import are all this needs.
+      # The trailing `...` on each filter resolves that transitively. Still no
+      # Nx cache, no uv, and no Homebrew: there is no project graph to build.
+      - name: 📚 Install Root Dependencies
+        run: |
+          CI=true pnpm install --frozen-lockfile --reporter=append-only \
+            --filter . --filter synchronization... --filter validation... \
+            --ignore-scripts
+
+      # Only on the event that creates an issue — an edit or a label change
+      # never adds a field the body didn't already have, and re-adding labels
+      # on every edit would fight a human who removed one on purpose.
+      - name: 🏷️ Reconcile Issue Labels
+        if: github.event.action == 'opened'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_LABELS: ${{ toJSON(github.event.issue.labels) }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+            tools/synchronization/src/main.ts issue-labels
+
+      - name: 🧾 Validate Issue Metadata
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_LABELS: ${{ toJSON(github.event.issue.labels) }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+            tools/validation/src/main.ts issue-metadata

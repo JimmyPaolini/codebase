@@ -109,7 +109,7 @@ describe(ConventionalConfigIoService, () => {
     );
   });
 
-  it("parses issue template scopes and markdown values", () => {
+  it("parses issue template dropdown options and markdown values", () => {
     const issueTemplate = [
       "# <!-- scopes-start -->",
       "options:",
@@ -119,10 +119,12 @@ describe(ConventionalConfigIoService, () => {
       "# <!-- scopes-end -->",
     ].join("\n");
 
-    expect(service.parseIssueTemplateScopes(issueTemplate)).toStrictEqual([
-      "alpha",
-      "beta",
-    ]);
+    expect(
+      service.parseIssueTemplateDropdown(issueTemplate, "scopes"),
+    ).toStrictEqual(["alpha", "beta"]);
+    expect(
+      service.parseIssueTemplateDropdown(issueTemplate, "types"),
+    ).toStrictEqual([]);
 
     const markdownTable = ["| `alpha` | desc |", "| `beta` | desc |"].join(
       "\n",
@@ -135,9 +137,11 @@ describe(ConventionalConfigIoService, () => {
   });
 
   it("returns empty parsed values when issue template or markdown rows are missing", () => {
-    expect(service.parseIssueTemplateScopes("no markers")).toStrictEqual([]);
     expect(
-      service.parseIssueTemplateScopes(
+      service.parseIssueTemplateDropdown("no markers", "scopes"),
+    ).toStrictEqual([]);
+    expect(
+      service.parseIssueTemplateDropdown(
         [
           "# <!-- scopes-start -->",
           "options:",
@@ -146,6 +150,7 @@ describe(ConventionalConfigIoService, () => {
           "validations:",
           "# <!-- scopes-end -->",
         ].join("\n"),
+        "scopes",
       ),
     ).toStrictEqual(["alpha"]);
 
@@ -271,9 +276,14 @@ describe(ConventionalConfigIoService, () => {
   it("writes synchronized issue template and settings content", () => {
     const issueTemplateFile = path.join(
       workspaceRoot,
-      ".github/ISSUE_TEMPLATE/bug.yml",
+      ".github/ISSUE_TEMPLATE/issue.yml",
     );
     const issueTemplate = [
+      "# <!-- types-start -->",
+      "options:",
+      "        - stale",
+      "validations:",
+      "# <!-- types-end -->",
       "# <!-- scopes-start -->",
       "options:",
       "        - stale",
@@ -282,21 +292,39 @@ describe(ConventionalConfigIoService, () => {
     ].join("\n");
 
     fileContents.set(issueTemplateFile, issueTemplate);
-    service.writeIssueTemplateSync(["alpha", "beta"], issueTemplateFile);
+    service.writeIssueTemplateSync(
+      {
+        scopes: [
+          { description: "first", name: "alpha" },
+          { description: "second", name: "beta" },
+        ],
+        types: [
+          { code: "fix", description: "fixing", emoji: "🐛", name: "fix" },
+        ],
+      },
+      issueTemplateFile,
+    );
 
     expect(writeFileSync).toHaveBeenCalledWith(
       issueTemplateFile,
       expect.stringContaining("        - alpha\n        - beta"),
       "utf8",
     );
+    expect(writeFileSync).toHaveBeenCalledWith(
+      issueTemplateFile,
+      expect.stringContaining("        - fix"),
+      "utf8",
+    );
     expect(logger.info).toHaveBeenCalledWith(
-      "🔄 Syncing a scopes dropdown",
+      "🔄 Syncing type and scope dropdowns",
       undefined,
       { templateName: path.relative(workspaceRoot, issueTemplateFile) },
     );
-    expect(logger.info).toHaveBeenCalledWith("📇 Synced scopes", undefined, {
-      templateName: path.relative(workspaceRoot, issueTemplateFile),
-    });
+    expect(logger.info).toHaveBeenCalledWith(
+      "📇 Synced types and scopes",
+      undefined,
+      { templateName: path.relative(workspaceRoot, issueTemplateFile) },
+    );
 
     fileContents.set(
       settingsFile,
@@ -321,13 +349,21 @@ describe(ConventionalConfigIoService, () => {
   it("throws when issue template markers are missing", () => {
     const issueTemplateFile = path.join(
       workspaceRoot,
-      ".github/ISSUE_TEMPLATE/bug.yml",
+      ".github/ISSUE_TEMPLATE/issue.yml",
     );
-    fileContents.set(issueTemplateFile, "name: bug");
+    fileContents.set(issueTemplateFile, "name: issue");
 
     expect(() =>
-      service.writeIssueTemplateSync(["alpha"], issueTemplateFile),
-    ).toThrow("Could not find scopes markers");
+      service.writeIssueTemplateSync(
+        {
+          scopes: [],
+          types: [
+            { code: "fix", description: "fixing", emoji: "🐛", name: "fix" },
+          ],
+        },
+        issueTemplateFile,
+      ),
+    ).toThrow("Could not find types markers");
   });
 
   it("throws when settings scope array pattern is missing", () => {

@@ -164,58 +164,58 @@ export class ConventionalConfigValidatorsService {
   }
 
   /**
-   * Validates that all issue templates contain matching scope options.
+   * Validates that all issue templates contain matching type and scope options.
    */
   checkAllTemplatesSync(
-    scopeNames: string[],
+    config: ConventionalConfig,
     issueTemplateFiles: string[],
   ): boolean {
     let templatesOk = true;
     for (const templateFile of issueTemplateFiles) {
-      if (!this.checkIssueTemplateSync(scopeNames, templateFile))
+      if (!this.checkIssueTemplateSync(config, templateFile))
         templatesOk = false;
     }
     return templatesOk;
   }
 
   /**
-   * Validates a single issue template against configured scope values and order.
+   * Validates a single issue template's type and scope dropdowns against
+   * configured values and order.
    */
   checkIssueTemplateSync(
-    sourceScopes: string[],
+    config: ConventionalConfig,
     templateFile: string,
   ): boolean {
     const templateName = path.relative(this.workspaceRoot, templateFile);
     const templateContent = readFileSync(templateFile, "utf8");
-    const templateScopes =
-      this.conventionalConfigIoService.parseIssueTemplateScopes(
-        templateContent,
-      );
-    if (templateScopes.length === 0) {
-      this.loggerService.info("📄 Missing markers", undefined, {
-        marker: "scopes",
-        templateName,
-      });
-      return false;
+    let templateOk = true;
+    for (const marker of ["types", "scopes"] as const) {
+      const sourceValues = this.getSourceValuesForMarker({ config, marker });
+      const templateValues =
+        this.conventionalConfigIoService.parseIssueTemplateDropdown(
+          templateContent,
+          marker,
+        );
+      if (templateValues.length === 0) {
+        this.loggerService.info("📄 Missing markers", undefined, {
+          marker,
+          templateName,
+        });
+        templateOk = false;
+        continue;
+      }
+      if (
+        !this.validateMarkerValues({
+          marker,
+          skillName: templateName,
+          skillValues: templateValues,
+          sourceValues,
+        })
+      ) {
+        templateOk = false;
+      }
     }
-    const sortedSource = _.sortBy([...sourceScopes]);
-    const sortedTemplate = _.sortBy([...templateScopes]);
-    if (!_.isEqual(sortedSource, sortedTemplate)) {
-      this.loggerService.info(
-        "📇 Detected an out-of-sync scopes dropdown",
-        undefined,
-        { templateName },
-      );
-      this.showDifference(sourceScopes, templateScopes, templateName);
-      return false;
-    }
-    if (!_.isEqual(sourceScopes, templateScopes)) {
-      this.loggerService.info("🔀 Reordered scopes", undefined, {
-        templateName,
-      });
-      return false;
-    }
-    return true;
+    return templateOk;
   }
 
   /**

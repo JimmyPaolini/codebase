@@ -121,7 +121,12 @@ gh pr list --head <branch> --state open
    - **📝 Details**: Bulleted list of meaningful changes
    - **🧪 Testing**: Relevant `nx run <project>:<target>` commands and manual steps
    - **🔗 Related**: Issue links discovered from branch name, commits, or `gh issue list --search`
-3. Labels: One `type:*` label matching the title's type, one `scope:*` label per title scope, and `source:agent` — this automation is opening the pull request, not a human.
+3. Assignee and labels — Validate Conventions rejects a pull request whose metadata disagrees with its title, so set all of this at creation time rather than waiting for the reconciliation step to backfill it:
+   - **Assignee**: `--assignee @me`. A pull request with no assignee fails validation.
+   - **Type label**: Exactly one `type:*` label, matching the title's type. Never more than one, never a mismatch.
+   - **Scope label(s)**: One `scope:*` label per scope named in the title — if the title carries more than one scope (`type(scope-one,scope-two): …`), add a `--label scope:<name>` for each of them, and no extra `scope:*` label beyond what the title names.
+   - **Source label**: Exactly one `source:*` label. This skill is agent-driven, so use `source:agent` — never `source:human`, and never both.
+   - **Never** apply `do-not-merge` — it blocks the pull request while present, and this workflow is opening one for immediate review, not staging a draft.
 4. Create the PR:
 
    ```bash
@@ -135,23 +140,36 @@ gh pr list --head <branch> --state open
      --label source:agent
    ```
 
-For complete PR conventions and description guidelines, see [create-pull-request skill](../create-pull-request/SKILL.md).
+   Repeat `--label scope:<name>` for each additional scope the title names.
+
+5. Confirm the metadata actually landed — a label GitHub silently drops (typo, not-yet-created) fails CI just as surely as never adding it:
+
+   ```bash
+   gh pr view <branch> --json number,labels,assignees
+   ```
+
+   If any expected label or the assignee is missing, add it with `gh pr edit <number> --add-label <label>` / `--add-assignee @me` rather than leaving it to Validate Conventions to catch and fail on.
+
+For complete PR conventions and description guidelines, see [create-pull-request skill](../create-pull-request/SKILL.md). For the full label vocabulary, the `opened`/`reopened` reconciliation step that creates missing labels, and how to fix each individual metadata failure, see the [triage-deployment skill](../triage-deployment/SKILL.md).
 
 ## Output
 
 After completing all phases, print a summary table:
 
-| Phase  | Result                                                   |
-| ------ | -------------------------------------------------------- |
-| Branch | Created `<branch>` / Already on `<branch>`               |
-| Commit | `<type>(<scope>): <gitmoji> <subject>` / Skipped (clean) |
-| PR     | Created `<url>` / Already exists `<url>`                 |
+| Phase    | Result                                                    |
+|----------|-----------------------------------------------------------|
+| Branch   | Created `<branch>` / Already on `<branch>`                |
+| Commit   | `<type>(<scope>): <gitmoji> <subject>` / Skipped (clean)  |
+| PR       | Created `<url>` / Already exists `<url>`                  |
+| Labels   | `type:*`, `scope:*` (one per title scope), `source:agent` |
+| Assignee | `@me` — confirmed via `gh pr view`                        |
 
 ## Resources
 
 - [checkout-branch skill](../checkout-branch/SKILL.md) — Branch naming conventions
 - [rename-branch skill](../rename-branch/SKILL.md) — Rename non-conforming branches before commit/push
 - [commit-code skill](../commit-code/SKILL.md) — Commit message format, types, scopes, gitmoji
-- [create-pull-request skill](../create-pull-request/SKILL.md) — PR conventions and description template
+- [create-pull-request skill](../create-pull-request/SKILL.md) — PR conventions and description template, full Labels section
+- [triage-deployment skill](../triage-deployment/SKILL.md) — Label vocabulary, `opened`/`reopened` reconciliation, fixing metadata failures
 - [check-commit-signing-configuration.sh](../../../scripts/git/check-commit-signing-configuration.sh) — Pre-commit hook signing prerequisite check
 - [check-push-commit-signatures.sh](../../../scripts/git/check-push-commit-signatures.sh) — Pre-push hook commit signature validation
