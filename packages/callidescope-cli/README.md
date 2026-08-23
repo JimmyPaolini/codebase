@@ -647,9 +647,13 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-14505-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-445.33_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-445.59_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-18-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-123-3178c6?style=flat-square)
+
+### Measured Targets
+
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-65.92_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -695,17 +699,17 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 
 ### JSON
 
-![JSON Files](https://img.shields.io/badge/JSON_Files-3-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-138-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-33-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-10-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-96-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-71-16a34a?style=flat-square)
+![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-153-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-35-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-12-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-101-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-80-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-7-0ea5e9?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-8-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-23-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-122-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-31-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-136-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-7-ea580c?style=flat-square)
 
 ### YAML
