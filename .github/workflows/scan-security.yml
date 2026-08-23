@@ -48,5 +48,19 @@ jobs:
       # gitleaks scans history, so it belongs to the root project rather than
       # to whichever project a commit happened to touch, and `affected` will
       # not select it on most pull requests.
-      - name: 🚰 Scan Secrets
+      #
+      # A full-history scan walks every commit the repository has ever had,
+      # which is unnecessary on every push and pull request when the weekly
+      # schedule (and workflow_dispatch, for an on-demand audit) already cover
+      # that ground. Push and pull_request events scan only the commits being
+      # introduced (NX_BASE..NX_HEAD) instead, which is what actually needs to
+      # gate before landing — nothing older can have changed.
+      - name: 🚰 Scan Secrets (Full History)
+        if: |
+          github.event_name == 'schedule'
+          || github.event_name == 'workflow_dispatch'
         run: pnpm exec nx run codebase:gitleaks:ci
+
+      - name: 🚰 Scan Secrets (Incremental)
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
+        run: pnpm exec nx run codebase:gitleaks:ci-incremental

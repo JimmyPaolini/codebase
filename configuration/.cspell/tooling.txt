@@ -103,6 +103,7 @@ lemmatizers
 licen
 licenseignore
 linesecond
+linuxbrew
 lintstaged
 lintstagedrc
 Manypkg
