@@ -4,9 +4,10 @@
 // Run via: nx run lexico-components:codometer
 // Docs: packages/codometer-cli/README.md
 //
-// This project carries a configuration file of its own because its limit is
-// declared here rather than in its manifest, which is where the convention
-// every other package follows reads one from.
+// This project carries a configuration file of its own because what gates it
+// is not a shape the workspace configuration can express: two limits on one
+// metric, an advisory one below the ceiling, where that file declares a single
+// limit per project. Both the target and the limits on it are written here.
 //
 // ⚠️ The 200 KB limit is a ratchet against the measured size, not a design
 // target. The output is 191 KB gzipped because the Vite library build ships

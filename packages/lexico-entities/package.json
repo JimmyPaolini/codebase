@@ -31,7 +31,6 @@
   "main": "./src/index.ts",
   "name": "@codebase/lexico-entities",
   "private": true,
-  "sizeLimit": "34 KB",
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,
