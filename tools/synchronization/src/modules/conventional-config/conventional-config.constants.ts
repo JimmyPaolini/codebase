@@ -10,10 +10,9 @@ export const SYNC_CONVENTIONAL_CONFIG_SKILL_FILES = [
   ".github/copilot-instructions.md",
 ];
 
-/** Issue template files that contain scope dropdowns. */
+/** Issue template files that contain type and scope dropdowns. */
 export const SYNC_CONVENTIONAL_CONFIG_ISSUE_TEMPLATE_FILES = [
-  ".github/ISSUE_TEMPLATE/bug-report.yml",
-  ".github/ISSUE_TEMPLATE/feature-request.yml",
+  ".github/ISSUE_TEMPLATE/issue.yml",
 ];
 
 /** Commit types excluded from release rules presence validation. */
