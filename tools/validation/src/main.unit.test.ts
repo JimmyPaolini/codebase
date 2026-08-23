@@ -6,6 +6,7 @@ import type { IssueMetadataModule } from "./modules/issue-metadata/issue-metadat
 import type { LockfileModule } from "./modules/lockfile/lockfile.module";
 import type { PullRequestBodyModule } from "./modules/pull-request-body/pull-request-body.module";
 import type { PullRequestMetadataModule } from "./modules/pull-request-metadata/pull-request-metadata.module";
+import type { PullRequestReleaseSignificanceModule } from "./modules/pull-request-release-significance/pull-request-release-significance.module";
 import type { LoggerService } from "@codebase/logger";
 
 type CommandFactoryRun = (
@@ -20,6 +21,8 @@ const issueMetadataModuleMock = createMock<IssueMetadataModule>();
 const lockfileModuleMock = createMock<LockfileModule>();
 const pullRequestBodyModuleMock = createMock<PullRequestBodyModule>();
 const pullRequestMetadataModuleMock = createMock<PullRequestMetadataModule>();
+const pullRequestReleaseSignificanceModuleMock =
+  createMock<PullRequestReleaseSignificanceModule>();
 
 vi.mock("nest-commander", () => ({
   CommandFactory: {
@@ -67,6 +70,16 @@ vi.mock("./modules/pull-request-metadata/pull-request-metadata.module", () => ({
     return pullRequestMetadataModuleMock;
   },
 }));
+
+vi.mock(
+  "./modules/pull-request-release-significance/pull-request-release-significance.module",
+  () => ({
+    PullRequestReleaseSignificanceModule:
+      function PullRequestReleaseSignificanceModule() {
+        return pullRequestReleaseSignificanceModuleMock;
+      },
+  }),
+);
 
 describe("main bootstrap", () => {
   beforeEach(() => {
