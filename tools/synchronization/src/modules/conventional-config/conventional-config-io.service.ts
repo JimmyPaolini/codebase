@@ -75,7 +75,7 @@ export class ConventionalConfigIoService {
       throw new Error(`Could not find ${marker} markers in ${templateName}`);
     }
 
-    return templateContent.replace(pattern, `$1${dropdownOptions}\n$2`);
+    return templateContent.replace(pattern, `$1${dropdownOptions}$2`);
   }
 
   // 🌎 Public Methods
