@@ -27,6 +27,7 @@ The `lint-codebase` Nx target hangs every quality tool off `dependsOn`, so one i
 | `tsc --noEmit` | TypeScript type checking | project `tsconfig.json` → `configuration/tsconfig.base.json` |
 | `pyright` + `ty` | Python type checking | `pyproject.toml` |
 | `knip` | Unused TS files, exports, deps | `configuration/knip.config.ts` |
+| `fallow dead-code` | The same, workspace-wide in one pass | `configuration/fallow.config.jsonc` |
 | `vulture` | Unused Python code | `configuration/vulture_whitelist.py` |
 | `cspell` | Spell checking | `configuration/cspell.config.yaml` |
 | `markdownlint` | Markdown linting | `configuration/.markdownlint-cli2.jsonc` |
@@ -64,6 +65,7 @@ pnpm exec nx affected --target=lint-codebase --configuration=check --base=main
 - **Typecheck**: Fix type errors — see [write-typescript skill](../write-typescript/SKILL.md) for patterns.
 - **Spell-check**: Either fix the typo, or add the word to the appropriate dictionary in `configuration/.cspell/`.
 - **Knip (unused code)**: Remove the unused export/file/dependency, or add an exception in `configuration/knip.config.ts`.
+- **Fallow dead-code (unused code)**: The same finding from the other direction — `knip` runs once per workspace, `fallow` once over all of them. The two configurations are kept in step, so fix the code and both pass; if an exception is genuinely warranted, add it to `configuration/fallow.config.jsonc` _and_ its counterpart in `configuration/knip.config.ts`, or the next run of the other tool reports what you just excused. Prefer `overrides` to `ignorePatterns` when suppressing a file: `ignorePatterns` also drops what that file imports out of the module graph, which makes reachable files read as dead.
 - **Sync checks**: Run the failing synchronization's own `write` configuration (e.g., `nx run synchronization:conventional-config:write`), or `nx run-many --targets=conformetry-generators,conventional-config,devcontainer-configuration,nx-project-graphs,pull-request-template,skill-exclusions --configuration=write` for every derivation at once.
 - **Check skill exclusions**: Add the exclusion lines the failure names to `configuration/.prettierignore`, `configuration/.codometerignore`, and `.gitattributes`. This leaf has no `write` variant.
 

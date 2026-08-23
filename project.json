@@ -211,6 +211,9 @@
     "fallow-dead-code": {
       "cache": true,
       "configurations": {
+        "check": {
+          "command": "fallow dead-code --config configuration/fallow.config.jsonc"
+        },
         "json": {
           "command": "fallow dead-code --config configuration/fallow.config.jsonc --format=json"
         },
@@ -219,9 +222,13 @@
         },
         "pr-comment-github": {
           "command": "fallow dead-code --config configuration/fallow.config.jsonc --format=pr-comment-github"
+        },
+        "write": {
+          "command": "fallow dead-code --config configuration/fallow.config.jsonc"
         }
       },
-      "description": "Fallow dead-code analysis (unused files, exports, deps, circular deps) \u2014 advisory",
+      "defaultConfiguration": "check",
+      "description": "Fallow dead-code analysis (unused files, exports, types, dependencies, unresolved imports) \u2014 a `lint-codebase` gate beside `knip`, whose findings it deliberately mirrors: `configuration/fallow.config.jsonc` carries the same entry points, the same per-file report suppressions, and the same ignored dependencies as `configuration/knip.config.ts`, so a finding one reports the other reports too. The severities `knip` also fails on are `error` in that config; the rest stay `warn` and belong to `fallow-health` and `fallow-duplicates`, which are still advisory. The `write` configuration is identical to `check` because there is nothing to write: removing what this finds is `fallow-fix`, which stays manual-only.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",

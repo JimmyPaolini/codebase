@@ -31,6 +31,11 @@
     "{applications,packages,tools}/*/src/generators.ts",
     "{applications,packages,tools}/*/src/repl.ts",
     "{applications,packages,tools}/*/testing/**/*.ts",
+    // codometer finds these by walking up from the project it is measuring,
+    // never by importing them, so nothing in the module graph reaches one.
+    // knip names the root file in its own entry list for the same reason.
+    "{applications,packages,tools}/*/codometer.config.cjs",
+    "codometer.config.ts",
     "configuration/**",
     "packages/lexico-entities/src/modules/database/migrations/**/*.ts",
     "release.config.cjs",
@@ -65,55 +70,49 @@
     "suggestInlineSuppression": false,
     "thresholdOverrides": [],
   },
+  // Every entry here is one fallow reports the moment it is removed — the list
+  // was three times this size, and the surplus was config that had outlived
+  // whatever once needed it. It only became visible once `ignorePatterns`
+  // stopped dropping constants and testing files out of the module graph: with
+  // those files back, the imports they make count, and most of what the list
+  // was suppressing is simply used. `configuration/knip.config.ts` carries the
+  // same reasons, split across the workspaces knip scopes each run to.
   "ignoreDependencies": [
-    "@caelundas/src",
-    "@caelundas/testing",
-    "@commitlint/config-conventional",
+    // Depended on so that pnpm links its `conformetry` bin into
+    // node_modules/.bin, which it does only for a root dependency.
+    "@conformetry/cli",
+    // Named as a string in conformetry-validation's language registry and
+    // imported on demand, so no static import proves it is used.
+    "@conformetry/text",
+    // Declared by every service package for the conformance-scaffolded
+    // `testing/mocks.ts`, which only the packages whose tests mock a
+    // dependency go on to import.
     "@golevelup/ts-vitest",
-    "@conformetry/nx",
-    "@nx/eslint-plugin",
-    "@nx/js",
+    // Nx loads its plugins from nx.json by name rather than importing them.
     "@nx/vitest",
-    "@nx/web",
-    "@photostructure/tz-lookup",
-    "@semantic-release/changelog",
-    "@semantic-release/commit-analyzer",
-    "@semantic-release/git",
-    "@semantic-release/github",
-    "@semantic-release/npm",
-    "@semantic-release/release-notes-generator",
-    "@swc/helpers",
+    // Registered on Nx command lines as a string
+    // (`node --import @swc-node/register/esm-register`) and by `src/main.mjs`,
+    // neither of which is an import fallow can see.
     "@swc-node/register",
-    "@testcontainers/postgresql",
-    "@typescript-eslint/parser",
-    "commitlint-plugin-gitmoji",
-    "commitlint-plugin-tense",
-    "jiti",
+    // SWC runtime helpers, required by @swc-node/register for compiled TS.
+    "@swc/helpers",
+    // Invoked by the Nx target named after it rather than imported.
     "license-checker",
-    "lodash",
-    "markdownlint-cli2",
+    // Invoked by the openwiki target rather than imported.
     "openwiki",
+    // TypeORM's postgres driver, which TypeORM resolves by name at runtime.
+    // Both manifests declaring it also carve it out of `@nx/dependency-checks`
+    // in their own eslint.config.ts, for this same reason.
     "pg",
-    "pino-pretty",
-    "pluralize",
+    // Invoked by the squawk target rather than imported.
     "squawk-cli",
-    "stylelint",
-    "stylelint-config-standard",
-    "stylelint-config-tailwindcss",
-    "tailwindcss-animate",
+    // TypeScript helper library, an implicit runtime dependency of compiled
+    // output.
     "tslib",
-    "tsx",
+    // Invoked by the type-coverage target rather than imported.
     "type-coverage",
-    "typeorm-naming-strategies",
-    "unplugin-swc",
-    "vitest",
-    "zod",
   ],
   "ignoreExports": [
-    {
-      "exports": ["typedObjectKeys"],
-      "file": "**/src/modules/caelundas/caelundas.symbol-constants.ts",
-    },
     {
       "exports": ["*"],
       "file": "**/src/routeTree.gen.ts",
@@ -168,11 +167,8 @@
     "**/library.json",
     "**/node_modules/**",
     "**/pnpm-lock.yaml",
-    "**/src/**/*.constants.ts",
-    "**/src/**/*.types.ts",
     "**/src/lib/database.types.ts",
     "**/src/routeTree.gen.ts",
-    "**/testing/**",
     "**/tmp/**",
     "**/vite.config.*.timestamp*",
     "**/vitest.config.*.timestamp*",
@@ -185,7 +181,30 @@
     "CLAUDE.md",
     "notepads/**",
   ],
+  // knip's `ignoreFiles`: spare a file the unused-file report without taking
+  // it out of the module graph. Excluding it outright — which
+  // `ignorePatterns` does — also hides what it imports, and a constants file
+  // is exactly where several of this repository's modules do their importing,
+  // so the files it reaches then read as unreachable themselves.
+  "overrides": [
+    {
+      "files": [
+        "**/src/**/*.constants.ts",
+        "**/src/**/*.types.ts",
+        "**/testing/mocks.ts",
+      ],
+      "rules": {
+        "unused-files": "off",
+      },
+    },
+  ],
   "publicPackages": [],
+  // The dead-code rules knip also gates on are errors, because
+  // `fallow-dead-code` is one of `lint-codebase`'s checks and a `warn` reports
+  // without failing — an advisory severity on a gating target is a check that
+  // does nothing. Everything else stays advisory: cycles are dependency-cruiser's
+  // gate, and coverage-gaps, prop-drilling, and thin-wrapper belong to
+  // `fallow-health`, which is still advisory.
   "rules": {
     "boundary-violation": "warn",
     "circular-dependencies": "warn",
@@ -194,16 +213,31 @@
     "re-export-cycle": "warn",
     "thin-wrapper": "warn",
     "unprovided-injects": "warn",
-    "unresolved-imports": "warn",
-    "unused-dependencies": "warn",
-    "unused-exports": "warn",
-    "unused-files": "warn",
-    "unused-types": "warn",
+    "unresolved-imports": "error",
+    "unused-dependencies": "error",
+    "unused-dev-dependencies": "error",
+    "unused-exports": "error",
+    "unused-files": "error",
+    "unused-types": "error",
   },
   "usedClassMembers": [
     {
       "extends": "CommandRunner",
-      "members": ["parseDirectory", "parseReadme", "run"],
+      // `synchronizationLabel` is read as `command.synchronizationLabel`
+      // through the `Synchronization` interface each command implements, which
+      // is a structural reference no class-member analysis follows.
+      "members": [
+        "parseDirectory",
+        "parseReadme",
+        "run",
+        "synchronizationLabel",
+      ],
+    },
+    {
+      // TypeORM calls the naming strategy it was handed; nothing in this
+      // repository calls either override directly.
+      "extends": "SnakeNamingStrategy",
+      "members": ["joinTableName", "tableName"],
     },
     {
       "extends": "ConsoleLogger",

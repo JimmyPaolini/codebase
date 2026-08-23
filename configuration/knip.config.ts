@@ -22,7 +22,11 @@ const config: KnipConfig = {
     "uv", // uv Python package manager, used in lint-staged for nbstripout
   ],
 
-  // devDependencies used via npx, CLI, or ESLint config (not directly imported)
+  // Dependencies nothing imports, each verified live: remove one and knip
+  // reports it. The list was twice this size, and the surplus had outlived
+  // whatever once needed it — `configuration/fallow.config.jsonc` carries the
+  // same set with the same reasons, so a finding one reports the other reports
+  // too.
   ignoreDependencies: [
     // Depended on so that pnpm links its `conformetry` bin into
     // node_modules/.bin, which it does only for root dependencies. Nothing
@@ -49,8 +53,7 @@ const config: KnipConfig = {
     "stylelint-config-tailwindcss", // stylelint preset, referenced as string in extends array
     "stylelint", // CSS linter CLI, invoked via nx:run-commands in project.json
     "tslib", // TypeScript helper library, implicit runtime dependency for compiled TS
-    "unplugin-swc", // Vite plugin for SWC transformation with emitDecoratorMetadata support (caelundas/vitest.config.ts)
-    "squawk-cli",
+    "squawk-cli", // SQL linter CLI, invoked via nx:run-commands in project.json
   ],
 
   // Allow exports that are only used in the same file (common for barrel re-exports)
@@ -144,7 +147,6 @@ const config: KnipConfig = {
       ],
       ignoreDependencies: [
         "@testcontainers/postgresql", // Used by integration helper in packages/lexico-entities/testing (outside knip project scope)
-        "pg", // TypeORM postgres driver — loaded dynamically by TypeORM, not directly imported
       ],
       project: ["src/**/*.ts", "scripts/**/*.ts"],
     },
@@ -156,7 +158,6 @@ const config: KnipConfig = {
       ],
       ignoreDependencies: [
         "@nestjs/testing", // Used by command unit tests; tests are excluded from knip project scope
-        "tsx", // TypeScript executor CLI (not used; project uses @swc-node/register instead)
         "vitest", // Knip misses vitest usage because tests are ignored
       ],
       project: "src/**/*.ts",
@@ -166,12 +167,6 @@ const config: KnipConfig = {
     "packages/logger": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [
-        "@golevelup/ts-vitest", // Used by unit tests; tests are excluded from knip project scope
-        "@nestjs/testing", // Used by unit tests; tests are excluded from knip project scope
-        "pino-pretty", // Referenced as a string transport target in LoggerService — knip can't trace string references
-        "vitest", // Knip misses vitest usage because tests are ignored
-      ],
       project: "src/**/*.ts",
     },
 
@@ -180,10 +175,6 @@ const config: KnipConfig = {
       entry: ["src/main.ts", "src/files.ts"], // Main CLI entry + public file-list constant exports
       ignore: [
         "testing/**", // Test fixtures and setup
-      ],
-      ignoreDependencies: [
-        "@swc-node/register", // Used in Nx run-commands strings (`node --import @swc-node/register/esm-register`)
-        "@swc/core", // Required peer/runtime for @swc-node/register loaded via CLI string command
       ],
       project: "src/**/*.ts",
     },
@@ -194,11 +185,6 @@ const config: KnipConfig = {
       ignore: [
         "testing/**", // Test fixtures and setup
       ],
-      ignoreDependencies: [
-        "@nestjs/testing", // Used by unit tests; tests are excluded from knip project scope
-        "@swc-node/register", // Used in Nx run-commands strings (`node --import @swc-node/register/esm-register`)
-        "@swc/core", // Required peer/runtime for @swc-node/register loaded via CLI string command
-      ],
       project: "src/**/*.ts",
     },
 
@@ -207,12 +193,6 @@ const config: KnipConfig = {
     "packages/callidescope-cli": {
       entry: ["src/main.mjs", "src/main.ts", "src/repl.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [
-        // Registered by src/main.mjs and named on Nx command lines as strings,
-        // so nothing knip can see imports either of them.
-        "@swc-node/register",
-        "@swc/core",
-      ],
       project: "src/**/*.ts",
     },
     "packages/callidescope-configuration": {
@@ -224,10 +204,6 @@ const config: KnipConfig = {
     "packages/codometer-cli": {
       entry: ["src/main.mjs", "src/main.ts", "src/repl.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
-      ignoreDependencies: [
-        "@swc-node/register", // Registered by src/main.mjs as a string, and used in Nx run-commands strings
-        "@swc/core", // Required peer/runtime for @swc-node/register loaded via CLI string command
-      ],
       project: "src/**/*.ts",
     },
     "packages/codometer-configuration": {
