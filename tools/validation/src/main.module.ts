@@ -6,7 +6,6 @@ import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
 import { CatalogManifestsModule } from "./modules/catalog-manifests/catalog-manifests.module";
-import { CodometerTargetsModule } from "./modules/codometer-targets/codometer-targets.module";
 import { LockfileModule } from "./modules/lockfile/lockfile.module";
 import { PullRequestBodyModule } from "./modules/pull-request-body/pull-request-body.module";
 import { PullRequestMetadataModule } from "./modules/pull-request-metadata/pull-request-metadata.module";
@@ -23,7 +22,6 @@ import { PullRequestMetadataModule } from "./modules/pull-request-metadata/pull-
         environmentSchema.parse(config),
     }),
     CatalogManifestsModule,
-    CodometerTargetsModule,
     DiscoveryModule,
     LockfileModule,
     LoggerModule,

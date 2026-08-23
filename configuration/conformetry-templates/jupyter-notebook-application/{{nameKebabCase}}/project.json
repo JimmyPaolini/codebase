@@ -9,6 +9,7 @@
   ],
   "targets": {
     "bandit": {},
+    "codometer": {},
     "lint-codebase": {},
     "markdown-lint": {},
     "nbstripout": {},
