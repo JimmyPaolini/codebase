@@ -432,8 +432,10 @@ Where this project sits in the Nx project graph: what it depends on, and what de
 flowchart LR
   codometer_cli["codometer-cli"]
   codometer_configuration["codometer-configuration"]
+  codometer_markdown["codometer-markdown"]
   logger["logger"]
   codometer_cli --> codometer_configuration
+  codometer_cli --> codometer_markdown
   codometer_cli --> logger
   classDef subject stroke-width:3px
   class codometer_cli subject
@@ -516,6 +518,8 @@ flowchart LR
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
+
+_Loaded at runtime rather than imported, and so absent from this container: codometer-markdown._
 
 <!-- nestjs-module-graph-end -->
 

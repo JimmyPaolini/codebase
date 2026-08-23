@@ -1222,6 +1222,9 @@ importers:
       '@codometer/configuration':
         specifier: workspace:*
         version: link:../codometer-configuration
+      '@codometer/markdown':
+        specifier: workspace:*
+        version: link:../codometer-markdown
       '@nestjs/common':
         specifier: 'catalog:'
         version: 11.1.28(reflect-metadata@0.2.2)(rxjs@7.8.2)

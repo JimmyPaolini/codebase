@@ -125,6 +125,8 @@ flowchart LR
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
 
+_Loaded at runtime rather than imported, and so absent from this container: codometer-markdown._
+
 <!-- nestjs-module-graph-end -->
 
 ## Development
