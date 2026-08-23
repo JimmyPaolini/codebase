@@ -144,6 +144,7 @@ same thing for any workspace:
 - If a request spans multiple projects or scopes, complete the first project end-to-end before starting the next one.
 - If the work is truly independent across projects, split it into separate subagents or separate passes so each agent stays project-scoped.
 - Avoid mixing unrelated project changes in one context unless the task is explicitly orchestrating them.
+- This also keeps a pull request's commits at one release significance: see [Release Significance](#release-significance) for why a branch that stays within one project or module rarely accumulates a commit more significant than the type its title was going to use.
 
 ## Code Quality
 
@@ -253,6 +254,18 @@ chore(dependencies): ⬆️ upgrade react to v19
 docs(codebase): 📝 update contributing guide
 ```
 
+### Release Significance
+
+This repository squash-merges with `PR_TITLE`, so **the PR title is the only thing semantic-release ever sees** — every individual commit on the branch is discarded the moment it is squashed. `release.config.cjs`'s `releaseRules` map each type to a bump level: `feat` is `minor`; `fix`, `perf`, `refactor`, `build`, and `revert` are `patch`; `docs`, `style`, `test`, `ci`, and `chore` are `none`; a breaking change (`!` after the scope, or a `BREAKING CHANGE:` footer) is `major` regardless of type.
+
+The [pull-request-release-significance](tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts) check reads the branch's own commits and fails the pull request when the title's type is **less** release-significant than the most significant commit reachable from the branch, or when a commit uses a scope the title's scopes do not name. A title that understates its branch is not caught by anything else — `📝 Validate Pull Request Title` only checks that the title itself is well-formed.
+
+**Practical effect for an agent:** pick the type and scope for the _branch as a whole_ before committing, and keep every commit on it at or below that significance.
+
+- Committing a `feat` while the branch (and its eventual title) is `chore` or `ci` fails this check — either retitle the pull request as `feat`, or move that commit to its own branch.
+- A branch that mixes `feat` and `fix` work is still fine — title it `feat`, since `feat` outranks `fix`. Mixing types is only a problem when a later commit is _more_ significant than the type already chosen.
+- This is also why [Work Scope](#work-scope) asks for one project or module per pull request: the fewer concerns a branch carries, the less likely it accumulates a commit that outranks the title picked at the start.
+
 ### Pull Requests
 
 PR title follows the same format as commit messages — `<type>(<scope>): <gitmoji> <subject>` — and is checked by the same commitlint configuration, so every commit-message rule above applies to it.
@@ -289,19 +302,19 @@ The 🧑‍⚖️ Validate Conventions workflow creates any label missing from t
 
 <!-- types-start -->
 
-| Type | Description |
-| ---- | ----------- |
-| `feat` | A new feature or capability that adds value for users |
-| `fix` | A bug fix that addresses a specific issue or problem |
-| `docs` | Documentation, AGENTS.md, SKILL.md, README, and planning files |
-| `test` | Adding or correcting unit, integration, or end-to-end tests |
-| `refactor` | Code restructuring that neither fixes a bug nor adds a feature |
-| `style` | Formatting, whitespace, or code structure changes with no semantic effect |
-| `perf` | A code change that improves performance (caching, query optimization, etc.) |
-| `chore` | Housekeeping that doesn't modify src or test files (gitignore, editor config, etc.) |
-| `ci` | GitHub Actions workflows, composite actions, and CI/CD scripts |
-| `build` | Build system, Vite/Docker/Helm config, or external dependency integration |
-| `revert` | Reverts a previous commit |
+| Type       | Description                                                                         |
+| ---------- | ----------------------------------------------------------------------------------- |
+| `feat`     | A new feature or capability that adds value for users                               |
+| `fix`      | A bug fix that addresses a specific issue or problem                                |
+| `docs`     | Documentation, AGENTS.md, SKILL.md, README, and planning files                      |
+| `test`     | Adding or correcting unit, integration, or end-to-end tests                         |
+| `refactor` | Code restructuring that neither fixes a bug nor adds a feature                      |
+| `style`    | Formatting, whitespace, or code structure changes with no semantic effect           |
+| `perf`     | A code change that improves performance (caching, query optimization, etc.)         |
+| `chore`    | Housekeeping that doesn't modify src or test files (gitignore, editor config, etc.) |
+| `ci`       | GitHub Actions workflows, composite actions, and CI/CD scripts                      |
+| `build`    | Build system, Vite/Docker/Helm config, or external dependency integration           |
+| `revert`   | Reverts a previous commit                                                           |
 
 <!-- types-end -->
 
@@ -309,36 +322,36 @@ The 🧑‍⚖️ Validate Conventions workflow creates any label missing from t
 
 <!-- scopes-start -->
 
-| Scope | Description |
-| ----- | ----------- |
-| `affirmations` | Python Jupyter notebook application for LangGraph affirmation generation |
-| `applications` | Changes spanning multiple applications in applications/ (e.g. lexico, caelundas, etc.) |
-| `caelundas` | Node.js CLI for astronomical calendar generation (NASA JPL ephemeris) |
-| `configuration` | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.) |
-| `conformetry` | Code generator templates and validation tests for generated instances |
-| `dependencies` | Dependency version changes (upgrades, additions, removals via pnpm) |
-| `deps` | Dependency version changes (upgrades, additions, removals via pnpm) |
-| `deployments` | GitHub Actions workflows and CI/CD pipeline configuration |
-| `documentation` | Markdown docs, skills, planning files, and AGENTS.md files |
-| `infrastructure` | Helm charts, Terraform configs, and Kubernetes resources |
-| `JimmyPaolini` | Static GitHub profile README project (markdown and assets) |
-| `lexico` | TanStack Start SSR Latin dictionary web app with Supabase backend |
-| `lexico-components` | Shared React/shadcn component library |
-| `lexico-entities` | Shared TypeORM entities and GraphQL types |
-| `lexico-ingestion` | Data ingestion scripts for Lexico |
-| `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
-| `callidescope` | Call stack tracing and linting CLI and the configuration package it reads |
-| `codometer` | Code statistics measurement CLI and the configuration package it reads |
-| `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
-| `no-release` | Escape hatch: suppress semantic-release for any commit type |
-| `packages` | Changes spanning multiple shared packages in packages/ |
-| `release` | Version bumps and release commits generated by semantic-release |
-| `scripts` | Shell and TypeScript scripts in scripts/ (sync, setup, utilities) |
-| `testing` | Vitest configuration, shared test utilities, and coverage setup |
-| `tools` | Changes spanning multiple tool projects in tools/ |
-| `synchronization` | Synchronization application and commands for automating workflows |
-| `reporting` | Internal reporting CLI and the reports it renders, such as 🎒 Bundles |
-| `validation` | Validation CLI and the checks it runs, such as pull request metadata |
+| Scope               | Description                                                                            |
+| ------------------- | -------------------------------------------------------------------------------------- |
+| `affirmations`      | Python Jupyter notebook application for LangGraph affirmation generation               |
+| `applications`      | Changes spanning multiple applications in applications/ (e.g. lexico, caelundas, etc.) |
+| `caelundas`         | Node.js CLI for astronomical calendar generation (NASA JPL ephemeris)                  |
+| `configuration`     | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.)                  |
+| `conformetry`       | Code generator templates and validation tests for generated instances                  |
+| `dependencies`      | Dependency version changes (upgrades, additions, removals via pnpm)                    |
+| `deps`              | Dependency version changes (upgrades, additions, removals via pnpm)                    |
+| `deployments`       | GitHub Actions workflows and CI/CD pipeline configuration                              |
+| `documentation`     | Markdown docs, skills, planning files, and AGENTS.md files                             |
+| `infrastructure`    | Helm charts, Terraform configs, and Kubernetes resources                               |
+| `JimmyPaolini`      | Static GitHub profile README project (markdown and assets)                             |
+| `lexico`            | TanStack Start SSR Latin dictionary web app with Supabase backend                      |
+| `lexico-components` | Shared React/shadcn component library                                                  |
+| `lexico-entities`   | Shared TypeORM entities and GraphQL types                                              |
+| `lexico-ingestion`  | Data ingestion scripts for Lexico                                                      |
+| `logger`            | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention  |
+| `callidescope`      | Call stack tracing and linting CLI and the configuration package it reads              |
+| `codometer`         | Code statistics measurement CLI and the configuration package it reads                 |
+| `codebase`          | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration)          |
+| `no-release`        | Escape hatch: suppress semantic-release for any commit type                            |
+| `packages`          | Changes spanning multiple shared packages in packages/                                 |
+| `release`           | Version bumps and release commits generated by semantic-release                        |
+| `scripts`           | Shell and TypeScript scripts in scripts/ (sync, setup, utilities)                      |
+| `testing`           | Vitest configuration, shared test utilities, and coverage setup                        |
+| `tools`             | Changes spanning multiple tool projects in tools/                                      |
+| `synchronization`   | Synchronization application and commands for automating workflows                      |
+| `reporting`         | Internal reporting CLI and the reports it renders, such as 🎒 Bundles                  |
+| `validation`        | Validation CLI and the checks it runs, such as pull request metadata                   |
 
 <!-- scopes-end -->
 
@@ -424,17 +437,17 @@ See the [write-typescript skill](.agents/skills/write-typescript/SKILL.md) for s
 
 Hard ESLint errors on source files. Test files (`*.test.ts`, `testing/**`) and `*.config.*` files are exempt from all of them, so a large test file is fine and a large service file is not.
 
-| Limit | Max |
-| ----- | --- |
-| Lines per file (`max-lines`) | 512 |
-| Lines per function (`max-lines-per-function`) | 128 |
-| Statements per function (`max-statements`) | 16 |
-| Block nesting depth (`max-depth`) | 4 |
-| Nested callbacks (`max-nested-callbacks`) | 3 |
-| Classes per file (`max-classes-per-file`) | 1 |
-| Function parameters (`better-max-params`) | 3 — constructors 12, functions in `*.module.ts` 12 |
-| Cyclomatic complexity | 8 (warning) |
-| Nested `describe` blocks | 3 |
+| Limit                                         | Max                                                |
+| --------------------------------------------- | -------------------------------------------------- |
+| Lines per file (`max-lines`)                  | 512                                                |
+| Lines per function (`max-lines-per-function`) | 128                                                |
+| Statements per function (`max-statements`)    | 16                                                 |
+| Block nesting depth (`max-depth`)             | 4                                                  |
+| Nested callbacks (`max-nested-callbacks`)     | 3                                                  |
+| Classes per file (`max-classes-per-file`)     | 1                                                  |
+| Function parameters (`better-max-params`)     | 3 — constructors 12, functions in `*.module.ts` 12 |
+| Cyclomatic complexity                         | 8 (warning)                                        |
+| Nested `describe` blocks                      | 3                                                  |
 
 When a file nears 512 lines, split it along the module file suffixes (`*.types.ts`, `*.constants.ts`, another `*.service.ts`) instead of raising the limit. Never add a disable comment or edit the threshold to make a file fit.
 
@@ -475,12 +488,12 @@ See the [testing-strategy skill](.agents/skills/testing-strategy/SKILL.md) for p
 
 `.agents/skills/` and this file are the single sources of truth. Every other agent entrypoint is a symlink to them, so edit the source and never the mirror:
 
-| Symlink | Target |
-| ------- | ------ |
-| `CLAUDE.md` | `AGENTS.md` |
-| `.claude/skills` | `.agents/skills` |
-| `.github/copilot-instructions.md` | `AGENTS.md` |
-| `.github/skills` | `.agents/skills` |
+| Symlink                           | Target           |
+| --------------------------------- | ---------------- |
+| `CLAUDE.md`                       | `AGENTS.md`      |
+| `.claude/skills`                  | `.agents/skills` |
+| `.github/copilot-instructions.md` | `AGENTS.md`      |
+| `.github/skills`                  | `.agents/skills` |
 
 ### Session Hooks
 
@@ -488,12 +501,12 @@ Four checks run at the start of every agent session and inject their failure as
 additional context, so the agent fixes the problem before writing any code. Both
 harnesses run the same scripts under `scripts/git/`:
 
-| Script | Checks |
-| ------ | ------ |
-| `validate-session-branch-name.sh` | Branch follows `<type>/<scope>-<description>`; directs the agent to the rename-branch skill |
-| `validate-session-commit-signing.sh` | `commit.gpgsign`, `user.signingkey`, and a GPG signing smoke test |
-| `validate-session-gh-authentication.sh` | The active `gh` account plus Projects access |
-| `validate-session-skills.sh` | Every skill declared in `skills-lock.json` is present; directs the agent to `codebase:install-skills` |
+| Script                                  | Checks                                                                                                |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `validate-session-branch-name.sh`       | Branch follows `<type>/<scope>-<description>`; directs the agent to the rename-branch skill           |
+| `validate-session-commit-signing.sh`    | `commit.gpgsign`, `user.signingkey`, and a GPG signing smoke test                                     |
+| `validate-session-gh-authentication.sh` | The active `gh` account plus Projects access                                                          |
+| `validate-session-skills.sh`            | Every skill declared in `skills-lock.json` is present; directs the agent to `codebase:install-skills` |
 
 The skills check is a backstop. Now that every skill is committed, a checkout
 holds them all and the check stays silent; it fires only when a skill folder is
@@ -505,10 +518,10 @@ hook would still not expose them to the session already underway.
 Each script is registered twice — once per harness — and both registrations point
 at the same file:
 
-| Harness | Registration |
-| ------- | ------------ |
-| Claude Code | `SessionStart` entries in `.claude/settings.json` |
-| GitHub Copilot | `sessionStart` entries in `.github/hooks/*.json` |
+| Harness        | Registration                                      |
+| -------------- | ------------------------------------------------- |
+| Claude Code    | `SessionStart` entries in `.claude/settings.json` |
+| GitHub Copilot | `sessionStart` entries in `.github/hooks/*.json`  |
 
 The two harnesses read different JSON shapes, so the scripts pipe their message
 through `scripts/git/emit-session-hook-context.sh`, which emits
@@ -589,15 +602,15 @@ license to travel with the copy. The last row is this repository consuming its
 own published skills, so its license is the root [`LICENSE`](LICENSE) rather than
 a vendored copy:
 
-| Source | License | Skills |
-| ------ | ------- | ------ |
-| [mattpocock/skills](https://github.com/mattpocock/skills) | MIT | 25, the Agent Workflow set |
-| [nrwl/nx](https://github.com/nrwl/nx) | MIT | 7, the `nx-*` skills plus `monitor-ci` and `link-workspace-packages` |
-| [obra/superpowers](https://github.com/obra/superpowers) | MIT | 5 |
-| [github/gh-stack](https://github.com/github/gh-stack) | MIT | 1 |
-| [github/awesome-copilot](https://github.com/github/awesome-copilot) | MIT | 1 |
-| [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | Apache-2.0 | 1 |
-| [JimmyPaolini/codebase](https://github.com/JimmyPaolini/codebase) | MIT | 3, the `conformetry-*` skills this repository publishes |
+| Source                                                              | License    | Skills                                                               |
+| ------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------- |
+| [mattpocock/skills](https://github.com/mattpocock/skills)           | MIT        | 25, the Agent Workflow set                                           |
+| [nrwl/nx](https://github.com/nrwl/nx)                               | MIT        | 7, the `nx-*` skills plus `monitor-ci` and `link-workspace-packages` |
+| [obra/superpowers](https://github.com/obra/superpowers)             | MIT        | 5                                                                    |
+| [github/gh-stack](https://github.com/github/gh-stack)               | MIT        | 1                                                                    |
+| [github/awesome-copilot](https://github.com/github/awesome-copilot) | MIT        | 1                                                                    |
+| [pbakaus/impeccable](https://github.com/pbakaus/impeccable)         | Apache-2.0 | 1                                                                    |
+| [JimmyPaolini/codebase](https://github.com/JimmyPaolini/codebase)   | MIT        | 3, the `conformetry-*` skills this repository publishes              |
 
 `skills-lock.json` maps each individual skill to its source.
 
@@ -693,11 +706,11 @@ read their per-repository configuration from `docs/agents/`. Edit these files
 directly; re-run `/setup-matt-pocock-skills` only to switch issue trackers or
 start over.
 
-| Concern | Setting | Reference |
-| ------- | ------- | --------- |
-| Issue tracker | GitHub Issues in `JimmyPaolini/codebase`, via the `gh` CLI | [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md) |
+| Concern       | Setting                                                                       | Reference                                                      |
+| ------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Issue tracker | GitHub Issues in `JimmyPaolini/codebase`, via the `gh` CLI                    | [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md) |
 | Triage labels | The five canonical roles mapped onto this repository's `status:` label family | [`docs/agents/triage-labels.md`](docs/agents/triage-labels.md) |
-| Domain docs | Single-context — one root `CONTEXT.md` plus root `docs/adr/` | [`docs/agents/domain.md`](docs/agents/domain.md) |
+| Domain docs   | Single-context — one root `CONTEXT.md` plus root `docs/adr/`                  | [`docs/agents/domain.md`](docs/agents/domain.md)               |
 
 `CONTEXT.md` and `docs/adr/` do not exist yet, and that is expected —
 [domain-modeling](.agents/skills/domain-modeling/SKILL.md) creates them lazily as

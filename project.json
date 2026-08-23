@@ -897,7 +897,7 @@
     },
     "yaml-lint": {
       "cache": true,
-      "description": "Lint the workspace-root YAML no project reaches: the GitHub Actions workflows, composite action, and issue templates, the devcontainer and infrastructure compose files, the Helm chart and its values, the shared cspell and yamllint configuration, and the pnpm workspace files. The generated pnpm-lock.yaml is left out on purpose, and the Helm templates are skipped by the `**/templates/` ignore in yamllint.yaml because their Go template directives are not valid YAML. The installed skills under .agents/ are owned upstream and stay out. pyproject.toml and uv.lock are inputs because they pin yamllint itself: without them, a yamllint upgrade replays a cached pass and stops linting. Defined here rather than in the nx.json targetDefaults entry, which is filtered to language tags this project does not carry.",
+      "description": "Lint the workspace-root YAML no project reaches: the GitHub Actions workflows, composite action, and issue templates, the devcontainer and infrastructure compose files, the Helm chart and its values, the shared cspell and yamllint configuration, and the pnpm workspace file. The generated pnpm-lock.yaml is left out on purpose, and the Helm templates are skipped by the `**/templates/` ignore in yamllint.yaml because their Go template directives are not valid YAML. The installed skills under .agents/ are owned upstream and stay out. pyproject.toml and uv.lock are inputs because they pin yamllint itself: without them, a yamllint upgrade replays a cached pass and stops linting. Defined here rather than in the nx.json targetDefaults entry, which is filtered to language tags this project does not carry.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/.devcontainer/**/*.{yaml,yml}",
@@ -905,13 +905,12 @@
         "{workspaceRoot}/configuration/cspell.config.yaml",
         "{workspaceRoot}/configuration/yamllint.yaml",
         "{workspaceRoot}/infrastructure/**/*.{yaml,yml}",
-        "{workspaceRoot}/pnpm.yaml",
         "{workspaceRoot}/pnpm-workspace.yaml",
         "{workspaceRoot}/pyproject.toml",
         "{workspaceRoot}/uv.lock"
       ],
       "options": {
-        "command": "uv run yamllint -c configuration/yamllint.yaml .devcontainer .github configuration/cspell.config.yaml configuration/yamllint.yaml infrastructure pnpm-workspace.yaml pnpm.yaml",
+        "command": "uv run yamllint -c configuration/yamllint.yaml .devcontainer .github configuration/cspell.config.yaml configuration/yamllint.yaml infrastructure pnpm-workspace.yaml",
         "cwd": "{workspaceRoot}"
       }
     }

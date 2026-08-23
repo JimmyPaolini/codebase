@@ -762,7 +762,6 @@
     "Modelfile*": "ollama",
     "oxfmt.config.ts": "oxc",
     "oxlint.config.ts": "oxc",
-    "pnpm.yaml": "pnpm",
     "project.json": "nx",
     "sessions.json": "exe",
     "settings.json": "settings",

@@ -260,9 +260,9 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
 
 | Measure | Value |
 | --- | --- |
-| Callables | 111 |
+| Callables | 114 |
 | Files | 42 |
-| Calls traced | 136 |
+| Calls traced | 140 |
 | Call stacks | 9 |
 | Deepest stack | 12 |
 | Stacks through recursion | 0 |
@@ -275,7 +275,7 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
 ```text
 🚀 runConformetryGenerator(…): Promise<string[]> [packages/conformetry-nx/src/index.ts:90]
    ↳ Runs one configured generator against an Nx tree.
-  └─> PluginService.runGenerator(args: RunGeneratorArguments): Promise<string[]> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:306]
+  └─> PluginService.runGenerator(args: RunGeneratorArguments): Promise<string[]> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:337]
      ↳ Runs one configured generator against an Nx tree.
     └─> PluginService.assertPluginInSync(args: { configurationPath: string; workspaceRoot: string; }): Promise<void> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:125]
        ↳ Fails fast when the plugin would run against a stale or broken setup.
@@ -301,7 +301,7 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
 ```text
 🚀 validateExecutor(…): Promise<{ success: boolean; }> [packages/conformetry-nx/src/executors/validate/executor.ts:16]
    ↳ Validates one project's instances against their conformetry templates.
-  └─> PluginService.runValidation(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:367]
+  └─> PluginService.runValidation(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:398]
      ↳ Validates one project's instances and renders the report.
     └─> PluginService.assertPluginInSync(args: { configurationPath: string; workspaceRoot: string; }): Promise<void> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:125]
        ↳ Fails fast when the plugin would run against a stale or broken setup.
@@ -371,7 +371,7 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
 
 ```text
 🚀 anonymous(…): Promise<CreateNodesResultArray> [packages/conformetry-nx/src/index.ts:46]
-  └─> PluginService.inferTargets(args: InferTargetsArguments): Promise<Map<string, InferredTargets>> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:247]
+  └─> PluginService.inferTargets(args: InferTargetsArguments): Promise<Map<string, InferredTargets>> [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:272]
      ↳ Infers a validation target onto every project that holds at least one instance.
     └─> InstancesService.findProjectInstances(args: FindProjectInstancesArguments): Promise<Instance[]> [packages/conformetry-nx/src/modules/instances/instances.service.ts:74]
        ↳ Expands every instance group that applies to a project, keeping only the instances that live inside it.
@@ -427,8 +427,8 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `PluginService.runValidation` | 17 | `conformetry-core:modules/reporting`, `conformetry-nx:modules/instances`, `conformetry-validation:modules/validation`, `logger:modules/logger` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:367` |
-| `PluginService.runGenerator` | 13 | `conformetry-configuration:modules/configuration`, `conformetry-generation:modules/generation`, `conformetry-nx:modules/adapter`, `conformetry-nx:modules/options`, `conformetry-nx:modules/paths`, `logger:modules/logger` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:306` |
+| `PluginService.runValidation` | 17 | `conformetry-core:modules/reporting`, `conformetry-nx:modules/instances`, `conformetry-validation:modules/validation`, `logger:modules/logger` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:398` |
+| `PluginService.runGenerator` | 13 | `conformetry-configuration:modules/configuration`, `conformetry-generation:modules/generation`, `conformetry-nx:modules/adapter`, `conformetry-nx:modules/options`, `conformetry-nx:modules/paths`, `logger:modules/logger` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:337` |
 | `syncGenerator` | 7 | `conformetry-nx:modules/generator`, `conformetry-nx:modules/options`, `conformetry-nx:modules/projects`, `conformetry-nx:src` | `packages/conformetry-nx/src/generators/sync/generator.ts:26` |
 | `PluginService.assertEmittedPluginCurrent` | 6 | `conformetry-nx:modules/generator`, `conformetry-nx:modules/projects`, `logger:modules/logger` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:91` |
 | `bootstrapPlugin` | 6 | `conformetry-nx:modules/generator`, `conformetry-nx:modules/options`, `conformetry-nx:modules/projects` | `packages/conformetry-nx/src/bootstrap.utilities.ts:38` |
@@ -445,13 +445,13 @@ None.
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5588-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-196.65_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-196.58_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-15-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-60-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-33.50_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-33.29_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 

@@ -87,10 +87,12 @@ The modules this project defines and the imports between them, published by `nx 
 flowchart LR
   subgraph group0["validation"]
     CatalogManifestsModule
+    IssueMetadataModule
     LockfileModule
     MainModule
     PullRequestBodyModule
     PullRequestMetadataModule
+    PullRequestReleaseSignificanceModule
   end
   subgraph group1["logger"]
     LoggerModule([LoggerModule])
@@ -99,9 +101,11 @@ flowchart LR
   DiscoveryModule
   MainModule --> CatalogManifestsModule
   MainModule --> DiscoveryModule
+  MainModule --> IssueMetadataModule
   MainModule --> LockfileModule
   MainModule --> PullRequestBodyModule
   MainModule --> PullRequestMetadataModule
+  MainModule --> PullRequestReleaseSignificanceModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._

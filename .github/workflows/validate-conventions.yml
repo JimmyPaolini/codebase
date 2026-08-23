@@ -37,10 +37,15 @@ name: 🧑‍⚖️ Validate Conventions
 # request job already turns it red, so a mislabeled issue shows up there too
 # rather than only as a comment nobody reads.
 #
-# Every check here is a nest-commander command in `tools/validation`,
-# invoked the same way and for the same reason: one-sided, a `check` with no
-# `write` to reconcile against, which is why they live there rather than
-# beside the label synchronizers.
+# The metadata, body, and release-significance checks are nest-commander
+# commands in `tools/validation`, invoked the same way and for the same
+# reason. All are one-sided — a `check` with no `write` to reconcile against —
+# which is why they live there rather than beside the label synchronizers.
+#
+# Release significance needs a token: unlike the others, its input is not in
+# the `pull_request` webhook payload — that event never carries a pull
+# request's full commit list — so it calls `gh pr view --json title,commits`
+# itself, the same way the label reconciliation step does.
 
 on:
   pull_request:
@@ -70,6 +75,9 @@ permissions:
   # ones, so this write permission covers the pull request reconciliation
   # step and the issue job's own label reconciliation step.
   issues: write
+  # `gh pr view --json title,commits` is a pull-requests-scoped read, needed
+  # by the release-significance check below.
+  pull-requests: read
 
 concurrency:
   # `github.ref` already tells the two triggers apart without help: a pull
@@ -174,6 +182,14 @@ jobs:
         run: |
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
             tools/validation/src/main.ts pull-request-metadata
+
+      - name: 📈 Validate Pull Request Release Significance
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+            tools/validation/src/main.ts pull-request-release-significance
 
   validate-issue-conventions:
     name: 🧑‍⚖️ Validate Issue Conventions

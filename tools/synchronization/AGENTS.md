@@ -86,6 +86,7 @@ flowchart LR
     ConformetryGeneratorsModule
     ConventionalConfigModule
     DevcontainerConfigurationModule
+    IssueLabelsModule
     MainModule
     NestjsModuleGraphsModule
     NxProjectGraphsModule
@@ -115,6 +116,7 @@ flowchart LR
   DiscoveryModule
   ConformetryGeneratorsModule --> ConfigurationModule
   MainModule --> DiscoveryModule
+  MainModule --> IssueLabelsModule
   MainModule --> SynchronizationModule
   SynchronizationModule --> ConformetryGeneratorsModule
   SynchronizationModule --> ConventionalConfigModule
