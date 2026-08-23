@@ -346,6 +346,58 @@ describe(ConventionalConfigIoService, () => {
     );
   });
 
+  it("rewrites issue template dropdowns without accumulating blank lines", () => {
+    const issueTemplateFile = path.join(
+      workspaceRoot,
+      ".github/ISSUE_TEMPLATE/issue.yml",
+    );
+    const issueTemplate = [
+      "body:",
+      "  # <!-- types-start -->",
+      "  - type: dropdown",
+      "    id: type",
+      "    attributes:",
+      "      label: Type",
+      "      options:",
+      "        - stale",
+      "    validations:",
+      "      required: true",
+      "  # <!-- types-end -->",
+      "",
+      "  # <!-- scopes-start -->",
+      "  - type: dropdown",
+      "    id: scope",
+      "    attributes:",
+      "      label: Scope",
+      "      options:",
+      "        - stale",
+      "    validations:",
+      "      required: true",
+      "  # <!-- scopes-end -->",
+      "",
+    ].join("\n");
+    const config = {
+      scopes: [
+        { description: "first", name: "alpha" },
+        { description: "second", name: "beta" },
+      ],
+      types: [{ code: "fix", description: "fixing", emoji: "🐛", name: "fix" }],
+    };
+
+    fileContents.set(issueTemplateFile, issueTemplate);
+    service.writeIssueTemplateSync(config, issueTemplateFile);
+    const firstWrite = fileContents.get(issueTemplateFile);
+    service.writeIssueTemplateSync(config, issueTemplateFile);
+    const secondWrite = fileContents.get(issueTemplateFile);
+
+    expect(firstWrite).toContain("        - fix\n    validations:");
+    expect(firstWrite).toContain(
+      "        - alpha\n        - beta\n    validations:",
+    );
+    expect(firstWrite).not.toMatch(/\n[ \t]*\n[ \t]*validations:/);
+    expect(secondWrite).toBe(firstWrite);
+  });
+
   it("throws when issue template markers are missing", () => {
     const issueTemplateFile = path.join(
       workspaceRoot,
