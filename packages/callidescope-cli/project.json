@@ -24,7 +24,7 @@
         ],
         "main": "packages/callidescope-cli/src/main.ts",
         "outputPath": "dist/packages/callidescope-cli",
-        "tsConfig": "packages/callidescope-cli/tsconfig.json"
+        "tsConfig": "packages/callidescope-cli/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]
     },

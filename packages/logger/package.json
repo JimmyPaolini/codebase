@@ -24,7 +24,6 @@
   "main": "src/index.ts",
   "name": "@codebase/logger",
   "private": true,
-  "sizeLimit": "6 KB",
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,
