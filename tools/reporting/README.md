@@ -357,7 +357,7 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
 
 ```text
 🚀 ReportingService.constructor(…): ReportingService [tools/reporting/src/modules/reporting/reporting.service.ts:27]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -365,7 +365,7 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
 
 ```text
 🚀 BundlesCommand.constructor(…): BundlesCommand [tools/reporting/src/modules/bundles/bundles.command.ts:33]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -373,7 +373,7 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
 
 ```text
 🚀 ReportingCommand.constructor(…): ReportingCommand [tools/reporting/src/modules/reporting/reporting.command.ts:33]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:285]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
      ↳ Sets the context label included in every subsequent log line.
 ```
 
@@ -395,7 +395,7 @@ None.
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3631-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-124.94_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-125.40_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-6-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-34-3178c6?style=flat-square)
 
@@ -441,16 +441,16 @@ None.
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-3-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-103-ca8a04?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-104-ca8a04?style=flat-square)
 ![JSON Objects](https://img.shields.io/badge/JSON_Objects-27-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-8-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-70-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-51-16a34a?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-71-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-52-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-6-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
 ![JSON Items](https://img.shields.io/badge/JSON_Items-20-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-93-dc2626?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-94-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-6-ea580c?style=flat-square)
 
 ### YAML
@@ -569,14 +569,14 @@ None.
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-277-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-279-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-15-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-51-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-52-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-6-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-28-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
@@ -585,7 +585,7 @@ None.
 ![Links](https://img.shields.io/badge/Links-9-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-14-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-79-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-80-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

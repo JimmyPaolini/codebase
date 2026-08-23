@@ -1,19 +1,29 @@
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import _ from "lodash";
 import moment from "moment-timezone";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
+
+import { LoggerService } from "@codebase/logger";
 
 import { ProgressiveAspectService } from "./progressive-aspect.service";
 
+import type { DeepMocked } from "@golevelup/ts-vitest";
+
 describe(ProgressiveAspectService, () => {
   let service: ProgressiveAspectService;
+  let mockLoggerService: DeepMocked<LoggerService>;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [ProgressiveAspectService],
+      providers: [
+        ProgressiveAspectService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(ProgressiveAspectService);
+    mockLoggerService = module.get(LoggerService);
   });
 
   it("should be defined", () => {
@@ -152,5 +162,81 @@ describe(ProgressiveAspectService, () => {
     });
 
     expect(events).toHaveLength(1);
+  });
+
+  describe("extractTypedAspectPartsOrThrow", () => {
+    it("logs and throws with the original error preserved as cause", () => {
+      const categories = ["Astronomy", "Astrology"];
+
+      expect(() =>
+        service.extractTypedAspectPartsOrThrow({
+          aspects: ["conjunct"],
+          bodies: ["sun", "moon"],
+          categories,
+          errorMessage: "Could not extract typed values",
+          isAspect: (value): value is "conjunct" => value === "conjunct",
+          isBody: (value): value is "moon" | "sun" =>
+            value === "sun" || value === "moon",
+        }),
+      ).toThrow("Could not extract typed values");
+
+      expect(mockLoggerService.error).toHaveBeenCalledWith(
+        "📐 Failed extracting typed aspect parts",
+        undefined,
+        {
+          categories,
+          reason: expect.stringContaining(
+            "Could not extract aspect info from categories",
+          ) as string,
+        },
+      );
+
+      let thrownError: unknown;
+      try {
+        service.extractTypedAspectPartsOrThrow({
+          aspects: ["conjunct"],
+          bodies: ["sun", "moon"],
+          categories,
+          errorMessage: "Could not extract typed values",
+          isAspect: (value): value is "conjunct" => value === "conjunct",
+          isBody: (value): value is "moon" | "sun" =>
+            value === "sun" || value === "moon",
+        });
+      } catch (error) {
+        thrownError = error;
+      }
+
+      expect(thrownError).toBeInstanceOf(Error);
+      expect((thrownError as Error).cause).toBeInstanceOf(Error);
+    });
+
+    it("stringifies a non-Error thrown value when logging the failure", () => {
+      const categories = ["Astronomy", "Astrology"];
+      const extractSpy = vi
+        .spyOn(service, "extractTypedAspectParts")
+        .mockImplementation(() => {
+          throw "boom" as unknown as Error;
+        });
+
+      expect(() =>
+        service.extractTypedAspectPartsOrThrow({
+          aspects: ["conjunct"],
+          bodies: ["sun", "moon"],
+          categories,
+          errorMessage: "Could not extract typed values",
+          isAspect: (value): value is "conjunct" => value === "conjunct",
+          isBody: (value): value is "moon" | "sun" =>
+            value === "sun" || value === "moon",
+        }),
+      ).toThrow("Could not extract typed values");
+
+      expect(mockLoggerService.error).toHaveBeenCalledWith(
+        "📐 Failed extracting typed aspect parts",
+        undefined,
+        { categories, reason: "boom" },
+      );
+
+      extractSpy.mockRestore();
+    });
   });
 });

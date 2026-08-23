@@ -77,8 +77,9 @@ export class MinorAspectsComposerService {
       phase,
     });
     const summary = `${phaseEmoji} ${symbolByBody[body1]} ${symbolByMinorAspect[minorAspect]} ${symbolByBody[body2]} ${description}`;
-    this.logger.log(`🗓️ Built ${summary}`, undefined, {
+    this.logger.info("🗓️ Built a calendar event", undefined, {
       at: timestamp.toISOString(),
+      summary,
     });
     return {
       categories,

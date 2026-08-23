@@ -27,8 +27,8 @@ import type { LogData, ParsedLogMessage } from "./logger.types";
  * message, so the message stays constant enough for telemetry to group on.
  *
  * ```ts
- * this.logger.log("📥 Downloading CSEL sources", undefined, { total: 428 });
- * this.logger.log("📥 Downloaded CSEL sources", undefined, { count: 412 });
+ * this.logger.info("📥 Downloading CSEL sources", undefined, { total: 428 });
+ * this.logger.info("📥 Downloaded CSEL sources", undefined, { count: 412 });
  * ```
  */
 @Injectable({ scope: Scope.TRANSIENT })
@@ -273,12 +273,24 @@ export class LoggerService extends ConsoleLogger {
   }
 
   /** Logs an informational message at the `info` level. */
-  override log(message: unknown, context?: string, data?: LogData): void {
+  info(message: unknown, context?: string, data?: LogData): void {
     const parsed = this.parseMessage(message);
     this.child.info(
       this.buildBindings({ context: context ?? this.context, data, parsed }),
       parsed.text,
     );
+  }
+
+  /**
+   * Logs an informational message at the `info` level.
+   *
+   * NestJS and `nest-commander` call this method directly as part of the
+   * framework's own `LoggerService` contract, so it must keep working
+   * exactly as before. Application code should call `info` instead — the
+   * same behavior under a name that says what level it logs at.
+   */
+  override log(message: unknown, context?: string, data?: LogData): void {
+    this.info(message, context, data);
   }
 
   /** Sets the context label included in every subsequent log line. */

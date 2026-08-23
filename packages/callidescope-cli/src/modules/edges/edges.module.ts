@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 
+import { LoggerModule } from "@codebase/logger";
+
 import { CallablesModule } from "../callables/callables.module";
 import { ClassHierarchyModule } from "../class-hierarchy/class-hierarchy.module";
 import { ProgramModule } from "../program/program.module";
@@ -18,6 +20,7 @@ import { SymbolResolutionService } from "./symbol-resolution.service";
   imports: [
     CallablesModule,
     ClassHierarchyModule,
+    LoggerModule,
     ProgramModule,
     WorkspaceModule,
   ],

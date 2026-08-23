@@ -2,9 +2,11 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { Logger } from "@nestjs/common";
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+
+import { LoggerService } from "@codebase/logger";
 
 import { JsonService } from "../json/json.service";
 import { MarkdownService } from "../markdown/markdown.service";
@@ -12,6 +14,8 @@ import { EMPTY_PYTHON_RESULT } from "../python/python.constants";
 import { PythonService } from "../python/python.service";
 
 import { JupyterService } from "./jupyter.service";
+
+import type { DeepMocked } from "@golevelup/ts-vitest";
 
 /** A notebook holding one markdown cell and one executed code cell. */
 const sampleNotebook = {
@@ -38,6 +42,7 @@ describe(JupyterService, () => {
   let jsonService: JsonService;
   let markdownService: MarkdownService;
   let pythonService: PythonService;
+  let loggerService: DeepMocked<LoggerService>;
   const temporaryDirectories: string[] = [];
 
   /** Writes notebooks into a fresh directory and returns it with their names. */
@@ -61,13 +66,20 @@ describe(JupyterService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [JupyterService, JsonService, MarkdownService, PythonService],
+      providers: [
+        JupyterService,
+        JsonService,
+        MarkdownService,
+        PythonService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(JupyterService);
     jsonService = await module.resolve(JsonService);
     markdownService = await module.resolve(MarkdownService);
     pythonService = await module.resolve(PythonService);
+    loggerService = await module.resolve(LoggerService);
   });
 
   afterEach(() => {
@@ -258,9 +270,6 @@ describe(JupyterService, () => {
   });
 
   it("skips a malformed notebook and warns", () => {
-    const loggerWarnSpy = vi
-      .spyOn(Logger.prototype, "warn")
-      .mockReturnValue(undefined);
     vi.spyOn(pythonService, "analyzeContents").mockReturnValue({
       ...EMPTY_PYTHON_RESULT,
     });
@@ -276,10 +285,10 @@ describe(JupyterService, () => {
     });
 
     expect(result.files).toBe(1);
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
-      "📓 Skipped notebook analysis for broken.ipynb",
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "📓 Skipped notebook analysis",
       undefined,
-      expect.any(Object),
+      expect.objectContaining({ filePath: "broken.ipynb" }),
     );
   });
 
@@ -287,7 +296,6 @@ describe(JupyterService, () => {
     vi.spyOn(pythonService, "analyzeContents").mockReturnValue({
       ...EMPTY_PYTHON_RESULT,
     });
-    vi.spyOn(Logger.prototype, "warn").mockReturnValue(undefined);
     const { notebookFiles, workingDirectory } = writeNotebooks({
       "odd.ipynb": { cells: "not an array" },
     });

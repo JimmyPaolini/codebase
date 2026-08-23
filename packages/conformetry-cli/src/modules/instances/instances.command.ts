@@ -91,6 +91,10 @@ export class InstancesCommand extends CommandRunner {
     _passedParameters: string[],
     options: InstancesCommandOptions,
   ): Promise<void> {
+    this.logger.debug("📋 Listing conformetry instances", undefined, {
+      templateFilter: options.templates,
+    });
+
     const workingDirectory = process.cwd();
     const configuration =
       await this.configurationService.loadConformetryConfiguration(

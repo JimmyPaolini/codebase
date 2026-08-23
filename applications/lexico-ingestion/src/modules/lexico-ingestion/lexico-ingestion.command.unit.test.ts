@@ -237,9 +237,13 @@ describe(LexicoIngestionCommand, () => {
     expect(epigraphikDatenbankClaussSlabyCommand.run).toHaveBeenCalledTimes(1);
     expect(libraryCommand.run).toHaveBeenCalledWith([], {});
     expect(literatureCommand.run).toHaveBeenCalledWith([], {});
-    expect(logger.log).toHaveBeenCalledWith(
-      "🎉 Completed the full ingestion pipeline",
-    );
+
+    const completionCall = logger.info.mock.calls.find(
+      (call) => call[0] === "🎉 Completed the full ingestion pipeline",
+    ) as [string, undefined, { durationSeconds: string }] | undefined;
+
+    expect(completionCall).toBeDefined();
+    expect(typeof completionCall?.[2].durationSeconds).toBe("string");
   });
 
   it("should skip disabled stages", async () => {

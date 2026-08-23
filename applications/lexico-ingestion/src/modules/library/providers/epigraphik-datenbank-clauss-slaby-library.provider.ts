@@ -105,7 +105,7 @@ export class EpigraphikDatenbankClaussSlabyLibraryProvider {
     total: number;
   }): Promise<void> {
     const { file, index, provinceData, sourceDataDirectory, total } = args;
-    this.logger.log(`📜 Starting processing chunk: ${file}`);
+    this.logger.info("📜 Starting processing chunk", undefined, { file });
     try {
       const filePath = path.join(sourceDataDirectory, file);
       const fileContent = await fs.readFile(filePath, "utf8");
@@ -113,12 +113,15 @@ export class EpigraphikDatenbankClaussSlabyLibraryProvider {
         data: EpigraphikDatenbankClaussSlabyRecord[];
       };
       for (const item of data.data) this.processEdcsRecord(item, provinceData);
-      const progressString = ` (${(((index + 1) / total) * 100).toFixed(2)}%, ${index + 1}/${total})`;
-      this.logger.log(
-        `📜 Completed processing chunk: ${file}${progressString}`,
-      );
+      this.logger.info("📜 Completed processing chunk", undefined, {
+        current: index + 1,
+        file,
+        percent: Number((((index + 1) / total) * 100).toFixed(2)),
+        total,
+      });
     } catch (error) {
-      this.logger.warn(`📄 Failed reading chunk file ${file}`, undefined, {
+      this.logger.warn("📄 Failed reading chunk file", undefined, {
+        file,
         reason: String(error),
       });
     }
@@ -157,7 +160,9 @@ export class EpigraphikDatenbankClaussSlabyLibraryProvider {
       return files.filter((file) => file.endsWith(".json"));
     } catch {
       this.logger.error(
-        `📁 Failed reading the source directory. Did you run the epigraphik-datenbank-clauss-slaby command first?`,
+        "📁 Failed reading the source directory. Did you run the epigraphik-datenbank-clauss-slaby command first?",
+        undefined,
+        { sourceDataDirectory },
       );
       return null;
     }
@@ -227,7 +232,7 @@ export class EpigraphikDatenbankClaussSlabyLibraryProvider {
       options,
       province,
     } = args;
-    this.logger.log(`🌍 Starting province: ${province}`);
+    this.logger.info("🌍 Starting province", undefined, { province });
     const bookSlug = _.kebabCase(province);
     const bookDirectory = path.join(authorDirectory, bookSlug);
     await fs.mkdir(bookDirectory, { recursive: true });
@@ -254,7 +259,7 @@ export class EpigraphikDatenbankClaussSlabyLibraryProvider {
         titleSlug,
       });
     }
-    this.logger.log(`🌍 Completed province: ${province}`);
+    this.logger.info("🌍 Completed province", undefined, { province });
   }
 
   /**
@@ -283,8 +288,12 @@ export class EpigraphikDatenbankClaussSlabyLibraryProvider {
         province,
       });
       currentProvince++;
-      const progress = ` (${((currentProvince / totalProvinces) * 100).toFixed(2)}%, ${currentProvince}/${totalProvinces})`;
-      this.logger.log(`🌍 Completed province: ${province}${progress}`);
+      this.logger.info("🌍 Completed province", undefined, {
+        current: currentProvince,
+        percent: Number(((currentProvince / totalProvinces) * 100).toFixed(2)),
+        province,
+        total: totalProvinces,
+      });
     }
   }
 
@@ -298,8 +307,8 @@ export class EpigraphikDatenbankClaussSlabyLibraryProvider {
     text?: string;
   }): Promise<Author[]> {
     const host = "https://edcs.hist.uzh.ch/api/query";
-    this.logger.log(
-      `🗂️ Ingesting Epigraphik-Datenbank Clauss-Slaby from local data`,
+    this.logger.info(
+      "🗂️ Ingesting Epigraphik-Datenbank Clauss-Slaby from local data",
     );
     const dataPath = path.resolve("data", "library", this.name);
     const authorSlug = "epigraphik-datenbank-clauss-slaby";
@@ -311,8 +320,10 @@ export class EpigraphikDatenbankClaussSlabyLibraryProvider {
       "data",
       "epigraphik-datenbank-clauss-slaby-source",
     );
-    this.logger.log(
-      `🗂️ Reading Epigraphik-Datenbank Clauss-Slaby chunks from ${sourceDataDirectory}`,
+    this.logger.info(
+      "🗂️ Reading Epigraphik-Datenbank Clauss-Slaby chunks",
+      undefined,
+      { sourceDataDirectory },
     );
     const chunkFiles = await this.readSourceChunkFiles(sourceDataDirectory);
     if (!chunkFiles) return [];

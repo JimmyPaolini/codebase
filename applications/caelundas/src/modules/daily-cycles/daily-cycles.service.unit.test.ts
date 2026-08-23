@@ -42,7 +42,7 @@ describe(DailyCyclesService, () => {
               date: Moment;
               description: string;
               logger: {
-                log: (
+                info: (
                   message: string,
                   context?: string,
                   data?: LogData,
@@ -60,8 +60,9 @@ describe(DailyCyclesService, () => {
                 timezone,
               } = args;
               const dateString = date.clone().tz(timezone).toISOString(true);
-              logger.log(`🗓️ Built ${summary}`, undefined, {
+              logger.info("🗓️ Built a calendar event", undefined, {
                 at: dateString,
+                summary,
               });
               return {
                 categories,

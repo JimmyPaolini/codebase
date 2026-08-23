@@ -153,6 +153,10 @@ export class ValidateCommand extends CommandRunner {
     _passedParameters: string[],
     options: ValidateCommandOptions,
   ): Promise<void> {
+    this.logger.debug("🔍 Validating conformetry instances", undefined, {
+      instanceFilter: options.instances,
+    });
+
     const workingDirectory = process.cwd();
     const configuration =
       await this.configurationService.loadConformetryConfiguration(
@@ -188,14 +192,21 @@ export class ValidateCommand extends CommandRunner {
         workingDirectory,
       })}\n`,
     );
-    this.logger.log("👔 Validated conformetry instances", undefined, {
+    const failedCount = result.scores.filter((score) => !score.ok).length;
+    const unmatchedCount = result.unmatched.length;
+
+    this.logger.info("👔 Validated conformetry instances", undefined, {
       count: result.checkedPaths.length,
-      failedCount: result.scores.filter((score) => !score.ok).length,
-      unmatchedCount: result.unmatched.length,
+      failedCount,
+      unmatchedCount,
     });
 
     if (!result.ok) {
       process.exitCode = 1;
+      this.logger.warn("⚠️ Rejected non-conforming instances", undefined, {
+        failedCount,
+        unmatchedCount,
+      });
       throw new Error(this.describeFailure(result));
     }
   }

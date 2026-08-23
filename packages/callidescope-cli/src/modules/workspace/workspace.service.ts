@@ -2,7 +2,9 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+
+import { LoggerService } from "@codebase/logger";
 
 import {
   MODULES_DIRECTORY,
@@ -31,11 +33,11 @@ import type { ModuleId } from "@callidescope/configuration";
 export class WorkspaceService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext(WorkspaceService.name);
+  }
 
   // 🔐 Private Fields
-
-  private readonly logger = new Logger(WorkspaceService.name);
 
   // 🔑 Public Fields
 
@@ -67,7 +69,9 @@ export class WorkspaceService {
 
       return output.trim().split("\n").filter(Boolean);
     } catch {
-      this.logger.warn(`🔭 Could not apply ignore file: ${args.ignorePath}`);
+      this.logger.warn("🔭 Skipped an unreadable ignore file", undefined, {
+        ignorePath: args.ignorePath,
+      });
 
       return [];
     }
@@ -110,7 +114,9 @@ export class WorkspaceService {
         }
       }
     } catch {
-      this.logger.warn(`🔭 Unreadable project manifest: ${args.manifestPath}`);
+      this.logger.warn("🔭 Skipped an unreadable project manifest", undefined, {
+        manifestPath: args.manifestPath,
+      });
     }
 
     return path.basename(args.root);
@@ -131,7 +137,9 @@ export class WorkspaceService {
       const ignorePath = path.resolve(args.workspaceRoot, ignoreFile);
 
       if (!existsSync(ignorePath)) {
-        this.logger.warn(`🔭 Missing ignore file: ${ignoreFile}`);
+        this.logger.warn("🔭 Skipped a missing ignore file", undefined, {
+          ignoreFile,
+        });
         continue;
       }
 

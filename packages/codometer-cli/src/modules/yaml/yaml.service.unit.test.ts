@@ -2,14 +2,19 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { Logger } from "@nestjs/common";
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { YamlService } from "./yaml.service";
+
+import type { DeepMocked } from "@golevelup/ts-vitest";
 
 describe(YamlService, () => {
   let service: YamlService;
+  let loggerService: DeepMocked<LoggerService>;
   const temporaryDirectories: string[] = [];
 
   /** Writes YAML files into a fresh directory and returns it with their names. */
@@ -29,10 +34,14 @@ describe(YamlService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [YamlService],
+      providers: [
+        YamlService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(YamlService);
+    loggerService = await module.resolve(LoggerService);
   });
 
   afterEach(() => {
@@ -195,20 +204,16 @@ describe(YamlService, () => {
   });
 
   it("skips an unreadable file and warns", () => {
-    const loggerWarnSpy = vi
-      .spyOn(Logger.prototype, "warn")
-      .mockReturnValue(undefined);
-
     const result = service.analyze({
       workingDirectory: "/repo",
       yamlFiles: ["missing.yaml"],
     });
 
     expect(result.files).toBe(0);
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
-      "🧾 Skipped YAML analysis for missing.yaml",
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "🧾 Skipped YAML analysis",
       undefined,
-      expect.any(Object),
+      expect.objectContaining({ filePath: "missing.yaml" }),
     );
   });
 });

@@ -508,9 +508,9 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider, () => {
     });
 
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining("📜 Failed processing /tmp/csel/aeneid.xml"),
+      "📜 Failed processing",
       undefined,
-      expect.any(Object),
+      expect.objectContaining({ xmlPath: "/tmp/csel/aeneid.xml" }),
     );
   });
 
@@ -598,8 +598,10 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider, () => {
     await vi.runAllTimersAsync();
     await promise;
 
-    expect(logger.log).toHaveBeenCalledWith(
-      expect.stringContaining("📜 Completed processing: /tmp/csel/aeneid.xml"),
+    expect(logger.info).toHaveBeenCalledWith(
+      "📜 Completed processing",
+      undefined,
+      expect.objectContaining({ xmlPath: "/tmp/csel/aeneid.xml" }),
     );
 
     vi.useRealTimers();
@@ -684,7 +686,9 @@ describe(CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider, () => {
     });
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "📜 Skipping empty or invalid text vergil/aeneid",
+      "📜 Skipping empty or invalid text",
+      undefined,
+      { textSlug: "vergil/aeneid" },
     );
   });
 

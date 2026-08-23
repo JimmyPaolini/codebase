@@ -3,6 +3,8 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import { MissingMarkdownPathError } from "./output-markdown.errors";
 
 import type {
@@ -25,13 +27,26 @@ import type { MarkdownAnchorHelpers } from "@callidescope/configuration";
 export class OutputMarkdownService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext(OutputMarkdownService.name);
+  }
 
   // 🔐 Private Fields
 
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /** Appends a generated block after a file's existing content. */
+  private appendBlock(args: { existing: string; generated: string }): string {
+    // Trailing newlines are trimmed before the separator goes in: a file that
+    // already ended with one would otherwise gain a second blank line every
+    // time, which every markdown linter rejects.
+    const body = args.existing.trimEnd();
+    const separator = body.length === 0 ? "" : `${body}\n\n`;
+
+    return `${separator}${args.generated}\n`;
+  }
 
   /** Builds the pattern matching everything between the two anchors. */
   private buildBlockPattern(
@@ -126,25 +141,14 @@ export class OutputMarkdownService {
       return pattern.exec(existing)?.[0] === generated;
     }
 
-    if (!existing.includes(args.destination.startMarker)) {
-      // Trailing newlines are trimmed before the separator goes in: a file
-      // that already ended with one would otherwise gain a second blank line
-      // every time, which every markdown linter rejects.
-      const body = existing.trimEnd();
-      const separator = body.length === 0 ? "" : `${body}\n\n`;
+    const updated = existing.includes(args.destination.startMarker)
+      ? // Replaced through a function so a `$` in the generated content is
+        // not read as a pattern reference.
+        existing.replace(pattern, () => generated)
+      : this.appendBlock({ existing, generated });
 
-      writeFileSync(resolvedPath, `${separator}${generated}\n`, "utf8");
-
-      return true;
-    }
-
-    // Replaced through a function so a `$` in the generated content is not read
-    // as a pattern reference.
-    writeFileSync(
-      resolvedPath,
-      existing.replace(pattern, () => generated),
-      "utf8",
-    );
+    writeFileSync(resolvedPath, updated, "utf8");
+    this.logger.info("🔭 Wrote a report", undefined, { path: resolvedPath });
 
     return true;
   }

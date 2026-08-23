@@ -85,8 +85,10 @@ export class LiteratureTextIngestionService {
     });
     const hierarchy = this.buildHierarchyPrefix(authorSlug, parentText);
 
-    this.logger.log(`📜 Ingesting ${hierarchy}${textEntry.title}`, undefined, {
+    this.logger.info("📜 Ingesting text", undefined, {
+      hierarchy,
       provider: textEntry.provider,
+      title: textEntry.title,
     });
 
     try {
@@ -102,18 +104,20 @@ export class LiteratureTextIngestionService {
         textEntry.fullPath,
         error,
       );
-      this.logger.error(
-        `📜 Failed processing ${hierarchy}${textEntry.title}`,
-        String(error),
-        { provider: textEntry.provider },
-      );
+      this.logger.error("📜 Failed processing text", String(error), {
+        hierarchy,
+        provider: textEntry.provider,
+        title: textEntry.title,
+      });
       await fs.appendFile(logFilePath, logLine);
     }
 
-    this.logger.log(`📜 Ingested ${hierarchy}${textEntry.title}`, undefined, {
+    this.logger.info("📜 Ingested text", undefined, {
       count: currentText,
+      hierarchy,
       percent: Number(((currentText / totalTexts) * 100).toFixed(2)),
       provider: textEntry.provider,
+      title: textEntry.title,
       total: totalTexts,
     });
   }

@@ -81,6 +81,10 @@ export class PhasesService {
       }),
     ];
 
+    this.logger.debug("🔍 Detected planetary phase events", undefined, {
+      count: events.length,
+    });
+
     return events;
   }
 
@@ -133,6 +137,12 @@ export class PhasesService {
       ...this.martianPhaseService.getMartianPhaseProgressiveEvents(
         martianPhaseEvents,
       ),
+    );
+
+    this.logger.debug(
+      "🔍 Detected progressive planetary phase events",
+      undefined,
+      { count: progressiveEvents.length },
     );
 
     return progressiveEvents;

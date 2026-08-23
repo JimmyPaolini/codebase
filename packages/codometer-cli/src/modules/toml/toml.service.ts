@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+
+import { LoggerService } from "@codebase/logger";
 
 import {
   EMPTY_TOML_RESULT,
@@ -12,6 +14,7 @@ import {
 
 import type { TomlInput, TomlResult } from "./toml.types";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Counts the tables, keys, and arrays a TOML document declares.
  *
@@ -20,14 +23,15 @@ import type { TomlInput, TomlResult } from "./toml.types";
  * syntax. That state is the whole reason this is not three regexes.
  */
 @Injectable()
+/* v8 ignore stop */
 export class TomlService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext(TomlService.name);
+  }
 
   // 🔐 Private Fields
-
-  private readonly logger = new Logger(TomlService.name);
 
   // 🔑 Public Fields
 
@@ -115,13 +119,10 @@ export class TomlService {
         }
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
-        this.logger.warn(
-          `🧰 Skipped TOML analysis for ${filePath}`,
-          undefined,
-          {
-            reason: message,
-          },
-        );
+        this.logger.warn("🧰 Skipped TOML analysis", undefined, {
+          filePath,
+          reason: message,
+        });
         continue;
       }
     }

@@ -65,9 +65,9 @@ export class TripleAspectsComposerService {
 
     const aspect = this.resolveAspectType(aspectCapitalized);
     if (!aspect) {
-      this.logger.warn(
-        `📐 Skipping unknown aspect type "${aspectCapitalized}"`,
-      );
+      this.logger.warn("📐 Skipping unknown aspect type", undefined, {
+        aspectCapitalized,
+      });
       return null;
     }
 
@@ -358,8 +358,9 @@ export class TripleAspectsComposerService {
     });
     const summary = `${this.getPhaseEmoji(phase)}${symbolByTripleAspect[tripleAspect]} ${symbolByBody[body1]}-${symbolByBody[body2]}-${symbolByBody[body3]} ${description}`;
 
-    this.logger.log(`🗓️ Built ${summary}`, undefined, {
+    this.logger.info("🗓️ Built a calendar event", undefined, {
       at: timestamp.toISOString(),
+      summary,
     });
 
     return {

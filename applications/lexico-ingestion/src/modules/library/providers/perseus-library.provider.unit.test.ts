@@ -437,10 +437,23 @@ describe(PerseusLibraryProvider, () => {
       xmlPath: "/tmp/perseus/aeneid.xml",
     });
 
-    expect((logger.log as ReturnType<typeof vi.fn>).mock.calls).toStrictEqual(
+    expect((logger.info as ReturnType<typeof vi.fn>).mock.calls).toStrictEqual(
       expect.arrayContaining([
-        ["📜 Starting processing: /tmp/perseus/aeneid.xml"],
-        ["📜 Completed processing: /tmp/perseus/aeneid.xml (50.00%, 1/2)"],
+        [
+          "📜 Starting processing",
+          undefined,
+          { xmlPath: "/tmp/perseus/aeneid.xml" },
+        ],
+        [
+          "📜 Completed processing",
+          undefined,
+          {
+            current: 1,
+            percent: 50,
+            total: 2,
+            xmlPath: "/tmp/perseus/aeneid.xml",
+          },
+        ],
       ]),
     );
   });
@@ -483,9 +496,9 @@ describe(PerseusLibraryProvider, () => {
     expect((logger.warn as ReturnType<typeof vi.fn>).mock.calls).toStrictEqual(
       expect.arrayContaining([
         [
-          expect.stringContaining("📜 Failed processing /tmp/perseus/bad.xml"),
+          "📜 Failed processing",
           undefined,
-          expect.any(Object),
+          expect.objectContaining({ xmlPath: "/tmp/perseus/bad.xml" }),
         ],
       ]),
     );

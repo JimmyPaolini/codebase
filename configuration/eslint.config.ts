@@ -19,6 +19,8 @@ import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import eslintPluginYml from "eslint-plugin-yml";
 import tseslint from "typescript-eslint";
 
+import { conventionalLogMessagePlugin } from "@codebase/logger/eslint";
+
 import type { ConfigWithExtends } from "typescript-eslint";
 
 const tsconfigRootDir = path.resolve(
@@ -81,6 +83,38 @@ export default [
     settings: {
       "project-structure/folder-structure-config-path":
         "configuration/codebase-structure.json",
+    },
+  },
+
+  // 📢 Logger Convention
+  // Statically flags a log call whose message doesn't start with an emoji
+  // naming its subject, then a verb in present progressive or past tense —
+  // the same convention `LoggerService` enforces at runtime. Test files are
+  // excluded: they deliberately construct malformed messages to exercise the
+  // runtime check's own production/context exemptions, and a static rule
+  // flagging that fixture data would be noise, not signal.
+  {
+    files: [
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.mts",
+      "**/*.cts",
+      "**/*.js",
+      "**/*.mjs",
+      "**/*.cjs",
+      "**/*.jsx",
+    ],
+    ignores: [
+      "**/*.test.ts",
+      "**/*.test.tsx",
+      "**/testing/**",
+      "**/__tests__/**",
+    ],
+    plugins: {
+      "logger-convention": conventionalLogMessagePlugin,
+    },
+    rules: {
+      "logger-convention/conventional-log-message": "error",
     },
   },
 

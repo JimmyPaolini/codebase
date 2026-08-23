@@ -3,6 +3,8 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
+import { LoggerService } from "@codebase/logger";
+
 import type {
   BuildReportArguments,
   SyncJsonArguments,
@@ -19,7 +21,9 @@ import type {
 export class OutputJsonService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext(OutputJsonService.name);
+  }
 
   // 🔐 Private Fields
 
@@ -66,6 +70,8 @@ export class OutputJsonService {
 
     mkdirSync(path.dirname(resolvedPath), { recursive: true });
     writeFileSync(resolvedPath, generatedReport, "utf8");
+
+    this.logger.info("🔭 Wrote a report", undefined, { path: resolvedPath });
 
     return true;
   }

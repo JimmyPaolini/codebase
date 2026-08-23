@@ -18,6 +18,7 @@ import { WorkspaceModule } from "../workspace/workspace.module";
 
 import { CallidescopeCommand } from "./callidescope.command";
 import { CallidescopeService } from "./callidescope.service";
+import { GraphAssemblyService } from "./graph-assembly.service";
 import { RunPlanService } from "./run-plan.service";
 
 /**
@@ -42,6 +43,11 @@ import { RunPlanService } from "./run-plan.service";
     ReportModule,
     WorkspaceModule,
   ],
-  providers: [CallidescopeCommand, CallidescopeService, RunPlanService],
+  providers: [
+    CallidescopeCommand,
+    CallidescopeService,
+    GraphAssemblyService,
+    RunPlanService,
+  ],
 })
 export class CallidescopeModule {}

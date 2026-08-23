@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { In, Repository } from "typeorm";
 
@@ -9,6 +9,7 @@ import {
   WordForm,
   WordLexeme,
 } from "@codebase/lexico-entities";
+import { LoggerService } from "@codebase/logger";
 
 import { LEXICO_INGESTION_BY_ID } from "../lexico-ingestion/lexico-ingestion.constants";
 
@@ -26,11 +27,12 @@ export class WordsService {
     private readonly wordLexemeRepository: Repository<WordLexeme>,
     @InjectRepository(WordForm)
     private readonly wordFormRepository: Repository<WordForm>,
-  ) {}
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(WordsService.name);
+  }
 
   // 🔐 Private Fields
-
-  private readonly logger = new Logger(WordsService.name);
 
   // 🔑 Public Fields
 
@@ -77,6 +79,11 @@ export class WordsService {
   ): Promise<void> {
     if (wordFormValues.length === 0) return;
     const chunkSize = 1000;
+    this.logger.debug("🧩 Inserting word form chunks", undefined, {
+      chunkSize,
+      totalValues: wordFormValues.length,
+    });
+    let chunksWritten = 0;
     for (let index = 0; index < wordFormValues.length; index += chunkSize) {
       const chunk = wordFormValues.slice(index, index + chunkSize);
       await this.wordFormRepository
@@ -86,7 +93,11 @@ export class WordsService {
         .values(chunk)
         .orIgnore()
         .execute();
+      chunksWritten++;
     }
+    this.logger.debug("🧩 Inserted word form chunks", undefined, {
+      chunksWritten,
+    });
   }
 
   /**
@@ -114,7 +125,9 @@ export class WordsService {
    * principal part that belongs to the given `Lexeme`.
    * Upserts rows in bulk and creates junction records to avoid N+1 queries. */
   async ingestLexemeWords(lexeme: Lexeme): Promise<void> {
-    this.logger.log(`🔤 Ingesting words for "${lexeme.id}"`);
+    this.logger.info("🔤 Ingesting words for lexeme", undefined, {
+      lexemeId: lexeme.id,
+    });
 
     const wordStrings = this.getLexemeWords(lexeme);
     const normalizedWords = [
@@ -152,7 +165,9 @@ export class WordsService {
       }
     }
 
-    this.logger.log(`🔤 Ingested words for "${lexeme.id}"`);
+    this.logger.info("🔤 Ingested words for lexeme", undefined, {
+      lexemeId: lexeme.id,
+    });
   }
 
   /** Upserts an array of normalized word strings into the `Word` table, then

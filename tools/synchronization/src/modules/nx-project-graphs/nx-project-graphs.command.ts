@@ -75,9 +75,9 @@ export class NxProjectGraphsCommand
     const { content, diagram, file, mode, relativeFile } = options;
 
     if (mode === "check") {
-      this.logger.log(
-        `🧭 Detected an out-of-sync project graph in ${relativeFile}`,
-      );
+      this.logger.info("🧭 Detected an out-of-sync project graph", undefined, {
+        path: relativeFile,
+      });
       return false;
     }
 
@@ -90,7 +90,9 @@ export class NxProjectGraphsCommand
       ),
       "utf8",
     );
-    this.logger.log(`🧭 Updated the project graph in ${relativeFile}`);
+    this.logger.info("🧭 Updated the project graph", undefined, {
+      path: relativeFile,
+    });
 
     return true;
   }
@@ -101,13 +103,13 @@ export class NxProjectGraphsCommand
     outOfSyncFiles: string[],
   ): boolean {
     if (outOfSyncFiles.length === 0) {
-      this.logger.log("🧭 Verified every Nx project graph", undefined, {
+      this.logger.info("🧭 Verified every Nx project graph", undefined, {
         projects: projectCount,
       });
       return true;
     }
 
-    this.logger.log("🧭 Detected out-of-sync Nx project graphs", undefined, {
+    this.logger.info("🧭 Detected out-of-sync Nx project graphs", undefined, {
       files: outOfSyncFiles,
       hint: "Run 'nx run synchronization:synchronize:write' to sync",
     });
@@ -134,9 +136,10 @@ export class NxProjectGraphsCommand
     );
 
     if (existing === undefined) {
-      this.logger.log(
-        `🧭 Missing ${this.markersService.getStartMarker(NX_PROJECT_GRAPH_MARKER)} markers in ${relativeFile}`,
-      );
+      this.logger.info("🧭 Missing markers", undefined, {
+        marker: this.markersService.getStartMarker(NX_PROJECT_GRAPH_MARKER),
+        path: relativeFile,
+      });
       return false;
     }
 
@@ -169,6 +172,7 @@ export class NxProjectGraphsCommand
   /** Synchronizes every project's graph and reports success without exiting. */
   async synchronize(mode: SynchronizationMode): Promise<boolean> {
     try {
+      this.logger.debug("🔍 Reading the Nx project graph");
       const graph = await this.projectGraphsService.readProjectGraph();
       const projects = this.projectGraphsService.readProjects(
         graph,
@@ -178,19 +182,33 @@ export class NxProjectGraphsCommand
         graph,
         projects,
       );
+      const outOfSyncFiles: string[] = [];
 
-      const outOfSyncFiles = projects
-        .filter(
-          (project) =>
-            !this.synchronizeProject({
-              mode,
-              neighborhood: neighborhoods.get(project.name),
-              project,
-            }),
-        )
-        .map((project) =>
-          path.join(project.name, NX_PROJECT_GRAPH_TARGET_FILE),
+      for (const project of projects) {
+        const targetFile = path.join(
+          project.name,
+          NX_PROJECT_GRAPH_TARGET_FILE,
         );
+
+        try {
+          const inSync = this.synchronizeProject({
+            mode,
+            neighborhood: neighborhoods.get(project.name),
+            project,
+          });
+          if (!inSync) outOfSyncFiles.push(targetFile);
+        } catch (error) {
+          this.logger.error(
+            "💥 Failed synchronizing a project's graph",
+            undefined,
+            {
+              project: project.name,
+              reason: error instanceof Error ? error.message : String(error),
+            },
+          );
+          outOfSyncFiles.push(targetFile);
+        }
+      }
 
       return this.reportResults(projects.length, outOfSyncFiles);
     } catch (error) {

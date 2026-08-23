@@ -190,8 +190,12 @@ export class CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider {
     xmlPath: string;
   }): void {
     const { index, totalFiles, xmlPath } = args;
-    const progressString = ` (${(((index + 1) / totalFiles) * 100).toFixed(2)}%, ${index + 1}/${totalFiles})`;
-    this.logger.log(`📜 Completed processing: ${xmlPath}${progressString}`);
+    this.logger.info("📜 Completed processing", undefined, {
+      current: index + 1,
+      percent: Number((((index + 1) / totalFiles) * 100).toFixed(2)),
+      total: totalFiles,
+      xmlPath,
+    });
   }
 
   /**
@@ -249,7 +253,7 @@ export class CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider {
       totalFiles,
       xmlPath,
     } = args;
-    this.logger.log(`📜 Starting processing: ${xmlPath}`);
+    this.logger.info("📜 Starting processing", undefined, { xmlPath });
     try {
       const parsedFile = await this.parseSourceXmlFile({
         options,
@@ -274,9 +278,9 @@ export class CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider {
         resolved,
       });
       if (!appended) {
-        this.logger.warn(
-          `📜 Skipping empty or invalid text ${resolved.textSlug}`,
-        );
+        this.logger.warn("📜 Skipping empty or invalid text", undefined, {
+          textSlug: resolved.textSlug,
+        });
         return;
       }
       await new Promise((resolve) => {
@@ -284,8 +288,9 @@ export class CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider {
       });
       this.logSourceProgress({ index, totalFiles, xmlPath });
     } catch (error) {
-      this.logger.warn(`📜 Failed processing ${xmlPath}`, undefined, {
+      this.logger.warn("📜 Failed processing", undefined, {
         reason: String(error),
+        xmlPath,
       });
     }
   }
@@ -381,7 +386,7 @@ export class CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider {
     author?: string;
     text?: string;
   }): Promise<Author[]> {
-    this.logger.log(`🗂️ Ingesting CSEL from local data`);
+    this.logger.info("🗂️ Ingesting CSEL from local data");
 
     const sourceDataDirectory = path.resolve(
       "data",
@@ -391,8 +396,12 @@ export class CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider {
     const xmlPaths = await this.collectSourceXmlPaths(sourceDataDirectory);
     if (!xmlPaths) return [];
 
-    this.logger.log(
-      `🗂️ Found ${xmlPaths.length} Latin XML files in local CSEL cache`,
+    this.logger.info(
+      "🗂️ Found Latin XML files in local CSEL cache",
+      undefined,
+      {
+        count: xmlPaths.length,
+      },
     );
 
     const dataPath = path.resolve("data", "library", this.name);

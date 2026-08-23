@@ -223,6 +223,7 @@ describe(TwilightsService, () => {
         mockBuilderService as never,
         mockComposerService as never,
         mockDetectorService as never,
+        new LoggerService(),
       );
       const timestamp = moment.utc("2024-03-21T06:00:00.000Z");
 
@@ -318,6 +319,7 @@ describe(TwilightsService, () => {
         mockBuilderService as never,
         mockComposerService as never,
         mockDetectorService as never,
+        new LoggerService(),
       );
       const minute = moment.utc("2024-03-21T06:00:00.000Z");
       const sunAzimuthElevationEphemeris: AzimuthElevationEphemeris = {

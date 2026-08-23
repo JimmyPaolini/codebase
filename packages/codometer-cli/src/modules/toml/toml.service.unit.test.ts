@@ -2,12 +2,15 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { Logger } from "@nestjs/common";
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { TomlService } from "./toml.service";
 
+import type { DeepMocked } from "@golevelup/ts-vitest";
 import type * as NodeFileSystem from "node:fs";
 
 // Reads stay real except for one sentinel path, which throws a bare string:
@@ -31,6 +34,7 @@ vi.mock("node:fs", async (importOriginal) => {
 
 describe(TomlService, () => {
   let service: TomlService;
+  let loggerService: DeepMocked<LoggerService>;
   const temporaryDirectories: string[] = [];
 
   /** Writes sources into a fresh directory and returns it with their names. */
@@ -52,10 +56,14 @@ describe(TomlService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [TomlService],
+      providers: [
+        TomlService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(TomlService);
+    loggerService = await module.resolve(LoggerService);
   });
 
   afterEach(() => {
@@ -124,9 +132,6 @@ describe(TomlService, () => {
   });
 
   it("reports a thrown value that is not an Error", () => {
-    const loggerWarnSpy = vi
-      .spyOn(Logger.prototype, "warn")
-      .mockReturnValue(undefined);
     const { tomlFiles, workingDirectory } = writeSources({
       "throws-a-string.toml": "",
     });
@@ -134,28 +139,24 @@ describe(TomlService, () => {
     const result = service.analyze({ tomlFiles, workingDirectory });
 
     expect(result.files).toBe(0);
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
-      "🧰 Skipped TOML analysis for throws-a-string.toml",
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "🧰 Skipped TOML analysis",
       undefined,
-      { reason: "not an Error" },
+      { filePath: "throws-a-string.toml", reason: "not an Error" },
     );
   });
 
   it("skips an unreadable file and warns", () => {
-    const loggerWarnSpy = vi
-      .spyOn(Logger.prototype, "warn")
-      .mockReturnValue(undefined);
-
     const result = service.analyze({
       tomlFiles: ["missing.toml"],
       workingDirectory: "/repo",
     });
 
     expect(result.files).toBe(0);
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
-      "🧰 Skipped TOML analysis for missing.toml",
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "🧰 Skipped TOML analysis",
       undefined,
-      expect.any(Object),
+      expect.objectContaining({ filePath: "missing.toml" }),
     );
   });
 });

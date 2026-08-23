@@ -1,12 +1,14 @@
 import { createMock } from "@golevelup/ts-vitest";
-import { Logger } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { LoggerService } from "@codebase/logger";
 
 import { FileDiscoveryService } from "./file-discovery.service";
 import { IgnoreRulesService } from "./ignore-rules.service";
 
 import type { FileDiscoveryResult } from "./file-discovery.types";
+import type { DeepMocked } from "@golevelup/ts-vitest";
 import type { Dirent } from "node:fs";
 
 // The walk is mocked down to the three filesystem calls it makes, so this
@@ -86,6 +88,7 @@ function createEntry(name: string, kind: EntryKind): Dirent {
 
 describe(FileDiscoveryService, () => {
   let service: FileDiscoveryService;
+  let loggerService: DeepMocked<LoggerService>;
 
   /** Discovers the in-memory tree with the repository's default exclusions. */
   function discover(exclude = DEFAULT_EXCLUDE): FileDiscoveryResult {
@@ -98,9 +101,14 @@ describe(FileDiscoveryService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [FileDiscoveryService, IgnoreRulesService],
+      providers: [
+        FileDiscoveryService,
+        IgnoreRulesService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
     service = await module.resolve(FileDiscoveryService);
+    loggerService = await module.resolve(LoggerService);
   });
 
   beforeEach(() => {
@@ -222,16 +230,13 @@ describe(FileDiscoveryService, () => {
   it("warns and continues when a configured ignore file is missing", () => {
     expect.hasAssertions();
 
-    const loggerWarnSpy = vi
-      .spyOn(Logger.prototype, "warn")
-      .mockReturnValue(undefined);
     const result = service.discoverFiles({
       exclude: DEFAULT_EXCLUDE,
       excludeFrom: [".nope-ignore"],
       workingDirectory: "/repo",
     });
 
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
+    expect(loggerService.warn).toHaveBeenCalledWith(
       "🙈 Skipped missing ignore file",
       undefined,
       { path: ".nope-ignore" },
@@ -239,16 +244,11 @@ describe(FileDiscoveryService, () => {
     // Nothing was subtracted, so what that ignore file would have claimed is
     // still there.
     expect(result.files).toContain("AGENTS.md");
-
-    loggerWarnSpy.mockRestore();
   });
 
   it("warns and keeps going when a directory cannot be read", () => {
     expect.hasAssertions();
 
-    const loggerWarnSpy = vi
-      .spyOn(Logger.prototype, "warn")
-      .mockReturnValue(undefined);
     const result = service.discoverFiles({
       exclude: DEFAULT_EXCLUDE,
       excludeFrom: [],
@@ -257,13 +257,11 @@ describe(FileDiscoveryService, () => {
 
     // One unreadable directory must not abort the whole measurement, which is
     // what shelling out to git could never fail at.
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
+    expect(loggerService.warn).toHaveBeenCalledWith(
       "📂 Skipped unreadable directory",
       undefined,
       expect.objectContaining({ path: "/gone" }),
     );
     expect(result.files).toStrictEqual([]);
-
-    loggerWarnSpy.mockRestore();
   });
 });

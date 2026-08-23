@@ -227,7 +227,7 @@ describe(EpigraphikDatenbankClaussSlabyCommand, () => {
     ).downloadChunkIfMissing(0);
 
     expect(result).toBe(true);
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "⏭️ Skipping chunk that already exists",
       undefined,
       expect.any(Object),
@@ -321,6 +321,6 @@ describe(EpigraphikDatenbankClaussSlabyCommand, () => {
     expect(downloadSpy).toHaveBeenCalledTimes(2);
     expect(downloadSpy).toHaveBeenNthCalledWith(1, 0);
     expect(downloadSpy).toHaveBeenNthCalledWith(2, 1000);
-    expect(logger.log).toHaveBeenCalledWith("📥 Downloaded chunks");
+    expect(logger.info).toHaveBeenCalledWith("📥 Downloaded chunks");
   });
 });

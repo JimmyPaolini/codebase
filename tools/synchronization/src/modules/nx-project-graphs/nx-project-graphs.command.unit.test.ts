@@ -152,12 +152,20 @@ describe(NxProjectGraphsCommand, () => {
   it("reports success when every graph is already current", async () => {
     await expect(command.synchronize("check")).resolves.toBe(true);
 
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "🧭 Verified every Nx project graph",
       undefined,
       { projects: 1 },
     );
     expect(writeFileSync).not.toHaveBeenCalled();
+  });
+
+  it("logs before reading the Nx project graph", async () => {
+    await command.synchronize("check");
+
+    expect(logger.debug).toHaveBeenCalledWith(
+      "🔍 Reading the Nx project graph",
+    );
   });
 
   it("reports drift in check mode without writing", async () => {
@@ -166,7 +174,7 @@ describe(NxProjectGraphsCommand, () => {
     await expect(command.synchronize("check")).resolves.toBe(false);
 
     expect(writeFileSync).not.toHaveBeenCalled();
-    expect(logger.log).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       "🧭 Detected out-of-sync Nx project graphs",
       undefined,
       expect.objectContaining({
@@ -189,9 +197,10 @@ describe(NxProjectGraphsCommand, () => {
 
     await expect(command.synchronize("write")).resolves.toBe(false);
 
-    expect(logger.log).toHaveBeenCalledWith(
-      expect.stringContaining("Missing <!-- nx-project-graph-start -->"),
-    );
+    expect(logger.info).toHaveBeenCalledWith("🧭 Missing markers", undefined, {
+      marker: `<!-- ${NX_PROJECT_GRAPH_MARKER}-start -->`,
+      path: path.join("packages", "logger", NX_PROJECT_GRAPH_TARGET_FILE),
+    });
   });
 
   it("skips a project with no README", async () => {
@@ -207,6 +216,35 @@ describe(NxProjectGraphsCommand, () => {
 
     await expect(command.synchronize("check")).resolves.toBe(true);
     expect(writeFileSync).not.toHaveBeenCalled();
+  });
+
+  it("reports failure and continues when a project's graph fails to render", async () => {
+    vi.mocked(projectGraphsService.renderMermaid).mockImplementation(() => {
+      throw new Error("boom");
+    });
+
+    await expect(command.synchronize("check")).resolves.toBe(false);
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "💥 Failed synchronizing a project's graph",
+      undefined,
+      { project: "logger", reason: "boom" },
+    );
+  });
+
+  it("reports a non-Error project graph failure", async () => {
+    const failure: unknown = "unusable";
+    vi.mocked(projectGraphsService.renderMermaid).mockImplementation(() => {
+      throw failure;
+    });
+
+    await expect(command.synchronize("check")).resolves.toBe(false);
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "💥 Failed synchronizing a project's graph",
+      undefined,
+      { project: "logger", reason: "unusable" },
+    );
   });
 
   it("reports failure when the project graph cannot be read", async () => {

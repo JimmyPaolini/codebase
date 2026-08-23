@@ -258,13 +258,23 @@ describe(TemplatesCommand, () => {
       await command.run([], {});
 
       expect(output).not.toHaveLength(0);
-      expect(commandLogger.log).not.toHaveBeenCalled();
+      expect(commandLogger.info).not.toHaveBeenCalled();
     });
 
     it("does not fail the command", async () => {
       await command.run([], {});
 
       expect(process.exitCode).toBeUndefined();
+    });
+
+    it("logs a debug entry marker naming the instance filter", async () => {
+      await command.run([], { instances: [GEARS_PATH] });
+
+      expect(commandLogger.debug).toHaveBeenCalledWith(
+        "📋 Listing conformetry templates",
+        undefined,
+        { instanceFilter: [GEARS_PATH] },
+      );
     });
   });
 

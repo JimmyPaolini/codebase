@@ -109,6 +109,10 @@ export class EclipsesService {
       );
     }
 
+    this.logger.debug("🔍 Detected eclipse events", undefined, {
+      count: eclipseEvents.length,
+    });
+
     return eclipseEvents;
   }
 
@@ -116,6 +120,13 @@ export class EclipsesService {
    * Builds progressive event spans for eclipse periods.
    */
   detectProgressive(events: Event[]): Event[] {
-    return this.eclipseEventService.detectProgressive(events);
+    const progressiveEvents =
+      this.eclipseEventService.detectProgressive(events);
+
+    this.logger.debug("🔍 Detected progressive eclipse events", undefined, {
+      count: progressiveEvents.length,
+    });
+
+    return progressiveEvents;
   }
 }
