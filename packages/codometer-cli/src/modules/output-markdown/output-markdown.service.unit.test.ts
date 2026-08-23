@@ -268,7 +268,8 @@ describe(OutputMarkdownService, () => {
     });
 
     expect(block).toContain("### Repository\n\n");
-    expect(block).toContain("### TypeScript & JavaScript\n\n");
+    expect(block).toContain("### TypeScript\n\n");
+    expect(block).toContain("### JavaScript\n\n");
     expect(block).toContain("### Python\n\n");
     expect(block).toContain("### JSON\n\n");
     expect(block).toContain("### Markdown\n\n");
@@ -345,7 +346,7 @@ describe(OutputMarkdownService, () => {
     });
     const typescriptGroup = block.split("### ")[2] ?? "";
 
-    expect(typescriptGroup).toContain("TypeScript & JavaScript");
+    expect(typescriptGroup).toContain("TypeScript");
     expect(typescriptGroup).toContain(
       "![Static Methods](https://img.shields.io/badge/Static_Methods-122-166534",
     );
