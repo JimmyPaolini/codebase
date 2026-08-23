@@ -11,6 +11,7 @@ import { PullRequestLabelsModule } from "../pull-request-labels/pull-request-lab
 import { PullRequestTemplateModule } from "../pull-request-template/pull-request-template.module";
 import { SkillExclusionsModule } from "../skill-exclusions/skill-exclusions.module";
 
+import { SynchronizationCommand } from "./synchronization.command";
 import { SynchronizationModule } from "./synchronization.module";
 import { SynchronizationService } from "./synchronization.service";
 
@@ -36,6 +37,7 @@ describe(SynchronizationModule, () => {
     expect(imports).toContain(SkillExclusionsModule);
 
     expect(providers).toBeDefined();
+    expect(providers).toContain(SynchronizationCommand);
     expect(providers).toContain(SynchronizationService);
   });
 });

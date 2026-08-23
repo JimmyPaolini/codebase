@@ -36,3 +36,9 @@ export type SynchronizationModeResolutionResult =
       modeValue: SynchronizationMode;
       valid: true;
     };
+
+/** Outcome of one command within a run of every synchronization. */
+export interface SynchronizationResult {
+  readonly label: string;
+  readonly succeeded: boolean;
+}

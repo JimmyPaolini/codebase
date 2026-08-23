@@ -26,17 +26,19 @@ nx run synchronization:conformetry-generators:write     # regenerate
 
 Every command runs in one of two modes:
 
-| Mode | Does |
-| ---- | ---- |
+| Mode    | Does                                                           |
+| ------- | -------------------------------------------------------------- |
 | `check` | Compares, writes nothing, exits non-zero on drift. The default |
-| `write` | Regenerates the derived file from its source |
+| `write` | Regenerates the derived file from its source                   |
 
-`start` launches the CLI directly with no subcommand, printing every
-synchronization's own `--help` usage — useful for discovering what exists, but
-running one on its own means invoking its own Nx target as above.
+`start` runs every synchronization command in one process instead of one at a
+time — the only target that does. No workflow or `lint-staged` pattern names
+it; it exists purely for a human at a terminal who wants to check or write
+everything in one command:
 
 ```bash
-nx run synchronization:start
+nx run synchronization:start          # check every synchronization
+nx run synchronization:start:write    # write every synchronization
 ```
 
 ## Where each synchronization's drift is answered
@@ -75,16 +77,16 @@ target, on `opened`/`reopened`, and nothing else names it.
 
 ## What it synchronizes
 
-| Command | Source | Destination |
-| ------- | ------ | ----------- |
-| `conformetry-generators` | `configuration/conformetry.config.ts` | The generator table in `AGENTS.md`, between marker comments |
-| `conventional-config` | `configuration/conventional.config.cjs` | The commit type and scope tables, commitlint, and release configuration |
-| `devcontainer-configuration` | `.devcontainer/local/devcontainer.json` | The shared fields of `.devcontainer/cloud/devcontainer.json` |
-| `nestjs-module-graphs` | The NestJS container each project builds | The mermaid module graph in that project's `AGENTS.md` and `README.md`. A report, published on `main` |
-| `nx-project-graphs` | The Nx project graph | The mermaid project graph in every project's `README.md` |
-| `pull-request-labels` | `configuration/conventional.config.cjs` | This repository's `type:`, `scope:`, and `source:` labels on GitHub. Needs credentials |
-| `pull-request-template` | `.github/PULL_REQUEST_TEMPLATE.md` | The template embedded in the PR skill files |
-| `skill-exclusions` | `skills-lock.json` | The installed-skill exclusion lists in five ignore files |
+| Command                      | Source                                   | Destination                                                                                           |
+| ---------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `conformetry-generators`     | `configuration/conformetry.config.ts`    | The generator table in `AGENTS.md`, between marker comments                                           |
+| `conventional-config`        | `configuration/conventional.config.cjs`  | The commit type and scope tables, commitlint, and release configuration                               |
+| `devcontainer-configuration` | `.devcontainer/local/devcontainer.json`  | The shared fields of `.devcontainer/cloud/devcontainer.json`                                          |
+| `nestjs-module-graphs`       | The NestJS container each project builds | The mermaid module graph in that project's `AGENTS.md` and `README.md`. A report, published on `main` |
+| `nx-project-graphs`          | The Nx project graph                     | The mermaid project graph in every project's `README.md`                                              |
+| `pull-request-labels`        | `configuration/conventional.config.cjs`  | This repository's `type:`, `scope:`, and `source:` labels on GitHub. Needs credentials                |
+| `pull-request-template`      | `.github/PULL_REQUEST_TEMPLATE.md`       | The template embedded in the PR skill files                                                           |
+| `skill-exclusions`           | `skills-lock.json`                       | The installed-skill exclusion lists in five ignore files                                              |
 
 ### Module graphs
 
@@ -225,14 +227,13 @@ Run it on its own through its own Nx target:
 nx run synchronization:pull-request-labels:write
 ```
 
-## Why no aggregate command
+## Why callers name targets directly
 
-Every synchronization command used to run through a shared aggregate that
-looped over all of them in one process, avoiding the cost of one `nx run` — and
-one project-graph build — per command. That traded a real cost for a worse one:
-the aggregate needed a taxonomy describing which commands each caller wanted,
-and the taxonomy kept stretching every time a new caller's requirements did not
-fit the existing values.
+Every synchronization command used to be selected through a shared aggregate's
+`--kinds` flag, so a caller asked for a set of kinds rather than for the
+commands it actually wanted. That flag needed a taxonomy describing which
+commands each caller wanted, and the taxonomy kept stretching every time a new
+caller's requirements did not fit the existing values.
 
 Each command is its own Nx target instead, run directly the way
 [`codebase:codometer`](../../packages/codometer-cli/README.md) and
@@ -250,10 +251,16 @@ which invocation:
   `nx affected` invocation, so a pull request and a commit both check drift.
 - The release workflow runs every derivation's `write` configuration together
   with `nestjs-module-graphs:write` through `nx run-many`, so one command still
-  publishes everything the old aggregate did.
+  publishes everything.
 - [validate-conventions.yml](../../.github/workflows/validate-conventions.yml)
   runs `pull-request-labels write` directly through `node`, bypassing Nx
   entirely, since it is the one caller with a token and needs no project graph.
+
+None of these callers reach for `start`. `SynchronizationCommand` still exists
+and still loops over every command in one process — that part of the old
+design was never the problem, and Nx's own `run-many` gives no way to run a
+plain Node command with no target of its own — but nothing selects a subset
+through it, so it needs no taxonomy: `start` always means all of them.
 
 One gap the commit path cannot close. `affected` selects this project from the
 staged paths, and no derivation target's `inputs` globs `package.json` — so a
@@ -357,6 +364,9 @@ _Dotted edges are modules named for a runtime load rather than imported._
    runs: name it directly wherever it belongs — `lint-codebase`'s dependents
    for a derivation, the release workflow's `run-many` for a report, or a
    caller with its own credentials for anything needing them.
+4. Register the command in `SynchronizationCommand.getCommands()`, and import
+   its module in `SynchronizationModule`, so `start` still drives it alongside
+   every other synchronization.
 
 ## Start
 
@@ -387,15 +397,15 @@ MIT — see [LICENSE](../../LICENSE).
 
 Call stacks traced through `synchronization`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
-| Measure | Value |
-| --- | --- |
-| Callables | 276 |
-| Files | 52 |
-| Calls traced | 363 |
-| Call stacks | 24 |
-| Deepest stack | 13 |
-| Stacks through recursion | 0 |
-| Unfollowable calls | 10 |
+| Measure                  | Value |
+| ------------------------ | ----- |
+| Callables                | 276   |
+| Files                    | 52    |
+| Calls traced             | 363   |
+| Call stacks              | 24    |
+| Deepest stack            | 13    |
+| Stacks through recursion | 0     |
+| Unfollowable calls       | 10    |
 
 ### Call stacks
 
@@ -717,6 +727,7 @@ None.
 ### Possibly misplaced
 
 None.
+
 <!-- CALL_STACKS_END -->
 
 <!-- CODE_STATISTICS_START -->
@@ -919,4 +930,5 @@ None.
 ![Inline Code](https://img.shields.io/badge/Inline_Code-90-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
+
 <!-- CODE_STATISTICS_END -->

@@ -208,10 +208,18 @@
     "spell-check": {},
     "start": {
       "cache": false,
-      "description": "Launches the synchronization CLI directly, printing every synchronization subcommand's `--help` usage. Run one synchronization on its own through its own Nx target instead — for example `nx run synchronization:skill-exclusions:check` or `nx run synchronization:skill-exclusions:write`.",
+      "configurations": {
+        "check": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization check"
+        },
+        "write": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization write"
+        }
+      },
+      "defaultConfiguration": "check",
+      "description": "Runs every synchronization command in one process — the only target that does. Not referenced by CI: no workflow or `configuration/lint-staged.config.ts` pattern names `start`, so this exists purely for a human at a terminal who wants to check or write everything in one command, uncached because nothing should ever depend on its result. Each synchronization also runs on its own through its own Nx target — for example `nx run synchronization:skill-exclusions:check` — which is what every other caller uses.",
       "executor": "nx:run-commands",
       "options": {
-        "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts",
         "cwd": "{workspaceRoot}"
       }
     },
