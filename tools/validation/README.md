@@ -111,6 +111,7 @@ The modules this project defines and the imports between them, published by `nx 
 flowchart LR
   subgraph group0["validation"]
     CatalogManifestsModule
+    IssueMetadataModule
     LockfileModule
     MainModule
     PullRequestBodyModule
@@ -123,6 +124,7 @@ flowchart LR
   DiscoveryModule
   MainModule --> CatalogManifestsModule
   MainModule --> DiscoveryModule
+  MainModule --> IssueMetadataModule
   MainModule --> LockfileModule
   MainModule --> PullRequestBodyModule
   MainModule --> PullRequestMetadataModule
@@ -152,17 +154,35 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
 
 | Measure | Value |
 | --- | --- |
-| Callables | 75 |
-| Files | 27 |
-| Calls traced | 92 |
-| Call stacks | 11 |
-| Deepest stack | 6 |
+| Callables | 116 |
+| Files | 33 |
+| Calls traced | 152 |
+| Call stacks | 13 |
+| Deepest stack | 7 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 9 |
+| Unfollowable calls | 15 |
 
 ### Call stacks
 
-**1. `PullRequestMetadataCommand.run`** — depth ≥ 6 · decorated-method
+**1. `IssueMetadataCommand.run`** — depth ≥ 7 · decorated-method
+
+```text
+🚀 IssueMetadataCommand.run(passedParameters: string[]): Promise<void> [tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:257]
+   ↳ Checks the issue's metadata and exits 0 or 1 on the verdict.
+  └─> IssueMetadataCommand.resolveMetadata(reportLines: string[], passedParameters: string[]): IssueMetadataResolution [tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:227]
+     ↳ Reads the metadata from wherever this invocation says it lives.
+    └─> IssueMetadataCommand.readEnvironmentMetadata(reportLines: string[]): IssueMetadataResolution [tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:131]
+       ↳ Reads the metadata from the environment, the workflow mode.
+      └─> IssueMetadataService.resolveFromEnvironment(…): IssueMetadataResolution [tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:311]
+         ↳ Reads the metadata out of the two environment documents.
+        └─> IssueMetadataService.readLabelNames(entries: unknown[]): string[] [tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:209]
+           ↳ Every label name, with the nameless entries dropped.
+          └─> IssueMetadataService.map(…)(entry: unknown): string [tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:211]
+            └─> IssueMetadataService.isRecord(value: unknown): value is Record<string, unknown> [tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:204]
+               ↳ Whether this value can be read by property name at all.
+```
+
+**2. `PullRequestMetadataCommand.run`** — depth ≥ 6 · decorated-method
 
 ```text
 🚀 PullRequestMetadataCommand.run(passedParameters: string[]): Promise<void> [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:264]
@@ -179,7 +199,7 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
              ↳ Whatever went wrong, as the one line a report can carry.
 ```
 
-**2. `PullRequestBodyCommand.run`** — depth 5 · decorated-method
+**3. `PullRequestBodyCommand.run`** — depth 5 · decorated-method
 
 ```text
 🚀 PullRequestBodyCommand.run(passedParameters: string[]): Promise<void> [tools/validation/src/modules/pull-request-body/pull-request-body.command.ts:123]
@@ -193,7 +213,10 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
            ↳ The leading run of a prompt that a description has to still carry.
 ```
 
-**3. `CatalogManifestsCommand.run`** — depth 3 · decorated-method
+<details>
+<summary>10 more call stacks</summary>
+
+**4. `CatalogManifestsCommand.run`** — depth 3 · decorated-method
 
 ```text
 🚀 CatalogManifestsCommand.run(): Promise<void> [tools/validation/src/modules/catalog-manifests/catalog-manifests.command.ts:44]
@@ -203,10 +226,7 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
        ↳ Reads and parses one manifest.
 ```
 
-<details>
-<summary>8 more call stacks</summary>
-
-**4. `LockfileCommand.run`** — depth 3 · decorated-method
+**5. `LockfileCommand.run`** — depth 3 · decorated-method
 
 ```text
 🚀 LockfileCommand.run(): Promise<void> [tools/validation/src/modules/lockfile/lockfile.command.ts:50]
@@ -217,7 +237,7 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
        ↳ Runs one candidate pnpm, merging both of its streams.
 ```
 
-**5. `CatalogManifestsService.validateManifestDependencies`** — depth 3 · orphan-root
+**6. `CatalogManifestsService.validateManifestDependencies`** — depth 3 · orphan-root
 
 ```text
 🚀 CatalogManifestsService.validateManifestDependencies(manifestPath: string, manifest: PackageManifest): string[] [tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:84]
@@ -227,7 +247,7 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
     └─> CatalogManifestsService.some(…)(scope: string): boolean [tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:38]
 ```
 
-**6. `main`** — depth ≥ 2 · module-bootstrap
+**7. `main`** — depth ≥ 2 · module-bootstrap
 
 ```text
 🚀 main(): Promise<void> [tools/validation/src/main.ts:9]
@@ -235,7 +255,7 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
   └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:38]
 ```
 
-**7. `CatalogManifestsCommand.constructor`** — depth ≥ 2 · orphan-root
+**8. `CatalogManifestsCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 CatalogManifestsCommand.constructor(…): CatalogManifestsCommand [tools/validation/src/modules/catalog-manifests/catalog-manifests.command.ts:27]
@@ -243,7 +263,15 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**8. `LockfileCommand.constructor`** — depth ≥ 2 · orphan-root
+**9. `IssueMetadataCommand.constructor`** — depth ≥ 2 · orphan-root
+
+```text
+🚀 IssueMetadataCommand.constructor(…): IssueMetadataCommand [tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:55]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
+     ↳ Sets the context label included in every subsequent log line.
+```
+
+**10. `LockfileCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 LockfileCommand.constructor(lockfileService: LockfileService, logger: LoggerService): LockfileCommand [tools/validation/src/modules/lockfile/lockfile.command.ts:33]
@@ -251,7 +279,7 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**9. `PullRequestBodyCommand.constructor`** — depth ≥ 2 · orphan-root
+**11. `PullRequestBodyCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 PullRequestBodyCommand.constructor(…): PullRequestBodyCommand [tools/validation/src/modules/pull-request-body/pull-request-body.command.ts:46]
@@ -259,7 +287,7 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**10. `PullRequestMetadataService.nameOf`** — depth 2 · orphan-root
+**12. `PullRequestMetadataService.nameOf`** — depth 2 · orphan-root
 
 ```text
 🚀 PullRequestMetadataService.nameOf(entry: unknown, propertyName: string): string [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:162]
@@ -268,7 +296,7 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
      ↳ Whether this value can be read by property name at all.
 ```
 
-**11. `PullRequestMetadataCommand.constructor`** — depth ≥ 2 · orphan-root
+**13. `PullRequestMetadataCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 PullRequestMetadataCommand.constructor(…): PullRequestMetadataCommand [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:56]
@@ -293,36 +321,36 @@ None.
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4204-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-141.63_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-45-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-6024-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-197.30_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-8-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-55-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-45-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-10-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-55-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-16-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-18-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-107-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-23-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-144-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-16-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-20-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-13-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-14-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-246-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-64-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-254-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-56-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-152-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-175-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-62-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-165-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-379-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-18-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-338-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-102-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-364-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-76-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-220-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-223-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-84-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-217-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-538-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -343,16 +371,16 @@ None.
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-3-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-114-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-30-7c3aed?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-117-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-31-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-8-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-78-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-56-16a34a?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-80-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-57-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-6-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
 ![JSON Items](https://img.shields.io/badge/JSON_Items-20-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-101-dc2626?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-103-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-6-ea580c?style=flat-square)
 
 ### YAML
@@ -433,15 +461,15 @@ None.
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-5-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-5-0284c7?style=flat-square)
-![Command Files](https://img.shields.io/badge/Command_Files-4-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-4-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-4-db2777?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-6-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-7-0284c7?style=flat-square)
+![Command Files](https://img.shields.io/badge/Command_Files-5-16a34a?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-5-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-5-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![Errors Files](https://img.shields.io/badge/Errors_Files-0-059669?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-15-7c3aed?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-19-7c3aed?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-0284c7?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-16a34a?style=flat-square)
 
@@ -471,7 +499,7 @@ None.
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-306-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-308-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-8-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-15-a78bfa?style=flat-square)

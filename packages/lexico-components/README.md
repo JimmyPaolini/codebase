@@ -2040,7 +2040,7 @@ None.
 
 ### Measured Targets
 
-![Library bundle Size](https://img.shields.io/badge/Library_bundle_Size-196.16_kB_gzip-6b7280?style=flat-square)
+![Library bundle Size](https://img.shields.io/badge/Library_bundle_Size-196.79_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
