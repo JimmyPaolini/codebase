@@ -86,18 +86,25 @@ jobs:
       #
       # Every step below is the `write` configuration of a target none of the
       # pull-request workflows can reach with a configuration of their own:
-      # none of these three hangs off `lint-codebase`'s `dependsOn`, so `write`
-      # means publish here and nowhere else. Their gates run on a pull request
-      # under `check`, named directly by the workflow that owns them.
+      # none of them hangs off `lint-codebase`'s `dependsOn`, so `write` means
+      # publish here and nowhere else. Their gates run on a pull request under
+      # `check`, named directly by the workflow that owns them.
       - name: 🔭 Trace Call Stacks
         run: pnpm exec nx run codebase:callidescope:write
 
-      # `synchronize:write` drives both kinds, so it rewrites derivations as
-      # well as publishing the module graphs. On main the derivations are
-      # already in sync — the pull request gate is what proves it — so this
-      # writes them back unchanged and only the reports move.
+      # Every synchronization command is its own Nx target, run directly the
+      # way `callidescope` and `codometer` are above — no aggregate command
+      # loops over them. This rewrites every derivation as well as publishing
+      # the module graphs; on main the derivations are already in sync — the
+      # pull request gate is what proves it — so this writes them back
+      # unchanged and only the module graphs move.
       - name: 🕸️ Publish Module Graphs
-        run: pnpm exec nx run synchronization:synchronize:write
+        run: |
+          pnpm exec nx run-many \
+            --target=conformetry-generators --target=conventional-config \
+            --target=devcontainer-configuration --target=nestjs-module-graphs \
+            --target=nx-project-graphs --target=pull-request-template \
+            --target=skill-exclusions --configuration=write
 
       # Two codometer commands, in this order, because the second measures the
       # output of the first: the workspace report counts every markdown file in

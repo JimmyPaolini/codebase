@@ -7,7 +7,6 @@ import { Command, CommandRunner } from "nest-commander";
 import { LoggerService } from "@codebase/logger";
 
 import { SynchronizationMarkersService } from "../synchronization/synchronization-markers.service";
-import { SYNCHRONIZATION_KIND_REPORT } from "../synchronization/synchronization.constants";
 import { SynchronizationService } from "../synchronization/synchronization.service";
 
 import { NestjsModuleGraphsGraphService } from "./nestjs-module-graphs-graph.service";
@@ -60,9 +59,6 @@ export class NestjsModuleGraphsCommand
 
   // 🔑 Public Fields
 
-  /** A report of the code, so it is published on the default branch. */
-  readonly synchronizationKind = SYNCHRONIZATION_KIND_REPORT;
-
   readonly synchronizationLabel = "nestjs-module-graphs";
 
   // 🔏 Private Methods
@@ -84,7 +80,7 @@ export class NestjsModuleGraphsCommand
       undefined,
       {
         files: outOfSyncFiles,
-        hint: "Run 'nx run synchronization:synchronize:write' to publish",
+        hint: "Run 'nx run synchronization:nestjs-module-graphs:write' to publish",
       },
     );
     return false;
@@ -184,7 +180,7 @@ export class NestjsModuleGraphsCommand
         loggerService: this.logger,
         passedParameters,
         usageMessage:
-          "💡 Usage: nx run synchronization:start:nestjs-module-graphs-check (or synchronization:start:nestjs-module-graphs-write)",
+          "💡 Usage: nx run synchronization:nestjs-module-graphs:check (or synchronization:nestjs-module-graphs:write)",
       });
 
     if (!(await this.synchronize(mode))) {

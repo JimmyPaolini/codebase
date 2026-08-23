@@ -3,60 +3,15 @@ import type { LoggerService } from "@codebase/logger";
 // 🏷️ Types
 
 /**
- * A synchronization command the aggregate `synchronization` command can drive.
+ * A synchronization command, runnable on its own through its own Nx target.
  *
- * `synchronize` reports success rather than exiting so the aggregate can run
- * every command and report all drift at once. Exiting stays in each command's
- * own `run`, where it belongs.
+ * `synchronize` reports success rather than exiting so a caller running
+ * several of these can decide what to do with the whole set. Exiting stays in
+ * each command's own `run`, where it belongs.
  */
 export interface SynchronizableCommand {
-  /**
-   * Which side of the pull-request line this synchronization sits on.
-   *
-   * Declared by the command itself rather than listed anywhere central, so a
-   * new synchronization decides its own side once and every caller — the
-   * aggregate command, the Nx target, the release workflow — reads it from
-   * there.
-   */
-  readonly synchronizationKind: SynchronizationKind;
   readonly synchronizationLabel: string;
   synchronize(mode: SynchronizationMode): Promise<boolean>;
-}
-
-/** Options the aggregate `synchronization` command accepts. */
-export interface SynchronizationCommandOptions {
-  /**
-   * The written `--kinds` set, or `true` for the flag passed without one.
-   *
-   * Kept as written rather than read into a set here, so the one place that
-   * knows which kinds exist is the only place that decides what they mean.
-   */
-  readonly kinds?: string | true | undefined;
-}
-
-/**
- * What a synchronization derives, and therefore where its drift is answered.
- *
- * A derivation is checked on a pull request, because its source is
- * configuration the same change touched. A report is published on the default
- * branch, because its source is the code, and a branch being behind the
- * published report is not a mistake the branch made. A repository
- * synchronization reconciles state the working tree does not contain at all,
- * so it needs credentials and is neither gated by `lint-codebase` nor
- * published by the release workflow — whoever holds a token asks for it by
- * name.
- */
-export type SynchronizationKind = "derivation" | "report" | "repository";
-
-/**
- * The kinds a command line selected, and what it could not make sense of.
- *
- * Every complaint is collected before any of them is reported, so a command
- * line with two mistakes in it is two mistakes to fix rather than two runs.
- */
-export interface SynchronizationKindSelection {
-  readonly errors: readonly string[];
-  readonly kinds: ReadonlySet<SynchronizationKind>;
 }
 
 /** Supported synchronization execution modes. */
@@ -82,7 +37,7 @@ export type SynchronizationModeResolutionResult =
       valid: true;
     };
 
-/** Outcome of one command within an aggregate synchronization run. */
+/** Outcome of one command within a run of every synchronization. */
 export interface SynchronizationResult {
   readonly label: string;
   readonly succeeded: boolean;

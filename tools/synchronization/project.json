@@ -12,14 +12,199 @@
   ],
   "targets": {
     "codometer": {},
+    "conformetry-generators": {
+      "cache": true,
+      "configurations": {
+        "check": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts conformetry-generators check"
+        },
+        "write": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts conformetry-generators write"
+        }
+      },
+      "defaultConfiguration": "check",
+      "description": "Reconciles generated code against the conformetry templates it was scaffolded from. `check` runs on a pull request, because drift is the author's to fix in the same change; `write` runs on the default branch's release, alongside every other derivation. Named on its own by whichever caller wants it — `configuration/lint-staged.config.ts`, the Lint Codebase workflow, and the release workflow — rather than through a shared aggregate, the way `codebase:codometer` and `codebase:callidescope` are named by their own callers.",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{projectRoot}/**/*.ts",
+        "{workspaceRoot}/configuration/conformetry.config.ts",
+        "{workspaceRoot}/nx.json",
+        "shared-globals"
+      ],
+      "options": {
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "conventional-config": {
+      "cache": true,
+      "configurations": {
+        "check": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts conventional-config check"
+        },
+        "write": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts conventional-config write"
+        }
+      },
+      "defaultConfiguration": "check",
+      "description": "Reconciles derived conventional-commit configuration against `configuration/conventional.config.cjs`. `check` runs on a pull request; `write` runs on the default branch's release.",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{projectRoot}/**/*.ts",
+        "{workspaceRoot}/configuration/conventional.config.cjs",
+        "shared-globals"
+      ],
+      "options": {
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "dependency-cruiser": {},
+    "devcontainer-configuration": {
+      "cache": true,
+      "configurations": {
+        "check": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts devcontainer-configuration check"
+        },
+        "write": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts devcontainer-configuration write"
+        }
+      },
+      "defaultConfiguration": "check",
+      "description": "Reconciles the cloud devcontainer configuration's synced fields against the local one. `check` runs on a pull request; `write` runs on the default branch's release.",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{projectRoot}/**/*.ts",
+        "{workspaceRoot}/.devcontainer/cloud/devcontainer.json",
+        "{workspaceRoot}/.devcontainer/local/devcontainer.json",
+        "shared-globals"
+      ],
+      "options": {
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "knip": {},
     "lint-codebase": {},
     "markdown-lint": {},
+    "nestjs-module-graphs": {
+      "cache": true,
+      "configurations": {
+        "check": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts nestjs-module-graphs check"
+        },
+        "write": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts nestjs-module-graphs write"
+        }
+      },
+      "defaultConfiguration": "check",
+      "description": "Publishes each NestJS project's module graph into its own markdown files. A report of the code rather than of configuration a pull request touched, so a branch being behind it is nobody's mistake: only `write` on the default branch's release publishes it, and no pull request gate names `check`.",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{projectRoot}/**/*.ts",
+        "{workspaceRoot}/applications/*/AGENTS.md",
+        "{workspaceRoot}/applications/*/README.md",
+        "{workspaceRoot}/applications/*/src/**/*.module.ts",
+        "{workspaceRoot}/packages/*/AGENTS.md",
+        "{workspaceRoot}/packages/*/README.md",
+        "{workspaceRoot}/packages/*/src/**/*.module.ts",
+        "{workspaceRoot}/tools/*/AGENTS.md",
+        "{workspaceRoot}/tools/*/README.md",
+        "{workspaceRoot}/tools/*/src/**/*.module.ts",
+        "shared-globals"
+      ],
+      "options": {
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "nx-project-graphs": {
+      "cache": true,
+      "configurations": {
+        "check": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts nx-project-graphs check"
+        },
+        "write": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts nx-project-graphs write"
+        }
+      },
+      "defaultConfiguration": "check",
+      "description": "Reconciles each project's embedded Nx project graph against its own `project.json`. `check` runs on a pull request; `write` runs on the default branch's release. A commit staging only a manifest changes the Nx project graph without touching a staged path this project's own inputs glob, so the commit path can miss drift here that the pull request still catches by resolving `affected` against the merge base.",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{projectRoot}/**/*.ts",
+        "{workspaceRoot}/applications/*/project.json",
+        "{workspaceRoot}/nx.json",
+        "{workspaceRoot}/packages/*/project.json",
+        "{workspaceRoot}/tools/*/project.json",
+        "shared-globals"
+      ],
+      "options": {
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "oxfmt": {},
     "oxlint": {},
     "prettier": {},
+    "pull-request-labels": {
+      "configurations": {
+        "check": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts pull-request-labels check"
+        },
+        "write": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts pull-request-labels write"
+        }
+      },
+      "defaultConfiguration": "check",
+      "description": "Reconciles this repository's GitHub label vocabulary against `configuration/conventional.config.cjs`. Its destination is GitHub itself rather than a file, so reaching it needs a token that neither a fork nor a developer's `lint-codebase` run has: the pull request workflow that holds one runs `write` directly through node rather than through this Nx target on `opened`/`reopened`, and nothing else names it. This target exists for a human running it locally with their own credentials.",
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "pull-request-template": {
+      "cache": true,
+      "configurations": {
+        "check": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts pull-request-template check"
+        },
+        "write": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts pull-request-template write"
+        }
+      },
+      "defaultConfiguration": "check",
+      "description": "Reconciles derived pull request template content. `check` runs on a pull request; `write` runs on the default branch's release.",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{projectRoot}/**/*.ts",
+        "{workspaceRoot}/.github/PULL_REQUEST_TEMPLATE.md",
+        "{workspaceRoot}/configuration/conventional.config.cjs",
+        "shared-globals"
+      ],
+      "options": {
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "repl": {},
+    "skill-exclusions": {
+      "cache": true,
+      "configurations": {
+        "check": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts skill-exclusions check"
+        },
+        "write": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts skill-exclusions write"
+        }
+      },
+      "defaultConfiguration": "check",
+      "description": "Reconciles the installed-skill exclusion lists against `skills-lock.json`. `check` runs on a pull request; `write` runs on the default branch's release.",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{projectRoot}/**/*.ts",
+        "{workspaceRoot}/.agents/skills/**",
+        "{workspaceRoot}/skills-lock.json",
+        "shared-globals"
+      ],
+      "options": {
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "spell-check": {},
     "start": {
       "cache": false,
@@ -27,113 +212,13 @@
         "check": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization check"
         },
-        "conformetry-generators-check": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts conformetry-generators check"
-        },
-        "conformetry-generators-write": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts conformetry-generators write"
-        },
-        "conventional-config-check": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts conventional-config check"
-        },
-        "conventional-config-write": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts conventional-config write"
-        },
-        "devcontainer-configuration-check": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts devcontainer-configuration check"
-        },
-        "devcontainer-configuration-write": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts devcontainer-configuration write"
-        },
-        "nestjs-module-graphs-check": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts nestjs-module-graphs check"
-        },
-        "nestjs-module-graphs-write": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts nestjs-module-graphs write"
-        },
-        "nx-project-graphs-check": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts nx-project-graphs check"
-        },
-        "nx-project-graphs-write": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts nx-project-graphs write"
-        },
-        "pull-request-labels-check": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts pull-request-labels check"
-        },
-        "pull-request-labels-write": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts pull-request-labels write"
-        },
-        "pull-request-template-check": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts pull-request-template check"
-        },
-        "pull-request-template-write": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts pull-request-template write"
-        },
-        "skill-exclusions-check": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts skill-exclusions check"
-        },
-        "skill-exclusions-write": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts skill-exclusions write"
-        },
         "write": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization write"
         }
       },
       "defaultConfiguration": "check",
-      "description": "Run every synchronization command (default), or one of them via a named configuration.",
+      "description": "Runs every synchronization command in one process — the only target that does. Not referenced by CI: no workflow or `configuration/lint-staged.config.ts` pattern names `start`, so this exists purely for a human at a terminal who wants to check or write everything in one command, uncached because nothing should ever depend on its result. Each synchronization also runs on its own through its own Nx target — for example `nx run synchronization:skill-exclusions:check` — which is what every other caller uses.",
       "executor": "nx:run-commands",
-      "options": {
-        "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization check",
-        "cwd": "{workspaceRoot}"
-      }
-    },
-    "synchronize": {
-      "cache": true,
-      "configurations": {
-        "check": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization check --kinds derivation"
-        },
-        "write": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts synchronization write --kinds derivation,report"
-        }
-      },
-      "defaultConfiguration": "check",
-      "description": "Run synchronizations in one process rather than one `nx run` per command. It exists alongside `start` because other projects use that target name to launch an application. Two configurations and no third: `check` drives the `derivation` kind alone, because a derived file's drift is the author's to fix in the same change while a report's drift is only the branch being behind the default branch; `write` names both kinds, so it writes derivations and publishes reports, and the release workflow runs it on the default branch. Which kind a synchronization is, its own command declares. This target is absent from `lint-codebase`'s `dependsOn`, exactly as `codebase:codometer` is: Nx forwards an explicit configuration down `dependsOn`, so a target reachable from there would take `write` from `lint-codebase --configuration=write` and publish report blocks from a branch. Nothing forwards anything here, so the derivation gate is named on its own wherever it runs: the Lint Codebase workflow and `configuration/lint-staged.config.ts` each name `check` alongside `lint-codebase` in one `nx affected` invocation, so a pull request and a commit both still check drift. One gap the commit path cannot close: nothing in `inputs` globs `package.json`, so a commit staging only a manifest changes the Nx project graph, drifts `nx-project-graphs`, and never selects this project. The pull request catches it, resolving `affected` against the merge base rather than a staged path list. `write` names its kinds rather than omitting `--kinds`, so the target says what it writes; the absent flag meaning every kind is what `start` uses for interactive runs.",
-      "executor": "nx:run-commands",
-      "inputs": [
-        "{projectRoot}/**/*.ts",
-        "{workspaceRoot}/.agents/skills/**",
-        "{workspaceRoot}/.devcontainer/cloud/devcontainer.json",
-        "{workspaceRoot}/.devcontainer/local/devcontainer.json",
-        "{workspaceRoot}/.gitattributes",
-        "{workspaceRoot}/.github/agents/**",
-        "{workspaceRoot}/.github/ISSUE_TEMPLATE/**",
-        "{workspaceRoot}/.github/PULL_REQUEST_TEMPLATE.md",
-        "{workspaceRoot}/.vscode/settings.json",
-        "{workspaceRoot}/AGENTS.md",
-        "{workspaceRoot}/applications/*/AGENTS.md",
-        "{workspaceRoot}/applications/*/project.json",
-        "{workspaceRoot}/applications/*/README.md",
-        "{workspaceRoot}/applications/*/src/**/*.module.ts",
-        "{workspaceRoot}/configuration/.codometerignore",
-        "{workspaceRoot}/configuration/.markdownlint-cli2.jsonc",
-        "{workspaceRoot}/configuration/.prettierignore",
-        "{workspaceRoot}/configuration/conformetry.config.ts",
-        "{workspaceRoot}/configuration/conventional.config.cjs",
-        "{workspaceRoot}/configuration/cspell.config.yaml",
-        "{workspaceRoot}/nx.json",
-        "{workspaceRoot}/packages/*/AGENTS.md",
-        "{workspaceRoot}/packages/*/project.json",
-        "{workspaceRoot}/packages/*/README.md",
-        "{workspaceRoot}/packages/*/src/**/*.module.ts",
-        "{workspaceRoot}/release.config.cjs",
-        "{workspaceRoot}/skills-lock.json",
-        "{workspaceRoot}/tools/*/AGENTS.md",
-        "{workspaceRoot}/tools/*/project.json",
-        "{workspaceRoot}/tools/*/README.md",
-        "{workspaceRoot}/tools/*/src/**/*.module.ts",
-        "shared-globals"
-      ],
       "options": {
         "cwd": "{workspaceRoot}"
       }
