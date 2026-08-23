@@ -505,7 +505,7 @@ harnesses run the same scripts under `scripts/git/`:
 | --------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | `validate-session-branch-name.sh`       | Branch follows `<type>/<scope>-<description>`; directs the agent to the rename-branch skill           |
 | `validate-session-commit-signing.sh`    | `commit.gpgsign`, `user.signingkey`, and a GPG signing smoke test                                     |
-| `validate-session-gh-authentication.sh` | `gh auth status` plus Projects access                                                                 |
+| `validate-session-gh-authentication.sh` | The active `gh` account plus Projects access                                                          |
 | `validate-session-skills.sh`            | Every skill declared in `skills-lock.json` is present; directs the agent to `codebase:install-skills` |
 
 The skills check is a backstop. Now that every skill is committed, a checkout
@@ -537,6 +537,25 @@ wrapper that uses an already-cached passphrase and errors out in milliseconds
 when there is none. A cancelled pinentry is reported as inconclusive rather than
 as broken signing, because the following real commit prompts for the passphrase
 normally.
+
+The gh check reads the token the session will really send, which is not the one
+a bare hook shell sees. A hook runs in a non-interactive shell that never sources
+a shell profile, so `GH_TOKEN` and `GITHUB_TOKEN` are absent even when every
+terminal in the session exports them, and `gh` silently falls back to its keyring
+account — whose token is scoped for the browser login flow and carries no
+`read:project`. Three things keep the check honest about which credential it is
+judging:
+
+- **It asks the login shell for the token** when neither variable is in the
+  environment, fencing the value in markers so a profile that prints a banner
+  cannot corrupt it. CI passes the token in explicitly and never asks.
+- **`gh auth status` runs with `--active`**, because it otherwise tests every
+  account in the keyring and fails when any one of them has a problem — including
+  accounts no gh command in the session would ever use.
+- **Only CI escalates to `gh auth login --with-token`.** That path deletes
+  `~/.config/gh/hosts.yml` and rewrites the git credential helper, which is fine
+  on a throwaway runner and destructive on a machine that already holds a working
+  keyring account. Locally a bad token is reported, not repaired.
 
 When adding a session check, add the script under `scripts/git/`, emit through
 the shared emitter, and register it in both places.
