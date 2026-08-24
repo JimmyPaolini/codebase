@@ -137,6 +137,76 @@ describe(BarsMotifService, () => {
       );
     });
 
+    it("draws the bounce dot phases, matching the real edges decoded from 6 rows bars dot bounce.svg", () => {
+      const geometry = gridGeometryService.compute(6);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "dot", shape: "bounce" },
+          rows: 6,
+          unitIndex: 0,
+        }),
+      ).toBe(
+        "M2.5 12.5V22.5M2.5 32.5V42.5M2.5 52.5H2.5M12.5 12.5V22.5M12.5 42.5V52.5M12.5 32.5H12.5M22.5 22.5V32.5M22.5 42.5V52.5M22.5 12.5H22.5M32.5 12.5V22.5M32.5 42.5V52.5M32.5 32.5H32.5M2.5 2.5H42.5M2.5 62.5H42.5",
+      );
+    });
+
+    it("advances the tile by the bounce period's column count per unit index", () => {
+      const geometry = gridGeometryService.compute(6);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "dot", shape: "bounce" },
+          rows: 6,
+          unitIndex: 1,
+        }),
+      ).toBe(
+        "M42.5 12.5V22.5M42.5 32.5V42.5M42.5 52.5H42.5M52.5 12.5V22.5M52.5 42.5V52.5M52.5 32.5H52.5M62.5 22.5V32.5M62.5 42.5V52.5M62.5 12.5H62.5M72.5 12.5V22.5M72.5 42.5V52.5M72.5 32.5H72.5M42.5 2.5H82.5M42.5 62.5H82.5",
+      );
+    });
+
+    it("draws the bounce dot phases at a deeper row count, matching the real edges decoded from 8 rows bars dot bounce.svg", () => {
+      const geometry = gridGeometryService.compute(8);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "dot", shape: "bounce" },
+          rows: 8,
+          unitIndex: 0,
+        }),
+      ).toBe(
+        "M1.875 9.375V16.875M1.875 24.375V31.875M1.875 39.375V46.875M1.875 54.375H1.875M9.375 9.375V16.875M9.375 24.375V31.875M9.375 46.875V54.375M9.375 39.375H9.375M16.875 9.375V16.875M16.875 31.875V39.375M16.875 46.875V54.375M16.875 24.375H16.875M24.375 16.875V24.375M24.375 31.875V39.375M24.375 46.875V54.375M24.375 9.375H24.375M31.875 9.375V16.875M31.875 31.875V39.375M31.875 46.875V54.375M31.875 24.375H31.875M39.375 9.375V16.875M39.375 24.375V31.875M39.375 46.875V54.375M39.375 39.375H39.375M1.875 1.875H46.875M1.875 61.875H46.875",
+      );
+    });
+
+    it("draws the up dot phases, matching the real edges decoded from 6 rows bars dot up.svg: the same first three columns as bounce, reset at a 3-column period instead of mirrored at 4", () => {
+      const geometry = gridGeometryService.compute(6);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "dot", shape: "up" },
+          rows: 6,
+          unitIndex: 0,
+        }),
+      ).toBe(
+        "M2.5 12.5V22.5M2.5 32.5V42.5M2.5 52.5H2.5M12.5 12.5V22.5M12.5 42.5V52.5M12.5 32.5H12.5M22.5 22.5V32.5M22.5 42.5V52.5M22.5 12.5H22.5M2.5 2.5H32.5M2.5 62.5H32.5",
+      );
+    });
+
+    it("draws the up dot phases at a deeper row count, matching the real edges decoded from 8 rows bars dot up.svg", () => {
+      const geometry = gridGeometryService.compute(8);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "dot", shape: "up" },
+          rows: 8,
+          unitIndex: 0,
+        }),
+      ).toBe(
+        "M1.875 9.375V16.875M1.875 24.375V31.875M1.875 39.375V46.875M1.875 54.375H1.875M9.375 9.375V16.875M9.375 24.375V31.875M9.375 46.875V54.375M9.375 39.375H9.375M16.875 9.375V16.875M16.875 31.875V39.375M16.875 46.875V54.375M16.875 24.375H16.875M24.375 16.875V24.375M24.375 31.875V39.375M24.375 46.875V54.375M24.375 9.375H24.375M1.875 1.875H31.875M1.875 61.875H31.875",
+      );
+    });
+
     it("draws alternating dash/gap segments for the split modifier, matching 5 rows bars split.svg", () => {
       const geometry = gridGeometryService.compute(5);
 
@@ -231,6 +301,42 @@ describe(BarsMotifService, () => {
       expect(
         service.rightEdge(geometry, {
           modifier: { name: "alternated", period: 2 },
+          repeatCount: 6,
+          rows: 8,
+        }),
+      ).toBe(174.375);
+    });
+
+    it("widens the touched columns to the bounce period * repeatCount - 1, matching the declared canvas width in 6 rows bars dot bounce.svg", () => {
+      const geometry = gridGeometryService.compute(6);
+
+      expect(
+        service.rightEdge(geometry, {
+          modifier: { name: "dot", shape: "bounce" },
+          repeatCount: 6,
+          rows: 6,
+        }),
+      ).toBe(232.5);
+    });
+
+    it("widens the touched columns to the up period * repeatCount - 1, matching the declared canvas width in 6 rows bars dot up.svg", () => {
+      const geometry = gridGeometryService.compute(6);
+
+      expect(
+        service.rightEdge(geometry, {
+          modifier: { name: "dot", shape: "up" },
+          repeatCount: 6,
+          rows: 6,
+        }),
+      ).toBe(172.5);
+    });
+
+    it("widens the touched columns to the up period * repeatCount - 1 at a deeper row count, matching the declared canvas width in 8 rows bars dot up.svg", () => {
+      const geometry = gridGeometryService.compute(8);
+
+      expect(
+        service.rightEdge(geometry, {
+          modifier: { name: "dot", shape: "up" },
           repeatCount: 6,
           rows: 8,
         }),

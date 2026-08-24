@@ -20,6 +20,14 @@ export interface BoxesSpiralBounds {
   top: number;
 }
 
+/**
+ * Which shape `bars`'s `dot` modifier's per-phase level sequence follows:
+ * `"bounce"` mirrors back up before repeating (a triangle wave), `"up"`
+ * steps straight down through every level once per period, then resets (a
+ * staircase). See {@link MotifTransformsService.dotLevels}.
+ */
+export type DotShape = "bounce" | "up";
+
 /** The type, rows, repeat count, and optional modifier needed to generate one meander. */
 export interface GenerationParameters {
   readonly modifier?: Modifier;
@@ -61,6 +69,7 @@ export type MirrorAxis = "horizontal" | "vertical";
  */
 export type Modifier =
   | { readonly name: "alternated"; readonly period: number }
+  | { readonly name: "dot"; readonly shape: DotShape }
   | { readonly name: "edge" }
   | { readonly name: "edge-flip" }
   | { readonly name: "flip" }

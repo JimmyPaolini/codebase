@@ -119,6 +119,14 @@ describe(GenerateCommand, () => {
       expect(command.parseModifier("alternated")).toBe("alternated");
     });
 
+    it("passes split through unchanged", () => {
+      expect(command.parseModifier("split")).toBe("split");
+    });
+
+    it("passes dot through unchanged", () => {
+      expect(command.parseModifier("dot")).toBe("dot");
+    });
+
     it("rejects an unsupported modifier name", () => {
       expect(() => command.parseModifier("bogus")).toThrow(
         /unsupported modifier/i,
@@ -129,6 +137,20 @@ describe(GenerateCommand, () => {
   describe("parsePeriod", () => {
     it("parses a numeric string", () => {
       expect(command.parsePeriod("2")).toBe(2);
+    });
+  });
+
+  describe("parseShape", () => {
+    it("passes a supported shape through unchanged", () => {
+      expect(command.parseShape("bounce")).toBe("bounce");
+    });
+
+    it("passes up through unchanged", () => {
+      expect(command.parseShape("up")).toBe("up");
+    });
+
+    it("rejects an unsupported shape", () => {
+      expect(() => command.parseShape("bogus")).toThrow(/unsupported shape/i);
     });
   });
 
@@ -234,6 +256,44 @@ describe(GenerateCommand, () => {
           type: "bars",
         }),
       ).rejects.toThrow(/requires --period/);
+    });
+
+    it("combines the modifier name with its shape and encodes both in the filename", async () => {
+      vi.mocked(meanderGenerationService.generate).mockReturnValue(
+        "<svg>fixture</svg>\n",
+      );
+
+      await command.run([], {
+        modifier: "dot",
+        outputDirectory: "output",
+        repeatCount: 6,
+        rows: 6,
+        shape: "bounce",
+        type: "bars",
+      });
+
+      expect(meanderGenerationService.generate).toHaveBeenCalledWith({
+        modifier: { name: "dot", shape: "bounce" },
+        repeatCount: 6,
+        rows: 6,
+        type: "bars",
+      });
+      expect(mockWriteFile).toHaveBeenCalledWith(
+        expect.stringContaining("bars-6-rows-6-repeats-dot-bounce.svg"),
+        "<svg>fixture</svg>\n",
+      );
+    });
+
+    it("throws when dot is requested without a shape", async () => {
+      await expect(
+        command.run([], {
+          modifier: "dot",
+          outputDirectory: "output",
+          repeatCount: 6,
+          rows: 6,
+          type: "bars",
+        }),
+      ).rejects.toThrow(/requires --shape/);
     });
   });
 });

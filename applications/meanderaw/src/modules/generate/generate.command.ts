@@ -7,6 +7,7 @@ import { Command, CommandRunner, Option } from "nest-commander";
 import { LoggerService } from "@codebase/logger";
 
 import {
+  SUPPORTED_DOT_SHAPES,
   SUPPORTED_MODIFIER_NAMES,
   SUPPORTED_TYPES,
 } from "../meander-generation/meander-generation.constants";
@@ -18,6 +19,7 @@ import {
 } from "./generate.constants";
 
 import type {
+  DotShape,
   MeanderType,
   Modifier,
 } from "../meander-generation/meander-generation.types";
@@ -65,12 +67,16 @@ export class GenerateCommand extends CommandRunner {
       return `${baseName}-alternated-period-${modifier.period}.svg`;
     }
 
+    if (modifier.name === "dot") {
+      return `${baseName}-dot-${modifier.shape}.svg`;
+    }
+
     return `${baseName}-${modifier.name}.svg`;
   }
 
   /** Builds the final {@link Modifier}, combining `--modifier`'s name with whichever parameter option that modifier requires. */
   private buildModifier(options: GenerateCommandOptions): Modifier | undefined {
-    const { modifier, period } = options;
+    const { modifier, period, shape } = options;
 
     if (!modifier) {
       return undefined;
@@ -84,7 +90,20 @@ export class GenerateCommand extends CommandRunner {
       return { name: "alternated", period };
     }
 
+    if (modifier === "dot") {
+      if (shape === undefined) {
+        throw new Error('Modifier "dot" requires --shape');
+      }
+
+      return { name: "dot", shape };
+    }
+
     return { name: modifier };
+  }
+
+  /** Narrows a raw string to a supported {@link DotShape} without an unchecked assertion. */
+  private isSupportedDotShape(value: string): value is DotShape {
+    return SUPPORTED_DOT_SHAPES.includes(value);
   }
 
   /** Narrows a raw string to a supported {@link Modifier} name without an unchecked assertion. */
@@ -151,6 +170,21 @@ export class GenerateCommand extends CommandRunner {
   })
   parseRows(value: string): number {
     return Number.parseInt(value, 10);
+  }
+
+  /** Parses the `--shape` flag, rejecting any value outside the supported set. Used only for `--modifier dot`. */
+  @Option({
+    description: `Dot level sequence shape, for --modifier dot (${SUPPORTED_DOT_SHAPES.join(", ")})`,
+    flags: "-s, --shape <shape>",
+  })
+  parseShape(value: string): DotShape {
+    if (!this.isSupportedDotShape(value)) {
+      throw new Error(
+        `Unsupported shape "${value}". Supported shapes: ${SUPPORTED_DOT_SHAPES.join(", ")}`,
+      );
+    }
+
+    return value;
   }
 
   /** Parses the `--type` flag, rejecting any value outside the supported set. */

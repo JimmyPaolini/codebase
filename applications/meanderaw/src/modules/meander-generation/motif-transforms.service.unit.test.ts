@@ -123,6 +123,29 @@ describe(MotifTransformsService, () => {
     });
   });
 
+  describe("dotLevels", () => {
+    it("steps straight down through every odd level once per period for up, matching 6 rows bars dot up.svg", () => {
+      expect(service.dotLevels(6, "up")).toStrictEqual([5, 3, 1]);
+    });
+
+    it("steps straight down through every odd level once per period for up, matching 8 rows bars dot up.svg", () => {
+      expect(service.dotLevels(8, "up")).toStrictEqual([7, 5, 3, 1]);
+    });
+
+    it("mirrors back up through the interior levels for bounce, matching 6 rows bars dot bounce.svg", () => {
+      expect(service.dotLevels(6, "bounce")).toStrictEqual([5, 3, 1, 3]);
+    });
+
+    it("mirrors back up through the interior levels for bounce, matching 8 rows bars dot bounce.svg", () => {
+      expect(service.dotLevels(8, "bounce")).toStrictEqual([7, 5, 3, 1, 3, 5]);
+    });
+
+    it("has no interior level to mirror when only two levels exist, so bounce matches up", () => {
+      expect(service.dotLevels(4, "bounce")).toStrictEqual([3, 1]);
+      expect(service.dotLevels(4, "up")).toStrictEqual([3, 1]);
+    });
+  });
+
   describe("closeEdge", () => {
     // Reference geometry: the 6-rows `snake`/`chain` zigzag, taken from
     // `SnakeSequenceService.points(6)` and verified against
