@@ -31,6 +31,10 @@ npm install --save-dev @callidescope/graph
 nx run callidescope-graph:vitest
 ```
 
+## 👔 Conformetry
+
+This project was generated from the [nestjs-service-project](../../configuration/conformetry-templates/nestjs-service-project) conformetry template.
+
 <!-- CALL_STACKS_START -->
 
 ## 🔭 Callidescope

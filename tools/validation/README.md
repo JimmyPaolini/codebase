@@ -96,6 +96,10 @@ nx run validation:start
 nx run validation:vitest
 ```
 
+## 👔 Conformetry
+
+This project was generated from the [nestjs-command-project](../../configuration/conformetry-templates/nestjs-command-project) conformetry template.
+
 <!-- CALL_STACKS_START -->
 
 ## 🔭 Callidescope

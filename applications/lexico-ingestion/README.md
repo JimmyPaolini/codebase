@@ -99,6 +99,10 @@ nx run lexico-entities:migration:run
 
 MIT — see [LICENSE](../../LICENSE).
 
+## 👔 Conformetry
+
+This project was generated from the [nestjs-command-project](../../configuration/conformetry-templates/nestjs-command-project) conformetry template.
+
 <!-- CALL_STACKS_START -->
 
 ## 🔭 Callidescope

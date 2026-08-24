@@ -32,3 +32,7 @@ uv run ty check
 uv run vulture src testing
 uv run bandit -r src
 ```
+
+## 👔 Conformetry
+
+This project was generated from the [jupyter-notebook-application](../../configuration/conformetry-templates/jupyter-notebook-application) conformetry template.
