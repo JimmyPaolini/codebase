@@ -51,11 +51,11 @@ The modules this project defines and the imports between them, published by `nx 
 flowchart LR
   subgraph group0["callidescope-graph"]
     CallablesModule
-    ClassHierarchyModule
+    ClassesModule
     CohesionModule
     DocumentationModule
     EdgesModule
-    EntryPointsModule
+    EntriesModule
     GraphModule
     ProgramModule
     SignaturesModule
@@ -67,7 +67,7 @@ flowchart LR
   CallablesModule --> ProgramModule
   CallablesModule --> WorkspaceModule
   EdgesModule --> CallablesModule
-  EdgesModule --> ClassHierarchyModule
+  EdgesModule --> ClassesModule
   EdgesModule --> ProgramModule
   EdgesModule --> WorkspaceModule
   GraphModule --> DocumentationModule

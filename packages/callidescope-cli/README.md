@@ -330,7 +330,7 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 | --- | --- |
 | Callables | 52 |
 | Files | 17 |
-| Calls traced | 65 |
+| Calls traced | 66 |
 | Call stacks | 2 |
 | Deepest stack | 13 |
 | Stacks through recursion | 0 |
@@ -361,11 +361,11 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
                    ↳ Resolves an already-identified callee symbol to its declarations.
                   └─> SymbolResolutionService.resolveThroughHierarchy(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:217]
                      ↳ Expands an interface or abstract member to its implementations.
-                    └─> ClassHierarchyService.resolveImplementations(…): ImplementationLookup [packages/callidescope-graph/src/modules/class-hierarchy/class-hierarchy.service.ts:207]
+                    └─> ClassesService.resolveImplementations(…): ImplementationLookup [packages/callidescope-graph/src/modules/classes/classes.service.ts:207]
                        ↳ Finds the concrete declarations one interface member resolves to.
-                      └─> ClassHierarchyService.filterAssignable(…): ClassDeclaration[] [packages/callidescope-graph/src/modules/class-hierarchy/class-hierarchy.service.ts:87]
+                      └─> ClassesService.filterAssignable(…): ClassDeclaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:87]
                          ↳ Keeps only classes whose instance type satisfies the declaring type.
-                        └─> ClassHierarchyService.filter(…)(candidate: ts.ClassDeclaration): boolean [packages/callidescope-graph/src/modules/class-hierarchy/class-hierarchy.service.ts:94]
+                        └─> ClassesService.filter(…)(candidate: ts.ClassDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:94]
 ```
 
 **2. `CallidescopeCommand.parseProjects`** — depth 2 · decorated-method
@@ -380,15 +380,15 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CallidescopeService.trace` | 12 | `callidescope-graph:modules/callables`, `callidescope-graph:modules/class-hierarchy`, `callidescope-graph:modules/program`, `callidescope-graph:modules/workspace` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:163` |
-| `CallidescopeService.analyze` | 11 | `callidescope-graph:modules/cohesion`, `callidescope-graph:modules/entry-points`, `callidescope-output:modules/project-reports` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:66` |
+| `CallidescopeService.trace` | 12 | `callidescope-graph:modules/callables`, `callidescope-graph:modules/classes`, `callidescope-graph:modules/program`, `callidescope-graph:modules/workspace` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:163` |
+| `CallidescopeService.analyze` | 11 | `callidescope-graph:modules/cohesion`, `callidescope-graph:modules/entries`, `callidescope-output:modules/project-reports` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:66` |
 
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CallidescopeService.analyze` | 10 | `GraphAssemblyService.assemble`, `EntryPointsService.resolve`, `CohesionService.findMisplacedCallables`, `CohesionService.findModuleSpreads`, `CohesionService.summarizeTypeDepths`, `ProjectReportsService.build`, `CallidescopeService.filter(…)`, `CallidescopeService.readMaximumDepth`, `ProjectReportsService.findDeepStacks`, `ProjectReportsService.findWideCallables` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:66` |
-| `CallidescopeService.trace` | 10 | `WorkspaceService.discoverProjects`, `ProgramService.buildPrograms`, `ExternalService.configure`, `ClassHierarchyService.build`, `CallablesService.collect`, `WorkspaceService.buildFileFilter`, `CallidescopeService.map(…)`, `CallidescopeService.map(…)`, `CallidescopeService.analyze`, `CallidescopeService.map(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:163` |
+| `CallidescopeService.trace` | 11 | `WorkspaceService.configure`, `WorkspaceService.discoverProjects`, `ProgramService.buildPrograms`, `ExternalService.configure`, `ClassesService.build`, `CallablesService.collect`, `WorkspaceService.buildFileFilter`, `CallidescopeService.map(…)`, `CallidescopeService.map(…)`, `CallidescopeService.analyze`, `CallidescopeService.map(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:163` |
+| `CallidescopeService.analyze` | 10 | `GraphAssemblyService.assemble`, `EntriesService.resolve`, `CohesionService.findMisplacedCallables`, `CohesionService.findModuleSpreads`, `CohesionService.summarizeTypeDepths`, `ProjectReportsService.build`, `CallidescopeService.filter(…)`, `CallidescopeService.readMaximumDepth`, `ProjectReportsService.findDeepStacks`, `ProjectReportsService.findWideCallables` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:66` |
 | `GraphAssemblyService.assemble` | 6 | `GraphService.assemble`, `EdgesService.build`, `ComponentsService.condense`, `GraphAssemblyService.map(…)`, `BreadthService.measure`, `DepthService.measure` | `packages/callidescope-cli/src/modules/callidescope/graph-assembly.service.ts:45` |
 
 <details>
@@ -426,40 +426,40 @@ None.
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-15798-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-485.46_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-18-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-125-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3694-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-122.66_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-4-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-29-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-69.74_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-12.60_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-124-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-57-0ea5e9?style=flat-square)
-![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-1-0369a1?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-28-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-11-0ea5e9?style=flat-square)
+![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-54-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-362-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-15-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-75-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-1-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-32-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-17-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-47-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-738-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-273-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-876-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-135-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-892-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-630-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-167-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-683-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1260-475569?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-7-10b981?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-18-8b5cf6?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-6-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-172-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-46-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-168-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-50-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-132-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-135-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-39-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-156-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-279-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -480,16 +480,16 @@ None.
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-153-ca8a04?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-155-ca8a04?style=flat-square)
 ![JSON Objects](https://img.shields.io/badge/JSON_Objects-35-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-12-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-101-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-80-16a34a?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-103-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-82-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-8-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
 ![JSON Items](https://img.shields.io/badge/JSON_Items-31-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-136-dc2626?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-138-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-7-ea580c?style=flat-square)
 
 ### YAML
@@ -570,15 +570,15 @@ None.
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-16-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-28-0284c7?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-2-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-3-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-1-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-17-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-18-db2777?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-2-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-3-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
-![Errors Files](https://img.shields.io/badge/Errors_Files-2-059669?style=flat-square)
+![Errors Files](https://img.shields.io/badge/Errors_Files-0-059669?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-30-7c3aed?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-5-7c3aed?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-1-0284c7?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-16a34a?style=flat-square)
 
@@ -608,7 +608,7 @@ None.
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-318-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-322-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-15-a78bfa?style=flat-square)
