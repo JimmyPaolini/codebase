@@ -5,6 +5,7 @@ import { DiscoveryModule } from "@nestjs/core";
 import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
+import { GenerateBatchModule } from "./modules/generate-batch/generate-batch.module";
 import { GenerateModule } from "./modules/generate/generate.module";
 
 /**
@@ -20,6 +21,7 @@ import { GenerateModule } from "./modules/generate/generate.module";
     }),
     DiscoveryModule,
     LoggerModule,
+    GenerateBatchModule,
     GenerateModule,
   ],
 })
