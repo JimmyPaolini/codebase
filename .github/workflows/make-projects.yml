@@ -147,7 +147,7 @@ jobs:
 
       # Re-raises whatever `make-projects` swallowed above, now that the
       # description section naming the offending bundle has been written.
-      - name: 🚦 Enforce Build And Bundle Limits
+      - name: 🚦 Enforce Codometer Limits
         if: steps.make-projects.outcome == 'failure'
         run: |
           echo "::error::A project failed to build or breached its limit."
