@@ -136,7 +136,11 @@ Where this project sits in the Nx project graph: what it depends on, and what de
 flowchart LR
   callidescope_cli["callidescope-cli"]
   callidescope_configuration["callidescope-configuration"]
+  callidescope_graph["callidescope-graph"]
+  callidescope_output["callidescope-output"]
   callidescope_cli --> callidescope_configuration
+  callidescope_graph --> callidescope_configuration
+  callidescope_output --> callidescope_configuration
   classDef subject stroke-width:3px
   class callidescope_configuration subject
 ```

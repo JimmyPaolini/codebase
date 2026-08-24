@@ -62,27 +62,31 @@ The modules this project defines and the imports between them, published by `nx 
 ```mermaid
 flowchart LR
   subgraph group0["callidescope-cli"]
-    CallablesModule
     CallidescopeModule
+    MainModule
+  end
+  subgraph group1["callidescope-configuration"]
+    ConfigurationModule
+  end
+  subgraph group2["callidescope-graph"]
+    CallablesModule
     ClassHierarchyModule
     CohesionModule
     DocumentationModule
     EdgesModule
     EntryPointsModule
     GraphModule
-    MainModule
-    OutputJsonModule
-    OutputMarkdownModule
     ProgramModule
-    ProjectReportsModule
-    ReportModule
     SignaturesModule
     WorkspaceModule
   end
-  subgraph group1["callidescope-configuration"]
-    ConfigurationModule
+  subgraph group3["callidescope-output"]
+    OutputJsonModule
+    OutputMarkdownModule
+    ProjectReportsModule
+    ReportModule
   end
-  subgraph group2["logger"]
+  subgraph group4["logger"]
     LoggerModule([LoggerModule])
   end
   ConfigModule([ConfigModule])

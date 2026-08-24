@@ -1,21 +1,20 @@
+import {
+  CallablesService,
+  ClassesService,
+  CohesionService,
+  EntriesService,
+  ExternalService,
+  ProgramService,
+  WorkspaceService,
+} from "@callidescope/graph";
+import { ProjectReportsService } from "@callidescope/output";
 import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
 
-import { CallablesService } from "../callables/callables.service";
-import { ClassHierarchyService } from "../class-hierarchy/class-hierarchy.service";
-import { ExternalService } from "../class-hierarchy/external.service";
-import { CohesionService } from "../cohesion/cohesion.service";
-import { EntryPointsService } from "../entry-points/entry-points.service";
-import { ProgramService } from "../program/program.service";
-import { ProjectReportsService } from "../project-reports/project-reports.service";
-import { WorkspaceService } from "../workspace/workspace.service";
-
 import { INCLUDE_CONSTRUCTOR_EDGES } from "./callidescope.constants";
 import { GraphAssemblyService } from "./graph-assembly.service";
 
-import type { DiscoveredCallable } from "../callables/callables.types";
-import type { DepthMeasurement } from "../graph/graph.types";
 import type { TraceArguments, TraceOutcome } from "./callidescope.types";
 import type {
   CallableId,
@@ -23,6 +22,7 @@ import type {
   CallGraphSummary,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
+import type { DepthMeasurement, DiscoveredCallable } from "@callidescope/graph";
 
 /**
  * Runs one trace of a workspace, from tsconfig files to findings.
@@ -33,9 +33,9 @@ export class CallidescopeService {
 
   constructor(
     private readonly callablesService: CallablesService,
-    private readonly classHierarchyService: ClassHierarchyService,
+    private readonly classHierarchyService: ClassesService,
     private readonly cohesionService: CohesionService,
-    private readonly entryPointsService: EntryPointsService,
+    private readonly entryPointsService: EntriesService,
     private readonly externalService: ExternalService,
     private readonly graphAssemblyService: GraphAssemblyService,
     private readonly programService: ProgramService,
@@ -164,6 +164,8 @@ export class CallidescopeService {
     this.logger.info("🔭 Tracing a workspace", undefined, {
       workspaceRoot: args.workspaceRoot,
     });
+
+    this.workspaceService.configure(args.configuration.workspaceStructure);
 
     const projects = this.workspaceService.discoverProjects({
       projectNames: args.projectNames,

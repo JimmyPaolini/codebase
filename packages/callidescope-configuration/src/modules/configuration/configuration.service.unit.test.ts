@@ -18,8 +18,11 @@ import {
   DEFAULT_MAXIMUM_DEPTH,
   DEFAULT_MAXIMUM_IMPLEMENTATION_CANDIDATES,
   DEFAULT_MINIMUM_CALLERS,
+  DEFAULT_MODULES_DIRECTORY,
   DEFAULT_PREVIEW_COUNT,
+  DEFAULT_PROJECT_CONTAINER_DIRECTORIES,
   DEFAULT_PROJECT_README_HEADING,
+  DEFAULT_ROOT_MODULE_SEGMENT,
   DEFAULT_SPREAD_THRESHOLD,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
@@ -129,6 +132,28 @@ describe(ConfigurationService, () => {
       includeExportedFunctions: true,
       includeOrphans: true,
       includeTests: false,
+    });
+  });
+
+  it("applies every workspace-structure default", () => {
+    const configuration = service.resolveConfiguration({});
+
+    expect(configuration.workspaceStructure).toStrictEqual({
+      modulesDirectory: DEFAULT_MODULES_DIRECTORY,
+      projectContainerDirectories: [...DEFAULT_PROJECT_CONTAINER_DIRECTORIES],
+      rootModuleSegment: DEFAULT_ROOT_MODULE_SEGMENT,
+    });
+  });
+
+  it("keeps an authored workspace structure and defaults the rest", () => {
+    const configuration = service.resolveConfiguration({
+      workspaceStructure: { projectContainerDirectories: ["services"] },
+    });
+
+    expect(configuration.workspaceStructure).toStrictEqual({
+      modulesDirectory: DEFAULT_MODULES_DIRECTORY,
+      projectContainerDirectories: ["services"],
+      rootModuleSegment: DEFAULT_ROOT_MODULE_SEGMENT,
     });
   });
 

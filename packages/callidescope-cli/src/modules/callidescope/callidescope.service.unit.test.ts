@@ -1,3 +1,15 @@
+import {
+  BreadthService,
+  CohesionService,
+  ComponentsService,
+  DepthService,
+  DocumentationService,
+  EntriesService,
+  GraphService,
+  PathsService,
+  SignaturesService,
+} from "@callidescope/graph";
+import { ProjectReportsService } from "@callidescope/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
@@ -11,16 +23,6 @@ import {
   collectFixtureCallables,
   FIXTURE_ROOT,
 } from "../../../testing/programs";
-import { CohesionService } from "../cohesion/cohesion.service";
-import { DocumentationService } from "../documentation/documentation.service";
-import { EntryPointsService } from "../entry-points/entry-points.service";
-import { BreadthService } from "../graph/breadth.service";
-import { ComponentsService } from "../graph/components.service";
-import { DepthService } from "../graph/depth.service";
-import { GraphService } from "../graph/graph.service";
-import { PathsService } from "../graph/paths.service";
-import { ProjectReportsService } from "../project-reports/project-reports.service";
-import { SignaturesService } from "../signatures/signatures.service";
 
 import { CallidescopeService } from "./callidescope.service";
 import { GraphAssemblyService } from "./graph-assembly.service";
@@ -86,6 +88,11 @@ function buildConfiguration(
       projectReadmes: undefined,
     },
     projects: [],
+    workspaceStructure: {
+      modulesDirectory: "modules",
+      projectContainerDirectories: ["applications", "packages", "tools"],
+      rootModuleSegment: "src",
+    },
     ...overrides,
   };
 }
@@ -99,7 +106,7 @@ function buildSubject(args: {
     args.fixture.callables,
     args.fixture.hierarchy,
     new CohesionService(),
-    new EntryPointsService(createMock<LoggerService>()),
+    new EntriesService(createMock<LoggerService>()),
     args.fixture.external,
     new GraphAssemblyService(
       new BreadthService(),

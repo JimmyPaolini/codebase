@@ -367,8 +367,10 @@ export default [
               sourceTag: "type:application",
             },
             // Callidescope package graph. The configuration reader is the
-            // leaf; the CLI traces whatever it describes, so the dependency
-            // only ever points that way.
+            // leaf; the graph builder depends only on it; the output renderer
+            // depends on both the configuration and the graph it renders; the
+            // CLI orchestrates all three, so the dependency only ever points
+            // that way.
             {
               onlyDependOnLibsWithTags: [],
               sourceTag: "name:callidescope-configuration",
@@ -376,6 +378,23 @@ export default [
             {
               onlyDependOnLibsWithTags: [
                 "name:callidescope-configuration",
+                "name:logger",
+              ],
+              sourceTag: "name:callidescope-graph",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:callidescope-configuration",
+                "name:callidescope-graph",
+                "name:logger",
+              ],
+              sourceTag: "name:callidescope-output",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:callidescope-configuration",
+                "name:callidescope-graph",
+                "name:callidescope-output",
                 "name:logger",
               ],
               sourceTag: "name:callidescope-cli",

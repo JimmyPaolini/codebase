@@ -1,13 +1,13 @@
 // 🏷️ Types
 
-import type { DiscoveredCallable } from "../callables/callables.types";
+import type { CallableId } from "@callidescope/configuration";
 import type {
   BreadthMeasurement,
   CallGraph,
   CondensedGraph,
   DepthMeasurement,
-} from "../graph/graph.types";
-import type { CallableId } from "@callidescope/configuration";
+  DiscoveredCallable,
+} from "@callidescope/graph";
 
 /** The call graph, its cycle condensation, and its depth and breadth measurements. */
 export interface AssembledGraph {

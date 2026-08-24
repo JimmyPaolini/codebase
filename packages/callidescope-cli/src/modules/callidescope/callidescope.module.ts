@@ -1,20 +1,23 @@
 import { ConfigurationModule } from "@callidescope/configuration";
+import {
+  CallablesModule,
+  ClassesModule,
+  CohesionModule,
+  EdgesModule,
+  EntriesModule,
+  GraphModule,
+  ProgramModule,
+  WorkspaceModule,
+} from "@callidescope/graph";
+import {
+  OutputJsonModule,
+  OutputMarkdownModule,
+  ProjectReportsModule,
+  ReportModule,
+} from "@callidescope/output";
 import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";
-
-import { CallablesModule } from "../callables/callables.module";
-import { ClassHierarchyModule } from "../class-hierarchy/class-hierarchy.module";
-import { CohesionModule } from "../cohesion/cohesion.module";
-import { EdgesModule } from "../edges/edges.module";
-import { EntryPointsModule } from "../entry-points/entry-points.module";
-import { GraphModule } from "../graph/graph.module";
-import { OutputJsonModule } from "../output-json/output-json.module";
-import { OutputMarkdownModule } from "../output-markdown/output-markdown.module";
-import { ProgramModule } from "../program/program.module";
-import { ProjectReportsModule } from "../project-reports/project-reports.module";
-import { ReportModule } from "../report/report.module";
-import { WorkspaceModule } from "../workspace/workspace.module";
 
 import { CallidescopeCommand } from "./callidescope.command";
 import { CallidescopeService } from "./callidescope.service";
@@ -32,9 +35,9 @@ import { RunPlanService } from "./run-plan.service";
     CohesionModule,
     ConfigurationModule,
     EdgesModule,
-    EntryPointsModule,
+    EntriesModule,
     GraphModule,
-    ClassHierarchyModule,
+    ClassesModule,
     LoggerModule,
     OutputJsonModule,
     OutputMarkdownModule,

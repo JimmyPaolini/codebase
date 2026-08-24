@@ -164,7 +164,7 @@ const scopes = [
   },
   {
     description:
-      "Call stack tracing and linting CLI and the configuration package it reads",
+      "Call stack tracing and linting CLI, the configuration package it reads, and the packages that build and render its call graph",
     name: "callidescope",
   },
   {

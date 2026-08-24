@@ -76,6 +76,8 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 
 - **[callidescope-cli](packages/callidescope-cli)**: Command-line host that traces call stacks through injected dependencies and flags the ones that are too deep
 - **[callidescope-configuration](packages/callidescope-configuration)**: Reads `callidescope.config.ts` and resolves the limits callidescope enforces
+- **[callidescope-graph](packages/callidescope-graph)**: Builds the call graph from traced TypeScript source and measures its depth, breadth, and cohesion
+- **[callidescope-output](packages/callidescope-output)**: Renders call-graph findings into markdown, mermaid, and JSON output formats
 - **[codometer-cli](packages/codometer-cli)**: Command-line host that measures code statistics and writes them to markdown and JSON
 - **[codometer-configuration](packages/codometer-configuration)**: Reads `codometer.config.ts` and resolves the repository-specific settings codometer needs
 - **[conformetry-cli](packages/conformetry-cli)**: Command-line host for code generation and validation
@@ -340,7 +342,7 @@ The 🧑‍⚖️ Validate Conventions workflow creates any label missing from t
 | `lexico-entities` | Shared TypeORM entities and GraphQL types |
 | `lexico-ingestion` | Data ingestion scripts for Lexico |
 | `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
-| `callidescope` | Call stack tracing and linting CLI and the configuration package it reads |
+| `callidescope` | Call stack tracing and linting CLI, the configuration package it reads, and the packages that build and render its call graph |
 | `codometer` | Code statistics measurement CLI, the configuration package it reads, and the packages that diff and render its pull request change report |
 | `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
 | `no-release` | Escape hatch: suppress semantic-release for any commit type |
