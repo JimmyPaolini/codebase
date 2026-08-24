@@ -1,0 +1,40 @@
+{
+  "ambientModuleNames": [
+    "LoggerModule"
+  ],
+  "edges": [
+    {
+      "source": "GraphModule",
+      "target": "DocumentationModule"
+    },
+    {
+      "source": "GraphModule",
+      "target": "SignaturesModule"
+    },
+    {
+      "source": "ProjectReportsModule",
+      "target": "GraphModule"
+    },
+    {
+      "source": "ProjectReportsModule",
+      "target": "SignaturesModule"
+    }
+  ],
+  "isolatedModuleNames": [
+    "LoggerModule",
+    "OutputJsonModule",
+    "OutputMarkdownModule",
+    "ReportModule"
+  ],
+  "moduleNames": [
+    "DocumentationModule",
+    "GraphModule",
+    "LoggerModule",
+    "OutputJsonModule",
+    "OutputMarkdownModule",
+    "ProjectReportsModule",
+    "ReportModule",
+    "SignaturesModule"
+  ],
+  "projectName": "callidescope-output"
+}

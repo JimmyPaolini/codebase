@@ -345,6 +345,8 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 graph LR
   caelundas["caelundas"]
   callidescope_cli["callidescope-cli"]
+  callidescope_graph["callidescope-graph"]
+  callidescope_output["callidescope-output"]
   codependix_cli["codependix-cli"]
   codependix_nestjs["codependix-nestjs"]
   codometer_changes["codometer-changes"]
@@ -358,6 +360,8 @@ graph LR
   validation["validation"]
   caelundas --> logger
   callidescope_cli --> logger
+  callidescope_graph --> logger
+  callidescope_output --> logger
   codependix_cli --> logger
   codependix_nestjs --> logger
   codometer_changes --> logger

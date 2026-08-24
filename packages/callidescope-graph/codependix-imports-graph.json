@@ -1,0 +1,879 @@
+{
+  "edges": [
+    {
+      "source": "src/modules/callables/callable-identity.service.ts",
+      "target": "src/modules/callables/callables.constants.ts"
+    },
+    {
+      "source": "src/modules/callables/callable-identity.service.ts",
+      "target": "src/modules/callables/callables.types.ts"
+    },
+    {
+      "source": "src/modules/callables/callable-identity.service.unit.test.ts",
+      "target": "src/modules/callables/callable-identity.service.ts"
+    },
+    {
+      "source": "src/modules/callables/callable-identity.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "src/modules/callables/callable-identity.service.unit.test.ts",
+      "target": "testing/programs.ts"
+    },
+    {
+      "source": "src/modules/callables/callables.module.ts",
+      "target": "src/modules/callables/callable-identity.service.ts"
+    },
+    {
+      "source": "src/modules/callables/callables.module.ts",
+      "target": "src/modules/callables/callables.service.ts"
+    },
+    {
+      "source": "src/modules/callables/callables.module.ts",
+      "target": "src/modules/program/program.module.ts"
+    },
+    {
+      "source": "src/modules/callables/callables.module.ts",
+      "target": "src/modules/workspace/workspace.module.ts"
+    },
+    {
+      "source": "src/modules/callables/callables.service.ts",
+      "target": "src/modules/callables/callable-identity.service.ts"
+    },
+    {
+      "source": "src/modules/callables/callables.service.ts",
+      "target": "src/modules/callables/callables.types.ts"
+    },
+    {
+      "source": "src/modules/callables/callables.service.ts",
+      "target": "src/modules/program/program.service.ts"
+    },
+    {
+      "source": "src/modules/callables/callables.service.ts",
+      "target": "src/modules/program/program.types.ts"
+    },
+    {
+      "source": "src/modules/callables/callables.service.ts",
+      "target": "src/modules/workspace/workspace.service.ts"
+    },
+    {
+      "source": "src/modules/callables/callables.service.unit.test.ts",
+      "target": "src/modules/callables/callables.service.ts"
+    },
+    {
+      "source": "src/modules/callables/callables.service.unit.test.ts",
+      "target": "src/modules/callables/callables.types.ts"
+    },
+    {
+      "source": "src/modules/callables/callables.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "src/modules/callables/callables.service.unit.test.ts",
+      "target": "testing/programs.ts"
+    },
+    {
+      "source": "src/modules/callables/callables.types.ts",
+      "target": "src/modules/program/program.types.ts"
+    },
+    {
+      "source": "src/modules/callables/callables.types.ts",
+      "target": "src/modules/workspace/workspace.types.ts"
+    },
+    {
+      "source": "src/modules/classes/classes.module.ts",
+      "target": "src/modules/classes/classes.service.ts"
+    },
+    {
+      "source": "src/modules/classes/classes.module.ts",
+      "target": "src/modules/classes/external.service.ts"
+    },
+    {
+      "source": "src/modules/classes/classes.service.ts",
+      "target": "src/modules/classes/classes.types.ts"
+    },
+    {
+      "source": "src/modules/classes/classes.service.ts",
+      "target": "src/modules/classes/external.service.ts"
+    },
+    {
+      "source": "src/modules/classes/classes.service.ts",
+      "target": "src/modules/program/program.types.ts"
+    },
+    {
+      "source": "src/modules/classes/classes.service.unit.test.ts",
+      "target": "src/modules/classes/classes.service.ts"
+    },
+    {
+      "source": "src/modules/classes/classes.service.unit.test.ts",
+      "target": "src/modules/classes/classes.types.ts"
+    },
+    {
+      "source": "src/modules/classes/classes.service.unit.test.ts",
+      "target": "src/modules/classes/external.service.ts"
+    },
+    {
+      "source": "src/modules/classes/classes.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "src/modules/classes/classes.service.unit.test.ts",
+      "target": "testing/programs.ts"
+    },
+    {
+      "source": "src/modules/classes/classes.types.ts",
+      "target": "src/modules/program/program.types.ts"
+    },
+    {
+      "source": "src/modules/classes/external.service.unit.test.ts",
+      "target": "src/modules/classes/external.service.ts"
+    },
+    {
+      "source": "src/modules/classes/external.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "src/modules/cohesion/cohesion.module.ts",
+      "target": "src/modules/cohesion/cohesion.service.ts"
+    },
+    {
+      "source": "src/modules/cohesion/cohesion.service.ts",
+      "target": "src/modules/callables/callables.types.ts"
+    },
+    {
+      "source": "src/modules/cohesion/cohesion.service.ts",
+      "target": "src/modules/cohesion/cohesion.types.ts"
+    },
+    {
+      "source": "src/modules/cohesion/cohesion.service.unit.test.ts",
+      "target": "src/modules/callables/callables.types.ts"
+    },
+    {
+      "source": "src/modules/cohesion/cohesion.service.unit.test.ts",
+      "target": "src/modules/cohesion/cohesion.service.ts"
+    },
+    {
+      "source": "src/modules/cohesion/cohesion.service.unit.test.ts",
+      "target": "src/modules/cohesion/cohesion.types.ts"
+    },
+    {
+      "source": "src/modules/cohesion/cohesion.service.unit.test.ts",
+      "target": "src/modules/graph/components.service.ts"
+    },
+    {
+      "source": "src/modules/cohesion/cohesion.service.unit.test.ts",
+      "target": "src/modules/graph/depth.service.ts"
+    },
+    {
+      "source": "src/modules/cohesion/cohesion.service.unit.test.ts",
+      "target": "src/modules/graph/graph.service.ts"
+    },
+    {
+      "source": "src/modules/cohesion/cohesion.service.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/cohesion/cohesion.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "src/modules/cohesion/cohesion.types.ts",
+      "target": "src/modules/callables/callables.types.ts"
+    },
+    {
+      "source": "src/modules/cohesion/cohesion.types.ts",
+      "target": "src/modules/graph/graph.types.ts"
+    },
+    {
+      "source": "src/modules/documentation/documentation.module.ts",
+      "target": "src/modules/documentation/documentation.service.ts"
+    },
+    {
+      "source": "src/modules/documentation/documentation.service.ts",
+      "target": "src/modules/documentation/documentation.constants.ts"
+    },
+    {
+      "source": "src/modules/documentation/documentation.service.ts",
+      "target": "src/modules/documentation/documentation.types.ts"
+    },
+    {
+      "source": "src/modules/documentation/documentation.service.unit.test.ts",
+      "target": "src/modules/documentation/documentation.service.ts"
+    },
+    {
+      "source": "src/modules/documentation/documentation.service.unit.test.ts",
+      "target": "src/modules/documentation/documentation.types.ts"
+    },
+    {
+      "source": "src/modules/documentation/documentation.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "src/modules/documentation/documentation.service.unit.test.ts",
+      "target": "testing/programs.ts"
+    },
+    {
+      "source": "src/modules/documentation/documentation.types.ts",
+      "target": "src/modules/callables/callables.types.ts"
+    },
+    {
+      "source": "src/modules/edges/call-sites.service.ts",
+      "target": "src/modules/callables/callables.types.ts"
+    },
+    {
+      "source": "src/modules/edges/call-sites.service.ts",
+      "target": "src/modules/edges/edges.types.ts"
+    },
+    {
+      "source": "src/modules/edges/call-sites.service.unit.test.ts",
+      "target": "src/modules/edges/call-sites.service.ts"
+    },
+    {
+      "source": "src/modules/edges/call-sites.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "src/modules/edges/call-sites.service.unit.test.ts",
+      "target": "testing/programs.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.constants.ts",
+      "target": "src/modules/edges/edges.types.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.module.ts",
+      "target": "src/modules/callables/callables.module.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.module.ts",
+      "target": "src/modules/classes/classes.module.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.module.ts",
+      "target": "src/modules/edges/call-sites.service.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.module.ts",
+      "target": "src/modules/edges/edges.service.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.module.ts",
+      "target": "src/modules/edges/symbol-resolution.service.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.module.ts",
+      "target": "src/modules/program/program.module.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.module.ts",
+      "target": "src/modules/workspace/workspace.module.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.service.ts",
+      "target": "src/modules/callables/callables.types.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.service.ts",
+      "target": "src/modules/classes/external.service.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.service.ts",
+      "target": "src/modules/edges/call-sites.service.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.service.ts",
+      "target": "src/modules/edges/edges.types.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.service.ts",
+      "target": "src/modules/edges/symbol-resolution.service.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.service.ts",
+      "target": "src/modules/program/program.service.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.service.ts",
+      "target": "src/modules/workspace/workspace.service.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.service.unit.test.ts",
+      "target": "src/modules/edges/call-sites.service.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.service.unit.test.ts",
+      "target": "src/modules/edges/edges.service.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.service.unit.test.ts",
+      "target": "src/modules/edges/symbol-resolution.service.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.service.unit.test.ts",
+      "target": "testing/programs.ts"
+    },
+    {
+      "source": "src/modules/edges/edges.types.ts",
+      "target": "src/modules/callables/callables.types.ts"
+    },
+    {
+      "source": "src/modules/edges/symbol-resolution.service.ts",
+      "target": "src/modules/classes/classes.service.ts"
+    },
+    {
+      "source": "src/modules/edges/symbol-resolution.service.ts",
+      "target": "src/modules/classes/external.service.ts"
+    },
+    {
+      "source": "src/modules/edges/symbol-resolution.service.ts",
+      "target": "src/modules/edges/edges.constants.ts"
+    },
+    {
+      "source": "src/modules/edges/symbol-resolution.service.ts",
+      "target": "src/modules/edges/edges.types.ts"
+    },
+    {
+      "source": "src/modules/edges/symbol-resolution.service.unit.test.ts",
+      "target": "src/modules/classes/classes.service.ts"
+    },
+    {
+      "source": "src/modules/edges/symbol-resolution.service.unit.test.ts",
+      "target": "src/modules/classes/external.service.ts"
+    },
+    {
+      "source": "src/modules/edges/symbol-resolution.service.unit.test.ts",
+      "target": "src/modules/edges/edges.constants.ts"
+    },
+    {
+      "source": "src/modules/edges/symbol-resolution.service.unit.test.ts",
+      "target": "src/modules/edges/edges.types.ts"
+    },
+    {
+      "source": "src/modules/edges/symbol-resolution.service.unit.test.ts",
+      "target": "src/modules/edges/symbol-resolution.service.ts"
+    },
+    {
+      "source": "src/modules/edges/symbol-resolution.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "src/modules/edges/symbol-resolution.service.unit.test.ts",
+      "target": "testing/programs.ts"
+    },
+    {
+      "source": "src/modules/entries/entries.module.ts",
+      "target": "src/modules/entries/entries.service.ts"
+    },
+    {
+      "source": "src/modules/entries/entries.service.ts",
+      "target": "src/modules/callables/callables.types.ts"
+    },
+    {
+      "source": "src/modules/entries/entries.service.ts",
+      "target": "src/modules/entries/entries.constants.ts"
+    },
+    {
+      "source": "src/modules/entries/entries.service.ts",
+      "target": "src/modules/entries/entries.types.ts"
+    },
+    {
+      "source": "src/modules/entries/entries.service.unit.test.ts",
+      "target": "src/modules/entries/entries.service.ts"
+    },
+    {
+      "source": "src/modules/entries/entries.service.unit.test.ts",
+      "target": "src/modules/graph/graph.service.ts"
+    },
+    {
+      "source": "src/modules/entries/entries.service.unit.test.ts",
+      "target": "src/modules/graph/graph.types.ts"
+    },
+    {
+      "source": "src/modules/entries/entries.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "src/modules/entries/entries.service.unit.test.ts",
+      "target": "testing/programs.ts"
+    },
+    {
+      "source": "src/modules/entries/entries.types.ts",
+      "target": "src/modules/callables/callables.types.ts"
+    },
+    {
+      "source": "src/modules/entries/entries.types.ts",
+      "target": "src/modules/graph/graph.types.ts"
+    },
+    {
+      "source": "src/modules/graph/breadth.service.ts",
+      "target": "src/modules/graph/graph.types.ts"
+    },
+    {
+      "source": "src/modules/graph/breadth.service.unit.test.ts",
+      "target": "src/modules/graph/breadth.service.ts"
+    },
+    {
+      "source": "src/modules/graph/breadth.service.unit.test.ts",
+      "target": "src/modules/graph/graph.service.ts"
+    },
+    {
+      "source": "src/modules/graph/breadth.service.unit.test.ts",
+      "target": "src/modules/graph/graph.types.ts"
+    },
+    {
+      "source": "src/modules/graph/breadth.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "src/modules/graph/components.service.ts",
+      "target": "src/modules/graph/components.constants.ts"
+    },
+    {
+      "source": "src/modules/graph/components.service.ts",
+      "target": "src/modules/graph/components.types.ts"
+    },
+    {
+      "source": "src/modules/graph/components.service.ts",
+      "target": "src/modules/graph/graph.types.ts"
+    },
+    {
+      "source": "src/modules/graph/components.service.unit.test.ts",
+      "target": "src/modules/graph/components.service.ts"
+    },
+    {
+      "source": "src/modules/graph/components.service.unit.test.ts",
+      "target": "src/modules/graph/graph.service.ts"
+    },
+    {
+      "source": "src/modules/graph/components.service.unit.test.ts",
+      "target": "src/modules/graph/graph.types.ts"
+    },
+    {
+      "source": "src/modules/graph/components.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "src/modules/graph/depth.service.ts",
+      "target": "src/modules/graph/graph.types.ts"
+    },
+    {
+      "source": "src/modules/graph/depth.service.unit.test.ts",
+      "target": "src/modules/graph/components.service.ts"
+    },
+    {
+      "source": "src/modules/graph/depth.service.unit.test.ts",
+      "target": "src/modules/graph/depth.service.ts"
+    },
+    {
+      "source": "src/modules/graph/depth.service.unit.test.ts",
+      "target": "src/modules/graph/graph.service.ts"
+    },
+    {
+      "source": "src/modules/graph/depth.service.unit.test.ts",
+      "target": "src/modules/graph/graph.types.ts"
+    },
+    {
+      "source": "src/modules/graph/depth.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "src/modules/graph/graph.module.ts",
+      "target": "src/modules/documentation/documentation.module.ts"
+    },
+    {
+      "source": "src/modules/graph/graph.module.ts",
+      "target": "src/modules/graph/breadth.service.ts"
+    },
+    {
+      "source": "src/modules/graph/graph.module.ts",
+      "target": "src/modules/graph/components.service.ts"
+    },
+    {
+      "source": "src/modules/graph/graph.module.ts",
+      "target": "src/modules/graph/depth.service.ts"
+    },
+    {
+      "source": "src/modules/graph/graph.module.ts",
+      "target": "src/modules/graph/graph.service.ts"
+    },
+    {
+      "source": "src/modules/graph/graph.module.ts",
+      "target": "src/modules/graph/paths.service.ts"
+    },
+    {
+      "source": "src/modules/graph/graph.module.ts",
+      "target": "src/modules/signatures/signatures.module.ts"
+    },
+    {
+      "source": "src/modules/graph/graph.service.ts",
+      "target": "src/modules/edges/edges.types.ts"
+    },
+    {
+      "source": "src/modules/graph/graph.service.ts",
+      "target": "src/modules/graph/graph.types.ts"
+    },
+    {
+      "source": "src/modules/graph/graph.service.unit.test.ts",
+      "target": "src/modules/graph/graph.service.ts"
+    },
+    {
+      "source": "src/modules/graph/graph.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "src/modules/graph/paths.service.ts",
+      "target": "src/modules/callables/callables.types.ts"
+    },
+    {
+      "source": "src/modules/graph/paths.service.ts",
+      "target": "src/modules/documentation/documentation.service.ts"
+    },
+    {
+      "source": "src/modules/graph/paths.service.ts",
+      "target": "src/modules/graph/graph.types.ts"
+    },
+    {
+      "source": "src/modules/graph/paths.service.ts",
+      "target": "src/modules/signatures/signatures.service.ts"
+    },
+    {
+      "source": "src/modules/graph/paths.service.unit.test.ts",
+      "target": "src/modules/callables/callables.types.ts"
+    },
+    {
+      "source": "src/modules/graph/paths.service.unit.test.ts",
+      "target": "src/modules/documentation/documentation.service.ts"
+    },
+    {
+      "source": "src/modules/graph/paths.service.unit.test.ts",
+      "target": "src/modules/graph/components.service.ts"
+    },
+    {
+      "source": "src/modules/graph/paths.service.unit.test.ts",
+      "target": "src/modules/graph/depth.service.ts"
+    },
+    {
+      "source": "src/modules/graph/paths.service.unit.test.ts",
+      "target": "src/modules/graph/graph.service.ts"
+    },
+    {
+      "source": "src/modules/graph/paths.service.unit.test.ts",
+      "target": "src/modules/graph/paths.service.ts"
+    },
+    {
+      "source": "src/modules/graph/paths.service.unit.test.ts",
+      "target": "src/modules/signatures/signatures.service.ts"
+    },
+    {
+      "source": "src/modules/graph/paths.service.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/graph/paths.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "src/modules/program/compiler-host.service.unit.test.ts",
+      "target": "src/modules/program/compiler-host.service.ts"
+    },
+    {
+      "source": "src/modules/program/compiler-host.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "src/modules/program/program.module.ts",
+      "target": "src/modules/program/compiler-host.service.ts"
+    },
+    {
+      "source": "src/modules/program/program.module.ts",
+      "target": "src/modules/program/program.service.ts"
+    },
+    {
+      "source": "src/modules/program/program.module.ts",
+      "target": "src/modules/workspace/workspace.module.ts"
+    },
+    {
+      "source": "src/modules/program/program.service.ts",
+      "target": "src/modules/program/compiler-host.service.ts"
+    },
+    {
+      "source": "src/modules/program/program.service.ts",
+      "target": "src/modules/program/program.errors.ts"
+    },
+    {
+      "source": "src/modules/program/program.service.ts",
+      "target": "src/modules/program/program.types.ts"
+    },
+    {
+      "source": "src/modules/program/program.service.ts",
+      "target": "src/modules/workspace/workspace.types.ts"
+    },
+    {
+      "source": "src/modules/program/program.service.unit.test.ts",
+      "target": "src/modules/program/compiler-host.service.ts"
+    },
+    {
+      "source": "src/modules/program/program.service.unit.test.ts",
+      "target": "src/modules/program/program.errors.ts"
+    },
+    {
+      "source": "src/modules/program/program.service.unit.test.ts",
+      "target": "src/modules/program/program.service.ts"
+    },
+    {
+      "source": "src/modules/program/program.service.unit.test.ts",
+      "target": "src/modules/workspace/workspace.types.ts"
+    },
+    {
+      "source": "src/modules/program/program.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "src/modules/program/program.types.ts",
+      "target": "src/modules/workspace/workspace.types.ts"
+    },
+    {
+      "source": "src/modules/signatures/signatures.module.ts",
+      "target": "src/modules/signatures/signatures.service.ts"
+    },
+    {
+      "source": "src/modules/signatures/signatures.service.ts",
+      "target": "src/modules/callables/callables.types.ts"
+    },
+    {
+      "source": "src/modules/signatures/signatures.service.ts",
+      "target": "src/modules/signatures/signatures.constants.ts"
+    },
+    {
+      "source": "src/modules/signatures/signatures.service.ts",
+      "target": "src/modules/signatures/signatures.types.ts"
+    },
+    {
+      "source": "src/modules/signatures/signatures.service.unit.test.ts",
+      "target": "src/modules/signatures/signatures.service.ts"
+    },
+    {
+      "source": "src/modules/signatures/signatures.service.unit.test.ts",
+      "target": "src/modules/signatures/signatures.types.ts"
+    },
+    {
+      "source": "src/modules/signatures/signatures.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "src/modules/signatures/signatures.service.unit.test.ts",
+      "target": "testing/programs.ts"
+    },
+    {
+      "source": "src/modules/signatures/signatures.types.ts",
+      "target": "src/modules/callables/callables.types.ts"
+    },
+    {
+      "source": "src/modules/workspace/workspace.module.ts",
+      "target": "src/modules/workspace/workspace.service.ts"
+    },
+    {
+      "source": "src/modules/workspace/workspace.service.ts",
+      "target": "src/modules/workspace/workspace.constants.ts"
+    },
+    {
+      "source": "src/modules/workspace/workspace.service.ts",
+      "target": "src/modules/workspace/workspace.types.ts"
+    },
+    {
+      "source": "src/modules/workspace/workspace.service.unit.test.ts",
+      "target": "src/modules/workspace/workspace.service.ts"
+    },
+    {
+      "source": "src/modules/workspace/workspace.service.unit.test.ts",
+      "target": "src/modules/workspace/workspace.types.ts"
+    },
+    {
+      "source": "src/modules/workspace/workspace.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
+      "source": "testing/mocks.ts",
+      "target": "src/modules/callables/callables.types.ts"
+    },
+    {
+      "source": "testing/modules.ts",
+      "target": "src/modules/callables/callables.module.ts"
+    },
+    {
+      "source": "testing/modules.ts",
+      "target": "src/modules/classes/classes.module.ts"
+    },
+    {
+      "source": "testing/modules.ts",
+      "target": "src/modules/cohesion/cohesion.module.ts"
+    },
+    {
+      "source": "testing/modules.ts",
+      "target": "src/modules/documentation/documentation.module.ts"
+    },
+    {
+      "source": "testing/modules.ts",
+      "target": "src/modules/edges/edges.module.ts"
+    },
+    {
+      "source": "testing/modules.ts",
+      "target": "src/modules/entries/entries.module.ts"
+    },
+    {
+      "source": "testing/modules.ts",
+      "target": "src/modules/graph/graph.module.ts"
+    },
+    {
+      "source": "testing/modules.ts",
+      "target": "src/modules/program/program.module.ts"
+    },
+    {
+      "source": "testing/modules.ts",
+      "target": "src/modules/signatures/signatures.module.ts"
+    },
+    {
+      "source": "testing/modules.ts",
+      "target": "src/modules/workspace/workspace.module.ts"
+    },
+    {
+      "source": "testing/programs.ts",
+      "target": "src/modules/callables/callable-identity.service.ts"
+    },
+    {
+      "source": "testing/programs.ts",
+      "target": "src/modules/callables/callables.service.ts"
+    },
+    {
+      "source": "testing/programs.ts",
+      "target": "src/modules/classes/classes.service.ts"
+    },
+    {
+      "source": "testing/programs.ts",
+      "target": "src/modules/classes/external.service.ts"
+    },
+    {
+      "source": "testing/programs.ts",
+      "target": "src/modules/edges/call-sites.service.ts"
+    },
+    {
+      "source": "testing/programs.ts",
+      "target": "src/modules/edges/edges.service.ts"
+    },
+    {
+      "source": "testing/programs.ts",
+      "target": "src/modules/edges/symbol-resolution.service.ts"
+    },
+    {
+      "source": "testing/programs.ts",
+      "target": "src/modules/program/compiler-host.service.ts"
+    },
+    {
+      "source": "testing/programs.ts",
+      "target": "src/modules/program/program.service.ts"
+    },
+    {
+      "source": "testing/programs.ts",
+      "target": "src/modules/program/program.types.ts"
+    },
+    {
+      "source": "testing/programs.ts",
+      "target": "src/modules/workspace/workspace.service.ts"
+    }
+  ],
+  "fileNames": [
+    "eslint.config.ts",
+    "src/index.ts",
+    "src/modules/callables/callable-identity.service.ts",
+    "src/modules/callables/callable-identity.service.unit.test.ts",
+    "src/modules/callables/callables.constants.ts",
+    "src/modules/callables/callables.module.ts",
+    "src/modules/callables/callables.service.ts",
+    "src/modules/callables/callables.service.unit.test.ts",
+    "src/modules/callables/callables.types.ts",
+    "src/modules/classes/classes.constants.ts",
+    "src/modules/classes/classes.module.ts",
+    "src/modules/classes/classes.service.ts",
+    "src/modules/classes/classes.service.unit.test.ts",
+    "src/modules/classes/classes.types.ts",
+    "src/modules/classes/external.service.ts",
+    "src/modules/classes/external.service.unit.test.ts",
+    "src/modules/cohesion/cohesion.constants.ts",
+    "src/modules/cohesion/cohesion.module.ts",
+    "src/modules/cohesion/cohesion.service.ts",
+    "src/modules/cohesion/cohesion.service.unit.test.ts",
+    "src/modules/cohesion/cohesion.types.ts",
+    "src/modules/documentation/documentation.constants.ts",
+    "src/modules/documentation/documentation.module.ts",
+    "src/modules/documentation/documentation.service.ts",
+    "src/modules/documentation/documentation.service.unit.test.ts",
+    "src/modules/documentation/documentation.types.ts",
+    "src/modules/edges/call-sites.service.ts",
+    "src/modules/edges/call-sites.service.unit.test.ts",
+    "src/modules/edges/edges.constants.ts",
+    "src/modules/edges/edges.module.ts",
+    "src/modules/edges/edges.service.ts",
+    "src/modules/edges/edges.service.unit.test.ts",
+    "src/modules/edges/edges.types.ts",
+    "src/modules/edges/symbol-resolution.service.ts",
+    "src/modules/edges/symbol-resolution.service.unit.test.ts",
+    "src/modules/entries/entries.constants.ts",
+    "src/modules/entries/entries.module.ts",
+    "src/modules/entries/entries.service.ts",
+    "src/modules/entries/entries.service.unit.test.ts",
+    "src/modules/entries/entries.types.ts",
+    "src/modules/graph/breadth.service.ts",
+    "src/modules/graph/breadth.service.unit.test.ts",
+    "src/modules/graph/components.constants.ts",
+    "src/modules/graph/components.service.ts",
+    "src/modules/graph/components.service.unit.test.ts",
+    "src/modules/graph/components.types.ts",
+    "src/modules/graph/depth.service.ts",
+    "src/modules/graph/depth.service.unit.test.ts",
+    "src/modules/graph/graph.constants.ts",
+    "src/modules/graph/graph.module.ts",
+    "src/modules/graph/graph.service.ts",
+    "src/modules/graph/graph.service.unit.test.ts",
+    "src/modules/graph/graph.types.ts",
+    "src/modules/graph/paths.service.ts",
+    "src/modules/graph/paths.service.unit.test.ts",
+    "src/modules/program/compiler-host.service.ts",
+    "src/modules/program/compiler-host.service.unit.test.ts",
+    "src/modules/program/program.constants.ts",
+    "src/modules/program/program.errors.ts",
+    "src/modules/program/program.module.ts",
+    "src/modules/program/program.service.ts",
+    "src/modules/program/program.service.unit.test.ts",
+    "src/modules/program/program.types.ts",
+    "src/modules/signatures/signatures.constants.ts",
+    "src/modules/signatures/signatures.module.ts",
+    "src/modules/signatures/signatures.service.ts",
+    "src/modules/signatures/signatures.service.unit.test.ts",
+    "src/modules/signatures/signatures.types.ts",
+    "src/modules/workspace/workspace.constants.ts",
+    "src/modules/workspace/workspace.module.ts",
+    "src/modules/workspace/workspace.service.ts",
+    "src/modules/workspace/workspace.service.unit.test.ts",
+    "src/modules/workspace/workspace.types.ts",
+    "testing/mocks.ts",
+    "testing/modules.ts",
+    "testing/programs.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "isolatedFileNames": [
+    "eslint.config.ts",
+    "src/index.ts",
+    "src/modules/classes/classes.constants.ts",
+    "src/modules/cohesion/cohesion.constants.ts",
+    "src/modules/graph/graph.constants.ts",
+    "src/modules/program/program.constants.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "projectName": "callidescope-graph"
+}

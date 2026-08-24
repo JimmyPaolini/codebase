@@ -1,6 +1,13 @@
 import path from "node:path";
 
 import { ConfigurationService } from "@callidescope/configuration";
+import {
+  MarkdownReportService,
+  MermaidReportService,
+  OutputJsonService,
+  OutputMarkdownService,
+  ReportService,
+} from "@callidescope/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import {
@@ -16,11 +23,6 @@ import {
 import { LoggerService } from "@codebase/logger";
 
 import { buildCallGraphResult, buildStackFrame } from "../../../testing/mocks";
-import { OutputJsonService } from "../output-json/output-json.service";
-import { OutputMarkdownService } from "../output-markdown/output-markdown.service";
-import { MarkdownReportService } from "../report/markdown-report.service";
-import { MermaidReportService } from "../report/mermaid-report.service";
-import { ReportService } from "../report/report.service";
 
 import { CallidescopeCommand } from "./callidescope.command";
 import { CallidescopeService } from "./callidescope.service";
@@ -63,6 +65,11 @@ function buildConfiguration(
       projectReadmes: undefined,
     },
     projects: [],
+    workspaceStructure: {
+      modulesDirectory: "modules",
+      projectContainerDirectories: ["applications", "packages", "tools"],
+      rootModuleSegment: "src",
+    },
     ...overrides,
   };
 }

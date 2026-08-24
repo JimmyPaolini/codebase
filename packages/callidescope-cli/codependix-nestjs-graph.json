@@ -18,7 +18,7 @@
     },
     {
       "source": "CallidescopeModule",
-      "target": "ClassHierarchyModule"
+      "target": "ClassesModule"
     },
     {
       "source": "CallidescopeModule",
@@ -34,7 +34,7 @@
     },
     {
       "source": "CallidescopeModule",
-      "target": "EntryPointsModule"
+      "target": "EntriesModule"
     },
     {
       "source": "CallidescopeModule",
@@ -70,7 +70,7 @@
     },
     {
       "source": "EdgesModule",
-      "target": "ClassHierarchyModule"
+      "target": "ClassesModule"
     },
     {
       "source": "EdgesModule",
@@ -120,14 +120,14 @@
   "moduleNames": [
     "CallablesModule",
     "CallidescopeModule",
-    "ClassHierarchyModule",
+    "ClassesModule",
     "CohesionModule",
     "ConfigModule",
     "ConfigurationModule",
     "DiscoveryModule",
     "DocumentationModule",
     "EdgesModule",
-    "EntryPointsModule",
+    "EntriesModule",
     "GraphModule",
     "LoggerModule",
     "MainModule",

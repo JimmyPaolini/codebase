@@ -343,6 +343,8 @@ graph LR
   caelundas["caelundas"]
   callidescope_cli["callidescope-cli"]
   callidescope_configuration["callidescope-configuration"]
+  callidescope_graph["callidescope-graph"]
+  callidescope_output["callidescope-output"]
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
   codependix_imports["codependix-imports"]
@@ -376,7 +378,14 @@ graph LR
   validation["validation"]
   caelundas --> logger
   callidescope_cli --> callidescope_configuration
+  callidescope_cli --> callidescope_graph
+  callidescope_cli --> callidescope_output
   callidescope_cli --> logger
+  callidescope_graph --> callidescope_configuration
+  callidescope_graph --> logger
+  callidescope_output --> callidescope_configuration
+  callidescope_output --> callidescope_graph
+  callidescope_output --> logger
   codependix_cli --> codependix_configuration
   codependix_cli --> codependix_imports
   codependix_cli --> codependix_nestjs

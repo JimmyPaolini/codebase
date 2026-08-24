@@ -3,6 +3,8 @@
   "dependents": [
     "caelundas",
     "callidescope-cli",
+    "callidescope-graph",
+    "callidescope-output",
     "codependix-cli",
     "codependix-nestjs",
     "codometer-changes",
@@ -23,6 +25,16 @@
     {
       "implicit": false,
       "source": "callidescope-cli",
+      "target": "logger"
+    },
+    {
+      "implicit": false,
+      "source": "callidescope-graph",
+      "target": "logger"
+    },
+    {
+      "implicit": false,
+      "source": "callidescope-output",
       "target": "logger"
     },
     {

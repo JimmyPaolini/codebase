@@ -4,21 +4,21 @@ import {
   DEFAULT_JSON_INDENTATION,
   DEFAULT_PREVIEW_COUNT,
 } from "@callidescope/configuration";
+import {
+  MarkdownReportService,
+  OutputJsonService,
+  OutputMarkdownService,
+} from "@callidescope/output";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
-
-import { OutputJsonService } from "../output-json/output-json.service";
-import { OutputMarkdownService } from "../output-markdown/output-markdown.service";
-import { MarkdownReportService } from "../report/markdown-report.service";
 
 import { PROJECT_README_NAME } from "./callidescope.constants";
 import { CallidescopeService } from "./callidescope.service";
 import { CHECK_NAMES } from "./run-plan.constants";
 import { RunPlanService } from "./run-plan.service";
 
-import type { ProjectSection } from "../output-markdown/output-markdown.types";
 import type {
   CallidescopeCommandOptions,
   SyncDestinationsArguments,
@@ -30,6 +30,7 @@ import type {
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeProjectReadmeConfiguration,
 } from "@callidescope/configuration";
+import type { ProjectSection } from "@callidescope/output";
 
 /**
  * CLI entry point for the call-stack tracing workflow.

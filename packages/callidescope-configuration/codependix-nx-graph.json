@@ -1,12 +1,24 @@
 {
   "dependencies": [],
   "dependents": [
-    "callidescope-cli"
+    "callidescope-cli",
+    "callidescope-graph",
+    "callidescope-output"
   ],
   "edges": [
     {
       "implicit": false,
       "source": "callidescope-cli",
+      "target": "callidescope-configuration"
+    },
+    {
+      "implicit": false,
+      "source": "callidescope-graph",
+      "target": "callidescope-configuration"
+    },
+    {
+      "implicit": false,
+      "source": "callidescope-output",
       "target": "callidescope-configuration"
     }
   ],

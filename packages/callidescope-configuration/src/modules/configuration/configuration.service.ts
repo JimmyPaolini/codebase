@@ -21,9 +21,12 @@ import {
   DEFAULT_MAXIMUM_DEPTH,
   DEFAULT_MAXIMUM_IMPLEMENTATION_CANDIDATES,
   DEFAULT_MINIMUM_CALLERS,
+  DEFAULT_MODULES_DIRECTORY,
   DEFAULT_OUTPUT_FORMAT,
   DEFAULT_PREVIEW_COUNT,
+  DEFAULT_PROJECT_CONTAINER_DIRECTORIES,
   DEFAULT_PROJECT_README_HEADING,
+  DEFAULT_ROOT_MODULE_SEGMENT,
   DEFAULT_SPREAD_THRESHOLD,
   REPOSITORY_ROOT_MARKERS,
   SUPPORTED_CONFIGURATION_EXTENSIONS,
@@ -37,6 +40,7 @@ import type {
   CallidescopeLimits,
   CallidescopeMarkdownOutputConfiguration,
   CallidescopeOutputConfiguration,
+  CallidescopeWorkspaceStructure,
   LoadConfigurationArguments,
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeEntryPoints,
@@ -44,6 +48,7 @@ import type {
   ResolvedCallidescopeLimits,
   ResolvedCallidescopeMarkdownOutputConfiguration,
   ResolvedCallidescopeProjectReadmeConfiguration,
+  ResolvedCallidescopeWorkspaceStructure,
 } from "./configuration.types";
 
 /**
@@ -286,6 +291,27 @@ export class ConfigurationService {
     };
   }
 
+  /**
+   * Applies defaults to the workspace's directory layout.
+   *
+   * Defaults to this tool's own repository layout, so a project that never
+   * configures this keeps tracing the way it always has.
+   */
+  private resolveWorkspaceStructure(
+    workspaceStructure: CallidescopeWorkspaceStructure | undefined,
+  ): ResolvedCallidescopeWorkspaceStructure {
+    const authored = workspaceStructure ?? {};
+
+    return {
+      modulesDirectory: authored.modulesDirectory ?? DEFAULT_MODULES_DIRECTORY,
+      projectContainerDirectories: authored.projectContainerDirectories ?? [
+        ...DEFAULT_PROJECT_CONTAINER_DIRECTORIES,
+      ],
+      rootModuleSegment:
+        authored.rootModuleSegment ?? DEFAULT_ROOT_MODULE_SEGMENT,
+    };
+  }
+
   // 🌎 Public Methods
 
   /**
@@ -361,6 +387,9 @@ export class ConfigurationService {
         projectReadmes: this.resolveProjectReadmes(configuration.output),
       },
       projects: configuration.projects ?? [],
+      workspaceStructure: this.resolveWorkspaceStructure(
+        configuration.workspaceStructure,
+      ),
     };
   }
 }
