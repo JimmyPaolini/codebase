@@ -41,53 +41,6 @@ src/
 testing/                            # Shared test utilities
 ```
 
-### Module Graph
-
-The modules this project defines and the imports between them, published by `nx run synchronization:nestjs-module-graphs:write`.
-
-<!-- nestjs-module-graph-start -->
-
-```mermaid
-flowchart LR
-  subgraph group0["codometer-languages"]
-    CssModule
-    HclModule
-    JsonModule
-    JupyterModule
-    LanguagesModule
-    MarkdownModule
-    PythonModule
-    ShellModule
-    SqlModule
-    TomlModule
-    TypescriptModule
-    YamlModule
-  end
-  subgraph group1["logger"]
-    LoggerModule([LoggerModule])
-  end
-  JupyterModule --> JsonModule
-  JupyterModule --> MarkdownModule
-  JupyterModule --> PythonModule
-  LanguagesModule --> CssModule
-  LanguagesModule --> HclModule
-  LanguagesModule --> JsonModule
-  LanguagesModule --> JupyterModule
-  LanguagesModule --> MarkdownModule
-  LanguagesModule --> PythonModule
-  LanguagesModule --> ShellModule
-  LanguagesModule --> SqlModule
-  LanguagesModule --> TomlModule
-  LanguagesModule --> TypescriptModule
-  LanguagesModule --> YamlModule
-```
-
-_Rounded modules are global: every module can inject them, so their edges are left out._
-
-_Reached only for their types, and so declaring no module here: codometer-configuration._
-
-<!-- nestjs-module-graph-end -->
-
 ## Development
 
 ### Adding Business Logic

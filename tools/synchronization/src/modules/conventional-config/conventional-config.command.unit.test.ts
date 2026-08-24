@@ -89,4 +89,20 @@ describe(ConventionalConfigCommand, () => {
       expect.any(Object),
     );
   });
+
+  it("exits non-zero when synchronization reports drift", async () => {
+    conventionalConfigService.runSynchronization.mockReturnValueOnce(false);
+
+    await expectProcessExitOne(async () => command.run(["check"]));
+
+    expect(conventionalConfigService.runSynchronization).toHaveBeenCalledWith(
+      "check",
+    );
+  });
+
+  it("does not exit when synchronization is already current", async () => {
+    conventionalConfigService.runSynchronization.mockReturnValueOnce(true);
+
+    await expect(command.run(["check"])).resolves.toBeUndefined();
+  });
 });
