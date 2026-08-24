@@ -90,6 +90,13 @@ describe(SnakeSequenceService, () => {
     });
   });
 
+  describe("flipPitchLevels", () => {
+    it("is twice rows minus two, matching the reference geometry at 5 and 6 rows", () => {
+      expect(service.flipPitchLevels(5)).toBe(6);
+      expect(service.flipPitchLevels(6)).toBe(8);
+    });
+  });
+
   describe("unitPoints", () => {
     it("returns the base zigzag unmodified when there is no modifier", () => {
       expect(service.unitPoints(6, 0, undefined)).toStrictEqual(
@@ -114,26 +121,33 @@ describe(SnakeSequenceService, () => {
       ]);
     });
 
-    it("leaves even unit indices not mirrored under flip", () => {
-      expect(service.unitPoints(6, 0, { name: "flip" })).toStrictEqual(
-        service.points(6),
-      );
-    });
-
-    it("mirrors odd unit indices under flip across a horizontal line", () => {
-      expect(service.unitPoints(6, 1, { name: "flip" })).toStrictEqual([
-        [0, 5],
-        [4, 5],
-        [4, 2],
-        [2, 2],
+    it("fuses a mirrored twin into the same tile for bare flip, matching the reference geometry at 6 rows", () => {
+      expect(service.unitPoints(6, 0, { name: "flip" })).toStrictEqual([
+        [0, 1],
+        [4, 1],
+        [4, 4],
+        [2, 4],
         [2, 3],
         [3, 3],
-        [3, 4],
-        [1, 4],
-        [1, 1],
+        [3, 2],
+        [1, 2],
+        [1, 5],
+        [8, 5],
+        [8, 2],
+        [6, 2],
+        [6, 3],
+        [7, 3],
+        [7, 4],
+        [5, 4],
         [5, 1],
-        [5, 5],
+        [8, 1],
       ]);
+    });
+
+    it("returns the identical fused tile for every unit index under bare flip, since the mirrored twin lives inside the tile rather than alternating", () => {
+      expect(service.unitPoints(6, 1, { name: "flip" })).toStrictEqual(
+        service.unitPoints(6, 0, { name: "flip" }),
+      );
     });
 
     it("composes edge and flip for edge-flip on odd unit indices", () => {
@@ -150,8 +164,8 @@ describe(SnakeSequenceService, () => {
       expect(service.unitWidthLevels(6, undefined)).toBe(5);
     });
 
-    it("spans rows minus one levels for flip, which doesn't widen the pitch", () => {
-      expect(service.unitWidthLevels(6, { name: "flip" })).toBe(5);
+    it("doubles rows-minus-two levels for bare flip's fused tile", () => {
+      expect(service.unitWidthLevels(6, { name: "flip" })).toBe(8);
     });
 
     it("widens to rows levels for the edge family", () => {

@@ -40,6 +40,12 @@ describe(SnakeMotifService, () => {
 
       expect(service.unitWidth(geometry, 6, { name: "edge" })).toBe(60);
     });
+
+    it("spans twice rows-minus-two grid levels for bare flip's fused tile", () => {
+      const geometry = gridGeometryService.compute(6);
+
+      expect(service.unitWidth(geometry, 6, { name: "flip" })).toBe(80);
+    });
   });
 
   describe("path", () => {
@@ -81,7 +87,7 @@ describe(SnakeMotifService, () => {
       );
     });
 
-    it("leaves the first (even-indexed) unit not mirrored under flip", () => {
+    it("fuses a mirrored twin into unit 0's own tile under flip, matching the reference geometry at 6 rows", () => {
       const geometry = gridGeometryService.compute(6);
 
       expect(
@@ -90,10 +96,12 @@ describe(SnakeMotifService, () => {
           rows: 6,
           unitIndex: 0,
         }),
-      ).toBe(service.path(geometry, { rows: 6, unitIndex: 0 }));
+      ).toBe(
+        "M2.5 12.5H42.5V42.5H22.5V32.5H32.5V22.5H12.5V52.5H82.5V22.5H62.5V32.5H72.5V42.5H52.5V12.5H82.5M2.5 2.5H82.5M82.5 62.5H2.5",
+      );
     });
 
-    it("mirrors the second (odd-indexed) unit under flip", () => {
+    it("translates unit 1's identical fused tile by the widened flip pitch, matching the reference geometry at 6 rows", () => {
       const geometry = gridGeometryService.compute(6);
 
       expect(
@@ -102,7 +110,9 @@ describe(SnakeMotifService, () => {
           rows: 6,
           unitIndex: 1,
         }),
-      ).not.toBe(service.path(geometry, { rows: 6, unitIndex: 1 }));
+      ).toBe(
+        "M82.5 12.5H122.5V42.5H102.5V32.5H112.5V22.5H92.5V52.5H162.5V22.5H142.5V32.5H152.5V42.5H132.5V12.5H162.5M82.5 2.5H162.5M162.5 62.5H82.5",
+      );
     });
   });
 
