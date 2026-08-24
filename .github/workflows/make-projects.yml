@@ -56,76 +56,23 @@ jobs:
         continue-on-error: true
         run: pnpm exec nx affected --target=make-projects --parallel=4
 
-      # On main this snapshot becomes the baseline every later pull request
-      # compares against, which is what removes the second checkout, install,
-      # and full build this job used to run just to size the base branch. A
-      # failed build would publish a partial baseline, so it is skipped.
+      # There is one baseline, not a "previous" and a "merged" one: this step
+      # downloads it, the next overlays this run's fresh reports directly onto
+      # it in place, and the one after re-uploads that same directory. A pull
+      # request run stops after this step and only ever reads it.
       #
-      # `nx affected` above only rebuilds what this push touched, so this run's
-      # reports alone cover a fraction of the workspace. The baseline is kept
-      # complete by starting from the previous one and overlaying today's fresh
-      # reports on top of it, rather than replacing it outright — a project
-      # untouched by this push keeps the size it last measured instead of
-      # disappearing from the baseline and reading as new on the next pull
-      # request that compares against it.
-      - name: 📥 Download Previous Codometer Baseline
-        id: previous-baseline
-        if: >-
-          github.ref == 'refs/heads/main'
-          && steps.make-projects.outcome == 'success'
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          run_id="$(gh run list --workflow=make-projects.yml --branch=main \
-            --status=success --limit=1 --json databaseId \
-            --jq '.[0].databaseId')"
-          if [[ -z "${run_id}" ]]; then
-            echo "No previous main run to merge with yet."
-            exit 0
-          fi
-          gh run download "${run_id}" --name codometer-reports-main \
-            --dir .codometer-baseline-previous \
-            || echo "No previous codometer-reports-main artifact to merge with yet."
-
-      # The merged tree is deliberately not dot-prefixed: `actions/upload-artifact`
-      # walks `path` with `@actions/glob`, which excludes dotfiles and
-      # dot-directories unless `include-hidden-files: true` is set. A
-      # `.codometer-baseline-merged` staging directory was silently treated as
-      # entirely hidden, so every file `cp` placed inside it was invisible to
-      # the upload step — the baseline artifact has been empty since this
-      # report shipped, and every pull request compared against nothing.
-      - name: 🧺 Merge Codometer Baseline
-        if: >-
-          github.ref == 'refs/heads/main'
-          && steps.make-projects.outcome == 'success'
-        run: |
-          mkdir -p codometer-baseline-merged
-          if [[ -d .codometer-baseline-previous ]]; then
-            cp -r .codometer-baseline-previous/. codometer-baseline-merged/
-          fi
-          shopt -s nullglob
-          for report in applications/*/codometer-report.json \
-            packages/*/codometer-report.json \
-            tools/*/codometer-report.json; do
-            mkdir -p "codometer-baseline-merged/$(dirname "${report}")"
-            cp "${report}" "codometer-baseline-merged/${report}"
-          done
-
-      - name: 📤 Upload Codometer Reports
-        if: >-
-          github.ref == 'refs/heads/main'
-          && steps.make-projects.outcome == 'success'
-        uses: actions/upload-artifact@v7
-        with:
-          name: codometer-reports-main
-          path: codometer-baseline-merged
-          retention-days: 90
-          if-no-files-found: ignore
-
+      # Not dot-prefixed: `actions/upload-artifact` walks `path` with
+      # `@actions/glob`, which excludes dotfiles and dot-directories unless
+      # `include-hidden-files: true` is set. A dot-prefixed staging directory
+      # was silently treated as entirely hidden, so every file placed inside it
+      # was invisible to the upload step — the baseline artifact had been empty
+      # since this report shipped, and every pull request compared against
+      # nothing.
       - name: 📥 Download Codometer Baseline
         id: baseline
-        if: github.event_name == 'pull_request'
+        if: >-
+          (github.ref == 'refs/heads/main' && steps.make-projects.outcome == 'success')
+          || github.event_name == 'pull_request'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -136,9 +83,46 @@ jobs:
             echo "No successful main run to compare against yet."
             exit 0
           fi
-          gh run download "${run_id}" --name codometer-reports-main --dir .codometer-baseline
+          gh run download "${run_id}" --name codometer-reports-main --dir codometer-baseline
           echo "run-url=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${run_id}" \
             >>"${GITHUB_OUTPUT}"
+
+      # On main this snapshot becomes the baseline every later pull request
+      # compares against, which is what removes the second checkout, install,
+      # and full build this job used to run just to size the base branch. A
+      # failed build would publish a partial baseline, so it is skipped.
+      #
+      # `nx affected` above only rebuilds what this push touched, so this run's
+      # reports alone cover a fraction of the workspace. The baseline is kept
+      # complete by overlaying today's fresh reports onto the one just
+      # downloaded rather than replacing it outright — a project untouched by
+      # this push keeps the size it last measured instead of disappearing from
+      # the baseline and reading as new on the next pull request that compares
+      # against it.
+      - name: 🧺 Update Codometer Baseline
+        if: >-
+          github.ref == 'refs/heads/main'
+          && steps.make-projects.outcome == 'success'
+        run: |
+          mkdir -p codometer-baseline
+          shopt -s nullglob
+          for report in applications/*/codometer-report.json \
+            packages/*/codometer-report.json \
+            tools/*/codometer-report.json; do
+            mkdir -p "codometer-baseline/$(dirname "${report}")"
+            cp "${report}" "codometer-baseline/${report}"
+          done
+
+      - name: 📤 Upload Codometer Baseline
+        if: >-
+          github.ref == 'refs/heads/main'
+          && steps.make-projects.outcome == 'success'
+        uses: actions/upload-artifact@v7
+        with:
+          name: codometer-reports-main
+          path: codometer-baseline
+          retention-days: 90
+          if-no-files-found: ignore
 
       # The report lives in the description, not a comment. Review automation
       # treats every new pull request comment as feedback needing a reply, so a
@@ -156,7 +140,7 @@ jobs:
           gh pr view "${PULL_REQUEST}" --json body --jq '.body' \
             >.pull-request-body.md
           pnpm exec nx run codometer-cli:start -- changes \
-            --baseline .codometer-baseline \
+            --baseline codometer-baseline \
             --baseline-url "${BASELINE_URL}" \
             --markdown .pull-request-body.md
           gh pr edit "${PULL_REQUEST}" --body-file .pull-request-body.md
