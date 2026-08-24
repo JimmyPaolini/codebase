@@ -8,6 +8,8 @@ import { MotifTransformsService } from "./motif-transforms.service";
 import { SnakeMotifService } from "./snake-motif.service";
 import { SnakeSequenceService } from "./snake-sequence.service";
 import { SvgRenderingService } from "./svg-rendering.service";
+import { SwirlMotifService } from "./swirl-motif.service";
+import { WhirlMotifService } from "./whirl-motif.service";
 
 /**
  * Wires up the services that turn generation parameters (type, rows, repeat
@@ -26,6 +28,8 @@ import { SvgRenderingService } from "./svg-rendering.service";
     SnakeMotifService,
     SnakeSequenceService,
     SvgRenderingService,
+    SwirlMotifService,
+    WhirlMotifService,
   ],
 })
 export class MeanderGenerationModule {}

@@ -14,6 +14,8 @@ export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
   boxes: ["spin", "spin-flip"],
   chain: ["edge", "flip", "edge-flip"],
   snake: ["edge", "flip", "edge-flip"],
+  swirl: ["flip"],
+  whirl: ["flip"],
 };
 
 /**
@@ -89,6 +91,8 @@ export const SUPPORTED_TYPES: readonly string[] = [
   "boxes",
   "chain",
   "snake",
+  "swirl",
+  "whirl",
 ] satisfies readonly MeanderType[];
 
 /**
@@ -97,10 +101,14 @@ export const SUPPORTED_TYPES: readonly string[] = [
  * inward; below 3 rows the first move collapses to a zero-length segment.
  * `chain` and `snake` share a zigzag that needs a genuine middle row
  * distinct from its two neighbors; below 4 rows the sequence degenerates
- * (no reference file exists below 4 rows for either type).
+ * (no reference file exists below 4 rows for either type). `swirl` and
+ * `whirl` are both nested spirals verified against reference files starting
+ * at 4 rows; nothing below that has been checked against real geometry.
  */
 export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
   boxes: 3,
   chain: 4,
   snake: 4,
+  swirl: 4,
+  whirl: 4,
 };

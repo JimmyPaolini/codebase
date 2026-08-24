@@ -15,6 +15,8 @@ import { MotifTransformsService } from "./motif-transforms.service";
 import { SnakeMotifService } from "./snake-motif.service";
 import { SnakeSequenceService } from "./snake-sequence.service";
 import { SvgRenderingService } from "./svg-rendering.service";
+import { SwirlMotifService } from "./swirl-motif.service";
+import { WhirlMotifService } from "./whirl-motif.service";
 
 describe(MeanderGenerationService, () => {
   let service: MeanderGenerationService;
@@ -30,6 +32,8 @@ describe(MeanderGenerationService, () => {
         SnakeMotifService,
         SnakeSequenceService,
         SvgRenderingService,
+        SwirlMotifService,
+        WhirlMotifService,
       ],
     }).compile();
 
@@ -292,5 +296,58 @@ describe(MeanderGenerationService, () => {
         expect(svg).toBe(golden);
       },
     );
+
+    it.each(["swirl", "whirl"] as const)(
+      "matches the committed golden fixture for 5 rows %s with 6 repeats",
+      async (type) => {
+        const svg = service.generate({
+          repeatCount: 6,
+          rows: 5,
+          type,
+        });
+        const golden = await readFile(
+          path.join(
+            import.meta.dirname,
+            `../../../testing/fixtures/${type}-5-rows-6-repeats.svg`,
+          ),
+          "utf8",
+        );
+
+        expect(svg).toBe(golden);
+      },
+    );
+
+    it.each(["swirl", "whirl"] as const)(
+      "matches the committed golden fixture for 5 rows %s with 6 repeats and flip",
+      async (type) => {
+        const svg = service.generate({
+          modifier: { name: "flip" },
+          repeatCount: 6,
+          rows: 5,
+          type,
+        });
+        const golden = await readFile(
+          path.join(
+            import.meta.dirname,
+            `../../../testing/fixtures/${type}-5-rows-6-repeats-flip.svg`,
+          ),
+          "utf8",
+        );
+
+        expect(svg).toBe(golden);
+      },
+    );
+
+    it("throws below the structural minimum rows for swirl", () => {
+      expect(() =>
+        service.generate({ repeatCount: 1, rows: 3, type: "swirl" }),
+      ).toThrow(InvalidRowsError);
+    });
+
+    it("throws below the structural minimum rows for whirl", () => {
+      expect(() =>
+        service.generate({ repeatCount: 1, rows: 3, type: "whirl" }),
+      ).toThrow(InvalidRowsError);
+    });
   });
 });
