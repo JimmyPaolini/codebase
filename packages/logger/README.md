@@ -142,7 +142,7 @@ Call stacks traced through `logger`, deepest first. Each frame shows what it tak
 | Stacks through recursion | 0 |
 | Unfollowable calls | 1 |
 
-### Call stacks
+### Call stacks (depth)
 
 **1. `CallExpression`** — depth 4 · orphan-root
 
@@ -181,6 +181,31 @@ Call stacks traced through `logger`, deepest first. Each frame shows what it tak
 ### Module spread
 
 None.
+
+### Direct fan-out (breadth)
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `checkConventionalMessage` | 2 | `parseLogMessage`, `isConventionalVerb` | `packages/logger/src/lib/conventional-log-message.eslint-rule.ts:61` |
+| `CallExpression` | 2 | `isLoggerObjectText`, `checkMessageArgumentConvention` | `packages/logger/src/lib/conventional-log-message.eslint-rule.ts:151` |
+| `LoggerService.debug` | 2 | `LoggerService.parseMessage`, `LoggerService.buildBindings` | `packages/logger/src/modules/logger/logger.service.ts:241` |
+
+<details>
+<summary>9 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `LoggerService.error` | 2 | `LoggerService.parseMessage`, `LoggerService.buildBindings` | `packages/logger/src/modules/logger/logger.service.ts:256` |
+| `LoggerService.info` | 2 | `LoggerService.parseMessage`, `LoggerService.buildBindings` | `packages/logger/src/modules/logger/logger.service.ts:276` |
+| `LoggerService.verbose` | 2 | `LoggerService.parseMessage`, `LoggerService.buildBindings` | `packages/logger/src/modules/logger/logger.service.ts:303` |
+| `LoggerService.warn` | 2 | `LoggerService.parseMessage`, `LoggerService.buildBindings` | `packages/logger/src/modules/logger/logger.service.ts:312` |
+| `checkMessageArgumentConvention` | 1 | `checkConventionalMessage` | `packages/logger/src/lib/conventional-log-message.eslint-rule.ts:91` |
+| `LoggerService.get root` | 1 | `LoggerService.createRootLogger` | `packages/logger/src/modules/logger/logger.service.ts:65` |
+| `LoggerService.assertConventionalMessage` | 1 | `LoggerService.isConventionalVerb` | `packages/logger/src/modules/logger/logger.service.ts:107` |
+| `LoggerService.buildBindings` | 1 | `LoggerService.assertConventionalMessage` | `packages/logger/src/modules/logger/logger.service.ts:140` |
+| `LoggerService.log` | 1 | `LoggerService.info` | `packages/logger/src/modules/logger/logger.service.ts:292` |
+
+</details>
 
 ### Possibly misplaced
 

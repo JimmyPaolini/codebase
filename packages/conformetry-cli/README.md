@@ -583,7 +583,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 | Stacks through recursion | 0 |
 | Unfollowable calls | 4 |
 
-### Call stacks
+### Call stacks (depth)
 
 **1. `ValidateCommand.run`** — depth ≥ 10 · decorated-method
 
@@ -847,6 +847,45 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 ### Module spread
 
 None.
+
+### Direct fan-out (breadth)
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `ValidateCommand.run` | 11 | `LoggerService.debug`, `ConfigurationService.loadConformetryConfiguration`, `ValidationService.validate`, `ValidateCommand.findInstances`, `ValidateCommand.flatMap(…)`, `TemplateDiscoveryService.collectTemplates`, `ReportingService.formatReport`, `ValidateCommand.filter(…)`, `LoggerService.info`, `LoggerService.warn`, `ValidateCommand.describeFailure` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:152` |
+| `GenerateCommand.run` | 10 | `LoggerService.debug`, `ConfigurationService.loadConformetryConfiguration`, `GenerateCommand.find(…)`, `LoggerService.error`, `GenerateCommand.map(…)`, `InputService.resolveGeneratorInputs`, `GenerateCommand.canPrompt`, `GenerationService.runGenerator`, `GenerateCommand.map(…)`, `LoggerService.info` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:108` |
+| `InstancesCommand.run` | 5 | `LoggerService.debug`, `ConfigurationService.loadConformetryConfiguration`, `InventoryService.shortenInstancePaths`, `InstanceDiscoveryService.resolveInventoriedInstances`, `InventoryService.describeInstances` | `packages/conformetry-cli/src/modules/instances/instances.command.ts:90` |
+
+<details>
+<summary>23 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `TemplatesCommand.run` | 5 | `LoggerService.debug`, `ConfigurationService.loadConformetryConfiguration`, `InventoryService.shortenTemplatePairings`, `InstanceDiscoveryService.resolveInventoriedTemplates`, `InventoryService.describeTemplates` | `packages/conformetry-cli/src/modules/templates/templates.command.ts:91` |
+| `ValidateCommand.describeFailure` | 2 | `ValidateCommand.filter(…)`, `ValidateCommand.map(…)` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:66` |
+| `main` | 2 | `LoggerService.constructor`, `LoggerService.setContext` | `packages/conformetry-cli/src/main.ts:11` |
+| `GenerateCommand.constructor` | 1 | `LoggerService.setContext` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:34` |
+| `GenerateCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:68` |
+| `GenerateCommand.parseDirectory` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:77` |
+| `GenerateCommand.parseGenerator` | 1 | `InputService.parseRequiredOption` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:86` |
+| `InstancesCommand.constructor` | 1 | `LoggerService.setContext` | `packages/conformetry-cli/src/modules/instances/instances.command.ts:42` |
+| `InstancesCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-cli/src/modules/instances/instances.command.ts:62` |
+| `InstancesCommand.parseTemplates` | 1 | `InputService.parseCommaDelimitedOption` | `packages/conformetry-cli/src/modules/instances/instances.command.ts:80` |
+| `TemplatesCommand.constructor` | 1 | `LoggerService.setContext` | `packages/conformetry-cli/src/modules/templates/templates.command.ts:43` |
+| `TemplatesCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-cli/src/modules/templates/templates.command.ts:63` |
+| `TemplatesCommand.parseInstances` | 1 | `InputService.parseCommaDelimitedOption` | `packages/conformetry-cli/src/modules/templates/templates.command.ts:72` |
+| `ValidateCommand.constructor` | 1 | `LoggerService.setContext` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:40` |
+| `ValidateCommand.map(…)` | 1 | `ReportingService.formatPercentage` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:69` |
+| `ValidateCommand.findInstances` | 1 | `ValidateCommand.flatMap(…)` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:90` |
+| `ValidateCommand.flatMap(…)` | 1 | `InstanceDiscoveryService.findInstances` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:94` |
+| `ValidateCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:114` |
+| `ValidateCommand.parseInstances` | 1 | `InputService.parseCommaDelimitedOption` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:123` |
+| `ValidateCommand.parseLanguages` | 1 | `InputService.parseCommaDelimitedOption` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:133` |
+| `ValidateCommand.parseThreshold` | 1 | `InputService.parseThresholdOption` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:142` |
+| `errorHandler` | 1 | `LoggerService.error` | `packages/conformetry-cli/src/main.ts:17` |
+| `serviceErrorHandler` | 1 | `LoggerService.error` | `packages/conformetry-cli/src/main.ts:22` |
+
+</details>
 
 ### Possibly misplaced
 

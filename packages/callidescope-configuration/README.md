@@ -195,13 +195,31 @@ Call stacks traced through `callidescope-configuration`, deepest first. Each fra
 | Stacks through recursion | 0 |
 | Unfollowable calls | 2 |
 
-### Call stacks
+### Call stacks (depth)
 
 None.
 
 ### Module spread
 
 None.
+
+### Direct fan-out (breadth)
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `ConfigurationService.loadConfiguration` | 5 | `ConfigurationService.findConfigurationFile`, `ConfigurationService.resolveConfigurationPath`, `ConfigurationService.resolveConfiguration`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.loadConfigurationModule` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:299` |
+| `ConfigurationService.resolveConfiguration` | 5 | `ConfigurationService.resolveEntryPoints`, `ConfigurationService.resolveLimits`, `ConfigurationService.resolveJsonOutput`, `ConfigurationService.resolveMarkdownDestination`, `ConfigurationService.resolveProjectReadmes` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:334` |
+| `ConfigurationService.resolveConfigurationPath` | 2 | `ConfigurationService.findRepositoryRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:166` |
+
+<details>
+<summary>2 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `ConfigurationService.findRepositoryRoot` | 1 | `ConfigurationService.some(…)` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:105` |
+| `ConfigurationService.loadConfigurationModule` | 1 | `ConfigurationService.loadJsonConfiguration` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:129` |
+
+</details>
 
 ### Possibly misplaced
 

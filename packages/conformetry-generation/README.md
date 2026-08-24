@@ -129,7 +129,7 @@ Call stacks traced through `conformetry-generation`, deepest first. Each frame s
 | Stacks through recursion | 0 |
 | Unfollowable calls | 2 |
 
-### Call stacks
+### Call stacks (depth)
 
 **1. `GenerationService.listDirectory`** — depth 2 · orphan-root
 
@@ -141,6 +141,24 @@ Call stacks traced through `conformetry-generation`, deepest first. Each frame s
 ### Module spread
 
 None.
+
+### Direct fan-out (breadth)
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `GenerationService.runGenerator` | 4 | `GenerationService.resolveAdapters`, `GenerationService.normalizeInputs`, `GenerationService.buildSubstitutions`, `GenerationService.renderDirectory` | `packages/conformetry-generation/src/modules/generation/generation.service.ts:189` |
+| `GenerationService.renderDirectory` | 2 | `RenderingService.renderPath`, `GenerationService.renderFile` | `packages/conformetry-generation/src/modules/generation/generation.service.ts:105` |
+| `GenerationService.listDirectory` | 1 | `GenerationService.map(…)` | `packages/conformetry-generation/src/modules/generation/generation.service.ts:39` |
+
+<details>
+<summary>2 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `GenerationService.buildSubstitutions` | 1 | `RenderingService.buildNameSubstitutions` | `packages/conformetry-generation/src/modules/generation/generation.service.ts:75` |
+| `GenerationService.renderFile` | 1 | `RenderingService.renderContent` | `packages/conformetry-generation/src/modules/generation/generation.service.ts:153` |
+
+</details>
 
 ### Possibly misplaced
 

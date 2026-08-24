@@ -96,7 +96,7 @@ Call stacks traced through `conformetry-json`, deepest first. Each frame shows w
 | Stacks through recursion | 1 |
 | Unfollowable calls | 0 |
 
-### Call stacks
+### Call stacks (depth)
 
 **1. `JsonValidatorService.validateDocument`** — depth 12 · orphan-root
 
@@ -125,6 +125,34 @@ Call stacks traced through `conformetry-json`, deepest first. Each frame shows w
 ### Module spread
 
 None.
+
+### Direct fan-out (breadth)
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `JsonComparisonService.compare` | 7 | `JsonComparisonService.countContainer`, `JsonComparisonService.compareArrays`, `JsonComparisonService.isJsonObject`, `JsonComparisonService.compareObjects`, `JsonComparisonService.countNodes`, `JsonComparisonService.formatPath`, `JsonComparisonService.buildError` | `packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:268` |
+| `JsonComparisonService.compareArrayItem` | 6 | `JsonComparisonService.formatPath`, `JsonComparisonService.countNodes`, `JsonComparisonService.isJsonPrimitive`, `JsonComparisonService.buildError`, `JsonComparisonService.pickClosestMatch`, `JsonComparisonService.map(…)` | `packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:79` |
+| `JsonComparisonService.map(…)` | 4 | `JsonComparisonService.formatPath`, `JsonComparisonService.countNodes`, `JsonComparisonService.buildError`, `JsonComparisonService.compare` | `packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:164` |
+
+<details>
+<summary>12 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `JsonComparisonService.countNodes` | 3 | `JsonComparisonService.reduce(…)`, `JsonComparisonService.isJsonObject`, `JsonComparisonService.reduce(…)` | `packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:207` |
+| `JsonComparisonService.compareArrays` | 2 | `JsonComparisonService.combine`, `JsonComparisonService.map(…)` | `packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:141` |
+| `JsonComparisonService.compareObjects` | 2 | `JsonComparisonService.combine`, `JsonComparisonService.map(…)` | `packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:155` |
+| `JsonComparisonService.combine` | 1 | `JsonComparisonService.reduce(…)` | `packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:66` |
+| `JsonComparisonService.map(…)` | 1 | `JsonComparisonService.compare` | `packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:122` |
+| `JsonComparisonService.map(…)` | 1 | `JsonComparisonService.compareArrayItem` | `packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:148` |
+| `JsonComparisonService.reduce(…)` | 1 | `JsonComparisonService.countNodes` | `packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:209` |
+| `JsonComparisonService.reduce(…)` | 1 | `JsonComparisonService.countNodes` | `packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:215` |
+| `JsonComparisonService.formatPath` | 1 | `JsonComparisonService.reduce(…)` | `packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:224` |
+| `JsonComparisonService.pickClosestMatch` | 1 | `JsonComparisonService.reduce(…)` | `packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:253` |
+| `JsonComparisonService.reduce(…)` | 1 | `ScoringService.sumWeights` | `packages/conformetry-json/src/modules/json-validator/json-comparison.service.ts:254` |
+| `JsonValidatorService.validateDocument` | 1 | `JsonComparisonService.compare` | `packages/conformetry-json/src/modules/json-validator/json-validator.service.ts:39` |
+
+</details>
 
 ### Possibly misplaced
 

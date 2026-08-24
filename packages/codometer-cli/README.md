@@ -572,7 +572,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 | Stacks through recursion | 0 |
 | Unfollowable calls | 11 |
 
-### Call stacks
+### Call stacks (depth)
 
 **1. `CodometerCommand.run`** — depth ≥ 13 · decorated-method
 
@@ -850,6 +850,189 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 | `CodometerService.analyzeLanguage` | 16 | `codometer-cli:modules/custom-statistics`, `codometer-cli:modules/languages`, `codometer-cli:modules/size-analysis` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:59` |
 | `LanguagesService.analyze` | 13 | `codometer-cli:modules/css`, `codometer-cli:modules/hcl`, `codometer-cli:modules/json`, `codometer-cli:modules/jupyter`, `codometer-cli:modules/markdown`, `codometer-cli:modules/python`, `codometer-cli:modules/shell`, `codometer-cli:modules/sql`, `codometer-cli:modules/toml`, `codometer-cli:modules/typescript`, `codometer-cli:modules/yaml` | `packages/codometer-cli/src/modules/languages/languages.service.ts:54` |
 | `JupyterService.analyze` | 5 | `codometer-cli:modules/json`, `codometer-cli:modules/markdown`, `codometer-cli:modules/python` | `packages/codometer-cli/src/modules/jupyter/jupyter.service.ts:166` |
+
+### Direct fan-out (breadth)
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `OutputMarkdownService.buildBadgeGroups` | 16 | `OutputMarkdownService.filter(…)`, `buildRepositoryGroup`, `buildTargetsGroup`, `buildTypescriptGroup`, `buildJavascriptGroup`, `buildPythonGroup`, `buildJsonGroup`, `buildYamlGroup`, `buildTomlGroup`, `buildShellGroup`, `buildSqlGroup`, `buildHclGroup`, `buildCssGroup`, `buildCustomGroup`, `buildJupyterGroup`, `buildMarkdownGroup` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:102` |
+| `CodometerCommand.run` | 12 | `CodometerCommand.resolveWorkingDirectory`, `RunPlanService.selectMode`, `LoggerService.error`, `CodometerCommand.readConfiguration`, `RunPlanService.resolveDestinations`, `RunPlanService.listOutputPaths`, `CodometerCommand.announceOutputPaths`, `CodometerService.measure`, `ReportService.build`, `CodometerCommand.deliver`, `RunPlanService.selectScope`, `CodometerCommand.reportFindings` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:453` |
+| `LanguagesService.analyze` | 11 | `CssService.analyze`, `HclService.analyze`, `JsonService.analyze`, `JupyterService.analyze`, `MarkdownService.analyze`, `PythonService.analyze`, `ShellService.analyze`, `SqlService.analyze`, `TomlService.analyze`, `TypescriptService.analyze`, `YamlService.analyze` | `packages/codometer-cli/src/modules/languages/languages.service.ts:54` |
+
+<details>
+<summary>167 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `CodometerService.measure` | 8 | `CodometerService.discoverCodebase`, `CodometerService.analyzeLanguage`, `FileDiscoveryService.categorize`, `CodometerService.measureDeclaredTargets`, `MetricIndexService.index`, `LimitsService.evaluate`, `CodometerService.map(…)`, `CodometerService.readLimitFailures` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:316` |
+| `TargetsService.matchFiles` | 7 | `TargetsService.findBoundary`, `TargetsService.sitsInsideBoundary`, `TargetOutsideRepositoryError.constructor`, `TargetsService.readTargetPrefix`, `TargetsService.walk`, `TargetsService.map(…)`, `TargetsService.map(…)` | `packages/codometer-cli/src/modules/targets/targets.service.ts:281` |
+| `CodometerService.analyzeLanguage` | 7 | `LanguagesService.analyze`, `CustomStatisticsService.buildSymbolCounters`, `SizeAnalysisService.analyze`, `CustomStatisticsService.analyze`, `CodometerService.getFolderCount`, `CodometerService.buildJavascriptStatistics`, `CodometerService.buildTypescriptStatistics` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:59` |
+| `FileDiscoveryService.categorize` | 6 | `FileDiscoveryService.filter(…)`, `FileDiscoveryService.filterByExtension`, `FileDiscoveryService.filter(…)`, `FileDiscoveryService.filter(…)`, `FileDiscoveryService.filter(…)`, `FileDiscoveryService.filter(…)` | `packages/codometer-cli/src/modules/file-discovery/file-discovery.service.ts:285` |
+| `OutputMarkdownService.syncAnchoredBlock` | 6 | `MissingMarkdownPathError.constructor`, `OutputMarkdownService.readExisting`, `OutputMarkdownService.wrapInAnchors`, `OutputMarkdownService.buildBlockRegex`, `OutputMarkdownService.writeMarkdownFile`, `OutputMarkdownService.replace(…)` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:183` |
+| `CodometerService.measureTarget` | 6 | `CodometerService.excludeOutputPaths`, `TargetsService.matchFiles`, `CodometerService.runsAnalysis`, `CodometerService.analyzeLanguage`, `FileDiscoveryService.categorize`, `SizeAnalysisService.analyze` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:256` |
+| `JsonService.countNode` | 5 | `JsonService.isArrayNode`, `JsonService.countArrayNode`, `JsonService.isRecordNode`, `JsonService.countRecordNode`, `JsonService.countPrimitiveNode` | `packages/codometer-cli/src/modules/json/json.service.ts:111` |
+| `JupyterService.analyze` | 5 | `JupyterService.collectParts`, `JsonService.analyze`, `PythonService.analyzeContents`, `MarkdownService.analyzeContents`, `JupyterService.countHeadings` | `packages/codometer-cli/src/modules/jupyter/jupyter.service.ts:166` |
+| `TypescriptService.walkNode` | 5 | `TypescriptService.countSymbols`, `TypescriptService.handleClass`, `TypescriptService.forEachChild(…)`, `TypescriptService.dispatchNode`, `TypescriptService.forEachChild(…)` | `packages/codometer-cli/src/modules/typescript/typescript.service.ts:393` |
+| `LimitsService.resolve` | 5 | `LimitsService.findCandidates`, `UnboundMetricError.constructor`, `LimitsService.describeTargets`, `LimitsService.map(…)`, `EmptyTargetError.constructor` | `packages/codometer-cli/src/modules/limits/limits.service.ts:154` |
+| `CodometerCommand.reportBreaches` | 5 | `CodometerCommand.filter(…)`, `CodometerCommand.filter(…)`, `CodometerCommand.filter(…)`, `LoggerService.warn`, `LoggerService.error` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:250` |
+| `CodometerCommand.reportFindings` | 5 | `CodometerCommand.reportFailures`, `CodometerCommand.reportStaleness`, `CodometerCommand.reportBreaches`, `LoggerService.info`, `CodometerCommand.filter(…)` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:294` |
+| `FileDiscoveryService.walkDirectory` | 4 | `FileDiscoveryService.readDirectoryEntries`, `FileDiscoveryService.applyDirectoryIgnoreFile`, `FileDiscoveryService.walkSubdirectory`, `FileDiscoveryService.isIgnoredPath` | `packages/codometer-cli/src/modules/file-discovery/file-discovery.service.ts:217` |
+| `JsonService.consumeJsoncCharacter` | 4 | `JsonService.handleLineCommentState`, `JsonService.handleBlockCommentState`, `JsonService.handleStringState`, `JsonService.consumeCharacterOutsideComments` | `packages/codometer-cli/src/modules/json/json.service.ts:66` |
+| `JsonService.analyze` | 4 | `JsonService.filter(…)`, `JsonService.parseDocuments`, `JsonService.countNode`, `LoggerService.warn` | `packages/codometer-cli/src/modules/json/json.service.ts:310` |
+| `SqlService.analyze` | 4 | `SqlService.stripComments`, `SqlService.filter(…)`, `SqlService.countKeywords`, `LoggerService.warn` | `packages/codometer-cli/src/modules/sql/sql.service.ts:63` |
+| `TypescriptService.createEmptyResult` | 4 | `TypescriptService.filter(…)`, `TypescriptService.map(…)`, `TypescriptService.filter(…)`, `TypescriptService.filter(…)` | `packages/codometer-cli/src/modules/typescript/typescript.service.ts:162` |
+| `buildRepositoryGroup` | 4 | `buildGroup`, `buildBadge`, `formatBytes`, `buildCustomBadges` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:234` |
+| `TargetsService.walk` | 4 | `TargetsService.readEntries`, `TargetsService.resolveEntryKind`, `TargetsService.canDescend`, `TargetsService.isMatched` | `packages/codometer-cli/src/modules/targets/targets.service.ts:238` |
+| `RunPlanService.readCheckNames` | 4 | `RunPlanService.describeAcceptedCheckNames`, `RunPlanService.filter(…)`, `RunPlanService.map(…)`, `RunPlanService.validateCheckNames` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:80` |
+| `RunPlanService.resolveDestinations` | 4 | `RunPlanService.namesDestination`, `RunPlanService.resolveJson`, `RunPlanService.resolveMarkdown`, `RunPlanService.resolveReadme` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:308` |
+| `CodometerCommand.deliverMarkdown` | 4 | `OutputMarkdownService.renderDocument`, `CodometerCommand.readTargetSizes`, `CodometerCommand.touchesFiles`, `OutputMarkdownService.syncDocument` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:126` |
+| `CodometerCommand.deliverReadme` | 4 | `CodometerCommand.readTargetSizes`, `CodometerCommand.touchesFiles`, `OutputMarkdownService.renderBlock`, `OutputMarkdownService.sync` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:158` |
+| `FileDiscoveryService.listDiscoveredFiles` | 3 | `FileDiscoveryService.walkDirectory`, `FileDiscoveryService.readExcludeFromScopes`, `FileDiscoveryService.filter(…)` | `packages/codometer-cli/src/modules/file-discovery/file-discovery.service.ts:145` |
+| `FileDiscoveryService.walkSubdirectory` | 3 | `FileDiscoveryService.isExhaustivelyExcluded`, `FileDiscoveryService.isIgnoredPath`, `FileDiscoveryService.walkDirectory` | `packages/codometer-cli/src/modules/file-discovery/file-discovery.service.ts:261` |
+| `JsonService.parseDocuments` | 3 | `JsonService.map(…)`, `JsonService.filter(…)`, `JsonService.stripJsoncComments` | `packages/codometer-cli/src/modules/json/json.service.ts:258` |
+| `TomlService.analyze` | 3 | `TomlService.countLine`, `TomlService.isInsideMultilineString`, `LoggerService.warn` | `packages/codometer-cli/src/modules/toml/toml.service.ts:98` |
+| `TypescriptService.analyzeFile` | 3 | `TypescriptService.getScriptKind`, `TypescriptService.scanComments`, `TypescriptService.walkNode` | `packages/codometer-cli/src/modules/typescript/typescript.service.ts:77` |
+| `TypescriptService.handleFunction` | 3 | `TypescriptService.hasExportKeyword`, `TypescriptService.hasAsyncKeyword`, `TypescriptService.hasTypeParameters` | `packages/codometer-cli/src/modules/typescript/typescript.service.ts:256` |
+| `TypescriptService.analyze` | 3 | `TypescriptService.createEmptyResult`, `TypescriptService.analyzeFile`, `TypescriptService.getCountersForFile` | `packages/codometer-cli/src/modules/typescript/typescript.service.ts:418` |
+| `LimitsService.findDefaultCandidate` | 3 | `UnboundMetricError.constructor`, `LimitsService.describeTargets`, `LimitsService.bind` | `packages/codometer-cli/src/modules/limits/limits.service.ts:122` |
+| `OutputJsonService.sync` | 3 | `OutputJsonService.render`, `OutputJsonService.readExisting`, `LoggerService.info` | `packages/codometer-cli/src/modules/output-json/output-json.service.ts:67` |
+| `buildCssGroup` | 3 | `buildGroup`, `buildBadge`, `buildCustomBadges` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:21` |
+| `buildHclGroup` | 3 | `buildGroup`, `buildBadge`, `buildCustomBadges` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:87` |
+| `buildJsonGroup` | 3 | `buildGroup`, `buildBadge`, `buildCustomBadges` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:127` |
+| `buildJupyterGroup` | 3 | `buildGroup`, `buildBadge`, `buildCustomBadges` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:148` |
+| `buildMarkdownGroup` | 3 | `buildGroup`, `buildBadge`, `buildCustomBadges` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:177` |
+| `buildPythonGroup` | 3 | `buildGroup`, `buildBadge`, `buildCustomBadges` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:206` |
+| `buildShellGroup` | 3 | `buildGroup`, `buildBadge`, `buildCustomBadges` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:252` |
+| `buildSqlGroup` | 3 | `buildGroup`, `buildBadge`, `buildCustomBadges` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:272` |
+| `buildTomlGroup` | 3 | `buildGroup`, `buildBadge`, `buildCustomBadges` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:323` |
+| `buildTypescriptGroup` | 3 | `buildGroup`, `buildBadge`, `buildCustomBadges` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:339` |
+| `buildYamlGroup` | 3 | `buildGroup`, `buildBadge`, `buildCustomBadges` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:354` |
+| `ReportService.buildMetrics` | 3 | `ReportService.buildMetricName`, `ReportService.map(…)`, `ReportService.readUnit` | `packages/codometer-cli/src/modules/report/report.service.ts:52` |
+| `SizeAnalysisService.measureFile` | 3 | `SizeAnalysisService.compress`, `LoggerService.error`, `UnreadableTargetFileError.constructor` | `packages/codometer-cli/src/modules/size-analysis/size-analysis.service.ts:60` |
+| `CodometerCommand.deliver` | 3 | `CodometerCommand.deliverJson`, `CodometerCommand.deliverMarkdown`, `CodometerCommand.deliverReadme` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:86` |
+| `CodometerCommand.deliverJson` | 3 | `CodometerCommand.touchesFiles`, `OutputJsonService.render`, `OutputJsonService.sync` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:97` |
+| `CodometerCommand.readConfiguration` | 3 | `ConfigurationService.loadConfiguration`, `LoggerService.debug`, `LoggerService.error` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:198` |
+| `main` | 3 | `LoggerService.logToStandardError`, `LoggerService.constructor`, `LoggerService.setContext` | `packages/codometer-cli/src/main.ts:17` |
+| `FileDiscoveryService.readExcludeFromScopes` | 2 | `IgnoreRulesService.readScope`, `LoggerService.warn` | `packages/codometer-cli/src/modules/file-discovery/file-discovery.service.ts:187` |
+| `FileDiscoveryService.discoverFiles` | 2 | `FileDiscoveryService.categorize`, `FileDiscoveryService.listDiscoveredFiles` | `packages/codometer-cli/src/modules/file-discovery/file-discovery.service.ts:317` |
+| `CssService.analyze` | 2 | `CssService.walk(…)`, `LoggerService.warn` | `packages/codometer-cli/src/modules/css/css.service.ts:74` |
+| `HclService.analyze` | 2 | `HclService.countLine`, `LoggerService.warn` | `packages/codometer-cli/src/modules/hcl/hcl.service.ts:87` |
+| `MarkdownService.countNode` | 2 | `MarkdownService.countHeading`, `MarkdownService.countListItem` | `packages/codometer-cli/src/modules/markdown/markdown.service.ts:62` |
+| `MarkdownService.analyze` | 2 | `LoggerService.warn`, `MarkdownService.analyzeContents` | `packages/codometer-cli/src/modules/markdown/markdown.service.ts:98` |
+| `PythonService.analyzeContents` | 2 | `PythonService.map(…)`, `PythonService.analyze` | `packages/codometer-cli/src/modules/python/python.service.ts:87` |
+| `JupyterService.collectParts` | 2 | `JupyterService.readNotebook`, `JupyterService.collectCell` | `packages/codometer-cli/src/modules/jupyter/jupyter.service.ts:88` |
+| `ShellService.analyze` | 2 | `ShellService.countLine`, `LoggerService.warn` | `packages/codometer-cli/src/modules/shell/shell.service.ts:93` |
+| `SqlService.stripComments` | 2 | `SqlService.replaceAll(…)`, `SqlService.replaceAll(…)` | `packages/codometer-cli/src/modules/sql/sql.service.ts:48` |
+| `TypescriptService.countSymbols` | 2 | `TypescriptService.getSymbolModifiers`, `TypescriptService.every(…)` | `packages/codometer-cli/src/modules/typescript/typescript.service.ts:132` |
+| `TypescriptService.handleClass` | 2 | `TypescriptService.hasExportKeyword`, `TypescriptService.hasTypeParameters` | `packages/codometer-cli/src/modules/typescript/typescript.service.ts:243` |
+| `TypescriptService.handleInterface` | 2 | `TypescriptService.hasExportKeyword`, `TypescriptService.hasTypeParameters` | `packages/codometer-cli/src/modules/typescript/typescript.service.ts:290` |
+| `TypescriptService.handleTypeAlias` | 2 | `TypescriptService.hasExportKeyword`, `TypescriptService.hasTypeParameters` | `packages/codometer-cli/src/modules/typescript/typescript.service.ts:313` |
+| `YamlService.countDocument` | 2 | `YamlService.countComments`, `YamlService.countNode` | `packages/codometer-cli/src/modules/yaml/yaml.service.ts:88` |
+| `YamlService.countNode` | 2 | `YamlService.countComments`, `YamlService.countCollection` | `packages/codometer-cli/src/modules/yaml/yaml.service.ts:95` |
+| `YamlService.analyze` | 2 | `YamlService.countDocument`, `LoggerService.warn` | `packages/codometer-cli/src/modules/yaml/yaml.service.ts:123` |
+| `LimitsService.findCandidates` | 2 | `LimitsService.bind`, `LimitsService.findDefaultCandidate` | `packages/codometer-cli/src/modules/limits/limits.service.ts:84` |
+| `LimitsService.evaluate` | 2 | `LimitsService.resolve`, `LimitsService.describeFailure` | `packages/codometer-cli/src/modules/limits/limits.service.ts:198` |
+| `MetricIndexService.buildTargetIndex` | 2 | `MetricIndexService.addMetric`, `MetricIndexService.indexLanguage` | `packages/codometer-cli/src/modules/limits/metric-index.service.ts:66` |
+| `MetricIndexService.indexCounters` | 2 | `MetricIndexService.addMetric`, `MetricIndexService.isCounterGroup` | `packages/codometer-cli/src/modules/limits/metric-index.service.ts:101` |
+| `MetricIndexService.indexLanguage` | 2 | `MetricIndexService.indexCounters`, `MetricIndexService.addMetric` | `packages/codometer-cli/src/modules/limits/metric-index.service.ts:125` |
+| `MetricIndexService.index` | 2 | `MetricIndexService.describeDuplicate`, `MetricIndexService.buildTargetIndex` | `packages/codometer-cli/src/modules/limits/metric-index.service.ts:157` |
+| `buildCustomBadges` | 2 | `map(…)`, `filter(…)` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:45` |
+| `buildCustomGroup` | 2 | `buildCustomBadges`, `buildGroup` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:62` |
+| `buildJavascriptGroup` | 2 | `buildGroup`, `buildBadge` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:105` |
+| `buildTargetsGroup` | 2 | `buildGroup`, `map(…)` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:305` |
+| `OutputMarkdownService.renderBlock` | 2 | `OutputMarkdownService.wrapInAnchors`, `OutputMarkdownService.renderContent` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:265` |
+| `OutputMarkdownService.sync` | 2 | `OutputMarkdownService.renderContent`, `OutputMarkdownService.buildAnchorHelpers` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:307` |
+| `OutputMarkdownService.syncDocument` | 2 | `OutputMarkdownService.readExisting`, `OutputMarkdownService.writeMarkdownFile` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:337` |
+| `ReportService.build` | 2 | `ReportService.indexLimits`, `ReportService.buildMetrics` | `packages/codometer-cli/src/modules/report/report.service.ts:120` |
+| `TargetsService.canDescend` | 2 | `TargetsService.isHidden`, `TargetsService.some(…)` | `packages/codometer-cli/src/modules/targets/targets.service.ts:49` |
+| `TargetsService.some(…)` | 2 | `TargetsService.leadsToBase`, `TargetsService.sitsInsideBase` | `packages/codometer-cli/src/modules/targets/targets.service.ts:55` |
+| `TargetsService.isMatched` | 2 | `TargetsService.some(…)`, `TargetsService.some(…)` | `packages/codometer-cli/src/modules/targets/targets.service.ts:125` |
+| `CodometerService.discoverCodebase` | 2 | `FileDiscoveryService.discoverFiles`, `CodometerService.excludeOutputPaths` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:164` |
+| `CodometerService.measureDeclaredTargets` | 2 | `CodometerService.measureTarget`, `CodometerService.describeFailure` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:220` |
+| `RunPlanService.resolveJson` | 2 | `RunPlanService.resolvePath`, `RunPlanService.readPathFlag` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:161` |
+| `RunPlanService.listOutputPaths` | 2 | `RunPlanService.map(…)`, `RunPlanService.filter(…)` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:284` |
+| `RunPlanService.selectMode` | 2 | `RunPlanService.readCheckNames`, `RunPlanService.requireWrittenReport` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:338` |
+| `CodometerCommand.resolveWorkingDirectory` | 2 | `CodometerCommand.parseDirectory`, `LoggerService.debug` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:326` |
+| `CustomStatisticsService.countMatches` | 1 | `CustomStatisticsService.filter(…)` | `packages/codometer-cli/src/modules/custom-statistics/custom-statistics.service.ts:40` |
+| `CustomStatisticsService.analyze` | 1 | `CustomStatisticsService.map(…)` | `packages/codometer-cli/src/modules/custom-statistics/custom-statistics.service.ts:49` |
+| `CustomStatisticsService.map(…)` | 1 | `CustomStatisticsService.countMatches` | `packages/codometer-cli/src/modules/custom-statistics/custom-statistics.service.ts:54` |
+| `CustomStatisticsService.buildSymbolCounters` | 1 | `CustomStatisticsService.flatMap(…)` | `packages/codometer-cli/src/modules/custom-statistics/custom-statistics.service.ts:72` |
+| `IgnoreRulesService.isIgnored` | 1 | `IgnoreRulesService.toScopedPath` | `packages/codometer-cli/src/modules/file-discovery/ignore-rules.service.ts:84` |
+| `IgnoreRulesService.readScope` | 1 | `IgnoreRulesService.createScope` | `packages/codometer-cli/src/modules/file-discovery/ignore-rules.service.ts:115` |
+| `FileDiscoveryService.constructor` | 1 | `LoggerService.setContext` | `packages/codometer-cli/src/modules/file-discovery/file-discovery.service.ts:40` |
+| `FileDiscoveryService.applyDirectoryIgnoreFile` | 1 | `IgnoreRulesService.readScope` | `packages/codometer-cli/src/modules/file-discovery/file-discovery.service.ts:59` |
+| `FileDiscoveryService.filterByExtension` | 1 | `FileDiscoveryService.filter(…)` | `packages/codometer-cli/src/modules/file-discovery/file-discovery.service.ts:75` |
+| `FileDiscoveryService.isExcluded` | 1 | `FileDiscoveryService.some(…)` | `packages/codometer-cli/src/modules/file-discovery/file-discovery.service.ts:91` |
+| `FileDiscoveryService.isExhaustivelyExcluded` | 1 | `FileDiscoveryService.some(…)` | `packages/codometer-cli/src/modules/file-discovery/file-discovery.service.ts:105` |
+| `FileDiscoveryService.isIgnoredPath` | 1 | `IgnoreRulesService.isIgnored` | `packages/codometer-cli/src/modules/file-discovery/file-discovery.service.ts:128` |
+| `FileDiscoveryService.filter(…)` | 1 | `FileDiscoveryService.isExcluded` | `packages/codometer-cli/src/modules/file-discovery/file-discovery.service.ts:155` |
+| `FileDiscoveryService.readDirectoryEntries` | 1 | `LoggerService.warn` | `packages/codometer-cli/src/modules/file-discovery/file-discovery.service.ts:168` |
+| `CssService.constructor` | 1 | `LoggerService.setContext` | `packages/codometer-cli/src/modules/css/css.service.ts:28` |
+| `CssService.walk(…)` | 1 | `CssService.countNode` | `packages/codometer-cli/src/modules/css/css.service.ts:88` |
+| `HclService.constructor` | 1 | `LoggerService.setContext` | `packages/codometer-cli/src/modules/hcl/hcl.service.ts:30` |
+| `HclService.countLine` | 1 | `HclService.countBlock` | `packages/codometer-cli/src/modules/hcl/hcl.service.ts:60` |
+| `JsonService.constructor` | 1 | `LoggerService.setContext` | `packages/codometer-cli/src/modules/json/json.service.ts:19` |
+| `JsonService.countArrayNode` | 1 | `JsonService.countNode` | `packages/codometer-cli/src/modules/json/json.service.ts:95` |
+| `JsonService.countPrimitiveNode` | 1 | `JsonService.countPrimitiveValue` | `packages/codometer-cli/src/modules/json/json.service.ts:126` |
+| `JsonService.countRecordNode` | 1 | `JsonService.countNode` | `packages/codometer-cli/src/modules/json/json.service.ts:162` |
+| `JsonService.stripJsoncComments` | 1 | `JsonService.consumeJsoncCharacter` | `packages/codometer-cli/src/modules/json/json.service.ts:273` |
+| `MarkdownService.constructor` | 1 | `LoggerService.setContext` | `packages/codometer-cli/src/modules/markdown/markdown.service.ts:31` |
+| `MarkdownService.walk` | 1 | `MarkdownService.countNode` | `packages/codometer-cli/src/modules/markdown/markdown.service.ts:81` |
+| `MarkdownService.analyzeContents` | 1 | `MarkdownService.walk` | `packages/codometer-cli/src/modules/markdown/markdown.service.ts:126` |
+| `PythonService.constructor` | 1 | `LoggerService.setContext` | `packages/codometer-cli/src/modules/python/python.service.ts:28` |
+| `PythonService.analyze` | 1 | `LoggerService.warn` | `packages/codometer-cli/src/modules/python/python.service.ts:56` |
+| `JupyterService.constructor` | 1 | `LoggerService.setContext` | `packages/codometer-cli/src/modules/jupyter/jupyter.service.ts:41` |
+| `JupyterService.collectCell` | 1 | `JupyterService.readSource` | `packages/codometer-cli/src/modules/jupyter/jupyter.service.ts:57` |
+| `JupyterService.readNotebook` | 1 | `LoggerService.warn` | `packages/codometer-cli/src/modules/jupyter/jupyter.service.ts:131` |
+| `ShellService.constructor` | 1 | `LoggerService.setContext` | `packages/codometer-cli/src/modules/shell/shell.service.ts:34` |
+| `ShellService.countLine` | 1 | `ShellService.countStatements` | `packages/codometer-cli/src/modules/shell/shell.service.ts:45` |
+| `SqlService.constructor` | 1 | `LoggerService.setContext` | `packages/codometer-cli/src/modules/sql/sql.service.ts:30` |
+| `TomlService.constructor` | 1 | `LoggerService.setContext` | `packages/codometer-cli/src/modules/toml/toml.service.ts:30` |
+| `TomlService.countLine` | 1 | `TomlService.countKey` | `packages/codometer-cli/src/modules/toml/toml.service.ts:61` |
+| `TypescriptService.getCountersForFile` | 1 | `TypescriptService.filter(…)` | `packages/codometer-cli/src/modules/typescript/typescript.service.ts:196` |
+| `TypescriptService.filter(…)` | 1 | `TypescriptService.some(…)` | `packages/codometer-cli/src/modules/typescript/typescript.service.ts:201` |
+| `TypescriptService.handleEnum` | 1 | `TypescriptService.hasExportKeyword` | `packages/codometer-cli/src/modules/typescript/typescript.service.ts:250` |
+| `TypescriptService.handleMethodOrAccessor` | 1 | `TypescriptService.hasAsyncKeyword` | `packages/codometer-cli/src/modules/typescript/typescript.service.ts:300` |
+| `TypescriptService.handleVariable` | 1 | `TypescriptService.hasExportKeyword` | `packages/codometer-cli/src/modules/typescript/typescript.service.ts:322` |
+| `TypescriptService.hasAsyncKeyword` | 1 | `TypescriptService.some(…)` | `packages/codometer-cli/src/modules/typescript/typescript.service.ts:334` |
+| `TypescriptService.hasExportKeyword` | 1 | `TypescriptService.some(…)` | `packages/codometer-cli/src/modules/typescript/typescript.service.ts:346` |
+| `TypescriptService.scanComments` | 1 | `TypescriptService.countComment` | `packages/codometer-cli/src/modules/typescript/typescript.service.ts:370` |
+| `YamlService.constructor` | 1 | `LoggerService.setContext` | `packages/codometer-cli/src/modules/yaml/yaml.service.ts:35` |
+| `YamlService.countCollection` | 1 | `YamlService.countNode` | `packages/codometer-cli/src/modules/yaml/yaml.service.ts:46` |
+| `LimitsService.bind` | 1 | `UnboundMetricError.constructor` | `packages/codometer-cli/src/modules/limits/limits.service.ts:39` |
+| `LimitsService.describeTargets` | 1 | `LimitsService.map(…)` | `packages/codometer-cli/src/modules/limits/limits.service.ts:70` |
+| `OutputJsonService.constructor` | 1 | `LoggerService.setContext` | `packages/codometer-cli/src/modules/output-json/output-json.service.ts:26` |
+| `buildBadge` | 1 | `encodeValue` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:12` |
+| `map(…)` | 1 | `formatTargetSize` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:316` |
+| `formatTargetSize` | 1 | `formatBytes` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:419` |
+| `OutputMarkdownService.constructor` | 1 | `LoggerService.setContext` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:52` |
+| `OutputMarkdownService.buildBlockRegex` | 1 | `OutputMarkdownService.escapeRegex` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:129` |
+| `OutputMarkdownService.renderContent` | 1 | `OutputMarkdownService.renderBadges` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:163` |
+| `OutputMarkdownService.writeMarkdownFile` | 1 | `LoggerService.info` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:234` |
+| `OutputMarkdownService.renderBadges` | 1 | `OutputMarkdownService.renderDocument` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:250` |
+| `OutputMarkdownService.renderDocument` | 1 | `OutputMarkdownService.buildBadgeGroups` | `packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:284` |
+| `ReportService.indexLimits` | 1 | `ReportService.buildMetricName` | `packages/codometer-cli/src/modules/report/report.service.ts:87` |
+| `SizeAnalysisService.constructor` | 1 | `LoggerService.setContext` | `packages/codometer-cli/src/modules/size-analysis/size-analysis.service.ts:22` |
+| `SizeAnalysisService.analyze` | 1 | `SizeAnalysisService.measureFile` | `packages/codometer-cli/src/modules/size-analysis/size-analysis.service.ts:84` |
+| `TargetsService.constructor` | 1 | `LoggerService.setContext` | `packages/codometer-cli/src/modules/targets/targets.service.ts:32` |
+| `TargetsService.findBoundary` | 1 | `TargetsService.some(…)` | `packages/codometer-cli/src/modules/targets/targets.service.ts:71` |
+| `TargetsService.isLinkedFile` | 1 | `LoggerService.warn` | `packages/codometer-cli/src/modules/targets/targets.service.ts:107` |
+| `TargetsService.readEntries` | 1 | `LoggerService.warn` | `packages/codometer-cli/src/modules/targets/targets.service.ts:152` |
+| `TargetsService.resolveEntryKind` | 1 | `TargetsService.isLinkedFile` | `packages/codometer-cli/src/modules/targets/targets.service.ts:183` |
+| `CodometerService.excludeOutputPaths` | 1 | `CodometerService.filter(…)` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:182` |
+| `CodometerService.readLimitFailures` | 1 | `CodometerService.map(…)` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:287` |
+| `RunPlanService.describeAcceptedCheckNames` | 1 | `RunPlanService.map(…)` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:53` |
+| `RunPlanService.resolveMarkdown` | 1 | `RunPlanService.resolvePath` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:191` |
+| `RunPlanService.resolveReadme` | 1 | `RunPlanService.resolvePath` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:230` |
+| `RunPlanService.validateCheckNames` | 1 | `RunPlanService.describeAcceptedCheckNames` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:259` |
+| `RunPlanService.selectScope` | 1 | `RunPlanService.some(…)` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:367` |
+| `CodometerCommand.constructor` | 1 | `LoggerService.setContext` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:39` |
+| `CodometerCommand.announceOutputPaths` | 1 | `LoggerService.info` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:65` |
+| `CodometerCommand.readTargetSizes` | 1 | `CodometerCommand.flatMap(…)` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:235` |
+| `CodometerCommand.reportFailures` | 1 | `LoggerService.error` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:279` |
+| `CodometerCommand.reportStaleness` | 1 | `LoggerService.error` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:311` |
+
+</details>
 
 ### Possibly misplaced
 

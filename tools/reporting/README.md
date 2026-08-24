@@ -199,7 +199,7 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
 | Stacks through recursion | 0 |
 | Unfollowable calls | 2 |
 
-### Call stacks
+### Call stacks (depth)
 
 **1. `BundlesCommand.run`** — depth 9 · decorated-method
 
@@ -399,6 +399,65 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
 ### Module spread
 
 None.
+
+### Direct fan-out (breadth)
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `BundleMarkdownService.renderSummary` | 12 | `BundleMarkdownService.summarizeRows`, `BundleMarkdownService.filter(…)`, `BundleMarkdownService.map(…)`, `BundleMarkdownService.readOverallStatus`, `formatBytes`, `formatCount`, `BundleMarkdownService.readComparison`, `BundleMarkdownService.readBiggestGrowth`, `formatDelta`, `BundleMarkdownService.readDelta`, `formatPercent`, `BundleMarkdownService.readFraction` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:349` |
+| `BundleMarkdownService.renderSubtotal` | 8 | `BundleMarkdownService.filter(…)`, `BundleMarkdownService.reduce(…)`, `BundleMarkdownService.filter(…)`, `BundleMarkdownService.reduce(…)`, `formatCount`, `formatBytes`, `formatDelta`, `formatPercent` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:315` |
+| `BundleMarkdownService.renderRow` | 7 | `BundleMarkdownService.readStatus`, `formatBytes`, `formatDelta`, `BundleMarkdownService.readDelta`, `formatPercent`, `BundleMarkdownService.readFraction`, `formatUsage` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:298` |
+
+<details>
+<summary>43 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `BundlesService.collectProjectRows` | 7 | `BundlesService.readProjectName`, `BundlesService.readBaseline`, `BundlesService.readReport`, `BundlesService.map(…)`, `BundlesService.map(…)`, `BundlesService.buildBaselineRow`, `BundlesService.map(…)` | `tools/reporting/src/modules/bundles/bundles.service.ts:110` |
+| `BundleMarkdownService.readComparison` | 6 | `BundleMarkdownService.filter(…)`, `BundleMarkdownService.filter(…)`, `BundleMarkdownService.filter(…)`, `formatDelta`, `formatPercent`, `BundleMarkdownService.some(…)` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:122` |
+| `BundleMarkdownService.renderMeasuredTable` | 6 | `BundleMarkdownService.filter(…)`, `BundleMarkdownService.map(…)`, `BundleMarkdownService.hasBreach`, `formatCount`, `BundleMarkdownService.flatMap(…)`, `groupByProject` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:272` |
+| `ReportingService.emit` | 6 | `BundlesCommand.renderReport`, `ReportingMarkersService.wrap`, `LoggerService.info`, `ReportingService.readDocument`, `ReportingMarkersService.splice`, `LoggerService.debug` | `tools/reporting/src/modules/reporting/reporting.service.ts:57` |
+| `BundleMarkdownService.renderUnmeasured` | 5 | `BundleMarkdownService.filter(…)`, `BundleMarkdownService.reduce(…)`, `formatCount`, `formatBytes`, `BundleMarkdownService.map(…)` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:381` |
+| `BundleMarkdownService.renderSection` | 5 | `BundleMarkdownService.renderFailures`, `BundleMarkdownService.renderSummary`, `BundleMarkdownService.renderMeasuredTable`, `BundleMarkdownService.renderUnmeasured`, `BundleMarkdownService.renderGuidelines` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:442` |
+| `ReportingCommand.run` | 5 | `ReportingCommand.getReports`, `ReportingService.readOptionalText`, `LoggerService.debug`, `ReportingService.emit`, `LoggerService.info` | `tools/reporting/src/modules/reporting/reporting.command.ts:83` |
+| `BundleMarkdownService.readBreachStatus` | 4 | `BundleMarkdownService.filter(…)`, `BundleMarkdownService.some(…)`, `BundleMarkdownService.some(…)`, `BundleMarkdownService.some(…)` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:109` |
+| `BundleMarkdownService.summarizeRows` | 4 | `BundleMarkdownService.reduce(…)`, `BundleMarkdownService.filter(…)`, `BundleMarkdownService.reduce(…)`, `BundleMarkdownService.reduce(…)` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:412` |
+| `BundlesService.readReportPaths` | 4 | `BundlesService.flatMap(…)`, `BundlesService.map(…)`, `BundlesService.flatMap(…)`, `LoggerService.debug` | `tools/reporting/src/modules/bundles/bundles.service.ts:240` |
+| `BundlesService.collect` | 4 | `BundlesService.map(…)`, `BundlesService.readReportPaths`, `BundlesService.flatMap(…)`, `BundlesService.flatMap(…)` | `tools/reporting/src/modules/bundles/bundles.service.ts:289` |
+| `BundleMarkdownService.readBiggestGrowth` | 3 | `BundleMarkdownService.filter(…)`, `BundleMarkdownService.filter(…)`, `BundleMarkdownService.toSorted(…)` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:81` |
+| `BundlesService.readReport` | 3 | `BundlesService.parseReport`, `LoggerService.warn`, `BundlesService.flatMap(…)` | `tools/reporting/src/modules/bundles/bundles.service.ts:216` |
+| `BundlesService.map(…)` | 3 | `BundlesService.readBreach`, `BundlesService.readLabel`, `BundlesService.readGoverningLimit` | `tools/reporting/src/modules/bundles/bundles.service.ts:276` |
+| `BundlesCommand.renderReport` | 3 | `BundlesService.collect`, `LoggerService.info`, `BundleMarkdownService.renderSection` | `tools/reporting/src/modules/bundles/bundles.command.ts:92` |
+| `BundleMarkdownService.hasBreach` | 2 | `BundleMarkdownService.some(…)`, `BundleMarkdownService.filter(…)` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:59` |
+| `BundleMarkdownService.renderFailures` | 2 | `formatCount`, `BundleMarkdownService.map(…)` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:218` |
+| `BundleMarkdownService.flatMap(…)` | 2 | `BundleMarkdownService.map(…)`, `BundleMarkdownService.renderSubtotal` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:288` |
+| `BundlesService.readBaseline` | 2 | `BundlesService.readReport`, `BundlesService.map(…)` | `tools/reporting/src/modules/bundles/bundles.service.ts:154` |
+| `BundlesService.readBreach` | 2 | `BundlesService.filter(…)`, `BundlesService.some(…)` | `tools/reporting/src/modules/bundles/bundles.service.ts:175` |
+| `BundlesService.readGoverningLimit` | 2 | `BundlesService.filter(…)`, `BundlesService.map(…)` | `tools/reporting/src/modules/bundles/bundles.service.ts:195` |
+| `BundlesService.readSizeMetrics` | 2 | `BundlesService.map(…)`, `BundlesService.filter(…)` | `tools/reporting/src/modules/bundles/bundles.service.ts:273` |
+| `BundlesCommand.run` | 2 | `ReportingService.emit`, `ReportingService.readOptionalText` | `tools/reporting/src/modules/bundles/bundles.command.ts:111` |
+| `main` | 2 | `LoggerService.constructor`, `LoggerService.setContext` | `tools/reporting/src/main.ts:9` |
+| `formatDelta` | 1 | `formatBytes` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts:24` |
+| `groupByProject` | 1 | `map(…)` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts:49` |
+| `BundleMarkdownService.readFraction` | 1 | `BundleMarkdownService.readDelta` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:162` |
+| `BundleMarkdownService.readOverallStatus` | 1 | `BundleMarkdownService.readBreachStatus` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:183` |
+| `BundleMarkdownService.readStatus` | 1 | `BundleMarkdownService.readGrowthStatus` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:200` |
+| `BundleMarkdownService.map(…)` | 1 | `formatBytes` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:398` |
+| `ReportingMarkersService.splice` | 1 | `ReportingMarkersService.filter(…)` | `tools/reporting/src/modules/reporting/reporting-markers.service.ts:29` |
+| `ReportingService.constructor` | 1 | `LoggerService.setContext` | `tools/reporting/src/modules/reporting/reporting.service.ts:27` |
+| `BundlesService.constructor` | 1 | `LoggerService.setContext` | `tools/reporting/src/modules/bundles/bundles.service.ts:49` |
+| `BundlesService.readLabel` | 1 | `BundlesService.find(…)` | `tools/reporting/src/modules/bundles/bundles.service.ts:206` |
+| `BundlesCommand.constructor` | 1 | `LoggerService.setContext` | `tools/reporting/src/modules/bundles/bundles.command.ts:33` |
+| `BundlesCommand.parseBaseline` | 1 | `ReportingService.readOptionalText` | `tools/reporting/src/modules/bundles/bundles.command.ts:56` |
+| `BundlesCommand.parseBaselineUrl` | 1 | `ReportingService.readOptionalText` | `tools/reporting/src/modules/bundles/bundles.command.ts:65` |
+| `BundlesCommand.parseMarkdown` | 1 | `ReportingService.readOptionalText` | `tools/reporting/src/modules/bundles/bundles.command.ts:74` |
+| `BundlesCommand.parseOutput` | 1 | `ReportingService.readOptionalText` | `tools/reporting/src/modules/bundles/bundles.command.ts:83` |
+| `ReportingCommand.constructor` | 1 | `LoggerService.setContext` | `tools/reporting/src/modules/reporting/reporting.command.ts:33` |
+| `ReportingCommand.parseBaseline` | 1 | `ReportingService.readOptionalText` | `tools/reporting/src/modules/reporting/reporting.command.ts:56` |
+| `ReportingCommand.parseBaselineUrl` | 1 | `ReportingService.readOptionalText` | `tools/reporting/src/modules/reporting/reporting.command.ts:65` |
+| `ReportingCommand.parseMarkdown` | 1 | `ReportingService.readOptionalText` | `tools/reporting/src/modules/reporting/reporting.command.ts:74` |
+
+</details>
 
 ### Possibly misplaced
 

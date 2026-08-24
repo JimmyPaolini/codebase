@@ -106,7 +106,7 @@ Call stacks traced through `conformetry-python`, deepest first. Each frame shows
 | Stacks through recursion | 0 |
 | Unfollowable calls | 0 |
 
-### Call stacks
+### Call stacks (depth)
 
 **1. `PythonValidatorService.validateDocument`** — depth 6 · orphan-root
 
@@ -127,6 +127,25 @@ Call stacks traced through `conformetry-python`, deepest first. Each frame shows
 ### Module spread
 
 None.
+
+### Direct fan-out (breadth)
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `PythonBridgeService.toConformetryDifference` | 6 | `PythonBridgeService.readValues`, `PythonBridgeService.readLocations`, `DifferencesService.resolveDifferenceType`, `PythonBridgeService.readString`, `DifferencesService.resolveErrorLanguage`, `PythonBridgeService.readNumber` | `packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:132` |
+| `PythonBridgeService.validatePythonSource` | 3 | `PythonBridgeService.buildBridgeError`, `PythonBridgeService.map(…)`, `ScoringService.sumWeights` | `packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:160` |
+| `PythonBridgeService.readLocations` | 1 | `PythonBridgeService.readNumber` | `packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:84` |
+
+<details>
+<summary>3 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `PythonBridgeService.readValues` | 1 | `PythonBridgeService.readString` | `packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:121` |
+| `PythonBridgeService.map(…)` | 1 | `PythonBridgeService.toConformetryDifference` | `packages/conformetry-python/src/modules/python-validator/python-bridge.service.ts:185` |
+| `PythonValidatorService.validateDocument` | 1 | `PythonBridgeService.validatePythonSource` | `packages/conformetry-python/src/modules/python-validator/python-validator.service.ts:38` |
+
+</details>
 
 ### Possibly misplaced
 

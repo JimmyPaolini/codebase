@@ -213,13 +213,47 @@ Call stacks traced through `conformetry-validation`, deepest first. Each frame s
 | Stacks through recursion | 0 |
 | Unfollowable calls | 3 |
 
-### Call stacks
+### Call stacks (depth)
 
 None.
 
 ### Module spread
 
 None.
+
+### Direct fan-out (breadth)
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `ValidationService.validate` | 10 | `InstanceDiscoveryService.matchInstances`, `ValidationService.selectValidators`, `ValidationLanguagesService.resolveValidators`, `ValidationService.readTemplateExtensions`, `ValidationService.map(…)`, `ValidationScoringService.scoreInstances`, `ValidationDeduplicationService.deduplicate`, `ValidationFindingsService.buildUnmatchedResults`, `ValidationService.map(…)`, `ValidationService.every(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:134` |
+| `ValidationService.validateInstance` | 6 | `InstanceDiscoveryService.prepareDocuments`, `ValidationService.flatMap(…)`, `FilesService.checkInstanceFiles`, `ValidationService.map(…)`, `ValidationService.flatMap(…)`, `ValidationService.reduce(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:89` |
+| `ValidationLanguagesService.resolveValidators` | 4 | `ValidationLanguagesService.filter(…)`, `ValidationLanguagesService.loadValidator`, `ValidationLanguagesService.flatMap(…)`, `ValidationLanguagesService.filter(…)` | `packages/conformetry-validation/src/modules/validation/validation-languages.service.ts:118` |
+
+<details>
+<summary>18 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `ValidationScoringService.scoreInstance` | 4 | `ValidationScoringService.reduce(…)`, `ScoringService.calculateScore`, `ValidationScoringService.resolveThreshold`, `ValidationScoringService.resolveInstancePath` | `packages/conformetry-validation/src/modules/validation/validation-scoring.service.ts:74` |
+| `ValidationLanguagesService.loadValidator` | 3 | `MissingLanguagePackageError.constructor`, `ValidationLanguagesService.readExport`, `ValidationLanguagesService.load(…)` | `packages/conformetry-validation/src/modules/validation/validation-languages.service.ts:42` |
+| `ValidationDeduplicationService.deduplicate` | 2 | `ValidationDeduplicationService.selectOwners`, `ValidationDeduplicationService.flatMap(…)` | `packages/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:92` |
+| `ValidationFindingsService.buildUnmatchedResults` | 2 | `ValidationFindingsService.resolveTemplatesRootPath`, `ValidationFindingsService.map(…)` | `packages/conformetry-validation/src/modules/validation/validation-findings.service.ts:70` |
+| `ValidationLanguagesService.readExport` | 2 | `ValidationLanguagesService.isConstructable`, `MissingLanguagePackageError.constructor` | `packages/conformetry-validation/src/modules/validation/validation-languages.service.ts:86` |
+| `ValidationScoringService.scoreInstances` | 2 | `ValidationScoringService.scoreInstance`, `ValidationScoringService.resolveScoreKey` | `packages/conformetry-validation/src/modules/validation/validation-scoring.service.ts:111` |
+| `ValidationDeduplicationService.selectOwners` | 1 | `ValidationDeduplicationService.compareInstances` | `packages/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:59` |
+| `ValidationDeduplicationService.flatMap(…)` | 1 | `ValidationDeduplicationService.filter(…)` | `packages/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:96` |
+| `ValidationDeduplicationService.filter(…)` | 1 | `ValidationDeduplicationService.resolveFindingKey` | `packages/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:97` |
+| `ValidationFindingsService.resolveTemplatesRootPath` | 1 | `ValidationFindingsService.map(…)` | `packages/conformetry-validation/src/modules/validation/validation-findings.service.ts:59` |
+| `ValidationFindingsService.map(…)` | 1 | `ValidationFindingsService.describeReason` | `packages/conformetry-validation/src/modules/validation/validation-findings.service.ts:76` |
+| `ValidationLanguagesService.filter(…)` | 1 | `ValidationLanguagesService.some(…)` | `packages/conformetry-validation/src/modules/validation/validation-languages.service.ts:129` |
+| `ValidationScoringService.reduce(…)` | 1 | `ScoringService.sumWeights` | `packages/conformetry-validation/src/modules/validation/validation-scoring.service.ts:75` |
+| `ValidationService.readTemplateExtensions` | 1 | `ValidationService.flatMap(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:52` |
+| `ValidationService.flatMap(…)` | 1 | `ValidationService.map(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:55` |
+| `ValidationService.selectValidators` | 1 | `ValidationService.filter(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:65` |
+| `ValidationService.map(…)` | 1 | `LanguageService.runValidator` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:102` |
+| `ValidationService.map(…)` | 1 | `ValidationService.validateInstance` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:152` |
+
+</details>
 
 ### Possibly misplaced
 

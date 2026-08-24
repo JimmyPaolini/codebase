@@ -93,7 +93,7 @@ Call stacks traced through `conformetry-text`, deepest first. Each frame shows w
 | Stacks through recursion | 0 |
 | Unfollowable calls | 0 |
 
-### Call stacks
+### Call stacks (depth)
 
 **1. `TextValidatorService.validateDocument`** — depth 3 · orphan-root
 
@@ -109,6 +109,13 @@ Call stacks traced through `conformetry-text`, deepest first. Each frame shows w
 ### Module spread
 
 None.
+
+### Direct fan-out (breadth)
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `TextValidatorService.validateDocument` | 2 | `TextValidatorService.map(…)`, `TextValidatorService.findMissingLines` | `packages/conformetry-text/src/modules/text-validator/text-validator.service.ts:76` |
+| `TextValidatorService.findMissingLines` | 1 | `TextValidatorService.countLines` | `packages/conformetry-text/src/modules/text-validator/text-validator.service.ts:46` |
 
 ### Possibly misplaced
 

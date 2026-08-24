@@ -124,7 +124,7 @@ Call stacks traced through `lexico`, deepest first. Each frame shows what it tak
 | Stacks through recursion | 0 |
 | Unfollowable calls | 57 |
 
-### Call stacks
+### Call stacks (depth)
 
 **1. `SearchResultsList`** — depth 9 · orphan-root
 
@@ -423,6 +423,75 @@ Call stacks traced through `lexico`, deepest first. Each frame shows what it tak
 ### Module spread
 
 None.
+
+### Direct fan-out (breadth)
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `dispatchFormTransform` | 9 | `isVerbForms`, `transformVerbForms`, `isNounPos`, `isNounForms`, `transformNounForms`, `isAdjectivePos`, `isAdjectiveForms`, `transformAdjectiveForms`, `autoDetectFormTransform` | `applications/lexico/src/lib/forms.ts:298` |
+| `useLibraryPage` | 7 | `useLibraryPageStateInitialization`, `useCallback(…)`, `useEffect(…)`, `useCallback(…)`, `useCallback(…)`, `useCallback(…)`, `buildLibraryPageState` | `applications/lexico/src/routes/hooks/useLibraryPage.ts:67` |
+| `autoDetectFormTransform` | 6 | `isVerbForms`, `transformVerbForms`, `isAdjectiveForms`, `transformAdjectiveForms`, `isNounForms`, `transformNounForms` | `applications/lexico/src/lib/forms.ts:153` |
+
+<details>
+<summary>53 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `VerbFormsTable` | 5 | `useMemo(…)`, `map(…)`, `map(…)`, `map(…)`, `renderVerbFormContent` | `applications/lexico/src/components/entry/verb-forms-table.tsx:261` |
+| `transformVerbForms` | 5 | `transformIndicativeForms`, `transformSubjunctiveForms`, `transformImperativeForms`, `transformNonFiniteForms`, `transformVerbalNounForms` | `applications/lexico/src/lib/forms.ts:140` |
+| `SearchPage` | 5 | `useDebounce`, `useEffect(…)`, `useEffect(…)`, `useCallback(…)`, `useEffect(…)` | `applications/lexico/src/routes/search.tsx:68` |
+| `Translations` | 4 | `cn`, `map(…)`, `map(…)`, `map(…)` | `applications/lexico/src/components/entry/translations.tsx:26` |
+| `FormTabs` | 3 | `cn`, `map(…)`, `map(…)` | `applications/lexico/src/components/entry/form-tabs.tsx:32` |
+| `AdjectiveFormsTable` | 3 | `useMemo(…)`, `map(…)`, `renderAdjectiveGenderContent` | `applications/lexico/src/components/entry/adjective-forms-table.tsx:73` |
+| `groupAdjectiveForms` | 3 | `some(…)`, `groupByGender`, `buildDegreeGroupsFromForms` | `applications/lexico/src/components/entry/adjective-forms-table.tsx:165` |
+| `restructureVerbForms` | 3 | `some(…)`, `map(…)`, `flatMap(…)` | `applications/lexico/src/components/entry/verb-forms-table.tsx:239` |
+| `BookmarksPage` | 3 | `useCallback(…)`, `useEffect(…)`, `useCallback(…)` | `applications/lexico/src/routes/bookmarks.tsx:103` |
+| `WordPage` | 3 | `useEffect(…)`, `useCallback(…)`, `map(…)` | `applications/lexico/src/routes/word.$id.tsx:78` |
+| `ApplicationSidebar` | 2 | `useSidebar`, `map(…)` | `applications/lexico/src/routes/__root.tsx:112` |
+| `FormCell` | 2 | `computeBorderClasses`, `cn` | `applications/lexico/src/components/entry/form-cell.tsx:57` |
+| `FormsTable` | 2 | `cn`, `map(…)` | `applications/lexico/src/components/entry/forms-table.tsx:27` |
+| `restructureAdjectiveForms` | 2 | `flatMap(…)`, `filter(…)` | `applications/lexico/src/components/entry/adjective-forms-table.tsx:236` |
+| `restructureNounForms` | 2 | `flatMap(…)`, `filter(…)` | `applications/lexico/src/components/entry/noun-forms-table.tsx:94` |
+| `PrincipalParts` | 2 | `getPrincipalPartsLabel`, `cn` | `applications/lexico/src/components/entry/principal-parts.tsx:125` |
+| `groupVerbForms` | 2 | `buildVerbGroupRecord`, `buildVerbFormTenses` | `applications/lexico/src/components/entry/verb-forms-table.tsx:165` |
+| `transformNonFiniteForms` | 2 | `collectInfinitiveForms`, `collectParticipleForms` | `applications/lexico/src/lib/forms.ts:441` |
+| `Logo` | 1 | `cn` | `applications/lexico/src/components/layout/logo.tsx:18` |
+| `Identifier` | 1 | `cn` | `applications/lexico/src/components/entry/identifier.tsx:171` |
+| `computeBorderClasses` | 1 | `cn` | `applications/lexico/src/components/entry/form-cell.tsx:43` |
+| `buildDegreeGroupsFromForms` | 1 | `groupByGender` | `applications/lexico/src/components/entry/adjective-forms-table.tsx:140` |
+| `groupByGender` | 1 | `restructureAdjectiveForms` | `applications/lexico/src/components/entry/adjective-forms-table.tsx:175` |
+| `renderAdjectiveGenderContent` | 1 | `map(…)` | `applications/lexico/src/components/entry/adjective-forms-table.tsx:201` |
+| `NounFormsTable` | 1 | `useMemo(…)` | `applications/lexico/src/components/entry/noun-forms-table.tsx:74` |
+| `getPrincipalPartsLabel` | 1 | `map(…)` | `applications/lexico/src/components/entry/principal-parts.tsx:194` |
+| `buildVerbFormTenses` | 1 | `restructureVerbForms` | `applications/lexico/src/components/entry/verb-forms-table.tsx:114` |
+| `EntryCard` | 1 | `cn` | `applications/lexico/src/components/entry/entry-card.tsx:104` |
+| `BookmarksList` | 1 | `map(…)` | `applications/lexico/src/routes/bookmarks.tsx:83` |
+| `useCallback(…)` | 1 | `setBookmarks(…)` | `applications/lexico/src/routes/bookmarks.tsx:127` |
+| `createTextAsync` | 1 | `setTexts(…)` | `applications/lexico/src/routes/hooks/useLibraryPage.ts:173` |
+| `deleteTextAsync` | 1 | `setTexts(…)` | `applications/lexico/src/routes/hooks/useLibraryPage.ts:218` |
+| `updateTextAsync` | 1 | `setTexts(…)` | `applications/lexico/src/routes/hooks/useLibraryPage.ts:265` |
+| `setTexts(…)` | 1 | `map(…)` | `applications/lexico/src/routes/hooks/useLibraryPage.ts:292` |
+| `LibraryPage` | 1 | `useLibraryPage` | `applications/lexico/src/routes/library.tsx:270` |
+| `LibraryTextGrid` | 1 | `map(…)` | `applications/lexico/src/routes/library.tsx:438` |
+| `transformForms` | 1 | `dispatchFormTransform` | `applications/lexico/src/lib/forms.ts:100` |
+| `collectParticipleForms` | 1 | `collectParticipialTenseForms` | `applications/lexico/src/lib/forms.ts:218` |
+| `collectPersonNumberForms` | 1 | `personDisplay` | `applications/lexico/src/lib/forms.ts:244` |
+| `transformImperativeForms` | 1 | `collectPersonNumberForms` | `applications/lexico/src/lib/forms.ts:385` |
+| `transformIndicativeForms` | 1 | `collectPersonNumberForms` | `applications/lexico/src/lib/forms.ts:413` |
+| `transformSubjunctiveForms` | 1 | `collectPersonNumberForms` | `applications/lexico/src/lib/forms.ts:459` |
+| `transformVerbalNounForms` | 1 | `collectVerbalNounCaseForms` | `applications/lexico/src/lib/forms.ts:487` |
+| `SearchResultsList` | 1 | `map(…)` | `applications/lexico/src/routes/search.tsx:165` |
+| `map(…)` | 1 | `transformForms` | `applications/lexico/src/routes/search.tsx:170` |
+| `useDebounce` | 1 | `useEffect(…)` | `applications/lexico/src/routes/search.tsx:203` |
+| `useEffect(…)` | 1 | `setTimeout(…)` | `applications/lexico/src/routes/search.tsx:206` |
+| `anonymous` | 1 | `handleSignIn` | `applications/lexico/src/routes/settings.tsx:67` |
+| `anonymous` | 1 | `handleSignOut` | `applications/lexico/src/routes/settings.tsx:92` |
+| `anonymous` | 1 | `handleDeleteAccount` | `applications/lexico/src/routes/settings.tsx:129` |
+| `PronunciationButton` | 1 | `useCallback(…)` | `applications/lexico/src/components/PronunciationButton.tsx:19` |
+| `useCallback(…)` | 1 | `addEventListener(…)` | `applications/lexico/src/components/PronunciationButton.tsx:30` |
+| `WordForms` | 1 | `transformForms` | `applications/lexico/src/routes/word.$id.tsx:51` |
+
+</details>
 
 ### Possibly misplaced
 
