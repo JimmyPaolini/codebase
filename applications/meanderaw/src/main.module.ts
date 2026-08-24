@@ -5,6 +5,7 @@ import { DiscoveryModule } from "@nestjs/core";
 import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
+import { GenerateModule } from "./modules/generate/generate.module";
 
 /**
  * Root NestJS application module.
@@ -19,6 +20,7 @@ import { environmentSchema } from "./constants";
     }),
     DiscoveryModule,
     LoggerModule,
+    GenerateModule,
   ],
 })
 export class MainModule {}
