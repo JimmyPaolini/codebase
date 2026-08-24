@@ -5,8 +5,8 @@ import { GridGeometryService } from "./grid-geometry.service";
 import { InvalidRepeatCountError } from "./invalid-repeat-count.errors";
 import { InvalidRowsError } from "./invalid-rows.errors";
 import {
-  MAXIMUM_REPEAT_COUNT,
-  MAXIMUM_ROWS,
+  MAXIMUM_VALUE,
+  MINIMUM_REPEAT_COUNT,
   STRUCTURAL_MINIMUM_ROWS,
 } from "./meander-generation.constants";
 import { SvgRenderingService } from "./svg-rendering.service";
@@ -63,19 +63,27 @@ export class MeanderGenerationService {
     ];
   }
 
-  /** Throws {@link InvalidRepeatCountError} outside the shared bounds. */
+  /** Throws {@link InvalidRepeatCountError} when not a whole number within the shared bounds. */
   private validateRepeatCount(repeatCount: number): void {
-    if (repeatCount < 1 || repeatCount > MAXIMUM_REPEAT_COUNT) {
-      throw new InvalidRepeatCountError(repeatCount, 1, MAXIMUM_REPEAT_COUNT);
+    if (
+      !Number.isInteger(repeatCount) ||
+      repeatCount < MINIMUM_REPEAT_COUNT ||
+      repeatCount > MAXIMUM_VALUE
+    ) {
+      throw new InvalidRepeatCountError(
+        repeatCount,
+        MINIMUM_REPEAT_COUNT,
+        MAXIMUM_VALUE,
+      );
     }
   }
 
-  /** Throws {@link InvalidRowsError} outside the type's structural minimum and the shared maximum. */
+  /** Throws {@link InvalidRowsError} when not a whole number within the type's structural minimum and the shared maximum. */
   private validateRows(type: MeanderType, rows: number): void {
     const minimum = STRUCTURAL_MINIMUM_ROWS[type];
 
-    if (rows < minimum || rows > MAXIMUM_ROWS) {
-      throw new InvalidRowsError(rows, minimum, MAXIMUM_ROWS);
+    if (!Number.isInteger(rows) || rows < minimum || rows > MAXIMUM_VALUE) {
+      throw new InvalidRowsError(rows, minimum, MAXIMUM_VALUE);
     }
   }
 

@@ -28,8 +28,8 @@ export class BoxesMotifService {
 
   // 🔏 Private Methods
 
-  /** Computes the next spiral corner and shrinks the bound it just used. */
-  private nextSpiralPoint(
+  /** Computes the next spiral corner, mutating `bounds` to shrink the side it just used. */
+  private advanceSpiral(
     bounds: BoxesSpiralBounds,
     moveIndex: number,
   ): SpiralLevelPoint {
@@ -69,7 +69,7 @@ export class BoxesMotifService {
     const totalMoves = 2 * rows - 3;
 
     for (let moveIndex = 0; moveIndex < totalMoves; moveIndex += 1) {
-      points.push(this.nextSpiralPoint(bounds, moveIndex));
+      points.push(this.advanceSpiral(bounds, moveIndex));
     }
 
     return points;
@@ -91,23 +91,27 @@ export class BoxesMotifService {
     return `M${rightX} ${bottomY}H${leftX}M${rightX} ${topY}H${leftX}`;
   }
 
-  /** Draws one repeat unit's spiral as an SVG path `d` string. */
+  /** Draws one repeat unit's spiral as an SVG path attribute value. */
   path(geometry: GridGeometry, rows: number, unitIndex: number): string {
     const points = this.spiralPoints(rows);
     const xOffset = unitIndex * this.unitWidth(geometry, rows);
-    const toX = (level: number): string =>
+    const toXCoordinate = (level: number): string =>
       this.gridGeometryService.formatCoordinate(
         geometry.offset + xOffset + level * geometry.unit,
       );
-    const toY = (level: number): string =>
+    const toYCoordinate = (level: number): string =>
       this.gridGeometryService.formatCoordinate(
         geometry.offset + level * geometry.unit,
       );
 
     return points
       .map(([xLevel, yLevel], index) => {
-        if (index === 0) return `M${toX(xLevel)} ${toY(yLevel)}`;
-        return index % 2 === 1 ? `H${toX(xLevel)}` : `V${toY(yLevel)}`;
+        if (index === 0) {
+          return `M${toXCoordinate(xLevel)} ${toYCoordinate(yLevel)}`;
+        }
+        return index % 2 === 1
+          ? `H${toXCoordinate(xLevel)}`
+          : `V${toYCoordinate(yLevel)}`;
       })
       .join("");
   }

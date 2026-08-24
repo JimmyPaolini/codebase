@@ -72,5 +72,17 @@ describe(MeanderGenerationService, () => {
         service.generate({ repeatCount: 13, rows: 5, type: "boxes" }),
       ).toThrow(InvalidRepeatCountError);
     });
+
+    it("throws on a non-integer rows value rather than producing NaN coordinates", () => {
+      expect(() =>
+        service.generate({ repeatCount: 1, rows: Number.NaN, type: "boxes" }),
+      ).toThrow(InvalidRowsError);
+    });
+
+    it("throws on a non-integer repeat count rather than producing NaN coordinates", () => {
+      expect(() =>
+        service.generate({ repeatCount: Number.NaN, rows: 5, type: "boxes" }),
+      ).toThrow(InvalidRepeatCountError);
+    });
   });
 });

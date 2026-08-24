@@ -63,6 +63,7 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 - **[JimmyPaolini](applications/JimmyPaolini)**: Portfolio website
 - **[lexico](applications/lexico)**: SSR web app (React 19, TanStack Start)
 - **[lexico-ingestion](applications/lexico-ingestion)**: NestJS CLI app for Latin dictionary data ingestion
+- **[meanderaw](applications/meanderaw)**: NestJS CLI for generating Greek meander (key/fret) SVG patterns
 
 ### Packages
 
