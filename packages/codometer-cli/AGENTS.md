@@ -60,36 +60,41 @@ flowchart LR
   subgraph group0["codometer-cli"]
     ChangesModule
     CodometerModule
-    CssModule
-    CustomStatisticsModule
-    FileDiscoveryModule
-    HclModule
-    JsonModule
-    JupyterModule
-    LanguagesModule
     LimitsModule
     MainModule
-    MarkdownModule
-    OutputJsonModule
-    OutputMarkdownModule
-    PythonModule
     ReportModule
-    ShellModule
-    SizeAnalysisModule
-    SqlModule
-    TargetsModule
-    TomlModule
-    TypescriptModule
-    YamlModule
   end
   subgraph group1["codometer-configuration"]
     ConfigurationModule
   end
-  subgraph group2["codometer-markdown"]
+  subgraph group2["codometer-customization"]
+    CustomizationModule
+  end
+  subgraph group3["codometer-discovery"]
+    TargetsModule
+  end
+  subgraph group4["codometer-languages"]
+    CssModule
+    HclModule
+    JupyterModule
+    LanguagesModule
+    PythonModule
+    ShellModule
+    SqlModule
+    TomlModule
+    TypescriptModule
+    YamlModule
+  end
+  subgraph group5["codometer-output"]
     DocumentsModule
+    JsonModule
+    MarkdownModule
     RenderModule
   end
-  subgraph group3["logger"]
+  subgraph group6["codometer-size"]
+    SizeModule
+  end
+  subgraph group7["logger"]
     LoggerModule([LoggerModule])
   end
   ConfigModule([ConfigModule])
@@ -98,14 +103,14 @@ flowchart LR
   ChangesModule --> DocumentsModule
   ChangesModule --> RenderModule
   CodometerModule --> ConfigurationModule
-  CodometerModule --> CustomStatisticsModule
-  CodometerModule --> FileDiscoveryModule
+  CodometerModule --> CustomizationModule
+  CodometerModule --> DiscoveryModule
+  CodometerModule --> JsonModule
   CodometerModule --> LanguagesModule
   CodometerModule --> LimitsModule
-  CodometerModule --> OutputJsonModule
-  CodometerModule --> OutputMarkdownModule
+  CodometerModule --> MarkdownModule
   CodometerModule --> ReportModule
-  CodometerModule --> SizeAnalysisModule
+  CodometerModule --> SizeModule
   CodometerModule --> TargetsModule
   JupyterModule --> JsonModule
   JupyterModule --> MarkdownModule
@@ -124,12 +129,12 @@ flowchart LR
   MainModule --> ChangesModule
   MainModule --> CodometerModule
   MainModule --> ConfigurationModule
-  MainModule --> CustomStatisticsModule
+  MainModule --> CustomizationModule
   MainModule --> DiscoveryModule
-  MainModule --> FileDiscoveryModule
+  MainModule --> DiscoveryModule
+  MainModule --> JsonModule
   MainModule --> LanguagesModule
-  MainModule --> OutputJsonModule
-  MainModule --> OutputMarkdownModule
+  MainModule --> MarkdownModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._

@@ -390,7 +390,17 @@ Where this project sits in the Nx project graph: what it depends on, and what de
 flowchart LR
   codometer_cli["codometer-cli"]
   codometer_configuration["codometer-configuration"]
+  codometer_customization["codometer-customization"]
+  codometer_discovery["codometer-discovery"]
+  codometer_languages["codometer-languages"]
+  codometer_output["codometer-output"]
+  codometer_size["codometer-size"]
   codometer_cli --> codometer_configuration
+  codometer_customization --> codometer_configuration
+  codometer_discovery --> codometer_configuration
+  codometer_languages --> codometer_configuration
+  codometer_output --> codometer_configuration
+  codometer_size --> codometer_configuration
   classDef subject stroke-width:3px
   class codometer_configuration subject
 ```

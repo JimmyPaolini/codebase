@@ -20,11 +20,6 @@
             "glob": "README.md",
             "input": "packages/codometer-cli",
             "output": "."
-          },
-          {
-            "glob": "src/modules/python/python.service.py",
-            "input": "packages/codometer-cli",
-            "output": "."
           }
         ],
         "main": "packages/codometer-cli/src/main.ts",

@@ -1,19 +1,17 @@
 import path from "node:path";
 
 import { ConfigurationService } from "@codometer/configuration";
+import { JsonService, MarkdownService } from "@codometer/output";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { OutputJsonService } from "../output-json/output-json.service";
-import { OutputMarkdownService } from "../output-markdown/output-markdown.service";
 import { ReportService } from "../report/report.service";
 
 import { CodometerService } from "./codometer.service";
 import { RunPlanService } from "./run-plan.service";
 
-import type { TargetSize } from "../output-markdown/output-markdown.types";
 import type {
   CodometerCommandOptions,
   MeasurementResult,
@@ -24,6 +22,7 @@ import type {
   RunMode,
 } from "./run-plan.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
+import type { TargetSize } from "@codometer/output";
 
 /**
  * CLI entry point for the repository measurement workflow.
@@ -39,8 +38,8 @@ export class CodometerCommand extends CommandRunner {
   constructor(
     private readonly configurationService: ConfigurationService,
     private readonly codometerService: CodometerService,
-    private readonly outputJsonService: OutputJsonService,
-    private readonly outputMarkdownService: OutputMarkdownService,
+    private readonly jsonService: JsonService,
+    private readonly markdownService: MarkdownService,
     private readonly reportService: ReportService,
     private readonly runPlanService: RunPlanService,
     private readonly logger: LoggerService,
@@ -105,12 +104,12 @@ export class CodometerCommand extends CommandRunner {
 
     if (destinationPath === undefined || !this.touchesFiles(args.mode)) {
       process.stdout.write(
-        this.outputJsonService.render({ indentation, report: args.report }),
+        this.jsonService.render({ indentation, report: args.report }),
       );
       return;
     }
 
-    const isCurrent = this.outputJsonService.sync({
+    const isCurrent = this.jsonService.sync({
       check: args.mode.checksReports,
       indentation,
       path: destinationPath,
@@ -130,7 +129,7 @@ export class CodometerCommand extends CommandRunner {
       return;
     }
 
-    const content = this.outputMarkdownService.renderDocument({
+    const content = this.markdownService.renderDocument({
       description: destination.description,
       scope: args.scope,
       statistics: args.measurement.statistics,
@@ -143,7 +142,7 @@ export class CodometerCommand extends CommandRunner {
       return;
     }
 
-    const isCurrent = this.outputMarkdownService.syncDocument({
+    const isCurrent = this.markdownService.syncDocument({
       check: args.mode.checksReports,
       content,
       path: destinationPath,
@@ -167,12 +166,12 @@ export class CodometerCommand extends CommandRunner {
 
     if (!this.touchesFiles(args.mode)) {
       process.stdout.write(
-        `${this.outputMarkdownService.renderBlock({ destination, scope: args.scope, statistics, targets })}\n`,
+        `${this.markdownService.renderBlock({ destination, scope: args.scope, statistics, targets })}\n`,
       );
       return;
     }
 
-    const isCurrent = this.outputMarkdownService.sync({
+    const isCurrent = this.markdownService.sync({
       check: args.mode.checksReports,
       destination,
       scope: args.scope,
