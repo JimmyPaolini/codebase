@@ -57,6 +57,7 @@ body:
         - lexico-entities
         - lexico-ingestion
         - logger
+        - meanderaw
         - callidescope
         - codometer
         - codebase
