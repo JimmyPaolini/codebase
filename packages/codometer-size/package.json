@@ -1,43 +1,22 @@
 {
-  "bin": {
-    "codometer": "./src/main.mjs"
-  },
   "dependencies": {
     "@codebase/logger": "workspace:*",
-    "@codometer/changes": "workspace:*",
     "@codometer/configuration": "workspace:*",
-    "@codometer/customization": "workspace:*",
-    "@codometer/discovery": "workspace:*",
-    "@codometer/languages": "workspace:*",
-    "@codometer/output": "workspace:*",
-    "@codometer/size": "workspace:*",
     "@nestjs/common": "catalog:",
-    "@nestjs/config": "catalog:",
-    "@nestjs/core": "catalog:",
-    "nest-commander": "catalog:",
     "reflect-metadata": "catalog:",
-    "tslib": "catalog:",
-    "zod": "catalog:"
+    "tslib": "catalog:"
   },
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
     "@nx/eslint-plugin": "catalog:",
-    "@swc-node/register": "catalog:",
-    "@swc/core": "catalog:",
     "@swc/helpers": "catalog:",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
-    "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "exports": {
-    ".": "./src/index.ts",
-    "./package.json": "./package.json"
-  },
   "main": "src/index.ts",
-  "name": "@codometer/cli",
-  "private": true,
+  "name": "@codometer/size",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"

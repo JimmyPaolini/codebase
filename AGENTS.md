@@ -67,12 +67,11 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 ### Packages
 
 - **[codometer-changes](packages/codometer-changes)**: Diffs codometer reports against a baseline snapshot
-- **[codometer-custom-statistics](packages/codometer-custom-statistics)**: Evaluates codometer's configured custom counters
-- **[codometer-file-discovery](packages/codometer-file-discovery)**: Glob matching and gitignore-aware file walking for codometer
+- **[codometer-customization](packages/codometer-customization)**: Evaluates codometer's configured custom counters
+- **[codometer-discovery](packages/codometer-discovery)**: Glob matching and gitignore-aware file walking, plus resolving configured measurement targets to file sets
 - **[codometer-languages](packages/codometer-languages)**: Every input language analyzer codometer measures, behind one `analyze()` call
 - **[codometer-output](packages/codometer-output)**: Every codometer output format — JSON reports, README badges, and the pull request change report
-- **[codometer-size-analysis](packages/codometer-size-analysis)**: Compresses a target's matched files and measures their size
-- **[codometer-targets](packages/codometer-targets)**: Resolves codometer's configured measurement targets to file sets
+- **[codometer-size](packages/codometer-size)**: Compresses a target's matched files and measures their size
 - **[lexico-components](packages/lexico-components)**: Shared React component library (shadcn/ui, Radix UI)
 - **[lexico-entities](packages/lexico-entities)**: Shared TypeORM entities and GraphQL types package
 - **[logger](packages/logger)**: Shared pino-backed NestJS `LoggerService` and `LoggerModule`

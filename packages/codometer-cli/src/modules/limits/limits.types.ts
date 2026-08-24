@@ -5,7 +5,7 @@ import type {
   CodometerSeverity,
   ResolvedCodometerConfiguration,
 } from "@codometer/configuration";
-import type { SizeResult } from "@codometer/size-analysis";
+import type { SizeResult } from "@codometer/size";
 
 /** Arguments accepted when binding one metric path within one target. */
 export interface BindMetricArguments {

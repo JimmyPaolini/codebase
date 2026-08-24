@@ -1,8 +1,8 @@
 import { ConfigurationModule } from "@codometer/configuration";
-import { CustomStatisticsModule } from "@codometer/custom-statistics";
-import { FileDiscoveryModule } from "@codometer/file-discovery";
+import { CustomizationModule } from "@codometer/customization";
+import { DiscoveryModule as CodometerDiscoveryModule } from "@codometer/discovery";
 import { LanguagesModule } from "@codometer/languages";
-import { OutputJsonModule, OutputMarkdownModule } from "@codometer/output";
+import { JsonModule, MarkdownModule } from "@codometer/output";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { DiscoveryModule } from "@nestjs/core";
@@ -28,12 +28,12 @@ import { CodometerModule } from "./modules/codometer/codometer.module";
     LoggerModule,
     ChangesModule,
     CodometerModule,
+    CodometerDiscoveryModule,
     ConfigurationModule,
-    CustomStatisticsModule,
-    FileDiscoveryModule,
+    CustomizationModule,
     LanguagesModule,
-    OutputJsonModule,
-    OutputMarkdownModule,
+    JsonModule,
+    MarkdownModule,
   ],
 })
 export class MainModule {}

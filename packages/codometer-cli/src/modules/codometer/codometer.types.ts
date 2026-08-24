@@ -7,15 +7,15 @@ import type {
   ResolvedCodometerConfiguration,
   ResolvedCodometerTarget,
 } from "@codometer/configuration";
-import type { FileDiscoveryResult } from "@codometer/file-discovery";
-import type { SizeResult } from "@codometer/size-analysis";
+import type { DiscoveryResult } from "@codometer/discovery";
+import type { SizeResult } from "@codometer/size";
 
 /**
  * Arguments accepted when running language analysis over a target's files.
  */
 export interface AnalyzeLanguageArguments {
   configuration: ResolvedCodometerConfiguration;
-  discoveredFiles: FileDiscoveryResult;
+  discoveredFiles: DiscoveryResult;
   workingDirectory: string;
 }
 

@@ -7,19 +7,19 @@ export type {
   DocumentMarkers,
   EmitArguments,
 } from "./modules/documents/documents.types";
-export { OutputJsonModule } from "./modules/output-json/output-json.module";
-export { OutputJsonService } from "./modules/output-json/output-json.service";
+export { JsonModule } from "./modules/json/json.module";
+export { JsonService } from "./modules/json/json.service";
 export type {
   RenderReportArguments,
   SyncJsonArguments,
-} from "./modules/output-json/output-json.types";
-export { MissingMarkdownPathError } from "./modules/output-markdown/output-markdown.errors";
-export { OutputMarkdownModule } from "./modules/output-markdown/output-markdown.module";
-export { OutputMarkdownService } from "./modules/output-markdown/output-markdown.service";
+} from "./modules/json/json.types";
+export { MissingMarkdownPathError } from "./modules/markdown/markdown.errors";
+export { MarkdownModule } from "./modules/markdown/markdown.module";
+export { MarkdownService } from "./modules/markdown/markdown.service";
 export type {
   MeasurementScope,
   TargetSize,
-} from "./modules/output-markdown/output-markdown.types";
+} from "./modules/markdown/markdown.types";
 export {
   CODOMETER_MARKERS,
   HEADING,

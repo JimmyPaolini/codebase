@@ -1,4 +1,4 @@
-# CodometerOutput: NestJS Service Application
+# CodometerDiscovery: NestJS Service Application
 
 ## Quick Start
 
@@ -49,20 +49,18 @@ The modules this project defines and the imports between them, published by `nx 
 
 ```mermaid
 flowchart LR
-  subgraph group0["codometer-output"]
-    DocumentsModule
-    JsonModule
-    MarkdownModule
-    RenderModule
+  subgraph group0["codometer-discovery"]
+    DiscoveryModule
+    TargetsModule
   end
   subgraph group1["logger"]
-    LoggerModule([LoggerModule])
+    LoggerModule
   end
+  DiscoveryModule --> LoggerModule
+  TargetsModule --> LoggerModule
 ```
 
-_Rounded modules are global: every module can inject them, so their edges are left out._
-
-_Reached only for their types, and so declaring no module here: codometer-changes and codometer-configuration._
+_Loaded at runtime rather than imported, and so absent from this container: codometer-configuration._
 
 <!-- nestjs-module-graph-end -->
 
@@ -93,10 +91,10 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run codometer-output:lint-codebase   # Every static check, in one graph
-nx run codometer-output:typecheck       # tsc --noEmit
-nx run codometer-output:oxfmt           # Formatting
-nx run codometer-output:build           # Compile for publication
+nx run codometer-discovery:lint-codebase   # Every static check, in one graph
+nx run codometer-discovery:typecheck       # tsc --noEmit
+nx run codometer-discovery:oxfmt           # Formatting
+nx run codometer-discovery:build           # Compile for publication
 ```
 
 ### Testing
@@ -104,9 +102,9 @@ nx run codometer-output:build           # Compile for publication
 Follow the codebase's strict three-tier testing strategy. Co-locate test files with the source they test.
 
 ```bash
-nx run codometer-output:vitest:unit          # Fast (<100ms) — pure logic, mocked DI
-nx run codometer-output:vitest:integration   # Moderate (1-2s) — real database/API I/O
-nx run codometer-output:vitest:end-to-end    # Slow (30-60s) — full service initialization
+nx run codometer-discovery:vitest:unit          # Fast (<100ms) — pure logic, mocked DI
+nx run codometer-discovery:vitest:integration   # Moderate (1-2s) — real database/API I/O
+nx run codometer-discovery:vitest:end-to-end    # Slow (30-60s) — full service initialization
 ```
 
 | Tier | File pattern | What to test |

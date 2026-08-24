@@ -1,10 +1,9 @@
 import { ConfigurationModule } from "@codometer/configuration";
-import { CustomStatisticsModule } from "@codometer/custom-statistics";
-import { FileDiscoveryModule } from "@codometer/file-discovery";
+import { CustomizationModule } from "@codometer/customization";
+import { DiscoveryModule, TargetsModule } from "@codometer/discovery";
 import { LanguagesModule } from "@codometer/languages";
-import { OutputJsonModule, OutputMarkdownModule } from "@codometer/output";
-import { SizeAnalysisModule } from "@codometer/size-analysis";
-import { TargetsModule } from "@codometer/targets";
+import { JsonModule, MarkdownModule } from "@codometer/output";
+import { SizeModule } from "@codometer/size";
 import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";
@@ -24,15 +23,15 @@ import { RunPlanService } from "./run-plan.service";
   exports: [CodometerCommand, CodometerService, RunPlanService],
   imports: [
     ConfigurationModule,
-    CustomStatisticsModule,
-    FileDiscoveryModule,
+    CustomizationModule,
+    DiscoveryModule,
     LanguagesModule,
     LimitsModule,
     LoggerModule,
-    OutputJsonModule,
-    OutputMarkdownModule,
+    JsonModule,
+    MarkdownModule,
     ReportModule,
-    SizeAnalysisModule,
+    SizeModule,
     TargetsModule,
   ],
   providers: [CodometerCommand, CodometerService, RunPlanService],
