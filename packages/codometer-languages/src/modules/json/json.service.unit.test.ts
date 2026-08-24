@@ -107,7 +107,7 @@ describe(JsonService, () => {
     expect(result.strings).toBe(2);
   });
 
-  it("skips unsupported JSONC escape combinations gracefully", () => {
+  it("parses JSONC content carrying escaped backslashes and quotes", () => {
     const filePath = path.join(tempDirectory, "escaped.jsonc");
     const backslash = String.fromCodePoint(92);
     const content = JSON.stringify(
@@ -128,8 +128,8 @@ describe(JsonService, () => {
     });
 
     expect(result.files).toBe(1);
-    expect(result.objects).toBe(0);
-    expect(result.strings).toBe(0);
+    expect(result.objects).toBe(1);
+    expect(result.strings).toBe(3);
   });
 
   it("handles files with no content gracefully", () => {
@@ -165,8 +165,8 @@ describe(JsonService, () => {
     });
 
     expect(result.files).toBe(1);
-    expect(result.objects).toBe(0);
-    expect(result.numbers).toBe(0);
+    expect(result.objects).toBe(1);
+    expect(result.numbers).toBe(1);
   });
 
   it("counts nested arrays correctly", () => {

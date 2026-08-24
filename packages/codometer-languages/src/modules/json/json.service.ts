@@ -9,10 +9,8 @@ import { EMPTY_JSON_RESULT } from "./json.constants";
 
 import type { JsoncState, JsonInput, JsonResult } from "./json.types";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /** Walks parsed JSON values to collect structural metrics. */
 @Injectable()
-/* v8 ignore stop */
 export class JsonService {
   // 🏗 Dependency Injection
 
@@ -283,7 +281,6 @@ export class JsonService {
     for (let index = 0; index < content.length; index++) {
       const currentCharacter = content[index] ?? "";
       const nextCharacter = content[index + 1] ?? "";
-      const shouldAdvanceIndex = state.shouldAdvanceIndex;
       state = this.consumeJsoncCharacter(
         currentCharacter,
         nextCharacter,
@@ -291,14 +288,13 @@ export class JsonService {
       );
       sanitizedContent = state.sanitizedContent;
 
-      if (shouldAdvanceIndex) {
+      if (state.shouldAdvanceIndex) {
         index++;
+        state = {
+          ...state,
+          shouldAdvanceIndex: false,
+        };
       }
-
-      state = {
-        ...state,
-        shouldAdvanceIndex: false,
-      };
     }
 
     return sanitizedContent;

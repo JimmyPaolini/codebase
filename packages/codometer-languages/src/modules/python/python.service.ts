@@ -16,12 +16,10 @@ import type {
   PythonResult,
 } from "./python.types";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Executes the Python analysis script and returns aggregated metrics.
  */
 @Injectable()
-/* v8 ignore stop */
 export class PythonService {
   // 🏗 Dependency Injection
 

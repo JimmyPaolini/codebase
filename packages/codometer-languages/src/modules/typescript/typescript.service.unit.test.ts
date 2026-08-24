@@ -260,6 +260,19 @@ describe(TypescriptService, () => {
     expect(result.externalPackages).toStrictEqual(new Set(["external-lib"]));
   });
 
+  it("ignores an empty import specifier for external package counting", () => {
+    readFileSyncMock.mockReturnValue(`import "";`);
+
+    const result = service.analyze({
+      sourceFiles: ["src/empty-specifier.ts"],
+      symbolCounters: [],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.imports).toBe(1);
+    expect(result.externalPackages.size).toBe(0);
+  });
+
   it("covers private node helpers for non-modifier and non-variable inputs", () => {
     const hasAsyncKeyword = Reflect.get(service, "hasAsyncKeyword") as (
       node: tsCompiler.Node,

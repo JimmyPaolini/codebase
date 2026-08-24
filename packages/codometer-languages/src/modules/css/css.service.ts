@@ -12,7 +12,6 @@ import { CSS_MEDIA_AT_RULE, EMPTY_CSS_RESULT } from "./css.constants";
 import type { CssInput, CssResult } from "./css.types";
 import type { ChildNode } from "postcss";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Walks parsed stylesheets to collect structural metrics.
  *
@@ -21,7 +20,6 @@ import type { ChildNode } from "postcss";
  * inside a comment counts not at all.
  */
 @Injectable()
-/* v8 ignore stop */
 export class CssService {
   // 🏗 Dependency Injection
 

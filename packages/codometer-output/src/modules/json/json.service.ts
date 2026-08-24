@@ -7,7 +7,6 @@ import { LoggerService } from "@codebase/logger";
 
 import type { RenderReportArguments, SyncJsonArguments } from "./json.types";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Writes the report to a JSON file.
  *
@@ -16,7 +15,6 @@ import type { RenderReportArguments, SyncJsonArguments } from "./json.types";
  * repository nobody touched as stale.
  */
 @Injectable()
-/* v8 ignore stop */
 export class JsonService {
   // 🏗 Dependency Injection
 

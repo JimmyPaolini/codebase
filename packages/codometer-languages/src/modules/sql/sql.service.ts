@@ -14,7 +14,6 @@ import {
 
 import type { SqlInput, SqlResult } from "./sql.types";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Counts the statements and clauses a SQL script is built from.
  *
@@ -23,7 +22,6 @@ import type { SqlInput, SqlResult } from "./sql.types";
  * semicolons, which is what the dialect-agnostic reading of a script is.
  */
 @Injectable()
-/* v8 ignore stop */
 export class SqlService {
   // 🏗 Dependency Injection
 
