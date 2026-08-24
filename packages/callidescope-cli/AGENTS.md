@@ -113,6 +113,7 @@ flowchart LR
   MainModule --> DiscoveryModule
   ProgramModule --> WorkspaceModule
   ProjectReportsModule --> GraphModule
+  ProjectReportsModule --> SignaturesModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
