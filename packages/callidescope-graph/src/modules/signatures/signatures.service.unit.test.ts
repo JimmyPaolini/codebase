@@ -6,6 +6,7 @@ import {
   buildFixtureProgram,
   buildFixtureServices,
   collectFixtureCallables,
+  findAbstractMethod,
 } from "../../../testing/programs";
 
 import { SignaturesService } from "./signatures.service";
@@ -50,6 +51,24 @@ describe(SignaturesService, () => {
 
   it("is defined", () => {
     expect(service).toBeDefined();
+  });
+
+  it("resolves a signature even for a declaration with no body", () => {
+    const projectProgram = buildFixtureProgram({
+      "packages/example/src/modules/a/a.service.ts":
+        "export abstract class Base { public abstract run(): void; }",
+    });
+    const declaration = findAbstractMethod(projectProgram);
+
+    expect(declaration).toBeDefined();
+    expect(
+      declaration === undefined
+        ? undefined
+        : service.read({
+            checker: projectProgram.checker,
+            declaration,
+          }),
+    ).toStrictEqual({ parameters: [], returnType: "void", text: "(): void" });
   });
 
   /** Reads the signature of one named callable. */

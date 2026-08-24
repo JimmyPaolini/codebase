@@ -18,6 +18,7 @@ import type {
 } from "./entry-points.types";
 import type { EntryPoint, EntryPointKind } from "@callidescope/configuration";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Decides which callables are the roots of a call stack.
  *
@@ -32,6 +33,7 @@ import type { EntryPoint, EntryPointKind } from "@callidescope/configuration";
  * rule this list is missing shows up as an orphan instead of as a hole.
  */
 @Injectable()
+/* v8 ignore stop */
 export class EntryPointsService {
   // 🏗 Dependency Injection
 

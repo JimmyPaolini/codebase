@@ -15,6 +15,7 @@ import {
 
 import type { ResolvedCallSite } from "./edges.types";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Resolves one call expression to the declarations it can reach.
  *
@@ -25,6 +26,7 @@ import type { ResolvedCallSite } from "./edges.types";
  * a NestJS call graph. Everything below that is the long tail.
  */
 @Injectable()
+/* v8 ignore stop */
 export class SymbolResolutionService {
   // 🏗 Dependency Injection
 

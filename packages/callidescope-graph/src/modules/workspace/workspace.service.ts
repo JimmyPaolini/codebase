@@ -22,6 +22,7 @@ import type {
 } from "./workspace.types";
 import type { ModuleId } from "@callidescope/configuration";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Finds the projects a run traces, and names the module every file belongs to.
  *
@@ -30,6 +31,7 @@ import type { ModuleId } from "@callidescope/configuration";
  * share a module identifier only when the structure says they are one unit.
  */
 @Injectable()
+/* v8 ignore stop */
 export class WorkspaceService {
   // 🏗 Dependency Injection
 
