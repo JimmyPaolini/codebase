@@ -132,34 +132,30 @@ export class MeanderGenerationService {
 
   /**
    * Throws {@link InvalidRepeatCountCycleError} when `repeatCount` doesn't
-   * divide evenly by the modifier's cycle length: a fixed
-   * {@link SPIN_CYCLE_LENGTH} for the spin family, or `alternated`'s own
-   * `period` — otherwise the last repeat unit's zigzag would be cut off
-   * mid-run instead of ending on a column switch.
+   * divide evenly by the spin family's fixed {@link SPIN_CYCLE_LENGTH} —
+   * otherwise the last repeat unit's rotation would be cut off mid-cycle
+   * instead of ending back at the starting orientation.
+   *
+   * `alternated` has no equivalent cycle to validate against
+   * `repeatCount`: `period` controls a single repeat tile's own column
+   * span (see {@link BarsMotifService.alternatedPath}), and every tile is
+   * self-contained regardless of how many times it repeats. A truncated
+   * final run inside a tile is expected, accepted behavior — see
+   * {@link MotifTransformsService.alternate}'s own tests — not a defect
+   * `repeatCount` could ever fix by being "more compatible" with `period`.
    */
   private validateModifierCycle(
     modifier: Modifier | undefined,
     repeatCount: number,
   ): void {
-    if (!modifier) {
-      return;
-    }
-
     if (
+      modifier &&
       SPIN_FAMILY_MODIFIER_NAMES.includes(modifier.name) &&
       repeatCount % SPIN_CYCLE_LENGTH !== 0
     ) {
       throw new InvalidRepeatCountCycleError(
         repeatCount,
         SPIN_CYCLE_LENGTH,
-        modifier.name,
-      );
-    }
-
-    if (modifier.name === "alternated" && repeatCount % modifier.period !== 0) {
-      throw new InvalidRepeatCountCycleError(
-        repeatCount,
-        modifier.period,
         modifier.name,
       );
     }

@@ -109,7 +109,7 @@ describe(BarsMotifService, () => {
       );
     });
 
-    it("holds each column for a longer run at period 2", () => {
+    it("widens the tile to 2 * period columns at period 2, filling each half with a period-1-style zigzag pair", () => {
       const geometry = gridGeometryService.compute(5);
 
       expect(
@@ -118,7 +118,23 @@ describe(BarsMotifService, () => {
           rows: 5,
           unitIndex: 0,
         }),
-      ).toBe("M3 15V39M15 39V51M3 3H27M3 63H27");
+      ).toBe(
+        "M3 15V27M27 27V39M3 39V51M15 15V27M39 27V39M15 39V51M3 3H51M3 63H51",
+      );
+    });
+
+    it("advances the tile by 2 * period columns per unit index at period 2", () => {
+      const geometry = gridGeometryService.compute(5);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "alternated", period: 2 },
+          rows: 5,
+          unitIndex: 1,
+        }),
+      ).toBe(
+        "M51 15V27M75 27V39M51 39V51M63 15V27M87 27V39M63 39V51M51 3H99M51 63H99",
+      );
     });
   });
 
@@ -147,7 +163,7 @@ describe(BarsMotifService, () => {
       );
     });
 
-    it("doubles the touched columns for the alternated modifier, matching 5 rows bars alternated.svg", () => {
+    it("doubles the touched columns for the alternated modifier at period 1, matching 5 rows bars alternated.svg", () => {
       const geometry = gridGeometryService.compute(5);
 
       expect(
@@ -159,7 +175,7 @@ describe(BarsMotifService, () => {
       ).toBe(135);
     });
 
-    it("doubles the touched columns for the alternated modifier, matching 8 rows bars alternated.svg", () => {
+    it("widens the touched columns to 2 * period * repeatCount - 1 at period 2", () => {
       const geometry = gridGeometryService.compute(8);
 
       expect(
@@ -168,7 +184,34 @@ describe(BarsMotifService, () => {
           repeatCount: 6,
           rows: 8,
         }),
-      ).toBe(84.375);
+      ).toBe(174.375);
     });
+
+    it.each`
+      period | expectedColumns
+      ${1}   | ${2}
+      ${2}   | ${4}
+      ${3}   | ${6}
+    `(
+      "spans 2 * period ($expectedColumns) real columns per repeat, matching 7 rows bars alternated / alternated 2 / alternated 3 at period $period",
+      ({
+        expectedColumns,
+        period,
+      }: {
+        expectedColumns: number;
+        period: number;
+      }) => {
+        const geometry = gridGeometryService.compute(7);
+        const singleUnitRightEdge = service.rightEdge(geometry, {
+          modifier: { name: "alternated", period },
+          repeatCount: 1,
+          rows: 7,
+        });
+
+        expect(singleUnitRightEdge).toBeCloseTo(
+          geometry.offset + (expectedColumns - 1) * geometry.unit,
+        );
+      },
+    );
   });
 });

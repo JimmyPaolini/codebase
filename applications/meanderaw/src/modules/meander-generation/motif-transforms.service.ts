@@ -28,41 +28,38 @@ export class MotifTransformsService {
 
   /**
    * Splits the closed level interval `[levelStart, levelEnd]` into
-   * consecutive runs of `period` grid levels each, alternating which of a
-   * `bars`-style motif's two columns (`0` for a repeat unit's own column,
-   * `1` for its neighbor) draws each run. Doesn't fit the
+   * consecutive runs of `runLength` grid levels each, alternating which of
+   * two columns (`0`/`1`) draws each run. Doesn't fit the
    * point-sequence-in/point-sequence-out shape `rotate`/`mirror` share (the
    * same exception {@link closeEdge} documents): `bars`'s vertical bar is
    * drawn as several disconnected segments rather than one continuous
    * polyline, so there is no single point sequence to transform — only a
    * pair of columns and a level range to split between them.
    *
-   * `period = 1` reproduces the `5`, `7`, and `8` rows "bars alternated"
-   * reference files exactly (verified by decoding their real path data):
-   * the run switches column every single grid level. Larger periods hold
-   * each column for more levels before switching. This does NOT reproduce
-   * the `7` rows "bars alternated 2"/"alternated 3" files bit-for-bit —
-   * those two files decode to a pattern (edges 1 and `rows - 2` doubled
-   * onto both columns, the adjacent edges 2 and `rows - 3` entirely
-   * missing) that isn't a consistent function of `period` across row
-   * counts: the same modifier at 7 rows uses a different offset than at 8
-   * rows AND contains real diagonal `L` path commands absent from every
-   * other file in the `bars` family, evidence the file was authored
-   * differently (likely by hand, possibly mixed up with the "bars
-   * alternated diamond" file) rather than generated from one parameterized
-   * rule. See the task 6 report for the full decode.
+   * A generic capability, independent of `bars`'s own `alternated`
+   * modifier: `BarsMotifService.alternatedPath` always calls this with
+   * `runLength = 1` (verified exact against the `5`, `7`, and `8` rows
+   * "bars alternated" reference files — the run switches column every
+   * single grid level) and uses the modifier's `period` parameter
+   * separately, to control how many real columns the repeat tile spans
+   * rather than how long a vertical run is. See
+   * {@link BarsMotifService.alternatedPath} for that derivation, including
+   * why the reference set's "bars alternated 2"/"alternated 3" files'
+   * interior zigzag pattern (as opposed to their column span, which IS a
+   * clean, confirmed `2 * period` progression) is hand-mangled and
+   * unrecoverable as one rule.
    */
   alternate(
     levelStart: number,
     levelEnd: number,
-    period: number,
+    runLength: number,
   ): AlternateRun[] {
     const runs: AlternateRun[] = [];
     let currentLevel = levelStart;
     let runIndex = 0;
 
     while (currentLevel < levelEnd) {
-      const runEnd = Math.min(currentLevel + period, levelEnd);
+      const runEnd = Math.min(currentLevel + runLength, levelEnd);
 
       runs.push({
         column: runIndex % 2 === 0 ? 0 : 1,

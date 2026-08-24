@@ -118,7 +118,7 @@ describe(MeanderGenerationService, () => {
       ).toThrow(InvalidPeriodError);
     });
 
-    it("throws when repeatCount isn't a whole multiple of alternated's period", () => {
+    it("does not require repeatCount to divide evenly by alternated's period, since each tile is self-contained", () => {
       expect(() =>
         service.generate({
           modifier: { name: "alternated", period: 4 },
@@ -126,7 +126,7 @@ describe(MeanderGenerationService, () => {
           rows: 5,
           type: "bars",
         }),
-      ).toThrow(InvalidRepeatCountCycleError);
+      ).not.toThrow();
     });
 
     it("throws when alternated is requested for a type that doesn't support it", () => {
