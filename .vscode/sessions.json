@@ -26,6 +26,13 @@
         "cwd": "codebase",
         "icon": "repo",
         "name": "codebase"
+      },
+      {
+        "color": "terminal.ansiBlue",
+        "commands": ["claude remote-control"],
+        "cwd": "codebase",
+        "icon": "repo",
+        "name": "codebase"
       }
     ]
   },
