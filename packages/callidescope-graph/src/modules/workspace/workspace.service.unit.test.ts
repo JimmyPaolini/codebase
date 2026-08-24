@@ -205,6 +205,63 @@ describe(WorkspaceService, () => {
     ).toBe("example:src");
   });
 
+  // ⚙️ Configuration
+
+  it("finds projects under a configured container directory", async () => {
+    const configured = new WorkspaceService(subjectLogger);
+
+    configured.configure({
+      modulesDirectory: "modules",
+      projectContainerDirectories: ["services"],
+      rootModuleSegment: "src",
+    });
+
+    const root = await buildWorkspace([
+      { container: "services", name: "billing" },
+    ]);
+
+    expect(
+      configured
+        .discoverProjects({ projectNames: [], workspaceRoot: root })
+        .map((project) => project.name),
+    ).toStrictEqual(["billing"]);
+  });
+
+  it("names a module folder by a configured modules directory", () => {
+    const configured = new WorkspaceService(subjectLogger);
+
+    configured.configure({
+      modulesDirectory: "features",
+      projectContainerDirectories: ["packages"],
+      rootModuleSegment: "lib",
+    });
+
+    expect(
+      configured.resolveModuleId({
+        project: PROJECT,
+        workspaceRelativePath:
+          "packages/example/lib/features/discovery/discovery.service.ts",
+      }),
+    ).toBe("example:features/discovery");
+  });
+
+  it("names a file directly under a configured root segment", () => {
+    const configured = new WorkspaceService(subjectLogger);
+
+    configured.configure({
+      modulesDirectory: "features",
+      projectContainerDirectories: ["packages"],
+      rootModuleSegment: "lib",
+    });
+
+    expect(
+      configured.resolveModuleId({
+        project: PROJECT,
+        workspaceRelativePath: "packages/example/lib/main.ts",
+      }),
+    ).toBe("example:lib");
+  });
+
   // 🧪 Test detection
 
   it.each([

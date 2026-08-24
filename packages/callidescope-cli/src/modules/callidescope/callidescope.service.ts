@@ -1,8 +1,8 @@
 import {
   CallablesService,
-  ClassHierarchyService,
+  ClassesService,
   CohesionService,
-  EntryPointsService,
+  EntriesService,
   ExternalService,
   ProgramService,
   WorkspaceService,
@@ -33,9 +33,9 @@ export class CallidescopeService {
 
   constructor(
     private readonly callablesService: CallablesService,
-    private readonly classHierarchyService: ClassHierarchyService,
+    private readonly classHierarchyService: ClassesService,
     private readonly cohesionService: CohesionService,
-    private readonly entryPointsService: EntryPointsService,
+    private readonly entryPointsService: EntriesService,
     private readonly externalService: ExternalService,
     private readonly graphAssemblyService: GraphAssemblyService,
     private readonly programService: ProgramService,
@@ -164,6 +164,8 @@ export class CallidescopeService {
     this.logger.info("🔭 Tracing a workspace", undefined, {
       workspaceRoot: args.workspaceRoot,
     });
+
+    this.workspaceService.configure(args.configuration.workspaceStructure);
 
     const projects = this.workspaceService.discoverProjects({
       projectNames: args.projectNames,

@@ -1,11 +1,30 @@
 // ♟️ Constants
 
-/** Directories a workspace keeps its projects in. */
-export const PROJECT_CONTAINER_DIRECTORIES = [
+/**
+ * Directories a workspace keeps its projects in, used until `configure` is
+ * called with a workspace's own layout.
+ */
+export const DEFAULT_PROJECT_CONTAINER_DIRECTORIES = [
   "applications",
   "packages",
   "tools",
 ] as const;
+
+/**
+ * The subdirectory a module identifier is derived from, used until
+ * `configure` is called with a workspace's own layout.
+ *
+ * A file under `<root>/modules/<name>/` is identified by that module;
+ * anything else falls back to its first subdirectory under the root, so
+ * routes and components still group into something a report can name.
+ */
+export const DEFAULT_MODULES_DIRECTORY = "modules";
+
+/**
+ * Identifier used for a file sitting directly under the source root, used
+ * until `configure` is called with a workspace's own layout.
+ */
+export const DEFAULT_ROOT_MODULE_SEGMENT = "src";
 
 /**
  * Directory holding a project's test scaffolding.
@@ -19,15 +38,3 @@ export const TEST_DIRECTORY_SEGMENT = "testing";
 /** Matches a test file, whatever tier it declares. */
 export const TEST_FILE_PATTERN =
   /\.(?:end-to-end|integration|unit)?\.?(?:spec|test)\.[cm]?[jt]sx?$/;
-
-/**
- * The `src/` subdirectory a module identifier is derived from.
- *
- * A file under `src/modules/<name>/` is identified by that module; anything
- * else falls back to its first `src/` subdirectory, so routes and components
- * still group into something a report can name.
- */
-export const MODULES_DIRECTORY = "modules";
-
-/** Identifier used for a file sitting directly under `src/`. */
-export const ROOT_MODULE_SEGMENT = "src";

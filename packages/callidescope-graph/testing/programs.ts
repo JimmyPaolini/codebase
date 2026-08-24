@@ -3,8 +3,8 @@ import ts from "typescript";
 
 import { CallableIdentityService } from "../src/modules/callables/callable-identity.service";
 import { CallablesService } from "../src/modules/callables/callables.service";
-import { ClassHierarchyService } from "../src/modules/class-hierarchy/class-hierarchy.service";
-import { ExternalService } from "../src/modules/class-hierarchy/external.service";
+import { ClassesService } from "../src/modules/classes/classes.service";
+import { ExternalService } from "../src/modules/classes/external.service";
 import { CallSitesService } from "../src/modules/edges/call-sites.service";
 import { EdgesService } from "../src/modules/edges/edges.service";
 import { SymbolResolutionService } from "../src/modules/edges/symbol-resolution.service";
@@ -30,7 +30,7 @@ export interface FixtureServices {
   readonly callables: CallablesService;
   readonly edges: EdgesService;
   readonly external: ExternalService;
-  readonly hierarchy: ClassHierarchyService;
+  readonly hierarchy: ClassesService;
   readonly identity: CallableIdentityService;
   readonly programService: ProgramService;
   readonly workspace: WorkspaceService;
@@ -113,7 +113,7 @@ export function buildFixtureServices(args: {
     createMock<LoggerService>(),
   );
   const external = new ExternalService();
-  const hierarchy = new ClassHierarchyService(external);
+  const hierarchy = new ClassesService(external);
 
   external.configure({
     ownedFilePaths: args.projectProgram.ownedFilePaths,

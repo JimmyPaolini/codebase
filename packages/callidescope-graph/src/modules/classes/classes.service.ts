@@ -7,9 +7,8 @@ import type { ProjectProgram } from "../program/program.types";
 import type {
   BuildHierarchyArguments,
   ImplementationLookup,
-} from "./class-hierarchy.types";
+} from "./classes.types";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Resolves an interface or abstract member to the classes that implement it.
  *
@@ -24,8 +23,7 @@ import type {
  * find none of them.
  */
 @Injectable()
-/* v8 ignore stop */
-export class ClassHierarchyService {
+export class ClassesService {
   // 🏗 Dependency Injection
 
   constructor(private readonly externalService: ExternalService) {}

@@ -1,9 +1,9 @@
 import { CallablesModule } from "../src/modules/callables/callables.module";
-import { ClassHierarchyModule } from "../src/modules/class-hierarchy/class-hierarchy.module";
+import { ClassesModule } from "../src/modules/classes/classes.module";
 import { CohesionModule } from "../src/modules/cohesion/cohesion.module";
 import { DocumentationModule } from "../src/modules/documentation/documentation.module";
 import { EdgesModule } from "../src/modules/edges/edges.module";
-import { EntryPointsModule } from "../src/modules/entry-points/entry-points.module";
+import { EntriesModule } from "../src/modules/entries/entries.module";
 import { GraphModule } from "../src/modules/graph/graph.module";
 import { ProgramModule } from "../src/modules/program/program.module";
 import { SignaturesModule } from "../src/modules/signatures/signatures.module";
@@ -22,9 +22,9 @@ export const ANALYSIS_MODULES = [
   CohesionModule,
   DocumentationModule,
   EdgesModule,
-  EntryPointsModule,
+  EntriesModule,
   GraphModule,
-  ClassHierarchyModule,
+  ClassesModule,
   ProgramModule,
   SignaturesModule,
   WorkspaceModule,

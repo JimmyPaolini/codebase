@@ -9,16 +9,15 @@ import {
   BOOTSTRAP_FUNCTION_NAMES,
   COMMAND_RUNNER_METHOD_NAME,
   LIFECYCLE_METHOD_NAMES,
-} from "./entry-points.constants";
+} from "./entries.constants";
 
 import type { DiscoveredCallable } from "../callables/callables.types";
 import type {
   EntryPointCollection,
-  ResolveEntryPointsArguments,
-} from "./entry-points.types";
+  ResolveEntriesArguments,
+} from "./entries.types";
 import type { EntryPoint, EntryPointKind } from "@callidescope/configuration";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Decides which callables are the roots of a call stack.
  *
@@ -33,12 +32,11 @@ import type { EntryPoint, EntryPointKind } from "@callidescope/configuration";
  * rule this list is missing shows up as an orphan instead of as a hole.
  */
 @Injectable()
-/* v8 ignore stop */
-export class EntryPointsService {
+export class EntriesService {
   // 🏗 Dependency Injection
 
   constructor(private readonly logger: LoggerService) {
-    this.logger.setContext(EntryPointsService.name);
+    this.logger.setContext(EntriesService.name);
   }
 
   // 🔐 Private Fields
@@ -138,7 +136,7 @@ export class EntryPointsService {
   // 🌎 Public Methods
 
   /** Resolves every root a run will measure depth from. */
-  public resolve(args: ResolveEntryPointsArguments): EntryPointCollection {
+  public resolve(args: ResolveEntriesArguments): EntryPointCollection {
     const entryPoints: EntryPoint[] = [];
     const claimed = new Set<string>();
 

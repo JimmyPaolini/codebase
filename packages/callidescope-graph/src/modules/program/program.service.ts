@@ -15,7 +15,6 @@ import type {
   ProjectProgram,
 } from "./program.types";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Turns each project's `tsconfig.json` into a program and a type checker.
  *
@@ -27,7 +26,6 @@ import type {
  * edges. Paying for twenty-odd programs buys the right answer.
  */
 @Injectable()
-/* v8 ignore stop */
 export class ProgramService {
   // 🏗 Dependency Injection
 

@@ -5,10 +5,10 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { ANALYSIS_MODULES } from "../../../testing/modules";
 import { buildFixtureProgram } from "../../../testing/programs";
 
-import { ClassHierarchyService } from "./class-hierarchy.service";
+import { ClassesService } from "./classes.service";
 import { ExternalService } from "./external.service";
 
-import type { ImplementationLookup } from "./class-hierarchy.types";
+import type { ImplementationLookup } from "./classes.types";
 
 /** Resolves one interface member against an in-memory workspace. */
 function resolve(args: {
@@ -25,7 +25,7 @@ function resolve(args: {
     workspaceRoot: "/workspace",
   });
 
-  const subject = new ClassHierarchyService(external);
+  const subject = new ClassesService(external);
 
   subject.build({
     maximumCandidates: args.maximumCandidates ?? 8,
@@ -59,16 +59,16 @@ function resolve(args: {
   });
 }
 
-describe(ClassHierarchyService, () => {
-  let service: ClassHierarchyService;
+describe(ClassesService, () => {
+  let service: ClassesService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [...ANALYSIS_MODULES],
-      providers: [ClassHierarchyService],
+      providers: [ClassesService],
     }).compile();
 
-    service = await module.resolve(ClassHierarchyService);
+    service = await module.resolve(ClassesService);
   });
 
   it("is defined", () => {
@@ -221,7 +221,7 @@ describe(ClassHierarchyService, () => {
       workspaceRoot: "/workspace",
     });
 
-    const subject = new ClassHierarchyService(external);
+    const subject = new ClassesService(external);
 
     subject.build({ maximumCandidates: 8, programs: [projectProgram] });
 
@@ -271,7 +271,7 @@ describe(ClassHierarchyService, () => {
       workspaceRoot: "/nowhere",
     });
 
-    const subject = new ClassHierarchyService(external);
+    const subject = new ClassesService(external);
 
     subject.build({ maximumCandidates: 8, programs: [projectProgram] });
 

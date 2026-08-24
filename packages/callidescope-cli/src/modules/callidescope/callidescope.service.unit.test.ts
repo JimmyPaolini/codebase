@@ -4,7 +4,7 @@ import {
   ComponentsService,
   DepthService,
   DocumentationService,
-  EntryPointsService,
+  EntriesService,
   GraphService,
   PathsService,
   SignaturesService,
@@ -88,6 +88,11 @@ function buildConfiguration(
       projectReadmes: undefined,
     },
     projects: [],
+    workspaceStructure: {
+      modulesDirectory: "modules",
+      projectContainerDirectories: ["applications", "packages", "tools"],
+      rootModuleSegment: "src",
+    },
     ...overrides,
   };
 }
@@ -101,7 +106,7 @@ function buildSubject(args: {
     args.fixture.callables,
     args.fixture.hierarchy,
     new CohesionService(),
-    new EntryPointsService(createMock<LoggerService>()),
+    new EntriesService(createMock<LoggerService>()),
     args.fixture.external,
     new GraphAssemblyService(
       new BreadthService(),

@@ -7,7 +7,6 @@ import type { DiscoveredCallable } from "../callables/callables.types";
 import type { CondensedGraph, DepthMeasurement } from "./graph.types";
 import type { CallableId, StackFrame } from "@callidescope/configuration";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Rebuilds the single deepest call stack below an entry point.
  *
@@ -18,7 +17,6 @@ import type { CallableId, StackFrame } from "@callidescope/configuration";
  * then discarding all but one of them.
  */
 @Injectable()
-/* v8 ignore stop */
 export class PathsService {
   // 🏗 Dependency Injection
 

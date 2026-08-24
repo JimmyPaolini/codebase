@@ -7,9 +7,9 @@ import { Injectable } from "@nestjs/common";
 import { LoggerService } from "@codebase/logger";
 
 import {
-  MODULES_DIRECTORY,
-  PROJECT_CONTAINER_DIRECTORIES,
-  ROOT_MODULE_SEGMENT,
+  DEFAULT_MODULES_DIRECTORY,
+  DEFAULT_PROJECT_CONTAINER_DIRECTORIES,
+  DEFAULT_ROOT_MODULE_SEGMENT,
   TEST_DIRECTORY_SEGMENT,
   TEST_FILE_PATTERN,
 } from "./workspace.constants";
@@ -19,19 +19,20 @@ import type {
   DiscoverProjectsArguments,
   FileFilter,
   WorkspaceProject,
+  WorkspaceStructure,
 } from "./workspace.types";
 import type { ModuleId } from "@callidescope/configuration";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Finds the projects a run traces, and names the module every file belongs to.
  *
- * Module identity is derived from the enforced repository layout rather than
+ * Module identity is derived from a configured directory layout rather than
  * guessed, which is what makes the cohesion findings mean something: two files
  * share a module identifier only when the structure says they are one unit.
+ * The layout defaults to this repository's own, and `configure` points it at
+ * another workspace's instead.
  */
 @Injectable()
-/* v8 ignore stop */
 export class WorkspaceService {
   // 🏗 Dependency Injection
 
@@ -40,6 +41,13 @@ export class WorkspaceService {
   }
 
   // 🔐 Private Fields
+
+  private modulesDirectory: string = DEFAULT_MODULES_DIRECTORY;
+
+  private projectContainerDirectories: readonly string[] =
+    DEFAULT_PROJECT_CONTAINER_DIRECTORIES;
+
+  private rootModuleSegment: string = DEFAULT_ROOT_MODULE_SEGMENT;
 
   // 🔑 Public Fields
 
@@ -163,6 +171,19 @@ export class WorkspaceService {
   }
 
   /**
+   * Points project discovery and module identity at a workspace's own layout.
+   *
+   * Defaults to this repository's own layout so a caller that never invokes
+   * this keeps today's behavior; a host embedding callidescope calls this
+   * once, before tracing, to describe its own repository instead.
+   */
+  public configure(structure: WorkspaceStructure): void {
+    this.modulesDirectory = structure.modulesDirectory;
+    this.projectContainerDirectories = structure.projectContainerDirectories;
+    this.rootModuleSegment = structure.rootModuleSegment;
+  }
+
+  /**
    * Finds every Nx project holding a `tsconfig.json`.
    *
    * A project without one cannot be turned into a program, so it is skipped
@@ -172,7 +193,7 @@ export class WorkspaceService {
     const wanted = new Set(args.projectNames);
     const projects: WorkspaceProject[] = [];
 
-    for (const container of PROJECT_CONTAINER_DIRECTORIES) {
+    for (const container of this.projectContainerDirectories) {
       const roots = this.listProjectRoots({
         container,
         workspaceRoot: args.workspaceRoot,
@@ -218,9 +239,10 @@ export class WorkspaceService {
   /**
    * Names the module a file belongs to: `<project>:<subtree>`.
    *
-   * A file under `src/modules/<name>/` is identified by that module. Anything
-   * else falls back to its first `src/` subdirectory, so routes and components
-   * still group into something a finding can name.
+   * A file under `<root>/<modules>/<name>/` is identified by that module.
+   * Anything else falls back to its first subdirectory under the source
+   * root, so routes and components still group into something a finding can
+   * name.
    */
   public resolveModuleId(args: {
     project: WorkspaceProject;
@@ -233,17 +255,17 @@ export class WorkspaceService {
     const segments = relative.split("/");
     const [head, ...rest] = segments;
 
-    if (head !== "src" || rest.length <= 1) {
-      return `${args.project.name}:${ROOT_MODULE_SEGMENT}`;
+    if (head !== this.rootModuleSegment || rest.length <= 1) {
+      return `${args.project.name}:${this.rootModuleSegment}`;
     }
 
     const [first, second] = rest;
 
-    if (first === MODULES_DIRECTORY && second !== undefined) {
-      return `${args.project.name}:${MODULES_DIRECTORY}/${second}`;
+    if (first === this.modulesDirectory && second !== undefined) {
+      return `${args.project.name}:${this.modulesDirectory}/${second}`;
     }
 
-    return `${args.project.name}:${first ?? ROOT_MODULE_SEGMENT}`;
+    return `${args.project.name}:${first ?? this.rootModuleSegment}`;
   }
 
   /** Rewrites an absolute path as workspace-relative with POSIX separators. */

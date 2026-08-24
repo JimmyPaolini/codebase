@@ -5,7 +5,7 @@ import ts from "typescript";
 
 import { LoggerService } from "@codebase/logger";
 
-import { ExternalService } from "../class-hierarchy/external.service";
+import { ExternalService } from "../classes/external.service";
 import { ProgramService } from "../program/program.service";
 import { WorkspaceService } from "../workspace/workspace.service";
 

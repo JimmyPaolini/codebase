@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { ClassHierarchyService } from "./class-hierarchy.service";
+import { ClassesService } from "./classes.service";
 import { ExternalService } from "./external.service";
 
 /**
@@ -8,8 +8,8 @@ import { ExternalService } from "./external.service";
  */
 @Module({
   controllers: [],
-  exports: [ClassHierarchyService, ExternalService],
+  exports: [ClassesService, ExternalService],
   imports: [],
-  providers: [ClassHierarchyService, ExternalService],
+  providers: [ClassesService, ExternalService],
 })
-export class ClassHierarchyModule {}
+export class ClassesModule {}

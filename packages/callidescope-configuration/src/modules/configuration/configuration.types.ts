@@ -30,6 +30,7 @@ export interface CallidescopeConfiguration {
    * a whole-workspace analysis, because each project needs its own program.
    */
   projects?: string[] | undefined;
+  workspaceStructure?: CallidescopeWorkspaceStructure | undefined;
 }
 
 /** Which callables are treated as the roots of a call stack. */
@@ -134,6 +135,19 @@ export interface CallidescopeProjectReadmeConfiguration {
   startMarker?: string | undefined;
 }
 
+/**
+ * Names the directory layout a workspace uses, for a repository that does not
+ * follow this tool's own.
+ */
+export interface CallidescopeWorkspaceStructure {
+  /** The subdirectory a module identifier is derived from. */
+  modulesDirectory?: string | undefined;
+  /** Directories a workspace keeps its projects in. */
+  projectContainerDirectories?: string[] | undefined;
+  /** Identifier used for a file sitting directly under the source root. */
+  rootModuleSegment?: string | undefined;
+}
+
 /** Arguments accepted by the configuration loader. */
 export interface LoadConfigurationArguments {
   configurationPath?: string | undefined;
@@ -191,6 +205,7 @@ export interface ResolvedCallidescopeConfiguration {
   limits: ResolvedCallidescopeLimits;
   output: ResolvedCallidescopeOutputConfiguration;
   projects: string[];
+  workspaceStructure: ResolvedCallidescopeWorkspaceStructure;
 }
 
 /** Entry-point rules with defaults applied. */
@@ -262,6 +277,13 @@ export interface ResolvedCallidescopeProjectReadmeConfiguration {
   heading: string;
   previewCount: number;
   startMarker: string;
+}
+
+/** A workspace's directory layout with defaults applied. */
+export interface ResolvedCallidescopeWorkspaceStructure {
+  modulesDirectory: string;
+  projectContainerDirectories: string[];
+  rootModuleSegment: string;
 }
 
 /** What a `write` function is handed. */

@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import ts from "typescript";
 
-import { ClassHierarchyService } from "../class-hierarchy/class-hierarchy.service";
-import { ExternalService } from "../class-hierarchy/external.service";
+import { ClassesService } from "../classes/classes.service";
+import { ExternalService } from "../classes/external.service";
 
 import {
   COMPUTED_MEMBER_CALL,
@@ -15,7 +15,6 @@ import {
 
 import type { ResolvedCallSite } from "./edges.types";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Resolves one call expression to the declarations it can reach.
  *
@@ -26,12 +25,11 @@ import type { ResolvedCallSite } from "./edges.types";
  * a NestJS call graph. Everything below that is the long tail.
  */
 @Injectable()
-/* v8 ignore stop */
 export class SymbolResolutionService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly classHierarchyService: ClassHierarchyService,
+    private readonly classHierarchyService: ClassesService,
     private readonly externalService: ExternalService,
   ) {}
 

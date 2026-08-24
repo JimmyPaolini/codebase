@@ -2,7 +2,7 @@ import {
   CallableIdentityService,
   CallablesService,
   CallSitesService,
-  ClassHierarchyService,
+  ClassesService,
   CompilerHostService,
   EdgesService,
   ExternalService,
@@ -31,7 +31,7 @@ export interface FixtureServices {
   readonly callables: CallablesService;
   readonly edges: EdgesService;
   readonly external: ExternalService;
-  readonly hierarchy: ClassHierarchyService;
+  readonly hierarchy: ClassesService;
   readonly identity: CallableIdentityService;
   readonly programService: ProgramService;
   readonly workspace: WorkspaceService;
@@ -114,7 +114,7 @@ export function buildFixtureServices(args: {
     createMock<LoggerService>(),
   );
   const external = new ExternalService();
-  const hierarchy = new ClassHierarchyService(external);
+  const hierarchy = new ClassesService(external);
 
   external.configure({
     ownedFilePaths: args.projectProgram.ownedFilePaths,

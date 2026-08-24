@@ -4,8 +4,8 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { ANALYSIS_MODULES } from "../../../testing/modules";
 import { buildFixtureProgram } from "../../../testing/programs";
-import { ClassHierarchyService } from "../class-hierarchy/class-hierarchy.service";
-import { ExternalService } from "../class-hierarchy/external.service";
+import { ClassesService } from "../classes/classes.service";
+import { ExternalService } from "../classes/external.service";
 
 import { SymbolResolutionService } from "./symbol-resolution.service";
 
@@ -47,7 +47,7 @@ function resolveFirstCall(source: string): ResolvedCallSite {
     workspaceRoot: "/workspace",
   });
 
-  const hierarchy = new ClassHierarchyService(external);
+  const hierarchy = new ClassesService(external);
 
   hierarchy.build({ maximumCandidates: 8, programs: [projectProgram] });
 
@@ -77,7 +77,7 @@ function resolveFirstConstruction(source: string): ResolvedCallSite {
   });
 
   const subject = new SymbolResolutionService(
-    new ClassHierarchyService(external),
+    new ClassesService(external),
     external,
   );
   const construction = findNode(

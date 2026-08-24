@@ -11,7 +11,7 @@ import {
 } from "../../../testing/programs";
 import { GraphService } from "../graph/graph.service";
 
-import { EntryPointsService } from "./entry-points.service";
+import { EntriesService } from "./entries.service";
 
 import type { CallGraph } from "../graph/graph.types";
 import type { EntryPointKind } from "@callidescope/configuration";
@@ -45,7 +45,7 @@ function resolveEntryPoints(args: {
     }),
   );
 
-  return new EntryPointsService(createMock<LoggerService>())
+  return new EntriesService(createMock<LoggerService>())
     .resolve({
       callablesById: collection.byId,
       decorators: new Set(["Command", "Get", "Option"]),
@@ -61,16 +61,16 @@ function resolveEntryPoints(args: {
     }));
 }
 
-describe(EntryPointsService, () => {
-  let service: EntryPointsService;
+describe(EntriesService, () => {
+  let service: EntriesService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [...ANALYSIS_MODULES],
-      providers: [EntryPointsService],
+      providers: [EntriesService],
     }).compile();
 
-    service = await module.resolve(EntryPointsService);
+    service = await module.resolve(EntriesService);
   });
 
   it("is defined", () => {
@@ -93,7 +93,7 @@ describe(EntryPointsService, () => {
       }),
     );
 
-    new EntryPointsService(logger).resolve({
+    new EntriesService(logger).resolve({
       callablesById: collection.byId,
       decorators: new Set(),
       graph,
@@ -111,7 +111,7 @@ describe(EntryPointsService, () => {
   it("logs how many entry points it resolved, orphans excluded", () => {
     const logger: DeepMocked<LoggerService> = createMock<LoggerService>();
 
-    new EntryPointsService(logger).resolve({
+    new EntriesService(logger).resolve({
       callablesById: new Map(),
       decorators: new Set(),
       graph: EMPTY_GRAPH,

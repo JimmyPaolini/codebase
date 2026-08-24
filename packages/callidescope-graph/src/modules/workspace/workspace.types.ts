@@ -28,3 +28,16 @@ export interface WorkspaceProject {
   /** Workspace-relative project root, POSIX separators. */
   readonly root: string;
 }
+
+/**
+ * Names the directory layout a workspace uses, so neither project discovery
+ * nor module identity is tied to one repository's conventions.
+ */
+export interface WorkspaceStructure {
+  /** The `src/` subdirectory a module identifier is derived from. */
+  readonly modulesDirectory: string;
+  /** Directories a workspace keeps its projects in. */
+  readonly projectContainerDirectories: readonly string[];
+  /** Identifier used for a file sitting directly under the source root. */
+  readonly rootModuleSegment: string;
+}

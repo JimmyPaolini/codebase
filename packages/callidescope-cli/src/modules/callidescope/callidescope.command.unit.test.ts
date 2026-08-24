@@ -65,6 +65,11 @@ function buildConfiguration(
       projectReadmes: undefined,
     },
     projects: [],
+    workspaceStructure: {
+      modulesDirectory: "modules",
+      projectContainerDirectories: ["applications", "packages", "tools"],
+      rootModuleSegment: "src",
+    },
     ...overrides,
   };
 }

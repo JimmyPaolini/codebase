@@ -10,7 +10,7 @@ export interface EntryPointCollection {
 }
 
 /** Arguments for deciding which callables root a call stack. */
-export interface ResolveEntryPointsArguments {
+export interface ResolveEntriesArguments {
   readonly callablesById: ReadonlyMap<CallableId, DiscoveredCallable>;
   readonly decorators: ReadonlySet<string>;
   readonly graph: CallGraph;

@@ -10,13 +10,13 @@ export type {
   DescribeCallableArguments,
   DiscoveredCallable,
 } from "./modules/callables/callables.types";
-export { ClassHierarchyModule } from "./modules/class-hierarchy/class-hierarchy.module";
-export { ClassHierarchyService } from "./modules/class-hierarchy/class-hierarchy.service";
+export { ClassesModule } from "./modules/classes/classes.module";
+export { ClassesService } from "./modules/classes/classes.service";
 export type {
   BuildHierarchyArguments,
   ImplementationLookup,
-} from "./modules/class-hierarchy/class-hierarchy.types";
-export { ExternalService } from "./modules/class-hierarchy/external.service";
+} from "./modules/classes/classes.types";
+export { ExternalService } from "./modules/classes/external.service";
 export { CohesionModule } from "./modules/cohesion/cohesion.module";
 export { CohesionService } from "./modules/cohesion/cohesion.service";
 export type {
@@ -51,13 +51,13 @@ export {
   BOOTSTRAP_FUNCTION_NAMES,
   COMMAND_RUNNER_METHOD_NAME,
   LIFECYCLE_METHOD_NAMES,
-} from "./modules/entry-points/entry-points.constants";
-export { EntryPointsModule } from "./modules/entry-points/entry-points.module";
-export { EntryPointsService } from "./modules/entry-points/entry-points.service";
+} from "./modules/entries/entries.constants";
+export { EntriesModule } from "./modules/entries/entries.module";
+export { EntriesService } from "./modules/entries/entries.service";
 export type {
   EntryPointCollection,
-  ResolveEntryPointsArguments,
-} from "./modules/entry-points/entry-points.types";
+  ResolveEntriesArguments,
+} from "./modules/entries/entries.types";
 export { BreadthService } from "./modules/graph/breadth.service";
 export { INITIAL_LOW_LINK } from "./modules/graph/components.constants";
 export { ComponentsService } from "./modules/graph/components.service";
@@ -93,9 +93,9 @@ export { SignaturesModule } from "./modules/signatures/signatures.module";
 export { SignaturesService } from "./modules/signatures/signatures.service";
 export type { ReadSignatureArguments } from "./modules/signatures/signatures.types";
 export {
-  MODULES_DIRECTORY,
-  PROJECT_CONTAINER_DIRECTORIES,
-  ROOT_MODULE_SEGMENT,
+  DEFAULT_MODULES_DIRECTORY,
+  DEFAULT_PROJECT_CONTAINER_DIRECTORIES,
+  DEFAULT_ROOT_MODULE_SEGMENT,
   TEST_DIRECTORY_SEGMENT,
   TEST_FILE_PATTERN,
 } from "./modules/workspace/workspace.constants";
@@ -106,4 +106,5 @@ export type {
   DiscoverProjectsArguments,
   FileFilter,
   WorkspaceProject,
+  WorkspaceStructure,
 } from "./modules/workspace/workspace.types";
