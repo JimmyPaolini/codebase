@@ -36,13 +36,21 @@ export class BarsMotifService implements MotifService {
   // 🔏 Private Methods
 
   /**
-   * Draws the `alternated` modifier's zigzag: `unitIndex` now advances two
-   * real columns at a time (its "own" column and its neighbor), since one
-   * zigzag repeat needs both to alternate between. Verified against `5`,
-   * `7`, and `8 rows bars alternated.svg` — see
-   * {@link MotifTransformsService.alternate} for the full derivation,
-   * including why larger periods deliberately don't match `alternated 2`/
-   * `alternated 3`'s reference geometry bit-for-bit.
+   * Draws the `alternated` modifier's zigzag. `period` controls the
+   * repeat tile's column span — `2 * period` real columns per tile —
+   * confirmed against `7 rows bars alternated.svg` (period 1, 2 columns),
+   * `7 rows bars alternated 2.svg` (period 2, 4 columns), and
+   * `7 rows bars alternated 3.svg` (period 3, 6 columns): all three decode
+   * cleanly to `columns = 2 * period` at the same row count. The interior
+   * zigzag pattern inside those wider tiles is hand-mangled in the
+   * reference files (non-uniform edge density in `alternated 2`, an
+   * incomplete second band stacked in `alternated 3`) and unrecoverable as
+   * one parameterized rule, so each `period`-wide half of the tile is
+   * filled with `period` side-by-side copies of the same period-1 interior
+   * zigzag that's verified exact against the `5`, `7`, and `8` rows "bars
+   * alternated" reference files — see
+   * {@link MotifTransformsService.alternate} (always called here with a
+   * fixed run length of `1`; `period` never reaches that argument).
    */
   private alternatedPath(
     geometry: GridGeometry,
@@ -52,26 +60,36 @@ export class BarsMotifService implements MotifService {
     const { rows, unitIndex } = unit;
     const format = (value: number): string =>
       this.gridGeometryService.formatCoordinate(value);
-    const ownColumnX = geometry.offset + unitIndex * 2 * geometry.unit;
-    const neighborColumnX = ownColumnX + geometry.unit;
-    const runs = this.motifTransformsService.alternate(1, rows - 1, period);
+    const tileStartColumn = unitIndex * 2 * period;
+    const runs = this.motifTransformsService.alternate(1, rows - 1, 1);
 
-    const runSegments = runs
-      .map((run) => {
-        const columnX = run.column === 0 ? ownColumnX : neighborColumnX;
-        const fromY = geometry.offset + run.fromLevel * geometry.unit;
-        const toY = geometry.offset + run.toLevel * geometry.unit;
+    const runSegments = Array.from({ length: period }, (_value, offset) => {
+      const ownColumnX =
+        geometry.offset + (tileStartColumn + offset) * geometry.unit;
+      const neighborColumnX =
+        geometry.offset + (tileStartColumn + period + offset) * geometry.unit;
 
-        return `M${format(columnX)} ${format(fromY)}V${format(toY)}`;
-      })
-      .join("");
+      return runs
+        .map((run) => {
+          const columnX = run.column === 0 ? ownColumnX : neighborColumnX;
+          const fromY = geometry.offset + run.fromLevel * geometry.unit;
+          const toY = geometry.offset + run.toLevel * geometry.unit;
 
-    const formattedOwnColumnX = format(ownColumnX);
-    const capRightX = format(ownColumnX + 2 * geometry.unit);
+          return `M${format(columnX)} ${format(fromY)}V${format(toY)}`;
+        })
+        .join("");
+    }).join("");
+
+    const tileStartX = format(
+      geometry.offset + tileStartColumn * geometry.unit,
+    );
+    const capRightX = format(
+      geometry.offset + (tileStartColumn + 2 * period) * geometry.unit,
+    );
     const capTopY = format(geometry.offset);
     const capBottomY = format(geometry.offset + rows * geometry.unit);
 
-    return `${runSegments}M${formattedOwnColumnX} ${capTopY}H${capRightX}M${formattedOwnColumnX} ${capBottomY}H${capRightX}`;
+    return `${runSegments}M${tileStartX} ${capTopY}H${capRightX}M${tileStartX} ${capBottomY}H${capRightX}`;
   }
 
   // 🌎 Public Methods
@@ -107,14 +125,18 @@ export class BarsMotifService implements MotifService {
    * overshoot (which would otherwise reach into where a thirteenth,
    * nonexistent unit's column would start) off the visible canvas.
    *
-   * `alternated` doubles the columns each repeat unit spans, so its last
-   * touched column is `2 * repeatCount - 1` rather than `repeatCount - 1` —
-   * verified against `5` and `8 rows bars alternated.svg`'s declared canvas
-   * width.
+   * `alternated` widens each repeat unit's tile to `2 * period` columns
+   * (see {@link alternatedPath}), so its last touched column is
+   * `2 * period * repeatCount - 1` rather than `repeatCount - 1` —
+   * verified against `5 rows bars alternated.svg`'s declared canvas width
+   * at period 1.
    */
   rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number {
     if (pattern.modifier?.name === "alternated") {
-      return geometry.offset + (2 * pattern.repeatCount - 1) * geometry.unit;
+      return (
+        geometry.offset +
+        (2 * pattern.modifier.period * pattern.repeatCount - 1) * geometry.unit
+      );
     }
 
     return geometry.offset + (pattern.repeatCount - 1) * geometry.unit;

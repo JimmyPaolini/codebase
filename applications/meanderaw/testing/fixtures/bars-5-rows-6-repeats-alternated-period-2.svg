@@ -1,8 +1,8 @@
-<svg width="138" height="66" viewBox="0 0 138 66" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M3 15V39M15 39V51M3 3H27M3 63H27" stroke="black" stroke-width="6" stroke-linecap="square"/>
-<path d="M27 15V39M39 39V51M27 3H51M27 63H51" stroke="black" stroke-width="6" stroke-linecap="square"/>
-<path d="M51 15V39M63 39V51M51 3H75M51 63H75" stroke="black" stroke-width="6" stroke-linecap="square"/>
-<path d="M75 15V39M87 39V51M75 3H99M75 63H99" stroke="black" stroke-width="6" stroke-linecap="square"/>
-<path d="M99 15V39M111 39V51M99 3H123M99 63H123" stroke="black" stroke-width="6" stroke-linecap="square"/>
-<path d="M123 15V39M135 39V51M123 3H147M123 63H147" stroke="black" stroke-width="6" stroke-linecap="square"/>
+<svg width="282" height="66" viewBox="0 0 282 66" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 15V27M27 27V39M3 39V51M15 15V27M39 27V39M15 39V51M3 3H51M3 63H51" stroke="black" stroke-width="6" stroke-linecap="square"/>
+<path d="M51 15V27M75 27V39M51 39V51M63 15V27M87 27V39M63 39V51M51 3H99M51 63H99" stroke="black" stroke-width="6" stroke-linecap="square"/>
+<path d="M99 15V27M123 27V39M99 39V51M111 15V27M135 27V39M111 39V51M99 3H147M99 63H147" stroke="black" stroke-width="6" stroke-linecap="square"/>
+<path d="M147 15V27M171 27V39M147 39V51M159 15V27M183 27V39M159 39V51M147 3H195M147 63H195" stroke="black" stroke-width="6" stroke-linecap="square"/>
+<path d="M195 15V27M219 27V39M195 39V51M207 15V27M231 27V39M207 39V51M195 3H243M195 63H243" stroke="black" stroke-width="6" stroke-linecap="square"/>
+<path d="M243 15V27M267 27V39M243 39V51M255 15V27M279 27V39M255 39V51M243 3H291M243 63H291" stroke="black" stroke-width="6" stroke-linecap="square"/>
 </svg>
