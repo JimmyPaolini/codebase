@@ -70,7 +70,7 @@ This skill teaches how to name Git branches for this codebase. All branch names 
 | `lexico-ingestion` | Data ingestion scripts for Lexico |
 | `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
 | `callidescope` | Call stack tracing and linting CLI and the configuration package it reads |
-| `codometer` | Code statistics measurement CLI and the configuration package it reads |
+| `codometer` | Code statistics measurement CLI, the configuration package it reads, and the packages that diff and render its pull request change report |
 | `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
 | `no-release` | Escape hatch: suppress semantic-release for any commit type |
 | `packages` | Changes spanning multiple shared packages in packages/ |
@@ -79,7 +79,6 @@ This skill teaches how to name Git branches for this codebase. All branch names 
 | `testing` | Vitest configuration, shared test utilities, and coverage setup |
 | `tools` | Changes spanning multiple tool projects in tools/ |
 | `synchronization` | Synchronization application and commands for automating workflows |
-| `reporting` | Internal reporting CLI and the reports it renders, such as 🎒 Bundles |
 | `validation` | Validation CLI and the checks it runs, such as pull request metadata |
 
 <!-- scopes-end -->

@@ -6,6 +6,7 @@ import { DiscoveryModule } from "@nestjs/core";
 import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
+import { ChangesModule } from "./modules/changes/changes.module";
 import { CodometerModule } from "./modules/codometer/codometer.module";
 import { CustomStatisticsModule } from "./modules/custom-statistics/custom-statistics.module";
 import { FileDiscoveryModule } from "./modules/file-discovery/file-discovery.module";
@@ -26,6 +27,7 @@ import { OutputMarkdownModule } from "./modules/output-markdown/output-markdown.
     }),
     DiscoveryModule,
     LoggerModule,
+    ChangesModule,
     CodometerModule,
     ConfigurationModule,
     CustomStatisticsModule,
