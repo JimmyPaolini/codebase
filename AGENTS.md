@@ -343,7 +343,7 @@ The 🧑‍⚖️ Validate Conventions workflow creates any label missing from t
 | `lexico-entities` | Shared TypeORM entities and GraphQL types |
 | `lexico-ingestion` | Data ingestion scripts for Lexico |
 | `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
-| `callidescope` | Call stack tracing and linting CLI and the configuration package it reads |
+| `callidescope` | Call stack tracing and linting CLI, the configuration package it reads, and the packages that build and render its call graph |
 | `codometer` | Code statistics measurement CLI, the configuration package it reads, and the packages that diff and render its pull request change report |
 | `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
 | `no-release` | Escape hatch: suppress semantic-release for any commit type |
