@@ -35,21 +35,6 @@ src/
 testing/                            # Shared test utilities
 ```
 
-### Module Graph
-
-The modules this project defines and the imports between them, published by `nx run synchronization:nestjs-module-graphs:write`.
-
-<!-- nestjs-module-graph-start -->
-
-```mermaid
-flowchart LR
-  subgraph group0["logger"]
-    LoggerModule
-  end
-```
-
-<!-- nestjs-module-graph-end -->
-
 ## Consuming this package
 
 Add the dependency, then import `LoggerModule` once in the root module:

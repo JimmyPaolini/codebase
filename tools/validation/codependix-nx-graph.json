@@ -1,5 +1,7 @@
 {
-  "dependencies": ["logger"],
+  "dependencies": [
+    "logger"
+  ],
   "dependents": [],
   "edges": [
     {

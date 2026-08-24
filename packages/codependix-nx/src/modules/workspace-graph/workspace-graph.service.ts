@@ -8,10 +8,7 @@ import {
   WORKSPACE_GRAPH_UNCONNECTED,
 } from "./workspace-graph.constants";
 
-import type {
-  NeighborhoodEdge,
-  NxProject,
-} from "../neighborhood/neighborhood.types";
+import type { NxProject } from "../neighborhood/neighborhood.types";
 import type { WorkspaceGraph } from "./workspace-graph.types";
 import type { ProjectGraph } from "@nx/devkit";
 
@@ -37,33 +34,6 @@ export class WorkspaceGraphService {
 
   // 🔏 Private Methods
 
-  /** Collects every edge between two known workspace projects. */
-  private collectEdges(
-    graph: ProjectGraph,
-    knownNames: Set<string>,
-  ): NeighborhoodEdge[] {
-    const edges = new Map<string, NeighborhoodEdge>();
-
-    for (const [source, dependencies] of Object.entries(graph.dependencies)) {
-      for (const dependency of dependencies) {
-        if (!knownNames.has(source) || !knownNames.has(dependency.target)) {
-          continue;
-        }
-        if (source === dependency.target) continue;
-
-        const key = `${source}->${dependency.target}`;
-        // A pair can be declared both ways round; a static edge is the
-        // stronger statement, so it wins over an implicit one.
-        const implicit =
-          dependency.type === "implicit" && (edges.get(key)?.implicit ?? true);
-
-        edges.set(key, { implicit, source, target: dependency.target });
-      }
-    }
-
-    return [...edges.values()];
-  }
-
   // 🌎 Public Methods
 
   /** Builds the Workspace Graph from one read of the Nx project graph. */
@@ -72,7 +42,7 @@ export class WorkspaceGraphService {
     projects: NxProject[],
   ): WorkspaceGraph {
     const knownNames = new Set(projects.map((project) => project.name));
-    const edges = this.collectEdges(graph, knownNames);
+    const edges = this.neighborhoodService.collectEdges(graph, knownNames);
 
     return {
       edges: edges.toSorted((first, second) =>

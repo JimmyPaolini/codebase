@@ -1,5 +1,7 @@
 {
-  "ambientModuleNames": ["LoggerModule"],
+  "ambientModuleNames": [
+    "LoggerModule"
+  ],
   "edges": [
     {
       "source": "FilesModule",
@@ -142,7 +144,9 @@
       "target": "ScoringModule"
     }
   ],
-  "isolatedModuleNames": ["LoggerModule"],
+  "isolatedModuleNames": [
+    "LoggerModule"
+  ],
   "moduleNames": [
     "AdapterModule",
     "ConfigurationModule",

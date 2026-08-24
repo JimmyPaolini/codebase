@@ -1,5 +1,8 @@
 {
-  "dependencies": ["conformetry-core", "conformetry-generation"],
+  "dependencies": [
+    "conformetry-core",
+    "conformetry-generation"
+  ],
   "dependents": [
     "conformetry-cli",
     "conformetry-files",

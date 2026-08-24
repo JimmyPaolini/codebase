@@ -1,5 +1,7 @@
 {
-  "dependencies": ["conformetry-core"],
+  "dependencies": [
+    "conformetry-core"
+  ],
   "dependents": [
     "conformetry-jupyter",
     "conformetry-nx",

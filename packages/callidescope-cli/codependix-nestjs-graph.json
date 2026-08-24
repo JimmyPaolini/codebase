@@ -1,5 +1,8 @@
 {
-  "ambientModuleNames": ["ConfigModule", "LoggerModule"],
+  "ambientModuleNames": [
+    "ConfigModule",
+    "LoggerModule"
+  ],
   "edges": [
     {
       "source": "CallablesModule",
@@ -106,7 +109,10 @@
       "target": "GraphModule"
     }
   ],
-  "isolatedModuleNames": ["ConfigModule", "LoggerModule"],
+  "isolatedModuleNames": [
+    "ConfigModule",
+    "LoggerModule"
+  ],
   "moduleNames": [
     "CallablesModule",
     "CallidescopeModule",

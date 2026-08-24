@@ -1,5 +1,8 @@
 {
-  "ambientModuleNames": ["ConfigModule", "LoggerModule"],
+  "ambientModuleNames": [
+    "ConfigModule",
+    "LoggerModule"
+  ],
   "edges": [
     {
       "source": "CodometerModule",
@@ -130,7 +133,10 @@
       "target": "OutputMarkdownModule"
     }
   ],
-  "isolatedModuleNames": ["ConfigModule", "LoggerModule"],
+  "isolatedModuleNames": [
+    "ConfigModule",
+    "LoggerModule"
+  ],
   "moduleNames": [
     "CodometerModule",
     "ConfigModule",

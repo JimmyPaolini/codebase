@@ -1,5 +1,8 @@
 {
-  "dependencies": ["callidescope-configuration", "logger"],
+  "dependencies": [
+    "callidescope-configuration",
+    "logger"
+  ],
   "dependents": [],
   "edges": [
     {

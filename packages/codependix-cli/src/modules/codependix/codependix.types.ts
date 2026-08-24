@@ -1,8 +1,11 @@
 // 🏷️ Types
 
+import type { CodependixRunMode } from "../delivery/delivery.types";
+import type { ResolvedCodependixConfiguration } from "@codependix/configuration";
 import type { ImportGraph } from "@codependix/imports";
 import type { NestjsModuleGraph } from "@codependix/nestjs";
-import type { Neighborhood, WorkspaceGraph } from "@codependix/nx";
+import type { Neighborhood, NxProject, WorkspaceGraph } from "@codependix/nx";
+import type { ProjectGraph } from "@nx/devkit";
 
 /** Command-line options `codependix` accepts. */
 export interface CodependixCommandOptions {
@@ -10,6 +13,18 @@ export interface CodependixCommandOptions {
   config?: string | undefined;
   directory?: string | undefined;
   write?: boolean | undefined;
+}
+
+/**
+ * Everything every graph-type pass reads, resolved once per run rather than
+ * once per pass — see `CodependixService.run`.
+ */
+export interface GraphRunContext {
+  configuration: ResolvedCodependixConfiguration;
+  graph: ProjectGraph;
+  mode: CodependixRunMode;
+  projects: NxProject[];
+  workingDirectory: string;
 }
 
 /**

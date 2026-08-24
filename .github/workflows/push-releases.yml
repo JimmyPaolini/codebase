@@ -106,16 +106,14 @@ jobs:
 
       # Every synchronization command is its own Nx target, run directly the
       # way `callidescope` and `codometer` are above — no aggregate command
-      # loops over them. This rewrites every derivation as well as publishing
-      # the module graphs; on main the derivations are already in sync — the
+      # loops over them. On main the derivations are already in sync — the
       # pull request gate is what proves it — so this writes them back
-      # unchanged and only the module graphs move.
-      - name: 🕸️ Publish Module Graphs
+      # unchanged.
+      - name: 🔗 Publish Derivations
         run: |
           pnpm exec nx run-many \
             --target=conformetry-generators --target=conventional-config \
-            --target=devcontainer-configuration --target=nestjs-module-graphs \
-            --target=nx-project-graphs --target=pull-request-template \
+            --target=devcontainer-configuration --target=pull-request-template \
             --target=skill-exclusions --configuration=write
 
       # Two codometer commands, in this order, because the second measures the

@@ -26,10 +26,10 @@ import type { ProjectGraph } from "@nx/devkit";
  * a neighborhood is exported — belongs to `codependix-cli` and its own anchor
  * mechanism instead of conformetry's marker-block sync.
  *
- * `compareEdges`, `renderEdge`, `renderNode`, and `toNodeIdentifier` are kept
- * public: `WorkspaceGraphService` renders the whole-workspace graph with the
- * same node and edge shapes, and reaches for these rather than duplicating
- * them.
+ * `collectEdges`, `compareEdges`, `renderEdge`, `renderNode`, and
+ * `toNodeIdentifier` are kept public: `WorkspaceGraphService` renders the
+ * whole-workspace graph with the same node and edge shapes, and reaches for
+ * these rather than duplicating them.
  */
 @Injectable()
 export class NeighborhoodService {
@@ -42,37 +42,6 @@ export class NeighborhoodService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
-
-  /** Collects the edges touching one project in either direction. */
-  private collectEdges(
-    graph: ProjectGraph,
-    projectName: string,
-    knownNames: Set<string>,
-  ): NeighborhoodEdge[] {
-    const edges = new Map<string, NeighborhoodEdge>();
-
-    for (const [source, dependencies] of Object.entries(graph.dependencies)) {
-      for (const dependency of dependencies) {
-        const touches =
-          source === projectName || dependency.target === projectName;
-        if (!touches) continue;
-        if (!knownNames.has(source) || !knownNames.has(dependency.target)) {
-          continue;
-        }
-        if (source === dependency.target) continue;
-
-        const key = `${source}->${dependency.target}`;
-        // A pair can be declared both ways round; a static edge is the
-        // stronger statement, so it wins over an implicit one.
-        const implicit =
-          dependency.type === "implicit" && (edges.get(key)?.implicit ?? true);
-
-        edges.set(key, { implicit, source, target: dependency.target });
-      }
-    }
-
-    return [...edges.values()];
-  }
 
   // 🌎 Public Methods
 
@@ -91,7 +60,7 @@ export class NeighborhoodService {
     const knownNames = new Set(projects.map((project) => project.name));
 
     for (const project of projects) {
-      const edges = this.collectEdges(graph, project.name, knownNames);
+      const edges = this.collectEdges(graph, knownNames, project.name);
 
       neighborhoods.set(project.name, {
         dependencies: this.sortNames(
@@ -112,6 +81,47 @@ export class NeighborhoodService {
     }
 
     return neighborhoods;
+  }
+
+  /**
+   * Collects edges between known workspace projects, optionally narrowed to
+   * the ones touching one subject project.
+   *
+   * `subjectName` left undefined collects every edge among `knownNames` —
+   * what `WorkspaceGraphService` needs for the whole-workspace graph. Naming
+   * it narrows to only the edges where the subject is the source or the
+   * target — one project's neighborhood.
+   */
+  collectEdges(
+    graph: ProjectGraph,
+    knownNames: Set<string>,
+    subjectName?: string,
+  ): NeighborhoodEdge[] {
+    const edges = new Map<string, NeighborhoodEdge>();
+
+    for (const [source, dependencies] of Object.entries(graph.dependencies)) {
+      for (const dependency of dependencies) {
+        const touchesSubject =
+          subjectName === undefined ||
+          source === subjectName ||
+          dependency.target === subjectName;
+        if (!touchesSubject) continue;
+        if (!knownNames.has(source) || !knownNames.has(dependency.target)) {
+          continue;
+        }
+        if (source === dependency.target) continue;
+
+        const key = `${source}->${dependency.target}`;
+        // A pair can be declared both ways round; a static edge is the
+        // stronger statement, so it wins over an implicit one.
+        const implicit =
+          dependency.type === "implicit" && (edges.get(key)?.implicit ?? true);
+
+        edges.set(key, { implicit, source, target: dependency.target });
+      }
+    }
+
+    return [...edges.values()];
   }
 
   /** Sorts edges by source then target so a rendered diagram never churns. */

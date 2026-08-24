@@ -7,7 +7,7 @@ import { LoggerService } from "@codebase/logger";
 import { CodependixCommand } from "./codependix.command";
 import { CodependixService } from "./codependix.service";
 
-import type { ProjectRunResult } from "../delivery/delivery.types";
+import type { GraphRunOutcome } from "../delivery/delivery.types";
 import type { CodependixCommandOptions } from "./codependix.types";
 
 describe(CodependixCommand, () => {
@@ -44,9 +44,10 @@ describe(CodependixCommand, () => {
     process.exitCode = 0;
     codependixService = createMock<CodependixService>();
     loggerService = createMock<LoggerService>();
-    vi.mocked(codependixService.runNxGraphs).mockResolvedValue([]);
-    vi.mocked(codependixService.runNestjsGraphs).mockResolvedValue([]);
-    vi.mocked(codependixService.runImportGraphs).mockResolvedValue([]);
+    vi.mocked(codependixService.run).mockResolvedValue({
+      failures: [],
+      results: [],
+    });
   });
 
   it("is defined", () => {
@@ -74,86 +75,98 @@ describe(CodependixCommand, () => {
     await run({});
 
     expect(process.exitCode).toBe(1);
-    expect(codependixService.runNxGraphs).not.toHaveBeenCalled();
+    expect(codependixService.run).not.toHaveBeenCalled();
   });
 
   it("rejects a command line naming both --check and --write", async () => {
     await run({ check: true, write: true });
 
     expect(process.exitCode).toBe(1);
-    expect(codependixService.runNxGraphs).not.toHaveBeenCalled();
+    expect(codependixService.run).not.toHaveBeenCalled();
   });
 
-  it("succeeds when every result is current", async () => {
+  it("succeeds when every result is current and nothing failed", async () => {
     await run({ write: true });
 
     expect(process.exitCode).toBe(0);
   });
 
-  it("fails in check mode when an nx result is stale", async () => {
-    const staleResult: ProjectRunResult = {
-      isCurrent: false,
-      projectName: "codependix-nx",
-      stalePaths: ["codependix-nx.json"],
+  it("fails in check mode when a result is stale", async () => {
+    const outcome: GraphRunOutcome = {
+      failures: [],
+      results: [
+        {
+          isCurrent: false,
+          projectName: "codependix-nx",
+          stalePaths: ["codependix-nx.json"],
+        },
+      ],
     };
-    vi.mocked(codependixService.runNxGraphs).mockResolvedValue([staleResult]);
+    vi.mocked(codependixService.run).mockResolvedValue(outcome);
 
     await run({ check: true });
 
     expect(process.exitCode).toBe(1);
   });
 
-  it("fails in check mode when a nestjs result is stale", async () => {
-    const staleResult: ProjectRunResult = {
-      isCurrent: false,
-      projectName: "codependix-cli",
-      stalePaths: ["codependix-cli.json"],
+  it("fails and logs when a project fails, without a thrown error", async () => {
+    const outcome: GraphRunOutcome = {
+      failures: [{ error: "boom", projectName: "codependix-nestjs" }],
+      results: [
+        { isCurrent: true, projectName: "codependix-nx", stalePaths: [] },
+      ],
     };
-    vi.mocked(codependixService.runNestjsGraphs).mockResolvedValue([
-      staleResult,
-    ]);
+    vi.mocked(codependixService.run).mockResolvedValue(outcome);
 
-    await run({ check: true });
-
-    expect(process.exitCode).toBe(1);
-  });
-
-  it("fails in check mode when an imports result is stale", async () => {
-    const staleResult: ProjectRunResult = {
-      isCurrent: false,
-      projectName: "codependix-imports",
-      stalePaths: ["codependix-imports.json"],
-    };
-    vi.mocked(codependixService.runImportGraphs).mockResolvedValue([
-      staleResult,
-    ]);
-
-    await run({ check: true });
-
-    expect(process.exitCode).toBe(1);
-  });
-
-  it("runs the nx, nestjs, and imports graphs", async () => {
     await run({ write: true });
 
-    expect(codependixService.runNxGraphs).toHaveBeenCalledWith(
-      { write: true },
-      process.cwd(),
+    expect(process.exitCode).toBe(1);
+    expect(loggerService.error).toHaveBeenCalledWith(
+      "💥 Failed running codependix",
+      undefined,
+      { failures: outcome.failures },
     );
-    expect(codependixService.runNestjsGraphs).toHaveBeenCalledWith(
-      { write: true },
-      process.cwd(),
+  });
+
+  it("reports both a failed project and a stale export together", async () => {
+    const outcome: GraphRunOutcome = {
+      failures: [{ error: "boom", projectName: "codependix-nestjs" }],
+      results: [
+        {
+          isCurrent: false,
+          projectName: "codependix-nx",
+          stalePaths: ["codependix-nx.json"],
+        },
+      ],
+    };
+    vi.mocked(codependixService.run).mockResolvedValue(outcome);
+
+    await run({ check: true });
+
+    expect(process.exitCode).toBe(1);
+    expect(loggerService.error).toHaveBeenCalledWith(
+      "💥 Failed running codependix",
+      undefined,
+      { failures: outcome.failures },
     );
-    expect(codependixService.runImportGraphs).toHaveBeenCalledWith(
+    expect(loggerService.error).toHaveBeenCalledWith(
+      "🕸️ Found stale codependix exports",
+      undefined,
+      { projects: ["codependix-nx"] },
+    );
+  });
+
+  it("runs codependix with the resolved options and working directory", async () => {
+    await run({ write: true });
+
+    expect(codependixService.run).toHaveBeenCalledWith(
       { write: true },
       process.cwd(),
     );
   });
 
   it("fails and logs when the run throws", async () => {
-    vi.mocked(codependixService.runNxGraphs).mockRejectedValue(
-      new Error("boom"),
-    );
+    vi.mocked(codependixService.run).mockRejectedValue(new Error("boom"));
 
     await run({ write: true });
 
@@ -166,7 +179,7 @@ describe(CodependixCommand, () => {
   });
 
   it("fails and logs a non-Error rejection as its string form", async () => {
-    vi.mocked(codependixService.runNxGraphs).mockRejectedValue("boom");
+    vi.mocked(codependixService.run).mockRejectedValue("boom");
 
     await run({ write: true });
 

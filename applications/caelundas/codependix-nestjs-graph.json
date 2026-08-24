@@ -1,5 +1,8 @@
 {
-  "ambientModuleNames": ["ConfigModule", "LoggerModule"],
+  "ambientModuleNames": [
+    "ConfigModule",
+    "LoggerModule"
+  ],
   "edges": [
     {
       "source": "AnnualSolarCycleModule",
@@ -370,7 +373,10 @@
       "target": "ProgressiveUtilitiesModule"
     }
   ],
-  "isolatedModuleNames": ["ConfigModule", "LoggerModule"],
+  "isolatedModuleNames": [
+    "ConfigModule",
+    "LoggerModule"
+  ],
   "moduleNames": [
     "AnnualSolarCycleModule",
     "AspectsModule",

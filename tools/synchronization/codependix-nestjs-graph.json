@@ -1,5 +1,8 @@
 {
-  "ambientModuleNames": ["ConfigModule", "LoggerModule"],
+  "ambientModuleNames": [
+    "ConfigModule",
+    "LoggerModule"
+  ],
   "edges": [
     {
       "source": "ConformetryGeneratorsModule",
@@ -50,7 +53,10 @@
       "target": "SkillExclusionsModule"
     }
   ],
-  "isolatedModuleNames": ["ConfigModule", "LoggerModule"],
+  "isolatedModuleNames": [
+    "ConfigModule",
+    "LoggerModule"
+  ],
   "moduleNames": [
     "ConfigModule",
     "ConfigurationModule",

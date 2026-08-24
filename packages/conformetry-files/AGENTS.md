@@ -41,36 +41,6 @@ src/
 testing/                            # Shared test utilities
 ```
 
-### Module Graph
-
-The modules this project defines and the imports between them, published by `nx run synchronization:nestjs-module-graphs:write`.
-
-<!-- nestjs-module-graph-start -->
-
-```mermaid
-flowchart LR
-  subgraph group0["conformetry-files"]
-    FilesModule
-  end
-  subgraph group1["conformetry-configuration"]
-    InstanceDiscoveryModule
-    TemplateDiscoveryModule
-  end
-  subgraph group2["conformetry-core"]
-    DifferencesModule
-  end
-  subgraph group3["conformetry-generation"]
-    RenderingModule
-  end
-  FilesModule --> DifferencesModule
-  FilesModule --> InstanceDiscoveryModule
-  InstanceDiscoveryModule --> RenderingModule
-  InstanceDiscoveryModule --> TemplateDiscoveryModule
-  TemplateDiscoveryModule --> RenderingModule
-```
-
-<!-- nestjs-module-graph-end -->
-
 ## Development
 
 ### Adding Business Logic

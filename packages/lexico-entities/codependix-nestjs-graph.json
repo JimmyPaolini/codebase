@@ -6,7 +6,13 @@
       "target": "TypeOrmModule"
     }
   ],
-  "isolatedModuleNames": ["EntitiesModule"],
-  "moduleNames": ["DatabaseModule", "EntitiesModule", "TypeOrmModule"],
+  "isolatedModuleNames": [
+    "EntitiesModule"
+  ],
+  "moduleNames": [
+    "DatabaseModule",
+    "EntitiesModule",
+    "TypeOrmModule"
+  ],
   "projectName": "lexico-entities"
 }

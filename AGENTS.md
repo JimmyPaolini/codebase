@@ -76,6 +76,8 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 - **[callidescope-configuration](packages/callidescope-configuration)**: Reads `callidescope.config.ts` and resolves the limits callidescope enforces
 - **[codependix-cli](packages/codependix-cli)**: Command-line host that exports dependency graphs as JSON and Markdown anchor blocks
 - **[codependix-configuration](packages/codependix-configuration)**: Reads `codependix.config.ts` and resolves per-project export destinations
+- **[codependix-imports](packages/codependix-imports)**: Builds a project's file-level import graph from its own `ts.Program`
+- **[codependix-nestjs](packages/codependix-nestjs)**: Explores a NestJS project's container and builds its module graph
 - **[codependix-nx](packages/codependix-nx)**: Builds a project's one-hop Nx dependency neighborhood from the Nx project graph
 - **[codometer-cli](packages/codometer-cli)**: Command-line host that measures code statistics and writes them to markdown and JSON
 - **[codometer-configuration](packages/codometer-configuration)**: Reads `codometer.config.ts` and resolves the repository-specific settings codometer needs
@@ -195,6 +197,7 @@ See the [validate-code skill](.agents/skills/validate-code/SKILL.md) for the ful
 | `fallow`        | Analyzes dead code, duplication, and code health      | `configuration/fallow.config.jsonc`      | [docs](https://docs.fallow.tools/)                      |
 | `jscpd`         | Detects duplicated code and copy-paste patterns       | `configuration/jscpd.config.json`        | [docs](https://jscpd.dev/)                              |
 | `callidescope`  | Traces call stacks and flags ones that are too deep   | `configuration/callidescope.config.ts`   | [docs](packages/callidescope-cli/README.md)             |
+| `codependix`    | Exports Nx, NestJS, and file-level dependency graphs  | `configuration/codependix.config.ts`     | [docs](packages/codependix-cli/README.md)               |
 | `cspell`        | Checks spelling across code and documentation         | `configuration/cspell.config.yaml`       | [docs](https://cspell.org/)                             |
 | `markdownlint`  | Lints markdown files                                  | `configuration/.markdownlint-cli2.jsonc` | [docs](https://github.com/DavidAnson/markdownlint-cli2) |
 | `yamllint`      | Lints YAML files                                      | `configuration/yamllint.yaml`            | [docs](https://yamllint.readthedocs.io/)                |

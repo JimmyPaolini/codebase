@@ -1,5 +1,8 @@
 {
-  "ambientModuleNames": ["ConfigModule", "LoggerModule"],
+  "ambientModuleNames": [
+    "ConfigModule",
+    "LoggerModule"
+  ],
   "edges": [
     {
       "source": "MainModule",
@@ -30,7 +33,10 @@
       "target": "PullRequestReleaseSignificanceModule"
     }
   ],
-  "isolatedModuleNames": ["ConfigModule", "LoggerModule"],
+  "isolatedModuleNames": [
+    "ConfigModule",
+    "LoggerModule"
+  ],
   "moduleNames": [
     "CatalogManifestsModule",
     "ConfigModule",

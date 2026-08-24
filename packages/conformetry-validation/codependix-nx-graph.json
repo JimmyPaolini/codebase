@@ -10,7 +10,10 @@
     "conformetry-text",
     "conformetry-typescript"
   ],
-  "dependents": ["conformetry-cli", "conformetry-nx"],
+  "dependents": [
+    "conformetry-cli",
+    "conformetry-nx"
+  ],
   "edges": [
     {
       "implicit": false,

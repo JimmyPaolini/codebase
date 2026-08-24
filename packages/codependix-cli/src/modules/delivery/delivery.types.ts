@@ -36,6 +36,35 @@ export interface DeliveryProject {
   name: string;
 }
 
+/**
+ * Every project's outcome from one graph-type pass — the projects that
+ * finished, and the projects that failed before their exports could be
+ * resolved.
+ *
+ * Kept apart rather than folded into one list: a caller deciding a run's exit
+ * code needs both a stale export and a failed project to fail it, and a caller
+ * only interested in what was actually written needs `results` alone.
+ */
+export interface GraphRunOutcome {
+  failures: ProjectRunFailure[];
+  results: ProjectRunResult[];
+}
+
+/**
+ * One project's outcome after it raised before its exports could be
+ * resolved — a missing anchor, or a NestJS project that failed to boot its
+ * container.
+ *
+ * Kept apart from `ProjectRunResult` rather than added to it as an optional
+ * field: a result is either something that was resolved (current or stale) or
+ * something that never got that far, and the two should not be representable
+ * at once.
+ */
+export interface ProjectRunFailure {
+  error: string;
+  projectName: string;
+}
+
 /** One project's outcome after its configured destinations were resolved. */
 export interface ProjectRunResult {
   isCurrent: boolean;

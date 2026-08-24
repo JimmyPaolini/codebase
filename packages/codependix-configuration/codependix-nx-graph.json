@@ -1,6 +1,8 @@
 {
   "dependencies": [],
-  "dependents": ["codependix-cli"],
+  "dependents": [
+    "codependix-cli"
+  ],
   "edges": [
     {
       "implicit": false,
