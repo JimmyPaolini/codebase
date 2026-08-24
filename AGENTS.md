@@ -66,6 +66,8 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 
 ### Packages
 
+- **[codometer-changes](packages/codometer-changes)**: Diffs codometer reports against a baseline snapshot
+- **[codometer-markdown](packages/codometer-markdown)**: Renders a codometer change collection into markdown and splices it into a document
 - **[lexico-components](packages/lexico-components)**: Shared React component library (shadcn/ui, Radix UI)
 - **[lexico-entities](packages/lexico-entities)**: Shared TypeORM entities and GraphQL types package
 - **[logger](packages/logger)**: Shared pino-backed NestJS `LoggerService` and `LoggerModule`
@@ -78,7 +80,6 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 - **[codometer-configuration](packages/codometer-configuration)**: Reads `codometer.config.ts` and resolves the repository-specific settings codometer needs
 - **[conformetry-cli](packages/conformetry-cli)**: Command-line host for code generation and validation
 - **[conformetry-nx](packages/conformetry-nx)**: Nx plugin that exposes the conformetry generator namespace
-- **[reporting](tools/reporting)**: NestJS CLI that renders internal codebase reports into markdown, such as the `🎒 Bundles` pull request section
 - **[synchronization](tools/synchronization)**: NestJS CLI for synchronizing codebase configuration and documentation artifacts
 - **[validation](tools/validation)**: NestJS CLI for the repository's one-sided checks — the ones with a `check` and no `write`, such as the pull request metadata gate
 
@@ -302,19 +303,19 @@ The 🧑‍⚖️ Validate Conventions workflow creates any label missing from t
 
 <!-- types-start -->
 
-| Type       | Description                                                                         |
-| ---------- | ----------------------------------------------------------------------------------- |
-| `feat`     | A new feature or capability that adds value for users                               |
-| `fix`      | A bug fix that addresses a specific issue or problem                                |
-| `docs`     | Documentation, AGENTS.md, SKILL.md, README, and planning files                      |
-| `test`     | Adding or correcting unit, integration, or end-to-end tests                         |
-| `refactor` | Code restructuring that neither fixes a bug nor adds a feature                      |
-| `style`    | Formatting, whitespace, or code structure changes with no semantic effect           |
-| `perf`     | A code change that improves performance (caching, query optimization, etc.)         |
-| `chore`    | Housekeeping that doesn't modify src or test files (gitignore, editor config, etc.) |
-| `ci`       | GitHub Actions workflows, composite actions, and CI/CD scripts                      |
-| `build`    | Build system, Vite/Docker/Helm config, or external dependency integration           |
-| `revert`   | Reverts a previous commit                                                           |
+| Type | Description |
+| ---- | ----------- |
+| `feat` | A new feature or capability that adds value for users |
+| `fix` | A bug fix that addresses a specific issue or problem |
+| `docs` | Documentation, AGENTS.md, SKILL.md, README, and planning files |
+| `test` | Adding or correcting unit, integration, or end-to-end tests |
+| `refactor` | Code restructuring that neither fixes a bug nor adds a feature |
+| `style` | Formatting, whitespace, or code structure changes with no semantic effect |
+| `perf` | A code change that improves performance (caching, query optimization, etc.) |
+| `chore` | Housekeeping that doesn't modify src or test files (gitignore, editor config, etc.) |
+| `ci` | GitHub Actions workflows, composite actions, and CI/CD scripts |
+| `build` | Build system, Vite/Docker/Helm config, or external dependency integration |
+| `revert` | Reverts a previous commit |
 
 <!-- types-end -->
 
@@ -322,36 +323,35 @@ The 🧑‍⚖️ Validate Conventions workflow creates any label missing from t
 
 <!-- scopes-start -->
 
-| Scope               | Description                                                                            |
-| ------------------- | -------------------------------------------------------------------------------------- |
-| `affirmations`      | Python Jupyter notebook application for LangGraph affirmation generation               |
-| `applications`      | Changes spanning multiple applications in applications/ (e.g. lexico, caelundas, etc.) |
-| `caelundas`         | Node.js CLI for astronomical calendar generation (NASA JPL ephemeris)                  |
-| `configuration`     | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.)                  |
-| `conformetry`       | Code generator templates and validation tests for generated instances                  |
-| `dependencies`      | Dependency version changes (upgrades, additions, removals via pnpm)                    |
-| `deps`              | Dependency version changes (upgrades, additions, removals via pnpm)                    |
-| `deployments`       | GitHub Actions workflows and CI/CD pipeline configuration                              |
-| `documentation`     | Markdown docs, skills, planning files, and AGENTS.md files                             |
-| `infrastructure`    | Helm charts, Terraform configs, and Kubernetes resources                               |
-| `JimmyPaolini`      | Static GitHub profile README project (markdown and assets)                             |
-| `lexico`            | TanStack Start SSR Latin dictionary web app with Supabase backend                      |
-| `lexico-components` | Shared React/shadcn component library                                                  |
-| `lexico-entities`   | Shared TypeORM entities and GraphQL types                                              |
-| `lexico-ingestion`  | Data ingestion scripts for Lexico                                                      |
-| `logger`            | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention  |
-| `callidescope`      | Call stack tracing and linting CLI and the configuration package it reads              |
-| `codometer`         | Code statistics measurement CLI and the configuration package it reads                 |
-| `codebase`          | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration)          |
-| `no-release`        | Escape hatch: suppress semantic-release for any commit type                            |
-| `packages`          | Changes spanning multiple shared packages in packages/                                 |
-| `release`           | Version bumps and release commits generated by semantic-release                        |
-| `scripts`           | Shell and TypeScript scripts in scripts/ (sync, setup, utilities)                      |
-| `testing`           | Vitest configuration, shared test utilities, and coverage setup                        |
-| `tools`             | Changes spanning multiple tool projects in tools/                                      |
-| `synchronization`   | Synchronization application and commands for automating workflows                      |
-| `reporting`         | Internal reporting CLI and the reports it renders, such as 🎒 Bundles                  |
-| `validation`        | Validation CLI and the checks it runs, such as pull request metadata                   |
+| Scope | Description |
+| ----- | ----------- |
+| `affirmations` | Python Jupyter notebook application for LangGraph affirmation generation |
+| `applications` | Changes spanning multiple applications in applications/ (e.g. lexico, caelundas, etc.) |
+| `caelundas` | Node.js CLI for astronomical calendar generation (NASA JPL ephemeris) |
+| `configuration` | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.) |
+| `conformetry` | Code generator templates and validation tests for generated instances |
+| `dependencies` | Dependency version changes (upgrades, additions, removals via pnpm) |
+| `deps` | Dependency version changes (upgrades, additions, removals via pnpm) |
+| `deployments` | GitHub Actions workflows and CI/CD pipeline configuration |
+| `documentation` | Markdown docs, skills, planning files, and AGENTS.md files |
+| `infrastructure` | Helm charts, Terraform configs, and Kubernetes resources |
+| `JimmyPaolini` | Static GitHub profile README project (markdown and assets) |
+| `lexico` | TanStack Start SSR Latin dictionary web app with Supabase backend |
+| `lexico-components` | Shared React/shadcn component library |
+| `lexico-entities` | Shared TypeORM entities and GraphQL types |
+| `lexico-ingestion` | Data ingestion scripts for Lexico |
+| `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
+| `callidescope` | Call stack tracing and linting CLI and the configuration package it reads |
+| `codometer` | Code statistics measurement CLI, the configuration package it reads, and the packages that diff and render its pull request change report |
+| `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
+| `no-release` | Escape hatch: suppress semantic-release for any commit type |
+| `packages` | Changes spanning multiple shared packages in packages/ |
+| `release` | Version bumps and release commits generated by semantic-release |
+| `scripts` | Shell and TypeScript scripts in scripts/ (sync, setup, utilities) |
+| `testing` | Vitest configuration, shared test utilities, and coverage setup |
+| `tools` | Changes spanning multiple tool projects in tools/ |
+| `synchronization` | Synchronization application and commands for automating workflows |
+| `validation` | Validation CLI and the checks it runs, such as pull request metadata |
 
 <!-- scopes-end -->
 
@@ -479,7 +479,7 @@ Test files are named `*.<kind>.test.ts` and live beside the code they cover. Vit
 - **Test coverage: 96%** for branches, functions, lines, and statements (`configuration/vitest.config.ts`, v8 provider). New code needs tests in the same change to keep a project above the line.
 - **Type coverage** is per project, declared as `typeCoverage.atLeast` in each project's `package.json` — most packages sit at 100 with `strict: true`, and the workspace root requires 95. Run `type-coverage` alongside `typecheck` for any touched project that defines the target; passing `typecheck` alone proves nothing about this gate.
 - **Duplication**: not a gate, and no longer measured by anything scheduled. `jscpd` and `fallow-duplicates` both remain as targets to run by hand — `nx run codebase:jscpd` and `nx run codebase:fallow-duplicates` — and both are advisory: the `jscpd` target ends in `|| true`, and nothing in CI invokes either one. The 6% threshold in `configuration/jscpd.config.json` and `configuration/fallow.config.jsonc` is what those manual runs report against, not a bar a pull request has to clear. It sat at 5.9% when the last scheduled caller was removed. Extract a shared helper rather than copying a block because it is the better code, not because a check will stop you.
-- **Bundle size** is per project, enforced by the `codometer` target, which builds first and measures the compiled output. Every package's gzipped limit is declared in the `PROJECT_LIMITS` table in `configuration/codometer.config.ts`, keyed by the project's path; `lexico` and `lexico-components` declare theirs in a `codometer.config.cjs` of their own because they measure several bundles each. Breaching one fails 👷 Make Projects, and the `## 🎒 Bundles` section names the bundle. That section is rendered by `nx run reporting:start:bundles` from the `codometer-report.json` each project's run leaves behind.
+- **Bundle size** is per project, enforced by the `codometer` target, which builds first and measures the compiled output. Every package's gzipped limit is declared in the `PROJECT_LIMITS` table in `configuration/codometer.config.ts`, keyed by the project's path; `lexico` and `lexico-components` declare theirs in a `codometer.config.cjs` of their own because they measure several bundles each. Breaching one fails 👷 Make Projects, and the `## ⏲️ Codometer` section names the project. That section is rendered by `nx run codometer-cli:start -- changes` from the `codometer-report.json` each project's run leaves behind, diffed by `codometer-changes` and rendered by `codometer-markdown`.
 - Lowering a threshold to make a change pass is not an option — fix the code.
 
 See the [testing-strategy skill](.agents/skills/testing-strategy/SKILL.md) for patterns.

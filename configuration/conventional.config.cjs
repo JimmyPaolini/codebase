@@ -174,7 +174,7 @@ const scopes = [
   },
   {
     description:
-      "Code statistics measurement CLI and the configuration package it reads",
+      "Code statistics measurement CLI, the configuration package it reads, and the packages that diff and render its pull request change report",
     name: "codometer",
   },
   {
@@ -213,11 +213,6 @@ const scopes = [
     description:
       "Synchronization application and commands for automating workflows",
     name: "synchronization",
-  },
-  {
-    description:
-      "Internal reporting CLI and the reports it renders, such as 🎒 Bundles",
-    name: "reporting",
   },
   {
     description:
