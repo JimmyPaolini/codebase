@@ -5,8 +5,6 @@ import { LoggerModule } from "@codebase/logger";
 import { ConformetryGeneratorsModule } from "../conformetry-generators/conformetry-generators.module";
 import { ConventionalConfigModule } from "../conventional-config/conventional-config.module";
 import { DevcontainerConfigurationModule } from "../devcontainer-configuration/devcontainer-configuration.module";
-import { NestjsModuleGraphsModule } from "../nestjs-module-graphs/nestjs-module-graphs.module";
-import { NxProjectGraphsModule } from "../nx-project-graphs/nx-project-graphs.module";
 import { PullRequestLabelsModule } from "../pull-request-labels/pull-request-labels.module";
 import { PullRequestTemplateModule } from "../pull-request-template/pull-request-template.module";
 import { SkillExclusionsModule } from "../skill-exclusions/skill-exclusions.module";
@@ -31,8 +29,6 @@ import { SynchronizationService } from "./synchronization.service";
     ConformetryGeneratorsModule,
     ConventionalConfigModule,
     DevcontainerConfigurationModule,
-    NestjsModuleGraphsModule,
-    NxProjectGraphsModule,
     PullRequestLabelsModule,
     PullRequestTemplateModule,
     SkillExclusionsModule,

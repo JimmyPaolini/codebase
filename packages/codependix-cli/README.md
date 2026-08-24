@@ -218,3 +218,104 @@ graph LR
   file_src_repl_ts --> file_src_main_module_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `codependix-cli`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 54 |
+| Files | 21 |
+| Calls traced | 86 |
+| Call stacks | 1 |
+| Deepest stack | 12 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 2 |
+
+### Call stacks (depth)
+
+**1. `CodependixCommand.run`** — depth ≥ 12 · decorated-method
+
+```text
+🚀 CodependixCommand.run(_passedParameters: string[], options?: CodependixCommandOptions): Promise<void> [packages/codependix-cli/src/modules/codependix/codependix.command.ts:142]
+   ↳ Runs every configured graph export in check or write mode.
+  └─> CodependixService.run(…): Promise<GraphRunOutcome> [packages/codependix-cli/src/modules/codependix/codependix.service.ts:326]
+     ↳ Runs every configured graph export, resolving the shared `GraphRunContext` exactly once.
+    └─> CodependixService.runNxGraphs(context: GraphRunContext): GraphRunOutcome [packages/codependix-cli/src/modules/codependix/codependix.service.ts:467]
+       ↳ Builds and delivers every configured Nx graph export — each included project's Neighborhood, and the whole-workspace…
+      └─> CodependixService.runNxProjects(…): GraphRunOutcome [packages/codependix-cli/src/modules/codependix/codependix.service.ts:242]
+         ↳ Renders and delivers every included project's Nx Neighborhood, isolating one project's failure from the rest — see…
+        └─> CodependixService.runNxProject(…): ProjectRunResult [packages/codependix-cli/src/modules/codependix/codependix.service.ts:212]
+           ↳ Renders and delivers one project's Nx Neighborhood.
+          └─> DeliveryService.deliverGraphOutput(args: DeliverGraphOutputArguments): ProjectRunResult [packages/codependix-cli/src/modules/delivery/delivery.service.ts:271]
+             ↳ Delivers whichever destinations a resolved graph output names. `jsonContent`/`markdownContent` are read only when the…
+            └─> DeliveryService.deliverMarkdown(…): void [packages/codependix-cli/src/modules/delivery/delivery.service.ts:143]
+               ↳ Delivers a Markdown destination, recording it as stale if needed.
+              └─> DeliveryService.deliverAnchoredMarkdown(…): boolean [packages/codependix-cli/src/modules/delivery/delivery.service.ts:52]
+                 ↳ Splices content into a named anchor block, or checks it is current.
+                └─> AnchorsService.checkAnchor(args: AnchorLocationArguments & { freshContent: string; }): AnchorCheckResult [packages/codependix-cli/src/modules/anchors/anchors.service.ts:103]
+                   ↳ Compares a Markdown file's anchor against a freshly computed export. `--check` reads this and reports drift without…
+                  └─> AnchorsService.extractAnchorContent(args: AnchorLocationArguments): string | undefined [packages/codependix-cli/src/modules/anchors/anchors.service.ts:120]
+                     ↳ Reads a named anchor's current content, or `undefined` when it is absent.
+                    └─> AnchorsService.buildAnchorPattern(anchorName: string): RegExp [packages/codependix-cli/src/modules/anchors/anchors.service.ts:59]
+                       ↳ Builds the pattern matching a named anchor block and its inner content.
+                      └─> AnchorsService.escapeForPattern(value: string): string [packages/codependix-cli/src/modules/anchors/anchors.service.ts:67]
+                         ↳ Escapes a string so it can be embedded literally in a regular expression.
+```
+
+### Module spread
+
+| Callable | Spread | Calls directly | Location |
+| --- | --- | --- | --- |
+| `CodependixService.runWorkspaceGraph` | 6 | `codependix-cli:modules/delivery`, `codependix-configuration:modules/configuration`, `codependix-nx:modules/workspace-graph` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:281` |
+| `CodependixService.runImportProject` | 5 | `codependix-cli:modules/delivery`, `codependix-imports:modules/import-graph`, `codependix-imports:modules/typescript-project` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:158` |
+| `CodependixService.runNestjsProject` | 5 | `codependix-cli:modules/delivery`, `codependix-nestjs:modules/module-graph`, `codependix-nestjs:modules/nestjs-project` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:185` |
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `CodependixService.run` | 7 | `ConfigurationService.loadConfiguration`, `NeighborhoodService.readProjectGraph`, `NeighborhoodService.readProjects`, `CodependixService.resolveMode`, `CodependixService.runNxGraphs`, `CodependixService.runNestjsGraphs`, `CodependixService.runImportGraphs` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:326` |
+| `AnchorsService.replaceAnchorContent` | 6 | `AnchorsService.hasAnchor`, `AnchorNotFoundError.constructor`, `buildStartMarker`, `buildEndMarker`, `AnchorsService.replace(…)`, `AnchorsService.buildAnchorPattern` | `packages/codependix-cli/src/modules/anchors/anchors.service.ts:178` |
+| `CodependixService.runImportProject` | 6 | `TypescriptProjectService.buildProgram`, `ImportGraphService.buildGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `ImportGraphService.renderMermaid`, `CodependixService.buildMarkdownSection` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:158` |
+
+<details>
+<summary>22 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `CodependixService.runNestjsProject` | 6 | `NestjsProjectService.exploreProject`, `ModuleGraphService.buildGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `ModuleGraphService.renderMermaid`, `CodependixService.buildMarkdownSection` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:185` |
+| `CodependixService.runWorkspaceGraph` | 6 | `ConfigurationService.resolveForWorkspace`, `WorkspaceGraphService.buildWorkspaceGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `WorkspaceGraphService.renderMermaid`, `CodependixService.buildMarkdownSection` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:281` |
+| `DeliveryService.deliverAnchoredMarkdown` | 5 | `AnchorNotFoundError.constructor`, `AnchorsService.hasAnchor`, `AnchorsService.checkAnchor`, `DeliveryService.writeAutoCreatedAnchorSection`, `AnchorsService.replaceAnchorContent` | `packages/codependix-cli/src/modules/delivery/delivery.service.ts:52` |
+| `CodependixService.runNxProject` | 5 | `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `CodependixService.buildNeighborhoodJsonExport`, `NeighborhoodService.renderMermaid`, `CodependixService.buildMarkdownSection` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:212` |
+| `AnchorsService.insertAnchorSection` | 4 | `AnchorsService.wrapInAnchors`, `AnchorsService.escapeForPattern`, `AnchorsService.appendCodependixSection`, `AnchorsService.insertIntoCodependixSection` | `packages/codependix-cli/src/modules/anchors/anchors.service.ts:144` |
+| `DeliveryService.deliverGraphOutput` | 4 | `DeliveryService.resolveJsonDelivery`, `DeliveryService.resolveMarkdownDelivery`, `DeliveryService.deliverJson`, `DeliveryService.deliverMarkdown` | `packages/codependix-cli/src/modules/delivery/delivery.service.ts:271` |
+| `CodependixService.runImportGraphs` | 4 | `TypescriptProjectService.discoverProjects`, `CodependixService.resolveProjectOutput`, `CodependixService.runImportProject`, `CodependixService.collectProjectFailure` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:375` |
+| `CodependixService.runNestjsGraphs` | 4 | `NestjsProjectService.discoverProjects`, `CodependixService.resolveProjectOutput`, `CodependixService.runNestjsProject`, `CodependixService.collectProjectFailure` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:418` |
+| `CodependixService.runNxGraphs` | 4 | `NeighborhoodService.buildNeighborhoods`, `CodependixService.runNxProjects`, `CodependixService.runWorkspaceGraph`, `CodependixService.collectProjectFailure` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:467` |
+| `AnchorsService.buildAnchorPattern` | 3 | `AnchorsService.escapeForPattern`, `buildStartMarker`, `buildEndMarker` | `packages/codependix-cli/src/modules/anchors/anchors.service.ts:59` |
+| `CodependixService.runNxProjects` | 3 | `CodependixService.resolveProjectOutput`, `CodependixService.runNxProject`, `CodependixService.collectProjectFailure` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:242` |
+| `CodependixCommand.run` | 3 | `CodependixCommand.selectMode`, `CodependixService.run`, `CodependixCommand.reportOutcome` | `packages/codependix-cli/src/modules/codependix/codependix.command.ts:142` |
+| `AnchorsService.checkAnchor` | 2 | `AnchorsService.extractAnchorContent`, `AnchorNotFoundError.constructor` | `packages/codependix-cli/src/modules/anchors/anchors.service.ts:103` |
+| `AnchorsService.wrapInAnchors` | 2 | `buildStartMarker`, `buildEndMarker` | `packages/codependix-cli/src/modules/anchors/anchors.service.ts:196` |
+| `DeliveryService.deliverMarkdown` | 2 | `DeliveryService.deliverFile`, `DeliveryService.deliverAnchoredMarkdown` | `packages/codependix-cli/src/modules/delivery/delivery.service.ts:143` |
+| `DeliveryService.writeAutoCreatedAnchorSection` | 2 | `AnchorNotFoundError.constructor`, `AnchorsService.insertAnchorSection` | `packages/codependix-cli/src/modules/delivery/delivery.service.ts:238` |
+| `CodependixCommand.reportOutcome` | 2 | `CodependixCommand.filter(…)`, `CodependixCommand.map(…)` | `packages/codependix-cli/src/modules/codependix/codependix.command.ts:51` |
+| `AnchorsService.extractAnchorContent` | 1 | `AnchorsService.buildAnchorPattern` | `packages/codependix-cli/src/modules/anchors/anchors.service.ts:120` |
+| `AnchorsService.hasAnchor` | 1 | `AnchorsService.buildAnchorPattern` | `packages/codependix-cli/src/modules/anchors/anchors.service.ts:125` |
+| `DeliveryService.deliverFile` | 1 | `DeliveryService.readFileOrEmpty` | `packages/codependix-cli/src/modules/delivery/delivery.service.ts:109` |
+| `DeliveryService.deliverJson` | 1 | `DeliveryService.deliverFile` | `packages/codependix-cli/src/modules/delivery/delivery.service.ts:123` |
+| `CodependixService.resolveProjectOutput` | 1 | `ConfigurationService.resolveForProject` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:141` |
+
+</details>
+
+### Possibly misplaced
+
+| Callable | Declared in | Called from | Callers |
+| --- | --- | --- | --- |
+| `DeliveryService.deliverGraphOutput` | `codependix-cli:modules/delivery` | `codependix-cli:modules/codependix` | 4/4 |
+| `DeliveryService.renderJson` | `codependix-cli:modules/delivery` | `codependix-cli:modules/codependix` | 4/4 |
+<!-- CALL_STACKS_END -->

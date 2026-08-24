@@ -41,46 +41,6 @@ src/
 testing/                            # Shared test utilities
 ```
 
-### Module Graph
-
-The modules this project defines and the imports between them, published by `nx run synchronization:nestjs-module-graphs:write`.
-
-<!-- nestjs-module-graph-start -->
-
-```mermaid
-flowchart LR
-  subgraph group0["callidescope-graph"]
-    CallablesModule
-    ClassesModule
-    CohesionModule
-    DocumentationModule
-    EdgesModule
-    EntriesModule
-    GraphModule
-    ProgramModule
-    SignaturesModule
-    WorkspaceModule
-  end
-  subgraph group1["logger"]
-    LoggerModule([LoggerModule])
-  end
-  CallablesModule --> ProgramModule
-  CallablesModule --> WorkspaceModule
-  EdgesModule --> CallablesModule
-  EdgesModule --> ClassesModule
-  EdgesModule --> ProgramModule
-  EdgesModule --> WorkspaceModule
-  GraphModule --> DocumentationModule
-  GraphModule --> SignaturesModule
-  ProgramModule --> WorkspaceModule
-```
-
-_Rounded modules are global: every module can inject them, so their edges are left out._
-
-_Reached only for their types, and so declaring no module here: callidescope-configuration._
-
-<!-- nestjs-module-graph-end -->
-
 ## Development
 
 ### Adding Business Logic

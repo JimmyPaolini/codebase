@@ -183,11 +183,6 @@ const scopes = [
     name: "codometer",
   },
   {
-    description:
-      "Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration)",
-    name: "codebase",
-  },
-  {
     description: "Escape hatch: suppress semantic-release for any commit type",
     name: "no-release",
   },

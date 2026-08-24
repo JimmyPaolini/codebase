@@ -44,26 +44,17 @@ nx run synchronization:start:write    # write every synchronization
 ## Where each synchronization's drift is answered
 
 Which runs check which synchronization is a property of the caller, not a
-taxonomy the commands declare about themselves. Six of the seven — every one
-except `nestjs-module-graphs` and `pull-request-labels` — are **derivations**:
-committed files derived from configuration a pull request can also change, so
-`check` runs on a pull request and `write` runs on the default branch's
-release. The [🧑‍💻 Lint Codebase](../../.github/workflows/lint-codebase.yml)
-workflow and
+taxonomy the commands declare about themselves. Five of the six — every one
+except `pull-request-labels` — are **derivations**: committed files derived
+from configuration a pull request can also change, so `check` runs on a pull
+request and `write` runs on the default branch's release. The
+[🧑‍💻 Lint Codebase](../../.github/workflows/lint-codebase.yml) workflow and
 [`configuration/lint-staged.config.ts`](../../configuration/lint-staged.config.ts)
 each name every derivation target directly alongside `lint-codebase` in one
 `nx affected` invocation, rather than reaching them through
 [`lint-codebase`](../../AGENTS.md#code-quality)'s `dependsOn` — Nx forwards an
 explicit configuration down `dependsOn`, so an edge there would let
 `lint-codebase --configuration=write` publish from a branch.
-
-`nestjs-module-graphs` is a **report**: its diagram moves whenever any module
-gains or loses an import, so gating a pull request on its freshness would fail
-branches for being behind `main` rather than for anything they did — the same
-trap [codometer](../../packages/codometer-cli/README.md) and
-[callidescope](../../packages/callidescope-cli/README.md) publish on `main` to
-avoid. Nothing checks it on a pull request; the release workflow runs its
-`write` configuration directly.
 
 `pull-request-labels` needs credentials: its destination is GitHub's label set
 rather than a file in the tree, so reaching it needs a token that neither a
@@ -82,120 +73,9 @@ target, on `opened`/`reopened`, and nothing else names it.
 | `conformetry-generators`     | `configuration/conformetry.config.ts`    | The generator table in `AGENTS.md`, between marker comments                                           |
 | `conventional-config`        | `configuration/conventional.config.cjs`  | The commit type and scope tables, commitlint, and release configuration                               |
 | `devcontainer-configuration` | `.devcontainer/local/devcontainer.json`  | The shared fields of `.devcontainer/cloud/devcontainer.json`                                          |
-| `nestjs-module-graphs`       | The NestJS container each project builds | The mermaid module graph in that project's `AGENTS.md` and `README.md`. A report, published on `main` |
-| `nx-project-graphs`          | The Nx project graph                     | The mermaid project graph in every project's `README.md`                                              |
 | `pull-request-labels`        | `configuration/conventional.config.cjs`  | This repository's `type:`, `scope:`, and `source:` labels on GitHub. Needs credentials                |
 | `pull-request-template`      | `.github/PULL_REQUEST_TEMPLATE.md`       | The template embedded in the PR skill files                                                           |
 | `skill-exclusions`           | `skills-lock.json`                       | The installed-skill exclusion lists in five ignore files                                              |
-
-### Module graphs
-
-`nestjs-module-graphs` finds every project tagged `framework:nestjs`, explores
-the container it builds with
-[nestjs-spelunker](https://github.com/jmcdo29/nestjs-spelunker), and writes a
-mermaid diagram into that project's `AGENTS.md` and `README.md`.
-
-The container is built in NestJS **preview mode**, which registers every module
-and provider without instantiating any of them. That is what makes exploring
-safe from a workstation or from CI: `lexico-ingestion` builds its
-`TypeOrmModule.forRootAsync` options without a database ever being contacted.
-Loading the module files is still a real import, though, so a project that
-cannot be imported at all fails this command rather than being skipped.
-
-An application is rooted in its `src/main.module.ts`. A library package has
-nothing to bootstrap, so it is rooted in a `SyntheticRootModule` importing
-every module it defines — along with a global `ConfigModule`, without which a
-package that reads configuration in a `useFactory` cannot be scanned at all.
-Both are kept out of the diagram, as are the `ConfigHostModule` and
-`TypeOrmCoreModule` that NestJS builds underneath a `forRoot`: they are
-implementation details of a dynamic module rather than anything a project
-designs. `TypeOrmModule` itself stays.
-
-Two more things are left out, for a reason worth knowing when the diagram looks
-sparser than the code reads. `explore` reports the container's view rather than
-the decorators', so a `@Global()` module — `LoggerModule`, or a global
-`ConfigModule` — is listed as an import of _every_ module in the project. Drawn
-literally, one of those contributes an edge per module and buries everything
-worth reading, so a module that every other module imports is treated as
-ambient: its edges are dropped and it is kept as a node on its own. Nothing a
-project actually designs comes close to that threshold.
-
-Modules are grouped by the project that defines them. Ownership is decided by
-name, which needs several rules because names collide: the graphed project wins
-outright (every application defines a `MainModule`); a name NestJS itself
-exports is credited to nobody, because a name cannot distinguish
-`@nestjs/core`'s module from a workspace one; otherwise the project's own
-source settles it, since two packages here define a `ConfigurationModule` and
-the import statement says which one was taken; and a name reached transitively
-falls back to its only definition.
-
-None of that consults the Nx project graph. A diagram of imports is derived
-from the imports — the source of the project being graphed, and its manifest —
-so the two graphs are independent readings of the same workspace rather than
-one deriving from the other.
-
-Where a name would otherwise be genuinely ambiguous in a single container —
-`conformetry-cli` imports `@nestjs/core`'s `DiscoveryModule` and
-`@conformetry/configuration`'s in the same application — the fix is to rename
-the module rather than to guess. Spelunker reports modules by name, so two
-different modules sharing one would collapse into a single node no rule can
-separate.
-
-### When the two graphs disagree
-
-A project dependency can be real and still contribute no module, so the module
-graph names those below the diagram rather than leaving a reader to wonder why
-the two disagree. It distinguishes the two reasons, because it can tell them
-apart from the source: a dependency every import of which is an `import type`
-declares no module by nature — `conformetry-json` takes `ConformetryError` from
-`@conformetry/core` and nothing else — while one the manifest declares but the
-source never imports is reached at runtime, which is how
-`conformetry-validation` loads its language packages through
-`LazyModuleLoader`.
-
-A module loaded at runtime is inferred rather than left to prose, in the way
-Nx infers a runtime dependency between projects: a module named as a string
-literal is evidence of a dependency the container cannot show, so
-`conformetry-validation`'s `LANGUAGE_PACKAGES` table turns into six dotted
-edges to the validator modules it loads. A name is only believed when exactly
-one project in the workspace defines it — every application defines a
-`MainModule`, and this command's own constants name one, so an ambiguous name
-buys nothing.
-
-Type-only dependencies have no equivalent, because there is no module to infer.
-`conformetry-json` takes `ConformetryError` from `@conformetry/core` — an
-interface, not a module — and nothing is registered in any container as a
-result. Importing `ErrorsModule` to draw the edge would create a runtime
-dependency the code does not have and enlarge every validator package's
-container to make a diagram look tidier. The note is the honest answer; the
-edge would be a fiction.
-
-The reverse also happens and is equally correct: the module graph reaches
-transitively, so it can show a module from a project the one-hop project graph
-does not list.
-
-A target file that exists but has no marker comments counts as drift. Which
-files a project must keep is conformetry's rule rather than this command's:
-the markers live in the NestJS project templates, so validation fails a project
-whose `README.md` or `AGENTS.md` has dropped them.
-
-### Project graphs
-
-`nx-project-graphs` is the level above. It reads the Nx project graph once and
-writes each project's own neighborhood into its `README.md`: what it depends
-on, and what depends on it. One hop in each direction is deliberate — a
-project's README should say what it needs and who would break if it changed,
-not redraw the workspace.
-
-A dependency Nx inferred from an import is drawn solid, and one declared in
-configuration alone is drawn dotted. A project connected to nothing gets a
-sentence saying so rather than a diagram of one box.
-
-This one covers every project, not only the NestJS ones, so its markers live in
-all four project templates — `jupyter-notebook-application` as well as the
-three NestJS ones. The projects no template governs (`lexico`,
-`lexico-components`, `lexico-entities`, and `logger`) still get a graph; there
-is simply no template to fail them if they drop the block.
 
 ### Pull request labels
 
@@ -249,9 +129,8 @@ which invocation:
   [`configuration/lint-staged.config.ts`](../../configuration/lint-staged.config.ts)
   each name every derivation target directly alongside `lint-codebase` in one
   `nx affected` invocation, so a pull request and a commit both check drift.
-- The release workflow runs every derivation's `write` configuration together
-  with `nestjs-module-graphs:write` through `nx run-many`, so one command still
-  publishes everything.
+- The release workflow runs every derivation's `write` configuration through
+  `nx run-many`, so one command still publishes everything.
 - [validate-conventions.yml](../../.github/workflows/validate-conventions.yml)
   runs `pull-request-labels write` directly through `node`, bypassing Nx
   entirely, since it is the one caller with a token and needs no project graph.
@@ -262,15 +141,6 @@ design was never the problem, and Nx's own `run-many` gives no way to run a
 plain Node command with no target of its own — but nothing selects a subset
 through it, so it needs no taxonomy: `start` always means all of them.
 
-One gap the commit path cannot close. `affected` selects this project from the
-staged paths, and no derivation target's `inputs` globs `package.json` — so a
-commit staging only a manifest changes the Nx project graph, drifts
-`nx-project-graphs`, and never selects it. The pull request catches that,
-resolving `affected` against the merge base rather than a staged path list.
-Conformetry answers the same problem by running unscoped on every commit; these
-targets stay scoped, because removing that scope would put every
-synchronization in every commit path.
-
 ## Adding a synchronizer
 
 1. Generate a module: `nx g conformetry:nestjs-command-module --name=<domain> --project=synchronization`
@@ -278,7 +148,7 @@ synchronization in every commit path.
    `synchronize(mode)` returning whether the destination was already current.
 3. Add a top-level target for it in `project.json`, with `check`/`write`
    configurations and its own source paths as `inputs`, the same shape as the
-   existing eight. That target is the whole declaration of where the command
+   existing six. That target is the whole declaration of where the command
    runs: name it directly wherever it belongs — `lint-codebase`'s dependents
    for a derivation, the release workflow's `run-many` for a report, or a
    caller with its own credentials for anything needing them.
@@ -317,13 +187,13 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 
 | Measure | Value |
 | --- | --- |
-| Callables | 310 |
-| Files | 60 |
-| Calls traced | 331 |
-| Call stacks | 15 |
+| Callables | 201 |
+| Files | 47 |
+| Calls traced | 216 |
+| Call stacks | 11 |
 | Deepest stack | 10 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 12 |
+| Unfollowable calls | 8 |
 
 ### Call stacks (depth)
 
@@ -375,48 +245,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                    ↳ Extracts text content between named HTML comment markers.
 ```
 
-**3. `NestjsModuleGraphsCommand.run`** — depth ≥ 8 · decorated-method
-
-```text
-🚀 NestjsModuleGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:173]
-   ↳ Runs the nestjs-module-graphs sync command in check or write mode.
-  └─> NestjsModuleGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:192]
-     ↳ Synchronizes every project's module graph and reports success without exiting.
-    └─> NestjsModuleGraphsService.indexModuleOwners(projects: NestjsProject[]): NestjsModuleOwnership [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:253]
-       ↳ Maps every module class in the workspace to the project that defines it.
-      └─> NestjsModuleGraphsService.map(…)(project: NestjsProject): [string, NestjsProjectImports] [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:281]
-        └─> NestjsModuleGraphsImportsService.readProjectImports(…): NestjsProjectImports [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts:178]
-           ↳ Reads which workspace projects one project reaches, and how.
-          └─> NestjsModuleGraphsImportsService.readFileImports(…): void [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts:83]
-             ↳ Records what one file's static imports say about the workspace.
-            └─> NestjsModuleGraphsImportsService.readImportedModuleNames(clause: string): string[] [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts:113]
-               ↳ Names the modules a named-import clause brings in.
-              └─> NestjsModuleGraphsImportsService.filter(…)(name: string | undefined): name is string [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts:118]
-```
-
-<details>
-<summary>12 more call stacks</summary>
-
-**4. `NxProjectGraphsCommand.run`** — depth 7 · decorated-method
-
-```text
-🚀 NxProjectGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:150]
-   ↳ Runs the nx-project-graphs sync command in check or write mode.
-  └─> NxProjectGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:169]
-     ↳ Synchronizes every project's graph and reports success without exiting.
-    └─> NxProjectGraphsCommand.synchronizeProject(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:116]
-       ↳ Checks or rewrites one project's README graph block.
-      └─> NxProjectGraphsCommand.applyMode(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:64]
-         ↳ Reports drift in check mode, or rewrites the block in write mode.
-        └─> SynchronizationMarkersService.replaceContent(content: string, markerName: string, replacement: string): string [tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:65]
-           ↳ Replaces the content between the markers, surrounding it with the blank lines markdown needs for the block to be parsed…
-          └─> SynchronizationMarkersService.locateMarkers(…): { endIndex: number; startIndex: number; } | undefined [tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:24]
-             ↳ Returns the index range the markers enclose, or undefined when absent.
-            └─> SynchronizationMarkersService.getStartMarker(markerName: string): string [tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:57]
-               ↳ Renders the opening marker comment for a marker name.
-```
-
-**5. `PullRequestLabelsCommand.run`** — depth 7 · decorated-method
+**3. `PullRequestLabelsCommand.run`** — depth 7 · decorated-method
 
 ```text
 🚀 PullRequestLabelsCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:281]
@@ -433,7 +262,10 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
             └─> PullRequestLabelsService.some(…)(prefix: string): boolean [tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:46]
 ```
 
-**6. `ConformetryGeneratorsCommand.run`** — depth ≥ 6 · decorated-method
+<details>
+<summary>8 more call stacks</summary>
+
+**4. `ConformetryGeneratorsCommand.run`** — depth ≥ 6 · decorated-method
 
 ```text
 🚀 ConformetryGeneratorsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:176]
@@ -450,7 +282,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
              ↳ Walks upward from the process cwd looking for the workspace manifest.
 ```
 
-**7. `PullRequestTemplateCommand.run`** — depth 6 · decorated-method
+**5. `PullRequestTemplateCommand.run`** — depth 6 · decorated-method
 
 ```text
 🚀 PullRequestTemplateCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:202]
@@ -466,7 +298,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
              ↳ Extracts the content between start and end marker comments from a file.
 ```
 
-**8. `SkillExclusionsCommand.run`** — depth 6 · decorated-method
+**6. `SkillExclusionsCommand.run`** — depth 6 · decorated-method
 
 ```text
 🚀 SkillExclusionsCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:165]
@@ -482,7 +314,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
              ↳ The comment opening this file's generated block, in its own syntax.
 ```
 
-**9. `IssueLabelsCommand.run`** — depth 5 · decorated-method
+**7. `IssueLabelsCommand.run`** — depth 5 · decorated-method
 
 ```text
 🚀 IssueLabelsCommand.run(): Promise<void> [tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:158]
@@ -496,7 +328,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
         └─> IssueLabelsCommand.filter(…)(name: string): boolean [tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:121]
 ```
 
-**10. `DevcontainerConfigurationCommand.run`** — depth 5 · decorated-method
+**8. `DevcontainerConfigurationCommand.run`** — depth 5 · decorated-method
 
 ```text
 🚀 DevcontainerConfigurationCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:266]
@@ -511,6 +343,28 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
            ↳ Returns true if the feature key refers to a Docker-in-Docker or Docker-outside-of-Docker feature.
 ```
 
+**9. `SynchronizationMarkersService.extractContent`** — depth 3 · orphan-root
+
+```text
+🚀 SynchronizationMarkersService.extractContent(content: string, markerName: string): string | undefined [tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:44]
+   ↳ Returns the content between the markers, or undefined when absent.
+  └─> SynchronizationMarkersService.locateMarkers(…): { endIndex: number; startIndex: number; } | undefined [tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:24]
+     ↳ Returns the index range the markers enclose, or undefined when absent.
+    └─> SynchronizationMarkersService.getStartMarker(markerName: string): string [tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:57]
+       ↳ Renders the opening marker comment for a marker name.
+```
+
+**10. `SynchronizationMarkersService.replaceContent`** — depth 3 · orphan-root
+
+```text
+🚀 SynchronizationMarkersService.replaceContent(content: string, markerName: string, replacement: string): string [tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:65]
+   ↳ Replaces the content between the markers, surrounding it with the blank lines markdown needs for the block to be parsed…
+  └─> SynchronizationMarkersService.locateMarkers(…): { endIndex: number; startIndex: number; } | undefined [tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:24]
+     ↳ Returns the index range the markers enclose, or undefined when absent.
+    └─> SynchronizationMarkersService.getStartMarker(markerName: string): string [tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:57]
+       ↳ Renders the opening marker comment for a marker name.
+```
+
 **11. `IssueLabelsCommand.nameOf`** — depth 2 · orphan-root
 
 ```text
@@ -518,41 +372,6 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
    ↳ Reads one label entry's name, whichever shape it arrived in.
   └─> IssueLabelsCommand.isRecord(value: unknown): value is Record<string, unknown> [tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:77]
      ↳ Whether this value can be read by property name at all.
-```
-
-**12. `NestjsModuleGraphsGraphService.compareGroups`** — depth 2 · orphan-root
-
-```text
-🚀 NestjsModuleGraphsGraphService.compareGroups(…): number [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:79]
-   ↳ Orders the graphed project first, other projects next, ungrouped last.
-  └─> NestjsModuleGraphsGraphService.rankGroup(group: NestjsModuleGraphGroup, projectName: string): number [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:210]
-     ↳ Ranks a group into the graphed project, another project, or ungrouped.
-```
-
-**13. `NestjsModuleGraphsService.loadModuleClasses`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 NestjsModuleGraphsService.loadModuleClasses(file: string): Promise<Type<unknown>[]> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:96]
-   ↳ Imports a module file and returns every module class it exports.
-  └─> NestjsModuleGraphsService.map(…)(…): Type<unknown> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:107]
-```
-
-**14. `NxProjectGraphsService.renderEdge`** — depth 2 · orphan-root
-
-```text
-🚀 NxProjectGraphsService.renderEdge(edge: NxProjectGraphEdge): string [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:50]
-   ↳ Renders one edge, dotted when Nx inferred it from configuration.
-  └─> NxProjectGraphsService.toNodeIdentifier(projectName: string): string [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:62]
-     ↳ Turns a project name into an identifier mermaid accepts.
-```
-
-**15. `NxProjectGraphsService.renderNode`** — depth 2 · orphan-root
-
-```text
-🚀 NxProjectGraphsService.renderNode(projectName: string): string [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:57]
-   ↳ Declares one node, labelled with the project name it stands for.
-  └─> NxProjectGraphsService.toNodeIdentifier(projectName: string): string [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:62]
-     ↳ Turns a project name into an identifier mermaid accepts.
 ```
 
 </details>
@@ -565,33 +384,23 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `SynchronizationCommand.synchronize` | 11 | `SynchronizationCommand.getCommands`, `ConformetryGeneratorsCommand.synchronize`, `ConventionalConfigCommand.synchronize`, `DevcontainerConfigurationCommand.synchronize`, `NestjsModuleGraphsCommand.synchronize`, `NxProjectGraphsCommand.synchronize`, `PullRequestLabelsCommand.synchronize`, `PullRequestTemplateCommand.synchronize`, `SkillExclusionsCommand.synchronize`, `SynchronizationCommand.reportResults`, `SynchronizationCommand.every(…)` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:137` |
-| `NestjsModuleGraphsGraphService.buildGraph` | 10 | `NestjsModuleGraphsGraphService.findAmbientModuleNames`, `NestjsModuleGraphsGraphService.collectEdges`, `NestjsModuleGraphsGraphService.findRuntimeEdges`, `NestjsModuleGraphsGraphService.sortNames`, `NestjsModuleGraphsGraphService.groupModuleNames`, `NestjsModuleGraphsGraphService.findAbsentDependencyNames`, `NestjsModuleGraphsGraphService.toSorted(…)`, `NestjsModuleGraphsGraphService.filter(…)`, `NestjsModuleGraphsGraphService.filter(…)`, `NestjsModuleGraphsGraphService.filter(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:265` |
 | `PullRequestLabelsCommand.reconcile` | 9 | `PullRequestLabelsGithubService.run`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsGithubService.describeFailure`, `PullRequestLabelsService.planReconciliation`, `PullRequestLabelsService.parseRepositoryLabels`, `PullRequestLabelsService.readExpectedLabels`, `PullRequestLabelsCommand.describeError`, `PullRequestLabelsCommand.reportPlan`, `PullRequestLabelsCommand.reportStaleLabels` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:175` |
+| `SynchronizationCommand.synchronize` | 9 | `SynchronizationCommand.getCommands`, `ConformetryGeneratorsCommand.synchronize`, `ConventionalConfigCommand.synchronize`, `DevcontainerConfigurationCommand.synchronize`, `PullRequestLabelsCommand.synchronize`, `PullRequestTemplateCommand.synchronize`, `SkillExclusionsCommand.synchronize`, `SynchronizationCommand.reportResults`, `SynchronizationCommand.every(…)` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:137` |
+| `ConventionalConfigService.handleCheckMode` | 8 | `ConventionalConfigValidatorsService.checkSettingsSync`, `ConventionalConfigValidatorsService.checkAllSkillsSync`, `ConventionalConfigValidatorsService.checkAllTemplatesSync`, `ConventionalConfigService.loadReleaseConfig`, `ConventionalConfigValidatorsService.checkReleaseRulesSync`, `ConventionalConfigIoService.getReleaseRulesTypes`, `ConventionalConfigValidatorsService.checkPresetConfigSync`, `ConventionalConfigIoService.getPresetConfigTypes` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:126` |
 
 <details>
-<summary>124 more callables</summary>
+<summary>86 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ConventionalConfigService.handleCheckMode` | 8 | `ConventionalConfigValidatorsService.checkSettingsSync`, `ConventionalConfigValidatorsService.checkAllSkillsSync`, `ConventionalConfigValidatorsService.checkAllTemplatesSync`, `ConventionalConfigService.loadReleaseConfig`, `ConventionalConfigValidatorsService.checkReleaseRulesSync`, `ConventionalConfigIoService.getReleaseRulesTypes`, `ConventionalConfigValidatorsService.checkPresetConfigSync`, `ConventionalConfigIoService.getPresetConfigTypes` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:126` |
-| `NxProjectGraphsService.buildNeighborhoods` | 8 | `NxProjectGraphsService.map(…)`, `NxProjectGraphsService.collectEdges`, `NxProjectGraphsService.sortNames`, `NxProjectGraphsService.map(…)`, `NxProjectGraphsService.filter(…)`, `NxProjectGraphsService.map(…)`, `NxProjectGraphsService.filter(…)`, `NxProjectGraphsService.toSorted(…)` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:74` |
 | `ConventionalConfigService.handleWriteMode` | 7 | `ConventionalConfigValidatorsService.checkSettingsSync`, `ConventionalConfigService.filter(…)`, `ConventionalConfigService.filter(…)`, `ConventionalConfigIoService.writeSettingsSync`, `ConventionalConfigIoService.writeSkillSync`, `ConventionalConfigIoService.writeIssueTemplateSync`, `ConventionalConfigService.syncReleaseConfigIfNeeded` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:182` |
 | `ConventionalConfigIoService.writeReleaseConfigSync` | 6 | `ConventionalConfigIoService.map(…)`, `ConventionalConfigIoService.filter(…)`, `ConventionalConfigIoService.getReleaseRulesTypes`, `ConventionalConfigIoService.getPresetConfigTypes`, `ConventionalConfigIoService.appendToReleaseRules`, `ConventionalConfigIoService.appendToPresetTypes` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:290` |
 | `ConventionalConfigService.runSynchronization` | 6 | `ConventionalConfigService.loadConventionalConfig`, `ConventionalConfigService.map(…)`, `ConventionalConfigIoService.parseSettingsScopes`, `ConventionalConfigService.map(…)`, `ConventionalConfigService.handleCheckMode`, `ConventionalConfigService.handleWriteMode` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:240` |
 | `PullRequestLabelsService.planReconciliation` | 6 | `PullRequestLabelsService.map(…)`, `PullRequestLabelsService.map(…)`, `PullRequestLabelsService.filter(…)`, `PullRequestLabelsService.map(…)`, `PullRequestLabelsService.filter(…)`, `PullRequestLabelsService.filter(…)` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:66` |
 | `ConventionalConfigService.syncReleaseConfigIfNeeded` | 5 | `ConventionalConfigService.loadReleaseConfig`, `ConventionalConfigService.filter(…)`, `ConventionalConfigIoService.getReleaseRulesTypes`, `ConventionalConfigIoService.getPresetConfigTypes`, `ConventionalConfigIoService.writeReleaseConfigSync` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:93` |
-| `NestjsModuleGraphsImportsService.readProjectImports` | 5 | `NestjsModuleGraphsImportsService.findSourceFiles`, `NestjsModuleGraphsImportsService.readRuntimeModuleEdges`, `NestjsModuleGraphsImportsService.readFileImports`, `NestjsModuleGraphsImportsService.readDeclaredProjects`, `NestjsModuleGraphsImportsService.filter(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts:178` |
-| `NestjsModuleGraphsService.indexModuleOwners` | 5 | `NestjsModuleGraphsService.findModuleFiles`, `NestjsModuleGraphsService.readModuleClassNames`, `NestjsModuleGraphsImportsService.readProjectNamesByPackage`, `NestjsModuleGraphsService.readFrameworkModuleNames`, `NestjsModuleGraphsService.map(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:253` |
-| `NxProjectGraphsService.renderMermaid` | 5 | `NxProjectGraphsService.sortNames`, `NxProjectGraphsService.map(…)`, `NxProjectGraphsService.map(…)`, `NxProjectGraphsService.toNodeIdentifier`, `NxProjectGraphsService.some(…)` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:153` |
-| `NxProjectGraphsCommand.synchronize` | 5 | `NxProjectGraphsService.readProjectGraph`, `NxProjectGraphsService.readProjects`, `NxProjectGraphsService.buildNeighborhoods`, `NxProjectGraphsCommand.synchronizeProject`, `NxProjectGraphsCommand.reportResults` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:169` |
 | `SynchronizationCommand.reportResults` | 5 | `SynchronizationCommand.filter(…)`, `SynchronizationCommand.map(…)`, `SynchronizationCommand.filter(…)`, `SynchronizationCommand.map(…)`, `SynchronizationCommand.filter(…)` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:84` |
 | `IssueLabelsCommand.resolvePlan` | 4 | `IssueLabelsCommand.readIssueNumber`, `IssueLabelsService.parseFormAnswers`, `IssueLabelsCommand.readExistingLabelNames`, `IssueLabelsService.missingLabels` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:130` |
 | `ConventionalConfigIoService.writeSkillSync` | 4 | `ConventionalConfigIoService.map(…)`, `ConventionalConfigIoService.map(…)`, `ConventionalConfigIoService.generateMarkdownTable`, `ConventionalConfigIoService.replaceMarkerContent` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:353` |
-| `NestjsModuleGraphsImportsService.readRuntimeModuleEdges` | 4 | `NestjsModuleGraphsImportsService.filter(…)`, `NestjsModuleGraphsImportsService.map(…)`, `NestjsModuleGraphsImportsService.readOwningModuleName`, `NestjsModuleGraphsImportsService.map(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts:153` |
-| `NestjsModuleGraphsCommand.synchronizeProject` | 4 | `NestjsModuleGraphsService.exploreProject`, `NestjsModuleGraphsGraphService.renderMermaid`, `NestjsModuleGraphsCommand.map(…)`, `NestjsModuleGraphsCommand.filter(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:141` |
-| `NestjsModuleGraphsCommand.synchronize` | 4 | `NestjsModuleGraphsService.discoverProjects`, `NestjsModuleGraphsService.indexModuleOwners`, `NestjsModuleGraphsCommand.synchronizeProject`, `NestjsModuleGraphsCommand.reportResults` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:192` |
-| `NxProjectGraphsCommand.synchronizeProject` | 4 | `NxProjectGraphsService.renderMermaid`, `SynchronizationMarkersService.extractContent`, `SynchronizationMarkersService.getStartMarker`, `NxProjectGraphsCommand.applyMode` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:116` |
 | `PullRequestLabelsCommand.reportPlan` | 4 | `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsCommand.describePlan`, `PullRequestLabelsCommand.createLabels`, `PullRequestLabelsCommand.updateLabels` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:215` |
 | `PullRequestLabelsCommand.synchronize` | 4 | `PullRequestLabelsCommand.reconcile`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsCommand.describeError`, `PullRequestLabelsCommand.mirrorToStepSummary` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:300` |
 | `PullRequestTemplateCommand.synchronize` | 4 | `PullRequestTemplateCommand.map(…)`, `PullRequestTemplateCommand.loadTemplate`, `PullRequestTemplateCommand.handleCheckMode`, `PullRequestTemplateCommand.handleWriteMode` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:221` |
@@ -602,16 +411,6 @@ None.
 | `ConventionalConfigValidatorsService.checkIssueTemplateSync` | 3 | `ConventionalConfigValidatorsService.getSourceValuesForMarker`, `ConventionalConfigIoService.parseIssueTemplateDropdown`, `ConventionalConfigValidatorsService.validateMarkerValues` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:185` |
 | `DevcontainerConfigurationCommand.applySync` | 3 | `DevcontainerConfigurationCommand.syncVerbatimFields`, `DevcontainerConfigurationCommand.preserveRemoteEnvironment`, `DevcontainerConfigurationCommand.syncFeatures` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:59` |
 | `DevcontainerConfigurationCommand.synchronize` | 3 | `DevcontainerConfigurationCommand.applySync`, `DevcontainerConfigurationCommand.check`, `DevcontainerConfigurationCommand.writeWhenDrifted` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:285` |
-| `NestjsModuleGraphsGraphService.findAbsentDependencyNames` | 3 | `NestjsModuleGraphsGraphService.map(…)`, `NestjsModuleGraphsGraphService.sortNames`, `NestjsModuleGraphsGraphService.filter(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:109` |
-| `NestjsModuleGraphsGraphService.groupModuleNames` | 3 | `NestjsModuleGraphsGraphService.resolveOwner`, `NestjsModuleGraphsGraphService.toSorted(…)`, `NestjsModuleGraphsGraphService.map(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:186` |
-| `NestjsModuleGraphsGraphService.renderGroup` | 3 | `NestjsModuleGraphsGraphService.map(…)`, `NestjsModuleGraphsGraphService.map(…)`, `NestjsModuleGraphsGraphService.map(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:323` |
-| `NestjsModuleGraphsGraphService.renderMermaid` | 3 | `NestjsModuleGraphsGraphService.renderGroup`, `NestjsModuleGraphsGraphService.some(…)`, `NestjsModuleGraphsGraphService.renderNameList` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:344` |
-| `NestjsModuleGraphsImportsService.readImportedModuleNames` | 3 | `NestjsModuleGraphsImportsService.filter(…)`, `NestjsModuleGraphsImportsService.map(…)`, `NestjsModuleGraphsImportsService.map(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts:113` |
-| `NestjsModuleGraphsService.buildSyntheticRootModule` | 3 | `NestjsModuleGraphsService.findModuleFiles`, `NestjsModuleGraphsService.map(…)`, `SyntheticRootModule.forModules` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:63` |
-| `NestjsModuleGraphsService.discoverProjects` | 3 | `NestjsModuleGraphsService.isNestjsProject`, `NestjsModuleGraphsService.describeProject`, `NestjsModuleGraphsService.toSorted(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:186` |
-| `NestjsModuleGraphsService.exploreProject` | 3 | `NestjsModuleGraphsService.buildSyntheticRootModule`, `NestjsModuleGraphsService.loadRootModule`, `NestjsModuleGraphsGraphService.buildGraph` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:210` |
-| `NestjsModuleGraphsCommand.synchronizeFile` | 3 | `SynchronizationMarkersService.extractContent`, `SynchronizationMarkersService.getStartMarker`, `SynchronizationMarkersService.replaceContent` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:95` |
-| `NxProjectGraphsService.readProjects` | 3 | `NxProjectGraphsService.toSorted(…)`, `NxProjectGraphsService.map(…)`, `NxProjectGraphsService.filter(…)` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:142` |
 | `PullRequestLabelsCommand.createLabels` | 3 | `PullRequestLabelsGithubService.run`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsGithubService.describeFailure` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:85` |
 | `PullRequestLabelsCommand.updateLabels` | 3 | `PullRequestLabelsGithubService.run`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsGithubService.describeFailure` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:251` |
 | `SkillExclusionsCommand.writeSync` | 3 | `SkillExclusionsCommand.readExclusionFile`, `SkillExclusionsCommand.renderBlock`, `SkillExclusionsCommand.map(…)` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:144` |
@@ -632,12 +431,6 @@ None.
 | `DevcontainerConfigurationCommand.check` | 2 | `DevcontainerConfigurationCommand.isCurrent`, `DevcontainerConfigurationCommand.reportDifferences` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:80` |
 | `DevcontainerConfigurationCommand.writeWhenDrifted` | 2 | `DevcontainerConfigurationCommand.isCurrent`, `DevcontainerConfigurationCommand.write` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:242` |
 | `DevcontainerConfigurationCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `DevcontainerConfigurationCommand.synchronize` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:266` |
-| `SynchronizationMarkersService.locateMarkers` | 2 | `SynchronizationMarkersService.getStartMarker`, `SynchronizationMarkersService.getEndMarker` | `tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:24` |
-| `NestjsModuleGraphsImportsService.readDeclaredProjects` | 2 | `NestjsModuleGraphsImportsService.filter(…)`, `NestjsModuleGraphsImportsService.map(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts:64` |
-| `NestjsModuleGraphsService.loadModuleClasses` | 2 | `NestjsModuleGraphsService.map(…)`, `NestjsModuleGraphsService.filter(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:96` |
-| `NestjsModuleGraphsService.readModuleClassNames` | 2 | `NestjsModuleGraphsService.filter(…)`, `NestjsModuleGraphsService.map(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:147` |
-| `NestjsModuleGraphsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `NestjsModuleGraphsCommand.synchronize` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:173` |
-| `NxProjectGraphsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `NxProjectGraphsCommand.synchronize` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:150` |
 | `PullRequestLabelsService.readExpectedLabels` | 2 | `PullRequestLabelsService.map(…)`, `PullRequestLabelsService.map(…)` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:106` |
 | `PullRequestLabelsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `PullRequestLabelsCommand.synchronize` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:281` |
 | `PullRequestTemplateCommand.checkTargetSync` | 2 | `PullRequestTemplateCommand.extractMarkerContent`, `PullRequestTemplateCommand.wrapInCodeBlock` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:55` |
@@ -649,6 +442,7 @@ None.
 | `SkillExclusionsCommand.readExclusionFile` | 2 | `SkillExclusionsCommand.renderStartMarker`, `SkillExclusionsCommand.renderEndMarker` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:82` |
 | `SkillExclusionsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `SkillExclusionsCommand.synchronize` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:165` |
 | `SynchronizationCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `SynchronizationCommand.synchronize` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:115` |
+| `SynchronizationMarkersService.locateMarkers` | 2 | `SynchronizationMarkersService.getStartMarker`, `SynchronizationMarkersService.getEndMarker` | `tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:24` |
 | `IssueLabelsGithubService.describeFailure` | 1 | `IssueLabelsGithubService.filter(…)` | `tools/synchronization/src/modules/issue-labels/issue-labels-github.service.ts:43` |
 | `IssueLabelsGithubService.isAvailable` | 1 | `IssueLabelsGithubService.run` | `tools/synchronization/src/modules/issue-labels/issue-labels-github.service.ts:52` |
 | `IssueLabelsService.parseFormAnswers` | 1 | `IssueLabelsService.extractFormField` | `tools/synchronization/src/modules/issue-labels/issue-labels.service.ts:90` |
@@ -674,21 +468,6 @@ None.
 | `ConventionalConfigService.filter(…)` | 1 | `ConventionalConfigValidatorsService.checkIssueTemplateSync` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:197` |
 | `ConventionalConfigCommand.synchronize` | 1 | `ConventionalConfigService.runSynchronization` | `tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:70` |
 | `DevcontainerConfigurationCommand.syncFeatures` | 1 | `DevcontainerConfigurationCommand.isDockerFeatureKey` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:180` |
-| `SynchronizationMarkersService.extractContent` | 1 | `SynchronizationMarkersService.locateMarkers` | `tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:44` |
-| `SynchronizationMarkersService.replaceContent` | 1 | `SynchronizationMarkersService.locateMarkers` | `tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:65` |
-| `NestjsModuleGraphsGraphService.collectEdges` | 1 | `NestjsModuleGraphsGraphService.map(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:42` |
-| `NestjsModuleGraphsGraphService.compareGroups` | 1 | `NestjsModuleGraphsGraphService.rankGroup` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:79` |
-| `NestjsModuleGraphsGraphService.findAmbientModuleNames` | 1 | `NestjsModuleGraphsGraphService.countInboundEdges` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:133` |
-| `NestjsModuleGraphsGraphService.sortNames` | 1 | `NestjsModuleGraphsGraphService.toSorted(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:260` |
-| `NestjsModuleGraphsImportsService.readFileImports` | 1 | `NestjsModuleGraphsImportsService.readImportedModuleNames` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts:83` |
-| `NestjsModuleGraphsService.findModuleFiles` | 1 | `NestjsModuleGraphsService.toSorted(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:77` |
-| `NestjsModuleGraphsService.map(…)` | 1 | `NestjsModuleGraphsImportsService.readProjectImports` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:281` |
-| `NestjsModuleGraphsService.isNestjsProject` | 1 | `NestjsModuleGraphsService.readProjectTags` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:294` |
-| `NestjsModuleGraphsCommand.filter(…)` | 1 | `NestjsModuleGraphsCommand.synchronizeFile` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:163` |
-| `NxProjectGraphsService.renderEdge` | 1 | `NxProjectGraphsService.toNodeIdentifier` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:50` |
-| `NxProjectGraphsService.renderNode` | 1 | `NxProjectGraphsService.toNodeIdentifier` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:57` |
-| `NxProjectGraphsService.sortNames` | 1 | `NxProjectGraphsService.toSorted(…)` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:181` |
-| `NxProjectGraphsCommand.applyMode` | 1 | `SynchronizationMarkersService.replaceContent` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:64` |
 | `PullRequestLabelsGithubService.describeFailure` | 1 | `PullRequestLabelsGithubService.filter(…)` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels-github.service.ts:42` |
 | `PullRequestLabelsService.isTrackedLabel` | 1 | `PullRequestLabelsService.some(…)` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:45` |
 | `PullRequestLabelsService.filter(…)` | 1 | `PullRequestLabelsService.isTrackedLabel` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:82` |
@@ -698,6 +477,8 @@ None.
 | `PullRequestTemplateCommand.filter(…)` | 1 | `PullRequestTemplateCommand.checkTargetSync` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:134` |
 | `SkillExclusionsCommand.readSkillNames` | 1 | `SkillExclusionsCommand.toSorted(…)` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:115` |
 | `SkillExclusionsCommand.renderBlock` | 1 | `SkillExclusionsCommand.map(…)` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:127` |
+| `SynchronizationMarkersService.extractContent` | 1 | `SynchronizationMarkersService.locateMarkers` | `tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:44` |
+| `SynchronizationMarkersService.replaceContent` | 1 | `SynchronizationMarkersService.locateMarkers` | `tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:65` |
 
 </details>
 
@@ -739,8 +520,6 @@ flowchart LR
   IssueLabelsModule
   LoggerModule([LoggerModule])
   MainModule
-  NestjsModuleGraphsModule
-  NxProjectGraphsModule
   PullRequestLabelsModule
   PullRequestTemplateModule
   SkillExclusionsModule
@@ -752,8 +531,6 @@ flowchart LR
   SynchronizationModule --> ConformetryGeneratorsModule
   SynchronizationModule --> ConventionalConfigModule
   SynchronizationModule --> DevcontainerConfigurationModule
-  SynchronizationModule --> NestjsModuleGraphsModule
-  SynchronizationModule --> NxProjectGraphsModule
   SynchronizationModule --> PullRequestLabelsModule
   SynchronizationModule --> PullRequestTemplateModule
   SynchronizationModule --> SkillExclusionsModule
@@ -804,25 +581,6 @@ graph LR
   file_src_modules_issue_labels_issue_labels_service_ts["src/modules/issue-labels/issue-labels.service.ts"]
   file_src_modules_issue_labels_issue_labels_service_unit_test_ts["src/modules/issue-labels/issue-labels.service.unit.test.ts"]
   file_src_modules_issue_labels_issue_labels_types_ts["src/modules/issue-labels/issue-labels.types.ts"]
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_graph_service_ts["src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts"]
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_graph_service_unit_test_ts["src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.unit.test.ts"]
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_imports_service_ts["src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts"]
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_imports_service_unit_test_ts["src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.unit.test.ts"]
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_synthetic_module_ts["src/modules/nestjs-module-graphs/nestjs-module-graphs-synthetic.module.ts"]
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_ts["src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts"]
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_unit_test_ts["src/modules/nestjs-module-graphs/nestjs-module-graphs.command.unit.test.ts"]
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_constants_ts["src/modules/nestjs-module-graphs/nestjs-module-graphs.constants.ts"]
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_module_ts["src/modules/nestjs-module-graphs/nestjs-module-graphs.module.ts"]
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_service_ts["src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts"]
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_service_unit_test_ts["src/modules/nestjs-module-graphs/nestjs-module-graphs.service.unit.test.ts"]
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_types_ts["src/modules/nestjs-module-graphs/nestjs-module-graphs.types.ts"]
-  file_src_modules_nx_project_graphs_nx_project_graphs_command_ts["src/modules/nx-project-graphs/nx-project-graphs.command.ts"]
-  file_src_modules_nx_project_graphs_nx_project_graphs_command_unit_test_ts["src/modules/nx-project-graphs/nx-project-graphs.command.unit.test.ts"]
-  file_src_modules_nx_project_graphs_nx_project_graphs_constants_ts["src/modules/nx-project-graphs/nx-project-graphs.constants.ts"]
-  file_src_modules_nx_project_graphs_nx_project_graphs_module_ts["src/modules/nx-project-graphs/nx-project-graphs.module.ts"]
-  file_src_modules_nx_project_graphs_nx_project_graphs_service_ts["src/modules/nx-project-graphs/nx-project-graphs.service.ts"]
-  file_src_modules_nx_project_graphs_nx_project_graphs_service_unit_test_ts["src/modules/nx-project-graphs/nx-project-graphs.service.unit.test.ts"]
-  file_src_modules_nx_project_graphs_nx_project_graphs_types_ts["src/modules/nx-project-graphs/nx-project-graphs.types.ts"]
   file_src_modules_pull_request_labels_pull_request_labels_github_service_ts["src/modules/pull-request-labels/pull-request-labels-github.service.ts"]
   file_src_modules_pull_request_labels_pull_request_labels_github_service_unit_test_ts["src/modules/pull-request-labels/pull-request-labels-github.service.unit.test.ts"]
   file_src_modules_pull_request_labels_pull_request_labels_command_ts["src/modules/pull-request-labels/pull-request-labels.command.ts"]
@@ -933,65 +691,6 @@ graph LR
   file_src_modules_issue_labels_issue_labels_service_ts --> file_src_modules_issue_labels_issue_labels_constants_ts
   file_src_modules_issue_labels_issue_labels_service_ts --> file_src_modules_issue_labels_issue_labels_types_ts
   file_src_modules_issue_labels_issue_labels_service_unit_test_ts --> file_src_modules_issue_labels_issue_labels_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_graph_service_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_constants_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_graph_service_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_types_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_graph_service_unit_test_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_graph_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_graph_service_unit_test_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_types_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_imports_service_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_constants_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_imports_service_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_types_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_imports_service_unit_test_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_imports_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_imports_service_unit_test_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_types_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_graph_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_constants_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_types_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_ts --> file_src_modules_synchronization_synchronization_markers_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_ts --> file_src_modules_synchronization_synchronization_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_ts --> file_src_modules_synchronization_synchronization_types_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_unit_test_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_graph_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_unit_test_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_unit_test_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_constants_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_unit_test_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_unit_test_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_types_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_unit_test_ts --> file_src_modules_synchronization_synchronization_markers_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_unit_test_ts --> file_src_modules_synchronization_synchronization_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_unit_test_ts --> file_testing_mocks_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_module_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_graph_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_module_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_imports_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_module_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_command_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_module_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_module_ts --> file_src_modules_synchronization_synchronization_markers_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_module_ts --> file_src_modules_synchronization_synchronization_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_service_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_graph_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_service_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_imports_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_service_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_synthetic_module_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_service_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_constants_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_service_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_types_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_service_unit_test_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_graph_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_service_unit_test_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_imports_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_service_unit_test_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_service_ts
-  file_src_modules_nestjs_module_graphs_nestjs_module_graphs_service_unit_test_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_types_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_command_ts --> file_src_modules_nx_project_graphs_nx_project_graphs_constants_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_command_ts --> file_src_modules_nx_project_graphs_nx_project_graphs_service_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_command_ts --> file_src_modules_nx_project_graphs_nx_project_graphs_types_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_command_ts --> file_src_modules_synchronization_synchronization_markers_service_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_command_ts --> file_src_modules_synchronization_synchronization_service_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_command_ts --> file_src_modules_synchronization_synchronization_types_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_command_unit_test_ts --> file_src_modules_nx_project_graphs_nx_project_graphs_command_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_command_unit_test_ts --> file_src_modules_nx_project_graphs_nx_project_graphs_constants_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_command_unit_test_ts --> file_src_modules_nx_project_graphs_nx_project_graphs_service_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_command_unit_test_ts --> file_src_modules_nx_project_graphs_nx_project_graphs_types_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_command_unit_test_ts --> file_src_modules_synchronization_synchronization_markers_service_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_command_unit_test_ts --> file_src_modules_synchronization_synchronization_service_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_command_unit_test_ts --> file_testing_mocks_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_module_ts --> file_src_modules_nx_project_graphs_nx_project_graphs_command_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_module_ts --> file_src_modules_nx_project_graphs_nx_project_graphs_service_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_module_ts --> file_src_modules_synchronization_synchronization_markers_service_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_module_ts --> file_src_modules_synchronization_synchronization_service_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_service_ts --> file_src_modules_nx_project_graphs_nx_project_graphs_constants_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_service_ts --> file_src_modules_nx_project_graphs_nx_project_graphs_types_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_service_unit_test_ts --> file_src_modules_nx_project_graphs_nx_project_graphs_service_ts
-  file_src_modules_nx_project_graphs_nx_project_graphs_service_unit_test_ts --> file_src_modules_nx_project_graphs_nx_project_graphs_types_ts
   file_src_modules_pull_request_labels_pull_request_labels_github_service_ts --> file_src_modules_pull_request_labels_pull_request_labels_constants_ts
   file_src_modules_pull_request_labels_pull_request_labels_github_service_ts --> file_src_modules_pull_request_labels_pull_request_labels_types_ts
   file_src_modules_pull_request_labels_pull_request_labels_github_service_unit_test_ts --> file_src_modules_pull_request_labels_pull_request_labels_github_service_ts
@@ -1060,8 +759,6 @@ graph LR
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_conformetry_generators_conformetry_generators_module_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_conventional_config_conventional_config_module_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_devcontainer_configuration_devcontainer_configuration_module_ts
-  file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_module_ts
-  file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_nx_project_graphs_nx_project_graphs_module_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_pull_request_labels_pull_request_labels_module_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_pull_request_template_pull_request_template_module_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_skill_exclusions_skill_exclusions_module_ts
@@ -1070,8 +767,6 @@ graph LR
   file_src_modules_synchronization_synchronization_module_unit_test_ts --> file_src_modules_conformetry_generators_conformetry_generators_module_ts
   file_src_modules_synchronization_synchronization_module_unit_test_ts --> file_src_modules_conventional_config_conventional_config_module_ts
   file_src_modules_synchronization_synchronization_module_unit_test_ts --> file_src_modules_devcontainer_configuration_devcontainer_configuration_module_ts
-  file_src_modules_synchronization_synchronization_module_unit_test_ts --> file_src_modules_nestjs_module_graphs_nestjs_module_graphs_module_ts
-  file_src_modules_synchronization_synchronization_module_unit_test_ts --> file_src_modules_nx_project_graphs_nx_project_graphs_module_ts
   file_src_modules_synchronization_synchronization_module_unit_test_ts --> file_src_modules_pull_request_labels_pull_request_labels_module_ts
   file_src_modules_synchronization_synchronization_module_unit_test_ts --> file_src_modules_pull_request_template_pull_request_template_module_ts
   file_src_modules_synchronization_synchronization_module_unit_test_ts --> file_src_modules_skill_exclusions_skill_exclusions_module_ts
