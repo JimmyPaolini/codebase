@@ -57,7 +57,7 @@ describe(MeanderGenerationService, () => {
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/fixtures/bars-5-rows-12-repeats.svg",
+          "../../../assets/bars-5-rows-12-repeats.svg",
         ),
         "utf8",
       );
@@ -81,7 +81,7 @@ describe(MeanderGenerationService, () => {
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/fixtures/bars-5-rows-6-repeats-alternated-period-1.svg",
+          "../../../assets/bars-5-rows-6-repeats-alternated-period-1.svg",
         ),
         "utf8",
       );
@@ -99,7 +99,7 @@ describe(MeanderGenerationService, () => {
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/fixtures/bars-5-rows-6-repeats-alternated-period-2.svg",
+          "../../../assets/bars-5-rows-6-repeats-alternated-period-2.svg",
         ),
         "utf8",
       );
@@ -139,7 +139,7 @@ describe(MeanderGenerationService, () => {
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/fixtures/bars-5-rows-12-repeats-split.svg",
+          "../../../assets/bars-5-rows-12-repeats-split.svg",
         ),
         "utf8",
       );
@@ -157,7 +157,7 @@ describe(MeanderGenerationService, () => {
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/fixtures/bars-6-rows-6-repeats-dot-bounce.svg",
+          "../../../assets/bars-6-rows-6-repeats-dot-bounce.svg",
         ),
         "utf8",
       );
@@ -175,7 +175,7 @@ describe(MeanderGenerationService, () => {
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/fixtures/bars-6-rows-6-repeats-dot-up.svg",
+          "../../../assets/bars-6-rows-6-repeats-dot-up.svg",
         ),
         "utf8",
       );
@@ -225,7 +225,7 @@ describe(MeanderGenerationService, () => {
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/fixtures/boxes-5-rows-6-repeats.svg",
+          "../../../assets/boxes-5-rows-6-repeats.svg",
         ),
         "utf8",
       );
@@ -279,7 +279,7 @@ describe(MeanderGenerationService, () => {
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/fixtures/boxes-5-rows-4-repeats-spin.svg",
+          "../../../assets/boxes-5-rows-4-repeats-spin.svg",
         ),
         "utf8",
       );
@@ -297,7 +297,7 @@ describe(MeanderGenerationService, () => {
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/fixtures/boxes-5-rows-4-repeats-spin-flip.svg",
+          "../../../assets/boxes-5-rows-4-repeats-spin-flip.svg",
         ),
         "utf8",
       );
@@ -336,7 +336,7 @@ describe(MeanderGenerationService, () => {
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/fixtures/snake-5-rows-6-repeats.svg",
+          "../../../assets/snake-5-rows-6-repeats.svg",
         ),
         "utf8",
       );
@@ -353,7 +353,7 @@ describe(MeanderGenerationService, () => {
       const golden = await readFile(
         path.join(
           import.meta.dirname,
-          "../../../testing/fixtures/chain-5-rows-6-repeats.svg",
+          "../../../assets/chain-5-rows-6-repeats.svg",
         ),
         "utf8",
       );
@@ -396,7 +396,7 @@ describe(MeanderGenerationService, () => {
         const golden = await readFile(
           path.join(
             import.meta.dirname,
-            `../../../testing/fixtures/${type}-5-rows-6-repeats-edge.svg`,
+            `../../../assets/${type}-5-rows-6-repeats-edge.svg`,
           ),
           "utf8",
         );
@@ -417,7 +417,7 @@ describe(MeanderGenerationService, () => {
         const golden = await readFile(
           path.join(
             import.meta.dirname,
-            `../../../testing/fixtures/${type}-5-rows-6-repeats-flip.svg`,
+            `../../../assets/${type}-5-rows-6-repeats-flip.svg`,
           ),
           "utf8",
         );
@@ -438,7 +438,7 @@ describe(MeanderGenerationService, () => {
         const golden = await readFile(
           path.join(
             import.meta.dirname,
-            `../../../testing/fixtures/${type}-7-rows-6-repeats-flip.svg`,
+            `../../../assets/${type}-7-rows-6-repeats-flip.svg`,
           ),
           "utf8",
         );
@@ -459,7 +459,7 @@ describe(MeanderGenerationService, () => {
         const golden = await readFile(
           path.join(
             import.meta.dirname,
-            `../../../testing/fixtures/${type}-5-rows-6-repeats-edge-flip.svg`,
+            `../../../assets/${type}-5-rows-6-repeats-edge-flip.svg`,
           ),
           "utf8",
         );
@@ -479,7 +479,7 @@ describe(MeanderGenerationService, () => {
         const golden = await readFile(
           path.join(
             import.meta.dirname,
-            `../../../testing/fixtures/${type}-5-rows-6-repeats.svg`,
+            `../../../assets/${type}-5-rows-6-repeats.svg`,
           ),
           "utf8",
         );
@@ -500,7 +500,7 @@ describe(MeanderGenerationService, () => {
         const golden = await readFile(
           path.join(
             import.meta.dirname,
-            `../../../testing/fixtures/${type}-5-rows-6-repeats-flip.svg`,
+            `../../../assets/${type}-5-rows-6-repeats-flip.svg`,
           ),
           "utf8",
         );
