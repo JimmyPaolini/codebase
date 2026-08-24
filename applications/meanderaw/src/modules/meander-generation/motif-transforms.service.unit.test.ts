@@ -3,7 +3,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { MotifTransformsService } from "./motif-transforms.service";
 
-import type { SpiralLevelPoint } from "./meander-generation.types";
+import type { MotifLevelPoint } from "./meander-generation.types";
 
 describe(MotifTransformsService, () => {
   let service: MotifTransformsService;
@@ -12,7 +12,7 @@ describe(MotifTransformsService, () => {
   // bounding-box center, taken from `boxes-motif.service.ts`'s
   // `spiralPoints`/`centerPoint` for `rows = 5` and verified against
   // `/Users/jimmypaolini/Desktop/meanders/5 rows boxes.svg`.
-  const points: SpiralLevelPoint[] = [
+  const points: MotifLevelPoint[] = [
     [0, 1],
     [3, 1],
     [3, 4],
@@ -22,7 +22,7 @@ describe(MotifTransformsService, () => {
     [2, 3],
     [1, 3],
   ];
-  const center: SpiralLevelPoint = [1.5, 2.5];
+  const center: MotifLevelPoint = [1.5, 2.5];
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -170,7 +170,7 @@ describe(MotifTransformsService, () => {
     // Reference geometry: the 6-rows `snake`/`chain` zigzag, taken from
     // `SnakeSequenceService.points(6)` and verified against
     // `/Users/jimmypaolini/Desktop/meanders/6 rows snake edge.svg`.
-    const zigzag: SpiralLevelPoint[] = [
+    const zigzag: MotifLevelPoint[] = [
       [0, 1],
       [4, 1],
       [4, 4],

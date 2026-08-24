@@ -46,10 +46,14 @@ export class BarsMotifService implements MotifService {
    * zigzag pattern inside those wider tiles is hand-mangled in the
    * reference files (non-uniform edge density in `alternated 2`, an
    * incomplete second band stacked in `alternated 3`) and unrecoverable as
-   * one parameterized rule, so each `period`-wide half of the tile is
-   * filled with `period` side-by-side copies of the same period-1 interior
-   * zigzag that's verified exact against the `5`, `7`, and `8` rows "bars
-   * alternated" reference files — see
+   * one parameterized rule, so the tile is filled with `period` copies of
+   * the same period-1 interior zigzag, each copy pairing column
+   * `tileStart + offset` in the tile's first half with column
+   * `tileStart + period + offset` in its second half (`offset` ranging over
+   * `0` through `period - 1`) — no half is a self-contained zigzag on its
+   * own; the two halves interleave column-by-column. This is verified
+   * exact against the `5`, `7`, and `8` rows "bars alternated" reference
+   * files — see
    * {@link MotifTransformsService.alternate} (always called here with a
    * fixed run length of `1`; `period` never reaches that argument).
    */
@@ -109,8 +113,8 @@ export class BarsMotifService implements MotifService {
    * levels: at an odd level, BOTH the run immediately below it (ending at
    * that level) and the run immediately above it (starting at that level)
    * land on the "wrong" side of their own column check and get skipped,
-   * leaving a real gap for the dot to sit in. At an even level, one of
-   * those two adjacent runs lands on the "right" side and IS drawn,
+   * leaving a real gap for the dot to sit in. At an even level, both of
+   * those two adjacent runs land on the "right" side and ARE drawn,
    * silently swallowing the dot into what looks like one continuous run —
    * exactly what happened at every odd `rows` before `dotLevels` was fixed
    * to always emit odd levels regardless of `rows`'s parity (odd `rows`

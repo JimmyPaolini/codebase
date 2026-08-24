@@ -8,10 +8,10 @@ import type {
   BoxesSpiralBounds,
   GridGeometry,
   Modifier,
+  MotifLevelPoint,
   MotifService,
   MotifUnit,
   RepeatPatternOptions,
-  SpiralLevelPoint,
 } from "./meander-generation.types";
 
 /**
@@ -40,25 +40,25 @@ export class BoxesMotifService implements MotifService {
   private advanceSpiral(
     bounds: BoxesSpiralBounds,
     moveIndex: number,
-  ): SpiralLevelPoint {
+  ): MotifLevelPoint {
     switch (moveIndex % 4) {
       case 0: {
-        const point: SpiralLevelPoint = [bounds.right, bounds.top];
+        const point: MotifLevelPoint = [bounds.right, bounds.top];
         bounds.top += 1;
         return point;
       }
       case 1: {
-        const point: SpiralLevelPoint = [bounds.right, bounds.bottom];
+        const point: MotifLevelPoint = [bounds.right, bounds.bottom];
         bounds.right -= 1;
         return point;
       }
       case 2: {
-        const point: SpiralLevelPoint = [bounds.left, bounds.bottom];
+        const point: MotifLevelPoint = [bounds.left, bounds.bottom];
         bounds.bottom -= 1;
         return point;
       }
       default: {
-        const point: SpiralLevelPoint = [bounds.left, bounds.top];
+        const point: MotifLevelPoint = [bounds.left, bounds.top];
         bounds.left += 1;
         return point;
       }
@@ -66,19 +66,19 @@ export class BoxesMotifService implements MotifService {
   }
 
   /** The spiral's grid-level bounding box center, every rotation and mirror pivots around this. */
-  private centerPoint(rows: number): SpiralLevelPoint {
+  private centerPoint(rows: number): MotifLevelPoint {
     return [(rows - 2) / 2, rows / 2];
   }
 
   /** Turns a point sequence into SVG path data, choosing `H`/`V` per segment by which coordinate actually changed rather than by index parity — required once a transform can swap which axis a step moves along. */
   private pointsToPathData(
-    points: readonly SpiralLevelPoint[],
+    points: readonly MotifLevelPoint[],
     toXCoordinate: (level: number) => string,
     toYCoordinate: (level: number) => string,
   ): string {
     const { pathData } = points.reduce<{
       pathData: string;
-      previousPoint: SpiralLevelPoint | undefined;
+      previousPoint: MotifLevelPoint | undefined;
     }>(
       (accumulator, point) => {
         const [xLevel, yLevel] = point;
@@ -108,14 +108,14 @@ export class BoxesMotifService implements MotifService {
   }
 
   /** Traces the full inward spiral for one unit, in grid levels. */
-  private spiralPoints(rows: number): SpiralLevelPoint[] {
+  private spiralPoints(rows: number): MotifLevelPoint[] {
     const bounds: BoxesSpiralBounds = {
       bottom: rows - 1,
       left: 0,
       right: rows - 2,
       top: 1,
     };
-    const points: SpiralLevelPoint[] = [[bounds.left, bounds.top]];
+    const points: MotifLevelPoint[] = [[bounds.left, bounds.top]];
     const totalMoves = 2 * rows - 3;
 
     for (let moveIndex = 0; moveIndex < totalMoves; moveIndex += 1) {
@@ -130,7 +130,7 @@ export class BoxesMotifService implements MotifService {
     rows: number,
     unitIndex: number,
     modifier: Modifier | undefined,
-  ): readonly SpiralLevelPoint[] {
+  ): readonly MotifLevelPoint[] {
     const points = this.spiralPoints(rows);
 
     if (
@@ -149,7 +149,7 @@ export class BoxesMotifService implements MotifService {
     );
     const pointsByModifierName: Record<
       "spin" | "spin-flip",
-      () => readonly SpiralLevelPoint[]
+      () => readonly MotifLevelPoint[]
     > = {
       spin: () => rotated,
       "spin-flip": () =>

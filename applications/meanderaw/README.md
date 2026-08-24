@@ -21,6 +21,28 @@ The modules this project defines and the imports between them, published by `nx 
 
 <!-- nestjs-module-graph-start -->
 
+```mermaid
+flowchart LR
+  subgraph group0["meanderaw"]
+    GenerateBatchModule
+    GenerateModule
+    MainModule
+    MeanderGenerationModule
+  end
+  subgraph group1["logger"]
+    LoggerModule([LoggerModule])
+  end
+  ConfigModule([ConfigModule])
+  DiscoveryModule
+  GenerateBatchModule --> MeanderGenerationModule
+  GenerateModule --> MeanderGenerationModule
+  MainModule --> DiscoveryModule
+  MainModule --> GenerateBatchModule
+  MainModule --> GenerateModule
+```
+
+_Rounded modules are global: every module can inject them, so their edges are left out._
+
 <!-- nestjs-module-graph-end -->
 
 ## Start

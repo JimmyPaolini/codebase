@@ -8,6 +8,8 @@ import { LoggerService } from "@codebase/logger";
 
 import {
   COMPATIBLE_MODIFIERS,
+  DEFAULT_OUTPUT_DIRECTORY,
+  DEFAULT_REPEAT_COUNT,
   SPIN_CYCLE_LENGTH,
   SPIN_FAMILY_MODIFIER_NAMES,
   STRUCTURAL_MINIMUM_ROWS,
@@ -19,8 +21,6 @@ import { OutputFilenameService } from "../meander-generation/output-filename.ser
 
 import {
   ALTERNATED_SWEEP_PERIODS,
-  BASE_REPEAT_COUNT,
-  DEFAULT_OUTPUT_DIRECTORY,
   DOT_SWEEP_SHAPES,
   ROWS_SWEEP_MAXIMUM,
 } from "./generate-batch.constants";
@@ -40,7 +40,7 @@ import type { GenerateBatchCommandOptions } from "./generate-batch.types";
  * for that type plus "no modifier" — `alternated` and `dot` each expand
  * into a couple of representative parameter values
  * (`ALTERNATED_SWEEP_PERIODS`, `DOT_SWEEP_SHAPES`) rather than their full
- * range. `repeatCount` is fixed at `BASE_REPEAT_COUNT` (6) for every
+ * range. `repeatCount` is fixed at `DEFAULT_REPEAT_COUNT` (6) for every
  * combination, except the `spin`/`spin-flip` family, which is rounded up to
  * the nearest multiple of their required `SPIN_CYCLE_LENGTH` (4) — giving 8
  * — so the generation service doesn't reject a cut-off rotation. This produces
@@ -141,15 +141,15 @@ export class GenerateBatchCommand extends CommandRunner {
     ];
   }
 
-  /** The `repeatCount` a combination uses: `BASE_REPEAT_COUNT`, rounded up to the spin family's required cycle length when needed. */
+  /** The `repeatCount` a combination uses: `DEFAULT_REPEAT_COUNT`, rounded up to the spin family's required cycle length when needed. */
   private repeatCountFor(modifier: Modifier | undefined): number {
     if (modifier && SPIN_FAMILY_MODIFIER_NAMES.includes(modifier.name)) {
       return (
-        Math.ceil(BASE_REPEAT_COUNT / SPIN_CYCLE_LENGTH) * SPIN_CYCLE_LENGTH
+        Math.ceil(DEFAULT_REPEAT_COUNT / SPIN_CYCLE_LENGTH) * SPIN_CYCLE_LENGTH
       );
     }
 
-    return BASE_REPEAT_COUNT;
+    return DEFAULT_REPEAT_COUNT;
   }
 
   /** Every `rows` value the sweep covers for `type`: its own structural minimum through `ROWS_SWEEP_MAXIMUM`. */

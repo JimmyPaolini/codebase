@@ -7,10 +7,10 @@ import { SnakeMotifService } from "./snake-motif.service";
 import type {
   GridGeometry,
   Modifier,
+  MotifLevelPoint,
   MotifService,
   MotifUnit,
   RepeatPatternOptions,
-  SpiralLevelPoint,
   UnitBorderOptions,
 } from "./meander-generation.types";
 
@@ -45,7 +45,7 @@ export class SwirlMotifService implements MotifService {
   // 🔏 Private Methods
 
   /** Traces the full two-armed spiral: the first arm, then its 180° rotation about the motif's own center, reversed so the two arms read as one continuous shape. */
-  private basePoints(rows: number): readonly SpiralLevelPoint[] {
+  private basePoints(rows: number): readonly MotifLevelPoint[] {
     const firstArm = this.firstArmPoints(rows);
     const secondArm = this.motifTransformsService
       .rotate(firstArm, this.centerPoint(rows), 2)
@@ -55,7 +55,7 @@ export class SwirlMotifService implements MotifService {
   }
 
   /** The motif's own bounding-box center that the 180° rotation joining its two arms pivots around. Unrelated to `flip`'s own mirror pivot, which uses {@link pitchLevels} directly instead. */
-  private centerPoint(rows: number): SpiralLevelPoint {
+  private centerPoint(rows: number): MotifLevelPoint {
     return [rows - 2, rows / 2];
   }
 
@@ -67,15 +67,15 @@ export class SwirlMotifService implements MotifService {
    * points depends on `rows`'s parity: down (`+1`) for odd `rows`, up
    * (`-1`) for even `rows`.
    */
-  private firstArmPoints(rows: number): SpiralLevelPoint[] {
-    const startPoint: SpiralLevelPoint = [
+  private firstArmPoints(rows: number): MotifLevelPoint[] {
+    const startPoint: MotifLevelPoint = [
       Math.floor((rows - 2) / 2),
       Math.floor(rows / 2),
     ];
     const initialHeadingY = rows % 2 === 0 ? -1 : 1;
-    let heading: SpiralLevelPoint = [0, initialHeadingY];
+    let heading: MotifLevelPoint = [0, initialHeadingY];
     let [currentX, currentY] = startPoint;
-    const points: SpiralLevelPoint[] = [startPoint];
+    const points: MotifLevelPoint[] = [startPoint];
 
     for (let length = 1; length <= rows - 2; length += 1) {
       for (let step = 0; step < 2; step += 1) {
@@ -91,9 +91,9 @@ export class SwirlMotifService implements MotifService {
   }
 
   /** Mirrors the base spiral across the motif's own right edge, fusing a mirrored twin onto the un-flipped motif for the `flip` modifier. */
-  private flippedPoints(rows: number): readonly SpiralLevelPoint[] {
+  private flippedPoints(rows: number): readonly MotifLevelPoint[] {
     const points = this.basePoints(rows);
-    const mirrorCenter: SpiralLevelPoint = [
+    const mirrorCenter: MotifLevelPoint = [
       this.pitchLevels(rows) - 0.5,
       rows / 2,
     ];

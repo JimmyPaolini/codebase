@@ -7,17 +7,14 @@ import { Command, CommandRunner, Option } from "nest-commander";
 import { LoggerService } from "@codebase/logger";
 
 import {
+  DEFAULT_OUTPUT_DIRECTORY,
+  DEFAULT_REPEAT_COUNT,
   SUPPORTED_DOT_SHAPES,
   SUPPORTED_MODIFIER_NAMES,
   SUPPORTED_TYPES,
 } from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { OutputFilenameService } from "../meander-generation/output-filename.service";
-
-import {
-  DEFAULT_OUTPUT_DIRECTORY,
-  DEFAULT_REPEAT_COUNT,
-} from "./generate.constants";
 
 import type {
   DotShape,
@@ -126,7 +123,8 @@ export class GenerateCommand extends CommandRunner {
 
   /** Parses the `--period` flag as an integer, used only when `--modifier alternated` is given. */
   @Option({
-    description: "Zigzag run length in grid levels, for --modifier alternated",
+    description:
+      "Column span of one repeat tile, in 2 * period grid columns, for --modifier alternated",
     flags: "-p, --period <period>",
   })
   parsePeriod(value: string): number {

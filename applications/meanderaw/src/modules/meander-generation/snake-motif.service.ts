@@ -6,10 +6,10 @@ import { SnakeSequenceService } from "./snake-sequence.service";
 import type {
   GridGeometry,
   Modifier,
+  MotifLevelPoint,
   MotifService,
   MotifUnit,
   RepeatPatternOptions,
-  SpiralLevelPoint,
   UnitBorderOptions,
 } from "./meander-generation.types";
 
@@ -85,13 +85,13 @@ export class SnakeMotifService implements MotifService {
 
   /** Turns a point sequence into SVG path data, choosing `H`/`V` per segment by which coordinate actually changed. */
   pointsToPathData(
-    points: readonly SpiralLevelPoint[],
+    points: readonly MotifLevelPoint[],
     toXCoordinate: (level: number) => string,
     toYCoordinate: (level: number) => string,
   ): string {
     const { pathData } = points.reduce<{
       pathData: string;
-      previousPoint: SpiralLevelPoint | undefined;
+      previousPoint: MotifLevelPoint | undefined;
     }>(
       (accumulator, point) => {
         const [xLevel, yLevel] = point;

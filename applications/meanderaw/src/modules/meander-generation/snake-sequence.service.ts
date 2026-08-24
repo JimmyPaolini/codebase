@@ -6,7 +6,7 @@ import {
 } from "./meander-generation.constants";
 import { MotifTransformsService } from "./motif-transforms.service";
 
-import type { Modifier, SpiralLevelPoint } from "./meander-generation.types";
+import type { Modifier, MotifLevelPoint } from "./meander-generation.types";
 
 /**
  * Generates the zigzag point sequence `snake` and `chain` both share, one
@@ -48,10 +48,10 @@ export class SnakeSequenceService {
    * `pitch` — the same "manually close the tile" idea `points` itself
    * uses for its own un-mirrored final point.
    */
-  private fusedFlipPoints(rows: number): readonly SpiralLevelPoint[] {
+  private fusedFlipPoints(rows: number): readonly MotifLevelPoint[] {
     const pitch = this.flipPitchLevels(rows);
     const prefix = this.points(rows).slice(0, -2);
-    const center: SpiralLevelPoint = [(1 + pitch) / 2, 0];
+    const center: MotifLevelPoint = [(1 + pitch) / 2, 0];
     const mirroredSuffix = this.motifTransformsService
       .mirror(prefix, center, "vertical")
       .toReversed();
@@ -89,7 +89,7 @@ export class SnakeSequenceService {
    * past it mirror the span of their counterpart on the other side, since
    * {@link rowSpanWidth} is itself symmetric around the center.
    */
-  private rowSpan(row: number, maximumLevel: number): SpiralLevelPoint {
+  private rowSpan(row: number, maximumLevel: number): MotifLevelPoint {
     const halfwayRow = Math.ceil(maximumLevel / 2);
 
     if (row <= halfwayRow) {
@@ -129,10 +129,10 @@ export class SnakeSequenceService {
    * Traces the full zigzag for one unit, in grid levels. `rows - 1` is the
    * highest grid level the sequence reaches in both directions.
    */
-  points(rows: number): readonly SpiralLevelPoint[] {
+  points(rows: number): readonly MotifLevelPoint[] {
     const maximumLevel = rows - 1;
     const order = this.rowOrder(maximumLevel);
-    const sequence: SpiralLevelPoint[] = [[0, 1]];
+    const sequence: MotifLevelPoint[] = [[0, 1]];
     let currentXLevel = 0;
 
     order.forEach((row, index) => {
@@ -173,7 +173,7 @@ export class SnakeSequenceService {
     rows: number,
     unitIndex: number,
     modifier: Modifier | undefined,
-  ): readonly SpiralLevelPoint[] {
+  ): readonly MotifLevelPoint[] {
     if (modifier?.name === "flip") {
       return this.fusedFlipPoints(rows);
     }

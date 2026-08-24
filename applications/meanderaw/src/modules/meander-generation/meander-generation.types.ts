@@ -77,6 +77,9 @@ export type Modifier =
   | { readonly name: "spin-flip" }
   | { readonly name: "split" };
 
+/** A point in the transforms layer expressed as `[xLevel, yLevel]` grid levels, not yet converted to pixel coordinates. */
+export type MotifLevelPoint = readonly [number, number];
+
 /**
  * The per-type contract `MeanderGenerationService` dispatches through:
  * every type draws its repeat units with `path` and reports how far right
@@ -112,9 +115,6 @@ export interface RepeatPatternOptions {
   readonly repeatCount: number;
   readonly rows: number;
 }
-
-/** A spiral point expressed as `[xLevel, yLevel]` grid levels, not yet converted to pixel coordinates. */
-export type SpiralLevelPoint = readonly [number, number];
 
 /** The row count, optional modifier, and horizontal offset one repeat unit's own border segment is drawn against. */
 export interface UnitBorderOptions {

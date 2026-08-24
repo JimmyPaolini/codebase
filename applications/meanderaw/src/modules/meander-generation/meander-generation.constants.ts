@@ -23,6 +23,16 @@ export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
   whirl: ["flip"],
 };
 
+/** Directory a generated meander is written to when the caller doesn't override it, shared by both `generate` and `generate-batch`. */
+export const DEFAULT_OUTPUT_DIRECTORY = "output";
+
+/**
+ * `repeatCount` a generated meander uses when the caller doesn't override it,
+ * shared by both `generate` and `generate-batch` so a single-pattern file and
+ * a batch-swept file for the same type/rows/modifier are identical.
+ */
+export const DEFAULT_REPEAT_COUNT = 6;
+
 /**
  * Modifier names whose "edge" behavior closes the motif flush against the
  * canvas border: the shared repeat pitch widens from `rows - 1` grid levels
@@ -79,14 +89,6 @@ export const SUPPORTED_DOT_SHAPES: readonly string[] = [
 ] satisfies readonly DotShape[];
 
 /**
- * Every implemented meander type, as the single source of truth `MeanderType`
- * is checked against. Declared `readonly string[]` rather than a literal
- * tuple — a tuple's narrow element type makes `Array.prototype.includes`
- * reject a plain `string` argument at compile time, forcing an unchecked
- * assertion at every call site; widening here instead keeps the one
- * `satisfies` check below as the only place a typo could surface.
- */
-/**
  * Every implemented modifier `name`, mirroring `SUPPORTED_TYPES`'s widened
  * `readonly string[]` declaration for the same reason: it keeps
  * `Array.prototype.includes` usable with a plain `string` at the CLI
@@ -125,6 +127,11 @@ export const SUPPORTED_TYPES: readonly string[] = [
  * type). `swirl` and `whirl` are both nested spirals verified against
  * reference files starting at 4 rows; nothing below that has been checked
  * against real geometry.
+ *
+ * `bars`'s minimum of 3 is a floor for the unmodified bar shape only: at
+ * exactly 3 rows the bar spans a single grid unit, so the `split` modifier
+ * degenerates to a no-op there — it has nothing left to split, and its
+ * output is byte-identical to the unmodified bar.
  */
 export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
   bars: 3,

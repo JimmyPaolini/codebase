@@ -132,7 +132,7 @@ describe(GenerateBatchCommand, () => {
         vi.mocked(meanderGenerationService.generate).mock.calls,
       ).toContainEqual([
         {
-          modifier: { name: "alternated", period: 2 },
+          modifier: { name: "alternated", period: 1 },
           repeatCount: 6,
           rows: 3,
           type: "bars",
