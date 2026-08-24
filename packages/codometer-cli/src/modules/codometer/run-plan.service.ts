@@ -16,7 +16,6 @@ import {
   CHECK_SEPARATOR,
 } from "./run-plan.constants";
 
-import type { MeasurementScope } from "../output-markdown/output-markdown.types";
 import type { CodometerCommandOptions } from "./codometer.types";
 import type {
   JsonDestination,
@@ -28,6 +27,7 @@ import type {
   RunMode,
 } from "./run-plan.types";
 import type { ResolvedCodometerMarkdownOutputConfiguration } from "@codometer/configuration";
+import type { MeasurementScope } from "@codometer/output";
 
 /**
  * Reads a command line into what the run will do and where its output goes.

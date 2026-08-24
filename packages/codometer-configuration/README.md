@@ -685,7 +685,17 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 graph LR
   codometer_cli["codometer-cli"]
   codometer_configuration["codometer-configuration"]
+  codometer_customization["codometer-customization"]
+  codometer_discovery["codometer-discovery"]
+  codometer_languages["codometer-languages"]
+  codometer_output["codometer-output"]
+  codometer_size["codometer-size"]
   codometer_cli --> codometer_configuration
+  codometer_customization --> codometer_configuration
+  codometer_discovery --> codometer_configuration
+  codometer_languages --> codometer_configuration
+  codometer_output --> codometer_configuration
+  codometer_size --> codometer_configuration
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codometer_configuration subject
 ```

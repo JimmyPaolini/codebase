@@ -353,7 +353,11 @@ graph LR
   codometer_changes["codometer-changes"]
   codometer_cli["codometer-cli"]
   codometer_configuration["codometer-configuration"]
-  codometer_markdown["codometer-markdown"]
+  codometer_customization["codometer-customization"]
+  codometer_discovery["codometer-discovery"]
+  codometer_languages["codometer-languages"]
+  codometer_output["codometer-output"]
+  codometer_size["codometer-size"]
   conformetry_agents["conformetry-agents"]
   conformetry_cli["conformetry-cli"]
   conformetry_configuration["conformetry-configuration"]
@@ -395,10 +399,23 @@ graph LR
   codometer_changes --> logger
   codometer_cli --> codometer_changes
   codometer_cli --> codometer_configuration
-  codometer_cli --> codometer_markdown
+  codometer_cli --> codometer_customization
+  codometer_cli --> codometer_discovery
+  codometer_cli --> codometer_languages
+  codometer_cli --> codometer_output
+  codometer_cli --> codometer_size
   codometer_cli --> logger
-  codometer_markdown --> codometer_changes
-  codometer_markdown --> logger
+  codometer_customization --> codometer_configuration
+  codometer_customization --> codometer_languages
+  codometer_discovery --> codometer_configuration
+  codometer_discovery --> logger
+  codometer_languages --> codometer_configuration
+  codometer_languages --> logger
+  codometer_output --> codometer_changes
+  codometer_output --> codometer_configuration
+  codometer_output --> logger
+  codometer_size --> codometer_configuration
+  codometer_size --> logger
   conformetry_cli --> conformetry_configuration
   conformetry_cli --> conformetry_core
   conformetry_cli --> conformetry_generation

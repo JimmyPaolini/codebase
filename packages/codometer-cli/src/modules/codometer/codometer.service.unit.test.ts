@@ -1,23 +1,22 @@
+import { CustomizationService } from "@codometer/customization";
+import { DiscoveryService, TargetsService } from "@codometer/discovery";
+import { LanguagesService } from "@codometer/languages";
+import { SizeService } from "@codometer/size";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { CustomStatisticsService } from "../custom-statistics/custom-statistics.service";
-import { FileDiscoveryService } from "../file-discovery/file-discovery.service";
-import { LanguagesService } from "../languages/languages.service";
 import { LimitsService } from "../limits/limits.service";
 import { MetricIndexService } from "../limits/metric-index.service";
-import { SizeAnalysisService } from "../size-analysis/size-analysis.service";
-import { TargetsService } from "../targets/targets.service";
 
 import { CodometerService } from "./codometer.service";
 
-import type { FileDiscoveryResult } from "../file-discovery/file-discovery.types";
-import type { LanguageResults } from "../languages/languages.types";
 import type {
   ResolvedCodometerConfiguration,
   ResolvedCodometerTarget,
 } from "@codometer/configuration";
+import type { DiscoveryResult } from "@codometer/discovery";
+import type { LanguageResults } from "@codometer/languages";
 
 const configuration: ResolvedCodometerConfiguration = {
   defaultTarget: undefined,
@@ -46,7 +45,7 @@ const compiledTarget: ResolvedCodometerTarget = {
   name: "compiled",
 };
 
-const discoveredFiles: FileDiscoveryResult = {
+const discoveredFiles: DiscoveryResult = {
   cssFiles: ["src/styles.css"],
   files: ["src/app.ts", "scripts/check.py"],
   hclFiles: ["infrastructure/main.tf"],
@@ -86,22 +85,22 @@ function buildLanguageResults(): LanguageResults {
 
 describe(CodometerService, () => {
   let service: CodometerService;
-  let customStatisticsService: CustomStatisticsService;
-  let fileDiscoveryService: FileDiscoveryService;
+  let customizationService: CustomizationService;
+  let discoveryService: DiscoveryService;
   let languagesService: LanguagesService;
   let limitsService: LimitsService;
   let metricIndexService: MetricIndexService;
-  let sizeAnalysisService: SizeAnalysisService;
+  let sizeService: SizeService;
   let targetsService: TargetsService;
 
   /** Builds an aggregator whose collaborators are all mocked. */
   function buildService(): CodometerService {
     return new CodometerService(
-      fileDiscoveryService,
+      discoveryService,
       languagesService,
-      customStatisticsService,
+      customizationService,
       targetsService,
-      sizeAnalysisService,
+      sizeService,
       limitsService,
       metricIndexService,
     );
@@ -112,19 +111,19 @@ describe(CodometerService, () => {
       providers: [
         CodometerService,
         {
-          provide: CustomStatisticsService,
-          useValue: createMock<CustomStatisticsService>(),
+          provide: CustomizationService,
+          useValue: createMock<CustomizationService>(),
         },
         {
-          provide: FileDiscoveryService,
-          useValue: createMock<FileDiscoveryService>(),
+          provide: DiscoveryService,
+          useValue: createMock<DiscoveryService>(),
         },
         { provide: LanguagesService, useValue: createMock<LanguagesService>() },
         { provide: LimitsService, useValue: createMock<LimitsService>() },
         { provide: MetricIndexService, useValue: new MetricIndexService() },
         {
-          provide: SizeAnalysisService,
-          useValue: createMock<SizeAnalysisService>(),
+          provide: SizeService,
+          useValue: createMock<SizeService>(),
         },
         { provide: TargetsService, useValue: createMock<TargetsService>() },
       ],
@@ -134,12 +133,12 @@ describe(CodometerService, () => {
   });
 
   beforeEach(() => {
-    customStatisticsService = createMock<CustomStatisticsService>();
-    fileDiscoveryService = createMock<FileDiscoveryService>();
+    customizationService = createMock<CustomizationService>();
+    discoveryService = createMock<DiscoveryService>();
     languagesService = createMock<LanguagesService>();
     limitsService = createMock<LimitsService>();
     metricIndexService = new MetricIndexService();
-    sizeAnalysisService = createMock<SizeAnalysisService>();
+    sizeService = createMock<SizeService>();
     vi.mocked(limitsService.evaluate).mockReturnValue({
       failures: [],
       limits: [],
@@ -149,18 +148,16 @@ describe(CodometerService, () => {
       "dist/index.js",
       "dist/nested/deep.js",
     ]);
-    vi.mocked(sizeAnalysisService.analyze).mockReturnValue({
+    vi.mocked(sizeService.analyze).mockReturnValue({
       bytes: 4529,
       compression: "gzip",
       files: 2,
     });
-    vi.mocked(fileDiscoveryService.categorize).mockReturnValue(discoveredFiles);
-    vi.mocked(fileDiscoveryService.discoverFiles).mockReturnValue(
-      discoveredFiles,
-    );
+    vi.mocked(discoveryService.categorize).mockReturnValue(discoveredFiles);
+    vi.mocked(discoveryService.discoverFiles).mockReturnValue(discoveredFiles);
     vi.mocked(languagesService.analyze).mockReturnValue(buildLanguageResults());
-    vi.mocked(customStatisticsService.buildSymbolCounters).mockReturnValue([]);
-    vi.mocked(customStatisticsService.analyze).mockReturnValue([
+    vi.mocked(customizationService.buildSymbolCounters).mockReturnValue([]);
+    vi.mocked(customizationService.analyze).mockReturnValue([
       {
         color: "7c3aed",
         count: 3,
@@ -181,7 +178,7 @@ describe(CodometerService, () => {
       workingDirectory: "/repo",
     });
 
-    expect(fileDiscoveryService.discoverFiles).toHaveBeenCalledExactlyOnceWith({
+    expect(discoveryService.discoverFiles).toHaveBeenCalledExactlyOnceWith({
       exclude: ["**/node_modules/**"],
       excludeFrom: [],
       workingDirectory: "/repo",
@@ -210,7 +207,7 @@ describe(CodometerService, () => {
       workingDirectory: "/repo",
     });
 
-    expect(customStatisticsService.analyze).toHaveBeenCalledExactlyOnceWith({
+    expect(customizationService.analyze).toHaveBeenCalledExactlyOnceWith({
       files: discoveredFiles.files,
       statistics: configuration.statistics,
       symbolCounts: {},
@@ -281,7 +278,7 @@ describe(CodometerService, () => {
     // No declared targets here, so the codebase's own language analysis is
     // the only thing that could have called it — pinned exactly, not just
     // "at least once with these args".
-    expect(sizeAnalysisService.analyze).toHaveBeenCalledExactlyOnceWith({
+    expect(sizeService.analyze).toHaveBeenCalledExactlyOnceWith({
       compression: "none",
       files: discoveredFiles.files,
       workingDirectory: "/repo",
@@ -303,8 +300,8 @@ describe(CodometerService, () => {
     // Exactly two calls: the codebase's own uncompressed total first, then
     // this declared target's compressed `size` metric — not "at least one
     // matching call", which would pass even if size analysis ran twice.
-    expect(sizeAnalysisService.analyze).toHaveBeenCalledTimes(2);
-    expect(sizeAnalysisService.analyze).toHaveBeenNthCalledWith(2, {
+    expect(sizeService.analyze).toHaveBeenCalledTimes(2);
+    expect(sizeService.analyze).toHaveBeenNthCalledWith(2, {
       compression: "gzip",
       files: ["dist/index.js", "dist/nested/deep.js"],
       workingDirectory: "/repo",
@@ -328,7 +325,7 @@ describe(CodometerService, () => {
     });
 
     // The same analyzers the codebase gets, over the files the globs claimed.
-    expect(fileDiscoveryService.categorize).toHaveBeenCalledWith([
+    expect(discoveryService.categorize).toHaveBeenCalledWith([
       "dist/index.js",
       "dist/nested/deep.js",
     ]);
@@ -339,13 +336,13 @@ describe(CodometerService, () => {
     // matched paths. Exactly two calls: the codebase's own, then this
     // target's — never a third, which is what a declared `size` analysis
     // running alongside "language" here would look like.
-    expect(sizeAnalysisService.analyze).toHaveBeenCalledTimes(2);
-    expect(sizeAnalysisService.analyze).toHaveBeenNthCalledWith(1, {
+    expect(sizeService.analyze).toHaveBeenCalledTimes(2);
+    expect(sizeService.analyze).toHaveBeenNthCalledWith(1, {
       compression: "none",
       files: discoveredFiles.files,
       workingDirectory: "/repo",
     });
-    expect(sizeAnalysisService.analyze).toHaveBeenNthCalledWith(2, {
+    expect(sizeService.analyze).toHaveBeenNthCalledWith(2, {
       compression: "none",
       files: discoveredFiles.files,
       workingDirectory: "/repo",
@@ -453,7 +450,7 @@ describe(CodometerService, () => {
   // Codometer's reports are made of what it measured, so measuring them makes
   // every report an input to the next one.
   it("never measures the files it writes itself", () => {
-    vi.mocked(fileDiscoveryService.discoverFiles).mockReturnValue({
+    vi.mocked(discoveryService.discoverFiles).mockReturnValue({
       ...discoveredFiles,
       files: ["README.md", "src/app.ts"],
     });
@@ -464,7 +461,7 @@ describe(CodometerService, () => {
       workingDirectory: "/repo",
     });
 
-    expect(fileDiscoveryService.categorize).toHaveBeenCalledExactlyOnceWith([
+    expect(discoveryService.categorize).toHaveBeenCalledExactlyOnceWith([
       "src/app.ts",
     ]);
   });
@@ -484,8 +481,8 @@ describe(CodometerService, () => {
     // Exactly two calls: the codebase's own uncompressed total first, then
     // this declared target's compressed `size` metric over the one file left
     // once the written report is excluded.
-    expect(sizeAnalysisService.analyze).toHaveBeenCalledTimes(2);
-    expect(sizeAnalysisService.analyze).toHaveBeenNthCalledWith(2, {
+    expect(sizeService.analyze).toHaveBeenCalledTimes(2);
+    expect(sizeService.analyze).toHaveBeenNthCalledWith(2, {
       compression: "gzip",
       files: ["dist/index.js"],
       workingDirectory: "/repo",
