@@ -160,7 +160,7 @@ describe(MarkdownReportService, () => {
     ).toContain("`example`");
   });
 
-  it("reports a project's counts, spreads, and misplaced callables", () => {
+  it("reports a project's counts, spreads, fan-out, and misplaced callables", () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
       previewCount: 3,
@@ -170,6 +170,7 @@ describe(MarkdownReportService, () => {
 
     expect(rendered).toContain("| Callables | 4 |");
     expect(rendered).toContain("### Module spread");
+    expect(rendered).toContain("### Direct fan-out");
     expect(rendered).toContain("### Possibly misplaced");
   });
 
@@ -184,6 +185,27 @@ describe(MarkdownReportService, () => {
 
     expect(rendered).toContain("# 🔭 Callidescope");
     expect(rendered).toContain("## Call stacks over the limit (1)");
+  });
+
+  it("heads a run's wide-callable section with its count", () => {
+    const rendered = service.renderRun({
+      previewCount: 3,
+      rendering: "tree",
+      result: buildCallGraphResult({
+        wideCallables: [
+          {
+            breadth: 5,
+            callees: [],
+            displayName: "Orchestrator.run",
+            id: "orchestrator",
+            limit: 3,
+            location: buildSourceLocation(),
+          },
+        ],
+      }),
+    });
+
+    expect(rendered).toContain("## Callables calling too much directly (1)");
   });
 
   it("renders a run that found nothing without failing", () => {
@@ -252,5 +274,36 @@ describe(MarkdownReportService, () => {
     expect(rendered).toContain("`example:modules/typescript`");
     expect(rendered).toContain("`example:modules/discovery`");
     expect(rendered).toContain("| 4/4 |");
+  });
+
+  it("gives a wide callable a row naming its breadth and direct callees", () => {
+    const rendered = service.renderProjectSection({
+      heading: "## 🔭 Callidescope",
+      previewCount: 3,
+      rendering: "tree",
+      report: {
+        ...report([]),
+        callableBreadths: [
+          {
+            breadth: 2,
+            callees: [
+              { displayName: "First.helper", id: "first" },
+              { displayName: "Second.helper", id: "second" },
+            ],
+            displayName: "Orchestrator.run",
+            id: "orchestrator",
+            location: buildSourceLocation({
+              filePath: "orchestrator.ts",
+              line: 12,
+            }),
+          },
+        ],
+      },
+    });
+
+    expect(rendered).toContain("| `Orchestrator.run` | 2 |");
+    expect(rendered).toContain("`First.helper`");
+    expect(rendered).toContain("`Second.helper`");
+    expect(rendered).toContain("`orchestrator.ts:12`");
   });
 });

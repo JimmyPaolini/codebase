@@ -5,6 +5,7 @@ import {
   MARKDOWN_MISPLACED_HEADER,
   MARKDOWN_SPREAD_HEADER,
   MARKDOWN_SUMMARY_HEADER,
+  MARKDOWN_WIDE_CALLABLES_HEADER,
   RUN_HEADING,
 } from "./report.constants";
 import { ReportService } from "./report.service";
@@ -16,6 +17,7 @@ import type {
   StackRendering,
 } from "./report.types";
 import type {
+  CallableBreadthReport,
   CallGraphSummary,
   CallStack,
   MisplacedCallableFinding,
@@ -123,6 +125,19 @@ export class MarkdownReportService {
       : `${args.header}\n${args.rows.join("\n")}`;
   }
 
+  /** Renders the callables calling more things directly than is reasonable. */
+  private renderWideCallables(
+    findings: readonly CallableBreadthReport[],
+  ): string {
+    return this.renderTable({
+      header: MARKDOWN_WIDE_CALLABLES_HEADER,
+      rows: findings.map(
+        (finding) =>
+          `| \`${finding.displayName}\` | ${String(finding.breadth)} | ${finding.callees.map((callee) => `\`${callee.displayName}\``).join(", ")} | \`${finding.location.filePath}:${String(finding.location.line)}\` |`,
+      ),
+    });
+  }
+
   // 🌎 Public Methods
 
   /** Renders one project's section, for splicing into its own README. */
@@ -147,6 +162,10 @@ export class MarkdownReportService {
       "### Module spread",
       "",
       this.renderSpreads(report.moduleSpreads),
+      "",
+      "### Direct fan-out",
+      "",
+      this.renderWideCallables(report.callableBreadths),
       "",
       "### Possibly misplaced",
       "",
@@ -174,6 +193,10 @@ export class MarkdownReportService {
       "## Module spread",
       "",
       this.renderSpreads(result.moduleSpreads),
+      "",
+      `## Callables calling too much directly (${String(result.wideCallables.length)})`,
+      "",
+      this.renderWideCallables(result.wideCallables),
       "",
       "## Possibly misplaced",
       "",
