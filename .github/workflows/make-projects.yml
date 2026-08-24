@@ -88,21 +88,28 @@ jobs:
             --dir .codometer-baseline-previous \
             || echo "No previous codometer-reports-main artifact to merge with yet."
 
+      # The merged tree is deliberately not dot-prefixed: `actions/upload-artifact`
+      # walks `path` with `@actions/glob`, which excludes dotfiles and
+      # dot-directories unless `include-hidden-files: true` is set. A
+      # `.codometer-baseline-merged` staging directory was silently treated as
+      # entirely hidden, so every file `cp` placed inside it was invisible to
+      # the upload step — the baseline artifact has been empty since this
+      # report shipped, and every pull request compared against nothing.
       - name: 🧺 Merge Codometer Baseline
         if: >-
           github.ref == 'refs/heads/main'
           && steps.make-projects.outcome == 'success'
         run: |
-          mkdir -p .codometer-baseline-merged
+          mkdir -p codometer-baseline-merged
           if [[ -d .codometer-baseline-previous ]]; then
-            cp -r .codometer-baseline-previous/. .codometer-baseline-merged/
+            cp -r .codometer-baseline-previous/. codometer-baseline-merged/
           fi
           shopt -s nullglob
           for report in applications/*/codometer-report.json \
             packages/*/codometer-report.json \
             tools/*/codometer-report.json; do
-            mkdir -p ".codometer-baseline-merged/$(dirname "${report}")"
-            cp "${report}" ".codometer-baseline-merged/${report}"
+            mkdir -p "codometer-baseline-merged/$(dirname "${report}")"
+            cp "${report}" "codometer-baseline-merged/${report}"
           done
 
       - name: 📤 Upload Codometer Reports
@@ -112,7 +119,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: codometer-reports-main
-          path: .codometer-baseline-merged
+          path: codometer-baseline-merged
           retention-days: 90
           if-no-files-found: ignore
 
