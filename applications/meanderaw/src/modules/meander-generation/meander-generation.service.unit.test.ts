@@ -349,5 +349,19 @@ describe(MeanderGenerationService, () => {
         service.generate({ repeatCount: 1, rows: 3, type: "whirl" }),
       ).toThrow(InvalidRowsError);
     });
+
+    it.each(["swirl", "whirl"] as const)(
+      "throws when a modifier isn't compatible with %s",
+      (type) => {
+        expect(() =>
+          service.generate({
+            modifier: { name: "edge" },
+            repeatCount: 1,
+            rows: 5,
+            type,
+          }),
+        ).toThrow(/not compatible/i);
+      },
+    );
   });
 });

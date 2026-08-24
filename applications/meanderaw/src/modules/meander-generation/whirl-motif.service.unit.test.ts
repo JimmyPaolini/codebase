@@ -3,6 +3,8 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { GridGeometryService } from "./grid-geometry.service";
 import { MotifTransformsService } from "./motif-transforms.service";
+import { SnakeMotifService } from "./snake-motif.service";
+import { SnakeSequenceService } from "./snake-sequence.service";
 import { WhirlMotifService } from "./whirl-motif.service";
 
 describe(WhirlMotifService, () => {
@@ -15,6 +17,8 @@ describe(WhirlMotifService, () => {
         WhirlMotifService,
         GridGeometryService,
         MotifTransformsService,
+        SnakeMotifService,
+        SnakeSequenceService,
       ],
     }).compile();
 

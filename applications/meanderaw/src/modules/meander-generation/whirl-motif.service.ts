@@ -2,6 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import { GridGeometryService } from "./grid-geometry.service";
 import { MotifTransformsService } from "./motif-transforms.service";
+import { SnakeMotifService } from "./snake-motif.service";
 
 import type {
   GridGeometry,
@@ -31,6 +32,8 @@ export class WhirlMotifService implements MotifService {
     private readonly gridGeometryService: GridGeometryService,
     @Inject(MotifTransformsService)
     private readonly motifTransformsService: MotifTransformsService,
+    @Inject(SnakeMotifService)
+    private readonly snakeMotifService: SnakeMotifService,
   ) {}
 
   // 🔐 Private Fields
@@ -71,7 +74,7 @@ export class WhirlMotifService implements MotifService {
     return [...arm, ...rotatedArm];
   }
 
-  /** The motif's own bounding-box center, both the 180° rotation joining its arm to itself and (indirectly, via {@link pitchLevels}) the `flip` modifier's mirror pivot. */
+  /** The motif's own bounding-box center that the 180° rotation joining its arm to itself pivots around. Unrelated to `flip`'s own mirror pivot, which uses {@link pitchLevels} directly instead. */
   private centerPoint(rows: number): SpiralLevelPoint {
     return [(rows - 1) / 2, rows / 2];
   }
@@ -92,46 +95,16 @@ export class WhirlMotifService implements MotifService {
     return rows;
   }
 
-  /** Turns a point sequence into SVG path data, choosing `H`/`V` per segment by which coordinate actually changed. */
-  private pointsToPathData(
-    points: readonly SpiralLevelPoint[],
-    toXCoordinate: (level: number) => string,
-    toYCoordinate: (level: number) => string,
-  ): string {
-    const { pathData } = points.reduce<{
-      pathData: string;
-      previousPoint: SpiralLevelPoint | undefined;
-    }>(
-      (accumulator, point) => {
-        const [xLevel, yLevel] = point;
-
-        if (!accumulator.previousPoint) {
-          return {
-            pathData: `M${toXCoordinate(xLevel)} ${toYCoordinate(yLevel)}`,
-            previousPoint: point,
-          };
-        }
-
-        const [previousXLevel] = accumulator.previousPoint;
-        const segment =
-          xLevel === previousXLevel
-            ? `V${toYCoordinate(yLevel)}`
-            : `H${toXCoordinate(xLevel)}`;
-
-        return {
-          pathData: accumulator.pathData + segment,
-          previousPoint: point,
-        };
-      },
-      { pathData: "", previousPoint: undefined },
-    );
-
-    return pathData;
-  }
-
   // 🌎 Public Methods
 
-  /** Draws one unit's own top/bottom border segment, spanning just that unit's width. */
+  /**
+   * Draws one unit's own top/bottom border segment, spanning just that
+   * unit's width. Same shape as {@link SnakeMotifService.borderSegment},
+   * but can't delegate to it: that method resolves `this.unitWidth`
+   * against `SnakeMotifService`'s own pitch (`rows - 1` grid levels), not
+   * `whirl`'s (`rows` grid levels, from {@link pitchLevels}), so calling
+   * through would silently draw the wrong width.
+   */
   borderSegment(geometry: GridGeometry, unit: UnitBorderOptions): string {
     const { modifier, rows, xOffset } = unit;
     const leftX = this.gridGeometryService.formatCoordinate(
@@ -166,7 +139,11 @@ export class WhirlMotifService implements MotifService {
         : [this.basePoints(rows)];
     const pathData = subpaths
       .map((points) =>
-        this.pointsToPathData(points, toXCoordinate, toYCoordinate),
+        this.snakeMotifService.pointsToPathData(
+          points,
+          toXCoordinate,
+          toYCoordinate,
+        ),
       )
       .join("");
 
@@ -180,7 +157,13 @@ export class WhirlMotifService implements MotifService {
     );
   }
 
-  /** The x-coordinate of the last unit's rightmost point, before the stroke-width margin. */
+  /**
+   * The x-coordinate of the last unit's rightmost point, before the
+   * stroke-width margin. Same shape as
+   * {@link SnakeMotifService.rightEdge}, but can't delegate to it for the
+   * same reason as {@link borderSegment}: it resolves `this.unitWidth`
+   * against `SnakeMotifService`'s own pitch, not `whirl`'s.
+   */
   rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number {
     const { modifier, repeatCount, rows } = pattern;
 
