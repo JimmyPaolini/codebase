@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { ChangesService } from "@codometer/changes";
-import { DocumentsService, RenderService } from "@codometer/markdown";
+import { DocumentsService, RenderService } from "@codometer/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import {

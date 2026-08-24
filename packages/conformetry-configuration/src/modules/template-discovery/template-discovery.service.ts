@@ -46,7 +46,6 @@ export class TemplateDiscoveryService {
     while (pendingDirectoryPaths.length > 0) {
       const currentDirectoryPath = pendingDirectoryPaths.pop();
 
-      /* v8 ignore next 3 -- the loop condition already proves the stack is not empty */
       if (currentDirectoryPath === undefined) {
         continue;
       }

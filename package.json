@@ -4,6 +4,7 @@
   "devDependencies": {
     "@callidescope/configuration": "workspace:*",
     "@codebase/logger": "workspace:*",
+    "@codependix/configuration": "workspace:*",
     "@codometer/configuration": "workspace:*",
     "@commitlint/cli": "catalog:",
     "@commitlint/config-conventional": "catalog:",
@@ -114,5 +115,5 @@
     ]
   },
   "type": "module",
-  "version": "1.35.2"
+  "version": "1.36.0"
 }

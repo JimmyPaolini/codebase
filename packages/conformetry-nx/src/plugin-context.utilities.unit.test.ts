@@ -5,10 +5,12 @@ import { GeneratorService } from "./modules/generator/generator.service";
 import { OptionsService } from "./modules/options/options.service";
 import { PLUGIN_CONTEXT_GLOBAL_KEY } from "./modules/plugin/plugin.constants";
 import { PluginService } from "./modules/plugin/plugin.service";
+import { ProjectsService } from "./modules/projects/projects.service";
 import {
   resolveGeneratorService,
   resolveOptionsService,
   resolvePluginService,
+  resolveProjectsService,
 } from "./plugin-context.utilities";
 
 import type nestCore from "@nestjs/core";
@@ -27,11 +29,13 @@ vi.mock("@nestjs/core", async (importOriginal) => {
 const GENERATOR_SERVICE = { emitPlugin: vi.fn() };
 const OPTIONS_SERVICE = { resolveConfigurationPath: vi.fn() };
 const PLUGIN_SERVICE = { runValidation: vi.fn() };
+const PROJECTS_SERVICE = { listWorkspaceProjects: vi.fn() };
 
 const SERVICES_BY_TOKEN = new Map<unknown, unknown>([
   [GeneratorService, GENERATOR_SERVICE],
   [OptionsService, OPTIONS_SERVICE],
   [PluginService, PLUGIN_SERVICE],
+  [ProjectsService, PROJECTS_SERVICE],
 ]);
 
 const createApplicationContext = vi.mocked(
@@ -65,6 +69,10 @@ describe("plugin context", () => {
 
   it("resolves the options service", async () => {
     await expect(resolveOptionsService()).resolves.toBe(OPTIONS_SERVICE);
+  });
+
+  it("resolves the projects service", async () => {
+    await expect(resolveProjectsService()).resolves.toBe(PROJECTS_SERVICE);
   });
 
   it("builds one context however many services are asked for", async () => {

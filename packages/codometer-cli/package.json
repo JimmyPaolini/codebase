@@ -6,19 +6,17 @@
     "@codebase/logger": "workspace:*",
     "@codometer/changes": "workspace:*",
     "@codometer/configuration": "workspace:*",
-    "@codometer/markdown": "workspace:*",
+    "@codometer/customization": "workspace:*",
+    "@codometer/discovery": "workspace:*",
+    "@codometer/languages": "workspace:*",
+    "@codometer/output": "workspace:*",
+    "@codometer/size": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
-    "ignore": "catalog:",
     "nest-commander": "catalog:",
-    "postcss": "catalog:",
     "reflect-metadata": "catalog:",
-    "remark": "catalog:",
-    "remark-frontmatter": "catalog:",
-    "remark-gfm": "catalog:",
     "tslib": "catalog:",
-    "yaml": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -28,7 +26,6 @@
     "@swc-node/register": "catalog:",
     "@swc/core": "catalog:",
     "@swc/helpers": "catalog:",
-    "@types/mdast": "catalog:",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "typescript": "catalog:",
@@ -40,9 +37,6 @@
   },
   "main": "src/index.ts",
   "name": "@codometer/cli",
-  "peerDependencies": {
-    "typescript": "catalog:"
-  },
   "private": true,
   "publishConfig": {
     "access": "public",

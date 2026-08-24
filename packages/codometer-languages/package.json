@@ -1,0 +1,40 @@
+{
+  "dependencies": {
+    "@codebase/logger": "workspace:*",
+    "@codometer/configuration": "workspace:*",
+    "@nestjs/common": "catalog:",
+    "mdast": "catalog:",
+    "postcss": "catalog:",
+    "reflect-metadata": "catalog:",
+    "remark": "catalog:",
+    "remark-frontmatter": "catalog:",
+    "remark-gfm": "catalog:",
+    "tslib": "catalog:",
+    "typescript": "catalog:",
+    "yaml": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@golevelup/ts-vitest": "catalog:",
+    "@nestjs/testing": "catalog:",
+    "@nx/eslint-plugin": "catalog:",
+    "@swc/helpers": "catalog:",
+    "@types/mdast": "catalog:",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "vitest": "catalog:"
+  },
+  "main": "src/index.ts",
+  "name": "@codometer/languages",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "type": "module",
+  "typeCoverage": {
+    "atLeast": 100,
+    "strict": true
+  },
+  "types": "src/index.ts",
+  "version": "0.0.1"
+}

@@ -102,17 +102,6 @@ const config = {
   // named by whichever caller wants it rather than through a shared process
   // that loops over all of them.
   //
-  // One gap worth knowing, because `affected` cannot close it. Neither
-  // `nx-project-graphs` nor any other derivation target declares a
-  // `package.json` glob in its `inputs` — so a commit that stages only a
-  // manifest changes the Nx project graph, drifts the `nx-project-graphs`
-  // derivation, and never selects this project. The pull request still
-  // catches it, since Lint Codebase resolves `affected` against the merge base
-  // rather than a staged path list. Conformetry answers the same problem by
-  // staying unscoped; this one stays scoped, because removing that scope would
-  // put every synchronization in every commit path.
-  //
-  //
   // `nx sync:check` no longer runs anywhere, on commit or otherwise: the
   // generator plugin it checked is emitted into .conformetry on install rather
   // than committed, so no commit can stage it out of date. Every conformetry
@@ -122,7 +111,7 @@ const config = {
   // without a shell, so `NX_DAEMON=false nx ...` would be parsed as the
   // executable name.
   "*": (files: string[]): string[] => [
-    `pnpm exec nx affected --target=lint-codebase --target=callidescope --target=conformetry-generators --target=conventional-config --target=devcontainer-configuration --target=nx-project-graphs --target=pull-request-template --target=skill-exclusions --configuration=check --parallel=${String(ANALYSIS_PARALLELISM)} --outputStyle=static ${getStagedFilesFlags(files)}`,
+    `pnpm exec nx affected --target=lint-codebase --target=callidescope --target=conformetry-generators --target=conventional-config --target=devcontainer-configuration --target=pull-request-template --target=skill-exclusions --configuration=check --parallel=${String(ANALYSIS_PARALLELISM)} --outputStyle=static ${getStagedFilesFlags(files)}`,
     "pnpm exec nx run-many --targets=conformetry-validate --outputStyle=static",
   ],
 };

@@ -1,21 +1,21 @@
 // 🏷️ Types
 
-import type { FileDiscoveryResult } from "../file-discovery/file-discovery.types";
 import type { EvaluatedLimit, TargetMetricIndex } from "../limits/limits.types";
 import type { ReportFailure } from "../report/report.types";
-import type { SizeResult } from "../size-analysis/size-analysis.types";
 import type {
   CodeStatisticsResult,
   ResolvedCodometerConfiguration,
   ResolvedCodometerTarget,
 } from "@codometer/configuration";
+import type { DiscoveryResult } from "@codometer/discovery";
+import type { SizeResult } from "@codometer/size";
 
 /**
  * Arguments accepted when running language analysis over a target's files.
  */
 export interface AnalyzeLanguageArguments {
   configuration: ResolvedCodometerConfiguration;
-  discoveredFiles: FileDiscoveryResult;
+  discoveredFiles: DiscoveryResult;
   workingDirectory: string;
 }
 

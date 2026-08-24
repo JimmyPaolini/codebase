@@ -73,8 +73,7 @@ export class InputOptionsService {
   /** Reads the option name from `--flag` or `--flag=value`. */
   private readOptionName(argument: string): string {
     return argument.includes("=")
-      ? /* v8 ignore next -- split always yields a first element */
-        (argument.slice(2).split("=", 1)[0] ?? "")
+      ? (argument.slice(2).split("=", 1)[0] ?? "")
       : argument.slice(2);
   }
 
@@ -88,7 +87,6 @@ export class InputOptionsService {
     argumentIndex: number;
     commandArguments: string[];
   }): string | undefined {
-    /* v8 ignore next -- the index always points at an argument the caller read */
     const argument = args.commandArguments[args.argumentIndex] ?? "";
 
     if (argument.includes("=")) {

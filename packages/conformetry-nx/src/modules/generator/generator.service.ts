@@ -16,7 +16,6 @@ import type { ProjectScope } from "../instances/instances.types";
 import type { EmitPluginArguments, EmittedFile } from "./generator.types";
 import type { ConformetryGeneratorDefinition } from "@conformetry/configuration";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Derives an Nx generator plugin from the conformetry configuration.
  *
@@ -27,7 +26,6 @@ import type { ConformetryGeneratorDefinition } from "@conformetry/configuration"
  * configuration and kept honest by `nx sync:check`.
  */
 @Injectable()
-/* v8 ignore stop */
 export class GeneratorService {
   // 🏗 Dependency Injection
 

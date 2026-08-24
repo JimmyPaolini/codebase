@@ -71,6 +71,7 @@ This skill teaches how to name Git branches for this codebase. All branch names 
 | `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
 | `meanderaw` | Greek meander (key/fret) SVG generator CLI and the composable motif/modifier library it reads |
 | `callidescope` | Call stack tracing and linting CLI, the configuration package it reads, and the packages that build and render its call graph |
+| `codependix` | Dependency graph export CLI and the configuration package it reads |
 | `codometer` | Code statistics measurement CLI, the configuration package it reads, and the packages that diff and render its pull request change report |
 | `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
 | `no-release` | Escape hatch: suppress semantic-release for any commit type |

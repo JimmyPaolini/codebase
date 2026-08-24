@@ -1,5 +1,5 @@
 import { ChangesModule as CodometerChangesModule } from "@codometer/changes";
-import { DocumentsModule, RenderModule } from "@codometer/markdown";
+import { DocumentsModule, RenderModule } from "@codometer/output";
 import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";

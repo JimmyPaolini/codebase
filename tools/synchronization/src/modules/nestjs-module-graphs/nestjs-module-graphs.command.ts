@@ -32,6 +32,15 @@ import type {
  * The graph is derived from the `@Module` metadata rather than from prose, so
  * a module that gains or loses an import shows up in the diagram on the next
  * run instead of whenever someone remembers to redraw it.
+ *
+ * Deprecated: superseded by `packages/codependix-nestjs`'s module-import
+ * graph export, which codependix's own anchor blocks now carry — see issue
+ * #296. Not tagged with an actual `@deprecated` JSDoc tag, because this
+ * command stays fully wired and tested as its own Nx target rather than
+ * deleted (a later, separate cleanup); a real `@deprecated` tag would flag
+ * every one of those still-legitimate internal references — including this
+ * class's own `this.logger.setContext(NestjsModuleGraphsCommand.name)` —
+ * under this workspace's `@typescript-eslint/no-deprecated` rule.
  */
 @Command({
   description: "Run the nestjs-module-graphs command",

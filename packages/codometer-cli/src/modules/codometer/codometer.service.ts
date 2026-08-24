@@ -1,17 +1,15 @@
 import { DEFAULT_TARGET_NAME } from "@codometer/configuration";
+import { CustomizationService } from "@codometer/customization";
+import { DiscoveryService, TargetsService } from "@codometer/discovery";
+import { LanguagesService } from "@codometer/languages";
+import { SizeService } from "@codometer/size";
 import { Injectable } from "@nestjs/common";
 
-import { CustomStatisticsService } from "../custom-statistics/custom-statistics.service";
-import { FileDiscoveryService } from "../file-discovery/file-discovery.service";
-import { LanguagesService } from "../languages/languages.service";
 import { LimitsService } from "../limits/limits.service";
 import { MetricIndexService } from "../limits/metric-index.service";
-import { SizeAnalysisService } from "../size-analysis/size-analysis.service";
-import { TargetsService } from "../targets/targets.service";
 
 import type { LimitFailure } from "../limits/limits.types";
 import type { ReportFailure } from "../report/report.types";
-import type { TypescriptResult } from "../typescript/typescript.types";
 import type {
   AnalyzeLanguageArguments,
   MeasureArguments,
@@ -26,6 +24,7 @@ import type {
   ResolvedCodometerTarget,
   TypescriptStatistics,
 } from "@codometer/configuration";
+import type { TypescriptResult } from "@codometer/languages";
 
 /**
  * Aggregates every analyzer's report into a single set of statistics.
@@ -35,11 +34,11 @@ export class CodometerService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly fileDiscoveryService: FileDiscoveryService,
+    private readonly discoveryService: DiscoveryService,
     private readonly languagesService: LanguagesService,
-    private readonly customStatisticsService: CustomStatisticsService,
+    private readonly customizationService: CustomizationService,
     private readonly targetsService: TargetsService,
-    private readonly sizeAnalysisService: SizeAnalysisService,
+    private readonly sizeService: SizeService,
     private readonly limitsService: LimitsService,
     private readonly metricIndexService: MetricIndexService,
   ) {}
@@ -64,7 +63,7 @@ export class CodometerService {
     const languages = this.languagesService.analyze({
       configuration: args.configuration,
       discoveredFiles,
-      symbolCounters: this.customStatisticsService.buildSymbolCounters(
+      symbolCounters: this.customizationService.buildSymbolCounters(
         args.configuration.statistics,
       ),
       workingDirectory: directory,
@@ -72,7 +71,7 @@ export class CodometerService {
     // `none` compression is size analysis's own way of saying "uncompressed",
     // which is what a headline byte total is: the reader is not asking what
     // this target compresses to, only how large it is.
-    const size = this.sizeAnalysisService.analyze({
+    const size = this.sizeService.analyze({
       compression: "none",
       files: discoveredFiles.files,
       workingDirectory: directory,
@@ -80,7 +79,7 @@ export class CodometerService {
 
     return {
       css: { ...languages.css },
-      custom: this.customStatisticsService.analyze({
+      custom: this.customizationService.analyze({
         files: discoveredFiles.files,
         statistics: args.configuration.statistics,
         symbolCounts: languages.typescript.symbolCounts,
@@ -162,7 +161,7 @@ export class CodometerService {
    * a pattern that might claim another.
    */
   private discoverCodebase(args: MeasureArguments): string[] {
-    const discovered = this.fileDiscoveryService.discoverFiles({
+    const discovered = this.discoveryService.discoverFiles({
       exclude: args.configuration.exclude,
       excludeFrom: args.configuration.excludeFrom,
       workingDirectory: args.workingDirectory,
@@ -268,13 +267,13 @@ export class CodometerService {
       language: this.runsAnalysis(target, "language")
         ? this.analyzeLanguage({
             configuration: args.configuration,
-            discoveredFiles: this.fileDiscoveryService.categorize(files),
+            discoveredFiles: this.discoveryService.categorize(files),
             workingDirectory: args.workingDirectory,
           })
         : undefined,
       name: target.name,
       size: this.runsAnalysis(target, "size")
-        ? this.sizeAnalysisService.analyze({
+        ? this.sizeService.analyze({
             compression: target.compression,
             files,
             workingDirectory: args.workingDirectory,
@@ -317,7 +316,7 @@ export class CodometerService {
     const files = this.discoverCodebase(args);
     const statistics = this.analyzeLanguage({
       configuration: args.configuration,
-      discoveredFiles: this.fileDiscoveryService.categorize(files),
+      discoveredFiles: this.discoveryService.categorize(files),
       workingDirectory: args.workingDirectory,
     });
     const declared = this.measureDeclaredTargets(args);

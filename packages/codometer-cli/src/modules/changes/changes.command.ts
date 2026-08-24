@@ -3,7 +3,7 @@ import {
   CODOMETER_MARKERS,
   DocumentsService,
   RenderService,
-} from "@codometer/markdown";
+} from "@codometer/output";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
