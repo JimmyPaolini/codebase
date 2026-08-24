@@ -106,6 +106,13 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
   "dot",
 ] satisfies readonly Modifier["name"][];
 
+/**
+ * Every implemented meander type, declared `readonly string[]` rather than a
+ * literal tuple for the same reason as {@link SUPPORTED_MODIFIER_NAMES}: it
+ * keeps `Array.prototype.includes` usable with a plain `string` at the CLI
+ * boundary, with the `satisfies` check below as the only place a typo could
+ * surface.
+ */
 export const SUPPORTED_TYPES: readonly string[] = [
   "bars",
   "boxes",

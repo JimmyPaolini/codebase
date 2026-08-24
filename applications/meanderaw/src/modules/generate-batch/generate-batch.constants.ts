@@ -4,8 +4,9 @@ import type { DotShape } from "../meander-generation/meander-generation.types";
 
 /**
  * `period` values swept for the `alternated` modifier's batch combinations:
- * two representative points inside the shared `MINIMUM_PERIOD`–`MAXIMUM_VALUE`
- * bounds, distinct enough to show the modifier actually varies with `period`
+ * two representative points within the shared `MINIMUM_PERIOD`–`MAXIMUM_VALUE`
+ * bounds (period 1 sits on the lower bound itself), distinct enough to show
+ * the modifier actually varies with `period`
  * without sweeping the whole range. Period 1 leads the sweep because it's the
  * only period verified byte-exact against real reference files; period 3's
  * interior zigzag geometry, like every period above 1, is a hand-idealized
