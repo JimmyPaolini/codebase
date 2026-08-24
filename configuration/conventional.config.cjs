@@ -188,6 +188,11 @@ const scopes = [
     name: "codometer",
   },
   {
+    description:
+      "Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) — kept for feat/applications-meanderaw's existing commit history after main dropped this scope as too general; safe to remove again once that branch merges if nothing else picks it back up",
+    name: "codebase",
+  },
+  {
     description: "Escape hatch: suppress semantic-release for any commit type",
     name: "no-release",
   },
