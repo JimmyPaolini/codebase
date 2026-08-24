@@ -1,5 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { BarsMotifService } from "./bars-motif.service";
 import { BoxesMotifService } from "./boxes-motif.service";
 import { ChainMotifService } from "./chain-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
@@ -41,6 +42,8 @@ export class MeanderGenerationService {
   constructor(
     @Inject(GridGeometryService)
     private readonly gridGeometryService: GridGeometryService,
+    @Inject(BarsMotifService)
+    private readonly barsMotifService: BarsMotifService,
     @Inject(BoxesMotifService)
     private readonly boxesMotifService: BoxesMotifService,
     @Inject(ChainMotifService)
@@ -94,6 +97,7 @@ export class MeanderGenerationService {
   /** Looks up the motif service that draws `type`'s repeat units. */
   private motifService(type: MeanderType): MotifService {
     const motifServicesByType: Record<MeanderType, MotifService> = {
+      bars: this.barsMotifService,
       boxes: this.boxesMotifService,
       chain: this.chainMotifService,
       snake: this.snakeMotifService,

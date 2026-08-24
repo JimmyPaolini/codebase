@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 
+import { BarsMotifService } from "./bars-motif.service";
 import { BoxesMotifService } from "./boxes-motif.service";
 import { ChainMotifService } from "./chain-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
@@ -20,6 +21,7 @@ import { WhirlMotifService } from "./whirl-motif.service";
   exports: [MeanderGenerationService],
   imports: [],
   providers: [
+    BarsMotifService,
     BoxesMotifService,
     ChainMotifService,
     GridGeometryService,

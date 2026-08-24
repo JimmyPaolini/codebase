@@ -11,6 +11,7 @@ export const CANVAS_HEIGHT = 60;
  * `parameters.type`.
  */
 export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
+  bars: [],
   boxes: ["spin", "spin-flip"],
   chain: ["edge", "flip", "edge-flip"],
   snake: ["edge", "flip", "edge-flip"],
@@ -88,6 +89,7 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
 ] satisfies readonly Modifier["name"][];
 
 export const SUPPORTED_TYPES: readonly string[] = [
+  "bars",
   "boxes",
   "chain",
   "snake",
@@ -97,15 +99,19 @@ export const SUPPORTED_TYPES: readonly string[] = [
 
 /**
  * The smallest `rows` value that still produces a valid, non-degenerate
- * motif for each type. `boxes`'s spiral traces `rows - 1` grid levels
- * inward; below 3 rows the first move collapses to a zero-length segment.
- * `chain` and `snake` share a zigzag that needs a genuine middle row
- * distinct from its two neighbors; below 4 rows the sequence degenerates
- * (no reference file exists below 4 rows for either type). `swirl` and
- * `whirl` are both nested spirals verified against reference files starting
- * at 4 rows; nothing below that has been checked against real geometry.
+ * motif for each type. `bars`'s vertical bar spans grid levels 1 through
+ * `rows - 1`; below 3 rows those two levels collapse to the same level and
+ * the bar disappears, leaving only the two caps. `boxes`'s spiral traces
+ * `rows - 1` grid levels inward; below 3 rows the first move collapses to a
+ * zero-length segment. `chain` and `snake` share a zigzag that needs a
+ * genuine middle row distinct from its two neighbors; below 4 rows the
+ * sequence degenerates (no reference file exists below 4 rows for either
+ * type). `swirl` and `whirl` are both nested spirals verified against
+ * reference files starting at 4 rows; nothing below that has been checked
+ * against real geometry.
  */
 export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
+  bars: 3,
   boxes: 3,
   chain: 4,
   snake: 4,
