@@ -5,8 +5,6 @@ import { LoggerModule } from "@codebase/logger";
 import { ConformetryGeneratorsModule } from "../conformetry-generators/conformetry-generators.module";
 import { ConventionalConfigModule } from "../conventional-config/conventional-config.module";
 import { DevcontainerConfigurationModule } from "../devcontainer-configuration/devcontainer-configuration.module";
-import { NestjsModuleGraphsModule } from "../nestjs-module-graphs/nestjs-module-graphs.module";
-import { NxProjectGraphsModule } from "../nx-project-graphs/nx-project-graphs.module";
 import { PullRequestLabelsModule } from "../pull-request-labels/pull-request-labels.module";
 import { PullRequestTemplateModule } from "../pull-request-template/pull-request-template.module";
 import { SkillExclusionsModule } from "../skill-exclusions/skill-exclusions.module";
@@ -30,8 +28,6 @@ describe(SynchronizationModule, () => {
     expect(imports).toContain(ConformetryGeneratorsModule);
     expect(imports).toContain(ConventionalConfigModule);
     expect(imports).toContain(DevcontainerConfigurationModule);
-    expect(imports).toContain(NestjsModuleGraphsModule);
-    expect(imports).toContain(NxProjectGraphsModule);
     expect(imports).toContain(PullRequestLabelsModule);
     expect(imports).toContain(PullRequestTemplateModule);
     expect(imports).toContain(SkillExclusionsModule);

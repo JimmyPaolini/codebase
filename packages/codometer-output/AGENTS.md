@@ -41,31 +41,6 @@ src/
 testing/                            # Shared test utilities
 ```
 
-### Module Graph
-
-The modules this project defines and the imports between them, published by `nx run synchronization:nestjs-module-graphs:write`.
-
-<!-- nestjs-module-graph-start -->
-
-```mermaid
-flowchart LR
-  subgraph group0["codometer-output"]
-    DocumentsModule
-    JsonModule
-    MarkdownModule
-    RenderModule
-  end
-  subgraph group1["logger"]
-    LoggerModule([LoggerModule])
-  end
-```
-
-_Rounded modules are global: every module can inject them, so their edges are left out._
-
-_Reached only for their types, and so declaring no module here: codometer-changes and codometer-configuration._
-
-<!-- nestjs-module-graph-end -->
-
 ## Development
 
 ### Adding Business Logic
