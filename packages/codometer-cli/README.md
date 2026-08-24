@@ -430,10 +430,12 @@ Where this project sits in the Nx project graph: what it depends on, and what de
 
 ```mermaid
 flowchart LR
+  codometer_changes["codometer-changes"]
   codometer_cli["codometer-cli"]
   codometer_configuration["codometer-configuration"]
   codometer_markdown["codometer-markdown"]
   logger["logger"]
+  codometer_cli --> codometer_changes
   codometer_cli --> codometer_configuration
   codometer_cli --> codometer_markdown
   codometer_cli --> logger
@@ -452,6 +454,7 @@ The modules this project defines and the imports between them, published by `nx 
 ```mermaid
 flowchart LR
   subgraph group0["codometer-cli"]
+    ChangesModule
     CodometerModule
     CssModule
     CustomStatisticsModule
@@ -478,11 +481,18 @@ flowchart LR
   subgraph group1["codometer-configuration"]
     ConfigurationModule
   end
-  subgraph group2["logger"]
+  subgraph group2["codometer-markdown"]
+    DocumentsModule
+    RenderModule
+  end
+  subgraph group3["logger"]
     LoggerModule([LoggerModule])
   end
   ConfigModule([ConfigModule])
   DiscoveryModule
+  ChangesModule --> ChangesModule
+  ChangesModule --> DocumentsModule
+  ChangesModule --> RenderModule
   CodometerModule --> ConfigurationModule
   CodometerModule --> CustomStatisticsModule
   CodometerModule --> FileDiscoveryModule
@@ -507,6 +517,7 @@ flowchart LR
   LanguagesModule --> TomlModule
   LanguagesModule --> TypescriptModule
   LanguagesModule --> YamlModule
+  MainModule --> ChangesModule
   MainModule --> CodometerModule
   MainModule --> ConfigurationModule
   MainModule --> CustomStatisticsModule
@@ -519,7 +530,7 @@ flowchart LR
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
 
-_Loaded at runtime rather than imported, and so absent from this container: codometer-markdown._
+_Loaded at runtime rather than imported, and so absent from this container: codometer-changes._
 
 <!-- nestjs-module-graph-end -->
 

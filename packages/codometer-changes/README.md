@@ -7,9 +7,11 @@ Where this project sits in the Nx project graph: what it depends on, and what de
 ```mermaid
 flowchart LR
   codometer_changes["codometer-changes"]
+  codometer_cli["codometer-cli"]
   codometer_markdown["codometer-markdown"]
   logger["logger"]
   codometer_changes --> logger
+  codometer_cli --> codometer_changes
   codometer_markdown --> codometer_changes
   classDef subject stroke-width:3px
   class codometer_changes subject

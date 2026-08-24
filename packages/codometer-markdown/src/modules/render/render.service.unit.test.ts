@@ -41,6 +41,7 @@ describe(RenderService, () => {
   describe("renderSection", () => {
     it("reports nothing to show when every row is unchanged", () => {
       const section = service.renderSection({
+        baselineUrl: undefined,
         failures: [],
         rows: [buildRow({ baseValue: 1000, value: 1000 })],
       });
@@ -54,6 +55,7 @@ describe(RenderService, () => {
 
     it("gives a project with a changed metric its own collapsed block", () => {
       const section = service.renderSection({
+        baselineUrl: undefined,
         failures: [],
         rows: [buildRow({ baseValue: 1000, value: 1200 })],
       });
@@ -68,6 +70,7 @@ describe(RenderService, () => {
 
     it("omits a project with nothing changed and nothing failed", () => {
       const section = service.renderSection({
+        baselineUrl: undefined,
         failures: [],
         rows: [
           buildRow({ baseValue: 1000, project: "logger", value: 1000 }),
@@ -81,6 +84,7 @@ describe(RenderService, () => {
 
     it("opens a project's block when it has a breach", () => {
       const section = service.renderSection({
+        baselineUrl: undefined,
         failures: [],
         rows: [buildRow({ baseValue: 1000, breach: "fail", value: 1200 })],
       });
@@ -90,6 +94,7 @@ describe(RenderService, () => {
 
     it("does not open a project's block for a plain change with no breach", () => {
       const section = service.renderSection({
+        baselineUrl: undefined,
         failures: [],
         rows: [buildRow({ baseValue: 1000, value: 1200 })],
       });
@@ -106,7 +111,11 @@ describe(RenderService, () => {
         subject: "Compiled JavaScript",
       };
 
-      const section = service.renderSection({ failures: [failure], rows: [] });
+      const section = service.renderSection({
+        baselineUrl: undefined,
+        failures: [failure],
+        rows: [],
+      });
 
       expect(section).toContain("<details open>");
       expect(section).toContain("> [!CAUTION]");
@@ -121,7 +130,11 @@ describe(RenderService, () => {
         subject: "Compiled JavaScript",
       };
 
-      const section = service.renderSection({ failures: [failure], rows: [] });
+      const section = service.renderSection({
+        baselineUrl: undefined,
+        failures: [failure],
+        rows: [],
+      });
 
       expect(section).toContain("`logger`");
       expect(section).not.toContain("| Metric |");
@@ -129,6 +142,7 @@ describe(RenderService, () => {
 
     it("formats a plain count metric without byte units", () => {
       const section = service.renderSection({
+        baselineUrl: undefined,
         failures: [],
         rows: [
           buildRow({
@@ -148,6 +162,7 @@ describe(RenderService, () => {
 
     it("marks a removed metric with strikethrough and no current value", () => {
       const section = service.renderSection({
+        baselineUrl: undefined,
         failures: [],
         rows: [buildRow({ baseValue: 500, removed: true, value: 0 })],
       });
@@ -158,6 +173,7 @@ describe(RenderService, () => {
 
     it("marks a warn breach distinctly from a fail breach", () => {
       const section = service.renderSection({
+        baselineUrl: undefined,
         failures: [],
         rows: [buildRow({ baseValue: 1000, breach: "warn", value: 1200 })],
       });
@@ -168,6 +184,7 @@ describe(RenderService, () => {
 
     it("marks a metric that shrank distinctly from one that grew", () => {
       const section = service.renderSection({
+        baselineUrl: undefined,
         failures: [],
         rows: [buildRow({ baseValue: 1200, value: 1000 })],
       });
@@ -177,6 +194,7 @@ describe(RenderService, () => {
 
     it("marks a brand-new metric as new", () => {
       const section = service.renderSection({
+        baselineUrl: undefined,
         failures: [],
         rows: [buildRow({ baseValue: undefined, value: 500 })],
       });
@@ -186,6 +204,7 @@ describe(RenderService, () => {
 
     it("groups more than one changed metric under the same project", () => {
       const section = service.renderSection({
+        baselineUrl: undefined,
         failures: [],
         rows: [
           buildRow({
@@ -224,7 +243,11 @@ describe(RenderService, () => {
         },
       ];
 
-      const section = service.renderSection({ failures, rows: [] });
+      const section = service.renderSection({
+        baselineUrl: undefined,
+        failures,
+        rows: [],
+      });
 
       expect(section).toContain("broken build");
       expect(section).toContain("unreadable configuration");
@@ -232,12 +255,35 @@ describe(RenderService, () => {
 
     it("marks an empty target distinctly from a breach or plain growth", () => {
       const section = service.renderSection({
+        baselineUrl: undefined,
         failures: [],
         rows: [buildRow({ baseValue: undefined, empty: true, value: 0 })],
       });
 
       expect(section).toContain("⁉️");
       expect(section).not.toContain("🆕");
+    });
+
+    it("names the run a baseline came from when one was given", () => {
+      const section = service.renderSection({
+        baselineUrl: "https://example.test/actions/runs/1",
+        failures: [],
+        rows: [buildRow({ baseValue: 1000, value: 1200 })],
+      });
+
+      expect(section).toContain(
+        "_Compared against [`main`](https://example.test/actions/runs/1)._",
+      );
+    });
+
+    it("says nothing about a baseline when none was given", () => {
+      const section = service.renderSection({
+        baselineUrl: undefined,
+        failures: [],
+        rows: [buildRow({ baseValue: 1000, value: 1200 })],
+      });
+
+      expect(section).not.toContain("Compared against");
     });
   });
 });

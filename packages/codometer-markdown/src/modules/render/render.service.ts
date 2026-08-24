@@ -72,6 +72,12 @@ export class RenderService {
     return row.value > row.baseValue ? "📈" : "📉";
   }
 
+  /** Names the run the baseline came from, when there was one to compare against. */
+  private renderComparison(baselineUrl: string | undefined): string[] {
+    if (baselineUrl === undefined) return [];
+    return [`_Compared against [\`main\`](${baselineUrl})._`, ""];
+  }
+
   /**
    * Names everything the run could not do, above the table rather than below.
    *
@@ -160,10 +166,18 @@ export class RenderService {
       ),
     );
 
+    const comparison = this.renderComparison(args.baselineUrl);
     const body =
       blocks.length === 0
-        ? ["No codometer changes to report for this pull request."]
-        : [...blocks, "*Updated automatically when you push new commits.*"];
+        ? [
+            ...comparison,
+            "No codometer changes to report for this pull request.",
+          ]
+        : [
+            ...comparison,
+            ...blocks,
+            "*Updated automatically when you push new commits.*",
+          ];
 
     return [HEADING, "", ...body].join("\n");
   }

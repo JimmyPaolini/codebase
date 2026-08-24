@@ -1219,6 +1219,9 @@ importers:
       '@codebase/logger':
         specifier: workspace:*
         version: link:../logger
+      '@codometer/changes':
+        specifier: workspace:*
+        version: link:../codometer-changes
       '@codometer/configuration':
         specifier: workspace:*
         version: link:../codometer-configuration

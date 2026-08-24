@@ -1,5 +1,12 @@
 import { spawnSync } from "node:child_process";
-import { writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -89,6 +96,92 @@ describe("main end-to-end suite", () => {
         "Excluded the files codometer writes from what it measures",
       );
       expect(standardError).toContain("README.md");
+    });
+  });
+
+  describe("the changes command", () => {
+    let workingDirectory: string;
+    let outputPath: string;
+
+    beforeAll(() => {
+      workingDirectory = mkdtempSync(path.join(tmpdir(), "codometer-changes-"));
+      outputPath = path.join(workingDirectory, "section.md");
+
+      mkdirSync(path.join(workingDirectory, "packages", "logger"), {
+        recursive: true,
+      });
+      mkdirSync(
+        path.join(workingDirectory, ".baseline", "packages", "logger"),
+        { recursive: true },
+      );
+
+      writeFileSync(
+        path.join(
+          workingDirectory,
+          ".baseline/packages/logger/codometer-report.json",
+        ),
+        JSON.stringify({
+          targets: [
+            {
+              empty: false,
+              metrics: [
+                { limits: [], name: "logger.size", unit: "bytes", value: 1000 },
+              ],
+              name: "logger",
+            },
+          ],
+        }),
+      );
+      writeFileSync(
+        path.join(workingDirectory, "packages/logger/codometer-report.json"),
+        JSON.stringify({
+          targets: [
+            {
+              empty: false,
+              metrics: [
+                { limits: [], name: "logger.size", unit: "bytes", value: 1200 },
+              ],
+              name: "logger",
+            },
+          ],
+        }),
+      );
+
+      spawnSync(
+        process.execPath,
+        [
+          "--import",
+          "@swc-node/register/esm-register",
+          COMMAND_PATH,
+          "changes",
+          "--directory",
+          workingDirectory,
+          "--baseline",
+          ".baseline",
+          "--output",
+          outputPath,
+        ],
+        {
+          encoding: "utf8",
+          env: { ...process.env, FORCE_COLOR: "0" },
+          timeout: 120_000,
+        },
+      );
+    }, 150_000);
+
+    afterAll(() => {
+      rmSync(workingDirectory, { force: true, recursive: true });
+    });
+
+    it("writes a report naming the project whose metric changed", () => {
+      expect.hasAssertions();
+
+      const written = readFileSync(outputPath, "utf8");
+
+      expect(written).toContain("## ⏲️ Codometer");
+      expect(written).toContain("`logger`");
+      expect(written).toContain("1.20 kB");
+      expect(written).toContain("1.00 kB");
     });
   });
 });
