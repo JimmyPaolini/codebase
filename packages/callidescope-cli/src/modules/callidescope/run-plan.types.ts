@@ -1,6 +1,16 @@
 // 🏷️ Types
 
-import type { CallGraphResult } from "@callidescope/configuration";
+import type {
+  CallGraphResult,
+  ResolvedCallidescopeConfiguration,
+} from "@callidescope/configuration";
+
+/** What a command line and its configuration resolved to. */
+export interface PreparedRun {
+  readonly configuration: ResolvedCallidescopeConfiguration;
+  readonly mode: RunMode;
+  readonly workspaceRoot: string;
+}
 
 /** Arguments accepted when weighing what a run found. */
 export interface ReportFindingsArguments {
@@ -16,11 +26,13 @@ export interface ReportFindingsArguments {
 /**
  * What the run does with what it traces.
  *
- * The three are independent. Writing gates on `writes` alone, staleness on
- * `checksReports` alone, and a stack that is too deep on `checksDepth` alone,
- * so no flag ever quietly turns another one on.
+ * The four are independent. Writing gates on `writes` alone, staleness on
+ * `checksReports` alone, a stack that is too deep on `checksDepth` alone, and
+ * a callable calling too many things on `checksBreadth` alone, so no flag
+ * ever quietly turns another one on.
  */
 export interface RunMode {
+  readonly checksBreadth: boolean;
   readonly checksDepth: boolean;
   readonly checksReports: boolean;
   readonly writes: boolean;

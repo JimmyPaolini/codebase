@@ -43,7 +43,7 @@ to change.
 | `maximumDepth` | `6` | Frames a call stack may hold, entry point inclusive |
 | `spreadThreshold` | `4` | Distinct modules a callable's transitive callees may touch |
 | `directSpreadThreshold` | `3` | Modules a callable must call _directly_ before spread is reported |
-| `maximumImplementationFanOut` | `8` | Implementations one interface member may resolve to |
+| `maximumImplementationCandidates` | `8` | Implementations one interface member may resolve to |
 | `minimumCallers` | `2` | Callers a callable needs before its placement is judged |
 | `callerMajorityRatio` | `0.8` | Share of callers in one foreign module that marks a callable misplaced |
 
@@ -52,7 +52,7 @@ entry point — an entry point legitimately reaches the whole program. Requiring
 direct breadth as well is what isolates the callable personally orchestrating
 unrelated concerns.
 
-`maximumImplementationFanOut` is the primary noise control. A structurally matched
+`maximumImplementationCandidates` is the primary noise control. A structurally matched
 interface member named `run` or `sync` otherwise resolves to dozens of unrelated
 classes and manufactures a call stack no execution ever takes.
 
@@ -195,13 +195,31 @@ Call stacks traced through `callidescope-configuration`, deepest first. Each fra
 | Stacks through recursion | 0 |
 | Unfollowable calls | 2 |
 
-### Call stacks
+### Call stacks (depth)
 
 None.
 
 ### Module spread
 
 None.
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `ConfigurationService.loadConfiguration` | 5 | `ConfigurationService.findConfigurationFile`, `ConfigurationService.resolveConfigurationPath`, `ConfigurationService.resolveConfiguration`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.loadConfigurationModule` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:299` |
+| `ConfigurationService.resolveConfiguration` | 5 | `ConfigurationService.resolveEntryPoints`, `ConfigurationService.resolveLimits`, `ConfigurationService.resolveJsonOutput`, `ConfigurationService.resolveMarkdownDestination`, `ConfigurationService.resolveProjectReadmes` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:334` |
+| `ConfigurationService.resolveConfigurationPath` | 2 | `ConfigurationService.findRepositoryRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:166` |
+
+<details>
+<summary>2 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `ConfigurationService.findRepositoryRoot` | 1 | `ConfigurationService.some(…)` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:105` |
+| `ConfigurationService.loadConfigurationModule` | 1 | `ConfigurationService.loadJsonConfiguration` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:129` |
+
+</details>
 
 ### Possibly misplaced
 

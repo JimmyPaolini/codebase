@@ -58,13 +58,13 @@ Call stacks traced through `codometer-markdown`, deepest first. Each frame shows
 | --- | --- |
 | Callables | 30 |
 | Files | 12 |
-| Calls traced | 30 |
-| Call stacks | 3 |
+| Calls traced | 26 |
+| Call stacks | 2 |
 | Deepest stack | 4 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 1 |
 
-### Call stacks
+### Call stacks (depth)
 
 **1. `RenderService.renderRow`** — depth 4 · orphan-root
 
@@ -89,17 +89,32 @@ Call stacks traced through `codometer-markdown`, deepest first. Each frame shows
     └─> RenderService.some(…)(row: MetricRow): boolean [packages/codometer-markdown/src/modules/render/render.service.ts:51]
 ```
 
-**3. `DocumentsService.constructor`** — depth 2 · orphan-root
-
-```text
-🚀 DocumentsService.constructor(logger: LoggerService): DocumentsService [packages/codometer-markdown/src/modules/documents/documents.service.ts:21]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
 ### Module spread
 
 None.
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `RenderService.renderSection` | 6 | `RenderService.groupByProject(…)`, `RenderService.groupByProject`, `RenderService.groupByProject(…)`, `RenderService.flatMap(…)`, `RenderService.readProjects`, `RenderService.renderComparison` | `packages/codometer-markdown/src/modules/render/render.service.ts:154` |
+| `RenderService.renderProject` | 4 | `RenderService.filter(…)`, `RenderService.readIsOpen`, `RenderService.renderFailures`, `RenderService.map(…)` | `packages/codometer-markdown/src/modules/render/render.service.ts:106` |
+| `DocumentsService.emit` | 3 | `DocumentsService.wrap`, `DocumentsService.readDocument`, `DocumentsService.splice` | `packages/codometer-markdown/src/modules/documents/documents.service.ts:51` |
+
+<details>
+<summary>7 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `RenderService.renderRow` | 3 | `RenderService.readStatus`, `formatValue`, `formatDelta` | `packages/codometer-markdown/src/modules/render/render.service.ts:134` |
+| `formatValue` | 2 | `formatBytes`, `formatCount` | `packages/codometer-markdown/src/modules/render/render.utilities.ts:33` |
+| `RenderService.readProjects` | 2 | `RenderService.map(…)`, `RenderService.map(…)` | `packages/codometer-markdown/src/modules/render/render.service.ts:55` |
+| `DocumentsService.splice` | 1 | `DocumentsService.filter(…)` | `packages/codometer-markdown/src/modules/documents/documents.service.ts:88` |
+| `formatDelta` | 1 | `formatValue` | `packages/codometer-markdown/src/modules/render/render.utilities.ts:23` |
+| `RenderService.readIsOpen` | 1 | `RenderService.some(…)` | `packages/codometer-markdown/src/modules/render/render.service.ts:47` |
+| `RenderService.renderFailures` | 1 | `RenderService.map(…)` | `packages/codometer-markdown/src/modules/render/render.service.ts:89` |
+
+</details>
 
 ### Possibly misplaced
 

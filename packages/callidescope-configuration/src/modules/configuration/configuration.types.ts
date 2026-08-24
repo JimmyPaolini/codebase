@@ -10,6 +10,17 @@ export interface CallidescopeConfiguration {
   exclude?: string[] | undefined;
   /** Gitignore-syntax files listing paths to leave untraced. */
   excludeFrom?: string[] | undefined;
+  /**
+   * Globs matched against a callable's display name (`Type.member`):
+   * calls landing on a match are dropped from the graph entirely, counting
+   * toward neither the caller's depth nor its breadth.
+   *
+   * For a cross-cutting callable like a logger, every call site is a fact
+   * about instrumentation, not about how deep or wide the code around it
+   * is — counting it would move every other callable's numbers on a change
+   * that has nothing to do with them.
+   */
+  ignoreCallees?: string[] | undefined;
   limits?: CallidescopeLimits | undefined;
   output?: CallidescopeOutputConfiguration | undefined;
   /**
@@ -59,10 +70,17 @@ export interface CallidescopeLimits {
   callerMajorityRatio?: number | undefined;
   /** Modules a callable must call directly before spread is reported. */
   directSpreadThreshold?: number | undefined;
+  /**
+   * Distinct callables a callable may call directly before it is reported.
+   *
+   * No default is applied: a project must configure this explicitly before
+   * `--check breadth` can run against it.
+   */
+  maximumBreadth?: number | undefined;
   /** Frames a call stack may hold before it is reported. */
   maximumDepth?: number | undefined;
   /** Implementations one interface member may resolve to before giving up. */
-  maximumImplementationFanOut?: number | undefined;
+  maximumImplementationCandidates?: number | undefined;
   /** Callers a callable needs before its placement is judged. */
   minimumCallers?: number | undefined;
   /** Distinct modules a callable's transitive callees may touch. */
@@ -169,6 +187,7 @@ export interface ResolvedCallidescopeConfiguration {
   entryPoints: ResolvedCallidescopeEntryPoints;
   exclude: string[];
   excludeFrom: string[];
+  ignoreCallees: string[];
   limits: ResolvedCallidescopeLimits;
   output: ResolvedCallidescopeOutputConfiguration;
   projects: string[];
@@ -192,8 +211,16 @@ export interface ResolvedCallidescopeJsonOutputConfiguration {
 export interface ResolvedCallidescopeLimits {
   callerMajorityRatio: number;
   directSpreadThreshold: number;
+  /**
+   * Distinct callables a callable may call directly before it is reported.
+   *
+   * Stays optional even after resolution: unlike every other limit, this one
+   * has no default, so its absence is a fact a `--check breadth` run must act
+   * on rather than something resolution can paper over.
+   */
+  maximumBreadth?: number | undefined;
   maximumDepth: number;
-  maximumImplementationFanOut: number;
+  maximumImplementationCandidates: number;
   minimumCallers: number;
   spreadThreshold: number;
 }

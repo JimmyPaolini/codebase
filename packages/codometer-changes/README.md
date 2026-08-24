@@ -54,15 +54,15 @@ Call stacks traced through `codometer-changes`, deepest first. Each frame shows 
 | --- | --- |
 | Callables | 31 |
 | Files | 7 |
-| Calls traced | 30 |
-| Call stacks | 3 |
-| Deepest stack | 7 |
+| Calls traced | 27 |
+| Call stacks | 2 |
+| Deepest stack | 4 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 0 |
 
-### Call stacks
+### Call stacks (depth)
 
-**1. `ChangesService.collectProjectRows`** — depth 7 · orphan-root
+**1. `ChangesService.collectProjectRows`** — depth 4 · orphan-root
 
 ```text
 🚀 ChangesService.collectProjectRows(args: CollectProjectRowsArguments): MetricCollection [packages/codometer-changes/src/modules/changes/changes.service.ts:110]
@@ -71,14 +71,8 @@ Call stacks traced through `codometer-changes`, deepest first. Each frame shows 
      ↳ Reads a baseline report into a name-to-metric lookup.
     └─> ChangesService.readReport(workingDirectory: string, reportPath: string): ProjectReport [packages/codometer-changes/src/modules/changes/changes.service.ts:240]
        ↳ Parses a codometer report, tolerating an absent or malformed file.
-      └─> LoggerService.warn(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:312]
-         ↳ Logs a warning message at the `warn` level.
-        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-           ↳ Assembles the object pino merges into the line.
-          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-             ↳ Fails a malformed message in development, and never in production.
-            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-               ↳ Whether a word is a verb in one of the two tenses the convention allows.
+      └─> ChangesService.parseReport(workingDirectory: string, reportPath: string): CodometerReport | undefined [packages/codometer-changes/src/modules/changes/changes.service.ts:137]
+         ↳ Parses the report's JSON body, tolerating an absent or malformed file.
 ```
 
 **2. `ChangesService.readMetrics`** — depth 4 · orphan-root
@@ -92,17 +86,32 @@ Call stacks traced through `codometer-changes`, deepest first. Each frame shows 
       └─> ChangesService.filter(…)(…): boolean [packages/codometer-changes/src/modules/changes/changes.service.ts:178]
 ```
 
-**3. `ChangesService.constructor`** — depth 2 · orphan-root
-
-```text
-🚀 ChangesService.constructor(logger: LoggerService): ChangesService [packages/codometer-changes/src/modules/changes/changes.service.ts:49]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
 ### Module spread
 
 None.
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `ChangesService.collectProjectRows` | 7 | `ChangesService.readProjectName`, `ChangesService.readBaseline`, `ChangesService.readReport`, `ChangesService.map(…)`, `ChangesService.map(…)`, `ChangesService.buildBaselineRow`, `ChangesService.map(…)` | `packages/codometer-changes/src/modules/changes/changes.service.ts:110` |
+| `ChangesService.collect` | 4 | `ChangesService.map(…)`, `ChangesService.readReportPaths`, `ChangesService.flatMap(…)`, `ChangesService.flatMap(…)` | `packages/codometer-changes/src/modules/changes/changes.service.ts:289` |
+| `ChangesService.map(…)` | 3 | `ChangesService.readBreach`, `ChangesService.readLabel`, `ChangesService.readGoverningLimit` | `packages/codometer-changes/src/modules/changes/changes.service.ts:223` |
+
+<details>
+<summary>7 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `ChangesService.readReportPaths` | 3 | `ChangesService.flatMap(…)`, `ChangesService.map(…)`, `ChangesService.flatMap(…)` | `packages/codometer-changes/src/modules/changes/changes.service.ts:264` |
+| `ChangesService.readBaseline` | 2 | `ChangesService.readReport`, `ChangesService.map(…)` | `packages/codometer-changes/src/modules/changes/changes.service.ts:154` |
+| `ChangesService.readBreach` | 2 | `ChangesService.filter(…)`, `ChangesService.some(…)` | `packages/codometer-changes/src/modules/changes/changes.service.ts:175` |
+| `ChangesService.readGoverningLimit` | 2 | `ChangesService.filter(…)`, `ChangesService.map(…)` | `packages/codometer-changes/src/modules/changes/changes.service.ts:195` |
+| `ChangesService.readReport` | 2 | `ChangesService.parseReport`, `ChangesService.flatMap(…)` | `packages/codometer-changes/src/modules/changes/changes.service.ts:240` |
+| `ChangesService.readLabel` | 1 | `ChangesService.find(…)` | `packages/codometer-changes/src/modules/changes/changes.service.ts:206` |
+| `ChangesService.readMetrics` | 1 | `ChangesService.map(…)` | `packages/codometer-changes/src/modules/changes/changes.service.ts:222` |
+
+</details>
 
 ### Possibly misplaced
 

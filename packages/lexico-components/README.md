@@ -468,7 +468,7 @@ Call stacks traced through `lexico-components`, deepest first. Each frame shows 
 | Stacks through recursion | 0 |
 | Unfollowable calls | 16 |
 
-### Call stacks
+### Call stacks (depth)
 
 **1. `ChartStyle`** — depth 3 · orphan-root
 
@@ -2019,6 +2019,246 @@ Call stacks traced through `lexico-components`, deepest first. Each frame shows 
 ### Module spread
 
 None.
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `forwardRef(…)` | 7 | `useCallback(…)`, `useCallback(…)`, `useCallback(…)`, `useCallback(…)`, `useEffect(…)`, `useEffect(…)`, `cn` | `packages/lexico-components/src/components/ui/carousel.tsx:48` |
+| `forwardRef(…)` | 6 | `useIsMobile`, `useCallback(…)`, `useCallback(…)`, `useEffect(…)`, `useMemo(…)`, `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:63` |
+| `forwardRef(…)` | 5 | `useChart`, `useMemo(…)`, `cn`, `map(…)`, `filter(…)` | `packages/lexico-components/src/components/ui/chart.tsx:138` |
+
+<details>
+<summary>224 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `forwardRef(…)` | 4 | `useChart`, `cn`, `map(…)`, `filter(…)` | `packages/lexico-components/src/components/ui/chart.tsx:302` |
+| `CalendarDayButton` | 2 | `useEffect(…)`, `cn` | `packages/lexico-components/src/components/ui/calendar.tsx:176` |
+| `forwardRef(…)` | 2 | `useCarousel`, `cn` | `packages/lexico-components/src/components/ui/carousel.tsx:155` |
+| `forwardRef(…)` | 2 | `useCarousel`, `cn` | `packages/lexico-components/src/components/ui/carousel.tsx:177` |
+| `forwardRef(…)` | 2 | `useCarousel`, `cn` | `packages/lexico-components/src/components/ui/carousel.tsx:199` |
+| `forwardRef(…)` | 2 | `useCarousel`, `cn` | `packages/lexico-components/src/components/ui/carousel.tsx:228` |
+| `ChartStyle` | 2 | `filter(…)`, `map(…)` | `packages/lexico-components/src/components/ui/chart.tsx:69` |
+| `useMemo(…)` | 2 | `getPayloadConfigurationFromPayload`, `cn` | `packages/lexico-components/src/components/ui/chart.tsx:158` |
+| `map(…)` | 2 | `getPayloadConfigurationFromPayload`, `cn` | `packages/lexico-components/src/components/ui/chart.tsx:212` |
+| `map(…)` | 2 | `getPayloadConfigurationFromPayload`, `cn` | `packages/lexico-components/src/components/ui/chart.tsx:323` |
+| `FieldError` | 2 | `useMemo(…)`, `cn` | `packages/lexico-components/src/components/ui/field.tsx:187` |
+| `forwardRef(…)` | 2 | `useFormField`, `cn` | `packages/lexico-components/src/components/ui/form.tsx:91` |
+| `forwardRef(…)` | 2 | `useFormField`, `cn` | `packages/lexico-components/src/components/ui/form.tsx:130` |
+| `forwardRef(…)` | 2 | `useFormField`, `cn` | `packages/lexico-components/src/components/ui/form.tsx:147` |
+| `useCallback(…)` | 2 | `setOpenMobile(…)`, `setOpen(…)` | `packages/lexico-components/src/components/ui/sidebar.tsx:98` |
+| `forwardRef(…)` | 2 | `useSidebar`, `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:170` |
+| `forwardRef(…)` | 2 | `useSidebar`, `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:272` |
+| `forwardRef(…)` | 2 | `useSidebar`, `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:298` |
+| `forwardRef(…)` | 2 | `useSidebar`, `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:551` |
+| `forwardRef(…)` | 2 | `useMemo(…)`, `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:659` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/accordion.tsx:13` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/accordion.tsx:25` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/accordion.tsx:45` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/alert.tsx:26` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/alert.tsx:39` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/alert.tsx:51` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/button.tsx:45` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/alert-dialog.tsx:17` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/alert-dialog.tsx:32` |
+| `AlertDialogHeader` | 1 | `cn` | `packages/lexico-components/src/components/ui/alert-dialog.tsx:47` |
+| `AlertDialogFooter` | 1 | `cn` | `packages/lexico-components/src/components/ui/alert-dialog.tsx:61` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/alert-dialog.tsx:78` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/alert-dialog.tsx:90` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/alert-dialog.tsx:103` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/alert-dialog.tsx:115` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/avatar.tsx:12` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/avatar.tsx:27` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/avatar.tsx:39` |
+| `Badge` | 1 | `cn` | `packages/lexico-components/src/components/ui/badge.tsx:31` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/breadcrumb.tsx:19` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/breadcrumb.tsx:34` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/breadcrumb.tsx:48` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/breadcrumb.tsx:64` |
+| `BreadcrumbSeparator` | 1 | `cn` | `packages/lexico-components/src/components/ui/breadcrumb.tsx:76` |
+| `BreadcrumbEllipsis` | 1 | `cn` | `packages/lexico-components/src/components/ui/breadcrumb.tsx:92` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/separator.tsx:11` |
+| `ButtonGroup` | 1 | `cn` | `packages/lexico-components/src/components/ui/button-group.tsx:25` |
+| `ButtonGroupText` | 1 | `cn` | `packages/lexico-components/src/components/ui/button-group.tsx:41` |
+| `ButtonGroupSeparator` | 1 | `cn` | `packages/lexico-components/src/components/ui/button-group.tsx:61` |
+| `Calendar` | 1 | `cn` | `packages/lexico-components/src/components/ui/calendar.tsx:15` |
+| `Root` | 1 | `cn` | `packages/lexico-components/src/components/ui/calendar.tsx:129` |
+| `Chevron` | 1 | `cn` | `packages/lexico-components/src/components/ui/calendar.tsx:139` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/card.tsx:9` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/card.tsx:24` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/card.tsx:36` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/card.tsx:48` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/card.tsx:60` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/card.tsx:68` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/chart.tsx:44` |
+| `map(…)` | 1 | `map(…)` | `packages/lexico-components/src/components/ui/chart.tsx:89` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/checkbox.tsx:11` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/dialog.tsx:21` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/dialog.tsx:36` |
+| `DialogHeader` | 1 | `cn` | `packages/lexico-components/src/components/ui/dialog.tsx:57` |
+| `DialogFooter` | 1 | `cn` | `packages/lexico-components/src/components/ui/dialog.tsx:71` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/dialog.tsx:88` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/dialog.tsx:103` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/command.tsx:15` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/command.tsx:42` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/command.tsx:61` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/command.tsx:87` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/command.tsx:103` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/command.tsx:115` |
+| `CommandShortcut` | 1 | `cn` | `packages/lexico-components/src/components/ui/command.tsx:128` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/context-menu.tsx:25` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/context-menu.tsx:44` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/context-menu.tsx:59` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/context-menu.tsx:78` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/context-menu.tsx:94` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/context-menu.tsx:118` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/context-menu.tsx:142` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/context-menu.tsx:158` |
+| `ContextMenuShortcut` | 1 | `cn` | `packages/lexico-components/src/components/ui/context-menu.tsx:167` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/drawer.tsx:27` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/drawer.tsx:39` |
+| `DrawerHeader` | 1 | `cn` | `packages/lexico-components/src/components/ui/drawer.tsx:57` |
+| `DrawerFooter` | 1 | `cn` | `packages/lexico-components/src/components/ui/drawer.tsx:68` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/drawer.tsx:82` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/drawer.tsx:97` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/dropdown-menu.tsx:27` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/dropdown-menu.tsx:47` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/dropdown-menu.tsx:63` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/dropdown-menu.tsx:84` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/dropdown-menu.tsx:100` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/dropdown-menu.tsx:124` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/dropdown-menu.tsx:148` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/dropdown-menu.tsx:164` |
+| `DropdownMenuShortcut` | 1 | `cn` | `packages/lexico-components/src/components/ui/dropdown-menu.tsx:173` |
+| `Empty` | 1 | `cn` | `packages/lexico-components/src/components/ui/empty.tsx:6` |
+| `EmptyHeader` | 1 | `cn` | `packages/lexico-components/src/components/ui/empty.tsx:19` |
+| `EmptyMedia` | 1 | `cn` | `packages/lexico-components/src/components/ui/empty.tsx:47` |
+| `EmptyTitle` | 1 | `cn` | `packages/lexico-components/src/components/ui/empty.tsx:62` |
+| `EmptyDescription` | 1 | `cn` | `packages/lexico-components/src/components/ui/empty.tsx:72` |
+| `EmptyContent` | 1 | `cn` | `packages/lexico-components/src/components/ui/empty.tsx:85` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/label.tsx:18` |
+| `FieldSet` | 1 | `cn` | `packages/lexico-components/src/components/ui/field.tsx:11` |
+| `FieldLegend` | 1 | `cn` | `packages/lexico-components/src/components/ui/field.tsx:25` |
+| `FieldGroup` | 1 | `cn` | `packages/lexico-components/src/components/ui/field.tsx:45` |
+| `Field` | 1 | `cn` | `packages/lexico-components/src/components/ui/field.tsx:82` |
+| `FieldContent` | 1 | `cn` | `packages/lexico-components/src/components/ui/field.tsx:98` |
+| `FieldLabel` | 1 | `cn` | `packages/lexico-components/src/components/ui/field.tsx:111` |
+| `FieldTitle` | 1 | `cn` | `packages/lexico-components/src/components/ui/field.tsx:129` |
+| `FieldDescription` | 1 | `cn` | `packages/lexico-components/src/components/ui/field.tsx:142` |
+| `FieldSeparator` | 1 | `cn` | `packages/lexico-components/src/components/ui/field.tsx:157` |
+| `useMemo(…)` | 1 | `map(…)` | `packages/lexico-components/src/components/ui/field.tsx:195` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/form.tsx:77` |
+| `forwardRef(…)` | 1 | `useFormField` | `packages/lexico-components/src/components/ui/form.tsx:108` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/hover-card.tsx:14` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/input.tsx:7` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/textarea.tsx:9` |
+| `InputGroup` | 1 | `cn` | `packages/lexico-components/src/components/ui/input-group.tsx:10` |
+| `InputGroupAddon` | 1 | `cn` | `packages/lexico-components/src/components/ui/input-group.tsx:57` |
+| `InputGroupButton` | 1 | `cn` | `packages/lexico-components/src/components/ui/input-group.tsx:94` |
+| `InputGroupText` | 1 | `cn` | `packages/lexico-components/src/components/ui/input-group.tsx:113` |
+| `InputGroupInput` | 1 | `cn` | `packages/lexico-components/src/components/ui/input-group.tsx:125` |
+| `InputGroupTextarea` | 1 | `cn` | `packages/lexico-components/src/components/ui/input-group.tsx:138` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/input-otp.tsx:11` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/input-otp.tsx:27` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/input-otp.tsx:35` |
+| `ItemGroup` | 1 | `cn` | `packages/lexico-components/src/components/ui/item.tsx:9` |
+| `ItemSeparator` | 1 | `cn` | `packages/lexico-components/src/components/ui/item.tsx:20` |
+| `Item` | 1 | `cn` | `packages/lexico-components/src/components/ui/item.tsx:55` |
+| `ItemMedia` | 1 | `cn` | `packages/lexico-components/src/components/ui/item.tsx:92` |
+| `ItemContent` | 1 | `cn` | `packages/lexico-components/src/components/ui/item.tsx:107` |
+| `ItemTitle` | 1 | `cn` | `packages/lexico-components/src/components/ui/item.tsx:120` |
+| `ItemDescription` | 1 | `cn` | `packages/lexico-components/src/components/ui/item.tsx:133` |
+| `ItemActions` | 1 | `cn` | `packages/lexico-components/src/components/ui/item.tsx:147` |
+| `ItemHeader` | 1 | `cn` | `packages/lexico-components/src/components/ui/item.tsx:157` |
+| `ItemFooter` | 1 | `cn` | `packages/lexico-components/src/components/ui/item.tsx:170` |
+| `Kbd` | 1 | `cn` | `packages/lexico-components/src/components/ui/kbd.tsx:4` |
+| `KbdGroup` | 1 | `cn` | `packages/lexico-components/src/components/ui/kbd.tsx:19` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/menubar.tsx:41` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/menubar.tsx:56` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/menubar.tsx:73` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/menubar.tsx:92` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/menubar.tsx:108` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/menubar.tsx:134` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/menubar.tsx:150` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/menubar.tsx:173` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/menubar.tsx:197` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/menubar.tsx:213` |
+| `MenubarShortcut` | 1 | `cn` | `packages/lexico-components/src/components/ui/menubar.tsx:222` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/navigation-menu.tsx:12` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/navigation-menu.tsx:30` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/navigation-menu.tsx:51` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/navigation-menu.tsx:69` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/navigation-menu.tsx:86` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/navigation-menu.tsx:104` |
+| `Pagination` | 1 | `cn` | `packages/lexico-components/src/components/ui/pagination.tsx:8` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/pagination.tsx:21` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/pagination.tsx:33` |
+| `PaginationLink` | 1 | `cn` | `packages/lexico-components/src/components/ui/pagination.tsx:43` |
+| `PaginationPrevious` | 1 | `cn` | `packages/lexico-components/src/components/ui/pagination.tsx:63` |
+| `PaginationNext` | 1 | `cn` | `packages/lexico-components/src/components/ui/pagination.tsx:79` |
+| `PaginationEllipsis` | 1 | `cn` | `packages/lexico-components/src/components/ui/pagination.tsx:95` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/popover.tsx:16` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/progress.tsx:12` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/radio-group.tsx:11` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/radio-group.tsx:25` |
+| `ResizablePanelGroup` | 1 | `cn` | `packages/lexico-components/src/components/ui/resizable.tsx:9` |
+| `ResizableHandle` | 1 | `cn` | `packages/lexico-components/src/components/ui/resizable.tsx:24` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/scroll-area.tsx:10` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/scroll-area.tsx:28` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/select.tsx:19` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/select.tsx:39` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/select.tsx:56` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/select.tsx:74` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/select.tsx:106` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/select.tsx:118` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/select.tsx:140` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sheet.tsx:22` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sheet.tsx:60` |
+| `SheetHeader` | 1 | `cn` | `packages/lexico-components/src/components/ui/sheet.tsx:78` |
+| `SheetFooter` | 1 | `cn` | `packages/lexico-components/src/components/ui/sheet.tsx:92` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sheet.tsx:109` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sheet.tsx:121` |
+| `useIsMobile` | 1 | `useEffect(…)` | `packages/lexico-components/src/hooks/use-mobile.tsx:5` |
+| `Skeleton` | 1 | `cn` | `packages/lexico-components/src/components/ui/skeleton.tsx:4` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/tooltip.tsx:18` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:327` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:345` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:363` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:378` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:393` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:408` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:426` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:441` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:462` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:485` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:498` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:511` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:608` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:636` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:695` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/sidebar.tsx:722` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/slider.tsx:10` |
+| `Spinner` | 1 | `cn` | `packages/lexico-components/src/components/ui/spinner.tsx:6` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/switch.tsx:10` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/table.tsx:9` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/table.tsx:23` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/table.tsx:31` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/table.tsx:43` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/table.tsx:58` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/table.tsx:73` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/table.tsx:88` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/table.tsx:103` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/tabs.tsx:12` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/tabs.tsx:27` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/tabs.tsx:42` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/toggle.tsx:34` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/toggle-group.tsx:22` |
+| `forwardRef(…)` | 1 | `cn` | `packages/lexico-components/src/components/ui/toggle-group.tsx:40` |
+| `useMediaQuery` | 1 | `useEffect(…)` | `packages/lexico-components/src/hooks/use-media-query.ts:16` |
+| `useBreakpoint` | 1 | `useMediaQuery` | `packages/lexico-components/src/hooks/use-media-query.ts:62` |
+
+</details>
 
 ### Possibly misplaced
 

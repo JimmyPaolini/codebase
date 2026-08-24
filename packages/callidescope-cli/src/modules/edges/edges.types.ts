@@ -12,6 +12,7 @@ import type ts from "typescript";
 /** Arguments for turning every callable's body into edges. */
 export interface BuildEdgesArguments {
   readonly callablesById: ReadonlyMap<CallableId, DiscoveredCallable>;
+  readonly ignoreCallees: readonly string[];
   readonly includeConstructorEdges: boolean;
   readonly workspaceRoot: string;
 }

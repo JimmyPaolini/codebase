@@ -13,7 +13,7 @@ import type { ImplementationLookup } from "./class-hierarchy.types";
 /** Resolves one interface member against an in-memory workspace. */
 function resolve(args: {
   files: Record<string, string>;
-  maximumFanOut?: number;
+  maximumCandidates?: number;
   memberName: string;
   ownerName: string;
 }): ImplementationLookup {
@@ -28,7 +28,7 @@ function resolve(args: {
   const subject = new ClassHierarchyService(external);
 
   subject.build({
-    maximumFanOut: args.maximumFanOut ?? 8,
+    maximumCandidates: args.maximumCandidates ?? 8,
     programs: [projectProgram],
   });
 
@@ -165,12 +165,12 @@ describe(ClassHierarchyService, () => {
           export class Three { public run(): void {} }
         `,
       },
-      maximumFanOut: 2,
+      maximumCandidates: 2,
       memberName: "run",
       ownerName: "Runner",
     });
 
-    expect(lookup.exceededFanOut).toBe(true);
+    expect(lookup.exceededCandidateLimit).toBe(true);
     expect(lookup.declarations).toStrictEqual([]);
   });
 
@@ -223,7 +223,7 @@ describe(ClassHierarchyService, () => {
 
     const subject = new ClassHierarchyService(external);
 
-    subject.build({ maximumFanOut: 8, programs: [projectProgram] });
+    subject.build({ maximumCandidates: 8, programs: [projectProgram] });
 
     let ownerSymbol: ts.Symbol | undefined;
 
@@ -273,7 +273,7 @@ describe(ClassHierarchyService, () => {
 
     const subject = new ClassHierarchyService(external);
 
-    subject.build({ maximumFanOut: 8, programs: [projectProgram] });
+    subject.build({ maximumCandidates: 8, programs: [projectProgram] });
 
     let ownerSymbol: ts.Symbol | undefined;
 
