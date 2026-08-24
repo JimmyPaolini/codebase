@@ -85,7 +85,6 @@ flowchart LR
   conformetry_nx["conformetry-nx"]
   lexico_ingestion["lexico-ingestion"]
   logger["logger"]
-  reporting["reporting"]
   synchronization["synchronization"]
   validation["validation"]
   caelundas --> logger
@@ -96,7 +95,6 @@ flowchart LR
   conformetry_cli --> logger
   conformetry_nx --> logger
   lexico_ingestion --> logger
-  reporting --> logger
   synchronization --> logger
   validation --> logger
   classDef subject stroke-width:3px
