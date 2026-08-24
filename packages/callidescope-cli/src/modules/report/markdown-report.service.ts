@@ -47,25 +47,48 @@ export class MarkdownReportService {
   // 🔏 Private Methods
 
   /**
-   * Renders each callable's direct fan-out.
+   * Renders each callable's direct fan-out, the first few openly and the rest
+   * behind a disclosure — the same treatment `renderStacks` gives stacks.
    *
    * Shared by both scopes: a project section passes every callable with a
    * direct callee, unfiltered by any limit, the same way its stacks are;
    * a whole-run section passes only the `WideCallableFinding`s that broke
    * the configured limit. `WideCallableFinding` is a `CallableBreadthReport`
    * with a `limit` added, so one renderer covers both without caring which
-   * it was handed.
+   * it was handed. Unfiltered, a project's fan-out table is one row per
+   * non-leaf callable — every bit as unbounded as its stacks — so it earns
+   * the same truncation rather than a bare table.
    */
-  private renderCallableBreadths(
-    reports: readonly CallableBreadthReport[],
-  ): string {
-    return this.renderTable({
+  private renderCallableBreadths(args: {
+    previewCount: number;
+    reports: readonly CallableBreadthReport[];
+  }): string {
+    const toRow = (report: CallableBreadthReport): string =>
+      `| \`${report.displayName}\` | ${String(report.breadth)} | ${report.callees.map((callee) => `\`${callee.displayName}\``).join(", ")} | \`${report.location.filePath}:${String(report.location.line)}\` |`;
+    const preview = args.reports.slice(0, args.previewCount);
+    const remaining = args.reports.slice(args.previewCount);
+    const previewTable = this.renderTable({
       header: MARKDOWN_WIDE_CALLABLES_HEADER,
-      rows: reports.map(
-        (report) =>
-          `| \`${report.displayName}\` | ${String(report.breadth)} | ${report.callees.map((callee) => `\`${callee.displayName}\``).join(", ")} | \`${report.location.filePath}:${String(report.location.line)}\` |`,
-      ),
+      rows: preview.map((report) => toRow(report)),
     });
+
+    if (remaining.length === 0) {
+      return previewTable;
+    }
+
+    return [
+      previewTable,
+      "",
+      "<details>",
+      `<summary>${String(remaining.length)} more callables</summary>`,
+      "",
+      this.renderTable({
+        header: MARKDOWN_WIDE_CALLABLES_HEADER,
+        rows: remaining.map((report) => toRow(report)),
+      }),
+      "",
+      "</details>",
+    ].join("\n");
   }
 
   /** Renders the misplaced-callable findings belonging to one scope. */
@@ -160,7 +183,7 @@ export class MarkdownReportService {
       "",
       this.renderSummaryTable(report.summary),
       "",
-      "### Call stacks",
+      "### Call stacks (depth)",
       "",
       this.renderStacksAs({
         previewCount: args.previewCount,
@@ -172,9 +195,12 @@ export class MarkdownReportService {
       "",
       this.renderSpreads(report.moduleSpreads),
       "",
-      "### Direct fan-out",
+      "### Direct fan-out (breadth)",
       "",
-      this.renderCallableBreadths(report.callableBreadths),
+      this.renderCallableBreadths({
+        previewCount: args.previewCount,
+        reports: report.callableBreadths,
+      }),
       "",
       "### Possibly misplaced",
       "",
@@ -191,7 +217,7 @@ export class MarkdownReportService {
       "",
       this.renderSummaryTable(result.summary),
       "",
-      `## Call stacks over the limit (${String(result.deepStacks.length)})`,
+      `## Call stacks over the depth limit (${String(result.deepStacks.length)})`,
       "",
       this.renderStacksAs({
         previewCount: args.previewCount,
@@ -203,9 +229,12 @@ export class MarkdownReportService {
       "",
       this.renderSpreads(result.moduleSpreads),
       "",
-      `## Callables calling too much directly (${String(result.wideCallables.length)})`,
+      `## Callables over the breadth limit (${String(result.wideCallables.length)})`,
       "",
-      this.renderCallableBreadths(result.wideCallables),
+      this.renderCallableBreadths({
+        previewCount: args.previewCount,
+        reports: result.wideCallables,
+      }),
       "",
       "## Possibly misplaced",
       "",

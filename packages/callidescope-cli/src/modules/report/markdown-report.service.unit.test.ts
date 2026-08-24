@@ -10,7 +10,26 @@ import { ANALYSIS_MODULES } from "../../../testing/modules";
 
 import { MarkdownReportService } from "./markdown-report.service";
 
-import type { CallStack, ProjectReport } from "@callidescope/configuration";
+import type {
+  CallableBreadthReport,
+  CallStack,
+  ProjectReport,
+} from "@callidescope/configuration";
+
+/** A callable with the given breadth and no callees, named uniquely. */
+function callableBreadth(args: {
+  breadth?: number;
+  name: string;
+}): CallableBreadthReport {
+  return {
+    breadth: args.breadth ?? 1,
+    callees: [],
+    displayName: args.name,
+    id: args.name,
+    location: buildSourceLocation({ filePath: `${args.name}.ts` }),
+    signature: undefined,
+  };
+}
 
 /** A project report carrying the given stacks and nothing else. */
 function report(stacks: CallStack[]): ProjectReport {
@@ -170,11 +189,22 @@ describe(MarkdownReportService, () => {
 
     expect(rendered).toContain("| Callables | 4 |");
     expect(rendered).toContain("### Module spread");
-    expect(rendered).toContain("### Direct fan-out");
+    expect(rendered).toContain("### Direct fan-out (breadth)");
     expect(rendered).toContain("### Possibly misplaced");
   });
 
-  it("heads a whole run and counts the stacks over the limit", () => {
+  it("names the call-stacks section as depth, distinct from breadth", () => {
+    const rendered = service.renderProjectSection({
+      heading: "## 🔭 Callidescope",
+      previewCount: 3,
+      rendering: "tree",
+      report: report([]),
+    });
+
+    expect(rendered).toContain("### Call stacks (depth)");
+  });
+
+  it("heads a whole run and counts the stacks over the depth limit", () => {
     const rendered = service.renderRun({
       previewCount: 3,
       rendering: "tree",
@@ -184,7 +214,7 @@ describe(MarkdownReportService, () => {
     });
 
     expect(rendered).toContain("# 🔭 Callidescope");
-    expect(rendered).toContain("## Call stacks over the limit (1)");
+    expect(rendered).toContain("## Call stacks over the depth limit (1)");
   });
 
   it("heads a run's wide-callable section with its count", () => {
@@ -206,7 +236,7 @@ describe(MarkdownReportService, () => {
       }),
     });
 
-    expect(rendered).toContain("## Callables calling too much directly (1)");
+    expect(rendered).toContain("## Callables over the breadth limit (1)");
   });
 
   it("renders a run that found nothing without failing", () => {
@@ -307,5 +337,59 @@ describe(MarkdownReportService, () => {
     expect(rendered).toContain("`First.helper`");
     expect(rendered).toContain("`Second.helper`");
     expect(rendered).toContain("`orchestrator.ts:12`");
+  });
+
+  it("shows every fan-out row openly while they fit in the preview", () => {
+    const rendered = service.renderProjectSection({
+      heading: "## 🔭 Callidescope",
+      previewCount: 3,
+      rendering: "tree",
+      report: {
+        ...report([]),
+        callableBreadths: [
+          callableBreadth({ name: "First" }),
+          callableBreadth({ name: "Second" }),
+        ],
+      },
+    });
+
+    expect(rendered).not.toContain("<details>");
+    expect(rendered).toContain("`Second`");
+  });
+
+  it("hides the fan-out rows past the preview behind a disclosure", () => {
+    const rendered = service.renderProjectSection({
+      heading: "## 🔭 Callidescope",
+      previewCount: 1,
+      rendering: "tree",
+      report: {
+        ...report([]),
+        callableBreadths: [
+          callableBreadth({ name: "First" }),
+          callableBreadth({ name: "Second" }),
+          callableBreadth({ name: "Third" }),
+        ],
+      },
+    });
+
+    expect(rendered).toContain("<summary>2 more callables</summary>");
+    expect(rendered).toContain("</details>");
+  });
+
+  it("still publishes the hidden fan-out rows in full", () => {
+    const rendered = service.renderProjectSection({
+      heading: "## 🔭 Callidescope",
+      previewCount: 1,
+      rendering: "tree",
+      report: {
+        ...report([]),
+        callableBreadths: [
+          callableBreadth({ name: "First" }),
+          callableBreadth({ name: "Second" }),
+        ],
+      },
+    });
+
+    expect(rendered).toContain("| `Second` |");
   });
 });

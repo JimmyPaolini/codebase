@@ -21,12 +21,14 @@ import type {
 } from "@callidescope/configuration";
 
 /**
- * Reads a command line into what the run will do.
+ * Reads the command line and configuration into what the run will do.
  *
- * Kept away from the command itself so the flag semantics can be stated once
- * and tested without tracing anything: which flag writes and which flag fails
- * are two separate questions, and the tool used to answer both of them with
- * one boolean.
+ * Kept away from the command itself so the flag semantics — and now the
+ * configuration a run resolves to — can be stated once and tested without
+ * the command's own output/reporting concerns: which flag writes, which
+ * flag fails, and whether the configuration a run resolved to can even
+ * support what was asked of it, are questions this service answers on its
+ * own, before `CallidescopeCommand` does anything with the result.
  */
 @Injectable()
 export class RunPlanService {
