@@ -261,6 +261,7 @@ export class ConfigurationService {
       exclude: configuration.exclude ?? [],
       include: configuration.include ?? [...DEFAULT_INCLUDE_GLOBS],
       projects: configuration.projects ?? {},
+      workspace: configuration.workspace ?? {},
     };
   }
 
@@ -289,5 +290,18 @@ export class ConfigurationService {
     const defaultOutput = configuration.defaults[graphType];
 
     return this.resolveGraphOutput(projectOutput ?? defaultOutput);
+  }
+
+  /**
+   * Resolves the Workspace Graph's export configuration.
+   *
+   * The Workspace Graph is exported once for the whole repository rather than
+   * once per project, so it has no per-project override and is unaffected by
+   * `include`/`exclude` — those two apply only to `resolveForProject`.
+   */
+  public resolveForWorkspace(
+    configuration: ResolvedCodependixConfiguration,
+  ): ResolvedCodependixGraphOutput {
+    return this.resolveGraphOutput(configuration.workspace.nx);
   }
 }

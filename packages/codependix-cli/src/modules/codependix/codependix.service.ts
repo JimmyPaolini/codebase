@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { ConfigurationService } from "@codependix/configuration";
-import { NeighborhoodService } from "@codependix/nx";
+import { NeighborhoodService, WorkspaceGraphService } from "@codependix/nx";
 import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
@@ -10,17 +10,25 @@ import { LoggerService } from "@codebase/logger";
 import { AnchorNotFoundError } from "../anchors/anchors.errors";
 import { AnchorsService } from "../anchors/anchors.service";
 
-import { JSON_INDENTATION, NX_GRAPH_TYPE } from "./codependix.constants";
+import {
+  JSON_INDENTATION,
+  NX_GRAPH_TYPE,
+  WORKSPACE_GRAPH_PROJECT_NAME,
+} from "./codependix.constants";
 
 import type {
   CodependixCommandOptions,
   CodependixRunMode,
   DeliverFileArguments,
   NxNeighborhoodExport,
+  NxWorkspaceGraphExport,
   ProjectRunResult,
 } from "./codependix.types";
-import type { ResolvedCodependixGraphOutput } from "@codependix/configuration";
-import type { Neighborhood, NxProject } from "@codependix/nx";
+import type {
+  ResolvedCodependixConfiguration,
+  ResolvedCodependixGraphOutput,
+} from "@codependix/configuration";
+import type { Neighborhood, NxProject, WorkspaceGraph } from "@codependix/nx";
 
 /**
  * Builds and delivers every configured Nx neighborhood export.
@@ -40,6 +48,7 @@ export class CodependixService {
     private readonly configurationService: ConfigurationService,
     private readonly logger: LoggerService,
     private readonly neighborhoodService: NeighborhoodService,
+    private readonly workspaceGraphService: WorkspaceGraphService,
   ) {
     this.logger.setContext(CodependixService.name);
   }
@@ -202,6 +211,111 @@ export class CodependixService {
     }
   }
 
+  /**
+   * Delivers the Workspace Graph's configured destinations, if any.
+   *
+   * Returns `undefined` when the resolved target is `"none"`, the same way a
+   * per-project delivery is skipped entirely rather than reported current —
+   * see `runNxGraphs`'s per-project loop for the equivalent reasoning.
+   */
+  private deliverWorkspaceGraph(args: {
+    configuration: ResolvedCodependixConfiguration;
+    mode: CodependixRunMode;
+    workingDirectory: string;
+    workspaceGraph: WorkspaceGraph;
+  }): ProjectRunResult | undefined {
+    const { configuration, mode, workingDirectory, workspaceGraph } = args;
+    const resolvedOutput =
+      this.configurationService.resolveForWorkspace(configuration);
+
+    if (resolvedOutput.target === "none") {
+      return undefined;
+    }
+
+    const stalePaths: string[] = [];
+    const touchesJson =
+      resolvedOutput.target === "both" || resolvedOutput.target === "json";
+    const touchesMarkdown =
+      resolvedOutput.target === "both" || resolvedOutput.target === "markdown";
+
+    if (touchesJson && resolvedOutput.json !== undefined) {
+      this.deliverWorkspaceJson({
+        json: resolvedOutput.json,
+        mode,
+        stalePaths,
+        workingDirectory,
+        workspaceGraph,
+      });
+    }
+
+    if (touchesMarkdown && resolvedOutput.markdown !== undefined) {
+      this.deliverWorkspaceMarkdown({
+        markdown: resolvedOutput.markdown,
+        mode,
+        stalePaths,
+        workingDirectory,
+        workspaceGraph,
+      });
+    }
+
+    return {
+      isCurrent: stalePaths.length === 0,
+      projectName: WORKSPACE_GRAPH_PROJECT_NAME,
+      stalePaths,
+    };
+  }
+
+  /** Delivers the Workspace Graph's JSON destination, recording it as stale if needed. */
+  private deliverWorkspaceJson(args: {
+    json: NonNullable<ResolvedCodependixGraphOutput["json"]>;
+    mode: CodependixRunMode;
+    stalePaths: string[];
+    workingDirectory: string;
+    workspaceGraph: WorkspaceGraph;
+  }): void {
+    const content = this.renderJson(args.workspaceGraph);
+    const isCurrent = this.deliverFile({
+      absoluteRoot: args.workingDirectory,
+      content,
+      mode: args.mode,
+      relativePath: args.json.path,
+    });
+
+    if (!isCurrent) {
+      args.stalePaths.push(args.json.path);
+    }
+  }
+
+  /** Delivers the Workspace Graph's Markdown destination, recording it as stale if needed. */
+  private deliverWorkspaceMarkdown(args: {
+    markdown: NonNullable<ResolvedCodependixGraphOutput["markdown"]>;
+    mode: CodependixRunMode;
+    stalePaths: string[];
+    workingDirectory: string;
+    workspaceGraph: WorkspaceGraph;
+  }): void {
+    const diagram = this.workspaceGraphService.renderMermaid(
+      args.workspaceGraph,
+    );
+    const deliverArguments: DeliverFileArguments = {
+      absoluteRoot: args.workingDirectory,
+      content: diagram,
+      mode: args.mode,
+      relativePath: args.markdown.path,
+    };
+    const isCurrent =
+      args.markdown.anchor === undefined
+        ? this.deliverFile({ ...deliverArguments, content: `${diagram}\n` })
+        : this.deliverAnchoredMarkdown({
+            ...deliverArguments,
+            anchorName: args.markdown.anchor,
+          });
+
+    if (!isCurrent) {
+      args.stalePaths.push(args.markdown.path);
+    }
+  }
+
   /** Reads a file's content, or an empty string when it does not exist yet. */
   private readFileOrEmpty(filePath: string): string {
     try {
@@ -211,21 +325,25 @@ export class CodependixService {
     }
   }
 
-  /** Renders a JSON export the same way every run of codependix would. */
-  private renderJson(exportedGraph: NxNeighborhoodExport): string {
+  /** Renders an export as JSON the same way every run of codependix would. */
+  private renderJson(
+    exportedGraph: NxNeighborhoodExport | NxWorkspaceGraphExport,
+  ): string {
     return `${JSON.stringify(exportedGraph, null, JSON_INDENTATION)}\n`;
   }
 
   // 🌎 Public Methods
 
   /**
-   * Builds and delivers the Nx neighborhood export for every included project.
+   * Builds and delivers every configured Nx graph export — each included
+   * project's Neighborhood, and the whole-workspace Workspace Graph.
    *
    * A project whose resolved export target is `"none"` — because it named no
    * override, matched no include glob, or matched an exclude glob — is left
    * out of the result entirely rather than reported as up to date, so a
-   * `--check` run's exit code depends only on projects codependix was actually
-   * configured to export.
+   * `--check` run's exit code depends only on exports codependix was actually
+   * configured to produce. The Workspace Graph follows the same rule: it is
+   * left out of the result entirely when its own resolved target is `"none"`.
    */
   async runNxGraphs(
     options: CodependixCommandOptions,
@@ -264,6 +382,19 @@ export class CodependixService {
       );
     }
 
-    return results;
+    const workspaceGraph = this.workspaceGraphService.buildWorkspaceGraph(
+      graph,
+      projects,
+    );
+    const workspaceResult = this.deliverWorkspaceGraph({
+      configuration,
+      mode,
+      workingDirectory,
+      workspaceGraph,
+    });
+
+    return workspaceResult === undefined
+      ? results
+      : [...results, workspaceResult];
   }
 }

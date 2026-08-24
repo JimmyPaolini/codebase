@@ -25,6 +25,11 @@ import type { ProjectGraph } from "@nx/devkit";
  * rendering are unchanged, but the file-writing side — deciding where and how
  * a neighborhood is exported — belongs to `codependix-cli` and its own anchor
  * mechanism instead of conformetry's marker-block sync.
+ *
+ * `compareEdges`, `renderEdge`, `renderNode`, and `toNodeIdentifier` are kept
+ * public: `WorkspaceGraphService` renders the whole-workspace graph with the
+ * same node and edge shapes, and reaches for these rather than duplicating
+ * them.
  */
 @Injectable()
 export class NeighborhoodService {
@@ -38,32 +43,35 @@ export class NeighborhoodService {
 
   // 🔏 Private Methods
 
-  /** Sorts edges by source then target so a rendered diagram never churns. */
-  private compareEdges(
-    first: NeighborhoodEdge,
-    second: NeighborhoodEdge,
-  ): number {
-    return (
-      first.source.localeCompare(second.source) ||
-      first.target.localeCompare(second.target)
-    );
-  }
+  /** Collects the edges touching one project in either direction. */
+  private collectEdges(
+    graph: ProjectGraph,
+    projectName: string,
+    knownNames: Set<string>,
+  ): NeighborhoodEdge[] {
+    const edges = new Map<string, NeighborhoodEdge>();
 
-  /** Renders one edge, dotted when Nx inferred it from configuration. */
-  private renderEdge(edge: NeighborhoodEdge): string {
-    const arrow = edge.implicit ? "-.->" : "-->";
+    for (const [source, dependencies] of Object.entries(graph.dependencies)) {
+      for (const dependency of dependencies) {
+        const touches =
+          source === projectName || dependency.target === projectName;
+        if (!touches) continue;
+        if (!knownNames.has(source) || !knownNames.has(dependency.target)) {
+          continue;
+        }
+        if (source === dependency.target) continue;
 
-    return `  ${this.toNodeIdentifier(edge.source)} ${arrow} ${this.toNodeIdentifier(edge.target)}`;
-  }
+        const key = `${source}->${dependency.target}`;
+        // A pair can be declared both ways round; a static edge is the
+        // stronger statement, so it wins over an implicit one.
+        const implicit =
+          dependency.type === "implicit" && (edges.get(key)?.implicit ?? true);
 
-  /** Declares one node, labelled with the project name it stands for. */
-  private renderNode(projectName: string): string {
-    return `  ${this.toNodeIdentifier(projectName)}["${projectName}"]`;
-  }
+        edges.set(key, { implicit, source, target: dependency.target });
+      }
+    }
 
-  /** Turns a project name into an identifier mermaid accepts. */
-  private toNodeIdentifier(projectName: string): string {
-    return projectName.replaceAll(/[^\dA-Za-z]/gu, "_");
+    return [...edges.values()];
   }
 
   // 🌎 Public Methods
@@ -106,35 +114,12 @@ export class NeighborhoodService {
     return neighborhoods;
   }
 
-  /** Collects the edges touching one project in either direction. */
-  collectEdges(
-    graph: ProjectGraph,
-    projectName: string,
-    knownNames: Set<string>,
-  ): NeighborhoodEdge[] {
-    const edges = new Map<string, NeighborhoodEdge>();
-
-    for (const [source, dependencies] of Object.entries(graph.dependencies)) {
-      for (const dependency of dependencies) {
-        const touches =
-          source === projectName || dependency.target === projectName;
-        if (!touches) continue;
-        if (!knownNames.has(source) || !knownNames.has(dependency.target)) {
-          continue;
-        }
-        if (source === dependency.target) continue;
-
-        const key = `${source}->${dependency.target}`;
-        // A pair can be declared both ways round; a static edge is the
-        // stronger statement, so it wins over an implicit one.
-        const implicit =
-          dependency.type === "implicit" && (edges.get(key)?.implicit ?? true);
-
-        edges.set(key, { implicit, source, target: dependency.target });
-      }
-    }
-
-    return [...edges.values()];
+  /** Sorts edges by source then target so a rendered diagram never churns. */
+  compareEdges(first: NeighborhoodEdge, second: NeighborhoodEdge): number {
+    return (
+      first.source.localeCompare(second.source) ||
+      first.target.localeCompare(second.target)
+    );
   }
 
   /** Reads the workspace's project graph. */
@@ -151,6 +136,13 @@ export class NeighborhoodService {
         name,
       }))
       .toSorted((first, second) => first.name.localeCompare(second.name));
+  }
+
+  /** Renders one edge, dotted when Nx inferred it from configuration. */
+  renderEdge(edge: NeighborhoodEdge): string {
+    const arrow = edge.implicit ? "-.->" : "-->";
+
+    return `  ${this.toNodeIdentifier(edge.source)} ${arrow} ${this.toNodeIdentifier(edge.target)}`;
   }
 
   /** Renders a neighborhood as a fenced mermaid diagram. */
@@ -181,10 +173,20 @@ export class NeighborhoodService {
     return lines.join("\n");
   }
 
+  /** Declares one node, labelled with the project name it stands for. */
+  renderNode(projectName: string): string {
+    return `  ${this.toNodeIdentifier(projectName)}["${projectName}"]`;
+  }
+
   /** Sorts names into a stable order, dropping duplicates. */
   sortNames(names: string[]): string[] {
     return [...new Set(names)].toSorted((first, second) =>
       first.localeCompare(second),
     );
+  }
+
+  /** Turns a project name into an identifier mermaid accepts. */
+  toNodeIdentifier(projectName: string): string {
+    return projectName.replaceAll(/[^\dA-Za-z]/gu, "_");
   }
 }

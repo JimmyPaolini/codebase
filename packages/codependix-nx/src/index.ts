@@ -12,3 +12,10 @@ export type {
   NeighborhoodEdge,
   NxProject,
 } from "./modules/neighborhood/neighborhood.types";
+export {
+  WORKSPACE_GRAPH_MERMAID_HEADER,
+  WORKSPACE_GRAPH_UNCONNECTED,
+} from "./modules/workspace-graph/workspace-graph.constants";
+export { WorkspaceGraphModule } from "./modules/workspace-graph/workspace-graph.module";
+export { WorkspaceGraphService } from "./modules/workspace-graph/workspace-graph.service";
+export type { WorkspaceGraph } from "./modules/workspace-graph/workspace-graph.types";

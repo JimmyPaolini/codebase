@@ -23,6 +23,14 @@ export interface CodependixConfiguration {
   include?: string[] | undefined;
   /** Per-project overrides, keyed by the Nx project name. */
   projects?: Record<string, CodependixProjectConfiguration> | undefined;
+  /**
+   * Export configuration for the whole-workspace Workspace Graph.
+   *
+   * Separate from `defaults`/`projects`: the Workspace Graph is exported once
+   * for the entire repository rather than once per project, so it carries no
+   * per-project override and is unaffected by `include`/`exclude`.
+   */
+  workspace?: CodependixWorkspaceConfiguration | undefined;
 }
 
 /**
@@ -78,6 +86,17 @@ export interface CodependixProjectConfiguration {
   nx?: CodependixGraphOutput | undefined;
 }
 
+/**
+ * The Workspace Graph's export configuration, keyed by graph type.
+ *
+ * Only `nx` is declared: the Workspace Graph is a whole-repository Nx project
+ * graph, and neither `codependix-nestjs` nor `codependix-imports` builds a
+ * workspace-wide graph of its own.
+ */
+export interface CodependixWorkspaceConfiguration {
+  nx?: CodependixGraphOutput | undefined;
+}
+
 /** Arguments accepted when loading a configuration file. */
 export interface LoadConfigurationArguments {
   configurationPath?: string | undefined;
@@ -97,6 +116,7 @@ export interface ResolvedCodependixConfiguration {
   exclude: string[];
   include: string[];
   projects: Record<string, CodependixProjectConfiguration>;
+  workspace: CodependixWorkspaceConfiguration;
 }
 
 /** A graph type's export configuration with every default applied. */

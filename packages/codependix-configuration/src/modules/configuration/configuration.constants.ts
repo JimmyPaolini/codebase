@@ -127,6 +127,16 @@ const projectConfigurationSchema = z.object({
 });
 
 /**
+ * Validates the Workspace Graph's export configuration.
+ *
+ * Only `nx` is accepted: the Workspace Graph is a whole-repository Nx project
+ * graph, so it has no `nestjs` or `imports` counterpart to configure.
+ */
+const workspaceConfigurationSchema = z.object({
+  nx: graphOutputSchema.optional(),
+});
+
+/**
  * Validates a codependix configuration file's contents.
  *
  * Zod strips unknown keys rather than rejecting them, so a configuration
@@ -138,4 +148,5 @@ export const codependixConfigurationSchema = z.object({
   exclude: z.array(z.string()).optional(),
   include: z.array(z.string()).optional(),
   projects: z.record(z.string(), projectConfigurationSchema).optional(),
+  workspace: workspaceConfigurationSchema.optional(),
 });

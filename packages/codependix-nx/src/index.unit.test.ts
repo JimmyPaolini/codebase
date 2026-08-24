@@ -7,6 +7,10 @@ import {
   NEIGHBORHOOD_UNCONNECTED,
   NeighborhoodModule,
   NeighborhoodService,
+  WORKSPACE_GRAPH_MERMAID_HEADER,
+  WORKSPACE_GRAPH_UNCONNECTED,
+  WorkspaceGraphModule,
+  WorkspaceGraphService,
 } from "./index.js";
 
 describe("codependix-nx index", () => {
@@ -17,5 +21,12 @@ describe("codependix-nx index", () => {
     expect(NEIGHBORHOOD_MERMAID_HEADER).toBeDefined();
     expect(NEIGHBORHOOD_SUBJECT_STYLE).toBeDefined();
     expect(NEIGHBORHOOD_IMPLICIT_LEGEND).toBeDefined();
+  });
+
+  it("exports the workspace graph surface", () => {
+    expect(WorkspaceGraphModule).toBeDefined();
+    expect(WorkspaceGraphService).toBeDefined();
+    expect(WORKSPACE_GRAPH_UNCONNECTED).toBeDefined();
+    expect(WORKSPACE_GRAPH_MERMAID_HEADER).toBeDefined();
   });
 });
