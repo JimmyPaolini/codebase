@@ -9,7 +9,13 @@ export { CodependixModule } from "./modules/codependix/codependix.module";
 export { CodependixService } from "./modules/codependix/codependix.service";
 export type {
   CodependixCommandOptions,
-  CodependixRunMode,
+  NestjsModuleGraphExport,
   NxNeighborhoodExport,
-  ProjectRunResult,
+  NxWorkspaceGraphExport,
 } from "./modules/codependix/codependix.types";
+export { DeliveryModule } from "./modules/delivery/delivery.module";
+export { DeliveryService } from "./modules/delivery/delivery.service";
+export type {
+  CodependixRunMode,
+  ProjectRunResult,
+} from "./modules/delivery/delivery.types";

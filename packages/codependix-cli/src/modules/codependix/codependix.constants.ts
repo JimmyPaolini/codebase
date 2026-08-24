@@ -1,7 +1,7 @@
 // ♟️ Constants
 
-/** Spaces used to indent every JSON export codependix writes. */
-export const JSON_INDENTATION = 2;
+/** Graph type `codependix-nestjs` builds. */
+export const NESTJS_GRAPH_TYPE = "nestjs";
 
 /** Graph type this ticket's `codependix-nx` package builds. */
 export const NX_GRAPH_TYPE = "nx";

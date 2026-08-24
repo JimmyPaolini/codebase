@@ -1,53 +1,60 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import path from "node:path";
-
 import { ConfigurationService } from "@codependix/configuration";
+import { ModuleGraphService, NestjsProjectService } from "@codependix/nestjs";
 import { NeighborhoodService, WorkspaceGraphService } from "@codependix/nx";
 import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
 
-import { AnchorNotFoundError } from "../anchors/anchors.errors";
-import { AnchorsService } from "../anchors/anchors.service";
+import { DeliveryService } from "../delivery/delivery.service";
 
 import {
-  JSON_INDENTATION,
+  NESTJS_GRAPH_TYPE,
   NX_GRAPH_TYPE,
   WORKSPACE_GRAPH_PROJECT_NAME,
 } from "./codependix.constants";
 
 import type {
-  CodependixCommandOptions,
   CodependixRunMode,
-  DeliverFileArguments,
+  ProjectRunResult,
+} from "../delivery/delivery.types";
+import type {
+  CodependixCommandOptions,
+  NestjsModuleGraphExport,
   NxNeighborhoodExport,
   NxWorkspaceGraphExport,
-  ProjectRunResult,
 } from "./codependix.types";
 import type {
   ResolvedCodependixConfiguration,
   ResolvedCodependixGraphOutput,
 } from "@codependix/configuration";
+import type { NestjsProject } from "@codependix/nestjs";
 import type { Neighborhood, NxProject, WorkspaceGraph } from "@codependix/nx";
+import type { ProjectGraph } from "@nx/devkit";
 
 /**
- * Builds and delivers every configured Nx neighborhood export.
+ * Builds and delivers every configured graph export.
  *
- * Orchestrates three collaborators that each know nothing about the others:
- * `NeighborhoodService` reads the Nx project graph and renders a diagram,
+ * Orchestrates collaborators that each know nothing about the others:
+ * `NeighborhoodService`/`WorkspaceGraphService` read the Nx project graph and
+ * render Nx diagrams, `NestjsProjectService`/`ModuleGraphService` explore a
+ * NestJS project's container and render its module diagram,
  * `ConfigurationService` resolves what each project wants exported and where,
- * and `AnchorsService` splices a Markdown export into an anchor block. This
- * service is the only place that knows how those three pieces fit together.
+ * and `DeliveryService` turns a resolved export configuration into file I/O.
+ * This service is the only place that knows how those pieces fit together —
+ * it renders each graph type's own JSON and diagram content and hands it to
+ * `DeliveryService`, which knows nothing about Nx or NestJS at all.
  */
 @Injectable()
 export class CodependixService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly anchorsService: AnchorsService,
     private readonly configurationService: ConfigurationService,
+    private readonly deliveryService: DeliveryService,
     private readonly logger: LoggerService,
+    private readonly moduleGraphService: ModuleGraphService,
     private readonly neighborhoodService: NeighborhoodService,
+    private readonly nestjsProjectService: NestjsProjectService,
     private readonly workspaceGraphService: WorkspaceGraphService,
   ) {
     this.logger.setContext(CodependixService.name);
@@ -60,7 +67,9 @@ export class CodependixService {
   // 🔏 Private Methods
 
   /** Turns a neighborhood into the JSON shape it is exported as. */
-  private buildJsonExport(neighborhood: Neighborhood): NxNeighborhoodExport {
+  private buildNeighborhoodJsonExport(
+    neighborhood: Neighborhood,
+  ): NxNeighborhoodExport {
     return {
       dependencies: neighborhood.dependencies,
       dependents: neighborhood.dependents,
@@ -69,162 +78,79 @@ export class CodependixService {
     };
   }
 
-  /** Splices a diagram into a named anchor block, or checks it is current. */
-  private deliverAnchoredMarkdown(
-    args: DeliverFileArguments & { anchorName: string },
-  ): boolean {
-    const resolvedPath = path.resolve(args.absoluteRoot, args.relativePath);
+  /** Resolves the run mode a command line's options selected. */
+  private resolveMode(options: CodependixCommandOptions): CodependixRunMode {
+    return options.check === true ? "check" : "write";
+  }
 
-    if (!existsSync(resolvedPath)) {
-      throw new AnchorNotFoundError(args.anchorName, resolvedPath);
-    }
+  // 🌎 Public Methods
 
-    const fileContent = readFileSync(resolvedPath, "utf8");
+  /** Explores, renders, and delivers one NestJS project's module graph. */
+  private async runNestjsProject(args: {
+    mode: CodependixRunMode;
+    project: NestjsProject;
+    resolvedOutput: ResolvedCodependixGraphOutput;
+  }): Promise<ProjectRunResult> {
+    const { mode, project, resolvedOutput } = args;
+    const tree = await this.nestjsProjectService.exploreProject(project);
+    const moduleGraph = this.moduleGraphService.buildGraph(tree, project.name);
+    const jsonExport: NestjsModuleGraphExport = moduleGraph;
 
-    if (args.mode === "check") {
-      return this.anchorsService.checkAnchor({
-        anchorName: args.anchorName,
-        fileContent,
-        filePath: resolvedPath,
-        freshContent: args.content,
-      }).isCurrent;
-    }
-
-    const updated = this.anchorsService.replaceAnchorContent({
-      anchorName: args.anchorName,
-      fileContent,
-      filePath: resolvedPath,
-      newContent: args.content,
+    return this.deliveryService.deliverGraphOutput({
+      jsonContent:
+        resolvedOutput.json === undefined
+          ? undefined
+          : this.deliveryService.renderJson(jsonExport),
+      markdownContent:
+        resolvedOutput.markdown === undefined
+          ? undefined
+          : this.moduleGraphService.renderMermaid(moduleGraph),
+      mode,
+      project,
+      resolvedOutput,
     });
-
-    if (updated !== fileContent) {
-      writeFileSync(resolvedPath, updated, "utf8");
-    }
-
-    return true;
   }
 
-  /** Writes or checks a whole file's rendered content. */
-  private deliverFile(args: DeliverFileArguments): boolean {
-    const resolvedPath = path.resolve(args.absoluteRoot, args.relativePath);
-
-    if (args.mode === "check") {
-      return this.readFileOrEmpty(resolvedPath) === args.content;
-    }
-
-    mkdirSync(path.dirname(resolvedPath), { recursive: true });
-    writeFileSync(resolvedPath, args.content, "utf8");
-
-    return true;
-  }
-
-  /** Delivers whichever destinations a project's resolved output names. */
-  private deliverProject(args: {
+  /** Renders and delivers one project's Nx Neighborhood. */
+  private runNxProject(args: {
     mode: CodependixRunMode;
     neighborhood: Neighborhood;
     project: NxProject;
     resolvedOutput: ResolvedCodependixGraphOutput;
   }): ProjectRunResult {
     const { mode, neighborhood, project, resolvedOutput } = args;
-    const stalePaths: string[] = [];
-    const touchesJson =
-      resolvedOutput.target === "both" || resolvedOutput.target === "json";
-    const touchesMarkdown =
-      resolvedOutput.target === "both" || resolvedOutput.target === "markdown";
 
-    if (touchesJson && resolvedOutput.json !== undefined) {
-      this.deliverProjectJson({
-        json: resolvedOutput.json,
-        mode,
-        neighborhood,
-        project,
-        stalePaths,
-      });
-    }
-
-    if (touchesMarkdown && resolvedOutput.markdown !== undefined) {
-      this.deliverProjectMarkdown({
-        markdown: resolvedOutput.markdown,
-        mode,
-        neighborhood,
-        project,
-        stalePaths,
-      });
-    }
-
-    return {
-      isCurrent: stalePaths.length === 0,
-      projectName: project.name,
-      stalePaths,
-    };
-  }
-
-  /** Delivers a project's JSON destination, recording it as stale if needed. */
-  private deliverProjectJson(args: {
-    json: NonNullable<ResolvedCodependixGraphOutput["json"]>;
-    mode: CodependixRunMode;
-    neighborhood: Neighborhood;
-    project: NxProject;
-    stalePaths: string[];
-  }): void {
-    const content = this.renderJson(this.buildJsonExport(args.neighborhood));
-    const isCurrent = this.deliverFile({
-      absoluteRoot: args.project.absoluteRoot,
-      content,
-      mode: args.mode,
-      relativePath: args.json.path,
+    return this.deliveryService.deliverGraphOutput({
+      jsonContent:
+        resolvedOutput.json === undefined
+          ? undefined
+          : this.deliveryService.renderJson(
+              this.buildNeighborhoodJsonExport(neighborhood),
+            ),
+      markdownContent:
+        resolvedOutput.markdown === undefined
+          ? undefined
+          : this.neighborhoodService.renderMermaid(neighborhood),
+      mode,
+      project,
+      resolvedOutput,
     });
-
-    if (!isCurrent) {
-      args.stalePaths.push(args.json.path);
-    }
-  }
-
-  /** Delivers a project's Markdown destination, recording it as stale if needed. */
-  private deliverProjectMarkdown(args: {
-    markdown: NonNullable<ResolvedCodependixGraphOutput["markdown"]>;
-    mode: CodependixRunMode;
-    neighborhood: Neighborhood;
-    project: NxProject;
-    stalePaths: string[];
-  }): void {
-    const diagram = this.neighborhoodService.renderMermaid(args.neighborhood);
-    const deliverArguments: DeliverFileArguments = {
-      absoluteRoot: args.project.absoluteRoot,
-      content: diagram,
-      mode: args.mode,
-      relativePath: args.markdown.path,
-    };
-    const isCurrent =
-      args.markdown.anchor === undefined
-        ? this.deliverFile({
-            ...deliverArguments,
-            content: `${diagram}\n`,
-          })
-        : this.deliverAnchoredMarkdown({
-            ...deliverArguments,
-            anchorName: args.markdown.anchor,
-          });
-
-    if (!isCurrent) {
-      args.stalePaths.push(args.markdown.path);
-    }
   }
 
   /**
-   * Delivers the Workspace Graph's configured destinations, if any.
+   * Renders and delivers the Workspace Graph's configured destinations.
    *
    * Returns `undefined` when the resolved target is `"none"`, the same way a
-   * per-project delivery is skipped entirely rather than reported current —
-   * see `runNxGraphs`'s per-project loop for the equivalent reasoning.
+   * per-project delivery is skipped entirely rather than reported current.
    */
-  private deliverWorkspaceGraph(args: {
+  private runWorkspaceGraph(args: {
     configuration: ResolvedCodependixConfiguration;
+    graph: ProjectGraph;
     mode: CodependixRunMode;
+    projects: NxProject[];
     workingDirectory: string;
-    workspaceGraph: WorkspaceGraph;
   }): ProjectRunResult | undefined {
-    const { configuration, mode, workingDirectory, workspaceGraph } = args;
+    const { configuration, graph, mode, projects, workingDirectory } = args;
     const resolvedOutput =
       this.configurationService.resolveForWorkspace(configuration);
 
@@ -232,107 +158,72 @@ export class CodependixService {
       return undefined;
     }
 
-    const stalePaths: string[] = [];
-    const touchesJson =
-      resolvedOutput.target === "both" || resolvedOutput.target === "json";
-    const touchesMarkdown =
-      resolvedOutput.target === "both" || resolvedOutput.target === "markdown";
+    const workspaceGraph: WorkspaceGraph =
+      this.workspaceGraphService.buildWorkspaceGraph(graph, projects);
+    const jsonExport: NxWorkspaceGraphExport = workspaceGraph;
 
-    if (touchesJson && resolvedOutput.json !== undefined) {
-      this.deliverWorkspaceJson({
-        json: resolvedOutput.json,
-        mode,
-        stalePaths,
-        workingDirectory,
-        workspaceGraph,
-      });
-    }
-
-    if (touchesMarkdown && resolvedOutput.markdown !== undefined) {
-      this.deliverWorkspaceMarkdown({
-        markdown: resolvedOutput.markdown,
-        mode,
-        stalePaths,
-        workingDirectory,
-        workspaceGraph,
-      });
-    }
-
-    return {
-      isCurrent: stalePaths.length === 0,
-      projectName: WORKSPACE_GRAPH_PROJECT_NAME,
-      stalePaths,
-    };
-  }
-
-  /** Delivers the Workspace Graph's JSON destination, recording it as stale if needed. */
-  private deliverWorkspaceJson(args: {
-    json: NonNullable<ResolvedCodependixGraphOutput["json"]>;
-    mode: CodependixRunMode;
-    stalePaths: string[];
-    workingDirectory: string;
-    workspaceGraph: WorkspaceGraph;
-  }): void {
-    const content = this.renderJson(args.workspaceGraph);
-    const isCurrent = this.deliverFile({
-      absoluteRoot: args.workingDirectory,
-      content,
-      mode: args.mode,
-      relativePath: args.json.path,
+    return this.deliveryService.deliverGraphOutput({
+      jsonContent:
+        resolvedOutput.json === undefined
+          ? undefined
+          : this.deliveryService.renderJson(jsonExport),
+      markdownContent:
+        resolvedOutput.markdown === undefined
+          ? undefined
+          : this.workspaceGraphService.renderMermaid(workspaceGraph),
+      mode,
+      project: {
+        absoluteRoot: workingDirectory,
+        name: WORKSPACE_GRAPH_PROJECT_NAME,
+      },
+      resolvedOutput,
     });
-
-    if (!isCurrent) {
-      args.stalePaths.push(args.json.path);
-    }
   }
 
-  /** Delivers the Workspace Graph's Markdown destination, recording it as stale if needed. */
-  private deliverWorkspaceMarkdown(args: {
-    markdown: NonNullable<ResolvedCodependixGraphOutput["markdown"]>;
-    mode: CodependixRunMode;
-    stalePaths: string[];
-    workingDirectory: string;
-    workspaceGraph: WorkspaceGraph;
-  }): void {
-    const diagram = this.workspaceGraphService.renderMermaid(
-      args.workspaceGraph,
+  /**
+   * Builds and delivers every configured NestJS module graph export.
+   *
+   * Only `framework:nestjs`-tagged projects participate, discovered from the
+   * same Nx project graph `runNxGraphs` reads — see `NestjsProjectService`.
+   */
+  async runNestjsGraphs(
+    options: CodependixCommandOptions,
+    workingDirectory: string,
+  ): Promise<ProjectRunResult[]> {
+    const mode = this.resolveMode(options);
+    const configuration = await this.configurationService.loadConfiguration({
+      configurationPath: options.config,
+      searchDirectory: workingDirectory,
+    });
+    const graph = await this.neighborhoodService.readProjectGraph();
+    const projects = this.neighborhoodService.readProjects(
+      graph,
+      workingDirectory,
     );
-    const deliverArguments: DeliverFileArguments = {
-      absoluteRoot: args.workingDirectory,
-      content: diagram,
-      mode: args.mode,
-      relativePath: args.markdown.path,
-    };
-    const isCurrent =
-      args.markdown.anchor === undefined
-        ? this.deliverFile({ ...deliverArguments, content: `${diagram}\n` })
-        : this.deliverAnchoredMarkdown({
-            ...deliverArguments,
-            anchorName: args.markdown.anchor,
-          });
+    const nestjsProjects = this.nestjsProjectService.discoverProjects(
+      graph,
+      projects,
+    );
+    const results: ProjectRunResult[] = [];
 
-    if (!isCurrent) {
-      args.stalePaths.push(args.markdown.path);
+    for (const project of nestjsProjects) {
+      const resolvedOutput = this.configurationService.resolveForProject({
+        configuration,
+        graphType: NESTJS_GRAPH_TYPE,
+        projectName: project.name,
+      });
+
+      if (resolvedOutput.target === "none") {
+        continue;
+      }
+
+      results.push(
+        await this.runNestjsProject({ mode, project, resolvedOutput }),
+      );
     }
-  }
 
-  /** Reads a file's content, or an empty string when it does not exist yet. */
-  private readFileOrEmpty(filePath: string): string {
-    try {
-      return readFileSync(filePath, "utf8");
-    } catch {
-      return "";
-    }
+    return results;
   }
-
-  /** Renders an export as JSON the same way every run of codependix would. */
-  private renderJson(
-    exportedGraph: NxNeighborhoodExport | NxWorkspaceGraphExport,
-  ): string {
-    return `${JSON.stringify(exportedGraph, null, JSON_INDENTATION)}\n`;
-  }
-
-  // 🌎 Public Methods
 
   /**
    * Builds and delivers every configured Nx graph export — each included
@@ -349,7 +240,7 @@ export class CodependixService {
     options: CodependixCommandOptions,
     workingDirectory: string,
   ): Promise<ProjectRunResult[]> {
-    const mode: CodependixRunMode = options.check === true ? "check" : "write";
+    const mode = this.resolveMode(options);
     const configuration = await this.configurationService.loadConfiguration({
       configurationPath: options.config,
       searchDirectory: workingDirectory,
@@ -378,19 +269,16 @@ export class CodependixService {
       }
 
       results.push(
-        this.deliverProject({ mode, neighborhood, project, resolvedOutput }),
+        this.runNxProject({ mode, neighborhood, project, resolvedOutput }),
       );
     }
 
-    const workspaceGraph = this.workspaceGraphService.buildWorkspaceGraph(
-      graph,
-      projects,
-    );
-    const workspaceResult = this.deliverWorkspaceGraph({
+    const workspaceResult = this.runWorkspaceGraph({
       configuration,
+      graph,
       mode,
+      projects,
       workingDirectory,
-      workspaceGraph,
     });
 
     return workspaceResult === undefined
