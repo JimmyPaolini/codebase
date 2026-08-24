@@ -4,13 +4,34 @@ import path from "node:path";
 
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
-import { afterEach, beforeAll, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
+
+import { throwUnknown } from "../../../testing/mocks";
 
 import { MarkdownService } from "./markdown.service";
 
 import type { DeepMocked } from "@golevelup/ts-vitest";
+import type * as NodeFileSystem from "node:fs";
+
+// Reads stay real except for one sentinel path, which throws a bare string:
+// a rejected promise or a thrown literal is not an Error, and the analyzer
+// still has to report which file it gave up on.
+vi.mock("node:fs", async (importOriginal) => {
+  const actual = await importOriginal<typeof NodeFileSystem>();
+
+  return {
+    ...actual,
+    readFileSync: (filePath: string, encoding: "utf8") => {
+      if (filePath.endsWith("throws-a-string.md")) {
+        return throwUnknown("not an Error");
+      }
+
+      return actual.readFileSync(filePath, encoding);
+    },
+  };
+});
 
 describe(MarkdownService, () => {
   let service: MarkdownService;
@@ -186,6 +207,25 @@ describe(MarkdownService, () => {
       "📝 Skipped markdown analysis",
       undefined,
       expect.objectContaining({ filePath: "missing.md" }),
+    );
+  });
+
+  it("reports a non-Error thrown value as a plain string", () => {
+    const workingDirectory = writeDocuments({ "a.md": "# A\n" });
+
+    const result = service.analyze({
+      markdownFiles: ["a.md", "throws-a-string.md"],
+      workingDirectory,
+    });
+
+    expect(result.files).toBe(1);
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "📝 Skipped markdown analysis",
+      undefined,
+      expect.objectContaining({
+        filePath: "throws-a-string.md",
+        reason: "not an Error",
+      }),
     );
   });
 

@@ -12,10 +12,8 @@ import { UnreadableTargetFileError } from "./size-analysis.errors";
 import type { AnalyzeSizeArguments, SizeResult } from "./size-analysis.types";
 import type { CodometerCompression } from "@codometer/configuration";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /** Measures how many bytes a target's files occupy once compressed. */
 @Injectable()
-/* v8 ignore stop */
 export class SizeAnalysisService {
   // 🏗 Dependency Injection
 

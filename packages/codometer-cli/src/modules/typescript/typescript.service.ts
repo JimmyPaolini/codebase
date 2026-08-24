@@ -107,7 +107,6 @@ export class TypescriptService {
     if (commentText.startsWith("/**")) {
       stats.docComments++;
       for (const match of commentText.matchAll(DOC_TAG_REGEX)) {
-        /* v8 ignore next -- the doc-tag pattern always captures its group */
         const tagName = match[1]?.toLowerCase() ?? "";
         stats.docTags[tagName] = (stats.docTags[tagName] ?? 0) + 1;
       }
@@ -221,8 +220,6 @@ export class TypescriptService {
   private getSymbolModifiers(
     node: tsCompiler.Node,
   ): Set<CodometerSymbolModifier> {
-    /* v8 ignore next 3 -- every kind this is reached for can have modifiers,
-       and the guard is what narrows the node type for `getModifiers`. */
     const keywords = tsCompiler.canHaveModifiers(node)
       ? tsCompiler.getModifiers(node)
       : undefined;

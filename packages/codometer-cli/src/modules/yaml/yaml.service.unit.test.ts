@@ -8,9 +8,30 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
+import { throwUnknown } from "../../../testing/mocks";
+
 import { YamlService } from "./yaml.service";
 
 import type { DeepMocked } from "@golevelup/ts-vitest";
+import type * as NodeFileSystem from "node:fs";
+
+// Reads stay real except for one sentinel path, which throws a bare string:
+// a rejected promise or a thrown literal is not an Error, and the analyzer
+// still has to report which file it gave up on.
+vi.mock("node:fs", async (importOriginal) => {
+  const actual = await importOriginal<typeof NodeFileSystem>();
+
+  return {
+    ...actual,
+    readFileSync: (filePath: string, encoding: "utf8") => {
+      if (filePath.endsWith("throws-a-string.yaml")) {
+        return throwUnknown("not an Error");
+      }
+
+      return actual.readFileSync(filePath, encoding);
+    },
+  };
+});
 
 describe(YamlService, () => {
   let service: YamlService;
@@ -214,6 +235,25 @@ describe(YamlService, () => {
       "🧾 Skipped YAML analysis",
       undefined,
       expect.objectContaining({ filePath: "missing.yaml" }),
+    );
+  });
+
+  it("reports a non-Error thrown value as a plain string", () => {
+    const { workingDirectory, yamlFiles } = writeYamlFiles({
+      "good.yaml": "a: 1\n",
+      "throws-a-string.yaml": "a: 1\n",
+    });
+
+    const result = service.analyze({ workingDirectory, yamlFiles });
+
+    expect(result.files).toBe(1);
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "🧾 Skipped YAML analysis",
+      undefined,
+      expect.objectContaining({
+        filePath: "throws-a-string.yaml",
+        reason: "not an Error",
+      }),
     );
   });
 });

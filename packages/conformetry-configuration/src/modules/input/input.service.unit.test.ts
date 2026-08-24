@@ -80,6 +80,15 @@ describe(InputService, () => {
       ).toThrow("generator must not be empty");
     });
 
+    it("trims and accepts a non-blank required option", () => {
+      expect(
+        service.parseRequiredOption({
+          optionName: "generator",
+          value: " widget ",
+        }),
+      ).toBe("widget");
+    });
+
     it("splits comma-delimited filters and drops empties", () => {
       expect(service.parseCommaDelimitedOption("a, ,b ")).toStrictEqual([
         "a",

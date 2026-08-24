@@ -16,7 +16,6 @@ import type {
 } from "./targets.types";
 import type { ResolvedCodometerTarget } from "@codometer/configuration";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Lists the files a target holds.
  *
@@ -25,7 +24,6 @@ import type { ResolvedCodometerTarget } from "@codometer/configuration";
  * output, which every repository's ignore files claim.
  */
 @Injectable()
-/* v8 ignore stop */
 export class TargetsService {
   // 🏗 Dependency Injection
 

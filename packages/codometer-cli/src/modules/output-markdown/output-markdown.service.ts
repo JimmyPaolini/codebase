@@ -40,12 +40,10 @@ import type {
 } from "./output-markdown.types";
 import type { MarkdownAnchorHelpers } from "@codometer/configuration";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Writes generated code statistics badges into a markdown file.
  */
 @Injectable()
-/* v8 ignore stop */
 export class OutputMarkdownService {
   // 🏗 Dependency Injection
 

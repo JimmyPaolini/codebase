@@ -10,7 +10,6 @@ import type {
   SyncJsonArguments,
 } from "./output-json.types";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Writes the report to a JSON file.
  *
@@ -19,7 +18,6 @@ import type {
  * repository nobody touched as stale.
  */
 @Injectable()
-/* v8 ignore stop */
 export class OutputJsonService {
   // 🏗 Dependency Injection
 

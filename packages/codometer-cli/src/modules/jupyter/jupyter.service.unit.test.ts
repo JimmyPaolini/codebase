@@ -8,6 +8,7 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
+import { throwUnknown } from "../../../testing/mocks";
 import { JsonService } from "../json/json.service";
 import { MarkdownService } from "../markdown/markdown.service";
 import { EMPTY_PYTHON_RESULT } from "../python/python.constants";
@@ -16,6 +17,25 @@ import { PythonService } from "../python/python.service";
 import { JupyterService } from "./jupyter.service";
 
 import type { DeepMocked } from "@golevelup/ts-vitest";
+import type * as NodeFileSystem from "node:fs";
+
+// Reads stay real except for one sentinel path, which throws a bare string:
+// a rejected promise or a thrown literal is not an Error, and the analyzer
+// still has to report which file it gave up on.
+vi.mock("node:fs", async (importOriginal) => {
+  const actual = await importOriginal<typeof NodeFileSystem>();
+
+  return {
+    ...actual,
+    readFileSync: (filePath: string, encoding: "utf8") => {
+      if (filePath.endsWith("throws-a-string.ipynb")) {
+        return throwUnknown("not an Error");
+      }
+
+      return actual.readFileSync(filePath, encoding);
+    },
+  };
+});
 
 /** A notebook holding one markdown cell and one executed code cell. */
 const sampleNotebook = {
@@ -289,6 +309,32 @@ describe(JupyterService, () => {
       "📓 Skipped notebook analysis",
       undefined,
       expect.objectContaining({ filePath: "broken.ipynb" }),
+    );
+  });
+
+  it("reports a non-Error thrown value as a plain string", () => {
+    vi.spyOn(pythonService, "analyzeContents").mockReturnValue({
+      ...EMPTY_PYTHON_RESULT,
+    });
+    const { notebookFiles, workingDirectory } = writeNotebooks({
+      "good.ipynb": sampleNotebook,
+      "throws-a-string.ipynb": sampleNotebook,
+    });
+
+    const result = service.analyze({
+      notebookFiles,
+      pythonCommand: "python3",
+      workingDirectory,
+    });
+
+    expect(result.files).toBe(1);
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "📓 Skipped notebook analysis",
+      undefined,
+      expect.objectContaining({
+        filePath: "throws-a-string.ipynb",
+        reason: "not an Error",
+      }),
     );
   });
 

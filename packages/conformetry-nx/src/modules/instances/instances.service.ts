@@ -11,7 +11,6 @@ import { ScopeService } from "../scope/scope.service";
 import type { FindProjectInstancesArguments } from "./instances.types";
 import type { Instance } from "@conformetry/configuration";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Turns Nx project knowledge into the instances conformetry validates.
  *
@@ -21,7 +20,6 @@ import type { Instance } from "@conformetry/configuration";
  * that would otherwise have to live inside them.
  */
 @Injectable()
-/* v8 ignore stop */
 export class InstancesService {
   // 🏗 Dependency Injection
 

@@ -248,3 +248,16 @@ export function mockDates(date: Date = DEFAULT_TEST_DATE): void {
     vi.useRealTimers();
   });
 }
+
+/**
+ * Throws the given value without narrowing it to `Error`.
+ *
+ * A catch block that special-cases `instanceof Error` needs a thrown value
+ * that provably is not one to exercise its other branch. Typing the
+ * parameter `unknown` is what lets a test throw a bare string or object
+ * without tripping the lint rule that otherwise requires every `throw` to
+ * carry an `Error`.
+ */
+export function throwUnknown(value: unknown): never {
+  throw value;
+}

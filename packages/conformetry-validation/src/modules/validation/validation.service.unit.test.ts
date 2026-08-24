@@ -2,7 +2,10 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { TemplateDiscoveryService } from "@conformetry/configuration";
+import {
+  InstanceDiscoveryService,
+  TemplateDiscoveryService,
+} from "@conformetry/configuration";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -214,14 +217,62 @@ describe(ValidationService, () => {
         instances: [{ nameStem: "my-widget", path: instancePath }],
         loadLanguageModule: async (specifier) => {
           loaded.push(specifier);
+          const moduleNamespace: unknown = await import(specifier);
 
-          return import(specifier);
+          return moduleNamespace;
         },
         templates,
       });
 
       expect(loaded.length).toBeGreaterThan(0);
       expect(result.checkedPaths.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("resilience to a discovery service reporting no prepared documents", () => {
+    it("treats no prepared entry for the instance as no documents to compare", async () => {
+      const instancePath = await createInstance({
+        configuration: '{\n  "kind": "widget",\n  "name": "my-widget"\n}\n',
+        withNotes: true,
+      });
+      const realModule = await Test.createTestingModule({
+        imports: [ValidationModule],
+        providers: [ValidationService],
+      }).compile();
+      const realInstanceDiscoveryService = await realModule.resolve(
+        InstanceDiscoveryService,
+      );
+      const overriddenModule = await Test.createTestingModule({
+        imports: [ValidationModule],
+        providers: [ValidationService],
+      })
+        .overrideProvider(InstanceDiscoveryService)
+        .useValue({
+          matchInstances: (
+            args: Parameters<InstanceDiscoveryService["matchInstances"]>[0],
+          ) => realInstanceDiscoveryService.matchInstances(args),
+          // Always empty, unlike the real service, which returns one entry
+          // per instance — this exercises the defensive fallback for a
+          // missing prepared entry that a one-to-one mapping never reaches
+          // in practice.
+          prepareDocuments: () => [],
+          resolveInstanceFiles: (
+            args: Parameters<
+              InstanceDiscoveryService["resolveInstanceFiles"]
+            >[0],
+          ) => realInstanceDiscoveryService.resolveInstanceFiles(args),
+        })
+        .compile();
+      const serviceUnderTest =
+        await overriddenModule.resolve(ValidationService);
+
+      const result = await serviceUnderTest.validate({
+        instances: [{ nameStem: "my-widget", path: instancePath }],
+        templates,
+      });
+
+      expect(result.fileResults).toStrictEqual([]);
+      expect(result.ok).toBe(true);
     });
   });
 });

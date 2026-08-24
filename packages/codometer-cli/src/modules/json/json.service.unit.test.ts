@@ -4,13 +4,42 @@ import path from "node:path";
 
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
-import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import { LoggerService } from "@codebase/logger";
+
+import { throwUnknown } from "../../../testing/mocks";
 
 import { JsonService } from "./json.service";
 
 import type { DeepMocked } from "@golevelup/ts-vitest";
+import type * as NodeFileSystem from "node:fs";
+
+// Reads stay real except for one sentinel path, which throws a bare string:
+// a rejected promise or a thrown literal is not an Error, and the analyzer
+// still has to report which file it gave up on.
+vi.mock("node:fs", async (importOriginal) => {
+  const actual = await importOriginal<typeof NodeFileSystem>();
+
+  return {
+    ...actual,
+    readFileSync: (filePath: string, encoding: "utf8") => {
+      if (filePath.endsWith("throws-a-string.json")) {
+        return throwUnknown("not an Error");
+      }
+
+      return actual.readFileSync(filePath, encoding);
+    },
+  };
+});
 
 describe(JsonService, () => {
   let service: JsonService;
@@ -236,6 +265,21 @@ describe(JsonService, () => {
       "🧮 Skipped JSON analysis",
       undefined,
       expect.objectContaining({ path: filePath }),
+    );
+  });
+
+  it("reports a non-Error thrown value as a plain string", () => {
+    const filePath = path.join(tempDirectory, "throws-a-string.json");
+
+    service.analyze({
+      jsonFiles: [path.relative(tempDirectory, filePath)],
+      workingDirectory: tempDirectory,
+    });
+
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "🧮 Skipped JSON analysis",
+      undefined,
+      expect.objectContaining({ path: filePath, reason: "not an Error" }),
     );
   });
 });

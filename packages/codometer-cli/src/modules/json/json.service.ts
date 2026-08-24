@@ -9,10 +9,8 @@ import { EMPTY_JSON_RESULT } from "./json.constants";
 
 import type { JsoncState, JsonInput, JsonResult } from "./json.types";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /** Walks parsed JSON values to collect structural metrics. */
 @Injectable()
-/* v8 ignore stop */
 export class JsonService {
   // 🏗 Dependency Injection
 

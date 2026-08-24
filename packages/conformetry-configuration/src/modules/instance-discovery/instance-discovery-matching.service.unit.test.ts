@@ -250,6 +250,56 @@ describe(InstanceDiscoveryMatchingService, () => {
       expect(unmatched[0]?.tiedTemplateNames).toStrictEqual(["alpha", "beta"]);
     });
 
+    it("breaks an equal-ratio tie by absolute matched file count", async () => {
+      const templatesRootPath = await mkdtemp(
+        path.join(tmpdir(), "conformetry-templates-"),
+      );
+      const layout: Record<string, string[]> = {
+        // Both templates reach a 50% match ratio, so the tiebreaker must fall
+        // to whichever matched more files in absolute terms — "larger".
+        larger: [
+          "larger.service.ts",
+          "larger.module.ts",
+          "larger.types.ts",
+          "larger.constants.ts",
+        ],
+        smaller: ["smaller.service.ts", "smaller.module.ts"],
+      };
+
+      for (const [name, filenames] of Object.entries(layout)) {
+        for (const filename of filenames) {
+          const filePath = path.join(templatesRootPath, name, filename);
+
+          await mkdir(path.dirname(filePath), { recursive: true });
+          await writeFile(filePath, "", "utf8");
+        }
+      }
+
+      const instancePath = await mkdtemp(
+        path.join(tmpdir(), "conformetry-instance-"),
+      );
+
+      // Matches half of "larger" (2 of 4) and half of "smaller" (1 of 2).
+      await writeFile(path.join(instancePath, "larger.service.ts"), "", "utf8");
+      await writeFile(path.join(instancePath, "larger.module.ts"), "", "utf8");
+      await writeFile(
+        path.join(instancePath, "smaller.service.ts"),
+        "",
+        "utf8",
+      );
+
+      const matches = service.matchTemplates({
+        instance: { nameStem: "differences", path: instancePath },
+        substitutions: {},
+        templates: collectTemplates(templatesService, templatesRootPath),
+      });
+
+      expect(matches.map((match) => match.template.name)).toStrictEqual([
+        "larger",
+        "smaller",
+      ]);
+    });
+
     it("matches every template an instance satisfies completely", async () => {
       const templatesRootPath = await mkdtemp(
         path.join(tmpdir(), "conformetry-templates-"),

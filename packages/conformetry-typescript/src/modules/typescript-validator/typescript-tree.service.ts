@@ -10,7 +10,6 @@ import type {
 } from "./typescript-validator.types";
 import type { Node } from "typescript";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Walks two syntax trees in parallel and reports what the template requires
  * but the instance does not contain.
@@ -25,7 +24,6 @@ import type { Node } from "typescript";
  * missing rather than to how many findings were printed.
  */
 @Injectable()
-/* v8 ignore stop */
 export class TypescriptTreeService {
   // 🏗 Dependency Injection
 
@@ -49,7 +47,6 @@ export class TypescriptTreeService {
     return {
       instancePosition: args.instanceNode.getStart(),
       kindLabel: this.typeScriptNodesService.readKindLabel(args.templateChild),
-      /* v8 ignore next -- a node with no key is reported without one */
       nodeKey: args.nodeKey ?? undefined,
       templatePosition: args.templateChild.getStart(),
       weight: this.typeScriptNodesService.countSubtree(args.templateChild),
@@ -79,7 +76,6 @@ export class TypescriptTreeService {
         });
       })
       .reduce((best, candidate) => {
-        /* v8 ignore next -- a tie keeps the earlier candidate */
         return this.scoringService.sumWeights(candidate.differences) <
           this.scoringService.sumWeights(best.differences)
           ? candidate

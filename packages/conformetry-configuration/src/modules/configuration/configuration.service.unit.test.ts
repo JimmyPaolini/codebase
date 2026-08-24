@@ -202,6 +202,24 @@ describe(ConfigurationService, () => {
     expect(configuration[0]?.name).toBe("example");
   });
 
+  it("unwraps a default export that is itself nested one level deeper", async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), "conformetry-config-"));
+    const configurationPath = path.join(directory, "conformetry.config.mjs");
+
+    // Mirrors a CommonJS/ESM interop shape where the resolved default export
+    // is itself an object carrying a further `default` field.
+    await writeFile(
+      configurationPath,
+      'export default { default: [{ name: "example", templatePath: "templates/example" }] };\n',
+      "utf8",
+    );
+
+    const configuration =
+      await service.loadConformetryConfiguration(configurationPath);
+
+    expect(configuration[0]?.name).toBe("example");
+  });
+
   it("reads a JSONC configuration, comments and all", async () => {
     const directory = await mkdtemp(path.join(tmpdir(), "conformetry-config-"));
     const configurationPath = path.join(directory, "conformetry.config.jsonc");

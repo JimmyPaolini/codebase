@@ -10,7 +10,6 @@ import type { CreateAdaptersArguments, TreeAdapters } from "./adapter.types";
 import type { DirectoryEntry } from "@conformetry/generation";
 import type { Tree } from "@nx/devkit";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Backs generation with an Nx `Tree` instead of the filesystem.
  *
@@ -21,7 +20,6 @@ import type { Tree } from "@nx/devkit";
  * straight to disk and made both features lie.
  */
 @Injectable()
-/* v8 ignore stop */
 export class AdapterService {
   // 🏗 Dependency Injection
 

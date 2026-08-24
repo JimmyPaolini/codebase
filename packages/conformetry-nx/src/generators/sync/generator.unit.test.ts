@@ -92,6 +92,24 @@ describe(syncGenerator, () => {
     expect(call?.[0].nxConfiguration).toStrictEqual(nxConfiguration);
   });
 
+  it("checks the tree for a candidate path when resolving from the registration", async () => {
+    tree.write("conformetry.json", "[]\n");
+    // Stands in for the real candidate walk, so what is asserted is that the
+    // generator hands over a predicate answering about its own tree rather
+    // than the filesystem.
+    resolveConfigurationPath.mockImplementation((args) => {
+      return args.exists("conformetry.json")
+        ? "conformetry.json"
+        : "conformetry.config.ts";
+    });
+
+    await syncGenerator(tree);
+
+    expect(emitPlugin).toHaveBeenCalledWith(
+      expect.objectContaining({ configurationPath: "conformetry.json" }),
+    );
+  });
+
   it("honors the paths a caller names", async () => {
     await syncGenerator(tree, {
       configurationPath: "custom/conformetry.config.ts",
