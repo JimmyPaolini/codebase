@@ -179,7 +179,7 @@ describe(MarkdownReportService, () => {
     ).toContain("`example`");
   });
 
-  it("reports a project's counts, spreads, fan-out, and misplaced callables", () => {
+  it("reports a project's counts, spreads, breadth, and misplaced callables", () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
       previewCount: 3,
@@ -189,7 +189,7 @@ describe(MarkdownReportService, () => {
 
     expect(rendered).toContain("| Callables | 4 |");
     expect(rendered).toContain("### Module spread");
-    expect(rendered).toContain("### Direct fan-out (breadth)");
+    expect(rendered).toContain("### Breadth");
     expect(rendered).toContain("### Possibly misplaced");
   });
 
@@ -339,7 +339,7 @@ describe(MarkdownReportService, () => {
     expect(rendered).toContain("`orchestrator.ts:12`");
   });
 
-  it("shows every fan-out row openly while they fit in the preview", () => {
+  it("shows every breadth row openly while they fit in the preview", () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
       previewCount: 3,
@@ -357,7 +357,7 @@ describe(MarkdownReportService, () => {
     expect(rendered).toContain("`Second`");
   });
 
-  it("hides the fan-out rows past the preview behind a disclosure", () => {
+  it("hides the breadth rows past the preview behind a disclosure", () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
       previewCount: 1,
@@ -376,7 +376,7 @@ describe(MarkdownReportService, () => {
     expect(rendered).toContain("</details>");
   });
 
-  it("still publishes the hidden fan-out rows in full", () => {
+  it("still publishes the hidden breadth rows in full", () => {
     const rendered = service.renderProjectSection({
       heading: "## 🔭 Callidescope",
       previewCount: 1,

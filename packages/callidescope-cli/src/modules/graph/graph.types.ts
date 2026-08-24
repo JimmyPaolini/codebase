@@ -13,7 +13,7 @@ export interface BreadthMeasurement {
 }
 
 /**
- * Direct fan-out for one callable.
+ * How many callables one callable calls directly, and which ones.
  *
  * `calleeIds` holds the distinct callables reached, not call sites: `assemble`
  * already dedupes repeat calls and drops self-edges when it builds
@@ -65,7 +65,7 @@ export interface DepthMeasurement {
 /**
  * Arguments for measuring breadth across the graph.
  *
- * No condensation is needed: unlike depth, a callable's direct fan-out is well
+ * No condensation is needed: unlike depth, a callable's breadth is well
  * defined even when it sits in a cycle, so breadth reads `graph` directly.
  */
 export interface MeasureBreadthArguments {

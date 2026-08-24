@@ -37,7 +37,7 @@ export class ProjectReportsService {
 
   // 🔏 Private Methods
 
-  /** Builds every callable's direct fan-out, grouped by project. */
+  /** Builds every callable's breadth, grouped by project. */
   private buildCallableBreadths(
     args: BuildProjectReportsArguments,
   ): Map<string, CallableBreadthReport[]> {

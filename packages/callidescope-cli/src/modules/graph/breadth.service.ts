@@ -10,9 +10,9 @@ import type { CallableId } from "@callidescope/configuration";
 /**
  * Measures how many distinct callables each callable calls directly.
  *
- * Unlike depth, this needs no condensation: a callable's direct fan-out is
- * well defined even when it sits in a cycle, since it only ever looks at its
- * own row in `calleeIdsByCaller` — which `GraphService.assemble` has already
+ * Unlike depth, this needs no condensation: a callable's breadth is well
+ * defined even when it sits in a cycle, since it only ever looks at its own
+ * row in `calleeIdsByCaller` — which `GraphService.assemble` has already
  * deduped and stripped of self-edges.
  */
 @Injectable()
@@ -29,7 +29,7 @@ export class BreadthService {
 
   // 🌎 Public Methods
 
-  /** Measures the direct fan-out of every named callable. */
+  /** Measures the breadth of every named callable. */
   public measure(args: MeasureBreadthArguments): BreadthMeasurement {
     const byCallable = new Map<CallableId, CallableBreadth>();
 

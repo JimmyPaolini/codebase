@@ -87,6 +87,6 @@ export const MARKDOWN_SPREAD_HEADER =
 export const MARKDOWN_MISPLACED_HEADER =
   "| Callable | Declared in | Called from | Callers |\n| --- | --- | --- | --- |";
 
-/** Header of the direct-fan-out table. */
+/** Header of the breadth table. */
 export const MARKDOWN_WIDE_CALLABLES_HEADER =
   "| Callable | Breadth | Calls directly | Location |\n| --- | --- | --- | --- |";

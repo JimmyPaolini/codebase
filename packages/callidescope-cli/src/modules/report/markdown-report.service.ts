@@ -47,7 +47,7 @@ export class MarkdownReportService {
   // 🔏 Private Methods
 
   /**
-   * Renders each callable's direct fan-out, the first few openly and the rest
+   * Renders each callable's breadth, the first few openly and the rest
    * behind a disclosure — the same treatment `renderStacks` gives stacks.
    *
    * Shared by both scopes: a project section passes every callable with a
@@ -55,7 +55,7 @@ export class MarkdownReportService {
    * a whole-run section passes only the `WideCallableFinding`s that broke
    * the configured limit. `WideCallableFinding` is a `CallableBreadthReport`
    * with a `limit` added, so one renderer covers both without caring which
-   * it was handed. Unfiltered, a project's fan-out table is one row per
+   * it was handed. Unfiltered, a project's breadth table is one row per
    * non-leaf callable — every bit as unbounded as its stacks — so it earns
    * the same truncation rather than a bare table.
    */
@@ -195,7 +195,7 @@ export class MarkdownReportService {
       "",
       this.renderSpreads(report.moduleSpreads),
       "",
-      "### Direct fan-out (breadth)",
+      "### Breadth",
       "",
       this.renderCallableBreadths({
         previewCount: args.previewCount,
