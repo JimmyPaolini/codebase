@@ -136,6 +136,56 @@ describe(BarsMotifService, () => {
         "M51 15V27M75 27V39M51 39V51M63 15V27M87 27V39M63 39V51M51 3H99M51 63H99",
       );
     });
+
+    it("draws alternating dash/gap segments for the split modifier, matching 5 rows bars split.svg", () => {
+      const geometry = gridGeometryService.compute(5);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "split" },
+          rows: 5,
+          unitIndex: 0,
+        }),
+      ).toBe("M3 15V27M3 39V51M3 3H15M3 63H15");
+    });
+
+    it("shifts the split modifier's column by one grid unit per unit index", () => {
+      const geometry = gridGeometryService.compute(5);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "split" },
+          rows: 5,
+          unitIndex: 1,
+        }),
+      ).toBe("M15 15V27M15 39V51M15 3H27M15 63H27");
+    });
+
+    it("draws one extra dash/gap pair for the split modifier, matching 7 rows bars split.svg", () => {
+      const geometry = gridGeometryService.compute(7);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "split" },
+          rows: 7,
+          unitIndex: 0,
+        }),
+      ).toBe(
+        "M2.14286 10.71429V19.28571M2.14286 27.85714V36.42857M2.14286 45V53.57143M2.14286 2.14286H10.71429M2.14286 62.14286H10.71429",
+      );
+    });
+
+    it("draws a single dash and no gap for the split modifier at the structural minimum of 3 rows", () => {
+      const geometry = gridGeometryService.compute(3);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "split" },
+          rows: 3,
+          unitIndex: 0,
+        }),
+      ).toBe("M5 25V45M5 5H25M5 65H25");
+    });
   });
 
   describe("rightEdge", () => {
