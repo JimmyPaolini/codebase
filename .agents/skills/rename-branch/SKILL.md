@@ -69,6 +69,7 @@ Using the repository's naming convention (`<type>/<scope>-<description>`):
 | `lexico-entities` | Shared TypeORM entities and GraphQL types |
 | `lexico-ingestion` | Data ingestion scripts for Lexico |
 | `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
+| `meanderaw` | Greek meander (key/fret) SVG generator CLI and the composable motif/modifier library it reads |
 | `callidescope` | Call stack tracing and linting CLI and the configuration package it reads |
 | `codometer` | Code statistics measurement CLI and the configuration package it reads |
 | `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
