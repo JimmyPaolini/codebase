@@ -11,7 +11,7 @@ export const CANVAS_HEIGHT = 60;
  * `parameters.type`.
  */
 export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
-  bars: ["alternated"],
+  bars: ["alternated", "split"],
   boxes: ["spin", "spin-flip"],
   chain: ["edge", "flip", "edge-flip"],
   snake: ["edge", "flip", "edge-flip"],
@@ -90,6 +90,7 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
   "flip",
   "edge-flip",
   "alternated",
+  "split",
 ] satisfies readonly Modifier["name"][];
 
 export const SUPPORTED_TYPES: readonly string[] = [

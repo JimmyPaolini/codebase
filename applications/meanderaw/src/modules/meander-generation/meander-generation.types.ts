@@ -65,7 +65,8 @@ export type Modifier =
   | { readonly name: "edge-flip" }
   | { readonly name: "flip" }
   | { readonly name: "spin" }
-  | { readonly name: "spin-flip" };
+  | { readonly name: "spin-flip" }
+  | { readonly name: "split" };
 
 /**
  * The per-type contract `MeanderGenerationService` dispatches through:

@@ -129,6 +129,35 @@ describe(MeanderGenerationService, () => {
       ).not.toThrow();
     });
 
+    it("matches the committed golden fixture for 5 rows bars with 12 repeats and split", async () => {
+      const svg = service.generate({
+        modifier: { name: "split" },
+        repeatCount: 12,
+        rows: 5,
+        type: "bars",
+      });
+      const golden = await readFile(
+        path.join(
+          import.meta.dirname,
+          "../../../testing/fixtures/bars-5-rows-12-repeats-split.svg",
+        ),
+        "utf8",
+      );
+
+      expect(svg).toBe(golden);
+    });
+
+    it("throws when split is requested for a type that doesn't support it", () => {
+      expect(() =>
+        service.generate({
+          modifier: { name: "split" },
+          repeatCount: 6,
+          rows: 5,
+          type: "boxes",
+        }),
+      ).toThrow(/not compatible/i);
+    });
+
     it("throws when alternated is requested for a type that doesn't support it", () => {
       expect(() =>
         service.generate({

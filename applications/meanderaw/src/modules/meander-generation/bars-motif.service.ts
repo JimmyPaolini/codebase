@@ -92,6 +92,54 @@ export class BarsMotifService implements MotifService {
     return `${runSegments}M${tileStartX} ${capTopY}H${capRightX}M${tileStartX} ${capBottomY}H${capRightX}`;
   }
 
+  /**
+   * Draws the `split` modifier's dashed bar: breaks the continuous vertical
+   * bar spanning grid levels 1 through `rows - 1` into unit-length dashes
+   * separated by unit-length gaps, starting with a dash right below the top
+   * cap. The two caps themselves are untouched.
+   *
+   * Verified by decoding `5 rows bars split.svg` (dash `[1,2]`, gap `[2,3]`,
+   * dash `[3,4]`) and `7 rows bars split.svg` (dash `[1,2]`, gap `[2,3]`,
+   * dash `[3,4]`, gap `[4,5]`, dash `[5,6]`) — both reference files also
+   * carry small hand-authoring artifacts (a sub-pixel horizontal jog at
+   * each dash endpoint, and one dash drawn in the opposite direction and
+   * traced with a slightly different x-coordinate than every other
+   * coordinate in the same file), which this implementation does not
+   * reproduce since they're inconsistent even within a single file and
+   * don't fit any single parameterized rule.
+   *
+   * Reuses {@link MotifTransformsService.alternate} with `runLength = 1`
+   * over the same `[1, rows - 1]` level range `alternatedPath` already
+   * splits between two columns — here every run stays on the bar's own
+   * column, and only the runs on column `0` are drawn, which produces the
+   * alternating dash/gap pattern directly.
+   */
+  private splitPath(geometry: GridGeometry, unit: MotifUnit): string {
+    const { rows, unitIndex } = unit;
+    const format = (value: number): string =>
+      this.gridGeometryService.formatCoordinate(value);
+    const columnX = format(geometry.offset + unitIndex * geometry.unit);
+    const runs = this.motifTransformsService.alternate(1, rows - 1, 1);
+
+    const dashSegments = runs
+      .filter((run) => run.column === 0)
+      .map((run) => {
+        const fromY = format(geometry.offset + run.fromLevel * geometry.unit);
+        const toY = format(geometry.offset + run.toLevel * geometry.unit);
+
+        return `M${columnX} ${fromY}V${toY}`;
+      })
+      .join("");
+
+    const capRightX = format(
+      geometry.offset + unitIndex * geometry.unit + geometry.unit,
+    );
+    const capTopY = format(geometry.offset);
+    const capBottomY = format(geometry.offset + rows * geometry.unit);
+
+    return `${dashSegments}M${columnX} ${capTopY}H${capRightX}M${columnX} ${capBottomY}H${capRightX}`;
+  }
+
   // 🌎 Public Methods
 
   /** Draws one repeat unit's bar and its two caps, as an SVG path attribute value. */
@@ -102,6 +150,10 @@ export class BarsMotifService implements MotifService {
 
     if (modifier?.name === "alternated") {
       return this.alternatedPath(geometry, unit, modifier.period);
+    }
+
+    if (modifier?.name === "split") {
+      return this.splitPath(geometry, unit);
     }
 
     const columnX = format(geometry.offset + unitIndex * geometry.unit);
