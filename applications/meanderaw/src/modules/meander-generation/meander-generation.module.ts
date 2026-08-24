@@ -6,6 +6,7 @@ import { ChainMotifService } from "./chain-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
 import { MeanderGenerationService } from "./meander-generation.service";
 import { MotifTransformsService } from "./motif-transforms.service";
+import { OutputFilenameService } from "./output-filename.service";
 import { SnakeMotifService } from "./snake-motif.service";
 import { SnakeSequenceService } from "./snake-sequence.service";
 import { SvgRenderingService } from "./svg-rendering.service";
@@ -18,7 +19,7 @@ import { WhirlMotifService } from "./whirl-motif.service";
  */
 @Module({
   controllers: [],
-  exports: [MeanderGenerationService],
+  exports: [MeanderGenerationService, OutputFilenameService],
   imports: [],
   providers: [
     BarsMotifService,
@@ -27,6 +28,7 @@ import { WhirlMotifService } from "./whirl-motif.service";
     GridGeometryService,
     MeanderGenerationService,
     MotifTransformsService,
+    OutputFilenameService,
     SnakeMotifService,
     SnakeSequenceService,
     SvgRenderingService,

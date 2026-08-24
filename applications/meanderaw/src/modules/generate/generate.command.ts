@@ -12,6 +12,7 @@ import {
   SUPPORTED_TYPES,
 } from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
+import { OutputFilenameService } from "../meander-generation/output-filename.service";
 
 import {
   DEFAULT_OUTPUT_DIRECTORY,
@@ -41,6 +42,8 @@ export class GenerateCommand extends CommandRunner {
     private readonly logger: LoggerService,
     @Inject(MeanderGenerationService)
     private readonly meanderGenerationService: MeanderGenerationService,
+    @Inject(OutputFilenameService)
+    private readonly outputFilenameService: OutputFilenameService,
   ) {
     super();
     this.logger.setContext(GenerateCommand.name);
@@ -51,28 +54,6 @@ export class GenerateCommand extends CommandRunner {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
-
-  /** Builds the kebab-case output filename, encoding every generation parameter so no two outputs can share a name. */
-  private buildFileName(
-    options: GenerateCommandOptions,
-    modifier: Modifier | undefined,
-  ): string {
-    const baseName = `${options.type}-${options.rows}-rows-${options.repeatCount}-repeats`;
-
-    if (!modifier) {
-      return `${baseName}.svg`;
-    }
-
-    if (modifier.name === "alternated") {
-      return `${baseName}-alternated-period-${modifier.period}.svg`;
-    }
-
-    if (modifier.name === "dot") {
-      return `${baseName}-dot-${modifier.shape}.svg`;
-    }
-
-    return `${baseName}-${modifier.name}.svg`;
-  }
 
   /** Builds the final {@link Modifier}, combining `--modifier`'s name with whichever parameter option that modifier requires. */
   private buildModifier(options: GenerateCommandOptions): Modifier | undefined {
@@ -209,18 +190,19 @@ export class GenerateCommand extends CommandRunner {
     options: GenerateCommandOptions,
   ): Promise<void> {
     const modifier = this.buildModifier(options);
-    const svg = this.meanderGenerationService.generate({
+    const generationParameters = {
       repeatCount: options.repeatCount,
       rows: options.rows,
       type: options.type,
       ...(modifier ? { modifier } : {}),
-    });
+    };
+    const svg = this.meanderGenerationService.generate(generationParameters);
 
     await mkdir(options.outputDirectory, { recursive: true });
 
     const filePath = path.join(
       options.outputDirectory,
-      this.buildFileName(options, modifier),
+      this.outputFilenameService.build(generationParameters),
     );
     await writeFile(filePath, svg);
 
