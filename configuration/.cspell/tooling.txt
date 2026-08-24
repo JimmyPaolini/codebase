@@ -26,6 +26,8 @@ cmdk
 codebase
 codemod
 codemods
+codependix
+codependixignore
 codometer
 codometerignore
 commitlint

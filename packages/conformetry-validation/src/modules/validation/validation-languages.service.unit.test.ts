@@ -195,5 +195,19 @@ describe(ValidationLanguagesService, () => {
         }),
       ).rejects.toThrow(/does not export TypescriptValidatorModule/);
     });
+
+    it("falls back to the rejection value's string form when the import does not reject with an Error", async () => {
+      const rejectionValue: unknown = "segmentation fault";
+      const loadLanguageModuleThatThrows: LanguageModuleLoader = () => {
+        throw rejectionValue;
+      };
+
+      await expect(
+        service.resolveValidators({
+          extensions: [".ts"],
+          loadLanguageModule: loadLanguageModuleThatThrows,
+        }),
+      ).rejects.toThrow(/it could not be loaded \(segmentation fault\)/);
+    });
   });
 });

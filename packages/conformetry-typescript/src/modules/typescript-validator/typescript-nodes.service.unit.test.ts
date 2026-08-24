@@ -53,6 +53,41 @@ describe(TypescriptNodesService, () => {
 
       expect(service.readKey(statement)).toContain("doSomething");
     });
+
+    it("returns no key for an import whose specifier failed to parse as a string", () => {
+      // The grammar requires a string literal after `from`, but the parser
+      // recovers from the missing quotes by keeping going: the module
+      // specifier position holds an Identifier rather than a StringLiteral.
+      const statement = parseStatement("import { a } from foo;");
+
+      expect(service.readKey(statement)).toBeNull();
+    });
+
+    it("keys a private class member by its private name", () => {
+      const statement = parseStatement("class Widget { #alpha() {} }");
+      const [member] = ts.isClassDeclaration(statement)
+        ? statement.members
+        : [];
+
+      if (member === undefined) {
+        throw new Error("No member parsed");
+      }
+
+      expect(service.readKey(member)).toBe("#alpha");
+    });
+
+    it("returns no key for a member named by a computed property", () => {
+      const statement = parseStatement("class Widget { [computedName]() {} }");
+      const [member] = ts.isClassDeclaration(statement)
+        ? statement.members
+        : [];
+
+      if (member === undefined) {
+        throw new Error("No member parsed");
+      }
+
+      expect(service.readKey(member)).toBeNull();
+    });
   });
 
   describe("readKindLabel", () => {

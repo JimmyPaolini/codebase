@@ -30,6 +30,15 @@ import type {
  *
  * This is the level above the NestJS module graph: what a project needs from
  * the workspace, and who would break if it changed.
+ *
+ * Deprecated: superseded by `packages/codependix-nx`'s whole-workspace graph
+ * export, which codependix's own anchor blocks now carry — see issue #296.
+ * Not tagged with an actual `@deprecated` JSDoc tag, because this command
+ * stays fully wired and tested as its own Nx target rather than deleted (a
+ * later, separate cleanup); a real `@deprecated` tag would flag every one of
+ * those still-legitimate internal references — including this class's own
+ * `this.logger.setContext(NxProjectGraphsCommand.name)` — under this
+ * workspace's `@typescript-eslint/no-deprecated` rule.
  */
 @Command({
   description: "Run the nx-project-graphs command",

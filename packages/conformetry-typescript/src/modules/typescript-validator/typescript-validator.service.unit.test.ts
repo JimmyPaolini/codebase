@@ -1,4 +1,5 @@
 import { ScoringService } from "@conformetry/core";
+import { createMock, type DeepMocked } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -388,6 +389,110 @@ describe(TypescriptValidatorService, () => {
       const source = "run(42);\n";
 
       expect(validate(source, source)).toStrictEqual([]);
+    });
+  });
+
+  describe("locations for positions no real parse produces", () => {
+    // readLocation treats a missing or negative position as unresolvable.
+    // A real parse never produces one — every position comes straight from
+    // `Node.getStart()` or a real comment's offset — so these scenarios are
+    // reached by mocking the collaborators that hand positions to the
+    // service, rather than by parsing contrived source.
+    let mockedService: TypescriptValidatorService;
+    let mockTypeScriptCommentsService: DeepMocked<TypescriptCommentsService>;
+    let mockTypeScriptTreeService: DeepMocked<TypescriptTreeService>;
+
+    beforeAll(async () => {
+      mockTypeScriptCommentsService = createMock<TypescriptCommentsService>();
+      mockTypeScriptTreeService = createMock<TypescriptTreeService>();
+
+      const module = await Test.createTestingModule({
+        providers: [
+          TypescriptValidatorService,
+          {
+            provide: TypescriptCommentsService,
+            useValue: mockTypeScriptCommentsService,
+          },
+          {
+            provide: TypescriptTreeService,
+            useValue: mockTypeScriptTreeService,
+          },
+        ],
+      }).compile();
+
+      mockedService = await module.resolve(TypescriptValidatorService);
+    });
+
+    function validateMocked(): ConformetryDifference[] {
+      return mockedService.validateDocument(
+        createDocument({ instance: "", renderedTemplate: "" }),
+      ).differences;
+    }
+
+    it("omits the template location for a comment with no resolvable position", () => {
+      mockTypeScriptTreeService.compareTree.mockReturnValue({
+        differences: [],
+        totalWeight: 0,
+      });
+      mockTypeScriptCommentsService.compareComments.mockReturnValue({
+        missingComments: [{ position: -1, text: "// 🏗 Section" }],
+        totalWeight: 1,
+      });
+
+      const [difference] = validateMocked();
+
+      expect(difference?.templateLine).toBeUndefined();
+      expect(difference?.templateColumn).toBeUndefined();
+    });
+
+    it("omits the instance location when a difference has no instance position", () => {
+      mockTypeScriptCommentsService.compareComments.mockReturnValue({
+        missingComments: [],
+        totalWeight: 0,
+      });
+      mockTypeScriptTreeService.compareTree.mockReturnValue({
+        differences: [
+          {
+            instancePosition: undefined,
+            kindLabel: "ClassDeclaration",
+            nodeKey: "Widget",
+            templatePosition: 0,
+            weight: 1,
+          },
+        ],
+        totalWeight: 1,
+      });
+
+      const [difference] = validateMocked();
+
+      expect(difference?.instanceLine).toBeUndefined();
+      expect(difference?.instanceColumn).toBeUndefined();
+      expect(difference?.templateLine).toBe(1);
+    });
+
+    it("omits the template location when a difference's template position is negative", () => {
+      mockTypeScriptCommentsService.compareComments.mockReturnValue({
+        missingComments: [],
+        totalWeight: 0,
+      });
+      mockTypeScriptTreeService.compareTree.mockReturnValue({
+        differences: [
+          {
+            instancePosition: 0,
+            kindLabel: "ClassDeclaration",
+            nodeKey: "Widget",
+            templatePosition: -1,
+            weight: 1,
+          },
+        ],
+        totalWeight: 1,
+      });
+
+      const [difference] = validateMocked();
+
+      expect(difference?.instanceLine).toBe(1);
+      expect(difference?.templateLine).toBeUndefined();
+      expect(difference?.templateColumn).toBeUndefined();
     });
   });
 });

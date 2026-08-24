@@ -2,13 +2,20 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { FsTree } from "nx/src/generators/tree";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { PathsModule } from "./paths.module";
 import { PathsService } from "./paths.service";
 
+import type { InstancesService } from "../instances/instances.service";
+import type { ScopeService } from "../scope/scope.service";
+import type {
+  ConfigurationService,
+  Instance,
+} from "@conformetry/configuration";
 import type { Tree } from "@nx/devkit";
 
 /**
@@ -256,6 +263,70 @@ describe(PathsService, () => {
           workspaceRoot,
         }),
       ).resolves.toBe(workspaceRoot);
+    });
+  });
+
+  describe("resolveGenerationPath with a crafted set of instances", () => {
+    /**
+     * Builds a `PathsService` whose collaborators are stubbed, so the
+     * instances fed into it can be shaped by hand instead of by a real glob —
+     * what these tests exercise is the module-parent inference, not
+     * discovery.
+     */
+    function createIsolatedService(instances: Instance[]): PathsService {
+      return new PathsService(
+        createMock<InstancesService>({
+          findProjectInstances: vi
+            .fn<InstancesService["findProjectInstances"]>()
+            .mockResolvedValue(instances),
+        }),
+        createMock<ConfigurationService>(),
+        createMock<ScopeService>(),
+      );
+    }
+
+    it("ignores a project-level instance when inferring the module parent", async () => {
+      // A project itself can be discovered as an instance — its own template
+      // matches the directory holding it, not a directory inside it — and
+      // that instance's parent path sits outside the project root entirely.
+      const isolatedService = createIsolatedService([
+        { nameStem: "widgets", path: path.join(workspaceRoot, "packages") },
+        {
+          nameStem: "differences",
+          path: path.join(workspaceRoot, "packages/widgets/src/modules"),
+        },
+      ]);
+
+      await expect(
+        isolatedService.resolveGenerationPath({
+          configurationPath,
+          inputs: { name: "my-widget", project: "widgets" },
+          tree,
+          workspaceRoot,
+        }),
+      ).resolves.toBe(path.join(workspaceRoot, "packages/widgets/src/modules"));
+    });
+
+    it("breaks a tie between equally common parents alphabetically", async () => {
+      const isolatedService = createIsolatedService([
+        {
+          nameStem: "differences",
+          path: path.join(workspaceRoot, "packages/widgets/src/modules"),
+        },
+        {
+          nameStem: "other",
+          path: path.join(workspaceRoot, "packages/widgets/src/alpha"),
+        },
+      ]);
+
+      await expect(
+        isolatedService.resolveGenerationPath({
+          configurationPath,
+          inputs: { name: "my-widget", project: "widgets" },
+          tree,
+          workspaceRoot,
+        }),
+      ).resolves.toBe(path.join(workspaceRoot, "packages/widgets/src/alpha"));
     });
   });
 });

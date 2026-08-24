@@ -425,6 +425,9 @@
         "name": "applications"
       },
       {
+        "name": "codependix-workspace-graph.json"
+      },
+      {
         "name": "codometer.config.ts"
       },
       {

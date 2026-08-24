@@ -58,6 +58,7 @@ body:
         - logger
         - meanderaw
         - callidescope
+        - codependix
         - codometer
         - codebase
         - no-release

@@ -174,6 +174,11 @@ const scopes = [
   },
   {
     description:
+      "Dependency graph export CLI and the configuration package it reads",
+    name: "codependix",
+  },
+  {
+    description:
       "Code statistics measurement CLI, the configuration package it reads, and the packages that diff and render its pull request change report",
     name: "codometer",
   },

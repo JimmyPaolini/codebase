@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -326,6 +326,51 @@ describe(PluginService, () => {
     });
   });
 
+  describe("runValidation with a threshold", () => {
+    it("passes the caller's threshold through", async () => {
+      const result = await service.runValidation({
+        options,
+        project: WIDGETS,
+        threshold: 0,
+        workspaceRoot,
+      });
+
+      // A threshold of 0 accepts any score, so the drifted instance passes
+      // where the default threshold rejects it.
+      expect(result.ok).toBe(true);
+    });
+  });
+
+  describe("resolving options that are not an object", () => {
+    it("falls back to the registration when the passed options are not an object", async () => {
+      // Whatever a caller hands the plugin is `unknown`, so a non-object
+      // value must fall back to the registration rather than being spread
+      // onto it.
+      const nxConfigurationPath = path.join(workspaceRoot, "nx.json");
+
+      await writeFile(
+        nxConfigurationPath,
+        JSON.stringify({
+          plugins: [
+            {
+              options: { configurationPath: options.configurationPath },
+              plugin: "@conformetry/nx",
+            },
+          ],
+        }),
+        "utf8",
+      );
+
+      await expect(
+        service.runValidation({
+          options: "not-an-object",
+          project: EMPTY,
+          workspaceRoot,
+        }),
+      ).resolves.toMatchObject({ ok: true });
+    });
+  });
+
   describe("runGenerator", () => {
     it("renders the template into the tree without touching disk", async () => {
       const tree = createTree();
@@ -428,6 +473,27 @@ describe(PluginService, () => {
         undefined,
         { generator: "widget", templatePath: "templates/not-there" },
       );
+    });
+
+    it("refuses to run when an emitted file has been deleted from disk", async () => {
+      // Missing entirely, rather than merely differing — the `existsSync`
+      // check above `readFileSync` is what this exercises. The configuration
+      // itself is untouched, so `generators.json` still matches and the
+      // mismatch is only found once the loop reaches the deleted schema.
+      const schemaPath = path.join(
+        workspaceRoot,
+        DEFAULT_OUTPUT_PATH,
+        "src/schemas/widget.json",
+      );
+      const originalSchema = await readFile(schemaPath, "utf8");
+
+      await rm(schemaPath);
+
+      await expect(
+        service.runValidation({ options, project: WIDGETS, workspaceRoot }),
+      ).rejects.toThrow("Run `nx sync`");
+
+      await writeFile(schemaPath, originalSchema, "utf8");
     });
 
     it("falls back to the path the workspace registered the plugin with", async () => {

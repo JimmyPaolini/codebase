@@ -5,7 +5,6 @@ import { InputSchemaService } from "./input-schema.service";
 
 import type { PromptRunner, SchemaInput } from "./input.types";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Asks the user for input values interactively.
  *
@@ -14,7 +13,6 @@ import type { PromptRunner, SchemaInput } from "./input.types";
  * the decision belongs with the caller that knows about TTYs and CI.
  */
 @Injectable()
-/* v8 ignore stop */
 export class InputPromptingService {
   // 🏗 Dependency Injection
 

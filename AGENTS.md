@@ -68,7 +68,11 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 ### Packages
 
 - **[codometer-changes](packages/codometer-changes)**: Diffs codometer reports against a baseline snapshot
-- **[codometer-markdown](packages/codometer-markdown)**: Renders a codometer change collection into markdown and splices it into a document
+- **[codometer-customization](packages/codometer-customization)**: Evaluates codometer's configured custom counters
+- **[codometer-discovery](packages/codometer-discovery)**: Glob matching and gitignore-aware file walking, plus resolving configured measurement targets to file sets
+- **[codometer-languages](packages/codometer-languages)**: Every input language analyzer codometer measures, behind one `analyze()` call
+- **[codometer-output](packages/codometer-output)**: Every codometer output format — JSON reports, README badges, and the pull request change report
+- **[codometer-size](packages/codometer-size)**: Compresses a target's matched files and measures their size
 - **[lexico-components](packages/lexico-components)**: Shared React component library (shadcn/ui, Radix UI)
 - **[lexico-entities](packages/lexico-entities)**: Shared TypeORM entities and GraphQL types package
 - **[logger](packages/logger)**: Shared pino-backed NestJS `LoggerService` and `LoggerModule`
@@ -79,6 +83,11 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 - **[callidescope-configuration](packages/callidescope-configuration)**: Reads `callidescope.config.ts` and resolves the limits callidescope enforces
 - **[callidescope-graph](packages/callidescope-graph)**: Builds the call graph from traced TypeScript source and measures its depth, breadth, and cohesion
 - **[callidescope-output](packages/callidescope-output)**: Renders call-graph findings into markdown, mermaid, and JSON output formats
+- **[codependix-cli](packages/codependix-cli)**: Command-line host that exports dependency graphs as JSON and Markdown anchor blocks
+- **[codependix-configuration](packages/codependix-configuration)**: Reads `codependix.config.ts` and resolves per-project export destinations
+- **[codependix-imports](packages/codependix-imports)**: Builds a project's file-level import graph from its own `ts.Program`
+- **[codependix-nestjs](packages/codependix-nestjs)**: Explores a NestJS project's container and builds its module graph
+- **[codependix-nx](packages/codependix-nx)**: Builds a project's one-hop Nx dependency neighborhood from the Nx project graph
 - **[codometer-cli](packages/codometer-cli)**: Command-line host that measures code statistics and writes them to markdown and JSON
 - **[codometer-configuration](packages/codometer-configuration)**: Reads `codometer.config.ts` and resolves the repository-specific settings codometer needs
 - **[conformetry-cli](packages/conformetry-cli)**: Command-line host for code generation and validation
@@ -196,6 +205,7 @@ See the [validate-code skill](.agents/skills/validate-code/SKILL.md) for the ful
 | `fallow`        | Analyzes dead code, duplication, and code health      | `configuration/fallow.config.jsonc`      | [docs](https://docs.fallow.tools/)                      |
 | `jscpd`         | Detects duplicated code and copy-paste patterns       | `configuration/jscpd.config.json`        | [docs](https://jscpd.dev/)                              |
 | `callidescope`  | Traces call stacks and flags ones that are too deep   | `configuration/callidescope.config.ts`   | [docs](packages/callidescope-cli/README.md)             |
+| `codependix`    | Exports Nx, NestJS, and file-level dependency graphs  | `configuration/codependix.config.ts`     | [docs](packages/codependix-cli/README.md)               |
 | `cspell`        | Checks spelling across code and documentation         | `configuration/cspell.config.yaml`       | [docs](https://cspell.org/)                             |
 | `markdownlint`  | Lints markdown files                                  | `configuration/.markdownlint-cli2.jsonc` | [docs](https://github.com/DavidAnson/markdownlint-cli2) |
 | `yamllint`      | Lints YAML files                                      | `configuration/yamllint.yaml`            | [docs](https://yamllint.readthedocs.io/)                |
@@ -345,6 +355,7 @@ The 🧑‍⚖️ Validate Conventions workflow creates any label missing from t
 | `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
 | `meanderaw` | Greek meander (key/fret) SVG generator CLI and the composable motif/modifier library it reads |
 | `callidescope` | Call stack tracing and linting CLI, the configuration package it reads, and the packages that build and render its call graph |
+| `codependix` | Dependency graph export CLI and the configuration package it reads |
 | `codometer` | Code statistics measurement CLI, the configuration package it reads, and the packages that diff and render its pull request change report |
 | `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
 | `no-release` | Escape hatch: suppress semantic-release for any commit type |
@@ -481,7 +492,7 @@ Test files are named `*.<kind>.test.ts` and live beside the code they cover. Vit
 - **Test coverage: 96%** for branches, functions, lines, and statements (`configuration/vitest.config.ts`, v8 provider). New code needs tests in the same change to keep a project above the line.
 - **Type coverage** is per project, declared as `typeCoverage.atLeast` in each project's `package.json` — most packages sit at 100 with `strict: true`, and the workspace root requires 95. Run `type-coverage` alongside `typecheck` for any touched project that defines the target; passing `typecheck` alone proves nothing about this gate.
 - **Duplication**: not a gate, and no longer measured by anything scheduled. `jscpd` and `fallow-duplicates` both remain as targets to run by hand — `nx run codebase:jscpd` and `nx run codebase:fallow-duplicates` — and both are advisory: the `jscpd` target ends in `|| true`, and nothing in CI invokes either one. The 6% threshold in `configuration/jscpd.config.json` and `configuration/fallow.config.jsonc` is what those manual runs report against, not a bar a pull request has to clear. It sat at 5.9% when the last scheduled caller was removed. Extract a shared helper rather than copying a block because it is the better code, not because a check will stop you.
-- **Bundle size** is per project, enforced by the `codometer` target, which builds first and measures the compiled output. Every package's gzipped limit is declared in the `PROJECT_LIMITS` table in `configuration/codometer.config.ts`, keyed by the project's path; `lexico` and `lexico-components` declare theirs in a `codometer.config.cjs` of their own because they measure several bundles each. Breaching one fails 👷 Make Projects, and the `## ⏲️ Codometer` section names the project. That section is rendered by `nx run codometer-cli:start -- changes` from the `codometer-report.json` each project's run leaves behind, diffed by `codometer-changes` and rendered by `codometer-markdown`.
+- **Bundle size** is per project, enforced by the `codometer` target, which builds first and measures the compiled output. Every package's gzipped limit is declared in the `PROJECT_LIMITS` table in `configuration/codometer.config.ts`, keyed by the project's path; `lexico` and `lexico-components` declare theirs in a `codometer.config.cjs` of their own because they measure several bundles each. Breaching one fails 👷 Make Projects, and the `## ⏲️ Codometer` section names the project. That section is rendered by `nx run codometer-cli:start -- changes` from the `codometer-report.json` each project's run leaves behind, diffed by `codometer-changes` and rendered by `codometer-output`.
 - Lowering a threshold to make a change pass is not an option — fix the code.
 
 See the [testing-strategy skill](.agents/skills/testing-strategy/SKILL.md) for patterns.

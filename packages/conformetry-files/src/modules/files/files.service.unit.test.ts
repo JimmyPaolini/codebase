@@ -122,6 +122,33 @@ describe(FilesService, () => {
     ).toStrictEqual([]);
   });
 
+  it("reports nothing when the matched template declares no files", async () => {
+    const emptyTemplate = templateDiscoveryService.collectTemplate({
+      name: "empty",
+      templatePath: await mkdtemp(
+        path.join(tmpdir(), "conformetry-files-empty-template-"),
+      ),
+    });
+    const instancePath = await mkdtemp(
+      path.join(tmpdir(), "conformetry-files-empty-instance-"),
+    );
+    // A matched instance whose template declares no files at all — nothing
+    // routes here through `matchInstances`, but resolving it should still be
+    // a no-op rather than an error.
+    const matched: MatchedInstance[] = [
+      {
+        instance: { nameStem: "my-widget", path: instancePath },
+        matchedFileCount: 0,
+        substitutions: {},
+        template: emptyTemplate,
+      },
+    ];
+
+    expect(
+      service.checkInstanceFiles({ instances: matched }).fileResults,
+    ).toStrictEqual([]);
+  });
+
   it("reports an extension-less file the template requires", async () => {
     const instancePath = await mkdtemp(
       path.join(tmpdir(), "conformetry-files-partial-"),
