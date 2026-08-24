@@ -30,6 +30,7 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
     },
     exclude: [],
     excludeFrom: [],
+    ignoreCallees: [],
     limits: {
       callerMajorityRatio: 0.8,
       directSpreadThreshold: 2,

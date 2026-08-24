@@ -29,6 +29,7 @@ function buildConfiguration(
     },
     exclude: [],
     excludeFrom: [],
+    ignoreCallees: [],
     limits: {
       callerMajorityRatio: 0.8,
       directSpreadThreshold: 3,

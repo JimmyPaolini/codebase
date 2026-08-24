@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import { Injectable } from "@nestjs/common";
 import ts from "typescript";
 
@@ -59,6 +61,7 @@ export class EdgesService {
   private buildSiteEdges(args: {
     callablesById: ReadonlyMap<CallableId, DiscoveredCallable>;
     caller: DiscoveredCallable;
+    ignoreCallees: readonly string[];
     includeConstructorEdges: boolean;
     site: CallSite;
     workspaceRoot: string;
@@ -83,7 +86,15 @@ export class EdgesService {
           workspaceRoot: args.workspaceRoot,
         }),
       )
-      .filter((calleeId): calleeId is CallableId => calleeId !== undefined);
+      .filter((calleeId): calleeId is CallableId => calleeId !== undefined)
+      .filter(
+        (calleeId) =>
+          !this.isIgnoredCallee({
+            callablesById: args.callablesById,
+            calleeId,
+            ignoreCallees: args.ignoreCallees,
+          }),
+      );
 
     const callSite = this.readLocation({
       node: args.site.expression,
@@ -140,6 +151,27 @@ export class EdgesService {
         candidateCount: 1,
         resolution: "callback" as const,
       }));
+  }
+
+  /**
+   * Whether a callee's own display name matches a configured ignore glob.
+   *
+   * Matched the same way `allowSpreadFor` exempts a file, against
+   * `Type.member` rather than a path: a cross-cutting callable like a logger
+   * has no single file worth naming, but every one of its call sites shares
+   * the same display name.
+   */
+  private isIgnoredCallee(args: {
+    callablesById: ReadonlyMap<CallableId, DiscoveredCallable>;
+    calleeId: CallableId;
+    ignoreCallees: readonly string[];
+  }): boolean {
+    const displayName = args.callablesById.get(args.calleeId)?.node.displayName;
+
+    return (
+      displayName !== undefined &&
+      args.ignoreCallees.some((glob) => path.matchesGlob(displayName, glob))
+    );
   }
 
   /** Reads the one-based position of a node, for a report. */
@@ -227,6 +259,7 @@ export class EdgesService {
         const result = this.buildSiteEdges({
           callablesById: args.callablesById,
           caller,
+          ignoreCallees: args.ignoreCallees,
           includeConstructorEdges: args.includeConstructorEdges,
           site,
           workspaceRoot: args.workspaceRoot,

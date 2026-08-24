@@ -10,6 +10,17 @@ export interface CallidescopeConfiguration {
   exclude?: string[] | undefined;
   /** Gitignore-syntax files listing paths to leave untraced. */
   excludeFrom?: string[] | undefined;
+  /**
+   * Globs matched against a callable's display name (`Type.member`):
+   * calls landing on a match are dropped from the graph entirely, counting
+   * toward neither the caller's depth nor its breadth.
+   *
+   * For a cross-cutting callable like a logger, every call site is a fact
+   * about instrumentation, not about how deep or wide the code around it
+   * is — counting it would move every other callable's numbers on a change
+   * that has nothing to do with them.
+   */
+  ignoreCallees?: string[] | undefined;
   limits?: CallidescopeLimits | undefined;
   output?: CallidescopeOutputConfiguration | undefined;
   /**
@@ -176,6 +187,7 @@ export interface ResolvedCallidescopeConfiguration {
   entryPoints: ResolvedCallidescopeEntryPoints;
   exclude: string[];
   excludeFrom: string[];
+  ignoreCallees: string[];
   limits: ResolvedCallidescopeLimits;
   output: ResolvedCallidescopeOutputConfiguration;
   projects: string[];

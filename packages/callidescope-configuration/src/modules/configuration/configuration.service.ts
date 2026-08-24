@@ -349,6 +349,7 @@ export class ConfigurationService {
         ]),
       ],
       excludeFrom: configuration.excludeFrom ?? [],
+      ignoreCallees: configuration.ignoreCallees ?? [],
       limits: this.resolveLimits(configuration.limits),
       output: {
         format: configuration.output?.format ?? DEFAULT_OUTPUT_FORMAT,

@@ -20,6 +20,7 @@ export interface AssembledGraph {
 /** Arguments for assembling the call graph and everything derived from it. */
 export interface AssembleGraphArguments {
   readonly callablesById: ReadonlyMap<CallableId, DiscoveredCallable>;
+  readonly ignoreCallees: readonly string[];
   readonly includeConstructorEdges: boolean;
   readonly workspaceRoot: string;
 }

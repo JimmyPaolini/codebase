@@ -22,6 +22,14 @@ import { type CallidescopeConfiguration } from "@callidescope/configuration";
  */
 const callidescopeConfiguration: CallidescopeConfiguration = {
   excludeFrom: ["configuration/.callidescopeignore"],
+  /**
+   * `LoggerService` sits behind nearly every other callable in this
+   * repository. A call to it is a fact about instrumentation, not about
+   * how deep or wide the code around it is, and counting it would move
+   * every other callable's depth and breadth on a change that has nothing
+   * to do with them.
+   */
+  ignoreCallees: ["LoggerService.*"],
   output: {
     /**
      * A section in every traced project's own README.

@@ -73,6 +73,7 @@ describe(ConfigurationService, () => {
 
     expect(configuration.exclude).toStrictEqual([...DEFAULT_EXCLUDE_GLOBS]);
     expect(configuration.excludeFrom).toStrictEqual([]);
+    expect(configuration.ignoreCallees).toStrictEqual([]);
     expect(configuration.projects).toStrictEqual([]);
     expect(configuration.allowSpreadFor).toStrictEqual([
       ...DEFAULT_ALLOW_SPREAD_FOR,
@@ -139,6 +140,14 @@ describe(ConfigurationService, () => {
 
     expect(configuration.limits.maximumDepth).toBe(12);
     expect(configuration.limits.spreadThreshold).toBe(DEFAULT_SPREAD_THRESHOLD);
+  });
+
+  it("keeps authored callee-ignore globs", () => {
+    const configuration = service.resolveConfiguration({
+      ignoreCallees: ["LoggerService.*"],
+    });
+
+    expect(configuration.ignoreCallees).toStrictEqual(["LoggerService.*"]);
   });
 
   it("keeps authored entry-point rules, including disabling them", () => {

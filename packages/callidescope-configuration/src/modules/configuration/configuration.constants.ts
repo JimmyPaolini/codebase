@@ -232,6 +232,7 @@ export const callidescopeConfigurationSchema = z.object({
   entryPoints: entryPointsSchema,
   exclude: z.array(z.string()).optional(),
   excludeFrom: z.array(z.string()).optional(),
+  ignoreCallees: z.array(z.string()).optional(),
   limits: limitsSchema,
   output: outputSchema,
   projects: z.array(z.string()).optional(),

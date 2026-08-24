@@ -75,6 +75,7 @@ export class CallidescopeService {
     const { breadthMeasurement, condensed, graph, measurement } =
       this.graphAssemblyService.assemble({
         callablesById: args.callablesById,
+        ignoreCallees: args.configuration.ignoreCallees,
         includeConstructorEdges: INCLUDE_CONSTRUCTOR_EDGES,
         workspaceRoot: args.workspaceRoot,
       });
