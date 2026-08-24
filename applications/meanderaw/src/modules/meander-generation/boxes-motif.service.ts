@@ -10,6 +10,7 @@ import type {
   Modifier,
   MotifService,
   MotifUnit,
+  RepeatPatternOptions,
   SpiralLevelPoint,
 } from "./meander-generation.types";
 
@@ -132,7 +133,10 @@ export class BoxesMotifService implements MotifService {
   ): readonly SpiralLevelPoint[] {
     const points = this.spiralPoints(rows);
 
-    if (!modifier) {
+    if (
+      !modifier ||
+      (modifier.name !== "spin" && modifier.name !== "spin-flip")
+    ) {
       return points;
     }
 
@@ -144,7 +148,7 @@ export class BoxesMotifService implements MotifService {
       quarterTurns,
     );
     const pointsByModifierName: Record<
-      Modifier["name"],
+      "spin" | "spin-flip",
       () => readonly SpiralLevelPoint[]
     > = {
       spin: () => rotated,
@@ -158,10 +162,10 @@ export class BoxesMotifService implements MotifService {
   // 🌎 Public Methods
 
   /** Draws the top/bottom border shared by every unit, spanning the full pattern width. */
-  border(geometry: GridGeometry, rows: number, repeatCount: number): string {
+  border(geometry: GridGeometry, pattern: RepeatPatternOptions): string {
     const leftX = this.gridGeometryService.formatCoordinate(geometry.offset);
     const rightX = this.gridGeometryService.formatCoordinate(
-      this.rightEdge(geometry, rows, repeatCount),
+      this.rightEdge(geometry, pattern),
     );
     const topY = this.gridGeometryService.formatCoordinate(geometry.offset);
     const bottomY = this.gridGeometryService.formatCoordinate(
@@ -189,11 +193,11 @@ export class BoxesMotifService implements MotifService {
   }
 
   /** The x-coordinate of the last unit's rightmost point, before the stroke-width margin. */
-  rightEdge(geometry: GridGeometry, rows: number, repeatCount: number): number {
+  rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number {
     return (
       geometry.offset +
-      (repeatCount - 1) * this.unitWidth(geometry, rows) +
-      (rows - 2) * geometry.unit
+      (pattern.repeatCount - 1) * this.unitWidth(geometry, pattern.rows) +
+      (pattern.rows - 2) * geometry.unit
     );
   }
 

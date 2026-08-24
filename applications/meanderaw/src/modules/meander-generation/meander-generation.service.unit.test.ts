@@ -208,5 +208,68 @@ describe(MeanderGenerationService, () => {
         }),
       ).toThrow(/not compatible/i);
     });
+
+    it.each(["chain", "snake"] as const)(
+      "matches the committed golden fixture for 5 rows %s with 6 repeats and edge",
+      async (type) => {
+        const svg = service.generate({
+          modifier: { name: "edge" },
+          repeatCount: 6,
+          rows: 5,
+          type,
+        });
+        const golden = await readFile(
+          path.join(
+            import.meta.dirname,
+            `../../../testing/fixtures/${type}-5-rows-6-repeats-edge.svg`,
+          ),
+          "utf8",
+        );
+
+        expect(svg).toBe(golden);
+      },
+    );
+
+    it.each(["chain", "snake"] as const)(
+      "matches the committed golden fixture for 5 rows %s with 6 repeats and flip",
+      async (type) => {
+        const svg = service.generate({
+          modifier: { name: "flip" },
+          repeatCount: 6,
+          rows: 5,
+          type,
+        });
+        const golden = await readFile(
+          path.join(
+            import.meta.dirname,
+            `../../../testing/fixtures/${type}-5-rows-6-repeats-flip.svg`,
+          ),
+          "utf8",
+        );
+
+        expect(svg).toBe(golden);
+      },
+    );
+
+    it.each(["chain", "snake"] as const)(
+      "matches the committed golden fixture for 5 rows %s with 6 repeats and edge-flip",
+      async (type) => {
+        const svg = service.generate({
+          modifier: { name: "edge-flip" },
+          repeatCount: 6,
+          rows: 5,
+          type,
+        });
+        const golden = await readFile(
+          path.join(
+            import.meta.dirname,
+            `../../../testing/fixtures/${type}-5-rows-6-repeats-edge-flip.svg`,
+          ),
+          "utf8",
+        );
+
+        expect(svg).toBe(golden);
+      },
+    );
   });
 });

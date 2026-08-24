@@ -42,6 +42,9 @@ export type MirrorAxis = "horizontal" | "vertical";
  * member would be dead code no `COMPATIBLE_MODIFIERS` entry could point to.
  */
 export type Modifier =
+  | { readonly name: "edge" }
+  | { readonly name: "edge-flip" }
+  | { readonly name: "flip" }
   | { readonly name: "spin" }
   | { readonly name: "spin-flip" };
 
@@ -54,9 +57,9 @@ export type Modifier =
  * each unit's own `path` instead.
  */
 export interface MotifService {
-  border?(geometry: GridGeometry, rows: number, repeatCount: number): string;
+  border?(geometry: GridGeometry, pattern: RepeatPatternOptions): string;
   path(geometry: GridGeometry, unit: MotifUnit): string;
-  rightEdge(geometry: GridGeometry, rows: number, repeatCount: number): number;
+  rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number;
 }
 
 /** Which repeat unit a motif service's `path` draws and the modifier (if any) applied to it. */
@@ -74,5 +77,19 @@ export interface RenderOptions {
   readonly width: string;
 }
 
+/** The row count, repeat count, and optional modifier a whole pattern's shared geometry (right edge, border) is computed from. */
+export interface RepeatPatternOptions {
+  readonly modifier?: Modifier;
+  readonly repeatCount: number;
+  readonly rows: number;
+}
+
 /** A spiral point expressed as `[xLevel, yLevel]` grid levels, not yet converted to pixel coordinates. */
 export type SpiralLevelPoint = readonly [number, number];
+
+/** The row count, optional modifier, and horizontal offset one repeat unit's own border segment is drawn against. */
+export interface UnitBorderOptions {
+  readonly modifier?: Modifier;
+  readonly rows: number;
+  readonly xOffset: number;
+}

@@ -12,9 +12,28 @@ export const CANVAS_HEIGHT = 60;
  */
 export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
   boxes: ["spin", "spin-flip"],
-  chain: [],
-  snake: [],
+  chain: ["edge", "flip", "edge-flip"],
+  snake: ["edge", "flip", "edge-flip"],
 };
+
+/**
+ * Modifier names whose "edge" behavior closes the motif flush against the
+ * canvas border: the shared repeat pitch widens from `rows - 1` grid levels
+ * to `rows` grid levels (see {@link MotifTransformsService.closeEdge}).
+ */
+export const EDGE_FAMILY_MODIFIER_NAMES: readonly Modifier["name"][] = [
+  "edge",
+  "edge-flip",
+];
+
+/**
+ * Modifier names whose "flip" behavior mirrors alternating repeat units
+ * (every odd `unitIndex`), rather than every unit like `spin-flip` does.
+ */
+export const FLIP_ALTERNATION_MODIFIER_NAMES: readonly Modifier["name"][] = [
+  "flip",
+  "edge-flip",
+];
 
 /** Highest `rows` or `repeatCount` value the CLI accepts for any type. */
 export const MAXIMUM_VALUE = 12;
@@ -57,6 +76,9 @@ export const STROKE_LINECAP = "square";
 export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
   "spin",
   "spin-flip",
+  "edge",
+  "flip",
+  "edge-flip",
 ] satisfies readonly Modifier["name"][];
 
 export const SUPPORTED_TYPES: readonly string[] = [

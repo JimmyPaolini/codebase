@@ -23,6 +23,32 @@ export class MotifTransformsService {
   // 🌎 Public Methods
 
   /**
+   * Closes a `chain`/`snake` repeat unit's zigzag flush against the
+   * pattern's shared top/bottom border: prepends a connector from the
+   * bottom border up to the sequence's first point, and extends the
+   * sequence's last point up onto the top border. Doesn't fit the plain
+   * point-sequence-in/point-sequence-out shape `rotate`/`mirror` share — it
+   * inserts a new point rather than only transforming existing ones, and
+   * the caller must separately widen the unit's own repeat pitch from
+   * `rows - 1` to `rows` grid levels so consecutive units' borders still
+   * meet edge to edge.
+   */
+  closeEdge(
+    points: readonly SpiralLevelPoint[],
+    rows: number,
+  ): SpiralLevelPoint[] {
+    const [firstPointXLevel] = points[0] ?? [0, 0];
+    const lastPoint = points.at(-1) ?? [0, 0];
+    const [lastPointXLevel] = lastPoint;
+
+    return [
+      [firstPointXLevel, rows],
+      ...points.slice(0, -1),
+      [lastPointXLevel, 0],
+    ];
+  }
+
+  /**
    * Reflects every point across a line through `center`, keeping point
    * order unchanged. `"horizontal"` reflects over a horizontal line
    * (negates the y distance from center, an up/down flip); `"vertical"`

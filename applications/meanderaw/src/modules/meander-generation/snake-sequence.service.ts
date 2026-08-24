@@ -1,6 +1,12 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import type { SpiralLevelPoint } from "./meander-generation.types";
+import {
+  EDGE_FAMILY_MODIFIER_NAMES,
+  FLIP_ALTERNATION_MODIFIER_NAMES,
+} from "./meander-generation.constants";
+import { MotifTransformsService } from "./motif-transforms.service";
+
+import type { Modifier, SpiralLevelPoint } from "./meander-generation.types";
 
 /**
  * Generates the zigzag point sequence `snake` and `chain` both share, one
@@ -14,7 +20,10 @@ import type { SpiralLevelPoint } from "./meander-generation.types";
 export class SnakeSequenceService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(MotifTransformsService)
+    private readonly motifTransformsService: MotifTransformsService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -105,5 +114,50 @@ export class SnakeSequenceService {
     sequence.push([currentXLevel, 1]);
 
     return sequence;
+  }
+
+  /**
+   * Applies the unit's modifier (edge's `closeEdge`, flip's mirror on
+   * alternating units) to the base zigzag, so `chain` and `snake` share one
+   * place that decides how a modifier reshapes the sequence before either
+   * one converts it to pixels.
+   */
+  unitPoints(
+    rows: number,
+    unitIndex: number,
+    modifier: Modifier | undefined,
+  ): readonly SpiralLevelPoint[] {
+    const base = this.points(rows);
+    const closed =
+      modifier && EDGE_FAMILY_MODIFIER_NAMES.includes(modifier.name)
+        ? this.motifTransformsService.closeEdge(base, rows)
+        : base;
+    const shouldMirror =
+      modifier &&
+      FLIP_ALTERNATION_MODIFIER_NAMES.includes(modifier.name) &&
+      unitIndex % 2 === 1;
+
+    if (!shouldMirror) {
+      return closed;
+    }
+
+    return this.motifTransformsService.mirror(
+      closed,
+      [0, rows / 2],
+      "horizontal",
+    );
+  }
+
+  /**
+   * How many grid levels one repeat unit spans: `rows` when the `edge`
+   * family widens the pitch to close flush against the shared border,
+   * otherwise the motif's own `rows - 1`.
+   */
+  unitWidthLevels(rows: number, modifier: Modifier | undefined): number {
+    if (modifier && EDGE_FAMILY_MODIFIER_NAMES.includes(modifier.name)) {
+      return rows;
+    }
+
+    return rows - 1;
   }
 }

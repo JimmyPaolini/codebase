@@ -1,13 +1,16 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { GridGeometryService } from "./grid-geometry.service";
+import { EDGE_FAMILY_MODIFIER_NAMES } from "./meander-generation.constants";
 import { SnakeMotifService } from "./snake-motif.service";
 import { SnakeSequenceService } from "./snake-sequence.service";
 
 import type {
   GridGeometry,
+  Modifier,
   MotifService,
   MotifUnit,
+  RepeatPatternOptions,
 } from "./meander-generation.types";
 
 /**
@@ -36,17 +39,35 @@ export class ChainMotifService implements MotifService {
 
   // 🔏 Private Methods
 
+  /**
+   * Where the shared sequence splits into chain's two disconnected
+   * subpaths: the motif's own middle segment, shifted one position later
+   * when the `edge` family has prepended a border connector to the front
+   * of the sequence.
+   */
+  private splitIndex(rows: number, modifier: Modifier | undefined): number {
+    const isEdgeFamily = Boolean(
+      modifier && EDGE_FAMILY_MODIFIER_NAMES.includes(modifier.name),
+    );
+
+    return isEdgeFamily ? rows : rows - 1;
+  }
+
   // 🌎 Public Methods
 
   /** Draws one repeat unit's two subpaths plus its own border, as an SVG path attribute value. */
   path(geometry: GridGeometry, unit: MotifUnit): string {
-    const { rows, unitIndex } = unit;
-    const points = this.snakeSequenceService.points(rows);
-    const splitIndex = rows - 1;
+    const { modifier, rows, unitIndex } = unit;
+    const points = this.snakeSequenceService.unitPoints(
+      rows,
+      unitIndex,
+      modifier,
+    );
+    const splitIndex = this.splitIndex(rows, modifier);
     const firstSubpath = points.slice(0, splitIndex);
     const secondSubpath = points.slice(splitIndex);
     const xOffset =
-      unitIndex * this.snakeMotifService.unitWidth(geometry, rows);
+      unitIndex * this.snakeMotifService.unitWidth(geometry, rows, modifier);
     const toXCoordinate = (level: number): string =>
       this.gridGeometryService.formatCoordinate(
         geometry.offset + xOffset + level * geometry.unit,
@@ -67,12 +88,16 @@ export class ChainMotifService implements MotifService {
         toXCoordinate,
         toYCoordinate,
       ) +
-      this.snakeMotifService.borderSegment(geometry, xOffset, rows)
+      this.snakeMotifService.borderSegment(geometry, {
+        rows,
+        xOffset,
+        ...(modifier ? { modifier } : {}),
+      })
     );
   }
 
   /** Delegates to {@link SnakeMotifService}: `chain` shares `snake`'s grid exactly. */
-  rightEdge(geometry: GridGeometry, rows: number, repeatCount: number): number {
-    return this.snakeMotifService.rightEdge(geometry, rows, repeatCount);
+  rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number {
+    return this.snakeMotifService.rightEdge(geometry, pattern);
   }
 }

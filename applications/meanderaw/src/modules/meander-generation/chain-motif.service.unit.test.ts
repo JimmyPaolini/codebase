@@ -3,6 +3,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { ChainMotifService } from "./chain-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
+import { MotifTransformsService } from "./motif-transforms.service";
 import { SnakeMotifService } from "./snake-motif.service";
 import { SnakeSequenceService } from "./snake-sequence.service";
 
@@ -15,6 +16,7 @@ describe(ChainMotifService, () => {
       providers: [
         ChainMotifService,
         GridGeometryService,
+        MotifTransformsService,
         SnakeMotifService,
         SnakeSequenceService,
       ],
@@ -52,13 +54,53 @@ describe(ChainMotifService, () => {
         "M2.5 12.5H42.5V42.5H22.5V32.5M32.5 32.5V22.5H12.5V52.5H52.5V12.5M2.5 2.5H52.5M52.5 62.5H2.5",
       );
     });
+
+    it("closes flush against the border for edge, shifting the split by the prepended connector", () => {
+      const geometry = gridGeometryService.compute(6);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "edge" },
+          rows: 6,
+          unitIndex: 0,
+        }),
+      ).toBe(
+        "M2.5 62.5V12.5H42.5V42.5H22.5V32.5M32.5 32.5V22.5H12.5V52.5H52.5V2.5M2.5 2.5H62.5M62.5 62.5H2.5",
+      );
+    });
+
+    it("mirrors the second (odd-indexed) unit under flip", () => {
+      const geometry = gridGeometryService.compute(6);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "flip" },
+          rows: 6,
+          unitIndex: 1,
+        }),
+      ).not.toBe(service.path(geometry, { rows: 6, unitIndex: 1 }));
+    });
   });
 
   describe("rightEdge", () => {
     it("delegates to snake, since chain shares snake's grid exactly", () => {
       const geometry = gridGeometryService.compute(4);
 
-      expect(service.rightEdge(geometry, 4, 6)).toBe(273.75);
+      expect(service.rightEdge(geometry, { repeatCount: 6, rows: 4 })).toBe(
+        273.75,
+      );
+    });
+
+    it("delegates the modifier through to snake's widened edge pitch", () => {
+      const geometry = gridGeometryService.compute(6);
+
+      expect(
+        service.rightEdge(geometry, {
+          modifier: { name: "edge" },
+          repeatCount: 6,
+          rows: 6,
+        }),
+      ).toBe(362.5);
     });
   });
 });

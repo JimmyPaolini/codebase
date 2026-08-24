@@ -152,7 +152,9 @@ describe(BoxesMotifService, () => {
     it("spans from the left edge to the last unit's rightmost point", () => {
       const geometry = gridGeometryService.compute(5);
 
-      expect(service.border(geometry, 5, 6)).toBe("M279 63H3M279 3H3");
+      expect(service.border(geometry, { repeatCount: 6, rows: 5 })).toBe(
+        "M279 63H3M279 3H3",
+      );
     });
   });
 });

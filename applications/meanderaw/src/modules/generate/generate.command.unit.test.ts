@@ -105,8 +105,22 @@ describe(GenerateCommand, () => {
       });
     });
 
+    it("passes edge through as a Modifier object", () => {
+      expect(command.parseModifier("edge")).toStrictEqual({ name: "edge" });
+    });
+
+    it("passes flip through as a Modifier object", () => {
+      expect(command.parseModifier("flip")).toStrictEqual({ name: "flip" });
+    });
+
+    it("passes edge-flip through as a Modifier object", () => {
+      expect(command.parseModifier("edge-flip")).toStrictEqual({
+        name: "edge-flip",
+      });
+    });
+
     it("rejects an unsupported modifier name", () => {
-      expect(() => command.parseModifier("edge")).toThrow(
+      expect(() => command.parseModifier("bogus")).toThrow(
         /unsupported modifier/i,
       );
     });
