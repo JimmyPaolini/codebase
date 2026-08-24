@@ -79,6 +79,7 @@ flowchart LR
   caelundas["caelundas"]
   callidescope_cli["callidescope-cli"]
   codependix_cli["codependix-cli"]
+  codependix_nestjs["codependix-nestjs"]
   codometer_cli["codometer-cli"]
   conformetry_cli["conformetry-cli"]
   conformetry_nx["conformetry-nx"]
@@ -90,6 +91,7 @@ flowchart LR
   caelundas --> logger
   callidescope_cli --> logger
   codependix_cli --> logger
+  codependix_nestjs --> logger
   codometer_cli --> logger
   conformetry_cli --> logger
   conformetry_nx --> logger

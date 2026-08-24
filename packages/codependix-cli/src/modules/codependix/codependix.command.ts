@@ -118,10 +118,16 @@ export class CodependixCommand extends CommandRunner {
     const workingDirectory = path.resolve(options.directory ?? process.cwd());
 
     try {
-      const results = await this.codependixService.runNxGraphs(
-        options,
-        workingDirectory,
-      );
+      const results = [
+        ...(await this.codependixService.runNxGraphs(
+          options,
+          workingDirectory,
+        )),
+        ...(await this.codependixService.runNestjsGraphs(
+          options,
+          workingDirectory,
+        )),
+      ];
       const staleProjects = results.filter((result) => !result.isCurrent);
 
       if (staleProjects.length > 0) {

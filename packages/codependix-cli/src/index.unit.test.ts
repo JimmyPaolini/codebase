@@ -7,6 +7,8 @@ import {
   CodependixCommand,
   CodependixModule,
   CodependixService,
+  DeliveryModule,
+  DeliveryService,
   MainModule,
 } from "./index.js";
 
@@ -19,5 +21,7 @@ describe("codependix-cli index", () => {
     expect(CodependixModule).toBeDefined();
     expect(CodependixService).toBeDefined();
     expect(CodependixCommand).toBeDefined();
+    expect(DeliveryModule).toBeDefined();
+    expect(DeliveryService).toBeDefined();
   });
 });

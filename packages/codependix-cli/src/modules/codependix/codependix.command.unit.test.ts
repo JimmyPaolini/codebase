@@ -7,10 +7,8 @@ import { LoggerService } from "@codebase/logger";
 import { CodependixCommand } from "./codependix.command";
 import { CodependixService } from "./codependix.service";
 
-import type {
-  CodependixCommandOptions,
-  ProjectRunResult,
-} from "./codependix.types";
+import type { ProjectRunResult } from "../delivery/delivery.types";
+import type { CodependixCommandOptions } from "./codependix.types";
 
 describe(CodependixCommand, () => {
   let command: CodependixCommand;
@@ -47,6 +45,7 @@ describe(CodependixCommand, () => {
     codependixService = createMock<CodependixService>();
     loggerService = createMock<LoggerService>();
     vi.mocked(codependixService.runNxGraphs).mockResolvedValue([]);
+    vi.mocked(codependixService.runNestjsGraphs).mockResolvedValue([]);
   });
 
   it("is defined", () => {
@@ -90,7 +89,7 @@ describe(CodependixCommand, () => {
     expect(process.exitCode).toBe(0);
   });
 
-  it("fails in check mode when a result is stale", async () => {
+  it("fails in check mode when an nx result is stale", async () => {
     const staleResult: ProjectRunResult = {
       isCurrent: false,
       projectName: "codependix-nx",
@@ -101,6 +100,34 @@ describe(CodependixCommand, () => {
     await run({ check: true });
 
     expect(process.exitCode).toBe(1);
+  });
+
+  it("fails in check mode when a nestjs result is stale", async () => {
+    const staleResult: ProjectRunResult = {
+      isCurrent: false,
+      projectName: "codependix-cli",
+      stalePaths: ["codependix-cli.json"],
+    };
+    vi.mocked(codependixService.runNestjsGraphs).mockResolvedValue([
+      staleResult,
+    ]);
+
+    await run({ check: true });
+
+    expect(process.exitCode).toBe(1);
+  });
+
+  it("runs both the nx and nestjs graphs", async () => {
+    await run({ write: true });
+
+    expect(codependixService.runNxGraphs).toHaveBeenCalledWith(
+      { write: true },
+      process.cwd(),
+    );
+    expect(codependixService.runNestjsGraphs).toHaveBeenCalledWith(
+      { write: true },
+      process.cwd(),
+    );
   });
 
   it("fails and logs when the run throws", async () => {

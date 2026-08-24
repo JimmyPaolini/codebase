@@ -1,5 +1,6 @@
 // 🏷️ Types
 
+import type { NestjsModuleGraph } from "@codependix/nestjs";
 import type { Neighborhood, WorkspaceGraph } from "@codependix/nx";
 
 /** Command-line options `codependix` accepts. */
@@ -10,16 +11,15 @@ export interface CodependixCommandOptions {
   write?: boolean | undefined;
 }
 
-/** Which of the two run modes a command line resolved to. */
-export type CodependixRunMode = "check" | "write";
-
-/** Arguments shared by every method that delivers one file destination. */
-export interface DeliverFileArguments {
-  absoluteRoot: string;
-  content: string;
-  mode: CodependixRunMode;
-  relativePath: string;
-}
+/**
+ * The JSON shape a single project's NestJS module graph export is written as.
+ *
+ * Identical in shape to `NestjsModuleGraph` itself — kept as its own named
+ * type so the export's JSON shape can evolve independently of
+ * `codependix-nestjs`'s internal representation, the same reasoning
+ * `NxWorkspaceGraphExport` follows for the Nx Workspace Graph.
+ */
+export type NestjsModuleGraphExport = NestjsModuleGraph;
 
 /** The JSON shape a single project's Nx neighborhood export is written as. */
 export interface NxNeighborhoodExport {
@@ -38,10 +38,3 @@ export interface NxNeighborhoodExport {
  * `codependix-nx`'s internal `WorkspaceGraph` representation.
  */
 export type NxWorkspaceGraphExport = WorkspaceGraph;
-
-/** One project's outcome after its configured destinations were resolved. */
-export interface ProjectRunResult {
-  isCurrent: boolean;
-  projectName: string;
-  stalePaths: string[];
-}

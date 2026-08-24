@@ -1,31 +1,21 @@
 {
-  "bin": {
-    "codependix": "./src/main.mjs"
-  },
   "dependencies": {
     "@codebase/logger": "workspace:*",
-    "@codependix/configuration": "workspace:*",
-    "@codependix/nestjs": "workspace:*",
-    "@codependix/nx": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
     "@nx/devkit": "catalog:",
-    "nest-commander": "catalog:",
+    "nestjs-spelunker": "catalog:",
     "reflect-metadata": "catalog:",
-    "tslib": "catalog:",
-    "zod": "catalog:"
+    "tslib": "catalog:"
   },
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
     "@nx/eslint-plugin": "catalog:",
-    "@swc-node/register": "catalog:",
-    "@swc/core": "catalog:",
     "@swc/helpers": "catalog:",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
-    "typescript": "catalog:",
     "vitest": "catalog:"
   },
   "exports": {
@@ -33,7 +23,7 @@
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
-  "name": "@codependix/cli",
+  "name": "@codependix/nestjs",
   "private": true,
   "publishConfig": {
     "access": "public",
