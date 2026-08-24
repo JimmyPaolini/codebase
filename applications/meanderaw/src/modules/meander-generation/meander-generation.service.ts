@@ -17,6 +17,8 @@ import {
 } from "./meander-generation.constants";
 import { SnakeMotifService } from "./snake-motif.service";
 import { SvgRenderingService } from "./svg-rendering.service";
+import { SwirlMotifService } from "./swirl-motif.service";
+import { WhirlMotifService } from "./whirl-motif.service";
 
 import type {
   GenerationParameters,
@@ -47,6 +49,10 @@ export class MeanderGenerationService {
     private readonly snakeMotifService: SnakeMotifService,
     @Inject(SvgRenderingService)
     private readonly svgRenderingService: SvgRenderingService,
+    @Inject(SwirlMotifService)
+    private readonly swirlMotifService: SwirlMotifService,
+    @Inject(WhirlMotifService)
+    private readonly whirlMotifService: WhirlMotifService,
   ) {}
 
   // 🔐 Private Fields
@@ -91,6 +97,8 @@ export class MeanderGenerationService {
       boxes: this.boxesMotifService,
       chain: this.chainMotifService,
       snake: this.snakeMotifService,
+      swirl: this.swirlMotifService,
+      whirl: this.whirlMotifService,
     };
 
     return motifServicesByType[type];
