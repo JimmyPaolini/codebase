@@ -16,10 +16,13 @@ import {
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_MAXIMUM_DEPTH,
-  DEFAULT_MAXIMUM_IMPLEMENTATION_FAN_OUT,
+  DEFAULT_MAXIMUM_IMPLEMENTATION_CANDIDATES,
   DEFAULT_MINIMUM_CALLERS,
+  DEFAULT_MODULES_DIRECTORY,
   DEFAULT_PREVIEW_COUNT,
+  DEFAULT_PROJECT_CONTAINER_DIRECTORIES,
   DEFAULT_PROJECT_README_HEADING,
+  DEFAULT_ROOT_MODULE_SEGMENT,
   DEFAULT_SPREAD_THRESHOLD,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
@@ -73,6 +76,7 @@ describe(ConfigurationService, () => {
 
     expect(configuration.exclude).toStrictEqual([...DEFAULT_EXCLUDE_GLOBS]);
     expect(configuration.excludeFrom).toStrictEqual([]);
+    expect(configuration.ignoreCallees).toStrictEqual([]);
     expect(configuration.projects).toStrictEqual([]);
     expect(configuration.allowSpreadFor).toStrictEqual([
       ...DEFAULT_ALLOW_SPREAD_FOR,
@@ -87,11 +91,37 @@ describe(ConfigurationService, () => {
     expect(configuration.limits).toStrictEqual({
       callerMajorityRatio: DEFAULT_CALLER_MAJORITY_RATIO,
       directSpreadThreshold: DEFAULT_DIRECT_SPREAD_THRESHOLD,
+      maximumBreadth: undefined,
       maximumDepth: DEFAULT_MAXIMUM_DEPTH,
-      maximumImplementationFanOut: DEFAULT_MAXIMUM_IMPLEMENTATION_FAN_OUT,
+      maximumImplementationCandidates:
+        DEFAULT_MAXIMUM_IMPLEMENTATION_CANDIDATES,
       minimumCallers: DEFAULT_MINIMUM_CALLERS,
       spreadThreshold: DEFAULT_SPREAD_THRESHOLD,
     });
+  });
+
+  it("leaves the breadth limit unset when no default exists for it", () => {
+    const configuration = service.resolveConfiguration({});
+
+    expect(configuration.limits.maximumBreadth).toBeUndefined();
+  });
+
+  it("keeps an authored breadth limit", () => {
+    const configuration = service.resolveConfiguration({
+      limits: { maximumBreadth: 5 },
+    });
+
+    expect(configuration.limits.maximumBreadth).toBe(5);
+  });
+
+  it("rejects a breadth limit that is not a positive integer", async () => {
+    const configurationPath = await writeConfiguration({
+      limits: { maximumBreadth: 0 },
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toThrow(ZodError);
   });
 
   it("applies every entry-point default", () => {
@@ -105,6 +135,28 @@ describe(ConfigurationService, () => {
     });
   });
 
+  it("applies every workspace-structure default", () => {
+    const configuration = service.resolveConfiguration({});
+
+    expect(configuration.workspaceStructure).toStrictEqual({
+      modulesDirectory: DEFAULT_MODULES_DIRECTORY,
+      projectContainerDirectories: [...DEFAULT_PROJECT_CONTAINER_DIRECTORIES],
+      rootModuleSegment: DEFAULT_ROOT_MODULE_SEGMENT,
+    });
+  });
+
+  it("keeps an authored workspace structure and defaults the rest", () => {
+    const configuration = service.resolveConfiguration({
+      workspaceStructure: { projectContainerDirectories: ["services"] },
+    });
+
+    expect(configuration.workspaceStructure).toStrictEqual({
+      modulesDirectory: DEFAULT_MODULES_DIRECTORY,
+      projectContainerDirectories: ["services"],
+      rootModuleSegment: DEFAULT_ROOT_MODULE_SEGMENT,
+    });
+  });
+
   // 🎛️ Overrides
 
   it("keeps an authored limit and defaults the rest", () => {
@@ -114,6 +166,14 @@ describe(ConfigurationService, () => {
 
     expect(configuration.limits.maximumDepth).toBe(12);
     expect(configuration.limits.spreadThreshold).toBe(DEFAULT_SPREAD_THRESHOLD);
+  });
+
+  it("keeps authored callee-ignore globs", () => {
+    const configuration = service.resolveConfiguration({
+      ignoreCallees: ["LoggerService.*"],
+    });
+
+    expect(configuration.ignoreCallees).toStrictEqual(["LoggerService.*"]);
   });
 
   it("keeps authored entry-point rules, including disabling them", () => {

@@ -1,5 +1,7 @@
 // 🛠️ Utilities
 
+import { formatBytes as formatBytesShared } from "@codometer/markdown";
+
 import type { MeasurementScope, TargetSize } from "./output-markdown.types";
 import type {
   CodeStatisticsResult,
@@ -388,24 +390,12 @@ export function encodeValue(input: number | string): string {
  * repository's own size and each measured target's — so two numbers rendered
  * side by side can never be in different units.
  *
- * Decimal because every other size in this project is: a limit written as
- * `"8 KB"` parses as 8000 bytes, and dividing by 1024 here would print this
- * badge as a number no limit in the workspace ever mentions.
- *
- * Deliberately a second implementation of `formatBytes` in
- * `tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts`
- * rather than a shared one: the two packages have no dependency edge, and
- * adding one for a formatter would cost more than the duplication. The two
- * must keep the same divisors and the same switch-over point, or this
- * badge and the pull request bundle table will disagree about what a
- * kilobyte is.
+ * Delegates to `@codometer/markdown`, which now owns byte formatting for both
+ * this badge report and the pull request change report, so the two can never
+ * disagree about what a kilobyte is.
  */
 export function formatBytes(bytes: number): string {
-  if (bytes >= 1_000_000) {
-    return `${(bytes / 1_000_000).toFixed(2)} MB`;
-  }
-
-  return `${(bytes / 1000).toFixed(2)} kB`;
+  return formatBytesShared(bytes);
 }
 
 /**

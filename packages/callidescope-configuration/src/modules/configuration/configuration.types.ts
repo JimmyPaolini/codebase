@@ -10,6 +10,17 @@ export interface CallidescopeConfiguration {
   exclude?: string[] | undefined;
   /** Gitignore-syntax files listing paths to leave untraced. */
   excludeFrom?: string[] | undefined;
+  /**
+   * Globs matched against a callable's display name (`Type.member`):
+   * calls landing on a match are dropped from the graph entirely, counting
+   * toward neither the caller's depth nor its breadth.
+   *
+   * For a cross-cutting callable like a logger, every call site is a fact
+   * about instrumentation, not about how deep or wide the code around it
+   * is — counting it would move every other callable's numbers on a change
+   * that has nothing to do with them.
+   */
+  ignoreCallees?: string[] | undefined;
   limits?: CallidescopeLimits | undefined;
   output?: CallidescopeOutputConfiguration | undefined;
   /**
@@ -19,6 +30,7 @@ export interface CallidescopeConfiguration {
    * a whole-workspace analysis, because each project needs its own program.
    */
   projects?: string[] | undefined;
+  workspaceStructure?: CallidescopeWorkspaceStructure | undefined;
 }
 
 /** Which callables are treated as the roots of a call stack. */
@@ -59,10 +71,17 @@ export interface CallidescopeLimits {
   callerMajorityRatio?: number | undefined;
   /** Modules a callable must call directly before spread is reported. */
   directSpreadThreshold?: number | undefined;
+  /**
+   * Distinct callables a callable may call directly before it is reported.
+   *
+   * No default is applied: a project must configure this explicitly before
+   * `--check breadth` can run against it.
+   */
+  maximumBreadth?: number | undefined;
   /** Frames a call stack may hold before it is reported. */
   maximumDepth?: number | undefined;
   /** Implementations one interface member may resolve to before giving up. */
-  maximumImplementationFanOut?: number | undefined;
+  maximumImplementationCandidates?: number | undefined;
   /** Callers a callable needs before its placement is judged. */
   minimumCallers?: number | undefined;
   /** Distinct modules a callable's transitive callees may touch. */
@@ -114,6 +133,19 @@ export interface CallidescopeProjectReadmeConfiguration {
   /** Stacks shown before the rest fold into a disclosure. */
   previewCount?: number | undefined;
   startMarker?: string | undefined;
+}
+
+/**
+ * Names the directory layout a workspace uses, for a repository that does not
+ * follow this tool's own.
+ */
+export interface CallidescopeWorkspaceStructure {
+  /** The subdirectory a module identifier is derived from. */
+  modulesDirectory?: string | undefined;
+  /** Directories a workspace keeps its projects in. */
+  projectContainerDirectories?: string[] | undefined;
+  /** Identifier used for a file sitting directly under the source root. */
+  rootModuleSegment?: string | undefined;
 }
 
 /** Arguments accepted by the configuration loader. */
@@ -169,9 +201,11 @@ export interface ResolvedCallidescopeConfiguration {
   entryPoints: ResolvedCallidescopeEntryPoints;
   exclude: string[];
   excludeFrom: string[];
+  ignoreCallees: string[];
   limits: ResolvedCallidescopeLimits;
   output: ResolvedCallidescopeOutputConfiguration;
   projects: string[];
+  workspaceStructure: ResolvedCallidescopeWorkspaceStructure;
 }
 
 /** Entry-point rules with defaults applied. */
@@ -192,8 +226,16 @@ export interface ResolvedCallidescopeJsonOutputConfiguration {
 export interface ResolvedCallidescopeLimits {
   callerMajorityRatio: number;
   directSpreadThreshold: number;
+  /**
+   * Distinct callables a callable may call directly before it is reported.
+   *
+   * Stays optional even after resolution: unlike every other limit, this one
+   * has no default, so its absence is a fact a `--check breadth` run must act
+   * on rather than something resolution can paper over.
+   */
+  maximumBreadth?: number | undefined;
   maximumDepth: number;
-  maximumImplementationFanOut: number;
+  maximumImplementationCandidates: number;
   minimumCallers: number;
   spreadThreshold: number;
 }
@@ -235,6 +277,13 @@ export interface ResolvedCallidescopeProjectReadmeConfiguration {
   heading: string;
   previewCount: number;
   startMarker: string;
+}
+
+/** A workspace's directory layout with defaults applied. */
+export interface ResolvedCallidescopeWorkspaceStructure {
+  modulesDirectory: string;
+  projectContainerDirectories: string[];
+  rootModuleSegment: string;
 }
 
 /** What a `write` function is handed. */

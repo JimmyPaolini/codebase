@@ -79,11 +79,15 @@ Call stacks traced through `conformetry-agents`, deepest first. Each frame shows
 | Stacks through recursion | 0 |
 | Unfollowable calls | 0 |
 
-### Call stacks
+### Call stacks (depth)
 
 None.
 
 ### Module spread
+
+None.
+
+### Breadth
 
 None.
 

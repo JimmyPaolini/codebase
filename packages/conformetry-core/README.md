@@ -167,7 +167,7 @@ Call stacks traced through `conformetry-core`, deepest first. Each frame shows w
 | Stacks through recursion | 0 |
 | Unfollowable calls | 1 |
 
-### Call stacks
+### Call stacks (depth)
 
 **1. `InventoryService.describePairing`** — depth 2 · orphan-root
 
@@ -181,6 +181,45 @@ Call stacks traced through `conformetry-core`, deepest first. Each frame shows w
 ### Module spread
 
 None.
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `LanguageService.runValidator` | 4 | `LanguageService.map(…)`, `LanguageService.filter(…)`, `LanguageService.filter(…)`, `LanguageService.reduce(…)` | `packages/conformetry-core/src/modules/language/language.service.ts:81` |
+| `ReportingService.formatTotal` | 4 | `ReportingService.reduce(…)`, `ReportingService.reduce(…)`, `ReportingService.filter(…)`, `ReportingService.formatFraction` | `packages/conformetry-core/src/modules/reporting/reporting.service.ts:233` |
+| `ReportingService.formatFileResult` | 3 | `ReportingService.formatFraction`, `ScoringService.sumWeights`, `ReportingService.flatMap(…)` | `packages/conformetry-core/src/modules/reporting/reporting.service.ts:97` |
+
+<details>
+<summary>23 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `ReportingService.formatScores` | 3 | `ReportingService.filter(…)`, `ReportingService.map(…)`, `ReportingService.formatTotal` | `packages/conformetry-core/src/modules/reporting/reporting.service.ts:196` |
+| `ReportingService.formatFraction` | 2 | `ScoringService.calculateScore`, `ReportingService.formatPercentage` | `packages/conformetry-core/src/modules/reporting/reporting.service.ts:130` |
+| `ReportingService.formatScore` | 2 | `ReportingService.formatPercentage`, `ReportingService.formatFraction` | `packages/conformetry-core/src/modules/reporting/reporting.service.ts:165` |
+| `ReportingService.formatReport` | 2 | `ReportingService.formatScores`, `ReportingService.flatMap(…)` | `packages/conformetry-core/src/modules/reporting/reporting.service.ts:261` |
+| `DifferencesService.resolveDifferenceType` | 1 | `DifferencesService.find(…)` | `packages/conformetry-core/src/modules/differences/differences.service.ts:76` |
+| `DifferencesService.resolveErrorLanguage` | 1 | `DifferencesService.find(…)` | `packages/conformetry-core/src/modules/differences/differences.service.ts:89` |
+| `InventoryService.describePairing` | 1 | `InventoryService.formatRatio` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:49` |
+| `InventoryService.describeInstances` | 1 | `InventoryService.flatMap(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:78` |
+| `InventoryService.flatMap(…)` | 1 | `InventoryService.map(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:79` |
+| `InventoryService.describeTemplates` | 1 | `InventoryService.flatMap(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:95` |
+| `InventoryService.flatMap(…)` | 1 | `InventoryService.map(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:99` |
+| `InventoryService.shortenInstancePaths` | 1 | `InventoryService.map(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:125` |
+| `InventoryService.map(…)` | 1 | `InventoryService.shortenPath` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:129` |
+| `InventoryService.shortenTemplatePairings` | 1 | `InventoryService.map(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:141` |
+| `InventoryService.map(…)` | 1 | `InventoryService.map(…)` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:145` |
+| `InventoryService.map(…)` | 1 | `InventoryService.shortenPath` | `packages/conformetry-core/src/modules/inventory/inventory.service.ts:148` |
+| `LanguageService.filter(…)` | 1 | `LanguageService.claimsDocument` | `packages/conformetry-core/src/modules/language/language.service.ts:85` |
+| `LanguageService.map(…)` | 1 | `LanguageService.validateDocument` | `packages/conformetry-core/src/modules/language/language.service.ts:88` |
+| `ScoringService.sumWeights` | 1 | `ScoringService.reduce(…)` | `packages/conformetry-core/src/modules/scoring/scoring.service.ts:53` |
+| `ReportingService.formatError` | 1 | `ReportingService.formatLocation` | `packages/conformetry-core/src/modules/reporting/reporting.service.ts:53` |
+| `ReportingService.flatMap(…)` | 1 | `ReportingService.formatError` | `packages/conformetry-core/src/modules/reporting/reporting.service.ts:114` |
+| `ReportingService.map(…)` | 1 | `ReportingService.formatScore` | `packages/conformetry-core/src/modules/reporting/reporting.service.ts:210` |
+| `ReportingService.flatMap(…)` | 1 | `ReportingService.formatFileResult` | `packages/conformetry-core/src/modules/reporting/reporting.service.ts:273` |
+
+</details>
 
 ### Possibly misplaced
 

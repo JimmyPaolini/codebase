@@ -4,6 +4,8 @@
   },
   "dependencies": {
     "@callidescope/configuration": "workspace:*",
+    "@callidescope/graph": "workspace:*",
+    "@callidescope/output": "workspace:*",
     "@codebase/logger": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",

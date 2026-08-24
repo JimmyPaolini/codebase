@@ -1,0 +1,45 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "codometer-markdown",
+  "projectType": "library",
+  "sourceRoot": "packages/codometer-markdown",
+  "tags": [
+    "framework:nestjs",
+    "generator:nestjs-service-project",
+    "language:typescript",
+    "name:codometer-markdown",
+    "type:package"
+  ],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "packages/codometer-markdown",
+            "output": "."
+          }
+        ],
+        "main": "packages/codometer-markdown/src/index.ts",
+        "outputPath": "dist/packages/codometer-markdown",
+        "tsConfig": "packages/codometer-markdown/tsconfig.build.json"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "codometer": {},
+    "dependency-cruiser": {},
+    "knip": {},
+    "lint-codebase": {},
+    "make-projects": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "oxlint": {},
+    "prettier": {},
+    "spell-check": {},
+    "test-coverage": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}

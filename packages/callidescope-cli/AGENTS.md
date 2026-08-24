@@ -62,27 +62,31 @@ The modules this project defines and the imports between them, published by `nx 
 ```mermaid
 flowchart LR
   subgraph group0["callidescope-cli"]
-    CallablesModule
     CallidescopeModule
-    ClassHierarchyModule
-    CohesionModule
-    DocumentationModule
-    EdgesModule
-    EntryPointsModule
-    GraphModule
     MainModule
-    OutputJsonModule
-    OutputMarkdownModule
-    ProgramModule
-    ProjectReportsModule
-    ReportModule
-    SignaturesModule
-    WorkspaceModule
   end
   subgraph group1["callidescope-configuration"]
     ConfigurationModule
   end
-  subgraph group2["logger"]
+  subgraph group2["callidescope-graph"]
+    CallablesModule
+    ClassesModule
+    CohesionModule
+    DocumentationModule
+    EdgesModule
+    EntriesModule
+    GraphModule
+    ProgramModule
+    SignaturesModule
+    WorkspaceModule
+  end
+  subgraph group3["callidescope-output"]
+    OutputJsonModule
+    OutputMarkdownModule
+    ProjectReportsModule
+    ReportModule
+  end
+  subgraph group4["logger"]
     LoggerModule([LoggerModule])
   end
   ConfigModule([ConfigModule])
@@ -90,11 +94,11 @@ flowchart LR
   CallablesModule --> ProgramModule
   CallablesModule --> WorkspaceModule
   CallidescopeModule --> CallablesModule
-  CallidescopeModule --> ClassHierarchyModule
+  CallidescopeModule --> ClassesModule
   CallidescopeModule --> CohesionModule
   CallidescopeModule --> ConfigurationModule
   CallidescopeModule --> EdgesModule
-  CallidescopeModule --> EntryPointsModule
+  CallidescopeModule --> EntriesModule
   CallidescopeModule --> GraphModule
   CallidescopeModule --> OutputJsonModule
   CallidescopeModule --> OutputMarkdownModule
@@ -103,7 +107,7 @@ flowchart LR
   CallidescopeModule --> ReportModule
   CallidescopeModule --> WorkspaceModule
   EdgesModule --> CallablesModule
-  EdgesModule --> ClassHierarchyModule
+  EdgesModule --> ClassesModule
   EdgesModule --> ProgramModule
   EdgesModule --> WorkspaceModule
   GraphModule --> DocumentationModule
@@ -113,6 +117,7 @@ flowchart LR
   MainModule --> DiscoveryModule
   ProgramModule --> WorkspaceModule
   ProjectReportsModule --> GraphModule
+  ProjectReportsModule --> SignaturesModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._

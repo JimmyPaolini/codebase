@@ -121,7 +121,7 @@ Call stacks traced through `conformetry-jupyter`, deepest first. Each frame show
 | Stacks through recursion | 1 |
 | Unfollowable calls | 0 |
 
-### Call stacks
+### Call stacks (depth)
 
 **1. `JupyterValidatorService.validateDocument`** — depth 13 · orphan-root
 
@@ -154,6 +154,29 @@ Call stacks traced through `conformetry-jupyter`, deepest first. Each frame show
 ### Module spread
 
 None.
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `JupyterValidatorService.validateDocument` | 11 | `JupyterNotebookService.parseNotebook`, `JupyterNotebookService.pairCells`, `JsonComparisonService.compare`, `JupyterValidatorService.readEnvelope`, `JupyterValidatorService.map(…)`, `JupyterValidatorService.map(…)`, `JupyterValidatorService.map(…)`, `JupyterValidatorService.flatMap(…)`, `JupyterValidatorService.reduce(…)`, `JupyterValidatorService.map(…)`, `JupyterValidatorService.map(…)` | `packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:152` |
+| `JupyterNotebookService.pairCells` | 3 | `JupyterNotebookService.groupSourcesByKind`, `JupyterNotebookService.readCellKind`, `JupyterNotebookService.readCellSource` | `packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-notebook.service.ts:82` |
+| `JupyterValidatorService.validateCell` | 3 | `MarkdownValidatorService.validateDocument`, `JupyterValidatorService.attributeToCell`, `PythonBridgeService.validatePythonSource` | `packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:89` |
+
+<details>
+<summary>7 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `JupyterNotebookService.groupSourcesByKind` | 2 | `JupyterNotebookService.readCellKind`, `JupyterNotebookService.readCellSource` | `packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-notebook.service.ts:31` |
+| `JupyterNotebookService.readCellSource` | 1 | `JupyterNotebookService.filter(…)` | `packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-notebook.service.ts:57` |
+| `JupyterNotebookService.parseNotebook` | 1 | `JupyterNotebookService.filter(…)` | `packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-notebook.service.ts:122` |
+| `JupyterValidatorService.attributeToCell` | 1 | `JupyterValidatorService.map(…)` | `packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:51` |
+| `JupyterValidatorService.weighMissingCell` | 1 | `JupyterValidatorService.validateCell` | `packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:139` |
+| `JupyterValidatorService.map(…)` | 1 | `JupyterValidatorService.weighMissingCell` | `packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:172` |
+| `JupyterValidatorService.map(…)` | 1 | `JupyterValidatorService.validateCell` | `packages/conformetry-jupyter/src/modules/jupyter-validator/jupyter-validator.service.ts:187` |
+
+</details>
 
 ### Possibly misplaced
 

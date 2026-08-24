@@ -43,7 +43,7 @@ to change.
 | `maximumDepth` | `6` | Frames a call stack may hold, entry point inclusive |
 | `spreadThreshold` | `4` | Distinct modules a callable's transitive callees may touch |
 | `directSpreadThreshold` | `3` | Modules a callable must call _directly_ before spread is reported |
-| `maximumImplementationFanOut` | `8` | Implementations one interface member may resolve to |
+| `maximumImplementationCandidates` | `8` | Implementations one interface member may resolve to |
 | `minimumCallers` | `2` | Callers a callable needs before its placement is judged |
 | `callerMajorityRatio` | `0.8` | Share of callers in one foreign module that marks a callable misplaced |
 
@@ -52,7 +52,7 @@ entry point — an entry point legitimately reaches the whole program. Requiring
 direct breadth as well is what isolates the callable personally orchestrating
 unrelated concerns.
 
-`maximumImplementationFanOut` is the primary noise control. A structurally matched
+`maximumImplementationCandidates` is the primary noise control. A structurally matched
 interface member named `run` or `sync` otherwise resolves to dozens of unrelated
 classes and manufactures a call stack no execution ever takes.
 
@@ -136,7 +136,11 @@ Where this project sits in the Nx project graph: what it depends on, and what de
 flowchart LR
   callidescope_cli["callidescope-cli"]
   callidescope_configuration["callidescope-configuration"]
+  callidescope_graph["callidescope-graph"]
+  callidescope_output["callidescope-output"]
   callidescope_cli --> callidescope_configuration
+  callidescope_graph --> callidescope_configuration
+  callidescope_output --> callidescope_configuration
   classDef subject stroke-width:3px
   class callidescope_configuration subject
 ```
@@ -187,21 +191,39 @@ Call stacks traced through `callidescope-configuration`, deepest first. Each fra
 
 | Measure | Value |
 | --- | --- |
-| Callables | 18 |
+| Callables | 19 |
 | Files | 9 |
-| Calls traced | 17 |
+| Calls traced | 18 |
 | Call stacks | 0 |
 | Deepest stack | 0 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 2 |
 
-### Call stacks
+### Call stacks (depth)
 
 None.
 
 ### Module spread
 
 None.
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `ConfigurationService.resolveConfiguration` | 6 | `ConfigurationService.resolveEntryPoints`, `ConfigurationService.resolveLimits`, `ConfigurationService.resolveJsonOutput`, `ConfigurationService.resolveMarkdownDestination`, `ConfigurationService.resolveProjectReadmes`, `ConfigurationService.resolveWorkspaceStructure` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:360` |
+| `ConfigurationService.loadConfiguration` | 5 | `ConfigurationService.findConfigurationFile`, `ConfigurationService.resolveConfigurationPath`, `ConfigurationService.resolveConfiguration`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.loadConfigurationModule` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:325` |
+| `ConfigurationService.resolveConfigurationPath` | 2 | `ConfigurationService.findRepositoryRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:171` |
+
+<details>
+<summary>2 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `ConfigurationService.findRepositoryRoot` | 1 | `ConfigurationService.some(…)` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:110` |
+| `ConfigurationService.loadConfigurationModule` | 1 | `ConfigurationService.loadJsonConfiguration` | `packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:134` |
+
+</details>
 
 ### Possibly misplaced
 
@@ -214,23 +236,23 @@ None.
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1919-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-71.79_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2126-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-79.22_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-4-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-14-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-7.09_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-7.56_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
 ![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-14-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-35-0ea5e9?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-40-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-1-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-2-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-117-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-134-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -239,15 +261,15 @@ None.
 ![Test Files](https://img.shields.io/badge/Test_Files-3-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-11-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-4-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-60-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-13-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-47-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-26-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-100-dc2626?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-66-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-14-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-53-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-27-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-111-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-37-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-69-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-153-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-315-475569?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-77-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-170-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-363-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python

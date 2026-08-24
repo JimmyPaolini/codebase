@@ -110,13 +110,21 @@ Call stacks traced through `conformetry-files`, deepest first. Each frame shows 
 | Stacks through recursion | 0 |
 | Unfollowable calls | 0 |
 
-### Call stacks
+### Call stacks (depth)
 
 None.
 
 ### Module spread
 
 None.
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `FilesService.checkInstanceFiles` | 3 | `InstanceDiscoveryService.resolveInstanceFiles`, `FilesService.buildMissingDifference`, `FilesService.countExpectedFiles` | `packages/conformetry-files/src/modules/files/files.service.ts:95` |
+| `FilesService.buildMissingDifference` | 2 | `DifferencesService.buildMissingFileDifference`, `DifferencesService.buildMissingDirectoryDifference` | `packages/conformetry-files/src/modules/files/files.service.ts:51` |
+| `FilesService.countExpectedFiles` | 1 | `FilesService.filter(…)` | `packages/conformetry-files/src/modules/files/files.service.ts:77` |
 
 ### Possibly misplaced
 
