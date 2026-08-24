@@ -8,6 +8,7 @@ import { BarsMotifService } from "./bars-motif.service";
 import { BoxesMotifService } from "./boxes-motif.service";
 import { ChainMotifService } from "./chain-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
+import { InvalidPeriodError } from "./invalid-period.errors";
 import { InvalidRepeatCountCycleError } from "./invalid-repeat-count-cycle.errors";
 import { InvalidRepeatCountError } from "./invalid-repeat-count.errors";
 import { InvalidRowsError } from "./invalid-rows.errors";
@@ -68,6 +69,75 @@ describe(MeanderGenerationService, () => {
       expect(() =>
         service.generate({ repeatCount: 1, rows: 2, type: "bars" }),
       ).toThrow(InvalidRowsError);
+    });
+
+    it("matches the committed golden fixture for 5 rows bars with 6 repeats and alternated at period 1", async () => {
+      const svg = service.generate({
+        modifier: { name: "alternated", period: 1 },
+        repeatCount: 6,
+        rows: 5,
+        type: "bars",
+      });
+      const golden = await readFile(
+        path.join(
+          import.meta.dirname,
+          "../../../testing/fixtures/bars-5-rows-6-repeats-alternated-period-1.svg",
+        ),
+        "utf8",
+      );
+
+      expect(svg).toBe(golden);
+    });
+
+    it("matches the committed golden fixture for 5 rows bars with 6 repeats and alternated at period 2", async () => {
+      const svg = service.generate({
+        modifier: { name: "alternated", period: 2 },
+        repeatCount: 6,
+        rows: 5,
+        type: "bars",
+      });
+      const golden = await readFile(
+        path.join(
+          import.meta.dirname,
+          "../../../testing/fixtures/bars-5-rows-6-repeats-alternated-period-2.svg",
+        ),
+        "utf8",
+      );
+
+      expect(svg).toBe(golden);
+    });
+
+    it("throws when alternated's period isn't a whole number within the shared bounds", () => {
+      expect(() =>
+        service.generate({
+          modifier: { name: "alternated", period: 0 },
+          repeatCount: 6,
+          rows: 5,
+          type: "bars",
+        }),
+      ).toThrow(InvalidPeriodError);
+    });
+
+    it("throws when repeatCount isn't a whole multiple of alternated's period", () => {
+      expect(() =>
+        service.generate({
+          modifier: { name: "alternated", period: 4 },
+          repeatCount: 6,
+          rows: 5,
+          type: "bars",
+        }),
+      ).toThrow(InvalidRepeatCountCycleError);
+    });
+
+    it("throws when alternated is requested for a type that doesn't support it", () => {
+      expect(() =>
+        service.generate({
+          modifier: { name: "alternated", period: 1 },
+          repeatCount: 6,
+          rows: 5,
+          type: "boxes",
+        }),
+      ).toThrow(/not compatible/i);
     });
 
     it("matches the committed golden fixture for 5 rows boxes with 6 repeats", async () => {

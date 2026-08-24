@@ -91,6 +91,38 @@ describe(MotifTransformsService, () => {
     });
   });
 
+  describe("alternate", () => {
+    it("switches column every level at period 1, matching the real edges decoded from 8 rows bars alternated.svg", () => {
+      expect(service.alternate(1, 7, 1)).toStrictEqual([
+        { column: 0, fromLevel: 1, toLevel: 2 },
+        { column: 1, fromLevel: 2, toLevel: 3 },
+        { column: 0, fromLevel: 3, toLevel: 4 },
+        { column: 1, fromLevel: 4, toLevel: 5 },
+        { column: 0, fromLevel: 5, toLevel: 6 },
+        { column: 1, fromLevel: 6, toLevel: 7 },
+      ]);
+    });
+
+    it("holds each column for a longer run at period 2", () => {
+      expect(service.alternate(1, 7, 2)).toStrictEqual([
+        { column: 0, fromLevel: 1, toLevel: 3 },
+        { column: 1, fromLevel: 3, toLevel: 5 },
+        { column: 0, fromLevel: 5, toLevel: 7 },
+      ]);
+    });
+
+    it("shortens the final run when the interval doesn't divide evenly by the period", () => {
+      expect(service.alternate(1, 4, 2)).toStrictEqual([
+        { column: 0, fromLevel: 1, toLevel: 3 },
+        { column: 1, fromLevel: 3, toLevel: 4 },
+      ]);
+    });
+
+    it("returns an empty sequence for a zero-length interval", () => {
+      expect(service.alternate(1, 1, 1)).toStrictEqual([]);
+    });
+  });
+
   describe("closeEdge", () => {
     // Reference geometry: the 6-rows `snake`/`chain` zigzag, taken from
     // `SnakeSequenceService.points(6)` and verified against

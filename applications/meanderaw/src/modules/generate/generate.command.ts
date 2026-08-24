@@ -51,14 +51,40 @@ export class GenerateCommand extends CommandRunner {
   // 🔏 Private Methods
 
   /** Builds the kebab-case output filename, encoding every generation parameter so no two outputs can share a name. */
-  private buildFileName(options: GenerateCommandOptions): string {
+  private buildFileName(
+    options: GenerateCommandOptions,
+    modifier: Modifier | undefined,
+  ): string {
     const baseName = `${options.type}-${options.rows}-rows-${options.repeatCount}-repeats`;
 
-    if (!options.modifier) {
+    if (!modifier) {
       return `${baseName}.svg`;
     }
 
-    return `${baseName}-${options.modifier.name}.svg`;
+    if (modifier.name === "alternated") {
+      return `${baseName}-alternated-period-${modifier.period}.svg`;
+    }
+
+    return `${baseName}-${modifier.name}.svg`;
+  }
+
+  /** Builds the final {@link Modifier}, combining `--modifier`'s name with whichever parameter option that modifier requires. */
+  private buildModifier(options: GenerateCommandOptions): Modifier | undefined {
+    const { modifier, period } = options;
+
+    if (!modifier) {
+      return undefined;
+    }
+
+    if (modifier === "alternated") {
+      if (period === undefined) {
+        throw new Error('Modifier "alternated" requires --period');
+      }
+
+      return { name: "alternated", period };
+    }
+
+    return { name: modifier };
   }
 
   /** Narrows a raw string to a supported {@link Modifier} name without an unchecked assertion. */
@@ -78,14 +104,14 @@ export class GenerateCommand extends CommandRunner {
     description: `Modifier applied to the motif (${SUPPORTED_MODIFIER_NAMES.join(", ")})`,
     flags: "-m, --modifier <modifier>",
   })
-  parseModifier(value: string): Modifier {
+  parseModifier(value: string): Modifier["name"] {
     if (!this.isSupportedModifierName(value)) {
       throw new Error(
         `Unsupported modifier "${value}". Supported modifiers: ${SUPPORTED_MODIFIER_NAMES.join(", ")}`,
       );
     }
 
-    return { name: value };
+    return value;
   }
 
   /** Registers the `--output-directory` flag; nest-commander requires a parser method per option even when no transformation is needed. */
@@ -96,6 +122,15 @@ export class GenerateCommand extends CommandRunner {
   })
   parseOutputDirectory(value: string): string {
     return value;
+  }
+
+  /** Parses the `--period` flag as an integer, used only when `--modifier alternated` is given. */
+  @Option({
+    description: "Zigzag run length in grid levels, for --modifier alternated",
+    flags: "-p, --period <period>",
+  })
+  parsePeriod(value: string): number {
+    return Number.parseInt(value, 10);
   }
 
   /** Parses the `--repeat-count` flag as an integer, defaulting to a sensible repeat count. */
@@ -139,18 +174,19 @@ export class GenerateCommand extends CommandRunner {
     _passedParameters: string[],
     options: GenerateCommandOptions,
   ): Promise<void> {
+    const modifier = this.buildModifier(options);
     const svg = this.meanderGenerationService.generate({
       repeatCount: options.repeatCount,
       rows: options.rows,
       type: options.type,
-      ...(options.modifier ? { modifier: options.modifier } : {}),
+      ...(modifier ? { modifier } : {}),
     });
 
     await mkdir(options.outputDirectory, { recursive: true });
 
     const filePath = path.join(
       options.outputDirectory,
-      this.buildFileName(options),
+      this.buildFileName(options, modifier),
     );
     await writeFile(filePath, svg);
 

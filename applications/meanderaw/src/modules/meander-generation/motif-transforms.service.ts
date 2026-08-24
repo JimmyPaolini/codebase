@@ -1,6 +1,10 @@
 import { Injectable } from "@nestjs/common";
 
-import type { MirrorAxis, SpiralLevelPoint } from "./meander-generation.types";
+import type {
+  AlternateRun,
+  MirrorAxis,
+  SpiralLevelPoint,
+} from "./meander-generation.types";
 
 /**
  * Generic, type-agnostic geometric transforms over a point sequence
@@ -21,6 +25,56 @@ export class MotifTransformsService {
   // 🔏 Private Methods
 
   // 🌎 Public Methods
+
+  /**
+   * Splits the closed level interval `[levelStart, levelEnd]` into
+   * consecutive runs of `period` grid levels each, alternating which of a
+   * `bars`-style motif's two columns (`0` for a repeat unit's own column,
+   * `1` for its neighbor) draws each run. Doesn't fit the
+   * point-sequence-in/point-sequence-out shape `rotate`/`mirror` share (the
+   * same exception {@link closeEdge} documents): `bars`'s vertical bar is
+   * drawn as several disconnected segments rather than one continuous
+   * polyline, so there is no single point sequence to transform — only a
+   * pair of columns and a level range to split between them.
+   *
+   * `period = 1` reproduces the `5`, `7`, and `8` rows "bars alternated"
+   * reference files exactly (verified by decoding their real path data):
+   * the run switches column every single grid level. Larger periods hold
+   * each column for more levels before switching. This does NOT reproduce
+   * the `7` rows "bars alternated 2"/"alternated 3" files bit-for-bit —
+   * those two files decode to a pattern (edges 1 and `rows - 2` doubled
+   * onto both columns, the adjacent edges 2 and `rows - 3` entirely
+   * missing) that isn't a consistent function of `period` across row
+   * counts: the same modifier at 7 rows uses a different offset than at 8
+   * rows AND contains real diagonal `L` path commands absent from every
+   * other file in the `bars` family, evidence the file was authored
+   * differently (likely by hand, possibly mixed up with the "bars
+   * alternated diamond" file) rather than generated from one parameterized
+   * rule. See the task 6 report for the full decode.
+   */
+  alternate(
+    levelStart: number,
+    levelEnd: number,
+    period: number,
+  ): AlternateRun[] {
+    const runs: AlternateRun[] = [];
+    let currentLevel = levelStart;
+    let runIndex = 0;
+
+    while (currentLevel < levelEnd) {
+      const runEnd = Math.min(currentLevel + period, levelEnd);
+
+      runs.push({
+        column: runIndex % 2 === 0 ? 0 : 1,
+        fromLevel: currentLevel,
+        toLevel: runEnd,
+      });
+      currentLevel = runEnd;
+      runIndex += 1;
+    }
+
+    return runs;
+  }
 
   /**
    * Closes a `chain`/`snake` repeat unit's zigzag flush against the

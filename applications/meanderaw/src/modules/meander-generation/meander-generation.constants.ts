@@ -11,7 +11,7 @@ export const CANVAS_HEIGHT = 60;
  * `parameters.type`.
  */
 export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
-  bars: [],
+  bars: ["alternated"],
   boxes: ["spin", "spin-flip"],
   chain: ["edge", "flip", "edge-flip"],
   snake: ["edge", "flip", "edge-flip"],
@@ -44,6 +44,9 @@ export const FLIP_ALTERNATION_MODIFIER_NAMES: readonly Modifier["name"][] = [
 
 /** Highest `rows` or `repeatCount` value the CLI accepts for any type. */
 export const MAXIMUM_VALUE = 12;
+
+/** Lowest `period` value `alternated` accepts: a run must span at least one grid level. */
+export const MINIMUM_PERIOD = 1;
 
 /** Lowest `repeatCount` value the CLI accepts: at least one unit must be drawn. */
 export const MINIMUM_REPEAT_COUNT = 1;
@@ -86,6 +89,7 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
   "edge",
   "flip",
   "edge-flip",
+  "alternated",
 ] satisfies readonly Modifier["name"][];
 
 export const SUPPORTED_TYPES: readonly string[] = [
