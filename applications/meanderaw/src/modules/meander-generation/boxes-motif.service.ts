@@ -1,10 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { GridGeometryService } from "./grid-geometry.service";
+import { SPIN_CYCLE_LENGTH } from "./meander-generation.constants";
+import { MotifTransformsService } from "./motif-transforms.service";
 
 import type {
   BoxesSpiralBounds,
+  BoxesUnit,
   GridGeometry,
+  Modifier,
   SpiralLevelPoint,
 } from "./meander-generation.types";
 
@@ -20,6 +24,8 @@ export class BoxesMotifService {
   constructor(
     @Inject(GridGeometryService)
     private readonly gridGeometryService: GridGeometryService,
+    @Inject(MotifTransformsService)
+    private readonly motifTransformsService: MotifTransformsService,
   ) {}
 
   // 🔐 Private Fields
@@ -57,6 +63,48 @@ export class BoxesMotifService {
     }
   }
 
+  /** The spiral's grid-level bounding box center, every rotation and mirror pivots around this. */
+  private centerPoint(rows: number): SpiralLevelPoint {
+    return [(rows - 2) / 2, rows / 2];
+  }
+
+  /** Turns a point sequence into SVG path data, choosing `H`/`V` per segment by which coordinate actually changed rather than by index parity — required once a transform can swap which axis a step moves along. */
+  private pointsToPathData(
+    points: readonly SpiralLevelPoint[],
+    toXCoordinate: (level: number) => string,
+    toYCoordinate: (level: number) => string,
+  ): string {
+    const { pathData } = points.reduce<{
+      pathData: string;
+      previousPoint: SpiralLevelPoint | undefined;
+    }>(
+      (accumulator, point) => {
+        const [xLevel, yLevel] = point;
+
+        if (!accumulator.previousPoint) {
+          return {
+            pathData: `M${toXCoordinate(xLevel)} ${toYCoordinate(yLevel)}`,
+            previousPoint: point,
+          };
+        }
+
+        const [previousXLevel] = accumulator.previousPoint;
+        const segment =
+          xLevel === previousXLevel
+            ? `V${toYCoordinate(yLevel)}`
+            : `H${toXCoordinate(xLevel)}`;
+
+        return {
+          pathData: accumulator.pathData + segment,
+          previousPoint: point,
+        };
+      },
+      { pathData: "", previousPoint: undefined },
+    );
+
+    return pathData;
+  }
+
   /** Traces the full inward spiral for one unit, in grid levels. */
   private spiralPoints(rows: number): SpiralLevelPoint[] {
     const bounds: BoxesSpiralBounds = {
@@ -75,6 +123,33 @@ export class BoxesMotifService {
     return points;
   }
 
+  /** Applies the unit's modifier (spin's rotation, spin-flip's rotation plus mirror) to the base spiral points. */
+  private unitPoints(
+    rows: number,
+    unitIndex: number,
+    modifier: Modifier | undefined,
+  ): readonly SpiralLevelPoint[] {
+    const points = this.spiralPoints(rows);
+
+    if (!modifier) {
+      return points;
+    }
+
+    const center = this.centerPoint(rows);
+    const quarterTurns = unitIndex % SPIN_CYCLE_LENGTH;
+    const rotated = this.motifTransformsService.rotate(
+      points,
+      center,
+      quarterTurns,
+    );
+
+    if (modifier.name === "spin") {
+      return rotated;
+    }
+
+    return this.motifTransformsService.mirror(rotated, center, "horizontal");
+  }
+
   // 🌎 Public Methods
 
   /** Draws the top/bottom border shared by every unit, spanning the full pattern width. */
@@ -91,9 +166,10 @@ export class BoxesMotifService {
     return `M${rightX} ${bottomY}H${leftX}M${rightX} ${topY}H${leftX}`;
   }
 
-  /** Draws one repeat unit's spiral as an SVG path attribute value. */
-  path(geometry: GridGeometry, rows: number, unitIndex: number): string {
-    const points = this.spiralPoints(rows);
+  /** Draws one repeat unit's spiral as an SVG path attribute value, applying the unit's modifier (if any) first. */
+  path(geometry: GridGeometry, unit: BoxesUnit): string {
+    const { modifier, rows, unitIndex } = unit;
+    const points = this.unitPoints(rows, unitIndex, modifier);
     const xOffset = unitIndex * this.unitWidth(geometry, rows);
     const toXCoordinate = (level: number): string =>
       this.gridGeometryService.formatCoordinate(
@@ -104,16 +180,7 @@ export class BoxesMotifService {
         geometry.offset + level * geometry.unit,
       );
 
-    return points
-      .map(([xLevel, yLevel], index) => {
-        if (index === 0) {
-          return `M${toXCoordinate(xLevel)} ${toYCoordinate(yLevel)}`;
-        }
-        return index % 2 === 1
-          ? `H${toXCoordinate(xLevel)}`
-          : `V${toYCoordinate(yLevel)}`;
-      })
-      .join("");
+    return this.pointsToPathData(points, toXCoordinate, toYCoordinate);
   }
 
   /** The x-coordinate of the last unit's rightmost point, before the stroke-width margin. */

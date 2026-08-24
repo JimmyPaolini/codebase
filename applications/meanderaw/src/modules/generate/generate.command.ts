@@ -6,7 +6,10 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { SUPPORTED_TYPES } from "../meander-generation/meander-generation.constants";
+import {
+  SUPPORTED_MODIFIER_NAMES,
+  SUPPORTED_TYPES,
+} from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 
 import {
@@ -14,7 +17,10 @@ import {
   DEFAULT_REPEAT_COUNT,
 } from "./generate.constants";
 
-import type { MeanderType } from "../meander-generation/meander-generation.types";
+import type {
+  MeanderType,
+  Modifier,
+} from "../meander-generation/meander-generation.types";
 import type { GenerateCommandOptions } from "./generate.types";
 
 /**
@@ -46,7 +52,18 @@ export class GenerateCommand extends CommandRunner {
 
   /** Builds the kebab-case output filename, encoding every generation parameter so no two outputs can share a name. */
   private buildFileName(options: GenerateCommandOptions): string {
-    return `${options.type}-${options.rows}-rows-${options.repeatCount}-repeats.svg`;
+    const baseName = `${options.type}-${options.rows}-rows-${options.repeatCount}-repeats`;
+
+    if (!options.modifier) {
+      return `${baseName}.svg`;
+    }
+
+    return `${baseName}-${options.modifier.name}.svg`;
+  }
+
+  /** Narrows a raw string to a supported {@link Modifier} name without an unchecked assertion. */
+  private isSupportedModifierName(value: string): value is Modifier["name"] {
+    return SUPPORTED_MODIFIER_NAMES.includes(value);
   }
 
   /** Narrows a raw string to a supported {@link MeanderType} without an unchecked assertion. */
@@ -55,6 +72,21 @@ export class GenerateCommand extends CommandRunner {
   }
 
   // 🌎 Public Methods
+
+  /** Parses the `--modifier` flag, rejecting any name outside the supported set. Omitted entirely when no modifier is requested. */
+  @Option({
+    description: `Modifier applied to the motif (${SUPPORTED_MODIFIER_NAMES.join(", ")})`,
+    flags: "-m, --modifier <modifier>",
+  })
+  parseModifier(value: string): Modifier {
+    if (!this.isSupportedModifierName(value)) {
+      throw new Error(
+        `Unsupported modifier "${value}". Supported modifiers: ${SUPPORTED_MODIFIER_NAMES.join(", ")}`,
+      );
+    }
+
+    return { name: value };
+  }
 
   /** Registers the `--output-directory` flag; nest-commander requires a parser method per option even when no transformation is needed. */
   @Option({
@@ -111,6 +143,7 @@ export class GenerateCommand extends CommandRunner {
       repeatCount: options.repeatCount,
       rows: options.rows,
       type: options.type,
+      ...(options.modifier ? { modifier: options.modifier } : {}),
     });
 
     await mkdir(options.outputDirectory, { recursive: true });
