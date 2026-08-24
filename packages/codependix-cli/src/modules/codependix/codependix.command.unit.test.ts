@@ -46,6 +46,7 @@ describe(CodependixCommand, () => {
     loggerService = createMock<LoggerService>();
     vi.mocked(codependixService.runNxGraphs).mockResolvedValue([]);
     vi.mocked(codependixService.runNestjsGraphs).mockResolvedValue([]);
+    vi.mocked(codependixService.runImportGraphs).mockResolvedValue([]);
   });
 
   it("is defined", () => {
@@ -117,7 +118,22 @@ describe(CodependixCommand, () => {
     expect(process.exitCode).toBe(1);
   });
 
-  it("runs both the nx and nestjs graphs", async () => {
+  it("fails in check mode when an imports result is stale", async () => {
+    const staleResult: ProjectRunResult = {
+      isCurrent: false,
+      projectName: "codependix-imports",
+      stalePaths: ["codependix-imports.json"],
+    };
+    vi.mocked(codependixService.runImportGraphs).mockResolvedValue([
+      staleResult,
+    ]);
+
+    await run({ check: true });
+
+    expect(process.exitCode).toBe(1);
+  });
+
+  it("runs the nx, nestjs, and imports graphs", async () => {
     await run({ write: true });
 
     expect(codependixService.runNxGraphs).toHaveBeenCalledWith(
@@ -125,6 +141,10 @@ describe(CodependixCommand, () => {
       process.cwd(),
     );
     expect(codependixService.runNestjsGraphs).toHaveBeenCalledWith(
+      { write: true },
+      process.cwd(),
+    );
+    expect(codependixService.runImportGraphs).toHaveBeenCalledWith(
       { write: true },
       process.cwd(),
     );

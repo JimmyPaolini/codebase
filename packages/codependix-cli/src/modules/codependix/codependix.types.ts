@@ -1,5 +1,6 @@
 // 🏷️ Types
 
+import type { ImportGraph } from "@codependix/imports";
 import type { NestjsModuleGraph } from "@codependix/nestjs";
 import type { Neighborhood, WorkspaceGraph } from "@codependix/nx";
 
@@ -10,6 +11,16 @@ export interface CodependixCommandOptions {
   directory?: string | undefined;
   write?: boolean | undefined;
 }
+
+/**
+ * The JSON shape a single project's file-level import graph export is
+ * written as.
+ *
+ * Identical in shape to `ImportGraph` itself — kept as its own named type for
+ * the same reason `NestjsModuleGraphExport` is: so the export's JSON shape
+ * can evolve independently of `codependix-imports`'s internal representation.
+ */
+export type ImportGraphExport = ImportGraph;
 
 /**
  * The JSON shape a single project's NestJS module graph export is written as.

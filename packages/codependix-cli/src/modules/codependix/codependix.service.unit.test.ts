@@ -3,6 +3,10 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { ConfigurationService } from "@codependix/configuration";
+import {
+  ImportGraphService,
+  TypescriptProjectService,
+} from "@codependix/imports";
 import { ModuleGraphService, NestjsProjectService } from "@codependix/nestjs";
 import { NeighborhoodService, WorkspaceGraphService } from "@codependix/nx";
 import { createMock } from "@golevelup/ts-vitest";
@@ -17,6 +21,10 @@ import { DeliveryService } from "../delivery/delivery.service";
 
 import { CodependixService } from "./codependix.service";
 
+import type {
+  ImportGraph,
+  TypescriptProjectProgram,
+} from "@codependix/imports";
 import type { NestjsModuleGraph } from "@codependix/nestjs";
 import type { Neighborhood } from "@codependix/nx";
 
@@ -35,20 +43,31 @@ const MODULE_GRAPH: NestjsModuleGraph = {
   projectName: "codependix-cli",
 };
 
+const IMPORT_GRAPH: ImportGraph = {
+  edges: [{ source: "src/index.ts", target: "src/helper.ts" }],
+  fileNames: ["src/helper.ts", "src/index.ts"],
+  isolatedFileNames: [],
+  projectName: "codependix-imports",
+};
+
 describe(CodependixService, () => {
   let service: CodependixService;
   let configurationService: ConfigurationService;
+  let importGraphService: ImportGraphService;
   let moduleGraphService: ModuleGraphService;
   let neighborhoodService: NeighborhoodService;
   let nestjsProjectService: NestjsProjectService;
+  let typescriptProjectService: TypescriptProjectService;
   let workspaceGraphService: WorkspaceGraphService;
   let projectRoot: string;
 
   beforeAll(async () => {
     configurationService = createMock<ConfigurationService>();
+    importGraphService = createMock<ImportGraphService>();
     moduleGraphService = createMock<ModuleGraphService>();
     neighborhoodService = createMock<NeighborhoodService>();
     nestjsProjectService = createMock<NestjsProjectService>();
+    typescriptProjectService = createMock<TypescriptProjectService>();
     workspaceGraphService = createMock<WorkspaceGraphService>();
 
     const module = await Test.createTestingModule({
@@ -60,10 +79,15 @@ describe(CodependixService, () => {
           provide: ConfigurationService,
           useValue: configurationService,
         },
+        { provide: ImportGraphService, useValue: importGraphService },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         { provide: ModuleGraphService, useValue: moduleGraphService },
         { provide: NeighborhoodService, useValue: neighborhoodService },
         { provide: NestjsProjectService, useValue: nestjsProjectService },
+        {
+          provide: TypescriptProjectService,
+          useValue: typescriptProjectService,
+        },
         { provide: WorkspaceGraphService, useValue: workspaceGraphService },
       ],
     }).compile();
@@ -117,6 +141,20 @@ describe(CodependixService, () => {
     vi.mocked(moduleGraphService.buildGraph).mockReturnValue(MODULE_GRAPH);
     vi.mocked(moduleGraphService.renderMermaid).mockReturnValue(
       "```mermaid\nflowchart LR\n```",
+    );
+    vi.mocked(typescriptProjectService.discoverProjects).mockReturnValue([
+      {
+        absoluteRoot: projectRoot,
+        name: "codependix-imports",
+        tsconfigPath: path.join(projectRoot, "tsconfig.json"),
+      },
+    ]);
+    vi.mocked(typescriptProjectService.buildProgram).mockReturnValue(
+      createMock<TypescriptProjectProgram>(),
+    );
+    vi.mocked(importGraphService.buildGraph).mockReturnValue(IMPORT_GRAPH);
+    vi.mocked(importGraphService.renderMermaid).mockReturnValue(
+      "```mermaid\ngraph LR\n```",
     );
   });
 
@@ -445,6 +483,135 @@ describe(CodependixService, () => {
       ).resolves.toContain("codependix-cli");
       await expect(
         readFile(path.join(projectRoot, "module-graph.md"), "utf8"),
+      ).resolves.toContain("mermaid");
+    });
+  });
+
+  describe("runImportGraphs", () => {
+    it("skips a project whose resolved target is none", async () => {
+      vi.mocked(configurationService.resolveForProject).mockReturnValue({
+        json: undefined,
+        markdown: undefined,
+        target: "none",
+      });
+
+      const results = await service.runImportGraphs(
+        { write: true },
+        projectRoot,
+      );
+
+      expect(results).toStrictEqual([]);
+    });
+
+    it("builds a program only for the discovered typescript projects", async () => {
+      vi.mocked(configurationService.resolveForProject).mockReturnValue({
+        json: { path: "codependix-imports.json" },
+        markdown: undefined,
+        target: "json",
+      });
+
+      await service.runImportGraphs({ write: true }, projectRoot);
+
+      expect(typescriptProjectService.buildProgram).toHaveBeenCalledWith({
+        absoluteRoot: projectRoot,
+        name: "codependix-imports",
+        tsconfigPath: path.join(projectRoot, "tsconfig.json"),
+      });
+    });
+
+    it("writes a project's JSON export", async () => {
+      vi.mocked(configurationService.resolveForProject).mockReturnValue({
+        json: { path: "codependix-imports.json" },
+        markdown: undefined,
+        target: "json",
+      });
+
+      const results = await service.runImportGraphs(
+        { write: true },
+        projectRoot,
+      );
+
+      expect(results).toStrictEqual([
+        { isCurrent: true, projectName: "codependix-imports", stalePaths: [] },
+      ]);
+
+      const written = JSON.parse(
+        await readFile(
+          path.join(projectRoot, "codependix-imports.json"),
+          "utf8",
+        ),
+      ) as unknown;
+
+      expect(written).toStrictEqual(IMPORT_GRAPH);
+    });
+
+    it("reports a missing JSON export as stale in check mode", async () => {
+      vi.mocked(configurationService.resolveForProject).mockReturnValue({
+        json: { path: "codependix-imports.json" },
+        markdown: undefined,
+        target: "json",
+      });
+
+      const results = await service.runImportGraphs(
+        { check: true },
+        projectRoot,
+      );
+
+      expect(results).toStrictEqual([
+        {
+          isCurrent: false,
+          projectName: "codependix-imports",
+          stalePaths: ["codependix-imports.json"],
+        },
+      ]);
+    });
+
+    it("splices a diagram into an existing anchor block", async () => {
+      const readmePath = path.join(projectRoot, "README.md");
+
+      await writeFile(
+        readmePath,
+        [
+          "# codependix-imports",
+          '<!-- codependix:start name="imports" -->',
+          "stale",
+          '<!-- codependix:end name="imports" -->',
+        ].join("\n"),
+        "utf8",
+      );
+      vi.mocked(configurationService.resolveForProject).mockReturnValue({
+        json: undefined,
+        markdown: { anchor: "imports", path: "README.md" },
+        target: "markdown",
+      });
+
+      const results = await service.runImportGraphs(
+        { write: true },
+        projectRoot,
+      );
+
+      expect(results[0]?.isCurrent).toBe(true);
+
+      const written = await readFile(readmePath, "utf8");
+
+      expect(written).toContain("```mermaid\ngraph LR\n```");
+      expect(written).not.toContain("stale");
+    });
+
+    it("writes both a JSON and a markdown export for a both target", async () => {
+      vi.mocked(configurationService.resolveForProject).mockReturnValue({
+        json: { path: "codependix-imports.json" },
+        markdown: { anchor: undefined, path: "import-graph.md" },
+        target: "both",
+      });
+
+      await service.runImportGraphs({ write: true }, projectRoot);
+
+      await expect(
+        readFile(path.join(projectRoot, "codependix-imports.json"), "utf8"),
+      ).resolves.toContain("codependix-imports");
+      await expect(
+        readFile(path.join(projectRoot, "import-graph.md"), "utf8"),
       ).resolves.toContain("mermaid");
     });
   });

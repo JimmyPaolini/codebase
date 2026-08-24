@@ -127,6 +127,10 @@ export class CodependixCommand extends CommandRunner {
           options,
           workingDirectory,
         )),
+        ...(await this.codependixService.runImportGraphs(
+          options,
+          workingDirectory,
+        )),
       ];
       const staleProjects = results.filter((result) => !result.isCurrent);
 
