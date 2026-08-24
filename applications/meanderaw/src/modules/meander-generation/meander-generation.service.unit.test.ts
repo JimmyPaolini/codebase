@@ -4,6 +4,7 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { BarsMotifService } from "./bars-motif.service";
 import { BoxesMotifService } from "./boxes-motif.service";
 import { ChainMotifService } from "./chain-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
@@ -26,6 +27,7 @@ describe(MeanderGenerationService, () => {
       providers: [
         MeanderGenerationService,
         GridGeometryService,
+        BarsMotifService,
         BoxesMotifService,
         ChainMotifService,
         MotifTransformsService,
@@ -45,6 +47,29 @@ describe(MeanderGenerationService, () => {
   });
 
   describe("generate", () => {
+    it("matches the committed golden fixture for 5 rows bars with 12 repeats", async () => {
+      const svg = service.generate({
+        repeatCount: 12,
+        rows: 5,
+        type: "bars",
+      });
+      const golden = await readFile(
+        path.join(
+          import.meta.dirname,
+          "../../../testing/fixtures/bars-5-rows-12-repeats.svg",
+        ),
+        "utf8",
+      );
+
+      expect(svg).toBe(golden);
+    });
+
+    it("throws below the structural minimum rows for bars", () => {
+      expect(() =>
+        service.generate({ repeatCount: 1, rows: 2, type: "bars" }),
+      ).toThrow(InvalidRowsError);
+    });
+
     it("matches the committed golden fixture for 5 rows boxes with 6 repeats", async () => {
       const svg = service.generate({
         repeatCount: 6,

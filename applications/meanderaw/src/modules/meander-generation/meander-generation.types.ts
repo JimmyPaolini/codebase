@@ -25,7 +25,13 @@ export interface GridGeometry {
 }
 
 /** A meander's base repeating motif shape. */
-export type MeanderType = "boxes" | "chain" | "snake" | "swirl" | "whirl";
+export type MeanderType =
+  | "bars"
+  | "boxes"
+  | "chain"
+  | "snake"
+  | "swirl"
+  | "whirl";
 
 /**
  * Which line a `mirror` transform reflects a point sequence across, both
