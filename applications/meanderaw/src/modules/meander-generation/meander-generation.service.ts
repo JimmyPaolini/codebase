@@ -5,12 +5,14 @@ import { BoxesMotifService } from "./boxes-motif.service";
 import { ChainMotifService } from "./chain-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
 import { InvalidModifierError } from "./invalid-modifier.errors";
+import { InvalidPeriodError } from "./invalid-period.errors";
 import { InvalidRepeatCountCycleError } from "./invalid-repeat-count-cycle.errors";
 import { InvalidRepeatCountError } from "./invalid-repeat-count.errors";
 import { InvalidRowsError } from "./invalid-rows.errors";
 import {
   COMPATIBLE_MODIFIERS,
   MAXIMUM_VALUE,
+  MINIMUM_PERIOD,
   MINIMUM_REPEAT_COUNT,
   SPIN_CYCLE_LENGTH,
   SPIN_FAMILY_MODIFIER_NAMES,
@@ -128,21 +130,55 @@ export class MeanderGenerationService {
     }
   }
 
-  /** Throws {@link InvalidRepeatCountCycleError} when `repeatCount` doesn't divide evenly by the modifier's rotation cycle. */
+  /**
+   * Throws {@link InvalidRepeatCountCycleError} when `repeatCount` doesn't
+   * divide evenly by the modifier's cycle length: a fixed
+   * {@link SPIN_CYCLE_LENGTH} for the spin family, or `alternated`'s own
+   * `period` — otherwise the last repeat unit's zigzag would be cut off
+   * mid-run instead of ending on a column switch.
+   */
   private validateModifierCycle(
     modifier: Modifier | undefined,
     repeatCount: number,
   ): void {
-    if (!modifier || !SPIN_FAMILY_MODIFIER_NAMES.includes(modifier.name)) {
+    if (!modifier) {
       return;
     }
 
-    if (repeatCount % SPIN_CYCLE_LENGTH !== 0) {
+    if (
+      SPIN_FAMILY_MODIFIER_NAMES.includes(modifier.name) &&
+      repeatCount % SPIN_CYCLE_LENGTH !== 0
+    ) {
       throw new InvalidRepeatCountCycleError(
         repeatCount,
         SPIN_CYCLE_LENGTH,
         modifier.name,
       );
+    }
+
+    if (modifier.name === "alternated" && repeatCount % modifier.period !== 0) {
+      throw new InvalidRepeatCountCycleError(
+        repeatCount,
+        modifier.period,
+        modifier.name,
+      );
+    }
+  }
+
+  /** Throws {@link InvalidPeriodError} when `alternated`'s `period` isn't a whole number within the shared bounds. */
+  private validatePeriod(modifier: Modifier | undefined): void {
+    if (modifier?.name !== "alternated") {
+      return;
+    }
+
+    const { period } = modifier;
+
+    if (
+      !Number.isInteger(period) ||
+      period < MINIMUM_PERIOD ||
+      period > MAXIMUM_VALUE
+    ) {
+      throw new InvalidPeriodError(period, MINIMUM_PERIOD, MAXIMUM_VALUE);
     }
   }
 
@@ -177,6 +213,7 @@ export class MeanderGenerationService {
     this.validateRows(parameters.type, parameters.rows);
     this.validateRepeatCount(parameters.repeatCount);
     this.validateModifier(parameters.type, parameters.modifier);
+    this.validatePeriod(parameters.modifier);
     this.validateModifierCycle(parameters.modifier, parameters.repeatCount);
 
     const geometry = this.gridGeometryService.compute(parameters.rows);

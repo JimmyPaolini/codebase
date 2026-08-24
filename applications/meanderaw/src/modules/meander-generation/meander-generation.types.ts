@@ -1,5 +1,17 @@
 // 🏷️ Types
 
+/**
+ * One column-and-level-range run of a `bars` zigzag, produced by
+ * {@link MotifTransformsService.alternate}: `column` is `0` for a repeat
+ * unit's own column, `1` for its neighbor, and `fromLevel`/`toLevel` are the
+ * grid levels the run's vertical segment spans.
+ */
+export interface AlternateRun {
+  readonly column: 0 | 1;
+  readonly fromLevel: number;
+  readonly toLevel: number;
+}
+
 /** Mutable in-progress bounds of the inward spiral `boxes` traces, in grid levels rather than pixels. */
 export interface BoxesSpiralBounds {
   bottom: number;
@@ -48,6 +60,7 @@ export type MirrorAxis = "horizontal" | "vertical";
  * member would be dead code no `COMPATIBLE_MODIFIERS` entry could point to.
  */
 export type Modifier =
+  | { readonly name: "alternated"; readonly period: number }
   | { readonly name: "edge" }
   | { readonly name: "edge-flip" }
   | { readonly name: "flip" }

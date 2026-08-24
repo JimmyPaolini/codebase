@@ -3,6 +3,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { BarsMotifService } from "./bars-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
+import { MotifTransformsService } from "./motif-transforms.service";
 
 describe(BarsMotifService, () => {
   let service: BarsMotifService;
@@ -10,7 +11,11 @@ describe(BarsMotifService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [BarsMotifService, GridGeometryService],
+      providers: [
+        BarsMotifService,
+        GridGeometryService,
+        MotifTransformsService,
+      ],
     }).compile();
 
     service = await module.resolve(BarsMotifService);
@@ -65,6 +70,56 @@ describe(BarsMotifService, () => {
         "M5 25V45M5 5H25M5 65H25",
       );
     });
+
+    it("draws period 1's zigzag, matching the real edges decoded from 5 rows bars alternated.svg", () => {
+      const geometry = gridGeometryService.compute(5);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "alternated", period: 1 },
+          rows: 5,
+          unitIndex: 0,
+        }),
+      ).toBe("M3 15V27M15 27V39M3 39V51M3 3H27M3 63H27");
+    });
+
+    it("advances two real columns per unit index for the alternated modifier", () => {
+      const geometry = gridGeometryService.compute(5);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "alternated", period: 1 },
+          rows: 5,
+          unitIndex: 1,
+        }),
+      ).toBe("M27 15V27M39 27V39M27 39V51M27 3H51M27 63H51");
+    });
+
+    it("draws period 1's zigzag, matching the real edges decoded from 8 rows bars alternated.svg", () => {
+      const geometry = gridGeometryService.compute(8);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "alternated", period: 1 },
+          rows: 8,
+          unitIndex: 0,
+        }),
+      ).toBe(
+        "M1.875 9.375V16.875M9.375 16.875V24.375M1.875 24.375V31.875M9.375 31.875V39.375M1.875 39.375V46.875M9.375 46.875V54.375M1.875 1.875H16.875M1.875 61.875H16.875",
+      );
+    });
+
+    it("holds each column for a longer run at period 2", () => {
+      const geometry = gridGeometryService.compute(5);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "alternated", period: 2 },
+          rows: 5,
+          unitIndex: 0,
+        }),
+      ).toBe("M3 15V39M15 39V51M3 3H27M3 63H27");
+    });
   });
 
   describe("rightEdge", () => {
@@ -90,6 +145,30 @@ describe(BarsMotifService, () => {
       expect(service.rightEdge(geometry, { repeatCount: 12, rows: 8 })).toBe(
         84.375,
       );
+    });
+
+    it("doubles the touched columns for the alternated modifier, matching 5 rows bars alternated.svg", () => {
+      const geometry = gridGeometryService.compute(5);
+
+      expect(
+        service.rightEdge(geometry, {
+          modifier: { name: "alternated", period: 1 },
+          repeatCount: 6,
+          rows: 5,
+        }),
+      ).toBe(135);
+    });
+
+    it("doubles the touched columns for the alternated modifier, matching 8 rows bars alternated.svg", () => {
+      const geometry = gridGeometryService.compute(8);
+
+      expect(
+        service.rightEdge(geometry, {
+          modifier: { name: "alternated", period: 2 },
+          repeatCount: 6,
+          rows: 8,
+        }),
+      ).toBe(84.375);
     });
   });
 });

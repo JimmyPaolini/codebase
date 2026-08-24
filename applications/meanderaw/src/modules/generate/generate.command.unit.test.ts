@@ -95,34 +95,40 @@ describe(GenerateCommand, () => {
   });
 
   describe("parseModifier", () => {
-    it("passes a supported modifier name through as a Modifier object", () => {
-      expect(command.parseModifier("spin")).toStrictEqual({ name: "spin" });
+    it("passes a supported modifier name through unchanged", () => {
+      expect(command.parseModifier("spin")).toBe("spin");
     });
 
-    it("passes spin-flip through as a Modifier object", () => {
-      expect(command.parseModifier("spin-flip")).toStrictEqual({
-        name: "spin-flip",
-      });
+    it("passes spin-flip through unchanged", () => {
+      expect(command.parseModifier("spin-flip")).toBe("spin-flip");
     });
 
-    it("passes edge through as a Modifier object", () => {
-      expect(command.parseModifier("edge")).toStrictEqual({ name: "edge" });
+    it("passes edge through unchanged", () => {
+      expect(command.parseModifier("edge")).toBe("edge");
     });
 
-    it("passes flip through as a Modifier object", () => {
-      expect(command.parseModifier("flip")).toStrictEqual({ name: "flip" });
+    it("passes flip through unchanged", () => {
+      expect(command.parseModifier("flip")).toBe("flip");
     });
 
-    it("passes edge-flip through as a Modifier object", () => {
-      expect(command.parseModifier("edge-flip")).toStrictEqual({
-        name: "edge-flip",
-      });
+    it("passes edge-flip through unchanged", () => {
+      expect(command.parseModifier("edge-flip")).toBe("edge-flip");
+    });
+
+    it("passes alternated through unchanged", () => {
+      expect(command.parseModifier("alternated")).toBe("alternated");
     });
 
     it("rejects an unsupported modifier name", () => {
       expect(() => command.parseModifier("bogus")).toThrow(
         /unsupported modifier/i,
       );
+    });
+  });
+
+  describe("parsePeriod", () => {
+    it("parses a numeric string", () => {
+      expect(command.parsePeriod("2")).toBe(2);
     });
   });
 
@@ -171,7 +177,7 @@ describe(GenerateCommand, () => {
       );
 
       await command.run([], {
-        modifier: { name: "spin" },
+        modifier: "spin",
         outputDirectory: "output",
         repeatCount: 4,
         rows: 5,
@@ -188,6 +194,46 @@ describe(GenerateCommand, () => {
         expect.stringContaining("boxes-5-rows-4-repeats-spin.svg"),
         "<svg>fixture</svg>\n",
       );
+    });
+
+    it("combines the modifier name with its period and encodes both in the filename", async () => {
+      vi.mocked(meanderGenerationService.generate).mockReturnValue(
+        "<svg>fixture</svg>\n",
+      );
+
+      await command.run([], {
+        modifier: "alternated",
+        outputDirectory: "output",
+        period: 2,
+        repeatCount: 6,
+        rows: 5,
+        type: "bars",
+      });
+
+      expect(meanderGenerationService.generate).toHaveBeenCalledWith({
+        modifier: { name: "alternated", period: 2 },
+        repeatCount: 6,
+        rows: 5,
+        type: "bars",
+      });
+      expect(mockWriteFile).toHaveBeenCalledWith(
+        expect.stringContaining(
+          "bars-5-rows-6-repeats-alternated-period-2.svg",
+        ),
+        "<svg>fixture</svg>\n",
+      );
+    });
+
+    it("throws when alternated is requested without a period", async () => {
+      await expect(
+        command.run([], {
+          modifier: "alternated",
+          outputDirectory: "output",
+          repeatCount: 6,
+          rows: 5,
+          type: "bars",
+        }),
+      ).rejects.toThrow(/requires --period/);
     });
   });
 });
