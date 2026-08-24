@@ -78,6 +78,8 @@ Where this project sits in the Nx project graph: what it depends on, and what de
 flowchart LR
   caelundas["caelundas"]
   callidescope_cli["callidescope-cli"]
+  callidescope_graph["callidescope-graph"]
+  callidescope_output["callidescope-output"]
   codometer_changes["codometer-changes"]
   codometer_cli["codometer-cli"]
   codometer_markdown["codometer-markdown"]
@@ -89,6 +91,8 @@ flowchart LR
   validation["validation"]
   caelundas --> logger
   callidescope_cli --> logger
+  callidescope_graph --> logger
+  callidescope_output --> logger
   codometer_changes --> logger
   codometer_cli --> logger
   codometer_markdown --> logger

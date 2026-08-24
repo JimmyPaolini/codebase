@@ -9,9 +9,9 @@ import { ANALYSIS_MODULES } from "../../../testing/modules";
 
 import { ProjectReportsService } from "./project-reports.service";
 
-import type { DiscoveredCallable } from "../callables/callables.types";
 import type { BuildProjectReportsArguments } from "./project-reports.types";
 import type { CallableId, ProjectReport } from "@callidescope/configuration";
+import type { DiscoveredCallable } from "@callidescope/graph";
 
 /**
  * A two-project graph: `alpha` holds a chain of `depth` callables, `beta` one.

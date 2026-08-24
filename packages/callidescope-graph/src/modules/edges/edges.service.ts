@@ -5,7 +5,6 @@ import ts from "typescript";
 
 import { LoggerService } from "@codebase/logger";
 
-import { CallableIdentityService } from "../callables/callable-identity.service";
 import { ExternalService } from "../class-hierarchy/external.service";
 import { ProgramService } from "../program/program.service";
 import { WorkspaceService } from "../workspace/workspace.service";
@@ -41,7 +40,6 @@ export class EdgesService {
 
   constructor(
     private readonly callSitesService: CallSitesService,
-    private readonly callableIdentityService: CallableIdentityService,
     private readonly externalService: ExternalService,
     private readonly programService: ProgramService,
     private readonly symbolResolutionService: SymbolResolutionService,
@@ -275,10 +273,5 @@ export class EdgesService {
     });
 
     return { edges, unresolvedCalls };
-  }
-
-  /** Exposed for the report, which prints a frame for each edge target. */
-  public readDisplayName(callable: DiscoveredCallable): string {
-    return this.callableIdentityService.readDisplayName(callable.declaration);
   }
 }

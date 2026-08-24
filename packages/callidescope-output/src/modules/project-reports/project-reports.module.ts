@@ -1,7 +1,5 @@
+import { GraphModule, SignaturesModule } from "@callidescope/graph";
 import { Module } from "@nestjs/common";
-
-import { GraphModule } from "../graph/graph.module";
-import { SignaturesModule } from "../signatures/signatures.module";
 
 import { ProjectReportsService } from "./project-reports.service";
 

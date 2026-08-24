@@ -98,6 +98,26 @@ describe(MarkdownReportService, () => {
     expect(rendered).toContain("decorated-method");
   });
 
+  it("labels a stack with no frames as unknown", () => {
+    const rendered = service.renderStacks({
+      previewCount: 3,
+      stacks: [{ ...stack({ entry: "Resolver.read" }), frames: [] }],
+    });
+
+    expect(rendered).toContain("**1. `unknown`**");
+  });
+
+  it("draws a mermaid diagram instead of a tree when asked to", () => {
+    const rendered = service.renderProjectSection({
+      heading: "## 🔭 Callidescope",
+      previewCount: 3,
+      rendering: "diagram",
+      report: report([stack({ entry: "Resolver.read" })]),
+    });
+
+    expect(rendered).toContain("flowchart LR");
+  });
+
   it("marks an under-reported depth rather than stating it as fact", () => {
     const rendered = service.renderStacks({
       previewCount: 3,

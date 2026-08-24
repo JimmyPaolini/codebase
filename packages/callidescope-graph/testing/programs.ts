@@ -1,19 +1,18 @@
-import {
-  CallableIdentityService,
-  CallablesService,
-  CallSitesService,
-  ClassHierarchyService,
-  CompilerHostService,
-  EdgesService,
-  ExternalService,
-  ProgramService,
-  SymbolResolutionService,
-  WorkspaceService,
-} from "@callidescope/graph";
 import { createMock } from "@golevelup/ts-vitest";
 import ts from "typescript";
 
-import type { ProjectProgram } from "@callidescope/graph";
+import { CallableIdentityService } from "../src/modules/callables/callable-identity.service";
+import { CallablesService } from "../src/modules/callables/callables.service";
+import { ClassHierarchyService } from "../src/modules/class-hierarchy/class-hierarchy.service";
+import { ExternalService } from "../src/modules/class-hierarchy/external.service";
+import { CallSitesService } from "../src/modules/edges/call-sites.service";
+import { EdgesService } from "../src/modules/edges/edges.service";
+import { SymbolResolutionService } from "../src/modules/edges/symbol-resolution.service";
+import { CompilerHostService } from "../src/modules/program/compiler-host.service";
+import { ProgramService } from "../src/modules/program/program.service";
+import { WorkspaceService } from "../src/modules/workspace/workspace.service";
+
+import type { ProjectProgram } from "../src/modules/program/program.types";
 import type { LoggerService } from "@codebase/logger";
 
 /** Root every in-memory fixture file is written under. */

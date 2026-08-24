@@ -225,22 +225,4 @@ describe(CallablesService, () => {
 
     expect([...collection.byId.values()][0]?.node.projectName).toBe("example");
   });
-
-  it("resolves the workspace-relative path of a source file", () => {
-    const projectProgram = buildFixtureProgram({
-      "packages/example/src/modules/a/a.service.ts":
-        "export function a(): void {}",
-    });
-    const services = buildFixtureServices({ projectProgram });
-    const sourceFile = projectProgram.program.getSourceFiles()[0];
-
-    expect(
-      sourceFile === undefined
-        ? undefined
-        : services.callables.toWorkspaceRelative({
-            sourceFile,
-            workspaceRoot: FIXTURE_ROOT,
-          }),
-    ).toBe("packages/example/src/modules/a/a.service.ts");
-  });
 });

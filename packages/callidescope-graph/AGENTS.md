@@ -1,28 +1,17 @@
-# CallidescopeCli: NestJS Command-Line Application
+# CallidescopeGraph: NestJS Service Application
 
 ## Quick Start
 
-**Type**: Node.js CLI application (NestJS + `nest-commander`)
+**Type**: Node.js service application (NestJS + `NestFactory`)
 
-**Purpose**: <!-- Briefly describe the specific purpose of this CLI application -->
-
-Traces call stacks through injected dependencies and flags the ones that are too
-deep, reading the limits it enforces from `callidescope.config.ts` via
-`@callidescope/configuration`.
-
-### Run Locally
-
-```bash
-cp .env.default .env  # Fill in required environment variables
-nx run callidescope-cli:start
-```
+**Purpose**: <!-- Briefly describe the specific purpose of this service application -->
 
 ## Architecture Overview
 
 ### Tech Stack
 
 - **Framework**: NestJS (modules, dependency injection, providers)
-- **CLI runner**: `nest-commander` (`CommandRunner` + `@Command()` decorator)
+- **Bootstrap**: `NestFactory.create` (standard NestJS bootstrap)
 - **Env validation**: `@nestjs/config` + `zod` (`environmentSchema` in `.constants.ts`)
 - **Logging**: `@codebase/logger` — a `pino`-backed `LoggerService` (`Scope.TRANSIENT`)
 - **Language**: Strict TypeScript
@@ -31,8 +20,8 @@ nx run callidescope-cli:start
 
 ```text
 src/main.ts
-  └─ CommandFactory.run(MainModule)
-       └─ domain command modules            ← add under src/modules/
+  └─ NestFactory.create(MainModule)
+       └─ domain service modules            ← add under src/modules/
 ```
 
 ### Directory Layout
@@ -45,7 +34,6 @@ src/
   modules/
     <domain>/                       # Add feature modules here
       <domain>.module.ts
-      <domain>.command.ts
       <domain>.service.ts
       <domain>.types.ts
       <domain>.constants.ts
@@ -61,14 +49,7 @@ The modules this project defines and the imports between them, published by `nx 
 
 ```mermaid
 flowchart LR
-  subgraph group0["callidescope-cli"]
-    CallidescopeModule
-    MainModule
-  end
-  subgraph group1["callidescope-configuration"]
-    ConfigurationModule
-  end
-  subgraph group2["callidescope-graph"]
+  subgraph group0["callidescope-graph"]
     CallablesModule
     ClassHierarchyModule
     CohesionModule
@@ -80,47 +61,23 @@ flowchart LR
     SignaturesModule
     WorkspaceModule
   end
-  subgraph group3["callidescope-output"]
-    OutputJsonModule
-    OutputMarkdownModule
-    ProjectReportsModule
-    ReportModule
-  end
-  subgraph group4["logger"]
+  subgraph group1["logger"]
     LoggerModule([LoggerModule])
   end
-  ConfigModule([ConfigModule])
-  DiscoveryModule
   CallablesModule --> ProgramModule
   CallablesModule --> WorkspaceModule
-  CallidescopeModule --> CallablesModule
-  CallidescopeModule --> ClassHierarchyModule
-  CallidescopeModule --> CohesionModule
-  CallidescopeModule --> ConfigurationModule
-  CallidescopeModule --> EdgesModule
-  CallidescopeModule --> EntryPointsModule
-  CallidescopeModule --> GraphModule
-  CallidescopeModule --> OutputJsonModule
-  CallidescopeModule --> OutputMarkdownModule
-  CallidescopeModule --> ProgramModule
-  CallidescopeModule --> ProjectReportsModule
-  CallidescopeModule --> ReportModule
-  CallidescopeModule --> WorkspaceModule
   EdgesModule --> CallablesModule
   EdgesModule --> ClassHierarchyModule
   EdgesModule --> ProgramModule
   EdgesModule --> WorkspaceModule
   GraphModule --> DocumentationModule
   GraphModule --> SignaturesModule
-  MainModule --> CallidescopeModule
-  MainModule --> ConfigurationModule
-  MainModule --> DiscoveryModule
   ProgramModule --> WorkspaceModule
-  ProjectReportsModule --> GraphModule
-  ProjectReportsModule --> SignaturesModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
+
+_Reached only for their types, and so declaring no module here: callidescope-configuration._
 
 <!-- nestjs-module-graph-end -->
 
@@ -128,7 +85,7 @@ _Rounded modules are global: every module can inject them, so their edges are le
 
 ### Adding Business Logic
 
-1. **Add domain command modules** — create `src/modules/<domain>/` with a NestJS module, command, service, types, and constants.
+1. **Add domain service modules** — create `src/modules/<domain>/` with a NestJS module, service, types, and constants.
 2. **Register in root module** — import the new module in `main.module.ts`.
 3. **Validate env vars** — extend `environmentSchema` in `constants.ts` with all required environment variables.
 
@@ -140,7 +97,6 @@ _Rounded modules are global: every module can inject them, so their edges are le
 
 ```ts
 constructor(private readonly logger: LoggerService) {
-  super();
   this.logger.setContext(MyService.name);
 }
 ```
@@ -152,10 +108,10 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run callidescope-cli:start           # Run the command-line application
-nx run callidescope-cli:lint-codebase   # Every static check, in one graph
-nx run callidescope-cli:typecheck       # tsc --noEmit
-nx run callidescope-cli:oxfmt           # Formatting
+nx run callidescope-graph:lint-codebase   # Every static check, in one graph
+nx run callidescope-graph:typecheck       # tsc --noEmit
+nx run callidescope-graph:oxfmt           # Formatting
+nx run callidescope-graph:build           # Compile for publication
 ```
 
 ### Testing
@@ -163,16 +119,16 @@ nx run callidescope-cli:oxfmt           # Formatting
 Follow the codebase's strict three-tier testing strategy. Co-locate test files with the source they test.
 
 ```bash
-nx run callidescope-cli:vitest:unit          # Fast (<100ms) — pure logic, mocked DI
-nx run callidescope-cli:vitest:integration   # Moderate (1-2s) — real database/API I/O
-nx run callidescope-cli:vitest:end-to-end    # Slow (30-60s) — full CLI execution
+nx run callidescope-graph:vitest:unit          # Fast (<100ms) — pure logic, mocked DI
+nx run callidescope-graph:vitest:integration   # Moderate (1-2s) — real database/API I/O
+nx run callidescope-graph:vitest:end-to-end    # Slow (30-60s) — full service initialization
 ```
 
 | Tier | File pattern | What to test |
 | ---- | ------------ | ------------ |
 | Unit | `*.unit.test.ts` | Pure functions, service methods with mocked deps |
 | Integration | `*.integration.test.ts` | Database queries, external API clients |
-| End-to-end | `*.end-to-end.test.ts` | Full `CommandFactory.run()` execution |
+| End-to-end | `*.end-to-end.test.ts` | Full `NestFactory.create()` execution |
 
 See the [testing-strategy skill](../../.agents/skills/testing-strategy/SKILL.md) and [testing-mocks skill](../../.agents/skills/testing-mocks/SKILL.md) for patterns and mock conventions.
 
@@ -202,7 +158,7 @@ Register the service in both `providers` and `exports` so consumers can inject i
 @Module({
   controllers: [],
   exports: [MyDomainService],
-  imports: [TypeOrmModule.forFeature([MyEntity]), LoggerModule],
+  imports: [LoggerModule],
   providers: [MyDomainService],
 })
 export class MyDomainModule {}
@@ -218,11 +174,7 @@ Follow the section-comment layout from the template — it keeps large services 
 @Injectable()
 export class MyDomainService {
   // 🏗 Dependency Injection
-  constructor(
-    @InjectRepository(MyEntity)
-    private readonly repo: Repository<MyEntity>,
-    private readonly logger: LoggerService,
-  ) {
+  constructor(private readonly logger: LoggerService) {
     this.logger.setContext(MyDomainService.name);
   }
 
@@ -250,7 +202,6 @@ Move all inline values to `.constants.ts` to keep services readable:
 
 ```ts
 // ♟️ Constants
-export const MY_SKIP_REGEX = /(alternative)|(archaic)|(synonym)/i;
 export const DEFAULT_PAGE_SIZE = 100;
 ```
 
@@ -284,18 +235,9 @@ After generating a module, import it in `main.module.ts`:
 export class MainModule {}
 ```
 
-### Conformetry validation
-
-Conformetry validation measures generated and existing module structures against the templates they came from. It runs for one project, or for every project at once.
-
-```bash
-pnpm nx run-many --targets=conformetry-validate
-```
-
 ## Best Practices
 
-- **Never** put business logic in `main.ts` — it bootstraps `CommandFactory` only.
-- **One command per class** — split sub-commands into separate `CommandRunner` subclasses.
+- **Never** put business logic in `main.ts` — it bootstraps `NestFactory` only.
 - **Validate at the boundary** — all env vars must be declared in `environmentSchema`; access via `ConfigService`, not `process.env`.
 - **Type imports** — use `import { type Foo }` for type-only imports (enforced by ESLint).
 - **No `any` types** — use `unknown` or proper typing; strict mode is enabled.
@@ -304,9 +246,7 @@ See the [write-typescript skill](../../.agents/skills/write-typescript/SKILL.md)
 
 ## Troubleshooting
 
-- **Command not found at runtime** — ensure the command class is listed in `providers` of its module and the module is imported by the root module.
 - **Dependency injection failure** — verify the service is `@Injectable()`, exported from its module, and that module is imported by the consuming module.
-- **Unrecognized CLI flag** — check that `@Option()` decorators in the command class exactly match the flag names passed.
 - **Env var validation error on startup** — add the missing variable to `environmentSchema` in `src/constants.ts` and to `.env.default`.
 
 See the [triage-submission skill](../../.agents/skills/triage-submission/SKILL.md) for lint and git hook failures.

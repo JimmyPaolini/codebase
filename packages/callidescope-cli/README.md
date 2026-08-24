@@ -299,8 +299,12 @@ Where this project sits in the Nx project graph: what it depends on, and what de
 flowchart LR
   callidescope_cli["callidescope-cli"]
   callidescope_configuration["callidescope-configuration"]
+  callidescope_graph["callidescope-graph"]
+  callidescope_output["callidescope-output"]
   logger["logger"]
   callidescope_cli --> callidescope_configuration
+  callidescope_cli --> callidescope_graph
+  callidescope_cli --> callidescope_output
   callidescope_cli --> logger
   classDef subject stroke-width:3px
   class callidescope_cli subject
@@ -317,27 +321,31 @@ The modules this project defines and the imports between them, published by `nx 
 ```mermaid
 flowchart LR
   subgraph group0["callidescope-cli"]
-    CallablesModule
     CallidescopeModule
+    MainModule
+  end
+  subgraph group1["callidescope-configuration"]
+    ConfigurationModule
+  end
+  subgraph group2["callidescope-graph"]
+    CallablesModule
     ClassHierarchyModule
     CohesionModule
     DocumentationModule
     EdgesModule
     EntryPointsModule
     GraphModule
-    MainModule
-    OutputJsonModule
-    OutputMarkdownModule
     ProgramModule
-    ProjectReportsModule
-    ReportModule
     SignaturesModule
     WorkspaceModule
   end
-  subgraph group1["callidescope-configuration"]
-    ConfigurationModule
+  subgraph group3["callidescope-output"]
+    OutputJsonModule
+    OutputMarkdownModule
+    ProjectReportsModule
+    ReportModule
   end
-  subgraph group2["logger"]
+  subgraph group4["logger"]
     LoggerModule([LoggerModule])
   end
   ConfigModule([ConfigModule])
@@ -379,8 +387,10 @@ _Rounded modules are global: every module can inject them, so their edges are le
 
 | Package | Role |
 | ------- | ---- |
-| [`@callidescope/cli`](.) | Builds the graph, measures it, and reports |
+| [`@callidescope/cli`](.) | Orchestrates a run: traces the workspace, plans what to check, and reports |
 | [`@callidescope/configuration`](../callidescope-configuration/README.md) | Reads `callidescope.config.ts` and resolves the limits |
+| [`@callidescope/graph`](../callidescope-graph/README.md) | Builds the call graph from traced source and measures depth, breadth, and cohesion |
+| [`@callidescope/output`](../callidescope-output/README.md) | Renders findings into markdown, mermaid, and JSON |
 
 ## Start
 

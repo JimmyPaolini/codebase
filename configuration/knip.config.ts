@@ -200,6 +200,16 @@ const config: KnipConfig = {
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
+    "packages/callidescope-graph": {
+      entry: ["src/index.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      project: "src/**/*.ts",
+    },
+    "packages/callidescope-output": {
+      entry: ["src/index.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      project: "src/**/*.ts",
+    },
     // codometer packages: the measurement CLI and the configuration it reads
     "packages/codometer-cli": {
       entry: ["src/main.mjs", "src/main.ts", "src/repl.ts"],

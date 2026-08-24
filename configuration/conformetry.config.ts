@@ -88,6 +88,8 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       {
         patterns: [
           "packages/callidescope-configuration",
+          "packages/callidescope-graph",
+          "packages/callidescope-output",
           "packages/codometer-configuration",
           "packages/conformetry-{configuration,core,files,generation,json,jupyter,markdown,python,text,typescript,validation,nx}",
         ],

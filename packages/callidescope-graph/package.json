@@ -1,26 +1,15 @@
 {
-  "bin": {
-    "callidescope": "./src/main.mjs"
-  },
   "dependencies": {
     "@callidescope/configuration": "workspace:*",
-    "@callidescope/graph": "workspace:*",
-    "@callidescope/output": "workspace:*",
     "@codebase/logger": "workspace:*",
     "@nestjs/common": "catalog:",
-    "@nestjs/config": "catalog:",
-    "@nestjs/core": "catalog:",
-    "nest-commander": "catalog:",
     "reflect-metadata": "catalog:",
-    "tslib": "catalog:",
-    "zod": "catalog:"
+    "tslib": "catalog:"
   },
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
     "@nx/eslint-plugin": "catalog:",
-    "@swc-node/register": "catalog:",
-    "@swc/core": "catalog:",
     "@swc/helpers": "catalog:",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
@@ -32,7 +21,7 @@
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
-  "name": "@callidescope/cli",
+  "name": "@callidescope/graph",
   "peerDependencies": {
     "typescript": "catalog:"
   },

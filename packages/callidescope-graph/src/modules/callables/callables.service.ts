@@ -209,15 +209,4 @@ export class CallablesService {
 
     return { byId, fileCount, fileCountByProject };
   }
-
-  /** Resolves the workspace-relative path of a source file. */
-  public toWorkspaceRelative(args: {
-    sourceFile: ts.SourceFile;
-    workspaceRoot: string;
-  }): string {
-    return this.workspaceService.toWorkspaceRelative({
-      absolutePath: this.programService.toRealPath(args.sourceFile.fileName),
-      workspaceRoot: args.workspaceRoot,
-    });
-  }
 }

@@ -1,13 +1,8 @@
 import { createMock } from "@golevelup/ts-vitest";
 import { afterEach, beforeEach, vi } from "vitest";
 
-import type {
-  CallableNode,
-  CallGraphResult,
-  SourceLocation,
-  StackFrame,
-} from "@callidescope/configuration";
-import type { DiscoveredCallable } from "@callidescope/graph";
+import type { DiscoveredCallable } from "../src/modules/callables/callables.types";
+import type { CallableNode, SourceLocation } from "@callidescope/configuration";
 
 /**
  * Default test date used across time-sensitive tests.
@@ -41,36 +36,6 @@ export function buildCallableNode(
 }
 
 /**
- * Builds an empty result, for tests that only pass one through.
- *
- * Every collection the pipeline produces is present, so a test asserting on the
- * whole result keeps working when a new finding kind is added.
- */
-export function buildCallGraphResult(
-  overrides: Partial<CallGraphResult> = {},
-): CallGraphResult {
-  return {
-    deepStacks: [],
-    misplacedCallables: [],
-    moduleSpreads: [],
-    projects: [],
-    summary: {
-      callableCount: 0,
-      cyclicComponentCount: 0,
-      edgeCount: 0,
-      entryPointCount: 0,
-      fileCount: 0,
-      maximumDepth: 0,
-      projectCount: 0,
-      unresolvedCallCount: 0,
-    },
-    typeDepths: [],
-    wideCallables: [],
-    ...overrides,
-  };
-}
-
-/**
  * Builds a discovered callable for tests that only read its described node.
  *
  * The declaration and program come from `createMock` rather than a cast: the
@@ -97,29 +62,6 @@ export function buildSourceLocation(
     column: 1,
     filePath: "packages/example/src/modules/example/example.service.ts",
     line: 1,
-    ...overrides,
-  };
-}
-
-/**
- * Builds a stack frame, defaulting the parts a test does not care about.
- *
- * Carrying neither documentation nor a signature by default: most assertions are about the
- * shape of a stack rather than what its frames say about themselves, and a
- * frame carrying neither is the honest baseline.
- */
-export function buildStackFrame(
-  overrides: Partial<StackFrame> = {},
-): StackFrame {
-  const location = overrides.location ?? buildSourceLocation();
-
-  return {
-    displayName: "ExampleService.example",
-    documentation: undefined,
-    id: `${location.filePath}#0`,
-    isCycle: false,
-    location,
-    signature: undefined,
     ...overrides,
   };
 }

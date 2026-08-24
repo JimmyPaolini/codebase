@@ -1,10 +1,11 @@
+import {
+  BreadthService,
+  ComponentsService,
+  DepthService,
+  EdgesService,
+  GraphService,
+} from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
-
-import { EdgesService } from "../edges/edges.service";
-import { BreadthService } from "../graph/breadth.service";
-import { ComponentsService } from "../graph/components.service";
-import { DepthService } from "../graph/depth.service";
-import { GraphService } from "../graph/graph.service";
 
 import type {
   AssembledGraph,

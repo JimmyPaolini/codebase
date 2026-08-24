@@ -120,6 +120,15 @@ describe(SymbolResolutionService, () => {
     expect(resolved.declarations).toHaveLength(1);
   });
 
+  it("follows a call through an arrow-typed class property", () => {
+    const resolved = resolveFirstCall(`
+      class Service { public run = (): void {}; }
+      export function entry(service: Service): void { service.run(); }
+    `);
+
+    expect(resolved.declarations).toHaveLength(1);
+  });
+
   it("records a computed member call with its reason", () => {
     const resolved = resolveFirstCall(`
       export function entry(target: Record<string, () => void>, key: string): void {

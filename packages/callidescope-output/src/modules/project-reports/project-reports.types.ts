@@ -1,19 +1,19 @@
 // 🏷️ Types
 
-import type { DiscoveredCallable } from "../callables/callables.types";
-import type { EntryPointCollection } from "../entry-points/entry-points.types";
-import type {
-  BreadthMeasurement,
-  CallGraph,
-  CondensedGraph,
-  DepthMeasurement,
-} from "../graph/graph.types";
 import type {
   CallableId,
   MisplacedCallableFinding,
   ModuleSpreadFinding,
   TypeDepthSummary,
 } from "@callidescope/configuration";
+import type {
+  BreadthMeasurement,
+  CallGraph,
+  CondensedGraph,
+  DepthMeasurement,
+  DiscoveredCallable,
+  EntryPointCollection,
+} from "@callidescope/graph";
 
 /** Arguments for scoping a run's findings to each project that produced them. */
 export interface BuildProjectReportsArguments {

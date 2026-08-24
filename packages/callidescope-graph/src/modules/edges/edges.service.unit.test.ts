@@ -78,7 +78,6 @@ describe(EdgesService, () => {
     const logger: DeepMocked<LoggerService> = createMock<LoggerService>();
     const subject = new EdgesService(
       new CallSitesService(),
-      fixture.identity,
       fixture.external,
       fixture.programService,
       new SymbolResolutionService(fixture.hierarchy, fixture.external),
@@ -490,23 +489,5 @@ describe(EdgesService, () => {
     });
 
     expect(collected.edges).toStrictEqual([]);
-  });
-
-  it("reports the display name of a discovered callable", () => {
-    const projectProgram = buildFixtureProgram({
-      "packages/example/src/modules/a/a.service.ts": `
-        export class Service { public load(): void {} }
-      `,
-    });
-    const services = buildFixtureServices({ projectProgram });
-    const collection = collectFixtureCallables({ projectProgram, services });
-    const callable = [...collection.byId.values()][0];
-
-    expect(callable).toBeDefined();
-    expect(
-      callable === undefined
-        ? undefined
-        : services.edges.readDisplayName(callable),
-    ).toBe("Service.load");
   });
 });

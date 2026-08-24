@@ -1,7 +1,5 @@
+import { PathsService, SignaturesService } from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
-
-import { PathsService } from "../graph/paths.service";
-import { SignaturesService } from "../signatures/signatures.service";
 
 import { MINIMUM_STACK_FRAMES } from "./project-reports.constants";
 

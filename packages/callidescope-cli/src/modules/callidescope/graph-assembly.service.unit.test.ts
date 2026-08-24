@@ -1,3 +1,9 @@
+import {
+  BreadthService,
+  ComponentsService,
+  DepthService,
+  GraphService,
+} from "@callidescope/graph";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -8,10 +14,6 @@ import {
   collectFixtureCallables,
   FIXTURE_ROOT,
 } from "../../../testing/programs";
-import { BreadthService } from "../graph/breadth.service";
-import { ComponentsService } from "../graph/components.service";
-import { DepthService } from "../graph/depth.service";
-import { GraphService } from "../graph/graph.service";
 
 import { GraphAssemblyService } from "./graph-assembly.service";
 
