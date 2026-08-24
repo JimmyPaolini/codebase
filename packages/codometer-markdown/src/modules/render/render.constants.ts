@@ -18,3 +18,15 @@ export const TABLE_HEADER = [
   "| | Metric | Value | `main` | Change |",
   "|--|--------|-------|--------|--------|",
 ];
+
+/**
+ * The most rows a report ever renders, across every project combined.
+ *
+ * A pull request description is passed to shell tooling as a single
+ * environment variable, which has an OS-level size ceiling; a run with no
+ * baseline to compare against — the first run against a project, or the
+ * first run after a baseline goes missing — can otherwise flag every metric
+ * a project measures at once and blow well past it. Breaches are exempt: a
+ * breach must never sit behind a click, however many of them there are.
+ */
+export const MAX_TOTAL_ROWS = 200;

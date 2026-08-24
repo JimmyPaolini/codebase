@@ -285,5 +285,90 @@ describe(RenderService, () => {
 
       expect(section).not.toContain("Compared against");
     });
+
+    it("caps the total rows rendered, noting how many were left out", () => {
+      const rows = Array.from({ length: 205 }, (_, index) =>
+        buildRow({
+          baseValue: 1000,
+          label: `Metric ${index}`,
+          name: `codebase.metric-${index}`,
+          project: `project-${index}`,
+          value: 1000 + index + 1,
+        }),
+      );
+
+      const section = service.renderSection({
+        baselineUrl: undefined,
+        failures: [],
+        rows,
+      });
+
+      const rowCount = section
+        .split("\n")
+        .filter((line) => line.startsWith("| 📈")).length;
+
+      expect(rowCount).toBe(200);
+      expect(section).toContain(
+        "_5 more changed metrics omitted — showing the most significant 200._",
+      );
+    });
+
+    it("favors the largest moves when trimming to the cap", () => {
+      const rows = Array.from({ length: 201 }, (_, index) =>
+        buildRow({
+          baseValue: 1000,
+          label: `Metric ${index}`,
+          name: `codebase.metric-${index}`,
+          project: `project-${index}`,
+          // The smallest move is guaranteed to be cut, the largest kept.
+          value: 1000 + index + 1,
+        }),
+      );
+
+      const section = service.renderSection({
+        baselineUrl: undefined,
+        failures: [],
+        rows,
+      });
+
+      expect(section).toContain("Metric 200");
+      expect(section).not.toContain("Metric 0 |");
+    });
+
+    it("never drops a breach for the cap, however many there are", () => {
+      const rows = Array.from({ length: 205 }, (_, index) =>
+        buildRow({
+          baseValue: 1000,
+          breach: "fail",
+          label: `Metric ${index}`,
+          name: `codebase.metric-${index}`,
+          project: `project-${index}`,
+          value: 1000 + index,
+        }),
+      );
+
+      const section = service.renderSection({
+        baselineUrl: undefined,
+        failures: [],
+        rows,
+      });
+
+      const rowCount = section
+        .split("\n")
+        .filter((line) => line.startsWith("| ❌")).length;
+
+      expect(rowCount).toBe(205);
+      expect(section).not.toContain("omitted");
+    });
+
+    it("says nothing about omission when everything fits", () => {
+      const section = service.renderSection({
+        baselineUrl: undefined,
+        failures: [],
+        rows: [buildRow({ baseValue: 1000, value: 1200 })],
+      });
+
+      expect(section).not.toContain("omitted");
+    });
   });
 });
