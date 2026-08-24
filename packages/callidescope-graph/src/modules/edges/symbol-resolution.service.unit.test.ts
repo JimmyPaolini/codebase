@@ -7,6 +7,7 @@ import { buildFixtureProgram } from "../../../testing/programs";
 import { ClassesService } from "../classes/classes.service";
 import { ExternalService } from "../classes/external.service";
 
+import { EXTERNAL_CALL } from "./edges.constants";
 import { SymbolResolutionService } from "./symbol-resolution.service";
 
 import type { ResolvedCallSite } from "./edges.types";
@@ -118,6 +119,42 @@ describe(SymbolResolutionService, () => {
 
     expect(resolved.resolution).toBe("direct");
     expect(resolved.declarations).toHaveLength(1);
+  });
+
+  it("records a call on a dependency as external rather than unresolved", () => {
+    const projectProgram = buildFixtureProgram({
+      "packages/example/src/modules/a/a.service.ts": `
+        import { Vendor } from "./node_modules/vendor/index";
+        export function entry(vendor: Vendor): void { vendor.run(); }
+      `,
+      "packages/example/src/modules/a/node_modules/vendor/index.ts": `
+        export class Vendor { public run(): void {} }
+      `,
+    });
+    const external = new ExternalService();
+
+    external.configure({
+      ownedFilePaths: projectProgram.ownedFilePaths,
+      workspaceRoot: "/workspace",
+    });
+
+    const hierarchy = new ClassesService(external);
+
+    hierarchy.build({ maximumCandidates: 8, programs: [projectProgram] });
+
+    const subject = new SymbolResolutionService(hierarchy, external);
+    const call = findNode(
+      projectProgram.program.getSourceFiles(),
+      ts.isCallExpression,
+    );
+
+    if (call === undefined) {
+      throw new Error("No call expression in the fixture");
+    }
+
+    expect(
+      subject.resolve({ checker: projectProgram.checker, expression: call }),
+    ).toStrictEqual(EXTERNAL_CALL);
   });
 
   it("follows a call through an arrow-typed class property", () => {
