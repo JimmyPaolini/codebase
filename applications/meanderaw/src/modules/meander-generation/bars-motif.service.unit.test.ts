@@ -207,6 +207,34 @@ describe(BarsMotifService, () => {
       );
     });
 
+    it("draws a genuinely visible dot at an odd row count instead of silently swallowing it into an adjacent run", () => {
+      const geometry = gridGeometryService.compute(5);
+
+      // Regression coverage for a bug caught in review: at odd `rows`,
+      // `rows - 1` is even, so a naive dot-level formula would land the dot
+      // exactly on a run endpoint instead of in a gap between two skipped
+      // runs, and the dot would be swallowed into what looks like one
+      // continuous line. `dotLevels(5, ...)` trims to `[3, 1]` (both odd)
+      // instead of `[4, 2]`, so each column below draws exactly one
+      // one-unit run plus a distinct zero-length dot segment — never a
+      // dot coinciding with, or absorbed into, a drawn run.
+      expect(
+        service.path(geometry, {
+          modifier: { name: "dot", shape: "bounce" },
+          rows: 5,
+          unitIndex: 0,
+        }),
+      ).toBe("M3 15V27M3 39H3M15 27V39M15 15H15M3 3H27M3 63H27");
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "dot", shape: "up" },
+          rows: 5,
+          unitIndex: 0,
+        }),
+      ).toBe("M3 15V27M3 39H3M15 27V39M15 15H15M3 3H27M3 63H27");
+    });
+
     it("draws alternating dash/gap segments for the split modifier, matching 5 rows bars split.svg", () => {
       const geometry = gridGeometryService.compute(5);
 

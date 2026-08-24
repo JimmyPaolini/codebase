@@ -102,23 +102,35 @@ export class MotifTransformsService {
 
   /**
    * Computes one full period's dot levels for `bars`'s `dot` modifier: the
-   * grid level (odd integers counting down from `rows - 1`) each phase in
-   * the repeat tile marks with a dot instead of a fully-drawn run. `"up"`
-   * steps straight down through every level once per period, then resets to
-   * the top — a monotonic staircase, confirmed against
-   * `6 rows bars dot up.svg` (period 3: levels `5, 3, 1`) and
+   * grid level each phase in the repeat tile marks with a dot instead of a
+   * fully-drawn run. `"up"` steps straight down through every level once per
+   * period, then resets to the top — a monotonic staircase, confirmed
+   * against `6 rows bars dot up.svg` (period 3: levels `5, 3, 1`) and
    * `8 rows bars dot up.svg` (period 4: levels `7, 5, 3, 1`). `"bounce"`
    * mirrors back up through the interior levels before repeating, so the
    * two extreme levels are each visited once per period and every interior
    * level twice — confirmed against
    * `6 rows bars dot bounce.svg` (period 4: levels `5, 3, 1, 3`) and
    * `8 rows bars dot bounce.svg` (period 6: levels `7, 5, 3, 1, 3, 5`).
+   *
+   * Every level in the sequence must be odd, regardless of `rows`'s parity:
+   * {@link BarsMotifService.dotPath} only renders a dot as a visible break
+   * when BOTH grid-unit runs immediately adjacent to it get skipped, and
+   * that only happens at an odd level (see `dotPath`'s own doc comment for
+   * why). At even `rows`, `rows - 1` is already odd, so the sequence starts
+   * there; at odd `rows`, `rows - 1` is even, so the sequence starts one
+   * level lower, at `rows - 2` — the top-most level a dot can actually sit
+   * at without being silently swallowed by an adjacent drawn run. This
+   * one-level trim at odd `rows` is unverified against a real reference
+   * file (none exists below 6 rows for `dot`), but follows directly from
+   * `dotPath`'s draw-or-skip rule, which IS verified.
    */
   dotLevels(rows: number, shape: DotShape): number[] {
-    const levelCount = Math.floor((rows - 2) / 2) + 1;
+    const maximumLevel = rows % 2 === 0 ? rows - 1 : rows - 2;
+    const levelCount = Math.floor((maximumLevel - 1) / 2) + 1;
     const levels = Array.from(
       { length: levelCount },
-      (_value, index) => rows - 1 - 2 * index,
+      (_value, index) => maximumLevel - 2 * index,
     );
 
     if (shape === "up") {
