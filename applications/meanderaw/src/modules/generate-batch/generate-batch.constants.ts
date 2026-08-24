@@ -6,18 +6,12 @@ import type { DotShape } from "../meander-generation/meander-generation.types";
  * `period` values swept for the `alternated` modifier's batch combinations:
  * two representative points inside the shared `MINIMUM_PERIOD`–`MAXIMUM_VALUE`
  * bounds, distinct enough to show the modifier actually varies with `period`
- * without sweeping the whole range.
+ * without sweeping the whole range. Period 1 leads the sweep because it's the
+ * only period verified byte-exact against real reference files; period 3's
+ * interior zigzag geometry, like every period above 1, is a hand-idealized
+ * approximation (see `BarsMotifService.alternatedPath`'s JSDoc).
  */
-export const ALTERNATED_SWEEP_PERIODS: readonly number[] = [2, 4];
-
-/**
- * `repeatCount` every non-cycle-constrained combination is generated with.
- * Matches `generate`'s own `DEFAULT_REPEAT_COUNT` so a batch file and a
- * single-pattern file for the same type/rows/modifier are identical.
- */
-export const BASE_REPEAT_COUNT = 6;
-
-export const DEFAULT_OUTPUT_DIRECTORY = "output";
+export const ALTERNATED_SWEEP_PERIODS: readonly number[] = [1, 3];
 
 /**
  * Every shape swept for the `dot` modifier's batch combinations. `DotShape`

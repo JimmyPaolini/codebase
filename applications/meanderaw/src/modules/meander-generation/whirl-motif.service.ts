@@ -7,10 +7,10 @@ import { SnakeMotifService } from "./snake-motif.service";
 import type {
   GridGeometry,
   Modifier,
+  MotifLevelPoint,
   MotifService,
   MotifUnit,
   RepeatPatternOptions,
-  SpiralLevelPoint,
   UnitBorderOptions,
 } from "./meander-generation.types";
 
@@ -43,15 +43,15 @@ export class WhirlMotifService implements MotifService {
   // 🔏 Private Methods
 
   /** Traces the spiral's single arm: starting at `(0, rows - 1)` heading up, stepping by each length from `rows - 2` (twice) down to `1` (once), turning a quarter turn counterclockwise after every step. */
-  private armPoints(rows: number): SpiralLevelPoint[] {
+  private armPoints(rows: number): MotifLevelPoint[] {
     const lengths = [
       rows - 2,
       ...Array.from({ length: rows - 2 }, (_value, index) => rows - 2 - index),
     ];
-    let heading: SpiralLevelPoint = [0, -1];
+    let heading: MotifLevelPoint = [0, -1];
     let currentX = 0;
     let currentY = rows - 1;
-    const points: SpiralLevelPoint[] = [[currentX, currentY]];
+    const points: MotifLevelPoint[] = [[currentX, currentY]];
 
     for (const length of lengths) {
       const [headingX, headingY] = heading;
@@ -65,7 +65,7 @@ export class WhirlMotifService implements MotifService {
   }
 
   /** Traces the full spiral: one arm, then its 180° rotation about the motif's own center, reversed so the two halves read as one continuous shape. */
-  private basePoints(rows: number): readonly SpiralLevelPoint[] {
+  private basePoints(rows: number): readonly MotifLevelPoint[] {
     const arm = this.armPoints(rows);
     const rotatedArm = this.motifTransformsService
       .rotate(arm, this.centerPoint(rows), 2)
@@ -75,14 +75,14 @@ export class WhirlMotifService implements MotifService {
   }
 
   /** The motif's own bounding-box center that the 180° rotation joining its arm to itself pivots around. Unrelated to `flip`'s own mirror pivot, which uses {@link pitchLevels} directly instead. */
-  private centerPoint(rows: number): SpiralLevelPoint {
+  private centerPoint(rows: number): MotifLevelPoint {
     return [(rows - 1) / 2, rows / 2];
   }
 
   /** Mirrors the base spiral across the motif's own right edge, fusing a mirrored twin onto the un-flipped motif for the `flip` modifier. */
-  private flippedPoints(rows: number): readonly SpiralLevelPoint[] {
+  private flippedPoints(rows: number): readonly MotifLevelPoint[] {
     const points = this.basePoints(rows);
-    const mirrorCenter: SpiralLevelPoint = [
+    const mirrorCenter: MotifLevelPoint = [
       this.pitchLevels(rows) - 0.5,
       rows / 2,
     ];
@@ -100,10 +100,13 @@ export class WhirlMotifService implements MotifService {
   /**
    * Draws one unit's own top/bottom border segment, spanning just that
    * unit's width. Same shape as {@link SnakeMotifService.borderSegment},
-   * but can't delegate to it: that method resolves `this.unitWidth`
-   * against `SnakeMotifService`'s own pitch (`rows - 1` grid levels), not
-   * `whirl`'s (`rows` grid levels, from {@link pitchLevels}), so calling
-   * through would silently draw the wrong width.
+   * but doesn't delegate to it: that method resolves its width via
+   * `this.unitWidth`, which is `SnakeMotifService`'s own pitch (`rows - 1`
+   * grid levels), not `whirl`'s (`rows` grid levels, from
+   * {@link pitchLevels}), so naive delegation would silently draw the wrong
+   * width. A version of `SnakeMotifService.borderSegment` parameterized on
+   * width explicitly, instead of computing it via `this.unitWidth`, could
+   * still be shared between the two — that refactor just hasn't been done.
    */
   borderSegment(geometry: GridGeometry, unit: UnitBorderOptions): string {
     const { modifier, rows, xOffset } = unit;
@@ -160,9 +163,10 @@ export class WhirlMotifService implements MotifService {
   /**
    * The x-coordinate of the last unit's rightmost point, before the
    * stroke-width margin. Same shape as
-   * {@link SnakeMotifService.rightEdge}, but can't delegate to it for the
+   * {@link SnakeMotifService.rightEdge}, but doesn't delegate to it for the
    * same reason as {@link borderSegment}: it resolves `this.unitWidth`
-   * against `SnakeMotifService`'s own pitch, not `whirl`'s.
+   * against `SnakeMotifService`'s own pitch, not `whirl`'s — a
+   * width-parameterized version of that method could still be shared.
    */
   rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number {
     const { modifier, repeatCount, rows } = pattern;

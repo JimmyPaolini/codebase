@@ -4,7 +4,7 @@ import type {
   AlternateRun,
   DotShape,
   MirrorAxis,
-  SpiralLevelPoint,
+  MotifLevelPoint,
 } from "./meander-generation.types";
 
 /**
@@ -86,9 +86,9 @@ export class MotifTransformsService {
    * meet edge to edge.
    */
   closeEdge(
-    points: readonly SpiralLevelPoint[],
+    points: readonly MotifLevelPoint[],
     rows: number,
-  ): SpiralLevelPoint[] {
+  ): MotifLevelPoint[] {
     const [firstPointXLevel] = points[0] ?? [0, 0];
     const lastPoint = points.at(-1) ?? [0, 0];
     const [lastPointXLevel] = lastPoint;
@@ -150,13 +150,13 @@ export class MotifTransformsService {
    * left/right flip).
    */
   mirror(
-    points: readonly SpiralLevelPoint[],
-    center: SpiralLevelPoint,
+    points: readonly MotifLevelPoint[],
+    center: MotifLevelPoint,
     axis: MirrorAxis,
-  ): SpiralLevelPoint[] {
+  ): MotifLevelPoint[] {
     const [centerX, centerY] = center;
 
-    return points.map(([x, y]): SpiralLevelPoint => {
+    return points.map(([x, y]): MotifLevelPoint => {
       if (axis === "horizontal") {
         return [x, 2 * centerY - y];
       }
@@ -170,10 +170,10 @@ export class MotifTransformsService {
    * modulo 4, so any integer (negative included) is accepted.
    */
   rotate(
-    points: readonly SpiralLevelPoint[],
-    center: SpiralLevelPoint,
+    points: readonly MotifLevelPoint[],
+    center: MotifLevelPoint,
     quarterTurns: number,
-  ): SpiralLevelPoint[] {
+  ): MotifLevelPoint[] {
     const normalizedTurns = ((quarterTurns % 4) + 4) % 4;
 
     if (normalizedTurns === 0) {
@@ -182,7 +182,7 @@ export class MotifTransformsService {
 
     const [centerX, centerY] = center;
 
-    return points.map(([x, y]): SpiralLevelPoint => {
+    return points.map(([x, y]): MotifLevelPoint => {
       const distanceX = x - centerX;
       const distanceY = y - centerY;
 

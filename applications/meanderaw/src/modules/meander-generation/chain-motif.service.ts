@@ -8,10 +8,10 @@ import { SnakeSequenceService } from "./snake-sequence.service";
 import type {
   GridGeometry,
   Modifier,
+  MotifLevelPoint,
   MotifService,
   MotifUnit,
   RepeatPatternOptions,
-  SpiralLevelPoint,
 } from "./meander-generation.types";
 
 /**
@@ -51,9 +51,9 @@ export class ChainMotifService implements MotifService {
    * middle-split reversed and mirrored.
    */
   private flipSubpaths(
-    points: readonly SpiralLevelPoint[],
+    points: readonly MotifLevelPoint[],
     rows: number,
-  ): readonly (readonly SpiralLevelPoint[])[] {
+  ): readonly (readonly MotifLevelPoint[])[] {
     const splitIndex = rows - 1;
     const mirroredSplitIndex = points.length - splitIndex;
 
