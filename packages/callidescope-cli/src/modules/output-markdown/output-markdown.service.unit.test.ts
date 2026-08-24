@@ -123,6 +123,70 @@ describe(OutputMarkdownService, () => {
     );
   });
 
+  it("replaces a start marker with no matching end, rather than no-oping", async () => {
+    const filePath = await temporaryPath();
+
+    await writeFile(
+      filePath,
+      "# Title\n\n<!-- CALL_STACKS_START -->\n\norphaned\n\nAfter.\n",
+      "utf8",
+    );
+    subject.syncAnchoredBlock({
+      check: false,
+      content: "new",
+      destination: buildDestination(filePath),
+      path: undefined,
+    });
+
+    const written = await readFile(filePath, "utf8");
+
+    expect(written).toContain("new");
+    expect(written).not.toContain("orphaned");
+    expect(written).toContain("<!-- CALL_STACKS_END -->");
+  });
+
+  it("keeps another anchored block intact when repairing a missing end marker", async () => {
+    const filePath = await temporaryPath();
+
+    await writeFile(
+      filePath,
+      "<!-- CALL_STACKS_START -->\n\norphaned\n\n<!-- CODE_STATISTICS_START -->\n\nstats\n<!-- CODE_STATISTICS_END -->\n",
+      "utf8",
+    );
+    subject.syncAnchoredBlock({
+      check: false,
+      content: "new",
+      destination: buildDestination(filePath),
+      path: undefined,
+    });
+
+    const written = await readFile(filePath, "utf8");
+
+    expect(written).not.toContain("orphaned");
+    expect(written).toContain("new");
+    expect(written).toContain("<!-- CODE_STATISTICS_START -->");
+    expect(written).toContain("stats");
+    expect(written).toContain("<!-- CODE_STATISTICS_END -->");
+  });
+
+  it("does not double the blank line before what follows a repaired block", async () => {
+    const filePath = await temporaryPath();
+
+    await writeFile(
+      filePath,
+      "<!-- CALL_STACKS_START -->\n\norphaned\n\n<!-- CODE_STATISTICS_START -->\n\nstats\n<!-- CODE_STATISTICS_END -->\n",
+      "utf8",
+    );
+    subject.syncAnchoredBlock({
+      check: false,
+      content: "new",
+      destination: buildDestination(filePath),
+      path: undefined,
+    });
+
+    await expect(readFile(filePath, "utf8")).resolves.not.toContain("\n\n\n");
+  });
+
   it("leaves exactly one blank line before an appended block", async () => {
     const filePath = await temporaryPath();
 
@@ -229,6 +293,25 @@ describe(OutputMarkdownService, () => {
     await writeFile(
       filePath,
       "<!-- CALL_STACKS_START -->\n\nstale\n<!-- CALL_STACKS_END -->\n",
+      "utf8",
+    );
+
+    expect(
+      subject.sync({
+        check: true,
+        content: "body",
+        destination: buildDestination(filePath),
+        result,
+      }),
+    ).toBe(false);
+  });
+
+  it("reports a start marker with no matching end as stale", async () => {
+    const filePath = await temporaryPath();
+
+    await writeFile(
+      filePath,
+      "<!-- CALL_STACKS_START -->\n\norphaned\n",
       "utf8",
     );
 

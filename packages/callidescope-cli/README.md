@@ -411,9 +411,9 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 
 | Measure | Value |
 | --- | --- |
-| Callables | 304 |
+| Callables | 306 |
 | Files | 88 |
-| Calls traced | 277 |
+| Calls traced | 279 |
 | Call stacks | 12 |
 | Deepest stack | 13 |
 | Stacks through recursion | 0 |
@@ -577,17 +577,17 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 | `CallablesService.describe` | 9 | `CallableIdentityService.readDisplayName`, `CallableIdentityService.readEnclosingTypeName`, `CallableIdentityService.buildId`, `CallableIdentityService.isExported`, `CallableIdentityService.readKind`, `CallableIdentityService.readLocation`, `CallableIdentityService.readMemberName`, `WorkspaceService.resolveModuleId`, `CallableIdentityService.countStatements` | `packages/callidescope-cli/src/modules/callables/callables.service.ts:116` |
 
 <details>
-<summary>110 more callables</summary>
+<summary>111 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `EdgesService.buildSiteEdges` | 7 | `EdgesService.collectCallbackEdges`, `EdgesService.resolveSite`, `EdgesService.filter(…)`, `EdgesService.filter(…)`, `EdgesService.map(…)`, `EdgesService.filter(…)`, `EdgesService.readLocation` | `packages/callidescope-cli/src/modules/edges/edges.service.ts:61` |
 | `SymbolResolutionService.resolveSymbol` | 6 | `SymbolResolutionService.unwrapAlias`, `SymbolResolutionService.every(…)`, `SymbolResolutionService.readBodied`, `SymbolResolutionService.readResolution`, `SymbolResolutionService.find(…)`, `SymbolResolutionService.resolveThroughHierarchy` | `packages/callidescope-cli/src/modules/edges/symbol-resolution.service.ts:165` |
-| `OutputMarkdownService.syncAnchoredBlock` | 6 | `MissingMarkdownPathError.constructor`, `OutputMarkdownService.readExisting`, `OutputMarkdownService.wrapInAnchors`, `OutputMarkdownService.buildBlockPattern`, `OutputMarkdownService.replace(…)`, `OutputMarkdownService.appendBlock` | `packages/callidescope-cli/src/modules/output-markdown/output-markdown.service.ts:128` |
 | `ProjectReportsService.map(…)` | 6 | `ProjectReportsService.toSorted(…)`, `ProjectReportsService.toSorted(…)`, `ProjectReportsService.filter(…)`, `ProjectReportsService.filter(…)`, `ProjectReportsService.buildSummary`, `ProjectReportsService.filter(…)` | `packages/callidescope-cli/src/modules/project-reports/project-reports.service.ts:193` |
 | `GraphAssemblyService.assemble` | 6 | `GraphService.assemble`, `EdgesService.build`, `ComponentsService.condense`, `GraphAssemblyService.map(…)`, `BreadthService.measure`, `DepthService.measure` | `packages/callidescope-cli/src/modules/callidescope/graph-assembly.service.ts:44` |
 | `CallidescopeCommand.syncDestinations` | 6 | `OutputJsonService.sync`, `OutputMarkdownService.sync`, `MarkdownReportService.renderRun`, `CallidescopeCommand.readPreviewCount`, `OutputMarkdownService.syncProjectReadmes`, `CallidescopeCommand.buildProjectSections` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:221` |
 | `CallidescopeCommand.run` | 6 | `RunPlanService.prepareRun`, `CallidescopeService.trace`, `CallidescopeCommand.report`, `RunPlanService.touchesFiles`, `CallidescopeCommand.syncDestinations`, `CallidescopeCommand.reportFindings` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:393` |
+| `OutputMarkdownService.syncAnchoredBlock` | 5 | `MissingMarkdownPathError.constructor`, `OutputMarkdownService.readExisting`, `OutputMarkdownService.wrapInAnchors`, `OutputMarkdownService.buildBlockPattern`, `OutputMarkdownService.spliceBlock` | `packages/callidescope-cli/src/modules/output-markdown/output-markdown.service.ts:205` |
 | `MarkdownReportService.renderProjectSection` | 5 | `MarkdownReportService.renderSummaryTable`, `MarkdownReportService.renderStacksAs`, `MarkdownReportService.renderSpreads`, `MarkdownReportService.renderCallableBreadths`, `MarkdownReportService.renderMisplaced` | `packages/callidescope-cli/src/modules/report/markdown-report.service.ts:176` |
 | `MarkdownReportService.renderRun` | 5 | `MarkdownReportService.renderSummaryTable`, `MarkdownReportService.renderStacksAs`, `MarkdownReportService.renderSpreads`, `MarkdownReportService.renderCallableBreadths`, `MarkdownReportService.renderMisplaced` | `packages/callidescope-cli/src/modules/report/markdown-report.service.ts:212` |
 | `ClassHierarchyService.resolveImplementations` | 4 | `ClassHierarchyService.collectDerived`, `ClassHierarchyService.filter(…)`, `ClassHierarchyService.filterAssignable`, `ClassHierarchyService.flatMap(…)` | `packages/callidescope-cli/src/modules/class-hierarchy/class-hierarchy.service.ts:207` |
@@ -609,6 +609,7 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 | `EntryPointsService.classify` | 3 | `EntryPointsService.hasConfiguredDecorator`, `EntryPointsService.isCommandRunnerMethod`, `EntryPointsService.isBootstrapFunction` | `packages/callidescope-cli/src/modules/entry-points/entry-points.service.ts:49` |
 | `ComponentsService.condense` | 3 | `ComponentsService.openNode`, `ComponentsService.step`, `ComponentsService.buildSuccessors` | `packages/callidescope-cli/src/modules/graph/components.service.ts:183` |
 | `DepthService.measure` | 3 | `DepthService.combine`, `DepthService.readOwnModules`, `DepthService.hasUnresolved` | `packages/callidescope-cli/src/modules/graph/depth.service.ts:132` |
+| `OutputMarkdownService.spliceBlock` | 3 | `OutputMarkdownService.replace(…)`, `OutputMarkdownService.appendBlock`, `OutputMarkdownService.replaceOrphanedBlock` | `packages/callidescope-cli/src/modules/output-markdown/output-markdown.service.ts:122` |
 | `ProjectReportsService.build` | 3 | `ProjectReportsService.buildStacks`, `ProjectReportsService.buildCallableBreadths`, `ProjectReportsService.map(…)` | `packages/callidescope-cli/src/modules/project-reports/project-reports.service.ts:189` |
 | `MermaidReportService.renderStacks` | 3 | `MermaidReportService.countNewCallables`, `MermaidReportService.addStack`, `MermaidReportService.renderDiagram` | `packages/callidescope-cli/src/modules/report/mermaid-report.service.ts:136` |
 | `ReportService.renderFrame` | 3 | `ReportService.renderSignature`, `ReportService.renderMarkers`, `ReportService.shortenSummary` | `packages/callidescope-cli/src/modules/report/report.service.ts:44` |
@@ -638,7 +639,7 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 | `PathsService.toFrame` | 2 | `DocumentationService.read`, `SignaturesService.read` | `packages/callidescope-cli/src/modules/graph/paths.service.ts:57` |
 | `PathsService.buildDeepestPath` | 2 | `PathsService.orderMembers`, `PathsService.toFrame` | `packages/callidescope-cli/src/modules/graph/paths.service.ts:82` |
 | `OutputJsonService.sync` | 2 | `OutputJsonService.buildReport`, `OutputJsonService.readExisting` | `packages/callidescope-cli/src/modules/output-json/output-json.service.ts:63` |
-| `OutputMarkdownService.sync` | 2 | `OutputMarkdownService.syncAnchoredBlock`, `OutputMarkdownService.buildHelpers` | `packages/callidescope-cli/src/modules/output-markdown/output-markdown.service.ts:99` |
+| `OutputMarkdownService.sync` | 2 | `OutputMarkdownService.syncAnchoredBlock`, `OutputMarkdownService.buildHelpers` | `packages/callidescope-cli/src/modules/output-markdown/output-markdown.service.ts:176` |
 | `ProjectReportsService.buildCallableBreadths` | 2 | `ProjectReportsService.flatMap(…)`, `SignaturesService.read` | `packages/callidescope-cli/src/modules/project-reports/project-reports.service.ts:41` |
 | `ProjectReportsService.buildStacks` | 2 | `ProjectReportsService.readDepth`, `PathsService.buildDeepestPath` | `packages/callidescope-cli/src/modules/project-reports/project-reports.service.ts:81` |
 | `MermaidReportService.countNewCallables` | 2 | `MermaidReportService.filter(…)`, `MermaidReportService.map(…)` | `packages/callidescope-cli/src/modules/report/mermaid-report.service.ts:87` |
@@ -673,8 +674,8 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 | `ComponentsService.buildSuccessors` | 1 | `ComponentsService.map(…)` | `packages/callidescope-cli/src/modules/graph/components.service.ts:160` |
 | `DepthService.combine` | 1 | `DepthService.foldSuccessors` | `packages/callidescope-cli/src/modules/graph/depth.service.ts:34` |
 | `DepthService.hasUnresolved` | 1 | `DepthService.some(…)` | `packages/callidescope-cli/src/modules/graph/depth.service.ts:102` |
-| `OutputMarkdownService.buildBlockPattern` | 1 | `OutputMarkdownService.escapePattern` | `packages/callidescope-cli/src/modules/output-markdown/output-markdown.service.ts:52` |
-| `OutputMarkdownService.syncProjectReadmes` | 1 | `OutputMarkdownService.syncAnchoredBlock` | `packages/callidescope-cli/src/modules/output-markdown/output-markdown.service.ts:162` |
+| `OutputMarkdownService.buildBlockPattern` | 1 | `OutputMarkdownService.escapePattern` | `packages/callidescope-cli/src/modules/output-markdown/output-markdown.service.ts:53` |
+| `OutputMarkdownService.syncProjectReadmes` | 1 | `OutputMarkdownService.syncAnchoredBlock` | `packages/callidescope-cli/src/modules/output-markdown/output-markdown.service.ts:240` |
 | `MermaidReportService.addFrame` | 1 | `MermaidReportService.renderLabel` | `packages/callidescope-cli/src/modules/report/mermaid-report.service.ts:39` |
 | `MermaidReportService.addStack` | 1 | `MermaidReportService.addFrame` | `packages/callidescope-cli/src/modules/report/mermaid-report.service.ts:67` |
 | `ReportService.shortenSummary` | 1 | `ReportService.readFirstSentence` | `packages/callidescope-cli/src/modules/report/report.service.ts:102` |
