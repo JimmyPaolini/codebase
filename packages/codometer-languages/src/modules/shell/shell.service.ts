@@ -17,6 +17,7 @@ import {
 
 import type { ShellInput, ShellResult } from "./shell.types";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Counts the constructs a shell script is built from.
  *
@@ -26,6 +27,7 @@ import type { ShellInput, ShellResult } from "./shell.types";
  * anything else so that a `#` opening a line never reads as code.
  */
 @Injectable()
+/* v8 ignore stop */
 export class ShellService {
   // 🏗 Dependency Injection
 

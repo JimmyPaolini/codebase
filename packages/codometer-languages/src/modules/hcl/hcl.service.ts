@@ -14,6 +14,7 @@ import {
 
 import type { HclInput, HclResult } from "./hcl.types";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Counts the blocks and attributes an HCL configuration declares.
  *
@@ -22,6 +23,7 @@ import type { HclInput, HclResult } from "./hcl.types";
  * knowing how many of each is what makes the count worth reading.
  */
 @Injectable()
+/* v8 ignore stop */
 export class HclService {
   // 🏗 Dependency Injection
 

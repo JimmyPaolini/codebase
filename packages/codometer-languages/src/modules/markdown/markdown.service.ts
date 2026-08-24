@@ -13,6 +13,7 @@ import { EMPTY_MARKDOWN_RESULT, NODE_COUNTER_KEYS } from "./markdown.constants";
 import type { MarkdownInput, MarkdownResult } from "./markdown.types";
 import type { Heading, ListItem, Nodes } from "mdast";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Walks parsed markdown documents to collect structural metrics.
  *
@@ -23,6 +24,7 @@ import type { Heading, ListItem, Nodes } from "mdast";
  * GFM is enabled so tables and task list items exist as nodes at all.
  */
 @Injectable()
+/* v8 ignore stop */
 export class MarkdownService {
   // 🏗 Dependency Injection
 

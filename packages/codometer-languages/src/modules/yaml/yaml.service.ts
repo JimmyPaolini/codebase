@@ -18,6 +18,7 @@ import { EMPTY_YAML_RESULT } from "./yaml.constants";
 import type { YamlInput, YamlResult } from "./yaml.types";
 import type { Document, Node } from "yaml";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Walks parsed YAML documents to collect structural metrics.
  *
@@ -27,6 +28,7 @@ import type { Document, Node } from "yaml";
  * comments and anchors on the nodes, which is what makes both countable at all.
  */
 @Injectable()
+/* v8 ignore stop */
 export class YamlService {
   // 🏗 Dependency Injection
 
