@@ -1,4 +1,5 @@
 import { ConfigurationService } from "@codometer/configuration";
+import { OutputJsonService, OutputMarkdownService } from "@codometer/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import {
@@ -14,8 +15,6 @@ import {
 import { LoggerService } from "@codebase/logger";
 
 import { buildCodeStatistics } from "../../../testing/mocks";
-import { OutputJsonService } from "../output-json/output-json.service";
-import { OutputMarkdownService } from "../output-markdown/output-markdown.service";
 import { ReportService } from "../report/report.service";
 
 import { CodometerCommand } from "./codometer.command";

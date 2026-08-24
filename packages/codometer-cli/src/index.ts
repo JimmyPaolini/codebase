@@ -12,10 +12,6 @@ export { CustomStatisticsService } from "./modules/custom-statistics/custom-stat
 export { FileDiscoveryModule } from "./modules/file-discovery/file-discovery.module";
 export { FileDiscoveryService } from "./modules/file-discovery/file-discovery.service";
 export type { FileDiscoveryResult } from "./modules/file-discovery/file-discovery.types";
-export { OutputJsonModule } from "./modules/output-json/output-json.module";
-export { OutputJsonService } from "./modules/output-json/output-json.service";
-export { OutputMarkdownModule } from "./modules/output-markdown/output-markdown.module";
-export { OutputMarkdownService } from "./modules/output-markdown/output-markdown.service";
 export { ReportModule } from "./modules/report/report.module";
 export { ReportService } from "./modules/report/report.service";
 export type {

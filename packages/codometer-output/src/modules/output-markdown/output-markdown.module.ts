@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 
+import { LoggerModule } from "@codebase/logger";
+
 import { OutputMarkdownService } from "./output-markdown.service";
 
 /**
@@ -8,7 +10,7 @@ import { OutputMarkdownService } from "./output-markdown.service";
 @Module({
   controllers: [],
   exports: [OutputMarkdownService],
-  imports: [],
+  imports: [LoggerModule],
   providers: [OutputMarkdownService],
 })
 export class OutputMarkdownModule {}

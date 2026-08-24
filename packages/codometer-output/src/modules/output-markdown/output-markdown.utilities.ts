@@ -1,6 +1,6 @@
 // 🛠️ Utilities
 
-import { formatBytes as formatBytesShared } from "@codometer/markdown";
+import { formatBytes } from "../render/render.utilities";
 
 import type { MeasurementScope, TargetSize } from "./output-markdown.types";
 import type {
@@ -380,22 +380,6 @@ export function encodeValue(input: number | string): string {
     .replaceAll("-", "--")
     .replaceAll("_", "__")
     .replaceAll(" ", "_");
-}
-
-/**
- * Formats a byte count in decimal units, switching to megabytes once
- * kilobytes read awkwardly.
- *
- * The one formatter every byte figure in a badge goes through — the
- * repository's own size and each measured target's — so two numbers rendered
- * side by side can never be in different units.
- *
- * Delegates to `@codometer/markdown`, which now owns byte formatting for both
- * this badge report and the pull request change report, so the two can never
- * disagree about what a kilobyte is.
- */
-export function formatBytes(bytes: number): string {
-  return formatBytesShared(bytes);
 }
 
 /**

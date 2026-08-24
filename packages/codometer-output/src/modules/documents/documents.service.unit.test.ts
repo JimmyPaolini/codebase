@@ -29,7 +29,7 @@ describe(DocumentsService, () => {
 
   /** A throwaway directory that cleans itself up after the suite. */
   function makeDirectory(): string {
-    const directory = mkdtempSync(path.join(tmpdir(), "codometer-markdown-"));
+    const directory = mkdtempSync(path.join(tmpdir(), "codometer-output-"));
     temporaryDirectories.push(directory);
     return directory;
   }

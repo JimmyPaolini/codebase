@@ -64,8 +64,6 @@ flowchart LR
     FileDiscoveryModule
     LimitsModule
     MainModule
-    OutputJsonModule
-    OutputMarkdownModule
     ReportModule
     SizeAnalysisModule
     TargetsModule
@@ -87,8 +85,10 @@ flowchart LR
     TypescriptModule
     YamlModule
   end
-  subgraph group3["codometer-markdown"]
+  subgraph group3["codometer-output"]
     DocumentsModule
+    OutputJsonModule
+    OutputMarkdownModule
     RenderModule
   end
   subgraph group4["logger"]

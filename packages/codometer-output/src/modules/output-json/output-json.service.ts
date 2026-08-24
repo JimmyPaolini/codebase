@@ -53,7 +53,7 @@ export class OutputJsonService {
    * behind, and so a staleness comparison does not fail over the one byte
    * every other tool in the repository adds.
    */
-  render(args: RenderReportArguments): string {
+  render<Report>(args: RenderReportArguments<Report>): string {
     return `${JSON.stringify(args.report, null, args.indentation)}\n`;
   }
 
@@ -64,7 +64,7 @@ export class OutputJsonService {
    * - **Checking**: returns `true` when the file already holds the current
    *   report, `false` when it is missing or stale, and writes nothing.
    */
-  sync(args: SyncJsonArguments): boolean {
+  sync<Report>(args: SyncJsonArguments<Report>): boolean {
     const resolvedPath = path.resolve(args.path);
     const rendered = this.render(args);
 

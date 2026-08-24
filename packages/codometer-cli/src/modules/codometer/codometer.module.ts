@@ -1,5 +1,6 @@
 import { ConfigurationModule } from "@codometer/configuration";
 import { LanguagesModule } from "@codometer/languages";
+import { OutputJsonModule, OutputMarkdownModule } from "@codometer/output";
 import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";
@@ -7,8 +8,6 @@ import { LoggerModule } from "@codebase/logger";
 import { CustomStatisticsModule } from "../custom-statistics/custom-statistics.module";
 import { FileDiscoveryModule } from "../file-discovery/file-discovery.module";
 import { LimitsModule } from "../limits/limits.module";
-import { OutputJsonModule } from "../output-json/output-json.module";
-import { OutputMarkdownModule } from "../output-markdown/output-markdown.module";
 import { ReportModule } from "../report/report.module";
 import { SizeAnalysisModule } from "../size-analysis/size-analysis.module";
 import { TargetsModule } from "../targets/targets.module";

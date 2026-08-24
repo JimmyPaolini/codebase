@@ -391,8 +391,10 @@ flowchart LR
   codometer_cli["codometer-cli"]
   codometer_configuration["codometer-configuration"]
   codometer_languages["codometer-languages"]
+  codometer_output["codometer-output"]
   codometer_cli --> codometer_configuration
   codometer_languages --> codometer_configuration
+  codometer_output --> codometer_configuration
   classDef subject stroke-width:3px
   class codometer_configuration subject
 ```

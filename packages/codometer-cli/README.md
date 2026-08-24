@@ -434,12 +434,12 @@ flowchart LR
   codometer_cli["codometer-cli"]
   codometer_configuration["codometer-configuration"]
   codometer_languages["codometer-languages"]
-  codometer_markdown["codometer-markdown"]
+  codometer_output["codometer-output"]
   logger["logger"]
   codometer_cli --> codometer_changes
   codometer_cli --> codometer_configuration
   codometer_cli --> codometer_languages
-  codometer_cli --> codometer_markdown
+  codometer_cli --> codometer_output
   codometer_cli --> logger
   classDef subject stroke-width:3px
   class codometer_cli subject
@@ -462,8 +462,6 @@ flowchart LR
     FileDiscoveryModule
     LimitsModule
     MainModule
-    OutputJsonModule
-    OutputMarkdownModule
     ReportModule
     SizeAnalysisModule
     TargetsModule
@@ -485,8 +483,10 @@ flowchart LR
     TypescriptModule
     YamlModule
   end
-  subgraph group3["codometer-markdown"]
+  subgraph group3["codometer-output"]
     DocumentsModule
+    OutputJsonModule
+    OutputMarkdownModule
     RenderModule
   end
   subgraph group4["logger"]

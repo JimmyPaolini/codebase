@@ -81,7 +81,7 @@ flowchart LR
   codometer_changes["codometer-changes"]
   codometer_cli["codometer-cli"]
   codometer_languages["codometer-languages"]
-  codometer_markdown["codometer-markdown"]
+  codometer_output["codometer-output"]
   conformetry_cli["conformetry-cli"]
   conformetry_nx["conformetry-nx"]
   lexico_ingestion["lexico-ingestion"]
@@ -93,7 +93,7 @@ flowchart LR
   codometer_changes --> logger
   codometer_cli --> logger
   codometer_languages --> logger
-  codometer_markdown --> logger
+  codometer_output --> logger
   conformetry_cli --> logger
   conformetry_nx --> logger
   lexico_ingestion --> logger

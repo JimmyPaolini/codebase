@@ -14,13 +14,29 @@ import { afterEach, beforeAll, describe, expect, it } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { buildCodometerReport } from "../../../testing/mocks";
-
 import { OutputJsonService } from "./output-json.service";
 
 import type { DeepMocked } from "@golevelup/ts-vitest";
 
-const sampleReport = buildCodometerReport();
+const sampleReport = {
+  failures: [],
+  targets: [
+    {
+      empty: false,
+      files: 3,
+      metrics: [
+        {
+          limits: [],
+          name: "codebase.files",
+          path: "files",
+          unit: null,
+          value: 3,
+        },
+      ],
+      name: "codebase",
+    },
+  ],
+};
 
 describe(OutputJsonService, () => {
   let service: OutputJsonService;

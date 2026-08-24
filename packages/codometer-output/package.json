@@ -2,6 +2,7 @@
   "dependencies": {
     "@codebase/logger": "workspace:*",
     "@codometer/changes": "workspace:*",
+    "@codometer/configuration": "workspace:*",
     "@nestjs/common": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:"
@@ -16,7 +17,7 @@
     "vitest": "catalog:"
   },
   "main": "src/index.ts",
-  "name": "@codometer/markdown",
+  "name": "@codometer/output",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"

@@ -1,13 +1,13 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "name": "codometer-markdown",
+  "name": "codometer-output",
   "projectType": "library",
-  "sourceRoot": "packages/codometer-markdown",
+  "sourceRoot": "packages/codometer-output",
   "tags": [
     "framework:nestjs",
     "generator:nestjs-service-project",
     "language:typescript",
-    "name:codometer-markdown",
+    "name:codometer-output",
     "type:package"
   ],
   "targets": {
@@ -17,13 +17,13 @@
         "assets": [
           {
             "glob": "README.md",
-            "input": "packages/codometer-markdown",
+            "input": "packages/codometer-output",
             "output": "."
           }
         ],
-        "main": "packages/codometer-markdown/src/index.ts",
-        "outputPath": "dist/packages/codometer-markdown",
-        "tsConfig": "packages/codometer-markdown/tsconfig.build.json"
+        "main": "packages/codometer-output/src/index.ts",
+        "outputPath": "dist/packages/codometer-output",
+        "tsConfig": "packages/codometer-output/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]
     },

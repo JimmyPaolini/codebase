@@ -7,7 +7,7 @@
     "@codometer/changes": "workspace:*",
     "@codometer/configuration": "workspace:*",
     "@codometer/languages": "workspace:*",
-    "@codometer/markdown": "workspace:*",
+    "@codometer/output": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",

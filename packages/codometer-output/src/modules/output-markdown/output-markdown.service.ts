@@ -180,13 +180,13 @@ export class OutputMarkdownService {
    * absent, and creates the file when it does not exist. Check mode compares
    * and writes nothing.
    *
-   * Deliberately its own splice, not `@codometer/markdown`'s `DocumentsService`:
-   * that service has no check mode, and its `wrap` omits the blank line after
-   * the opening marker that `wrapInAnchors` below adds for Prettier — sharing
-   * it as-is would either drop `codometer --check reports` or reformat every
-   * README the badge block sits in. Only the byte formatting was shared;
-   * unifying the splice itself needs check mode added to `DocumentsService`
-   * first, which is unscoped work of its own.
+   * Deliberately its own splice, not the `documents` module's
+   * `DocumentsService`: that service has no check mode, and its `wrap` omits
+   * the blank line after the opening marker that `wrapInAnchors` below adds
+   * for Prettier — sharing it as-is would either drop check-mode reports or
+   * reformat every README the badge block sits in. Only the byte formatting
+   * was shared; unifying the splice itself needs check mode added to
+   * `DocumentsService` first, which is unscoped work of its own.
    */
   private syncAnchoredBlock(args: SyncAnchoredBlockArguments): boolean {
     if (args.path === undefined) {

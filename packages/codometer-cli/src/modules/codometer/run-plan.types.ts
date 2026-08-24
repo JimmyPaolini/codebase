@@ -1,6 +1,5 @@
 // 🏷️ Types
 
-import type { MeasurementScope } from "../output-markdown/output-markdown.types";
 import type { CodometerReport } from "../report/report.types";
 import type {
   CodometerCommandOptions,
@@ -10,6 +9,7 @@ import type {
   ResolvedCodometerConfiguration,
   ResolvedCodometerMarkdownOutputConfiguration,
 } from "@codometer/configuration";
+import type { MeasurementScope } from "@codometer/output";
 
 /** Arguments accepted when producing every one of a run's outputs. */
 export interface DeliverArguments {

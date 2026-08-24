@@ -1,19 +1,17 @@
 import path from "node:path";
 
 import { ConfigurationService } from "@codometer/configuration";
+import { OutputJsonService, OutputMarkdownService } from "@codometer/output";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { OutputJsonService } from "../output-json/output-json.service";
-import { OutputMarkdownService } from "../output-markdown/output-markdown.service";
 import { ReportService } from "../report/report.service";
 
 import { CodometerService } from "./codometer.service";
 import { RunPlanService } from "./run-plan.service";
 
-import type { TargetSize } from "../output-markdown/output-markdown.types";
 import type {
   CodometerCommandOptions,
   MeasurementResult,
@@ -24,6 +22,7 @@ import type {
   RunMode,
 } from "./run-plan.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
+import type { TargetSize } from "@codometer/output";
 
 /**
  * CLI entry point for the repository measurement workflow.

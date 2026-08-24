@@ -380,12 +380,12 @@ export default [
               ],
               sourceTag: "name:callidescope-cli",
             },
-            // Codometer package graph. The configuration reader and the
-            // change diffing package are leaves; the markdown renderer joins
-            // a change collection to a rendered report, so it depends on the
-            // diffing package; the CLI measures whatever the configuration
-            // describes and reports on both, so the dependency only ever
-            // points that way.
+            // Codometer package graph. The configuration reader, the change
+            // diffing package, and the language analyzers are leaves; the
+            // output renderer joins a change collection to a rendered report,
+            // so it depends on the diffing and configuration packages; the CLI
+            // measures whatever the configuration describes and reports on
+            // all of them, so the dependency only ever points that way.
             {
               onlyDependOnLibsWithTags: [],
               sourceTag: "name:codometer-configuration",
@@ -393,13 +393,6 @@ export default [
             {
               onlyDependOnLibsWithTags: ["name:logger"],
               sourceTag: "name:codometer-changes",
-            },
-            {
-              onlyDependOnLibsWithTags: [
-                "name:codometer-changes",
-                "name:logger",
-              ],
-              sourceTag: "name:codometer-markdown",
             },
             {
               onlyDependOnLibsWithTags: [
@@ -412,8 +405,16 @@ export default [
               onlyDependOnLibsWithTags: [
                 "name:codometer-changes",
                 "name:codometer-configuration",
+                "name:logger",
+              ],
+              sourceTag: "name:codometer-output",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:codometer-changes",
+                "name:codometer-configuration",
                 "name:codometer-languages",
-                "name:codometer-markdown",
+                "name:codometer-output",
                 "name:logger",
               ],
               sourceTag: "name:codometer-cli",
