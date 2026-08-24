@@ -1,6 +1,7 @@
 // 🏷️ Types
 
 import type {
+  DotShape,
   MeanderType,
   Modifier,
 } from "../meander-generation/meander-generation.types";
@@ -12,8 +13,9 @@ import type {
  * name (`--modifier`, `--period`), so they can't be pre-combined at parse
  * time. `GenerateCommand.buildModifier` combines them into the final
  * {@link Modifier} shape once every option has been parsed, since a
- * modifier's own required parameters (like `alternated`'s `period`) are
- * parsed by a separate `@Option` method with no access to `modifier`.
+ * modifier's own required parameters (like `alternated`'s `period`, or
+ * `dot`'s `shape`) are parsed by a separate `@Option` method with no access
+ * to `modifier`.
  */
 export interface GenerateCommandOptions {
   modifier?: Modifier["name"];
@@ -21,5 +23,6 @@ export interface GenerateCommandOptions {
   period?: number;
   repeatCount: number;
   rows: number;
+  shape?: DotShape;
   type: MeanderType;
 }

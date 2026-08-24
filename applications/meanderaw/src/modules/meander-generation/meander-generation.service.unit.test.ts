@@ -147,6 +147,53 @@ describe(MeanderGenerationService, () => {
       expect(svg).toBe(golden);
     });
 
+    it("matches the committed golden fixture for 6 rows bars with 6 repeats and dot bounce", async () => {
+      const svg = service.generate({
+        modifier: { name: "dot", shape: "bounce" },
+        repeatCount: 6,
+        rows: 6,
+        type: "bars",
+      });
+      const golden = await readFile(
+        path.join(
+          import.meta.dirname,
+          "../../../testing/fixtures/bars-6-rows-6-repeats-dot-bounce.svg",
+        ),
+        "utf8",
+      );
+
+      expect(svg).toBe(golden);
+    });
+
+    it("matches the committed golden fixture for 6 rows bars with 6 repeats and dot up", async () => {
+      const svg = service.generate({
+        modifier: { name: "dot", shape: "up" },
+        repeatCount: 6,
+        rows: 6,
+        type: "bars",
+      });
+      const golden = await readFile(
+        path.join(
+          import.meta.dirname,
+          "../../../testing/fixtures/bars-6-rows-6-repeats-dot-up.svg",
+        ),
+        "utf8",
+      );
+
+      expect(svg).toBe(golden);
+    });
+
+    it("throws when dot is requested for a type that doesn't support it", () => {
+      expect(() =>
+        service.generate({
+          modifier: { name: "dot", shape: "bounce" },
+          repeatCount: 6,
+          rows: 6,
+          type: "boxes",
+        }),
+      ).toThrow(/not compatible/i);
+    });
+
     it("throws when split is requested for a type that doesn't support it", () => {
       expect(() =>
         service.generate({

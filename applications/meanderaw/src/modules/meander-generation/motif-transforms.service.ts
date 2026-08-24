@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 
 import type {
   AlternateRun,
+  DotShape,
   MirrorAxis,
   SpiralLevelPoint,
 } from "./meander-generation.types";
@@ -97,6 +98,36 @@ export class MotifTransformsService {
       ...points.slice(0, -1),
       [lastPointXLevel, 0],
     ];
+  }
+
+  /**
+   * Computes one full period's dot levels for `bars`'s `dot` modifier: the
+   * grid level (odd integers counting down from `rows - 1`) each phase in
+   * the repeat tile marks with a dot instead of a fully-drawn run. `"up"`
+   * steps straight down through every level once per period, then resets to
+   * the top — a monotonic staircase, confirmed against
+   * `6 rows bars dot up.svg` (period 3: levels `5, 3, 1`) and
+   * `8 rows bars dot up.svg` (period 4: levels `7, 5, 3, 1`). `"bounce"`
+   * mirrors back up through the interior levels before repeating, so the
+   * two extreme levels are each visited once per period and every interior
+   * level twice — confirmed against
+   * `6 rows bars dot bounce.svg` (period 4: levels `5, 3, 1, 3`) and
+   * `8 rows bars dot bounce.svg` (period 6: levels `7, 5, 3, 1, 3, 5`).
+   */
+  dotLevels(rows: number, shape: DotShape): number[] {
+    const levelCount = Math.floor((rows - 2) / 2) + 1;
+    const levels = Array.from(
+      { length: levelCount },
+      (_value, index) => rows - 1 - 2 * index,
+    );
+
+    if (shape === "up") {
+      return levels;
+    }
+
+    const mirroredLevels = levels.slice(1, -1).toReversed();
+
+    return [...levels, ...mirroredLevels];
   }
 
   /**
