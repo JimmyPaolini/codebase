@@ -11,6 +11,7 @@ import type {
   MotifService,
   MotifUnit,
   RepeatPatternOptions,
+  SpiralLevelPoint,
 } from "./meander-generation.types";
 
 /**
@@ -40,10 +41,35 @@ export class ChainMotifService implements MotifService {
   // 🔏 Private Methods
 
   /**
+   * Bare `flip`'s three disconnected subpaths, verified against
+   * `5/6 rows chain flip.svg`: fusing a mirrored twin into the tile (see
+   * {@link SnakeSequenceService}'s `fusedFlipPoints`) means chain's usual
+   * single omitted segment happens twice — once at the plain arm's own
+   * middle (reversed, exactly like the un-mirrored motif's first subpath),
+   * and again at the mirrored twin's own middle, which lands at
+   * `points.length - splitIndex` because the twin is the plain arm's own
+   * middle-split reversed and mirrored.
+   */
+  private flipSubpaths(
+    points: readonly SpiralLevelPoint[],
+    rows: number,
+  ): readonly (readonly SpiralLevelPoint[])[] {
+    const splitIndex = rows - 1;
+    const mirroredSplitIndex = points.length - splitIndex;
+
+    return [
+      points.slice(0, splitIndex).toReversed(),
+      points.slice(splitIndex, mirroredSplitIndex),
+      points.slice(mirroredSplitIndex),
+    ];
+  }
+
+  /**
    * Where the shared sequence splits into chain's two disconnected
    * subpaths: the motif's own middle segment, shifted one position later
    * when the `edge` family has prepended a border connector to the front
-   * of the sequence.
+   * of the sequence. Bare `flip` never reaches here — {@link flipSubpaths}
+   * handles its three-subpath split instead.
    */
   private splitIndex(rows: number, modifier: Modifier | undefined): number {
     const isEdgeFamily = Boolean(
@@ -55,7 +81,7 @@ export class ChainMotifService implements MotifService {
 
   // 🌎 Public Methods
 
-  /** Draws one repeat unit's two subpaths plus its own border, as an SVG path attribute value. */
+  /** Draws one repeat unit's subpaths plus its own border, as an SVG path attribute value. */
   path(geometry: GridGeometry, unit: MotifUnit): string {
     const { modifier, rows, unitIndex } = unit;
     const points = this.snakeSequenceService.unitPoints(
@@ -63,9 +89,13 @@ export class ChainMotifService implements MotifService {
       unitIndex,
       modifier,
     );
-    const splitIndex = this.splitIndex(rows, modifier);
-    const firstSubpath = points.slice(0, splitIndex);
-    const secondSubpath = points.slice(splitIndex);
+    const subpaths =
+      modifier?.name === "flip"
+        ? this.flipSubpaths(points, rows)
+        : [
+            points.slice(0, this.splitIndex(rows, modifier)),
+            points.slice(this.splitIndex(rows, modifier)),
+          ];
     const xOffset =
       unitIndex * this.snakeMotifService.unitWidth(geometry, rows, modifier);
     const toXCoordinate = (level: number): string =>
@@ -76,18 +106,18 @@ export class ChainMotifService implements MotifService {
       this.gridGeometryService.formatCoordinate(
         geometry.offset + level * geometry.unit,
       );
+    const pathData = subpaths
+      .map((subpath) =>
+        this.snakeMotifService.pointsToPathData(
+          subpath,
+          toXCoordinate,
+          toYCoordinate,
+        ),
+      )
+      .join("");
 
     return (
-      this.snakeMotifService.pointsToPathData(
-        firstSubpath,
-        toXCoordinate,
-        toYCoordinate,
-      ) +
-      this.snakeMotifService.pointsToPathData(
-        secondSubpath,
-        toXCoordinate,
-        toYCoordinate,
-      ) +
+      pathData +
       this.snakeMotifService.borderSegment(geometry, {
         rows,
         xOffset,

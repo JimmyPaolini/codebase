@@ -252,6 +252,27 @@ describe(MeanderGenerationService, () => {
     );
 
     it.each(["chain", "snake"] as const)(
+      "matches the committed golden fixture for 7 rows %s with 6 repeats and flip, confirming the fused-tile pitch generalizes",
+      async (type) => {
+        const svg = service.generate({
+          modifier: { name: "flip" },
+          repeatCount: 6,
+          rows: 7,
+          type,
+        });
+        const golden = await readFile(
+          path.join(
+            import.meta.dirname,
+            `../../../testing/fixtures/${type}-7-rows-6-repeats-flip.svg`,
+          ),
+          "utf8",
+        );
+
+        expect(svg).toBe(golden);
+      },
+    );
+
+    it.each(["chain", "snake"] as const)(
       "matches the committed golden fixture for 5 rows %s with 6 repeats and edge-flip",
       async (type) => {
         const svg = service.generate({

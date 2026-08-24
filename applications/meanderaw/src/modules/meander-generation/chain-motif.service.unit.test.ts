@@ -69,7 +69,21 @@ describe(ChainMotifService, () => {
       );
     });
 
-    it("mirrors the second (odd-indexed) unit under flip", () => {
+    it("draws three subpaths fusing a mirrored twin into unit 0's own tile under flip, matching the reference geometry at 6 rows", () => {
+      const geometry = gridGeometryService.compute(6);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "flip" },
+          rows: 6,
+          unitIndex: 0,
+        }),
+      ).toBe(
+        "M22.5 32.5V42.5H42.5V12.5H2.5M32.5 32.5V22.5H12.5V52.5H82.5V22.5H62.5V32.5M72.5 32.5V42.5H52.5V12.5H82.5M2.5 2.5H82.5M82.5 62.5H2.5",
+      );
+    });
+
+    it("translates unit 1's identical fused tile by the widened flip pitch, matching the reference geometry at 6 rows", () => {
       const geometry = gridGeometryService.compute(6);
 
       expect(
@@ -78,7 +92,9 @@ describe(ChainMotifService, () => {
           rows: 6,
           unitIndex: 1,
         }),
-      ).not.toBe(service.path(geometry, { rows: 6, unitIndex: 1 }));
+      ).toBe(
+        "M102.5 32.5V42.5H122.5V12.5H82.5M112.5 32.5V22.5H92.5V52.5H162.5V22.5H142.5V32.5M152.5 32.5V42.5H132.5V12.5H162.5M82.5 2.5H162.5M162.5 62.5H82.5",
+      );
     });
   });
 
