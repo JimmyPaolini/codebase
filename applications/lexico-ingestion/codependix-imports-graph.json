@@ -1,0 +1,1339 @@
+{
+  "edges": [
+    {
+      "source": "src/main.end-to-end.test.ts",
+      "target": "src/constants.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/constants.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/lexico-ingestion/lexico-ingestion.module.ts"
+    },
+    {
+      "source": "src/main.ts",
+      "target": "src/main.module.ts"
+    },
+    {
+      "source": "src/modules/clear/clear.command.ts",
+      "target": "src/modules/clear/clear.types.ts"
+    },
+    {
+      "source": "src/modules/clear/clear.command.unit.test.ts",
+      "target": "src/modules/clear/clear.command.ts"
+    },
+    {
+      "source": "src/modules/clear/clear.command.unit.test.ts",
+      "target": "testing/command-harness.ts"
+    },
+    {
+      "source": "src/modules/clear/clear.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/clear/clear.module.ts",
+      "target": "src/modules/clear/clear.command.ts"
+    },
+    {
+      "source": "src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts",
+      "target": "src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.constants.ts"
+    },
+    {
+      "source": "src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts",
+      "target": "src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.types.ts"
+    },
+    {
+      "source": "src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.unit.test.ts",
+      "target": "src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts"
+    },
+    {
+      "source": "src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.unit.test.ts",
+      "target": "testing/command-harness.ts"
+    },
+    {
+      "source": "src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.module.ts",
+      "target": "src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.command.ts",
+      "target": "src/modules/dictionary/dictionary.types.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.command.ts",
+      "target": "src/modules/lexemes/lexemes.service.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.command.ts",
+      "target": "src/modules/lexico-ingestion/lexico-ingestion.types.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.command.ts",
+      "target": "src/modules/manual/manual.service.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.command.ts",
+      "target": "src/modules/translations/translations.service.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.command.unit.test.ts",
+      "target": "src/modules/dictionary/dictionary.command.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.command.unit.test.ts",
+      "target": "src/modules/lexemes/lexemes.service.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.command.unit.test.ts",
+      "target": "src/modules/manual/manual.service.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.command.unit.test.ts",
+      "target": "src/modules/translations/translations.service.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.command.unit.test.ts",
+      "target": "testing/command-harness.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.module.ts",
+      "target": "src/modules/dictionary/dictionary.command.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.module.ts",
+      "target": "src/modules/forms/forms.module.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.module.ts",
+      "target": "src/modules/lexemes/lexemes.module.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.module.ts",
+      "target": "src/modules/manual/manual.module.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.module.ts",
+      "target": "src/modules/principal-parts/principal-parts.module.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.module.ts",
+      "target": "src/modules/pronunciation/pronunciation.module.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.module.ts",
+      "target": "src/modules/translations/translations.module.ts"
+    },
+    {
+      "source": "src/modules/dictionary/dictionary.module.ts",
+      "target": "src/modules/words/words.module.ts"
+    },
+    {
+      "source": "src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts",
+      "target": "src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.constants.ts"
+    },
+    {
+      "source": "src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts",
+      "target": "src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.types.ts"
+    },
+    {
+      "source": "src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.unit.test.ts",
+      "target": "src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts"
+    },
+    {
+      "source": "src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.unit.test.ts",
+      "target": "testing/command-harness.ts"
+    },
+    {
+      "source": "src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.module.ts",
+      "target": "src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts"
+    },
+    {
+      "source": "src/modules/etymology/etymology.module.ts",
+      "target": "src/modules/etymology/etymology.service.ts"
+    },
+    {
+      "source": "src/modules/etymology/etymology.service.unit.test.ts",
+      "target": "src/modules/etymology/etymology.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-builder-guards.service.ts",
+      "target": "src/modules/forms/forms.constants.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-builder-guards.service.ts",
+      "target": "src/modules/forms/forms.types.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-builder-guards.service.unit.test.ts",
+      "target": "src/modules/forms/forms-builder-guards.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-builder-other.service.ts",
+      "target": "src/modules/forms/forms-builder-guards.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-builder-other.service.ts",
+      "target": "src/modules/forms/forms-builder-verb.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-builder-other.service.ts",
+      "target": "src/modules/forms/forms-transient-words.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-builder-other.service.ts",
+      "target": "src/modules/forms/forms.constants.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-builder-other.service.ts",
+      "target": "src/modules/forms/forms.types.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-builder-other.service.unit.test.ts",
+      "target": "src/modules/forms/forms-builder-guards.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-builder-other.service.unit.test.ts",
+      "target": "src/modules/forms/forms-builder-other.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-builder-other.service.unit.test.ts",
+      "target": "src/modules/forms/forms-builder-verb.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-builder-other.service.unit.test.ts",
+      "target": "src/modules/forms/forms-transient-words.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-builder-verb.service.ts",
+      "target": "src/modules/forms/forms-builder-guards.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-builder-verb.service.ts",
+      "target": "src/modules/forms/forms-transient-words.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-builder-verb.service.ts",
+      "target": "src/modules/forms/forms.types.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-builder-verb.service.unit.test.ts",
+      "target": "src/modules/forms/forms-builder-guards.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-builder-verb.service.unit.test.ts",
+      "target": "src/modules/forms/forms-builder-verb.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-builder-verb.service.unit.test.ts",
+      "target": "src/modules/forms/forms-transient-words.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms-transient-words.service.unit.test.ts",
+      "target": "src/modules/forms/forms-transient-words.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms.module.ts",
+      "target": "src/modules/forms/forms-builder-guards.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms.module.ts",
+      "target": "src/modules/forms/forms-builder-other.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms.module.ts",
+      "target": "src/modules/forms/forms-builder-verb.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms.module.ts",
+      "target": "src/modules/forms/forms-transient-words.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms.module.ts",
+      "target": "src/modules/forms/forms.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms.module.ts",
+      "target": "src/modules/words/words.module.ts"
+    },
+    {
+      "source": "src/modules/forms/forms.service.ts",
+      "target": "src/modules/forms/forms-builder-other.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms.service.ts",
+      "target": "src/modules/forms/forms-transient-words.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms.service.ts",
+      "target": "src/modules/words/words.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms.service.unit.test.ts",
+      "target": "src/modules/forms/forms-builder-other.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms.service.unit.test.ts",
+      "target": "src/modules/forms/forms-transient-words.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms.service.unit.test.ts",
+      "target": "src/modules/forms/forms.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms.service.unit.test.ts",
+      "target": "src/modules/words/words.service.ts"
+    },
+    {
+      "source": "src/modules/forms/forms.service.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/latin-library/latin-library.command.unit.test.ts",
+      "target": "src/modules/latin-library/latin-library.command.ts"
+    },
+    {
+      "source": "src/modules/latin-library/latin-library.command.unit.test.ts",
+      "target": "testing/command-harness.ts"
+    },
+    {
+      "source": "src/modules/latin-library/latin-library.module.ts",
+      "target": "src/modules/latin-library/latin-library.command.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.module.ts",
+      "target": "src/modules/etymology/etymology.module.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.module.ts",
+      "target": "src/modules/forms/forms.module.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.module.ts",
+      "target": "src/modules/lexemes/lexemes.service.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.module.ts",
+      "target": "src/modules/part-of-speech/part-of-speech.module.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.module.ts",
+      "target": "src/modules/principal-parts/principal-parts.module.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.module.ts",
+      "target": "src/modules/pronunciation/pronunciation.module.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.module.ts",
+      "target": "src/modules/translations/translations.module.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.module.ts",
+      "target": "src/modules/words/words.module.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.ts",
+      "target": "src/modules/etymology/etymology.service.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.ts",
+      "target": "src/modules/forms/forms.service.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.ts",
+      "target": "src/modules/lexemes/lexemes.constants.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.ts",
+      "target": "src/modules/lexico-ingestion/lexico-ingestion.constants.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.ts",
+      "target": "src/modules/lexico-ingestion/lexico-ingestion.types.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.ts",
+      "target": "src/modules/part-of-speech/part-of-speech.service.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.ts",
+      "target": "src/modules/principal-parts/principal-parts.service.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.ts",
+      "target": "src/modules/pronunciation/pronunciation.service.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.ts",
+      "target": "src/modules/translations/translations.service.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.ts",
+      "target": "src/modules/words/words.service.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.unit.test.ts",
+      "target": "src/modules/etymology/etymology.service.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.unit.test.ts",
+      "target": "src/modules/forms/forms.service.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.unit.test.ts",
+      "target": "src/modules/lexemes/lexemes.service.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.unit.test.ts",
+      "target": "src/modules/lexico-ingestion/lexico-ingestion.types.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.unit.test.ts",
+      "target": "src/modules/part-of-speech/part-of-speech.service.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.unit.test.ts",
+      "target": "src/modules/principal-parts/principal-parts.service.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.unit.test.ts",
+      "target": "src/modules/pronunciation/pronunciation.service.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.unit.test.ts",
+      "target": "src/modules/translations/translations.service.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.unit.test.ts",
+      "target": "src/modules/words/words.service.ts"
+    },
+    {
+      "source": "src/modules/lexemes/lexemes.service.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.ts",
+      "target": "src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.ts",
+      "target": "src/modules/dictionary/dictionary.command.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.ts",
+      "target": "src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.ts",
+      "target": "src/modules/latin-library/latin-library.command.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.ts",
+      "target": "src/modules/lexico-ingestion/lexico-ingestion.types.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.ts",
+      "target": "src/modules/library/library.command.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.ts",
+      "target": "src/modules/literature/literature.command.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.ts",
+      "target": "src/modules/perseus/perseus.command.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.ts",
+      "target": "src/modules/wiktionary/wiktionary.command.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.unit.test.ts",
+      "target": "src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.unit.test.ts",
+      "target": "src/modules/dictionary/dictionary.command.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.unit.test.ts",
+      "target": "src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.unit.test.ts",
+      "target": "src/modules/latin-library/latin-library.command.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.unit.test.ts",
+      "target": "src/modules/lexico-ingestion/lexico-ingestion.command.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.unit.test.ts",
+      "target": "src/modules/lexico-ingestion/lexico-ingestion.types.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.unit.test.ts",
+      "target": "src/modules/library/library.command.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.unit.test.ts",
+      "target": "src/modules/literature/literature.command.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.unit.test.ts",
+      "target": "src/modules/perseus/perseus.command.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.unit.test.ts",
+      "target": "src/modules/wiktionary/wiktionary.command.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.module.ts",
+      "target": "src/modules/clear/clear.module.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.module.ts",
+      "target": "src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.module.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.module.ts",
+      "target": "src/modules/dictionary/dictionary.module.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.module.ts",
+      "target": "src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.module.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.module.ts",
+      "target": "src/modules/latin-library/latin-library.module.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.module.ts",
+      "target": "src/modules/lexico-ingestion/lexico-ingestion.command.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.module.ts",
+      "target": "src/modules/library/library.module.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.module.ts",
+      "target": "src/modules/literature/literature.module.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.module.ts",
+      "target": "src/modules/manual/manual.module.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.module.ts",
+      "target": "src/modules/perseus/perseus.module.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.module.ts",
+      "target": "src/modules/wiktionary/wiktionary.module.ts"
+    },
+    {
+      "source": "src/modules/lexico-ingestion/lexico-ingestion.module.ts",
+      "target": "src/modules/words/words.module.ts"
+    },
+    {
+      "source": "src/modules/library/library.command.ts",
+      "target": "src/modules/library/library.constants.ts"
+    },
+    {
+      "source": "src/modules/library/library.command.ts",
+      "target": "src/modules/library/library.types.ts"
+    },
+    {
+      "source": "src/modules/library/library.command.unit.test.ts",
+      "target": "src/modules/library/library.command.ts"
+    },
+    {
+      "source": "src/modules/library/library.command.unit.test.ts",
+      "target": "src/modules/library/library.constants.ts"
+    },
+    {
+      "source": "src/modules/library/library.command.unit.test.ts",
+      "target": "src/modules/library/library.types.ts"
+    },
+    {
+      "source": "src/modules/library/library.command.unit.test.ts",
+      "target": "testing/command-harness.ts"
+    },
+    {
+      "source": "src/modules/library/library.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/library/library.module.ts",
+      "target": "src/modules/library/library.command.ts"
+    },
+    {
+      "source": "src/modules/library/library.module.ts",
+      "target": "src/modules/library/library.constants.ts"
+    },
+    {
+      "source": "src/modules/library/library.module.ts",
+      "target": "src/modules/library/library.types.ts"
+    },
+    {
+      "source": "src/modules/library/library.module.ts",
+      "target": "src/modules/library/providers/corpus-scriptorum-ecclesiasticorum-latinorum-library.provider.ts"
+    },
+    {
+      "source": "src/modules/library/library.module.ts",
+      "target": "src/modules/library/providers/epigraphik-datenbank-clauss-slaby-library.provider.ts"
+    },
+    {
+      "source": "src/modules/library/library.module.ts",
+      "target": "src/modules/library/providers/latin-library.builder.ts"
+    },
+    {
+      "source": "src/modules/library/library.module.ts",
+      "target": "src/modules/library/providers/latin-library.provider.ts"
+    },
+    {
+      "source": "src/modules/library/library.module.ts",
+      "target": "src/modules/library/providers/perseus-library-text-extraction.provider.ts"
+    },
+    {
+      "source": "src/modules/library/library.module.ts",
+      "target": "src/modules/library/providers/perseus-library.provider.ts"
+    },
+    {
+      "source": "src/modules/library/library.utilities.unit.test.ts",
+      "target": "src/modules/library/library.utilities.ts"
+    },
+    {
+      "source": "src/modules/library/providers/corpus-scriptorum-ecclesiasticorum-latinorum-library.provider.ts",
+      "target": "src/modules/library/library.utilities.ts"
+    },
+    {
+      "source": "src/modules/library/providers/corpus-scriptorum-ecclesiasticorum-latinorum-library.provider.unit.test.ts",
+      "target": "src/modules/library/providers/corpus-scriptorum-ecclesiasticorum-latinorum-library.provider.ts"
+    },
+    {
+      "source": "src/modules/library/providers/epigraphik-datenbank-clauss-slaby-library.provider.unit.test.ts",
+      "target": "src/modules/library/providers/epigraphik-datenbank-clauss-slaby-library.provider.ts"
+    },
+    {
+      "source": "src/modules/library/providers/latin-library.builder.ts",
+      "target": "src/modules/library/library.utilities.ts"
+    },
+    {
+      "source": "src/modules/library/providers/latin-library.builder.ts",
+      "target": "src/modules/literature/literature.constants.ts"
+    },
+    {
+      "source": "src/modules/library/providers/latin-library.builder.unit.test.ts",
+      "target": "src/modules/library/providers/latin-library.builder.ts"
+    },
+    {
+      "source": "src/modules/library/providers/latin-library.provider.ts",
+      "target": "src/modules/library/library.utilities.ts"
+    },
+    {
+      "source": "src/modules/library/providers/latin-library.provider.ts",
+      "target": "src/modules/library/providers/latin-library.builder.ts"
+    },
+    {
+      "source": "src/modules/library/providers/latin-library.provider.unit.test.ts",
+      "target": "src/modules/library/providers/latin-library.builder.ts"
+    },
+    {
+      "source": "src/modules/library/providers/latin-library.provider.unit.test.ts",
+      "target": "src/modules/library/providers/latin-library.provider.ts"
+    },
+    {
+      "source": "src/modules/library/providers/perseus-library-text-extraction.provider.ts",
+      "target": "src/modules/library/library.utilities.ts"
+    },
+    {
+      "source": "src/modules/library/providers/perseus-library-text-extraction.provider.unit.test.ts",
+      "target": "src/modules/library/providers/perseus-library-text-extraction.provider.ts"
+    },
+    {
+      "source": "src/modules/library/providers/perseus-library.provider.ts",
+      "target": "src/modules/library/providers/perseus-library-text-extraction.provider.ts"
+    },
+    {
+      "source": "src/modules/library/providers/perseus-library.provider.unit.test.ts",
+      "target": "src/modules/library/providers/perseus-library-text-extraction.provider.ts"
+    },
+    {
+      "source": "src/modules/library/providers/perseus-library.provider.unit.test.ts",
+      "target": "src/modules/library/providers/perseus-library.provider.ts"
+    },
+    {
+      "source": "src/modules/literature/literature-library-scan.service.ts",
+      "target": "src/modules/literature/literature.types.ts"
+    },
+    {
+      "source": "src/modules/literature/literature-library-scan.service.unit.test.ts",
+      "target": "src/modules/literature/literature-library-scan.service.ts"
+    },
+    {
+      "source": "src/modules/literature/literature-text-ingestion.service.ts",
+      "target": "src/modules/literature/literature.types.ts"
+    },
+    {
+      "source": "src/modules/literature/literature-text-ingestion.service.unit.test.ts",
+      "target": "src/modules/literature/literature-text-ingestion.service.ts"
+    },
+    {
+      "source": "src/modules/literature/literature-text-ingestion.service.unit.test.ts",
+      "target": "src/modules/literature/literature.types.ts"
+    },
+    {
+      "source": "src/modules/literature/literature-word-normalization.service.ts",
+      "target": "src/modules/literature/literature.constants.ts"
+    },
+    {
+      "source": "src/modules/literature/literature-word-normalization.service.unit.test.ts",
+      "target": "src/modules/literature/literature-word-normalization.service.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.command.ts",
+      "target": "src/modules/literature/literature.service.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.command.ts",
+      "target": "src/modules/literature/literature.types.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.command.unit.test.ts",
+      "target": "src/modules/literature/literature.command.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.command.unit.test.ts",
+      "target": "src/modules/literature/literature.service.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.command.unit.test.ts",
+      "target": "src/modules/literature/literature.types.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.command.unit.test.ts",
+      "target": "testing/command-harness.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.module.ts",
+      "target": "src/modules/literature/literature-library-scan.service.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.module.ts",
+      "target": "src/modules/literature/literature-text-ingestion.service.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.module.ts",
+      "target": "src/modules/literature/literature-word-normalization.service.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.module.ts",
+      "target": "src/modules/literature/literature.command.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.module.ts",
+      "target": "src/modules/literature/literature.service.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.module.ts",
+      "target": "src/modules/numerals/numerals.module.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.service.ts",
+      "target": "src/modules/literature/literature-library-scan.service.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.service.ts",
+      "target": "src/modules/literature/literature-text-ingestion.service.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.service.ts",
+      "target": "src/modules/literature/literature-word-normalization.service.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.service.ts",
+      "target": "src/modules/literature/literature.constants.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.service.ts",
+      "target": "src/modules/literature/literature.types.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.service.ts",
+      "target": "src/modules/numerals/numerals.service.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.service.unit.test.ts",
+      "target": "src/modules/literature/literature-library-scan.service.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.service.unit.test.ts",
+      "target": "src/modules/literature/literature-text-ingestion.service.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.service.unit.test.ts",
+      "target": "src/modules/literature/literature-word-normalization.service.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.service.unit.test.ts",
+      "target": "src/modules/literature/literature.service.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.service.unit.test.ts",
+      "target": "src/modules/literature/literature.types.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.service.unit.test.ts",
+      "target": "src/modules/numerals/numerals.service.ts"
+    },
+    {
+      "source": "src/modules/literature/literature.service.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/manual/manual.constants.ts",
+      "target": "src/modules/manual/manual.types.ts"
+    },
+    {
+      "source": "src/modules/manual/manual.module.ts",
+      "target": "src/modules/manual/manual.service.ts"
+    },
+    {
+      "source": "src/modules/manual/manual.module.ts",
+      "target": "src/modules/numerals/numerals.module.ts"
+    },
+    {
+      "source": "src/modules/manual/manual.module.ts",
+      "target": "src/modules/words/words.module.ts"
+    },
+    {
+      "source": "src/modules/manual/manual.service.ts",
+      "target": "src/modules/manual/manual.constants.ts"
+    },
+    {
+      "source": "src/modules/manual/manual.service.ts",
+      "target": "src/modules/manual/manual.types.ts"
+    },
+    {
+      "source": "src/modules/manual/manual.service.ts",
+      "target": "src/modules/manual/manual.utilities.ts"
+    },
+    {
+      "source": "src/modules/manual/manual.service.ts",
+      "target": "src/modules/numerals/numerals.service.ts"
+    },
+    {
+      "source": "src/modules/manual/manual.service.ts",
+      "target": "src/modules/words/words.service.ts"
+    },
+    {
+      "source": "src/modules/manual/manual.service.unit.test.ts",
+      "target": "src/modules/manual/manual.constants.ts"
+    },
+    {
+      "source": "src/modules/manual/manual.service.unit.test.ts",
+      "target": "src/modules/manual/manual.service.ts"
+    },
+    {
+      "source": "src/modules/manual/manual.service.unit.test.ts",
+      "target": "src/modules/manual/manual.types.ts"
+    },
+    {
+      "source": "src/modules/manual/manual.service.unit.test.ts",
+      "target": "src/modules/manual/manual.utilities.ts"
+    },
+    {
+      "source": "src/modules/manual/manual.service.unit.test.ts",
+      "target": "src/modules/numerals/numerals.service.ts"
+    },
+    {
+      "source": "src/modules/manual/manual.service.unit.test.ts",
+      "target": "src/modules/words/words.service.ts"
+    },
+    {
+      "source": "src/modules/manual/manual.service.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/numerals/numerals.module.ts",
+      "target": "src/modules/numerals/numerals.service.ts"
+    },
+    {
+      "source": "src/modules/numerals/numerals.service.ts",
+      "target": "src/modules/numerals/numerals.constants.ts"
+    },
+    {
+      "source": "src/modules/numerals/numerals.service.unit.test.ts",
+      "target": "src/modules/numerals/numerals.service.ts"
+    },
+    {
+      "source": "src/modules/part-of-speech/part-of-speech-forms.service.ts",
+      "target": "src/modules/part-of-speech/part-of-speech.constants.ts"
+    },
+    {
+      "source": "src/modules/part-of-speech/part-of-speech-forms.service.unit.test.ts",
+      "target": "src/modules/part-of-speech/part-of-speech-forms.service.ts"
+    },
+    {
+      "source": "src/modules/part-of-speech/part-of-speech-forms.service.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/part-of-speech/part-of-speech.module.ts",
+      "target": "src/modules/part-of-speech/part-of-speech-forms.service.ts"
+    },
+    {
+      "source": "src/modules/part-of-speech/part-of-speech.module.ts",
+      "target": "src/modules/part-of-speech/part-of-speech.service.ts"
+    },
+    {
+      "source": "src/modules/part-of-speech/part-of-speech.service.ts",
+      "target": "src/modules/part-of-speech/part-of-speech-forms.service.ts"
+    },
+    {
+      "source": "src/modules/part-of-speech/part-of-speech.service.ts",
+      "target": "src/modules/part-of-speech/part-of-speech.constants.ts"
+    },
+    {
+      "source": "src/modules/part-of-speech/part-of-speech.service.unit.test.ts",
+      "target": "src/modules/part-of-speech/part-of-speech-forms.service.ts"
+    },
+    {
+      "source": "src/modules/part-of-speech/part-of-speech.service.unit.test.ts",
+      "target": "src/modules/part-of-speech/part-of-speech.module.ts"
+    },
+    {
+      "source": "src/modules/part-of-speech/part-of-speech.service.unit.test.ts",
+      "target": "src/modules/part-of-speech/part-of-speech.service.ts"
+    },
+    {
+      "source": "src/modules/perseus/perseus.command.ts",
+      "target": "src/modules/perseus/perseus.constants.ts"
+    },
+    {
+      "source": "src/modules/perseus/perseus.command.ts",
+      "target": "src/modules/perseus/perseus.types.ts"
+    },
+    {
+      "source": "src/modules/perseus/perseus.command.unit.test.ts",
+      "target": "src/modules/perseus/perseus.command.ts"
+    },
+    {
+      "source": "src/modules/perseus/perseus.command.unit.test.ts",
+      "target": "testing/command-harness.ts"
+    },
+    {
+      "source": "src/modules/perseus/perseus.module.ts",
+      "target": "src/modules/perseus/perseus.command.ts"
+    },
+    {
+      "source": "src/modules/principal-parts/principal-parts.module.ts",
+      "target": "src/modules/principal-parts/principal-parts.service.ts"
+    },
+    {
+      "source": "src/modules/principal-parts/principal-parts.service.unit.test.ts",
+      "target": "src/modules/principal-parts/principal-parts.service.ts"
+    },
+    {
+      "source": "src/modules/principal-parts/principal-parts.service.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation-classical.service.ts",
+      "target": "src/modules/pronunciation/pronunciation.constants.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation-classical.service.ts",
+      "target": "src/modules/pronunciation/pronunciation.types.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation-classical.service.unit.test.ts",
+      "target": "src/modules/pronunciation/pronunciation-classical.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation-classifier.service.ts",
+      "target": "src/modules/pronunciation/pronunciation-classical.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation-classifier.service.ts",
+      "target": "src/modules/pronunciation/pronunciation-ecclesiastical.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation-classifier.service.ts",
+      "target": "src/modules/pronunciation/pronunciation.types.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation-classifier.service.unit.test.ts",
+      "target": "src/modules/pronunciation/pronunciation-classical.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation-classifier.service.unit.test.ts",
+      "target": "src/modules/pronunciation/pronunciation-classifier.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation-classifier.service.unit.test.ts",
+      "target": "src/modules/pronunciation/pronunciation-ecclesiastical.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation-classifier.service.unit.test.ts",
+      "target": "src/modules/pronunciation/pronunciation.types.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation-ecclesiastical.service.ts",
+      "target": "src/modules/pronunciation/pronunciation-phonemes.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation-ecclesiastical.service.ts",
+      "target": "src/modules/pronunciation/pronunciation.constants.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation-ecclesiastical.service.ts",
+      "target": "src/modules/pronunciation/pronunciation.types.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation-ecclesiastical.service.unit.test.ts",
+      "target": "src/modules/pronunciation/pronunciation-ecclesiastical.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation-ecclesiastical.service.unit.test.ts",
+      "target": "src/modules/pronunciation/pronunciation-phonemes.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation-ecclesiastical.service.unit.test.ts",
+      "target": "src/modules/pronunciation/pronunciation.types.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation-phonemes.service.ts",
+      "target": "src/modules/pronunciation/pronunciation.types.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation-phonemes.service.unit.test.ts",
+      "target": "src/modules/pronunciation/pronunciation-phonemes.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation.constants.ts",
+      "target": "src/modules/pronunciation/pronunciation.types.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation.module.ts",
+      "target": "src/modules/pronunciation/pronunciation-classical.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation.module.ts",
+      "target": "src/modules/pronunciation/pronunciation-classifier.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation.module.ts",
+      "target": "src/modules/pronunciation/pronunciation-ecclesiastical.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation.module.ts",
+      "target": "src/modules/pronunciation/pronunciation-phonemes.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation.module.ts",
+      "target": "src/modules/pronunciation/pronunciation.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation.service.ts",
+      "target": "src/modules/pronunciation/pronunciation-classifier.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation.service.ts",
+      "target": "src/modules/pronunciation/pronunciation.constants.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation.service.ts",
+      "target": "src/modules/pronunciation/pronunciation.types.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation.service.unit.test.ts",
+      "target": "src/modules/pronunciation/pronunciation-classical.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation.service.unit.test.ts",
+      "target": "src/modules/pronunciation/pronunciation-classifier.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation.service.unit.test.ts",
+      "target": "src/modules/pronunciation/pronunciation-ecclesiastical.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation.service.unit.test.ts",
+      "target": "src/modules/pronunciation/pronunciation-phonemes.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation.service.unit.test.ts",
+      "target": "src/modules/pronunciation/pronunciation.service.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation.service.unit.test.ts",
+      "target": "src/modules/pronunciation/pronunciation.types.ts"
+    },
+    {
+      "source": "src/modules/pronunciation/pronunciation.service.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/translations/translations.module.ts",
+      "target": "src/modules/translations/translations.service.ts"
+    },
+    {
+      "source": "src/modules/translations/translations.service.ts",
+      "target": "src/modules/translations/translations.constants.ts"
+    },
+    {
+      "source": "src/modules/translations/translations.service.unit.test.ts",
+      "target": "src/modules/translations/translations.service.ts"
+    },
+    {
+      "source": "src/modules/translations/translations.service.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/wiktionary/wiktionary.command.ts",
+      "target": "src/modules/lexico-ingestion/lexico-ingestion.types.ts"
+    },
+    {
+      "source": "src/modules/wiktionary/wiktionary.command.ts",
+      "target": "src/modules/wiktionary/wiktionary.constants.ts"
+    },
+    {
+      "source": "src/modules/wiktionary/wiktionary.command.ts",
+      "target": "src/modules/wiktionary/wiktionary.types.ts"
+    },
+    {
+      "source": "src/modules/wiktionary/wiktionary.command.unit.test.ts",
+      "target": "src/modules/wiktionary/wiktionary.command.ts"
+    },
+    {
+      "source": "src/modules/wiktionary/wiktionary.command.unit.test.ts",
+      "target": "testing/command-harness.ts"
+    },
+    {
+      "source": "src/modules/wiktionary/wiktionary.module.ts",
+      "target": "src/modules/wiktionary/wiktionary.command.ts"
+    },
+    {
+      "source": "src/modules/wiktionary/wiktionary.types.ts",
+      "target": "src/modules/wiktionary/wiktionary.constants.ts"
+    },
+    {
+      "source": "src/modules/words/words.module.ts",
+      "target": "src/modules/words/words.service.ts"
+    },
+    {
+      "source": "src/modules/words/words.service.ts",
+      "target": "src/modules/lexico-ingestion/lexico-ingestion.constants.ts"
+    },
+    {
+      "source": "src/modules/words/words.service.unit.test.ts",
+      "target": "src/modules/lexico-ingestion/lexico-ingestion.constants.ts"
+    },
+    {
+      "source": "src/modules/words/words.service.unit.test.ts",
+      "target": "src/modules/words/words.service.ts"
+    },
+    {
+      "source": "src/modules/words/words.service.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/repl.ts",
+      "target": "src/main.module.ts"
+    }
+  ],
+  "fileNames": [
+    "eslint.config.ts",
+    "src/constants.ts",
+    "src/main.end-to-end.test.ts",
+    "src/main.module.ts",
+    "src/main.ts",
+    "src/main.unit.test.ts",
+    "src/modules/clear/clear.command.ts",
+    "src/modules/clear/clear.command.unit.test.ts",
+    "src/modules/clear/clear.constants.ts",
+    "src/modules/clear/clear.module.ts",
+    "src/modules/clear/clear.types.ts",
+    "src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts",
+    "src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.unit.test.ts",
+    "src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.constants.ts",
+    "src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.module.ts",
+    "src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.types.ts",
+    "src/modules/dictionary/dictionary.command.ts",
+    "src/modules/dictionary/dictionary.command.unit.test.ts",
+    "src/modules/dictionary/dictionary.constants.ts",
+    "src/modules/dictionary/dictionary.module.ts",
+    "src/modules/dictionary/dictionary.types.ts",
+    "src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts",
+    "src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.unit.test.ts",
+    "src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.constants.ts",
+    "src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.module.ts",
+    "src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.types.ts",
+    "src/modules/etymology/etymology.constants.ts",
+    "src/modules/etymology/etymology.module.ts",
+    "src/modules/etymology/etymology.service.ts",
+    "src/modules/etymology/etymology.service.unit.test.ts",
+    "src/modules/etymology/etymology.types.ts",
+    "src/modules/forms/forms.constants.ts",
+    "src/modules/forms/forms.constants.unit.test.ts",
+    "src/modules/forms/forms.module.ts",
+    "src/modules/forms/forms.service.ts",
+    "src/modules/forms/forms.service.unit.test.ts",
+    "src/modules/forms/forms.types.ts",
+    "src/modules/forms/forms-builder-guards.service.ts",
+    "src/modules/forms/forms-builder-guards.service.unit.test.ts",
+    "src/modules/forms/forms-builder-other.service.ts",
+    "src/modules/forms/forms-builder-other.service.unit.test.ts",
+    "src/modules/forms/forms-builder-verb.service.ts",
+    "src/modules/forms/forms-builder-verb.service.unit.test.ts",
+    "src/modules/forms/forms-transient-words.service.ts",
+    "src/modules/forms/forms-transient-words.service.unit.test.ts",
+    "src/modules/latin-library/latin-library.command.ts",
+    "src/modules/latin-library/latin-library.command.unit.test.ts",
+    "src/modules/latin-library/latin-library.constants.ts",
+    "src/modules/latin-library/latin-library.module.ts",
+    "src/modules/latin-library/latin-library.types.ts",
+    "src/modules/lexemes/lexemes.constants.ts",
+    "src/modules/lexemes/lexemes.module.ts",
+    "src/modules/lexemes/lexemes.service.ts",
+    "src/modules/lexemes/lexemes.service.unit.test.ts",
+    "src/modules/lexemes/lexemes.types.ts",
+    "src/modules/lexico-ingestion/lexico-ingestion.command.ts",
+    "src/modules/lexico-ingestion/lexico-ingestion.command.unit.test.ts",
+    "src/modules/lexico-ingestion/lexico-ingestion.constants.ts",
+    "src/modules/lexico-ingestion/lexico-ingestion.module.ts",
+    "src/modules/lexico-ingestion/lexico-ingestion.types.ts",
+    "src/modules/library/library.command.ts",
+    "src/modules/library/library.command.unit.test.ts",
+    "src/modules/library/library.constants.ts",
+    "src/modules/library/library.module.ts",
+    "src/modules/library/library.types.ts",
+    "src/modules/library/library.utilities.ts",
+    "src/modules/library/library.utilities.unit.test.ts",
+    "src/modules/library/providers/corpus-scriptorum-ecclesiasticorum-latinorum-library.provider.ts",
+    "src/modules/library/providers/corpus-scriptorum-ecclesiasticorum-latinorum-library.provider.unit.test.ts",
+    "src/modules/library/providers/epigraphik-datenbank-clauss-slaby-library.provider.ts",
+    "src/modules/library/providers/epigraphik-datenbank-clauss-slaby-library.provider.unit.test.ts",
+    "src/modules/library/providers/latin-library.builder.ts",
+    "src/modules/library/providers/latin-library.builder.unit.test.ts",
+    "src/modules/library/providers/latin-library.provider.ts",
+    "src/modules/library/providers/latin-library.provider.unit.test.ts",
+    "src/modules/library/providers/perseus-library.provider.ts",
+    "src/modules/library/providers/perseus-library.provider.unit.test.ts",
+    "src/modules/library/providers/perseus-library-text-extraction.provider.ts",
+    "src/modules/library/providers/perseus-library-text-extraction.provider.unit.test.ts",
+    "src/modules/literature/literature.command.ts",
+    "src/modules/literature/literature.command.unit.test.ts",
+    "src/modules/literature/literature.constants.ts",
+    "src/modules/literature/literature.module.ts",
+    "src/modules/literature/literature.service.ts",
+    "src/modules/literature/literature.service.unit.test.ts",
+    "src/modules/literature/literature.types.ts",
+    "src/modules/literature/literature-library-scan.service.ts",
+    "src/modules/literature/literature-library-scan.service.unit.test.ts",
+    "src/modules/literature/literature-text-ingestion.service.ts",
+    "src/modules/literature/literature-text-ingestion.service.unit.test.ts",
+    "src/modules/literature/literature-word-normalization.service.ts",
+    "src/modules/literature/literature-word-normalization.service.unit.test.ts",
+    "src/modules/manual/manual.constants.ts",
+    "src/modules/manual/manual.module.ts",
+    "src/modules/manual/manual.service.ts",
+    "src/modules/manual/manual.service.unit.test.ts",
+    "src/modules/manual/manual.types.ts",
+    "src/modules/manual/manual.utilities.ts",
+    "src/modules/numerals/numerals.constants.ts",
+    "src/modules/numerals/numerals.module.ts",
+    "src/modules/numerals/numerals.service.ts",
+    "src/modules/numerals/numerals.service.unit.test.ts",
+    "src/modules/numerals/numerals.types.ts",
+    "src/modules/part-of-speech/part-of-speech.constants.ts",
+    "src/modules/part-of-speech/part-of-speech.module.ts",
+    "src/modules/part-of-speech/part-of-speech.service.ts",
+    "src/modules/part-of-speech/part-of-speech.service.unit.test.ts",
+    "src/modules/part-of-speech/part-of-speech.types.ts",
+    "src/modules/part-of-speech/part-of-speech-forms.service.ts",
+    "src/modules/part-of-speech/part-of-speech-forms.service.unit.test.ts",
+    "src/modules/perseus/perseus.command.ts",
+    "src/modules/perseus/perseus.command.unit.test.ts",
+    "src/modules/perseus/perseus.constants.ts",
+    "src/modules/perseus/perseus.module.ts",
+    "src/modules/perseus/perseus.types.ts",
+    "src/modules/principal-parts/principal-parts.constants.ts",
+    "src/modules/principal-parts/principal-parts.module.ts",
+    "src/modules/principal-parts/principal-parts.service.ts",
+    "src/modules/principal-parts/principal-parts.service.unit.test.ts",
+    "src/modules/principal-parts/principal-parts.types.ts",
+    "src/modules/pronunciation/pronunciation.constants.ts",
+    "src/modules/pronunciation/pronunciation.module.ts",
+    "src/modules/pronunciation/pronunciation.service.ts",
+    "src/modules/pronunciation/pronunciation.service.unit.test.ts",
+    "src/modules/pronunciation/pronunciation.types.ts",
+    "src/modules/pronunciation/pronunciation-classical.service.ts",
+    "src/modules/pronunciation/pronunciation-classical.service.unit.test.ts",
+    "src/modules/pronunciation/pronunciation-classifier.service.ts",
+    "src/modules/pronunciation/pronunciation-classifier.service.unit.test.ts",
+    "src/modules/pronunciation/pronunciation-ecclesiastical.service.ts",
+    "src/modules/pronunciation/pronunciation-ecclesiastical.service.unit.test.ts",
+    "src/modules/pronunciation/pronunciation-phonemes.service.ts",
+    "src/modules/pronunciation/pronunciation-phonemes.service.unit.test.ts",
+    "src/modules/translations/translations.constants.ts",
+    "src/modules/translations/translations.module.ts",
+    "src/modules/translations/translations.service.ts",
+    "src/modules/translations/translations.service.unit.test.ts",
+    "src/modules/translations/translations.types.ts",
+    "src/modules/wiktionary/wiktionary.command.ts",
+    "src/modules/wiktionary/wiktionary.command.unit.test.ts",
+    "src/modules/wiktionary/wiktionary.constants.ts",
+    "src/modules/wiktionary/wiktionary.module.ts",
+    "src/modules/wiktionary/wiktionary.types.ts",
+    "src/modules/words/words.constants.ts",
+    "src/modules/words/words.module.ts",
+    "src/modules/words/words.service.ts",
+    "src/modules/words/words.service.unit.test.ts",
+    "src/modules/words/words.types.ts",
+    "src/repl.ts",
+    "src/repl.unit.test.ts",
+    "testing/command-harness.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "isolatedFileNames": [
+    "eslint.config.ts",
+    "src/main.unit.test.ts",
+    "src/modules/clear/clear.constants.ts",
+    "src/modules/dictionary/dictionary.constants.ts",
+    "src/modules/etymology/etymology.constants.ts",
+    "src/modules/etymology/etymology.types.ts",
+    "src/modules/forms/forms.constants.unit.test.ts",
+    "src/modules/latin-library/latin-library.constants.ts",
+    "src/modules/latin-library/latin-library.types.ts",
+    "src/modules/lexemes/lexemes.types.ts",
+    "src/modules/numerals/numerals.types.ts",
+    "src/modules/part-of-speech/part-of-speech.types.ts",
+    "src/modules/principal-parts/principal-parts.constants.ts",
+    "src/modules/principal-parts/principal-parts.types.ts",
+    "src/modules/translations/translations.types.ts",
+    "src/modules/words/words.constants.ts",
+    "src/modules/words/words.types.ts",
+    "src/repl.unit.test.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "projectName": "lexico-ingestion"
+}

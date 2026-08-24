@@ -1,0 +1,505 @@
+{
+  "edges": [
+    {
+      "source": "src/bootstrap.utilities.ts",
+      "target": "src/modules/generator/generator.constants.ts"
+    },
+    {
+      "source": "src/bootstrap.utilities.ts",
+      "target": "src/modules/generator/generator.types.ts"
+    },
+    {
+      "source": "src/bootstrap.utilities.ts",
+      "target": "src/modules/options/options.constants.ts"
+    },
+    {
+      "source": "src/bootstrap.utilities.ts",
+      "target": "src/plugin-context.utilities.ts"
+    },
+    {
+      "source": "src/bootstrap.utilities.unit.test.ts",
+      "target": "src/bootstrap.utilities.ts"
+    },
+    {
+      "source": "src/bootstrap.utilities.unit.test.ts",
+      "target": "src/modules/generator/generator.constants.ts"
+    },
+    {
+      "source": "src/bootstrap.utilities.unit.test.ts",
+      "target": "src/plugin-context.utilities.ts"
+    },
+    {
+      "source": "src/executors/validate/executor.ts",
+      "target": "src/executors/validate/executor.types.ts"
+    },
+    {
+      "source": "src/executors/validate/executor.ts",
+      "target": "src/plugin-context.utilities.ts"
+    },
+    {
+      "source": "src/executors/validate/executor.unit.test.ts",
+      "target": "src/executors/validate/executor.ts"
+    },
+    {
+      "source": "src/executors/validate/executor.unit.test.ts",
+      "target": "src/plugin-context.utilities.ts"
+    },
+    {
+      "source": "src/generators/sync/generator.ts",
+      "target": "src/generators/sync/generator.types.ts"
+    },
+    {
+      "source": "src/generators/sync/generator.ts",
+      "target": "src/modules/generator/generator.constants.ts"
+    },
+    {
+      "source": "src/generators/sync/generator.ts",
+      "target": "src/modules/options/options.constants.ts"
+    },
+    {
+      "source": "src/generators/sync/generator.ts",
+      "target": "src/plugin-context.utilities.ts"
+    },
+    {
+      "source": "src/generators/sync/generator.unit.test.ts",
+      "target": "src/generators/sync/generator.ts"
+    },
+    {
+      "source": "src/generators/sync/generator.unit.test.ts",
+      "target": "src/plugin-context.utilities.ts"
+    },
+    {
+      "source": "src/index.ts",
+      "target": "src/modules/plugin/plugin.constants.ts"
+    },
+    {
+      "source": "src/index.ts",
+      "target": "src/plugin-context.utilities.ts"
+    },
+    {
+      "source": "src/index.unit.test.ts",
+      "target": "src/index.ts"
+    },
+    {
+      "source": "src/index.unit.test.ts",
+      "target": "src/plugin-context.utilities.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/generator/generator.module.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/plugin/plugin.module.ts"
+    },
+    {
+      "source": "src/modules/adapter/adapter.module.ts",
+      "target": "src/modules/adapter/adapter.service.ts"
+    },
+    {
+      "source": "src/modules/adapter/adapter.service.ts",
+      "target": "src/modules/adapter/adapter.constants.ts"
+    },
+    {
+      "source": "src/modules/adapter/adapter.service.ts",
+      "target": "src/modules/adapter/adapter.types.ts"
+    },
+    {
+      "source": "src/modules/adapter/adapter.service.unit.test.ts",
+      "target": "src/modules/adapter/adapter.service.ts"
+    },
+    {
+      "source": "src/modules/generator/generator.module.ts",
+      "target": "src/modules/generator/generator.service.ts"
+    },
+    {
+      "source": "src/modules/generator/generator.module.ts",
+      "target": "src/modules/scope/scope.module.ts"
+    },
+    {
+      "source": "src/modules/generator/generator.service.ts",
+      "target": "src/modules/generator/generator.constants.ts"
+    },
+    {
+      "source": "src/modules/generator/generator.service.ts",
+      "target": "src/modules/generator/generator.types.ts"
+    },
+    {
+      "source": "src/modules/generator/generator.service.ts",
+      "target": "src/modules/instances/instances.types.ts"
+    },
+    {
+      "source": "src/modules/generator/generator.service.ts",
+      "target": "src/modules/paths/paths.constants.ts"
+    },
+    {
+      "source": "src/modules/generator/generator.service.ts",
+      "target": "src/modules/scope/scope.service.ts"
+    },
+    {
+      "source": "src/modules/generator/generator.service.unit.test.ts",
+      "target": "src/modules/generator/generator.module.ts"
+    },
+    {
+      "source": "src/modules/generator/generator.service.unit.test.ts",
+      "target": "src/modules/generator/generator.service.ts"
+    },
+    {
+      "source": "src/modules/generator/generator.service.unit.test.ts",
+      "target": "src/modules/generator/generator.types.ts"
+    },
+    {
+      "source": "src/modules/generator/generator.types.ts",
+      "target": "src/modules/instances/instances.types.ts"
+    },
+    {
+      "source": "src/modules/instances/instances.module.ts",
+      "target": "src/modules/instances/instances.service.ts"
+    },
+    {
+      "source": "src/modules/instances/instances.module.ts",
+      "target": "src/modules/scope/scope.module.ts"
+    },
+    {
+      "source": "src/modules/instances/instances.service.ts",
+      "target": "src/modules/instances/instances.types.ts"
+    },
+    {
+      "source": "src/modules/instances/instances.service.ts",
+      "target": "src/modules/scope/scope.service.ts"
+    },
+    {
+      "source": "src/modules/instances/instances.service.unit.test.ts",
+      "target": "src/modules/instances/instances.service.ts"
+    },
+    {
+      "source": "src/modules/instances/instances.service.unit.test.ts",
+      "target": "src/modules/instances/instances.types.ts"
+    },
+    {
+      "source": "src/modules/instances/instances.service.unit.test.ts",
+      "target": "src/modules/scope/scope.module.ts"
+    },
+    {
+      "source": "src/modules/options/options.module.ts",
+      "target": "src/modules/options/options.service.ts"
+    },
+    {
+      "source": "src/modules/options/options.service.ts",
+      "target": "src/modules/options/options.constants.ts"
+    },
+    {
+      "source": "src/modules/options/options.service.ts",
+      "target": "src/modules/options/options.types.ts"
+    },
+    {
+      "source": "src/modules/options/options.service.unit.test.ts",
+      "target": "src/modules/options/options.constants.ts"
+    },
+    {
+      "source": "src/modules/options/options.service.unit.test.ts",
+      "target": "src/modules/options/options.service.ts"
+    },
+    {
+      "source": "src/modules/paths/paths.module.ts",
+      "target": "src/modules/instances/instances.module.ts"
+    },
+    {
+      "source": "src/modules/paths/paths.module.ts",
+      "target": "src/modules/paths/paths.service.ts"
+    },
+    {
+      "source": "src/modules/paths/paths.module.ts",
+      "target": "src/modules/scope/scope.module.ts"
+    },
+    {
+      "source": "src/modules/paths/paths.service.ts",
+      "target": "src/modules/instances/instances.service.ts"
+    },
+    {
+      "source": "src/modules/paths/paths.service.ts",
+      "target": "src/modules/paths/paths.constants.ts"
+    },
+    {
+      "source": "src/modules/paths/paths.service.ts",
+      "target": "src/modules/paths/paths.types.ts"
+    },
+    {
+      "source": "src/modules/paths/paths.service.ts",
+      "target": "src/modules/scope/scope.service.ts"
+    },
+    {
+      "source": "src/modules/paths/paths.service.unit.test.ts",
+      "target": "src/modules/paths/paths.module.ts"
+    },
+    {
+      "source": "src/modules/paths/paths.service.unit.test.ts",
+      "target": "src/modules/paths/paths.service.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.constants.unit.test.ts",
+      "target": "src/modules/plugin/plugin.constants.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.module.ts",
+      "target": "src/modules/adapter/adapter.module.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.module.ts",
+      "target": "src/modules/generator/generator.module.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.module.ts",
+      "target": "src/modules/instances/instances.module.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.module.ts",
+      "target": "src/modules/options/options.module.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.module.ts",
+      "target": "src/modules/paths/paths.module.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.module.ts",
+      "target": "src/modules/plugin/plugin.service.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.module.ts",
+      "target": "src/modules/projects/projects.module.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.module.ts",
+      "target": "src/modules/scope/scope.module.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.service.ts",
+      "target": "src/modules/adapter/adapter.service.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.service.ts",
+      "target": "src/modules/generator/generator.constants.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.service.ts",
+      "target": "src/modules/generator/generator.service.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.service.ts",
+      "target": "src/modules/instances/instances.service.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.service.ts",
+      "target": "src/modules/options/options.constants.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.service.ts",
+      "target": "src/modules/options/options.service.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.service.ts",
+      "target": "src/modules/options/options.types.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.service.ts",
+      "target": "src/modules/paths/paths.service.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.service.ts",
+      "target": "src/modules/plugin/plugin.constants.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.service.ts",
+      "target": "src/modules/plugin/plugin.types.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.service.ts",
+      "target": "src/modules/projects/projects.service.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.service.unit.test.ts",
+      "target": "src/modules/generator/generator.constants.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.service.unit.test.ts",
+      "target": "src/modules/generator/generator.service.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.service.unit.test.ts",
+      "target": "src/modules/instances/instances.types.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.service.unit.test.ts",
+      "target": "src/modules/plugin/plugin.module.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.service.unit.test.ts",
+      "target": "src/modules/plugin/plugin.service.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.types.ts",
+      "target": "src/modules/instances/instances.types.ts"
+    },
+    {
+      "source": "src/modules/plugin/plugin.types.ts",
+      "target": "src/modules/plugin/plugin.constants.ts"
+    },
+    {
+      "source": "src/modules/projects/projects.module.ts",
+      "target": "src/modules/projects/projects.service.ts"
+    },
+    {
+      "source": "src/modules/projects/projects.service.ts",
+      "target": "src/modules/instances/instances.types.ts"
+    },
+    {
+      "source": "src/modules/projects/projects.service.ts",
+      "target": "src/modules/projects/projects.constants.ts"
+    },
+    {
+      "source": "src/modules/projects/projects.service.ts",
+      "target": "src/modules/projects/projects.types.ts"
+    },
+    {
+      "source": "src/modules/projects/projects.service.unit.test.ts",
+      "target": "src/modules/projects/projects.service.ts"
+    },
+    {
+      "source": "src/modules/scope/scope.module.ts",
+      "target": "src/modules/scope/scope.service.ts"
+    },
+    {
+      "source": "src/modules/scope/scope.service.ts",
+      "target": "src/modules/instances/instances.types.ts"
+    },
+    {
+      "source": "src/modules/scope/scope.service.ts",
+      "target": "src/modules/scope/scope.constants.ts"
+    },
+    {
+      "source": "src/modules/scope/scope.service.unit.test.ts",
+      "target": "src/modules/instances/instances.types.ts"
+    },
+    {
+      "source": "src/modules/scope/scope.service.unit.test.ts",
+      "target": "src/modules/scope/scope.service.ts"
+    },
+    {
+      "source": "src/plugin-context.utilities.ts",
+      "target": "src/main.module.ts"
+    },
+    {
+      "source": "src/plugin-context.utilities.ts",
+      "target": "src/modules/generator/generator.service.ts"
+    },
+    {
+      "source": "src/plugin-context.utilities.ts",
+      "target": "src/modules/options/options.service.ts"
+    },
+    {
+      "source": "src/plugin-context.utilities.ts",
+      "target": "src/modules/plugin/plugin.constants.ts"
+    },
+    {
+      "source": "src/plugin-context.utilities.ts",
+      "target": "src/modules/plugin/plugin.service.ts"
+    },
+    {
+      "source": "src/plugin-context.utilities.ts",
+      "target": "src/modules/plugin/plugin.types.ts"
+    },
+    {
+      "source": "src/plugin-context.utilities.ts",
+      "target": "src/modules/projects/projects.service.ts"
+    },
+    {
+      "source": "src/plugin-context.utilities.unit.test.ts",
+      "target": "src/modules/generator/generator.service.ts"
+    },
+    {
+      "source": "src/plugin-context.utilities.unit.test.ts",
+      "target": "src/modules/options/options.service.ts"
+    },
+    {
+      "source": "src/plugin-context.utilities.unit.test.ts",
+      "target": "src/modules/plugin/plugin.constants.ts"
+    },
+    {
+      "source": "src/plugin-context.utilities.unit.test.ts",
+      "target": "src/modules/plugin/plugin.service.ts"
+    },
+    {
+      "source": "src/plugin-context.utilities.unit.test.ts",
+      "target": "src/plugin-context.utilities.ts"
+    }
+  ],
+  "fileNames": [
+    "eslint.config.ts",
+    "src/bootstrap.utilities.ts",
+    "src/bootstrap.utilities.unit.test.ts",
+    "src/executors/validate/executor.ts",
+    "src/executors/validate/executor.types.ts",
+    "src/executors/validate/executor.unit.test.ts",
+    "src/generators/sync/generator.ts",
+    "src/generators/sync/generator.types.ts",
+    "src/generators/sync/generator.unit.test.ts",
+    "src/index.ts",
+    "src/index.unit.test.ts",
+    "src/main.module.ts",
+    "src/modules/adapter/adapter.constants.ts",
+    "src/modules/adapter/adapter.module.ts",
+    "src/modules/adapter/adapter.service.ts",
+    "src/modules/adapter/adapter.service.unit.test.ts",
+    "src/modules/adapter/adapter.types.ts",
+    "src/modules/generator/generator.constants.ts",
+    "src/modules/generator/generator.module.ts",
+    "src/modules/generator/generator.service.ts",
+    "src/modules/generator/generator.service.unit.test.ts",
+    "src/modules/generator/generator.types.ts",
+    "src/modules/instances/instances.constants.ts",
+    "src/modules/instances/instances.module.ts",
+    "src/modules/instances/instances.service.ts",
+    "src/modules/instances/instances.service.unit.test.ts",
+    "src/modules/instances/instances.types.ts",
+    "src/modules/options/options.constants.ts",
+    "src/modules/options/options.module.ts",
+    "src/modules/options/options.service.ts",
+    "src/modules/options/options.service.unit.test.ts",
+    "src/modules/options/options.types.ts",
+    "src/modules/paths/paths.constants.ts",
+    "src/modules/paths/paths.module.ts",
+    "src/modules/paths/paths.service.ts",
+    "src/modules/paths/paths.service.unit.test.ts",
+    "src/modules/paths/paths.types.ts",
+    "src/modules/plugin/plugin.constants.ts",
+    "src/modules/plugin/plugin.constants.unit.test.ts",
+    "src/modules/plugin/plugin.module.ts",
+    "src/modules/plugin/plugin.service.ts",
+    "src/modules/plugin/plugin.service.unit.test.ts",
+    "src/modules/plugin/plugin.types.ts",
+    "src/modules/projects/projects.constants.ts",
+    "src/modules/projects/projects.module.ts",
+    "src/modules/projects/projects.service.ts",
+    "src/modules/projects/projects.service.unit.test.ts",
+    "src/modules/projects/projects.types.ts",
+    "src/modules/scope/scope.constants.ts",
+    "src/modules/scope/scope.module.ts",
+    "src/modules/scope/scope.service.ts",
+    "src/modules/scope/scope.service.unit.test.ts",
+    "src/modules/scope/scope.types.ts",
+    "src/plugin-context.utilities.ts",
+    "src/plugin-context.utilities.unit.test.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "isolatedFileNames": [
+    "eslint.config.ts",
+    "src/modules/instances/instances.constants.ts",
+    "src/modules/scope/scope.types.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "projectName": "conformetry-nx"
+}

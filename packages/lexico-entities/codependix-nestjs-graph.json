@@ -1,0 +1,12 @@
+{
+  "ambientModuleNames": [],
+  "edges": [
+    {
+      "source": "DatabaseModule",
+      "target": "TypeOrmModule"
+    }
+  ],
+  "isolatedModuleNames": ["EntitiesModule"],
+  "moduleNames": ["DatabaseModule", "EntitiesModule", "TypeOrmModule"],
+  "projectName": "lexico-entities"
+}

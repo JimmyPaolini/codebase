@@ -1,0 +1,163 @@
+{
+  "ambientModuleNames": ["ConfigModule", "LoggerModule"],
+  "edges": [
+    {
+      "source": "CodometerModule",
+      "target": "ConfigurationModule"
+    },
+    {
+      "source": "CodometerModule",
+      "target": "CustomStatisticsModule"
+    },
+    {
+      "source": "CodometerModule",
+      "target": "FileDiscoveryModule"
+    },
+    {
+      "source": "CodometerModule",
+      "target": "LanguagesModule"
+    },
+    {
+      "source": "CodometerModule",
+      "target": "LimitsModule"
+    },
+    {
+      "source": "CodometerModule",
+      "target": "OutputJsonModule"
+    },
+    {
+      "source": "CodometerModule",
+      "target": "OutputMarkdownModule"
+    },
+    {
+      "source": "CodometerModule",
+      "target": "ReportModule"
+    },
+    {
+      "source": "CodometerModule",
+      "target": "SizeAnalysisModule"
+    },
+    {
+      "source": "CodometerModule",
+      "target": "TargetsModule"
+    },
+    {
+      "source": "JupyterModule",
+      "target": "JsonModule"
+    },
+    {
+      "source": "JupyterModule",
+      "target": "MarkdownModule"
+    },
+    {
+      "source": "JupyterModule",
+      "target": "PythonModule"
+    },
+    {
+      "source": "LanguagesModule",
+      "target": "CssModule"
+    },
+    {
+      "source": "LanguagesModule",
+      "target": "HclModule"
+    },
+    {
+      "source": "LanguagesModule",
+      "target": "JsonModule"
+    },
+    {
+      "source": "LanguagesModule",
+      "target": "JupyterModule"
+    },
+    {
+      "source": "LanguagesModule",
+      "target": "MarkdownModule"
+    },
+    {
+      "source": "LanguagesModule",
+      "target": "PythonModule"
+    },
+    {
+      "source": "LanguagesModule",
+      "target": "ShellModule"
+    },
+    {
+      "source": "LanguagesModule",
+      "target": "SqlModule"
+    },
+    {
+      "source": "LanguagesModule",
+      "target": "TomlModule"
+    },
+    {
+      "source": "LanguagesModule",
+      "target": "TypescriptModule"
+    },
+    {
+      "source": "LanguagesModule",
+      "target": "YamlModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "CodometerModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "ConfigurationModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "CustomStatisticsModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "DiscoveryModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "FileDiscoveryModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "LanguagesModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "OutputJsonModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "OutputMarkdownModule"
+    }
+  ],
+  "isolatedModuleNames": ["ConfigModule", "LoggerModule"],
+  "moduleNames": [
+    "CodometerModule",
+    "ConfigModule",
+    "ConfigurationModule",
+    "CssModule",
+    "CustomStatisticsModule",
+    "DiscoveryModule",
+    "FileDiscoveryModule",
+    "HclModule",
+    "JsonModule",
+    "JupyterModule",
+    "LanguagesModule",
+    "LimitsModule",
+    "LoggerModule",
+    "MainModule",
+    "MarkdownModule",
+    "OutputJsonModule",
+    "OutputMarkdownModule",
+    "PythonModule",
+    "ReportModule",
+    "ShellModule",
+    "SizeAnalysisModule",
+    "SqlModule",
+    "TargetsModule",
+    "TomlModule",
+    "TypescriptModule",
+    "YamlModule"
+  ],
+  "projectName": "codometer-cli"
+}

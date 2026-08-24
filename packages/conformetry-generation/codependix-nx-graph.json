@@ -1,0 +1,26 @@
+{
+  "dependencies": [],
+  "dependents": [
+    "conformetry-cli",
+    "conformetry-configuration",
+    "conformetry-nx"
+  ],
+  "edges": [
+    {
+      "implicit": false,
+      "source": "conformetry-cli",
+      "target": "conformetry-generation"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-configuration",
+      "target": "conformetry-generation"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-nx",
+      "target": "conformetry-generation"
+    }
+  ],
+  "projectName": "conformetry-generation"
+}

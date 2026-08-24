@@ -1,0 +1,42 @@
+{
+  "dependencies": [
+    "conformetry-core",
+    "conformetry-json",
+    "conformetry-markdown",
+    "conformetry-python"
+  ],
+  "dependents": ["conformetry-nx", "conformetry-validation"],
+  "edges": [
+    {
+      "implicit": false,
+      "source": "conformetry-jupyter",
+      "target": "conformetry-core"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-jupyter",
+      "target": "conformetry-json"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-jupyter",
+      "target": "conformetry-markdown"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-jupyter",
+      "target": "conformetry-python"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-nx",
+      "target": "conformetry-jupyter"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-validation",
+      "target": "conformetry-jupyter"
+    }
+  ],
+  "projectName": "conformetry-jupyter"
+}

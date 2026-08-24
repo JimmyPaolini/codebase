@@ -1,0 +1,17 @@
+{
+  "dependencies": ["conformetry-configuration", "logger"],
+  "dependents": [],
+  "edges": [
+    {
+      "implicit": false,
+      "source": "synchronization",
+      "target": "conformetry-configuration"
+    },
+    {
+      "implicit": false,
+      "source": "synchronization",
+      "target": "logger"
+    }
+  ],
+  "projectName": "synchronization"
+}

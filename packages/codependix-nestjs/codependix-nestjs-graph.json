@@ -1,0 +1,16 @@
+{
+  "ambientModuleNames": [],
+  "edges": [
+    {
+      "source": "ModuleGraphModule",
+      "target": "LoggerModule"
+    },
+    {
+      "source": "NestjsProjectModule",
+      "target": "LoggerModule"
+    }
+  ],
+  "isolatedModuleNames": [],
+  "moduleNames": ["LoggerModule", "ModuleGraphModule", "NestjsProjectModule"],
+  "projectName": "codependix-nestjs"
+}

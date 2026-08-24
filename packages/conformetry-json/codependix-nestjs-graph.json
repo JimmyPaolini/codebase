@@ -1,0 +1,12 @@
+{
+  "ambientModuleNames": [],
+  "edges": [
+    {
+      "source": "JsonValidatorModule",
+      "target": "ScoringModule"
+    }
+  ],
+  "isolatedModuleNames": [],
+  "moduleNames": ["JsonValidatorModule", "ScoringModule"],
+  "projectName": "conformetry-json"
+}

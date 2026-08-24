@@ -1,0 +1,12 @@
+{
+  "dependencies": ["logger"],
+  "dependents": [],
+  "edges": [
+    {
+      "implicit": false,
+      "source": "validation",
+      "target": "logger"
+    }
+  ],
+  "projectName": "validation"
+}

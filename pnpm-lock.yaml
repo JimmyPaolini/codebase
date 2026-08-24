@@ -560,6 +560,9 @@ importers:
       '@codebase/logger':
         specifier: workspace:*
         version: link:packages/logger
+      '@codependix/configuration':
+        specifier: workspace:*
+        version: link:packages/codependix-configuration
       '@codometer/configuration':
         specifier: workspace:*
         version: link:packages/codometer-configuration
@@ -800,6 +803,8 @@ importers:
       zod:
         specifier: 'catalog:'
         version: 4.4.3
+
+  applications/JimmyPaolini: {}
 
   applications/affirmations: {}
 

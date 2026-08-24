@@ -1,0 +1,614 @@
+{
+  "edges": [
+    {
+      "source": "src/main.end-to-end.test.ts",
+      "target": "src/constants.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/constants.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/catalog-manifests/catalog-manifests.module.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.module.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/lockfile/lockfile.module.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/pull-request-body/pull-request-body.module.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.module.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.module.ts"
+    },
+    {
+      "source": "src/main.ts",
+      "target": "src/main.module.ts"
+    },
+    {
+      "source": "src/main.unit.test.ts",
+      "target": "src/modules/catalog-manifests/catalog-manifests.module.ts"
+    },
+    {
+      "source": "src/main.unit.test.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.module.ts"
+    },
+    {
+      "source": "src/main.unit.test.ts",
+      "target": "src/modules/lockfile/lockfile.module.ts"
+    },
+    {
+      "source": "src/main.unit.test.ts",
+      "target": "src/modules/pull-request-body/pull-request-body.module.ts"
+    },
+    {
+      "source": "src/main.unit.test.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.module.ts"
+    },
+    {
+      "source": "src/main.unit.test.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.module.ts"
+    },
+    {
+      "source": "src/modules/catalog-manifests/catalog-manifests.command.ts",
+      "target": "src/modules/catalog-manifests/catalog-manifests.service.ts"
+    },
+    {
+      "source": "src/modules/catalog-manifests/catalog-manifests.command.unit.test.ts",
+      "target": "src/modules/catalog-manifests/catalog-manifests.command.ts"
+    },
+    {
+      "source": "src/modules/catalog-manifests/catalog-manifests.command.unit.test.ts",
+      "target": "src/modules/catalog-manifests/catalog-manifests.service.ts"
+    },
+    {
+      "source": "src/modules/catalog-manifests/catalog-manifests.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/catalog-manifests/catalog-manifests.constants.ts",
+      "target": "src/modules/catalog-manifests/catalog-manifests.types.ts"
+    },
+    {
+      "source": "src/modules/catalog-manifests/catalog-manifests.module.ts",
+      "target": "src/modules/catalog-manifests/catalog-manifests.command.ts"
+    },
+    {
+      "source": "src/modules/catalog-manifests/catalog-manifests.module.ts",
+      "target": "src/modules/catalog-manifests/catalog-manifests.service.ts"
+    },
+    {
+      "source": "src/modules/catalog-manifests/catalog-manifests.module.unit.test.ts",
+      "target": "src/modules/catalog-manifests/catalog-manifests.command.ts"
+    },
+    {
+      "source": "src/modules/catalog-manifests/catalog-manifests.module.unit.test.ts",
+      "target": "src/modules/catalog-manifests/catalog-manifests.module.ts"
+    },
+    {
+      "source": "src/modules/catalog-manifests/catalog-manifests.module.unit.test.ts",
+      "target": "src/modules/catalog-manifests/catalog-manifests.service.ts"
+    },
+    {
+      "source": "src/modules/catalog-manifests/catalog-manifests.service.ts",
+      "target": "src/modules/catalog-manifests/catalog-manifests.constants.ts"
+    },
+    {
+      "source": "src/modules/catalog-manifests/catalog-manifests.service.ts",
+      "target": "src/modules/catalog-manifests/catalog-manifests.types.ts"
+    },
+    {
+      "source": "src/modules/catalog-manifests/catalog-manifests.service.unit.test.ts",
+      "target": "src/modules/catalog-manifests/catalog-manifests.service.ts"
+    },
+    {
+      "source": "src/modules/catalog-manifests/catalog-manifests.service.unit.test.ts",
+      "target": "src/modules/catalog-manifests/catalog-manifests.types.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata-github.service.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.constants.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata-github.service.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.types.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata-github.service.unit.test.ts",
+      "target": "src/modules/issue-metadata/issue-metadata-github.service.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata-github.service.unit.test.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.constants.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.command.ts",
+      "target": "src/modules/issue-metadata/issue-metadata-github.service.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.command.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.constants.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.command.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.service.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.command.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.types.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.command.unit.test.ts",
+      "target": "src/modules/issue-metadata/issue-metadata-github.service.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.command.unit.test.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.command.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.command.unit.test.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.constants.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.command.unit.test.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.service.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.command.unit.test.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.types.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.module.ts",
+      "target": "src/modules/issue-metadata/issue-metadata-github.service.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.module.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.command.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.module.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.service.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.module.unit.test.ts",
+      "target": "src/modules/issue-metadata/issue-metadata-github.service.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.module.unit.test.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.command.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.module.unit.test.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.module.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.module.unit.test.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.service.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.service.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.constants.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.service.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.types.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.service.unit.test.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.service.ts"
+    },
+    {
+      "source": "src/modules/issue-metadata/issue-metadata.service.unit.test.ts",
+      "target": "src/modules/issue-metadata/issue-metadata.types.ts"
+    },
+    {
+      "source": "src/modules/lockfile/lockfile.command.ts",
+      "target": "src/modules/lockfile/lockfile.constants.ts"
+    },
+    {
+      "source": "src/modules/lockfile/lockfile.command.ts",
+      "target": "src/modules/lockfile/lockfile.service.ts"
+    },
+    {
+      "source": "src/modules/lockfile/lockfile.command.unit.test.ts",
+      "target": "src/modules/lockfile/lockfile.command.ts"
+    },
+    {
+      "source": "src/modules/lockfile/lockfile.command.unit.test.ts",
+      "target": "src/modules/lockfile/lockfile.service.ts"
+    },
+    {
+      "source": "src/modules/lockfile/lockfile.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/lockfile/lockfile.module.ts",
+      "target": "src/modules/lockfile/lockfile.command.ts"
+    },
+    {
+      "source": "src/modules/lockfile/lockfile.module.ts",
+      "target": "src/modules/lockfile/lockfile.service.ts"
+    },
+    {
+      "source": "src/modules/lockfile/lockfile.module.unit.test.ts",
+      "target": "src/modules/lockfile/lockfile.command.ts"
+    },
+    {
+      "source": "src/modules/lockfile/lockfile.module.unit.test.ts",
+      "target": "src/modules/lockfile/lockfile.module.ts"
+    },
+    {
+      "source": "src/modules/lockfile/lockfile.module.unit.test.ts",
+      "target": "src/modules/lockfile/lockfile.service.ts"
+    },
+    {
+      "source": "src/modules/lockfile/lockfile.service.ts",
+      "target": "src/modules/lockfile/lockfile.constants.ts"
+    },
+    {
+      "source": "src/modules/lockfile/lockfile.service.ts",
+      "target": "src/modules/lockfile/lockfile.types.ts"
+    },
+    {
+      "source": "src/modules/lockfile/lockfile.service.unit.test.ts",
+      "target": "src/modules/lockfile/lockfile.constants.ts"
+    },
+    {
+      "source": "src/modules/lockfile/lockfile.service.unit.test.ts",
+      "target": "src/modules/lockfile/lockfile.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-body/pull-request-body.command.ts",
+      "target": "src/modules/pull-request-body/pull-request-body.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-body/pull-request-body.command.ts",
+      "target": "src/modules/pull-request-body/pull-request-body.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-body/pull-request-body.command.ts",
+      "target": "src/modules/pull-request-body/pull-request-body.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-body/pull-request-body.command.unit.test.ts",
+      "target": "src/modules/pull-request-body/pull-request-body.command.ts"
+    },
+    {
+      "source": "src/modules/pull-request-body/pull-request-body.command.unit.test.ts",
+      "target": "src/modules/pull-request-body/pull-request-body.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-body/pull-request-body.command.unit.test.ts",
+      "target": "src/modules/pull-request-body/pull-request-body.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-body/pull-request-body.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/pull-request-body/pull-request-body.module.ts",
+      "target": "src/modules/pull-request-body/pull-request-body.command.ts"
+    },
+    {
+      "source": "src/modules/pull-request-body/pull-request-body.module.ts",
+      "target": "src/modules/pull-request-body/pull-request-body.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-body/pull-request-body.module.unit.test.ts",
+      "target": "src/modules/pull-request-body/pull-request-body.command.ts"
+    },
+    {
+      "source": "src/modules/pull-request-body/pull-request-body.module.unit.test.ts",
+      "target": "src/modules/pull-request-body/pull-request-body.module.ts"
+    },
+    {
+      "source": "src/modules/pull-request-body/pull-request-body.module.unit.test.ts",
+      "target": "src/modules/pull-request-body/pull-request-body.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-body/pull-request-body.service.ts",
+      "target": "src/modules/pull-request-body/pull-request-body.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-body/pull-request-body.service.ts",
+      "target": "src/modules/pull-request-body/pull-request-body.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-body/pull-request-body.service.unit.test.ts",
+      "target": "src/modules/pull-request-body/pull-request-body.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata-github.service.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata-github.service.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata-github.service.unit.test.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata-github.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata-github.service.unit.test.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.command.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata-github.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.command.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.command.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.command.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.command.unit.test.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata-github.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.command.unit.test.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.command.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.command.unit.test.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.command.unit.test.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.command.unit.test.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.module.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata-github.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.module.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.command.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.module.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.module.unit.test.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata-github.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.module.unit.test.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.command.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.module.unit.test.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.module.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.module.unit.test.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.service.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.service.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.service.unit.test.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-metadata/pull-request-metadata.service.unit.test.ts",
+      "target": "src/modules/pull-request-metadata/pull-request-metadata.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance-github.service.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance-github.service.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance-github.service.unit.test.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance-github.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance-github.service.unit.test.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.command.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance-github.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.command.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.command.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.command.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.command.unit.test.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance-github.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.command.unit.test.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.command.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.command.unit.test.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.command.unit.test.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.command.unit.test.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.module.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance-github.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.module.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.command.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.module.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.module.unit.test.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance-github.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.module.unit.test.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.command.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.module.unit.test.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.module.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.module.unit.test.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.service.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.service.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.service.unit.test.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-release-significance/pull-request-release-significance.service.unit.test.ts",
+      "target": "src/modules/pull-request-release-significance/pull-request-release-significance.types.ts"
+    },
+    {
+      "source": "src/repl.ts",
+      "target": "src/main.module.ts"
+    }
+  ],
+  "fileNames": [
+    "eslint.config.ts",
+    "src/constants.ts",
+    "src/main.end-to-end.test.ts",
+    "src/main.module.ts",
+    "src/main.ts",
+    "src/main.unit.test.ts",
+    "src/modules/catalog-manifests/catalog-manifests.command.ts",
+    "src/modules/catalog-manifests/catalog-manifests.command.unit.test.ts",
+    "src/modules/catalog-manifests/catalog-manifests.constants.ts",
+    "src/modules/catalog-manifests/catalog-manifests.module.ts",
+    "src/modules/catalog-manifests/catalog-manifests.module.unit.test.ts",
+    "src/modules/catalog-manifests/catalog-manifests.service.ts",
+    "src/modules/catalog-manifests/catalog-manifests.service.unit.test.ts",
+    "src/modules/catalog-manifests/catalog-manifests.types.ts",
+    "src/modules/issue-metadata/issue-metadata.command.ts",
+    "src/modules/issue-metadata/issue-metadata.command.unit.test.ts",
+    "src/modules/issue-metadata/issue-metadata.constants.ts",
+    "src/modules/issue-metadata/issue-metadata.module.ts",
+    "src/modules/issue-metadata/issue-metadata.module.unit.test.ts",
+    "src/modules/issue-metadata/issue-metadata.service.ts",
+    "src/modules/issue-metadata/issue-metadata.service.unit.test.ts",
+    "src/modules/issue-metadata/issue-metadata.types.ts",
+    "src/modules/issue-metadata/issue-metadata-github.service.ts",
+    "src/modules/issue-metadata/issue-metadata-github.service.unit.test.ts",
+    "src/modules/lockfile/lockfile.command.ts",
+    "src/modules/lockfile/lockfile.command.unit.test.ts",
+    "src/modules/lockfile/lockfile.constants.ts",
+    "src/modules/lockfile/lockfile.module.ts",
+    "src/modules/lockfile/lockfile.module.unit.test.ts",
+    "src/modules/lockfile/lockfile.service.ts",
+    "src/modules/lockfile/lockfile.service.unit.test.ts",
+    "src/modules/lockfile/lockfile.types.ts",
+    "src/modules/pull-request-body/pull-request-body.command.ts",
+    "src/modules/pull-request-body/pull-request-body.command.unit.test.ts",
+    "src/modules/pull-request-body/pull-request-body.constants.ts",
+    "src/modules/pull-request-body/pull-request-body.module.ts",
+    "src/modules/pull-request-body/pull-request-body.module.unit.test.ts",
+    "src/modules/pull-request-body/pull-request-body.service.ts",
+    "src/modules/pull-request-body/pull-request-body.service.unit.test.ts",
+    "src/modules/pull-request-body/pull-request-body.types.ts",
+    "src/modules/pull-request-metadata/pull-request-metadata.command.ts",
+    "src/modules/pull-request-metadata/pull-request-metadata.command.unit.test.ts",
+    "src/modules/pull-request-metadata/pull-request-metadata.constants.ts",
+    "src/modules/pull-request-metadata/pull-request-metadata.module.ts",
+    "src/modules/pull-request-metadata/pull-request-metadata.module.unit.test.ts",
+    "src/modules/pull-request-metadata/pull-request-metadata.service.ts",
+    "src/modules/pull-request-metadata/pull-request-metadata.service.unit.test.ts",
+    "src/modules/pull-request-metadata/pull-request-metadata.types.ts",
+    "src/modules/pull-request-metadata/pull-request-metadata-github.service.ts",
+    "src/modules/pull-request-metadata/pull-request-metadata-github.service.unit.test.ts",
+    "src/modules/pull-request-release-significance/pull-request-release-significance.command.ts",
+    "src/modules/pull-request-release-significance/pull-request-release-significance.command.unit.test.ts",
+    "src/modules/pull-request-release-significance/pull-request-release-significance.constants.ts",
+    "src/modules/pull-request-release-significance/pull-request-release-significance.module.ts",
+    "src/modules/pull-request-release-significance/pull-request-release-significance.module.unit.test.ts",
+    "src/modules/pull-request-release-significance/pull-request-release-significance.service.ts",
+    "src/modules/pull-request-release-significance/pull-request-release-significance.service.unit.test.ts",
+    "src/modules/pull-request-release-significance/pull-request-release-significance.types.ts",
+    "src/modules/pull-request-release-significance/pull-request-release-significance-github.service.ts",
+    "src/modules/pull-request-release-significance/pull-request-release-significance-github.service.unit.test.ts",
+    "src/repl.ts",
+    "src/repl.unit.test.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "isolatedFileNames": [
+    "eslint.config.ts",
+    "src/repl.unit.test.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "projectName": "validation"
+}

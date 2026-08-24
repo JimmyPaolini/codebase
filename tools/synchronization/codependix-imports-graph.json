@@ -1,0 +1,1005 @@
+{
+  "edges": [
+    {
+      "source": "src/main.end-to-end.test.ts",
+      "target": "src/constants.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/constants.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/issue-labels/issue-labels.module.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/synchronization/synchronization.module.ts"
+    },
+    {
+      "source": "src/main.ts",
+      "target": "src/main.module.ts"
+    },
+    {
+      "source": "src/main.unit.test.ts",
+      "target": "src/modules/issue-labels/issue-labels.module.ts"
+    },
+    {
+      "source": "src/main.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization.module.ts"
+    },
+    {
+      "source": "src/modules/conformetry-generators/conformetry-generators.command.ts",
+      "target": "src/modules/conformetry-generators/conformetry-generators.types.ts"
+    },
+    {
+      "source": "src/modules/conformetry-generators/conformetry-generators.command.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/conformetry-generators/conformetry-generators.command.ts",
+      "target": "src/modules/synchronization/synchronization.types.ts"
+    },
+    {
+      "source": "src/modules/conformetry-generators/conformetry-generators.command.unit.test.ts",
+      "target": "src/modules/conformetry-generators/conformetry-generators.command.ts"
+    },
+    {
+      "source": "src/modules/conformetry-generators/conformetry-generators.command.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/conformetry-generators/conformetry-generators.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/conformetry-generators/conformetry-generators.module.ts",
+      "target": "src/modules/conformetry-generators/conformetry-generators.command.ts"
+    },
+    {
+      "source": "src/modules/conformetry-generators/conformetry-generators.module.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config-io.service.ts",
+      "target": "src/modules/conventional-config/conventional-config.constants.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config-io.service.ts",
+      "target": "src/modules/conventional-config/conventional-config.types.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config-io.service.unit.test.ts",
+      "target": "src/modules/conventional-config/conventional-config-io.service.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config-io.service.unit.test.ts",
+      "target": "src/modules/conventional-config/conventional-config.types.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config-validators.service.ts",
+      "target": "src/modules/conventional-config/conventional-config-io.service.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config-validators.service.ts",
+      "target": "src/modules/conventional-config/conventional-config.constants.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config-validators.service.ts",
+      "target": "src/modules/conventional-config/conventional-config.types.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config-validators.service.unit.test.ts",
+      "target": "src/modules/conventional-config/conventional-config-io.service.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config-validators.service.unit.test.ts",
+      "target": "src/modules/conventional-config/conventional-config-validators.service.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config-validators.service.unit.test.ts",
+      "target": "src/modules/conventional-config/conventional-config.types.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.command.ts",
+      "target": "src/modules/conventional-config/conventional-config.service.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.command.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.command.ts",
+      "target": "src/modules/synchronization/synchronization.types.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.command.unit.test.ts",
+      "target": "src/modules/conventional-config/conventional-config.command.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.command.unit.test.ts",
+      "target": "src/modules/conventional-config/conventional-config.service.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.command.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.module.ts",
+      "target": "src/modules/conventional-config/conventional-config-io.service.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.module.ts",
+      "target": "src/modules/conventional-config/conventional-config-validators.service.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.module.ts",
+      "target": "src/modules/conventional-config/conventional-config.command.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.module.ts",
+      "target": "src/modules/conventional-config/conventional-config.service.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.module.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.service.ts",
+      "target": "src/modules/conventional-config/conventional-config-io.service.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.service.ts",
+      "target": "src/modules/conventional-config/conventional-config-validators.service.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.service.ts",
+      "target": "src/modules/conventional-config/conventional-config.constants.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.service.ts",
+      "target": "src/modules/conventional-config/conventional-config.types.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.service.unit.test.ts",
+      "target": "src/modules/conventional-config/conventional-config-io.service.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.service.unit.test.ts",
+      "target": "src/modules/conventional-config/conventional-config-validators.service.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.service.unit.test.ts",
+      "target": "src/modules/conventional-config/conventional-config.constants.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.service.unit.test.ts",
+      "target": "src/modules/conventional-config/conventional-config.service.ts"
+    },
+    {
+      "source": "src/modules/conventional-config/conventional-config.service.unit.test.ts",
+      "target": "src/modules/conventional-config/conventional-config.types.ts"
+    },
+    {
+      "source": "src/modules/devcontainer-configuration/devcontainer-configuration.command.ts",
+      "target": "src/modules/devcontainer-configuration/devcontainer-configuration.constants.ts"
+    },
+    {
+      "source": "src/modules/devcontainer-configuration/devcontainer-configuration.command.ts",
+      "target": "src/modules/devcontainer-configuration/devcontainer-configuration.types.ts"
+    },
+    {
+      "source": "src/modules/devcontainer-configuration/devcontainer-configuration.command.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/devcontainer-configuration/devcontainer-configuration.command.ts",
+      "target": "src/modules/synchronization/synchronization.types.ts"
+    },
+    {
+      "source": "src/modules/devcontainer-configuration/devcontainer-configuration.command.unit.test.ts",
+      "target": "src/modules/devcontainer-configuration/devcontainer-configuration.command.ts"
+    },
+    {
+      "source": "src/modules/devcontainer-configuration/devcontainer-configuration.command.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/devcontainer-configuration/devcontainer-configuration.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/devcontainer-configuration/devcontainer-configuration.module.ts",
+      "target": "src/modules/devcontainer-configuration/devcontainer-configuration.command.ts"
+    },
+    {
+      "source": "src/modules/devcontainer-configuration/devcontainer-configuration.module.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels-github.service.ts",
+      "target": "src/modules/issue-labels/issue-labels.constants.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels-github.service.ts",
+      "target": "src/modules/issue-labels/issue-labels.types.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels-github.service.unit.test.ts",
+      "target": "src/modules/issue-labels/issue-labels-github.service.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels-github.service.unit.test.ts",
+      "target": "src/modules/issue-labels/issue-labels.constants.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels.command.ts",
+      "target": "src/modules/issue-labels/issue-labels-github.service.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels.command.ts",
+      "target": "src/modules/issue-labels/issue-labels.constants.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels.command.ts",
+      "target": "src/modules/issue-labels/issue-labels.service.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels.command.unit.test.ts",
+      "target": "src/modules/issue-labels/issue-labels-github.service.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels.command.unit.test.ts",
+      "target": "src/modules/issue-labels/issue-labels.command.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels.command.unit.test.ts",
+      "target": "src/modules/issue-labels/issue-labels.service.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels.command.unit.test.ts",
+      "target": "src/modules/issue-labels/issue-labels.types.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels.module.ts",
+      "target": "src/modules/issue-labels/issue-labels-github.service.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels.module.ts",
+      "target": "src/modules/issue-labels/issue-labels.command.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels.module.ts",
+      "target": "src/modules/issue-labels/issue-labels.service.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels.module.unit.test.ts",
+      "target": "src/modules/issue-labels/issue-labels-github.service.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels.module.unit.test.ts",
+      "target": "src/modules/issue-labels/issue-labels.command.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels.module.unit.test.ts",
+      "target": "src/modules/issue-labels/issue-labels.module.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels.module.unit.test.ts",
+      "target": "src/modules/issue-labels/issue-labels.service.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels.service.ts",
+      "target": "src/modules/issue-labels/issue-labels.constants.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels.service.ts",
+      "target": "src/modules/issue-labels/issue-labels.types.ts"
+    },
+    {
+      "source": "src/modules/issue-labels/issue-labels.service.unit.test.ts",
+      "target": "src/modules/issue-labels/issue-labels.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.constants.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.types.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.unit.test.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.unit.test.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.types.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.constants.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.types.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.unit.test.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.unit.test.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.types.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.constants.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.types.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts",
+      "target": "src/modules/synchronization/synchronization-markers.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts",
+      "target": "src/modules/synchronization/synchronization.types.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.unit.test.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.unit.test.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.unit.test.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.constants.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.unit.test.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.unit.test.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.types.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization-markers.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.module.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.module.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.module.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.module.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.module.ts",
+      "target": "src/modules/synchronization/synchronization-markers.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.module.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs-synthetic.module.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.constants.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.types.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.service.unit.test.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.service.unit.test.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.service.unit.test.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts"
+    },
+    {
+      "source": "src/modules/nestjs-module-graphs/nestjs-module-graphs.service.unit.test.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.types.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.command.ts",
+      "target": "src/modules/nx-project-graphs/nx-project-graphs.constants.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.command.ts",
+      "target": "src/modules/nx-project-graphs/nx-project-graphs.service.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.command.ts",
+      "target": "src/modules/nx-project-graphs/nx-project-graphs.types.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.command.ts",
+      "target": "src/modules/synchronization/synchronization-markers.service.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.command.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.command.ts",
+      "target": "src/modules/synchronization/synchronization.types.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.command.unit.test.ts",
+      "target": "src/modules/nx-project-graphs/nx-project-graphs.command.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.command.unit.test.ts",
+      "target": "src/modules/nx-project-graphs/nx-project-graphs.constants.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.command.unit.test.ts",
+      "target": "src/modules/nx-project-graphs/nx-project-graphs.service.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.command.unit.test.ts",
+      "target": "src/modules/nx-project-graphs/nx-project-graphs.types.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.command.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization-markers.service.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.command.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.module.ts",
+      "target": "src/modules/nx-project-graphs/nx-project-graphs.command.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.module.ts",
+      "target": "src/modules/nx-project-graphs/nx-project-graphs.service.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.module.ts",
+      "target": "src/modules/synchronization/synchronization-markers.service.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.module.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.service.ts",
+      "target": "src/modules/nx-project-graphs/nx-project-graphs.constants.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.service.ts",
+      "target": "src/modules/nx-project-graphs/nx-project-graphs.types.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.service.unit.test.ts",
+      "target": "src/modules/nx-project-graphs/nx-project-graphs.service.ts"
+    },
+    {
+      "source": "src/modules/nx-project-graphs/nx-project-graphs.service.unit.test.ts",
+      "target": "src/modules/nx-project-graphs/nx-project-graphs.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels-github.service.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels-github.service.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels-github.service.unit.test.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels-github.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.command.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels-github.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.command.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.command.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.command.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.command.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.command.ts",
+      "target": "src/modules/synchronization/synchronization.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.command.unit.test.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels-github.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.command.unit.test.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.command.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.command.unit.test.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.command.unit.test.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.command.unit.test.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.command.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.constants.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.module.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels-github.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.module.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.command.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.module.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.module.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.service.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.service.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.service.unit.test.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-labels/pull-request-labels.service.unit.test.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-template/pull-request-template.command.ts",
+      "target": "src/modules/pull-request-template/pull-request-template.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-template/pull-request-template.command.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-template/pull-request-template.command.ts",
+      "target": "src/modules/synchronization/synchronization.types.ts"
+    },
+    {
+      "source": "src/modules/pull-request-template/pull-request-template.command.unit.test.ts",
+      "target": "src/modules/pull-request-template/pull-request-template.command.ts"
+    },
+    {
+      "source": "src/modules/pull-request-template/pull-request-template.command.unit.test.ts",
+      "target": "src/modules/pull-request-template/pull-request-template.constants.ts"
+    },
+    {
+      "source": "src/modules/pull-request-template/pull-request-template.command.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/pull-request-template/pull-request-template.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/pull-request-template/pull-request-template.module.ts",
+      "target": "src/modules/pull-request-template/pull-request-template.command.ts"
+    },
+    {
+      "source": "src/modules/pull-request-template/pull-request-template.module.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/skill-exclusions/skill-exclusions.command.ts",
+      "target": "src/modules/skill-exclusions/skill-exclusions.constants.ts"
+    },
+    {
+      "source": "src/modules/skill-exclusions/skill-exclusions.command.ts",
+      "target": "src/modules/skill-exclusions/skill-exclusions.types.ts"
+    },
+    {
+      "source": "src/modules/skill-exclusions/skill-exclusions.command.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/skill-exclusions/skill-exclusions.command.ts",
+      "target": "src/modules/synchronization/synchronization.types.ts"
+    },
+    {
+      "source": "src/modules/skill-exclusions/skill-exclusions.command.unit.test.ts",
+      "target": "src/modules/skill-exclusions/skill-exclusions.command.ts"
+    },
+    {
+      "source": "src/modules/skill-exclusions/skill-exclusions.command.unit.test.ts",
+      "target": "src/modules/skill-exclusions/skill-exclusions.constants.ts"
+    },
+    {
+      "source": "src/modules/skill-exclusions/skill-exclusions.command.unit.test.ts",
+      "target": "src/modules/skill-exclusions/skill-exclusions.types.ts"
+    },
+    {
+      "source": "src/modules/skill-exclusions/skill-exclusions.command.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/skill-exclusions/skill-exclusions.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/skill-exclusions/skill-exclusions.constants.ts",
+      "target": "src/modules/skill-exclusions/skill-exclusions.types.ts"
+    },
+    {
+      "source": "src/modules/skill-exclusions/skill-exclusions.module.ts",
+      "target": "src/modules/skill-exclusions/skill-exclusions.command.ts"
+    },
+    {
+      "source": "src/modules/skill-exclusions/skill-exclusions.module.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization-markers.service.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization-markers.service.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.command.ts",
+      "target": "src/modules/conformetry-generators/conformetry-generators.command.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.command.ts",
+      "target": "src/modules/conventional-config/conventional-config.command.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.command.ts",
+      "target": "src/modules/devcontainer-configuration/devcontainer-configuration.command.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.command.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.command.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.command.ts",
+      "target": "src/modules/pull-request-template/pull-request-template.command.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.command.ts",
+      "target": "src/modules/skill-exclusions/skill-exclusions.command.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.command.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.command.ts",
+      "target": "src/modules/synchronization/synchronization.types.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.command.unit.test.ts",
+      "target": "src/modules/conformetry-generators/conformetry-generators.command.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.command.unit.test.ts",
+      "target": "src/modules/conventional-config/conventional-config.command.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.command.unit.test.ts",
+      "target": "src/modules/devcontainer-configuration/devcontainer-configuration.command.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.command.unit.test.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.command.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.command.unit.test.ts",
+      "target": "src/modules/pull-request-template/pull-request-template.command.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.command.unit.test.ts",
+      "target": "src/modules/skill-exclusions/skill-exclusions.command.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.command.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization.command.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.command.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.command.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization.types.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.ts",
+      "target": "src/modules/conformetry-generators/conformetry-generators.module.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.ts",
+      "target": "src/modules/conventional-config/conventional-config.module.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.ts",
+      "target": "src/modules/devcontainer-configuration/devcontainer-configuration.module.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.module.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.ts",
+      "target": "src/modules/nx-project-graphs/nx-project-graphs.module.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.module.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.ts",
+      "target": "src/modules/pull-request-template/pull-request-template.module.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.ts",
+      "target": "src/modules/skill-exclusions/skill-exclusions.module.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.ts",
+      "target": "src/modules/synchronization/synchronization.command.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.unit.test.ts",
+      "target": "src/modules/conformetry-generators/conformetry-generators.module.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.unit.test.ts",
+      "target": "src/modules/conventional-config/conventional-config.module.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.unit.test.ts",
+      "target": "src/modules/devcontainer-configuration/devcontainer-configuration.module.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.unit.test.ts",
+      "target": "src/modules/nestjs-module-graphs/nestjs-module-graphs.module.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.unit.test.ts",
+      "target": "src/modules/nx-project-graphs/nx-project-graphs.module.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.unit.test.ts",
+      "target": "src/modules/pull-request-labels/pull-request-labels.module.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.unit.test.ts",
+      "target": "src/modules/pull-request-template/pull-request-template.module.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.unit.test.ts",
+      "target": "src/modules/skill-exclusions/skill-exclusions.module.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization.command.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization.module.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.module.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.service.ts",
+      "target": "src/modules/synchronization/synchronization.types.ts"
+    },
+    {
+      "source": "src/modules/synchronization/synchronization.service.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization.service.ts"
+    },
+    {
+      "source": "src/repl.ts",
+      "target": "src/main.module.ts"
+    },
+    {
+      "source": "src/repl.unit.test.ts",
+      "target": "src/modules/synchronization/synchronization.module.ts"
+    }
+  ],
+  "fileNames": [
+    "eslint.config.ts",
+    "src/constants.ts",
+    "src/main.end-to-end.test.ts",
+    "src/main.module.ts",
+    "src/main.ts",
+    "src/main.unit.test.ts",
+    "src/modules/conformetry-generators/conformetry-generators.command.ts",
+    "src/modules/conformetry-generators/conformetry-generators.command.unit.test.ts",
+    "src/modules/conformetry-generators/conformetry-generators.constants.ts",
+    "src/modules/conformetry-generators/conformetry-generators.module.ts",
+    "src/modules/conformetry-generators/conformetry-generators.types.ts",
+    "src/modules/conventional-config/conventional-config.command.ts",
+    "src/modules/conventional-config/conventional-config.command.unit.test.ts",
+    "src/modules/conventional-config/conventional-config.constants.ts",
+    "src/modules/conventional-config/conventional-config.module.ts",
+    "src/modules/conventional-config/conventional-config.service.ts",
+    "src/modules/conventional-config/conventional-config.service.unit.test.ts",
+    "src/modules/conventional-config/conventional-config.types.ts",
+    "src/modules/conventional-config/conventional-config-io.service.ts",
+    "src/modules/conventional-config/conventional-config-io.service.unit.test.ts",
+    "src/modules/conventional-config/conventional-config-validators.service.ts",
+    "src/modules/conventional-config/conventional-config-validators.service.unit.test.ts",
+    "src/modules/devcontainer-configuration/devcontainer-configuration.command.ts",
+    "src/modules/devcontainer-configuration/devcontainer-configuration.command.unit.test.ts",
+    "src/modules/devcontainer-configuration/devcontainer-configuration.constants.ts",
+    "src/modules/devcontainer-configuration/devcontainer-configuration.module.ts",
+    "src/modules/devcontainer-configuration/devcontainer-configuration.types.ts",
+    "src/modules/issue-labels/issue-labels.command.ts",
+    "src/modules/issue-labels/issue-labels.command.unit.test.ts",
+    "src/modules/issue-labels/issue-labels.constants.ts",
+    "src/modules/issue-labels/issue-labels.module.ts",
+    "src/modules/issue-labels/issue-labels.module.unit.test.ts",
+    "src/modules/issue-labels/issue-labels.service.ts",
+    "src/modules/issue-labels/issue-labels.service.unit.test.ts",
+    "src/modules/issue-labels/issue-labels.types.ts",
+    "src/modules/issue-labels/issue-labels-github.service.ts",
+    "src/modules/issue-labels/issue-labels-github.service.unit.test.ts",
+    "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts",
+    "src/modules/nestjs-module-graphs/nestjs-module-graphs.command.unit.test.ts",
+    "src/modules/nestjs-module-graphs/nestjs-module-graphs.constants.ts",
+    "src/modules/nestjs-module-graphs/nestjs-module-graphs.module.ts",
+    "src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts",
+    "src/modules/nestjs-module-graphs/nestjs-module-graphs.service.unit.test.ts",
+    "src/modules/nestjs-module-graphs/nestjs-module-graphs.types.ts",
+    "src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts",
+    "src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.unit.test.ts",
+    "src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts",
+    "src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.unit.test.ts",
+    "src/modules/nestjs-module-graphs/nestjs-module-graphs-synthetic.module.ts",
+    "src/modules/nx-project-graphs/nx-project-graphs.command.ts",
+    "src/modules/nx-project-graphs/nx-project-graphs.command.unit.test.ts",
+    "src/modules/nx-project-graphs/nx-project-graphs.constants.ts",
+    "src/modules/nx-project-graphs/nx-project-graphs.module.ts",
+    "src/modules/nx-project-graphs/nx-project-graphs.service.ts",
+    "src/modules/nx-project-graphs/nx-project-graphs.service.unit.test.ts",
+    "src/modules/nx-project-graphs/nx-project-graphs.types.ts",
+    "src/modules/pull-request-labels/pull-request-labels.command.ts",
+    "src/modules/pull-request-labels/pull-request-labels.command.unit.test.ts",
+    "src/modules/pull-request-labels/pull-request-labels.constants.ts",
+    "src/modules/pull-request-labels/pull-request-labels.module.ts",
+    "src/modules/pull-request-labels/pull-request-labels.service.ts",
+    "src/modules/pull-request-labels/pull-request-labels.service.unit.test.ts",
+    "src/modules/pull-request-labels/pull-request-labels.types.ts",
+    "src/modules/pull-request-labels/pull-request-labels-github.service.ts",
+    "src/modules/pull-request-labels/pull-request-labels-github.service.unit.test.ts",
+    "src/modules/pull-request-template/pull-request-template.command.ts",
+    "src/modules/pull-request-template/pull-request-template.command.unit.test.ts",
+    "src/modules/pull-request-template/pull-request-template.constants.ts",
+    "src/modules/pull-request-template/pull-request-template.module.ts",
+    "src/modules/pull-request-template/pull-request-template.types.ts",
+    "src/modules/skill-exclusions/skill-exclusions.command.ts",
+    "src/modules/skill-exclusions/skill-exclusions.command.unit.test.ts",
+    "src/modules/skill-exclusions/skill-exclusions.constants.ts",
+    "src/modules/skill-exclusions/skill-exclusions.module.ts",
+    "src/modules/skill-exclusions/skill-exclusions.types.ts",
+    "src/modules/synchronization/synchronization.command.ts",
+    "src/modules/synchronization/synchronization.command.unit.test.ts",
+    "src/modules/synchronization/synchronization.constants.ts",
+    "src/modules/synchronization/synchronization.module.ts",
+    "src/modules/synchronization/synchronization.module.unit.test.ts",
+    "src/modules/synchronization/synchronization.service.ts",
+    "src/modules/synchronization/synchronization.service.unit.test.ts",
+    "src/modules/synchronization/synchronization.types.ts",
+    "src/modules/synchronization/synchronization-markers.service.ts",
+    "src/modules/synchronization/synchronization-markers.service.unit.test.ts",
+    "src/repl.ts",
+    "src/repl.unit.test.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "isolatedFileNames": [
+    "eslint.config.ts",
+    "src/modules/conformetry-generators/conformetry-generators.constants.ts",
+    "src/modules/pull-request-template/pull-request-template.types.ts",
+    "src/modules/synchronization/synchronization.constants.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "projectName": "synchronization"
+}

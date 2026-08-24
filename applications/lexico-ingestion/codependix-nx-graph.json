@@ -1,0 +1,17 @@
+{
+  "dependencies": ["lexico-entities", "logger"],
+  "dependents": [],
+  "edges": [
+    {
+      "implicit": false,
+      "source": "lexico-ingestion",
+      "target": "lexico-entities"
+    },
+    {
+      "implicit": false,
+      "source": "lexico-ingestion",
+      "target": "logger"
+    }
+  ],
+  "projectName": "lexico-ingestion"
+}

@@ -1,0 +1,12 @@
+{
+  "ambientModuleNames": [],
+  "edges": [
+    {
+      "source": "TypescriptValidatorModule",
+      "target": "ScoringModule"
+    }
+  ],
+  "isolatedModuleNames": [],
+  "moduleNames": ["ScoringModule", "TypescriptValidatorModule"],
+  "projectName": "conformetry-typescript"
+}

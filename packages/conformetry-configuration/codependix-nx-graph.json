@@ -1,0 +1,48 @@
+{
+  "dependencies": ["conformetry-core", "conformetry-generation"],
+  "dependents": [
+    "conformetry-cli",
+    "conformetry-files",
+    "conformetry-nx",
+    "conformetry-validation",
+    "synchronization"
+  ],
+  "edges": [
+    {
+      "implicit": false,
+      "source": "conformetry-cli",
+      "target": "conformetry-configuration"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-configuration",
+      "target": "conformetry-core"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-configuration",
+      "target": "conformetry-generation"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-files",
+      "target": "conformetry-configuration"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-nx",
+      "target": "conformetry-configuration"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-validation",
+      "target": "conformetry-configuration"
+    },
+    {
+      "implicit": false,
+      "source": "synchronization",
+      "target": "conformetry-configuration"
+    }
+  ],
+  "projectName": "conformetry-configuration"
+}

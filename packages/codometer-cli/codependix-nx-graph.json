@@ -1,0 +1,17 @@
+{
+  "dependencies": ["codometer-configuration", "logger"],
+  "dependents": [],
+  "edges": [
+    {
+      "implicit": false,
+      "source": "codometer-cli",
+      "target": "codometer-configuration"
+    },
+    {
+      "implicit": false,
+      "source": "codometer-cli",
+      "target": "logger"
+    }
+  ],
+  "projectName": "codometer-cli"
+}

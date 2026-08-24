@@ -1,0 +1,12 @@
+{
+  "dependencies": [],
+  "dependents": ["callidescope-cli"],
+  "edges": [
+    {
+      "implicit": false,
+      "source": "callidescope-cli",
+      "target": "callidescope-configuration"
+    }
+  ],
+  "projectName": "callidescope-configuration"
+}

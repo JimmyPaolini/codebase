@@ -1,0 +1,22 @@
+{
+  "ambientModuleNames": [],
+  "edges": [
+    {
+      "source": "ReportingModule",
+      "target": "ScoringModule"
+    }
+  ],
+  "isolatedModuleNames": [
+    "DifferencesModule",
+    "InventoryModule",
+    "LanguageModule"
+  ],
+  "moduleNames": [
+    "DifferencesModule",
+    "InventoryModule",
+    "LanguageModule",
+    "ReportingModule",
+    "ScoringModule"
+  ],
+  "projectName": "conformetry-core"
+}

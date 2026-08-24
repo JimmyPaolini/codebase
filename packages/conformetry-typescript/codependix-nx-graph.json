@@ -1,0 +1,22 @@
+{
+  "dependencies": ["conformetry-core"],
+  "dependents": ["conformetry-nx", "conformetry-validation"],
+  "edges": [
+    {
+      "implicit": false,
+      "source": "conformetry-nx",
+      "target": "conformetry-typescript"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-typescript",
+      "target": "conformetry-core"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-validation",
+      "target": "conformetry-typescript"
+    }
+  ],
+  "projectName": "conformetry-typescript"
+}

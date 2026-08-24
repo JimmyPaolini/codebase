@@ -1,0 +1,115 @@
+{
+  "edges": [
+    {
+      "source": "src/index.unit.test.ts",
+      "target": "src/index.ts"
+    },
+    {
+      "source": "src/modules/neighborhood/neighborhood.module.ts",
+      "target": "src/modules/neighborhood/neighborhood.service.ts"
+    },
+    {
+      "source": "src/modules/neighborhood/neighborhood.module.unit.test.ts",
+      "target": "src/modules/neighborhood/neighborhood.module.ts"
+    },
+    {
+      "source": "src/modules/neighborhood/neighborhood.module.unit.test.ts",
+      "target": "src/modules/neighborhood/neighborhood.service.ts"
+    },
+    {
+      "source": "src/modules/neighborhood/neighborhood.service.ts",
+      "target": "src/modules/neighborhood/neighborhood.constants.ts"
+    },
+    {
+      "source": "src/modules/neighborhood/neighborhood.service.ts",
+      "target": "src/modules/neighborhood/neighborhood.types.ts"
+    },
+    {
+      "source": "src/modules/neighborhood/neighborhood.service.unit.test.ts",
+      "target": "src/modules/neighborhood/neighborhood.service.ts"
+    },
+    {
+      "source": "src/modules/neighborhood/neighborhood.service.unit.test.ts",
+      "target": "src/modules/neighborhood/neighborhood.types.ts"
+    },
+    {
+      "source": "src/modules/workspace-graph/workspace-graph.module.ts",
+      "target": "src/modules/neighborhood/neighborhood.module.ts"
+    },
+    {
+      "source": "src/modules/workspace-graph/workspace-graph.module.ts",
+      "target": "src/modules/workspace-graph/workspace-graph.service.ts"
+    },
+    {
+      "source": "src/modules/workspace-graph/workspace-graph.module.unit.test.ts",
+      "target": "src/modules/workspace-graph/workspace-graph.module.ts"
+    },
+    {
+      "source": "src/modules/workspace-graph/workspace-graph.module.unit.test.ts",
+      "target": "src/modules/workspace-graph/workspace-graph.service.ts"
+    },
+    {
+      "source": "src/modules/workspace-graph/workspace-graph.service.ts",
+      "target": "src/modules/neighborhood/neighborhood.constants.ts"
+    },
+    {
+      "source": "src/modules/workspace-graph/workspace-graph.service.ts",
+      "target": "src/modules/neighborhood/neighborhood.service.ts"
+    },
+    {
+      "source": "src/modules/workspace-graph/workspace-graph.service.ts",
+      "target": "src/modules/neighborhood/neighborhood.types.ts"
+    },
+    {
+      "source": "src/modules/workspace-graph/workspace-graph.service.ts",
+      "target": "src/modules/workspace-graph/workspace-graph.constants.ts"
+    },
+    {
+      "source": "src/modules/workspace-graph/workspace-graph.service.ts",
+      "target": "src/modules/workspace-graph/workspace-graph.types.ts"
+    },
+    {
+      "source": "src/modules/workspace-graph/workspace-graph.service.unit.test.ts",
+      "target": "src/modules/neighborhood/neighborhood.service.ts"
+    },
+    {
+      "source": "src/modules/workspace-graph/workspace-graph.service.unit.test.ts",
+      "target": "src/modules/neighborhood/neighborhood.types.ts"
+    },
+    {
+      "source": "src/modules/workspace-graph/workspace-graph.service.unit.test.ts",
+      "target": "src/modules/workspace-graph/workspace-graph.service.ts"
+    },
+    {
+      "source": "src/modules/workspace-graph/workspace-graph.types.ts",
+      "target": "src/modules/neighborhood/neighborhood.types.ts"
+    }
+  ],
+  "fileNames": [
+    "eslint.config.ts",
+    "src/index.ts",
+    "src/index.unit.test.ts",
+    "src/modules/neighborhood/neighborhood.constants.ts",
+    "src/modules/neighborhood/neighborhood.module.ts",
+    "src/modules/neighborhood/neighborhood.module.unit.test.ts",
+    "src/modules/neighborhood/neighborhood.service.ts",
+    "src/modules/neighborhood/neighborhood.service.unit.test.ts",
+    "src/modules/neighborhood/neighborhood.types.ts",
+    "src/modules/workspace-graph/workspace-graph.constants.ts",
+    "src/modules/workspace-graph/workspace-graph.module.ts",
+    "src/modules/workspace-graph/workspace-graph.module.unit.test.ts",
+    "src/modules/workspace-graph/workspace-graph.service.ts",
+    "src/modules/workspace-graph/workspace-graph.service.unit.test.ts",
+    "src/modules/workspace-graph/workspace-graph.types.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "isolatedFileNames": [
+    "eslint.config.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "projectName": "codependix-nx"
+}

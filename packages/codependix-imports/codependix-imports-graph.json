@@ -1,0 +1,121 @@
+{
+  "edges": [
+    {
+      "source": "src/modules/import-graph/import-graph.module.ts",
+      "target": "src/modules/import-graph/import-graph.service.ts"
+    },
+    {
+      "source": "src/modules/import-graph/import-graph.module.ts",
+      "target": "src/modules/typescript-project/typescript-project.module.ts"
+    },
+    {
+      "source": "src/modules/import-graph/import-graph.module.unit.test.ts",
+      "target": "src/modules/import-graph/import-graph.module.ts"
+    },
+    {
+      "source": "src/modules/import-graph/import-graph.module.unit.test.ts",
+      "target": "src/modules/import-graph/import-graph.service.ts"
+    },
+    {
+      "source": "src/modules/import-graph/import-graph.service.ts",
+      "target": "src/modules/import-graph/import-graph.constants.ts"
+    },
+    {
+      "source": "src/modules/import-graph/import-graph.service.ts",
+      "target": "src/modules/import-graph/import-graph.types.ts"
+    },
+    {
+      "source": "src/modules/import-graph/import-graph.service.ts",
+      "target": "src/modules/typescript-project/typescript-project.service.ts"
+    },
+    {
+      "source": "src/modules/import-graph/import-graph.service.ts",
+      "target": "src/modules/typescript-project/typescript-project.types.ts"
+    },
+    {
+      "source": "src/modules/import-graph/import-graph.service.unit.test.ts",
+      "target": "src/modules/import-graph/import-graph.constants.ts"
+    },
+    {
+      "source": "src/modules/import-graph/import-graph.service.unit.test.ts",
+      "target": "src/modules/import-graph/import-graph.service.ts"
+    },
+    {
+      "source": "src/modules/import-graph/import-graph.service.unit.test.ts",
+      "target": "src/modules/typescript-project/typescript-project.service.ts"
+    },
+    {
+      "source": "src/modules/import-graph/import-graph.service.unit.test.ts",
+      "target": "testing/programs.ts"
+    },
+    {
+      "source": "src/modules/typescript-project/typescript-project.module.ts",
+      "target": "src/modules/typescript-project/typescript-project.service.ts"
+    },
+    {
+      "source": "src/modules/typescript-project/typescript-project.module.unit.test.ts",
+      "target": "src/modules/typescript-project/typescript-project.module.ts"
+    },
+    {
+      "source": "src/modules/typescript-project/typescript-project.module.unit.test.ts",
+      "target": "src/modules/typescript-project/typescript-project.service.ts"
+    },
+    {
+      "source": "src/modules/typescript-project/typescript-project.service.ts",
+      "target": "src/modules/typescript-project/typescript-project.constants.ts"
+    },
+    {
+      "source": "src/modules/typescript-project/typescript-project.service.ts",
+      "target": "src/modules/typescript-project/typescript-project.errors.ts"
+    },
+    {
+      "source": "src/modules/typescript-project/typescript-project.service.ts",
+      "target": "src/modules/typescript-project/typescript-project.types.ts"
+    },
+    {
+      "source": "src/modules/typescript-project/typescript-project.service.unit.test.ts",
+      "target": "src/modules/typescript-project/typescript-project.errors.ts"
+    },
+    {
+      "source": "src/modules/typescript-project/typescript-project.service.unit.test.ts",
+      "target": "src/modules/typescript-project/typescript-project.service.ts"
+    },
+    {
+      "source": "src/modules/typescript-project/typescript-project.service.unit.test.ts",
+      "target": "src/modules/typescript-project/typescript-project.types.ts"
+    },
+    {
+      "source": "testing/programs.ts",
+      "target": "src/modules/typescript-project/typescript-project.types.ts"
+    }
+  ],
+  "fileNames": [
+    "eslint.config.ts",
+    "src/index.ts",
+    "src/modules/import-graph/import-graph.constants.ts",
+    "src/modules/import-graph/import-graph.module.ts",
+    "src/modules/import-graph/import-graph.module.unit.test.ts",
+    "src/modules/import-graph/import-graph.service.ts",
+    "src/modules/import-graph/import-graph.service.unit.test.ts",
+    "src/modules/import-graph/import-graph.types.ts",
+    "src/modules/typescript-project/typescript-project.constants.ts",
+    "src/modules/typescript-project/typescript-project.errors.ts",
+    "src/modules/typescript-project/typescript-project.module.ts",
+    "src/modules/typescript-project/typescript-project.module.unit.test.ts",
+    "src/modules/typescript-project/typescript-project.service.ts",
+    "src/modules/typescript-project/typescript-project.service.unit.test.ts",
+    "src/modules/typescript-project/typescript-project.types.ts",
+    "testing/mocks.ts",
+    "testing/programs.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "isolatedFileNames": [
+    "eslint.config.ts",
+    "src/index.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "projectName": "codependix-imports"
+}

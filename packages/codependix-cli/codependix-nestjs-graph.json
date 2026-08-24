@@ -1,0 +1,75 @@
+{
+  "ambientModuleNames": ["ConfigModule", "LoggerModule"],
+  "edges": [
+    {
+      "source": "CodependixModule",
+      "target": "ConfigurationModule"
+    },
+    {
+      "source": "CodependixModule",
+      "target": "DeliveryModule"
+    },
+    {
+      "source": "CodependixModule",
+      "target": "ImportGraphModule"
+    },
+    {
+      "source": "CodependixModule",
+      "target": "ModuleGraphModule"
+    },
+    {
+      "source": "CodependixModule",
+      "target": "NeighborhoodModule"
+    },
+    {
+      "source": "CodependixModule",
+      "target": "NestjsProjectModule"
+    },
+    {
+      "source": "CodependixModule",
+      "target": "TypescriptProjectModule"
+    },
+    {
+      "source": "CodependixModule",
+      "target": "WorkspaceGraphModule"
+    },
+    {
+      "source": "DeliveryModule",
+      "target": "AnchorsModule"
+    },
+    {
+      "source": "ImportGraphModule",
+      "target": "TypescriptProjectModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "CodependixModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "DiscoveryModule"
+    },
+    {
+      "source": "WorkspaceGraphModule",
+      "target": "NeighborhoodModule"
+    }
+  ],
+  "isolatedModuleNames": ["ConfigModule", "LoggerModule"],
+  "moduleNames": [
+    "AnchorsModule",
+    "CodependixModule",
+    "ConfigModule",
+    "ConfigurationModule",
+    "DeliveryModule",
+    "DiscoveryModule",
+    "ImportGraphModule",
+    "LoggerModule",
+    "MainModule",
+    "ModuleGraphModule",
+    "NeighborhoodModule",
+    "NestjsProjectModule",
+    "TypescriptProjectModule",
+    "WorkspaceGraphModule"
+  ],
+  "projectName": "codependix-cli"
+}
