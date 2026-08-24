@@ -14,7 +14,7 @@ import {
 
 import { LoggerService } from "@codebase/logger";
 
-import { buildCodeStatistics } from "../../../testing/mocks";
+import { buildCodeStatistics, throwUnknown } from "../../../testing/mocks";
 import { ReportService } from "../report/report.service";
 
 import { CodometerCommand } from "./codometer.command";
@@ -425,6 +425,24 @@ describe(CodometerCommand, () => {
         "📊 Rejected the configuration",
         undefined,
         { reason: 'Cannot read the limit on "size" from "8 K"' },
+      );
+      expect(codometerService.measure).not.toHaveBeenCalled();
+      expect(process.exitCode).toBe(1);
+    });
+
+    it("reports a non-Error thrown value as a plain string", async () => {
+      vi.mocked(configurationService.loadConfiguration).mockImplementation(
+        () => {
+          throwUnknown("not an Error");
+        },
+      );
+
+      await run();
+
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Rejected the configuration",
+        undefined,
+        { reason: "not an Error" },
       );
       expect(codometerService.measure).not.toHaveBeenCalled();
       expect(process.exitCode).toBe(1);

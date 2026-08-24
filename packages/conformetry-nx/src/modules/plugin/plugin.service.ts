@@ -43,7 +43,6 @@ import type {
 } from "./plugin.types";
 import type { TemplateDefinition } from "@conformetry/configuration";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * The plugin's whole surface: infer targets, generate, validate.
  *
@@ -52,7 +51,6 @@ import type { TemplateDefinition } from "@conformetry/configuration";
  * functions in `index.ts` stay thin wrappers with no logic of their own.
  */
 @Injectable()
-/* v8 ignore stop */
 export class PluginService {
   // 🏗 Dependency Injection
 

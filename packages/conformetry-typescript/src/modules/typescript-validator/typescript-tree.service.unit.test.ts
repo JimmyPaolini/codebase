@@ -119,5 +119,31 @@ describe(TypescriptTreeService, () => {
         }).differences,
       ).toStrictEqual([]);
     });
+
+    it("prefers a later candidate that matches the template more closely", () => {
+      // Two keyless blocks are both matched by kind alone. The first is a
+      // worse match than the second, so the reduce must replace its running
+      // "best" rather than keep the one it started with.
+      expect(
+        service.compareTree({
+          instanceNode: parse("{}\n{\n  start();\n}\n"),
+          templateNode: parse("{\n  start();\n}\n"),
+        }).differences,
+      ).toStrictEqual([]);
+    });
+
+    it("keeps the earlier candidate when two equally match a keyless node", () => {
+      // Two identical if-statements have no key of their own, so both are
+      // matched by kind alone and both satisfy the template perfectly — a
+      // tie the reduce must resolve without discarding the earlier one.
+      const statement = "if (ready) {\n  start();\n}\n";
+
+      expect(
+        service.compareTree({
+          instanceNode: parse(statement + statement),
+          templateNode: parse(statement),
+        }).differences,
+      ).toStrictEqual([]);
+    });
   });
 });

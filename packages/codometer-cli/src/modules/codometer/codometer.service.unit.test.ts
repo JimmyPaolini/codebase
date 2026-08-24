@@ -6,6 +6,7 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { throwUnknown } from "../../../testing/mocks";
 import { LimitsService } from "../limits/limits.service";
 import { MetricIndexService } from "../limits/metric-index.service";
 
@@ -405,6 +406,25 @@ describe(CodometerService, () => {
     expect(result.failures.map((failure) => failure.subject)).toStrictEqual([
       "first",
       "second",
+    ]);
+  });
+
+  it("reports a non-Error thrown value as a plain string", () => {
+    vi.mocked(targetsService.matchFiles).mockImplementation(() => {
+      throwUnknown("not an Error");
+    });
+
+    const result = buildService().measure({
+      configuration: {
+        ...configuration,
+        targets: [{ ...compiledTarget, name: "broken" }],
+      },
+      outputPaths: [],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.failures).toStrictEqual([
+      { kind: "target", reason: "not an Error", subject: "broken" },
     ]);
   });
 

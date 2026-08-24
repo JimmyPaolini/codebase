@@ -7,7 +7,6 @@ import { PROJECT_ROOT_PATTERN } from "./scope.constants";
 import type { ProjectScope } from "../instances/instances.types";
 import type { ConformetryInstanceGroup } from "@conformetry/configuration";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Reads an instance group as Nx resolves it.
  *
@@ -18,7 +17,6 @@ import type { ConformetryInstanceGroup } from "@conformetry/configuration";
  * contradict it, and so nothing can silently narrow it.
  */
 @Injectable()
-/* v8 ignore stop */
 export class ScopeService {
   // 🏗 Dependency Injection
 

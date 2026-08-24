@@ -18,7 +18,6 @@ import type {
 import type { MatchedInstance } from "@conformetry/configuration";
 import type { ConformetryLanguageValidator } from "@conformetry/core";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Runs a full conformetry validation: match instances to templates, check the
  * files exist, then compare contents language by language.
@@ -28,7 +27,6 @@ import type { ConformetryLanguageValidator } from "@conformetry/core";
  * suffixes, which made a generic package depend on one repository's layout.
  */
 @Injectable()
-/* v8 ignore stop */
 export class ValidationService {
   // 🏗 Dependency Injection
 

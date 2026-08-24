@@ -131,6 +131,26 @@ describe("bootstrap utilities", () => {
       );
     });
 
+    it("replaces a dangling link left behind by a deleted emit", async () => {
+      // A link this bootstrap made previously, whose target has since been
+      // removed, still counts as ours — `realpathSync` throws on it, and the
+      // fallback treats a link with nothing on disk as leading nowhere else.
+      mkdirSync(path.join(workspaceRoot, "node_modules"), { recursive: true });
+      symlinkSync(
+        path.join(workspaceRoot, "no-longer-there"),
+        path.join(workspaceRoot, "node_modules/conformetry"),
+        "dir",
+      );
+
+      await expect(bootstrapPlugin(workspaceRoot)).resolves.toHaveLength(2);
+
+      const linkPath = path.join(workspaceRoot, "node_modules/conformetry");
+
+      expect(readFileSync(path.join(linkPath, "generators.json"), "utf8")).toBe(
+        '{ "generators": {} }\n',
+      );
+    });
+
     it("refuses a link to somewhere other than the emitted plugin", async () => {
       // pnpm installs packages as symlinks into its store, so being a link is
       // no evidence the link is this bootstrap's.

@@ -225,6 +225,25 @@ describe(MarkdownService, () => {
     );
   });
 
+  it("reports a non-Error thrown value as a plain string", () => {
+    const workingDirectory = writeDocuments({ "a.md": "# A\n" });
+
+    const result = service.analyze({
+      markdownFiles: ["a.md", "throws-a-string.md"],
+      workingDirectory,
+    });
+
+    expect(result.files).toBe(1);
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      "📝 Skipped markdown analysis",
+      undefined,
+      expect.objectContaining({
+        filePath: "throws-a-string.md",
+        reason: "not an Error",
+      }),
+    );
+  });
+
   it("returns empty metrics when there are no markdown files", () => {
     const result = service.analyze({
       markdownFiles: [],

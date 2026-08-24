@@ -15,7 +15,6 @@ import type {
   ReadProjectScopeArguments,
 } from "./projects.types";
 
-/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Reads the workspace's projects straight from their `project.json` files.
  *
@@ -26,7 +25,6 @@ import type {
  * check compares those bytes, and would fire on any disagreement.
  */
 @Injectable()
-/* v8 ignore stop */
 export class ProjectsService {
   // 🏗 Dependency Injection
 

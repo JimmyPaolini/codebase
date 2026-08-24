@@ -14,6 +14,7 @@ import {
 
 import type { TomlInput, TomlResult } from "./toml.types";
 
+/* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Counts the tables, keys, and arrays a TOML document declares.
  *
@@ -22,6 +23,7 @@ import type { TomlInput, TomlResult } from "./toml.types";
  * syntax. That state is the whole reason this is not three regexes.
  */
 @Injectable()
+/* v8 ignore stop */
 export class TomlService {
   // 🏗 Dependency Injection
 
