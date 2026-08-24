@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 
+import { LoggerModule } from "@codebase/logger";
+
 import { TargetsService } from "./targets.service";
 
 /**
@@ -8,7 +10,7 @@ import { TargetsService } from "./targets.service";
 @Module({
   controllers: [],
   exports: [TargetsService],
-  imports: [],
+  imports: [LoggerModule],
   providers: [TargetsService],
 })
 export class TargetsModule {}

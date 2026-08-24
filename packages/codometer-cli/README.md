@@ -433,13 +433,21 @@ flowchart LR
   codometer_changes["codometer-changes"]
   codometer_cli["codometer-cli"]
   codometer_configuration["codometer-configuration"]
+  codometer_custom_statistics["codometer-custom-statistics"]
+  codometer_file_discovery["codometer-file-discovery"]
   codometer_languages["codometer-languages"]
   codometer_output["codometer-output"]
+  codometer_size_analysis["codometer-size-analysis"]
+  codometer_targets["codometer-targets"]
   logger["logger"]
   codometer_cli --> codometer_changes
   codometer_cli --> codometer_configuration
+  codometer_cli --> codometer_custom_statistics
+  codometer_cli --> codometer_file_discovery
   codometer_cli --> codometer_languages
   codometer_cli --> codometer_output
+  codometer_cli --> codometer_size_analysis
+  codometer_cli --> codometer_targets
   codometer_cli --> logger
   classDef subject stroke-width:3px
   class codometer_cli subject
@@ -458,18 +466,20 @@ flowchart LR
   subgraph group0["codometer-cli"]
     ChangesModule
     CodometerModule
-    CustomStatisticsModule
-    FileDiscoveryModule
     LimitsModule
     MainModule
     ReportModule
-    SizeAnalysisModule
-    TargetsModule
   end
   subgraph group1["codometer-configuration"]
     ConfigurationModule
   end
-  subgraph group2["codometer-languages"]
+  subgraph group2["codometer-custom-statistics"]
+    CustomStatisticsModule
+  end
+  subgraph group3["codometer-file-discovery"]
+    FileDiscoveryModule
+  end
+  subgraph group4["codometer-languages"]
     CssModule
     HclModule
     JsonModule
@@ -483,13 +493,19 @@ flowchart LR
     TypescriptModule
     YamlModule
   end
-  subgraph group3["codometer-output"]
+  subgraph group5["codometer-output"]
     DocumentsModule
     OutputJsonModule
     OutputMarkdownModule
     RenderModule
   end
-  subgraph group4["logger"]
+  subgraph group6["codometer-size-analysis"]
+    SizeAnalysisModule
+  end
+  subgraph group7["codometer-targets"]
+    TargetsModule
+  end
+  subgraph group8["logger"]
     LoggerModule([LoggerModule])
   end
   ConfigModule([ConfigModule])

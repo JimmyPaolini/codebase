@@ -60,18 +60,20 @@ flowchart LR
   subgraph group0["codometer-cli"]
     ChangesModule
     CodometerModule
-    CustomStatisticsModule
-    FileDiscoveryModule
     LimitsModule
     MainModule
     ReportModule
-    SizeAnalysisModule
-    TargetsModule
   end
   subgraph group1["codometer-configuration"]
     ConfigurationModule
   end
-  subgraph group2["codometer-languages"]
+  subgraph group2["codometer-custom-statistics"]
+    CustomStatisticsModule
+  end
+  subgraph group3["codometer-file-discovery"]
+    FileDiscoveryModule
+  end
+  subgraph group4["codometer-languages"]
     CssModule
     HclModule
     JsonModule
@@ -85,13 +87,19 @@ flowchart LR
     TypescriptModule
     YamlModule
   end
-  subgraph group3["codometer-output"]
+  subgraph group5["codometer-output"]
     DocumentsModule
     OutputJsonModule
     OutputMarkdownModule
     RenderModule
   end
-  subgraph group4["logger"]
+  subgraph group6["codometer-size-analysis"]
+    SizeAnalysisModule
+  end
+  subgraph group7["codometer-targets"]
+    TargetsModule
+  end
+  subgraph group8["logger"]
     LoggerModule([LoggerModule])
   end
   ConfigModule([ConfigModule])

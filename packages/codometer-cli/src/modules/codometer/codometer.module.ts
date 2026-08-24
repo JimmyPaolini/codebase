@@ -1,16 +1,16 @@
 import { ConfigurationModule } from "@codometer/configuration";
+import { CustomStatisticsModule } from "@codometer/custom-statistics";
+import { FileDiscoveryModule } from "@codometer/file-discovery";
 import { LanguagesModule } from "@codometer/languages";
 import { OutputJsonModule, OutputMarkdownModule } from "@codometer/output";
+import { SizeAnalysisModule } from "@codometer/size-analysis";
+import { TargetsModule } from "@codometer/targets";
 import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";
 
-import { CustomStatisticsModule } from "../custom-statistics/custom-statistics.module";
-import { FileDiscoveryModule } from "../file-discovery/file-discovery.module";
 import { LimitsModule } from "../limits/limits.module";
 import { ReportModule } from "../report/report.module";
-import { SizeAnalysisModule } from "../size-analysis/size-analysis.module";
-import { TargetsModule } from "../targets/targets.module";
 
 import { CodometerCommand } from "./codometer.command";
 import { CodometerService } from "./codometer.service";

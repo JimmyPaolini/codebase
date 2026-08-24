@@ -1,13 +1,13 @@
 import { DEFAULT_TARGET_NAME } from "@codometer/configuration";
+import { CustomStatisticsService } from "@codometer/custom-statistics";
+import { FileDiscoveryService } from "@codometer/file-discovery";
 import { LanguagesService } from "@codometer/languages";
+import { SizeAnalysisService } from "@codometer/size-analysis";
+import { TargetsService } from "@codometer/targets";
 import { Injectable } from "@nestjs/common";
 
-import { CustomStatisticsService } from "../custom-statistics/custom-statistics.service";
-import { FileDiscoveryService } from "../file-discovery/file-discovery.service";
 import { LimitsService } from "../limits/limits.service";
 import { MetricIndexService } from "../limits/metric-index.service";
-import { SizeAnalysisService } from "../size-analysis/size-analysis.service";
-import { TargetsService } from "../targets/targets.service";
 
 import type { LimitFailure } from "../limits/limits.types";
 import type { ReportFailure } from "../report/report.types";

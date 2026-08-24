@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 
+import { LoggerModule } from "@codebase/logger";
+
 import { SizeAnalysisService } from "./size-analysis.service";
 
 /**
@@ -8,7 +10,7 @@ import { SizeAnalysisService } from "./size-analysis.service";
 @Module({
   controllers: [],
   exports: [SizeAnalysisService],
-  imports: [],
+  imports: [LoggerModule],
   providers: [SizeAnalysisService],
 })
 export class SizeAnalysisModule {}

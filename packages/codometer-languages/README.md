@@ -8,9 +8,11 @@ Where this project sits in the Nx project graph: what it depends on, and what de
 flowchart LR
   codometer_cli["codometer-cli"]
   codometer_configuration["codometer-configuration"]
+  codometer_custom_statistics["codometer-custom-statistics"]
   codometer_languages["codometer-languages"]
   logger["logger"]
   codometer_cli --> codometer_languages
+  codometer_custom_statistics --> codometer_languages
   codometer_languages --> codometer_configuration
   codometer_languages --> logger
   classDef subject stroke-width:3px

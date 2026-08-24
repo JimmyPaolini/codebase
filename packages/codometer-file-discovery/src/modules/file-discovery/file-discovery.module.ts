@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 
+import { LoggerModule } from "@codebase/logger";
+
 import { FileDiscoveryService } from "./file-discovery.service";
 import { IgnoreRulesService } from "./ignore-rules.service";
 
@@ -9,7 +11,7 @@ import { IgnoreRulesService } from "./ignore-rules.service";
 @Module({
   controllers: [],
   exports: [FileDiscoveryService],
-  imports: [],
+  imports: [LoggerModule],
   providers: [FileDiscoveryService, IgnoreRulesService],
 })
 export class FileDiscoveryModule {}

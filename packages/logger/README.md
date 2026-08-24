@@ -80,8 +80,11 @@ flowchart LR
   callidescope_cli["callidescope-cli"]
   codometer_changes["codometer-changes"]
   codometer_cli["codometer-cli"]
+  codometer_file_discovery["codometer-file-discovery"]
   codometer_languages["codometer-languages"]
   codometer_output["codometer-output"]
+  codometer_size_analysis["codometer-size-analysis"]
+  codometer_targets["codometer-targets"]
   conformetry_cli["conformetry-cli"]
   conformetry_nx["conformetry-nx"]
   lexico_ingestion["lexico-ingestion"]
@@ -92,8 +95,11 @@ flowchart LR
   callidescope_cli --> logger
   codometer_changes --> logger
   codometer_cli --> logger
+  codometer_file_discovery --> logger
   codometer_languages --> logger
   codometer_output --> logger
+  codometer_size_analysis --> logger
+  codometer_targets --> logger
   conformetry_cli --> logger
   conformetry_nx --> logger
   lexico_ingestion --> logger
