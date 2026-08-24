@@ -28,6 +28,7 @@ export const WORKSPACE_SCOPES = ["applications", "packages", "tools"];
 export const INTERNAL_PACKAGE_SCOPES = [
   "@callidescope/",
   "@codebase/",
+  "@codependix/",
   "@codometer/",
   "@conformetry/",
   "@jimmypaolini/",

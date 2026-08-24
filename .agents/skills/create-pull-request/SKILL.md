@@ -35,19 +35,19 @@ PR titles **must** follow the same format as commit messages:
 
 <!-- types-start -->
 
-| Type       | Description                                                                         |
-| ---------- | ----------------------------------------------------------------------------------- |
-| `feat`     | A new feature or capability that adds value for users                               |
-| `fix`      | A bug fix that addresses a specific issue or problem                                |
-| `docs`     | Documentation, AGENTS.md, SKILL.md, README, and planning files                      |
-| `test`     | Adding or correcting unit, integration, or end-to-end tests                         |
-| `refactor` | Code restructuring that neither fixes a bug nor adds a feature                      |
-| `style`    | Formatting, whitespace, or code structure changes with no semantic effect           |
-| `perf`     | A code change that improves performance (caching, query optimization, etc.)         |
-| `chore`    | Housekeeping that doesn't modify src or test files (gitignore, editor config, etc.) |
-| `ci`       | GitHub Actions workflows, composite actions, and CI/CD scripts                      |
-| `build`    | Build system, Vite/Docker/Helm config, or external dependency integration           |
-| `revert`   | Reverts a previous commit                                                           |
+| Type | Description |
+| ---- | ----------- |
+| `feat` | A new feature or capability that adds value for users |
+| `fix` | A bug fix that addresses a specific issue or problem |
+| `docs` | Documentation, AGENTS.md, SKILL.md, README, and planning files |
+| `test` | Adding or correcting unit, integration, or end-to-end tests |
+| `refactor` | Code restructuring that neither fixes a bug nor adds a feature |
+| `style` | Formatting, whitespace, or code structure changes with no semantic effect |
+| `perf` | A code change that improves performance (caching, query optimization, etc.) |
+| `chore` | Housekeeping that doesn't modify src or test files (gitignore, editor config, etc.) |
+| `ci` | GitHub Actions workflows, composite actions, and CI/CD scripts |
+| `build` | Build system, Vite/Docker/Helm config, or external dependency integration |
+| `revert` | Reverts a previous commit |
 
 <!-- types-end -->
 
@@ -55,36 +55,37 @@ PR titles **must** follow the same format as commit messages:
 
 <!-- scopes-start -->
 
-| Scope               | Description                                                                            |
-| ------------------- | -------------------------------------------------------------------------------------- |
-| `affirmations`      | Python Jupyter notebook application for LangGraph affirmation generation               |
-| `applications`      | Changes spanning multiple applications in applications/ (e.g. lexico, caelundas, etc.) |
-| `caelundas`         | Node.js CLI for astronomical calendar generation (NASA JPL ephemeris)                  |
-| `configuration`     | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.)                  |
-| `conformetry`       | Code generator templates and validation tests for generated instances                  |
-| `dependencies`      | Dependency version changes (upgrades, additions, removals via pnpm)                    |
-| `deps`              | Dependency version changes (upgrades, additions, removals via pnpm)                    |
-| `deployments`       | GitHub Actions workflows and CI/CD pipeline configuration                              |
-| `documentation`     | Markdown docs, skills, planning files, and AGENTS.md files                             |
-| `infrastructure`    | Helm charts, Terraform configs, and Kubernetes resources                               |
-| `JimmyPaolini`      | Static GitHub profile README project (markdown and assets)                             |
-| `lexico`            | TanStack Start SSR Latin dictionary web app with Supabase backend                      |
-| `lexico-components` | Shared React/shadcn component library                                                  |
-| `lexico-entities`   | Shared TypeORM entities and GraphQL types                                              |
-| `lexico-ingestion`  | Data ingestion scripts for Lexico                                                      |
-| `logger`            | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention  |
-| `callidescope`      | Call stack tracing and linting CLI and the configuration package it reads              |
-| `codometer`         | Code statistics measurement CLI and the configuration package it reads                 |
-| `codebase`          | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration)          |
-| `no-release`        | Escape hatch: suppress semantic-release for any commit type                            |
-| `packages`          | Changes spanning multiple shared packages in packages/                                 |
-| `release`           | Version bumps and release commits generated by semantic-release                        |
-| `scripts`           | Shell and TypeScript scripts in scripts/ (sync, setup, utilities)                      |
-| `testing`           | Vitest configuration, shared test utilities, and coverage setup                        |
-| `tools`             | Changes spanning multiple tool projects in tools/                                      |
-| `synchronization`   | Synchronization application and commands for automating workflows                      |
-| `reporting`         | Internal reporting CLI and the reports it renders, such as 🎒 Bundles                  |
-| `validation`        | Validation CLI and the checks it runs, such as pull request metadata                   |
+| Scope | Description |
+| ----- | ----------- |
+| `affirmations` | Python Jupyter notebook application for LangGraph affirmation generation |
+| `applications` | Changes spanning multiple applications in applications/ (e.g. lexico, caelundas, etc.) |
+| `caelundas` | Node.js CLI for astronomical calendar generation (NASA JPL ephemeris) |
+| `configuration` | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.) |
+| `conformetry` | Code generator templates and validation tests for generated instances |
+| `dependencies` | Dependency version changes (upgrades, additions, removals via pnpm) |
+| `deps` | Dependency version changes (upgrades, additions, removals via pnpm) |
+| `deployments` | GitHub Actions workflows and CI/CD pipeline configuration |
+| `documentation` | Markdown docs, skills, planning files, and AGENTS.md files |
+| `infrastructure` | Helm charts, Terraform configs, and Kubernetes resources |
+| `JimmyPaolini` | Static GitHub profile README project (markdown and assets) |
+| `lexico` | TanStack Start SSR Latin dictionary web app with Supabase backend |
+| `lexico-components` | Shared React/shadcn component library |
+| `lexico-entities` | Shared TypeORM entities and GraphQL types |
+| `lexico-ingestion` | Data ingestion scripts for Lexico |
+| `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
+| `callidescope` | Call stack tracing and linting CLI and the configuration package it reads |
+| `codependix` | Dependency graph export CLI and the configuration package it reads |
+| `codometer` | Code statistics measurement CLI and the configuration package it reads |
+| `codebase` | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration) |
+| `no-release` | Escape hatch: suppress semantic-release for any commit type |
+| `packages` | Changes spanning multiple shared packages in packages/ |
+| `release` | Version bumps and release commits generated by semantic-release |
+| `scripts` | Shell and TypeScript scripts in scripts/ (sync, setup, utilities) |
+| `testing` | Vitest configuration, shared test utilities, and coverage setup |
+| `tools` | Changes spanning multiple tool projects in tools/ |
+| `synchronization` | Synchronization application and commands for automating workflows |
+| `reporting` | Internal reporting CLI and the reports it renders, such as 🎒 Bundles |
+| `validation` | Validation CLI and the checks it runs, such as pull request metadata |
 
 <!-- scopes-end -->
 

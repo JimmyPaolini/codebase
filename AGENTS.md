@@ -74,6 +74,9 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 
 - **[callidescope-cli](packages/callidescope-cli)**: Command-line host that traces call stacks through injected dependencies and flags the ones that are too deep
 - **[callidescope-configuration](packages/callidescope-configuration)**: Reads `callidescope.config.ts` and resolves the limits callidescope enforces
+- **[codependix-cli](packages/codependix-cli)**: Command-line host that exports dependency graphs as JSON and Markdown anchor blocks
+- **[codependix-configuration](packages/codependix-configuration)**: Reads `codependix.config.ts` and resolves per-project export destinations
+- **[codependix-nx](packages/codependix-nx)**: Builds a project's one-hop Nx dependency neighborhood from the Nx project graph
 - **[codometer-cli](packages/codometer-cli)**: Command-line host that measures code statistics and writes them to markdown and JSON
 - **[codometer-configuration](packages/codometer-configuration)**: Reads `codometer.config.ts` and resolves the repository-specific settings codometer needs
 - **[conformetry-cli](packages/conformetry-cli)**: Command-line host for code generation and validation
@@ -341,6 +344,7 @@ The 🧑‍⚖️ Validate Conventions workflow creates any label missing from t
 | `lexico-ingestion`  | Data ingestion scripts for Lexico                                                      |
 | `logger`            | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention  |
 | `callidescope`      | Call stack tracing and linting CLI and the configuration package it reads              |
+| `codependix`        | Dependency graph export CLI and the configuration package it reads                     |
 | `codometer`         | Code statistics measurement CLI and the configuration package it reads                 |
 | `codebase`          | Workspace root concerns (pnpm-workspace, root package.json, Nx orchestration)          |
 | `no-release`        | Escape hatch: suppress semantic-release for any commit type                            |
