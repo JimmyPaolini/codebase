@@ -25,6 +25,14 @@ export interface DeliverFileArguments {
 export interface DeliverGraphOutputArguments {
   jsonContent: string | undefined;
   markdownContent: string | undefined;
+  /**
+   * The heading text used to auto-create a missing anchor's section on write.
+   *
+   * `undefined` for a standalone (non-anchored) Markdown destination, which
+   * has no section to create. Required whenever the destination is anchored
+   * and might need auto-creation — see `DeliveryService.deliverAnchoredMarkdown`.
+   */
+  markdownSection: MarkdownSectionArguments | undefined;
   mode: CodependixRunMode;
   project: DeliveryProject;
   resolvedOutput: ResolvedCodependixGraphOutput;
@@ -48,6 +56,26 @@ export interface DeliveryProject {
 export interface GraphRunOutcome {
   failures: ProjectRunFailure[];
   results: ProjectRunResult[];
+}
+
+/**
+ * Names the `## 🕸️ Codependix` section text a caller wants auto-created when
+ * its anchored Markdown destination is missing.
+ *
+ * Carried as its own field on `DeliverGraphOutputArguments` rather than
+ * folded into `ResolvedCodependixGraphOutput`: the section heading and intro
+ * line are fixed per graph type, not something a workspace's configuration
+ * file resolves, so they are supplied by `CodependixService` at the call site
+ * instead of flowing through configuration resolution.
+ */
+export interface MarkdownSectionArguments {
+  introLine: string;
+  /**
+   * The `### <subheading>` placed above the anchor block, or `undefined` for
+   * the workspace README, whose Workspace Graph anchor sits directly under
+   * the `## 🕸️ Codependix` heading with no subheading of its own.
+   */
+  subheading: string | undefined;
 }
 
 /**

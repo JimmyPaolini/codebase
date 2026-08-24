@@ -1,126 +1,51 @@
 import { type CodependixConfiguration } from "@codependix/configuration";
 
 /**
- * Every project in the workspace gets a JSON export of its own Nx Neighborhood,
- * NestJS module graph, and file-level import graph — the same "cover the whole
- * repository by default" philosophy `codometer.config.ts` and
- * `callidescope.config.ts` both follow, rather than an explicit include list
- * that would need a new entry every time a project is added.
+ * Every project in the workspace — and the workspace root itself — gets a
+ * Markdown export of its own Nx Neighborhood, NestJS module graph, and
+ * file-level import graph, spliced into its `README.md` via codependix's
+ * anchor-comment mechanism. The same "cover the whole repository by default"
+ * philosophy `codometer.config.ts` and `callidescope.config.ts` both follow,
+ * but for real this time: no explicit include list is needed, and no JSON
+ * output is produced by default at all.
  *
- * JSON needs nothing placed by hand, so it is safe to default broadly: a
- * project that is not a NestJS project or carries no `tsconfig.json` simply
- * never appears in that graph type's results (see `NestjsProjectService` and
- * `TypescriptProjectService`), so `target: "json"` here costs nothing for a
- * project it does not apply to.
+ * Markdown used to be the opt-in exception here, because `AnchorsService`
+ * treated a missing anchor block as an error rather than creating one — a
+ * deliberate choice so that placing a Markdown export stayed something a
+ * human did once, by hand, rather than codependix guessing where in a
+ * document it belonged. That could not scale to every project in the
+ * workspace, since nobody has hand-placed anchor blocks everywhere. Now
+ * `DeliveryService` auto-creates a missing `## 🕸️ Codependix` section on
+ * `--write` — appending it to the end of the file, or inserting a new
+ * `### <Subheading>` under an existing section — and only a project with no
+ * `README.md` at all still fails outright. A `--check` run against a project
+ * that has never had codependix output simply reports it as stale, the same
+ * as any other drift this tool reports.
  *
- * Markdown is different — `AnchorsService` treats a missing anchor block as an
- * error in both `--check` and `--write` rather than creating one, exactly so
- * that placing a Markdown export stays a deliberate, per-file decision. Only
- * the handful of projects below carry a `<!-- codependix:start -->` block in
- * their README.md, and only those are opted into Markdown via `projects`.
+ * `target: "markdown"` here costs nothing for a project a given graph type
+ * does not apply to: a project that is not a NestJS project or carries no
+ * `tsconfig.json` simply never appears in that graph type's results (see
+ * `NestjsProjectService` and `TypescriptProjectService`).
  */
 const codependixConfiguration: CodependixConfiguration = {
   defaults: {
     imports: {
-      json: { path: "codependix-imports-graph.json" },
-      target: "json",
+      markdown: { anchor: "codependix-imports" },
+      target: "markdown",
     },
     nestjs: {
-      json: { path: "codependix-nestjs-graph.json" },
-      target: "json",
+      markdown: { anchor: "codependix-nestjs" },
+      target: "markdown",
     },
     nx: {
-      json: { path: "codependix-nx-graph.json" },
-      target: "json",
-    },
-  },
-  projects: {
-    "codependix-cli": {
-      imports: {
-        json: { path: "codependix-imports-graph.json" },
-        markdown: { anchor: "codependix-imports" },
-        target: "both",
-      },
-      nestjs: {
-        json: { path: "codependix-nestjs-graph.json" },
-        markdown: { anchor: "codependix-nestjs" },
-        target: "both",
-      },
-      nx: {
-        json: { path: "codependix-nx-graph.json" },
-        markdown: { anchor: "codependix-nx" },
-        target: "both",
-      },
-    },
-    "codometer-cli": {
-      imports: {
-        json: { path: "codependix-imports-graph.json" },
-        markdown: { anchor: "codependix-imports" },
-        target: "both",
-      },
-      nestjs: {
-        json: { path: "codependix-nestjs-graph.json" },
-        markdown: { anchor: "codependix-nestjs" },
-        target: "both",
-      },
-      nx: {
-        json: { path: "codependix-nx-graph.json" },
-        markdown: { anchor: "codependix-nx" },
-        target: "both",
-      },
-    },
-    lexico: {
-      imports: {
-        json: { path: "codependix-imports-graph.json" },
-        markdown: { anchor: "codependix-imports" },
-        target: "both",
-      },
-      nx: {
-        json: { path: "codependix-nx-graph.json" },
-        markdown: { anchor: "codependix-nx" },
-        target: "both",
-      },
-    },
-    logger: {
-      imports: {
-        json: { path: "codependix-imports-graph.json" },
-        markdown: { anchor: "codependix-imports" },
-        target: "both",
-      },
-      nestjs: {
-        json: { path: "codependix-nestjs-graph.json" },
-        markdown: { anchor: "codependix-nestjs" },
-        target: "both",
-      },
-      nx: {
-        json: { path: "codependix-nx-graph.json" },
-        markdown: { anchor: "codependix-nx" },
-        target: "both",
-      },
-    },
-    validation: {
-      imports: {
-        json: { path: "codependix-imports-graph.json" },
-        markdown: { anchor: "codependix-imports" },
-        target: "both",
-      },
-      nestjs: {
-        json: { path: "codependix-nestjs-graph.json" },
-        markdown: { anchor: "codependix-nestjs" },
-        target: "both",
-      },
-      nx: {
-        json: { path: "codependix-nx-graph.json" },
-        markdown: { anchor: "codependix-nx" },
-        target: "both",
-      },
+      markdown: { anchor: "codependix-nx" },
+      target: "markdown",
     },
   },
   workspace: {
     nx: {
-      json: { path: "codependix-workspace-graph.json" },
       markdown: { anchor: "codependix-workspace" },
-      target: "both",
+      target: "markdown",
     },
   },
 };

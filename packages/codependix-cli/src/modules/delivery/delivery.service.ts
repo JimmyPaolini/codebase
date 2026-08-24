@@ -11,6 +11,7 @@ import { JSON_INDENTATION } from "./delivery.constants";
 import type {
   DeliverFileArguments,
   DeliverGraphOutputArguments,
+  MarkdownSectionArguments,
   ProjectRunResult,
 } from "./delivery.types";
 
@@ -37,9 +38,22 @@ export class DeliveryService {
 
   // 🔏 Private Methods
 
-  /** Splices content into a named anchor block, or checks it is current. */
+  /**
+   * Splices content into a named anchor block, or checks it is current.
+   *
+   * A missing anchor is treated differently by mode: `--check` reports it as
+   * stale rather than throwing, consistent with every other kind of drift
+   * this tool reports, and `--write` auto-creates the section via
+   * `AnchorsService.insertAnchorSection` when `markdownSection` was supplied,
+   * or falls back to the historical hard failure when it was not. The file
+   * itself not existing at all is always an error, regardless of mode — a
+   * project with no README is a more serious problem than a missing anchor.
+   */
   private deliverAnchoredMarkdown(
-    args: DeliverFileArguments & { anchorName: string },
+    args: DeliverFileArguments & {
+      anchorName: string;
+      markdownSection: MarkdownSectionArguments | undefined;
+    },
   ): boolean {
     const resolvedPath = path.resolve(args.absoluteRoot, args.relativePath);
 
@@ -48,14 +62,33 @@ export class DeliveryService {
     }
 
     const fileContent = readFileSync(resolvedPath, "utf8");
+    const anchorExists = this.anchorsService.hasAnchor({
+      anchorName: args.anchorName,
+      fileContent,
+      filePath: resolvedPath,
+    });
 
     if (args.mode === "check") {
+      if (!anchorExists) {
+        return false;
+      }
+
       return this.anchorsService.checkAnchor({
         anchorName: args.anchorName,
         fileContent,
         filePath: resolvedPath,
         freshContent: args.content,
       }).isCurrent;
+    }
+
+    if (!anchorExists) {
+      return this.writeAutoCreatedAnchorSection({
+        anchorName: args.anchorName,
+        content: args.content,
+        fileContent,
+        markdownSection: args.markdownSection,
+        resolvedPath,
+      });
     }
 
     const updated = this.anchorsService.replaceAnchorContent({
@@ -111,6 +144,7 @@ export class DeliveryService {
     absoluteRoot: string;
     anchor: string | undefined;
     content: string;
+    markdownSection: MarkdownSectionArguments | undefined;
     mode: DeliverFileArguments["mode"];
     path: string;
     stalePaths: string[];
@@ -130,6 +164,7 @@ export class DeliveryService {
         : this.deliverAnchoredMarkdown({
             ...deliverArguments,
             anchorName: args.anchor,
+            markdownSection: args.markdownSection,
           });
 
     if (!isCurrent) {
@@ -192,6 +227,38 @@ export class DeliveryService {
     };
   }
 
+  /**
+   * Auto-creates a missing anchor's `## 🕸️ Codependix` section and writes it.
+   *
+   * Falls back to the historical hard failure when the caller supplied no
+   * `markdownSection` — there is nothing safe to build without a heading and
+   * intro line, and `CodependixService` always supplies one for every real
+   * anchored destination it delivers.
+   */
+  private writeAutoCreatedAnchorSection(args: {
+    anchorName: string;
+    content: string;
+    fileContent: string;
+    markdownSection: MarkdownSectionArguments | undefined;
+    resolvedPath: string;
+  }): boolean {
+    if (args.markdownSection === undefined) {
+      throw new AnchorNotFoundError(args.anchorName, args.resolvedPath);
+    }
+
+    const updated = this.anchorsService.insertAnchorSection({
+      anchorName: args.anchorName,
+      content: args.content,
+      fileContent: args.fileContent,
+      introLine: args.markdownSection.introLine,
+      subheading: args.markdownSection.subheading,
+    });
+
+    writeFileSync(args.resolvedPath, updated, "utf8");
+
+    return true;
+  }
+
   // 🌎 Public Methods
 
   /**
@@ -202,7 +269,7 @@ export class DeliveryService {
    * is `"json"` never renders a diagram nobody configured.
    */
   deliverGraphOutput(args: DeliverGraphOutputArguments): ProjectRunResult {
-    const { mode, project } = args;
+    const { markdownSection, mode, project } = args;
     const stalePaths: string[] = [];
     const jsonDelivery = this.resolveJsonDelivery(args);
     const markdownDelivery = this.resolveMarkdownDelivery(args);
@@ -222,6 +289,7 @@ export class DeliveryService {
         absoluteRoot: project.absoluteRoot,
         anchor: markdownDelivery.anchor,
         content: markdownDelivery.content,
+        markdownSection,
         mode,
         path: markdownDelivery.path,
         stalePaths,

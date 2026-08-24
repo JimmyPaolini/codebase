@@ -1,11 +1,16 @@
 import { Injectable } from "@nestjs/common";
 
-import { buildEndMarker, buildStartMarker } from "./anchors.constants";
+import {
+  buildEndMarker,
+  buildStartMarker,
+  CODEPENDIX_SECTION_HEADING,
+} from "./anchors.constants";
 import { AnchorNotFoundError } from "./anchors.errors";
 
 import type {
   AnchorCheckResult,
   AnchorLocationArguments,
+  AnchorSectionInsertArguments,
 } from "./anchors.types";
 
 /**
@@ -18,10 +23,13 @@ import type {
  * conformetry's template-conformance mechanism. See `anchors.constants.ts`
  * for the exact marker text.
  *
- * An anchor block that does not exist is always an error, in both `--check`
- * and `--write`: creating one unattended risks appending it to the wrong
- * place in a document someone else is authoring, so codependix asks a human
- * to place the markers once, by hand, rather than guessing.
+ * `checkAnchor` and `replaceAnchorContent` still treat a missing anchor as an
+ * error — they are low-level primitives with no notion of where a new section
+ * would safely go. `insertAnchorSection` is the one place that risk is taken
+ * on deliberately: it only ever places a new section at one of two safe,
+ * well-defined spots — the end of the file, or the end of an existing
+ * `## 🕸️ Codependix` section — never anywhere else in a document someone else
+ * is authoring. `DeliveryService` is what decides when to reach for it.
  */
 @Injectable()
 export class AnchorsService {
@@ -35,6 +43,18 @@ export class AnchorsService {
 
   // 🔏 Private Methods
 
+  /** Appends a brand-new `## 🕸️ Codependix` section to the end of a file. */
+  private appendCodependixSection(args: {
+    fileContent: string;
+    introLine: string;
+    subsectionBlock: string;
+  }): string {
+    const trimmedFile = args.fileContent.replace(/\s+$/u, "");
+    const prefix = trimmedFile.length === 0 ? "" : `${trimmedFile}\n\n`;
+
+    return `${prefix}${CODEPENDIX_SECTION_HEADING}\n\n${args.introLine}\n\n${args.subsectionBlock}\n`;
+  }
+
   /** Builds the pattern matching a named anchor block and its inner content. */
   private buildAnchorPattern(anchorName: string): RegExp {
     const start = this.escapeForPattern(buildStartMarker(anchorName));
@@ -46,6 +66,28 @@ export class AnchorsService {
   /** Escapes a string so it can be embedded literally in a regular expression. */
   private escapeForPattern(value: string): string {
     return value.replaceAll(/[$()*+.?[\\\]^{|}]/gu, String.raw`\$&`);
+  }
+
+  /**
+   * Inserts a new subsection at the end of an existing `## 🕸️ Codependix`
+   * section, before whatever heading comes next in the file (or at the end of
+   * the file, when the section is already the last thing in it).
+   */
+  private insertIntoCodependixSection(args: {
+    fileContent: string;
+    headingMatch: RegExpExecArray;
+    subsectionBlock: string;
+  }): string {
+    const { fileContent, headingMatch, subsectionBlock } = args;
+    const sectionStart = headingMatch.index + headingMatch[0].length;
+    const remainder = fileContent.slice(sectionStart);
+    const nextHeadingMatch = /\n#{1,2} /u.exec(remainder);
+    const sectionBodyEnd = nextHeadingMatch?.index ?? remainder.length;
+    const sectionBody = remainder.slice(0, sectionBodyEnd).replace(/\s+$/u, "");
+    const tail = remainder.slice(sectionBodyEnd);
+    const finalTail = tail.length === 0 ? "\n" : tail.replace(/^\n/u, "\n\n");
+
+    return `${fileContent.slice(0, sectionStart)}${sectionBody}\n\n${subsectionBlock}${finalTail}`;
   }
 
   // 🌎 Public Methods
@@ -82,6 +124,47 @@ export class AnchorsService {
   /** Whether a named anchor block is present in a file's content. */
   hasAnchor(args: AnchorLocationArguments): boolean {
     return this.buildAnchorPattern(args.anchorName).test(args.fileContent);
+  }
+
+  /**
+   * Auto-creates a missing anchor's `## 🕸️ Codependix` section.
+   *
+   * Called only when the caller has already confirmed the anchor is absent —
+   * this never checks that itself, and never touches an anchor that already
+   * exists. Two safe, well-defined outcomes only:
+   *
+   * - No `## 🕸️ Codependix` heading anywhere in the file: appends the heading,
+   *   `introLine`, the `### <subheading>` (when one is given), and the anchor
+   *   block to the end of the file.
+   * - A `## 🕸️ Codependix` heading already exists (from an earlier graph
+   *   type's write): inserts the new `### <subheading>` and anchor block at
+   *   the end of that section, before whatever heading comes next — never
+   *   duplicating the heading itself.
+   */
+  insertAnchorSection(args: AnchorSectionInsertArguments): string {
+    const subsectionBlock = this.wrapInAnchors(args.anchorName, args.content);
+    const fullSubsectionBlock =
+      args.subheading === undefined
+        ? subsectionBlock
+        : `### ${args.subheading}\n\n${subsectionBlock}`;
+    const headingMatch = new RegExp(
+      `^${this.escapeForPattern(CODEPENDIX_SECTION_HEADING)}$`,
+      "mu",
+    ).exec(args.fileContent);
+
+    if (headingMatch === null) {
+      return this.appendCodependixSection({
+        fileContent: args.fileContent,
+        introLine: args.introLine,
+        subsectionBlock: fullSubsectionBlock,
+      });
+    }
+
+    return this.insertIntoCodependixSection({
+      fileContent: args.fileContent,
+      headingMatch,
+      subsectionBlock: fullSubsectionBlock,
+    });
   }
 
   /**

@@ -13,10 +13,6 @@ skills-lock.json
 /CHANGELOG.md
 openwiki/
 **/routeTree.gen.ts
-**/codependix-nx-graph.json
-**/codependix-nestjs-graph.json
-**/codependix-imports-graph.json
-/codependix-workspace-graph.json
 
 # 🧩 Vendored by shadcn, not authored here
 packages/lexico-components/src/components/

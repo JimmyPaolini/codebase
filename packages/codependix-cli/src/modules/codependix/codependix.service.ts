@@ -15,14 +15,19 @@ import { DeliveryService } from "../delivery/delivery.service";
 
 import {
   IMPORTS_GRAPH_TYPE,
+  IMPORTS_MARKDOWN_SUBHEADING,
+  MARKDOWN_SECTION_INTRO_LINE,
   NESTJS_GRAPH_TYPE,
+  NESTJS_MARKDOWN_SUBHEADING,
   NX_GRAPH_TYPE,
+  NX_MARKDOWN_SUBHEADING,
   WORKSPACE_GRAPH_PROJECT_NAME,
 } from "./codependix.constants";
 
 import type {
   CodependixRunMode,
   GraphRunOutcome,
+  MarkdownSectionArguments,
   ProjectRunFailure,
   ProjectRunResult,
 } from "../delivery/delivery.types";
@@ -88,6 +93,18 @@ export class CodependixService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /**
+   * Builds the section heading a graph type's anchored Markdown destination
+   * auto-creates when it is missing.
+   *
+   * `subheading` is `undefined` only for the Workspace Graph: its anchor sits
+   * directly under the `## 🕸️ Codependix` heading in the root README, since
+   * that file carries no other graph type's section to disambiguate from.
+   */
+  private buildMarkdownSection(subheading?: string): MarkdownSectionArguments {
+    return { introLine: MARKDOWN_SECTION_INTRO_LINE, subheading };
+  }
 
   /** Turns a neighborhood into the JSON shape it is exported as. */
   private buildNeighborhoodJsonExport(
@@ -157,6 +174,7 @@ export class CodependixService {
         resolvedOutput.markdown === undefined
           ? undefined
           : this.importGraphService.renderMermaid(importGraph),
+      markdownSection: this.buildMarkdownSection(IMPORTS_MARKDOWN_SUBHEADING),
       mode,
       project,
       resolvedOutput,
@@ -183,6 +201,7 @@ export class CodependixService {
         resolvedOutput.markdown === undefined
           ? undefined
           : this.moduleGraphService.renderMermaid(moduleGraph),
+      markdownSection: this.buildMarkdownSection(NESTJS_MARKDOWN_SUBHEADING),
       mode,
       project,
       resolvedOutput,
@@ -209,6 +228,7 @@ export class CodependixService {
         resolvedOutput.markdown === undefined
           ? undefined
           : this.neighborhoodService.renderMermaid(neighborhood),
+      markdownSection: this.buildMarkdownSection(NX_MARKDOWN_SUBHEADING),
       mode,
       project,
       resolvedOutput,
@@ -282,6 +302,7 @@ export class CodependixService {
         resolvedOutput.markdown === undefined
           ? undefined
           : this.workspaceGraphService.renderMermaid(workspaceGraph),
+      markdownSection: this.buildMarkdownSection(),
       mode,
       project: {
         absoluteRoot: workingDirectory,

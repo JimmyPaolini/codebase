@@ -224,6 +224,214 @@ describe(AnchorsService, () => {
     });
   });
 
+  describe("insertAnchorSection", () => {
+    it("appends a brand-new Codependix section to a file with none", () => {
+      const result = service.insertAnchorSection({
+        anchorName: "codependix-nx",
+        content: "```mermaid\ngraph LR\n```",
+        fileContent: "# my-project\n\nSome existing content.\n",
+        introLine: "Dependency graphs exported by codependix.",
+        subheading: "Nx Neighborhood",
+      });
+
+      expect(result).toBe(
+        [
+          "# my-project",
+          "",
+          "Some existing content.",
+          "",
+          "## 🕸️ Codependix",
+          "",
+          "Dependency graphs exported by codependix.",
+          "",
+          "### Nx Neighborhood",
+          "",
+          '<!-- codependix:start name="codependix-nx" -->',
+          "```mermaid",
+          "graph LR",
+          "```",
+          '<!-- codependix:end name="codependix-nx" -->',
+          "",
+        ].join("\n"),
+      );
+    });
+
+    it("appends a Codependix section with no subheading, for the workspace case", () => {
+      const result = service.insertAnchorSection({
+        anchorName: "codependix-workspace",
+        content: "```mermaid\ngraph LR\n```",
+        fileContent: "# workspace\n",
+        introLine: "The workspace's dependency graph.",
+        subheading: undefined,
+      });
+
+      expect(result).toBe(
+        [
+          "# workspace",
+          "",
+          "## 🕸️ Codependix",
+          "",
+          "The workspace's dependency graph.",
+          "",
+          '<!-- codependix:start name="codependix-workspace" -->',
+          "```mermaid",
+          "graph LR",
+          "```",
+          '<!-- codependix:end name="codependix-workspace" -->',
+          "",
+        ].join("\n"),
+      );
+    });
+
+    it("inserts a new subheading under an existing Codependix section", () => {
+      const fileContent = [
+        "# my-project",
+        "",
+        "## 🕸️ Codependix",
+        "",
+        "Dependency graphs exported by codependix.",
+        "",
+        "### Nx Neighborhood",
+        "",
+        '<!-- codependix:start name="codependix-nx" -->',
+        "graph",
+        '<!-- codependix:end name="codependix-nx" -->',
+        "",
+        "## Other Section",
+        "",
+        "unrelated content",
+      ].join("\n");
+
+      const result = service.insertAnchorSection({
+        anchorName: "codependix-imports",
+        content: "```mermaid\ngraph LR\n```",
+        fileContent,
+        introLine: "Dependency graphs exported by codependix.",
+        subheading: "File Imports",
+      });
+
+      expect(result).toBe(
+        [
+          "# my-project",
+          "",
+          "## 🕸️ Codependix",
+          "",
+          "Dependency graphs exported by codependix.",
+          "",
+          "### Nx Neighborhood",
+          "",
+          '<!-- codependix:start name="codependix-nx" -->',
+          "graph",
+          '<!-- codependix:end name="codependix-nx" -->',
+          "",
+          "### File Imports",
+          "",
+          '<!-- codependix:start name="codependix-imports" -->',
+          "```mermaid",
+          "graph LR",
+          "```",
+          '<!-- codependix:end name="codependix-imports" -->',
+          "",
+          "## Other Section",
+          "",
+          "unrelated content",
+        ].join("\n"),
+      );
+    });
+
+    it("inserts a new subheading at the end of the file when the section is last", () => {
+      const fileContent = [
+        "# my-project",
+        "",
+        "## 🕸️ Codependix",
+        "",
+        "Dependency graphs exported by codependix.",
+        "",
+        "### Nx Neighborhood",
+        "",
+        '<!-- codependix:start name="codependix-nx" -->',
+        "graph",
+        '<!-- codependix:end name="codependix-nx" -->',
+      ].join("\n");
+
+      const result = service.insertAnchorSection({
+        anchorName: "codependix-imports",
+        content: "content",
+        fileContent,
+        introLine: "Dependency graphs exported by codependix.",
+        subheading: "File Imports",
+      });
+
+      expect(result).toBe(
+        [
+          "# my-project",
+          "",
+          "## 🕸️ Codependix",
+          "",
+          "Dependency graphs exported by codependix.",
+          "",
+          "### Nx Neighborhood",
+          "",
+          '<!-- codependix:start name="codependix-nx" -->',
+          "graph",
+          '<!-- codependix:end name="codependix-nx" -->',
+          "",
+          "### File Imports",
+          "",
+          '<!-- codependix:start name="codependix-imports" -->',
+          "content",
+          '<!-- codependix:end name="codependix-imports" -->',
+          "",
+        ].join("\n"),
+      );
+    });
+
+    it("appends a Codependix section to a completely empty file", () => {
+      const result = service.insertAnchorSection({
+        anchorName: "codependix-nx",
+        content: "content",
+        fileContent: "",
+        introLine: "intro",
+        subheading: undefined,
+      });
+
+      expect(result).toBe(
+        [
+          "## 🕸️ Codependix",
+          "",
+          "intro",
+          "",
+          '<!-- codependix:start name="codependix-nx" -->',
+          "content",
+          '<!-- codependix:end name="codependix-nx" -->',
+          "",
+        ].join("\n"),
+      );
+    });
+
+    it("never duplicates the Codependix heading itself", () => {
+      const fileContent = [
+        "## 🕸️ Codependix",
+        "",
+        "intro",
+        "",
+        '<!-- codependix:start name="codependix-nx" -->',
+        "graph",
+        '<!-- codependix:end name="codependix-nx" -->',
+      ].join("\n");
+
+      const result = service.insertAnchorSection({
+        anchorName: "codependix-nestjs",
+        content: "content",
+        fileContent,
+        introLine: "intro",
+        subheading: "NestJS Module Graph",
+      });
+
+      expect(result.match(/## 🕸️ Codependix/gu)).toHaveLength(1);
+    });
+  });
+
   describe("wrapInAnchors", () => {
     it("wraps content in a fresh pair of named markers", () => {
       expect(service.wrapInAnchors("nx", "content")).toBe(

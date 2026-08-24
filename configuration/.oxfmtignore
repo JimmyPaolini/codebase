@@ -47,10 +47,6 @@ tmp
 # authoritative, and reformatting it makes every conformetry command fail the
 # drift check after a `format` run.
 **/.conformetry/**
-# Emitted by codependix; the emitter's output is authoritative, and
-# reformatting it makes every codependix command fail the drift check after a
-# `format` run.
-**/codependix-*graph.json
 **/data/wikipedia
 **/data/wiktionary
 yarn.lock

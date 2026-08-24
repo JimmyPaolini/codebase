@@ -278,7 +278,10 @@ describe(CodependixService, () => {
       const otherProjectRoot = path.join(projectRoot, "other-project");
 
       await mkdir(otherProjectRoot, { recursive: true });
-      await writeFile(path.join(projectRoot, "README.md"), "# empty", "utf8");
+      // No README.md is written for `codependix-nx`'s root here, on purpose:
+      // a missing anchor in a file that exists now auto-creates the section
+      // rather than failing, so the file itself must be absent to still
+      // exercise a hard failure — see `AnchorNotFoundError`'s updated JSDoc.
       vi.mocked(neighborhoodService.buildNeighborhoods).mockReturnValue(
         new Map([
           ["codependix-nx", NEIGHBORHOOD],
@@ -872,6 +875,16 @@ describe(CodependixService, () => {
 
       expect(service.runNestjsGraphs).toHaveBeenCalledTimes(1);
       expect(service.runImportGraphs).toHaveBeenCalledTimes(1);
+    });
+
+    it("resolves check mode when the command line names --check", async () => {
+      const runNxGraphsSpy = vi
+        .spyOn(service, "runNxGraphs")
+        .mockReturnValue({ failures: [], results: [] });
+
+      await service.run({ check: true }, projectRoot);
+
+      expect(runNxGraphsSpy.mock.calls[0]?.[0].mode).toBe("check");
     });
   });
 });
