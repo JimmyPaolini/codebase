@@ -94,6 +94,24 @@ describe(GenerateCommand, () => {
     });
   });
 
+  describe("parseModifier", () => {
+    it("passes a supported modifier name through as a Modifier object", () => {
+      expect(command.parseModifier("spin")).toStrictEqual({ name: "spin" });
+    });
+
+    it("passes spin-flip through as a Modifier object", () => {
+      expect(command.parseModifier("spin-flip")).toStrictEqual({
+        name: "spin-flip",
+      });
+    });
+
+    it("rejects an unsupported modifier name", () => {
+      expect(() => command.parseModifier("edge")).toThrow(
+        /unsupported modifier/i,
+      );
+    });
+  });
+
   describe("parseRepeatCount", () => {
     it("parses a numeric string", () => {
       expect(command.parseRepeatCount("8")).toBe(8);
@@ -129,6 +147,31 @@ describe(GenerateCommand, () => {
       expect(mockMkdir).toHaveBeenCalledWith("output", { recursive: true });
       expect(mockWriteFile).toHaveBeenCalledWith(
         expect.stringContaining("boxes-5-rows-8-repeats.svg"),
+        "<svg>fixture</svg>\n",
+      );
+    });
+
+    it("encodes the modifier in the filename and forwards it to the generation service", async () => {
+      vi.mocked(meanderGenerationService.generate).mockReturnValue(
+        "<svg>fixture</svg>\n",
+      );
+
+      await command.run([], {
+        modifier: { name: "spin" },
+        outputDirectory: "output",
+        repeatCount: 4,
+        rows: 5,
+        type: "boxes",
+      });
+
+      expect(meanderGenerationService.generate).toHaveBeenCalledWith({
+        modifier: { name: "spin" },
+        repeatCount: 4,
+        rows: 5,
+        type: "boxes",
+      });
+      expect(mockWriteFile).toHaveBeenCalledWith(
+        expect.stringContaining("boxes-5-rows-4-repeats-spin.svg"),
         "<svg>fixture</svg>\n",
       );
     });

@@ -6,9 +6,11 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { BoxesMotifService } from "./boxes-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
+import { InvalidRepeatCountCycleError } from "./invalid-repeat-count-cycle.errors";
 import { InvalidRepeatCountError } from "./invalid-repeat-count.errors";
 import { InvalidRowsError } from "./invalid-rows.errors";
 import { MeanderGenerationService } from "./meander-generation.service";
+import { MotifTransformsService } from "./motif-transforms.service";
 import { SvgRenderingService } from "./svg-rendering.service";
 
 describe(MeanderGenerationService, () => {
@@ -20,6 +22,7 @@ describe(MeanderGenerationService, () => {
         MeanderGenerationService,
         GridGeometryService,
         BoxesMotifService,
+        MotifTransformsService,
         SvgRenderingService,
       ],
     }).compile();
@@ -83,6 +86,64 @@ describe(MeanderGenerationService, () => {
       expect(() =>
         service.generate({ repeatCount: Number.NaN, rows: 5, type: "boxes" }),
       ).toThrow(InvalidRepeatCountError);
+    });
+
+    it("matches the committed golden fixture for 5 rows boxes with 4 repeats and spin", async () => {
+      const svg = service.generate({
+        modifier: { name: "spin" },
+        repeatCount: 4,
+        rows: 5,
+        type: "boxes",
+      });
+      const golden = await readFile(
+        path.join(
+          import.meta.dirname,
+          "../../../testing/fixtures/boxes-5-rows-4-repeats-spin.svg",
+        ),
+        "utf8",
+      );
+
+      expect(svg).toBe(golden);
+    });
+
+    it("matches the committed golden fixture for 5 rows boxes with 4 repeats and spin-flip", async () => {
+      const svg = service.generate({
+        modifier: { name: "spin-flip" },
+        repeatCount: 4,
+        rows: 5,
+        type: "boxes",
+      });
+      const golden = await readFile(
+        path.join(
+          import.meta.dirname,
+          "../../../testing/fixtures/boxes-5-rows-4-repeats-spin-flip.svg",
+        ),
+        "utf8",
+      );
+
+      expect(svg).toBe(golden);
+    });
+
+    it("throws when repeatCount doesn't complete spin's 4-step cycle", () => {
+      expect(() =>
+        service.generate({
+          modifier: { name: "spin" },
+          repeatCount: 6,
+          rows: 5,
+          type: "boxes",
+        }),
+      ).toThrow(InvalidRepeatCountCycleError);
+    });
+
+    it("throws when repeatCount doesn't complete spin-flip's 4-step cycle", () => {
+      expect(() =>
+        service.generate({
+          modifier: { name: "spin-flip" },
+          repeatCount: 5,
+          rows: 5,
+          type: "boxes",
+        }),
+      ).toThrow(InvalidRepeatCountCycleError);
     });
   });
 });

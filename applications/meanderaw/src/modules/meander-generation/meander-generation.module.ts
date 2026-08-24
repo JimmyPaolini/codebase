@@ -3,6 +3,7 @@ import { Module } from "@nestjs/common";
 import { BoxesMotifService } from "./boxes-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
 import { MeanderGenerationService } from "./meander-generation.service";
+import { MotifTransformsService } from "./motif-transforms.service";
 import { SvgRenderingService } from "./svg-rendering.service";
 
 /**
@@ -17,6 +18,7 @@ import { SvgRenderingService } from "./svg-rendering.service";
     BoxesMotifService,
     GridGeometryService,
     MeanderGenerationService,
+    MotifTransformsService,
     SvgRenderingService,
   ],
 })
