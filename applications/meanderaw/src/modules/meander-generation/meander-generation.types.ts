@@ -8,13 +8,6 @@ export interface BoxesSpiralBounds {
   top: number;
 }
 
-/** Which repeat unit `BoxesMotifService.path` draws and the modifier (if any) applied to it. */
-export interface BoxesUnit {
-  readonly modifier?: Modifier;
-  readonly rows: number;
-  readonly unitIndex: number;
-}
-
 /** The type, rows, repeat count, and optional modifier needed to generate one meander. */
 export interface GenerationParameters {
   readonly modifier?: Modifier;
@@ -32,7 +25,7 @@ export interface GridGeometry {
 }
 
 /** A meander's base repeating motif shape. */
-export type MeanderType = "boxes";
+export type MeanderType = "boxes" | "chain" | "snake";
 
 /**
  * Which line a `mirror` transform reflects a point sequence across, both
@@ -51,6 +44,27 @@ export type MirrorAxis = "horizontal" | "vertical";
 export type Modifier =
   | { readonly name: "spin" }
   | { readonly name: "spin-flip" };
+
+/**
+ * The per-type contract `MeanderGenerationService` dispatches through:
+ * every type draws its repeat units with `path` and reports how far right
+ * the last one extends with `rightEdge`. `border` is optional because only
+ * `boxes` draws a single shared border path across the whole pattern —
+ * `chain` and `snake` draw their own top/bottom border segment as part of
+ * each unit's own `path` instead.
+ */
+export interface MotifService {
+  border?(geometry: GridGeometry, rows: number, repeatCount: number): string;
+  path(geometry: GridGeometry, unit: MotifUnit): string;
+  rightEdge(geometry: GridGeometry, rows: number, repeatCount: number): number;
+}
+
+/** Which repeat unit a motif service's `path` draws and the modifier (if any) applied to it. */
+export interface MotifUnit {
+  readonly modifier?: Modifier;
+  readonly rows: number;
+  readonly unitIndex: number;
+}
 
 /** Every field here is already formatted for direct interpolation into SVG markup. */
 export interface RenderOptions {

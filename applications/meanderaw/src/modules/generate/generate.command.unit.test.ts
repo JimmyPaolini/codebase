@@ -82,7 +82,7 @@ describe(GenerateCommand, () => {
     });
 
     it("rejects an unsupported type", () => {
-      expect(() => command.parseType("snake")).toThrow(
+      expect(() => command.parseType("triangles")).toThrow(
         /unsupported meander type/i,
       );
     });

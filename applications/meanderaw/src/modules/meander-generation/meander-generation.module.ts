@@ -1,9 +1,12 @@
 import { Module } from "@nestjs/common";
 
 import { BoxesMotifService } from "./boxes-motif.service";
+import { ChainMotifService } from "./chain-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
 import { MeanderGenerationService } from "./meander-generation.service";
 import { MotifTransformsService } from "./motif-transforms.service";
+import { SnakeMotifService } from "./snake-motif.service";
+import { SnakeSequenceService } from "./snake-sequence.service";
 import { SvgRenderingService } from "./svg-rendering.service";
 
 /**
@@ -16,9 +19,12 @@ import { SvgRenderingService } from "./svg-rendering.service";
   imports: [],
   providers: [
     BoxesMotifService,
+    ChainMotifService,
     GridGeometryService,
     MeanderGenerationService,
     MotifTransformsService,
+    SnakeMotifService,
+    SnakeSequenceService,
     SvgRenderingService,
   ],
 })

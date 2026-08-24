@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { BoxesMotifService } from "./boxes-motif.service";
+import { ChainMotifService } from "./chain-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
 import { InvalidModifierError } from "./invalid-modifier.errors";
 import { InvalidRepeatCountCycleError } from "./invalid-repeat-count-cycle.errors";
@@ -14,6 +15,7 @@ import {
   SPIN_FAMILY_MODIFIER_NAMES,
   STRUCTURAL_MINIMUM_ROWS,
 } from "./meander-generation.constants";
+import { SnakeMotifService } from "./snake-motif.service";
 import { SvgRenderingService } from "./svg-rendering.service";
 
 import type {
@@ -21,6 +23,7 @@ import type {
   GridGeometry,
   MeanderType,
   Modifier,
+  MotifService,
 } from "./meander-generation.types";
 
 /**
@@ -38,6 +41,10 @@ export class MeanderGenerationService {
     private readonly gridGeometryService: GridGeometryService,
     @Inject(BoxesMotifService)
     private readonly boxesMotifService: BoxesMotifService,
+    @Inject(ChainMotifService)
+    private readonly chainMotifService: ChainMotifService,
+    @Inject(SnakeMotifService)
+    private readonly snakeMotifService: SnakeMotifService,
     @Inject(SvgRenderingService)
     private readonly svgRenderingService: SvgRenderingService,
   ) {}
@@ -48,29 +55,41 @@ export class MeanderGenerationService {
 
   // 🔏 Private Methods
 
-  /** Builds every repeat unit's path plus the shared top/bottom border path. */
+  /** Builds every repeat unit's path, appending the type's shared border path when it draws one. */
   private buildPaths(
     geometry: GridGeometry,
     parameters: GenerationParameters,
   ): string[] {
+    const motifService = this.motifService(parameters.type);
     const unitPaths = Array.from(
       { length: parameters.repeatCount },
       (_value, unitIndex) =>
-        this.boxesMotifService.path(geometry, {
+        motifService.path(geometry, {
           rows: parameters.rows,
           unitIndex,
           ...(parameters.modifier ? { modifier: parameters.modifier } : {}),
         }),
     );
 
+    if (!motifService.border) {
+      return unitPaths;
+    }
+
     return [
       ...unitPaths,
-      this.boxesMotifService.border(
-        geometry,
-        parameters.rows,
-        parameters.repeatCount,
-      ),
+      motifService.border(geometry, parameters.rows, parameters.repeatCount),
     ];
+  }
+
+  /** Looks up the motif service that draws `type`'s repeat units. */
+  private motifService(type: MeanderType): MotifService {
+    const motifServicesByType: Record<MeanderType, MotifService> = {
+      boxes: this.boxesMotifService,
+      chain: this.chainMotifService,
+      snake: this.snakeMotifService,
+    };
+
+    return motifServicesByType[type];
   }
 
   /** Throws {@link InvalidModifierError} when the modifier's `name` isn't compatible with `type`. */
@@ -146,7 +165,7 @@ export class MeanderGenerationService {
 
     const geometry = this.gridGeometryService.compute(parameters.rows);
     const paths = this.buildPaths(geometry, parameters);
-    const rightEdge = this.boxesMotifService.rightEdge(
+    const rightEdge = this.motifService(parameters.type).rightEdge(
       geometry,
       parameters.rows,
       parameters.repeatCount,
