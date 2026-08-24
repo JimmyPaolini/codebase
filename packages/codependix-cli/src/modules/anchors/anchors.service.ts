@@ -49,7 +49,7 @@ export class AnchorsService {
     introLine: string;
     subsectionBlock: string;
   }): string {
-    const trimmedFile = args.fileContent.replace(/\s+$/u, "");
+    const trimmedFile = args.fileContent.trimEnd();
     const prefix = trimmedFile.length === 0 ? "" : `${trimmedFile}\n\n`;
 
     return `${prefix}${CODEPENDIX_SECTION_HEADING}\n\n${args.introLine}\n\n${args.subsectionBlock}\n`;
@@ -83,7 +83,7 @@ export class AnchorsService {
     const remainder = fileContent.slice(sectionStart);
     const nextHeadingMatch = /\n#{1,2} /u.exec(remainder);
     const sectionBodyEnd = nextHeadingMatch?.index ?? remainder.length;
-    const sectionBody = remainder.slice(0, sectionBodyEnd).replace(/\s+$/u, "");
+    const sectionBody = remainder.slice(0, sectionBodyEnd).trimEnd();
     const tail = remainder.slice(sectionBodyEnd);
     const finalTail = tail.length === 0 ? "\n" : tail.replace(/^\n/u, "\n\n");
 
