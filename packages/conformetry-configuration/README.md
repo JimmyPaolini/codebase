@@ -424,7 +424,7 @@ Call stacks traced through `conformetry-configuration`, deepest first. Each fram
 
 None.
 
-### Direct fan-out (breadth)
+### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |

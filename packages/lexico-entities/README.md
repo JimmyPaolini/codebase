@@ -187,7 +187,7 @@ Call stacks traced through `lexico-entities`, deepest first. Each frame shows wh
 
 None.
 
-### Direct fan-out (breadth)
+### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |

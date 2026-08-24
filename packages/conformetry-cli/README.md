@@ -577,8 +577,8 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 | --- | --- |
 | Callables | 38 |
 | Files | 23 |
-| Calls traced | 56 |
-| Call stacks | 22 |
+| Calls traced | 40 |
+| Call stacks | 15 |
 | Deepest stack | 10 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 4 |
@@ -649,7 +649,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 ```
 
 <details>
-<summary>19 more call stacks</summary>
+<summary>12 more call stacks</summary>
 
 **4. `TemplatesCommand.run`** — depth ≥ 7 · decorated-method
 
@@ -669,35 +669,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
                ↳ Lists every file under a directory, recursively and sorted.
 ```
 
-**5. `errorHandler`** — depth 5 · orphan-root
-
-```text
-🚀 errorHandler(error: Error): void [packages/conformetry-cli/src/main.ts:17]
-  └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:256]
-     ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
-    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-       ↳ Assembles the object pino merges into the line.
-      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-         ↳ Fails a malformed message in development, and never in production.
-        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-           ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-**6. `serviceErrorHandler`** — depth 5 · orphan-root
-
-```text
-🚀 serviceErrorHandler(error: Error): void [packages/conformetry-cli/src/main.ts:22]
-  └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:256]
-     ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
-    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-       ↳ Assembles the object pino merges into the line.
-      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-         ↳ Fails a malformed message in development, and never in production.
-        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-           ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-**7. `InstancesCommand.parseTemplates`** — depth 3 · decorated-method
+**5. `InstancesCommand.parseTemplates`** — depth 3 · decorated-method
 
 ```text
 🚀 InstancesCommand.parseTemplates(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/instances/instances.command.ts:80]
@@ -707,7 +679,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
     └─> InputService.filter(…)(item: string): boolean [packages/conformetry-configuration/src/modules/input/input.service.ts:135]
 ```
 
-**8. `TemplatesCommand.parseInstances`** — depth 3 · decorated-method
+**6. `TemplatesCommand.parseInstances`** — depth 3 · decorated-method
 
 ```text
 🚀 TemplatesCommand.parseInstances(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/templates/templates.command.ts:72]
@@ -717,7 +689,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
     └─> InputService.filter(…)(item: string): boolean [packages/conformetry-configuration/src/modules/input/input.service.ts:135]
 ```
 
-**9. `ValidateCommand.parseInstances`** — depth 3 · decorated-method
+**7. `ValidateCommand.parseInstances`** — depth 3 · decorated-method
 
 ```text
 🚀 ValidateCommand.parseInstances(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:123]
@@ -727,7 +699,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
     └─> InputService.filter(…)(item: string): boolean [packages/conformetry-configuration/src/modules/input/input.service.ts:135]
 ```
 
-**10. `ValidateCommand.parseLanguages`** — depth 3 · decorated-method
+**8. `ValidateCommand.parseLanguages`** — depth 3 · decorated-method
 
 ```text
 🚀 ValidateCommand.parseLanguages(value: string | undefined): string[] | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:133]
@@ -737,7 +709,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
     └─> InputService.filter(…)(item: string): boolean [packages/conformetry-configuration/src/modules/input/input.service.ts:135]
 ```
 
-**11. `ValidateCommand.parseThreshold`** — depth 3 · decorated-method
+**9. `ValidateCommand.parseThreshold`** — depth 3 · decorated-method
 
 ```text
 🚀 ValidateCommand.parseThreshold(value: string | undefined): number | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:142]
@@ -748,7 +720,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
        ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**12. `GenerateCommand.parseConfig`** — depth 2 · decorated-method
+**10. `GenerateCommand.parseConfig`** — depth 2 · decorated-method
 
 ```text
 🚀 GenerateCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/generate/generate.command.ts:68]
@@ -757,7 +729,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
      ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**13. `GenerateCommand.parseDirectory`** — depth 2 · decorated-method
+**11. `GenerateCommand.parseDirectory`** — depth 2 · decorated-method
 
 ```text
 🚀 GenerateCommand.parseDirectory(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/generate/generate.command.ts:77]
@@ -766,7 +738,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
      ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**14. `GenerateCommand.parseGenerator`** — depth 2 · decorated-method
+**12. `GenerateCommand.parseGenerator`** — depth 2 · decorated-method
 
 ```text
 🚀 GenerateCommand.parseGenerator(value: string): string [packages/conformetry-cli/src/modules/generate/generate.command.ts:86]
@@ -775,7 +747,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
      ↳ Trims a required string option, rejecting blank values.
 ```
 
-**15. `InstancesCommand.parseConfig`** — depth 2 · decorated-method
+**13. `InstancesCommand.parseConfig`** — depth 2 · decorated-method
 
 ```text
 🚀 InstancesCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/instances/instances.command.ts:62]
@@ -784,7 +756,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
      ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**16. `TemplatesCommand.parseConfig`** — depth 2 · decorated-method
+**14. `TemplatesCommand.parseConfig`** — depth 2 · decorated-method
 
 ```text
 🚀 TemplatesCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/templates/templates.command.ts:63]
@@ -793,7 +765,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
      ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**17. `ValidateCommand.parseConfig`** — depth 2 · decorated-method
+**15. `ValidateCommand.parseConfig`** — depth 2 · decorated-method
 
 ```text
 🚀 ValidateCommand.parseConfig(value: string | undefined): string | undefined [packages/conformetry-cli/src/modules/validate/validate.command.ts:114]
@@ -802,79 +774,34 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
      ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**18. `main`** — depth ≥ 2 · module-bootstrap
-
-```text
-🚀 main(): Promise<void> [packages/conformetry-cli/src/main.ts:11]
-   ↳ Bootstraps the NestJS command application.
-  └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:38]
-```
-
-**19. `GenerateCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 GenerateCommand.constructor(…): GenerateCommand [packages/conformetry-cli/src/modules/generate/generate.command.ts:34]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**20. `InstancesCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 InstancesCommand.constructor(…): InstancesCommand [packages/conformetry-cli/src/modules/instances/instances.command.ts:42]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**21. `TemplatesCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 TemplatesCommand.constructor(…): TemplatesCommand [packages/conformetry-cli/src/modules/templates/templates.command.ts:43]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**22. `ValidateCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 ValidateCommand.constructor(…): ValidateCommand [packages/conformetry-cli/src/modules/validate/validate.command.ts:40]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
 </details>
 
 ### Module spread
 
 None.
 
-### Direct fan-out (breadth)
+### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ValidateCommand.run` | 11 | `LoggerService.debug`, `ConfigurationService.loadConformetryConfiguration`, `ValidationService.validate`, `ValidateCommand.findInstances`, `ValidateCommand.flatMap(…)`, `TemplateDiscoveryService.collectTemplates`, `ReportingService.formatReport`, `ValidateCommand.filter(…)`, `LoggerService.info`, `LoggerService.warn`, `ValidateCommand.describeFailure` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:152` |
-| `GenerateCommand.run` | 10 | `LoggerService.debug`, `ConfigurationService.loadConformetryConfiguration`, `GenerateCommand.find(…)`, `LoggerService.error`, `GenerateCommand.map(…)`, `InputService.resolveGeneratorInputs`, `GenerateCommand.canPrompt`, `GenerationService.runGenerator`, `GenerateCommand.map(…)`, `LoggerService.info` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:108` |
-| `InstancesCommand.run` | 5 | `LoggerService.debug`, `ConfigurationService.loadConformetryConfiguration`, `InventoryService.shortenInstancePaths`, `InstanceDiscoveryService.resolveInventoriedInstances`, `InventoryService.describeInstances` | `packages/conformetry-cli/src/modules/instances/instances.command.ts:90` |
+| `ValidateCommand.run` | 8 | `ConfigurationService.loadConformetryConfiguration`, `ValidationService.validate`, `ValidateCommand.findInstances`, `ValidateCommand.flatMap(…)`, `TemplateDiscoveryService.collectTemplates`, `ReportingService.formatReport`, `ValidateCommand.filter(…)`, `ValidateCommand.describeFailure` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:152` |
+| `GenerateCommand.run` | 7 | `ConfigurationService.loadConformetryConfiguration`, `GenerateCommand.find(…)`, `GenerateCommand.map(…)`, `InputService.resolveGeneratorInputs`, `GenerateCommand.canPrompt`, `GenerationService.runGenerator`, `GenerateCommand.map(…)` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:108` |
+| `InstancesCommand.run` | 4 | `ConfigurationService.loadConformetryConfiguration`, `InventoryService.shortenInstancePaths`, `InstanceDiscoveryService.resolveInventoriedInstances`, `InventoryService.describeInstances` | `packages/conformetry-cli/src/modules/instances/instances.command.ts:90` |
 
 <details>
-<summary>23 more callables</summary>
+<summary>16 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `TemplatesCommand.run` | 5 | `LoggerService.debug`, `ConfigurationService.loadConformetryConfiguration`, `InventoryService.shortenTemplatePairings`, `InstanceDiscoveryService.resolveInventoriedTemplates`, `InventoryService.describeTemplates` | `packages/conformetry-cli/src/modules/templates/templates.command.ts:91` |
+| `TemplatesCommand.run` | 4 | `ConfigurationService.loadConformetryConfiguration`, `InventoryService.shortenTemplatePairings`, `InstanceDiscoveryService.resolveInventoriedTemplates`, `InventoryService.describeTemplates` | `packages/conformetry-cli/src/modules/templates/templates.command.ts:91` |
 | `ValidateCommand.describeFailure` | 2 | `ValidateCommand.filter(…)`, `ValidateCommand.map(…)` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:66` |
-| `main` | 2 | `LoggerService.constructor`, `LoggerService.setContext` | `packages/conformetry-cli/src/main.ts:11` |
-| `GenerateCommand.constructor` | 1 | `LoggerService.setContext` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:34` |
 | `GenerateCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:68` |
 | `GenerateCommand.parseDirectory` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:77` |
 | `GenerateCommand.parseGenerator` | 1 | `InputService.parseRequiredOption` | `packages/conformetry-cli/src/modules/generate/generate.command.ts:86` |
-| `InstancesCommand.constructor` | 1 | `LoggerService.setContext` | `packages/conformetry-cli/src/modules/instances/instances.command.ts:42` |
 | `InstancesCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-cli/src/modules/instances/instances.command.ts:62` |
 | `InstancesCommand.parseTemplates` | 1 | `InputService.parseCommaDelimitedOption` | `packages/conformetry-cli/src/modules/instances/instances.command.ts:80` |
-| `TemplatesCommand.constructor` | 1 | `LoggerService.setContext` | `packages/conformetry-cli/src/modules/templates/templates.command.ts:43` |
 | `TemplatesCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/conformetry-cli/src/modules/templates/templates.command.ts:63` |
 | `TemplatesCommand.parseInstances` | 1 | `InputService.parseCommaDelimitedOption` | `packages/conformetry-cli/src/modules/templates/templates.command.ts:72` |
-| `ValidateCommand.constructor` | 1 | `LoggerService.setContext` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:40` |
 | `ValidateCommand.map(…)` | 1 | `ReportingService.formatPercentage` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:69` |
 | `ValidateCommand.findInstances` | 1 | `ValidateCommand.flatMap(…)` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:90` |
 | `ValidateCommand.flatMap(…)` | 1 | `InstanceDiscoveryService.findInstances` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:94` |
@@ -882,8 +809,6 @@ None.
 | `ValidateCommand.parseInstances` | 1 | `InputService.parseCommaDelimitedOption` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:123` |
 | `ValidateCommand.parseLanguages` | 1 | `InputService.parseCommaDelimitedOption` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:133` |
 | `ValidateCommand.parseThreshold` | 1 | `InputService.parseThresholdOption` | `packages/conformetry-cli/src/modules/validate/validate.command.ts:142` |
-| `errorHandler` | 1 | `LoggerService.error` | `packages/conformetry-cli/src/main.ts:17` |
-| `serviceErrorHandler` | 1 | `LoggerService.error` | `packages/conformetry-cli/src/main.ts:22` |
 
 </details>
 

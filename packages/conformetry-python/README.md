@@ -128,7 +128,7 @@ Call stacks traced through `conformetry-python`, deepest first. Each frame shows
 
 None.
 
-### Direct fan-out (breadth)
+### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |

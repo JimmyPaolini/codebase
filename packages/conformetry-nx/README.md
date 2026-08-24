@@ -262,8 +262,8 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
 | --- | --- |
 | Callables | 114 |
 | Files | 42 |
-| Calls traced | 140 |
-| Call stacks | 9 |
+| Calls traced | 134 |
+| Call stacks | 8 |
 | Deepest stack | 12 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 1 |
@@ -345,7 +345,7 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
 ```
 
 <details>
-<summary>6 more call stacks</summary>
+<summary>5 more call stacks</summary>
 
 **4. `syncGenerator`** — depth ≥ 9 · orphan-root
 
@@ -413,41 +413,32 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
      ↳ Converts an absolute path to the workspace-relative form a `Tree` uses, or returns `undefined` when the path lies…
 ```
 
-**9. `PluginService.constructor`** — depth 2 · orphan-root
-
-```text
-🚀 PluginService.constructor(…): PluginService [packages/conformetry-nx/src/modules/plugin/plugin.service.ts:59]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
 </details>
 
 ### Module spread
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `PluginService.runValidation` | 17 | `conformetry-core:modules/reporting`, `conformetry-nx:modules/instances`, `conformetry-validation:modules/validation`, `logger:modules/logger` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:398` |
-| `PluginService.runGenerator` | 13 | `conformetry-configuration:modules/configuration`, `conformetry-generation:modules/generation`, `conformetry-nx:modules/adapter`, `conformetry-nx:modules/options`, `conformetry-nx:modules/paths`, `logger:modules/logger` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:337` |
+| `PluginService.runValidation` | 16 | `conformetry-core:modules/reporting`, `conformetry-nx:modules/instances`, `conformetry-validation:modules/validation` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:398` |
+| `PluginService.runGenerator` | 12 | `conformetry-configuration:modules/configuration`, `conformetry-generation:modules/generation`, `conformetry-nx:modules/adapter`, `conformetry-nx:modules/options`, `conformetry-nx:modules/paths` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:337` |
 | `syncGenerator` | 7 | `conformetry-nx:modules/generator`, `conformetry-nx:modules/options`, `conformetry-nx:modules/projects`, `conformetry-nx:src` | `packages/conformetry-nx/src/generators/sync/generator.ts:26` |
-| `PluginService.assertEmittedPluginCurrent` | 6 | `conformetry-nx:modules/generator`, `conformetry-nx:modules/projects`, `logger:modules/logger` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:91` |
 | `bootstrapPlugin` | 6 | `conformetry-nx:modules/generator`, `conformetry-nx:modules/options`, `conformetry-nx:modules/projects` | `packages/conformetry-nx/src/bootstrap.utilities.ts:38` |
 
-### Direct fan-out (breadth)
+### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `PluginService.runGenerator` | 11 | `PluginService.resolveOptions`, `PluginService.assertPluginInSync`, `ConfigurationService.loadConformetryConfiguration`, `PluginService.find(…)`, `LoggerService.error`, `PluginService.map(…)`, `AdapterService.createAdapters`, `OptionsService.resolveGeneratorInputs`, `GenerationService.runGenerator`, `PathsService.resolveGenerationPath`, `LoggerService.info` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:337` |
+| `PluginService.runGenerator` | 9 | `PluginService.resolveOptions`, `PluginService.assertPluginInSync`, `ConfigurationService.loadConformetryConfiguration`, `PluginService.find(…)`, `PluginService.map(…)`, `AdapterService.createAdapters`, `OptionsService.resolveGeneratorInputs`, `GenerationService.runGenerator`, `PathsService.resolveGenerationPath` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:337` |
 | `bootstrapPlugin` | 9 | `resolveGeneratorService`, `resolveOptionsService`, `resolveProjectsService`, `GeneratorService.emitPlugin`, `OptionsService.resolveConfigurationPath`, `readNxConfiguration`, `ProjectsService.listWorkspaceProjects`, `writePlugin`, `linkPlugin` | `packages/conformetry-nx/src/bootstrap.utilities.ts:38` |
-| `PluginService.runValidation` | 7 | `PluginService.resolveOptions`, `PluginService.assertPluginInSync`, `ValidationService.validate`, `InstancesService.findProjectInstances`, `PluginService.resolveTemplates`, `LoggerService.info`, `ReportingService.formatReport` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:398` |
+| `syncGenerator` | 7 | `resolveGeneratorService`, `resolveOptionsService`, `resolveProjectsService`, `GeneratorService.emitPlugin`, `OptionsService.resolveConfigurationPath`, `readNxConfiguration`, `ProjectsService.listWorkspaceProjects` | `packages/conformetry-nx/src/generators/sync/generator.ts:26` |
 
 <details>
-<summary>54 more callables</summary>
+<summary>53 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `syncGenerator` | 7 | `resolveGeneratorService`, `resolveOptionsService`, `resolveProjectsService`, `GeneratorService.emitPlugin`, `OptionsService.resolveConfigurationPath`, `readNxConfiguration`, `ProjectsService.listWorkspaceProjects` | `packages/conformetry-nx/src/generators/sync/generator.ts:26` |
 | `GeneratorService.emitPlugin` | 6 | `ConfigurationService.loadConformetryConfiguration`, `GeneratorService.toSorted(…)`, `GeneratorService.buildGeneratorsManifest`, `GeneratorService.map(…)`, `GeneratorService.map(…)`, `GeneratorService.stringify` | `packages/conformetry-nx/src/modules/generator/generator.service.ts:217` |
+| `PluginService.runValidation` | 6 | `PluginService.resolveOptions`, `PluginService.assertPluginInSync`, `ValidationService.validate`, `InstancesService.findProjectInstances`, `PluginService.resolveTemplates`, `ReportingService.formatReport` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:398` |
 | `InstancesService.findProjectInstances` | 5 | `ConfigurationService.loadConformetryConfiguration`, `InstancesService.filter(…)`, `InstancesService.flatMap(…)`, `InstancesService.flatMap(…)`, `InstancesService.flatMap(…)` | `packages/conformetry-nx/src/modules/instances/instances.service.ts:74` |
 | `PathsService.resolveGenerationPath` | 5 | `PathsService.resolveNewProjectPath`, `InstancesService.findProjectInstances`, `PathsService.requireModulePath`, `PathsService.resolveScopedDirectory`, `PathsService.resolveModuleParentPath` | `packages/conformetry-nx/src/modules/paths/paths.service.ts:211` |
 | `PluginService.inferTargets` | 5 | `PluginService.resolveOptions`, `PluginService.resolveTemplateInputs`, `PluginService.filter(…)`, `ProjectsService.readProjectScope`, `InstancesService.findProjectInstances` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:272` |
@@ -457,7 +448,6 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
 | `ScopeService.resolveGroup` | 3 | `ScopeService.matchesProject`, `ScopeService.isProjectGroup`, `ScopeService.map(…)` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:69` |
 | `AdapterService.listDirectory` | 3 | `AdapterService.resolveTreePath`, `AdapterService.map(…)`, `AdapterService.map(…)` | `packages/conformetry-nx/src/modules/adapter/adapter.service.ts:44` |
 | `PathsService.resolveScopedDirectory` | 3 | `ConfigurationService.loadConformetryConfiguration`, `PathsService.find(…)`, `ScopeService.resolveScopedDirectory` | `packages/conformetry-nx/src/modules/paths/paths.service.ts:158` |
-| `PluginService.assertEmittedPluginCurrent` | 3 | `GeneratorService.emitPlugin`, `ProjectsService.listWorkspaceProjects`, `LoggerService.warn` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:91` |
 | `PluginService.resolveOptions` | 3 | `OptionsService.resolveConfigurationPath`, `PluginService.readNxConfiguration`, `OptionsService.resolvePluginOptions` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:196` |
 | `PluginService.resolveTemplateInputs` | 3 | `ConfigurationService.loadConformetryConfiguration`, `PluginService.map(…)`, `PluginService.map(…)` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:226` |
 | `ScopeService.matchesProject` | 2 | `ScopeService.isProjectGroup`, `ScopeService.some(…)` | `packages/conformetry-nx/src/modules/scope/scope.service.ts:47` |
@@ -468,8 +458,8 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
 | `OptionsService.resolveConfigurationPath` | 2 | `OptionsService.readRegisteredConfigurationPath`, `OptionsService.find(…)` | `packages/conformetry-nx/src/modules/options/options.service.ts:100` |
 | `ProjectsService.readIgnoredPaths` | 2 | `ProjectsService.filter(…)`, `ProjectsService.map(…)` | `packages/conformetry-nx/src/modules/projects/projects.service.ts:99` |
 | `ProjectsService.readProjectScope` | 2 | `ProjectsService.isUnknownArray`, `ProjectsService.filter(…)` | `packages/conformetry-nx/src/modules/projects/projects.service.ts:136` |
+| `PluginService.assertEmittedPluginCurrent` | 2 | `GeneratorService.emitPlugin`, `ProjectsService.listWorkspaceProjects` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:91` |
 | `PluginService.assertPluginInSync` | 2 | `PluginService.assertTemplatesExist`, `PluginService.assertEmittedPluginCurrent` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:125` |
-| `PluginService.assertTemplatesExist` | 2 | `ConfigurationService.loadConformetryConfiguration`, `LoggerService.warn` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:141` |
 | `PluginService.resolveTemplates` | 2 | `ConfigurationService.loadConformetryConfiguration`, `PluginService.map(…)` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:243` |
 | `runConformetryGenerator` | 2 | `resolvePluginService`, `PluginService.runGenerator` | `packages/conformetry-nx/src/index.ts:90` |
 | `validateExecutor` | 2 | `resolvePluginService`, `PluginService.runValidation` | `packages/conformetry-nx/src/executors/validate/executor.ts:16` |
@@ -492,7 +482,7 @@ Call stacks traced through `conformetry-nx`, deepest first. Each frame shows wha
 | `PathsService.resolveModulePath` | 1 | `PathsService.find(…)` | `packages/conformetry-nx/src/modules/paths/paths.service.ts:117` |
 | `PathsService.resolveNewProjectPath` | 1 | `PathsService.resolveTypeDirectoryPath` | `packages/conformetry-nx/src/modules/paths/paths.service.ts:135` |
 | `ProjectsService.map(…)` | 1 | `ProjectsService.readProjectScope` | `packages/conformetry-nx/src/modules/projects/projects.service.ts:126` |
-| `PluginService.constructor` | 1 | `LoggerService.setContext` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:59` |
+| `PluginService.assertTemplatesExist` | 1 | `ConfigurationService.loadConformetryConfiguration` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:141` |
 | `PluginService.map(…)` | 1 | `TemplateDiscoveryService.collectTemplate` | `packages/conformetry-nx/src/modules/plugin/plugin.service.ts:252` |
 | `resolveGeneratorService` | 1 | `resolvePluginContext` | `packages/conformetry-nx/src/plugin-context.utilities.ts:17` |
 | `resolveOptionsService` | 1 | `resolvePluginContext` | `packages/conformetry-nx/src/plugin-context.utilities.ts:24` |

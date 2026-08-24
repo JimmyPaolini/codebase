@@ -464,7 +464,7 @@ Call stacks traced through `codometer-configuration`, deepest first. Each frame 
 
 None.
 
-### Direct fan-out (breadth)
+### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |

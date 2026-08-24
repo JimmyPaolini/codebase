@@ -182,7 +182,7 @@ Call stacks traced through `conformetry-core`, deepest first. Each frame shows w
 
 None.
 
-### Direct fan-out (breadth)
+### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |

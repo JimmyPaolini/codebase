@@ -87,7 +87,7 @@ None.
 
 None.
 
-### Direct fan-out (breadth)
+### Breadth
 
 None.
 

@@ -193,8 +193,8 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
 | --- | --- |
 | Callables | 114 |
 | Files | 22 |
-| Calls traced | 145 |
-| Call stacks | 17 |
+| Calls traced | 131 |
+| Call stacks | 12 |
 | Deepest stack | 9 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 2 |
@@ -210,18 +210,17 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
      ↳ Renders one report and writes it wherever the destination says.
     └─> BundlesCommand.renderReport(options: ReportOptions): string [tools/reporting/src/modules/bundles/bundles.command.ts:92]
        ↳ Renders the report body from whatever the `codometer` target measured.
-      └─> BundlesService.collect(args: CollectRowsArguments): MetricCollection [tools/reporting/src/modules/bundles/bundles.service.ts:289]
-         ↳ Joins every current report to the baseline snapshot.
-        └─> BundlesService.readReportPaths(args: CollectRowsArguments): string[] [tools/reporting/src/modules/bundles/bundles.service.ts:240]
-           ↳ Lists every report path either side knows about, so a project the baseline measured is still accounted for when this…
-          └─> LoggerService.debug(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:241]
-             ↳ Logs a debug message at the `debug` level.
-            └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Assembles the object pino merges into the line.
-              └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-                 ↳ Fails a malformed message in development, and never in production.
-                └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                   ↳ Whether a word is a verb in one of the two tenses the convention allows.
+      └─> BundleMarkdownService.renderSection(args: RenderSectionArguments): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:442]
+         ↳ Renders the report body: its heading, and everything under it.
+        └─> BundleMarkdownService.renderMeasuredTable(rows: readonly MetricRow[]): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:272]
+           ↳ Renders the table of everything this run rebuilt, collapsed by default.
+          └─> BundleMarkdownService.flatMap(…)(this: undefined, group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:288]
+            └─> BundleMarkdownService.renderSubtotal(group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:315]
+               ↳ Renders a project's rollup, which earns its line only with siblings.
+              └─> formatDelta(delta: number | undefined): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts:24]
+                 ↳ Formats a signed delta, or an em dash when there is no baseline.
+                └─> formatBytes(bytes: number): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts:11]
+                   ↳ Formats a byte count, switching to megabytes once kilobytes get unwieldy.
 ```
 
 **2. `ReportingCommand.run`** — depth 9 · decorated-method
@@ -233,21 +232,20 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
      ↳ Renders one report and writes it wherever the destination says.
     └─> BundlesCommand.renderReport(options: ReportOptions): string [tools/reporting/src/modules/bundles/bundles.command.ts:92]
        ↳ Renders the report body from whatever the `codometer` target measured.
-      └─> BundlesService.collect(args: CollectRowsArguments): MetricCollection [tools/reporting/src/modules/bundles/bundles.service.ts:289]
-         ↳ Joins every current report to the baseline snapshot.
-        └─> BundlesService.readReportPaths(args: CollectRowsArguments): string[] [tools/reporting/src/modules/bundles/bundles.service.ts:240]
-           ↳ Lists every report path either side knows about, so a project the baseline measured is still accounted for when this…
-          └─> LoggerService.debug(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:241]
-             ↳ Logs a debug message at the `debug` level.
-            └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Assembles the object pino merges into the line.
-              └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-                 ↳ Fails a malformed message in development, and never in production.
-                └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                   ↳ Whether a word is a verb in one of the two tenses the convention allows.
+      └─> BundleMarkdownService.renderSection(args: RenderSectionArguments): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:442]
+         ↳ Renders the report body: its heading, and everything under it.
+        └─> BundleMarkdownService.renderMeasuredTable(rows: readonly MetricRow[]): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:272]
+           ↳ Renders the table of everything this run rebuilt, collapsed by default.
+          └─> BundleMarkdownService.flatMap(…)(this: undefined, group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:288]
+            └─> BundleMarkdownService.renderSubtotal(group: ProjectGroup): string[] [tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:315]
+               ↳ Renders a project's rollup, which earns its line only with siblings.
+              └─> formatDelta(delta: number | undefined): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts:24]
+                 ↳ Formats a signed delta, or an em dash when there is no baseline.
+                └─> formatBytes(bytes: number): string [tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts:11]
+                   ↳ Formats a byte count, switching to megabytes once kilobytes get unwieldy.
 ```
 
-**3. `BundlesService.collectProjectRows`** — depth 7 · orphan-root
+**3. `BundlesService.collectProjectRows`** — depth 4 · orphan-root
 
 ```text
 🚀 BundlesService.collectProjectRows(args: CollectProjectRowsArguments): MetricCollection [tools/reporting/src/modules/bundles/bundles.service.ts:110]
@@ -256,18 +254,12 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
      ↳ Reads a baseline report into a name-to-metric lookup.
     └─> BundlesService.readReport(workingDirectory: string, reportPath: string): ProjectReport [tools/reporting/src/modules/bundles/bundles.service.ts:216]
        ↳ Parses a codometer report, tolerating an absent or malformed file.
-      └─> LoggerService.warn(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:312]
-         ↳ Logs a warning message at the `warn` level.
-        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-           ↳ Assembles the object pino merges into the line.
-          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-             ↳ Fails a malformed message in development, and never in production.
-            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-               ↳ Whether a word is a verb in one of the two tenses the convention allows.
+      └─> BundlesService.parseReport(workingDirectory: string, reportPath: string): CodometerReport | undefined [tools/reporting/src/modules/bundles/bundles.service.ts:137]
+         ↳ Parses the report's JSON body, tolerating an absent or malformed file.
 ```
 
 <details>
-<summary>14 more call stacks</summary>
+<summary>9 more call stacks</summary>
 
 **4. `BundlesService.readSizeMetrics`** — depth 4 · orphan-root
 
@@ -354,53 +346,13 @@ Call stacks traced through `reporting`, deepest first. Each frame shows what it 
      ↳ Narrows an option that carries text, or nothing at all.
 ```
 
-**13. `main`** — depth ≥ 2 · module-bootstrap
-
-```text
-🚀 main(): Promise<void> [tools/reporting/src/main.ts:9]
-   ↳ Bootstraps the bundle sizes CLI application.
-  └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:38]
-```
-
-**14. `ReportingService.constructor`** — depth 2 · orphan-root
-
-```text
-🚀 ReportingService.constructor(…): ReportingService [tools/reporting/src/modules/reporting/reporting.service.ts:27]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**15. `BundlesService.constructor`** — depth 2 · orphan-root
-
-```text
-🚀 BundlesService.constructor(logger: LoggerService): BundlesService [tools/reporting/src/modules/bundles/bundles.service.ts:49]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**16. `BundlesCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 BundlesCommand.constructor(…): BundlesCommand [tools/reporting/src/modules/bundles/bundles.command.ts:33]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**17. `ReportingCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 ReportingCommand.constructor(…): ReportingCommand [tools/reporting/src/modules/reporting/reporting.command.ts:33]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
 </details>
 
 ### Module spread
 
 None.
 
-### Direct fan-out (breadth)
+### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -409,34 +361,33 @@ None.
 | `BundleMarkdownService.renderRow` | 7 | `BundleMarkdownService.readStatus`, `formatBytes`, `formatDelta`, `BundleMarkdownService.readDelta`, `formatPercent`, `BundleMarkdownService.readFraction`, `formatUsage` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:298` |
 
 <details>
-<summary>43 more callables</summary>
+<summary>38 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `BundlesService.collectProjectRows` | 7 | `BundlesService.readProjectName`, `BundlesService.readBaseline`, `BundlesService.readReport`, `BundlesService.map(…)`, `BundlesService.map(…)`, `BundlesService.buildBaselineRow`, `BundlesService.map(…)` | `tools/reporting/src/modules/bundles/bundles.service.ts:110` |
 | `BundleMarkdownService.readComparison` | 6 | `BundleMarkdownService.filter(…)`, `BundleMarkdownService.filter(…)`, `BundleMarkdownService.filter(…)`, `formatDelta`, `formatPercent`, `BundleMarkdownService.some(…)` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:122` |
 | `BundleMarkdownService.renderMeasuredTable` | 6 | `BundleMarkdownService.filter(…)`, `BundleMarkdownService.map(…)`, `BundleMarkdownService.hasBreach`, `formatCount`, `BundleMarkdownService.flatMap(…)`, `groupByProject` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:272` |
-| `ReportingService.emit` | 6 | `BundlesCommand.renderReport`, `ReportingMarkersService.wrap`, `LoggerService.info`, `ReportingService.readDocument`, `ReportingMarkersService.splice`, `LoggerService.debug` | `tools/reporting/src/modules/reporting/reporting.service.ts:57` |
 | `BundleMarkdownService.renderUnmeasured` | 5 | `BundleMarkdownService.filter(…)`, `BundleMarkdownService.reduce(…)`, `formatCount`, `formatBytes`, `BundleMarkdownService.map(…)` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:381` |
 | `BundleMarkdownService.renderSection` | 5 | `BundleMarkdownService.renderFailures`, `BundleMarkdownService.renderSummary`, `BundleMarkdownService.renderMeasuredTable`, `BundleMarkdownService.renderUnmeasured`, `BundleMarkdownService.renderGuidelines` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:442` |
-| `ReportingCommand.run` | 5 | `ReportingCommand.getReports`, `ReportingService.readOptionalText`, `LoggerService.debug`, `ReportingService.emit`, `LoggerService.info` | `tools/reporting/src/modules/reporting/reporting.command.ts:83` |
 | `BundleMarkdownService.readBreachStatus` | 4 | `BundleMarkdownService.filter(…)`, `BundleMarkdownService.some(…)`, `BundleMarkdownService.some(…)`, `BundleMarkdownService.some(…)` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:109` |
 | `BundleMarkdownService.summarizeRows` | 4 | `BundleMarkdownService.reduce(…)`, `BundleMarkdownService.filter(…)`, `BundleMarkdownService.reduce(…)`, `BundleMarkdownService.reduce(…)` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:412` |
-| `BundlesService.readReportPaths` | 4 | `BundlesService.flatMap(…)`, `BundlesService.map(…)`, `BundlesService.flatMap(…)`, `LoggerService.debug` | `tools/reporting/src/modules/bundles/bundles.service.ts:240` |
+| `ReportingService.emit` | 4 | `BundlesCommand.renderReport`, `ReportingMarkersService.wrap`, `ReportingService.readDocument`, `ReportingMarkersService.splice` | `tools/reporting/src/modules/reporting/reporting.service.ts:57` |
 | `BundlesService.collect` | 4 | `BundlesService.map(…)`, `BundlesService.readReportPaths`, `BundlesService.flatMap(…)`, `BundlesService.flatMap(…)` | `tools/reporting/src/modules/bundles/bundles.service.ts:289` |
 | `BundleMarkdownService.readBiggestGrowth` | 3 | `BundleMarkdownService.filter(…)`, `BundleMarkdownService.filter(…)`, `BundleMarkdownService.toSorted(…)` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:81` |
-| `BundlesService.readReport` | 3 | `BundlesService.parseReport`, `LoggerService.warn`, `BundlesService.flatMap(…)` | `tools/reporting/src/modules/bundles/bundles.service.ts:216` |
+| `BundlesService.readReportPaths` | 3 | `BundlesService.flatMap(…)`, `BundlesService.map(…)`, `BundlesService.flatMap(…)` | `tools/reporting/src/modules/bundles/bundles.service.ts:240` |
 | `BundlesService.map(…)` | 3 | `BundlesService.readBreach`, `BundlesService.readLabel`, `BundlesService.readGoverningLimit` | `tools/reporting/src/modules/bundles/bundles.service.ts:276` |
-| `BundlesCommand.renderReport` | 3 | `BundlesService.collect`, `LoggerService.info`, `BundleMarkdownService.renderSection` | `tools/reporting/src/modules/bundles/bundles.command.ts:92` |
+| `ReportingCommand.run` | 3 | `ReportingCommand.getReports`, `ReportingService.readOptionalText`, `ReportingService.emit` | `tools/reporting/src/modules/reporting/reporting.command.ts:83` |
 | `BundleMarkdownService.hasBreach` | 2 | `BundleMarkdownService.some(…)`, `BundleMarkdownService.filter(…)` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:59` |
 | `BundleMarkdownService.renderFailures` | 2 | `formatCount`, `BundleMarkdownService.map(…)` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:218` |
 | `BundleMarkdownService.flatMap(…)` | 2 | `BundleMarkdownService.map(…)`, `BundleMarkdownService.renderSubtotal` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:288` |
 | `BundlesService.readBaseline` | 2 | `BundlesService.readReport`, `BundlesService.map(…)` | `tools/reporting/src/modules/bundles/bundles.service.ts:154` |
 | `BundlesService.readBreach` | 2 | `BundlesService.filter(…)`, `BundlesService.some(…)` | `tools/reporting/src/modules/bundles/bundles.service.ts:175` |
 | `BundlesService.readGoverningLimit` | 2 | `BundlesService.filter(…)`, `BundlesService.map(…)` | `tools/reporting/src/modules/bundles/bundles.service.ts:195` |
+| `BundlesService.readReport` | 2 | `BundlesService.parseReport`, `BundlesService.flatMap(…)` | `tools/reporting/src/modules/bundles/bundles.service.ts:216` |
 | `BundlesService.readSizeMetrics` | 2 | `BundlesService.map(…)`, `BundlesService.filter(…)` | `tools/reporting/src/modules/bundles/bundles.service.ts:273` |
+| `BundlesCommand.renderReport` | 2 | `BundlesService.collect`, `BundleMarkdownService.renderSection` | `tools/reporting/src/modules/bundles/bundles.command.ts:92` |
 | `BundlesCommand.run` | 2 | `ReportingService.emit`, `ReportingService.readOptionalText` | `tools/reporting/src/modules/bundles/bundles.command.ts:111` |
-| `main` | 2 | `LoggerService.constructor`, `LoggerService.setContext` | `tools/reporting/src/main.ts:9` |
 | `formatDelta` | 1 | `formatBytes` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts:24` |
 | `groupByProject` | 1 | `map(…)` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.utilities.ts:49` |
 | `BundleMarkdownService.readFraction` | 1 | `BundleMarkdownService.readDelta` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:162` |
@@ -444,15 +395,11 @@ None.
 | `BundleMarkdownService.readStatus` | 1 | `BundleMarkdownService.readGrowthStatus` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:200` |
 | `BundleMarkdownService.map(…)` | 1 | `formatBytes` | `tools/reporting/src/modules/bundle-markdown/bundle-markdown.service.ts:398` |
 | `ReportingMarkersService.splice` | 1 | `ReportingMarkersService.filter(…)` | `tools/reporting/src/modules/reporting/reporting-markers.service.ts:29` |
-| `ReportingService.constructor` | 1 | `LoggerService.setContext` | `tools/reporting/src/modules/reporting/reporting.service.ts:27` |
-| `BundlesService.constructor` | 1 | `LoggerService.setContext` | `tools/reporting/src/modules/bundles/bundles.service.ts:49` |
 | `BundlesService.readLabel` | 1 | `BundlesService.find(…)` | `tools/reporting/src/modules/bundles/bundles.service.ts:206` |
-| `BundlesCommand.constructor` | 1 | `LoggerService.setContext` | `tools/reporting/src/modules/bundles/bundles.command.ts:33` |
 | `BundlesCommand.parseBaseline` | 1 | `ReportingService.readOptionalText` | `tools/reporting/src/modules/bundles/bundles.command.ts:56` |
 | `BundlesCommand.parseBaselineUrl` | 1 | `ReportingService.readOptionalText` | `tools/reporting/src/modules/bundles/bundles.command.ts:65` |
 | `BundlesCommand.parseMarkdown` | 1 | `ReportingService.readOptionalText` | `tools/reporting/src/modules/bundles/bundles.command.ts:74` |
 | `BundlesCommand.parseOutput` | 1 | `ReportingService.readOptionalText` | `tools/reporting/src/modules/bundles/bundles.command.ts:83` |
-| `ReportingCommand.constructor` | 1 | `LoggerService.setContext` | `tools/reporting/src/modules/reporting/reporting.command.ts:33` |
 | `ReportingCommand.parseBaseline` | 1 | `ReportingService.readOptionalText` | `tools/reporting/src/modules/reporting/reporting.command.ts:56` |
 | `ReportingCommand.parseBaselineUrl` | 1 | `ReportingService.readOptionalText` | `tools/reporting/src/modules/reporting/reporting.command.ts:65` |
 | `ReportingCommand.parseMarkdown` | 1 | `ReportingService.readOptionalText` | `tools/reporting/src/modules/reporting/reporting.command.ts:74` |

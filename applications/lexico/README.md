@@ -424,7 +424,7 @@ Call stacks traced through `lexico`, deepest first. Each frame shows what it tak
 
 None.
 
-### Direct fan-out (breadth)
+### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |

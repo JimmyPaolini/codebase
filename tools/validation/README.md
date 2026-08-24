@@ -158,8 +158,8 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
 | --- | --- |
 | Callables | 155 |
 | Files | 39 |
-| Calls traced | 204 |
-| Call stacks | 16 |
+| Calls traced | 196 |
+| Call stacks | 9 |
 | Deepest stack | 7 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 16 |
@@ -218,7 +218,7 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
 ```
 
 <details>
-<summary>13 more call stacks</summary>
+<summary>6 more call stacks</summary>
 
 **4. `PullRequestBodyCommand.run`** — depth 5 · decorated-method
 
@@ -275,47 +275,7 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
     └─> PullRequestReleaseSignificanceService.filter(…)(scope: string): boolean [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:266]
 ```
 
-**9. `main`** — depth ≥ 2 · module-bootstrap
-
-```text
-🚀 main(): Promise<void> [tools/validation/src/main.ts:9]
-   ↳ Bootstraps the validation CLI application.
-  └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:38]
-```
-
-**10. `CatalogManifestsCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 CatalogManifestsCommand.constructor(…): CatalogManifestsCommand [tools/validation/src/modules/catalog-manifests/catalog-manifests.command.ts:27]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**11. `IssueMetadataCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 IssueMetadataCommand.constructor(…): IssueMetadataCommand [tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:55]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**12. `LockfileCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 LockfileCommand.constructor(lockfileService: LockfileService, logger: LoggerService): LockfileCommand [tools/validation/src/modules/lockfile/lockfile.command.ts:33]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**13. `PullRequestBodyCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 PullRequestBodyCommand.constructor(…): PullRequestBodyCommand [tools/validation/src/modules/pull-request-body/pull-request-body.command.ts:46]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**14. `PullRequestMetadataService.nameOf`** — depth 2 · orphan-root
+**9. `PullRequestMetadataService.nameOf`** — depth 2 · orphan-root
 
 ```text
 🚀 PullRequestMetadataService.nameOf(entry: unknown, propertyName: string): string [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:162]
@@ -324,29 +284,13 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
      ↳ Whether this value can be read by property name at all.
 ```
 
-**15. `PullRequestMetadataCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 PullRequestMetadataCommand.constructor(…): PullRequestMetadataCommand [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:56]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**16. `PullRequestReleaseSignificanceCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 PullRequestReleaseSignificanceCommand.constructor(…): PullRequestReleaseSignificanceCommand [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:51]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
 </details>
 
 ### Module spread
 
 None.
 
-### Direct fan-out (breadth)
+### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -355,7 +299,7 @@ None.
 | `PullRequestMetadataCommand.run` | 8 | `PullRequestMetadataCommand.resolveMetadata`, `PullRequestMetadataCommand.failWithMessage`, `PullRequestMetadataService.parseTitle`, `PullRequestMetadataService.checkMetadata`, `PullRequestMetadataCommand.resolvePullRequestNumber`, `PullRequestMetadataCommand.reportFailures`, `PullRequestMetadataCommand.appendToReport`, `PullRequestMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:264` |
 
 <details>
-<summary>75 more callables</summary>
+<summary>68 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -400,31 +344,25 @@ None.
 | `PullRequestReleaseSignificanceCommand.failWithMessage` | 2 | `PullRequestReleaseSignificanceCommand.appendToReport`, `PullRequestReleaseSignificanceCommand.mirrorToStepSummary` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:73` |
 | `PullRequestReleaseSignificanceCommand.failWithUsageError` | 2 | `PullRequestReleaseSignificanceCommand.appendToReport`, `PullRequestReleaseSignificanceCommand.mirrorToStepSummary` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:81` |
 | `PullRequestReleaseSignificanceCommand.reportFailures` | 2 | `PullRequestReleaseSignificanceCommand.appendToReport`, `PullRequestReleaseSignificanceCommand.mirrorToStepSummary` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:146` |
-| `main` | 2 | `LoggerService.constructor`, `LoggerService.setContext` | `tools/validation/src/main.ts:9` |
 | `CatalogManifestsService.isInternalWorkspaceDependency` | 1 | `CatalogManifestsService.some(…)` | `tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:37` |
 | `CatalogManifestsService.validateManifestDependencies` | 1 | `CatalogManifestsService.isInternalWorkspaceDependency` | `tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:84` |
-| `CatalogManifestsCommand.constructor` | 1 | `LoggerService.setContext` | `tools/validation/src/modules/catalog-manifests/catalog-manifests.command.ts:27` |
 | `CatalogManifestsCommand.flatMap(…)` | 1 | `CatalogManifestsService.readManifest` | `tools/validation/src/modules/catalog-manifests/catalog-manifests.command.ts:50` |
 | `IssueMetadataGithubService.describeFailure` | 1 | `IssueMetadataGithubService.filter(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata-github.service.ts:47` |
 | `IssueMetadataGithubService.isAvailable` | 1 | `IssueMetadataGithubService.run` | `tools/validation/src/modules/issue-metadata/issue-metadata-github.service.ts:56` |
 | `IssueMetadataService.checkTypeLabelPresence` | 1 | `IssueMetadataService.map(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:162` |
 | `IssueMetadataService.map(…)` | 1 | `IssueMetadataService.isRecord` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:211` |
 | `IssueMetadataService.parseFormAnswers` | 1 | `IssueMetadataService.extractFormField` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:274` |
-| `IssueMetadataCommand.constructor` | 1 | `LoggerService.setContext` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:55` |
 | `LockfileService.checkLockfile` | 1 | `LockfileService.runFrozenInstall` | `tools/validation/src/modules/lockfile/lockfile.service.ts:60` |
-| `LockfileCommand.constructor` | 1 | `LoggerService.setContext` | `tools/validation/src/modules/lockfile/lockfile.command.ts:33` |
 | `LockfileCommand.run` | 1 | `LockfileService.checkLockfile` | `tools/validation/src/modules/lockfile/lockfile.command.ts:50` |
 | `PullRequestBodyService.extractTemplateComments` | 1 | `PullRequestBodyService.map(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:61` |
 | `PullRequestBodyService.findUnfilledComments` | 1 | `PullRequestBodyService.filter(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:75` |
 | `PullRequestBodyService.filter(…)` | 1 | `PullRequestBodyService.prefixOf` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:81` |
-| `PullRequestBodyCommand.constructor` | 1 | `LoggerService.setContext` | `tools/validation/src/modules/pull-request-body/pull-request-body.command.ts:46` |
 | `PullRequestBodyCommand.reportVerdict` | 1 | `PullRequestBodyCommand.map(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.command.ts:72` |
 | `PullRequestBodyCommand.resolveBody` | 1 | `PullRequestBodyCommand.failWithUsageError` | `tools/validation/src/modules/pull-request-body/pull-request-body.command.ts:98` |
 | `PullRequestMetadataGithubService.describeFailure` | 1 | `PullRequestMetadataGithubService.filter(…)` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata-github.service.ts:47` |
 | `PullRequestMetadataGithubService.isAvailable` | 1 | `PullRequestMetadataGithubService.run` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata-github.service.ts:56` |
 | `PullRequestMetadataService.nameOf` | 1 | `PullRequestMetadataService.isRecord` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:162` |
 | `PullRequestMetadataService.parseJsonArray` | 1 | `PullRequestMetadataService.describeError` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:177` |
-| `PullRequestMetadataCommand.constructor` | 1 | `LoggerService.setContext` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:56` |
 | `PullRequestReleaseSignificanceGithubService.describeFailure` | 1 | `PullRequestReleaseSignificanceGithubService.filter(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance-github.service.ts:42` |
 | `PullRequestReleaseSignificanceGithubService.isAvailable` | 1 | `PullRequestReleaseSignificanceGithubService.run` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance-github.service.ts:51` |
 | `PullRequestReleaseSignificanceService.describeMissingScopeFailures` | 1 | `PullRequestReleaseSignificanceService.map(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:51` |
@@ -432,7 +370,6 @@ None.
 | `PullRequestReleaseSignificanceService.matchRule` | 1 | `PullRequestReleaseSignificanceService.find(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:140` |
 | `PullRequestReleaseSignificanceService.releaseLevelName` | 1 | `PullRequestReleaseSignificanceService.find(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:172` |
 | `PullRequestReleaseSignificanceService.readReleaseRules` | 1 | `PullRequestReleaseSignificanceService.find(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:284` |
-| `PullRequestReleaseSignificanceCommand.constructor` | 1 | `LoggerService.setContext` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:51` |
 | `PullRequestReleaseSignificanceCommand.resolvePullRequestNumber` | 1 | `PullRequestReleaseSignificanceCommand.failWithUsageError` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:173` |
 
 </details>
