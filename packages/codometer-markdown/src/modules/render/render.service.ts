@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { HEADING, MAX_TOTAL_ROWS, TABLE_HEADER } from "./render.constants";
+import { HEADING, TABLE_HEADER } from "./render.constants";
 import { formatDelta, formatValue, hasChanged } from "./render.utilities";
 
 import type { RenderSectionArguments } from "./render.types";
@@ -18,32 +18,6 @@ export class RenderService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
-
-  /**
-   * Caps how many changed rows the whole report renders, keeping every
-   * breach and otherwise favoring the metrics that moved the most.
-   *
-   * Ranked globally rather than per project: a project with one breach and a
-   * project with two hundred quiet new counters should not each get an equal
-   * share of the budget, and a breach anywhere must survive the cut.
-   */
-  private capRows(rows: readonly MetricRow[]): {
-    kept: Set<MetricRow>;
-    omitted: number;
-  } {
-    const breaches = rows.filter((row) => row.breach !== undefined);
-    const rest = rows
-      .filter((row) => row.breach === undefined)
-      .toSorted(
-        (first, second) =>
-          this.readMagnitude(second) - this.readMagnitude(first),
-      );
-
-    const budget = Math.max(0, MAX_TOTAL_ROWS - breaches.length);
-    const kept = new Set([...breaches, ...rest.slice(0, budget)]);
-
-    return { kept, omitted: rows.length - kept.size };
-  }
 
   /** Groups items by whatever project name a case picks out of each one. */
   private groupByProject<Item>(
@@ -75,17 +49,6 @@ export class RenderService {
     failures: readonly ProjectFailure[],
   ): boolean {
     return failures.length > 0 || rows.some((row) => row.breach !== undefined);
-  }
-
-  /**
-   * How far a row moved from its baseline, in absolute terms.
-   *
-   * A brand-new metric is measured against zero, so a large new count still
-   * outranks a small one when both are competing for a place in a capped
-   * report.
-   */
-  private readMagnitude(row: MetricRow): number {
-    return Math.abs(row.value - (row.baseValue ?? 0));
   }
 
   /** Every project name either a row or a failure mentions, in sorted order. */
@@ -140,14 +103,12 @@ export class RenderService {
   }
 
   /** Renders one project's block, or nothing if it has nothing to show. */
-  private renderProject(args: {
-    failures: readonly ProjectFailure[];
-    kept: ReadonlySet<MetricRow>;
-    project: string;
-    rows: readonly MetricRow[];
-  }): string[] {
-    const { failures, kept, project, rows } = args;
-    const changed = rows.filter((row) => hasChanged(row) && kept.has(row));
+  private renderProject(
+    project: string,
+    rows: readonly MetricRow[],
+    failures: readonly ProjectFailure[],
+  ): string[] {
+    const changed = rows.filter((row) => hasChanged(row));
     if (changed.length === 0 && failures.length === 0) return [];
 
     const open = this.readIsOpen(changed, failures) ? " open" : "";
@@ -196,25 +157,16 @@ export class RenderService {
       args.failures,
       (failure) => failure.project,
     );
-    const { kept, omitted } = this.capRows(args.rows.filter(hasChanged));
 
     const blocks = this.readProjects(args).flatMap((project) =>
-      this.renderProject({
-        failures: failuresByProject.get(project) ?? [],
-        kept,
+      this.renderProject(
         project,
-        rows: rowsByProject.get(project) ?? [],
-      }),
+        rowsByProject.get(project) ?? [],
+        failuresByProject.get(project) ?? [],
+      ),
     );
 
     const comparison = this.renderComparison(args.baselineUrl);
-    const omission =
-      omitted === 0
-        ? []
-        : [
-            `_${omitted} more changed ${omitted === 1 ? "metric" : "metrics"} omitted — showing the most significant ${MAX_TOTAL_ROWS}._`,
-            "",
-          ];
     const body =
       blocks.length === 0
         ? [
@@ -224,7 +176,6 @@ export class RenderService {
         : [
             ...comparison,
             ...blocks,
-            ...omission,
             "*Updated automatically when you push new commits.*",
           ];
 
