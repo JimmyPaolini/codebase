@@ -1,4 +1,8 @@
 import { ConfigurationService } from "@codependix/configuration";
+import {
+  ImportGraphService,
+  TypescriptProjectService,
+} from "@codependix/imports";
 import { ModuleGraphService, NestjsProjectService } from "@codependix/nestjs";
 import { NeighborhoodService, WorkspaceGraphService } from "@codependix/nx";
 import { Injectable } from "@nestjs/common";
@@ -8,6 +12,7 @@ import { LoggerService } from "@codebase/logger";
 import { DeliveryService } from "../delivery/delivery.service";
 
 import {
+  IMPORTS_GRAPH_TYPE,
   NESTJS_GRAPH_TYPE,
   NX_GRAPH_TYPE,
   WORKSPACE_GRAPH_PROJECT_NAME,
@@ -19,6 +24,7 @@ import type {
 } from "../delivery/delivery.types";
 import type {
   CodependixCommandOptions,
+  ImportGraphExport,
   NestjsModuleGraphExport,
   NxNeighborhoodExport,
   NxWorkspaceGraphExport,
@@ -27,6 +33,7 @@ import type {
   ResolvedCodependixConfiguration,
   ResolvedCodependixGraphOutput,
 } from "@codependix/configuration";
+import type { TypescriptProject } from "@codependix/imports";
 import type { NestjsProject } from "@codependix/nestjs";
 import type { Neighborhood, NxProject, WorkspaceGraph } from "@codependix/nx";
 import type { ProjectGraph } from "@nx/devkit";
@@ -51,10 +58,12 @@ export class CodependixService {
   constructor(
     private readonly configurationService: ConfigurationService,
     private readonly deliveryService: DeliveryService,
+    private readonly importGraphService: ImportGraphService,
     private readonly logger: LoggerService,
     private readonly moduleGraphService: ModuleGraphService,
     private readonly neighborhoodService: NeighborhoodService,
     private readonly nestjsProjectService: NestjsProjectService,
+    private readonly typescriptProjectService: TypescriptProjectService,
     private readonly workspaceGraphService: WorkspaceGraphService,
   ) {
     this.logger.setContext(CodependixService.name);
@@ -84,6 +93,32 @@ export class CodependixService {
   }
 
   // 🌎 Public Methods
+
+  /** Builds, renders, and delivers one project's file-level import Graph. */
+  private runImportProject(args: {
+    mode: CodependixRunMode;
+    project: TypescriptProject;
+    resolvedOutput: ResolvedCodependixGraphOutput;
+  }): ProjectRunResult {
+    const { mode, project, resolvedOutput } = args;
+    const projectProgram = this.typescriptProjectService.buildProgram(project);
+    const importGraph = this.importGraphService.buildGraph(projectProgram);
+    const jsonExport: ImportGraphExport = importGraph;
+
+    return this.deliveryService.deliverGraphOutput({
+      jsonContent:
+        resolvedOutput.json === undefined
+          ? undefined
+          : this.deliveryService.renderJson(jsonExport),
+      markdownContent:
+        resolvedOutput.markdown === undefined
+          ? undefined
+          : this.importGraphService.renderMermaid(importGraph),
+      mode,
+      project,
+      resolvedOutput,
+    });
+  }
 
   /** Explores, renders, and delivers one NestJS project's module graph. */
   private async runNestjsProject(args: {
@@ -178,6 +213,49 @@ export class CodependixService {
       },
       resolvedOutput,
     });
+  }
+
+  /**
+   * Builds and delivers every configured file-level import graph export.
+   *
+   * Every project carrying its own `tsconfig.json` participates — see
+   * `TypescriptProjectService` — rather than only those tagged for a
+   * particular framework, since a file-level import graph is meaningful for
+   * any TypeScript project.
+   */
+  async runImportGraphs(
+    options: CodependixCommandOptions,
+    workingDirectory: string,
+  ): Promise<ProjectRunResult[]> {
+    const mode = this.resolveMode(options);
+    const configuration = await this.configurationService.loadConfiguration({
+      configurationPath: options.config,
+      searchDirectory: workingDirectory,
+    });
+    const graph = await this.neighborhoodService.readProjectGraph();
+    const projects = this.neighborhoodService.readProjects(
+      graph,
+      workingDirectory,
+    );
+    const typescriptProjects =
+      this.typescriptProjectService.discoverProjects(projects);
+    const results: ProjectRunResult[] = [];
+
+    for (const project of typescriptProjects) {
+      const resolvedOutput = this.configurationService.resolveForProject({
+        configuration,
+        graphType: IMPORTS_GRAPH_TYPE,
+        projectName: project.name,
+      });
+
+      if (resolvedOutput.target === "none") {
+        continue;
+      }
+
+      results.push(this.runImportProject({ mode, project, resolvedOutput }));
+    }
+
+    return results;
   }
 
   /**

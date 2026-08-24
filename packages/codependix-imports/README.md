@@ -7,18 +7,10 @@ Where this project sits in the Nx project graph: what it depends on, and what de
 ```mermaid
 flowchart LR
   codependix_cli["codependix-cli"]
-  codependix_configuration["codependix-configuration"]
   codependix_imports["codependix-imports"]
-  codependix_nestjs["codependix-nestjs"]
-  codependix_nx["codependix-nx"]
-  logger["logger"]
-  codependix_cli --> codependix_configuration
   codependix_cli --> codependix_imports
-  codependix_cli --> codependix_nestjs
-  codependix_cli --> codependix_nx
-  codependix_cli --> logger
   classDef subject stroke-width:3px
-  class codependix_cli subject
+  class codependix_imports subject
 ```
 
 <!-- nx-project-graph-end -->
@@ -31,14 +23,8 @@ The modules this project defines and the imports between them, published by `nx 
 
 <!-- nestjs-module-graph-end -->
 
-## Start
-
-```bash
-nx run codependix-cli:start
-```
-
 ## Test
 
 ```bash
-nx run codependix-cli:vitest
+nx run codependix-imports:vitest
 ```

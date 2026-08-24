@@ -1,5 +1,8 @@
 // ♟️ Constants
 
+/** Graph type `codependix-imports` builds. */
+export const IMPORTS_GRAPH_TYPE = "imports";
+
 /** Graph type `codependix-nestjs` builds. */
 export const NESTJS_GRAPH_TYPE = "nestjs";
 
