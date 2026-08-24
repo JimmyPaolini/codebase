@@ -6,12 +6,12 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
+import { SUPPORTED_TYPES } from "../meander-generation/meander-generation.constants";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 
 import {
   DEFAULT_OUTPUT_DIRECTORY,
   DEFAULT_REPEAT_COUNT,
-  SUPPORTED_TYPES,
 } from "./generate.constants";
 
 import type { MeanderType } from "../meander-generation/meander-generation.types";
@@ -45,7 +45,7 @@ export class GenerateCommand extends CommandRunner {
   // 🔏 Private Methods
 
   /** Builds the kebab-case output filename, encoding every generation parameter so no two outputs can share a name. */
-  private fileName(options: GenerateCommandOptions): string {
+  private buildFileName(options: GenerateCommandOptions): string {
     return `${options.type}-${options.rows}-rows-${options.repeatCount}-repeats.svg`;
   }
 
@@ -56,7 +56,7 @@ export class GenerateCommand extends CommandRunner {
 
   // 🌎 Public Methods
 
-  /** Parses the `--output-directory` flag, passing it through unchanged. */
+  /** Registers the `--output-directory` flag; nest-commander requires a parser method per option even when no transformation is needed. */
   @Option({
     defaultValue: DEFAULT_OUTPUT_DIRECTORY,
     description: "Directory the generated SVG is written to",
@@ -115,7 +115,10 @@ export class GenerateCommand extends CommandRunner {
 
     await mkdir(options.outputDirectory, { recursive: true });
 
-    const filePath = path.join(options.outputDirectory, this.fileName(options));
+    const filePath = path.join(
+      options.outputDirectory,
+      this.buildFileName(options),
+    );
     await writeFile(filePath, svg);
 
     this.logger.log("✨ Generated a meander", undefined, { filePath });

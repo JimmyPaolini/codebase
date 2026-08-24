@@ -28,8 +28,8 @@ export class SvgRenderingService {
     const { height, paths, strokeWidth, width } = options;
     const pathElements = paths
       .map(
-        (d) =>
-          `<path d="${d}" stroke="${STROKE_COLOR}" stroke-width="${strokeWidth}" stroke-linecap="${STROKE_LINECAP}"/>\n`,
+        (pathData) =>
+          `<path d="${pathData}" stroke="${STROKE_COLOR}" stroke-width="${strokeWidth}" stroke-linecap="${STROKE_LINECAP}"/>\n`,
       )
       .join("");
 
