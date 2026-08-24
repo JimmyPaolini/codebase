@@ -133,7 +133,7 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-188354-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-188346-22c55e?style=flat-square)
 ![Repository Size](https://img.shields.io/badge/Repository_Size-9.30_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-376-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-1389-3178c6?style=flat-square)
@@ -183,7 +183,7 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-147-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-9592-ca8a04?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-9590-ca8a04?style=flat-square)
 ![JSON Objects](https://img.shields.io/badge/JSON_Objects-1699-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-569-8b5cf6?style=flat-square)
 ![JSON Properties](https://img.shields.io/badge/JSON_Properties-4604-0284c7?style=flat-square)
@@ -198,12 +198,12 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ### YAML
 
 ![YAML Files](https://img.shields.io/badge/YAML_Files-22-cb171e?style=flat-square)
-![YAML Lines](https://img.shields.io/badge/YAML_Lines-2660-e34c26?style=flat-square)
+![YAML Lines](https://img.shields.io/badge/YAML_Lines-2658-e34c26?style=flat-square)
 ![YAML Documents](https://img.shields.io/badge/YAML_Documents-22-f97316?style=flat-square)
 ![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-358-7c3aed?style=flat-square)
 ![YAML Sequences](https://img.shields.io/badge/YAML_Sequences-73-8b5cf6?style=flat-square)
 ![YAML Keys](https://img.shields.io/badge/YAML_Keys-1234-0284c7?style=flat-square)
-![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2537-16a34a?style=flat-square)
+![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2535-16a34a?style=flat-square)
 ![YAML Anchors](https://img.shields.io/badge/YAML_Anchors-0-059669?style=flat-square)
 ![YAML Aliases](https://img.shields.io/badge/YAML_Aliases-0-10b981?style=flat-square)
 ![YAML Comments](https://img.shields.io/badge/YAML_Comments-618-64748b?style=flat-square)
@@ -311,7 +311,7 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-150-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-45074-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-45062-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-143-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-1156-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-1518-a78bfa?style=flat-square)
@@ -323,11 +323,11 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ![List Items](https://img.shields.io/badge/List_Items-4915-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-57-4ade80?style=flat-square)
 ![Tables](https://img.shields.io/badge/Tables-425-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-4627-0ea5e9?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-4615-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-1088-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-4606-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-1445-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-20873-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-20861-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-28-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-33-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
