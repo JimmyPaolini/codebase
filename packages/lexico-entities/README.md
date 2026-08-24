@@ -118,7 +118,7 @@ Call stacks traced through `lexico-entities`, deepest first. Each frame shows wh
 | Stacks through recursion | 0 |
 | Unfollowable calls | 1 |
 
-### Call stacks
+### Call stacks (depth)
 
 **1. `main`** — depth 3 · orphan-root
 
@@ -151,6 +151,25 @@ Call stacks traced through `lexico-entities`, deepest first. Each frame shows wh
 ### Module spread
 
 None.
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `main` | 3 | `parseMode`, `findMigrationFiles`, `processMigrationFile` | `packages/lexico-entities/scripts/extract-migration-sql.ts:164` |
+| `findMigrationFiles` | 2 | `filter(…)`, `map(…)` | `packages/lexico-entities/scripts/extract-migration-sql.ts:142` |
+| `visit` | 1 | `extractSqlFromLiteral` | `packages/lexico-entities/scripts/extract-migration-sql.ts:66` |
+
+<details>
+<summary>3 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `visit` | 1 | `extractSqlFromMethod` | `packages/lexico-entities/scripts/extract-migration-sql.ts:113` |
+| `parseMode` | 1 | `find(…)` | `packages/lexico-entities/scripts/extract-migration-sql.ts:188` |
+| `processMigrationFile` | 1 | `extractSqlFromMigration` | `packages/lexico-entities/scripts/extract-migration-sql.ts:198` |
+
+</details>
 
 ### Possibly misplaced
 

@@ -76,6 +76,27 @@ from a breach: staleness is about drift between the report and reality, a breach
 is about magnitude. Both fail a run, and they are never the same finding.
 _Avoid_: Drift, out of date, dirty
 
+## Change reporting
+
+**Baseline**:
+A previously published report — from the latest successful run on `main` — that
+a current report is compared against to find what changed.
+_Avoid_: Previous run, main, comparison
+
+**Change**:
+The difference between a metric's current value and its value in the baseline.
+A metric with no change is left out of a change report unless it is currently
+breaching a limit.
+_Avoid_: Delta, diff, drift
+
+**Measured**:
+Whether a metric was recomputed by the current run, as opposed to standing in
+with its baseline value because the run's targets did not include that
+project. An unmeasured metric can still breach if its baseline value already
+exceeds a limit. Distinct from staleness below: measured is about which run
+produced a number, staleness is about whether a committed one still matches.
+_Avoid_: Fresh, rebuilt, stale
+
 ## Codependix
 
 **Graph**:

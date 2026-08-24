@@ -4,7 +4,9 @@
   },
   "dependencies": {
     "@codebase/logger": "workspace:*",
+    "@codometer/changes": "workspace:*",
     "@codometer/configuration": "workspace:*",
+    "@codometer/markdown": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",

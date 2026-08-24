@@ -165,12 +165,23 @@ jobs:
           echo "$PULL_REQUEST_TITLE" \
             | pnpm exec commitlint --config configuration/commitlint.config.ts
 
+      # Read through `gh pr view` into a file rather than the webhook's own
+      # `github.event.pull_request.body` as an environment variable: a large
+      # enough description — the `⏲️ Codometer` change report, uncapped, can
+      # run to hundreds of rows — pushes the runner's combined argv and
+      # environment size past the OS limit, and `bash` itself fails to start
+      # with "Argument list too long" before this step gets to run anything.
+      # A file has no such ceiling.
       - name: 🪢 Validate Pull Request Body
         env:
-          PULL_REQUEST_BODY: ${{ github.event.pull_request.body }}
+          GH_TOKEN: ${{ github.token }}
+          PULL_REQUEST: ${{ github.event.pull_request.number }}
         run: |
+          gh pr view "${PULL_REQUEST}" --json body --jq '.body' \
+            >.pull-request-body.md
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
-            tools/validation/src/main.ts pull-request-body
+            tools/validation/src/main.ts pull-request-body \
+            .pull-request-body.md
 
       - name: 🏷️ Ensure Pull Request Labels
         if: >-

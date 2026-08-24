@@ -5,6 +5,7 @@ import {
   MARKDOWN_MISPLACED_HEADER,
   MARKDOWN_SPREAD_HEADER,
   MARKDOWN_SUMMARY_HEADER,
+  MARKDOWN_WIDE_CALLABLES_HEADER,
   RUN_HEADING,
 } from "./report.constants";
 import { ReportService } from "./report.service";
@@ -16,6 +17,7 @@ import type {
   StackRendering,
 } from "./report.types";
 import type {
+  CallableBreadthReport,
   CallGraphSummary,
   CallStack,
   MisplacedCallableFinding,
@@ -43,6 +45,51 @@ export class MarkdownReportService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /**
+   * Renders each callable's breadth, the first few openly and the rest
+   * behind a disclosure — the same treatment `renderStacks` gives stacks.
+   *
+   * Shared by both scopes: a project section passes every callable with a
+   * direct callee, unfiltered by any limit, the same way its stacks are;
+   * a whole-run section passes only the `WideCallableFinding`s that broke
+   * the configured limit. `WideCallableFinding` is a `CallableBreadthReport`
+   * with a `limit` added, so one renderer covers both without caring which
+   * it was handed. Unfiltered, a project's breadth table is one row per
+   * non-leaf callable — every bit as unbounded as its stacks — so it earns
+   * the same truncation rather than a bare table.
+   */
+  private renderCallableBreadths(args: {
+    previewCount: number;
+    reports: readonly CallableBreadthReport[];
+  }): string {
+    const toRow = (report: CallableBreadthReport): string =>
+      `| \`${report.displayName}\` | ${String(report.breadth)} | ${report.callees.map((callee) => `\`${callee.displayName}\``).join(", ")} | \`${report.location.filePath}:${String(report.location.line)}\` |`;
+    const preview = args.reports.slice(0, args.previewCount);
+    const remaining = args.reports.slice(args.previewCount);
+    const previewTable = this.renderTable({
+      header: MARKDOWN_WIDE_CALLABLES_HEADER,
+      rows: preview.map((report) => toRow(report)),
+    });
+
+    if (remaining.length === 0) {
+      return previewTable;
+    }
+
+    return [
+      previewTable,
+      "",
+      "<details>",
+      `<summary>${String(remaining.length)} more callables</summary>`,
+      "",
+      this.renderTable({
+        header: MARKDOWN_WIDE_CALLABLES_HEADER,
+        rows: remaining.map((report) => toRow(report)),
+      }),
+      "",
+      "</details>",
+    ].join("\n");
+  }
 
   /** Renders the misplaced-callable findings belonging to one scope. */
   private renderMisplaced(
@@ -136,7 +183,7 @@ export class MarkdownReportService {
       "",
       this.renderSummaryTable(report.summary),
       "",
-      "### Call stacks",
+      "### Call stacks (depth)",
       "",
       this.renderStacksAs({
         previewCount: args.previewCount,
@@ -147,6 +194,13 @@ export class MarkdownReportService {
       "### Module spread",
       "",
       this.renderSpreads(report.moduleSpreads),
+      "",
+      "### Breadth",
+      "",
+      this.renderCallableBreadths({
+        previewCount: args.previewCount,
+        reports: report.callableBreadths,
+      }),
       "",
       "### Possibly misplaced",
       "",
@@ -163,7 +217,7 @@ export class MarkdownReportService {
       "",
       this.renderSummaryTable(result.summary),
       "",
-      `## Call stacks over the limit (${String(result.deepStacks.length)})`,
+      `## Call stacks over the depth limit (${String(result.deepStacks.length)})`,
       "",
       this.renderStacksAs({
         previewCount: args.previewCount,
@@ -174,6 +228,13 @@ export class MarkdownReportService {
       "## Module spread",
       "",
       this.renderSpreads(result.moduleSpreads),
+      "",
+      `## Callables over the breadth limit (${String(result.wideCallables.length)})`,
+      "",
+      this.renderCallableBreadths({
+        previewCount: args.previewCount,
+        reports: result.wideCallables,
+      }),
       "",
       "## Possibly misplaced",
       "",

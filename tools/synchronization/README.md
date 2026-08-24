@@ -317,17 +317,17 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 
 | Measure | Value |
 | --- | --- |
-| Callables | 285 |
-| Files | 54 |
-| Calls traced | 393 |
-| Call stacks | 27 |
-| Deepest stack | 14 |
+| Callables | 310 |
+| Files | 60 |
+| Calls traced | 331 |
+| Call stacks | 15 |
+| Deepest stack | 10 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 11 |
+| Unfollowable calls | 12 |
 
-### Call stacks
+### Call stacks (depth)
 
-**1. `SynchronizationCommand.run`** — depth ≥ 14 · decorated-method
+**1. `SynchronizationCommand.run`** — depth ≥ 10 · decorated-method
 
 ```text
 🚀 SynchronizationCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:115]
@@ -346,21 +346,13 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                ↳ Validates a skill file's type/scope markdown tables against source config.
               └─> ConventionalConfigValidatorsService.checkMarkerSync(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:41]
                  ↳ Checks that a named marker block in a skill file matches the source config values.
-                └─> ConventionalConfigValidatorsService.validateMarkerValues(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:123]
-                   ↳ Compares skill marker values against source values and logs any mismatch.
-                  └─> ConventionalConfigValidatorsService.showDifference(source: string[], target: string[], targetName: string): void [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:103]
-                     ↳ Logs the items missing from and extra in the target compared to the source.
-                    └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
-                       ↳ Logs an informational message at the `info` level.
-                      └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-                         ↳ Assembles the object pino merges into the line.
-                        └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-                           ↳ Fails a malformed message in development, and never in production.
-                          └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                             ↳ Whether a word is a verb in one of the two tenses the convention allows.
+                └─> ConventionalConfigValidatorsService.readMarkerValues(…): { skillValues: string[]; } | undefined [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:76]
+                   ↳ Extracts and returns parsed table values from a named marker block, or undefined if missing.
+                  └─> ConventionalConfigIoService.extractMarkerContent(content: string, markerName: string): string | undefined [tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:127]
+                     ↳ Extracts text content between named HTML comment markers.
 ```
 
-**2. `ConventionalConfigCommand.run`** — depth 13 · decorated-method
+**2. `ConventionalConfigCommand.run`** — depth 9 · decorated-method
 
 ```text
 🚀 ConventionalConfigCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:51]
@@ -377,46 +369,88 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
              ↳ Validates a skill file's type/scope markdown tables against source config.
             └─> ConventionalConfigValidatorsService.checkMarkerSync(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:41]
                ↳ Checks that a named marker block in a skill file matches the source config values.
-              └─> ConventionalConfigValidatorsService.validateMarkerValues(…): boolean [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:123]
-                 ↳ Compares skill marker values against source values and logs any mismatch.
-                └─> ConventionalConfigValidatorsService.showDifference(source: string[], target: string[], targetName: string): void [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:103]
-                   ↳ Logs the items missing from and extra in the target compared to the source.
-                  └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
-                     ↳ Logs an informational message at the `info` level.
-                    └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-                       ↳ Assembles the object pino merges into the line.
-                      └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-                         ↳ Fails a malformed message in development, and never in production.
-                        └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                           ↳ Whether a word is a verb in one of the two tenses the convention allows.
+              └─> ConventionalConfigValidatorsService.readMarkerValues(…): { skillValues: string[]; } | undefined [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:76]
+                 ↳ Extracts and returns parsed table values from a named marker block, or undefined if missing.
+                └─> ConventionalConfigIoService.extractMarkerContent(content: string, markerName: string): string | undefined [tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:127]
+                   ↳ Extracts text content between named HTML comment markers.
 ```
 
-**3. `NestjsModuleGraphsCommand.run`** — depth ≥ 9 · decorated-method
+**3. `NestjsModuleGraphsCommand.run`** — depth ≥ 8 · decorated-method
 
 ```text
 🚀 NestjsModuleGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:173]
    ↳ Runs the nestjs-module-graphs sync command in check or write mode.
   └─> NestjsModuleGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:192]
      ↳ Synchronizes every project's module graph and reports success without exiting.
-    └─> NestjsModuleGraphsCommand.synchronizeProject(…): Promise<string[]> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:141]
-       ↳ Explores one project and syncs its graph into every target markdown file.
-      └─> NestjsModuleGraphsCommand.filter(…)(fileName: string): boolean [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:163]
-        └─> NestjsModuleGraphsCommand.synchronizeFile(…): boolean [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:95]
-           ↳ Checks or rewrites one markdown file's graph block.
-          └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
-             ↳ Logs an informational message at the `info` level.
-            └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Assembles the object pino merges into the line.
-              └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-                 ↳ Fails a malformed message in development, and never in production.
-                └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                   ↳ Whether a word is a verb in one of the two tenses the convention allows.
+    └─> NestjsModuleGraphsService.indexModuleOwners(projects: NestjsProject[]): NestjsModuleOwnership [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:253]
+       ↳ Maps every module class in the workspace to the project that defines it.
+      └─> NestjsModuleGraphsService.map(…)(project: NestjsProject): [string, NestjsProjectImports] [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:281]
+        └─> NestjsModuleGraphsImportsService.readProjectImports(…): NestjsProjectImports [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts:178]
+           ↳ Reads which workspace projects one project reaches, and how.
+          └─> NestjsModuleGraphsImportsService.readFileImports(…): void [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts:83]
+             ↳ Records what one file's static imports say about the workspace.
+            └─> NestjsModuleGraphsImportsService.readImportedModuleNames(clause: string): string[] [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts:113]
+               ↳ Names the modules a named-import clause brings in.
+              └─> NestjsModuleGraphsImportsService.filter(…)(name: string | undefined): name is string [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts:118]
 ```
 
 <details>
-<summary>24 more call stacks</summary>
+<summary>12 more call stacks</summary>
 
-**4. `PullRequestTemplateCommand.run`** — depth 9 · decorated-method
+**4. `NxProjectGraphsCommand.run`** — depth 7 · decorated-method
+
+```text
+🚀 NxProjectGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:150]
+   ↳ Runs the nx-project-graphs sync command in check or write mode.
+  └─> NxProjectGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:169]
+     ↳ Synchronizes every project's graph and reports success without exiting.
+    └─> NxProjectGraphsCommand.synchronizeProject(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:116]
+       ↳ Checks or rewrites one project's README graph block.
+      └─> NxProjectGraphsCommand.applyMode(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:64]
+         ↳ Reports drift in check mode, or rewrites the block in write mode.
+        └─> SynchronizationMarkersService.replaceContent(content: string, markerName: string, replacement: string): string [tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:65]
+           ↳ Replaces the content between the markers, surrounding it with the blank lines markdown needs for the block to be parsed…
+          └─> SynchronizationMarkersService.locateMarkers(…): { endIndex: number; startIndex: number; } | undefined [tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:24]
+             ↳ Returns the index range the markers enclose, or undefined when absent.
+            └─> SynchronizationMarkersService.getStartMarker(markerName: string): string [tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:57]
+               ↳ Renders the opening marker comment for a marker name.
+```
+
+**5. `PullRequestLabelsCommand.run`** — depth 7 · decorated-method
+
+```text
+🚀 PullRequestLabelsCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:281]
+   ↳ Runs the pull-request-labels reconciliation in check or write mode.
+  └─> PullRequestLabelsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:300]
+     ↳ Reconciles the label vocabulary and always reports success.
+    └─> PullRequestLabelsCommand.reconcile(mode: SynchronizationMode, reportLines: string[]): void [tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:175]
+       ↳ Reconciles the vocabulary, appending everything it did to the report.
+      └─> PullRequestLabelsService.planReconciliation(…): LabelReconciliationPlan [tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:66]
+         ↳ Works out what reconciling would create, update, and leave behind.
+        └─> PullRequestLabelsService.filter(…)(label: ConventionalLabel): boolean [tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:82]
+          └─> PullRequestLabelsService.isTrackedLabel(labelName: string): boolean [tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:45]
+             ↳ Whether this reconciliation owns the label with this name.
+            └─> PullRequestLabelsService.some(…)(prefix: string): boolean [tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:46]
+```
+
+**6. `ConformetryGeneratorsCommand.run`** — depth ≥ 6 · decorated-method
+
+```text
+🚀 ConformetryGeneratorsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:176]
+   ↳ Runs the conformetry-generators sync command in check or write mode.
+  └─> ConformetryGeneratorsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:194]
+     ↳ Synchronizes the generators table and reports success without exiting.
+    └─> ConformetryGeneratorsCommand.readGenerators(): Promise<ConformetryGeneratorMetadata[]> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:136]
+       ↳ Reads configuration/conformetry.config.ts and returns the list of generator metadata.
+      └─> ConfigurationService.loadConformetryConfiguration(configurationPath: string): Promise<ConformetryConfiguration> [packages/conformetry-configuration/src/modules/configuration/configuration.service.ts:172]
+         ↳ Loads, validates, and normalizes a conformetry configuration file.
+        └─> ConfigurationService.resolveConfigurationPath(configurationPath: string): Promise<string> [packages/conformetry-configuration/src/modules/configuration/configuration.service.ts:138]
+           ↳ Resolves a config path against the cwd, falling back to the workspace root.
+          └─> ConfigurationService.findWorkspaceRoot(): Promise<string | undefined> [packages/conformetry-configuration/src/modules/configuration/configuration.service.ts:77]
+             ↳ Walks upward from the process cwd looking for the workspace manifest.
+```
+
+**7. `PullRequestTemplateCommand.run`** — depth 6 · decorated-method
 
 ```text
 🚀 PullRequestTemplateCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:202]
@@ -428,195 +462,65 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
       └─> PullRequestTemplateCommand.filter(…)(targetFile: string): boolean [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:134]
         └─> PullRequestTemplateCommand.checkTargetSync(templateContent: string, targetFile: string): boolean [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:55]
            ↳ Checks whether the target file's marker block matches the current PR template.
-          └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
-             ↳ Logs an informational message at the `info` level.
-            └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-               ↳ Assembles the object pino merges into the line.
-              └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-                 ↳ Fails a malformed message in development, and never in production.
-                └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                   ↳ Whether a word is a verb in one of the two tenses the convention allows.
+          └─> PullRequestTemplateCommand.extractMarkerContent(content: string, markerName: string): string | undefined [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:90]
+             ↳ Extracts the content between start and end marker comments from a file.
 ```
 
-**5. `DevcontainerConfigurationCommand.run`** — depth 8 · decorated-method
-
-```text
-🚀 DevcontainerConfigurationCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:266]
-   ↳ Runs the devcontainer-configuration sync command in check or write mode.
-  └─> DevcontainerConfigurationCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:285]
-     ↳ Synchronizes the cloud devcontainer config and reports success without exiting.
-    └─> DevcontainerConfigurationCommand.check(expectedConfig: DevcontainerConfiguration, cloudConfigFile: string): boolean [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:80]
-       ↳ Compares the expected merged config against the current cloud config file and reports field differences.
-      └─> DevcontainerConfigurationCommand.reportDifferences(…): void [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:157]
-         ↳ Logs each field that differs between the expected and current config.
-        └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
-           ↳ Logs an informational message at the `info` level.
-          └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-             ↳ Assembles the object pino merges into the line.
-            └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-               ↳ Fails a malformed message in development, and never in production.
-              └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                 ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-**6. `NxProjectGraphsCommand.run`** — depth 8 · decorated-method
-
-```text
-🚀 NxProjectGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:154]
-   ↳ Runs the nx-project-graphs sync command in check or write mode.
-  └─> NxProjectGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:173]
-     ↳ Synchronizes every project's graph and reports success without exiting.
-    └─> NxProjectGraphsCommand.synchronizeProject(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:120]
-       ↳ Checks or rewrites one project's README graph block.
-      └─> NxProjectGraphsCommand.applyMode(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:68]
-         ↳ Reports drift in check mode, or rewrites the block in write mode.
-        └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
-           ↳ Logs an informational message at the `info` level.
-          └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-             ↳ Assembles the object pino merges into the line.
-            └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-               ↳ Fails a malformed message in development, and never in production.
-              └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                 ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-**7. `SkillExclusionsCommand.run`** — depth 8 · decorated-method
-
-```text
-🚀 NxProjectGraphsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:150]
-   ↳ Runs the nx-project-graphs sync command in check or write mode.
-  └─> NxProjectGraphsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:169]
-     ↳ Synchronizes every project's graph and reports success without exiting.
-    └─> NxProjectGraphsCommand.synchronizeProject(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:116]
-       ↳ Checks or rewrites one project's README graph block.
-      └─> NxProjectGraphsCommand.applyMode(…): boolean [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:64]
-         ↳ Reports drift in check mode, or rewrites the block in write mode.
-        └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
-           ↳ Logs an informational message at the `info` level.
-          └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-             ↳ Assembles the object pino merges into the line.
-            └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-               ↳ Fails a malformed message in development, and never in production.
-              └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                 ↳ Whether a word is a verb in one of the two tenses the convention allows.
-```
-
-**7. `SkillExclusionsCommand.run`** — depth 8 · decorated-method
+**8. `SkillExclusionsCommand.run`** — depth 6 · decorated-method
 
 ```text
 🚀 SkillExclusionsCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:165]
    ↳ Runs the skill-exclusions sync command in check or write mode.
   └─> SkillExclusionsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:180]
      ↳ Synchronizes the exclusion lists and reports success without exiting.
-    └─> SkillExclusionsCommand.writeSync(skillNames: string[]): void [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:144]
-       ↳ Rewrites every file's generated block.
-      └─> LoggerService.log(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:292]
-         ↳ Logs an informational message at the `info` level.
-        └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
-           ↳ Logs an informational message at the `info` level.
-          └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-             ↳ Assembles the object pino merges into the line.
-            └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-               ↳ Fails a malformed message in development, and never in production.
-              └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-                 ↳ Whether a word is a verb in one of the two tenses the convention allows.
+    └─> SkillExclusionsCommand.findStaleFiles(skillNames: string[]): string[] [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:71]
+       ↳ Every file whose generated block differs from what the lockfile implies.
+      └─> SkillExclusionsCommand.filter(…)(file: SkillExclusionFile): boolean [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:72]
+        └─> SkillExclusionsCommand.readExclusionFile(…): { afterMarker: string; beforeMarker: string; generatedContent: string; } [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:82]
+           ↳ Splits one exclusion file around its generated block.
+          └─> SkillExclusionsCommand.renderStartMarker(file: SkillExclusionFile): string [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:139]
+             ↳ The comment opening this file's generated block, in its own syntax.
 ```
 
-**8. `ConformetryGeneratorsCommand.run`** — depth ≥ 7 · decorated-method
+**9. `IssueLabelsCommand.run`** — depth 5 · decorated-method
 
 ```text
-🚀 ConformetryGeneratorsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:176]
-   ↳ Runs the conformetry-generators sync command in check or write mode.
-  └─> SynchronizationService.resolveSynchronizationModeOrExit(options: SynchronizationModeResolutionOptions): SynchronizationMode [tools/synchronization/src/modules/synchronization/synchronization.service.ts:59]
-     ↳ Resolves synchronization mode or exits the process when the mode is invalid.
-    └─> SynchronizationService.exitInvalidMode(…): never [tools/synchronization/src/modules/synchronization/synchronization.service.ts:22]
-       ↳ Logs invalid mode details and exits with status code 1.
-      └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:256]
-         ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
-        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-           ↳ Assembles the object pino merges into the line.
-          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-             ↳ Fails a malformed message in development, and never in production.
-            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-               ↳ Whether a word is a verb in one of the two tenses the convention allows.
+🚀 IssueLabelsCommand.run(): Promise<void> [tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:158]
+   ↳ Adds whichever type and scope labels the issue's body implies.
+  └─> IssueLabelsCommand.resolvePlan(): undefined | { issueNumber: string; missingLabels: string[]; } [tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:130]
+     ↳ What this run needs to do, or `undefined` when there is nothing to add.
+    └─> IssueLabelsCommand.readExistingLabelNames(): string[] [tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:94]
+       ↳ Reads the labels already on the issue, from `ISSUE_LABELS`.
+      └─> IssueLabelsCommand.readLabelNames(entries: unknown[]): string[] [tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:118]
+         ↳ Every label name in this array, with the nameless entries dropped.
+        └─> IssueLabelsCommand.filter(…)(name: string): boolean [tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:121]
 ```
 
-**9. `PullRequestLabelsCommand.run`** — depth 7 · decorated-method
+**10. `DevcontainerConfigurationCommand.run`** — depth 5 · decorated-method
 
 ```text
-🚀 PullRequestLabelsCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:281]
-   ↳ Runs the pull-request-labels reconciliation in check or write mode.
-  └─> SynchronizationService.resolveSynchronizationModeOrExit(options: SynchronizationModeResolutionOptions): SynchronizationMode [tools/synchronization/src/modules/synchronization/synchronization.service.ts:59]
-     ↳ Resolves synchronization mode or exits the process when the mode is invalid.
-    └─> SynchronizationService.exitInvalidMode(…): never [tools/synchronization/src/modules/synchronization/synchronization.service.ts:22]
-       ↳ Logs invalid mode details and exits with status code 1.
-      └─> LoggerService.error(…): void [packages/logger/src/modules/logger/logger.service.ts:256]
-         ↳ Logs an error message at the `error` level, optionally including a stack trace. `ConsoleLogger.error` spends a third…
-        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
-           ↳ Assembles the object pino merges into the line.
-          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
-             ↳ Fails a malformed message in development, and never in production.
-            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
-               ↳ Whether a word is a verb in one of the two tenses the convention allows.
+🚀 DevcontainerConfigurationCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:266]
+   ↳ Runs the devcontainer-configuration sync command in check or write mode.
+  └─> DevcontainerConfigurationCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:285]
+     ↳ Synchronizes the cloud devcontainer config and reports success without exiting.
+    └─> DevcontainerConfigurationCommand.applySync(…): DevcontainerConfiguration [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:59]
+       ↳ Merges local devcontainer fields into a copy of the cloud config, preserving cloud-only keys.
+      └─> DevcontainerConfigurationCommand.syncFeatures(…): void [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:180]
+         ↳ Merges features from local and cloud configs, keeping Docker features from cloud.
+        └─> DevcontainerConfigurationCommand.isDockerFeatureKey(key: string): boolean [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:127]
+           ↳ Returns true if the feature key refers to a Docker-in-Docker or Docker-outside-of-Docker feature.
 ```
 
-**10. `main`** — depth ≥ 2 · module-bootstrap
+**11. `IssueLabelsCommand.nameOf`** — depth 2 · orphan-root
 
 ```text
-🚀 main(): Promise<void> [tools/synchronization/src/main.ts:9]
-   ↳ Bootstraps the synchronization CLI application.
-  └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:38]
+🚀 IssueLabelsCommand.nameOf(entry: unknown): string [tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:82]
+   ↳ Reads one label entry's name, whichever shape it arrived in.
+  └─> IssueLabelsCommand.isRecord(value: unknown): value is Record<string, unknown> [tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:77]
+     ↳ Whether this value can be read by property name at all.
 ```
 
-**11. `ConformetryGeneratorsCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 ConformetryGeneratorsCommand.constructor(…): ConformetryGeneratorsCommand [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:34]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**12. `ConventionalConfigIoService.constructor`** — depth 2 · orphan-root
-
-```text
-🚀 ConventionalConfigIoService.constructor(loggerService: LoggerService): ConventionalConfigIoService [tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:31]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**13. `ConventionalConfigValidatorsService.constructor`** — depth 2 · orphan-root
-
-```text
-🚀 ConventionalConfigValidatorsService.constructor(…): ConventionalConfigValidatorsService [tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:25]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**14. `ConventionalConfigService.constructor`** — depth 2 · orphan-root
-
-```text
-🚀 ConventionalConfigService.constructor(…): ConventionalConfigService [tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:36]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**15. `ConventionalConfigCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 ConventionalConfigCommand.constructor(…): ConventionalConfigCommand [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:31]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**16. `DevcontainerConfigurationCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 DevcontainerConfigurationCommand.constructor(…): DevcontainerConfigurationCommand [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:40]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**17. `NestjsModuleGraphsGraphService.compareGroups`** — depth 2 · orphan-root
+**12. `NestjsModuleGraphsGraphService.compareGroups`** — depth 2 · orphan-root
 
 ```text
 🚀 NestjsModuleGraphsGraphService.compareGroups(…): number [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:79]
@@ -625,15 +529,7 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
      ↳ Ranks a group into the graphed project, another project, or ungrouped.
 ```
 
-**18. `NestjsModuleGraphsService.constructor`** — depth 2 · orphan-root
-
-```text
-🚀 NestjsModuleGraphsService.constructor(…): NestjsModuleGraphsService [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:48]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**19. `NestjsModuleGraphsService.loadModuleClasses`** — depth ≥ 2 · orphan-root
+**13. `NestjsModuleGraphsService.loadModuleClasses`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 NestjsModuleGraphsService.loadModuleClasses(file: string): Promise<Type<unknown>[]> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:96]
@@ -641,29 +537,174 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
   └─> NestjsModuleGraphsService.map(…)(…): Type<unknown> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:107]
 ```
 
-**20. `NestjsModuleGraphsCommand.constructor`** — depth ≥ 2 · orphan-root
+**14. `NxProjectGraphsService.renderEdge`** — depth 2 · orphan-root
 
 ```text
-🚀 NestjsModuleGraphsCommand.constructor(…): NestjsModuleGraphsCommand [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:48]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
+🚀 NxProjectGraphsService.renderEdge(edge: NxProjectGraphEdge): string [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:50]
+   ↳ Renders one edge, dotted when Nx inferred it from configuration.
+  └─> NxProjectGraphsService.toNodeIdentifier(projectName: string): string [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:62]
+     ↳ Turns a project name into an identifier mermaid accepts.
 ```
 
-**19. `NestjsModuleGraphsService.loadModuleClasses`** — depth ≥ 2 · orphan-root
+**15. `NxProjectGraphsService.renderNode`** — depth 2 · orphan-root
 
 ```text
-🚀 NestjsModuleGraphsService.loadModuleClasses(file: string): Promise<Type<unknown>[]> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:96]
-   ↳ Imports a module file and returns every module class it exports.
-  └─> NestjsModuleGraphsService.map(…)(…): Type<unknown> [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:107]
+🚀 NxProjectGraphsService.renderNode(projectName: string): string [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:57]
+   ↳ Declares one node, labelled with the project name it stands for.
+  └─> NxProjectGraphsService.toNodeIdentifier(projectName: string): string [tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:62]
+     ↳ Turns a project name into an identifier mermaid accepts.
 ```
 
-**20. `NestjsModuleGraphsCommand.constructor`** — depth ≥ 2 · orphan-root
+</details>
 
-```text
-🚀 NestjsModuleGraphsCommand.constructor(…): NestjsModuleGraphsCommand [tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:47]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
+### Module spread
+
+None.
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `SynchronizationCommand.synchronize` | 11 | `SynchronizationCommand.getCommands`, `ConformetryGeneratorsCommand.synchronize`, `ConventionalConfigCommand.synchronize`, `DevcontainerConfigurationCommand.synchronize`, `NestjsModuleGraphsCommand.synchronize`, `NxProjectGraphsCommand.synchronize`, `PullRequestLabelsCommand.synchronize`, `PullRequestTemplateCommand.synchronize`, `SkillExclusionsCommand.synchronize`, `SynchronizationCommand.reportResults`, `SynchronizationCommand.every(…)` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:137` |
+| `NestjsModuleGraphsGraphService.buildGraph` | 10 | `NestjsModuleGraphsGraphService.findAmbientModuleNames`, `NestjsModuleGraphsGraphService.collectEdges`, `NestjsModuleGraphsGraphService.findRuntimeEdges`, `NestjsModuleGraphsGraphService.sortNames`, `NestjsModuleGraphsGraphService.groupModuleNames`, `NestjsModuleGraphsGraphService.findAbsentDependencyNames`, `NestjsModuleGraphsGraphService.toSorted(…)`, `NestjsModuleGraphsGraphService.filter(…)`, `NestjsModuleGraphsGraphService.filter(…)`, `NestjsModuleGraphsGraphService.filter(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:265` |
+| `PullRequestLabelsCommand.reconcile` | 9 | `PullRequestLabelsGithubService.run`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsGithubService.describeFailure`, `PullRequestLabelsService.planReconciliation`, `PullRequestLabelsService.parseRepositoryLabels`, `PullRequestLabelsService.readExpectedLabels`, `PullRequestLabelsCommand.describeError`, `PullRequestLabelsCommand.reportPlan`, `PullRequestLabelsCommand.reportStaleLabels` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:175` |
+
+<details>
+<summary>124 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `ConventionalConfigService.handleCheckMode` | 8 | `ConventionalConfigValidatorsService.checkSettingsSync`, `ConventionalConfigValidatorsService.checkAllSkillsSync`, `ConventionalConfigValidatorsService.checkAllTemplatesSync`, `ConventionalConfigService.loadReleaseConfig`, `ConventionalConfigValidatorsService.checkReleaseRulesSync`, `ConventionalConfigIoService.getReleaseRulesTypes`, `ConventionalConfigValidatorsService.checkPresetConfigSync`, `ConventionalConfigIoService.getPresetConfigTypes` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:126` |
+| `NxProjectGraphsService.buildNeighborhoods` | 8 | `NxProjectGraphsService.map(…)`, `NxProjectGraphsService.collectEdges`, `NxProjectGraphsService.sortNames`, `NxProjectGraphsService.map(…)`, `NxProjectGraphsService.filter(…)`, `NxProjectGraphsService.map(…)`, `NxProjectGraphsService.filter(…)`, `NxProjectGraphsService.toSorted(…)` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:74` |
+| `ConventionalConfigService.handleWriteMode` | 7 | `ConventionalConfigValidatorsService.checkSettingsSync`, `ConventionalConfigService.filter(…)`, `ConventionalConfigService.filter(…)`, `ConventionalConfigIoService.writeSettingsSync`, `ConventionalConfigIoService.writeSkillSync`, `ConventionalConfigIoService.writeIssueTemplateSync`, `ConventionalConfigService.syncReleaseConfigIfNeeded` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:182` |
+| `ConventionalConfigIoService.writeReleaseConfigSync` | 6 | `ConventionalConfigIoService.map(…)`, `ConventionalConfigIoService.filter(…)`, `ConventionalConfigIoService.getReleaseRulesTypes`, `ConventionalConfigIoService.getPresetConfigTypes`, `ConventionalConfigIoService.appendToReleaseRules`, `ConventionalConfigIoService.appendToPresetTypes` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:290` |
+| `ConventionalConfigService.runSynchronization` | 6 | `ConventionalConfigService.loadConventionalConfig`, `ConventionalConfigService.map(…)`, `ConventionalConfigIoService.parseSettingsScopes`, `ConventionalConfigService.map(…)`, `ConventionalConfigService.handleCheckMode`, `ConventionalConfigService.handleWriteMode` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:240` |
+| `PullRequestLabelsService.planReconciliation` | 6 | `PullRequestLabelsService.map(…)`, `PullRequestLabelsService.map(…)`, `PullRequestLabelsService.filter(…)`, `PullRequestLabelsService.map(…)`, `PullRequestLabelsService.filter(…)`, `PullRequestLabelsService.filter(…)` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:66` |
+| `ConventionalConfigService.syncReleaseConfigIfNeeded` | 5 | `ConventionalConfigService.loadReleaseConfig`, `ConventionalConfigService.filter(…)`, `ConventionalConfigIoService.getReleaseRulesTypes`, `ConventionalConfigIoService.getPresetConfigTypes`, `ConventionalConfigIoService.writeReleaseConfigSync` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:93` |
+| `NestjsModuleGraphsImportsService.readProjectImports` | 5 | `NestjsModuleGraphsImportsService.findSourceFiles`, `NestjsModuleGraphsImportsService.readRuntimeModuleEdges`, `NestjsModuleGraphsImportsService.readFileImports`, `NestjsModuleGraphsImportsService.readDeclaredProjects`, `NestjsModuleGraphsImportsService.filter(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts:178` |
+| `NestjsModuleGraphsService.indexModuleOwners` | 5 | `NestjsModuleGraphsService.findModuleFiles`, `NestjsModuleGraphsService.readModuleClassNames`, `NestjsModuleGraphsImportsService.readProjectNamesByPackage`, `NestjsModuleGraphsService.readFrameworkModuleNames`, `NestjsModuleGraphsService.map(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:253` |
+| `NxProjectGraphsService.renderMermaid` | 5 | `NxProjectGraphsService.sortNames`, `NxProjectGraphsService.map(…)`, `NxProjectGraphsService.map(…)`, `NxProjectGraphsService.toNodeIdentifier`, `NxProjectGraphsService.some(…)` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:153` |
+| `NxProjectGraphsCommand.synchronize` | 5 | `NxProjectGraphsService.readProjectGraph`, `NxProjectGraphsService.readProjects`, `NxProjectGraphsService.buildNeighborhoods`, `NxProjectGraphsCommand.synchronizeProject`, `NxProjectGraphsCommand.reportResults` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:169` |
+| `SynchronizationCommand.reportResults` | 5 | `SynchronizationCommand.filter(…)`, `SynchronizationCommand.map(…)`, `SynchronizationCommand.filter(…)`, `SynchronizationCommand.map(…)`, `SynchronizationCommand.filter(…)` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:84` |
+| `IssueLabelsCommand.resolvePlan` | 4 | `IssueLabelsCommand.readIssueNumber`, `IssueLabelsService.parseFormAnswers`, `IssueLabelsCommand.readExistingLabelNames`, `IssueLabelsService.missingLabels` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:130` |
+| `ConventionalConfigIoService.writeSkillSync` | 4 | `ConventionalConfigIoService.map(…)`, `ConventionalConfigIoService.map(…)`, `ConventionalConfigIoService.generateMarkdownTable`, `ConventionalConfigIoService.replaceMarkerContent` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:353` |
+| `NestjsModuleGraphsImportsService.readRuntimeModuleEdges` | 4 | `NestjsModuleGraphsImportsService.filter(…)`, `NestjsModuleGraphsImportsService.map(…)`, `NestjsModuleGraphsImportsService.readOwningModuleName`, `NestjsModuleGraphsImportsService.map(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts:153` |
+| `NestjsModuleGraphsCommand.synchronizeProject` | 4 | `NestjsModuleGraphsService.exploreProject`, `NestjsModuleGraphsGraphService.renderMermaid`, `NestjsModuleGraphsCommand.map(…)`, `NestjsModuleGraphsCommand.filter(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:141` |
+| `NestjsModuleGraphsCommand.synchronize` | 4 | `NestjsModuleGraphsService.discoverProjects`, `NestjsModuleGraphsService.indexModuleOwners`, `NestjsModuleGraphsCommand.synchronizeProject`, `NestjsModuleGraphsCommand.reportResults` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:192` |
+| `NxProjectGraphsCommand.synchronizeProject` | 4 | `NxProjectGraphsService.renderMermaid`, `SynchronizationMarkersService.extractContent`, `SynchronizationMarkersService.getStartMarker`, `NxProjectGraphsCommand.applyMode` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:116` |
+| `PullRequestLabelsCommand.reportPlan` | 4 | `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsCommand.describePlan`, `PullRequestLabelsCommand.createLabels`, `PullRequestLabelsCommand.updateLabels` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:215` |
+| `PullRequestLabelsCommand.synchronize` | 4 | `PullRequestLabelsCommand.reconcile`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsCommand.describeError`, `PullRequestLabelsCommand.mirrorToStepSummary` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:300` |
+| `PullRequestTemplateCommand.synchronize` | 4 | `PullRequestTemplateCommand.map(…)`, `PullRequestTemplateCommand.loadTemplate`, `PullRequestTemplateCommand.handleCheckMode`, `PullRequestTemplateCommand.handleWriteMode` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:221` |
+| `IssueLabelsCommand.run` | 3 | `IssueLabelsCommand.resolvePlan`, `IssueLabelsGithubService.isAvailable`, `IssueLabelsCommand.addLabel` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:158` |
+| `ConformetryGeneratorsCommand.synchronize` | 3 | `ConformetryGeneratorsCommand.readGenerators`, `ConformetryGeneratorsCommand.checkSync`, `ConformetryGeneratorsCommand.writeSync` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:194` |
+| `ConventionalConfigIoService.writeIssueTemplateSync` | 3 | `ConventionalConfigIoService.writeIssueTemplateDropdown`, `ConventionalConfigIoService.map(…)`, `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:258` |
+| `ConventionalConfigValidatorsService.checkMarkerSync` | 3 | `ConventionalConfigValidatorsService.readMarkerValues`, `ConventionalConfigValidatorsService.getSourceValuesForMarker`, `ConventionalConfigValidatorsService.validateMarkerValues` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:41` |
+| `ConventionalConfigValidatorsService.checkIssueTemplateSync` | 3 | `ConventionalConfigValidatorsService.getSourceValuesForMarker`, `ConventionalConfigIoService.parseIssueTemplateDropdown`, `ConventionalConfigValidatorsService.validateMarkerValues` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:185` |
+| `DevcontainerConfigurationCommand.applySync` | 3 | `DevcontainerConfigurationCommand.syncVerbatimFields`, `DevcontainerConfigurationCommand.preserveRemoteEnvironment`, `DevcontainerConfigurationCommand.syncFeatures` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:59` |
+| `DevcontainerConfigurationCommand.synchronize` | 3 | `DevcontainerConfigurationCommand.applySync`, `DevcontainerConfigurationCommand.check`, `DevcontainerConfigurationCommand.writeWhenDrifted` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:285` |
+| `NestjsModuleGraphsGraphService.findAbsentDependencyNames` | 3 | `NestjsModuleGraphsGraphService.map(…)`, `NestjsModuleGraphsGraphService.sortNames`, `NestjsModuleGraphsGraphService.filter(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:109` |
+| `NestjsModuleGraphsGraphService.groupModuleNames` | 3 | `NestjsModuleGraphsGraphService.resolveOwner`, `NestjsModuleGraphsGraphService.toSorted(…)`, `NestjsModuleGraphsGraphService.map(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:186` |
+| `NestjsModuleGraphsGraphService.renderGroup` | 3 | `NestjsModuleGraphsGraphService.map(…)`, `NestjsModuleGraphsGraphService.map(…)`, `NestjsModuleGraphsGraphService.map(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:323` |
+| `NestjsModuleGraphsGraphService.renderMermaid` | 3 | `NestjsModuleGraphsGraphService.renderGroup`, `NestjsModuleGraphsGraphService.some(…)`, `NestjsModuleGraphsGraphService.renderNameList` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:344` |
+| `NestjsModuleGraphsImportsService.readImportedModuleNames` | 3 | `NestjsModuleGraphsImportsService.filter(…)`, `NestjsModuleGraphsImportsService.map(…)`, `NestjsModuleGraphsImportsService.map(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts:113` |
+| `NestjsModuleGraphsService.buildSyntheticRootModule` | 3 | `NestjsModuleGraphsService.findModuleFiles`, `NestjsModuleGraphsService.map(…)`, `SyntheticRootModule.forModules` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:63` |
+| `NestjsModuleGraphsService.discoverProjects` | 3 | `NestjsModuleGraphsService.isNestjsProject`, `NestjsModuleGraphsService.describeProject`, `NestjsModuleGraphsService.toSorted(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:186` |
+| `NestjsModuleGraphsService.exploreProject` | 3 | `NestjsModuleGraphsService.buildSyntheticRootModule`, `NestjsModuleGraphsService.loadRootModule`, `NestjsModuleGraphsGraphService.buildGraph` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:210` |
+| `NestjsModuleGraphsCommand.synchronizeFile` | 3 | `SynchronizationMarkersService.extractContent`, `SynchronizationMarkersService.getStartMarker`, `SynchronizationMarkersService.replaceContent` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:95` |
+| `NxProjectGraphsService.readProjects` | 3 | `NxProjectGraphsService.toSorted(…)`, `NxProjectGraphsService.map(…)`, `NxProjectGraphsService.filter(…)` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:142` |
+| `PullRequestLabelsCommand.createLabels` | 3 | `PullRequestLabelsGithubService.run`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsGithubService.describeFailure` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:85` |
+| `PullRequestLabelsCommand.updateLabels` | 3 | `PullRequestLabelsGithubService.run`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsGithubService.describeFailure` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:251` |
+| `SkillExclusionsCommand.writeSync` | 3 | `SkillExclusionsCommand.readExclusionFile`, `SkillExclusionsCommand.renderBlock`, `SkillExclusionsCommand.map(…)` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:144` |
+| `SkillExclusionsCommand.synchronize` | 3 | `SkillExclusionsCommand.readSkillNames`, `SkillExclusionsCommand.writeSync`, `SkillExclusionsCommand.findStaleFiles` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:180` |
+| `IssueLabelsService.missingLabels` | 2 | `IssueLabelsService.filter(…)`, `IssueLabelsService.labelsFromAnswers` | `tools/synchronization/src/modules/issue-labels/issue-labels.service.ts:77` |
+| `IssueLabelsCommand.addLabel` | 2 | `IssueLabelsGithubService.run`, `IssueLabelsGithubService.describeFailure` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:57` |
+| `IssueLabelsCommand.readLabelNames` | 2 | `IssueLabelsCommand.filter(…)`, `IssueLabelsCommand.map(…)` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:118` |
+| `SynchronizationService.resolveSynchronizationModeOrExit` | 2 | `SynchronizationService.resolveModeValue`, `SynchronizationService.exitInvalidMode` | `tools/synchronization/src/modules/synchronization/synchronization.service.ts:59` |
+| `ConformetryGeneratorsCommand.checkSync` | 2 | `ConformetryGeneratorsCommand.generateGeneratorsTable`, `ConformetryGeneratorsCommand.readAgentsFile` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:54` |
+| `ConformetryGeneratorsCommand.readGenerators` | 2 | `ConfigurationService.loadConformetryConfiguration`, `ConformetryGeneratorsCommand.map(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:136` |
+| `ConformetryGeneratorsCommand.writeSync` | 2 | `ConformetryGeneratorsCommand.generateGeneratorsTable`, `ConformetryGeneratorsCommand.readAgentsFile` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:157` |
+| `ConformetryGeneratorsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `ConformetryGeneratorsCommand.synchronize` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:176` |
+| `ConventionalConfigIoService.map(…)` | 2 | `ConventionalConfigIoService.find(…)`, `ConventionalConfigIoService.capitalize` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:93` |
+| `ConventionalConfigIoService.getReleaseRulesTypes` | 2 | `ConventionalConfigIoService.filter(…)`, `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:184` |
+| `ConventionalConfigValidatorsService.getSourceValuesForMarker` | 2 | `ConventionalConfigValidatorsService.map(…)`, `ConventionalConfigValidatorsService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:64` |
+| `ConventionalConfigValidatorsService.readMarkerValues` | 2 | `ConventionalConfigIoService.extractMarkerContent`, `ConventionalConfigIoService.parseMarkdownTableValues` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:76` |
+| `ConventionalConfigCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `ConventionalConfigCommand.synchronize` | `tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:51` |
+| `DevcontainerConfigurationCommand.check` | 2 | `DevcontainerConfigurationCommand.isCurrent`, `DevcontainerConfigurationCommand.reportDifferences` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:80` |
+| `DevcontainerConfigurationCommand.writeWhenDrifted` | 2 | `DevcontainerConfigurationCommand.isCurrent`, `DevcontainerConfigurationCommand.write` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:242` |
+| `DevcontainerConfigurationCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `DevcontainerConfigurationCommand.synchronize` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:266` |
+| `SynchronizationMarkersService.locateMarkers` | 2 | `SynchronizationMarkersService.getStartMarker`, `SynchronizationMarkersService.getEndMarker` | `tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:24` |
+| `NestjsModuleGraphsImportsService.readDeclaredProjects` | 2 | `NestjsModuleGraphsImportsService.filter(…)`, `NestjsModuleGraphsImportsService.map(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts:64` |
+| `NestjsModuleGraphsService.loadModuleClasses` | 2 | `NestjsModuleGraphsService.map(…)`, `NestjsModuleGraphsService.filter(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:96` |
+| `NestjsModuleGraphsService.readModuleClassNames` | 2 | `NestjsModuleGraphsService.filter(…)`, `NestjsModuleGraphsService.map(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:147` |
+| `NestjsModuleGraphsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `NestjsModuleGraphsCommand.synchronize` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:173` |
+| `NxProjectGraphsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `NxProjectGraphsCommand.synchronize` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:150` |
+| `PullRequestLabelsService.readExpectedLabels` | 2 | `PullRequestLabelsService.map(…)`, `PullRequestLabelsService.map(…)` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:106` |
+| `PullRequestLabelsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `PullRequestLabelsCommand.synchronize` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:281` |
+| `PullRequestTemplateCommand.checkTargetSync` | 2 | `PullRequestTemplateCommand.extractMarkerContent`, `PullRequestTemplateCommand.wrapInCodeBlock` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:55` |
+| `PullRequestTemplateCommand.handleWriteMode` | 2 | `PullRequestTemplateCommand.filter(…)`, `PullRequestTemplateCommand.writeTargetSync` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:129` |
+| `PullRequestTemplateCommand.writeTargetSync` | 2 | `PullRequestTemplateCommand.wrapInCodeBlock`, `PullRequestTemplateCommand.replaceMarkerContent` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:176` |
+| `PullRequestTemplateCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `PullRequestTemplateCommand.synchronize` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:202` |
+| `SkillExclusionsCommand.findStaleFiles` | 2 | `SkillExclusionsCommand.map(…)`, `SkillExclusionsCommand.filter(…)` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:71` |
+| `SkillExclusionsCommand.filter(…)` | 2 | `SkillExclusionsCommand.readExclusionFile`, `SkillExclusionsCommand.renderBlock` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:72` |
+| `SkillExclusionsCommand.readExclusionFile` | 2 | `SkillExclusionsCommand.renderStartMarker`, `SkillExclusionsCommand.renderEndMarker` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:82` |
+| `SkillExclusionsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `SkillExclusionsCommand.synchronize` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:165` |
+| `SynchronizationCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `SynchronizationCommand.synchronize` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:115` |
+| `IssueLabelsGithubService.describeFailure` | 1 | `IssueLabelsGithubService.filter(…)` | `tools/synchronization/src/modules/issue-labels/issue-labels-github.service.ts:43` |
+| `IssueLabelsGithubService.isAvailable` | 1 | `IssueLabelsGithubService.run` | `tools/synchronization/src/modules/issue-labels/issue-labels-github.service.ts:52` |
+| `IssueLabelsService.parseFormAnswers` | 1 | `IssueLabelsService.extractFormField` | `tools/synchronization/src/modules/issue-labels/issue-labels.service.ts:90` |
+| `IssueLabelsCommand.nameOf` | 1 | `IssueLabelsCommand.isRecord` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:82` |
+| `IssueLabelsCommand.readExistingLabelNames` | 1 | `IssueLabelsCommand.readLabelNames` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:94` |
+| `SynchronizationService.resolveModeValue` | 1 | `SynchronizationService.isSynchronizationMode` | `tools/synchronization/src/modules/synchronization/synchronization.service.ts:40` |
+| `ConformetryGeneratorsCommand.generateGeneratorsTable` | 1 | `ConformetryGeneratorsCommand.map(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:86` |
+| `ConformetryGeneratorsCommand.map(…)` | 1 | `ConformetryGeneratorsCommand.map(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:91` |
+| `ConventionalConfigIoService.writeIssueTemplateDropdown` | 1 | `ConventionalConfigIoService.generateYamlDropdownOptions` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:62` |
+| `ConventionalConfigIoService.appendToPresetTypes` | 1 | `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:86` |
+| `ConventionalConfigIoService.appendToReleaseRules` | 1 | `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:110` |
+| `ConventionalConfigIoService.formatScopesForSettings` | 1 | `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:141` |
+| `ConventionalConfigIoService.generateYamlDropdownOptions` | 1 | `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:170` |
+| `ConventionalConfigIoService.getPresetConfigTypes` | 1 | `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:177` |
+| `ConventionalConfigIoService.writeSettingsSync` | 1 | `ConventionalConfigIoService.formatScopesForSettings` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:327` |
+| `ConventionalConfigValidatorsService.validateMarkerValues` | 1 | `ConventionalConfigValidatorsService.showDifference` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:123` |
+| `ConventionalConfigValidatorsService.checkAllSkillsSync` | 1 | `ConventionalConfigValidatorsService.checkSkillSync` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:155` |
+| `ConventionalConfigValidatorsService.checkAllTemplatesSync` | 1 | `ConventionalConfigValidatorsService.checkIssueTemplateSync` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:169` |
+| `ConventionalConfigValidatorsService.checkReleaseRulesSync` | 1 | `ConventionalConfigValidatorsService.filter(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:244` |
+| `ConventionalConfigValidatorsService.checkSettingsSync` | 1 | `ConventionalConfigValidatorsService.showDifference` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:269` |
+| `ConventionalConfigValidatorsService.checkSkillSync` | 1 | `ConventionalConfigValidatorsService.checkMarkerSync` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:293` |
+| `ConventionalConfigService.filter(…)` | 1 | `ConventionalConfigValidatorsService.checkSkillSync` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:190` |
+| `ConventionalConfigService.filter(…)` | 1 | `ConventionalConfigValidatorsService.checkIssueTemplateSync` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:197` |
+| `ConventionalConfigCommand.synchronize` | 1 | `ConventionalConfigService.runSynchronization` | `tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:70` |
+| `DevcontainerConfigurationCommand.syncFeatures` | 1 | `DevcontainerConfigurationCommand.isDockerFeatureKey` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:180` |
+| `SynchronizationMarkersService.extractContent` | 1 | `SynchronizationMarkersService.locateMarkers` | `tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:44` |
+| `SynchronizationMarkersService.replaceContent` | 1 | `SynchronizationMarkersService.locateMarkers` | `tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:65` |
+| `NestjsModuleGraphsGraphService.collectEdges` | 1 | `NestjsModuleGraphsGraphService.map(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:42` |
+| `NestjsModuleGraphsGraphService.compareGroups` | 1 | `NestjsModuleGraphsGraphService.rankGroup` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:79` |
+| `NestjsModuleGraphsGraphService.findAmbientModuleNames` | 1 | `NestjsModuleGraphsGraphService.countInboundEdges` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:133` |
+| `NestjsModuleGraphsGraphService.sortNames` | 1 | `NestjsModuleGraphsGraphService.toSorted(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-graph.service.ts:260` |
+| `NestjsModuleGraphsImportsService.readFileImports` | 1 | `NestjsModuleGraphsImportsService.readImportedModuleNames` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs-imports.service.ts:83` |
+| `NestjsModuleGraphsService.findModuleFiles` | 1 | `NestjsModuleGraphsService.toSorted(…)` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:77` |
+| `NestjsModuleGraphsService.map(…)` | 1 | `NestjsModuleGraphsImportsService.readProjectImports` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:281` |
+| `NestjsModuleGraphsService.isNestjsProject` | 1 | `NestjsModuleGraphsService.readProjectTags` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.service.ts:294` |
+| `NestjsModuleGraphsCommand.filter(…)` | 1 | `NestjsModuleGraphsCommand.synchronizeFile` | `tools/synchronization/src/modules/nestjs-module-graphs/nestjs-module-graphs.command.ts:163` |
+| `NxProjectGraphsService.renderEdge` | 1 | `NxProjectGraphsService.toNodeIdentifier` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:50` |
+| `NxProjectGraphsService.renderNode` | 1 | `NxProjectGraphsService.toNodeIdentifier` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:57` |
+| `NxProjectGraphsService.sortNames` | 1 | `NxProjectGraphsService.toSorted(…)` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.service.ts:181` |
+| `NxProjectGraphsCommand.applyMode` | 1 | `SynchronizationMarkersService.replaceContent` | `tools/synchronization/src/modules/nx-project-graphs/nx-project-graphs.command.ts:64` |
+| `PullRequestLabelsGithubService.describeFailure` | 1 | `PullRequestLabelsGithubService.filter(…)` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels-github.service.ts:42` |
+| `PullRequestLabelsService.isTrackedLabel` | 1 | `PullRequestLabelsService.some(…)` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:45` |
+| `PullRequestLabelsService.filter(…)` | 1 | `PullRequestLabelsService.isTrackedLabel` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:82` |
+| `PullRequestLabelsCommand.describePlan` | 1 | `PullRequestLabelsCommand.appendToReport` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:118` |
+| `PullRequestLabelsCommand.reportStaleLabels` | 1 | `PullRequestLabelsCommand.appendToReport` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:238` |
+| `PullRequestTemplateCommand.handleCheckMode` | 1 | `PullRequestTemplateCommand.checkTargetSync` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:106` |
+| `PullRequestTemplateCommand.filter(…)` | 1 | `PullRequestTemplateCommand.checkTargetSync` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:134` |
+| `SkillExclusionsCommand.readSkillNames` | 1 | `SkillExclusionsCommand.toSorted(…)` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:115` |
+| `SkillExclusionsCommand.renderBlock` | 1 | `SkillExclusionsCommand.map(…)` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:127` |
+
+</details>
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->
 
 <!-- CODE_STATISTICS_START -->
 

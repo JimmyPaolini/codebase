@@ -49,7 +49,7 @@ function resolveFirstCall(source: string): ResolvedCallSite {
 
   const hierarchy = new ClassHierarchyService(external);
 
-  hierarchy.build({ maximumFanOut: 8, programs: [projectProgram] });
+  hierarchy.build({ maximumCandidates: 8, programs: [projectProgram] });
 
   const subject = new SymbolResolutionService(hierarchy, external);
   const call = findNode(

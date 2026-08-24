@@ -1,0 +1,27 @@
+{
+  "dependencies": [
+    "codometer-changes",
+    "logger"
+  ],
+  "dependents": [
+    "codometer-cli"
+  ],
+  "edges": [
+    {
+      "implicit": false,
+      "source": "codometer-cli",
+      "target": "codometer-markdown"
+    },
+    {
+      "implicit": false,
+      "source": "codometer-markdown",
+      "target": "codometer-changes"
+    },
+    {
+      "implicit": false,
+      "source": "codometer-markdown",
+      "target": "logger"
+    }
+  ],
+  "projectName": "codometer-markdown"
+}

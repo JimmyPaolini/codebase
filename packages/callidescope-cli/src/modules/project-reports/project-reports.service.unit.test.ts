@@ -30,6 +30,7 @@ function buildArguments(depth: number): BuildProjectReportsArguments {
   const chainIds = chain.map(([callableId]) => callableId);
 
   return {
+    breadthMeasurement: { byCallable: new Map() },
     callablesById: new Map([...chain, [betaId, betaCallable]]),
     condensed: {
       componentIdByCallable: new Map(
@@ -206,6 +207,131 @@ describe(ProjectReportsService, () => {
     });
 
     expect(findings.map((finding) => finding.depth)).toStrictEqual([4, 2]);
+  });
+
+  // 🌐 The breadth gate
+
+  it("builds a callable's breadth report from its direct callees", () => {
+    const base = buildArguments(3);
+    const [alpha0Id, alpha1Id, alpha2Id] = [...base.callablesById.keys()];
+    const reports = service.build({
+      ...base,
+      breadthMeasurement: {
+        byCallable: new Map([
+          [
+            alpha0Id ?? "",
+            { breadth: 2, calleeIds: [alpha1Id ?? "", alpha2Id ?? ""] },
+          ],
+        ]),
+      },
+    });
+
+    const [breadthReport] = reports[0]?.callableBreadths ?? [];
+
+    expect(breadthReport).toStrictEqual({
+      breadth: 2,
+      callees: [
+        { displayName: "alpha1", id: alpha1Id },
+        { displayName: "alpha2", id: alpha2Id },
+      ],
+      displayName: "alpha0",
+      id: alpha0Id,
+      location: buildSourceLocation({
+        filePath: "packages/alpha/src/alpha0.ts",
+      }),
+      signature: breadthReport?.signature,
+    });
+  });
+
+  it("reads a breadth report's signature the same way a stack frame does", () => {
+    const base = buildArguments(3);
+    const [alpha0Id, alpha1Id] = [...base.callablesById.keys()];
+    const reports = service.build({
+      ...base,
+      breadthMeasurement: {
+        byCallable: new Map([
+          [alpha0Id ?? "", { breadth: 1, calleeIds: [alpha1Id ?? ""] }],
+        ]),
+      },
+    });
+
+    expect(reports[0]?.callableBreadths[0]?.signature).toBeDefined();
+  });
+
+  it("omits a callable with no direct callees from its breadth report", () => {
+    const reports = service.build(buildArguments(3));
+
+    expect(reports[1]?.callableBreadths).toStrictEqual([]);
+  });
+
+  it("skips a callee the run never collected", () => {
+    const base = buildArguments(3);
+    const [alpha0Id] = [...base.callablesById.keys()];
+    const reports = service.build({
+      ...base,
+      breadthMeasurement: {
+        byCallable: new Map([
+          [alpha0Id ?? "", { breadth: 1, calleeIds: ["nowhere.ts#0"] }],
+        ]),
+      },
+    });
+
+    expect(reports[0]?.callableBreadths[0]?.callees).toStrictEqual([]);
+  });
+
+  it("fails only on the callables past the breadth limit", () => {
+    const base = buildArguments(3);
+    const [alpha0Id, alpha1Id, alpha2Id] = [...base.callablesById.keys()];
+    const reports = service.build({
+      ...base,
+      breadthMeasurement: {
+        byCallable: new Map([
+          [
+            alpha0Id ?? "",
+            { breadth: 2, calleeIds: [alpha1Id ?? "", alpha2Id ?? ""] },
+          ],
+        ]),
+      },
+    });
+
+    expect(service.findWideCallables({ limit: 1, reports })).toHaveLength(1);
+    expect(service.findWideCallables({ limit: 2, reports })).toStrictEqual([]);
+  });
+
+  it("stamps each wide-callable finding with the limit it broke", () => {
+    const base = buildArguments(3);
+    const [alpha0Id, alpha1Id] = [...base.callablesById.keys()];
+    const reports = service.build({
+      ...base,
+      breadthMeasurement: {
+        byCallable: new Map([
+          [alpha0Id ?? "", { breadth: 1, calleeIds: [alpha1Id ?? ""] }],
+        ]),
+      },
+    });
+
+    expect(service.findWideCallables({ limit: 0, reports })[0]?.limit).toBe(0);
+  });
+
+  it("reports the widest callable first", () => {
+    const base = buildArguments(3);
+    const [alpha0Id, alpha1Id, alpha2Id] = [...base.callablesById.keys()];
+    const reports = service.build({
+      ...base,
+      breadthMeasurement: {
+        byCallable: new Map([
+          [alpha0Id ?? "", { breadth: 1, calleeIds: [alpha1Id ?? ""] }],
+          [
+            alpha1Id ?? "",
+            { breadth: 2, calleeIds: [alpha0Id ?? "", alpha2Id ?? ""] },
+          ],
+        ]),
+      },
+    });
+
+    const findings = service.findWideCallables({ limit: 0, reports });
+
+    expect(findings.map((finding) => finding.breadth)).toStrictEqual([2, 1]);
   });
 
   // 🕳 Gaps in what the graph knows

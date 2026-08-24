@@ -322,6 +322,10 @@
     },
     {
       "source": "src/modules/callidescope/callidescope.service.unit.test.ts",
+      "target": "src/modules/graph/breadth.service.ts"
+    },
+    {
+      "source": "src/modules/callidescope/callidescope.service.unit.test.ts",
       "target": "src/modules/graph/components.service.ts"
     },
     {
@@ -362,6 +366,10 @@
     },
     {
       "source": "src/modules/callidescope/graph-assembly.service.ts",
+      "target": "src/modules/graph/breadth.service.ts"
+    },
+    {
+      "source": "src/modules/callidescope/graph-assembly.service.ts",
       "target": "src/modules/graph/components.service.ts"
     },
     {
@@ -379,6 +387,10 @@
     {
       "source": "src/modules/callidescope/graph-assembly.service.unit.test.ts",
       "target": "src/modules/callidescope/graph-assembly.types.ts"
+    },
+    {
+      "source": "src/modules/callidescope/graph-assembly.service.unit.test.ts",
+      "target": "src/modules/graph/breadth.service.ts"
     },
     {
       "source": "src/modules/callidescope/graph-assembly.service.unit.test.ts",
@@ -423,6 +435,10 @@
     {
       "source": "src/modules/callidescope/run-plan.service.unit.test.ts",
       "target": "src/modules/callidescope/run-plan.service.ts"
+    },
+    {
+      "source": "src/modules/callidescope/run-plan.service.unit.test.ts",
+      "target": "src/modules/callidescope/run-plan.types.ts"
     },
     {
       "source": "src/modules/class-hierarchy/class-hierarchy.module.ts",
@@ -753,6 +769,26 @@
       "target": "src/modules/graph/graph.types.ts"
     },
     {
+      "source": "src/modules/graph/breadth.service.ts",
+      "target": "src/modules/graph/graph.types.ts"
+    },
+    {
+      "source": "src/modules/graph/breadth.service.unit.test.ts",
+      "target": "src/modules/graph/breadth.service.ts"
+    },
+    {
+      "source": "src/modules/graph/breadth.service.unit.test.ts",
+      "target": "src/modules/graph/graph.service.ts"
+    },
+    {
+      "source": "src/modules/graph/breadth.service.unit.test.ts",
+      "target": "src/modules/graph/graph.types.ts"
+    },
+    {
+      "source": "src/modules/graph/breadth.service.unit.test.ts",
+      "target": "testing/modules.ts"
+    },
+    {
       "source": "src/modules/graph/components.service.ts",
       "target": "src/modules/graph/components.constants.ts"
     },
@@ -807,6 +843,10 @@
     {
       "source": "src/modules/graph/graph.module.ts",
       "target": "src/modules/documentation/documentation.module.ts"
+    },
+    {
+      "source": "src/modules/graph/graph.module.ts",
+      "target": "src/modules/graph/breadth.service.ts"
     },
     {
       "source": "src/modules/graph/graph.module.ts",
@@ -922,6 +962,10 @@
     },
     {
       "source": "src/modules/output-markdown/output-markdown.service.ts",
+      "target": "src/modules/output-markdown/output-markdown.constants.ts"
+    },
+    {
+      "source": "src/modules/output-markdown/output-markdown.service.ts",
       "target": "src/modules/output-markdown/output-markdown.errors.ts"
     },
     {
@@ -1013,6 +1057,10 @@
       "target": "src/modules/project-reports/project-reports.service.ts"
     },
     {
+      "source": "src/modules/project-reports/project-reports.module.ts",
+      "target": "src/modules/signatures/signatures.module.ts"
+    },
+    {
       "source": "src/modules/project-reports/project-reports.service.ts",
       "target": "src/modules/graph/paths.service.ts"
     },
@@ -1023,6 +1071,10 @@
     {
       "source": "src/modules/project-reports/project-reports.service.ts",
       "target": "src/modules/project-reports/project-reports.types.ts"
+    },
+    {
+      "source": "src/modules/project-reports/project-reports.service.ts",
+      "target": "src/modules/signatures/signatures.service.ts"
     },
     {
       "source": "src/modules/project-reports/project-reports.service.unit.test.ts",
@@ -1365,6 +1417,8 @@
     "src/modules/entry-points/entry-points.service.ts",
     "src/modules/entry-points/entry-points.service.unit.test.ts",
     "src/modules/entry-points/entry-points.types.ts",
+    "src/modules/graph/breadth.service.ts",
+    "src/modules/graph/breadth.service.unit.test.ts",
     "src/modules/graph/components.constants.ts",
     "src/modules/graph/components.service.ts",
     "src/modules/graph/components.service.unit.test.ts",
@@ -1436,7 +1490,6 @@
     "src/modules/cohesion/cohesion.constants.ts",
     "src/modules/graph/graph.constants.ts",
     "src/modules/output-json/output-json.constants.ts",
-    "src/modules/output-markdown/output-markdown.constants.ts",
     "src/modules/program/program.constants.ts",
     "src/repl.unit.test.ts",
     "testing/setup.ts",

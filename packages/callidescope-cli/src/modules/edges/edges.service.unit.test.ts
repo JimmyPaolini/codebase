@@ -39,6 +39,7 @@ function traceFixture(files: Record<string, string>): {
   const collection = collectFixtureCallables({ projectProgram, services });
   const collected = services.edges.build({
     callablesById: collection.byId,
+    ignoreCallees: [],
     includeConstructorEdges: true,
     workspaceRoot: FIXTURE_ROOT,
   });
@@ -87,6 +88,7 @@ describe(EdgesService, () => {
 
     subject.build({
       callablesById: new Map(),
+      ignoreCallees: [],
       includeConstructorEdges: true,
       workspaceRoot: FIXTURE_ROOT,
     });
@@ -320,18 +322,19 @@ describe(EdgesService, () => {
       `,
     });
     const services = buildFixtureServices({
-      maximumFanOut: 2,
+      maximumCandidates: 2,
       projectProgram,
     });
     const collection = collectFixtureCallables({ projectProgram, services });
     const collected = services.edges.build({
       callablesById: collection.byId,
+      ignoreCallees: [],
       includeConstructorEdges: true,
       workspaceRoot: FIXTURE_ROOT,
     });
 
     expect(collected.unresolvedCalls.map((call) => call.reason)).toContain(
-      "fan-out-exceeded",
+      "too-many-implementations",
     );
   });
 
@@ -346,6 +349,7 @@ describe(EdgesService, () => {
     const collection = collectFixtureCallables({ projectProgram, services });
     const collected = services.edges.build({
       callablesById: collection.byId,
+      ignoreCallees: [],
       includeConstructorEdges: false,
       workspaceRoot: FIXTURE_ROOT,
     });
@@ -362,6 +366,97 @@ describe(EdgesService, () => {
           `${names.get(edge.callerId) ?? "?"} -> ${names.get(edge.calleeId) ?? "?"}`,
       ),
     ).not.toContain("entry -> Repository.constructor");
+  });
+
+  // 🙈 Ignored callees
+
+  it("drops an edge whose callee matches an ignore glob", () => {
+    const projectProgram = buildFixtureProgram({
+      "packages/example/src/modules/a/logger.service.ts": `
+        export class LoggerService { public info(): void {} }
+      `,
+      "packages/example/src/modules/b/b.service.ts": `
+        import { LoggerService } from "../a/logger.service";
+        export function entry(logger: LoggerService): void { logger.info(); }
+      `,
+    });
+    const services = buildFixtureServices({ projectProgram });
+    const collection = collectFixtureCallables({ projectProgram, services });
+    const collected = services.edges.build({
+      callablesById: collection.byId,
+      ignoreCallees: ["LoggerService.*"],
+      includeConstructorEdges: true,
+      workspaceRoot: FIXTURE_ROOT,
+    });
+    const names = new Map(
+      [...collection.byId].map(([id, callable]) => [
+        id,
+        callable.node.displayName,
+      ]),
+    );
+
+    expect(
+      collected.edges.map(
+        (edge) =>
+          `${names.get(edge.callerId) ?? "?"} -> ${names.get(edge.calleeId) ?? "?"}`,
+      ),
+    ).not.toContain("entry -> LoggerService.info");
+  });
+
+  it("keeps an edge whose callee does not match any ignore glob", () => {
+    const projectProgram = buildFixtureProgram({
+      "packages/example/src/modules/a/logger.service.ts": `
+        export class LoggerService { public info(): void {} }
+        export class OtherService { public run(): void {} }
+      `,
+      "packages/example/src/modules/b/b.service.ts": `
+        import { OtherService } from "../a/logger.service";
+        export function entry(other: OtherService): void { other.run(); }
+      `,
+    });
+    const services = buildFixtureServices({ projectProgram });
+    const collection = collectFixtureCallables({ projectProgram, services });
+    const collected = services.edges.build({
+      callablesById: collection.byId,
+      ignoreCallees: ["LoggerService.*"],
+      includeConstructorEdges: true,
+      workspaceRoot: FIXTURE_ROOT,
+    });
+    const names = new Map(
+      [...collection.byId].map(([id, callable]) => [
+        id,
+        callable.node.displayName,
+      ]),
+    );
+
+    expect(
+      collected.edges.map(
+        (edge) =>
+          `${names.get(edge.callerId) ?? "?"} -> ${names.get(edge.calleeId) ?? "?"}`,
+      ),
+    ).toContain("entry -> OtherService.run");
+  });
+
+  it("does not record an ignored callee as unresolved either", () => {
+    const projectProgram = buildFixtureProgram({
+      "packages/example/src/modules/a/logger.service.ts": `
+        export class LoggerService { public info(): void {} }
+      `,
+      "packages/example/src/modules/b/b.service.ts": `
+        import { LoggerService } from "../a/logger.service";
+        export function entry(logger: LoggerService): void { logger.info(); }
+      `,
+    });
+    const services = buildFixtureServices({ projectProgram });
+    const collection = collectFixtureCallables({ projectProgram, services });
+    const collected = services.edges.build({
+      callablesById: collection.byId,
+      ignoreCallees: ["LoggerService.*"],
+      includeConstructorEdges: true,
+      workspaceRoot: FIXTURE_ROOT,
+    });
+
+    expect(collected.unresolvedCalls).toStrictEqual([]);
   });
 
   it("records no edge to a callee that was never collected", () => {
@@ -389,6 +484,7 @@ describe(EdgesService, () => {
     });
     const collected = services.edges.build({
       callablesById: collection.byId,
+      ignoreCallees: [],
       includeConstructorEdges: true,
       workspaceRoot: FIXTURE_ROOT,
     });

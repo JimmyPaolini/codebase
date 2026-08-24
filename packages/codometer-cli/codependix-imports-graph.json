@@ -18,6 +18,10 @@
     },
     {
       "source": "src/main.module.ts",
+      "target": "src/modules/changes/changes.module.ts"
+    },
+    {
+      "source": "src/main.module.ts",
       "target": "src/modules/codometer/codometer.module.ts"
     },
     {
@@ -43,6 +47,26 @@
     {
       "source": "src/main.ts",
       "target": "src/main.module.ts"
+    },
+    {
+      "source": "src/main.ts",
+      "target": "src/main.utilities.ts"
+    },
+    {
+      "source": "src/main.utilities.unit.test.ts",
+      "target": "src/main.utilities.ts"
+    },
+    {
+      "source": "src/modules/changes/changes.command.ts",
+      "target": "src/modules/changes/changes.types.ts"
+    },
+    {
+      "source": "src/modules/changes/changes.command.unit.test.ts",
+      "target": "src/modules/changes/changes.command.ts"
+    },
+    {
+      "source": "src/modules/changes/changes.module.ts",
+      "target": "src/modules/changes/changes.command.ts"
     },
     {
       "source": "src/modules/codometer/codometer.command.integration.test.ts",
@@ -1128,6 +1152,13 @@
     "src/main.end-to-end.test.ts",
     "src/main.module.ts",
     "src/main.ts",
+    "src/main.utilities.ts",
+    "src/main.utilities.unit.test.ts",
+    "src/modules/changes/changes.command.ts",
+    "src/modules/changes/changes.command.unit.test.ts",
+    "src/modules/changes/changes.constants.ts",
+    "src/modules/changes/changes.module.ts",
+    "src/modules/changes/changes.types.ts",
     "src/modules/codometer/codometer.command.integration.test.ts",
     "src/modules/codometer/codometer.command.ts",
     "src/modules/codometer/codometer.command.unit.test.ts",
@@ -1267,6 +1298,7 @@
   "isolatedFileNames": [
     "eslint.config.ts",
     "src/index.ts",
+    "src/modules/changes/changes.constants.ts",
     "src/modules/codometer/codometer.constants.ts",
     "src/modules/custom-statistics/custom-statistics.constants.ts",
     "src/modules/languages/languages.constants.ts",

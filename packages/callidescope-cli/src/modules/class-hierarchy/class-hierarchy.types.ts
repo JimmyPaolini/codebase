@@ -5,7 +5,7 @@ import type ts from "typescript";
 
 /** Arguments for building the class-hierarchy index. */
 export interface BuildHierarchyArguments {
-  readonly maximumFanOut: number;
+  readonly maximumCandidates: number;
   readonly programs: readonly ProjectProgram[];
 }
 
@@ -14,5 +14,5 @@ export interface ImplementationLookup {
   /** Concrete member declarations, empty when none could be resolved. */
   readonly declarations: readonly ts.Declaration[];
   /** True when the candidate set was larger than the configured cap. */
-  readonly exceededFanOut: boolean;
+  readonly exceededCandidateLimit: boolean;
 }

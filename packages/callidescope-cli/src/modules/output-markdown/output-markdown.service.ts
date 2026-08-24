@@ -5,6 +5,7 @@ import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
 
+import { FOREIGN_ANCHOR_PATTERN } from "./output-markdown.constants";
 import { MissingMarkdownPathError } from "./output-markdown.errors";
 
 import type {
@@ -69,6 +70,82 @@ export class OutputMarkdownService {
     } catch {
       return "";
     }
+  }
+
+  /**
+   * Cuts out a start marker's corrupted span and splices the fresh block in.
+   *
+   * Reached only when the start marker is present but the block's own end
+   * marker cannot be found anywhere after it — the same file this
+   * convention lets stack several anchored blocks back to back, so
+   * everything is fair game to have drifted except one thing: another
+   * block's own anchors. The span is cut at the next such anchor, or at the
+   * end of the file when none follows, so the fresh block replaces exactly
+   * what belonged to this one and nothing that belonged to another.
+   */
+  private replaceOrphanedBlock(args: {
+    existing: string;
+    generated: string;
+    startIndex: number;
+    startMarker: string;
+  }): string {
+    const searchFrom = args.startIndex + args.startMarker.length;
+    const foreignAnchor = FOREIGN_ANCHOR_PATTERN.exec(
+      args.existing.slice(searchFrom),
+    );
+    const spanEnd =
+      foreignAnchor === null
+        ? args.existing.length
+        : searchFrom + foreignAnchor.index;
+    const before = args.existing.slice(0, args.startIndex).trimEnd();
+    const after = args.existing.slice(spanEnd).trim();
+    const prefix = before.length === 0 ? "" : `${before}\n\n`;
+
+    // `after` is trimmed rather than kept verbatim: whatever whitespace
+    // surrounded it, including any doubled blank line an earlier version of
+    // this same repair left behind, this is the one place that gets to
+    // decide the block separator, exactly once.
+    return after.length === 0
+      ? `${prefix}${args.generated}\n`
+      : `${prefix}${args.generated}\n\n${after}\n`;
+  }
+
+  /**
+   * Places the generated block into the file's current content.
+   *
+   * A pattern match replaces cleanly. No start marker at all falls back to
+   * appending, the historical behavior for a file never written to before.
+   * A start marker with no matching end can never satisfy the pattern —
+   * silently leaving it in place is what let a run claim success while
+   * changing nothing — so that span is cut out and replaced instead.
+   */
+  private spliceBlock(args: {
+    destination: SyncAnchoredBlockArguments["destination"];
+    existing: string;
+    generated: string;
+    pattern: RegExp;
+  }): string {
+    if (args.pattern.test(args.existing)) {
+      // Replaced through a function so a `$` in the generated content is
+      // not read as a pattern reference.
+      return args.existing.replace(args.pattern, () => args.generated);
+    }
+
+    const startIndex = args.existing.indexOf(args.destination.startMarker);
+
+    if (startIndex === -1) {
+      return this.appendBlock({
+        existing: args.existing,
+        generated: args.generated,
+      });
+    }
+
+    return this.replaceOrphanedBlock({
+      existing: args.existing,
+      generated: args.generated,
+      startIndex,
+      startMarker: args.destination.startMarker,
+    });
   }
 
   // 🌎 Public Methods
@@ -141,11 +218,12 @@ export class OutputMarkdownService {
       return pattern.exec(existing)?.[0] === generated;
     }
 
-    const updated = existing.includes(args.destination.startMarker)
-      ? // Replaced through a function so a `$` in the generated content is
-        // not read as a pattern reference.
-        existing.replace(pattern, () => generated)
-      : this.appendBlock({ existing, generated });
+    const updated = this.spliceBlock({
+      destination: args.destination,
+      existing,
+      generated,
+      pattern,
+    });
 
     writeFileSync(resolvedPath, updated, "utf8");
     this.logger.info("🔭 Wrote a report", undefined, { path: resolvedPath });

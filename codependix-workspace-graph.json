@@ -47,12 +47,37 @@
     },
     {
       "implicit": false,
+      "source": "codometer-changes",
+      "target": "logger"
+    },
+    {
+      "implicit": false,
+      "source": "codometer-cli",
+      "target": "codometer-changes"
+    },
+    {
+      "implicit": false,
       "source": "codometer-cli",
       "target": "codometer-configuration"
     },
     {
       "implicit": false,
       "source": "codometer-cli",
+      "target": "codometer-markdown"
+    },
+    {
+      "implicit": false,
+      "source": "codometer-cli",
+      "target": "logger"
+    },
+    {
+      "implicit": false,
+      "source": "codometer-markdown",
+      "target": "codometer-changes"
+    },
+    {
+      "implicit": false,
+      "source": "codometer-markdown",
       "target": "logger"
     },
     {
@@ -262,11 +287,6 @@
     },
     {
       "implicit": false,
-      "source": "reporting",
-      "target": "logger"
-    },
-    {
-      "implicit": false,
       "source": "synchronization",
       "target": "conformetry-configuration"
     },
@@ -291,8 +311,10 @@
     "codependix-imports",
     "codependix-nestjs",
     "codependix-nx",
+    "codometer-changes",
     "codometer-cli",
     "codometer-configuration",
+    "codometer-markdown",
     "conformetry-agents",
     "conformetry-cli",
     "conformetry-configuration",

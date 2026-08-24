@@ -1,0 +1,61 @@
+{
+  "edges": [
+    {
+      "source": "src/index.unit.test.ts",
+      "target": "src/index.ts"
+    },
+    {
+      "source": "src/modules/changes/changes.module.ts",
+      "target": "src/modules/changes/changes.service.ts"
+    },
+    {
+      "source": "src/modules/changes/changes.module.unit.test.ts",
+      "target": "src/modules/changes/changes.module.ts"
+    },
+    {
+      "source": "src/modules/changes/changes.module.unit.test.ts",
+      "target": "src/modules/changes/changes.service.ts"
+    },
+    {
+      "source": "src/modules/changes/changes.service.ts",
+      "target": "src/modules/changes/changes.constants.ts"
+    },
+    {
+      "source": "src/modules/changes/changes.service.ts",
+      "target": "src/modules/changes/changes.types.ts"
+    },
+    {
+      "source": "src/modules/changes/changes.service.unit.test.ts",
+      "target": "src/modules/changes/changes.service.ts"
+    },
+    {
+      "source": "src/modules/changes/changes.service.unit.test.ts",
+      "target": "src/modules/changes/changes.types.ts"
+    },
+    {
+      "source": "src/modules/changes/changes.types.ts",
+      "target": "src/modules/changes/changes.constants.ts"
+    }
+  ],
+  "fileNames": [
+    "eslint.config.ts",
+    "src/index.ts",
+    "src/index.unit.test.ts",
+    "src/modules/changes/changes.constants.ts",
+    "src/modules/changes/changes.module.ts",
+    "src/modules/changes/changes.module.unit.test.ts",
+    "src/modules/changes/changes.service.ts",
+    "src/modules/changes/changes.service.unit.test.ts",
+    "src/modules/changes/changes.types.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "isolatedFileNames": [
+    "eslint.config.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "projectName": "codometer-changes"
+}

@@ -1,0 +1,20 @@
+{
+  "ambientModuleNames": [],
+  "edges": [
+    {
+      "source": "DocumentsModule",
+      "target": "LoggerModule"
+    },
+    {
+      "source": "RenderModule",
+      "target": "LoggerModule"
+    }
+  ],
+  "isolatedModuleNames": [],
+  "moduleNames": [
+    "DocumentsModule",
+    "LoggerModule",
+    "RenderModule"
+  ],
+  "projectName": "codometer-markdown"
+}

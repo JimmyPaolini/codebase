@@ -39,6 +39,7 @@ function resolveEntryPoints(args: {
   const graph = new GraphService().assemble(
     services.edges.build({
       callablesById: collection.byId,
+      ignoreCallees: [],
       includeConstructorEdges: true,
       workspaceRoot: FIXTURE_ROOT,
     }),
@@ -86,6 +87,7 @@ describe(EntryPointsService, () => {
     const graph = new GraphService().assemble(
       services.edges.build({
         callablesById: collection.byId,
+        ignoreCallees: [],
         includeConstructorEdges: true,
         workspaceRoot: FIXTURE_ROOT,
       }),

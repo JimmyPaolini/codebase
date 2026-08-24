@@ -8,9 +8,9 @@ import {
   COMPUTED_MEMBER_CALL,
   DYNAMIC_CALL,
   EXTERNAL_CALL,
-  FAN_OUT_EXCEEDED_CALL,
   NO_IMPLEMENTATION_CALL,
   NO_SYMBOL_CALL,
+  TOO_MANY_IMPLEMENTATIONS_CALL,
 } from "./edges.constants";
 
 import type { ResolvedCallSite } from "./edges.types";
@@ -236,8 +236,8 @@ export class SymbolResolutionService {
       ownerSymbol,
     });
 
-    if (lookup.exceededFanOut) {
-      return FAN_OUT_EXCEEDED_CALL;
+    if (lookup.exceededCandidateLimit) {
+      return TOO_MANY_IMPLEMENTATIONS_CALL;
     }
 
     return {

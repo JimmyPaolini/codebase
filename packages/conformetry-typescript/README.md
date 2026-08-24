@@ -64,7 +64,7 @@ Call stacks traced through `conformetry-typescript`, deepest first. Each frame s
 | Stacks through recursion | 1 |
 | Unfollowable calls | 0 |
 
-### Call stacks
+### Call stacks (depth)
 
 **1. `TypescriptValidatorService.validateDocument`** — depth 12 · orphan-root
 
@@ -94,6 +94,41 @@ Call stacks traced through `conformetry-typescript`, deepest first. Each frame s
 ### Module spread
 
 None.
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `TypescriptNodesService.readKey` | 6 | `TypescriptNodesService.readImportKey`, `TypescriptNodesService.readExportKey`, `TypescriptNodesService.readDecoratorKey`, `TypescriptNodesService.readExpressionStatementKey`, `TypescriptNodesService.readLiteralKey`, `TypescriptNodesService.readNamedKey` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:206` |
+| `TypescriptTreeService.compareChild` | 5 | `TypescriptNodesService.readKey`, `TypescriptTreeService.filter(…)`, `TypescriptTreeService.filter(…)`, `TypescriptTreeService.buildError`, `TypescriptTreeService.compareBestCandidate` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:91` |
+| `TypescriptTreeService.compareTree` | 3 | `TypescriptNodesService.readChildren`, `TypescriptTreeService.reduce(…)`, `TypescriptTreeService.map(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:130` |
+
+<details>
+<summary>19 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `TypescriptValidatorService.validateDocument` | 3 | `TypescriptValidatorService.parseSourceFile`, `TypescriptValidatorService.validateStructure`, `TypescriptValidatorService.validateComments` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:170` |
+| `TypescriptCommentsService.compareComments` | 2 | `TypescriptCommentsService.extractComments`, `TypescriptCommentsService.findIndex(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-comments.service.ts:46` |
+| `TypescriptCommentsService.extractComments` | 2 | `TypescriptCommentsService.visit`, `TypescriptCommentsService.toSorted(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-comments.service.ts:87` |
+| `TypescriptNodesService.readExpressionStatementKey` | 2 | `TypescriptNodesService.buildDottedName`, `TypescriptNodesService.readLiteralKey` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:100` |
+| `TypescriptNodesService.countSubtree` | 2 | `TypescriptNodesService.reduce(…)`, `TypescriptNodesService.readChildren` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:181` |
+| `TypescriptTreeService.buildError` | 2 | `TypescriptNodesService.readKindLabel`, `TypescriptNodesService.countSubtree` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:44` |
+| `TypescriptTreeService.compareBestCandidate` | 2 | `TypescriptTreeService.reduce(…)`, `TypescriptTreeService.map(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:70` |
+| `TypescriptValidatorService.validateComments` | 2 | `TypescriptCommentsService.compareComments`, `TypescriptValidatorService.map(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:78` |
+| `TypescriptValidatorService.validateStructure` | 2 | `TypescriptTreeService.compareTree`, `TypescriptValidatorService.map(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:111` |
+| `TypescriptNodesService.readDecoratorKey` | 1 | `TypescriptNodesService.buildDottedName` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:77` |
+| `TypescriptNodesService.readNamedKey` | 1 | `TypescriptNodesService.isNode` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:146` |
+| `TypescriptNodesService.reduce(…)` | 1 | `TypescriptNodesService.countSubtree` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:182` |
+| `TypescriptNodesService.readChildren` | 1 | `TypescriptNodesService.forEachChild(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:188` |
+| `TypescriptTreeService.map(…)` | 1 | `TypescriptTreeService.compareTree` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:75` |
+| `TypescriptTreeService.reduce(…)` | 1 | `ScoringService.sumWeights` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:81` |
+| `TypescriptTreeService.filter(…)` | 1 | `TypescriptNodesService.readKey` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:102` |
+| `TypescriptTreeService.map(…)` | 1 | `TypescriptTreeService.compareChild` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:137` |
+| `TypescriptValidatorService.map(…)` | 1 | `TypescriptValidatorService.readLocation` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:84` |
+| `TypescriptValidatorService.map(…)` | 1 | `TypescriptValidatorService.readLocation` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:120` |
+
+</details>
 
 ### Possibly misplaced
 

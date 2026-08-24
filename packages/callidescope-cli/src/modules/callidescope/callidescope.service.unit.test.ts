@@ -14,6 +14,7 @@ import {
 import { CohesionService } from "../cohesion/cohesion.service";
 import { DocumentationService } from "../documentation/documentation.service";
 import { EntryPointsService } from "../entry-points/entry-points.service";
+import { BreadthService } from "../graph/breadth.service";
 import { ComponentsService } from "../graph/components.service";
 import { DepthService } from "../graph/depth.service";
 import { GraphService } from "../graph/graph.service";
@@ -68,11 +69,12 @@ function buildConfiguration(
     },
     exclude: [],
     excludeFrom: [],
+    ignoreCallees: [],
     limits: {
       callerMajorityRatio: 0.8,
       directSpreadThreshold: 2,
       maximumDepth: 2,
-      maximumImplementationFanOut: 8,
+      maximumImplementationCandidates: 8,
       minimumCallers: 2,
       spreadThreshold: 2,
     },
@@ -100,6 +102,7 @@ function buildSubject(args: {
     new EntryPointsService(createMock<LoggerService>()),
     args.fixture.external,
     new GraphAssemblyService(
+      new BreadthService(),
       new ComponentsService(),
       new DepthService(),
       args.fixture.edges,
@@ -108,6 +111,7 @@ function buildSubject(args: {
     args.fixture.programService,
     new ProjectReportsService(
       new PathsService(new DocumentationService(), new SignaturesService()),
+      new SignaturesService(),
     ),
     args.fixture.workspace,
     args.logger ?? createMock<LoggerService>(),

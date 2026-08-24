@@ -5,11 +5,12 @@
     "callidescope-cli",
     "codependix-cli",
     "codependix-nestjs",
+    "codometer-changes",
     "codometer-cli",
+    "codometer-markdown",
     "conformetry-cli",
     "conformetry-nx",
     "lexico-ingestion",
-    "reporting",
     "synchronization",
     "validation"
   ],
@@ -36,7 +37,17 @@
     },
     {
       "implicit": false,
+      "source": "codometer-changes",
+      "target": "logger"
+    },
+    {
+      "implicit": false,
       "source": "codometer-cli",
+      "target": "logger"
+    },
+    {
+      "implicit": false,
+      "source": "codometer-markdown",
       "target": "logger"
     },
     {
@@ -52,11 +63,6 @@
     {
       "implicit": false,
       "source": "lexico-ingestion",
-      "target": "logger"
-    },
-    {
-      "implicit": false,
-      "source": "reporting",
       "target": "logger"
     },
     {

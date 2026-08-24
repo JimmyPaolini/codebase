@@ -1,15 +1,18 @@
 import { Injectable } from "@nestjs/common";
 
 import { PathsService } from "../graph/paths.service";
+import { SignaturesService } from "../signatures/signatures.service";
 
 import { MINIMUM_STACK_FRAMES } from "./project-reports.constants";
 
 import type { BuildProjectReportsArguments } from "./project-reports.types";
 import type {
+  CallableBreadthReport,
   CallGraphSummary,
   CallStack,
   DeepStackFinding,
   ProjectReport,
+  WideCallableFinding,
 } from "@callidescope/configuration";
 
 /**
@@ -23,13 +26,56 @@ import type {
 export class ProjectReportsService {
   // 🏗 Dependency Injection
 
-  constructor(private readonly pathsService: PathsService) {}
+  constructor(
+    private readonly pathsService: PathsService,
+    private readonly signaturesService: SignaturesService,
+  ) {}
 
   // 🔐 Private Fields
 
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /** Builds every callable's breadth, grouped by project. */
+  private buildCallableBreadths(
+    args: BuildProjectReportsArguments,
+  ): Map<string, CallableBreadthReport[]> {
+    const byProject = new Map<string, CallableBreadthReport[]>();
+
+    for (const [callableId, callable] of args.callablesById) {
+      const measured = args.breadthMeasurement.byCallable.get(callableId);
+
+      if (measured === undefined || measured.breadth === 0) {
+        continue;
+      }
+
+      const callees = measured.calleeIds.flatMap((calleeId) => {
+        const callee = args.callablesById.get(calleeId);
+
+        return callee === undefined
+          ? []
+          : [{ displayName: callee.node.displayName, id: calleeId }];
+      });
+
+      const reports = byProject.get(callable.node.projectName) ?? [];
+
+      reports.push({
+        breadth: measured.breadth,
+        callees,
+        displayName: callable.node.displayName,
+        id: callableId,
+        location: callable.node.location,
+        signature: this.signaturesService.read({
+          checker: callable.projectProgram.checker,
+          declaration: callable.declaration,
+        }),
+      });
+      byProject.set(callable.node.projectName, reports);
+    }
+
+    return byProject;
+  }
 
   /** Builds every stack that makes at least one call, deepest first. */
   private buildStacks(
@@ -142,6 +188,7 @@ export class ProjectReportsService {
   /** Builds one report per project, in the order the projects were traced. */
   public build(args: BuildProjectReportsArguments): ProjectReport[] {
     const stacksByProject = this.buildStacks(args);
+    const callableBreadthsByProject = this.buildCallableBreadths(args);
 
     return args.projectNames.map((projectName) => {
       const stacks = (stacksByProject.get(projectName) ?? []).toSorted(
@@ -152,6 +199,9 @@ export class ProjectReportsService {
         args.callablesById.get(callableId)?.node.projectName === projectName;
 
       return {
+        callableBreadths: (
+          callableBreadthsByProject.get(projectName) ?? []
+        ).toSorted((first, second) => second.breadth - first.breadth),
         misplacedCallables: args.misplacedCallables.filter((finding) =>
           owns(finding.id),
         ),
@@ -191,5 +241,23 @@ export class ProjectReportsService {
       .filter((stack) => stack.depth > args.limit)
       .map((stack) => ({ ...stack, limit: args.limit }))
       .toSorted((first, second) => second.depth - first.depth);
+  }
+
+  /**
+   * Picks the callables a run should fail on, widest first.
+   *
+   * A filter over the breadth reports the reports already hold, mirroring
+   * `findDeepStacks`, so the number the gate fails on cannot drift from the
+   * number the README publishes.
+   */
+  public findWideCallables(args: {
+    limit: number;
+    reports: readonly ProjectReport[];
+  }): WideCallableFinding[] {
+    return args.reports
+      .flatMap((report) => report.callableBreadths)
+      .filter((report) => report.breadth > args.limit)
+      .map((report) => ({ ...report, limit: args.limit }))
+      .toSorted((first, second) => second.breadth - first.breadth);
   }
 }

@@ -46,7 +46,7 @@ export class ClassHierarchyService {
 
   private readonly lookupCache = new Map<string, ImplementationLookup>();
 
-  private maximumFanOut = 0;
+  private maximumCandidates = 0;
 
   // 🔑 Public Fields
 
@@ -170,7 +170,7 @@ export class ClassHierarchyService {
 
   /** Walks every traced class once, recording members and heritage. */
   public build(args: BuildHierarchyArguments): void {
-    this.maximumFanOut = args.maximumFanOut;
+    this.maximumCandidates = args.maximumCandidates;
 
     for (const projectProgram of args.programs) {
       this.indexProgram(projectProgram);
@@ -229,8 +229,8 @@ export class ClassHierarchyService {
           });
 
     const lookup: ImplementationLookup =
-      candidates.length > this.maximumFanOut
-        ? { declarations: [], exceededFanOut: true }
+      candidates.length > this.maximumCandidates
+        ? { declarations: [], exceededCandidateLimit: true }
         : {
             declarations: candidates.flatMap((candidate) =>
               this.readMemberDeclarations({
@@ -239,7 +239,7 @@ export class ClassHierarchyService {
                 memberName: args.memberName,
               }),
             ),
-            exceededFanOut: false,
+            exceededCandidateLimit: false,
           };
 
     this.lookupCache.set(cacheKey, lookup);

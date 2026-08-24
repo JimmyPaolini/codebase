@@ -42,7 +42,6 @@ body:
       description: Which area of the codebase does this apply to?
       options:
         - affirmations
-        - applications
         - caelundas
         - configuration
         - conformetry
@@ -62,13 +61,11 @@ body:
         - codometer
         - codebase
         - no-release
-        - packages
         - release
+        - reporting
         - scripts
         - testing
-        - tools
         - synchronization
-        - reporting
         - validation
     validations:
       required: true

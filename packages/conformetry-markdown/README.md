@@ -59,7 +59,7 @@ Call stacks traced through `conformetry-markdown`, deepest first. Each frame sho
 | Stacks through recursion | 0 |
 | Unfollowable calls | 0 |
 
-### Call stacks
+### Call stacks (depth)
 
 **1. `MarkdownNodesService.table`** — depth 3 · orphan-root
 
@@ -143,6 +143,42 @@ Call stacks traced through `conformetry-markdown`, deepest first. Each frame sho
 ### Module spread
 
 None.
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `MarkdownTreeService.compareContainer` | 5 | `MarkdownTreeService.findCandidates`, `MarkdownTreeService.buildError`, `MarkdownNodesService.readChildren`, `MarkdownTreeService.reduce(…)`, `MarkdownTreeService.map(…)` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:64` |
+| `MarkdownTreeService.compareLeaf` | 3 | `MarkdownTreeService.findCandidates`, `MarkdownNodesService.countSubtree`, `MarkdownTreeService.buildError` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:114` |
+| `MarkdownValidatorService.validateDocument` | 3 | `MarkdownTreeService.compareChildren`, `MarkdownNodesService.filterNodes`, `MarkdownValidatorService.map(…)` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-validator.service.ts:48` |
+
+<details>
+<summary>20 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `MarkdownNodesService.link` | 2 | `MarkdownNodesService.sameField`, `MarkdownNodesService.readText` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:59` |
+| `MarkdownNodesService.countSubtree` | 2 | `MarkdownNodesService.reduce(…)`, `MarkdownNodesService.readChildren` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:118` |
+| `MarkdownTreeService.buildError` | 2 | `MarkdownNodesService.readText`, `MarkdownNodesService.countSubtree` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:44` |
+| `MarkdownTreeService.map(…)` | 2 | `MarkdownTreeService.compareChildren`, `MarkdownNodesService.readChildren` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:90` |
+| `MarkdownTreeService.compareChildren` | 2 | `MarkdownTreeService.compareContainer`, `MarkdownTreeService.compareLeaf` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:146` |
+| `MarkdownNodesService.code` | 1 | `MarkdownNodesService.sameField` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:35` |
+| `MarkdownNodesService.heading` | 1 | `MarkdownNodesService.readText` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:41` |
+| `MarkdownNodesService.html` | 1 | `MarkdownNodesService.sameField` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:47` |
+| `MarkdownNodesService.image` | 1 | `MarkdownNodesService.sameField` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:50` |
+| `MarkdownNodesService.inlineCode` | 1 | `MarkdownNodesService.sameField` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:56` |
+| `MarkdownNodesService.table` | 1 | `MarkdownNodesService.readColumnCount` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:68` |
+| `MarkdownNodesService.tableRow` | 1 | `MarkdownNodesService.readChildren` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:74` |
+| `MarkdownNodesService.text` | 1 | `MarkdownNodesService.sameField` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:80` |
+| `MarkdownNodesService.readColumnCount` | 1 | `MarkdownNodesService.readChildren` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:91` |
+| `MarkdownNodesService.reduce(…)` | 1 | `MarkdownNodesService.countSubtree` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:123` |
+| `MarkdownNodesService.filterNodes` | 1 | `MarkdownNodesService.filter(…)` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:129` |
+| `MarkdownNodesService.matches` | 1 | `MarkdownNodesService.readText` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-nodes.service.ts:140` |
+| `MarkdownTreeService.reduce(…)` | 1 | `ScoringService.sumWeights` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:103` |
+| `MarkdownTreeService.findCandidates` | 1 | `MarkdownTreeService.filter(…)` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:134` |
+| `MarkdownTreeService.filter(…)` | 1 | `MarkdownNodesService.matches` | `packages/conformetry-markdown/src/modules/markdown-validator/markdown-tree.service.ts:135` |
+
+</details>
 
 ### Possibly misplaced
 

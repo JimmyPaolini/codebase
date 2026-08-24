@@ -107,6 +107,10 @@
     {
       "source": "ProjectReportsModule",
       "target": "GraphModule"
+    },
+    {
+      "source": "ProjectReportsModule",
+      "target": "SignaturesModule"
     }
   ],
   "isolatedModuleNames": [

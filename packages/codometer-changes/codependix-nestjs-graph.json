@@ -1,0 +1,15 @@
+{
+  "ambientModuleNames": [],
+  "edges": [
+    {
+      "source": "ChangesModule",
+      "target": "LoggerModule"
+    }
+  ],
+  "isolatedModuleNames": [],
+  "moduleNames": [
+    "ChangesModule",
+    "LoggerModule"
+  ],
+  "projectName": "codometer-changes"
+}

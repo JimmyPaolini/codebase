@@ -4,6 +4,7 @@ import { CommandFactory } from "nest-commander";
 import { LoggerService } from "@codebase/logger";
 
 import { MainModule } from "./main.module";
+import { withDefaultCommand } from "./main.utilities";
 
 /**
  * Bootstraps the codometer CLI command application.
@@ -19,6 +20,11 @@ async function main(): Promise<void> {
 
   const logger = new LoggerService();
   logger.setContext("CommandFactory");
+
+  process.argv = [
+    ...process.argv.slice(0, 2),
+    ...withDefaultCommand(process.argv.slice(2)),
+  ];
 
   await CommandFactory.run(MainModule, { bufferLogs: true, logger });
 }

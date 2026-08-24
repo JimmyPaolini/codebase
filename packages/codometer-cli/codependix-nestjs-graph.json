@@ -5,6 +5,18 @@
   ],
   "edges": [
     {
+      "source": "ChangesModule",
+      "target": "ChangesModule"
+    },
+    {
+      "source": "ChangesModule",
+      "target": "DocumentsModule"
+    },
+    {
+      "source": "ChangesModule",
+      "target": "RenderModule"
+    },
+    {
       "source": "CodometerModule",
       "target": "ConfigurationModule"
     },
@@ -102,6 +114,10 @@
     },
     {
       "source": "MainModule",
+      "target": "ChangesModule"
+    },
+    {
+      "source": "MainModule",
       "target": "CodometerModule"
     },
     {
@@ -138,12 +154,14 @@
     "LoggerModule"
   ],
   "moduleNames": [
+    "ChangesModule",
     "CodometerModule",
     "ConfigModule",
     "ConfigurationModule",
     "CssModule",
     "CustomStatisticsModule",
     "DiscoveryModule",
+    "DocumentsModule",
     "FileDiscoveryModule",
     "HclModule",
     "JsonModule",
@@ -156,6 +174,7 @@
     "OutputJsonModule",
     "OutputMarkdownModule",
     "PythonModule",
+    "RenderModule",
     "ReportModule",
     "ShellModule",
     "SizeAnalysisModule",
