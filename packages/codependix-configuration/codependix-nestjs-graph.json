@@ -1,7 +1,11 @@
 {
   "ambientModuleNames": [],
   "edges": [],
-  "isolatedModuleNames": ["ConfigurationModule"],
-  "moduleNames": ["ConfigurationModule"],
+  "isolatedModuleNames": [
+    "ConfigurationModule"
+  ],
+  "moduleNames": [
+    "ConfigurationModule"
+  ],
   "projectName": "codependix-configuration"
 }

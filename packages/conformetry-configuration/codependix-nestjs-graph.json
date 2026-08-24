@@ -14,7 +14,10 @@
       "target": "RenderingModule"
     }
   ],
-  "isolatedModuleNames": ["ConfigurationModule", "InputModule"],
+  "isolatedModuleNames": [
+    "ConfigurationModule",
+    "InputModule"
+  ],
   "moduleNames": [
     "ConfigurationModule",
     "InputModule",

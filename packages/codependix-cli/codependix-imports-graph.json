@@ -65,6 +65,10 @@
       "target": "src/modules/codependix/codependix.types.ts"
     },
     {
+      "source": "src/modules/codependix/codependix.command.ts",
+      "target": "src/modules/delivery/delivery.types.ts"
+    },
+    {
       "source": "src/modules/codependix/codependix.command.unit.test.ts",
       "target": "src/modules/codependix/codependix.command.ts"
     },
@@ -122,10 +126,6 @@
     },
     {
       "source": "src/modules/codependix/codependix.service.unit.test.ts",
-      "target": "src/modules/anchors/anchors.errors.ts"
-    },
-    {
-      "source": "src/modules/codependix/codependix.service.unit.test.ts",
       "target": "src/modules/anchors/anchors.service.ts"
     },
     {
@@ -134,7 +134,19 @@
     },
     {
       "source": "src/modules/codependix/codependix.service.unit.test.ts",
+      "target": "src/modules/codependix/codependix.types.ts"
+    },
+    {
+      "source": "src/modules/codependix/codependix.service.unit.test.ts",
       "target": "src/modules/delivery/delivery.service.ts"
+    },
+    {
+      "source": "src/modules/codependix/codependix.service.unit.test.ts",
+      "target": "src/modules/delivery/delivery.types.ts"
+    },
+    {
+      "source": "src/modules/codependix/codependix.types.ts",
+      "target": "src/modules/delivery/delivery.types.ts"
     },
     {
       "source": "src/modules/delivery/delivery.module.ts",

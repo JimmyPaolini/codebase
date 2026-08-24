@@ -1,6 +1,10 @@
 {
-  "dependencies": ["logger"],
-  "dependents": ["codependix-cli"],
+  "dependencies": [
+    "logger"
+  ],
+  "dependents": [
+    "codependix-cli"
+  ],
   "edges": [
     {
       "implicit": false,

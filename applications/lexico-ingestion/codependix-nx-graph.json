@@ -1,5 +1,8 @@
 {
-  "dependencies": ["lexico-entities", "logger"],
+  "dependencies": [
+    "lexico-entities",
+    "logger"
+  ],
   "dependents": [],
   "edges": [
     {

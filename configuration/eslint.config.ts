@@ -1367,6 +1367,20 @@ export default [
     },
   },
 
+  // 🕸️ codependix graph JSON files
+  // Emitted from the Nx project graph, a NestJS container, or a `ts.Program`,
+  // in whichever order each source discovers its projects, modules, or
+  // files — not alphabetical. Enforcing array order here would make every
+  // `codependix --write` immediately fail its own `--check`, the same
+  // reformatting-vs-drift conflict `configuration/.oxfmtignore` already
+  // solves for `oxfmt` and `.conformetry/**`.
+  {
+    files: ["**/codependix-*graph.json"],
+    rules: {
+      "jsonc/sort-array-values": "off",
+    },
+  },
+
   // 📋 YAML Files
   // YAML/YML linting with indent, quoting, and best practice rules
   ...eslintPluginYml.configs["flat/standard"].map((config) => ({

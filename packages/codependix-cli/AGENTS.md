@@ -49,14 +49,6 @@ src/
 testing/                            # Shared test utilities
 ```
 
-### Module Graph
-
-The modules this project defines and the imports between them, published by `nx run synchronization:nestjs-module-graphs:write`.
-
-<!-- nestjs-module-graph-start -->
-
-<!-- nestjs-module-graph-end -->
-
 ## Development
 
 ### Adding Business Logic

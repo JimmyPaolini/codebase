@@ -1,6 +1,8 @@
 {
   "dependencies": [],
-  "dependents": ["lexico-ingestion"],
+  "dependents": [
+    "lexico-ingestion"
+  ],
   "edges": [
     {
       "implicit": false,

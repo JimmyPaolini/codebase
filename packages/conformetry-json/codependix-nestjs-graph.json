@@ -7,6 +7,9 @@
     }
   ],
   "isolatedModuleNames": [],
-  "moduleNames": ["JsonValidatorModule", "ScoringModule"],
+  "moduleNames": [
+    "JsonValidatorModule",
+    "ScoringModule"
+  ],
   "projectName": "conformetry-json"
 }

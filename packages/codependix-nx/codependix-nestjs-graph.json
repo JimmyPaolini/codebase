@@ -7,6 +7,9 @@
     }
   ],
   "isolatedModuleNames": [],
-  "moduleNames": ["NeighborhoodModule", "WorkspaceGraphModule"],
+  "moduleNames": [
+    "NeighborhoodModule",
+    "WorkspaceGraphModule"
+  ],
   "projectName": "codependix-nx"
 }

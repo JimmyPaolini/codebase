@@ -140,4 +140,13 @@ export interface ResolveForProjectArguments {
   configuration: ResolvedCodependixConfiguration;
   graphType: CodependixGraphType;
   projectName: string;
+  /**
+   * The project's root, relative to the workspace, as read from the Nx
+   * project graph.
+   *
+   * Optional so a caller with no root handy — a test, or a host that only
+   * knows a project by name — still resolves against `include`/`exclude`
+   * globs written against project names.
+   */
+  projectRoot?: string | undefined;
 }

@@ -1,6 +1,11 @@
 {
-  "dependencies": ["conformetry-configuration", "conformetry-core"],
-  "dependents": ["conformetry-validation"],
+  "dependencies": [
+    "conformetry-configuration",
+    "conformetry-core"
+  ],
+  "dependents": [
+    "conformetry-validation"
+  ],
   "edges": [
     {
       "implicit": false,

@@ -1,6 +1,11 @@
 {
-  "dependencies": ["conformetry-core"],
-  "dependents": ["conformetry-nx", "conformetry-validation"],
+  "dependencies": [
+    "conformetry-core"
+  ],
+  "dependents": [
+    "conformetry-nx",
+    "conformetry-validation"
+  ],
   "edges": [
     {
       "implicit": false,

@@ -1,5 +1,8 @@
 {
-  "dependencies": ["conformetry-configuration", "logger"],
+  "dependencies": [
+    "conformetry-configuration",
+    "logger"
+  ],
   "dependents": [],
   "edges": [
     {

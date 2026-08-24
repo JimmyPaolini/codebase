@@ -1,6 +1,8 @@
 {
   "dependencies": [],
-  "dependents": ["lexico"],
+  "dependents": [
+    "lexico"
+  ],
   "edges": [
     {
       "implicit": false,

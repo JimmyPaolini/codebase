@@ -1,5 +1,8 @@
 {
-  "dependencies": ["codometer-configuration", "logger"],
+  "dependencies": [
+    "codometer-configuration",
+    "logger"
+  ],
   "dependents": [],
   "edges": [
     {

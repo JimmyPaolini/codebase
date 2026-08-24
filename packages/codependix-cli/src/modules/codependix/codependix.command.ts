@@ -8,6 +8,7 @@ import { LoggerService } from "@codebase/logger";
 import { USAGE_MESSAGE } from "./codependix.constants";
 import { CodependixService } from "./codependix.service";
 
+import type { GraphRunOutcome } from "../delivery/delivery.types";
 import type { CodependixCommandOptions } from "./codependix.types";
 
 /**
@@ -38,6 +39,32 @@ export class CodependixCommand extends CommandRunner {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /**
+   * Logs an outcome's failures and stale exports, and reports whether the run
+   * as a whole should fail.
+   *
+   * Both are reported together rather than the first one short-circuiting the
+   * other, since `CodependixService.run` already attempted every project
+   * regardless of an earlier one's failure.
+   */
+  private reportOutcome(outcome: GraphRunOutcome): boolean {
+    const staleProjects = outcome.results.filter((result) => !result.isCurrent);
+
+    if (outcome.failures.length > 0) {
+      this.logger.error("💥 Failed running codependix", undefined, {
+        failures: outcome.failures,
+      });
+    }
+
+    if (staleProjects.length > 0) {
+      this.logger.error("🕸️ Found stale codependix exports", undefined, {
+        projects: staleProjects.map((result) => result.projectName),
+      });
+    }
+
+    return outcome.failures.length === 0 && staleProjects.length === 0;
+  }
 
   /**
    * Reads exactly one run mode from the command line, or reports why not.
@@ -105,6 +132,12 @@ export class CodependixCommand extends CommandRunner {
 
   /**
    * Runs every configured graph export in check or write mode.
+   *
+   * Every project is attempted regardless of whether an earlier one failed —
+   * `CodependixService.run` isolates each project's failure to itself — so
+   * this only decides the exit code from what came back: any failed project
+   * or any stale export fails the run, and both are reported together rather
+   * than the first one short-circuiting the other.
    */
   async run(
     _passedParameters: string[],
@@ -118,26 +151,12 @@ export class CodependixCommand extends CommandRunner {
     const workingDirectory = path.resolve(options.directory ?? process.cwd());
 
     try {
-      const results = [
-        ...(await this.codependixService.runNxGraphs(
-          options,
-          workingDirectory,
-        )),
-        ...(await this.codependixService.runNestjsGraphs(
-          options,
-          workingDirectory,
-        )),
-        ...(await this.codependixService.runImportGraphs(
-          options,
-          workingDirectory,
-        )),
-      ];
-      const staleProjects = results.filter((result) => !result.isCurrent);
+      const outcome = await this.codependixService.run(
+        options,
+        workingDirectory,
+      );
 
-      if (staleProjects.length > 0) {
-        this.logger.error("🕸️ Found stale codependix exports", undefined, {
-          projects: staleProjects.map((result) => result.projectName),
-        });
+      if (!this.reportOutcome(outcome)) {
         process.exitCode = 1;
         return;
       }
@@ -145,7 +164,7 @@ export class CodependixCommand extends CommandRunner {
       this.logger.info(
         "🕸️ Verified every configured codependix export is current",
         undefined,
-        { projects: results.length },
+        { projects: outcome.results.length },
       );
     } catch (error) {
       this.logger.error("💥 Failed running codependix", undefined, {

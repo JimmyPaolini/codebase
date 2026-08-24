@@ -11,6 +11,10 @@
     }
   ],
   "isolatedModuleNames": [],
-  "moduleNames": ["LoggerModule", "ModuleGraphModule", "NestjsProjectModule"],
+  "moduleNames": [
+    "LoggerModule",
+    "ModuleGraphModule",
+    "NestjsProjectModule"
+  ],
   "projectName": "codependix-nestjs"
 }

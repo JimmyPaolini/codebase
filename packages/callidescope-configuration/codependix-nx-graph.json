@@ -1,6 +1,8 @@
 {
   "dependencies": [],
-  "dependents": ["callidescope-cli"],
+  "dependents": [
+    "callidescope-cli"
+  ],
   "edges": [
     {
       "implicit": false,

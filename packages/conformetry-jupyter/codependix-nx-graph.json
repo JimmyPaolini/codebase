@@ -5,7 +5,10 @@
     "conformetry-markdown",
     "conformetry-python"
   ],
-  "dependents": ["conformetry-nx", "conformetry-validation"],
+  "dependents": [
+    "conformetry-nx",
+    "conformetry-validation"
+  ],
   "edges": [
     {
       "implicit": false,

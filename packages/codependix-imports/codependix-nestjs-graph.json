@@ -7,6 +7,9 @@
     }
   ],
   "isolatedModuleNames": [],
-  "moduleNames": ["ImportGraphModule", "TypescriptProjectModule"],
+  "moduleNames": [
+    "ImportGraphModule",
+    "TypescriptProjectModule"
+  ],
   "projectName": "codependix-imports"
 }

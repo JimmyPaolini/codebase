@@ -77,41 +77,6 @@ src/
 testing/                            # Shared test utilities
 ```
 
-### Module Graph
-
-The modules this project defines and the imports between them, published by `nx run synchronization:nestjs-module-graphs:write`.
-
-<!-- nestjs-module-graph-start -->
-
-```mermaid
-flowchart LR
-  subgraph group0["validation"]
-    CatalogManifestsModule
-    IssueMetadataModule
-    LockfileModule
-    MainModule
-    PullRequestBodyModule
-    PullRequestMetadataModule
-    PullRequestReleaseSignificanceModule
-  end
-  subgraph group1["logger"]
-    LoggerModule([LoggerModule])
-  end
-  ConfigModule([ConfigModule])
-  DiscoveryModule
-  MainModule --> CatalogManifestsModule
-  MainModule --> DiscoveryModule
-  MainModule --> IssueMetadataModule
-  MainModule --> LockfileModule
-  MainModule --> PullRequestBodyModule
-  MainModule --> PullRequestMetadataModule
-  MainModule --> PullRequestReleaseSignificanceModule
-```
-
-_Rounded modules are global: every module can inject them, so their edges are left out._
-
-<!-- nestjs-module-graph-end -->
-
 ## Development
 
 ### Adding Business Logic

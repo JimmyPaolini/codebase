@@ -195,18 +195,27 @@ export class ConfigurationService {
   /**
    * Whether a project participates in graph export at all.
    *
-   * A project matches when at least one include glob claims its name and no
-   * exclude glob does — the same rule `codometer`'s file discovery applies to
-   * paths, applied here to project names instead.
+   * A project matches when at least one include glob claims its name or its
+   * root and no exclude glob claims either — the same rule `codometer`'s file
+   * discovery applies to paths, applied here to a project's name and root.
+   * `projectRoot` is optional: a caller with no root handy still resolves
+   * against globs written against project names.
    */
   public isProjectIncluded(
     projectName: string,
     configuration: ResolvedCodependixConfiguration,
+    projectRoot?: string,
   ): boolean {
-    return (
-      this.matchesAnyGlob(projectName, configuration.include) &&
-      !this.matchesAnyGlob(projectName, configuration.exclude)
-    );
+    const isIncluded =
+      this.matchesAnyGlob(projectName, configuration.include) ||
+      (projectRoot !== undefined &&
+        this.matchesAnyGlob(projectRoot, configuration.include));
+    const isExcluded =
+      this.matchesAnyGlob(projectName, configuration.exclude) ||
+      (projectRoot !== undefined &&
+        this.matchesAnyGlob(projectRoot, configuration.exclude));
+
+    return isIncluded && !isExcluded;
   }
 
   /**
@@ -280,9 +289,9 @@ export class ConfigurationService {
   public resolveForProject(
     args: ResolveForProjectArguments,
   ): ResolvedCodependixGraphOutput {
-    const { configuration, graphType, projectName } = args;
+    const { configuration, graphType, projectName, projectRoot } = args;
 
-    if (!this.isProjectIncluded(projectName, configuration)) {
+    if (!this.isProjectIncluded(projectName, configuration, projectRoot)) {
       return { json: undefined, markdown: undefined, target: "none" };
     }
 

@@ -375,6 +375,37 @@ describe(ConfigurationService, () => {
         service.isProjectIncluded("packages/codependix-nx", configuration),
       ).toBe(true);
     });
+
+    it("includes a project whose root matches an include glob its name does not", () => {
+      const configuration = service.resolveConfiguration({
+        defaults: { nx: { target: "json" } },
+        include: ["packages/*"],
+      });
+
+      const resolved = service.resolveForProject({
+        configuration,
+        graphType: "nx",
+        projectName: "codependix-nx",
+        projectRoot: "packages/codependix-nx",
+      });
+
+      expect(resolved.target).not.toBe("none");
+    });
+
+    it("excludes a project whose root matches an exclude glob its name does not", () => {
+      const configuration = service.resolveConfiguration({
+        exclude: ["packages/excluded-*"],
+      });
+
+      const resolved = service.resolveForProject({
+        configuration,
+        graphType: "nx",
+        projectName: "kept-name",
+        projectRoot: "packages/excluded-project",
+      });
+
+      expect(resolved.target).toBe("none");
+    });
   });
 
   describe("resolveForWorkspace", () => {
