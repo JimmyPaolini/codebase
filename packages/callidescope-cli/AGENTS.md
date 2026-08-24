@@ -70,11 +70,11 @@ flowchart LR
   end
   subgraph group2["callidescope-graph"]
     CallablesModule
-    ClassHierarchyModule
+    ClassesModule
     CohesionModule
     DocumentationModule
     EdgesModule
-    EntryPointsModule
+    EntriesModule
     GraphModule
     ProgramModule
     SignaturesModule
@@ -94,11 +94,11 @@ flowchart LR
   CallablesModule --> ProgramModule
   CallablesModule --> WorkspaceModule
   CallidescopeModule --> CallablesModule
-  CallidescopeModule --> ClassHierarchyModule
+  CallidescopeModule --> ClassesModule
   CallidescopeModule --> CohesionModule
   CallidescopeModule --> ConfigurationModule
   CallidescopeModule --> EdgesModule
-  CallidescopeModule --> EntryPointsModule
+  CallidescopeModule --> EntriesModule
   CallidescopeModule --> GraphModule
   CallidescopeModule --> OutputJsonModule
   CallidescopeModule --> OutputMarkdownModule
@@ -107,7 +107,7 @@ flowchart LR
   CallidescopeModule --> ReportModule
   CallidescopeModule --> WorkspaceModule
   EdgesModule --> CallablesModule
-  EdgesModule --> ClassHierarchyModule
+  EdgesModule --> ClassesModule
   EdgesModule --> ProgramModule
   EdgesModule --> WorkspaceModule
   GraphModule --> DocumentationModule
