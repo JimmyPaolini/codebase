@@ -58,6 +58,7 @@ body:
         - lexico-ingestion
         - logger
         - callidescope
+        - codependix
         - codometer
         - codebase
         - no-release
