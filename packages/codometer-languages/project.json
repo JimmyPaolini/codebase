@@ -1,14 +1,13 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "name": "codometer-cli",
+  "name": "codometer-languages",
   "projectType": "library",
-  "sourceRoot": "packages/codometer-cli",
+  "sourceRoot": "packages/codometer-languages",
   "tags": [
-    "framework:nest-commander",
     "framework:nestjs",
-    "generator:nestjs-command-project",
+    "generator:nestjs-service-project",
     "language:typescript",
-    "name:codometer-cli",
+    "name:codometer-languages",
     "type:package"
   ],
   "targets": {
@@ -18,13 +17,18 @@
         "assets": [
           {
             "glob": "README.md",
-            "input": "packages/codometer-cli",
+            "input": "packages/codometer-languages",
+            "output": "."
+          },
+          {
+            "glob": "src/modules/python/python.service.py",
+            "input": "packages/codometer-languages",
             "output": "."
           }
         ],
-        "main": "packages/codometer-cli/src/main.ts",
-        "outputPath": "dist/packages/codometer-cli",
-        "tsConfig": "packages/codometer-cli/tsconfig.build.json"
+        "main": "packages/codometer-languages/src/index.ts",
+        "outputPath": "dist/packages/codometer-languages",
+        "tsConfig": "packages/codometer-languages/tsconfig.build.json"
       },
       "outputs": ["{options.outputPath}"]
     },
@@ -38,17 +42,6 @@
     "oxlint": {},
     "prettier": {},
     "spell-check": {},
-    "start": {
-      "cache": false,
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "node --import @swc-node/register/esm-register packages/codometer-cli/src/main.ts",
-        "cwd": "{workspaceRoot}",
-        "env": {
-          "SWC_NODE_PROJECT": "packages/codometer-cli/tsconfig.json"
-        }
-      }
-    },
     "test-coverage": {},
     "type-coverage": {},
     "typecheck": {},

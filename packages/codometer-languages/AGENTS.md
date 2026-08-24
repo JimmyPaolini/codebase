@@ -1,24 +1,17 @@
-# CodometerCli: NestJS Command-Line Application
+# CodometerLanguages: NestJS Service Application
 
 ## Quick Start
 
-**Type**: Node.js CLI application (NestJS + `nest-commander`)
+**Type**: Node.js service application (NestJS + `NestFactory`)
 
-**Purpose**: <!-- Briefly describe the specific purpose of this CLI application -->
-
-### Run Locally
-
-```bash
-cp .env.default .env  # Fill in required environment variables
-nx run codometer-cli:start
-```
+**Purpose**: <!-- Briefly describe the specific purpose of this service application -->
 
 ## Architecture Overview
 
 ### Tech Stack
 
 - **Framework**: NestJS (modules, dependency injection, providers)
-- **CLI runner**: `nest-commander` (`CommandRunner` + `@Command()` decorator)
+- **Bootstrap**: `NestFactory.create` (standard NestJS bootstrap)
 - **Env validation**: `@nestjs/config` + `zod` (`environmentSchema` in `.constants.ts`)
 - **Logging**: `@codebase/logger` — a `pino`-backed `LoggerService` (`Scope.TRANSIENT`)
 - **Language**: Strict TypeScript
@@ -27,8 +20,8 @@ nx run codometer-cli:start
 
 ```text
 src/main.ts
-  └─ CommandFactory.run(MainModule)
-       └─ domain command modules            ← add under src/modules/
+  └─ NestFactory.create(MainModule)
+       └─ domain service modules            ← add under src/modules/
 ```
 
 ### Directory Layout
@@ -41,7 +34,6 @@ src/
   modules/
     <domain>/                       # Add feature modules here
       <domain>.module.ts
-      <domain>.command.ts
       <domain>.service.ts
       <domain>.types.ts
       <domain>.constants.ts
@@ -57,23 +49,7 @@ The modules this project defines and the imports between them, published by `nx 
 
 ```mermaid
 flowchart LR
-  subgraph group0["codometer-cli"]
-    ChangesModule
-    CodometerModule
-    CustomStatisticsModule
-    FileDiscoveryModule
-    LimitsModule
-    MainModule
-    OutputJsonModule
-    OutputMarkdownModule
-    ReportModule
-    SizeAnalysisModule
-    TargetsModule
-  end
-  subgraph group1["codometer-configuration"]
-    ConfigurationModule
-  end
-  subgraph group2["codometer-languages"]
+  subgraph group0["codometer-languages"]
     CssModule
     HclModule
     JsonModule
@@ -87,28 +63,9 @@ flowchart LR
     TypescriptModule
     YamlModule
   end
-  subgraph group3["codometer-markdown"]
-    DocumentsModule
-    RenderModule
-  end
-  subgraph group4["logger"]
+  subgraph group1["logger"]
     LoggerModule([LoggerModule])
   end
-  ConfigModule([ConfigModule])
-  DiscoveryModule
-  ChangesModule --> ChangesModule
-  ChangesModule --> DocumentsModule
-  ChangesModule --> RenderModule
-  CodometerModule --> ConfigurationModule
-  CodometerModule --> CustomStatisticsModule
-  CodometerModule --> FileDiscoveryModule
-  CodometerModule --> LanguagesModule
-  CodometerModule --> LimitsModule
-  CodometerModule --> OutputJsonModule
-  CodometerModule --> OutputMarkdownModule
-  CodometerModule --> ReportModule
-  CodometerModule --> SizeAnalysisModule
-  CodometerModule --> TargetsModule
   JupyterModule --> JsonModule
   JupyterModule --> MarkdownModule
   JupyterModule --> PythonModule
@@ -123,20 +80,11 @@ flowchart LR
   LanguagesModule --> TomlModule
   LanguagesModule --> TypescriptModule
   LanguagesModule --> YamlModule
-  MainModule --> ChangesModule
-  MainModule --> CodometerModule
-  MainModule --> ConfigurationModule
-  MainModule --> CustomStatisticsModule
-  MainModule --> DiscoveryModule
-  MainModule --> FileDiscoveryModule
-  MainModule --> LanguagesModule
-  MainModule --> OutputJsonModule
-  MainModule --> OutputMarkdownModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
 
-_Loaded at runtime rather than imported, and so absent from this container: codometer-changes._
+_Reached only for their types, and so declaring no module here: codometer-configuration._
 
 <!-- nestjs-module-graph-end -->
 
@@ -144,7 +92,7 @@ _Loaded at runtime rather than imported, and so absent from this container: codo
 
 ### Adding Business Logic
 
-1. **Add domain command modules** — create `src/modules/<domain>/` with a NestJS module, command, service, types, and constants.
+1. **Add domain service modules** — create `src/modules/<domain>/` with a NestJS module, service, types, and constants.
 2. **Register in root module** — import the new module in `main.module.ts`.
 3. **Validate env vars** — extend `environmentSchema` in `constants.ts` with all required environment variables.
 
@@ -156,7 +104,6 @@ _Loaded at runtime rather than imported, and so absent from this container: codo
 
 ```ts
 constructor(private readonly logger: LoggerService) {
-  super();
   this.logger.setContext(MyService.name);
 }
 ```
@@ -168,10 +115,10 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run codometer-cli:start           # Run the command-line application
-nx run codometer-cli:lint-codebase   # Every static check, in one graph
-nx run codometer-cli:typecheck       # tsc --noEmit
-nx run codometer-cli:oxfmt           # Formatting
+nx run codometer-languages:lint-codebase   # Every static check, in one graph
+nx run codometer-languages:typecheck       # tsc --noEmit
+nx run codometer-languages:oxfmt           # Formatting
+nx run codometer-languages:build           # Compile for publication
 ```
 
 ### Testing
@@ -179,16 +126,16 @@ nx run codometer-cli:oxfmt           # Formatting
 Follow the codebase's strict three-tier testing strategy. Co-locate test files with the source they test.
 
 ```bash
-nx run codometer-cli:vitest:unit          # Fast (<100ms) — pure logic, mocked DI
-nx run codometer-cli:vitest:integration   # Moderate (1-2s) — real database/API I/O
-nx run codometer-cli:vitest:end-to-end    # Slow (30-60s) — full CLI execution
+nx run codometer-languages:vitest:unit          # Fast (<100ms) — pure logic, mocked DI
+nx run codometer-languages:vitest:integration   # Moderate (1-2s) — real database/API I/O
+nx run codometer-languages:vitest:end-to-end    # Slow (30-60s) — full service initialization
 ```
 
 | Tier | File pattern | What to test |
 | ---- | ------------ | ------------ |
 | Unit | `*.unit.test.ts` | Pure functions, service methods with mocked deps |
 | Integration | `*.integration.test.ts` | Database queries, external API clients |
-| End-to-end | `*.end-to-end.test.ts` | Full `CommandFactory.run()` execution |
+| End-to-end | `*.end-to-end.test.ts` | Full `NestFactory.create()` execution |
 
 See the [testing-strategy skill](../../.agents/skills/testing-strategy/SKILL.md) and [testing-mocks skill](../../.agents/skills/testing-mocks/SKILL.md) for patterns and mock conventions.
 
@@ -218,7 +165,7 @@ Register the service in both `providers` and `exports` so consumers can inject i
 @Module({
   controllers: [],
   exports: [MyDomainService],
-  imports: [TypeOrmModule.forFeature([MyEntity]), LoggerModule],
+  imports: [LoggerModule],
   providers: [MyDomainService],
 })
 export class MyDomainModule {}
@@ -234,11 +181,7 @@ Follow the section-comment layout from the template — it keeps large services 
 @Injectable()
 export class MyDomainService {
   // 🏗 Dependency Injection
-  constructor(
-    @InjectRepository(MyEntity)
-    private readonly repo: Repository<MyEntity>,
-    private readonly logger: LoggerService,
-  ) {
+  constructor(private readonly logger: LoggerService) {
     this.logger.setContext(MyDomainService.name);
   }
 
@@ -266,7 +209,6 @@ Move all inline values to `.constants.ts` to keep services readable:
 
 ```ts
 // ♟️ Constants
-export const MY_SKIP_REGEX = /(alternative)|(archaic)|(synonym)/i;
 export const DEFAULT_PAGE_SIZE = 100;
 ```
 
@@ -300,18 +242,9 @@ After generating a module, import it in `main.module.ts`:
 export class MainModule {}
 ```
 
-### Conformetry validation
-
-Conformetry validation measures generated and existing module structures against the templates they came from. It runs for one project, or for every project at once.
-
-```bash
-pnpm nx run-many --targets=conformetry-validate
-```
-
 ## Best Practices
 
-- **Never** put business logic in `main.ts` — it bootstraps `CommandFactory` only.
-- **One command per class** — split sub-commands into separate `CommandRunner` subclasses.
+- **Never** put business logic in `main.ts` — it bootstraps `NestFactory` only.
 - **Validate at the boundary** — all env vars must be declared in `environmentSchema`; access via `ConfigService`, not `process.env`.
 - **Type imports** — use `import { type Foo }` for type-only imports (enforced by ESLint).
 - **No `any` types** — use `unknown` or proper typing; strict mode is enabled.
@@ -320,9 +253,7 @@ See the [write-typescript skill](../../.agents/skills/write-typescript/SKILL.md)
 
 ## Troubleshooting
 
-- **Command not found at runtime** — ensure the command class is listed in `providers` of its module and the module is imported by the root module.
 - **Dependency injection failure** — verify the service is `@Injectable()`, exported from its module, and that module is imported by the consuming module.
-- **Unrecognized CLI flag** — check that `@Option()` decorators in the command class exactly match the flag names passed.
 - **Env var validation error on startup** — add the missing variable to `environmentSchema` in `src/constants.ts` and to `.env.default`.
 
 See the [triage-submission skill](../../.agents/skills/triage-submission/SKILL.md) for lint and git hook failures.

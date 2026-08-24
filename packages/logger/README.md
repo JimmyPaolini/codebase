@@ -80,6 +80,7 @@ flowchart LR
   callidescope_cli["callidescope-cli"]
   codometer_changes["codometer-changes"]
   codometer_cli["codometer-cli"]
+  codometer_languages["codometer-languages"]
   codometer_markdown["codometer-markdown"]
   conformetry_cli["conformetry-cli"]
   conformetry_nx["conformetry-nx"]
@@ -91,6 +92,7 @@ flowchart LR
   callidescope_cli --> logger
   codometer_changes --> logger
   codometer_cli --> logger
+  codometer_languages --> logger
   codometer_markdown --> logger
   conformetry_cli --> logger
   conformetry_nx --> logger

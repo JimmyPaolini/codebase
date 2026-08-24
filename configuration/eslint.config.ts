@@ -403,8 +403,16 @@ export default [
             },
             {
               onlyDependOnLibsWithTags: [
+                "name:codometer-configuration",
+                "name:logger",
+              ],
+              sourceTag: "name:codometer-languages",
+            },
+            {
+              onlyDependOnLibsWithTags: [
                 "name:codometer-changes",
                 "name:codometer-configuration",
+                "name:codometer-languages",
                 "name:codometer-markdown",
                 "name:logger",
               ],

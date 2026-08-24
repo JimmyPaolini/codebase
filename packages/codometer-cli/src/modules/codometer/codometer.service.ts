@@ -1,9 +1,9 @@
 import { DEFAULT_TARGET_NAME } from "@codometer/configuration";
+import { LanguagesService } from "@codometer/languages";
 import { Injectable } from "@nestjs/common";
 
 import { CustomStatisticsService } from "../custom-statistics/custom-statistics.service";
 import { FileDiscoveryService } from "../file-discovery/file-discovery.service";
-import { LanguagesService } from "../languages/languages.service";
 import { LimitsService } from "../limits/limits.service";
 import { MetricIndexService } from "../limits/metric-index.service";
 import { SizeAnalysisService } from "../size-analysis/size-analysis.service";
@@ -11,7 +11,6 @@ import { TargetsService } from "../targets/targets.service";
 
 import type { LimitFailure } from "../limits/limits.types";
 import type { ReportFailure } from "../report/report.types";
-import type { TypescriptResult } from "../typescript/typescript.types";
 import type {
   AnalyzeLanguageArguments,
   MeasureArguments,
@@ -26,6 +25,7 @@ import type {
   ResolvedCodometerTarget,
   TypescriptStatistics,
 } from "@codometer/configuration";
+import type { TypescriptResult } from "@codometer/languages";
 
 /**
  * Aggregates every analyzer's report into a single set of statistics.

@@ -67,6 +67,7 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 ### Packages
 
 - **[codometer-changes](packages/codometer-changes)**: Diffs codometer reports against a baseline snapshot
+- **[codometer-languages](packages/codometer-languages)**: Every input language analyzer codometer measures, behind one `analyze()` call
 - **[codometer-markdown](packages/codometer-markdown)**: Renders a codometer change collection into markdown and splices it into a document
 - **[lexico-components](packages/lexico-components)**: Shared React component library (shadcn/ui, Radix UI)
 - **[lexico-entities](packages/lexico-entities)**: Shared TypeORM entities and GraphQL types package

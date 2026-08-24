@@ -1,10 +1,10 @@
+import { LanguagesService } from "@codometer/languages";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CustomStatisticsService } from "../custom-statistics/custom-statistics.service";
 import { FileDiscoveryService } from "../file-discovery/file-discovery.service";
-import { LanguagesService } from "../languages/languages.service";
 import { LimitsService } from "../limits/limits.service";
 import { MetricIndexService } from "../limits/metric-index.service";
 import { SizeAnalysisService } from "../size-analysis/size-analysis.service";
@@ -13,11 +13,11 @@ import { TargetsService } from "../targets/targets.service";
 import { CodometerService } from "./codometer.service";
 
 import type { FileDiscoveryResult } from "../file-discovery/file-discovery.types";
-import type { LanguageResults } from "../languages/languages.types";
 import type {
   ResolvedCodometerConfiguration,
   ResolvedCodometerTarget,
 } from "@codometer/configuration";
+import type { LanguageResults } from "@codometer/languages";
 
 const configuration: ResolvedCodometerConfiguration = {
   defaultTarget: undefined,

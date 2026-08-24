@@ -12,8 +12,6 @@ export { CustomStatisticsService } from "./modules/custom-statistics/custom-stat
 export { FileDiscoveryModule } from "./modules/file-discovery/file-discovery.module";
 export { FileDiscoveryService } from "./modules/file-discovery/file-discovery.service";
 export type { FileDiscoveryResult } from "./modules/file-discovery/file-discovery.types";
-export { JupyterModule } from "./modules/jupyter/jupyter.module";
-export { JupyterService } from "./modules/jupyter/jupyter.service";
 export { OutputJsonModule } from "./modules/output-json/output-json.module";
 export { OutputJsonService } from "./modules/output-json/output-json.service";
 export { OutputMarkdownModule } from "./modules/output-markdown/output-markdown.module";
@@ -27,5 +25,3 @@ export type {
   ReportMetric,
   ReportTarget,
 } from "./modules/report/report.types";
-export { YamlModule } from "./modules/yaml/yaml.module";
-export { YamlService } from "./modules/yaml/yaml.service";

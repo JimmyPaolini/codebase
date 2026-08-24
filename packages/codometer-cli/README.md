@@ -433,10 +433,12 @@ flowchart LR
   codometer_changes["codometer-changes"]
   codometer_cli["codometer-cli"]
   codometer_configuration["codometer-configuration"]
+  codometer_languages["codometer-languages"]
   codometer_markdown["codometer-markdown"]
   logger["logger"]
   codometer_cli --> codometer_changes
   codometer_cli --> codometer_configuration
+  codometer_cli --> codometer_languages
   codometer_cli --> codometer_markdown
   codometer_cli --> logger
   classDef subject stroke-width:3px
@@ -456,36 +458,38 @@ flowchart LR
   subgraph group0["codometer-cli"]
     ChangesModule
     CodometerModule
-    CssModule
     CustomStatisticsModule
     FileDiscoveryModule
-    HclModule
-    JsonModule
-    JupyterModule
-    LanguagesModule
     LimitsModule
     MainModule
-    MarkdownModule
     OutputJsonModule
     OutputMarkdownModule
-    PythonModule
     ReportModule
-    ShellModule
     SizeAnalysisModule
-    SqlModule
     TargetsModule
-    TomlModule
-    TypescriptModule
-    YamlModule
   end
   subgraph group1["codometer-configuration"]
     ConfigurationModule
   end
-  subgraph group2["codometer-markdown"]
+  subgraph group2["codometer-languages"]
+    CssModule
+    HclModule
+    JsonModule
+    JupyterModule
+    LanguagesModule
+    MarkdownModule
+    PythonModule
+    ShellModule
+    SqlModule
+    TomlModule
+    TypescriptModule
+    YamlModule
+  end
+  subgraph group3["codometer-markdown"]
     DocumentsModule
     RenderModule
   end
-  subgraph group3["logger"]
+  subgraph group4["logger"]
     LoggerModule([LoggerModule])
   end
   ConfigModule([ConfigModule])

@@ -2,9 +2,9 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import type { TypescriptSymbolCounter } from "../typescript/typescript.types";
 import type { CustomStatisticsInput } from "./custom-statistics.types";
 import type { CustomStatisticResult } from "@codometer/configuration";
+import type { TypescriptSymbolCounter } from "@codometer/languages";
 
 /**
  * Counts the conventions a repository holds itself to.
