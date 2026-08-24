@@ -77,7 +77,11 @@ export class MeanderGenerationService {
 
     return [
       ...unitPaths,
-      motifService.border(geometry, parameters.rows, parameters.repeatCount),
+      motifService.border(geometry, {
+        repeatCount: parameters.repeatCount,
+        rows: parameters.rows,
+        ...(parameters.modifier ? { modifier: parameters.modifier } : {}),
+      }),
     ];
   }
 
@@ -165,11 +169,11 @@ export class MeanderGenerationService {
 
     const geometry = this.gridGeometryService.compute(parameters.rows);
     const paths = this.buildPaths(geometry, parameters);
-    const rightEdge = this.motifService(parameters.type).rightEdge(
-      geometry,
-      parameters.rows,
-      parameters.repeatCount,
-    );
+    const rightEdge = this.motifService(parameters.type).rightEdge(geometry, {
+      repeatCount: parameters.repeatCount,
+      rows: parameters.rows,
+      ...(parameters.modifier ? { modifier: parameters.modifier } : {}),
+    });
     const format = (value: number): string =>
       this.gridGeometryService.formatCoordinate(value);
 

@@ -91,6 +91,42 @@ describe(MotifTransformsService, () => {
     });
   });
 
+  describe("closeEdge", () => {
+    // Reference geometry: the 6-rows `snake`/`chain` zigzag, taken from
+    // `SnakeSequenceService.points(6)` and verified against
+    // `/Users/jimmypaolini/Desktop/meanders/6 rows snake edge.svg`.
+    const zigzag: SpiralLevelPoint[] = [
+      [0, 1],
+      [4, 1],
+      [4, 4],
+      [2, 4],
+      [2, 3],
+      [3, 3],
+      [3, 2],
+      [1, 2],
+      [1, 5],
+      [5, 5],
+      [5, 1],
+    ];
+
+    it("prepends a bottom-border connector and extends the last point onto the top border", () => {
+      expect(service.closeEdge(zigzag, 6)).toStrictEqual([
+        [0, 6],
+        [0, 1],
+        [4, 1],
+        [4, 4],
+        [2, 4],
+        [2, 3],
+        [3, 3],
+        [3, 2],
+        [1, 2],
+        [1, 5],
+        [5, 5],
+        [5, 0],
+      ]);
+    });
+  });
+
   describe("mirror", () => {
     it("reflects across a horizontal line through center, matching the spin-flip transform", () => {
       expect(service.mirror(points, center, "horizontal")).toStrictEqual([

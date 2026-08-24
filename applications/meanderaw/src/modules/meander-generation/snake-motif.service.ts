@@ -5,9 +5,12 @@ import { SnakeSequenceService } from "./snake-sequence.service";
 
 import type {
   GridGeometry,
+  Modifier,
   MotifService,
   MotifUnit,
+  RepeatPatternOptions,
   SpiralLevelPoint,
+  UnitBorderOptions,
 } from "./meander-generation.types";
 
 /**
@@ -36,12 +39,13 @@ export class SnakeMotifService implements MotifService {
   // 🌎 Public Methods
 
   /** Draws one unit's own top/bottom border segment, spanning just that unit's width. */
-  borderSegment(geometry: GridGeometry, xOffset: number, rows: number): string {
+  borderSegment(geometry: GridGeometry, unit: UnitBorderOptions): string {
+    const { modifier, rows, xOffset } = unit;
     const leftX = this.gridGeometryService.formatCoordinate(
       geometry.offset + xOffset,
     );
     const rightX = this.gridGeometryService.formatCoordinate(
-      geometry.offset + xOffset + this.unitWidth(geometry, rows),
+      geometry.offset + xOffset + this.unitWidth(geometry, rows, modifier),
     );
     const topY = this.gridGeometryService.formatCoordinate(geometry.offset);
     const bottomY = this.gridGeometryService.formatCoordinate(
@@ -53,9 +57,13 @@ export class SnakeMotifService implements MotifService {
 
   /** Draws one repeat unit's zigzag plus its own border, as an SVG path attribute value. */
   path(geometry: GridGeometry, unit: MotifUnit): string {
-    const { rows, unitIndex } = unit;
-    const points = this.snakeSequenceService.points(rows);
-    const xOffset = unitIndex * this.unitWidth(geometry, rows);
+    const { modifier, rows, unitIndex } = unit;
+    const points = this.snakeSequenceService.unitPoints(
+      rows,
+      unitIndex,
+      modifier,
+    );
+    const xOffset = unitIndex * this.unitWidth(geometry, rows, modifier);
     const toXCoordinate = (level: number): string =>
       this.gridGeometryService.formatCoordinate(
         geometry.offset + xOffset + level * geometry.unit,
@@ -67,7 +75,11 @@ export class SnakeMotifService implements MotifService {
 
     return (
       this.pointsToPathData(points, toXCoordinate, toYCoordinate) +
-      this.borderSegment(geometry, xOffset, rows)
+      this.borderSegment(geometry, {
+        rows,
+        xOffset,
+        ...(modifier ? { modifier } : {}),
+      })
     );
   }
 
@@ -109,12 +121,22 @@ export class SnakeMotifService implements MotifService {
   }
 
   /** The x-coordinate of the last unit's rightmost point, before the stroke-width margin. */
-  rightEdge(geometry: GridGeometry, rows: number, repeatCount: number): number {
-    return geometry.offset + repeatCount * this.unitWidth(geometry, rows);
+  rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number {
+    const { modifier, repeatCount, rows } = pattern;
+
+    return (
+      geometry.offset + repeatCount * this.unitWidth(geometry, rows, modifier)
+    );
   }
 
-  /** How far each successive unit is translated horizontally: the zigzag spans every grid level up to `rows - 1`. */
-  unitWidth(geometry: GridGeometry, rows: number): number {
-    return (rows - 1) * geometry.unit;
+  /**
+   * How far each successive unit is translated horizontally: the zigzag
+   * spans every grid level up to `rows - 1`, widened to `rows` levels by
+   * the `edge` family so consecutive units' borders meet flush.
+   */
+  unitWidth(geometry: GridGeometry, rows: number, modifier?: Modifier): number {
+    return (
+      this.snakeSequenceService.unitWidthLevels(rows, modifier) * geometry.unit
+    );
   }
 }

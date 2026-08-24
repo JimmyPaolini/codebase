@@ -2,6 +2,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { GridGeometryService } from "./grid-geometry.service";
+import { MotifTransformsService } from "./motif-transforms.service";
 import { SnakeMotifService } from "./snake-motif.service";
 import { SnakeSequenceService } from "./snake-sequence.service";
 
@@ -11,7 +12,12 @@ describe(SnakeMotifService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [SnakeMotifService, GridGeometryService, SnakeSequenceService],
+      providers: [
+        SnakeMotifService,
+        GridGeometryService,
+        MotifTransformsService,
+        SnakeSequenceService,
+      ],
     }).compile();
 
     service = await module.resolve(SnakeMotifService);
@@ -27,6 +33,12 @@ describe(SnakeMotifService, () => {
       const geometry = gridGeometryService.compute(4);
 
       expect(service.unitWidth(geometry, 4)).toBe(45);
+    });
+
+    it("widens to rows grid levels for the edge family", () => {
+      const geometry = gridGeometryService.compute(6);
+
+      expect(service.unitWidth(geometry, 6, { name: "edge" })).toBe(60);
     });
   });
 
@@ -54,13 +66,65 @@ describe(SnakeMotifService, () => {
         "M2.5 12.5H42.5V42.5H22.5V32.5H32.5V22.5H12.5V52.5H52.5V12.5M2.5 2.5H52.5M52.5 62.5H2.5",
       );
     });
+
+    it("closes flush against the border for edge, matching the reference geometry at 6 rows", () => {
+      const geometry = gridGeometryService.compute(6);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "edge" },
+          rows: 6,
+          unitIndex: 0,
+        }),
+      ).toBe(
+        "M2.5 62.5V12.5H42.5V42.5H22.5V32.5H32.5V22.5H12.5V52.5H52.5V2.5M2.5 2.5H62.5M62.5 62.5H2.5",
+      );
+    });
+
+    it("leaves the first (even-indexed) unit not mirrored under flip", () => {
+      const geometry = gridGeometryService.compute(6);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "flip" },
+          rows: 6,
+          unitIndex: 0,
+        }),
+      ).toBe(service.path(geometry, { rows: 6, unitIndex: 0 }));
+    });
+
+    it("mirrors the second (odd-indexed) unit under flip", () => {
+      const geometry = gridGeometryService.compute(6);
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "flip" },
+          rows: 6,
+          unitIndex: 1,
+        }),
+      ).not.toBe(service.path(geometry, { rows: 6, unitIndex: 1 }));
+    });
   });
 
   describe("rightEdge", () => {
     it("spans repeatCount units, matching the reference geometry at 4 rows", () => {
       const geometry = gridGeometryService.compute(4);
 
-      expect(service.rightEdge(geometry, 4, 6)).toBe(273.75);
+      expect(service.rightEdge(geometry, { repeatCount: 6, rows: 4 })).toBe(
+        273.75,
+      );
+    });
+
+    it("spans repeatCount units of the widened edge pitch", () => {
+      const geometry = gridGeometryService.compute(6);
+
+      expect(
+        service.rightEdge(geometry, {
+          modifier: { name: "edge" },
+          repeatCount: 6,
+          rows: 6,
+        }),
+      ).toBe(362.5);
     });
   });
 
@@ -68,7 +132,7 @@ describe(SnakeMotifService, () => {
     it("spans just one unit's width, unlike boxes's shared full-pattern border", () => {
       const geometry = gridGeometryService.compute(4);
 
-      expect(service.borderSegment(geometry, 0, 4)).toBe(
+      expect(service.borderSegment(geometry, { rows: 4, xOffset: 0 })).toBe(
         "M3.75 3.75H48.75M48.75 63.75H3.75",
       );
     });
