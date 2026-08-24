@@ -189,7 +189,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/): `<type>(<scope
 
 **Types**: `feat` (minor release), `fix`/`perf`/`refactor`/`build` (patch), `docs`/`test`/`ci`/`chore` (no release)
 
-**Scopes**: `codebase`, `caelundas`, `lexico`, `lexico-components`, `JimmyPaolini`, `documentation`, `dependencies`, `infrastructure`, `ci`
+**Scopes**: `configuration`, `caelundas`, `lexico`, `lexico-components`, `JimmyPaolini`, `documentation`, `dependencies`, `infrastructure`, `ci`
 
 **Breaking changes**: Add `!` after type or `BREAKING CHANGE:` in footer (triggers major release)
 

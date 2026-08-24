@@ -61,3 +61,53 @@ graph LR
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `codependix-configuration`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 18 |
+| Files | 8 |
+| Calls traced | 19 |
+| Call stacks | 0 |
+| Deepest stack | 0 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 2 |
+
+### Call stacks (depth)
+
+None.
+
+### Module spread
+
+None.
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `ConfigurationService.loadConfiguration` | 5 | `ConfigurationService.findConfigurationFile`, `ConfigurationService.resolveConfigurationPath`, `ConfigurationService.resolveConfiguration`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.loadConfigurationModule` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:229` |
+| `ConfigurationService.resolveConfigurationPath` | 2 | `ConfigurationService.findWorkspaceRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:151` |
+| `ConfigurationService.resolveForProject` | 2 | `ConfigurationService.isProjectIncluded`, `ConfigurationService.resolveGraphOutput` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:289` |
+
+<details>
+<summary>5 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `ConfigurationService.findWorkspaceRoot` | 1 | `ConfigurationService.some(…)` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:89` |
+| `ConfigurationService.loadConfigurationModule` | 1 | `ConfigurationService.readDefaultExport` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:113` |
+| `ConfigurationService.matchesAnyGlob` | 1 | `ConfigurationService.some(…)` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:129` |
+| `ConfigurationService.isProjectIncluded` | 1 | `ConfigurationService.matchesAnyGlob` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:204` |
+| `ConfigurationService.resolveForWorkspace` | 1 | `ConfigurationService.resolveGraphOutput` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:311` |
+
+</details>
+
+### Possibly misplaced
+
+None.
+<!-- CALL_STACKS_END -->
