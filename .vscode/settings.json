@@ -452,7 +452,7 @@
   "git.autofetch": "all",
   "git.autofetchPeriod": 600,
   "git.autorefresh": true,
-  "git.autoRepositoryDetection": "subFolders",
+  "git.autoRepositoryDetection": "openEditors",
   "git.autoStash": true,
   "git.blame.editorDecoration.enabled": true,
   "git.blame.statusBarItem.enabled": true,
