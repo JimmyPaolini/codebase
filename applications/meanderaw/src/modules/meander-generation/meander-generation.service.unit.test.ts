@@ -5,12 +5,15 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { BoxesMotifService } from "./boxes-motif.service";
+import { ChainMotifService } from "./chain-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
 import { InvalidRepeatCountCycleError } from "./invalid-repeat-count-cycle.errors";
 import { InvalidRepeatCountError } from "./invalid-repeat-count.errors";
 import { InvalidRowsError } from "./invalid-rows.errors";
 import { MeanderGenerationService } from "./meander-generation.service";
 import { MotifTransformsService } from "./motif-transforms.service";
+import { SnakeMotifService } from "./snake-motif.service";
+import { SnakeSequenceService } from "./snake-sequence.service";
 import { SvgRenderingService } from "./svg-rendering.service";
 
 describe(MeanderGenerationService, () => {
@@ -22,7 +25,10 @@ describe(MeanderGenerationService, () => {
         MeanderGenerationService,
         GridGeometryService,
         BoxesMotifService,
+        ChainMotifService,
         MotifTransformsService,
+        SnakeMotifService,
+        SnakeSequenceService,
         SvgRenderingService,
       ],
     }).compile();
@@ -144,6 +150,63 @@ describe(MeanderGenerationService, () => {
           type: "boxes",
         }),
       ).toThrow(InvalidRepeatCountCycleError);
+    });
+
+    it("matches the committed golden fixture for 5 rows snake with 6 repeats", async () => {
+      const svg = service.generate({
+        repeatCount: 6,
+        rows: 5,
+        type: "snake",
+      });
+      const golden = await readFile(
+        path.join(
+          import.meta.dirname,
+          "../../../testing/fixtures/snake-5-rows-6-repeats.svg",
+        ),
+        "utf8",
+      );
+
+      expect(svg).toBe(golden);
+    });
+
+    it("matches the committed golden fixture for 5 rows chain with 6 repeats", async () => {
+      const svg = service.generate({
+        repeatCount: 6,
+        rows: 5,
+        type: "chain",
+      });
+      const golden = await readFile(
+        path.join(
+          import.meta.dirname,
+          "../../../testing/fixtures/chain-5-rows-6-repeats.svg",
+        ),
+        "utf8",
+      );
+
+      expect(svg).toBe(golden);
+    });
+
+    it("throws below the structural minimum rows for snake", () => {
+      expect(() =>
+        service.generate({ repeatCount: 1, rows: 3, type: "snake" }),
+      ).toThrow(InvalidRowsError);
+    });
+
+    it("throws below the structural minimum rows for chain", () => {
+      expect(() =>
+        service.generate({ repeatCount: 1, rows: 3, type: "chain" }),
+      ).toThrow(InvalidRowsError);
+    });
+
+    it("throws when a modifier isn't compatible with the requested type", () => {
+      expect(() =>
+        service.generate({
+          modifier: { name: "spin" },
+          repeatCount: 1,
+          rows: 5,
+          type: "snake",
+        }),
+      ).toThrow(/not compatible/i);
     });
   });
 });

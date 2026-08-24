@@ -12,6 +12,8 @@ export const CANVAS_HEIGHT = 60;
  */
 export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
   boxes: ["spin", "spin-flip"],
+  chain: [],
+  snake: [],
 };
 
 /** Highest `rows` or `repeatCount` value the CLI accepts for any type. */
@@ -59,13 +61,20 @@ export const SUPPORTED_MODIFIER_NAMES: readonly string[] = [
 
 export const SUPPORTED_TYPES: readonly string[] = [
   "boxes",
+  "chain",
+  "snake",
 ] satisfies readonly MeanderType[];
 
 /**
  * The smallest `rows` value that still produces a valid, non-degenerate
  * motif for each type. `boxes`'s spiral traces `rows - 1` grid levels
  * inward; below 3 rows the first move collapses to a zero-length segment.
+ * `chain` and `snake` share a zigzag that needs a genuine middle row
+ * distinct from its two neighbors; below 4 rows the sequence degenerates
+ * (no reference file exists below 4 rows for either type).
  */
 export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderType, number> = {
   boxes: 3,
+  chain: 4,
+  snake: 4,
 };

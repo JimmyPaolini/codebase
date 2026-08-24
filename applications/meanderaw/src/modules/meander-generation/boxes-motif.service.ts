@@ -6,9 +6,10 @@ import { MotifTransformsService } from "./motif-transforms.service";
 
 import type {
   BoxesSpiralBounds,
-  BoxesUnit,
   GridGeometry,
   Modifier,
+  MotifService,
+  MotifUnit,
   SpiralLevelPoint,
 } from "./meander-generation.types";
 
@@ -18,7 +19,7 @@ import type {
  * with `rows` rather than staying fixed.
  */
 @Injectable()
-export class BoxesMotifService {
+export class BoxesMotifService implements MotifService {
   // 🏗 Dependency Injection
 
   constructor(
@@ -142,12 +143,16 @@ export class BoxesMotifService {
       center,
       quarterTurns,
     );
+    const pointsByModifierName: Record<
+      Modifier["name"],
+      () => readonly SpiralLevelPoint[]
+    > = {
+      spin: () => rotated,
+      "spin-flip": () =>
+        this.motifTransformsService.mirror(rotated, center, "horizontal"),
+    };
 
-    if (modifier.name === "spin") {
-      return rotated;
-    }
-
-    return this.motifTransformsService.mirror(rotated, center, "horizontal");
+    return pointsByModifierName[modifier.name]();
   }
 
   // 🌎 Public Methods
@@ -167,7 +172,7 @@ export class BoxesMotifService {
   }
 
   /** Draws one repeat unit's spiral as an SVG path attribute value, applying the unit's modifier (if any) first. */
-  path(geometry: GridGeometry, unit: BoxesUnit): string {
+  path(geometry: GridGeometry, unit: MotifUnit): string {
     const { modifier, rows, unitIndex } = unit;
     const points = this.unitPoints(rows, unitIndex, modifier);
     const xOffset = unitIndex * this.unitWidth(geometry, rows);
