@@ -214,15 +214,16 @@ export class ChangesService {
    * lines, bytes — and every one of them is joined against its baseline, not
    * only the ones denominated in bytes.
    *
-   * The row is labelled with whatever the limit was written under, falling back
-   * to the target's own name. The metric's name stays the join key either way,
-   * so relabelling a limit never reads as a removal plus an addition.
+   * The row is labelled with whatever the limit was written under, falling
+   * back to the metric's own dotted name rather than the target's — a target
+   * groups many metrics under one name, so labelling every one of them with
+   * that shared name would make them indistinguishable from each other.
    */
   private readMetrics(target: ReportTarget): ReportMetric[] {
     return target.metrics.map((metric) => ({
       breach: this.readBreach(metric.limits),
       empty: target.empty,
-      label: this.readLabel(metric.limits) ?? target.name,
+      label: this.readLabel(metric.limits) ?? metric.name,
       limit: this.readGoverningLimit(metric.limits),
       name: metric.name,
       unit: metric.unit,

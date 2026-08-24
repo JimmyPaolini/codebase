@@ -40,12 +40,15 @@ export function formatValue(value: number, unit: MetricUnit): string {
  *
  * A row that neither changed nor breaches anything has nothing to tell a
  * reviewer, so it never reaches the table. A brand-new metric — one with no
- * baseline at all — always counts as changed, since "appeared" is a change.
+ * baseline at all — counts as changed only when it measured something or its
+ * target's globs matched nothing, because a zero-valued metric appearing for
+ * the first time (every project carries a metric for every language
+ * codometer knows, most of them zero) tells a reviewer nothing "appeared" —
+ * least of all on the first run this report ever makes against a project,
+ * where every metric is technically without a baseline at once.
  */
 export function hasChanged(row: MetricRow): boolean {
-  return (
-    row.breach !== undefined ||
-    row.baseValue === undefined ||
-    row.value !== row.baseValue
-  );
+  if (row.breach !== undefined) return true;
+  if (row.baseValue === undefined) return row.value !== 0 || row.empty;
+  return row.value !== row.baseValue;
 }

@@ -245,7 +245,7 @@ describe(ChangesService, () => {
     expect(rows[0]?.label).toBe("New label");
   });
 
-  it("labels a row with its target when the limit wrote no label", () => {
+  it("labels a row with its own metric name when the limit wrote no label", () => {
     const workingDirectory = writeWorkspace({
       "packages/logger/codometer-report.json": buildReport([
         buildMetricTarget({ name: "Library bundle", value: 50 }),
@@ -257,7 +257,7 @@ describe(ChangesService, () => {
       workingDirectory,
     }).rows;
 
-    expect(row?.label).toBe("Library bundle");
+    expect(row?.label).toBe("Library bundle.size");
     expect(row?.name).toBe("Library bundle.size");
   });
 
@@ -276,7 +276,7 @@ describe(ChangesService, () => {
       baselineDirectory: ".baseline",
       workingDirectory,
     }).rows;
-    const retired = rows.find((row) => row.label === "Retired");
+    const retired = rows.find((row) => row.label === "Retired.size");
 
     expect(retired?.removed).toBe(true);
     expect(retired?.value).toBe(0);
@@ -459,7 +459,7 @@ describe(ChangesService, () => {
 
       const row = service
         .collect({ baselineDirectory: ".baseline", workingDirectory })
-        .rows.find((candidate) => candidate.label === "Library bundle");
+        .rows.find((candidate) => candidate.label === "Library bundle.size");
 
       expect(row?.measured).toBe(false);
       expect(row?.removed).toBe(removed);

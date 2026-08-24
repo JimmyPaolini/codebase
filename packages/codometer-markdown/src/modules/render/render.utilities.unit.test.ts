@@ -97,6 +97,12 @@ describe("codometer markdown render utilities", () => {
       );
     });
 
+    it("is false for a brand-new metric that measured nothing", () => {
+      expect(hasChanged(buildRow({ baseValue: undefined, value: 0 }))).toBe(
+        false,
+      );
+    });
+
     it("is true for a metric breaching its limit even with no change", () => {
       expect(
         hasChanged(buildRow({ baseValue: 1000, breach: "fail", value: 1000 })),
