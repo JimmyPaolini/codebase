@@ -144,6 +144,26 @@ describe(MotifTransformsService, () => {
       expect(service.dotLevels(4, "bounce")).toStrictEqual([3, 1]);
       expect(service.dotLevels(4, "up")).toStrictEqual([3, 1]);
     });
+
+    it("trims to one level below rows - 1 at odd rows, since rows - 1 is even and would swallow the dot into a run", () => {
+      expect(service.dotLevels(5, "up")).toStrictEqual([3, 1]);
+      expect(service.dotLevels(5, "bounce")).toStrictEqual([3, 1]);
+      expect(service.dotLevels(7, "up")).toStrictEqual([5, 3, 1]);
+      expect(service.dotLevels(7, "bounce")).toStrictEqual([5, 3, 1, 3]);
+    });
+
+    it("returns every level odd, regardless of rows's parity, since an even level would sit on a run rather than a gap", () => {
+      const rowsValues = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+      for (const rows of rowsValues) {
+        for (const level of service.dotLevels(rows, "bounce")) {
+          expect(level % 2).toBe(1);
+        }
+        for (const level of service.dotLevels(rows, "up")) {
+          expect(level % 2).toBe(1);
+        }
+      }
+    });
   });
 
   describe("closeEdge", () => {

@@ -103,8 +103,19 @@ export class BarsMotifService implements MotifService {
    * unit-length runs, alternating column `0`/`1`: a run below the column's
    * own dot level is drawn only if it's a column-`0` run, a run above only
    * if it's a column-`1` run (a run's level range never straddles the dot
-   * level itself, since the dot always sits on an odd grid level and every
-   * run's midpoint is a half-integer). The dot itself is a zero-length path
+   * level itself, since every run's midpoint is a half-integer and the dot
+   * level is always a whole one). This draw-or-skip rule is also why
+   * {@link MotifTransformsService.dotLevels} must only ever hand back odd
+   * levels: at an odd level, BOTH the run immediately below it (ending at
+   * that level) and the run immediately above it (starting at that level)
+   * land on the "wrong" side of their own column check and get skipped,
+   * leaving a real gap for the dot to sit in. At an even level, one of
+   * those two adjacent runs lands on the "right" side and IS drawn,
+   * silently swallowing the dot into what looks like one continuous run —
+   * exactly what happened at every odd `rows` before `dotLevels` was fixed
+   * to always emit odd levels regardless of `rows`'s parity (odd `rows`
+   * makes `rows - 1` even, so a naive "count down from `rows - 1`" sequence
+   * lands on even levels there). The dot itself is a zero-length path
    * segment at the column's own x and the dot level's y, which
    * `stroke-linecap="square"` renders as a small square mark. Verified by
    * decoding `6 rows bars dot bounce.svg`/`8 rows bars dot bounce.svg` and
