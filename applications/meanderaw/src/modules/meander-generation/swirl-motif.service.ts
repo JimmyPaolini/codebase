@@ -2,6 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import { GridGeometryService } from "./grid-geometry.service";
 import { MotifTransformsService } from "./motif-transforms.service";
+import { SnakeMotifService } from "./snake-motif.service";
 
 import type {
   GridGeometry,
@@ -33,6 +34,8 @@ export class SwirlMotifService implements MotifService {
     private readonly gridGeometryService: GridGeometryService,
     @Inject(MotifTransformsService)
     private readonly motifTransformsService: MotifTransformsService,
+    @Inject(SnakeMotifService)
+    private readonly snakeMotifService: SnakeMotifService,
   ) {}
 
   // 🔐 Private Fields
@@ -51,7 +54,7 @@ export class SwirlMotifService implements MotifService {
     return [...firstArm, ...secondArm];
   }
 
-  /** The motif's own bounding-box center, both the 180° rotation joining its two arms and the `flip` modifier's mirror pivot around this (indirectly, via {@link pitchLevels}). */
+  /** The motif's own bounding-box center that the 180° rotation joining its two arms pivots around. Unrelated to `flip`'s own mirror pivot, which uses {@link pitchLevels} directly instead. */
   private centerPoint(rows: number): SpiralLevelPoint {
     return [rows - 2, rows / 2];
   }
@@ -103,50 +106,17 @@ export class SwirlMotifService implements MotifService {
     return 2 * rows - 3;
   }
 
-  /** Turns a point sequence into SVG path data, choosing `H`/`V` per segment by which coordinate actually changed. */
-  private pointsToPathData(
-    points: readonly SpiralLevelPoint[],
-    toXCoordinate: (level: number) => string,
-    toYCoordinate: (level: number) => string,
-  ): string {
-    const { pathData } = points.reduce<{
-      pathData: string;
-      previousPoint: SpiralLevelPoint | undefined;
-    }>(
-      (accumulator, point) => {
-        const [xLevel, yLevel] = point;
-
-        if (!accumulator.previousPoint) {
-          return {
-            pathData: `M${toXCoordinate(xLevel)} ${toYCoordinate(yLevel)}`,
-            previousPoint: point,
-          };
-        }
-
-        const [previousXLevel] = accumulator.previousPoint;
-        const segment =
-          xLevel === previousXLevel
-            ? `V${toYCoordinate(yLevel)}`
-            : `H${toXCoordinate(xLevel)}`;
-
-        return {
-          pathData: accumulator.pathData + segment,
-          previousPoint: point,
-        };
-      },
-      { pathData: "", previousPoint: undefined },
-    );
-
-    return pathData;
-  }
-
   // 🌎 Public Methods
 
   /**
    * Draws one unit's own top/bottom border segment, spanning just that
    * unit's width. Unlike `snake`/`chain`/`whirl`, `swirl`'s reference
    * geometry draws both the top and bottom segment in the SAME
-   * left-to-right direction rather than reversing the bottom one.
+   * left-to-right direction rather than reversing the bottom one: rows 5,
+   * 6, 7, and 8 (and every `flip` reference file) use that same direction,
+   * while the 4-rows reference alone reverses its bottom segment — a plain
+   * stroked line with `stroke-linecap="square"` renders identically either
+   * way, so the majority (and every `flip` file) is what this follows.
    */
   borderSegment(geometry: GridGeometry, unit: UnitBorderOptions): string {
     const { modifier, rows, xOffset } = unit;
@@ -182,7 +152,11 @@ export class SwirlMotifService implements MotifService {
         : [this.basePoints(rows)];
     const pathData = subpaths
       .map((points) =>
-        this.pointsToPathData(points, toXCoordinate, toYCoordinate),
+        this.snakeMotifService.pointsToPathData(
+          points,
+          toXCoordinate,
+          toYCoordinate,
+        ),
       )
       .join("");
 
