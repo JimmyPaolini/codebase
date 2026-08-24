@@ -21,6 +21,7 @@ export type {
   CodependixJsonOutput,
   CodependixMarkdownOutput,
   CodependixProjectConfiguration,
+  CodependixWorkspaceConfiguration,
   LoadConfigurationArguments,
   ResolvedCodependixConfiguration,
   ResolvedCodependixGraphOutput,

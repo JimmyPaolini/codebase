@@ -376,4 +376,64 @@ describe(ConfigurationService, () => {
       ).toBe(true);
     });
   });
+
+  describe("resolveForWorkspace", () => {
+    it("resolves to none when the configuration names no workspace section", () => {
+      const configuration = service.resolveConfiguration({});
+
+      expect(service.resolveForWorkspace(configuration)).toStrictEqual({
+        json: undefined,
+        markdown: undefined,
+        target: "none",
+      });
+    });
+
+    it("reads the workspace section's nx export configuration", () => {
+      const configuration = service.resolveConfiguration({
+        workspace: {
+          nx: {
+            json: { path: "codependix-workspace-graph.json" },
+            markdown: { anchor: "workspace" },
+            target: "both",
+          },
+        },
+      });
+
+      expect(service.resolveForWorkspace(configuration)).toStrictEqual({
+        json: { path: "codependix-workspace-graph.json" },
+        markdown: { anchor: "workspace", path: "README.md" },
+        target: "both",
+      });
+    });
+
+    it("is unaffected by include and exclude globs", () => {
+      const configuration = service.resolveConfiguration({
+        exclude: ["**"],
+        include: [],
+        workspace: {
+          nx: { markdown: { anchor: "workspace" }, target: "markdown" },
+        },
+      });
+
+      expect(service.resolveForWorkspace(configuration).target).toBe(
+        "markdown",
+      );
+    });
+
+    it("resolves an explicit workspace configuration built without loading a file", async () => {
+      const configurationPath = await writeConfiguration({
+        workspace: { nx: { json: { path: "graph.json" }, target: "json" } },
+      });
+
+      const configuration = await service.loadConfiguration({
+        configurationPath,
+      });
+
+      expect(service.resolveForWorkspace(configuration)).toStrictEqual({
+        json: { path: "graph.json" },
+        markdown: undefined,
+        target: "json",
+      });
+    });
+  });
 });

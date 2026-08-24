@@ -1,5 +1,5 @@
 import { ConfigurationModule } from "@codependix/configuration";
-import { NeighborhoodModule } from "@codependix/nx";
+import { NeighborhoodModule, WorkspaceGraphModule } from "@codependix/nx";
 import { Module } from "@nestjs/common";
 
 import { AnchorsModule } from "../anchors/anchors.module";
@@ -11,7 +11,12 @@ import { CodependixService } from "./codependix.service";
 @Module({
   controllers: [],
   exports: [CodependixCommand, CodependixService],
-  imports: [AnchorsModule, ConfigurationModule, NeighborhoodModule],
+  imports: [
+    AnchorsModule,
+    ConfigurationModule,
+    NeighborhoodModule,
+    WorkspaceGraphModule,
+  ],
   providers: [CodependixCommand, CodependixService],
 })
 export class CodependixModule {}

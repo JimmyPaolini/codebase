@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { ConfigurationService } from "@codependix/configuration";
-import { NeighborhoodService } from "@codependix/nx";
+import { NeighborhoodService, WorkspaceGraphService } from "@codependix/nx";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -28,11 +28,13 @@ describe(CodependixService, () => {
   let service: CodependixService;
   let configurationService: ConfigurationService;
   let neighborhoodService: NeighborhoodService;
+  let workspaceGraphService: WorkspaceGraphService;
   let projectRoot: string;
 
   beforeAll(async () => {
     configurationService = createMock<ConfigurationService>();
     neighborhoodService = createMock<NeighborhoodService>();
+    workspaceGraphService = createMock<WorkspaceGraphService>();
 
     const module = await Test.createTestingModule({
       providers: [
@@ -44,6 +46,7 @@ describe(CodependixService, () => {
         },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         { provide: NeighborhoodService, useValue: neighborhoodService },
+        { provide: WorkspaceGraphService, useValue: workspaceGraphService },
       ],
     }).compile();
 
@@ -58,6 +61,12 @@ describe(CodependixService, () => {
       exclude: [],
       include: ["**"],
       projects: {},
+      workspace: {},
+    });
+    vi.mocked(configurationService.resolveForWorkspace).mockReturnValue({
+      json: undefined,
+      markdown: undefined,
+      target: "none",
     });
     vi.mocked(neighborhoodService.readProjectGraph).mockResolvedValue({
       dependencies: {},
@@ -70,6 +79,13 @@ describe(CodependixService, () => {
       new Map([["codependix-nx", NEIGHBORHOOD]]),
     );
     vi.mocked(neighborhoodService.renderMermaid).mockReturnValue(
+      "```mermaid\ngraph LR\n```",
+    );
+    vi.mocked(workspaceGraphService.buildWorkspaceGraph).mockReturnValue({
+      edges: [],
+      projectNames: [],
+    });
+    vi.mocked(workspaceGraphService.renderMermaid).mockReturnValue(
       "```mermaid\ngraph LR\n```",
     );
   });
@@ -266,5 +282,155 @@ describe(CodependixService, () => {
     await expect(
       readFile(path.join(projectRoot, "dependency-graph.md"), "utf8"),
     ).resolves.toContain("mermaid");
+  });
+
+  describe("workspace graph", () => {
+    beforeEach(() => {
+      vi.mocked(configurationService.resolveForProject).mockReturnValue({
+        json: undefined,
+        markdown: undefined,
+        target: "none",
+      });
+      vi.mocked(workspaceGraphService.buildWorkspaceGraph).mockReturnValue({
+        edges: [{ implicit: false, source: "lexico", target: "logger" }],
+        projectNames: ["lexico", "logger"],
+      });
+    });
+
+    it("leaves the workspace graph out of the results when its target is none", async () => {
+      const results = await service.runNxGraphs({ write: true }, projectRoot);
+
+      expect(results).toStrictEqual([]);
+    });
+
+    it("writes the workspace graph's JSON export at the workspace root", async () => {
+      vi.mocked(configurationService.resolveForWorkspace).mockReturnValue({
+        json: { path: "codependix-workspace-graph.json" },
+        markdown: undefined,
+        target: "json",
+      });
+
+      const results = await service.runNxGraphs({ write: true }, projectRoot);
+
+      expect(results).toStrictEqual([
+        { isCurrent: true, projectName: "workspace", stalePaths: [] },
+      ]);
+
+      const written = JSON.parse(
+        await readFile(
+          path.join(projectRoot, "codependix-workspace-graph.json"),
+          "utf8",
+        ),
+      ) as unknown;
+
+      expect(written).toStrictEqual({
+        edges: [{ implicit: false, source: "lexico", target: "logger" }],
+        projectNames: ["lexico", "logger"],
+      });
+    });
+
+    it("reports a missing workspace JSON export as stale in check mode", async () => {
+      vi.mocked(configurationService.resolveForWorkspace).mockReturnValue({
+        json: { path: "codependix-workspace-graph.json" },
+        markdown: undefined,
+        target: "json",
+      });
+
+      const results = await service.runNxGraphs({ check: true }, projectRoot);
+
+      expect(results).toStrictEqual([
+        {
+          isCurrent: false,
+          projectName: "workspace",
+          stalePaths: ["codependix-workspace-graph.json"],
+        },
+      ]);
+    });
+
+    it("splices the workspace diagram into the root README's anchor", async () => {
+      const readmePath = path.join(projectRoot, "README.md");
+
+      await writeFile(
+        readmePath,
+        [
+          "# codebase",
+          '<!-- codependix:start name="workspace" -->',
+          "stale",
+          '<!-- codependix:end name="workspace" -->',
+        ].join("\n"),
+        "utf8",
+      );
+      vi.mocked(configurationService.resolveForWorkspace).mockReturnValue({
+        json: undefined,
+        markdown: { anchor: "workspace", path: "README.md" },
+        target: "markdown",
+      });
+      vi.mocked(workspaceGraphService.renderMermaid).mockReturnValue(
+        "```mermaid\ngraph LR\n  lexico --> logger\n```",
+      );
+
+      const results = await service.runNxGraphs({ write: true }, projectRoot);
+
+      expect(results[0]).toStrictEqual({
+        isCurrent: true,
+        projectName: "workspace",
+        stalePaths: [],
+      });
+
+      const written = await readFile(readmePath, "utf8");
+
+      expect(written).toContain("lexico --> logger");
+      expect(written).not.toContain("stale");
+    });
+
+    it("reports a stale workspace anchor as stale in check mode without writing it", async () => {
+      const readmePath = path.join(projectRoot, "README.md");
+
+      await writeFile(
+        readmePath,
+        [
+          '<!-- codependix:start name="workspace" -->',
+          "stale",
+          '<!-- codependix:end name="workspace" -->',
+        ].join("\n"),
+        "utf8",
+      );
+      vi.mocked(configurationService.resolveForWorkspace).mockReturnValue({
+        json: undefined,
+        markdown: { anchor: "workspace", path: "README.md" },
+        target: "markdown",
+      });
+
+      const results = await service.runNxGraphs({ check: true }, projectRoot);
+
+      expect(results).toStrictEqual([
+        {
+          isCurrent: false,
+          projectName: "workspace",
+          stalePaths: ["README.md"],
+        },
+      ]);
+      await expect(readFile(readmePath, "utf8")).resolves.toContain("stale");
+    });
+
+    it("writes both a JSON and a markdown export for a both target", async () => {
+      vi.mocked(configurationService.resolveForWorkspace).mockReturnValue({
+        json: { path: "codependix-workspace-graph.json" },
+        markdown: { anchor: undefined, path: "workspace-graph.md" },
+        target: "both",
+      });
+
+      await service.runNxGraphs({ write: true }, projectRoot);
+
+      await expect(
+        readFile(
+          path.join(projectRoot, "codependix-workspace-graph.json"),
+          "utf8",
+        ),
+      ).resolves.toContain("lexico");
+      await expect(
+        readFile(path.join(projectRoot, "workspace-graph.md"), "utf8"),
+      ).resolves.toContain("mermaid");
+    });
   });
 });

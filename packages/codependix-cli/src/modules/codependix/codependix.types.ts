@@ -1,6 +1,6 @@
 // 🏷️ Types
 
-import type { Neighborhood } from "@codependix/nx";
+import type { Neighborhood, WorkspaceGraph } from "@codependix/nx";
 
 /** Command-line options `codependix` accepts. */
 export interface CodependixCommandOptions {
@@ -28,6 +28,16 @@ export interface NxNeighborhoodExport {
   edges: Neighborhood["edges"];
   projectName: string;
 }
+
+/**
+ * The JSON shape the whole-workspace Nx Workspace Graph export is written as.
+ *
+ * Identical in shape to `WorkspaceGraph` itself — no extra field is added the
+ * way `NxNeighborhoodExport` adds none beyond `Neighborhood` either — kept as
+ * its own named type so the export's JSON shape can evolve independently of
+ * `codependix-nx`'s internal `WorkspaceGraph` representation.
+ */
+export type NxWorkspaceGraphExport = WorkspaceGraph;
 
 /** One project's outcome after its configured destinations were resolved. */
 export interface ProjectRunResult {
