@@ -42,8 +42,8 @@ import type { GenerateBatchCommandOptions } from "./generate-batch.types";
  * (`ALTERNATED_SWEEP_PERIODS`, `DOT_SWEEP_SHAPES`) rather than their full
  * range. `repeatCount` is fixed at `BASE_REPEAT_COUNT` (6) for every
  * combination, except the `spin`/`spin-flip` family, which is rounded up to
- * the nearest multiple of their required `SPIN_CYCLE_LENGTH` (8) so the
- * generation service doesn't reject a cut-off rotation. This produces
+ * the nearest multiple of their required `SPIN_CYCLE_LENGTH` (4) — giving 8
+ * — so the generation service doesn't reject a cut-off rotation. This produces
  * roughly a hundred files rather than the many hundreds a full
  * rows-by-repeat-count-by-modifier-parameter cross product would.
  */

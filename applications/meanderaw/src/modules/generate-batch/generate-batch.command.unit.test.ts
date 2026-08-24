@@ -4,6 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
+import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { OutputFilenameService } from "../meander-generation/output-filename.service";
 
@@ -200,6 +201,35 @@ describe(GenerateBatchCommand, () => {
       await expect(
         collidingCommand.run([], { outputDirectory: "output" }),
       ).rejects.toThrow(/colliding output filenames/);
+    });
+  });
+
+  describe("real generation integration", () => {
+    it("generates every enumerated combination through the real generation service without throwing", async () => {
+      const module = await Test.createTestingModule({
+        imports: [MeanderGenerationModule],
+        providers: [
+          GenerateBatchCommand,
+          {
+            provide: LoggerService,
+            useValue: createMock<LoggerService>(),
+          },
+        ],
+      }).compile();
+      const realCommand = await module.resolve(GenerateBatchCommand);
+
+      mockMkdir.mockClear();
+      mockWriteFile.mockClear();
+
+      await expect(
+        realCommand.run([], { outputDirectory: "output" }),
+      ).resolves.toBeUndefined();
+
+      // 🎯 every one of the 114 enumerated combinations reached the real
+      // `MeanderGenerationService.generate` and its real validators without
+      // throwing — this is the regression guard the mocked tests above
+      // can't provide, since they replace the generation service entirely.
+      expect(mockWriteFile).toHaveBeenCalledTimes(114);
     });
   });
 });
