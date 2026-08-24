@@ -41,29 +41,6 @@ src/
 testing/                            # Shared test utilities
 ```
 
-### Module Graph
-
-The modules this project defines and the imports between them, published by `nx run synchronization:nestjs-module-graphs:write`.
-
-<!-- nestjs-module-graph-start -->
-
-```mermaid
-flowchart LR
-  subgraph group0["codometer-discovery"]
-    DiscoveryModule
-    TargetsModule
-  end
-  subgraph group1["logger"]
-    LoggerModule
-  end
-  DiscoveryModule --> LoggerModule
-  TargetsModule --> LoggerModule
-```
-
-_Loaded at runtime rather than imported, and so absent from this container: codometer-configuration._
-
-<!-- nestjs-module-graph-end -->
-
 ## Development
 
 ### Adding Business Logic

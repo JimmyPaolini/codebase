@@ -6,8 +6,6 @@ import { LoggerService } from "@codebase/logger";
 import { ConformetryGeneratorsCommand } from "../conformetry-generators/conformetry-generators.command";
 import { ConventionalConfigCommand } from "../conventional-config/conventional-config.command";
 import { DevcontainerConfigurationCommand } from "../devcontainer-configuration/devcontainer-configuration.command";
-import { NestjsModuleGraphsCommand } from "../nestjs-module-graphs/nestjs-module-graphs.command";
-import { NxProjectGraphsCommand } from "../nx-project-graphs/nx-project-graphs.command";
 import { PullRequestLabelsCommand } from "../pull-request-labels/pull-request-labels.command";
 import { PullRequestTemplateCommand } from "../pull-request-template/pull-request-template.command";
 import { SkillExclusionsCommand } from "../skill-exclusions/skill-exclusions.command";
@@ -29,6 +27,12 @@ import type {
  * pattern. It has no `--kinds` or other selection flag: unlike the callers
  * that name specific targets, running "all of them, always" needs no
  * per-command declaration to select against.
+ *
+ * `nestjs-module-graphs` and `nx-project-graphs` are deliberately absent from
+ * this aggregate: `packages/codependix-nx` and `packages/codependix-nestjs`
+ * now produce the same graphs through their own anchor blocks, per issue
+ * #296. Both commands are still registered as their own Nx target and can
+ * still be run directly — only their place in this aggregate was retired.
  */
 @Command({
   description: "Run every synchronization command",
@@ -43,8 +47,6 @@ export class SynchronizationCommand extends CommandRunner {
     private readonly conventionalConfigCommand: ConventionalConfigCommand,
     private readonly devcontainerConfigurationCommand: DevcontainerConfigurationCommand,
     private readonly logger: LoggerService,
-    private readonly nestjsModuleGraphsCommand: NestjsModuleGraphsCommand,
-    private readonly nxProjectGraphsCommand: NxProjectGraphsCommand,
     private readonly pullRequestLabelsCommand: PullRequestLabelsCommand,
     private readonly pullRequestTemplateCommand: PullRequestTemplateCommand,
     private readonly skillExclusionsCommand: SkillExclusionsCommand,
@@ -72,8 +74,6 @@ export class SynchronizationCommand extends CommandRunner {
       this.conformetryGeneratorsCommand,
       this.conventionalConfigCommand,
       this.devcontainerConfigurationCommand,
-      this.nestjsModuleGraphsCommand,
-      this.nxProjectGraphsCommand,
       this.pullRequestLabelsCommand,
       this.pullRequestTemplateCommand,
       this.skillExclusionsCommand,

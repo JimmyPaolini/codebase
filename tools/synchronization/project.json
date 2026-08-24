@@ -111,7 +111,7 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Publishes each NestJS project's module graph into its own markdown files. A report of the code rather than of configuration a pull request touched, so a branch being behind it is nobody's mistake: only `write` on the default branch's release publishes it, and no pull request gate names `check`.",
+      "description": "Deprecated — superseded by `codependix-nestjs` (see issue #296). No longer invoked by `synchronize`, pull request CI, or the release job; retained only so its own tests keep running. Publishing this manually would reintroduce the duplicate module-graph sections codependix's own anchors already cover.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.ts",
@@ -141,7 +141,7 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Reconciles each project's embedded Nx project graph against its own `project.json`. `check` runs on a pull request; `write` runs on the default branch's release. A commit staging only a manifest changes the Nx project graph without touching a staged path this project's own inputs glob, so the commit path can miss drift here that the pull request still catches by resolving `affected` against the merge base.",
+      "description": "Deprecated — superseded by `codependix-nx` (see issue #296). No longer invoked by `synchronize`, pull request CI, or the release job; retained only so its own tests keep running. Publishing this manually would reintroduce the duplicate project-graph sections codependix's own anchors already cover.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.ts",

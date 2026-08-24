@@ -71,13 +71,14 @@ jobs:
       # rewrites uncommitted, which is the same thing the changelog does.
       #
       # Ordering is load-bearing, and the rule is that a writer which counts
-      # files another writer produces has to go second. Callidescope and the
-      # module-graph synchronization both splice blocks into project README.md
-      # and AGENTS.md files; codometer counts the lines of those same files, so
-      # codometer goes last — measuring first would publish figures one release
-      # behind the documents they describe. The two splicers may run in either
-      # order relative to each other: each writes between its own markers and
-      # leaves the rest of the file as it found it.
+      # files another writer produces has to go second. Callidescope, the
+      # module-graph synchronization, and codependix all splice blocks into
+      # project README.md and AGENTS.md files; codometer counts the lines of
+      # those same files, so codometer goes last — measuring first would
+      # publish figures one release behind the documents they describe. The
+      # three splicers may run in any order relative to each other: each
+      # writes between its own markers and leaves the rest of the file as it
+      # found it.
       #
       # `--write` exits 1 when it could not measure something it was asked to
       # measure, so a transient failure fails this job rather than committing a
@@ -92,18 +93,27 @@ jobs:
       - name: 🔭 Trace Call Stacks
         run: pnpm exec nx run codebase:callidescope:write
 
+      # `codependix --write` covers all three graph types (Nx, NestJS, file
+      # imports) in one run — no per-graph-type subcommand, see
+      # `codependix.config.ts`. Same split as `callidescope` above: `check`
+      # (verifying every configured export is current) is what a pull request
+      # would run, but nothing does, since `codependix --check` is deliberately
+      # absent from `lint-codebase` and every pull-request-triggered workflow —
+      # the exports move with the workspace they describe, so gating a branch
+      # on their staleness would fail it for something `main` did.
+      - name: 🕸️ Export Dependency Graphs
+        run: pnpm exec nx run codebase:codependix:write
+
       # Every synchronization command is its own Nx target, run directly the
       # way `callidescope` and `codometer` are above — no aggregate command
-      # loops over them. This rewrites every derivation as well as publishing
-      # the module graphs; on main the derivations are already in sync — the
+      # loops over them. On main the derivations are already in sync — the
       # pull request gate is what proves it — so this writes them back
-      # unchanged and only the module graphs move.
-      - name: 🕸️ Publish Module Graphs
+      # unchanged.
+      - name: 🔗 Publish Derivations
         run: |
           pnpm exec nx run-many \
             --target=conformetry-generators --target=conventional-config \
-            --target=devcontainer-configuration --target=nestjs-module-graphs \
-            --target=nx-project-graphs --target=pull-request-template \
+            --target=devcontainer-configuration --target=pull-request-template \
             --target=skill-exclusions --configuration=write
 
       # Two codometer commands, in this order, because the second measures the

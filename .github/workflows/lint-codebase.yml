@@ -62,7 +62,7 @@ jobs:
           pnpm exec nx affected --target=lint-codebase \
             --target=callidescope \
             --target=conformetry-generators --target=conventional-config \
-            --target=devcontainer-configuration --target=nx-project-graphs \
+            --target=devcontainer-configuration \
             --target=pull-request-template --target=skill-exclusions \
             --configuration=check --parallel=4
 

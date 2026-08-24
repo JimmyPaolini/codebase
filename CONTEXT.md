@@ -97,6 +97,37 @@ exceeds a limit. Distinct from staleness below: measured is about which run
 produced a number, staleness is about whether a committed one still matches.
 _Avoid_: Fresh, rebuilt, stale
 
+## Codependix
+
+**Graph**:
+A dependency structure for one level of the codebase — projects, NestJS
+modules, or files — built by exactly one codependix package (`codependix-nx`,
+`codependix-nestjs`, `codependix-imports` respectively).
+_Avoid_: Diagram, tree, map
+
+**Neighborhood**:
+A project's own graph, scoped to its immediate one-hop dependencies and
+dependents. The default granularity codependix exports per project.
+_Avoid_: Local graph, one-hop graph, subgraph
+
+**Workspace Graph**:
+The whole-repository graph across every project, exported once at the
+workspace root rather than per project.
+_Avoid_: Full graph, global graph, root graph
+
+**Export**:
+A graph rendered to JSON or Markdown. An export is measured and reported —
+codependix has no gating concept, so an export is never a breach or a
+threshold.
+_Avoid_: Report, output, artifact
+
+**Anchor**:
+The comment marker codependix writes an export between in a Markdown file,
+read and rewritten in place on `--write`. Independent of conformetry's
+template mechanism — codependix owns its own anchor syntax and does not
+depend on any conformetry package.
+_Avoid_: Marker block, placeholder, template
+
 ## Neighboring gates
 
 Each quality tool owns one gating word, and they are not interchangeable.
@@ -108,3 +139,6 @@ Never used for codometer's limits.
 **Depth**:
 Callidescope's call-stack length, and the thing it flags as too deep. Never used
 for nesting elsewhere.
+
+**Codependix has no gating word.** Its export is always descriptive — never a
+breach, a threshold, or a depth.
