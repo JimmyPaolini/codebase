@@ -579,13 +579,13 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Measure | Value |
 | --- | --- |
-| Callables | 325 |
-| Files | 104 |
-| Calls traced | 545 |
-| Call stacks | 26 |
+| Callables | 334 |
+| Files | 109 |
+| Calls traced | 562 |
+| Call stacks | 33 |
 | Deepest stack | 13 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 11 |
+| Unfollowable calls | 12 |
 
 ### Call stacks
 
@@ -620,30 +620,54 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
                            ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-**2. `OutputMarkdownService.renderBadges`** — depth 7 · orphan-root
+**2. `OutputMarkdownService.renderBadges`** — depth 8 · orphan-root
 
 ```text
-🚀 OutputMarkdownService.renderBadges(args: RenderBadgesArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:250]
+🚀 OutputMarkdownService.renderBadges(args: RenderBadgesArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:258]
    ↳ Render the badge block for a destination, description and all.
-  └─> OutputMarkdownService.renderDocument(args: RenderDocumentArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:284]
+  └─> OutputMarkdownService.renderDocument(args: RenderDocumentArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:292]
      ↳ Render the badges as a document of their own.
     └─> OutputMarkdownService.buildBadgeGroups(args: RenderDocumentArguments): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:102]
        ↳ Assemble the badge groups, in the order they are rendered.
-      └─> buildTargetsGroup(targets: readonly TargetSize[]): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:305]
+      └─> buildTargetsGroup(targets: readonly TargetSize[]): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:307]
          ↳ Renders the Measured Targets badge group, one badge per measured target.
-        └─> map(…)(target: TargetSize): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:316]
-          └─> formatTargetSize(target: TargetSize): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:419]
+        └─> map(…)(target: TargetSize): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:318]
+          └─> formatTargetSize(target: TargetSize): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:409]
              ↳ Formats one target's measured size, naming the compression it was measured under unless there was none.
-            └─> formatBytes(bytes: number): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:403]
+            └─> formatBytes(bytes: number): string [packages/codometer-cli/src/modules/output-markdown/output-markdown.utilities.ts:397]
                ↳ Formats a byte count in decimal units, switching to megabytes once kilobytes read awkwardly.
+              └─> formatBytes(bytes: number): string [packages/codometer-markdown/src/modules/render/render.utilities.ts:10]
+                 ↳ Formats a byte count, switching to megabytes once kilobytes get unwieldy.
 ```
 
-**3. `OutputMarkdownService.syncAnchoredBlock`** — depth ≥ 6 · orphan-root
+**3. `ChangesCommand.run`** — depth ≥ 7 · decorated-method
 
 ```text
-🚀 OutputMarkdownService.syncAnchoredBlock(args: SyncAnchoredBlockArguments): boolean [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:183]
+🚀 ChangesCommand.run(_passedParameters: string[], options: ChangesCommandOptions): Promise<void> [packages/codometer-cli/src/modules/changes/changes.command.ts:107]
+   ↳ Diffs every project's report against the baseline, and emits the result.
+  └─> ChangesService.collect(args: CollectRowsArguments): MetricCollection [packages/codometer-changes/src/modules/changes/changes.service.ts:289]
+     ↳ Joins every current report to the baseline snapshot.
+    └─> ChangesService.readReportPaths(args: CollectRowsArguments): string[] [packages/codometer-changes/src/modules/changes/changes.service.ts:264]
+       ↳ Lists every report path either side knows about, so a project the baseline measured is still accounted for when this…
+      └─> LoggerService.debug(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:241]
+         ↳ Logs a debug message at the `debug` level.
+        └─> LoggerService.buildBindings(…): Record<string, unknown> [packages/logger/src/modules/logger/logger.service.ts:140]
+           ↳ Assembles the object pino merges into the line.
+          └─> LoggerService.assertConventionalMessage(args: { context: string | undefined; parsed: ParsedLogMessage; }): void [packages/logger/src/modules/logger/logger.service.ts:107]
+             ↳ Fails a malformed message in development, and never in production.
+            └─> LoggerService.isConventionalVerb(word: string): boolean [packages/logger/src/modules/logger/logger.service.ts:165]
+               ↳ Whether a word is a verb in one of the two tenses the convention allows.
+```
+
+<details>
+<summary>30 more call stacks</summary>
+
+**4. `OutputMarkdownService.syncAnchoredBlock`** — depth ≥ 6 · orphan-root
+
+```text
+🚀 OutputMarkdownService.syncAnchoredBlock(args: SyncAnchoredBlockArguments): boolean [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:191]
    ↳ Splice the anchored block into a file, or report whether it is current.
-  └─> OutputMarkdownService.writeMarkdownFile(resolvedPath: string, content: string): void [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:234]
+  └─> OutputMarkdownService.writeMarkdownFile(resolvedPath: string, content: string): void [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:242]
      ↳ Write markdown to a file, and record that it happened.
     └─> LoggerService.info(message: unknown, context?: string, data?: LogData): void [packages/logger/src/modules/logger/logger.service.ts:276]
        ↳ Logs an informational message at the `info` level.
@@ -655,10 +679,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
              ↳ Whether a word is a verb in one of the two tenses the convention allows.
 ```
 
-<details>
-<summary>23 more call stacks</summary>
-
-**4. `TypescriptService.handleEnum`** — depth 3 · orphan-root
+**5. `TypescriptService.handleEnum`** — depth 3 · orphan-root
 
 ```text
 🚀 TypescriptService.handleEnum(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-cli/src/modules/typescript/typescript.service.ts:250]
@@ -668,7 +689,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
     └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-cli/src/modules/typescript/typescript.service.ts:352]
 ```
 
-**5. `TypescriptService.handleFunction`** — depth 3 · orphan-root
+**6. `TypescriptService.handleFunction`** — depth 3 · orphan-root
 
 ```text
 🚀 TypescriptService.handleFunction(node: tsCompiler.Node, stats: TypescriptResult, insideClass: boolean): void [packages/codometer-cli/src/modules/typescript/typescript.service.ts:256]
@@ -678,7 +699,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
     └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-cli/src/modules/typescript/typescript.service.ts:352]
 ```
 
-**6. `TypescriptService.handleInterface`** — depth 3 · orphan-root
+**7. `TypescriptService.handleInterface`** — depth 3 · orphan-root
 
 ```text
 🚀 TypescriptService.handleInterface(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-cli/src/modules/typescript/typescript.service.ts:290]
@@ -688,7 +709,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
     └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-cli/src/modules/typescript/typescript.service.ts:352]
 ```
 
-**7. `TypescriptService.handleMethodOrAccessor`** — depth 3 · orphan-root
+**8. `TypescriptService.handleMethodOrAccessor`** — depth 3 · orphan-root
 
 ```text
 🚀 TypescriptService.handleMethodOrAccessor(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-cli/src/modules/typescript/typescript.service.ts:300]
@@ -698,7 +719,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
     └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.AsyncKeyword [packages/codometer-cli/src/modules/typescript/typescript.service.ts:340]
 ```
 
-**8. `TypescriptService.handleTypeAlias`** — depth 3 · orphan-root
+**9. `TypescriptService.handleTypeAlias`** — depth 3 · orphan-root
 
 ```text
 🚀 TypescriptService.handleTypeAlias(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-cli/src/modules/typescript/typescript.service.ts:313]
@@ -708,7 +729,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
     └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-cli/src/modules/typescript/typescript.service.ts:352]
 ```
 
-**9. `TypescriptService.handleVariable`** — depth 3 · orphan-root
+**10. `TypescriptService.handleVariable`** — depth 3 · orphan-root
 
 ```text
 🚀 TypescriptService.handleVariable(node: tsCompiler.Node, stats: TypescriptResult): void [packages/codometer-cli/src/modules/typescript/typescript.service.ts:322]
@@ -718,16 +739,69 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
     └─> TypescriptService.some(…)(modifier: tsCompiler.Modifier): modifier is tsCompiler.ExportKeyword [packages/codometer-cli/src/modules/typescript/typescript.service.ts:352]
 ```
 
-**10. `main`** — depth ≥ 2 · module-bootstrap
+**11. `ChangesCommand.parseBaseline`** — depth 2 · decorated-method
 
 ```text
-🚀 main(): Promise<void> [packages/codometer-cli/src/main.ts:17]
+🚀 ChangesCommand.parseBaseline(value: unknown): string | undefined [packages/codometer-cli/src/modules/changes/changes.command.ts:62]
+   ↳ Parse the baseline directory holding a snapshot of the reports.
+  └─> ChangesCommand.readOptionalText(value: unknown): string | undefined [packages/codometer-cli/src/modules/changes/changes.command.ts:55]
+     ↳ Narrows an option that carries text, or nothing at all.
+```
+
+**12. `ChangesCommand.parseBaselineUrl`** — depth 2 · decorated-method
+
+```text
+🚀 ChangesCommand.parseBaselineUrl(value: unknown): string | undefined [packages/codometer-cli/src/modules/changes/changes.command.ts:71]
+   ↳ Parse the run URL the baseline came from, linked from the summary.
+  └─> ChangesCommand.readOptionalText(value: unknown): string | undefined [packages/codometer-cli/src/modules/changes/changes.command.ts:55]
+     ↳ Narrows an option that carries text, or nothing at all.
+```
+
+**13. `ChangesCommand.parseDirectory`** — depth 2 · decorated-method
+
+```text
+🚀 ChangesCommand.parseDirectory(value: unknown): string [packages/codometer-cli/src/modules/changes/changes.command.ts:80]
+   ↳ Parse the directory to look for codometer reports in.
+  └─> ChangesCommand.readOptionalText(value: unknown): string | undefined [packages/codometer-cli/src/modules/changes/changes.command.ts:55]
+     ↳ Narrows an option that carries text, or nothing at all.
+```
+
+**14. `ChangesCommand.parseMarkdown`** — depth 2 · decorated-method
+
+```text
+🚀 ChangesCommand.parseMarkdown(value: unknown): string | undefined [packages/codometer-cli/src/modules/changes/changes.command.ts:89]
+   ↳ Parse the markdown document the report is spliced into.
+  └─> ChangesCommand.readOptionalText(value: unknown): string | undefined [packages/codometer-cli/src/modules/changes/changes.command.ts:55]
+     ↳ Narrows an option that carries text, or nothing at all.
+```
+
+**15. `ChangesCommand.parseOutput`** — depth 2 · decorated-method
+
+```text
+🚀 ChangesCommand.parseOutput(value: unknown): string | undefined [packages/codometer-cli/src/modules/changes/changes.command.ts:98]
+   ↳ Parse the file the report is written to on its own.
+  └─> ChangesCommand.readOptionalText(value: unknown): string | undefined [packages/codometer-cli/src/modules/changes/changes.command.ts:55]
+     ↳ Narrows an option that carries text, or nothing at all.
+```
+
+**16. `main`** — depth ≥ 2 · module-bootstrap
+
+```text
+🚀 main(): Promise<void> [packages/codometer-cli/src/main.ts:18]
    ↳ Bootstraps the codometer CLI command application.
   └─> LoggerService.logToStandardError(): void [packages/logger/src/modules/logger/logger.service.ts:202]
      ↳ Sends every subsequent line to standard error instead of standard output.
 ```
 
-**11. `FileDiscoveryService.constructor`** — depth 2 · orphan-root
+**17. `ChangesCommand.constructor`** — depth ≥ 2 · orphan-root
+
+```text
+🚀 ChangesCommand.constructor(…): ChangesCommand [packages/codometer-cli/src/modules/changes/changes.command.ts:31]
+  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
+     ↳ Sets the context label included in every subsequent log line.
+```
+
+**18. `FileDiscoveryService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 FileDiscoveryService.constructor(…): FileDiscoveryService [packages/codometer-cli/src/modules/file-discovery/file-discovery.service.ts:40]
@@ -735,7 +809,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**12. `CssService.constructor`** — depth 2 · orphan-root
+**19. `CssService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 CssService.constructor(logger: LoggerService): CssService [packages/codometer-cli/src/modules/css/css.service.ts:28]
@@ -743,7 +817,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**13. `HclService.constructor`** — depth 2 · orphan-root
+**20. `HclService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 HclService.constructor(logger: LoggerService): HclService [packages/codometer-cli/src/modules/hcl/hcl.service.ts:30]
@@ -751,7 +825,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**14. `JsonService.constructor`** — depth 2 · orphan-root
+**21. `JsonService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 JsonService.constructor(logger: LoggerService): JsonService [packages/codometer-cli/src/modules/json/json.service.ts:19]
@@ -759,7 +833,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**15. `MarkdownService.constructor`** — depth 2 · orphan-root
+**22. `MarkdownService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 MarkdownService.constructor(logger: LoggerService): MarkdownService [packages/codometer-cli/src/modules/markdown/markdown.service.ts:31]
@@ -767,7 +841,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**16. `PythonService.constructor`** — depth 2 · orphan-root
+**23. `PythonService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 PythonService.constructor(logger: LoggerService): PythonService [packages/codometer-cli/src/modules/python/python.service.ts:28]
@@ -775,7 +849,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**17. `JupyterService.constructor`** — depth 2 · orphan-root
+**24. `JupyterService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 JupyterService.constructor(…): JupyterService [packages/codometer-cli/src/modules/jupyter/jupyter.service.ts:41]
@@ -783,7 +857,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**18. `ShellService.constructor`** — depth 2 · orphan-root
+**25. `ShellService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 ShellService.constructor(logger: LoggerService): ShellService [packages/codometer-cli/src/modules/shell/shell.service.ts:34]
@@ -791,7 +865,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**19. `SqlService.constructor`** — depth 2 · orphan-root
+**26. `SqlService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 SqlService.constructor(logger: LoggerService): SqlService [packages/codometer-cli/src/modules/sql/sql.service.ts:30]
@@ -799,7 +873,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**20. `TomlService.constructor`** — depth 2 · orphan-root
+**27. `TomlService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 TomlService.constructor(logger: LoggerService): TomlService [packages/codometer-cli/src/modules/toml/toml.service.ts:30]
@@ -807,7 +881,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**21. `YamlService.constructor`** — depth 2 · orphan-root
+**28. `YamlService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 YamlService.constructor(logger: LoggerService): YamlService [packages/codometer-cli/src/modules/yaml/yaml.service.ts:35]
@@ -815,7 +889,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**22. `OutputJsonService.constructor`** — depth 2 · orphan-root
+**29. `OutputJsonService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 OutputJsonService.constructor(logger: LoggerService): OutputJsonService [packages/codometer-cli/src/modules/output-json/output-json.service.ts:26]
@@ -823,7 +897,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**23. `OutputMarkdownService.constructor`** — depth 2 · orphan-root
+**30. `OutputMarkdownService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 OutputMarkdownService.constructor(logger: LoggerService): OutputMarkdownService [packages/codometer-cli/src/modules/output-markdown/output-markdown.service.ts:52]
@@ -831,7 +905,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**24. `SizeAnalysisService.constructor`** — depth 2 · orphan-root
+**31. `SizeAnalysisService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 SizeAnalysisService.constructor(logger: LoggerService): SizeAnalysisService [packages/codometer-cli/src/modules/size-analysis/size-analysis.service.ts:22]
@@ -839,7 +913,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**25. `TargetsService.constructor`** — depth 2 · orphan-root
+**32. `TargetsService.constructor`** — depth 2 · orphan-root
 
 ```text
 🚀 TargetsService.constructor(logger: LoggerService): TargetsService [packages/codometer-cli/src/modules/targets/targets.service.ts:32]
@@ -847,7 +921,7 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
      ↳ Sets the context label included in every subsequent log line.
 ```
 
-**26. `CodometerCommand.constructor`** — depth ≥ 2 · orphan-root
+**33. `CodometerCommand.constructor`** — depth ≥ 2 · orphan-root
 
 ```text
 🚀 CodometerCommand.constructor(…): CodometerCommand [packages/codometer-cli/src/modules/codometer/codometer.command.ts:39]
@@ -879,40 +953,40 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-16800-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-523.66_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-24-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-143-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-17366-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-540.64_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-25-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-150-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-78.81_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-81.56_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-141-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-84-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-148-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-85-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-55-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-433-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-63-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-445-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-1-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-33-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-26-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-52-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-634-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-269-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-820-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-83-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-750-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-640-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-241-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-896-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1629-475569?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-35-10b981?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-28-8b5cf6?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-54-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-664-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-276-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-846-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-94-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-776-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-668-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-245-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-920-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1678-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-4-ca8a04?style=flat-square)
 
 ### Python
@@ -933,16 +1007,16 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-165-ca8a04?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-167-ca8a04?style=flat-square)
 ![JSON Objects](https://img.shields.io/badge/JSON_Objects-36-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-12-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-111-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-90-16a34a?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-113-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-92-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-8-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
 ![JSON Items](https://img.shields.io/badge/JSON_Items-32-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-147-dc2626?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-149-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-7-ea580c?style=flat-square)
 
 ### YAML
@@ -1023,15 +1097,15 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-22-7c3aed?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-23-7c3aed?style=flat-square)
 ![Service Files](https://img.shields.io/badge/Service_Files-24-0284c7?style=flat-square)
-![Command Files](https://img.shields.io/badge/Command_Files-1-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-22-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-23-db2777?style=flat-square)
-![Utilities Files](https://img.shields.io/badge/Utilities_Files-1-0ea5e9?style=flat-square)
+![Command Files](https://img.shields.io/badge/Command_Files-2-16a34a?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-23-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-24-db2777?style=flat-square)
+![Utilities Files](https://img.shields.io/badge/Utilities_Files-2-0ea5e9?style=flat-square)
 ![Errors Files](https://img.shields.io/badge/Errors_Files-5-059669?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-27-7c3aed?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-29-7c3aed?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-5-0284c7?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-16a34a?style=flat-square)
 
@@ -1061,14 +1135,14 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-325-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-336-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-15-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-51-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-52-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-6-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-28-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
