@@ -19,11 +19,14 @@ import {
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_MAXIMUM_DEPTH,
-  DEFAULT_MAXIMUM_IMPLEMENTATION_FAN_OUT,
+  DEFAULT_MAXIMUM_IMPLEMENTATION_CANDIDATES,
   DEFAULT_MINIMUM_CALLERS,
+  DEFAULT_MODULES_DIRECTORY,
   DEFAULT_OUTPUT_FORMAT,
   DEFAULT_PREVIEW_COUNT,
+  DEFAULT_PROJECT_CONTAINER_DIRECTORIES,
   DEFAULT_PROJECT_README_HEADING,
+  DEFAULT_ROOT_MODULE_SEGMENT,
   DEFAULT_SPREAD_THRESHOLD,
   REPOSITORY_ROOT_MARKERS,
   SUPPORTED_CONFIGURATION_EXTENSIONS,
@@ -37,6 +40,7 @@ import type {
   CallidescopeLimits,
   CallidescopeMarkdownOutputConfiguration,
   CallidescopeOutputConfiguration,
+  CallidescopeWorkspaceStructure,
   LoadConfigurationArguments,
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeEntryPoints,
@@ -44,6 +48,7 @@ import type {
   ResolvedCallidescopeLimits,
   ResolvedCallidescopeMarkdownOutputConfiguration,
   ResolvedCallidescopeProjectReadmeConfiguration,
+  ResolvedCallidescopeWorkspaceStructure,
 } from "./configuration.types";
 
 /**
@@ -233,10 +238,11 @@ export class ConfigurationService {
         authored.callerMajorityRatio ?? DEFAULT_CALLER_MAJORITY_RATIO,
       directSpreadThreshold:
         authored.directSpreadThreshold ?? DEFAULT_DIRECT_SPREAD_THRESHOLD,
+      maximumBreadth: authored.maximumBreadth,
       maximumDepth: authored.maximumDepth ?? DEFAULT_MAXIMUM_DEPTH,
-      maximumImplementationFanOut:
-        authored.maximumImplementationFanOut ??
-        DEFAULT_MAXIMUM_IMPLEMENTATION_FAN_OUT,
+      maximumImplementationCandidates:
+        authored.maximumImplementationCandidates ??
+        DEFAULT_MAXIMUM_IMPLEMENTATION_CANDIDATES,
       minimumCallers: authored.minimumCallers ?? DEFAULT_MINIMUM_CALLERS,
       spreadThreshold: authored.spreadThreshold ?? DEFAULT_SPREAD_THRESHOLD,
     };
@@ -282,6 +288,27 @@ export class ConfigurationService {
       heading: projectReadmes.heading ?? DEFAULT_PROJECT_README_HEADING,
       previewCount: projectReadmes.previewCount ?? DEFAULT_PREVIEW_COUNT,
       startMarker: projectReadmes.startMarker ?? DEFAULT_MARKDOWN_START_MARKER,
+    };
+  }
+
+  /**
+   * Applies defaults to the workspace's directory layout.
+   *
+   * Defaults to this tool's own repository layout, so a project that never
+   * configures this keeps tracing the way it always has.
+   */
+  private resolveWorkspaceStructure(
+    workspaceStructure: CallidescopeWorkspaceStructure | undefined,
+  ): ResolvedCallidescopeWorkspaceStructure {
+    const authored = workspaceStructure ?? {};
+
+    return {
+      modulesDirectory: authored.modulesDirectory ?? DEFAULT_MODULES_DIRECTORY,
+      projectContainerDirectories: authored.projectContainerDirectories ?? [
+        ...DEFAULT_PROJECT_CONTAINER_DIRECTORIES,
+      ],
+      rootModuleSegment:
+        authored.rootModuleSegment ?? DEFAULT_ROOT_MODULE_SEGMENT,
     };
   }
 
@@ -348,6 +375,7 @@ export class ConfigurationService {
         ]),
       ],
       excludeFrom: configuration.excludeFrom ?? [],
+      ignoreCallees: configuration.ignoreCallees ?? [],
       limits: this.resolveLimits(configuration.limits),
       output: {
         format: configuration.output?.format ?? DEFAULT_OUTPUT_FORMAT,
@@ -359,6 +387,9 @@ export class ConfigurationService {
         projectReadmes: this.resolveProjectReadmes(configuration.output),
       },
       projects: configuration.projects ?? [],
+      workspaceStructure: this.resolveWorkspaceStructure(
+        configuration.workspaceStructure,
+      ),
     };
   }
 }

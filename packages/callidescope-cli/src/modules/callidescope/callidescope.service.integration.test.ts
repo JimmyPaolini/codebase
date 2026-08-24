@@ -30,11 +30,12 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
     },
     exclude: [],
     excludeFrom: [],
+    ignoreCallees: [],
     limits: {
       callerMajorityRatio: 0.8,
       directSpreadThreshold: 2,
       maximumDepth: 2,
-      maximumImplementationFanOut: 8,
+      maximumImplementationCandidates: 8,
       minimumCallers: 2,
       spreadThreshold: 2,
     },
@@ -46,6 +47,11 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
       projectReadmes: undefined,
     },
     projects: [],
+    workspaceStructure: {
+      modulesDirectory: "modules",
+      projectContainerDirectories: ["applications", "packages", "tools"],
+      rootModuleSegment: "src",
+    },
   };
 }
 

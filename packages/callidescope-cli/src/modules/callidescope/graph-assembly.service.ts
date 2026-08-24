@@ -1,9 +1,11 @@
+import {
+  BreadthService,
+  ComponentsService,
+  DepthService,
+  EdgesService,
+  GraphService,
+} from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
-
-import { EdgesService } from "../edges/edges.service";
-import { ComponentsService } from "../graph/components.service";
-import { DepthService } from "../graph/depth.service";
-import { GraphService } from "../graph/graph.service";
 
 import type {
   AssembledGraph,
@@ -24,6 +26,7 @@ export class GraphAssemblyService {
   // 🏗 Dependency Injection
 
   constructor(
+    private readonly breadthService: BreadthService,
     private readonly componentsService: ComponentsService,
     private readonly depthService: DepthService,
     private readonly edgesService: EdgesService,
@@ -43,6 +46,7 @@ export class GraphAssemblyService {
     const graph = this.graphService.assemble(
       this.edgesService.build({
         callablesById: args.callablesById,
+        ignoreCallees: args.ignoreCallees,
         includeConstructorEdges: args.includeConstructorEdges,
         workspaceRoot: args.workspaceRoot,
       }),
@@ -59,6 +63,10 @@ export class GraphAssemblyService {
     );
 
     return {
+      breadthMeasurement: this.breadthService.measure({
+        callableIds: [...args.callablesById.keys()],
+        graph,
+      }),
       condensed,
       graph,
       measurement: this.depthService.measure({

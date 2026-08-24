@@ -1,18 +1,19 @@
+import {
+  CallableIdentityService,
+  CallablesService,
+  CallSitesService,
+  ClassesService,
+  CompilerHostService,
+  EdgesService,
+  ExternalService,
+  ProgramService,
+  SymbolResolutionService,
+  WorkspaceService,
+} from "@callidescope/graph";
 import { createMock } from "@golevelup/ts-vitest";
 import ts from "typescript";
 
-import { CallableIdentityService } from "../src/modules/callables/callable-identity.service";
-import { CallablesService } from "../src/modules/callables/callables.service";
-import { ClassHierarchyService } from "../src/modules/class-hierarchy/class-hierarchy.service";
-import { ExternalService } from "../src/modules/class-hierarchy/external.service";
-import { CallSitesService } from "../src/modules/edges/call-sites.service";
-import { EdgesService } from "../src/modules/edges/edges.service";
-import { SymbolResolutionService } from "../src/modules/edges/symbol-resolution.service";
-import { CompilerHostService } from "../src/modules/program/compiler-host.service";
-import { ProgramService } from "../src/modules/program/program.service";
-import { WorkspaceService } from "../src/modules/workspace/workspace.service";
-
-import type { ProjectProgram } from "../src/modules/program/program.types";
+import type { ProjectProgram } from "@callidescope/graph";
 import type { LoggerService } from "@codebase/logger";
 
 /** Root every in-memory fixture file is written under. */
@@ -30,7 +31,7 @@ export interface FixtureServices {
   readonly callables: CallablesService;
   readonly edges: EdgesService;
   readonly external: ExternalService;
-  readonly hierarchy: ClassHierarchyService;
+  readonly hierarchy: ClassesService;
   readonly identity: CallableIdentityService;
   readonly programService: ProgramService;
   readonly workspace: WorkspaceService;
@@ -101,7 +102,7 @@ export function buildFixtureProgram(
  * harder to see.
  */
 export function buildFixtureServices(args: {
-  maximumFanOut?: number;
+  maximumCandidates?: number;
   projectProgram: ProjectProgram;
 }): FixtureServices {
   const workspace = new WorkspaceService(createMock<LoggerService>());
@@ -113,14 +114,14 @@ export function buildFixtureServices(args: {
     createMock<LoggerService>(),
   );
   const external = new ExternalService();
-  const hierarchy = new ClassHierarchyService(external);
+  const hierarchy = new ClassesService(external);
 
   external.configure({
     ownedFilePaths: args.projectProgram.ownedFilePaths,
     workspaceRoot: FIXTURE_ROOT,
   });
   hierarchy.build({
-    maximumFanOut: args.maximumFanOut ?? 8,
+    maximumCandidates: args.maximumCandidates ?? 8,
     programs: [args.projectProgram],
   });
 
@@ -128,7 +129,6 @@ export function buildFixtureServices(args: {
     callables: new CallablesService(identity, programService, workspace),
     edges: new EdgesService(
       new CallSitesService(),
-      identity,
       external,
       programService,
       new SymbolResolutionService(hierarchy, external),

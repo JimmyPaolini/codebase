@@ -45,6 +45,22 @@ export const SUPPORTED_CONFIGURATION_EXTENSIONS = new Set([
  */
 export const REPOSITORY_ROOT_MARKERS = [".git", "pnpm-workspace.yaml"] as const;
 
+/** The subdirectory a module identifier is derived from, unless configured. */
+export const DEFAULT_MODULES_DIRECTORY = "modules";
+
+/** Directories a workspace keeps its projects in, unless configured. */
+export const DEFAULT_PROJECT_CONTAINER_DIRECTORIES = [
+  "applications",
+  "packages",
+  "tools",
+] as const;
+
+/**
+ * Identifier used for a file sitting directly under the source root, unless
+ * configured.
+ */
+export const DEFAULT_ROOT_MODULE_SEGMENT = "src";
+
 /** Directories no repository wants traced, kept out even when unmentioned. */
 export const DEFAULT_EXCLUDE_GLOBS = [
   "**/.conformetry/**",
@@ -86,7 +102,7 @@ export const DEFAULT_DIRECT_SPREAD_THRESHOLD = 3;
  * `run` or `sync` otherwise matches dozens of unrelated classes and manufactures
  * a call-stack depth that no execution ever takes.
  */
-export const DEFAULT_MAXIMUM_IMPLEMENTATION_FAN_OUT = 8;
+export const DEFAULT_MAXIMUM_IMPLEMENTATION_CANDIDATES = 8;
 
 /**
  * Callers a callable needs before its placement is judged.
@@ -168,8 +184,9 @@ const limitsSchema = z
   .object({
     callerMajorityRatio: z.number().gt(0).max(1).optional(),
     directSpreadThreshold: z.number().int().positive().optional(),
+    maximumBreadth: z.number().int().positive().optional(),
     maximumDepth: z.number().int().positive().optional(),
-    maximumImplementationFanOut: z.number().int().positive().optional(),
+    maximumImplementationCandidates: z.number().int().positive().optional(),
     minimumCallers: z.number().int().positive().optional(),
     spreadThreshold: z.number().int().positive().optional(),
   })
@@ -225,13 +242,23 @@ const outputSchema = z
   })
   .optional();
 
+const workspaceStructureSchema = z
+  .object({
+    modulesDirectory: z.string().optional(),
+    projectContainerDirectories: z.array(z.string()).optional(),
+    rootModuleSegment: z.string().optional(),
+  })
+  .optional();
+
 /** Validates the shape of a callidescope configuration file. */
 export const callidescopeConfigurationSchema = z.object({
   allowSpreadFor: z.array(z.string()).optional(),
   entryPoints: entryPointsSchema,
   exclude: z.array(z.string()).optional(),
   excludeFrom: z.array(z.string()).optional(),
+  ignoreCallees: z.array(z.string()).optional(),
   limits: limitsSchema,
   output: outputSchema,
   projects: z.array(z.string()).optional(),
+  workspaceStructure: workspaceStructureSchema,
 });

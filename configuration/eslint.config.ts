@@ -367,8 +367,10 @@ export default [
               sourceTag: "type:application",
             },
             // Callidescope package graph. The configuration reader is the
-            // leaf; the CLI traces whatever it describes, so the dependency
-            // only ever points that way.
+            // leaf; the graph builder depends only on it; the output renderer
+            // depends on both the configuration and the graph it renders; the
+            // CLI orchestrates all three, so the dependency only ever points
+            // that way.
             {
               onlyDependOnLibsWithTags: [],
               sourceTag: "name:callidescope-configuration",
@@ -378,18 +380,51 @@ export default [
                 "name:callidescope-configuration",
                 "name:logger",
               ],
+              sourceTag: "name:callidescope-graph",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:callidescope-configuration",
+                "name:callidescope-graph",
+                "name:logger",
+              ],
+              sourceTag: "name:callidescope-output",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:callidescope-configuration",
+                "name:callidescope-graph",
+                "name:callidescope-output",
+                "name:logger",
+              ],
               sourceTag: "name:callidescope-cli",
             },
-            // Codometer package graph. The configuration reader is the leaf;
-            // the CLI measures whatever it describes, so the dependency only
-            // ever points that way.
+            // Codometer package graph. The configuration reader and the
+            // change diffing package are leaves; the markdown renderer joins
+            // a change collection to a rendered report, so it depends on the
+            // diffing package; the CLI measures whatever the configuration
+            // describes and reports on both, so the dependency only ever
+            // points that way.
             {
               onlyDependOnLibsWithTags: [],
               sourceTag: "name:codometer-configuration",
             },
             {
+              onlyDependOnLibsWithTags: ["name:logger"],
+              sourceTag: "name:codometer-changes",
+            },
+            {
               onlyDependOnLibsWithTags: [
+                "name:codometer-changes",
+                "name:logger",
+              ],
+              sourceTag: "name:codometer-markdown",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:codometer-changes",
                 "name:codometer-configuration",
+                "name:codometer-markdown",
                 "name:logger",
               ],
               sourceTag: "name:codometer-cli",

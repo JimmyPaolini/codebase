@@ -1,4 +1,5 @@
 export type {
+  CallableBreadthReport,
   CallableDocumentation,
   CallableId,
   CallableKind,
@@ -22,6 +23,8 @@ export type {
   TypeDepthSummary,
   UnresolvedCall,
   UnresolvedReason,
+  WideCallableCallee,
+  WideCallableFinding,
 } from "./modules/configuration/call-graph.types";
 // 📤 Exports
 export {
@@ -36,11 +39,14 @@ export {
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_MAXIMUM_DEPTH,
-  DEFAULT_MAXIMUM_IMPLEMENTATION_FAN_OUT,
+  DEFAULT_MAXIMUM_IMPLEMENTATION_CANDIDATES,
   DEFAULT_MINIMUM_CALLERS,
+  DEFAULT_MODULES_DIRECTORY,
   DEFAULT_OUTPUT_FORMAT,
   DEFAULT_PREVIEW_COUNT,
+  DEFAULT_PROJECT_CONTAINER_DIRECTORIES,
   DEFAULT_PROJECT_README_HEADING,
+  DEFAULT_ROOT_MODULE_SEGMENT,
   DEFAULT_SPREAD_THRESHOLD,
   REPOSITORY_ROOT_MARKERS,
   SUPPORTED_CONFIGURATION_EXTENSIONS,
@@ -58,6 +64,7 @@ export type {
   CallidescopeOutputConfiguration,
   CallidescopeOutputFormat,
   CallidescopeProjectReadmeConfiguration,
+  CallidescopeWorkspaceStructure,
   LoadConfigurationArguments,
   MarkdownAnchorHelpers,
   RenderMarkdownArguments,
@@ -69,6 +76,7 @@ export type {
   ResolvedCallidescopeMarkdownOutputConfiguration,
   ResolvedCallidescopeOutputConfiguration,
   ResolvedCallidescopeProjectReadmeConfiguration,
+  ResolvedCallidescopeWorkspaceStructure,
   WriteMarkdownArguments,
   WriteMarkdownOutput,
 } from "./modules/configuration/configuration.types";

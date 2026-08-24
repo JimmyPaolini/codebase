@@ -444,7 +444,7 @@ Call stacks traced through `codometer-configuration`, deepest first. Each frame 
 | Stacks through recursion | 0 |
 | Unfollowable calls | 4 |
 
-### Call stacks
+### Call stacks (depth)
 
 **1. `superRefine(…)`** — depth 2 · orphan-root
 
@@ -463,6 +463,34 @@ Call stacks traced through `codometer-configuration`, deepest first. Each frame 
 ### Module spread
 
 None.
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `ConfigurationService.loadConfiguration` | 6 | `ConfigurationService.findConfigurationFile`, `ConfigurationService.resolveConfigurationPath`, `ConfigurationService.resolveConfiguration`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.applyRunContext`, `ConfigurationService.loadConfigurationModule` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:423` |
+| `ConfigurationService.resolveConfiguration` | 5 | `ConfigurationService.resolveLimits`, `ConfigurationService.resolveJsonOutput`, `ConfigurationService.resolveMarkdownOutput`, `ConfigurationService.resolveCustomStatistics`, `ConfigurationService.resolveTargets` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:464` |
+| `ConfigurationService.map(…)` | 3 | `ConfigurationService.map(…)`, `ConfigurationService.filter(…)`, `ConfigurationService.filter(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:389` |
+
+<details>
+<summary>12 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `ConfigurationService.loadConfigurationModule` | 2 | `ConfigurationService.loadJsonConfiguration`, `ConfigurationService.readDefaultExport` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:163` |
+| `ConfigurationService.parseLimitValue` | 2 | `ConfigurationService.parseLimitValueText`, `InvalidLimitValueError.constructor` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:197` |
+| `ConfigurationService.resolveConfigurationPath` | 2 | `ConfigurationService.findRepositoryRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:267` |
+| `superRefine(…)` | 1 | `some(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:378` |
+| `refine(…)` | 1 | `map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.constants.ts:405` |
+| `ConfigurationService.applyRunContext` | 1 | `ConfigurationService.isConfigurationFactory` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:79` |
+| `ConfigurationService.findRepositoryRoot` | 1 | `ConfigurationService.some(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:127` |
+| `ConfigurationService.parseLimitValueText` | 1 | `InvalidLimitValueError.constructor` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:217` |
+| `ConfigurationService.resolveCustomStatistics` | 1 | `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:299` |
+| `ConfigurationService.resolveLimits` | 1 | `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:345` |
+| `ConfigurationService.map(…)` | 1 | `ConfigurationService.parseLimitValue` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:348` |
+| `ConfigurationService.resolveTargets` | 1 | `ConfigurationService.map(…)` | `packages/codometer-configuration/src/modules/configuration/configuration.service.ts:386` |
+
+</details>
 
 ### Possibly misplaced
 

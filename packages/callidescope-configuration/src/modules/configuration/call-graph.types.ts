@@ -1,5 +1,23 @@
 // 🏷️ Types
 
+/**
+ * One callable and every distinct callable it calls directly, unfiltered by
+ * any limit.
+ *
+ * Held on a `ProjectReport` the same way `stacks` holds every `CallStack`
+ * regardless of `maximumDepth`: computing breadth does not require a
+ * configured limit, only reporting a violation does.
+ */
+export interface CallableBreadthReport {
+  readonly breadth: number;
+  readonly callees: readonly WideCallableCallee[];
+  readonly displayName: string;
+  readonly id: CallableId;
+  readonly location: SourceLocation;
+  /** Absent when the checker could not resolve a signature. */
+  readonly signature: CallableSignature | undefined;
+}
+
 /** What the documentation comment above a callable says. */
 export interface CallableDocumentation {
   readonly isDeprecated: boolean;
@@ -91,6 +109,7 @@ export interface CallGraphResult {
   readonly projects: readonly ProjectReport[];
   readonly summary: CallGraphSummary;
   readonly typeDepths: readonly TypeDepthSummary[];
+  readonly wideCallables: readonly WideCallableFinding[];
 }
 
 /** Counts describing the graph a run built. */
@@ -179,6 +198,8 @@ export interface ModuleSpreadFinding {
  * project's own README describes that project rather than the workspace.
  */
 export interface ProjectReport {
+  /** Every callable with at least one direct callee. */
+  readonly callableBreadths: readonly CallableBreadthReport[];
   readonly misplacedCallables: readonly MisplacedCallableFinding[];
   readonly moduleSpreads: readonly ModuleSpreadFinding[];
   readonly projectName: string;
@@ -235,7 +256,18 @@ export interface UnresolvedCall {
 export type UnresolvedReason =
   | "computed-member"
   | "dynamic-value"
-  | "fan-out-exceeded"
   | "generic-parameter"
   | "no-implementation"
-  | "no-symbol";
+  | "no-symbol"
+  | "too-many-implementations";
+
+/** One callable reached directly by another, named in its breadth report. */
+export interface WideCallableCallee {
+  readonly displayName: string;
+  readonly id: CallableId;
+}
+
+/** A callable calling more callables directly than the configured limit. */
+export interface WideCallableFinding extends CallableBreadthReport {
+  readonly limit: number;
+}

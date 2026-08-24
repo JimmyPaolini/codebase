@@ -56,8 +56,8 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
     inputs: defineInputs({
       name: z.string().describe("Project name (kebab-case)"),
       type: z
-        .string()
-        .describe("Project type (application, package, or tools)"),
+        .enum(["applications", "packages", "tools"])
+        .describe("Project type directory (applications, packages, or tools)"),
     }),
     instances: [{ patterns: ["."], tags: ["framework:nest-commander"] }],
     name: "nestjs-command-project",
@@ -81,13 +81,15 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
     inputs: defineInputs({
       name: z.string().describe("Project name (kebab-case)"),
       type: z
-        .string()
-        .describe("Project type (application, package, or tools)"),
+        .enum(["applications", "packages", "tools"])
+        .describe("Project type directory (applications, packages, or tools)"),
     }),
     instances: [
       {
         patterns: [
           "packages/callidescope-configuration",
+          "packages/callidescope-graph",
+          "packages/callidescope-output",
           "packages/codometer-configuration",
           "packages/conformetry-{configuration,core,files,generation,json,jupyter,markdown,python,text,typescript,validation,nx}",
         ],

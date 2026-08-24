@@ -36,8 +36,8 @@ const PATH_SEPARATOR = "/";
  * The limit each project's compiled output is gated against, gzipped.
  *
  * Keyed by the project's path beneath the workspace directory, which is both
- * where its build output is written and the name the pull request's 🎒 Bundles
- * section shows, so a row here is findable from either. A project this names
+ * where its build output is written and the name the pull request's
+ * ⏲️ Codometer section shows, so a row here is findable from either. A project this names
  * nothing for is measured and reported like the rest and gated by nothing.
  *
  * Declared here rather than as a `sizeLimit` field in each project's

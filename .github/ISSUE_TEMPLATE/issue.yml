@@ -62,13 +62,11 @@ body:
         - codometer
         - codebase
         - no-release
-        - packages
         - release
+        - reporting
         - scripts
         - testing
-        - tools
         - synchronization
-        - reporting
         - validation
     validations:
       required: true

@@ -244,7 +244,7 @@ carries the service's type, and the checker follows it.
 | ---------- | ----------- |
 | `helper()` | The symbol at the callee, unwrapped through import aliases |
 | `this.service.load()` | The symbol at the member name — the injected-dependency case |
-| `provider.ingest()` | Every class structurally satisfying the interface, capped by `maximumImplementationFanOut` |
+| `provider.ingest()` | Every class structurally satisfying the interface, capped by `maximumImplementationCandidates` |
 | `super.run()` | The base declaration the checker resolves to |
 | `new Thing()` | The constructor, when it has a body |
 | `list.map(callback)` | The callback, as its own frame — `map` itself is external |
@@ -299,8 +299,12 @@ Where this project sits in the Nx project graph: what it depends on, and what de
 flowchart LR
   callidescope_cli["callidescope-cli"]
   callidescope_configuration["callidescope-configuration"]
+  callidescope_graph["callidescope-graph"]
+  callidescope_output["callidescope-output"]
   logger["logger"]
   callidescope_cli --> callidescope_configuration
+  callidescope_cli --> callidescope_graph
+  callidescope_cli --> callidescope_output
   callidescope_cli --> logger
   classDef subject stroke-width:3px
   class callidescope_cli subject
@@ -317,27 +321,31 @@ The modules this project defines and the imports between them, published by `nx 
 ```mermaid
 flowchart LR
   subgraph group0["callidescope-cli"]
-    CallablesModule
     CallidescopeModule
-    ClassHierarchyModule
-    CohesionModule
-    DocumentationModule
-    EdgesModule
-    EntryPointsModule
-    GraphModule
     MainModule
-    OutputJsonModule
-    OutputMarkdownModule
-    ProgramModule
-    ProjectReportsModule
-    ReportModule
-    SignaturesModule
-    WorkspaceModule
   end
   subgraph group1["callidescope-configuration"]
     ConfigurationModule
   end
-  subgraph group2["logger"]
+  subgraph group2["callidescope-graph"]
+    CallablesModule
+    ClassesModule
+    CohesionModule
+    DocumentationModule
+    EdgesModule
+    EntriesModule
+    GraphModule
+    ProgramModule
+    SignaturesModule
+    WorkspaceModule
+  end
+  subgraph group3["callidescope-output"]
+    OutputJsonModule
+    OutputMarkdownModule
+    ProjectReportsModule
+    ReportModule
+  end
+  subgraph group4["logger"]
     LoggerModule([LoggerModule])
   end
   ConfigModule([ConfigModule])
@@ -345,11 +353,11 @@ flowchart LR
   CallablesModule --> ProgramModule
   CallablesModule --> WorkspaceModule
   CallidescopeModule --> CallablesModule
-  CallidescopeModule --> ClassHierarchyModule
+  CallidescopeModule --> ClassesModule
   CallidescopeModule --> CohesionModule
   CallidescopeModule --> ConfigurationModule
   CallidescopeModule --> EdgesModule
-  CallidescopeModule --> EntryPointsModule
+  CallidescopeModule --> EntriesModule
   CallidescopeModule --> GraphModule
   CallidescopeModule --> OutputJsonModule
   CallidescopeModule --> OutputMarkdownModule
@@ -358,7 +366,7 @@ flowchart LR
   CallidescopeModule --> ReportModule
   CallidescopeModule --> WorkspaceModule
   EdgesModule --> CallablesModule
-  EdgesModule --> ClassHierarchyModule
+  EdgesModule --> ClassesModule
   EdgesModule --> ProgramModule
   EdgesModule --> WorkspaceModule
   GraphModule --> DocumentationModule
@@ -368,6 +376,7 @@ flowchart LR
   MainModule --> DiscoveryModule
   ProgramModule --> WorkspaceModule
   ProjectReportsModule --> GraphModule
+  ProjectReportsModule --> SignaturesModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
@@ -378,8 +387,10 @@ _Rounded modules are global: every module can inject them, so their edges are le
 
 | Package | Role |
 | ------- | ---- |
-| [`@callidescope/cli`](.) | Builds the graph, measures it, and reports |
+| [`@callidescope/cli`](.) | Orchestrates a run: traces the workspace, plans what to check, and reports |
 | [`@callidescope/configuration`](../callidescope-configuration/README.md) | Reads `callidescope.config.ts` and resolves the limits |
+| [`@callidescope/graph`](../callidescope-graph/README.md) | Builds the call graph from traced source and measures depth, breadth, and cohesion |
+| [`@callidescope/output`](../callidescope-output/README.md) | Renders findings into markdown, mermaid, and JSON |
 
 ## Start
 
@@ -411,233 +422,96 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 
 | Measure | Value |
 | --- | --- |
-| Callables | 281 |
-| Files | 87 |
-| Calls traced | 278 |
-| Call stacks | 20 |
+| Callables | 52 |
+| Files | 17 |
+| Calls traced | 66 |
+| Call stacks | 2 |
 | Deepest stack | 13 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 4 |
+| Unfollowable calls | 1 |
 
-### Call stacks
+### Call stacks (depth)
 
 **1. `CallidescopeCommand.run`** — depth ≥ 13 · decorated-method
 
 ```text
-🚀 CallidescopeCommand.run(…): Promise<void> [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:383]
+🚀 CallidescopeCommand.run(…): Promise<void> [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:394]
    ↳ Traces the workspace, reports, and sets the exit code.
-  └─> CallidescopeService.trace(args: TraceArguments): TraceOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:154]
+  └─> CallidescopeService.trace(args: TraceArguments): TraceOutcome [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:163]
      ↳ Traces a workspace and returns everything the run found.
     └─> CallidescopeService.analyze(…): CallGraphResult [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:66]
        ↳ Derives every finding from the collected callables.
-      └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-cli/src/modules/callidescope/graph-assembly.service.ts:42]
+      └─> GraphAssemblyService.assemble(args: AssembleGraphArguments): AssembledGraph [packages/callidescope-cli/src/modules/callidescope/graph-assembly.service.ts:45]
          ↳ Builds the call graph and everything derived from it.
-        └─> EdgesService.build(args: BuildEdgesArguments): EdgeCollection [packages/callidescope-cli/src/modules/edges/edges.service.ts:221]
+        └─> EdgesService.build(args: BuildEdgesArguments): EdgeCollection [packages/callidescope-graph/src/modules/edges/edges.service.ts:251]
            ↳ Builds every edge in the graph, and records the calls it could not.
-          └─> EdgesService.buildSiteEdges(…): { edges: CallEdge[]; unresolved: UnresolvedCall[]; } [packages/callidescope-cli/src/modules/edges/edges.service.ts:59]
+          └─> EdgesService.buildSiteEdges(…): { edges: CallEdge[]; unresolved: UnresolvedCall[]; } [packages/callidescope-graph/src/modules/edges/edges.service.ts:59]
              ↳ Turns one call site into the edges and non-resolutions it produced.
-            └─> EdgesService.resolveSite(…): ResolvedCallSite | undefined [packages/callidescope-cli/src/modules/edges/edges.service.ts:196]
+            └─> EdgesService.resolveSite(…): ResolvedCallSite | undefined [packages/callidescope-graph/src/modules/edges/edges.service.ts:226]
                ↳ Resolves one call site, choosing the right strategy for its shape.
-              └─> SymbolResolutionService.resolve(…): ResolvedCallSite [packages/callidescope-cli/src/modules/edges/symbol-resolution.service.ts:267]
+              └─> SymbolResolutionService.resolve(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:267]
                  ↳ Resolves a call expression to every declaration it can reach.
-                └─> SymbolResolutionService.resolveSymbol(…): ResolvedCallSite [packages/callidescope-cli/src/modules/edges/symbol-resolution.service.ts:165]
+                └─> SymbolResolutionService.resolveSymbol(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:165]
                    ↳ Resolves an already-identified callee symbol to its declarations.
-                  └─> SymbolResolutionService.resolveThroughHierarchy(…): ResolvedCallSite [packages/callidescope-cli/src/modules/edges/symbol-resolution.service.ts:217]
+                  └─> SymbolResolutionService.resolveThroughHierarchy(…): ResolvedCallSite [packages/callidescope-graph/src/modules/edges/symbol-resolution.service.ts:217]
                      ↳ Expands an interface or abstract member to its implementations.
-                    └─> ClassHierarchyService.resolveImplementations(…): ImplementationLookup [packages/callidescope-cli/src/modules/class-hierarchy/class-hierarchy.service.ts:207]
+                    └─> ClassesService.resolveImplementations(…): ImplementationLookup [packages/callidescope-graph/src/modules/classes/classes.service.ts:207]
                        ↳ Finds the concrete declarations one interface member resolves to.
-                      └─> ClassHierarchyService.filterAssignable(…): ClassDeclaration[] [packages/callidescope-cli/src/modules/class-hierarchy/class-hierarchy.service.ts:87]
+                      └─> ClassesService.filterAssignable(…): ClassDeclaration[] [packages/callidescope-graph/src/modules/classes/classes.service.ts:87]
                          ↳ Keeps only classes whose instance type satisfies the declaring type.
-                        └─> ClassHierarchyService.filter(…)(candidate: ts.ClassDeclaration): boolean [packages/callidescope-cli/src/modules/class-hierarchy/class-hierarchy.service.ts:94]
+                        └─> ClassesService.filter(…)(candidate: ts.ClassDeclaration): boolean [packages/callidescope-graph/src/modules/classes/classes.service.ts:94]
 ```
 
-**2. `CallablesService.visit`** — depth 5 · orphan-root
+**2. `CallidescopeCommand.parseProjects`** — depth 2 · decorated-method
 
 ```text
-🚀 CallablesService.visit(node: ts.Node): void [packages/callidescope-cli/src/modules/callables/callables.service.ts:49]
-  └─> CallablesService.describe(args: DescribeCallableArguments): DiscoveredCallable [packages/callidescope-cli/src/modules/callables/callables.service.ts:116]
-     ↳ Turns one declaration into a fully described node.
-    └─> CallableIdentityService.readDisplayName(declaration: CallableDeclaration): string [packages/callidescope-cli/src/modules/callables/callable-identity.service.ts:117]
-       ↳ Builds the qualified name a report prints for a callable.
-      └─> CallableIdentityService.readMemberName(declaration: CallableDeclaration): string [packages/callidescope-cli/src/modules/callables/callable-identity.service.ts:179]
-         ↳ Reads the member name, falling back to the shape it was written in.
-        └─> CallableIdentityService.readBindingName(node: ts.Node): string | undefined [packages/callidescope-cli/src/modules/callables/callable-identity.service.ts:50]
-           ↳ Reads the name a property, variable, or parameter declaration binds.
-```
-
-**3. `EdgesService.readDisplayName`** — depth 4 · orphan-root
-
-```text
-🚀 EdgesService.readDisplayName(callable: DiscoveredCallable): string [packages/callidescope-cli/src/modules/edges/edges.service.ts:248]
-   ↳ Exposed for the report, which prints a frame for each edge target.
-  └─> CallableIdentityService.readDisplayName(declaration: CallableDeclaration): string [packages/callidescope-cli/src/modules/callables/callable-identity.service.ts:117]
-     ↳ Builds the qualified name a report prints for a callable.
-    └─> CallableIdentityService.readMemberName(declaration: CallableDeclaration): string [packages/callidescope-cli/src/modules/callables/callable-identity.service.ts:179]
-       ↳ Reads the member name, falling back to the shape it was written in.
-      └─> CallableIdentityService.readBindingName(node: ts.Node): string | undefined [packages/callidescope-cli/src/modules/callables/callable-identity.service.ts:50]
-         ↳ Reads the name a property, variable, or parameter declaration binds.
-```
-
-<details>
-<summary>17 more call stacks</summary>
-
-**4. `CallSitesService.visit`** — depth 3 · orphan-root
-
-```text
-🚀 CallSitesService.visit(node: ts.Node): void [packages/callidescope-cli/src/modules/edges/call-sites.service.ts:62]
-  └─> CallSitesService.readFunctionArguments(expression: ts.CallExpression | ts.NewExpression): ts.SignatureDeclaration[] [packages/callidescope-cli/src/modules/edges/call-sites.service.ts:42]
-     ↳ Collects the function literals passed as arguments to one call.
-    └─> CallSitesService.filter(…)(argument: ts.Expression): argument is ts.Expression & ts.SignatureDeclaration [packages/callidescope-cli/src/modules/edges/call-sites.service.ts:46]
-```
-
-**5. `ReportService.renderFrame`** — depth 3 · orphan-root
-
-```text
-🚀 ReportService.renderFrame(args: { depth: number; frame: StackFrame; }): string [packages/callidescope-cli/src/modules/report/report.service.ts:44]
-   ↳ Renders one frame at its indentation, with whatever it says about itself.
-  └─> ReportService.shortenSummary(summary: string): string [packages/callidescope-cli/src/modules/report/report.service.ts:102]
-     ↳ Shortens a summary to what fits under an indented frame.
-    └─> ReportService.readFirstSentence(summary: string): string | undefined [packages/callidescope-cli/src/modules/report/report.service.ts:37]
-       ↳ Reads a summary's opening sentence, when it has more than one.
-```
-
-**6. `MarkdownReportService.renderStack`** — depth 3 · orphan-root
-
-```text
-🚀 MarkdownReportService.renderStack(args: { index: number; stack: CallStack; }): string [packages/callidescope-cli/src/modules/report/markdown-report.service.ts:72]
-   ↳ Renders one stack: a labelled heading line and its tree in a fence.
-  └─> ReportService.renderStackTree(stack: CallStack): string [packages/callidescope-cli/src/modules/report/report.service.ts:123]
-     ↳ Renders every frame of a stack, the entry point first.
-    └─> ReportService.map(…)(frame: StackFrame, depth: number): string [packages/callidescope-cli/src/modules/report/report.service.ts:125]
-```
-
-**7. `CallidescopeCommand.parseProjects`** — depth 2 · decorated-method
-
-```text
-🚀 CallidescopeCommand.parseProjects(value: string | undefined): string[] [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:346]
+🚀 CallidescopeCommand.parseProjects(value: string | undefined): string[] [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:357]
    ↳ Parses `--projects`, a comma-separated list of Nx project names.
-  └─> CallidescopeCommand.map(…)(name: string): string [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:355]
+  └─> CallidescopeCommand.map(…)(name: string): string [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:366]
 ```
-
-**8. `main`** — depth ≥ 2 · module-bootstrap
-
-```text
-🚀 main(): Promise<void> [packages/callidescope-cli/src/main.ts:11]
-   ↳ Bootstraps the callidescope CLI command application.
-  └─> LoggerService.constructor(): LoggerService [packages/logger/src/modules/logger/logger.service.ts:38]
-```
-
-**9. `WorkspaceService.constructor`** — depth 2 · orphan-root
-
-```text
-🚀 WorkspaceService.constructor(logger: LoggerService): WorkspaceService [packages/callidescope-cli/src/modules/workspace/workspace.service.ts:36]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**10. `WorkspaceService.isExcluded`** — depth 2 · orphan-root
-
-```text
-🚀 WorkspaceService.isExcluded(workspaceRelativePath: string): boolean [packages/callidescope-cli/src/modules/workspace/workspace.service.ts:157]
-  └─> WorkspaceService.some(…)(glob: string): boolean [packages/callidescope-cli/src/modules/workspace/workspace.service.ts:159]
-```
-
-**11. `ProgramService.constructor`** — depth 2 · orphan-root
-
-```text
-🚀 ProgramService.constructor(…): ProgramService [packages/callidescope-cli/src/modules/program/program.service.ts:32]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**12. `CallablesService.toWorkspaceRelative`** — depth 2 · orphan-root
-
-```text
-🚀 CallablesService.toWorkspaceRelative(args: { sourceFile: ts.SourceFile; workspaceRoot: string; }): string [packages/callidescope-cli/src/modules/callables/callables.service.ts:214]
-   ↳ Resolves the workspace-relative path of a source file.
-  └─> WorkspaceService.toWorkspaceRelative(args: { absolutePath: string; workspaceRoot: string; }): string [packages/callidescope-cli/src/modules/workspace/workspace.service.ts:248]
-     ↳ Rewrites an absolute path as workspace-relative with POSIX separators.
-```
-
-**13. `ClassHierarchyService.readMemberDeclarations`** — depth 2 · orphan-root
-
-```text
-🚀 ClassHierarchyService.readMemberDeclarations(…): Declaration[] [packages/callidescope-cli/src/modules/class-hierarchy/class-hierarchy.service.ts:149]
-   ↳ Reads one member's concrete declarations off a candidate class.
-  └─> ClassHierarchyService.filter(…)(member: ts.PropertyDeclaration | ts.MethodDeclaration): boolean [packages/callidescope-cli/src/modules/class-hierarchy/class-hierarchy.service.ts:163]
-```
-
-**14. `EdgesService.constructor`** — depth 2 · orphan-root
-
-```text
-🚀 EdgesService.constructor(…): EdgesService [packages/callidescope-cli/src/modules/edges/edges.service.ts:40]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**15. `EdgesService.resolveCallableId`** — depth 2 · orphan-root
-
-```text
-🚀 EdgesService.resolveCallableId(…): string | undefined [packages/callidescope-cli/src/modules/edges/edges.service.ts:172]
-   ↳ Maps a resolved declaration to the callable it belongs to.
-  └─> WorkspaceService.toWorkspaceRelative(args: { absolutePath: string; workspaceRoot: string; }): string [packages/callidescope-cli/src/modules/workspace/workspace.service.ts:248]
-     ↳ Rewrites an absolute path as workspace-relative with POSIX separators.
-```
-
-**16. `EntryPointsService.constructor`** — depth 2 · orphan-root
-
-```text
-🚀 EntryPointsService.constructor(logger: LoggerService): EntryPointsService [packages/callidescope-cli/src/modules/entry-points/entry-points.service.ts:38]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**17. `OutputJsonService.constructor`** — depth 2 · orphan-root
-
-```text
-🚀 OutputJsonService.constructor(logger: LoggerService): OutputJsonService [packages/callidescope-cli/src/modules/output-json/output-json.service.ts:24]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**18. `OutputMarkdownService.constructor`** — depth 2 · orphan-root
-
-```text
-🚀 OutputMarkdownService.constructor(logger: LoggerService): OutputMarkdownService [packages/callidescope-cli/src/modules/output-markdown/output-markdown.service.ts:30]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**19. `CallidescopeService.constructor`** — depth 2 · orphan-root
-
-```text
-🚀 CallidescopeService.constructor(…): CallidescopeService [packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:34]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-**20. `CallidescopeCommand.constructor`** — depth ≥ 2 · orphan-root
-
-```text
-🚀 CallidescopeCommand.constructor(…): CallidescopeCommand [packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:47]
-  └─> LoggerService.setContext(context: string): void [packages/logger/src/modules/logger/logger.service.ts:297]
-     ↳ Sets the context label included in every subsequent log line.
-```
-
-</details>
 
 ### Module spread
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CallidescopeService.trace` | 13 | `callidescope-cli:modules/callables`, `callidescope-cli:modules/class-hierarchy`, `callidescope-cli:modules/program`, `callidescope-cli:modules/workspace`, `logger:modules/logger` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:154` |
-| `CallidescopeService.analyze` | 12 | `callidescope-cli:modules/cohesion`, `callidescope-cli:modules/entry-points`, `callidescope-cli:modules/project-reports`, `logger:modules/logger` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:66` |
+| `CallidescopeService.trace` | 12 | `callidescope-graph:modules/callables`, `callidescope-graph:modules/classes`, `callidescope-graph:modules/program`, `callidescope-graph:modules/workspace` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:163` |
+| `CallidescopeService.analyze` | 11 | `callidescope-graph:modules/cohesion`, `callidescope-graph:modules/entries`, `callidescope-output:modules/project-reports` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:66` |
+
+### Breadth
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `CallidescopeService.trace` | 11 | `WorkspaceService.configure`, `WorkspaceService.discoverProjects`, `ProgramService.buildPrograms`, `ExternalService.configure`, `ClassesService.build`, `CallablesService.collect`, `WorkspaceService.buildFileFilter`, `CallidescopeService.map(…)`, `CallidescopeService.map(…)`, `CallidescopeService.analyze`, `CallidescopeService.map(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:163` |
+| `CallidescopeService.analyze` | 10 | `GraphAssemblyService.assemble`, `EntriesService.resolve`, `CohesionService.findMisplacedCallables`, `CohesionService.findModuleSpreads`, `CohesionService.summarizeTypeDepths`, `ProjectReportsService.build`, `CallidescopeService.filter(…)`, `CallidescopeService.readMaximumDepth`, `ProjectReportsService.findDeepStacks`, `ProjectReportsService.findWideCallables` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:66` |
+| `GraphAssemblyService.assemble` | 6 | `GraphService.assemble`, `EdgesService.build`, `ComponentsService.condense`, `GraphAssemblyService.map(…)`, `BreadthService.measure`, `DepthService.measure` | `packages/callidescope-cli/src/modules/callidescope/graph-assembly.service.ts:45` |
+
+<details>
+<summary>16 more callables</summary>
+
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `CallidescopeCommand.syncDestinations` | 6 | `OutputJsonService.sync`, `OutputMarkdownService.sync`, `MarkdownReportService.renderRun`, `CallidescopeCommand.readPreviewCount`, `OutputMarkdownService.syncProjectReadmes`, `CallidescopeCommand.buildProjectSections` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:222` |
+| `CallidescopeCommand.run` | 6 | `RunPlanService.prepareRun`, `CallidescopeService.trace`, `CallidescopeCommand.report`, `RunPlanService.touchesFiles`, `CallidescopeCommand.syncDestinations`, `CallidescopeCommand.reportFindings` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:394` |
+| `RunPlanService.readCheckNames` | 4 | `RunPlanService.describeAcceptedCheckNames`, `RunPlanService.filter(…)`, `RunPlanService.map(…)`, `RunPlanService.validateCheckNames` | `packages/callidescope-cli/src/modules/callidescope/run-plan.service.ts:61` |
+| `RunPlanService.prepareRun` | 4 | `RunPlanService.selectMode`, `ConfigurationService.loadConfiguration`, `RunPlanService.resolveMarkdownDestination`, `RunPlanService.validateConfiguration` | `packages/callidescope-cli/src/modules/callidescope/run-plan.service.ts:135` |
+| `CallidescopeCommand.report` | 3 | `OutputJsonService.buildReport`, `MarkdownReportService.renderRun`, `CallidescopeCommand.readPreviewCount` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:110` |
+| `CallidescopeCommand.reportFindings` | 3 | `CallidescopeCommand.reportStaleness`, `CallidescopeCommand.reportDeepStacks`, `CallidescopeCommand.reportWideCallables` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:171` |
+| `CallidescopeCommand.reportDeepStacks` | 2 | `CallidescopeCommand.map(…)`, `CallidescopeCommand.map(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:146` |
+| `CallidescopeCommand.reportWideCallables` | 2 | `CallidescopeCommand.map(…)`, `CallidescopeCommand.map(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:201` |
+| `CallidescopeService.readMaximumDepth` | 1 | `CallidescopeService.reduce(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.service.ts:56` |
+| `RunPlanService.describeAcceptedCheckNames` | 1 | `RunPlanService.map(…)` | `packages/callidescope-cli/src/modules/callidescope/run-plan.service.ts:49` |
+| `RunPlanService.resolveMarkdownDestination` | 1 | `ConfigurationService.resolveConfiguration` | `packages/callidescope-cli/src/modules/callidescope/run-plan.service.ts:93` |
+| `RunPlanService.validateCheckNames` | 1 | `RunPlanService.describeAcceptedCheckNames` | `packages/callidescope-cli/src/modules/callidescope/run-plan.service.ts:109` |
+| `RunPlanService.selectMode` | 1 | `RunPlanService.readCheckNames` | `packages/callidescope-cli/src/modules/callidescope/run-plan.service.ts:202` |
+| `CallidescopeCommand.buildProjectSections` | 1 | `CallidescopeCommand.flatMap(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:65` |
+| `CallidescopeCommand.flatMap(…)` | 1 | `MarkdownReportService.renderProjectSection` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:73` |
+| `CallidescopeCommand.parseProjects` | 1 | `CallidescopeCommand.map(…)` | `packages/callidescope-cli/src/modules/callidescope/callidescope.command.ts:357` |
+
+</details>
 
 ### Possibly misplaced
 
-| Callable | Declared in | Called from | Callers |
-| --- | --- | --- | --- |
-| `MarkdownReportService.renderRun` | `callidescope-cli:modules/report` | `callidescope-cli:modules/callidescope` | 2/2 |
+None.
 <!-- CALL_STACKS_END -->
 
 <!-- CODE_STATISTICS_START -->
@@ -646,40 +520,40 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-14505-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-445.59_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-18-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-123-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3694-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-122.66_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-4-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-29-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-65.92_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-12.60_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-122-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-53-0ea5e9?style=flat-square)
-![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-1-0369a1?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-28-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-11-0ea5e9?style=flat-square)
+![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-53-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-354-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-15-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-75-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-1-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-31-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-17-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-46-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-681-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-249-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-806-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-124-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-807-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-603-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-164-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-671-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1194-475569?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-7-10b981?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-18-8b5cf6?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-6-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-172-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-46-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-168-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-50-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-132-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-135-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-39-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-156-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-279-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -700,16 +574,16 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-153-ca8a04?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-155-ca8a04?style=flat-square)
 ![JSON Objects](https://img.shields.io/badge/JSON_Objects-35-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-12-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-101-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-80-16a34a?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-103-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-82-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-8-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
 ![JSON Items](https://img.shields.io/badge/JSON_Items-31-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-136-dc2626?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-138-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-7-ea580c?style=flat-square)
 
 ### YAML
@@ -790,15 +664,15 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-16-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-27-0284c7?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-2-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-3-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-1-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-17-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-18-db2777?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-2-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-3-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
-![Errors Files](https://img.shields.io/badge/Errors_Files-2-059669?style=flat-square)
+![Errors Files](https://img.shields.io/badge/Errors_Files-0-059669?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-29-7c3aed?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-5-7c3aed?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-1-0284c7?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-16a34a?style=flat-square)
 
@@ -828,7 +702,7 @@ Call stacks traced through `callidescope-cli`, deepest first. Each frame shows w
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-317-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-322-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-15-a78bfa?style=flat-square)
