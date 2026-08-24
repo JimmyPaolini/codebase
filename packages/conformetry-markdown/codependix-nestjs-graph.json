@@ -1,0 +1,12 @@
+{
+  "ambientModuleNames": [],
+  "edges": [
+    {
+      "source": "MarkdownValidatorModule",
+      "target": "ScoringModule"
+    }
+  ],
+  "isolatedModuleNames": [],
+  "moduleNames": ["MarkdownValidatorModule", "ScoringModule"],
+  "projectName": "conformetry-markdown"
+}

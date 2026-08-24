@@ -1,0 +1,12 @@
+{
+  "ambientModuleNames": [],
+  "edges": [
+    {
+      "source": "WorkspaceGraphModule",
+      "target": "NeighborhoodModule"
+    }
+  ],
+  "isolatedModuleNames": [],
+  "moduleNames": ["NeighborhoodModule", "WorkspaceGraphModule"],
+  "projectName": "codependix-nx"
+}

@@ -1,0 +1,12 @@
+{
+  "dependencies": ["lexico-components"],
+  "dependents": [],
+  "edges": [
+    {
+      "implicit": false,
+      "source": "lexico",
+      "target": "lexico-components"
+    }
+  ],
+  "projectName": "lexico"
+}

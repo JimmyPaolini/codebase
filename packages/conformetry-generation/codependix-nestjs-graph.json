@@ -1,0 +1,12 @@
+{
+  "ambientModuleNames": [],
+  "edges": [
+    {
+      "source": "GenerationModule",
+      "target": "RenderingModule"
+    }
+  ],
+  "isolatedModuleNames": [],
+  "moduleNames": ["GenerationModule", "RenderingModule"],
+  "projectName": "conformetry-generation"
+}

@@ -1,0 +1,62 @@
+{
+  "ambientModuleNames": [],
+  "edges": [
+    {
+      "source": "FilesModule",
+      "target": "DifferencesModule"
+    },
+    {
+      "source": "FilesModule",
+      "target": "InstanceDiscoveryModule"
+    },
+    {
+      "source": "InstanceDiscoveryModule",
+      "target": "RenderingModule"
+    },
+    {
+      "source": "InstanceDiscoveryModule",
+      "target": "TemplateDiscoveryModule"
+    },
+    {
+      "source": "ReportingModule",
+      "target": "ScoringModule"
+    },
+    {
+      "source": "TemplateDiscoveryModule",
+      "target": "RenderingModule"
+    },
+    {
+      "source": "ValidationModule",
+      "target": "FilesModule"
+    },
+    {
+      "source": "ValidationModule",
+      "target": "InstanceDiscoveryModule"
+    },
+    {
+      "source": "ValidationModule",
+      "target": "LanguageModule"
+    },
+    {
+      "source": "ValidationModule",
+      "target": "ReportingModule"
+    },
+    {
+      "source": "ValidationModule",
+      "target": "ScoringModule"
+    }
+  ],
+  "isolatedModuleNames": [],
+  "moduleNames": [
+    "DifferencesModule",
+    "FilesModule",
+    "InstanceDiscoveryModule",
+    "LanguageModule",
+    "RenderingModule",
+    "ReportingModule",
+    "ScoringModule",
+    "TemplateDiscoveryModule",
+    "ValidationModule"
+  ],
+  "projectName": "conformetry-validation"
+}

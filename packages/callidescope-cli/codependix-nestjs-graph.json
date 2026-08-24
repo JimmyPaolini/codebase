@@ -1,0 +1,133 @@
+{
+  "ambientModuleNames": ["ConfigModule", "LoggerModule"],
+  "edges": [
+    {
+      "source": "CallablesModule",
+      "target": "ProgramModule"
+    },
+    {
+      "source": "CallablesModule",
+      "target": "WorkspaceModule"
+    },
+    {
+      "source": "CallidescopeModule",
+      "target": "CallablesModule"
+    },
+    {
+      "source": "CallidescopeModule",
+      "target": "ClassHierarchyModule"
+    },
+    {
+      "source": "CallidescopeModule",
+      "target": "CohesionModule"
+    },
+    {
+      "source": "CallidescopeModule",
+      "target": "ConfigurationModule"
+    },
+    {
+      "source": "CallidescopeModule",
+      "target": "EdgesModule"
+    },
+    {
+      "source": "CallidescopeModule",
+      "target": "EntryPointsModule"
+    },
+    {
+      "source": "CallidescopeModule",
+      "target": "GraphModule"
+    },
+    {
+      "source": "CallidescopeModule",
+      "target": "OutputJsonModule"
+    },
+    {
+      "source": "CallidescopeModule",
+      "target": "OutputMarkdownModule"
+    },
+    {
+      "source": "CallidescopeModule",
+      "target": "ProgramModule"
+    },
+    {
+      "source": "CallidescopeModule",
+      "target": "ProjectReportsModule"
+    },
+    {
+      "source": "CallidescopeModule",
+      "target": "ReportModule"
+    },
+    {
+      "source": "CallidescopeModule",
+      "target": "WorkspaceModule"
+    },
+    {
+      "source": "EdgesModule",
+      "target": "CallablesModule"
+    },
+    {
+      "source": "EdgesModule",
+      "target": "ClassHierarchyModule"
+    },
+    {
+      "source": "EdgesModule",
+      "target": "ProgramModule"
+    },
+    {
+      "source": "EdgesModule",
+      "target": "WorkspaceModule"
+    },
+    {
+      "source": "GraphModule",
+      "target": "DocumentationModule"
+    },
+    {
+      "source": "GraphModule",
+      "target": "SignaturesModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "CallidescopeModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "ConfigurationModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "DiscoveryModule"
+    },
+    {
+      "source": "ProgramModule",
+      "target": "WorkspaceModule"
+    },
+    {
+      "source": "ProjectReportsModule",
+      "target": "GraphModule"
+    }
+  ],
+  "isolatedModuleNames": ["ConfigModule", "LoggerModule"],
+  "moduleNames": [
+    "CallablesModule",
+    "CallidescopeModule",
+    "ClassHierarchyModule",
+    "CohesionModule",
+    "ConfigModule",
+    "ConfigurationModule",
+    "DiscoveryModule",
+    "DocumentationModule",
+    "EdgesModule",
+    "EntryPointsModule",
+    "GraphModule",
+    "LoggerModule",
+    "MainModule",
+    "OutputJsonModule",
+    "OutputMarkdownModule",
+    "ProgramModule",
+    "ProjectReportsModule",
+    "ReportModule",
+    "SignaturesModule",
+    "WorkspaceModule"
+  ],
+  "projectName": "callidescope-cli"
+}

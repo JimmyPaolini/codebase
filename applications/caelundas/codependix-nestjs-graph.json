@@ -1,0 +1,408 @@
+{
+  "ambientModuleNames": ["ConfigModule", "LoggerModule"],
+  "edges": [
+    {
+      "source": "AnnualSolarCycleModule",
+      "target": "EphemerisModule"
+    },
+    {
+      "source": "AnnualSolarCycleModule",
+      "target": "MathModule"
+    },
+    {
+      "source": "AnnualSolarCycleModule",
+      "target": "ProgressiveUtilitiesModule"
+    },
+    {
+      "source": "AspectsModule",
+      "target": "MajorAspectsModule"
+    },
+    {
+      "source": "AspectsModule",
+      "target": "MinorAspectsModule"
+    },
+    {
+      "source": "AspectsModule",
+      "target": "QuadrupleAspectsModule"
+    },
+    {
+      "source": "AspectsModule",
+      "target": "QuintupleAspectsModule"
+    },
+    {
+      "source": "AspectsModule",
+      "target": "SextupleAspectsModule"
+    },
+    {
+      "source": "AspectsModule",
+      "target": "SpecialtyAspectsModule"
+    },
+    {
+      "source": "AspectsModule",
+      "target": "StelliumModule"
+    },
+    {
+      "source": "AspectsModule",
+      "target": "TripleAspectsModule"
+    },
+    {
+      "source": "AspectsUtilitiesModule",
+      "target": "EphemerisModule"
+    },
+    {
+      "source": "AspectsUtilitiesModule",
+      "target": "MathModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "AnnualSolarCycleModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "AspectsModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "CalendarModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "DailyCyclesModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "EclipsesModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "EphemerisModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "IngressesModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "InputModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "MajorAspectsModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "MathModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "MinorAspectsModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "MonthlyLunarCycleModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "PerfectiveModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "PhasesModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "ProgressiveModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "QuadrupleAspectsModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "QuintupleAspectsModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "RetrogradesModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "SextupleAspectsModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "SpecialtyAspectsModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "StelliumModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "TripleAspectsModule"
+    },
+    {
+      "source": "CaelundasModule",
+      "target": "TwilightsModule"
+    },
+    {
+      "source": "DailyCyclesModule",
+      "target": "CalendarModule"
+    },
+    {
+      "source": "DailyCyclesModule",
+      "target": "EphemerisModule"
+    },
+    {
+      "source": "DailyCyclesModule",
+      "target": "MathModule"
+    },
+    {
+      "source": "EclipsesModule",
+      "target": "EphemerisModule"
+    },
+    {
+      "source": "EclipsesModule",
+      "target": "MathModule"
+    },
+    {
+      "source": "EclipsesModule",
+      "target": "ProgressiveUtilitiesModule"
+    },
+    {
+      "source": "EphemerisModule",
+      "target": "MathModule"
+    },
+    {
+      "source": "IngressesModule",
+      "target": "EphemerisModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "CaelundasModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "DiscoveryModule"
+    },
+    {
+      "source": "MajorAspectsModule",
+      "target": "AspectsUtilitiesModule"
+    },
+    {
+      "source": "MajorAspectsModule",
+      "target": "EphemerisModule"
+    },
+    {
+      "source": "MajorAspectsModule",
+      "target": "ProgressiveUtilitiesModule"
+    },
+    {
+      "source": "MinorAspectsModule",
+      "target": "AspectsUtilitiesModule"
+    },
+    {
+      "source": "MinorAspectsModule",
+      "target": "EphemerisModule"
+    },
+    {
+      "source": "MinorAspectsModule",
+      "target": "ProgressiveUtilitiesModule"
+    },
+    {
+      "source": "MonthlyLunarCycleModule",
+      "target": "CalendarModule"
+    },
+    {
+      "source": "MonthlyLunarCycleModule",
+      "target": "EphemerisModule"
+    },
+    {
+      "source": "PerfectiveModule",
+      "target": "AnnualSolarCycleModule"
+    },
+    {
+      "source": "PerfectiveModule",
+      "target": "AspectsModule"
+    },
+    {
+      "source": "PerfectiveModule",
+      "target": "DailyCyclesModule"
+    },
+    {
+      "source": "PerfectiveModule",
+      "target": "DatetimeModule"
+    },
+    {
+      "source": "PerfectiveModule",
+      "target": "EclipsesModule"
+    },
+    {
+      "source": "PerfectiveModule",
+      "target": "EphemerisModule"
+    },
+    {
+      "source": "PerfectiveModule",
+      "target": "IngressesModule"
+    },
+    {
+      "source": "PerfectiveModule",
+      "target": "MonthlyLunarCycleModule"
+    },
+    {
+      "source": "PerfectiveModule",
+      "target": "PhasesModule"
+    },
+    {
+      "source": "PerfectiveModule",
+      "target": "RetrogradesModule"
+    },
+    {
+      "source": "PerfectiveModule",
+      "target": "TwilightsModule"
+    },
+    {
+      "source": "PhasesModule",
+      "target": "EphemerisModule"
+    },
+    {
+      "source": "PhasesModule",
+      "target": "MathModule"
+    },
+    {
+      "source": "PhasesModule",
+      "target": "ProgressiveUtilitiesModule"
+    },
+    {
+      "source": "ProgressiveModule",
+      "target": "AnnualSolarCycleModule"
+    },
+    {
+      "source": "ProgressiveModule",
+      "target": "AspectsModule"
+    },
+    {
+      "source": "ProgressiveModule",
+      "target": "EclipsesModule"
+    },
+    {
+      "source": "ProgressiveModule",
+      "target": "IngressesModule"
+    },
+    {
+      "source": "ProgressiveModule",
+      "target": "MonthlyLunarCycleModule"
+    },
+    {
+      "source": "ProgressiveModule",
+      "target": "PhasesModule"
+    },
+    {
+      "source": "ProgressiveModule",
+      "target": "RetrogradesModule"
+    },
+    {
+      "source": "ProgressiveModule",
+      "target": "TwilightsModule"
+    },
+    {
+      "source": "QuadrupleAspectsModule",
+      "target": "AspectsUtilitiesModule"
+    },
+    {
+      "source": "QuintupleAspectsModule",
+      "target": "AspectsUtilitiesModule"
+    },
+    {
+      "source": "QuintupleAspectsModule",
+      "target": "MathModule"
+    },
+    {
+      "source": "RetrogradesModule",
+      "target": "EphemerisModule"
+    },
+    {
+      "source": "RetrogradesModule",
+      "target": "MathModule"
+    },
+    {
+      "source": "RetrogradesModule",
+      "target": "ProgressiveUtilitiesModule"
+    },
+    {
+      "source": "SextupleAspectsModule",
+      "target": "AspectsUtilitiesModule"
+    },
+    {
+      "source": "SextupleAspectsModule",
+      "target": "MathModule"
+    },
+    {
+      "source": "SpecialtyAspectsModule",
+      "target": "AspectsUtilitiesModule"
+    },
+    {
+      "source": "SpecialtyAspectsModule",
+      "target": "EphemerisModule"
+    },
+    {
+      "source": "SpecialtyAspectsModule",
+      "target": "ProgressiveUtilitiesModule"
+    },
+    {
+      "source": "StelliumModule",
+      "target": "AspectsUtilitiesModule"
+    },
+    {
+      "source": "TripleAspectsModule",
+      "target": "AspectsUtilitiesModule"
+    },
+    {
+      "source": "TwilightsModule",
+      "target": "EphemerisModule"
+    },
+    {
+      "source": "TwilightsModule",
+      "target": "MathModule"
+    },
+    {
+      "source": "TwilightsModule",
+      "target": "ProgressiveUtilitiesModule"
+    }
+  ],
+  "isolatedModuleNames": ["ConfigModule", "LoggerModule"],
+  "moduleNames": [
+    "AnnualSolarCycleModule",
+    "AspectsModule",
+    "AspectsUtilitiesModule",
+    "CaelundasModule",
+    "CalendarModule",
+    "ConfigModule",
+    "DailyCyclesModule",
+    "DatetimeModule",
+    "DiscoveryModule",
+    "EclipsesModule",
+    "EphemerisModule",
+    "IngressesModule",
+    "InputModule",
+    "LoggerModule",
+    "MainModule",
+    "MajorAspectsModule",
+    "MathModule",
+    "MinorAspectsModule",
+    "MonthlyLunarCycleModule",
+    "PerfectiveModule",
+    "PhasesModule",
+    "ProgressiveModule",
+    "ProgressiveUtilitiesModule",
+    "QuadrupleAspectsModule",
+    "QuintupleAspectsModule",
+    "RetrogradesModule",
+    "SextupleAspectsModule",
+    "SpecialtyAspectsModule",
+    "StelliumModule",
+    "TripleAspectsModule",
+    "TwilightsModule"
+  ],
+  "projectName": "caelundas"
+}

@@ -1,0 +1,75 @@
+{
+  "edges": [
+    {
+      "source": "src/modules/json-validator/json-comparison.service.ts",
+      "target": "src/modules/json-validator/json-validator.types.ts"
+    },
+    {
+      "source": "src/modules/json-validator/json-comparison.service.unit.test.ts",
+      "target": "src/modules/json-validator/json-comparison.service.ts"
+    },
+    {
+      "source": "src/modules/json-validator/json-comparison.service.unit.test.ts",
+      "target": "src/modules/json-validator/json-validator.types.ts"
+    },
+    {
+      "source": "src/modules/json-validator/json-validator.module.ts",
+      "target": "src/modules/json-validator/json-comparison.service.ts"
+    },
+    {
+      "source": "src/modules/json-validator/json-validator.module.ts",
+      "target": "src/modules/json-validator/json-validator.service.ts"
+    },
+    {
+      "source": "src/modules/json-validator/json-validator.module.unit.test.ts",
+      "target": "src/modules/json-validator/json-validator.module.ts"
+    },
+    {
+      "source": "src/modules/json-validator/json-validator.module.unit.test.ts",
+      "target": "src/modules/json-validator/json-validator.service.ts"
+    },
+    {
+      "source": "src/modules/json-validator/json-validator.service.ts",
+      "target": "src/modules/json-validator/json-comparison.service.ts"
+    },
+    {
+      "source": "src/modules/json-validator/json-validator.service.ts",
+      "target": "src/modules/json-validator/json-validator.constants.ts"
+    },
+    {
+      "source": "src/modules/json-validator/json-validator.service.ts",
+      "target": "src/modules/json-validator/json-validator.types.ts"
+    },
+    {
+      "source": "src/modules/json-validator/json-validator.service.unit.test.ts",
+      "target": "src/modules/json-validator/json-comparison.service.ts"
+    },
+    {
+      "source": "src/modules/json-validator/json-validator.service.unit.test.ts",
+      "target": "src/modules/json-validator/json-validator.service.ts"
+    }
+  ],
+  "fileNames": [
+    "eslint.config.ts",
+    "src/index.ts",
+    "src/modules/json-validator/json-comparison.service.ts",
+    "src/modules/json-validator/json-comparison.service.unit.test.ts",
+    "src/modules/json-validator/json-validator.constants.ts",
+    "src/modules/json-validator/json-validator.module.ts",
+    "src/modules/json-validator/json-validator.module.unit.test.ts",
+    "src/modules/json-validator/json-validator.service.ts",
+    "src/modules/json-validator/json-validator.service.unit.test.ts",
+    "src/modules/json-validator/json-validator.types.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "isolatedFileNames": [
+    "eslint.config.ts",
+    "src/index.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "projectName": "conformetry-json"
+}

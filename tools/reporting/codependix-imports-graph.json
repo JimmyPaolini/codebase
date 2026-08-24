@@ -1,0 +1,285 @@
+{
+  "edges": [
+    {
+      "source": "src/main.end-to-end.test.ts",
+      "target": "src/constants.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/constants.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/reporting/reporting.module.ts"
+    },
+    {
+      "source": "src/main.ts",
+      "target": "src/main.module.ts"
+    },
+    {
+      "source": "src/main.unit.test.ts",
+      "target": "src/modules/reporting/reporting.module.ts"
+    },
+    {
+      "source": "src/modules/bundle-markdown/bundle-markdown.module.ts",
+      "target": "src/modules/bundle-markdown/bundle-markdown.service.ts"
+    },
+    {
+      "source": "src/modules/bundle-markdown/bundle-markdown.service.ts",
+      "target": "src/modules/bundle-markdown/bundle-markdown.constants.ts"
+    },
+    {
+      "source": "src/modules/bundle-markdown/bundle-markdown.service.ts",
+      "target": "src/modules/bundle-markdown/bundle-markdown.types.ts"
+    },
+    {
+      "source": "src/modules/bundle-markdown/bundle-markdown.service.ts",
+      "target": "src/modules/bundle-markdown/bundle-markdown.utilities.ts"
+    },
+    {
+      "source": "src/modules/bundle-markdown/bundle-markdown.service.ts",
+      "target": "src/modules/bundles/bundles.types.ts"
+    },
+    {
+      "source": "src/modules/bundle-markdown/bundle-markdown.service.unit.test.ts",
+      "target": "src/modules/bundle-markdown/bundle-markdown.service.ts"
+    },
+    {
+      "source": "src/modules/bundle-markdown/bundle-markdown.service.unit.test.ts",
+      "target": "src/modules/bundles/bundles.types.ts"
+    },
+    {
+      "source": "src/modules/bundle-markdown/bundle-markdown.types.ts",
+      "target": "src/modules/bundles/bundles.types.ts"
+    },
+    {
+      "source": "src/modules/bundle-markdown/bundle-markdown.utilities.ts",
+      "target": "src/modules/bundle-markdown/bundle-markdown.types.ts"
+    },
+    {
+      "source": "src/modules/bundle-markdown/bundle-markdown.utilities.ts",
+      "target": "src/modules/bundles/bundles.types.ts"
+    },
+    {
+      "source": "src/modules/bundle-markdown/bundle-markdown.utilities.unit.test.ts",
+      "target": "src/modules/bundle-markdown/bundle-markdown.utilities.ts"
+    },
+    {
+      "source": "src/modules/bundle-markdown/bundle-markdown.utilities.unit.test.ts",
+      "target": "src/modules/bundles/bundles.types.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.command.ts",
+      "target": "src/modules/bundle-markdown/bundle-markdown.constants.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.command.ts",
+      "target": "src/modules/bundle-markdown/bundle-markdown.service.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.command.ts",
+      "target": "src/modules/bundles/bundles.service.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.command.ts",
+      "target": "src/modules/bundles/bundles.types.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.command.ts",
+      "target": "src/modules/reporting/reporting.service.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.command.ts",
+      "target": "src/modules/reporting/reporting.types.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.command.unit.test.ts",
+      "target": "src/modules/bundle-markdown/bundle-markdown.service.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.command.unit.test.ts",
+      "target": "src/modules/bundles/bundles.command.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.command.unit.test.ts",
+      "target": "src/modules/bundles/bundles.service.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.command.unit.test.ts",
+      "target": "src/modules/bundles/bundles.types.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.command.unit.test.ts",
+      "target": "src/modules/reporting/reporting-markers.service.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.command.unit.test.ts",
+      "target": "src/modules/reporting/reporting.service.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.module.ts",
+      "target": "src/modules/bundle-markdown/bundle-markdown.module.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.module.ts",
+      "target": "src/modules/bundles/bundles.command.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.module.ts",
+      "target": "src/modules/bundles/bundles.service.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.module.ts",
+      "target": "src/modules/reporting/reporting-markers.service.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.module.ts",
+      "target": "src/modules/reporting/reporting.service.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.service.ts",
+      "target": "src/modules/bundles/bundles.constants.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.service.ts",
+      "target": "src/modules/bundles/bundles.types.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.service.unit.test.ts",
+      "target": "src/modules/bundles/bundles.service.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.service.unit.test.ts",
+      "target": "src/modules/bundles/bundles.types.ts"
+    },
+    {
+      "source": "src/modules/bundles/bundles.types.ts",
+      "target": "src/modules/bundles/bundles.constants.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting-markers.service.ts",
+      "target": "src/modules/reporting/reporting.types.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting-markers.service.unit.test.ts",
+      "target": "src/modules/reporting/reporting-markers.service.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting-markers.service.unit.test.ts",
+      "target": "src/modules/reporting/reporting.types.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting.command.ts",
+      "target": "src/modules/bundles/bundles.command.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting.command.ts",
+      "target": "src/modules/reporting/reporting.service.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting.command.ts",
+      "target": "src/modules/reporting/reporting.types.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting.command.unit.test.ts",
+      "target": "src/modules/bundles/bundles.command.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting.command.unit.test.ts",
+      "target": "src/modules/reporting/reporting-markers.service.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting.command.unit.test.ts",
+      "target": "src/modules/reporting/reporting.command.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting.command.unit.test.ts",
+      "target": "src/modules/reporting/reporting.service.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting.module.ts",
+      "target": "src/modules/bundles/bundles.module.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting.module.ts",
+      "target": "src/modules/reporting/reporting-markers.service.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting.module.ts",
+      "target": "src/modules/reporting/reporting.command.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting.module.ts",
+      "target": "src/modules/reporting/reporting.service.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting.service.ts",
+      "target": "src/modules/reporting/reporting-markers.service.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting.service.ts",
+      "target": "src/modules/reporting/reporting.types.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting.service.unit.test.ts",
+      "target": "src/modules/reporting/reporting-markers.service.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting.service.unit.test.ts",
+      "target": "src/modules/reporting/reporting.service.ts"
+    },
+    {
+      "source": "src/modules/reporting/reporting.service.unit.test.ts",
+      "target": "src/modules/reporting/reporting.types.ts"
+    },
+    {
+      "source": "src/repl.ts",
+      "target": "src/main.module.ts"
+    }
+  ],
+  "fileNames": [
+    "eslint.config.ts",
+    "src/constants.ts",
+    "src/main.end-to-end.test.ts",
+    "src/main.module.ts",
+    "src/main.ts",
+    "src/main.unit.test.ts",
+    "src/modules/bundle-markdown/bundle-markdown.constants.ts",
+    "src/modules/bundle-markdown/bundle-markdown.module.ts",
+    "src/modules/bundle-markdown/bundle-markdown.service.ts",
+    "src/modules/bundle-markdown/bundle-markdown.service.unit.test.ts",
+    "src/modules/bundle-markdown/bundle-markdown.types.ts",
+    "src/modules/bundle-markdown/bundle-markdown.utilities.ts",
+    "src/modules/bundle-markdown/bundle-markdown.utilities.unit.test.ts",
+    "src/modules/bundles/bundles.command.ts",
+    "src/modules/bundles/bundles.command.unit.test.ts",
+    "src/modules/bundles/bundles.constants.ts",
+    "src/modules/bundles/bundles.module.ts",
+    "src/modules/bundles/bundles.service.ts",
+    "src/modules/bundles/bundles.service.unit.test.ts",
+    "src/modules/bundles/bundles.types.ts",
+    "src/modules/reporting/reporting.command.ts",
+    "src/modules/reporting/reporting.command.unit.test.ts",
+    "src/modules/reporting/reporting.constants.ts",
+    "src/modules/reporting/reporting.module.ts",
+    "src/modules/reporting/reporting.service.ts",
+    "src/modules/reporting/reporting.service.unit.test.ts",
+    "src/modules/reporting/reporting.types.ts",
+    "src/modules/reporting/reporting-markers.service.ts",
+    "src/modules/reporting/reporting-markers.service.unit.test.ts",
+    "src/repl.ts",
+    "src/repl.unit.test.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "isolatedFileNames": [
+    "eslint.config.ts",
+    "src/modules/reporting/reporting.constants.ts",
+    "src/repl.unit.test.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "projectName": "reporting"
+}

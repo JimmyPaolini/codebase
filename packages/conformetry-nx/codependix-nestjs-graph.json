@@ -1,0 +1,170 @@
+{
+  "ambientModuleNames": ["LoggerModule"],
+  "edges": [
+    {
+      "source": "FilesModule",
+      "target": "DifferencesModule"
+    },
+    {
+      "source": "FilesModule",
+      "target": "InstanceDiscoveryModule"
+    },
+    {
+      "source": "GenerationModule",
+      "target": "RenderingModule"
+    },
+    {
+      "source": "GeneratorModule",
+      "target": "ConfigurationModule"
+    },
+    {
+      "source": "GeneratorModule",
+      "target": "ScopeModule"
+    },
+    {
+      "source": "InstanceDiscoveryModule",
+      "target": "RenderingModule"
+    },
+    {
+      "source": "InstanceDiscoveryModule",
+      "target": "TemplateDiscoveryModule"
+    },
+    {
+      "source": "InstancesModule",
+      "target": "ConfigurationModule"
+    },
+    {
+      "source": "InstancesModule",
+      "target": "InstanceDiscoveryModule"
+    },
+    {
+      "source": "InstancesModule",
+      "target": "ScopeModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "GeneratorModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "PluginModule"
+    },
+    {
+      "source": "PathsModule",
+      "target": "ConfigurationModule"
+    },
+    {
+      "source": "PathsModule",
+      "target": "InstancesModule"
+    },
+    {
+      "source": "PathsModule",
+      "target": "ScopeModule"
+    },
+    {
+      "source": "PluginModule",
+      "target": "AdapterModule"
+    },
+    {
+      "source": "PluginModule",
+      "target": "ConfigurationModule"
+    },
+    {
+      "source": "PluginModule",
+      "target": "GenerationModule"
+    },
+    {
+      "source": "PluginModule",
+      "target": "GeneratorModule"
+    },
+    {
+      "source": "PluginModule",
+      "target": "InstanceDiscoveryModule"
+    },
+    {
+      "source": "PluginModule",
+      "target": "InstancesModule"
+    },
+    {
+      "source": "PluginModule",
+      "target": "OptionsModule"
+    },
+    {
+      "source": "PluginModule",
+      "target": "PathsModule"
+    },
+    {
+      "source": "PluginModule",
+      "target": "ProjectsModule"
+    },
+    {
+      "source": "PluginModule",
+      "target": "ReportingModule"
+    },
+    {
+      "source": "PluginModule",
+      "target": "ScopeModule"
+    },
+    {
+      "source": "PluginModule",
+      "target": "TemplateDiscoveryModule"
+    },
+    {
+      "source": "PluginModule",
+      "target": "ValidationModule"
+    },
+    {
+      "source": "ReportingModule",
+      "target": "ScoringModule"
+    },
+    {
+      "source": "TemplateDiscoveryModule",
+      "target": "RenderingModule"
+    },
+    {
+      "source": "ValidationModule",
+      "target": "FilesModule"
+    },
+    {
+      "source": "ValidationModule",
+      "target": "InstanceDiscoveryModule"
+    },
+    {
+      "source": "ValidationModule",
+      "target": "LanguageModule"
+    },
+    {
+      "source": "ValidationModule",
+      "target": "ReportingModule"
+    },
+    {
+      "source": "ValidationModule",
+      "target": "ScoringModule"
+    }
+  ],
+  "isolatedModuleNames": ["LoggerModule"],
+  "moduleNames": [
+    "AdapterModule",
+    "ConfigurationModule",
+    "DifferencesModule",
+    "FilesModule",
+    "GenerationModule",
+    "GeneratorModule",
+    "InstanceDiscoveryModule",
+    "InstancesModule",
+    "LanguageModule",
+    "LoggerModule",
+    "MainModule",
+    "OptionsModule",
+    "PathsModule",
+    "PluginModule",
+    "ProjectsModule",
+    "RenderingModule",
+    "ReportingModule",
+    "ScopeModule",
+    "ScoringModule",
+    "TemplateDiscoveryModule",
+    "ValidationModule"
+  ],
+  "projectName": "conformetry-nx"
+}

@@ -4,6 +4,7 @@
   "devDependencies": {
     "@callidescope/configuration": "workspace:*",
     "@codebase/logger": "workspace:*",
+    "@codependix/configuration": "workspace:*",
     "@codometer/configuration": "workspace:*",
     "@commitlint/cli": "catalog:",
     "@commitlint/config-conventional": "catalog:",

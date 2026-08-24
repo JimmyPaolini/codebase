@@ -1,0 +1,46 @@
+{
+  "edges": [
+    {
+      "source": "src/modules/files/files.module.ts",
+      "target": "src/modules/files/files.service.ts"
+    },
+    {
+      "source": "src/modules/files/files.module.unit.test.ts",
+      "target": "src/modules/files/files.module.ts"
+    },
+    {
+      "source": "src/modules/files/files.module.unit.test.ts",
+      "target": "src/modules/files/files.service.ts"
+    },
+    {
+      "source": "src/modules/files/files.service.ts",
+      "target": "src/modules/files/files.types.ts"
+    },
+    {
+      "source": "src/modules/files/files.service.unit.test.ts",
+      "target": "src/modules/files/files.service.ts"
+    }
+  ],
+  "fileNames": [
+    "eslint.config.ts",
+    "src/index.ts",
+    "src/modules/files/files.constants.ts",
+    "src/modules/files/files.module.ts",
+    "src/modules/files/files.module.unit.test.ts",
+    "src/modules/files/files.service.ts",
+    "src/modules/files/files.service.unit.test.ts",
+    "src/modules/files/files.types.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "isolatedFileNames": [
+    "eslint.config.ts",
+    "src/index.ts",
+    "src/modules/files/files.constants.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "projectName": "conformetry-files"
+}

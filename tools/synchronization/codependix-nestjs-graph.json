@@ -1,0 +1,72 @@
+{
+  "ambientModuleNames": ["ConfigModule", "LoggerModule"],
+  "edges": [
+    {
+      "source": "ConformetryGeneratorsModule",
+      "target": "ConfigurationModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "DiscoveryModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "IssueLabelsModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "SynchronizationModule"
+    },
+    {
+      "source": "SynchronizationModule",
+      "target": "ConformetryGeneratorsModule"
+    },
+    {
+      "source": "SynchronizationModule",
+      "target": "ConventionalConfigModule"
+    },
+    {
+      "source": "SynchronizationModule",
+      "target": "DevcontainerConfigurationModule"
+    },
+    {
+      "source": "SynchronizationModule",
+      "target": "NestjsModuleGraphsModule"
+    },
+    {
+      "source": "SynchronizationModule",
+      "target": "NxProjectGraphsModule"
+    },
+    {
+      "source": "SynchronizationModule",
+      "target": "PullRequestLabelsModule"
+    },
+    {
+      "source": "SynchronizationModule",
+      "target": "PullRequestTemplateModule"
+    },
+    {
+      "source": "SynchronizationModule",
+      "target": "SkillExclusionsModule"
+    }
+  ],
+  "isolatedModuleNames": ["ConfigModule", "LoggerModule"],
+  "moduleNames": [
+    "ConfigModule",
+    "ConfigurationModule",
+    "ConformetryGeneratorsModule",
+    "ConventionalConfigModule",
+    "DevcontainerConfigurationModule",
+    "DiscoveryModule",
+    "IssueLabelsModule",
+    "LoggerModule",
+    "MainModule",
+    "NestjsModuleGraphsModule",
+    "NxProjectGraphsModule",
+    "PullRequestLabelsModule",
+    "PullRequestTemplateModule",
+    "SkillExclusionsModule",
+    "SynchronizationModule"
+  ],
+  "projectName": "synchronization"
+}

@@ -1,0 +1,32 @@
+{
+  "ambientModuleNames": ["ConfigModule", "LoggerModule"],
+  "edges": [
+    {
+      "source": "BundlesModule",
+      "target": "BundleMarkdownModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "DiscoveryModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "ReportingModule"
+    },
+    {
+      "source": "ReportingModule",
+      "target": "BundlesModule"
+    }
+  ],
+  "isolatedModuleNames": ["ConfigModule", "LoggerModule"],
+  "moduleNames": [
+    "BundleMarkdownModule",
+    "BundlesModule",
+    "ConfigModule",
+    "DiscoveryModule",
+    "LoggerModule",
+    "MainModule",
+    "ReportingModule"
+  ],
+  "projectName": "reporting"
+}

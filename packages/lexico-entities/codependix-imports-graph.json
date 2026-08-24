@@ -1,0 +1,527 @@
+{
+  "edges": [
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/database/database.constants.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/form/AdjectivalForm.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/form/AdverbForm.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/form/FiniteVerbForm.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/form/Form.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/form/GerundForm.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/form/InfinitiveForm.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/form/NominalForm.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/form/ParticipleForm.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/form/SupineForm.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/inflection/AdjectiveInflection.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/inflection/AdverbInflection.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/inflection/Inflection.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/inflection/NounInflection.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/inflection/PrepositionInflection.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/inflection/Uninflected.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/inflection/VerbInflection.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/Lexeme.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/PrincipalPart.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/Pronunciation.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/Translation.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/Word.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/WordForm.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/dictionary/WordLexeme.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/literature/Author.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/literature/Line.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/literature/Text.entity.ts"
+    },
+    {
+      "source": "src/modules/database/data-source.constants.ts",
+      "target": "src/modules/entities/literature/Token.entity.ts"
+    },
+    {
+      "source": "src/modules/database/database.module.ts",
+      "target": "src/modules/database/data-source.constants.ts"
+    },
+    {
+      "source": "src/modules/database/database.module.ts",
+      "target": "src/modules/database/database.constants.ts"
+    },
+    {
+      "source": "src/modules/database/database.module.ts",
+      "target": "src/modules/database/database.service.ts"
+    },
+    {
+      "source": "src/modules/database/database.service.unit.test.ts",
+      "target": "src/modules/database/database.service.ts"
+    },
+    {
+      "source": "src/modules/entities/base/Auditable.entity.ts",
+      "target": "src/modules/entities/base/Deletable.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/base/Creatable.entity.ts",
+      "target": "src/modules/entities/base/Identifiable.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/base/Deletable.entity.ts",
+      "target": "src/modules/entities/base/Updatable.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/base/Updatable.entity.ts",
+      "target": "src/modules/entities/base/Creatable.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/AdjectivalForm.entity.ts",
+      "target": "src/modules/database/database.constants.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/AdjectivalForm.entity.ts",
+      "target": "src/modules/entities/dictionary/form/Form.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/AdverbForm.entity.ts",
+      "target": "src/modules/database/database.constants.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/AdverbForm.entity.ts",
+      "target": "src/modules/entities/dictionary/form/Form.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/FiniteVerbForm.entity.ts",
+      "target": "src/modules/database/database.constants.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/FiniteVerbForm.entity.ts",
+      "target": "src/modules/entities/dictionary/form/Form.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/Form.entity.ts",
+      "target": "src/modules/entities/base/Auditable.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/Form.entity.ts",
+      "target": "src/modules/entities/dictionary/Lexeme.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/Form.entity.ts",
+      "target": "src/modules/entities/dictionary/WordForm.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/GerundForm.entity.ts",
+      "target": "src/modules/database/database.constants.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/GerundForm.entity.ts",
+      "target": "src/modules/entities/dictionary/form/Form.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/InfinitiveForm.entity.ts",
+      "target": "src/modules/database/database.constants.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/InfinitiveForm.entity.ts",
+      "target": "src/modules/entities/dictionary/form/Form.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/NominalForm.entity.ts",
+      "target": "src/modules/database/database.constants.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/NominalForm.entity.ts",
+      "target": "src/modules/entities/dictionary/form/Form.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/ParticipleForm.entity.ts",
+      "target": "src/modules/database/database.constants.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/ParticipleForm.entity.ts",
+      "target": "src/modules/entities/dictionary/form/Form.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/SupineForm.entity.ts",
+      "target": "src/modules/database/database.constants.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/form/SupineForm.entity.ts",
+      "target": "src/modules/entities/dictionary/form/Form.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/inflection/AdjectiveInflection.entity.ts",
+      "target": "src/modules/database/database.constants.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/inflection/AdjectiveInflection.entity.ts",
+      "target": "src/modules/entities/dictionary/inflection/Inflection.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/inflection/AdverbInflection.entity.ts",
+      "target": "src/modules/database/database.constants.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/inflection/AdverbInflection.entity.ts",
+      "target": "src/modules/entities/dictionary/inflection/Inflection.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/inflection/Inflection.entity.ts",
+      "target": "src/modules/entities/dictionary/Lexeme.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/inflection/NounInflection.entity.ts",
+      "target": "src/modules/database/database.constants.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/inflection/NounInflection.entity.ts",
+      "target": "src/modules/entities/dictionary/inflection/Inflection.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/inflection/PrepositionInflection.entity.ts",
+      "target": "src/modules/database/database.constants.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/inflection/PrepositionInflection.entity.ts",
+      "target": "src/modules/entities/dictionary/inflection/Inflection.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/inflection/Uninflected.entity.ts",
+      "target": "src/modules/entities/dictionary/inflection/Inflection.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/inflection/VerbInflection.entity.ts",
+      "target": "src/modules/database/database.constants.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/inflection/VerbInflection.entity.ts",
+      "target": "src/modules/entities/dictionary/inflection/Inflection.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/Lexeme.entity.ts",
+      "target": "src/modules/entities/base/Auditable.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/Lexeme.entity.ts",
+      "target": "src/modules/entities/dictionary/form/Form.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/Lexeme.entity.ts",
+      "target": "src/modules/entities/dictionary/inflection/Inflection.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/Lexeme.entity.ts",
+      "target": "src/modules/entities/dictionary/PartOfSpeech.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/Lexeme.entity.ts",
+      "target": "src/modules/entities/dictionary/PrincipalPart.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/Lexeme.entity.ts",
+      "target": "src/modules/entities/dictionary/Pronunciation.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/Lexeme.entity.ts",
+      "target": "src/modules/entities/dictionary/Translation.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/Lexeme.entity.ts",
+      "target": "src/modules/entities/dictionary/WordLexeme.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/PrincipalPart.entity.ts",
+      "target": "src/modules/entities/base/Auditable.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/PrincipalPart.entity.ts",
+      "target": "src/modules/entities/dictionary/Lexeme.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/Pronunciation.entity.ts",
+      "target": "src/modules/entities/base/Auditable.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/Pronunciation.entity.ts",
+      "target": "src/modules/entities/dictionary/Lexeme.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/Translation.entity.ts",
+      "target": "src/modules/entities/base/Auditable.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/Translation.entity.ts",
+      "target": "src/modules/entities/dictionary/Lexeme.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/Word.entity.ts",
+      "target": "src/modules/entities/base/Auditable.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/Word.entity.ts",
+      "target": "src/modules/entities/dictionary/WordForm.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/Word.entity.ts",
+      "target": "src/modules/entities/dictionary/WordLexeme.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/WordForm.entity.ts",
+      "target": "src/modules/entities/base/Auditable.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/WordForm.entity.ts",
+      "target": "src/modules/entities/dictionary/form/Form.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/WordForm.entity.ts",
+      "target": "src/modules/entities/dictionary/Word.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/WordLexeme.entity.ts",
+      "target": "src/modules/entities/base/Auditable.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/WordLexeme.entity.ts",
+      "target": "src/modules/entities/dictionary/Lexeme.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/dictionary/WordLexeme.entity.ts",
+      "target": "src/modules/entities/dictionary/Word.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/entities.module.ts",
+      "target": "src/modules/entities/entities.service.ts"
+    },
+    {
+      "source": "src/modules/entities/entities.service.integration.test.ts",
+      "target": "testing/integration-test-data-source.ts"
+    },
+    {
+      "source": "src/modules/entities/entities.service.unit.test.ts",
+      "target": "src/modules/database/data-source.constants.ts"
+    },
+    {
+      "source": "src/modules/entities/entities.service.unit.test.ts",
+      "target": "src/modules/database/database.constants.ts"
+    },
+    {
+      "source": "src/modules/entities/entities.service.unit.test.ts",
+      "target": "src/modules/entities/dictionary/PartOfSpeech.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/entities.service.unit.test.ts",
+      "target": "src/modules/entities/dictionary/Pronunciation.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/entities.service.unit.test.ts",
+      "target": "src/modules/entities/entities.service.ts"
+    },
+    {
+      "source": "src/modules/entities/entities.service.unit.test.ts",
+      "target": "testing/entity-definition-assertions.ts"
+    },
+    {
+      "source": "src/modules/entities/literature/Author.entity.ts",
+      "target": "src/modules/entities/base/Auditable.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/literature/Author.entity.ts",
+      "target": "src/modules/entities/literature/Text.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/literature/Line.entity.ts",
+      "target": "src/modules/entities/base/Auditable.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/literature/Line.entity.ts",
+      "target": "src/modules/entities/literature/Author.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/literature/Line.entity.ts",
+      "target": "src/modules/entities/literature/Text.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/literature/Line.entity.ts",
+      "target": "src/modules/entities/literature/Token.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/literature/Text.entity.ts",
+      "target": "src/modules/entities/base/Auditable.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/literature/Text.entity.ts",
+      "target": "src/modules/entities/literature/Author.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/literature/Text.entity.ts",
+      "target": "src/modules/entities/literature/Line.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/literature/Token.entity.ts",
+      "target": "src/modules/entities/base/Auditable.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/literature/Token.entity.ts",
+      "target": "src/modules/entities/dictionary/Word.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/literature/Token.entity.ts",
+      "target": "src/modules/entities/literature/Author.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/literature/Token.entity.ts",
+      "target": "src/modules/entities/literature/Line.entity.ts"
+    },
+    {
+      "source": "src/modules/entities/literature/Token.entity.ts",
+      "target": "src/modules/entities/literature/Text.entity.ts"
+    },
+    {
+      "source": "testing/integration-test-data-source.ts",
+      "target": "src/modules/database/data-source.constants.ts"
+    }
+  ],
+  "fileNames": [
+    "eslint.config.ts",
+    "scripts/extract-migration-sql.ts",
+    "src/index.ts",
+    "src/modules/database/data-source.constants.ts",
+    "src/modules/database/data-source.constants.unit.test.ts",
+    "src/modules/database/data-source.utilities.unit.test.ts",
+    "src/modules/database/database.constants.ts",
+    "src/modules/database/database.module.ts",
+    "src/modules/database/database.service.ts",
+    "src/modules/database/database.service.unit.test.ts",
+    "src/modules/database/database.types.ts",
+    "src/modules/database/migrations/1781126991393-migration.ts",
+    "src/modules/entities/base/Auditable.entity.ts",
+    "src/modules/entities/base/Creatable.entity.ts",
+    "src/modules/entities/base/Deletable.entity.ts",
+    "src/modules/entities/base/Identifiable.entity.ts",
+    "src/modules/entities/base/Updatable.entity.ts",
+    "src/modules/entities/dictionary/form/AdjectivalForm.entity.ts",
+    "src/modules/entities/dictionary/form/AdverbForm.entity.ts",
+    "src/modules/entities/dictionary/form/FiniteVerbForm.entity.ts",
+    "src/modules/entities/dictionary/form/Form.entity.ts",
+    "src/modules/entities/dictionary/form/GerundForm.entity.ts",
+    "src/modules/entities/dictionary/form/InfinitiveForm.entity.ts",
+    "src/modules/entities/dictionary/form/NominalForm.entity.ts",
+    "src/modules/entities/dictionary/form/ParticipleForm.entity.ts",
+    "src/modules/entities/dictionary/form/SupineForm.entity.ts",
+    "src/modules/entities/dictionary/inflection/AdjectiveInflection.entity.ts",
+    "src/modules/entities/dictionary/inflection/AdverbInflection.entity.ts",
+    "src/modules/entities/dictionary/inflection/Inflection.entity.ts",
+    "src/modules/entities/dictionary/inflection/NounInflection.entity.ts",
+    "src/modules/entities/dictionary/inflection/PrepositionInflection.entity.ts",
+    "src/modules/entities/dictionary/inflection/Uninflected.entity.ts",
+    "src/modules/entities/dictionary/inflection/VerbInflection.entity.ts",
+    "src/modules/entities/dictionary/Lexeme.entity.ts",
+    "src/modules/entities/dictionary/PartOfSpeech.entity.ts",
+    "src/modules/entities/dictionary/PrincipalPart.entity.ts",
+    "src/modules/entities/dictionary/Pronunciation.entity.ts",
+    "src/modules/entities/dictionary/Translation.entity.ts",
+    "src/modules/entities/dictionary/Word.entity.ts",
+    "src/modules/entities/dictionary/WordForm.entity.ts",
+    "src/modules/entities/dictionary/WordLexeme.entity.ts",
+    "src/modules/entities/entities.constants.ts",
+    "src/modules/entities/entities.module.ts",
+    "src/modules/entities/entities.service.integration.test.ts",
+    "src/modules/entities/entities.service.ts",
+    "src/modules/entities/entities.service.unit.test.ts",
+    "src/modules/entities/entities.types.ts",
+    "src/modules/entities/literature/Author.entity.ts",
+    "src/modules/entities/literature/Line.entity.ts",
+    "src/modules/entities/literature/Text.entity.ts",
+    "src/modules/entities/literature/Token.entity.ts",
+    "testing/entity-definition-assertions.ts",
+    "testing/integration-test-data-source.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "isolatedFileNames": [
+    "eslint.config.ts",
+    "scripts/extract-migration-sql.ts",
+    "src/index.ts",
+    "src/modules/database/data-source.constants.unit.test.ts",
+    "src/modules/database/data-source.utilities.unit.test.ts",
+    "src/modules/database/database.types.ts",
+    "src/modules/database/migrations/1781126991393-migration.ts",
+    "src/modules/entities/entities.constants.ts",
+    "src/modules/entities/entities.types.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "projectName": "lexico-entities"
+}

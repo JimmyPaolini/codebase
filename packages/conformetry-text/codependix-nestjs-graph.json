@@ -1,0 +1,7 @@
+{
+  "ambientModuleNames": [],
+  "edges": [],
+  "isolatedModuleNames": ["TextValidatorModule"],
+  "moduleNames": ["TextValidatorModule"],
+  "projectName": "conformetry-text"
+}

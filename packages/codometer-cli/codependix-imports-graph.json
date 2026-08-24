@@ -1,0 +1,1279 @@
+{
+  "edges": [
+    {
+      "source": "src/main.end-to-end.test.ts",
+      "target": "src/constants.ts"
+    },
+    {
+      "source": "src/main.end-to-end.test.ts",
+      "target": "src/modules/report/report.types.ts"
+    },
+    {
+      "source": "src/main.end-to-end.test.ts",
+      "target": "testing/fixture-tree.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/constants.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/codometer/codometer.module.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/custom-statistics/custom-statistics.module.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/file-discovery/file-discovery.module.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/languages/languages.module.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/output-json/output-json.module.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/output-markdown/output-markdown.module.ts"
+    },
+    {
+      "source": "src/main.ts",
+      "target": "src/main.module.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.integration.test.ts",
+      "target": "src/main.module.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.integration.test.ts",
+      "target": "src/modules/codometer/codometer.command.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.integration.test.ts",
+      "target": "src/modules/report/report.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.integration.test.ts",
+      "target": "testing/fixture-tree.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.ts",
+      "target": "src/modules/codometer/codometer.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.ts",
+      "target": "src/modules/codometer/codometer.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.ts",
+      "target": "src/modules/codometer/run-plan.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.ts",
+      "target": "src/modules/codometer/run-plan.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.ts",
+      "target": "src/modules/output-json/output-json.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.ts",
+      "target": "src/modules/output-markdown/output-markdown.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.ts",
+      "target": "src/modules/output-markdown/output-markdown.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.ts",
+      "target": "src/modules/report/report.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.unit.test.ts",
+      "target": "src/modules/codometer/codometer.command.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.unit.test.ts",
+      "target": "src/modules/codometer/codometer.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.unit.test.ts",
+      "target": "src/modules/codometer/codometer.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.unit.test.ts",
+      "target": "src/modules/codometer/run-plan.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.unit.test.ts",
+      "target": "src/modules/limits/limits.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.unit.test.ts",
+      "target": "src/modules/output-json/output-json.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.unit.test.ts",
+      "target": "src/modules/output-markdown/output-markdown.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.unit.test.ts",
+      "target": "src/modules/report/report.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.command.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.module.ts",
+      "target": "src/modules/codometer/codometer.command.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.module.ts",
+      "target": "src/modules/codometer/codometer.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.module.ts",
+      "target": "src/modules/codometer/run-plan.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.module.ts",
+      "target": "src/modules/custom-statistics/custom-statistics.module.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.module.ts",
+      "target": "src/modules/file-discovery/file-discovery.module.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.module.ts",
+      "target": "src/modules/languages/languages.module.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.module.ts",
+      "target": "src/modules/limits/limits.module.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.module.ts",
+      "target": "src/modules/output-json/output-json.module.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.module.ts",
+      "target": "src/modules/output-markdown/output-markdown.module.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.module.ts",
+      "target": "src/modules/report/report.module.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.module.ts",
+      "target": "src/modules/size-analysis/size-analysis.module.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.module.ts",
+      "target": "src/modules/targets/targets.module.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.ts",
+      "target": "src/modules/codometer/codometer.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.ts",
+      "target": "src/modules/custom-statistics/custom-statistics.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.ts",
+      "target": "src/modules/file-discovery/file-discovery.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.ts",
+      "target": "src/modules/languages/languages.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.ts",
+      "target": "src/modules/limits/limits.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.ts",
+      "target": "src/modules/limits/limits.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.ts",
+      "target": "src/modules/limits/metric-index.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.ts",
+      "target": "src/modules/report/report.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.ts",
+      "target": "src/modules/size-analysis/size-analysis.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.ts",
+      "target": "src/modules/targets/targets.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.ts",
+      "target": "src/modules/typescript/typescript.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.unit.test.ts",
+      "target": "src/modules/codometer/codometer.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.unit.test.ts",
+      "target": "src/modules/custom-statistics/custom-statistics.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.unit.test.ts",
+      "target": "src/modules/file-discovery/file-discovery.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.unit.test.ts",
+      "target": "src/modules/file-discovery/file-discovery.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.unit.test.ts",
+      "target": "src/modules/languages/languages.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.unit.test.ts",
+      "target": "src/modules/languages/languages.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.unit.test.ts",
+      "target": "src/modules/limits/limits.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.unit.test.ts",
+      "target": "src/modules/limits/metric-index.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.unit.test.ts",
+      "target": "src/modules/size-analysis/size-analysis.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.service.unit.test.ts",
+      "target": "src/modules/targets/targets.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.types.ts",
+      "target": "src/modules/file-discovery/file-discovery.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.types.ts",
+      "target": "src/modules/limits/limits.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.types.ts",
+      "target": "src/modules/report/report.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/codometer.types.ts",
+      "target": "src/modules/size-analysis/size-analysis.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/run-plan.service.ts",
+      "target": "src/modules/codometer/codometer.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/run-plan.service.ts",
+      "target": "src/modules/codometer/run-plan.constants.ts"
+    },
+    {
+      "source": "src/modules/codometer/run-plan.service.ts",
+      "target": "src/modules/codometer/run-plan.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/run-plan.service.ts",
+      "target": "src/modules/output-markdown/output-markdown.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/run-plan.service.unit.test.ts",
+      "target": "src/modules/codometer/codometer.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/run-plan.service.unit.test.ts",
+      "target": "src/modules/codometer/run-plan.service.ts"
+    },
+    {
+      "source": "src/modules/codometer/run-plan.service.unit.test.ts",
+      "target": "src/modules/codometer/run-plan.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/run-plan.types.ts",
+      "target": "src/modules/codometer/codometer.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/run-plan.types.ts",
+      "target": "src/modules/output-markdown/output-markdown.types.ts"
+    },
+    {
+      "source": "src/modules/codometer/run-plan.types.ts",
+      "target": "src/modules/report/report.types.ts"
+    },
+    {
+      "source": "src/modules/css/css.constants.ts",
+      "target": "src/modules/css/css.types.ts"
+    },
+    {
+      "source": "src/modules/css/css.module.ts",
+      "target": "src/modules/css/css.service.ts"
+    },
+    {
+      "source": "src/modules/css/css.service.ts",
+      "target": "src/modules/css/css.constants.ts"
+    },
+    {
+      "source": "src/modules/css/css.service.ts",
+      "target": "src/modules/css/css.types.ts"
+    },
+    {
+      "source": "src/modules/css/css.service.unit.test.ts",
+      "target": "src/modules/css/css.service.ts"
+    },
+    {
+      "source": "src/modules/custom-statistics/custom-statistics.module.ts",
+      "target": "src/modules/custom-statistics/custom-statistics.service.ts"
+    },
+    {
+      "source": "src/modules/custom-statistics/custom-statistics.service.ts",
+      "target": "src/modules/custom-statistics/custom-statistics.types.ts"
+    },
+    {
+      "source": "src/modules/custom-statistics/custom-statistics.service.ts",
+      "target": "src/modules/typescript/typescript.types.ts"
+    },
+    {
+      "source": "src/modules/custom-statistics/custom-statistics.service.unit.test.ts",
+      "target": "src/modules/custom-statistics/custom-statistics.service.ts"
+    },
+    {
+      "source": "src/modules/file-discovery/file-discovery.module.ts",
+      "target": "src/modules/file-discovery/file-discovery.service.ts"
+    },
+    {
+      "source": "src/modules/file-discovery/file-discovery.module.ts",
+      "target": "src/modules/file-discovery/ignore-rules.service.ts"
+    },
+    {
+      "source": "src/modules/file-discovery/file-discovery.service.integration.test.ts",
+      "target": "src/modules/file-discovery/file-discovery.service.ts"
+    },
+    {
+      "source": "src/modules/file-discovery/file-discovery.service.integration.test.ts",
+      "target": "src/modules/file-discovery/file-discovery.types.ts"
+    },
+    {
+      "source": "src/modules/file-discovery/file-discovery.service.integration.test.ts",
+      "target": "src/modules/file-discovery/ignore-rules.service.ts"
+    },
+    {
+      "source": "src/modules/file-discovery/file-discovery.service.integration.test.ts",
+      "target": "testing/fixture-tree.ts"
+    },
+    {
+      "source": "src/modules/file-discovery/file-discovery.service.ts",
+      "target": "src/modules/file-discovery/file-discovery.constants.ts"
+    },
+    {
+      "source": "src/modules/file-discovery/file-discovery.service.ts",
+      "target": "src/modules/file-discovery/file-discovery.types.ts"
+    },
+    {
+      "source": "src/modules/file-discovery/file-discovery.service.ts",
+      "target": "src/modules/file-discovery/ignore-rules.service.ts"
+    },
+    {
+      "source": "src/modules/file-discovery/file-discovery.service.ts",
+      "target": "src/modules/file-discovery/ignore-rules.types.ts"
+    },
+    {
+      "source": "src/modules/file-discovery/file-discovery.service.unit.test.ts",
+      "target": "src/modules/file-discovery/file-discovery.service.ts"
+    },
+    {
+      "source": "src/modules/file-discovery/file-discovery.service.unit.test.ts",
+      "target": "src/modules/file-discovery/file-discovery.types.ts"
+    },
+    {
+      "source": "src/modules/file-discovery/file-discovery.service.unit.test.ts",
+      "target": "src/modules/file-discovery/ignore-rules.service.ts"
+    },
+    {
+      "source": "src/modules/file-discovery/file-discovery.types.ts",
+      "target": "src/modules/file-discovery/ignore-rules.types.ts"
+    },
+    {
+      "source": "src/modules/file-discovery/ignore-rules.service.ts",
+      "target": "src/modules/file-discovery/ignore-rules.types.ts"
+    },
+    {
+      "source": "src/modules/file-discovery/ignore-rules.service.unit.test.ts",
+      "target": "src/modules/file-discovery/ignore-rules.service.ts"
+    },
+    {
+      "source": "src/modules/file-discovery/ignore-rules.service.unit.test.ts",
+      "target": "src/modules/file-discovery/ignore-rules.types.ts"
+    },
+    {
+      "source": "src/modules/hcl/hcl.constants.ts",
+      "target": "src/modules/hcl/hcl.types.ts"
+    },
+    {
+      "source": "src/modules/hcl/hcl.module.ts",
+      "target": "src/modules/hcl/hcl.service.ts"
+    },
+    {
+      "source": "src/modules/hcl/hcl.service.ts",
+      "target": "src/modules/hcl/hcl.constants.ts"
+    },
+    {
+      "source": "src/modules/hcl/hcl.service.ts",
+      "target": "src/modules/hcl/hcl.types.ts"
+    },
+    {
+      "source": "src/modules/hcl/hcl.service.unit.test.ts",
+      "target": "src/modules/hcl/hcl.service.ts"
+    },
+    {
+      "source": "src/modules/json/json.constants.ts",
+      "target": "src/modules/json/json.types.ts"
+    },
+    {
+      "source": "src/modules/json/json.module.ts",
+      "target": "src/modules/json/json.service.ts"
+    },
+    {
+      "source": "src/modules/json/json.service.ts",
+      "target": "src/modules/json/json.constants.ts"
+    },
+    {
+      "source": "src/modules/json/json.service.ts",
+      "target": "src/modules/json/json.types.ts"
+    },
+    {
+      "source": "src/modules/json/json.service.unit.test.ts",
+      "target": "src/modules/json/json.service.ts"
+    },
+    {
+      "source": "src/modules/jupyter/jupyter.constants.ts",
+      "target": "src/modules/jupyter/jupyter.types.ts"
+    },
+    {
+      "source": "src/modules/jupyter/jupyter.module.ts",
+      "target": "src/modules/json/json.module.ts"
+    },
+    {
+      "source": "src/modules/jupyter/jupyter.module.ts",
+      "target": "src/modules/jupyter/jupyter.service.ts"
+    },
+    {
+      "source": "src/modules/jupyter/jupyter.module.ts",
+      "target": "src/modules/markdown/markdown.module.ts"
+    },
+    {
+      "source": "src/modules/jupyter/jupyter.module.ts",
+      "target": "src/modules/python/python.module.ts"
+    },
+    {
+      "source": "src/modules/jupyter/jupyter.service.ts",
+      "target": "src/modules/json/json.service.ts"
+    },
+    {
+      "source": "src/modules/jupyter/jupyter.service.ts",
+      "target": "src/modules/jupyter/jupyter.constants.ts"
+    },
+    {
+      "source": "src/modules/jupyter/jupyter.service.ts",
+      "target": "src/modules/jupyter/jupyter.types.ts"
+    },
+    {
+      "source": "src/modules/jupyter/jupyter.service.ts",
+      "target": "src/modules/markdown/markdown.service.ts"
+    },
+    {
+      "source": "src/modules/jupyter/jupyter.service.ts",
+      "target": "src/modules/markdown/markdown.types.ts"
+    },
+    {
+      "source": "src/modules/jupyter/jupyter.service.ts",
+      "target": "src/modules/python/python.service.ts"
+    },
+    {
+      "source": "src/modules/jupyter/jupyter.service.unit.test.ts",
+      "target": "src/modules/json/json.service.ts"
+    },
+    {
+      "source": "src/modules/jupyter/jupyter.service.unit.test.ts",
+      "target": "src/modules/jupyter/jupyter.service.ts"
+    },
+    {
+      "source": "src/modules/jupyter/jupyter.service.unit.test.ts",
+      "target": "src/modules/markdown/markdown.service.ts"
+    },
+    {
+      "source": "src/modules/jupyter/jupyter.service.unit.test.ts",
+      "target": "src/modules/python/python.constants.ts"
+    },
+    {
+      "source": "src/modules/jupyter/jupyter.service.unit.test.ts",
+      "target": "src/modules/python/python.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.module.ts",
+      "target": "src/modules/css/css.module.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.module.ts",
+      "target": "src/modules/hcl/hcl.module.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.module.ts",
+      "target": "src/modules/json/json.module.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.module.ts",
+      "target": "src/modules/jupyter/jupyter.module.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.module.ts",
+      "target": "src/modules/languages/languages.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.module.ts",
+      "target": "src/modules/markdown/markdown.module.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.module.ts",
+      "target": "src/modules/python/python.module.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.module.ts",
+      "target": "src/modules/shell/shell.module.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.module.ts",
+      "target": "src/modules/sql/sql.module.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.module.ts",
+      "target": "src/modules/toml/toml.module.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.module.ts",
+      "target": "src/modules/typescript/typescript.module.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.module.ts",
+      "target": "src/modules/yaml/yaml.module.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.ts",
+      "target": "src/modules/css/css.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.ts",
+      "target": "src/modules/hcl/hcl.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.ts",
+      "target": "src/modules/json/json.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.ts",
+      "target": "src/modules/jupyter/jupyter.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.ts",
+      "target": "src/modules/languages/languages.types.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.ts",
+      "target": "src/modules/markdown/markdown.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.ts",
+      "target": "src/modules/python/python.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.ts",
+      "target": "src/modules/shell/shell.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.ts",
+      "target": "src/modules/sql/sql.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.ts",
+      "target": "src/modules/toml/toml.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.ts",
+      "target": "src/modules/typescript/typescript.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.ts",
+      "target": "src/modules/yaml/yaml.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.unit.test.ts",
+      "target": "src/modules/css/css.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.unit.test.ts",
+      "target": "src/modules/file-discovery/file-discovery.types.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.unit.test.ts",
+      "target": "src/modules/hcl/hcl.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.unit.test.ts",
+      "target": "src/modules/json/json.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.unit.test.ts",
+      "target": "src/modules/jupyter/jupyter.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.unit.test.ts",
+      "target": "src/modules/languages/languages.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.unit.test.ts",
+      "target": "src/modules/markdown/markdown.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.unit.test.ts",
+      "target": "src/modules/python/python.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.unit.test.ts",
+      "target": "src/modules/shell/shell.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.unit.test.ts",
+      "target": "src/modules/sql/sql.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.unit.test.ts",
+      "target": "src/modules/toml/toml.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.unit.test.ts",
+      "target": "src/modules/typescript/typescript.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.service.unit.test.ts",
+      "target": "src/modules/yaml/yaml.service.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.types.ts",
+      "target": "src/modules/css/css.types.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.types.ts",
+      "target": "src/modules/file-discovery/file-discovery.types.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.types.ts",
+      "target": "src/modules/hcl/hcl.types.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.types.ts",
+      "target": "src/modules/json/json.types.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.types.ts",
+      "target": "src/modules/jupyter/jupyter.types.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.types.ts",
+      "target": "src/modules/markdown/markdown.types.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.types.ts",
+      "target": "src/modules/python/python.types.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.types.ts",
+      "target": "src/modules/shell/shell.types.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.types.ts",
+      "target": "src/modules/sql/sql.types.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.types.ts",
+      "target": "src/modules/toml/toml.types.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.types.ts",
+      "target": "src/modules/typescript/typescript.types.ts"
+    },
+    {
+      "source": "src/modules/languages/languages.types.ts",
+      "target": "src/modules/yaml/yaml.types.ts"
+    },
+    {
+      "source": "src/modules/limits/limits.module.ts",
+      "target": "src/modules/limits/limits.service.ts"
+    },
+    {
+      "source": "src/modules/limits/limits.module.ts",
+      "target": "src/modules/limits/metric-index.service.ts"
+    },
+    {
+      "source": "src/modules/limits/limits.service.integration.test.ts",
+      "target": "src/modules/limits/limits.service.ts"
+    },
+    {
+      "source": "src/modules/limits/limits.service.integration.test.ts",
+      "target": "src/modules/limits/limits.types.ts"
+    },
+    {
+      "source": "src/modules/limits/limits.service.integration.test.ts",
+      "target": "src/modules/limits/metric-index.service.ts"
+    },
+    {
+      "source": "src/modules/limits/limits.service.integration.test.ts",
+      "target": "testing/fixture-tree.ts"
+    },
+    {
+      "source": "src/modules/limits/limits.service.integration.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/limits/limits.service.ts",
+      "target": "src/modules/limits/empty-target.errors.ts"
+    },
+    {
+      "source": "src/modules/limits/limits.service.ts",
+      "target": "src/modules/limits/limits.constants.ts"
+    },
+    {
+      "source": "src/modules/limits/limits.service.ts",
+      "target": "src/modules/limits/limits.errors.ts"
+    },
+    {
+      "source": "src/modules/limits/limits.service.ts",
+      "target": "src/modules/limits/limits.types.ts"
+    },
+    {
+      "source": "src/modules/limits/limits.service.unit.test.ts",
+      "target": "src/modules/limits/limits.service.ts"
+    },
+    {
+      "source": "src/modules/limits/limits.service.unit.test.ts",
+      "target": "src/modules/limits/limits.types.ts"
+    },
+    {
+      "source": "src/modules/limits/limits.service.unit.test.ts",
+      "target": "src/modules/limits/metric-index.service.ts"
+    },
+    {
+      "source": "src/modules/limits/limits.service.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/limits/limits.types.ts",
+      "target": "src/modules/size-analysis/size-analysis.types.ts"
+    },
+    {
+      "source": "src/modules/limits/metric-index.service.ts",
+      "target": "src/modules/limits/limits.constants.ts"
+    },
+    {
+      "source": "src/modules/limits/metric-index.service.ts",
+      "target": "src/modules/limits/limits.types.ts"
+    },
+    {
+      "source": "src/modules/limits/metric-index.service.unit.test.ts",
+      "target": "src/modules/limits/limits.types.ts"
+    },
+    {
+      "source": "src/modules/limits/metric-index.service.unit.test.ts",
+      "target": "src/modules/limits/metric-index.service.ts"
+    },
+    {
+      "source": "src/modules/limits/metric-index.service.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/markdown/markdown.constants.ts",
+      "target": "src/modules/markdown/markdown.types.ts"
+    },
+    {
+      "source": "src/modules/markdown/markdown.module.ts",
+      "target": "src/modules/markdown/markdown.service.ts"
+    },
+    {
+      "source": "src/modules/markdown/markdown.service.ts",
+      "target": "src/modules/markdown/markdown.constants.ts"
+    },
+    {
+      "source": "src/modules/markdown/markdown.service.ts",
+      "target": "src/modules/markdown/markdown.types.ts"
+    },
+    {
+      "source": "src/modules/markdown/markdown.service.unit.test.ts",
+      "target": "src/modules/markdown/markdown.service.ts"
+    },
+    {
+      "source": "src/modules/output-json/output-json.module.ts",
+      "target": "src/modules/output-json/output-json.service.ts"
+    },
+    {
+      "source": "src/modules/output-json/output-json.service.ts",
+      "target": "src/modules/output-json/output-json.types.ts"
+    },
+    {
+      "source": "src/modules/output-json/output-json.service.unit.test.ts",
+      "target": "src/modules/output-json/output-json.service.ts"
+    },
+    {
+      "source": "src/modules/output-json/output-json.service.unit.test.ts",
+      "target": "testing/mocks.ts"
+    },
+    {
+      "source": "src/modules/output-json/output-json.types.ts",
+      "target": "src/modules/report/report.types.ts"
+    },
+    {
+      "source": "src/modules/output-markdown/output-markdown.module.ts",
+      "target": "src/modules/output-markdown/output-markdown.service.ts"
+    },
+    {
+      "source": "src/modules/output-markdown/output-markdown.service.ts",
+      "target": "src/modules/output-markdown/output-markdown.constants.ts"
+    },
+    {
+      "source": "src/modules/output-markdown/output-markdown.service.ts",
+      "target": "src/modules/output-markdown/output-markdown.errors.ts"
+    },
+    {
+      "source": "src/modules/output-markdown/output-markdown.service.ts",
+      "target": "src/modules/output-markdown/output-markdown.types.ts"
+    },
+    {
+      "source": "src/modules/output-markdown/output-markdown.service.ts",
+      "target": "src/modules/output-markdown/output-markdown.utilities.ts"
+    },
+    {
+      "source": "src/modules/output-markdown/output-markdown.service.unit.test.ts",
+      "target": "src/modules/output-markdown/output-markdown.errors.ts"
+    },
+    {
+      "source": "src/modules/output-markdown/output-markdown.service.unit.test.ts",
+      "target": "src/modules/output-markdown/output-markdown.service.ts"
+    },
+    {
+      "source": "src/modules/output-markdown/output-markdown.utilities.ts",
+      "target": "src/modules/output-markdown/output-markdown.types.ts"
+    },
+    {
+      "source": "src/modules/output-markdown/output-markdown.utilities.unit.test.ts",
+      "target": "src/modules/output-markdown/output-markdown.utilities.ts"
+    },
+    {
+      "source": "src/modules/python/python.constants.ts",
+      "target": "src/modules/python/python.types.ts"
+    },
+    {
+      "source": "src/modules/python/python.module.ts",
+      "target": "src/modules/python/python.service.ts"
+    },
+    {
+      "source": "src/modules/python/python.service.ts",
+      "target": "src/modules/python/python.constants.ts"
+    },
+    {
+      "source": "src/modules/python/python.service.ts",
+      "target": "src/modules/python/python.types.ts"
+    },
+    {
+      "source": "src/modules/python/python.service.unit.test.ts",
+      "target": "src/modules/python/python.constants.ts"
+    },
+    {
+      "source": "src/modules/python/python.service.unit.test.ts",
+      "target": "src/modules/python/python.service.ts"
+    },
+    {
+      "source": "src/modules/report/report.module.ts",
+      "target": "src/modules/report/report.service.ts"
+    },
+    {
+      "source": "src/modules/report/report.service.ts",
+      "target": "src/modules/limits/limits.types.ts"
+    },
+    {
+      "source": "src/modules/report/report.service.ts",
+      "target": "src/modules/report/report.constants.ts"
+    },
+    {
+      "source": "src/modules/report/report.service.ts",
+      "target": "src/modules/report/report.types.ts"
+    },
+    {
+      "source": "src/modules/report/report.service.unit.test.ts",
+      "target": "src/modules/limits/limits.types.ts"
+    },
+    {
+      "source": "src/modules/report/report.service.unit.test.ts",
+      "target": "src/modules/report/report.service.ts"
+    },
+    {
+      "source": "src/modules/report/report.service.unit.test.ts",
+      "target": "src/modules/report/report.types.ts"
+    },
+    {
+      "source": "src/modules/report/report.types.ts",
+      "target": "src/modules/limits/limits.types.ts"
+    },
+    {
+      "source": "src/modules/shell/shell.constants.ts",
+      "target": "src/modules/shell/shell.types.ts"
+    },
+    {
+      "source": "src/modules/shell/shell.module.ts",
+      "target": "src/modules/shell/shell.service.ts"
+    },
+    {
+      "source": "src/modules/shell/shell.service.ts",
+      "target": "src/modules/shell/shell.constants.ts"
+    },
+    {
+      "source": "src/modules/shell/shell.service.ts",
+      "target": "src/modules/shell/shell.types.ts"
+    },
+    {
+      "source": "src/modules/shell/shell.service.unit.test.ts",
+      "target": "src/modules/shell/shell.service.ts"
+    },
+    {
+      "source": "src/modules/size-analysis/size-analysis.module.ts",
+      "target": "src/modules/size-analysis/size-analysis.service.ts"
+    },
+    {
+      "source": "src/modules/size-analysis/size-analysis.service.integration.test.ts",
+      "target": "src/modules/size-analysis/size-analysis.constants.ts"
+    },
+    {
+      "source": "src/modules/size-analysis/size-analysis.service.integration.test.ts",
+      "target": "src/modules/size-analysis/size-analysis.errors.ts"
+    },
+    {
+      "source": "src/modules/size-analysis/size-analysis.service.integration.test.ts",
+      "target": "src/modules/size-analysis/size-analysis.service.ts"
+    },
+    {
+      "source": "src/modules/size-analysis/size-analysis.service.integration.test.ts",
+      "target": "testing/target-tree.ts"
+    },
+    {
+      "source": "src/modules/size-analysis/size-analysis.service.ts",
+      "target": "src/modules/size-analysis/size-analysis.constants.ts"
+    },
+    {
+      "source": "src/modules/size-analysis/size-analysis.service.ts",
+      "target": "src/modules/size-analysis/size-analysis.errors.ts"
+    },
+    {
+      "source": "src/modules/size-analysis/size-analysis.service.ts",
+      "target": "src/modules/size-analysis/size-analysis.types.ts"
+    },
+    {
+      "source": "src/modules/size-analysis/size-analysis.service.unit.test.ts",
+      "target": "src/modules/size-analysis/size-analysis.errors.ts"
+    },
+    {
+      "source": "src/modules/size-analysis/size-analysis.service.unit.test.ts",
+      "target": "src/modules/size-analysis/size-analysis.service.ts"
+    },
+    {
+      "source": "src/modules/sql/sql.constants.ts",
+      "target": "src/modules/sql/sql.types.ts"
+    },
+    {
+      "source": "src/modules/sql/sql.module.ts",
+      "target": "src/modules/sql/sql.service.ts"
+    },
+    {
+      "source": "src/modules/sql/sql.service.ts",
+      "target": "src/modules/sql/sql.constants.ts"
+    },
+    {
+      "source": "src/modules/sql/sql.service.ts",
+      "target": "src/modules/sql/sql.types.ts"
+    },
+    {
+      "source": "src/modules/sql/sql.service.unit.test.ts",
+      "target": "src/modules/sql/sql.service.ts"
+    },
+    {
+      "source": "src/modules/targets/targets.module.ts",
+      "target": "src/modules/targets/targets.service.ts"
+    },
+    {
+      "source": "src/modules/targets/targets.service.integration.test.ts",
+      "target": "src/modules/targets/targets.service.ts"
+    },
+    {
+      "source": "src/modules/targets/targets.service.integration.test.ts",
+      "target": "testing/target-tree.ts"
+    },
+    {
+      "source": "src/modules/targets/targets.service.ts",
+      "target": "src/modules/targets/targets.constants.ts"
+    },
+    {
+      "source": "src/modules/targets/targets.service.ts",
+      "target": "src/modules/targets/targets.errors.ts"
+    },
+    {
+      "source": "src/modules/targets/targets.service.ts",
+      "target": "src/modules/targets/targets.types.ts"
+    },
+    {
+      "source": "src/modules/targets/targets.service.unit.test.ts",
+      "target": "src/modules/targets/targets.errors.ts"
+    },
+    {
+      "source": "src/modules/targets/targets.service.unit.test.ts",
+      "target": "src/modules/targets/targets.service.ts"
+    },
+    {
+      "source": "src/modules/toml/toml.constants.ts",
+      "target": "src/modules/toml/toml.types.ts"
+    },
+    {
+      "source": "src/modules/toml/toml.module.ts",
+      "target": "src/modules/toml/toml.service.ts"
+    },
+    {
+      "source": "src/modules/toml/toml.service.ts",
+      "target": "src/modules/toml/toml.constants.ts"
+    },
+    {
+      "source": "src/modules/toml/toml.service.ts",
+      "target": "src/modules/toml/toml.types.ts"
+    },
+    {
+      "source": "src/modules/toml/toml.service.unit.test.ts",
+      "target": "src/modules/toml/toml.service.ts"
+    },
+    {
+      "source": "src/modules/typescript/typescript.constants.ts",
+      "target": "src/modules/typescript/typescript.types.ts"
+    },
+    {
+      "source": "src/modules/typescript/typescript.module.ts",
+      "target": "src/modules/typescript/typescript.service.ts"
+    },
+    {
+      "source": "src/modules/typescript/typescript.service.ts",
+      "target": "src/modules/typescript/typescript.constants.ts"
+    },
+    {
+      "source": "src/modules/typescript/typescript.service.ts",
+      "target": "src/modules/typescript/typescript.types.ts"
+    },
+    {
+      "source": "src/modules/typescript/typescript.service.unit.test.ts",
+      "target": "src/modules/typescript/typescript.service.ts"
+    },
+    {
+      "source": "src/modules/typescript/typescript.service.unit.test.ts",
+      "target": "src/modules/typescript/typescript.types.ts"
+    },
+    {
+      "source": "src/modules/yaml/yaml.constants.ts",
+      "target": "src/modules/yaml/yaml.types.ts"
+    },
+    {
+      "source": "src/modules/yaml/yaml.module.ts",
+      "target": "src/modules/yaml/yaml.service.ts"
+    },
+    {
+      "source": "src/modules/yaml/yaml.service.ts",
+      "target": "src/modules/yaml/yaml.constants.ts"
+    },
+    {
+      "source": "src/modules/yaml/yaml.service.ts",
+      "target": "src/modules/yaml/yaml.types.ts"
+    },
+    {
+      "source": "src/modules/yaml/yaml.service.unit.test.ts",
+      "target": "src/modules/yaml/yaml.service.ts"
+    },
+    {
+      "source": "src/repl.ts",
+      "target": "src/main.module.ts"
+    },
+    {
+      "source": "testing/mocks.ts",
+      "target": "src/modules/report/report.types.ts"
+    }
+  ],
+  "fileNames": [
+    "eslint.config.ts",
+    "src/constants.ts",
+    "src/index.ts",
+    "src/main.end-to-end.test.ts",
+    "src/main.module.ts",
+    "src/main.ts",
+    "src/modules/codometer/codometer.command.integration.test.ts",
+    "src/modules/codometer/codometer.command.ts",
+    "src/modules/codometer/codometer.command.unit.test.ts",
+    "src/modules/codometer/codometer.constants.ts",
+    "src/modules/codometer/codometer.module.ts",
+    "src/modules/codometer/codometer.service.ts",
+    "src/modules/codometer/codometer.service.unit.test.ts",
+    "src/modules/codometer/codometer.types.ts",
+    "src/modules/codometer/run-plan.constants.ts",
+    "src/modules/codometer/run-plan.service.ts",
+    "src/modules/codometer/run-plan.service.unit.test.ts",
+    "src/modules/codometer/run-plan.types.ts",
+    "src/modules/css/css.constants.ts",
+    "src/modules/css/css.module.ts",
+    "src/modules/css/css.service.ts",
+    "src/modules/css/css.service.unit.test.ts",
+    "src/modules/css/css.types.ts",
+    "src/modules/custom-statistics/custom-statistics.constants.ts",
+    "src/modules/custom-statistics/custom-statistics.module.ts",
+    "src/modules/custom-statistics/custom-statistics.service.ts",
+    "src/modules/custom-statistics/custom-statistics.service.unit.test.ts",
+    "src/modules/custom-statistics/custom-statistics.types.ts",
+    "src/modules/file-discovery/file-discovery.constants.ts",
+    "src/modules/file-discovery/file-discovery.module.ts",
+    "src/modules/file-discovery/file-discovery.service.integration.test.ts",
+    "src/modules/file-discovery/file-discovery.service.ts",
+    "src/modules/file-discovery/file-discovery.service.unit.test.ts",
+    "src/modules/file-discovery/file-discovery.types.ts",
+    "src/modules/file-discovery/ignore-rules.service.ts",
+    "src/modules/file-discovery/ignore-rules.service.unit.test.ts",
+    "src/modules/file-discovery/ignore-rules.types.ts",
+    "src/modules/hcl/hcl.constants.ts",
+    "src/modules/hcl/hcl.module.ts",
+    "src/modules/hcl/hcl.service.ts",
+    "src/modules/hcl/hcl.service.unit.test.ts",
+    "src/modules/hcl/hcl.types.ts",
+    "src/modules/json/json.constants.ts",
+    "src/modules/json/json.module.ts",
+    "src/modules/json/json.service.ts",
+    "src/modules/json/json.service.unit.test.ts",
+    "src/modules/json/json.types.ts",
+    "src/modules/jupyter/jupyter.constants.ts",
+    "src/modules/jupyter/jupyter.module.ts",
+    "src/modules/jupyter/jupyter.service.ts",
+    "src/modules/jupyter/jupyter.service.unit.test.ts",
+    "src/modules/jupyter/jupyter.types.ts",
+    "src/modules/languages/languages.constants.ts",
+    "src/modules/languages/languages.module.ts",
+    "src/modules/languages/languages.service.ts",
+    "src/modules/languages/languages.service.unit.test.ts",
+    "src/modules/languages/languages.types.ts",
+    "src/modules/limits/empty-target.errors.ts",
+    "src/modules/limits/limits.constants.ts",
+    "src/modules/limits/limits.errors.ts",
+    "src/modules/limits/limits.module.ts",
+    "src/modules/limits/limits.service.integration.test.ts",
+    "src/modules/limits/limits.service.ts",
+    "src/modules/limits/limits.service.unit.test.ts",
+    "src/modules/limits/limits.types.ts",
+    "src/modules/limits/metric-index.service.ts",
+    "src/modules/limits/metric-index.service.unit.test.ts",
+    "src/modules/markdown/markdown.constants.ts",
+    "src/modules/markdown/markdown.module.ts",
+    "src/modules/markdown/markdown.service.ts",
+    "src/modules/markdown/markdown.service.unit.test.ts",
+    "src/modules/markdown/markdown.types.ts",
+    "src/modules/output-json/output-json.constants.ts",
+    "src/modules/output-json/output-json.module.ts",
+    "src/modules/output-json/output-json.service.ts",
+    "src/modules/output-json/output-json.service.unit.test.ts",
+    "src/modules/output-json/output-json.types.ts",
+    "src/modules/output-markdown/output-markdown.constants.ts",
+    "src/modules/output-markdown/output-markdown.errors.ts",
+    "src/modules/output-markdown/output-markdown.module.ts",
+    "src/modules/output-markdown/output-markdown.service.ts",
+    "src/modules/output-markdown/output-markdown.service.unit.test.ts",
+    "src/modules/output-markdown/output-markdown.types.ts",
+    "src/modules/output-markdown/output-markdown.utilities.ts",
+    "src/modules/output-markdown/output-markdown.utilities.unit.test.ts",
+    "src/modules/python/python.constants.ts",
+    "src/modules/python/python.module.ts",
+    "src/modules/python/python.service.ts",
+    "src/modules/python/python.service.unit.test.ts",
+    "src/modules/python/python.types.ts",
+    "src/modules/report/report.constants.ts",
+    "src/modules/report/report.module.ts",
+    "src/modules/report/report.service.ts",
+    "src/modules/report/report.service.unit.test.ts",
+    "src/modules/report/report.types.ts",
+    "src/modules/shell/shell.constants.ts",
+    "src/modules/shell/shell.module.ts",
+    "src/modules/shell/shell.service.ts",
+    "src/modules/shell/shell.service.unit.test.ts",
+    "src/modules/shell/shell.types.ts",
+    "src/modules/size-analysis/size-analysis.constants.ts",
+    "src/modules/size-analysis/size-analysis.errors.ts",
+    "src/modules/size-analysis/size-analysis.module.ts",
+    "src/modules/size-analysis/size-analysis.service.integration.test.ts",
+    "src/modules/size-analysis/size-analysis.service.ts",
+    "src/modules/size-analysis/size-analysis.service.unit.test.ts",
+    "src/modules/size-analysis/size-analysis.types.ts",
+    "src/modules/sql/sql.constants.ts",
+    "src/modules/sql/sql.module.ts",
+    "src/modules/sql/sql.service.ts",
+    "src/modules/sql/sql.service.unit.test.ts",
+    "src/modules/sql/sql.types.ts",
+    "src/modules/targets/targets.constants.ts",
+    "src/modules/targets/targets.errors.ts",
+    "src/modules/targets/targets.module.ts",
+    "src/modules/targets/targets.service.integration.test.ts",
+    "src/modules/targets/targets.service.ts",
+    "src/modules/targets/targets.service.unit.test.ts",
+    "src/modules/targets/targets.types.ts",
+    "src/modules/toml/toml.constants.ts",
+    "src/modules/toml/toml.module.ts",
+    "src/modules/toml/toml.service.ts",
+    "src/modules/toml/toml.service.unit.test.ts",
+    "src/modules/toml/toml.types.ts",
+    "src/modules/typescript/typescript.constants.ts",
+    "src/modules/typescript/typescript.module.ts",
+    "src/modules/typescript/typescript.service.ts",
+    "src/modules/typescript/typescript.service.unit.test.ts",
+    "src/modules/typescript/typescript.types.ts",
+    "src/modules/yaml/yaml.constants.ts",
+    "src/modules/yaml/yaml.module.ts",
+    "src/modules/yaml/yaml.service.ts",
+    "src/modules/yaml/yaml.service.unit.test.ts",
+    "src/modules/yaml/yaml.types.ts",
+    "src/repl.ts",
+    "src/repl.unit.test.ts",
+    "testing/fixture-tree.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "testing/target-tree.ts",
+    "vitest.config.ts"
+  ],
+  "isolatedFileNames": [
+    "eslint.config.ts",
+    "src/index.ts",
+    "src/modules/codometer/codometer.constants.ts",
+    "src/modules/custom-statistics/custom-statistics.constants.ts",
+    "src/modules/languages/languages.constants.ts",
+    "src/modules/output-json/output-json.constants.ts",
+    "src/repl.unit.test.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "projectName": "codometer-cli"
+}

@@ -1,0 +1,11 @@
+{
+  "ambientModuleNames": [],
+  "edges": [],
+  "isolatedModuleNames": [
+    "LoggerModule"
+  ],
+  "moduleNames": [
+    "LoggerModule"
+  ],
+  "projectName": "logger"
+}

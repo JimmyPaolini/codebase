@@ -1,0 +1,74 @@
+{
+  "dependencies": [],
+  "dependents": [
+    "conformetry-cli",
+    "conformetry-configuration",
+    "conformetry-files",
+    "conformetry-json",
+    "conformetry-jupyter",
+    "conformetry-markdown",
+    "conformetry-nx",
+    "conformetry-python",
+    "conformetry-text",
+    "conformetry-typescript",
+    "conformetry-validation"
+  ],
+  "edges": [
+    {
+      "implicit": false,
+      "source": "conformetry-cli",
+      "target": "conformetry-core"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-configuration",
+      "target": "conformetry-core"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-files",
+      "target": "conformetry-core"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-json",
+      "target": "conformetry-core"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-jupyter",
+      "target": "conformetry-core"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-markdown",
+      "target": "conformetry-core"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-nx",
+      "target": "conformetry-core"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-python",
+      "target": "conformetry-core"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-text",
+      "target": "conformetry-core"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-typescript",
+      "target": "conformetry-core"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-validation",
+      "target": "conformetry-core"
+    }
+  ],
+  "projectName": "conformetry-core"
+}

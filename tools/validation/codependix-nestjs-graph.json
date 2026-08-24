@@ -1,0 +1,47 @@
+{
+  "ambientModuleNames": ["ConfigModule", "LoggerModule"],
+  "edges": [
+    {
+      "source": "MainModule",
+      "target": "CatalogManifestsModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "DiscoveryModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "IssueMetadataModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "LockfileModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "PullRequestBodyModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "PullRequestMetadataModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "PullRequestReleaseSignificanceModule"
+    }
+  ],
+  "isolatedModuleNames": ["ConfigModule", "LoggerModule"],
+  "moduleNames": [
+    "CatalogManifestsModule",
+    "ConfigModule",
+    "DiscoveryModule",
+    "IssueMetadataModule",
+    "LockfileModule",
+    "LoggerModule",
+    "MainModule",
+    "PullRequestBodyModule",
+    "PullRequestMetadataModule",
+    "PullRequestReleaseSignificanceModule"
+  ],
+  "projectName": "validation"
+}

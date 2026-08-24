@@ -1,0 +1,166 @@
+{
+  "ambientModuleNames": ["ConfigModule", "LoggerModule"],
+  "edges": [
+    {
+      "source": "FilesModule",
+      "target": "DifferencesModule"
+    },
+    {
+      "source": "FilesModule",
+      "target": "InstanceDiscoveryModule"
+    },
+    {
+      "source": "GenerateModule",
+      "target": "ConfigurationModule"
+    },
+    {
+      "source": "GenerateModule",
+      "target": "GenerationModule"
+    },
+    {
+      "source": "GenerateModule",
+      "target": "InputModule"
+    },
+    {
+      "source": "GenerationModule",
+      "target": "RenderingModule"
+    },
+    {
+      "source": "InstanceDiscoveryModule",
+      "target": "RenderingModule"
+    },
+    {
+      "source": "InstanceDiscoveryModule",
+      "target": "TemplateDiscoveryModule"
+    },
+    {
+      "source": "InstancesModule",
+      "target": "ConfigurationModule"
+    },
+    {
+      "source": "InstancesModule",
+      "target": "InputModule"
+    },
+    {
+      "source": "InstancesModule",
+      "target": "InstanceDiscoveryModule"
+    },
+    {
+      "source": "InstancesModule",
+      "target": "InventoryModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "DiscoveryModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "GenerateModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "InstancesModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "TemplatesModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "ValidateModule"
+    },
+    {
+      "source": "ReportingModule",
+      "target": "ScoringModule"
+    },
+    {
+      "source": "TemplateDiscoveryModule",
+      "target": "RenderingModule"
+    },
+    {
+      "source": "TemplatesModule",
+      "target": "ConfigurationModule"
+    },
+    {
+      "source": "TemplatesModule",
+      "target": "InputModule"
+    },
+    {
+      "source": "TemplatesModule",
+      "target": "InstanceDiscoveryModule"
+    },
+    {
+      "source": "TemplatesModule",
+      "target": "InventoryModule"
+    },
+    {
+      "source": "ValidateModule",
+      "target": "ConfigurationModule"
+    },
+    {
+      "source": "ValidateModule",
+      "target": "InputModule"
+    },
+    {
+      "source": "ValidateModule",
+      "target": "InstanceDiscoveryModule"
+    },
+    {
+      "source": "ValidateModule",
+      "target": "ReportingModule"
+    },
+    {
+      "source": "ValidateModule",
+      "target": "TemplateDiscoveryModule"
+    },
+    {
+      "source": "ValidateModule",
+      "target": "ValidationModule"
+    },
+    {
+      "source": "ValidationModule",
+      "target": "FilesModule"
+    },
+    {
+      "source": "ValidationModule",
+      "target": "InstanceDiscoveryModule"
+    },
+    {
+      "source": "ValidationModule",
+      "target": "LanguageModule"
+    },
+    {
+      "source": "ValidationModule",
+      "target": "ReportingModule"
+    },
+    {
+      "source": "ValidationModule",
+      "target": "ScoringModule"
+    }
+  ],
+  "isolatedModuleNames": ["ConfigModule", "LoggerModule"],
+  "moduleNames": [
+    "ConfigModule",
+    "ConfigurationModule",
+    "DifferencesModule",
+    "DiscoveryModule",
+    "FilesModule",
+    "GenerateModule",
+    "GenerationModule",
+    "InputModule",
+    "InstanceDiscoveryModule",
+    "InstancesModule",
+    "InventoryModule",
+    "LanguageModule",
+    "LoggerModule",
+    "MainModule",
+    "RenderingModule",
+    "ReportingModule",
+    "ScoringModule",
+    "TemplateDiscoveryModule",
+    "TemplatesModule",
+    "ValidateModule",
+    "ValidationModule"
+  ],
+  "projectName": "conformetry-cli"
+}

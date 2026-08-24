@@ -1,0 +1,20 @@
+{
+  "ambientModuleNames": [],
+  "edges": [
+    {
+      "source": "PythonValidatorModule",
+      "target": "DifferencesModule"
+    },
+    {
+      "source": "PythonValidatorModule",
+      "target": "ScoringModule"
+    }
+  ],
+  "isolatedModuleNames": [],
+  "moduleNames": [
+    "DifferencesModule",
+    "PythonValidatorModule",
+    "ScoringModule"
+  ],
+  "projectName": "conformetry-python"
+}

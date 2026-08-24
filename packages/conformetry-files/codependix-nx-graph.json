@@ -1,0 +1,22 @@
+{
+  "dependencies": ["conformetry-configuration", "conformetry-core"],
+  "dependents": ["conformetry-validation"],
+  "edges": [
+    {
+      "implicit": false,
+      "source": "conformetry-files",
+      "target": "conformetry-configuration"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-files",
+      "target": "conformetry-core"
+    },
+    {
+      "implicit": false,
+      "source": "conformetry-validation",
+      "target": "conformetry-files"
+    }
+  ],
+  "projectName": "conformetry-files"
+}

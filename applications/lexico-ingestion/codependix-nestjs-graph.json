@@ -1,0 +1,215 @@
+{
+  "ambientModuleNames": ["ConfigModule", "LoggerModule"],
+  "edges": [
+    {
+      "source": "ClearModule",
+      "target": "DatabaseModule"
+    },
+    {
+      "source": "ClearModule",
+      "target": "TypeOrmModule"
+    },
+    {
+      "source": "DatabaseModule",
+      "target": "TypeOrmModule"
+    },
+    {
+      "source": "DictionaryModule",
+      "target": "FormsModule"
+    },
+    {
+      "source": "DictionaryModule",
+      "target": "LexemesModule"
+    },
+    {
+      "source": "DictionaryModule",
+      "target": "ManualModule"
+    },
+    {
+      "source": "DictionaryModule",
+      "target": "PrincipalPartsModule"
+    },
+    {
+      "source": "DictionaryModule",
+      "target": "PronunciationModule"
+    },
+    {
+      "source": "DictionaryModule",
+      "target": "TranslationsModule"
+    },
+    {
+      "source": "DictionaryModule",
+      "target": "WordsModule"
+    },
+    {
+      "source": "FormsModule",
+      "target": "TypeOrmModule"
+    },
+    {
+      "source": "FormsModule",
+      "target": "WordsModule"
+    },
+    {
+      "source": "LexemesModule",
+      "target": "EtymologyModule"
+    },
+    {
+      "source": "LexemesModule",
+      "target": "FormsModule"
+    },
+    {
+      "source": "LexemesModule",
+      "target": "PartOfSpeechModule"
+    },
+    {
+      "source": "LexemesModule",
+      "target": "PrincipalPartsModule"
+    },
+    {
+      "source": "LexemesModule",
+      "target": "PronunciationModule"
+    },
+    {
+      "source": "LexemesModule",
+      "target": "TranslationsModule"
+    },
+    {
+      "source": "LexemesModule",
+      "target": "TypeOrmModule"
+    },
+    {
+      "source": "LexemesModule",
+      "target": "WordsModule"
+    },
+    {
+      "source": "LexicoIngestionModule",
+      "target": "ClearModule"
+    },
+    {
+      "source": "LexicoIngestionModule",
+      "target": "CorpusScriptorumEcclesiasticorumLatinorumModule"
+    },
+    {
+      "source": "LexicoIngestionModule",
+      "target": "DatabaseModule"
+    },
+    {
+      "source": "LexicoIngestionModule",
+      "target": "DictionaryModule"
+    },
+    {
+      "source": "LexicoIngestionModule",
+      "target": "EpigraphikDatenbankClaussSlabyModule"
+    },
+    {
+      "source": "LexicoIngestionModule",
+      "target": "LatinLibraryModule"
+    },
+    {
+      "source": "LexicoIngestionModule",
+      "target": "LibraryModule"
+    },
+    {
+      "source": "LexicoIngestionModule",
+      "target": "LiteratureModule"
+    },
+    {
+      "source": "LexicoIngestionModule",
+      "target": "ManualModule"
+    },
+    {
+      "source": "LexicoIngestionModule",
+      "target": "PerseusModule"
+    },
+    {
+      "source": "LexicoIngestionModule",
+      "target": "WiktionaryModule"
+    },
+    {
+      "source": "LexicoIngestionModule",
+      "target": "WordsModule"
+    },
+    {
+      "source": "LiteratureModule",
+      "target": "DatabaseModule"
+    },
+    {
+      "source": "LiteratureModule",
+      "target": "NumeralsModule"
+    },
+    {
+      "source": "LiteratureModule",
+      "target": "TypeOrmModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "DiscoveryModule"
+    },
+    {
+      "source": "MainModule",
+      "target": "LexicoIngestionModule"
+    },
+    {
+      "source": "ManualModule",
+      "target": "NumeralsModule"
+    },
+    {
+      "source": "ManualModule",
+      "target": "TypeOrmModule"
+    },
+    {
+      "source": "ManualModule",
+      "target": "WordsModule"
+    },
+    {
+      "source": "PrincipalPartsModule",
+      "target": "TypeOrmModule"
+    },
+    {
+      "source": "PronunciationModule",
+      "target": "TypeOrmModule"
+    },
+    {
+      "source": "TranslationsModule",
+      "target": "TypeOrmModule"
+    },
+    {
+      "source": "WiktionaryModule",
+      "target": "TypeOrmModule"
+    },
+    {
+      "source": "WordsModule",
+      "target": "TypeOrmModule"
+    }
+  ],
+  "isolatedModuleNames": ["ConfigModule", "LoggerModule"],
+  "moduleNames": [
+    "ClearModule",
+    "ConfigModule",
+    "CorpusScriptorumEcclesiasticorumLatinorumModule",
+    "DatabaseModule",
+    "DictionaryModule",
+    "DiscoveryModule",
+    "EpigraphikDatenbankClaussSlabyModule",
+    "EtymologyModule",
+    "FormsModule",
+    "LatinLibraryModule",
+    "LexemesModule",
+    "LexicoIngestionModule",
+    "LibraryModule",
+    "LiteratureModule",
+    "LoggerModule",
+    "MainModule",
+    "ManualModule",
+    "NumeralsModule",
+    "PartOfSpeechModule",
+    "PerseusModule",
+    "PrincipalPartsModule",
+    "PronunciationModule",
+    "TranslationsModule",
+    "TypeOrmModule",
+    "WiktionaryModule",
+    "WordsModule"
+  ],
+  "projectName": "lexico-ingestion"
+}

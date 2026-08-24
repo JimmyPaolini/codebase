@@ -1,0 +1,115 @@
+{
+  "edges": [
+    {
+      "source": "src/modules/typescript-validator/typescript-comments.service.ts",
+      "target": "src/modules/typescript-validator/typescript-validator.constants.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-comments.service.ts",
+      "target": "src/modules/typescript-validator/typescript-validator.types.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-comments.service.unit.test.ts",
+      "target": "src/modules/typescript-validator/typescript-comments.service.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-nodes.service.unit.test.ts",
+      "target": "src/modules/typescript-validator/typescript-nodes.service.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-tree.service.ts",
+      "target": "src/modules/typescript-validator/typescript-nodes.service.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-tree.service.ts",
+      "target": "src/modules/typescript-validator/typescript-validator.types.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-tree.service.unit.test.ts",
+      "target": "src/modules/typescript-validator/typescript-nodes.service.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-tree.service.unit.test.ts",
+      "target": "src/modules/typescript-validator/typescript-tree.service.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-validator.module.ts",
+      "target": "src/modules/typescript-validator/typescript-comments.service.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-validator.module.ts",
+      "target": "src/modules/typescript-validator/typescript-nodes.service.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-validator.module.ts",
+      "target": "src/modules/typescript-validator/typescript-tree.service.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-validator.module.ts",
+      "target": "src/modules/typescript-validator/typescript-validator.service.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-validator.module.unit.test.ts",
+      "target": "src/modules/typescript-validator/typescript-validator.module.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-validator.module.unit.test.ts",
+      "target": "src/modules/typescript-validator/typescript-validator.service.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-validator.service.ts",
+      "target": "src/modules/typescript-validator/typescript-comments.service.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-validator.service.ts",
+      "target": "src/modules/typescript-validator/typescript-tree.service.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-validator.service.ts",
+      "target": "src/modules/typescript-validator/typescript-validator.constants.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-validator.service.unit.test.ts",
+      "target": "src/modules/typescript-validator/typescript-comments.service.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-validator.service.unit.test.ts",
+      "target": "src/modules/typescript-validator/typescript-nodes.service.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-validator.service.unit.test.ts",
+      "target": "src/modules/typescript-validator/typescript-tree.service.ts"
+    },
+    {
+      "source": "src/modules/typescript-validator/typescript-validator.service.unit.test.ts",
+      "target": "src/modules/typescript-validator/typescript-validator.service.ts"
+    }
+  ],
+  "fileNames": [
+    "eslint.config.ts",
+    "src/index.ts",
+    "src/modules/typescript-validator/typescript-comments.service.ts",
+    "src/modules/typescript-validator/typescript-comments.service.unit.test.ts",
+    "src/modules/typescript-validator/typescript-nodes.service.ts",
+    "src/modules/typescript-validator/typescript-nodes.service.unit.test.ts",
+    "src/modules/typescript-validator/typescript-tree.service.ts",
+    "src/modules/typescript-validator/typescript-tree.service.unit.test.ts",
+    "src/modules/typescript-validator/typescript-validator.constants.ts",
+    "src/modules/typescript-validator/typescript-validator.module.ts",
+    "src/modules/typescript-validator/typescript-validator.module.unit.test.ts",
+    "src/modules/typescript-validator/typescript-validator.service.ts",
+    "src/modules/typescript-validator/typescript-validator.service.unit.test.ts",
+    "src/modules/typescript-validator/typescript-validator.types.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "isolatedFileNames": [
+    "eslint.config.ts",
+    "src/index.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "projectName": "conformetry-typescript"
+}

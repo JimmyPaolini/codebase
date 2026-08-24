@@ -1,0 +1,12 @@
+{
+  "dependencies": [],
+  "dependents": ["codependix-cli"],
+  "edges": [
+    {
+      "implicit": false,
+      "source": "codependix-cli",
+      "target": "codependix-nx"
+    }
+  ],
+  "projectName": "codependix-nx"
+}

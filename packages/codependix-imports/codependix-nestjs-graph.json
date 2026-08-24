@@ -1,0 +1,12 @@
+{
+  "ambientModuleNames": [],
+  "edges": [
+    {
+      "source": "ImportGraphModule",
+      "target": "TypescriptProjectModule"
+    }
+  ],
+  "isolatedModuleNames": [],
+  "moduleNames": ["ImportGraphModule", "TypescriptProjectModule"],
+  "projectName": "codependix-imports"
+}

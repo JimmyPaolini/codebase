@@ -1,0 +1,178 @@
+{
+  "edges": [
+    {
+      "source": "src/main.end-to-end.test.ts",
+      "target": "src/constants.ts"
+    },
+    {
+      "source": "src/main.integration.test.ts",
+      "target": "src/main.module.ts"
+    },
+    {
+      "source": "src/main.integration.test.ts",
+      "target": "src/modules/generate/generate.command.ts"
+    },
+    {
+      "source": "src/main.integration.test.ts",
+      "target": "src/modules/instances/instances.command.ts"
+    },
+    {
+      "source": "src/main.integration.test.ts",
+      "target": "src/modules/templates/templates.command.ts"
+    },
+    {
+      "source": "src/main.integration.test.ts",
+      "target": "src/modules/validate/validate.command.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/constants.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/generate/generate.module.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/instances/instances.module.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/templates/templates.module.ts"
+    },
+    {
+      "source": "src/main.module.ts",
+      "target": "src/modules/validate/validate.module.ts"
+    },
+    {
+      "source": "src/main.ts",
+      "target": "src/main.module.ts"
+    },
+    {
+      "source": "src/modules/generate/generate.command.ts",
+      "target": "src/constants.ts"
+    },
+    {
+      "source": "src/modules/generate/generate.command.ts",
+      "target": "src/modules/generate/generate.constants.ts"
+    },
+    {
+      "source": "src/modules/generate/generate.command.ts",
+      "target": "src/modules/generate/generate.types.ts"
+    },
+    {
+      "source": "src/modules/generate/generate.command.unit.test.ts",
+      "target": "src/modules/generate/generate.command.ts"
+    },
+    {
+      "source": "src/modules/generate/generate.module.ts",
+      "target": "src/modules/generate/generate.command.ts"
+    },
+    {
+      "source": "src/modules/instances/instances.command.ts",
+      "target": "src/constants.ts"
+    },
+    {
+      "source": "src/modules/instances/instances.command.ts",
+      "target": "src/modules/instances/instances.constants.ts"
+    },
+    {
+      "source": "src/modules/instances/instances.command.ts",
+      "target": "src/modules/instances/instances.types.ts"
+    },
+    {
+      "source": "src/modules/instances/instances.command.unit.test.ts",
+      "target": "src/modules/instances/instances.command.ts"
+    },
+    {
+      "source": "src/modules/instances/instances.module.ts",
+      "target": "src/modules/instances/instances.command.ts"
+    },
+    {
+      "source": "src/modules/templates/templates.command.ts",
+      "target": "src/constants.ts"
+    },
+    {
+      "source": "src/modules/templates/templates.command.ts",
+      "target": "src/modules/templates/templates.constants.ts"
+    },
+    {
+      "source": "src/modules/templates/templates.command.ts",
+      "target": "src/modules/templates/templates.types.ts"
+    },
+    {
+      "source": "src/modules/templates/templates.command.unit.test.ts",
+      "target": "src/modules/templates/templates.command.ts"
+    },
+    {
+      "source": "src/modules/templates/templates.module.ts",
+      "target": "src/modules/templates/templates.command.ts"
+    },
+    {
+      "source": "src/modules/validate/validate.command.ts",
+      "target": "src/constants.ts"
+    },
+    {
+      "source": "src/modules/validate/validate.command.ts",
+      "target": "src/modules/validate/validate.types.ts"
+    },
+    {
+      "source": "src/modules/validate/validate.command.unit.test.ts",
+      "target": "src/modules/validate/validate.command.ts"
+    },
+    {
+      "source": "src/modules/validate/validate.module.ts",
+      "target": "src/modules/validate/validate.command.ts"
+    },
+    {
+      "source": "src/repl.ts",
+      "target": "src/main.module.ts"
+    }
+  ],
+  "fileNames": [
+    "eslint.config.ts",
+    "src/constants.ts",
+    "src/index.ts",
+    "src/main.end-to-end.test.ts",
+    "src/main.integration.test.ts",
+    "src/main.module.ts",
+    "src/main.ts",
+    "src/main.unit.test.ts",
+    "src/modules/generate/generate.command.ts",
+    "src/modules/generate/generate.command.unit.test.ts",
+    "src/modules/generate/generate.constants.ts",
+    "src/modules/generate/generate.module.ts",
+    "src/modules/generate/generate.types.ts",
+    "src/modules/instances/instances.command.ts",
+    "src/modules/instances/instances.command.unit.test.ts",
+    "src/modules/instances/instances.constants.ts",
+    "src/modules/instances/instances.module.ts",
+    "src/modules/instances/instances.types.ts",
+    "src/modules/templates/templates.command.ts",
+    "src/modules/templates/templates.command.unit.test.ts",
+    "src/modules/templates/templates.constants.ts",
+    "src/modules/templates/templates.module.ts",
+    "src/modules/templates/templates.types.ts",
+    "src/modules/validate/validate.command.ts",
+    "src/modules/validate/validate.command.unit.test.ts",
+    "src/modules/validate/validate.constants.ts",
+    "src/modules/validate/validate.module.ts",
+    "src/modules/validate/validate.types.ts",
+    "src/repl.ts",
+    "src/repl.unit.test.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "isolatedFileNames": [
+    "eslint.config.ts",
+    "src/index.ts",
+    "src/main.unit.test.ts",
+    "src/modules/validate/validate.constants.ts",
+    "src/repl.unit.test.ts",
+    "testing/mocks.ts",
+    "testing/setup.ts",
+    "vitest.config.ts"
+  ],
+  "projectName": "conformetry-cli"
+}
