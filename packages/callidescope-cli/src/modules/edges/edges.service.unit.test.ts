@@ -322,7 +322,7 @@ describe(EdgesService, () => {
       `,
     });
     const services = buildFixtureServices({
-      maximumFanOut: 2,
+      maximumCandidates: 2,
       projectProgram,
     });
     const collection = collectFixtureCallables({ projectProgram, services });
@@ -334,7 +334,7 @@ describe(EdgesService, () => {
     });
 
     expect(collected.unresolvedCalls.map((call) => call.reason)).toContain(
-      "fan-out-exceeded",
+      "too-many-implementations",
     );
   });
 

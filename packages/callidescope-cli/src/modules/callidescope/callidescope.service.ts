@@ -179,7 +179,8 @@ export class CallidescopeService {
       workspaceRoot: args.workspaceRoot,
     });
     this.classHierarchyService.build({
-      maximumFanOut: args.configuration.limits.maximumImplementationFanOut,
+      maximumCandidates:
+        args.configuration.limits.maximumImplementationCandidates,
       programs: programSet.programs,
     });
 

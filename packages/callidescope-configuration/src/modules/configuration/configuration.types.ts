@@ -80,7 +80,7 @@ export interface CallidescopeLimits {
   /** Frames a call stack may hold before it is reported. */
   maximumDepth?: number | undefined;
   /** Implementations one interface member may resolve to before giving up. */
-  maximumImplementationFanOut?: number | undefined;
+  maximumImplementationCandidates?: number | undefined;
   /** Callers a callable needs before its placement is judged. */
   minimumCallers?: number | undefined;
   /** Distinct modules a callable's transitive callees may touch. */
@@ -220,7 +220,7 @@ export interface ResolvedCallidescopeLimits {
    */
   maximumBreadth?: number | undefined;
   maximumDepth: number;
-  maximumImplementationFanOut: number;
+  maximumImplementationCandidates: number;
   minimumCallers: number;
   spreadThreshold: number;
 }

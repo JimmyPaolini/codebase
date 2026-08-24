@@ -19,7 +19,7 @@ import {
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_MAXIMUM_DEPTH,
-  DEFAULT_MAXIMUM_IMPLEMENTATION_FAN_OUT,
+  DEFAULT_MAXIMUM_IMPLEMENTATION_CANDIDATES,
   DEFAULT_MINIMUM_CALLERS,
   DEFAULT_OUTPUT_FORMAT,
   DEFAULT_PREVIEW_COUNT,
@@ -235,9 +235,9 @@ export class ConfigurationService {
         authored.directSpreadThreshold ?? DEFAULT_DIRECT_SPREAD_THRESHOLD,
       maximumBreadth: authored.maximumBreadth,
       maximumDepth: authored.maximumDepth ?? DEFAULT_MAXIMUM_DEPTH,
-      maximumImplementationFanOut:
-        authored.maximumImplementationFanOut ??
-        DEFAULT_MAXIMUM_IMPLEMENTATION_FAN_OUT,
+      maximumImplementationCandidates:
+        authored.maximumImplementationCandidates ??
+        DEFAULT_MAXIMUM_IMPLEMENTATION_CANDIDATES,
       minimumCallers: authored.minimumCallers ?? DEFAULT_MINIMUM_CALLERS,
       spreadThreshold: authored.spreadThreshold ?? DEFAULT_SPREAD_THRESHOLD,
     };

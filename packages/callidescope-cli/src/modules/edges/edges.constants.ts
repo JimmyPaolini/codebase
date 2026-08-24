@@ -38,8 +38,8 @@ export const NO_IMPLEMENTATION_CALL: ResolvedCallSite = {
 };
 
 /** An interface member too many classes implement to be worth following. */
-export const FAN_OUT_EXCEEDED_CALL: ResolvedCallSite = {
+export const TOO_MANY_IMPLEMENTATIONS_CALL: ResolvedCallSite = {
   declarations: [],
-  reason: "fan-out-exceeded",
+  reason: "too-many-implementations",
   resolution: "implementation",
 };

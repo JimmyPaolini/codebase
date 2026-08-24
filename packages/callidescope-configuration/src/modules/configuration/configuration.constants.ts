@@ -86,7 +86,7 @@ export const DEFAULT_DIRECT_SPREAD_THRESHOLD = 3;
  * `run` or `sync` otherwise matches dozens of unrelated classes and manufactures
  * a call-stack depth that no execution ever takes.
  */
-export const DEFAULT_MAXIMUM_IMPLEMENTATION_FAN_OUT = 8;
+export const DEFAULT_MAXIMUM_IMPLEMENTATION_CANDIDATES = 8;
 
 /**
  * Callers a callable needs before its placement is judged.
@@ -170,7 +170,7 @@ const limitsSchema = z
     directSpreadThreshold: z.number().int().positive().optional(),
     maximumBreadth: z.number().int().positive().optional(),
     maximumDepth: z.number().int().positive().optional(),
-    maximumImplementationFanOut: z.number().int().positive().optional(),
+    maximumImplementationCandidates: z.number().int().positive().optional(),
     minimumCallers: z.number().int().positive().optional(),
     spreadThreshold: z.number().int().positive().optional(),
   })

@@ -256,10 +256,10 @@ export interface UnresolvedCall {
 export type UnresolvedReason =
   | "computed-member"
   | "dynamic-value"
-  | "fan-out-exceeded"
   | "generic-parameter"
   | "no-implementation"
-  | "no-symbol";
+  | "no-symbol"
+  | "too-many-implementations";
 
 /** One callable reached directly by another, named in its breadth report. */
 export interface WideCallableCallee {

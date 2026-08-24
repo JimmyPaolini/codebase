@@ -101,7 +101,7 @@ export function buildFixtureProgram(
  * harder to see.
  */
 export function buildFixtureServices(args: {
-  maximumFanOut?: number;
+  maximumCandidates?: number;
   projectProgram: ProjectProgram;
 }): FixtureServices {
   const workspace = new WorkspaceService(createMock<LoggerService>());
@@ -120,7 +120,7 @@ export function buildFixtureServices(args: {
     workspaceRoot: FIXTURE_ROOT,
   });
   hierarchy.build({
-    maximumFanOut: args.maximumFanOut ?? 8,
+    maximumCandidates: args.maximumCandidates ?? 8,
     programs: [args.projectProgram],
   });
 

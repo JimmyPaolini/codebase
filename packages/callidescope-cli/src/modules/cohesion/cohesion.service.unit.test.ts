@@ -63,7 +63,7 @@ function buildArguments(args: {
       callerMajorityRatio: 0.8,
       directSpreadThreshold: 2,
       maximumDepth: 6,
-      maximumImplementationFanOut: 8,
+      maximumImplementationCandidates: 8,
       minimumCallers: 2,
       spreadThreshold: 2,
       ...args.limits,

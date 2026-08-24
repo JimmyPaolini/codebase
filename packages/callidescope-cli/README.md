@@ -244,7 +244,7 @@ carries the service's type, and the checker follows it.
 | ---------- | ----------- |
 | `helper()` | The symbol at the callee, unwrapped through import aliases |
 | `this.service.load()` | The symbol at the member name — the injected-dependency case |
-| `provider.ingest()` | Every class structurally satisfying the interface, capped by `maximumImplementationFanOut` |
+| `provider.ingest()` | Every class structurally satisfying the interface, capped by `maximumImplementationCandidates` |
 | `super.run()` | The base declaration the checker resolves to |
 | `new Thing()` | The constructor, when it has a body |
 | `list.map(callback)` | The callback, as its own frame — `map` itself is external |

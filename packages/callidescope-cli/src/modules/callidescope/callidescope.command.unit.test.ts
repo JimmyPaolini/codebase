@@ -51,7 +51,7 @@ function buildConfiguration(
       callerMajorityRatio: 0.8,
       directSpreadThreshold: 3,
       maximumDepth: 6,
-      maximumImplementationFanOut: 8,
+      maximumImplementationCandidates: 8,
       minimumCallers: 2,
       spreadThreshold: 4,
     },
