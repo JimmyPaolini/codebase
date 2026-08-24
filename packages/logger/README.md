@@ -83,6 +83,7 @@ flowchart LR
   conformetry_nx["conformetry-nx"]
   lexico_ingestion["lexico-ingestion"]
   logger["logger"]
+  meanderaw["meanderaw"]
   reporting["reporting"]
   synchronization["synchronization"]
   validation["validation"]
@@ -92,6 +93,7 @@ flowchart LR
   conformetry_cli --> logger
   conformetry_nx --> logger
   lexico_ingestion --> logger
+  meanderaw --> logger
   reporting --> logger
   synchronization --> logger
   validation --> logger
