@@ -14,6 +14,8 @@ export interface CallableBreadthReport {
   readonly displayName: string;
   readonly id: CallableId;
   readonly location: SourceLocation;
+  /** Absent when the checker could not resolve a signature. */
+  readonly signature: CallableSignature | undefined;
 }
 
 /** What the documentation comment above a callable says. */
@@ -259,7 +261,7 @@ export type UnresolvedReason =
   | "no-implementation"
   | "no-symbol";
 
-/** One callee pushing a callable's breadth over its limit. */
+/** One callable reached directly by another, named in its breadth report. */
 export interface WideCallableCallee {
   readonly displayName: string;
   readonly id: CallableId;

@@ -146,6 +146,7 @@ describe(CallidescopeCommand, () => {
               filePath: "packages/example/src/example.ts",
               line: 1,
             },
+            signature: undefined,
           },
         ],
       }),
@@ -710,6 +711,7 @@ describe(CallidescopeCommand, () => {
         reasons: [
           "--check breadth requires limits.maximumBreadth to be set. Add `limits: { maximumBreadth: <number> }` to your callidescope.config.ts before running --check breadth.",
         ],
+        workspaceRoot: path.resolve("."),
       },
     );
   });

@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import { PathsService } from "../graph/paths.service";
+import { SignaturesService } from "../signatures/signatures.service";
 
 import { MINIMUM_STACK_FRAMES } from "./project-reports.constants";
 
@@ -25,7 +26,10 @@ import type {
 export class ProjectReportsService {
   // 🏗 Dependency Injection
 
-  constructor(private readonly pathsService: PathsService) {}
+  constructor(
+    private readonly pathsService: PathsService,
+    private readonly signaturesService: SignaturesService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -62,6 +66,10 @@ export class ProjectReportsService {
         displayName: callable.node.displayName,
         id: callableId,
         location: callable.node.location,
+        signature: this.signaturesService.read({
+          checker: callable.projectProgram.checker,
+          declaration: callable.declaration,
+        }),
       });
       byProject.set(callable.node.projectName, reports);
     }

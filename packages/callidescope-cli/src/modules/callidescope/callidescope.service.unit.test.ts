@@ -110,6 +110,7 @@ function buildSubject(args: {
     args.fixture.programService,
     new ProjectReportsService(
       new PathsService(new DocumentationService(), new SignaturesService()),
+      new SignaturesService(),
     ),
     args.fixture.workspace,
     args.logger ?? createMock<LoggerService>(),

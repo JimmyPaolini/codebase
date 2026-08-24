@@ -46,6 +46,28 @@ export class MarkdownReportService {
 
   // 🔏 Private Methods
 
+  /**
+   * Renders each callable's direct fan-out.
+   *
+   * Shared by both scopes: a project section passes every callable with a
+   * direct callee, unfiltered by any limit, the same way its stacks are;
+   * a whole-run section passes only the `WideCallableFinding`s that broke
+   * the configured limit. `WideCallableFinding` is a `CallableBreadthReport`
+   * with a `limit` added, so one renderer covers both without caring which
+   * it was handed.
+   */
+  private renderCallableBreadths(
+    reports: readonly CallableBreadthReport[],
+  ): string {
+    return this.renderTable({
+      header: MARKDOWN_WIDE_CALLABLES_HEADER,
+      rows: reports.map(
+        (report) =>
+          `| \`${report.displayName}\` | ${String(report.breadth)} | ${report.callees.map((callee) => `\`${callee.displayName}\``).join(", ")} | \`${report.location.filePath}:${String(report.location.line)}\` |`,
+      ),
+    });
+  }
+
   /** Renders the misplaced-callable findings belonging to one scope. */
   private renderMisplaced(
     findings: readonly MisplacedCallableFinding[],
@@ -125,19 +147,6 @@ export class MarkdownReportService {
       : `${args.header}\n${args.rows.join("\n")}`;
   }
 
-  /** Renders the callables calling more things directly than is reasonable. */
-  private renderWideCallables(
-    findings: readonly CallableBreadthReport[],
-  ): string {
-    return this.renderTable({
-      header: MARKDOWN_WIDE_CALLABLES_HEADER,
-      rows: findings.map(
-        (finding) =>
-          `| \`${finding.displayName}\` | ${String(finding.breadth)} | ${finding.callees.map((callee) => `\`${callee.displayName}\``).join(", ")} | \`${finding.location.filePath}:${String(finding.location.line)}\` |`,
-      ),
-    });
-  }
-
   // 🌎 Public Methods
 
   /** Renders one project's section, for splicing into its own README. */
@@ -165,7 +174,7 @@ export class MarkdownReportService {
       "",
       "### Direct fan-out",
       "",
-      this.renderWideCallables(report.callableBreadths),
+      this.renderCallableBreadths(report.callableBreadths),
       "",
       "### Possibly misplaced",
       "",
@@ -196,7 +205,7 @@ export class MarkdownReportService {
       "",
       `## Callables calling too much directly (${String(result.wideCallables.length)})`,
       "",
-      this.renderWideCallables(result.wideCallables),
+      this.renderCallableBreadths(result.wideCallables),
       "",
       "## Possibly misplaced",
       "",

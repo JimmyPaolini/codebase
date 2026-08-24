@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { GraphModule } from "../graph/graph.module";
+import { SignaturesModule } from "../signatures/signatures.module";
 
 import { ProjectReportsService } from "./project-reports.service";
 
@@ -10,7 +11,7 @@ import { ProjectReportsService } from "./project-reports.service";
 @Module({
   controllers: [],
   exports: [ProjectReportsService],
-  imports: [GraphModule],
+  imports: [GraphModule, SignaturesModule],
   providers: [ProjectReportsService],
 })
 export class ProjectReportsModule {}

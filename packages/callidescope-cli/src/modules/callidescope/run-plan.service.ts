@@ -181,6 +181,7 @@ export class RunPlanService {
     if (configurationErrors.length > 0) {
       this.logger.error(`🔭 Rejected the configuration`, undefined, {
         reasons: configurationErrors,
+        workspaceRoot,
       });
       process.exitCode = 1;
       return undefined;
