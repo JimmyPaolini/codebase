@@ -480,3 +480,22 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-28-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-33-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
+
+## 👔 Conformetry
+
+Template-driven code generation and conformance validation, generators synced from [configuration/conformetry.config.ts](configuration/conformetry.config.ts) by `nx run synchronization:conformetry-generators:write`.
+
+<!-- conformetry-generators-table start -->
+| Generator | Alias | Description |
+| --------- | ----- | ----------- |
+| `jupyter-notebook-application` | `jna` | Generate a Python Jupyter notebook application |
+| `nestjs-command-project` | `nca` | Generate a NestJS command-line application using nest-commander |
+| `nestjs-graphql-application` | `nga` | Generate a NestJS GraphQL API application |
+| `nestjs-service-project` | `nsp` | Generate a NestJS service package template for internal workspace libraries |
+| `nestjs-command-module` | `ncm` | Generate a NestJS command module with command, module, and unit test files |
+| `nestjs-dataloader-module` | `ndm` | Generate a NestJS dataloader module with dataloader, types, and unit test files |
+| `nestjs-graphql-module` | `ngm` | Generate a NestJS GraphQL module with resolver, entities, inputs, args, factories, service, types, constants, and unit test files |
+| `nestjs-service-file` | `nsf` | Generate NestJS service and unit test files |
+| `nestjs-service-module` | `nsm` | Generate a NestJS service module with module, service, types, constants, and unit test files |
+| `react-component` | `c` | Generate a React component with test file |
+<!-- conformetry-generators-table end -->

@@ -60,6 +60,7 @@ describe(ConformetryGeneratorsCommand, () => {
 
   const workspaceRoot = process.cwd();
   const agentsFile = path.join(workspaceRoot, "AGENTS.md");
+  const readmeFile = path.join(workspaceRoot, "README.md");
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -111,7 +112,12 @@ describe(ConformetryGeneratorsCommand, () => {
 
   it.each([
     {
-      agentsContent: [
+      expectedLogMessage: "📇 Verified the conformetry generators table",
+      generators: [
+        { aliases: ["a"], description: "first", name: "alpha" },
+        { aliases: ["b"], description: "second", name: "beta" },
+      ],
+      markedContent: [
         "# Header",
         "<!-- conformetry-generators-table start -->",
         "| Generator | Alias | Description |",
@@ -120,17 +126,14 @@ describe(ConformetryGeneratorsCommand, () => {
         "| `beta` | `b` | second |",
         "<!-- conformetry-generators-table end -->",
       ].join("\n"),
-      expectedLogMessage: "📇 Verified the conformetry generators table",
-      generators: [
-        { aliases: ["a"], description: "first", name: "alpha" },
-        { aliases: ["b"], description: "second", name: "beta" },
-      ],
       modeArguments: ["check"],
       scenarioName:
-        "passes check mode when generated table matches AGENTS markers",
+        "passes check mode when generated table matches every target file",
     },
     {
-      agentsContent: [
+      expectedLogMessage: "📇 Verified the conformetry generators table",
+      generators: [{ description: "first", name: "alpha" }],
+      markedContent: [
         "# Header",
         "<!-- conformetry-generators-table start -->",
         "| Generator | Alias | Description |",
@@ -138,21 +141,20 @@ describe(ConformetryGeneratorsCommand, () => {
         "| `alpha` |  | first |",
         "<!-- conformetry-generators-table end -->",
       ].join("\n"),
-      expectedLogMessage: "📇 Verified the conformetry generators table",
-      generators: [{ description: "first", name: "alpha" }],
       modeArguments: [],
       scenarioName: "defaults to check mode when no mode is provided",
     },
   ])(
     "$scenarioName",
     async ({
-      agentsContent,
       expectedLogMessage,
       generators,
+      markedContent,
       modeArguments,
     }) => {
       currentConformetryConfiguration = generators;
-      fileContents.set(agentsFile, agentsContent);
+      fileContents.set(agentsFile, markedContent);
+      fileContents.set(readmeFile, markedContent);
 
       await command.run(modeArguments);
 
@@ -165,25 +167,29 @@ describe(ConformetryGeneratorsCommand, () => {
     },
   );
 
-  it("writes generated table to AGENTS in write mode", async () => {
+  it("writes generated table to every target file in write mode", async () => {
     currentConformetryConfiguration = [
       { aliases: ["a"], description: "first", name: "alpha" },
     ];
-    fileContents.set(
-      agentsFile,
-      [
-        "# Header",
-        "<!-- conformetry-generators-table start -->",
-        "stale",
-        "<!-- conformetry-generators-table end -->",
-      ].join("\n"),
-    );
+    const staleContent = [
+      "# Header",
+      "<!-- conformetry-generators-table start -->",
+      "stale",
+      "<!-- conformetry-generators-table end -->",
+    ].join("\n");
+    fileContents.set(agentsFile, staleContent);
+    fileContents.set(readmeFile, staleContent);
 
     await command.run(["write"]);
 
-    expect(writeFileSync).toHaveBeenCalledTimes(1);
+    expect(writeFileSync).toHaveBeenCalledTimes(2);
     expect(writeFileSync).toHaveBeenCalledWith(
       agentsFile,
+      expect.stringContaining("| `alpha` | `a` | first |"),
+      "utf8",
+    );
+    expect(writeFileSync).toHaveBeenCalledWith(
+      readmeFile,
       expect.stringContaining("| `alpha` | `a` | first |"),
       "utf8",
     );
@@ -192,6 +198,11 @@ describe(ConformetryGeneratorsCommand, () => {
     );
     expect(logger.info).toHaveBeenCalledWith(
       "📇 Updated AGENTS.md",
+      undefined,
+      expect.any(Object),
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      "📇 Updated README.md",
       undefined,
       expect.any(Object),
     );
@@ -234,9 +245,9 @@ describe(ConformetryGeneratorsCommand, () => {
     {
       assertLogs: (loggerService: LoggerService): void => {
         expect(loggerService.info).toHaveBeenCalledWith(
-          "📇 Detected an out-of-sync conformetry generators table in AGENTS.md",
+          "📇 Detected an out-of-sync conformetry generators table",
           undefined,
-          expect.any(Object),
+          expect.objectContaining({ files: ["AGENTS.md"] }),
         );
       },
       modeArguments: ["check"],
@@ -254,6 +265,17 @@ describe(ConformetryGeneratorsCommand, () => {
             "| Generator | Alias | Description |",
             "| --------- | ----- | ----------- |",
             "| `stale` | `x` | mismatch |",
+            "<!-- conformetry-generators-table end -->",
+          ].join("\n"),
+        );
+        fileContents.set(
+          readmeFile,
+          [
+            "# Header",
+            "<!-- conformetry-generators-table start -->",
+            "| Generator | Alias | Description |",
+            "| --------- | ----- | ----------- |",
+            "| `alpha` | `a` | first |",
             "<!-- conformetry-generators-table end -->",
           ].join("\n"),
         );
