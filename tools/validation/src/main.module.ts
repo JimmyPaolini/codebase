@@ -11,6 +11,7 @@ import { LockfileModule } from "./modules/lockfile/lockfile.module";
 import { PullRequestBodyModule } from "./modules/pull-request-body/pull-request-body.module";
 import { PullRequestMetadataModule } from "./modules/pull-request-metadata/pull-request-metadata.module";
 import { PullRequestReleaseSignificanceModule } from "./modules/pull-request-release-significance/pull-request-release-significance.module";
+import { ReadmeProjectsModule } from "./modules/readme-projects/readme-projects.module";
 
 /**
  * Root NestJS application module.
@@ -31,6 +32,7 @@ import { PullRequestReleaseSignificanceModule } from "./modules/pull-request-rel
     PullRequestBodyModule,
     PullRequestMetadataModule,
     PullRequestReleaseSignificanceModule,
+    ReadmeProjectsModule,
   ],
 })
 export class MainModule {}

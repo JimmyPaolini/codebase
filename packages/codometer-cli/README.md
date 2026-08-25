@@ -851,6 +851,7 @@ graph LR
   file_src_modules_codometer_codometer_service_unit_test_ts --> file_src_modules_codometer_codometer_service_ts
   file_src_modules_codometer_codometer_service_unit_test_ts --> file_src_modules_limits_limits_service_ts
   file_src_modules_codometer_codometer_service_unit_test_ts --> file_src_modules_limits_metric_index_service_ts
+  file_src_modules_codometer_codometer_service_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_codometer_codometer_types_ts --> file_src_modules_limits_limits_types_ts
   file_src_modules_codometer_codometer_types_ts --> file_src_modules_report_report_types_ts
   file_src_modules_codometer_run_plan_service_ts --> file_src_modules_codometer_codometer_types_ts

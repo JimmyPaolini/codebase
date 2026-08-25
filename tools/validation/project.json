@@ -38,6 +38,9 @@
         },
         "pull-request-metadata": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts pull-request-metadata"
+        },
+        "readme-projects": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts readme-projects"
         }
       },
       "description": "Run one validation check by name.",

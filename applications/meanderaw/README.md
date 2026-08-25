@@ -56,3 +56,7 @@ nx run meanderaw:start
 ```bash
 nx run meanderaw:vitest
 ```
+
+## 👔 Conformetry
+
+This project was generated from the [nestjs-command-project](../../configuration/conformetry-templates/nestjs-command-project) conformetry template.

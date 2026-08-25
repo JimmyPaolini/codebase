@@ -7,6 +7,7 @@ import type { LockfileModule } from "./modules/lockfile/lockfile.module";
 import type { PullRequestBodyModule } from "./modules/pull-request-body/pull-request-body.module";
 import type { PullRequestMetadataModule } from "./modules/pull-request-metadata/pull-request-metadata.module";
 import type { PullRequestReleaseSignificanceModule } from "./modules/pull-request-release-significance/pull-request-release-significance.module";
+import type { ReadmeProjectsModule } from "./modules/readme-projects/readme-projects.module";
 import type { LoggerService } from "@codebase/logger";
 
 type CommandFactoryRun = (
@@ -23,6 +24,7 @@ const pullRequestBodyModuleMock = createMock<PullRequestBodyModule>();
 const pullRequestMetadataModuleMock = createMock<PullRequestMetadataModule>();
 const pullRequestReleaseSignificanceModuleMock =
   createMock<PullRequestReleaseSignificanceModule>();
+const readmeProjectsModuleMock = createMock<ReadmeProjectsModule>();
 
 vi.mock("nest-commander", () => ({
   CommandFactory: {
@@ -80,6 +82,12 @@ vi.mock(
       },
   }),
 );
+
+vi.mock("./modules/readme-projects/readme-projects.module", () => ({
+  ReadmeProjectsModule: function ReadmeProjectsModule() {
+    return readmeProjectsModuleMock;
+  },
+}));
 
 describe("main bootstrap", () => {
   beforeEach(() => {
