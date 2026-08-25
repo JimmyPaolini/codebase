@@ -4,6 +4,7 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 import tsCompiler from "typescript";
 
+import { DocumentationMeasurementService } from "./documentation-measurement.service";
 import {
   DOC_TAG_REGEX,
   EMPTY_TYPESCRIPT_RESULT,
@@ -28,7 +29,9 @@ export class TypescriptService {
   // 🏗 Dependency Injection
 
   /** Creates the TypescriptService. */
-  constructor() {}
+  constructor(
+    private readonly documentationMeasurementService: DocumentationMeasurementService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -106,49 +109,14 @@ export class TypescriptService {
     node: tsCompiler.Node,
     context: TypescriptWalkContext,
   ): void {
-    const { documentation, sourceFile } = context;
-    const kind = SYMBOL_KIND_BY_SYNTAX_KIND[node.kind];
-
-    if (documentation === undefined || kind === undefined) {
-      return;
-    }
-
-    const range = (
-      tsCompiler.getLeadingCommentRanges(
-        sourceFile.text,
-        node.getFullStart(),
-      ) ?? []
-    ).findLast(
-      (candidate) =>
-        candidate.kind === tsCompiler.SyntaxKind.MultiLineCommentTrivia &&
-        sourceFile.text.slice(candidate.pos, candidate.pos + 3) === "/**",
+    const measurement = this.documentationMeasurementService.measure(
+      node,
+      context,
     );
 
-    if (range === undefined) {
-      return;
+    if (measurement !== undefined) {
+      context.stats.documentation.push(measurement);
     }
-
-    const text = sourceFile.text
-      .slice(range.pos, range.end)
-      .replaceAll("\r\n", "\n");
-    const measured =
-      documentation.unit === "characters"
-        ? text.length
-        : text.split("\n").length;
-
-    context.stats.documentation.push({
-      breached: measured > (documentation.kinds[kind] ?? documentation.default),
-      declaration: this.getDeclarationName(node),
-      file: context.filePath,
-      kind,
-      limit: documentation.kinds[kind] ?? documentation.default,
-      line:
-        sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile))
-          .line + 1,
-      measured,
-      severity: documentation.severity,
-      unit: documentation.unit,
-    });
   }
 
   /** Count a discovered comment and update the appropriate metrics. */
@@ -259,15 +227,6 @@ export class TypescriptService {
         counter.patterns.length === 0 ||
         counter.patterns.some((pattern) => path.matchesGlob(filePath, pattern)),
     );
-  }
-
-  /** Reads a declaration's own name, or `"(anonymous)"` when it has none. */
-  private getDeclarationName(node: tsCompiler.Node): string {
-    const nodeWithName = node as tsCompiler.Node & {
-      name?: { getText?: () => string };
-    };
-
-    return nodeWithName.name?.getText?.() ?? "(anonymous)";
   }
 
   /** Choose the dialect a file is parsed as, from its extension. */

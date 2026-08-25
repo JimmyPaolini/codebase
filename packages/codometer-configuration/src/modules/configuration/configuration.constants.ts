@@ -255,6 +255,7 @@ export const CODOMETER_SYMBOL_KINDS = [
 export const CODOMETER_DOCUMENTATION_UNITS = [
   "characters",
   "lines",
+  "words",
 ] as const satisfies readonly CodometerDocumentationUnit[];
 
 /** Modifiers a symbol counter may require of a declaration. */

@@ -260,7 +260,7 @@ documentation: {
 | `default` | no | `6` | The limit a declaration's kind falls back to when `kinds` names none for it |
 | `kinds` | no | none | A limit per declaration kind — `class`, `interface`, `function`, `method`, `property`, and the rest `## What gets measured` lists |
 | `severity` | no | `fail` | `fail` stops the run on a breach; `warn` reports it |
-| `unit` | no | `"lines"` | `"lines"` or `"characters"`, the unit a comment's length is measured in |
+| `unit` | no | `"lines"` | `"lines"`, `"characters"`, or `"words"` — the unit a comment's length is measured in |
 
 A documentation breach is gated by the same `--check limits` flag every other
 limit is — there is no separate flag for it. It never needs its own `metric`

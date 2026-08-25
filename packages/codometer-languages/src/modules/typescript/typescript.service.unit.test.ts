@@ -5,6 +5,7 @@ import { Test } from "@nestjs/testing";
 import tsCompiler from "typescript";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { DocumentationMeasurementService } from "./documentation-measurement.service";
 import { TypescriptService } from "./typescript.service";
 
 import type { TypescriptSymbolCounter } from "./typescript.types";
@@ -20,7 +21,7 @@ describe(TypescriptService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [TypescriptService],
+      providers: [DocumentationMeasurementService, TypescriptService],
     }).compile();
     service = await module.resolve(TypescriptService);
   });
@@ -777,6 +778,25 @@ describe(TypescriptService, () => {
 
       expect(measurement?.unit).toBe("characters");
       expect(measurement?.measured).toBe("/** Short. */".length);
+    });
+
+    it("measures words instead of lines when configured", () => {
+      readFileSyncMock.mockReturnValue(
+        `/**
+          * This comment has exactly six words.
+          */
+         export class Foo {}`,
+      );
+
+      const [measurement] = service.analyze({
+        documentation: { ...documentation, unit: "words" },
+        sourceFiles: ["src/foo.ts"],
+        symbolCounters: [],
+        workingDirectory: "/repo",
+      }).documentation;
+
+      expect(measurement?.unit).toBe("words");
+      expect(measurement?.measured).toBe(6);
     });
 
     it("does not report a declaration with no JSDoc comment at all", () => {

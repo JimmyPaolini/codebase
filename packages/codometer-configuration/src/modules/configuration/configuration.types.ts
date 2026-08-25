@@ -167,7 +167,7 @@ export interface CodometerDocumentationConfiguration {
 }
 
 /** Unit a documentation length is measured in. */
-export type CodometerDocumentationUnit = "characters" | "lines";
+export type CodometerDocumentationUnit = "characters" | "lines" | "words";
 
 /**
  * How high one measured metric may go.

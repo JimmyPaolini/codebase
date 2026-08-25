@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 
+import { DocumentationMeasurementService } from "./documentation-measurement.service";
 import { TypescriptService } from "./typescript.service";
 
 /**
@@ -9,6 +10,6 @@ import { TypescriptService } from "./typescript.service";
   controllers: [],
   exports: [TypescriptService],
   imports: [],
-  providers: [TypescriptService],
+  providers: [DocumentationMeasurementService, TypescriptService],
 })
 export class TypescriptModule {}
