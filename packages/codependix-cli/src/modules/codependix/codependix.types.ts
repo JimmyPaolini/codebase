@@ -3,6 +3,7 @@
 import type { CodependixRunMode } from "../delivery/delivery.types";
 import type { ResolvedCodependixConfiguration } from "@codependix/configuration";
 import type { ImportGraph } from "@codependix/imports";
+import type { PythonImportGraph } from "@codependix/imports-python";
 import type { NestjsModuleGraph } from "@codependix/nestjs";
 import type { Neighborhood, NxProject, WorkspaceGraph } from "@codependix/nx";
 import type { ProjectGraph } from "@nx/devkit";
@@ -64,3 +65,12 @@ export interface NxNeighborhoodExport {
  * `codependix-nx`'s internal `WorkspaceGraph` representation.
  */
 export type NxWorkspaceGraphExport = WorkspaceGraph;
+
+/**
+ * The JSON shape a single project's Python file-level import graph export is
+ * written as.
+ *
+ * Identical in shape to `PythonImportGraph` itself, kept as its own named
+ * type for the same reason `ImportGraphExport` is.
+ */
+export type PythonImportGraphExport = PythonImportGraph;

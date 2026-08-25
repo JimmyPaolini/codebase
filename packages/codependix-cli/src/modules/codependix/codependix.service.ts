@@ -12,6 +12,7 @@ import { Injectable } from "@nestjs/common";
 import { LoggerService } from "@codebase/logger";
 
 import { DeliveryService } from "../delivery/delivery.service";
+import { PythonImportsService } from "../python-imports/python-imports.service";
 
 import {
   IMPORTS_GRAPH_TYPE,
@@ -62,7 +63,7 @@ import type { Neighborhood, NxProject, WorkspaceGraph } from "@codependix/nx";
  * `DeliveryService`, which knows nothing about Nx or NestJS at all.
  *
  * `run` resolves the configuration and reads the Nx project graph exactly
- * once, then hands both down to the three passes as a `GraphRunContext` —
+ * once, then hands both down to the four passes as a `GraphRunContext` —
  * each of them previously loaded the configuration and re-read the graph
  * itself. Every pass also isolates one project's failure from the rest: a
  * missing anchor or a NestJS project that fails to boot its container is
@@ -82,6 +83,7 @@ export class CodependixService {
     private readonly moduleGraphService: ModuleGraphService,
     private readonly neighborhoodService: NeighborhoodService,
     private readonly nestjsProjectService: NestjsProjectService,
+    private readonly pythonImportsService: PythonImportsService,
     private readonly typescriptProjectService: TypescriptProjectService,
     private readonly workspaceGraphService: WorkspaceGraphService,
   ) {
@@ -319,7 +321,7 @@ export class CodependixService {
    * exactly once.
    *
    * Every pass is attempted regardless of whether an earlier one reported a
-   * failure: the three graph types are independent, so a NestJS project
+   * failure: the four graph types are independent, so a NestJS project
    * failing to boot its container has no bearing on whether the Nx or import
    * graphs finish.
    */
@@ -347,17 +349,20 @@ export class CodependixService {
     const nxOutcome = this.runNxGraphs(context);
     const nestjsOutcome = await this.runNestjsGraphs(context);
     const importsOutcome = this.runImportGraphs(context);
+    const pythonImportsOutcome = this.runPythonImportGraphs(context);
 
     return {
       failures: [
         ...nxOutcome.failures,
         ...nestjsOutcome.failures,
         ...importsOutcome.failures,
+        ...pythonImportsOutcome.failures,
       ],
       results: [
         ...nxOutcome.results,
         ...nestjsOutcome.results,
         ...importsOutcome.results,
+        ...pythonImportsOutcome.results,
       ],
     };
   }
@@ -487,5 +492,17 @@ export class CodependixService {
     }
 
     return { failures, results };
+  }
+
+  /**
+   * Builds and delivers every configured Python file-level import graph
+   * export.
+   *
+   * Delegates to `PythonImportsService` — the pass itself follows
+   * `runImportGraphs` exactly, but lives in its own file so this one stays
+   * under the repository's per-file line limit.
+   */
+  runPythonImportGraphs(context: GraphRunContext): GraphRunOutcome {
+    return this.pythonImportsService.runGraphs(context);
   }
 }

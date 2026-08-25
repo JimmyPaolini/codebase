@@ -17,6 +17,7 @@ import { LoggerService } from "@codebase/logger";
 
 import { AnchorsService } from "../anchors/anchors.service";
 import { DeliveryService } from "../delivery/delivery.service";
+import { PythonImportsService } from "../python-imports/python-imports.service";
 
 import { CodependixService } from "./codependix.service";
 
@@ -58,6 +59,7 @@ describe(CodependixService, () => {
   let moduleGraphService: ModuleGraphService;
   let neighborhoodService: NeighborhoodService;
   let nestjsProjectService: NestjsProjectService;
+  let pythonImportsService: PythonImportsService;
   let typescriptProjectService: TypescriptProjectService;
   let workspaceGraphService: WorkspaceGraphService;
   let projectRoot: string;
@@ -88,6 +90,7 @@ describe(CodependixService, () => {
     moduleGraphService = createMock<ModuleGraphService>();
     neighborhoodService = createMock<NeighborhoodService>();
     nestjsProjectService = createMock<NestjsProjectService>();
+    pythonImportsService = createMock<PythonImportsService>();
     typescriptProjectService = createMock<TypescriptProjectService>();
     workspaceGraphService = createMock<WorkspaceGraphService>();
 
@@ -105,6 +108,7 @@ describe(CodependixService, () => {
         { provide: ModuleGraphService, useValue: moduleGraphService },
         { provide: NeighborhoodService, useValue: neighborhoodService },
         { provide: NestjsProjectService, useValue: nestjsProjectService },
+        { provide: PythonImportsService, useValue: pythonImportsService },
         {
           provide: TypescriptProjectService,
           useValue: typescriptProjectService,
@@ -177,6 +181,10 @@ describe(CodependixService, () => {
     vi.mocked(importGraphService.renderMermaid).mockReturnValue(
       "```mermaid\ngraph LR\n```",
     );
+    vi.mocked(pythonImportsService.runGraphs).mockReturnValue({
+      failures: [],
+      results: [],
+    });
   });
 
   it("is defined", () => {
@@ -817,6 +825,23 @@ describe(CodependixService, () => {
     });
   });
 
+  describe("runPythonImportGraphs", () => {
+    it("delegates to PythonImportsService with the given context", () => {
+      const context = buildContext();
+      const outcome: GraphRunOutcome = {
+        failures: [],
+        results: [
+          { isCurrent: true, projectName: "affirmations", stalePaths: [] },
+        ],
+      };
+
+      vi.mocked(pythonImportsService.runGraphs).mockReturnValue(outcome);
+
+      expect(service.runPythonImportGraphs(context)).toBe(outcome);
+      expect(pythonImportsService.runGraphs).toHaveBeenCalledWith(context);
+    });
+  });
+
   describe("run", () => {
     it("loads the configuration and reads the project graph exactly once", async () => {
       vi.mocked(configurationService.resolveForProject).mockReturnValue({
@@ -831,7 +856,7 @@ describe(CodependixService, () => {
       expect(neighborhoodService.readProjectGraph).toHaveBeenCalledTimes(1);
     });
 
-    it("aggregates the results and failures from all three passes", async () => {
+    it("aggregates the results and failures from all four passes", async () => {
       const nxOutcome: GraphRunOutcome = {
         failures: [{ error: "nx-boom", projectName: "a" }],
         results: [{ isCurrent: true, projectName: "b", stalePaths: [] }],
@@ -844,10 +869,17 @@ describe(CodependixService, () => {
         failures: [{ error: "import-boom", projectName: "d" }],
         results: [],
       };
+      const pythonImportsOutcome: GraphRunOutcome = {
+        failures: [],
+        results: [{ isCurrent: true, projectName: "e", stalePaths: [] }],
+      };
 
       vi.spyOn(service, "runNxGraphs").mockReturnValue(nxOutcome);
       vi.spyOn(service, "runNestjsGraphs").mockResolvedValue(nestjsOutcome);
       vi.spyOn(service, "runImportGraphs").mockReturnValue(importsOutcome);
+      vi.spyOn(service, "runPythonImportGraphs").mockReturnValue(
+        pythonImportsOutcome,
+      );
 
       const outcome = await service.run({ write: true }, projectRoot);
 
@@ -856,16 +888,18 @@ describe(CodependixService, () => {
           ...nxOutcome.failures,
           ...nestjsOutcome.failures,
           ...importsOutcome.failures,
+          ...pythonImportsOutcome.failures,
         ],
         results: [
           ...nxOutcome.results,
           ...nestjsOutcome.results,
           ...importsOutcome.results,
+          ...pythonImportsOutcome.results,
         ],
       });
     });
 
-    it("still runs the nestjs and import passes when the nx pass reports a failure", async () => {
+    it("still runs the nestjs, import, and python-import passes when the nx pass reports a failure", async () => {
       vi.spyOn(service, "runNxGraphs").mockReturnValue({
         failures: [{ error: "boom", projectName: "a" }],
         results: [],
@@ -875,6 +909,7 @@ describe(CodependixService, () => {
 
       expect(service.runNestjsGraphs).toHaveBeenCalledTimes(1);
       expect(service.runImportGraphs).toHaveBeenCalledTimes(1);
+      expect(service.runPythonImportGraphs).toHaveBeenCalledTimes(1);
     });
 
     it("resolves check mode when the command line names --check", async () => {

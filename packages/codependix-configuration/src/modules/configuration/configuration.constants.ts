@@ -20,6 +20,7 @@ export const CODEPENDIX_GRAPH_TYPES = [
   "imports",
   "nestjs",
   "nx",
+  "pythonImports",
 ] as const satisfies readonly CodependixGraphType[];
 
 /** Export targets a graph type may be configured with, per project. */
@@ -124,6 +125,7 @@ const projectConfigurationSchema = z.object({
   imports: graphOutputSchema.optional(),
   nestjs: graphOutputSchema.optional(),
   nx: graphOutputSchema.optional(),
+  pythonImports: graphOutputSchema.optional(),
 });
 
 /**

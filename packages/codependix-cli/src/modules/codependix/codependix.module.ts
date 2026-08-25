@@ -8,6 +8,7 @@ import { NeighborhoodModule, WorkspaceGraphModule } from "@codependix/nx";
 import { Module } from "@nestjs/common";
 
 import { DeliveryModule } from "../delivery/delivery.module";
+import { PythonImportsModule } from "../python-imports/python-imports.module";
 
 import { CodependixCommand } from "./codependix.command";
 import { CodependixService } from "./codependix.service";
@@ -23,6 +24,7 @@ import { CodependixService } from "./codependix.service";
     ModuleGraphModule,
     NeighborhoodModule,
     NestjsProjectModule,
+    PythonImportsModule,
     TypescriptProjectModule,
     WorkspaceGraphModule,
   ],

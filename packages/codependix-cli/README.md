@@ -2,9 +2,10 @@
 
 **Exports a project's dependency graphs — Nx, NestJS, and file-level imports — as JSON and Markdown diagrams.**
 
-Codependix reads what each project depends on and renders it three ways: the
-Nx project graph, a NestJS project's module graph, and a TypeScript project's
-own file-level import graph. Each graph is delivered to whichever destinations
+Codependix reads what each project depends on and renders it four ways: the
+Nx project graph, a NestJS project's module graph, a TypeScript project's own
+file-level import graph, and a Python project's own file-level import graph.
+Each graph is delivered to whichever destinations
 `codependix.config.ts` names for that project — a JSON file, a Markdown anchor
 block spliced into an existing file such as a `README.md`, or both.
 
@@ -49,11 +50,12 @@ every other one.
 
 | Package | Role |
 | ------- | ---- |
-| [`@codependix/cli`](.) | Orchestrates the three graph builders and delivers their exports |
+| [`@codependix/cli`](.) | Orchestrates the four graph builders and delivers their exports |
 | [`@codependix/configuration`](../codependix-configuration/README.md) | Reads `codependix.config.ts` and resolves per-project export destinations |
 | [`@codependix/nx`](../codependix-nx/README.md) | Builds a project's Nx Neighborhood and the whole-workspace Workspace Graph |
 | [`@codependix/nestjs`](../codependix-nestjs/README.md) | Explores a NestJS project's container and builds its module graph |
 | [`@codependix/imports`](../codependix-imports/README.md) | Builds a project's file-level import graph from its own `ts.Program` |
+| [`@codependix/imports-python`](../codependix-imports-python/README.md) | Builds a Python project's file-level import graph from its `import`/`from ... import` statements |
 
 ## Start
 
@@ -83,11 +85,13 @@ graph LR
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
   codependix_imports["codependix-imports"]
+  codependix_imports_python["codependix-imports-python"]
   codependix_nestjs["codependix-nestjs"]
   codependix_nx["codependix-nx"]
   logger["logger"]
   codependix_cli --> codependix_configuration
   codependix_cli --> codependix_imports
+  codependix_cli --> codependix_imports_python
   codependix_cli --> codependix_nestjs
   codependix_cli --> codependix_nx
   codependix_cli --> logger
@@ -113,6 +117,10 @@ flowchart LR
   ModuleGraphModule
   NeighborhoodModule
   NestjsProjectModule
+  PythonImportGraphModule
+  PythonImportParserModule
+  PythonImportsModule
+  PythonProjectModule
   TypescriptProjectModule
   WorkspaceGraphModule
   CodependixModule --> ConfigurationModule
@@ -121,12 +129,19 @@ flowchart LR
   CodependixModule --> ModuleGraphModule
   CodependixModule --> NeighborhoodModule
   CodependixModule --> NestjsProjectModule
+  CodependixModule --> PythonImportsModule
   CodependixModule --> TypescriptProjectModule
   CodependixModule --> WorkspaceGraphModule
   DeliveryModule --> AnchorsModule
   ImportGraphModule --> TypescriptProjectModule
   MainModule --> CodependixModule
   MainModule --> DiscoveryModule
+  PythonImportGraphModule --> PythonImportParserModule
+  PythonImportGraphModule --> PythonProjectModule
+  PythonImportsModule --> ConfigurationModule
+  PythonImportsModule --> DeliveryModule
+  PythonImportsModule --> PythonImportGraphModule
+  PythonImportsModule --> PythonProjectModule
   WorkspaceGraphModule --> NeighborhoodModule
 ```
 
@@ -166,6 +181,12 @@ graph LR
   file_src_modules_delivery_delivery_service_ts["src/modules/delivery/delivery.service.ts"]
   file_src_modules_delivery_delivery_service_unit_test_ts["src/modules/delivery/delivery.service.unit.test.ts"]
   file_src_modules_delivery_delivery_types_ts["src/modules/delivery/delivery.types.ts"]
+  file_src_modules_python_imports_python_imports_constants_ts["src/modules/python-imports/python-imports.constants.ts"]
+  file_src_modules_python_imports_python_imports_module_ts["src/modules/python-imports/python-imports.module.ts"]
+  file_src_modules_python_imports_python_imports_module_unit_test_ts["src/modules/python-imports/python-imports.module.unit.test.ts"]
+  file_src_modules_python_imports_python_imports_service_ts["src/modules/python-imports/python-imports.service.ts"]
+  file_src_modules_python_imports_python_imports_service_unit_test_ts["src/modules/python-imports/python-imports.service.unit.test.ts"]
+  file_src_modules_python_imports_python_imports_types_ts["src/modules/python-imports/python-imports.types.ts"]
   file_src_repl_ts["src/repl.ts"]
   file_src_repl_unit_test_ts["src/repl.unit.test.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
@@ -195,6 +216,7 @@ graph LR
   file_src_modules_codependix_codependix_module_ts --> file_src_modules_codependix_codependix_command_ts
   file_src_modules_codependix_codependix_module_ts --> file_src_modules_codependix_codependix_service_ts
   file_src_modules_codependix_codependix_module_ts --> file_src_modules_delivery_delivery_module_ts
+  file_src_modules_codependix_codependix_module_ts --> file_src_modules_python_imports_python_imports_module_ts
   file_src_modules_codependix_codependix_module_unit_test_ts --> file_src_modules_codependix_codependix_command_ts
   file_src_modules_codependix_codependix_module_unit_test_ts --> file_src_modules_codependix_codependix_module_ts
   file_src_modules_codependix_codependix_module_unit_test_ts --> file_src_modules_codependix_codependix_service_ts
@@ -202,11 +224,13 @@ graph LR
   file_src_modules_codependix_codependix_service_ts --> file_src_modules_codependix_codependix_types_ts
   file_src_modules_codependix_codependix_service_ts --> file_src_modules_delivery_delivery_service_ts
   file_src_modules_codependix_codependix_service_ts --> file_src_modules_delivery_delivery_types_ts
+  file_src_modules_codependix_codependix_service_ts --> file_src_modules_python_imports_python_imports_service_ts
   file_src_modules_codependix_codependix_service_unit_test_ts --> file_src_modules_anchors_anchors_service_ts
   file_src_modules_codependix_codependix_service_unit_test_ts --> file_src_modules_codependix_codependix_service_ts
   file_src_modules_codependix_codependix_service_unit_test_ts --> file_src_modules_codependix_codependix_types_ts
   file_src_modules_codependix_codependix_service_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
   file_src_modules_codependix_codependix_service_unit_test_ts --> file_src_modules_delivery_delivery_types_ts
+  file_src_modules_codependix_codependix_service_unit_test_ts --> file_src_modules_python_imports_python_imports_service_ts
   file_src_modules_codependix_codependix_types_ts --> file_src_modules_delivery_delivery_types_ts
   file_src_modules_delivery_delivery_module_ts --> file_src_modules_anchors_anchors_module_ts
   file_src_modules_delivery_delivery_module_ts --> file_src_modules_delivery_delivery_service_ts
@@ -219,6 +243,18 @@ graph LR
   file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_anchors_anchors_errors_ts
   file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_anchors_anchors_service_ts
   file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
+  file_src_modules_python_imports_python_imports_module_ts --> file_src_modules_delivery_delivery_module_ts
+  file_src_modules_python_imports_python_imports_module_ts --> file_src_modules_python_imports_python_imports_service_ts
+  file_src_modules_python_imports_python_imports_module_unit_test_ts --> file_src_modules_python_imports_python_imports_module_ts
+  file_src_modules_python_imports_python_imports_module_unit_test_ts --> file_src_modules_python_imports_python_imports_service_ts
+  file_src_modules_python_imports_python_imports_service_ts --> file_src_modules_codependix_codependix_constants_ts
+  file_src_modules_python_imports_python_imports_service_ts --> file_src_modules_codependix_codependix_types_ts
+  file_src_modules_python_imports_python_imports_service_ts --> file_src_modules_delivery_delivery_service_ts
+  file_src_modules_python_imports_python_imports_service_ts --> file_src_modules_delivery_delivery_types_ts
+  file_src_modules_python_imports_python_imports_service_unit_test_ts --> file_src_modules_anchors_anchors_service_ts
+  file_src_modules_python_imports_python_imports_service_unit_test_ts --> file_src_modules_codependix_codependix_types_ts
+  file_src_modules_python_imports_python_imports_service_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
+  file_src_modules_python_imports_python_imports_service_unit_test_ts --> file_src_modules_python_imports_python_imports_service_ts
   file_src_repl_ts --> file_src_main_module_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
