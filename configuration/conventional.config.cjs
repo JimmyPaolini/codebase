@@ -164,6 +164,11 @@ const scopes = [
   },
   {
     description:
+      "Greek meander (key/fret) SVG generator CLI and the composable motif/modifier library it reads",
+    name: "meanderaw",
+  },
+  {
+    description:
       "Call stack tracing and linting CLI, the configuration package it reads, and the packages that build and render its call graph",
     name: "callidescope",
   },

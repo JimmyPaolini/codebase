@@ -112,6 +112,8 @@ dictionaryDefinitions:
     addWords: true
   - name: editor
     path: .cspell/editor.txt
+  - name: meanders
+    path: .cspell/meanders.txt
 # Abbreviations banned everywhere — prose, comments, and identifiers alike. This is the
 # text-level counterpart to ESLint's `unicorn/prevent-abbreviations`, which only sees
 # TypeScript and JavaScript identifiers; these entries extend the same ban to Markdown,
@@ -182,6 +184,7 @@ dictionaries:
   - infrastructure
   - tooling
   - editor
+  - meanders
 patterns:
   - name: notebook-outputs
     pattern: /"outputs"\s*:\s*\[(?:[^\[\]]*|\[(?:[^\[\]]*|\[(?:[^\[\]]*|\[[^\[\]]*\])*[^\[\]]*\])*[^\[\]]*\])*[^\[\]]*\]/g
