@@ -29,13 +29,13 @@ export interface CallAddressTreeResult {
 }
 
 /** What one direction's walk reads a neighbor from, and what it may render. */
-export interface TraversalContext {
+export interface CallTreeTraversalContext {
   readonly adjacency: ReadonlyMap<CallableId, readonly CallableId[]>;
   readonly callablesById: ReadonlyMap<CallableId, DiscoveredCallable>;
 }
 
 /** One partly walked path, kept on an explicit stack rather than recursion. */
-export interface TraversalFrame {
+export interface CallTreeTraversalFrame {
   /** The path's last member, kept alongside it rather than re-read from it. */
   readonly currentId: CallableId;
   nextIndex: number;

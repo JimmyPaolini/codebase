@@ -8,8 +8,8 @@ import type {
   BuildCallAddressStacksArguments,
   CallAddressStack,
   CallAddressTreeResult,
-  TraversalContext,
-  TraversalFrame,
+  CallTreeTraversalContext,
+  CallTreeTraversalFrame,
 } from "./call-tree.types";
 import type { CallableId, StackFrame } from "@callidescope/configuration";
 
@@ -42,11 +42,11 @@ export class CallTreeService {
 
   /** Follows one neighbor: closes a cycle, stops at an unknown id, or descends. */
   private follow(args: {
-    context: TraversalContext;
-    frame: TraversalFrame;
+    context: CallTreeTraversalContext;
+    frame: CallTreeTraversalFrame;
     neighborId: CallableId;
     paths: (readonly CallableId[])[];
-    pending: TraversalFrame[];
+    pending: CallTreeTraversalFrame[];
   }): void {
     const { context, frame, neighborId, paths, pending } = args;
 
@@ -77,10 +77,10 @@ export class CallTreeService {
 
   /** Advances one traversal frame: closes it, follows a neighbor, or backtracks. */
   private step(args: {
-    context: TraversalContext;
-    frame: TraversalFrame;
+    context: CallTreeTraversalContext;
+    frame: CallTreeTraversalFrame;
     paths: (readonly CallableId[])[];
-    pending: TraversalFrame[];
+    pending: CallTreeTraversalFrame[];
   }): void {
     const { context, frame, paths, pending } = args;
     const neighborIds = context.adjacency.get(frame.currentId) ?? [];
@@ -140,12 +140,14 @@ export class CallTreeService {
    * followed again: the path so far, plus that repeated neighbor, is emitted
    * as one complete stack, and the walk backtracks instead of looping forever.
    */
-  private traverse(context: TraversalContext & { startId: CallableId }): {
+  private traverse(
+    context: CallTreeTraversalContext & { startId: CallableId },
+  ): {
     paths: (readonly CallableId[])[];
     truncated: boolean;
   } {
     const paths: (readonly CallableId[])[] = [];
-    const pending: TraversalFrame[] = [
+    const pending: CallTreeTraversalFrame[] = [
       { currentId: context.startId, nextIndex: 0, path: [context.startId] },
     ];
 
