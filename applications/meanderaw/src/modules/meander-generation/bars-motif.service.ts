@@ -100,33 +100,22 @@ export class BarsMotifService implements MotifService {
   /**
    * Draws the `dot` modifier's overlay: widens each repeat unit's tile to
    * `period` real columns — `period` is `shape`'s dot-level sequence length
-   * from {@link MotifTransformsService.dotLevels}, `4` for `bounce` and `3`
-   * for `up` at 6 rows — and gives each of those columns its own dot level
-   * plus a run pattern derived from it. A column's runs reuse
-   * {@link MotifTransformsService.alternate}'s `[1, rows - 1]` division into
-   * unit-length runs, alternating column `0`/`1`: a run below the column's
-   * own dot level is drawn only if it's a column-`0` run, a run above only
-   * if it's a column-`1` run (a run's level range never straddles the dot
-   * level itself, since every run's midpoint is a half-integer and the dot
-   * level is always a whole one). This draw-or-skip rule is also why
+   * from {@link MotifTransformsService.dotLevels} — and gives each of those
+   * columns its own dot level. A column's runs reuse
+   * {@link MotifTransformsService.alternate}'s `[1, rows - 1]` split into
+   * unit-length pieces, but only for that pre-split level range — the run's
+   * `column` field (meaningful for {@link alternatedPath}'s two real,
+   * alternating columns) doesn't apply here, since a dot phase draws to only
+   * one column; a run is skipped only when it directly touches the dot's own
+   * level (`fromLevel` or `toLevel` equals `dotLevel`), so the bar stays
+   * space-filling everywhere except right at the dot. This is also why
    * {@link MotifTransformsService.dotLevels} must only ever hand back odd
-   * levels: at an odd level, BOTH the run immediately below it (ending at
-   * that level) and the run immediately above it (starting at that level)
-   * land on the "wrong" side of their own column check and get skipped,
-   * leaving a real gap for the dot to sit in. At an even level, both of
-   * those two adjacent runs land on the "right" side and ARE drawn,
-   * silently swallowing the dot into what looks like one continuous run —
-   * exactly what happened at every odd `rows` before `dotLevels` was fixed
-   * to always emit odd levels regardless of `rows`'s parity (odd `rows`
-   * makes `rows - 1` even, so a naive "count down from `rows - 1`" sequence
-   * lands on even levels there). The dot itself is a zero-length path
+   * levels: a run's endpoints are whole numbers, and only a whole dot level
+   * can land on one to open the gap the dot needs — an even level would let
+   * every run draw straight through it, silently swallowing the dot into
+   * what looks like one continuous run. The dot itself is a zero-length path
    * segment at the column's own x and the dot level's y, which
-   * `stroke-linecap="square"` renders as a small square mark. Verified by
-   * decoding `6 rows bars dot bounce.svg`/`8 rows bars dot bounce.svg` and
-   * `6 rows bars dot up.svg`/`8 rows bars dot up.svg`: both reference sets
-   * carry the same small hand-authoring artifacts already documented on
-   * {@link splitPath} (sub-pixel jogs at run/dot endpoints), which this
-   * implementation does not reproduce.
+   * `stroke-linecap="square"` renders as a small square mark.
    */
   private dotPath(
     geometry: GridGeometry,
@@ -149,10 +138,9 @@ export class BarsMotifService implements MotifService {
         const dotY = format(geometry.offset + dotLevel * geometry.unit);
 
         const runSegments = runs
-          .filter((run) => {
-            const midpoint = (run.fromLevel + run.toLevel) / 2;
-            return midpoint < dotLevel ? run.column === 0 : run.column === 1;
-          })
+          .filter(
+            (run) => run.fromLevel !== dotLevel && run.toLevel !== dotLevel,
+          )
           .map((run) => {
             const fromY = format(
               geometry.offset + run.fromLevel * geometry.unit,
