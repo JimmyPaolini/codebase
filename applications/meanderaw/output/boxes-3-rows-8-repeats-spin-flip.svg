@@ -1,0 +1,11 @@
+<svg width="310" height="70" viewBox="0 0 310 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M5 45H25V25H5" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M65 45V25H45V45" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M105 25H85V45H105" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M125 25V45H145V25" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M165 45H185V25H165" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M225 45V25H205V45" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M265 25H245V45H265" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M285 25V45H305V25" stroke="black" stroke-width="10" stroke-linecap="square"/>
+<path d="M305 65H5M305 5H5" stroke="black" stroke-width="10" stroke-linecap="square"/>
+</svg>
