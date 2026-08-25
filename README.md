@@ -149,7 +149,6 @@ graph LR
   codometer_customization["codometer-customization"]
   codometer_discovery["codometer-discovery"]
   codometer_languages["codometer-languages"]
-  codometer_markdown["codometer-markdown"]
   codometer_output["codometer-output"]
   codometer_size["codometer-size"]
   conformetry_agents["conformetry-agents"]
@@ -171,6 +170,7 @@ graph LR
   lexico_entities["lexico-entities"]
   lexico_ingestion["lexico-ingestion"]
   logger["logger"]
+  meanderaw["meanderaw"]
   synchronization["synchronization"]
   validation["validation"]
   caelundas --> logger
@@ -250,6 +250,7 @@ graph LR
   lexico --> lexico_components
   lexico_ingestion --> lexico_entities
   lexico_ingestion --> logger
+  meanderaw --> logger
   synchronization --> conformetry_configuration
   synchronization --> logger
   validation --> logger

@@ -150,6 +150,7 @@ graph LR
   conformetry_nx["conformetry-nx"]
   lexico_ingestion["lexico-ingestion"]
   logger["logger"]
+  meanderaw["meanderaw"]
   synchronization["synchronization"]
   validation["validation"]
   caelundas --> logger
@@ -167,6 +168,7 @@ graph LR
   conformetry_cli --> logger
   conformetry_nx --> logger
   lexico_ingestion --> logger
+  meanderaw --> logger
   synchronization --> logger
   validation --> logger
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
