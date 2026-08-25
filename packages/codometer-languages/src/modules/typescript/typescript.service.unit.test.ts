@@ -829,6 +829,67 @@ describe(TypescriptService, () => {
       expect(measurement?.line).toBe(6);
     });
 
+    it("measures a documented enum under the default limit", () => {
+      readFileSyncMock.mockReturnValue(
+        `/**
+          * A status.
+          */
+         export enum Status {
+           Active,
+           Inactive,
+         }`,
+      );
+
+      const [measurement] = service.analyze({
+        documentation,
+        sourceFiles: ["src/status.ts"],
+        symbolCounters: [],
+        workingDirectory: "/repo",
+      }).documentation;
+
+      expect(measurement).toMatchObject({
+        breached: false,
+        declaration: "Status",
+        kind: "enum",
+      });
+    });
+
+    it("measures a documented getter and setter under the default limit", () => {
+      readFileSyncMock.mockReturnValue(
+        `export class Foo {
+           /**
+            * The value.
+            */
+           get value(): number {
+             return 1;
+           }
+
+           /**
+            * Sets the value.
+            */
+           set value(next: number) {}
+         }`,
+      );
+
+      const result = service.analyze({
+        documentation,
+        sourceFiles: ["src/foo.ts"],
+        symbolCounters: [],
+        workingDirectory: "/repo",
+      });
+
+      expect(
+        result.documentation.map((measurement) => ({
+          breached: measurement.breached,
+          declaration: measurement.declaration,
+          kind: measurement.kind,
+        })),
+      ).toStrictEqual([
+        { breached: false, declaration: "value", kind: "getter" },
+        { breached: false, declaration: "value", kind: "setter" },
+      ]);
+    });
+
     it("names an anonymous default-exported function as such", () => {
       readFileSyncMock.mockReturnValue(
         `/**
