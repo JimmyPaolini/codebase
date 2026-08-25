@@ -205,4 +205,51 @@ describe(`${CallidescopeService.name} (integration)`, () => {
   it("finds no recursion in a workspace that has none", () => {
     expect(result.summary.cyclicComponentCount).toBe(0);
   });
+
+  // 🔍 Locating callables
+
+  it("collects the same callables locate would need to resolve an address", () => {
+    const located = service.locate({
+      configuration: buildConfiguration(),
+      projectNames: [],
+      workspaceRoot: tracedWorkspaceRoot,
+    });
+
+    const displayNames = [...located.callablesById.values()].map(
+      (callable) => callable.node.displayName,
+    );
+
+    expect(displayNames).toStrictEqual([
+      "Repository.find",
+      "Repository.open",
+      "ExampleService.constructor",
+      "ExampleService.load",
+      "Command",
+      "anonymous",
+      "ExampleCommand.constructor",
+      "ExampleCommand.run",
+    ]);
+    expect(located.projectRoots.get("example")).toBe(
+      path.join("packages", "example"),
+    );
+  });
+
+  it("builds the same graph a full trace would, without any analysis", () => {
+    const located = service.locate({
+      configuration: buildConfiguration(),
+      projectNames: [],
+      workspaceRoot: tracedWorkspaceRoot,
+    });
+
+    const commandId = [...located.callablesById.entries()].find(
+      ([, callable]) => callable.node.displayName === "ExampleCommand.run",
+    )?.[0];
+    const serviceId = [...located.callablesById.entries()].find(
+      ([, callable]) => callable.node.displayName === "ExampleService.load",
+    )?.[0];
+
+    expect(
+      commandId !== undefined && located.graph.calleeIdsByCaller.get(commandId),
+    ).toStrictEqual([serviceId]);
+  });
 });

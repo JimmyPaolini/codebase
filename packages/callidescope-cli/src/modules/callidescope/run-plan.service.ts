@@ -13,7 +13,10 @@ import {
   CHECK_SEPARATOR,
 } from "./run-plan.constants";
 
-import type { CallidescopeCommandOptions } from "./callidescope.types";
+import type {
+  AddressCommandOptions,
+  CallidescopeCommandOptions,
+} from "./callidescope.types";
 import type { PreparedRun, RunMode, RunModeSelection } from "./run-plan.types";
 import type {
   ResolvedCallidescopeConfiguration,
@@ -124,6 +127,37 @@ export class RunPlanService {
   }
 
   // 🌎 Public Methods
+
+  /**
+   * Reads `depth` and `breadth`'s scoping flags into a workspace root and a
+   * resolved configuration, with no `--check`/`--write` mode to select.
+   *
+   * A lookup command never writes or compares a destination, so it has no
+   * mode to reject in the first place — only the workspace to trace and the
+   * format to print in, both of which every run already resolves the same
+   * way `prepareRun` does.
+   */
+  public async prepareLookup(options: AddressCommandOptions): Promise<{
+    configuration: ResolvedCallidescopeConfiguration;
+    workspaceRoot: string;
+  }> {
+    const workspaceRoot = path.resolve(options.directory ?? process.cwd());
+    const loaded = await this.configurationService.loadConfiguration({
+      configurationPath: options.config,
+      searchDirectory: workspaceRoot,
+    });
+
+    return {
+      configuration: {
+        ...loaded,
+        output: {
+          ...loaded.output,
+          format: options.format ?? loaded.output.format,
+        },
+      },
+      workspaceRoot,
+    };
+  }
 
   /**
    * Reads the command line and configuration into what the run will do.

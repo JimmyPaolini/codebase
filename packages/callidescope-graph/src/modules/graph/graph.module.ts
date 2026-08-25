@@ -4,6 +4,7 @@ import { DocumentationModule } from "../documentation/documentation.module";
 import { SignaturesModule } from "../signatures/signatures.module";
 
 import { BreadthService } from "./breadth.service";
+import { CallTreeService } from "./call-tree.service";
 import { ComponentsService } from "./components.service";
 import { DepthService } from "./depth.service";
 import { GraphService } from "./graph.service";
@@ -16,6 +17,7 @@ import { PathsService } from "./paths.service";
   controllers: [],
   exports: [
     BreadthService,
+    CallTreeService,
     ComponentsService,
     DepthService,
     GraphService,
@@ -24,6 +26,7 @@ import { PathsService } from "./paths.service";
   imports: [DocumentationModule, SignaturesModule],
   providers: [
     BreadthService,
+    CallTreeService,
     ComponentsService,
     DepthService,
     GraphService,

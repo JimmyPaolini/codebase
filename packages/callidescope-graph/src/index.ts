@@ -1,4 +1,10 @@
 // 📤 Exports
+export { AddressService } from "./modules/callables/address.service";
+export type {
+  CallableAddressCandidate,
+  CallableAddressResolution,
+  ResolveAddressArguments,
+} from "./modules/callables/address.types";
 export { CallableIdentityService } from "./modules/callables/callable-identity.service";
 export { ANONYMOUS_MEMBER_NAME } from "./modules/callables/callables.constants";
 export { CallablesModule } from "./modules/callables/callables.module";
@@ -59,6 +65,13 @@ export type {
   ResolveEntriesArguments,
 } from "./modules/entries/entries.types";
 export { BreadthService } from "./modules/graph/breadth.service";
+export { MAXIMUM_CALL_ADDRESS_STACKS } from "./modules/graph/call-tree.constants";
+export { CallTreeService } from "./modules/graph/call-tree.service";
+export type {
+  BuildCallAddressStacksArguments,
+  CallAddressStack,
+  CallAddressTreeResult,
+} from "./modules/graph/call-tree.types";
 export { INITIAL_LOW_LINK } from "./modules/graph/components.constants";
 export { ComponentsService } from "./modules/graph/components.service";
 export type {
@@ -71,6 +84,8 @@ export { GraphService } from "./modules/graph/graph.service";
 export type {
   BreadthMeasurement,
   CallableBreadth,
+  CallableDirectCalls,
+  CallableReference,
   CallGraph,
   ComponentDepth,
   CondensedGraph,

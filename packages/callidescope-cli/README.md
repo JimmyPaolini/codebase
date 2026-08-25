@@ -177,6 +177,41 @@ default branch, and the release commits them.
 Narrowing with `--projects` is the difference between a whole-workspace analysis
 and a one-second check, because each project needs its own TypeScript program.
 
+## Depth and breadth for one callable
+
+`callidescope` reports the whole workspace; `depth` and `breadth` answer a
+narrower question about one callable, addressed the way a Python traceback or
+an ESLint rule id points at a symbol — the file path and the qualified name
+callidescope already prints in every stack, joined by `#`:
+
+```bash
+callidescope depth src/foo.service.ts#FooService.bar
+callidescope breadth src/foo.service.ts#FooService.bar
+```
+
+A file holding more than one declaration under the same qualified name — two
+overloads, two callbacks bound to the same property — is disambiguated with a
+trailing `:<line>`, and both commands print every candidate's line when they
+cannot tell which one was meant.
+
+Both accept the same workspace-scoping flags as `callidescope` itself —
+`--directory`, `--config`, `--projects`, and `--format` — since resolving an
+address still means tracing the workspace first. Neither takes `--check`,
+`--write`, `--json`, or `--markdown`: a lookup only ever prints, to whichever
+format `--format` names.
+
+**`depth`** prints every path above the callable and every path below it —
+every caller chain up to a root, every callee chain down to a leaf — rather
+than folding each direction into the single deepest one `callidescope`'s own
+report keeps. A callable reached from a dozen places, or reaching a dozen
+leaves, is exactly the shape this is asked to show in full, capped at 200
+paths per direction so a widely-called utility cannot make the walk run away;
+a capped run says so.
+
+**`breadth`** prints the callable's direct callees and direct callers side by
+side — what it calls, and what calls it — the two questions a refactor or a
+rename needs answered together before either one is safe.
+
 ## What it reports
 
 **Deep call stacks.** The single deepest path below each entry point, when it

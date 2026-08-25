@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import { ConfigurationService } from "@callidescope/configuration";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
@@ -302,5 +304,72 @@ describe(RunPlanService, () => {
     ).toStrictEqual([
       "--check breadth requires limits.maximumBreadth to be set. Add `limits: { maximumBreadth: <number> }` to your callidescope.config.ts before running --check breadth.",
     ]);
+  });
+
+  // 🔍 Lookup preparation
+
+  describe("prepareLookup", () => {
+    it("resolves the workspace root and loads the configuration", async () => {
+      const configurationService = createMock<ConfigurationService>();
+
+      configurationService.loadConfiguration.mockResolvedValue(
+        buildConfiguration(),
+      );
+
+      const subject = new RunPlanService(
+        configurationService,
+        createMock<LoggerService>(),
+      );
+
+      const prepared = await subject.prepareLookup({ directory: "." });
+
+      expect(prepared.workspaceRoot).toBe(path.resolve("."));
+      expect(configurationService.loadConfiguration).toHaveBeenCalledWith({
+        configurationPath: undefined,
+        searchDirectory: path.resolve("."),
+      });
+    });
+
+    it("prefers the format a flag named over the configured one", async () => {
+      const configurationService = createMock<ConfigurationService>();
+
+      configurationService.loadConfiguration.mockResolvedValue(
+        buildConfiguration(),
+      );
+
+      const subject = new RunPlanService(
+        configurationService,
+        createMock<LoggerService>(),
+      );
+
+      const prepared = await subject.prepareLookup({ format: "json" });
+
+      expect(prepared.configuration.output.format).toBe("json");
+    });
+
+    it("falls back to the configured format when a flag names none", async () => {
+      const configurationService = createMock<ConfigurationService>();
+
+      configurationService.loadConfiguration.mockResolvedValue(
+        buildConfiguration({
+          output: {
+            format: "mermaid",
+            json: undefined,
+            markdown: undefined,
+            mermaid: undefined,
+            projectReadmes: undefined,
+          },
+        }),
+      );
+
+      const subject = new RunPlanService(
+        configurationService,
+        createMock<LoggerService>(),
+      );
+
+      const prepared = await subject.prepareLookup({});
+
+      expect(prepared.configuration.output.format).toBe("mermaid");
+    });
   });
 });
