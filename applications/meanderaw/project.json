@@ -1,0 +1,47 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "meanderaw",
+  "projectType": "application",
+  "sourceRoot": "applications/meanderaw",
+  "tags": [
+    "domain:meanderaw",
+    "framework:nest-commander",
+    "framework:nestjs",
+    "generator:nestjs-command-project",
+    "language:typescript",
+    "type:application"
+  ],
+  "targets": {
+    "codometer": {},
+    "dependency-cruiser": {},
+    "knip": {},
+    "lint-codebase": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "oxlint": {},
+    "prettier": {},
+    "repl": {
+      "cache": false,
+      "description": "Start an interactive NestJS REPL for Meanderaw services",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node --import @swc-node/register/esm-register src/repl.ts",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "spell-check": {},
+    "start": {
+      "cache": false,
+      "description": "Start the Meanderaw application",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node --import @swc-node/register/esm-register src/main.ts {args}",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "test-coverage": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}
