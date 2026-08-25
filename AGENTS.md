@@ -63,6 +63,7 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 - **[JimmyPaolini](applications/JimmyPaolini)**: Portfolio website
 - **[lexico](applications/lexico)**: SSR web app (React 19, TanStack Start)
 - **[lexico-ingestion](applications/lexico-ingestion)**: NestJS CLI app for Latin dictionary data ingestion
+- **[meanderaw](applications/meanderaw)**: NestJS CLI for generating Greek meander (key/fret) SVG patterns
 
 ### Packages
 
@@ -352,6 +353,7 @@ The 🧑‍⚖️ Validate Conventions workflow creates any label missing from t
 | `lexico-entities` | Shared TypeORM entities and GraphQL types |
 | `lexico-ingestion` | Data ingestion scripts for Lexico |
 | `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
+| `meanderaw` | Greek meander (key/fret) SVG generator CLI and the composable motif/modifier library it reads |
 | `callidescope` | Call stack tracing and linting CLI, the configuration package it reads, and the packages that build and render its call graph |
 | `codependix` | Dependency graph export CLI and the configuration package it reads |
 | `codometer` | Code statistics measurement CLI, the configuration package it reads, and the packages that diff and render its pull request change report |

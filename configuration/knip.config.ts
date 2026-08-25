@@ -163,6 +163,11 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
 
+    // meanderaw: Greek meander (key/fret) SVG generator CLI
+    "applications/meanderaw": {
+      project: "src/**/*.ts",
+    },
+
     // logger: Shared pino-backed NestJS LoggerService and LoggerModule
     "packages/logger": {
       entry: ["src/index.ts"],

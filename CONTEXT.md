@@ -76,6 +76,43 @@ from a breach: staleness is about drift between the report and reality, a breach
 is about magnitude. Both fail a run, and they are never the same finding.
 _Avoid_: Drift, out of date, dirty
 
+## Meanders
+
+**Meander**:
+A single generated Greek key/fret ornament, produced by applying one modifier
+to one type at a given row count and repeat count.
+_Avoid_: Pattern, motif, key pattern
+
+**Type**:
+The base repeating shape a meander draws — `boxes`, `chain`, `snake`, `swirl`,
+`whirl`, or `bars`. Each type defines its own motif and its own set of
+compatible modifiers.
+_Avoid_: Style, family, kind
+
+**Modifier**:
+A named transform applied to a type's motif across its repeat units — rotation
+(`spin`), mirroring (`flip`), border-closing (`edge`), or the `bars`-specific
+`alternated`, `split`, and `dot` transforms. Only certain modifiers are
+compatible with each type.
+_Avoid_: Variant, option, flag
+
+**Rows**:
+The parameter that sets a meander's grid density. It does not change the
+canvas height, which stays fixed; instead it divides that fixed height into
+finer subdivisions, shrinking the grid unit and stroke width as rows
+increases.
+_Avoid_: Row count, height, N
+
+**Repeat count**:
+How many times a type's motif is tiled horizontally across a meander.
+_Avoid_: Width, unit count, columns
+
+**Grid unit**:
+The base spacing a meander's coordinates are built from, derived from canvas
+height divided by rows. Stroke width and offsets are themselves derived from
+the grid unit, not set independently.
+_Avoid_: Cell size, spacing, step
+
 ## Change reporting
 
 **Baseline**:
