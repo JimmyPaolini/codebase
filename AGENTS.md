@@ -234,6 +234,19 @@ Two repository rules override the skill's generic defaults:
   reject a non-compliant branch, so an unvalidated worktree wastes the work.
 - **If the branch already exists locally, attach a worktree to it** rather than
   creating a second branch.
+- **Never run `git submodule update --init` for `applications/JimmyPaolini`.**
+  `git worktree add` never checks out submodules — the git manual's own
+  `WORKTREE` documentation calls submodule support "incomplete" and advises
+  against multiple checkouts of a superproject — but this repository's
+  submodule is deliberately left uninitialized everywhere, not only in
+  worktrees: its real content is never checked out locally or in CI, and
+  `package.json`'s `sherif.ignorePackage` already exempts it from workspace
+  checks. A `git submodule status` `-` prefix here is expected, not broken.
+  If `pnpm install` or `lint-codebase --write` rewrites the
+  `applications/JimmyPaolini` entry out of `pnpm-lock.yaml`, that is the
+  known spurious diff from an inconsistently-present placeholder
+  `package.json` across checkouts — revert the lockfile rather than
+  reconciling it, the same as any other worktree-only lockfile drift.
 
 ### Branch Names
 
