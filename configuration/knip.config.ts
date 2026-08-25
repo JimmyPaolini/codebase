@@ -165,6 +165,9 @@ const config: KnipConfig = {
 
     // meanderaw: Greek meander (key/fret) SVG generator CLI
     "applications/meanderaw": {
+      ignoreDependencies: [
+        "vitest", // Knip misses vitest usage because tests are ignored
+      ],
       project: "src/**/*.ts",
     },
 
