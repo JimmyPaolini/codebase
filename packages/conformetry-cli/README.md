@@ -486,7 +486,7 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
 ```text
 🚀 ValidateCommand.run(_passedParameters: string[], options: ValidateCommandOptions): Promise<void> [packages/conformetry-cli/src/modules/validate/validate.command.ts:152]
    ↳ Runs validation and reports every difference found.
-  └─> ValidationService.validate(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-validation/src/modules/validation/validation.service.ts:134]
+  └─> ValidationService.validate(args: RunValidationArguments): Promise<RunValidationResult> [packages/conformetry-validation/src/modules/validation/validation.service.ts:132]
      ↳ Validates every instance and returns the differences found.
     └─> InstanceDiscoveryService.matchInstances(…): ResolvedInstances [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:92]
        ↳ Resolves every instance to the template, or templates, that explain it.
@@ -495,10 +495,10 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
         └─> InstanceDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:154]
            ↳ Weighs every template that shares at least one file with the instance, best-first.
           └─> InstanceDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160]
-            └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:121]
+            └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:120]
                ↳ Counts how many of a template's files the instance path already has.
-              └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:130]
-                └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:178]
+              └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:129]
+                └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:177]
                    ↳ Maps a template file path to the instance file path it governs.
                   └─> RenderingService.renderPath(args: { substitutions: Substitutions; templatePath: string; }): string [packages/conformetry-generation/src/modules/rendering/rendering.service.ts:80]
                      ↳ Renders a template path with mustache, the same way contents are rendered.
@@ -535,10 +535,10 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
      ↳ Lists every instance found, paired with the templates that explain it. `templateNames` narrows the pairing rather than…
     └─> InstanceDiscoveryService.takeInventory(…): { templates: TemplateDefinition[]; weighed: { instance: Instance; pairings: InventoriedPairing[]; }[]; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:225]
        ↳ Weighs every instance the globs find against every declared template.
-      └─> TemplateDiscoveryService.collectTemplates(…): TemplateDefinition[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:98]
+      └─> TemplateDiscoveryService.collectTemplates(…): TemplateDefinition[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:97]
          ↳ Reads every configured generator's template folder.
-        └─> TemplateDiscoveryService.map(…)(generator: ConformetryGeneratorDefinition): TemplateDefinition [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:102]
-          └─> TemplateDiscoveryService.collectTemplate(…): TemplateDefinition [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:78]
+        └─> TemplateDiscoveryService.map(…)(generator: ConformetryGeneratorDefinition): TemplateDefinition [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:101]
+          └─> TemplateDiscoveryService.collectTemplate(…): TemplateDefinition [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:77]
              ↳ Reads one template folder.
             └─> TemplateDiscoveryService.collectFilePaths(directoryPath: string): string[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:38]
                ↳ Lists every file under a directory, recursively and sorted.
@@ -556,10 +556,10 @@ Call stacks traced through `conformetry-cli`, deepest first. Each frame shows wh
      ↳ Lists every template declared, paired with the instances it explains. `instancePatterns` narrows which instances are…
     └─> InstanceDiscoveryService.takeInventory(…): { templates: TemplateDefinition[]; weighed: { instance: Instance; pairings: InventoriedPairing[]; }[]; } [packages/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:225]
        ↳ Weighs every instance the globs find against every declared template.
-      └─> TemplateDiscoveryService.collectTemplates(…): TemplateDefinition[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:98]
+      └─> TemplateDiscoveryService.collectTemplates(…): TemplateDefinition[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:97]
          ↳ Reads every configured generator's template folder.
-        └─> TemplateDiscoveryService.map(…)(generator: ConformetryGeneratorDefinition): TemplateDefinition [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:102]
-          └─> TemplateDiscoveryService.collectTemplate(…): TemplateDefinition [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:78]
+        └─> TemplateDiscoveryService.map(…)(generator: ConformetryGeneratorDefinition): TemplateDefinition [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:101]
+          └─> TemplateDiscoveryService.collectTemplate(…): TemplateDefinition [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:77]
              ↳ Reads one template folder.
             └─> TemplateDiscoveryService.collectFilePaths(directoryPath: string): string[] [packages/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:38]
                ↳ Lists every file under a directory, recursively and sorted.
@@ -883,7 +883,7 @@ graph LR
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2465-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-92.68_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-90.24_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-34-3178c6?style=flat-square)
 
@@ -1064,14 +1064,14 @@ graph LR
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-330-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-247-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-15-a78bfa?style=flat-square)
+![H3](https://img.shields.io/badge/H3-14-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-51-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-49-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-6-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-28-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
@@ -1079,8 +1079,8 @@ graph LR
 ![Table Rows](https://img.shields.io/badge/Table_Rows-10-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-9-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-14-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-79-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-13-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-78-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

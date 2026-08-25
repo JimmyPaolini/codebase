@@ -108,13 +108,13 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
 
 | Measure | Value |
 | --- | --- |
-| Callables | 155 |
-| Files | 39 |
-| Calls traced | 196 |
-| Call stacks | 9 |
+| Callables | 162 |
+| Files | 44 |
+| Calls traced | 200 |
+| Call stacks | 10 |
 | Deepest stack | 7 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 16 |
+| Unfollowable calls | 17 |
 
 ### Call stacks (depth)
 
@@ -170,7 +170,7 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
 ```
 
 <details>
-<summary>6 more call stacks</summary>
+<summary>7 more call stacks</summary>
 
 **4. `PullRequestBodyCommand.run`** — depth 5 · decorated-method
 
@@ -207,7 +207,17 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
        ↳ Runs one candidate pnpm, merging both of its streams.
 ```
 
-**7. `CatalogManifestsService.validateManifestDependencies`** — depth 3 · orphan-root
+**7. `ReadmeProjectsCommand.run`** — depth 3 · decorated-method
+
+```text
+🚀 ReadmeProjectsCommand.run(): Promise<void> [tools/validation/src/modules/readme-projects/readme-projects.command.ts:43]
+   ↳ Checks every workspace project and exits 0 or 1 on the verdict.
+  └─> ReadmeProjectsService.findUndocumentedProjectPaths(projectPaths: string[], readmeContents: string): string[] [tools/validation/src/modules/readme-projects/readme-projects.service.ts:36]
+     ↳ Every project path the README does not link to.
+    └─> ReadmeProjectsService.filter(…)(projectPath: string): boolean [tools/validation/src/modules/readme-projects/readme-projects.service.ts:41]
+```
+
+**8. `CatalogManifestsService.validateManifestDependencies`** — depth 3 · orphan-root
 
 ```text
 🚀 CatalogManifestsService.validateManifestDependencies(manifestPath: string, manifest: PackageManifest): string[] [tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:84]
@@ -217,7 +227,7 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
     └─> CatalogManifestsService.some(…)(scope: string): boolean [tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:38]
 ```
 
-**8. `PullRequestReleaseSignificanceService.readRawCommit`** — depth 3 · orphan-root
+**9. `PullRequestReleaseSignificanceService.readRawCommit`** — depth 3 · orphan-root
 
 ```text
 🚀 PullRequestReleaseSignificanceService.readRawCommit(entry: unknown): PullRequestCommit [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:153]
@@ -227,7 +237,7 @@ Call stacks traced through `validation`, deepest first. Each frame shows what it
     └─> PullRequestReleaseSignificanceService.filter(…)(scope: string): boolean [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:266]
 ```
 
-**9. `PullRequestMetadataService.nameOf`** — depth 2 · orphan-root
+**10. `PullRequestMetadataService.nameOf`** — depth 2 · orphan-root
 
 ```text
 🚀 PullRequestMetadataService.nameOf(entry: unknown, propertyName: string): string [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:162]
@@ -251,7 +261,7 @@ None.
 | `PullRequestMetadataCommand.run` | 8 | `PullRequestMetadataCommand.resolveMetadata`, `PullRequestMetadataCommand.failWithMessage`, `PullRequestMetadataService.parseTitle`, `PullRequestMetadataService.checkMetadata`, `PullRequestMetadataCommand.resolvePullRequestNumber`, `PullRequestMetadataCommand.reportFailures`, `PullRequestMetadataCommand.appendToReport`, `PullRequestMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:264` |
 
 <details>
-<summary>68 more callables</summary>
+<summary>70 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -269,6 +279,7 @@ None.
 | `PullRequestMetadataService.groupLabels` | 3 | `PullRequestMetadataService.filter(…)`, `PullRequestMetadataService.filter(…)`, `PullRequestMetadataService.filter(…)` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:254` |
 | `PullRequestMetadataService.resolveFromDocument` | 3 | `PullRequestMetadataService.describeError`, `PullRequestMetadataService.isRecord`, `PullRequestMetadataService.readNames` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:297` |
 | `PullRequestMetadataCommand.resolveMetadata` | 3 | `PullRequestMetadataCommand.failWithUsageError`, `PullRequestMetadataCommand.readEnvironmentMetadata`, `PullRequestMetadataCommand.readLiveMetadata` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:214` |
+| `ReadmeProjectsCommand.run` | 3 | `ReadmeProjectsService.resolveWorkspaceProjectPaths`, `ReadmeProjectsService.readRootReadme`, `ReadmeProjectsService.findUndocumentedProjectPaths` | `tools/validation/src/modules/readme-projects/readme-projects.command.ts:43` |
 | `CatalogManifestsCommand.run` | 2 | `CatalogManifestsService.resolveWorkspaceManifestPaths`, `CatalogManifestsCommand.flatMap(…)` | `tools/validation/src/modules/catalog-manifests/catalog-manifests.command.ts:44` |
 | `IssueMetadataService.checkSourceLabel` | 2 | `IssueMetadataService.map(…)`, `IssueMetadataService.map(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:88` |
 | `IssueMetadataService.readLabelNames` | 2 | `IssueMetadataService.filter(…)`, `IssueMetadataService.map(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:209` |
@@ -323,6 +334,7 @@ None.
 | `PullRequestReleaseSignificanceService.releaseLevelName` | 1 | `PullRequestReleaseSignificanceService.find(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:172` |
 | `PullRequestReleaseSignificanceService.readReleaseRules` | 1 | `PullRequestReleaseSignificanceService.find(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:284` |
 | `PullRequestReleaseSignificanceCommand.resolvePullRequestNumber` | 1 | `PullRequestReleaseSignificanceCommand.failWithUsageError` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:173` |
+| `ReadmeProjectsService.findUndocumentedProjectPaths` | 1 | `ReadmeProjectsService.filter(…)` | `tools/validation/src/modules/readme-projects/readme-projects.service.ts:36` |
 
 </details>
 
@@ -363,6 +375,7 @@ flowchart LR
   PullRequestBodyModule
   PullRequestMetadataModule
   PullRequestReleaseSignificanceModule
+  ReadmeProjectsModule
   MainModule --> CatalogManifestsModule
   MainModule --> DiscoveryModule
   MainModule --> IssueMetadataModule
@@ -370,6 +383,7 @@ flowchart LR
   MainModule --> PullRequestBodyModule
   MainModule --> PullRequestMetadataModule
   MainModule --> PullRequestReleaseSignificanceModule
+  MainModule --> ReadmeProjectsModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
@@ -440,6 +454,14 @@ graph LR
   file_src_modules_pull_request_release_significance_pull_request_release_significance_service_ts["src/modules/pull-request-release-significance/pull-request-release-significance.service.ts"]
   file_src_modules_pull_request_release_significance_pull_request_release_significance_service_unit_test_ts["src/modules/pull-request-release-significance/pull-request-release-significance.service.unit.test.ts"]
   file_src_modules_pull_request_release_significance_pull_request_release_significance_types_ts["src/modules/pull-request-release-significance/pull-request-release-significance.types.ts"]
+  file_src_modules_readme_projects_readme_projects_command_ts["src/modules/readme-projects/readme-projects.command.ts"]
+  file_src_modules_readme_projects_readme_projects_command_unit_test_ts["src/modules/readme-projects/readme-projects.command.unit.test.ts"]
+  file_src_modules_readme_projects_readme_projects_constants_ts["src/modules/readme-projects/readme-projects.constants.ts"]
+  file_src_modules_readme_projects_readme_projects_module_ts["src/modules/readme-projects/readme-projects.module.ts"]
+  file_src_modules_readme_projects_readme_projects_module_unit_test_ts["src/modules/readme-projects/readme-projects.module.unit.test.ts"]
+  file_src_modules_readme_projects_readme_projects_service_ts["src/modules/readme-projects/readme-projects.service.ts"]
+  file_src_modules_readme_projects_readme_projects_service_unit_test_ts["src/modules/readme-projects/readme-projects.service.unit.test.ts"]
+  file_src_modules_readme_projects_readme_projects_types_ts["src/modules/readme-projects/readme-projects.types.ts"]
   file_src_repl_ts["src/repl.ts"]
   file_src_repl_unit_test_ts["src/repl.unit.test.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
@@ -453,6 +475,7 @@ graph LR
   file_src_main_module_ts --> file_src_modules_pull_request_body_pull_request_body_module_ts
   file_src_main_module_ts --> file_src_modules_pull_request_metadata_pull_request_metadata_module_ts
   file_src_main_module_ts --> file_src_modules_pull_request_release_significance_pull_request_release_significance_module_ts
+  file_src_main_module_ts --> file_src_modules_readme_projects_readme_projects_module_ts
   file_src_main_ts --> file_src_main_module_ts
   file_src_main_unit_test_ts --> file_src_modules_catalog_manifests_catalog_manifests_module_ts
   file_src_main_unit_test_ts --> file_src_modules_issue_metadata_issue_metadata_module_ts
@@ -460,6 +483,7 @@ graph LR
   file_src_main_unit_test_ts --> file_src_modules_pull_request_body_pull_request_body_module_ts
   file_src_main_unit_test_ts --> file_src_modules_pull_request_metadata_pull_request_metadata_module_ts
   file_src_main_unit_test_ts --> file_src_modules_pull_request_release_significance_pull_request_release_significance_module_ts
+  file_src_main_unit_test_ts --> file_src_modules_readme_projects_readme_projects_module_ts
   file_src_modules_catalog_manifests_catalog_manifests_command_ts --> file_src_modules_catalog_manifests_catalog_manifests_service_ts
   file_src_modules_catalog_manifests_catalog_manifests_command_unit_test_ts --> file_src_modules_catalog_manifests_catalog_manifests_command_ts
   file_src_modules_catalog_manifests_catalog_manifests_command_unit_test_ts --> file_src_modules_catalog_manifests_catalog_manifests_service_ts
@@ -578,6 +602,17 @@ graph LR
   file_src_modules_pull_request_release_significance_pull_request_release_significance_service_ts --> file_src_modules_pull_request_release_significance_pull_request_release_significance_types_ts
   file_src_modules_pull_request_release_significance_pull_request_release_significance_service_unit_test_ts --> file_src_modules_pull_request_release_significance_pull_request_release_significance_service_ts
   file_src_modules_pull_request_release_significance_pull_request_release_significance_service_unit_test_ts --> file_src_modules_pull_request_release_significance_pull_request_release_significance_types_ts
+  file_src_modules_readme_projects_readme_projects_command_ts --> file_src_modules_readme_projects_readme_projects_service_ts
+  file_src_modules_readme_projects_readme_projects_command_unit_test_ts --> file_src_modules_readme_projects_readme_projects_command_ts
+  file_src_modules_readme_projects_readme_projects_command_unit_test_ts --> file_src_modules_readme_projects_readme_projects_service_ts
+  file_src_modules_readme_projects_readme_projects_command_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_readme_projects_readme_projects_module_ts --> file_src_modules_readme_projects_readme_projects_command_ts
+  file_src_modules_readme_projects_readme_projects_module_ts --> file_src_modules_readme_projects_readme_projects_service_ts
+  file_src_modules_readme_projects_readme_projects_module_unit_test_ts --> file_src_modules_readme_projects_readme_projects_command_ts
+  file_src_modules_readme_projects_readme_projects_module_unit_test_ts --> file_src_modules_readme_projects_readme_projects_module_ts
+  file_src_modules_readme_projects_readme_projects_module_unit_test_ts --> file_src_modules_readme_projects_readme_projects_service_ts
+  file_src_modules_readme_projects_readme_projects_service_ts --> file_src_modules_readme_projects_readme_projects_constants_ts
+  file_src_modules_readme_projects_readme_projects_service_unit_test_ts --> file_src_modules_readme_projects_readme_projects_service_ts
   file_src_repl_ts --> file_src_main_module_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
@@ -588,36 +623,36 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-7827-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-254.22_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-9-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-65-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-8293-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-267.22_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-10-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-73-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-65-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-73-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-22-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-28-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-193-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-32-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-204-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-24-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-27-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-14-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-22-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-427-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-138-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-469-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-96-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-305-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-274-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-110-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-281-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-683-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-25-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-460-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-143-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-501-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-102-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-325-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-303-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-115-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-305-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-723-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -638,16 +673,16 @@ graph LR
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-3-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-117-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-31-7c3aed?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-120-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-32-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-8-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-80-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-57-16a34a?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-82-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-58-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-6-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
 ![JSON Items](https://img.shields.io/badge/JSON_Items-20-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-103-dc2626?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-105-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-6-ea580c?style=flat-square)
 
 ### YAML
@@ -728,15 +763,15 @@ graph LR
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-7-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-9-0284c7?style=flat-square)
-![Command Files](https://img.shields.io/badge/Command_Files-6-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-6-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-6-db2777?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-8-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-10-0284c7?style=flat-square)
+![Command Files](https://img.shields.io/badge/Command_Files-7-16a34a?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-7-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-7-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![Errors Files](https://img.shields.io/badge/Errors_Files-0-059669?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-23-7c3aed?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-26-7c3aed?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-0284c7?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-16a34a?style=flat-square)
 
@@ -766,14 +801,14 @@ graph LR
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-310-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-275-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-8-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-15-a78bfa?style=flat-square)
+![H3](https://img.shields.io/badge/H3-14-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-55-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-53-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-6-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-28-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
@@ -781,8 +816,8 @@ graph LR
 ![Table Rows](https://img.shields.io/badge/Table_Rows-16-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-10-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-14-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-95-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-13-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-94-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

@@ -124,9 +124,9 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ValidationService.validate` | 10 | `InstanceDiscoveryService.matchInstances`, `ValidationService.selectValidators`, `ValidationLanguagesService.resolveValidators`, `ValidationService.readTemplateExtensions`, `ValidationService.map(…)`, `ValidationScoringService.scoreInstances`, `ValidationDeduplicationService.deduplicate`, `ValidationFindingsService.buildUnmatchedResults`, `ValidationService.map(…)`, `ValidationService.every(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:134` |
-| `ValidationService.validateInstance` | 6 | `InstanceDiscoveryService.prepareDocuments`, `ValidationService.flatMap(…)`, `FilesService.checkInstanceFiles`, `ValidationService.map(…)`, `ValidationService.flatMap(…)`, `ValidationService.reduce(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:89` |
-| `ValidationLanguagesService.resolveValidators` | 4 | `ValidationLanguagesService.filter(…)`, `ValidationLanguagesService.loadValidator`, `ValidationLanguagesService.flatMap(…)`, `ValidationLanguagesService.filter(…)` | `packages/conformetry-validation/src/modules/validation/validation-languages.service.ts:118` |
+| `ValidationService.validate` | 10 | `InstanceDiscoveryService.matchInstances`, `ValidationService.selectValidators`, `ValidationLanguagesService.resolveValidators`, `ValidationService.readTemplateExtensions`, `ValidationService.map(…)`, `ValidationScoringService.scoreInstances`, `ValidationDeduplicationService.deduplicate`, `ValidationFindingsService.buildUnmatchedResults`, `ValidationService.map(…)`, `ValidationService.every(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:132` |
+| `ValidationService.validateInstance` | 6 | `InstanceDiscoveryService.prepareDocuments`, `ValidationService.flatMap(…)`, `FilesService.checkInstanceFiles`, `ValidationService.map(…)`, `ValidationService.flatMap(…)`, `ValidationService.reduce(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:87` |
+| `ValidationLanguagesService.resolveValidators` | 4 | `ValidationLanguagesService.filter(…)`, `ValidationLanguagesService.loadValidator`, `ValidationLanguagesService.flatMap(…)`, `ValidationLanguagesService.filter(…)` | `packages/conformetry-validation/src/modules/validation/validation-languages.service.ts:117` |
 
 <details>
 <summary>18 more callables</summary>
@@ -135,22 +135,22 @@ None.
 | --- | --- | --- | --- |
 | `ValidationScoringService.scoreInstance` | 4 | `ValidationScoringService.reduce(…)`, `ScoringService.calculateScore`, `ValidationScoringService.resolveThreshold`, `ValidationScoringService.resolveInstancePath` | `packages/conformetry-validation/src/modules/validation/validation-scoring.service.ts:74` |
 | `ValidationLanguagesService.loadValidator` | 3 | `MissingLanguagePackageError.constructor`, `ValidationLanguagesService.readExport`, `ValidationLanguagesService.load(…)` | `packages/conformetry-validation/src/modules/validation/validation-languages.service.ts:42` |
-| `ValidationDeduplicationService.deduplicate` | 2 | `ValidationDeduplicationService.selectOwners`, `ValidationDeduplicationService.flatMap(…)` | `packages/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:92` |
-| `ValidationFindingsService.buildUnmatchedResults` | 2 | `ValidationFindingsService.resolveTemplatesRootPath`, `ValidationFindingsService.map(…)` | `packages/conformetry-validation/src/modules/validation/validation-findings.service.ts:70` |
-| `ValidationLanguagesService.readExport` | 2 | `ValidationLanguagesService.isConstructable`, `MissingLanguagePackageError.constructor` | `packages/conformetry-validation/src/modules/validation/validation-languages.service.ts:86` |
+| `ValidationDeduplicationService.deduplicate` | 2 | `ValidationDeduplicationService.selectOwners`, `ValidationDeduplicationService.flatMap(…)` | `packages/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:90` |
+| `ValidationFindingsService.buildUnmatchedResults` | 2 | `ValidationFindingsService.resolveTemplatesRootPath`, `ValidationFindingsService.map(…)` | `packages/conformetry-validation/src/modules/validation/validation-findings.service.ts:68` |
+| `ValidationLanguagesService.readExport` | 2 | `ValidationLanguagesService.isConstructable`, `MissingLanguagePackageError.constructor` | `packages/conformetry-validation/src/modules/validation/validation-languages.service.ts:85` |
 | `ValidationScoringService.scoreInstances` | 2 | `ValidationScoringService.scoreInstance`, `ValidationScoringService.resolveScoreKey` | `packages/conformetry-validation/src/modules/validation/validation-scoring.service.ts:111` |
-| `ValidationDeduplicationService.selectOwners` | 1 | `ValidationDeduplicationService.compareInstances` | `packages/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:59` |
-| `ValidationDeduplicationService.flatMap(…)` | 1 | `ValidationDeduplicationService.filter(…)` | `packages/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:96` |
-| `ValidationDeduplicationService.filter(…)` | 1 | `ValidationDeduplicationService.resolveFindingKey` | `packages/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:97` |
-| `ValidationFindingsService.resolveTemplatesRootPath` | 1 | `ValidationFindingsService.map(…)` | `packages/conformetry-validation/src/modules/validation/validation-findings.service.ts:59` |
-| `ValidationFindingsService.map(…)` | 1 | `ValidationFindingsService.describeReason` | `packages/conformetry-validation/src/modules/validation/validation-findings.service.ts:76` |
-| `ValidationLanguagesService.filter(…)` | 1 | `ValidationLanguagesService.some(…)` | `packages/conformetry-validation/src/modules/validation/validation-languages.service.ts:129` |
+| `ValidationDeduplicationService.selectOwners` | 1 | `ValidationDeduplicationService.compareInstances` | `packages/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:57` |
+| `ValidationDeduplicationService.flatMap(…)` | 1 | `ValidationDeduplicationService.filter(…)` | `packages/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:94` |
+| `ValidationDeduplicationService.filter(…)` | 1 | `ValidationDeduplicationService.resolveFindingKey` | `packages/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:95` |
+| `ValidationFindingsService.resolveTemplatesRootPath` | 1 | `ValidationFindingsService.map(…)` | `packages/conformetry-validation/src/modules/validation/validation-findings.service.ts:57` |
+| `ValidationFindingsService.map(…)` | 1 | `ValidationFindingsService.describeReason` | `packages/conformetry-validation/src/modules/validation/validation-findings.service.ts:74` |
+| `ValidationLanguagesService.filter(…)` | 1 | `ValidationLanguagesService.some(…)` | `packages/conformetry-validation/src/modules/validation/validation-languages.service.ts:128` |
 | `ValidationScoringService.reduce(…)` | 1 | `ScoringService.sumWeights` | `packages/conformetry-validation/src/modules/validation/validation-scoring.service.ts:75` |
-| `ValidationService.readTemplateExtensions` | 1 | `ValidationService.flatMap(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:52` |
-| `ValidationService.flatMap(…)` | 1 | `ValidationService.map(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:55` |
-| `ValidationService.selectValidators` | 1 | `ValidationService.filter(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:65` |
-| `ValidationService.map(…)` | 1 | `LanguageService.runValidator` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:102` |
-| `ValidationService.map(…)` | 1 | `ValidationService.validateInstance` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:152` |
+| `ValidationService.readTemplateExtensions` | 1 | `ValidationService.flatMap(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:50` |
+| `ValidationService.flatMap(…)` | 1 | `ValidationService.map(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:53` |
+| `ValidationService.selectValidators` | 1 | `ValidationService.filter(…)` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:63` |
+| `ValidationService.map(…)` | 1 | `LanguageService.runValidator` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:100` |
+| `ValidationService.map(…)` | 1 | `ValidationService.validateInstance` | `packages/conformetry-validation/src/modules/validation/validation.service.ts:150` |
 
 </details>
 
@@ -283,14 +283,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2099-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-79.32_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2157-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-79.53_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-4-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-19-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-10.96_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-10.77_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -308,15 +308,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-5-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-11-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-9-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-89-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-96-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-43-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-102-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-30-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-105-dc2626?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-107-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-32-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-114-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-85-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-21-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-116-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-265-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-113-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-262-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -465,14 +465,14 @@ graph LR
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-290-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-222-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-13-a78bfa?style=flat-square)
+![H3](https://img.shields.io/badge/H3-12-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-47-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-45-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-6-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-25-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
@@ -480,8 +480,8 @@ graph LR
 ![Table Rows](https://img.shields.io/badge/Table_Rows-10-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-9-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-12-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-74-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-11-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-73-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

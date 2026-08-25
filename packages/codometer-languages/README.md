@@ -98,7 +98,7 @@ Call stacks traced through `codometer-languages`, deepest first. Each frame show
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `LanguagesService.analyze` | 11 | `CssService.analyze`, `HclService.analyze`, `JsonService.analyze`, `JupyterService.analyze`, `MarkdownService.analyze`, `PythonService.analyze`, `ShellService.analyze`, `SqlService.analyze`, `TomlService.analyze`, `TypescriptService.analyze`, `YamlService.analyze` | `packages/codometer-languages/src/modules/languages/languages.service.ts:54` |
-| `JsonService.countNode` | 5 | `JsonService.isArrayNode`, `JsonService.countArrayNode`, `JsonService.isRecordNode`, `JsonService.countRecordNode`, `JsonService.countPrimitiveNode` | `packages/codometer-languages/src/modules/json/json.service.ts:109` |
+| `JsonService.countNode` | 5 | `JsonService.isArrayNode`, `JsonService.countArrayNode`, `JsonService.isRecordNode`, `JsonService.countRecordNode`, `JsonService.countPrimitiveNode` | `packages/codometer-languages/src/modules/json/json.service.ts:111` |
 | `JupyterService.analyze` | 5 | `JupyterService.collectParts`, `JsonService.analyze`, `PythonService.analyzeContents`, `MarkdownService.analyzeContents`, `JupyterService.countHeadings` | `packages/codometer-languages/src/modules/jupyter/jupyter.service.ts:166` |
 
 <details>
@@ -107,40 +107,40 @@ Call stacks traced through `codometer-languages`, deepest first. Each frame show
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `TypescriptService.walkNode` | 5 | `TypescriptService.countSymbols`, `TypescriptService.handleClass`, `TypescriptService.forEachChild(…)`, `TypescriptService.dispatchNode`, `TypescriptService.forEachChild(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:390` |
-| `JsonService.consumeJsoncCharacter` | 4 | `JsonService.handleLineCommentState`, `JsonService.handleBlockCommentState`, `JsonService.handleStringState`, `JsonService.consumeCharacterOutsideComments` | `packages/codometer-languages/src/modules/json/json.service.ts:64` |
+| `JsonService.consumeJsoncCharacter` | 4 | `JsonService.handleLineCommentState`, `JsonService.handleBlockCommentState`, `JsonService.handleStringState`, `JsonService.consumeCharacterOutsideComments` | `packages/codometer-languages/src/modules/json/json.service.ts:66` |
 | `TypescriptService.createEmptyResult` | 4 | `TypescriptService.filter(…)`, `TypescriptService.map(…)`, `TypescriptService.filter(…)`, `TypescriptService.filter(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:161` |
-| `JsonService.parseDocuments` | 3 | `JsonService.map(…)`, `JsonService.filter(…)`, `JsonService.stripJsoncComments` | `packages/codometer-languages/src/modules/json/json.service.ts:256` |
-| `JsonService.analyze` | 3 | `JsonService.filter(…)`, `JsonService.parseDocuments`, `JsonService.countNode` | `packages/codometer-languages/src/modules/json/json.service.ts:306` |
-| `SqlService.analyze` | 3 | `SqlService.stripComments`, `SqlService.filter(…)`, `SqlService.countKeywords` | `packages/codometer-languages/src/modules/sql/sql.service.ts:61` |
+| `JsonService.parseDocuments` | 3 | `JsonService.map(…)`, `JsonService.filter(…)`, `JsonService.stripJsoncComments` | `packages/codometer-languages/src/modules/json/json.service.ts:258` |
+| `JsonService.analyze` | 3 | `JsonService.filter(…)`, `JsonService.parseDocuments`, `JsonService.countNode` | `packages/codometer-languages/src/modules/json/json.service.ts:308` |
+| `SqlService.analyze` | 3 | `SqlService.stripComments`, `SqlService.filter(…)`, `SqlService.countKeywords` | `packages/codometer-languages/src/modules/sql/sql.service.ts:63` |
 | `TypescriptService.analyzeFile` | 3 | `TypescriptService.getScriptKind`, `TypescriptService.scanComments`, `TypescriptService.walkNode` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:77` |
 | `TypescriptService.handleFunction` | 3 | `TypescriptService.hasExportKeyword`, `TypescriptService.hasAsyncKeyword`, `TypescriptService.hasTypeParameters` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:253` |
 | `TypescriptService.analyze` | 3 | `TypescriptService.createEmptyResult`, `TypescriptService.analyzeFile`, `TypescriptService.getCountersForFile` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:415` |
-| `MarkdownService.countNode` | 2 | `MarkdownService.countHeading`, `MarkdownService.countListItem` | `packages/codometer-languages/src/modules/markdown/markdown.service.ts:60` |
-| `PythonService.analyzeContents` | 2 | `PythonService.map(…)`, `PythonService.analyze` | `packages/codometer-languages/src/modules/python/python.service.ts:85` |
+| `MarkdownService.countNode` | 2 | `MarkdownService.countHeading`, `MarkdownService.countListItem` | `packages/codometer-languages/src/modules/markdown/markdown.service.ts:62` |
+| `PythonService.analyzeContents` | 2 | `PythonService.map(…)`, `PythonService.analyze` | `packages/codometer-languages/src/modules/python/python.service.ts:87` |
 | `JupyterService.collectParts` | 2 | `JupyterService.readNotebook`, `JupyterService.collectCell` | `packages/codometer-languages/src/modules/jupyter/jupyter.service.ts:88` |
-| `SqlService.stripComments` | 2 | `SqlService.replaceAll(…)`, `SqlService.replaceAll(…)` | `packages/codometer-languages/src/modules/sql/sql.service.ts:46` |
-| `TomlService.analyze` | 2 | `TomlService.countLine`, `TomlService.isInsideMultilineString` | `packages/codometer-languages/src/modules/toml/toml.service.ts:96` |
+| `SqlService.stripComments` | 2 | `SqlService.replaceAll(…)`, `SqlService.replaceAll(…)` | `packages/codometer-languages/src/modules/sql/sql.service.ts:48` |
+| `TomlService.analyze` | 2 | `TomlService.countLine`, `TomlService.isInsideMultilineString` | `packages/codometer-languages/src/modules/toml/toml.service.ts:98` |
 | `TypescriptService.countSymbols` | 2 | `TypescriptService.getSymbolModifiers`, `TypescriptService.every(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:131` |
 | `TypescriptService.handleClass` | 2 | `TypescriptService.hasExportKeyword`, `TypescriptService.hasTypeParameters` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:240` |
 | `TypescriptService.handleInterface` | 2 | `TypescriptService.hasExportKeyword`, `TypescriptService.hasTypeParameters` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:287` |
 | `TypescriptService.handleTypeAlias` | 2 | `TypescriptService.hasExportKeyword`, `TypescriptService.hasTypeParameters` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:310` |
-| `YamlService.countDocument` | 2 | `YamlService.countComments`, `YamlService.countNode` | `packages/codometer-languages/src/modules/yaml/yaml.service.ts:86` |
-| `YamlService.countNode` | 2 | `YamlService.countComments`, `YamlService.countCollection` | `packages/codometer-languages/src/modules/yaml/yaml.service.ts:93` |
-| `CssService.analyze` | 1 | `CssService.walk(…)` | `packages/codometer-languages/src/modules/css/css.service.ts:72` |
-| `CssService.walk(…)` | 1 | `CssService.countNode` | `packages/codometer-languages/src/modules/css/css.service.ts:86` |
-| `HclService.countLine` | 1 | `HclService.countBlock` | `packages/codometer-languages/src/modules/hcl/hcl.service.ts:58` |
-| `HclService.analyze` | 1 | `HclService.countLine` | `packages/codometer-languages/src/modules/hcl/hcl.service.ts:85` |
-| `JsonService.countArrayNode` | 1 | `JsonService.countNode` | `packages/codometer-languages/src/modules/json/json.service.ts:93` |
-| `JsonService.countPrimitiveNode` | 1 | `JsonService.countPrimitiveValue` | `packages/codometer-languages/src/modules/json/json.service.ts:124` |
-| `JsonService.countRecordNode` | 1 | `JsonService.countNode` | `packages/codometer-languages/src/modules/json/json.service.ts:160` |
-| `JsonService.stripJsoncComments` | 1 | `JsonService.consumeJsoncCharacter` | `packages/codometer-languages/src/modules/json/json.service.ts:271` |
-| `MarkdownService.walk` | 1 | `MarkdownService.countNode` | `packages/codometer-languages/src/modules/markdown/markdown.service.ts:79` |
-| `MarkdownService.analyze` | 1 | `MarkdownService.analyzeContents` | `packages/codometer-languages/src/modules/markdown/markdown.service.ts:96` |
-| `MarkdownService.analyzeContents` | 1 | `MarkdownService.walk` | `packages/codometer-languages/src/modules/markdown/markdown.service.ts:124` |
+| `YamlService.countDocument` | 2 | `YamlService.countComments`, `YamlService.countNode` | `packages/codometer-languages/src/modules/yaml/yaml.service.ts:88` |
+| `YamlService.countNode` | 2 | `YamlService.countComments`, `YamlService.countCollection` | `packages/codometer-languages/src/modules/yaml/yaml.service.ts:95` |
+| `CssService.analyze` | 1 | `CssService.walk(…)` | `packages/codometer-languages/src/modules/css/css.service.ts:74` |
+| `CssService.walk(…)` | 1 | `CssService.countNode` | `packages/codometer-languages/src/modules/css/css.service.ts:88` |
+| `HclService.countLine` | 1 | `HclService.countBlock` | `packages/codometer-languages/src/modules/hcl/hcl.service.ts:60` |
+| `HclService.analyze` | 1 | `HclService.countLine` | `packages/codometer-languages/src/modules/hcl/hcl.service.ts:87` |
+| `JsonService.countArrayNode` | 1 | `JsonService.countNode` | `packages/codometer-languages/src/modules/json/json.service.ts:95` |
+| `JsonService.countPrimitiveNode` | 1 | `JsonService.countPrimitiveValue` | `packages/codometer-languages/src/modules/json/json.service.ts:126` |
+| `JsonService.countRecordNode` | 1 | `JsonService.countNode` | `packages/codometer-languages/src/modules/json/json.service.ts:162` |
+| `JsonService.stripJsoncComments` | 1 | `JsonService.consumeJsoncCharacter` | `packages/codometer-languages/src/modules/json/json.service.ts:273` |
+| `MarkdownService.walk` | 1 | `MarkdownService.countNode` | `packages/codometer-languages/src/modules/markdown/markdown.service.ts:81` |
+| `MarkdownService.analyze` | 1 | `MarkdownService.analyzeContents` | `packages/codometer-languages/src/modules/markdown/markdown.service.ts:98` |
+| `MarkdownService.analyzeContents` | 1 | `MarkdownService.walk` | `packages/codometer-languages/src/modules/markdown/markdown.service.ts:126` |
 | `JupyterService.collectCell` | 1 | `JupyterService.readSource` | `packages/codometer-languages/src/modules/jupyter/jupyter.service.ts:57` |
-| `ShellService.countLine` | 1 | `ShellService.countStatements` | `packages/codometer-languages/src/modules/shell/shell.service.ts:43` |
-| `ShellService.analyze` | 1 | `ShellService.countLine` | `packages/codometer-languages/src/modules/shell/shell.service.ts:91` |
-| `TomlService.countLine` | 1 | `TomlService.countKey` | `packages/codometer-languages/src/modules/toml/toml.service.ts:59` |
+| `ShellService.countLine` | 1 | `ShellService.countStatements` | `packages/codometer-languages/src/modules/shell/shell.service.ts:45` |
+| `ShellService.analyze` | 1 | `ShellService.countLine` | `packages/codometer-languages/src/modules/shell/shell.service.ts:93` |
+| `TomlService.countLine` | 1 | `TomlService.countKey` | `packages/codometer-languages/src/modules/toml/toml.service.ts:61` |
 | `TypescriptService.getCountersForFile` | 1 | `TypescriptService.filter(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:195` |
 | `TypescriptService.filter(…)` | 1 | `TypescriptService.some(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:200` |
 | `TypescriptService.handleEnum` | 1 | `TypescriptService.hasExportKeyword` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:247` |
@@ -149,8 +149,8 @@ Call stacks traced through `codometer-languages`, deepest first. Each frame show
 | `TypescriptService.hasAsyncKeyword` | 1 | `TypescriptService.some(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:331` |
 | `TypescriptService.hasExportKeyword` | 1 | `TypescriptService.some(…)` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:343` |
 | `TypescriptService.scanComments` | 1 | `TypescriptService.countComment` | `packages/codometer-languages/src/modules/typescript/typescript.service.ts:367` |
-| `YamlService.countCollection` | 1 | `YamlService.countNode` | `packages/codometer-languages/src/modules/yaml/yaml.service.ts:44` |
-| `YamlService.analyze` | 1 | `YamlService.countDocument` | `packages/codometer-languages/src/modules/yaml/yaml.service.ts:121` |
+| `YamlService.countCollection` | 1 | `YamlService.countNode` | `packages/codometer-languages/src/modules/yaml/yaml.service.ts:46` |
+| `YamlService.analyze` | 1 | `YamlService.countDocument` | `packages/codometer-languages/src/modules/yaml/yaml.service.ts:123` |
 
 </details>
 
@@ -450,14 +450,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-6528-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-197.04_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-6601-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-197.94_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-15-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-78-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-29.56_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-30.05_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -475,15 +475,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-24-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-20-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-24-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-218-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-222-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-103-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-301-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-20-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-363-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-349-0284c7?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-304-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-21-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-367-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-350-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-94-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-326-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-455-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-342-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-471-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-3-ca8a04?style=flat-square)
 
 ### Python
@@ -632,14 +632,14 @@ graph LR
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-269-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-222-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-13-a78bfa?style=flat-square)
+![H3](https://img.shields.io/badge/H3-12-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-48-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-45-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-6-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-25-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
@@ -647,8 +647,8 @@ graph LR
 ![Table Rows](https://img.shields.io/badge/Table_Rows-10-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-9-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-12-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-74-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-11-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-73-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
