@@ -94,6 +94,7 @@ export class LanguagesService {
         workingDirectory,
       }),
       typescript: this.typescriptService.analyze({
+        documentation: args.configuration.documentation,
         sourceFiles: discoveredFiles.sourceFiles,
         symbolCounters: args.symbolCounters,
         workingDirectory,

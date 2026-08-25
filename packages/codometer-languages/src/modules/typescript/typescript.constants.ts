@@ -67,6 +67,7 @@ export const EMPTY_TYPESCRIPT_RESULT: TypescriptResult = {
   decorators: 0,
   docComments: 0,
   docTags: {},
+  documentation: [],
   enums: 0,
   exported: 0,
   externalPackages: new Set<string>(),

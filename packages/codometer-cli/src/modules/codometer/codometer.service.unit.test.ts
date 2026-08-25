@@ -21,6 +21,7 @@ import type { LanguageResults } from "@codometer/languages";
 
 const configuration: ResolvedCodometerConfiguration = {
   defaultTarget: undefined,
+  documentation: { default: 6, kinds: {}, severity: "fail", unit: "lines" },
   exclude: ["**/node_modules/**"],
   excludeFrom: [],
   limits: [],
@@ -75,6 +76,7 @@ function buildLanguageResults(): LanguageResults {
     python: createMock<LanguageResults["python"]>({ files: 1, lines: 11 }),
     typescript: createMock<LanguageResults["typescript"]>({
       classes: 10,
+      documentation: [],
       externalPackages: new Set(["react"]),
       jsFiles: 1,
       lines: 19,
@@ -258,6 +260,7 @@ describe(CodometerService, () => {
 
     expect(result.targets).toStrictEqual([
       {
+        documentation: [],
         files: 2,
         language: result.statistics,
         name: "codebase",
@@ -308,6 +311,7 @@ describe(CodometerService, () => {
       workingDirectory: "/repo",
     });
     expect(result.targets[1]).toStrictEqual({
+      documentation: [],
       files: 2,
       language: undefined,
       name: "compiled",
@@ -350,6 +354,102 @@ describe(CodometerService, () => {
     });
     expect(result.targets[1]?.language?.linesOfCode).toBe(70);
     expect(result.targets[1]?.language?.repositoryBytes).toBe(4529);
+  });
+
+  it("attaches the codebase target's name to its documentation measurements", () => {
+    vi.mocked(languagesService.analyze).mockReturnValue(
+      createMock<LanguageResults>({
+        typescript: createMock<LanguageResults["typescript"]>({
+          documentation: [
+            {
+              breached: false,
+              declaration: "Foo",
+              file: "src/foo.ts",
+              kind: "class",
+              limit: 6,
+              line: 1,
+              measured: 3,
+              severity: "fail",
+              unit: "lines",
+            },
+          ],
+        }),
+      }),
+    );
+
+    const result = buildService().measure({
+      configuration,
+      outputPaths: [],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.targets[0]?.documentation).toStrictEqual([
+      {
+        breached: false,
+        declaration: "Foo",
+        file: "src/foo.ts",
+        kind: "class",
+        limit: 6,
+        line: 1,
+        measured: 3,
+        severity: "fail",
+        target: "codebase",
+        unit: "lines",
+      },
+    ]);
+    expect(result.documentation).toStrictEqual(
+      result.targets[0]?.documentation,
+    );
+  });
+
+  it("attaches a declared target's name to its documentation measurements", () => {
+    vi.mocked(languagesService.analyze).mockReturnValue(
+      createMock<LanguageResults>({
+        typescript: createMock<LanguageResults["typescript"]>({
+          documentation: [
+            {
+              breached: true,
+              declaration: "Bar",
+              file: "dist/bar.js",
+              kind: "function",
+              limit: 4,
+              line: 2,
+              measured: 9,
+              severity: "warn",
+              unit: "lines",
+            },
+          ],
+        }),
+      }),
+    );
+
+    const result = buildService().measure({
+      configuration: {
+        ...configuration,
+        targets: [{ ...compiledTarget, analyses: ["language"] }],
+      },
+      outputPaths: [],
+      workingDirectory: "/repo",
+    });
+
+    expect(result.targets[1]?.documentation).toStrictEqual([
+      {
+        breached: true,
+        declaration: "Bar",
+        file: "dist/bar.js",
+        kind: "function",
+        limit: 4,
+        line: 2,
+        measured: 9,
+        severity: "warn",
+        target: "compiled",
+        unit: "lines",
+      },
+    ]);
+    expect(result.documentation).toStrictEqual([
+      ...(result.targets[0]?.documentation ?? []),
+      ...(result.targets[1]?.documentation ?? []),
+    ]);
   });
 
   // One unreadable file used to take the whole run with it, including the

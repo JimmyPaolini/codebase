@@ -2,6 +2,7 @@
 
 import type { EvaluatedLimit, TargetMetricIndex } from "../limits/limits.types";
 import type { ReportFailure } from "../report/report.types";
+import type { DocumentationMeasurement } from "./documentation-measurement.types";
 import type {
   CodeStatisticsResult,
   ResolvedCodometerConfiguration,
@@ -65,6 +66,8 @@ export interface MeasureArguments {
  * out separately so nothing downstream has to know which target it came from.
  */
 export interface MeasurementResult {
+  /** Every documented declaration across every target, flattened, in measurement order. */
+  documentation: DocumentationMeasurement[];
   /**
    * Whatever the run could not do, collected rather than thrown.
    *
@@ -103,6 +106,7 @@ export interface MeasureTargetArguments {
  * so a target nobody measured the size of is never mistaken for an empty one.
  */
 export interface TargetMeasurement {
+  documentation: DocumentationMeasurement[];
   /** How many files the target's globs claimed. */
   files: number;
   language: CodeStatisticsResult | undefined;

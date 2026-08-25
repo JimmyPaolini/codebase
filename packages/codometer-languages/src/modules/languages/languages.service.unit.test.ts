@@ -20,6 +20,7 @@ import type { DiscoveredLanguageFiles } from "./languages.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
 const configuration = createMock<ResolvedCodometerConfiguration>({
+  documentation: { default: 6, kinds: {}, severity: "fail", unit: "lines" },
   python: { command: "uv run python" },
 });
 
@@ -108,6 +109,42 @@ describe(LanguagesService, () => {
       pythonCommand: "uv run python",
       workingDirectory: "/repo",
     });
+  });
+
+  it("passes the resolved documentation configuration through to typescript.analyze", async () => {
+    const module = await Test.createTestingModule({
+      providers: [
+        LanguagesService,
+        { provide: CssService, useValue: createMock<CssService>() },
+        { provide: HclService, useValue: createMock<HclService>() },
+        { provide: JsonService, useValue: createMock<JsonService>() },
+        { provide: JupyterService, useValue: createMock<JupyterService>() },
+        { provide: MarkdownService, useValue: createMock<MarkdownService>() },
+        { provide: PythonService, useValue: createMock<PythonService>() },
+        { provide: ShellService, useValue: createMock<ShellService>() },
+        { provide: SqlService, useValue: createMock<SqlService>() },
+        { provide: TomlService, useValue: createMock<TomlService>() },
+        {
+          provide: TypescriptService,
+          useValue: createMock<TypescriptService>(),
+        },
+        { provide: YamlService, useValue: createMock<YamlService>() },
+      ],
+    }).compile();
+
+    const isolatedService = await module.resolve(LanguagesService);
+    const isolatedTypescriptService = await module.resolve(TypescriptService);
+
+    isolatedService.analyze({
+      configuration,
+      discoveredFiles,
+      symbolCounters: [],
+      workingDirectory: "/repo",
+    });
+
+    expect(isolatedTypescriptService.analyze).toHaveBeenCalledWith(
+      expect.objectContaining({ documentation: configuration.documentation }),
+    );
   });
 
   it("reports one entry per language", () => {

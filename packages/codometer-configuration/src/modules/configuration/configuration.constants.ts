@@ -5,12 +5,12 @@ import { z } from "zod";
 import type {
   CodometerAnalysis,
   CodometerCompression,
+  CodometerDocumentationUnit,
   CodometerSeverity,
   CodometerSymbolKind,
   CodometerSymbolModifier,
-  RenderMarkdownOutput,
-  WriteMarkdownOutput,
 } from "./configuration.types";
+import type { RenderMarkdownOutput, WriteMarkdownOutput } from "./output.types";
 import type { CodometerStatisticGroup } from "./statistics.types";
 
 /** Raised when the configuration path points to an unsupported file type. */
@@ -121,6 +121,16 @@ export const DEFAULT_TARGET_NAME = "codebase";
  * `warn` is the deliberate choice, not the accidental one.
  */
 export const DEFAULT_LIMIT_SEVERITY = "fail" satisfies CodometerSeverity;
+
+/**
+ * How many lines a documented declaration's comment may run when its kind
+ * names no limit and none is configured at all.
+ */
+export const DEFAULT_DOCUMENTATION_LIMIT = 6;
+
+/** Unit a documentation limit measures in when it names none. */
+export const DEFAULT_DOCUMENTATION_UNIT =
+  "lines" satisfies CodometerDocumentationUnit;
 
 /**
  * What each unit suffix a limit may carry multiplies its number by.
@@ -241,6 +251,12 @@ export const CODOMETER_SYMBOL_KINDS = [
   "setter",
 ] as const satisfies readonly CodometerSymbolKind[];
 
+/** Units a documentation limit may measure a comment's length in. */
+export const CODOMETER_DOCUMENTATION_UNITS = [
+  "characters",
+  "lines",
+] as const satisfies readonly CodometerDocumentationUnit[];
+
 /** Modifiers a symbol counter may require of a declaration. */
 export const CODOMETER_SYMBOL_MODIFIERS = [
   "abstract",
@@ -274,6 +290,26 @@ const callbackSchema = <CallbackType>(): z.ZodType<CallbackType> =>
  */
 export const codometerConfigurationSchema = z.object({
   defaultTarget: z.string().min(1).optional(),
+  documentation: z
+    .object({
+      default: z.number().int().min(1).optional(),
+      kinds: z
+        .record(z.string(), z.number().int().min(1))
+        .refine(
+          (kinds) =>
+            Object.keys(kinds).every((kind) =>
+              (CODOMETER_SYMBOL_KINDS as readonly string[]).includes(kind),
+            ),
+          {
+            message:
+              "Every key in documentation.kinds must be a valid declaration kind.",
+          },
+        )
+        .optional(),
+      severity: z.enum(CODOMETER_SEVERITIES).optional(),
+      unit: z.enum(CODOMETER_DOCUMENTATION_UNITS).optional(),
+    })
+    .optional(),
   exclude: z.array(z.string()).optional(),
   excludeFrom: z.array(z.string()).optional(),
   // Two limits may name one metric on purpose — a `warn` short of a `fail` is

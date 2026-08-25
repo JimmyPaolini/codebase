@@ -13,6 +13,8 @@ import { ReportModule } from "../report/report.module";
 
 import { CodometerCommand } from "./codometer.command";
 import { CodometerService } from "./codometer.service";
+import { DeliveryService } from "./delivery.service";
+import { DocumentationReportService } from "./documentation-report.service";
 import { RunPlanService } from "./run-plan.service";
 
 /**
@@ -20,7 +22,13 @@ import { RunPlanService } from "./run-plan.service";
  */
 @Module({
   controllers: [],
-  exports: [CodometerCommand, CodometerService, RunPlanService],
+  exports: [
+    CodometerCommand,
+    CodometerService,
+    DeliveryService,
+    DocumentationReportService,
+    RunPlanService,
+  ],
   imports: [
     ConfigurationModule,
     CustomizationModule,
@@ -34,6 +42,12 @@ import { RunPlanService } from "./run-plan.service";
     SizeModule,
     TargetsModule,
   ],
-  providers: [CodometerCommand, CodometerService, RunPlanService],
+  providers: [
+    CodometerCommand,
+    CodometerService,
+    DeliveryService,
+    DocumentationReportService,
+    RunPlanService,
+  ],
 })
 export class CodometerModule {}

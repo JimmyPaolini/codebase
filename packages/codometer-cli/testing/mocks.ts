@@ -203,6 +203,7 @@ export function buildCodometerReport(
   overrides: Partial<CodometerReport> = {},
 ): CodometerReport {
   return {
+    documentation: [],
     failures: [],
     targets: [
       {

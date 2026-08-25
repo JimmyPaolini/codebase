@@ -75,7 +75,7 @@ export class TypescriptService {
 
   /** Read one source file, count its lines and comments, and walk its AST. */
   private analyzeFile(args: AnalyzeTypescriptFileArguments): void {
-    const { counters, filePath, stats, workingDirectory } = args;
+    const { counters, documentation, filePath, stats, workingDirectory } = args;
     const content = readFileSync(
       path.resolve(workingDirectory, filePath),
       "utf8",
@@ -91,7 +91,64 @@ export class TypescriptService {
     stats.lines += content.split(/\r?\n/).length;
     stats.todos += (content.match(TODO_REGEX) ?? []).length;
     this.scanComments(content, stats);
-    this.walkNode(sourceFile, { counters, insideClass: false, stats });
+    this.walkNode(sourceFile, {
+      counters,
+      documentation,
+      filePath,
+      insideClass: false,
+      sourceFile,
+      stats,
+    });
+  }
+
+  /** Measure a documentable declaration's leading JSDoc comment, if it has one. */
+  private collectDocumentation(
+    node: tsCompiler.Node,
+    context: TypescriptWalkContext,
+  ): void {
+    const { documentation, sourceFile } = context;
+    const kind = SYMBOL_KIND_BY_SYNTAX_KIND[node.kind];
+
+    if (documentation === undefined || kind === undefined) {
+      return;
+    }
+
+    const range = (
+      tsCompiler.getLeadingCommentRanges(
+        sourceFile.text,
+        node.getFullStart(),
+      ) ?? []
+    ).findLast(
+      (candidate) =>
+        candidate.kind === tsCompiler.SyntaxKind.MultiLineCommentTrivia &&
+        sourceFile.text.slice(candidate.pos, candidate.pos + 3) === "/**",
+    );
+
+    if (range === undefined) {
+      return;
+    }
+
+    const text = sourceFile.text
+      .slice(range.pos, range.end)
+      .replaceAll("\r\n", "\n");
+    const measured =
+      documentation.unit === "characters"
+        ? text.length
+        : text.split("\n").length;
+
+    context.stats.documentation.push({
+      breached: measured > (documentation.kinds[kind] ?? documentation.default),
+      declaration: this.getDeclarationName(node),
+      file: context.filePath,
+      kind,
+      limit: documentation.kinds[kind] ?? documentation.default,
+      line:
+        sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile))
+          .line + 1,
+      measured,
+      severity: documentation.severity,
+      unit: documentation.unit,
+    });
   }
 
   /** Count a discovered comment and update the appropriate metrics. */
@@ -164,6 +221,7 @@ export class TypescriptService {
     return {
       ...EMPTY_TYPESCRIPT_RESULT,
       docTags: { ...EMPTY_TYPESCRIPT_RESULT.docTags },
+      documentation: [],
       externalPackages: new Set<string>(),
       jsFiles: sourceFiles.filter((filePath) =>
         JS_EXTENSIONS.has(path.extname(filePath)),
@@ -201,6 +259,15 @@ export class TypescriptService {
         counter.patterns.length === 0 ||
         counter.patterns.some((pattern) => path.matchesGlob(filePath, pattern)),
     );
+  }
+
+  /** Reads a declaration's own name, or `"(anonymous)"` when it has none. */
+  private getDeclarationName(node: tsCompiler.Node): string {
+    const nodeWithName = node as tsCompiler.Node & {
+      name?: { getText?: () => string };
+    };
+
+    return nodeWithName.name?.getText?.() ?? "(anonymous)";
   }
 
   /** Choose the dialect a file is parsed as, from its extension. */
@@ -392,6 +459,7 @@ export class TypescriptService {
     context: TypescriptWalkContext,
   ): void {
     this.countSymbols(node, context);
+    this.collectDocumentation(node, context);
 
     if (
       node.kind === tsCompiler.SyntaxKind.ClassDeclaration ||
@@ -418,6 +486,7 @@ export class TypescriptService {
     for (const filePath of input.sourceFiles) {
       this.analyzeFile({
         counters: this.getCountersForFile(filePath, input.symbolCounters),
+        documentation: input.documentation,
         filePath,
         stats,
         workingDirectory: input.workingDirectory,

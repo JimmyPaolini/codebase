@@ -1,20 +1,53 @@
 // 🏷️ Types
 
 import type {
+  CodometerDocumentationUnit,
+  CodometerSeverity,
   CodometerSymbolKind,
   CodometerSymbolModifier,
+  ResolvedCodometerDocumentationConfiguration,
 } from "@codometer/configuration";
+import type { SourceFile } from "typescript";
 
 /** Arguments for analyzing a single source file. */
 export interface AnalyzeTypescriptFileArguments {
   counters: TypescriptSymbolCounter[];
+  documentation: ResolvedCodometerDocumentationConfiguration | undefined;
   filePath: string;
   stats: TypescriptResult;
   workingDirectory: string;
 }
 
+/**
+ * One documented declaration's JSDoc comment, measured against its kind's limit.
+ *
+ * Every declaration carrying a `/**` comment is reported, breached or not, so
+ * the length is visible before it ever becomes a problem.
+ */
+export interface TypescriptDocumentationMeasurement {
+  breached: boolean;
+  /** The declaration's own name, or `"(anonymous)"` when it has none. */
+  declaration: string;
+  file: string;
+  kind: CodometerSymbolKind;
+  limit: number;
+  /** 1-indexed line the declaration itself starts on. */
+  line: number;
+  measured: number;
+  severity: CodometerSeverity;
+  unit: CodometerDocumentationUnit;
+}
+
 /** Input to the TypeScript/JavaScript AST analysis step. */
 export interface TypescriptInput {
+  /**
+   * How long a documented declaration's JSDoc comment may run.
+   *
+   * Left undefined when the repository's configuration names no
+   * `documentation` block at all, which is what skips measurement entirely
+   * rather than measuring against a limit nobody chose.
+   */
+  documentation?: ResolvedCodometerDocumentationConfiguration | undefined;
   sourceFiles: string[];
   /** Configured counters over declarations, tallied during the same walk. */
   symbolCounters: TypescriptSymbolCounter[];
@@ -32,6 +65,8 @@ export interface TypescriptResult {
   decorators: number;
   docComments: number;
   docTags: Record<string, number>;
+  /** Every documented declaration, breached or not, in measurement order. */
+  documentation: TypescriptDocumentationMeasurement[];
   enums: number;
   exported: number;
   externalPackages: Set<string>;
@@ -69,6 +104,9 @@ export interface TypescriptWalkContext {
    * depends on its path, which does not change as the walk descends.
    */
   counters: TypescriptSymbolCounter[];
+  documentation: ResolvedCodometerDocumentationConfiguration | undefined;
+  filePath: string;
   insideClass: boolean;
+  sourceFile: SourceFile;
   stats: TypescriptResult;
 }

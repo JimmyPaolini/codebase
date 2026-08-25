@@ -645,4 +645,206 @@ describe(TypescriptService, () => {
       expect(result.symbolCounts["Static Methods"]).toBe(1);
     });
   });
+
+  describe("documentation length measurement", () => {
+    const documentation = {
+      default: 6,
+      kinds: { class: 6, interface: 5, method: 4, property: 3 },
+      severity: "fail" as const,
+      unit: "lines" as const,
+    };
+
+    it("does nothing when no documentation configuration is given", () => {
+      readFileSyncMock.mockReturnValue(
+        `/**
+          * A class.
+          */
+         export class Foo {}`,
+      );
+
+      const result = service.analyze({
+        sourceFiles: ["src/foo.ts"],
+        symbolCounters: [],
+        workingDirectory: "/repo",
+      });
+
+      expect(result.documentation).toStrictEqual([]);
+    });
+
+    it("measures a documented class, interface, function, method, and property under their limits", () => {
+      readFileSyncMock.mockReturnValue(
+        `/**
+          * A class.
+          */
+         export class Foo {
+           /**
+            * A property.
+            */
+           value = 1;
+
+           /**
+            * A method.
+            */
+           run(): void {}
+         }
+
+         /**
+          * An interface.
+          */
+         export interface Bar {}
+
+         /**
+          * A function.
+          */
+         export function greet(): void {}`,
+      );
+
+      const result = service.analyze({
+        documentation,
+        sourceFiles: ["src/foo.ts"],
+        symbolCounters: [],
+        workingDirectory: "/repo",
+      });
+
+      expect(
+        result.documentation.map((measurement) => ({
+          breached: measurement.breached,
+          declaration: measurement.declaration,
+          kind: measurement.kind,
+        })),
+      ).toStrictEqual([
+        { breached: false, declaration: "Foo", kind: "class" },
+        { breached: false, declaration: "value", kind: "property" },
+        { breached: false, declaration: "run", kind: "method" },
+        { breached: false, declaration: "Bar", kind: "interface" },
+        { breached: false, declaration: "greet", kind: "function" },
+      ]);
+    });
+
+    it("marks a declaration whose comment exceeds its kind's limit as breached", () => {
+      readFileSyncMock.mockReturnValue(
+        `/**
+          * A class.
+          * With far too many lines of explanation.
+          */
+         export class Foo {
+           value = 1;
+         }`,
+      );
+
+      const [measurement] = service.analyze({
+        documentation: { ...documentation, kinds: { class: 2 } },
+        sourceFiles: ["src/foo.ts"],
+        symbolCounters: [],
+        workingDirectory: "/repo",
+      }).documentation;
+
+      expect(measurement?.breached).toBe(true);
+      expect(measurement?.limit).toBe(2);
+      expect(measurement?.kind).toBe("class");
+    });
+
+    it("falls back to the default limit for a kind naming none", () => {
+      readFileSyncMock.mockReturnValue(
+        `/**
+          * An interface with no configured kind limit.
+          */
+         export interface Bar {}`,
+      );
+
+      const [measurement] = service.analyze({
+        documentation: { ...documentation, kinds: {} },
+        sourceFiles: ["src/bar.ts"],
+        symbolCounters: [],
+        workingDirectory: "/repo",
+      }).documentation;
+
+      expect(measurement?.limit).toBe(6);
+    });
+
+    it("measures characters instead of lines when configured", () => {
+      readFileSyncMock.mockReturnValue(
+        `/** Short. */
+         export class Foo {}`,
+      );
+
+      const [measurement] = service.analyze({
+        documentation: { ...documentation, unit: "characters" },
+        sourceFiles: ["src/foo.ts"],
+        symbolCounters: [],
+        workingDirectory: "/repo",
+      }).documentation;
+
+      expect(measurement?.unit).toBe("characters");
+      expect(measurement?.measured).toBe("/** Short. */".length);
+    });
+
+    it("does not report a declaration with no JSDoc comment at all", () => {
+      readFileSyncMock.mockReturnValue(`export class Foo {}`);
+
+      const result = service.analyze({
+        documentation,
+        sourceFiles: ["src/foo.ts"],
+        symbolCounters: [],
+        workingDirectory: "/repo",
+      });
+
+      expect(result.documentation).toStrictEqual([]);
+    });
+
+    it("does not treat a plain block comment as JSDoc", () => {
+      readFileSyncMock.mockReturnValue(
+        `/* Not a doc comment. */
+         export class Foo {}`,
+      );
+
+      const result = service.analyze({
+        documentation,
+        sourceFiles: ["src/foo.ts"],
+        symbolCounters: [],
+        workingDirectory: "/repo",
+      });
+
+      expect(result.documentation).toStrictEqual([]);
+    });
+
+    it("reports the file and 1-indexed line of the declaration", () => {
+      readFileSyncMock.mockReturnValue(
+        `// A leading line comment.
+
+         /**
+          * A class.
+          */
+         export class Foo {}`,
+      );
+
+      const [measurement] = service.analyze({
+        documentation,
+        sourceFiles: ["src/foo.ts"],
+        symbolCounters: [],
+        workingDirectory: "/repo",
+      }).documentation;
+
+      expect(measurement?.file).toBe("src/foo.ts");
+      expect(measurement?.line).toBe(6);
+    });
+
+    it("names an anonymous default-exported function as such", () => {
+      readFileSyncMock.mockReturnValue(
+        `/**
+          * An anonymous function.
+          */
+         export default function (): void {}`,
+      );
+
+      const [measurement] = service.analyze({
+        documentation,
+        sourceFiles: ["src/foo.ts"],
+        symbolCounters: [],
+        workingDirectory: "/repo",
+      }).documentation;
+
+      expect(measurement?.declaration).toBe("(anonymous)");
+    });
+  });
 });

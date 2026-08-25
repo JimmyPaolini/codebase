@@ -1,10 +1,12 @@
 // 🏷️ Types
 
+import type { DocumentationMeasurement } from "../codometer/documentation-measurement.types";
 import type { EvaluatedLimit, TargetMetricIndex } from "../limits/limits.types";
 import type { CodometerSeverity } from "@codometer/configuration";
 
 /** Arguments accepted when building the report from one measurement. */
 export interface BuildReportArguments {
+  documentation: readonly DocumentationMeasurement[];
   failures: readonly ReportFailure[];
   /** Every metric each measured target counted, target by target. */
   indexes: ReadonlyMap<string, TargetMetricIndex>;
@@ -26,6 +28,7 @@ export interface CodometerReport {
    * reading the file can tell a metric nobody measured from one that measured
    * zero.
    */
+  documentation: DocumentationMeasurement[];
   failures: ReportFailure[];
   targets: ReportTarget[];
 }
