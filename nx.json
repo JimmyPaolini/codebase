@@ -304,6 +304,7 @@
       "dependsOn": [
         "check-catalog-manifests",
         "check-lockfile",
+        "check-readme-projects",
         "conformetry-validate",
         "dependency-cruiser",
         "eslint",

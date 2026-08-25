@@ -598,8 +598,10 @@ graph LR
   file_src_modules_paths_paths_service_ts --> file_src_modules_paths_paths_constants_ts
   file_src_modules_paths_paths_service_ts --> file_src_modules_paths_paths_types_ts
   file_src_modules_paths_paths_service_ts --> file_src_modules_scope_scope_service_ts
+  file_src_modules_paths_paths_service_unit_test_ts --> file_src_modules_instances_instances_service_ts
   file_src_modules_paths_paths_service_unit_test_ts --> file_src_modules_paths_paths_module_ts
   file_src_modules_paths_paths_service_unit_test_ts --> file_src_modules_paths_paths_service_ts
+  file_src_modules_paths_paths_service_unit_test_ts --> file_src_modules_scope_scope_service_ts
   file_src_modules_plugin_plugin_constants_unit_test_ts --> file_src_modules_plugin_plugin_constants_ts
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_adapter_adapter_module_ts
   file_src_modules_plugin_plugin_module_ts --> file_src_modules_generator_generator_module_ts
@@ -648,6 +650,7 @@ graph LR
   file_src_plugin_context_utilities_unit_test_ts --> file_src_modules_options_options_service_ts
   file_src_plugin_context_utilities_unit_test_ts --> file_src_modules_plugin_plugin_constants_ts
   file_src_plugin_context_utilities_unit_test_ts --> file_src_modules_plugin_plugin_service_ts
+  file_src_plugin_context_utilities_unit_test_ts --> file_src_modules_projects_projects_service_ts
   file_src_plugin_context_utilities_unit_test_ts --> file_src_plugin_context_utilities_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
