@@ -1,10 +1,7 @@
 import path from "node:path";
 
 import { ConfigurationService } from "@codependix/configuration";
-import {
-  ImportGraphService,
-  TypescriptProjectService,
-} from "@codependix/imports";
+import { TypescriptService } from "@codependix/imports";
 import { ModuleGraphService, NestjsProjectService } from "@codependix/nestjs";
 import { NeighborhoodService, WorkspaceGraphService } from "@codependix/nx";
 import { Injectable } from "@nestjs/common";
@@ -35,10 +32,10 @@ import type {
 import type {
   CodependixCommandOptions,
   GraphRunContext,
-  ImportGraphExport,
   NestjsModuleGraphExport,
   NxNeighborhoodExport,
   NxWorkspaceGraphExport,
+  TypescriptImportGraphExport,
 } from "./codependix.types";
 import type {
   CodependixGraphType,
@@ -78,13 +75,12 @@ export class CodependixService {
   constructor(
     private readonly configurationService: ConfigurationService,
     private readonly deliveryService: DeliveryService,
-    private readonly importGraphService: ImportGraphService,
     private readonly logger: LoggerService,
     private readonly moduleGraphService: ModuleGraphService,
     private readonly neighborhoodService: NeighborhoodService,
     private readonly nestjsProjectService: NestjsProjectService,
     private readonly pythonImportsService: PythonImportsService,
-    private readonly typescriptProjectService: TypescriptProjectService,
+    private readonly typescriptService: TypescriptService,
     private readonly workspaceGraphService: WorkspaceGraphService,
   ) {
     this.logger.setContext(CodependixService.name);
@@ -163,9 +159,9 @@ export class CodependixService {
     resolvedOutput: ResolvedCodependixGraphOutput;
   }): ProjectRunResult {
     const { mode, project, resolvedOutput } = args;
-    const projectProgram = this.typescriptProjectService.buildProgram(project);
-    const importGraph = this.importGraphService.buildGraph(projectProgram);
-    const jsonExport: ImportGraphExport = importGraph;
+    const projectProgram = this.typescriptService.buildProgram(project);
+    const importGraph = this.typescriptService.buildGraph(projectProgram);
+    const jsonExport: TypescriptImportGraphExport = importGraph;
 
     return this.deliveryService.deliverGraphOutput({
       jsonContent:
@@ -175,7 +171,7 @@ export class CodependixService {
       markdownContent:
         resolvedOutput.markdown === undefined
           ? undefined
-          : this.importGraphService.renderMermaid(importGraph),
+          : this.typescriptService.renderMermaid(importGraph),
       markdownSection: this.buildMarkdownSection(IMPORTS_MARKDOWN_SUBHEADING),
       mode,
       project,
@@ -371,14 +367,14 @@ export class CodependixService {
    * Builds and delivers every configured file-level import graph export.
    *
    * Every project carrying its own `tsconfig.json` participates — see
-   * `TypescriptProjectService` — rather than only those tagged for a
+   * `TypescriptService` — rather than only those tagged for a
    * particular framework, since a file-level import graph is meaningful for
    * any TypeScript project. A project that raises while its own export is
    * being resolved is recorded as a failure rather than aborting the pass, so
    * every other project still gets attempted.
    */
   runImportGraphs(context: GraphRunContext): GraphRunOutcome {
-    const typescriptProjects = this.typescriptProjectService.discoverProjects(
+    const typescriptProjects = this.typescriptService.discoverProjects(
       context.projects,
     );
     const results: GraphRunOutcome["results"] = [];

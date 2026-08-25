@@ -27,7 +27,7 @@ export const NX_GRAPH_TYPE = "nx";
 /** `### <subheading>` placed above an Nx Neighborhood's anchor. */
 export const NX_MARKDOWN_SUBHEADING = "Nx Neighborhood";
 
-/** Graph type `codependix-imports-python` builds. */
+/** Graph type `codependix-imports`'s Python module builds. */
 export const PYTHON_IMPORTS_GRAPH_TYPE = "pythonImports";
 
 /** `### <subheading>` placed above the Python file-level import graph's anchor. */

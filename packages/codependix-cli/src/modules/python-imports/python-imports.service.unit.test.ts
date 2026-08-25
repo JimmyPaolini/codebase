@@ -3,10 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { ConfigurationService } from "@codependix/configuration";
-import {
-  PythonImportGraphService,
-  PythonProjectService,
-} from "@codependix/imports-python";
+import { PythonService } from "@codependix/imports";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -17,7 +14,7 @@ import { DeliveryService } from "../delivery/delivery.service";
 import { PythonImportsService } from "./python-imports.service";
 
 import type { GraphRunContext } from "../codependix/codependix.types";
-import type { PythonImportGraph } from "@codependix/imports-python";
+import type { PythonImportGraph } from "@codependix/imports";
 
 const PYTHON_IMPORT_GRAPH: PythonImportGraph = {
   edges: [{ source: "src/index.py", target: "src/helper.py" }],
@@ -29,8 +26,7 @@ const PYTHON_IMPORT_GRAPH: PythonImportGraph = {
 describe(PythonImportsService, () => {
   let service: PythonImportsService;
   let configurationService: ConfigurationService;
-  let pythonImportGraphService: PythonImportGraphService;
-  let pythonProjectService: PythonProjectService;
+  let pythonService: PythonService;
   let projectRoot: string;
 
   /** Builds a `GraphRunContext` whose one project is `affirmations`. */
@@ -55,8 +51,7 @@ describe(PythonImportsService, () => {
 
   beforeAll(async () => {
     configurationService = createMock<ConfigurationService>();
-    pythonImportGraphService = createMock<PythonImportGraphService>();
-    pythonProjectService = createMock<PythonProjectService>();
+    pythonService = createMock<PythonService>();
 
     const module = await Test.createTestingModule({
       providers: [
@@ -67,11 +62,7 @@ describe(PythonImportsService, () => {
           provide: ConfigurationService,
           useValue: configurationService,
         },
-        {
-          provide: PythonImportGraphService,
-          useValue: pythonImportGraphService,
-        },
-        { provide: PythonProjectService, useValue: pythonProjectService },
+        { provide: PythonService, useValue: pythonService },
       ],
     }).compile();
 
@@ -81,13 +72,11 @@ describe(PythonImportsService, () => {
   beforeEach(async () => {
     projectRoot = await mkdtemp(path.join(tmpdir(), "python-imports-service-"));
 
-    vi.mocked(pythonProjectService.discoverProjects).mockReturnValue([
+    vi.mocked(pythonService.discoverProjects).mockReturnValue([
       { absoluteRoot: projectRoot, name: "affirmations" },
     ]);
-    vi.mocked(pythonImportGraphService.buildGraph).mockReturnValue(
-      PYTHON_IMPORT_GRAPH,
-    );
-    vi.mocked(pythonImportGraphService.renderMermaid).mockReturnValue(
+    vi.mocked(pythonService.buildGraph).mockReturnValue(PYTHON_IMPORT_GRAPH);
+    vi.mocked(pythonService.renderMermaid).mockReturnValue(
       "```mermaid\ngraph LR\n```",
     );
   });
@@ -117,7 +106,7 @@ describe(PythonImportsService, () => {
 
     service.runGraphs(buildContext());
 
-    expect(pythonImportGraphService.buildGraph).toHaveBeenCalledWith({
+    expect(pythonService.buildGraph).toHaveBeenCalledWith({
       absoluteRoot: projectRoot,
       name: "affirmations",
     });
@@ -199,7 +188,7 @@ describe(PythonImportsService, () => {
   it("records a non-Error rejection as its string form", () => {
     const nonErrorFailure: unknown = "boom";
 
-    vi.mocked(pythonImportGraphService.buildGraph).mockImplementation(() => {
+    vi.mocked(pythonService.buildGraph).mockImplementation(() => {
       throw nonErrorFailure;
     });
     vi.mocked(configurationService.resolveForProject).mockReturnValue({
@@ -219,19 +208,17 @@ describe(PythonImportsService, () => {
     const otherProjectRoot = path.join(projectRoot, "other-python-project");
 
     await mkdir(otherProjectRoot, { recursive: true });
-    vi.mocked(pythonProjectService.discoverProjects).mockReturnValue([
+    vi.mocked(pythonService.discoverProjects).mockReturnValue([
       { absoluteRoot: projectRoot, name: "affirmations" },
       { absoluteRoot: otherProjectRoot, name: "other-python-project" },
     ]);
-    vi.mocked(pythonImportGraphService.buildGraph).mockImplementation(
-      (project) => {
-        if (project.name === "affirmations") {
-          throw new Error("failed to build graph");
-        }
+    vi.mocked(pythonService.buildGraph).mockImplementation((project) => {
+      if (project.name === "affirmations") {
+        throw new Error("failed to build graph");
+      }
 
-        return { ...PYTHON_IMPORT_GRAPH, projectName: project.name };
-      },
-    );
+      return { ...PYTHON_IMPORT_GRAPH, projectName: project.name };
+    });
     vi.mocked(configurationService.resolveForProject).mockReturnValue({
       json: { path: "graph.json" },
       markdown: undefined,

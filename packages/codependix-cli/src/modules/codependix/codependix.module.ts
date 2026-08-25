@@ -1,8 +1,5 @@
 import { ConfigurationModule } from "@codependix/configuration";
-import {
-  ImportGraphModule,
-  TypescriptProjectModule,
-} from "@codependix/imports";
+import { TypescriptModule } from "@codependix/imports";
 import { ModuleGraphModule, NestjsProjectModule } from "@codependix/nestjs";
 import { NeighborhoodModule, WorkspaceGraphModule } from "@codependix/nx";
 import { Module } from "@nestjs/common";
@@ -20,12 +17,11 @@ import { CodependixService } from "./codependix.service";
   imports: [
     ConfigurationModule,
     DeliveryModule,
-    ImportGraphModule,
     ModuleGraphModule,
     NeighborhoodModule,
     NestjsProjectModule,
     PythonImportsModule,
-    TypescriptProjectModule,
+    TypescriptModule,
     WorkspaceGraphModule,
   ],
   providers: [CodependixCommand, CodependixService],

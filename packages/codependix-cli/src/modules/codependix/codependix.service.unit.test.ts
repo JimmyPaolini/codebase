@@ -3,10 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { ConfigurationService } from "@codependix/configuration";
-import {
-  ImportGraphService,
-  TypescriptProjectService,
-} from "@codependix/imports";
+import { TypescriptService } from "@codependix/imports";
 import { ModuleGraphService, NestjsProjectService } from "@codependix/nestjs";
 import { NeighborhoodService, WorkspaceGraphService } from "@codependix/nx";
 import { createMock } from "@golevelup/ts-vitest";
@@ -24,7 +21,7 @@ import { CodependixService } from "./codependix.service";
 import type { GraphRunOutcome } from "../delivery/delivery.types";
 import type { GraphRunContext } from "./codependix.types";
 import type {
-  ImportGraph,
+  TypescriptImportGraph,
   TypescriptProjectProgram,
 } from "@codependix/imports";
 import type { NestjsModuleGraph } from "@codependix/nestjs";
@@ -45,7 +42,7 @@ const MODULE_GRAPH: NestjsModuleGraph = {
   projectName: "codependix-cli",
 };
 
-const IMPORT_GRAPH: ImportGraph = {
+const TYPESCRIPT_IMPORT_GRAPH: TypescriptImportGraph = {
   edges: [{ source: "src/index.ts", target: "src/helper.ts" }],
   fileNames: ["src/helper.ts", "src/index.ts"],
   isolatedFileNames: [],
@@ -55,12 +52,11 @@ const IMPORT_GRAPH: ImportGraph = {
 describe(CodependixService, () => {
   let service: CodependixService;
   let configurationService: ConfigurationService;
-  let importGraphService: ImportGraphService;
   let moduleGraphService: ModuleGraphService;
   let neighborhoodService: NeighborhoodService;
   let nestjsProjectService: NestjsProjectService;
   let pythonImportsService: PythonImportsService;
-  let typescriptProjectService: TypescriptProjectService;
+  let typescriptService: TypescriptService;
   let workspaceGraphService: WorkspaceGraphService;
   let projectRoot: string;
 
@@ -86,12 +82,11 @@ describe(CodependixService, () => {
 
   beforeAll(async () => {
     configurationService = createMock<ConfigurationService>();
-    importGraphService = createMock<ImportGraphService>();
     moduleGraphService = createMock<ModuleGraphService>();
     neighborhoodService = createMock<NeighborhoodService>();
     nestjsProjectService = createMock<NestjsProjectService>();
     pythonImportsService = createMock<PythonImportsService>();
-    typescriptProjectService = createMock<TypescriptProjectService>();
+    typescriptService = createMock<TypescriptService>();
     workspaceGraphService = createMock<WorkspaceGraphService>();
 
     const module = await Test.createTestingModule({
@@ -103,16 +98,12 @@ describe(CodependixService, () => {
           provide: ConfigurationService,
           useValue: configurationService,
         },
-        { provide: ImportGraphService, useValue: importGraphService },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         { provide: ModuleGraphService, useValue: moduleGraphService },
         { provide: NeighborhoodService, useValue: neighborhoodService },
         { provide: NestjsProjectService, useValue: nestjsProjectService },
         { provide: PythonImportsService, useValue: pythonImportsService },
-        {
-          provide: TypescriptProjectService,
-          useValue: typescriptProjectService,
-        },
+        { provide: TypescriptService, useValue: typescriptService },
         { provide: WorkspaceGraphService, useValue: workspaceGraphService },
       ],
     }).compile();
@@ -167,18 +158,20 @@ describe(CodependixService, () => {
     vi.mocked(moduleGraphService.renderMermaid).mockReturnValue(
       "```mermaid\nflowchart LR\n```",
     );
-    vi.mocked(typescriptProjectService.discoverProjects).mockReturnValue([
+    vi.mocked(typescriptService.discoverProjects).mockReturnValue([
       {
         absoluteRoot: projectRoot,
         name: "codependix-imports",
         tsconfigPath: path.join(projectRoot, "tsconfig.json"),
       },
     ]);
-    vi.mocked(typescriptProjectService.buildProgram).mockReturnValue(
+    vi.mocked(typescriptService.buildProgram).mockReturnValue(
       createMock<TypescriptProjectProgram>(),
     );
-    vi.mocked(importGraphService.buildGraph).mockReturnValue(IMPORT_GRAPH);
-    vi.mocked(importGraphService.renderMermaid).mockReturnValue(
+    vi.mocked(typescriptService.buildGraph).mockReturnValue(
+      TYPESCRIPT_IMPORT_GRAPH,
+    );
+    vi.mocked(typescriptService.renderMermaid).mockReturnValue(
       "```mermaid\ngraph LR\n```",
     );
     vi.mocked(pythonImportsService.runGraphs).mockReturnValue({
@@ -642,7 +635,7 @@ describe(CodependixService, () => {
 
       service.runImportGraphs(buildImportsContext());
 
-      expect(typescriptProjectService.buildProgram).toHaveBeenCalledWith({
+      expect(typescriptService.buildProgram).toHaveBeenCalledWith({
         absoluteRoot: projectRoot,
         name: "codependix-imports",
         tsconfigPath: path.join(projectRoot, "tsconfig.json"),
@@ -676,7 +669,7 @@ describe(CodependixService, () => {
         ),
       ) as unknown;
 
-      expect(written).toStrictEqual(IMPORT_GRAPH);
+      expect(written).toStrictEqual(TYPESCRIPT_IMPORT_GRAPH);
     });
 
     it("reports a missing JSON export as stale in check mode", () => {
@@ -752,7 +745,7 @@ describe(CodependixService, () => {
       const otherProjectRoot = path.join(projectRoot, "other-imports-project");
 
       await mkdir(otherProjectRoot, { recursive: true });
-      vi.mocked(typescriptProjectService.discoverProjects).mockReturnValue([
+      vi.mocked(typescriptService.discoverProjects).mockReturnValue([
         {
           absoluteRoot: projectRoot,
           name: "codependix-imports",
@@ -764,7 +757,7 @@ describe(CodependixService, () => {
           tsconfigPath: path.join(otherProjectRoot, "tsconfig.json"),
         },
       ]);
-      vi.mocked(typescriptProjectService.buildProgram).mockImplementation(
+      vi.mocked(typescriptService.buildProgram).mockImplementation(
         (project) => {
           if (project.name === "codependix-imports") {
             throw new Error("failed to build program");
@@ -806,11 +799,9 @@ describe(CodependixService, () => {
     it("records a non-Error rejection as its string form", () => {
       const nonErrorFailure: unknown = "boom";
 
-      vi.mocked(typescriptProjectService.buildProgram).mockImplementation(
-        () => {
-          throw nonErrorFailure;
-        },
-      );
+      vi.mocked(typescriptService.buildProgram).mockImplementation(() => {
+        throw nonErrorFailure;
+      });
       vi.mocked(configurationService.resolveForProject).mockReturnValue({
         json: { path: "codependix-imports.json" },
         markdown: undefined,

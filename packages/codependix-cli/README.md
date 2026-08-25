@@ -54,8 +54,7 @@ every other one.
 | [`@codependix/configuration`](../codependix-configuration/README.md) | Reads `codependix.config.ts` and resolves per-project export destinations |
 | [`@codependix/nx`](../codependix-nx/README.md) | Builds a project's Nx Neighborhood and the whole-workspace Workspace Graph |
 | [`@codependix/nestjs`](../codependix-nestjs/README.md) | Explores a NestJS project's container and builds its module graph |
-| [`@codependix/imports`](../codependix-imports/README.md) | Builds a project's file-level import graph from its own `ts.Program` |
-| [`@codependix/imports-python`](../codependix-imports-python/README.md) | Builds a Python project's file-level import graph from its `import`/`from ... import` statements |
+| [`@codependix/imports`](../codependix-imports/README.md) | Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements |
 
 ## Start
 
@@ -85,13 +84,11 @@ graph LR
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
   codependix_imports["codependix-imports"]
-  codependix_imports_python["codependix-imports-python"]
   codependix_nestjs["codependix-nestjs"]
   codependix_nx["codependix-nx"]
   logger["logger"]
   codependix_cli --> codependix_configuration
   codependix_cli --> codependix_imports
-  codependix_cli --> codependix_imports_python
   codependix_cli --> codependix_nestjs
   codependix_cli --> codependix_nx
   codependix_cli --> logger
@@ -111,37 +108,29 @@ flowchart LR
   ConfigurationModule
   DeliveryModule
   DiscoveryModule
-  ImportGraphModule
   LoggerModule([LoggerModule])
   MainModule
   ModuleGraphModule
   NeighborhoodModule
   NestjsProjectModule
-  PythonImportGraphModule
-  PythonImportParserModule
   PythonImportsModule
-  PythonProjectModule
-  TypescriptProjectModule
+  PythonModule
+  TypescriptModule
   WorkspaceGraphModule
   CodependixModule --> ConfigurationModule
   CodependixModule --> DeliveryModule
-  CodependixModule --> ImportGraphModule
   CodependixModule --> ModuleGraphModule
   CodependixModule --> NeighborhoodModule
   CodependixModule --> NestjsProjectModule
   CodependixModule --> PythonImportsModule
-  CodependixModule --> TypescriptProjectModule
+  CodependixModule --> TypescriptModule
   CodependixModule --> WorkspaceGraphModule
   DeliveryModule --> AnchorsModule
-  ImportGraphModule --> TypescriptProjectModule
   MainModule --> CodependixModule
   MainModule --> DiscoveryModule
-  PythonImportGraphModule --> PythonImportParserModule
-  PythonImportGraphModule --> PythonProjectModule
   PythonImportsModule --> ConfigurationModule
   PythonImportsModule --> DeliveryModule
-  PythonImportsModule --> PythonImportGraphModule
-  PythonImportsModule --> PythonProjectModule
+  PythonImportsModule --> PythonModule
   WorkspaceGraphModule --> NeighborhoodModule
 ```
 

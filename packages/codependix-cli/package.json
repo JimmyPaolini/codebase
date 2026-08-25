@@ -6,7 +6,6 @@
     "@codebase/logger": "workspace:*",
     "@codependix/configuration": "workspace:*",
     "@codependix/imports": "workspace:*",
-    "@codependix/imports-python": "workspace:*",
     "@codependix/nestjs": "workspace:*",
     "@codependix/nx": "workspace:*",
     "@nestjs/common": "catalog:",

@@ -1,10 +1,7 @@
 import path from "node:path";
 
 import { ConfigurationService } from "@codependix/configuration";
-import {
-  PythonImportGraphService,
-  PythonProjectService,
-} from "@codependix/imports-python";
+import { PythonService } from "@codependix/imports";
 import { Injectable } from "@nestjs/common";
 
 import {
@@ -26,7 +23,7 @@ import type {
   ProjectRunResult,
 } from "../delivery/delivery.types";
 import type { ResolvedCodependixGraphOutput } from "@codependix/configuration";
-import type { PythonProject } from "@codependix/imports-python";
+import type { PythonProject } from "@codependix/imports";
 
 /**
  * Builds and delivers every configured Python file-level import graph
@@ -45,8 +42,7 @@ export class PythonImportsService {
   constructor(
     private readonly configurationService: ConfigurationService,
     private readonly deliveryService: DeliveryService,
-    private readonly pythonImportGraphService: PythonImportGraphService,
-    private readonly pythonProjectService: PythonProjectService,
+    private readonly pythonService: PythonService,
   ) {}
 
   // 🔐 Private Fields
@@ -104,7 +100,7 @@ export class PythonImportsService {
     resolvedOutput: ResolvedCodependixGraphOutput;
   }): ProjectRunResult {
     const { mode, project, resolvedOutput } = args;
-    const pythonImportGraph = this.pythonImportGraphService.buildGraph(project);
+    const pythonImportGraph = this.pythonService.buildGraph(project);
     const jsonExport: PythonImportGraphExport = pythonImportGraph;
 
     return this.deliveryService.deliverGraphOutput({
@@ -115,7 +111,7 @@ export class PythonImportsService {
       markdownContent:
         resolvedOutput.markdown === undefined
           ? undefined
-          : this.pythonImportGraphService.renderMermaid(pythonImportGraph),
+          : this.pythonService.renderMermaid(pythonImportGraph),
       markdownSection: this.buildMarkdownSection(),
       mode,
       project,
@@ -130,12 +126,12 @@ export class PythonImportsService {
    * export.
    *
    * Only `language:python`-tagged projects participate, discovered from the
-   * shared `context.graph` — see `PythonProjectService`. A project that
+   * shared `context.graph` — see `PythonService`. A project that
    * raises while its own export is being resolved is recorded as a failure
    * rather than aborting the pass, the same rule `runImportGraphs` follows.
    */
   runGraphs(context: GraphRunContext): GraphRunOutcome {
-    const pythonProjects = this.pythonProjectService.discoverProjects(
+    const pythonProjects = this.pythonService.discoverProjects(
       context.graph,
       context.projects,
     );

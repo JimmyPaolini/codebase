@@ -1,8 +1,5 @@
 import { ConfigurationModule } from "@codependix/configuration";
-import {
-  PythonImportGraphModule,
-  PythonProjectModule,
-} from "@codependix/imports-python";
+import { PythonModule } from "@codependix/imports";
 import { Module } from "@nestjs/common";
 
 import { DeliveryModule } from "../delivery/delivery.module";
@@ -13,12 +10,7 @@ import { PythonImportsService } from "./python-imports.service";
 @Module({
   controllers: [],
   exports: [PythonImportsService],
-  imports: [
-    ConfigurationModule,
-    DeliveryModule,
-    PythonImportGraphModule,
-    PythonProjectModule,
-  ],
+  imports: [ConfigurationModule, DeliveryModule, PythonModule],
   providers: [PythonImportsService],
 })
 export class PythonImportsModule {}
