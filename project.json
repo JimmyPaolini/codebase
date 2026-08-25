@@ -88,6 +88,14 @@
         "cwd": "{workspaceRoot}"
       }
     },
+    "check-readme-projects": {
+      "description": "Verify the root README links to every workspace project",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts readme-projects",
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "codependix": {
       "cache": true,
       "configurations": {

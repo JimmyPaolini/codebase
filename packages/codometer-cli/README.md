@@ -498,17 +498,17 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
              ↳ Analyze every language present in the discovered files.
             └─> JupyterService.analyze(args: AnalyzeJupyterArguments): JupyterResult [packages/codometer-languages/src/modules/jupyter/jupyter.service.ts:166]
                ↳ Analyze the given notebooks, resolved against the directory.
-              └─> JsonService.analyze(input: JsonInput): JsonResult [packages/codometer-languages/src/modules/json/json.service.ts:306]
+              └─> JsonService.analyze(input: JsonInput): JsonResult [packages/codometer-languages/src/modules/json/json.service.ts:308]
                  ↳ Analyze JSON files and return structural metrics for their contents.
-                └─> JsonService.countNode(node: unknown, stats: JsonResult, depth: number): void (cycle) [packages/codometer-languages/src/modules/json/json.service.ts:109]
+                └─> JsonService.countNode(node: unknown, stats: JsonResult, depth: number): void (cycle) [packages/codometer-languages/src/modules/json/json.service.ts:111]
                    ↳ Recursively count JSON containers, primitives, and nesting depth.
-                  └─> JsonService.countArrayNode(node: unknown[], stats: JsonResult, depth: number): void (cycle) [packages/codometer-languages/src/modules/json/json.service.ts:93]
+                  └─> JsonService.countArrayNode(node: unknown[], stats: JsonResult, depth: number): void (cycle) [packages/codometer-languages/src/modules/json/json.service.ts:95]
                      ↳ Count array nodes and their child values.
-                    └─> JsonService.countRecordNode(node: Record<string, unknown>, stats: JsonResult, depth: number): void (cycle) [packages/codometer-languages/src/modules/json/json.service.ts:160]
+                    └─> JsonService.countRecordNode(node: Record<string, unknown>, stats: JsonResult, depth: number): void (cycle) [packages/codometer-languages/src/modules/json/json.service.ts:162]
                        ↳ Count object nodes and their child values.
-                      └─> JsonService.countPrimitiveNode(node: unknown, stats: JsonResult, depth: number): void [packages/codometer-languages/src/modules/json/json.service.ts:124]
+                      └─> JsonService.countPrimitiveNode(node: unknown, stats: JsonResult, depth: number): void [packages/codometer-languages/src/modules/json/json.service.ts:126]
                          ↳ Count scalar values and update primitive stats.
-                        └─> JsonService.countPrimitiveValue(node: unknown, stats: JsonResult): void [packages/codometer-languages/src/modules/json/json.service.ts:141]
+                        └─> JsonService.countPrimitiveValue(node: unknown, stats: JsonResult): void [packages/codometer-languages/src/modules/json/json.service.ts:143]
                            ↳ Increment stats for a scalar JSON value.
 ```
 
@@ -901,8 +901,8 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-6381-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-211.79_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-6432-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-210.85_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-48-3178c6?style=flat-square)
 
@@ -917,7 +917,7 @@ graph LR
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-26-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-163-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-164-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -926,15 +926,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-12-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-22-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-14-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-257-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-262-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-93-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-286-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-64-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-233-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-222-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-70-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-353-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-722-475569?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-290-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-65-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-234-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-223-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-71-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-354-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-730-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -1083,14 +1083,14 @@ graph LR
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-341-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-247-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-15-a78bfa?style=flat-square)
+![H3](https://img.shields.io/badge/H3-14-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-52-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-49-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-6-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-28-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
@@ -1098,8 +1098,8 @@ graph LR
 ![Table Rows](https://img.shields.io/badge/Table_Rows-10-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-9-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-14-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-79-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-13-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-78-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

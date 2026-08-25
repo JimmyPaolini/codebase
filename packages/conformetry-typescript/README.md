@@ -73,26 +73,26 @@ Call stacks traced through `conformetry-typescript`, deepest first. Each frame s
 **1. `TypescriptValidatorService.validateDocument`** — depth 12 · orphan-root
 
 ```text
-🚀 TypescriptValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:170]
+🚀 TypescriptValidatorService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:164]
    ↳ Reports every declaration and comment the template requires.
-  └─> TypescriptValidatorService.validateStructure(…): DocumentValidationResult [packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:111]
+  └─> TypescriptValidatorService.validateStructure(…): DocumentValidationResult [packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:107]
      ↳ Compares the syntax trees and describes each missing declaration.
-    └─> TypescriptTreeService.compareBestCandidate(args: { candidates: Node[]; templateChild: Node; }): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:70]
+    └─> TypescriptTreeService.compareBestCandidate(args: { candidates: Node[]; templateChild: Node; }): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:67]
        ↳ Descends into whichever candidate explains the template best.
-      └─> TypescriptTreeService.map(…)(candidate: Node): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:75]
-        └─> TypescriptTreeService.compareTree(args: CompareTreeArguments): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:130]
+      └─> TypescriptTreeService.map(…)(candidate: Node): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:72]
+        └─> TypescriptTreeService.compareTree(args: CompareTreeArguments): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:126]
            ↳ Compares one level of two trees, descending into every match.
-          └─> TypescriptTreeService.map(…)(templateChild: Node): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:137]
-            └─> TypescriptTreeService.compareChild(…): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:91]
+          └─> TypescriptTreeService.map(…)(templateChild: Node): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:133]
+            └─> TypescriptTreeService.compareChild(…): TreeComparison (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:87]
                ↳ Matches one template child against the instance's children.
-              └─> TypescriptTreeService.buildError(…): TypescriptComparisonError [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:44]
+              └─> TypescriptTreeService.buildError(…): TypescriptComparisonError [packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:42]
                  ↳ Describes a template node with no instance counterpart.
-                └─> TypescriptNodesService.countSubtree(node: Node): number (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:181]
+                └─> TypescriptNodesService.countSubtree(node: Node): number (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:176]
                    ↳ Counts a node and everything beneath it.
-                  └─> TypescriptNodesService.reduce(…)(total: number, child: Node): number (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:182]
-                    └─> TypescriptNodesService.readChildren(node: Node): Node[] [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:188]
+                  └─> TypescriptNodesService.reduce(…)(total: number, child: Node): number (cycle) [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:177]
+                    └─> TypescriptNodesService.readChildren(node: Node): Node[] [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:183]
                        ↳ Reads a node's direct children, skipping the end-of-file token.
-                      └─> TypescriptNodesService.forEachChild(…)(childNode: Node): undefined [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:191]
+                      └─> TypescriptNodesService.forEachChild(…)(childNode: Node): undefined [packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:186]
 ```
 
 ### Module spread
@@ -103,34 +103,34 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `TypescriptNodesService.readKey` | 6 | `TypescriptNodesService.readImportKey`, `TypescriptNodesService.readExportKey`, `TypescriptNodesService.readDecoratorKey`, `TypescriptNodesService.readExpressionStatementKey`, `TypescriptNodesService.readLiteralKey`, `TypescriptNodesService.readNamedKey` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:206` |
-| `TypescriptTreeService.compareChild` | 5 | `TypescriptNodesService.readKey`, `TypescriptTreeService.filter(…)`, `TypescriptTreeService.filter(…)`, `TypescriptTreeService.buildError`, `TypescriptTreeService.compareBestCandidate` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:91` |
-| `TypescriptTreeService.compareTree` | 3 | `TypescriptNodesService.readChildren`, `TypescriptTreeService.reduce(…)`, `TypescriptTreeService.map(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:130` |
+| `TypescriptNodesService.readKey` | 6 | `TypescriptNodesService.readImportKey`, `TypescriptNodesService.readExportKey`, `TypescriptNodesService.readDecoratorKey`, `TypescriptNodesService.readExpressionStatementKey`, `TypescriptNodesService.readLiteralKey`, `TypescriptNodesService.readNamedKey` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:201` |
+| `TypescriptTreeService.compareChild` | 5 | `TypescriptNodesService.readKey`, `TypescriptTreeService.filter(…)`, `TypescriptTreeService.filter(…)`, `TypescriptTreeService.buildError`, `TypescriptTreeService.compareBestCandidate` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:87` |
+| `TypescriptTreeService.compareTree` | 3 | `TypescriptNodesService.readChildren`, `TypescriptTreeService.reduce(…)`, `TypescriptTreeService.map(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:126` |
 
 <details>
 <summary>19 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `TypescriptValidatorService.validateDocument` | 3 | `TypescriptValidatorService.parseSourceFile`, `TypescriptValidatorService.validateStructure`, `TypescriptValidatorService.validateComments` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:170` |
+| `TypescriptValidatorService.validateDocument` | 3 | `TypescriptValidatorService.parseSourceFile`, `TypescriptValidatorService.validateStructure`, `TypescriptValidatorService.validateComments` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:164` |
 | `TypescriptCommentsService.compareComments` | 2 | `TypescriptCommentsService.extractComments`, `TypescriptCommentsService.findIndex(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-comments.service.ts:46` |
 | `TypescriptCommentsService.extractComments` | 2 | `TypescriptCommentsService.visit`, `TypescriptCommentsService.toSorted(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-comments.service.ts:87` |
-| `TypescriptNodesService.readExpressionStatementKey` | 2 | `TypescriptNodesService.buildDottedName`, `TypescriptNodesService.readLiteralKey` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:100` |
-| `TypescriptNodesService.countSubtree` | 2 | `TypescriptNodesService.reduce(…)`, `TypescriptNodesService.readChildren` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:181` |
-| `TypescriptTreeService.buildError` | 2 | `TypescriptNodesService.readKindLabel`, `TypescriptNodesService.countSubtree` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:44` |
-| `TypescriptTreeService.compareBestCandidate` | 2 | `TypescriptTreeService.reduce(…)`, `TypescriptTreeService.map(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:70` |
-| `TypescriptValidatorService.validateComments` | 2 | `TypescriptCommentsService.compareComments`, `TypescriptValidatorService.map(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:78` |
-| `TypescriptValidatorService.validateStructure` | 2 | `TypescriptTreeService.compareTree`, `TypescriptValidatorService.map(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:111` |
-| `TypescriptNodesService.readDecoratorKey` | 1 | `TypescriptNodesService.buildDottedName` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:77` |
-| `TypescriptNodesService.readNamedKey` | 1 | `TypescriptNodesService.isNode` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:146` |
-| `TypescriptNodesService.reduce(…)` | 1 | `TypescriptNodesService.countSubtree` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:182` |
-| `TypescriptNodesService.readChildren` | 1 | `TypescriptNodesService.forEachChild(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:188` |
-| `TypescriptTreeService.map(…)` | 1 | `TypescriptTreeService.compareTree` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:75` |
-| `TypescriptTreeService.reduce(…)` | 1 | `ScoringService.sumWeights` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:81` |
-| `TypescriptTreeService.filter(…)` | 1 | `TypescriptNodesService.readKey` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:102` |
-| `TypescriptTreeService.map(…)` | 1 | `TypescriptTreeService.compareChild` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:137` |
-| `TypescriptValidatorService.map(…)` | 1 | `TypescriptValidatorService.readLocation` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:84` |
-| `TypescriptValidatorService.map(…)` | 1 | `TypescriptValidatorService.readLocation` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:120` |
+| `TypescriptNodesService.readExpressionStatementKey` | 2 | `TypescriptNodesService.buildDottedName`, `TypescriptNodesService.readLiteralKey` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:98` |
+| `TypescriptNodesService.countSubtree` | 2 | `TypescriptNodesService.reduce(…)`, `TypescriptNodesService.readChildren` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:176` |
+| `TypescriptTreeService.buildError` | 2 | `TypescriptNodesService.readKindLabel`, `TypescriptNodesService.countSubtree` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:42` |
+| `TypescriptTreeService.compareBestCandidate` | 2 | `TypescriptTreeService.reduce(…)`, `TypescriptTreeService.map(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:67` |
+| `TypescriptValidatorService.validateComments` | 2 | `TypescriptCommentsService.compareComments`, `TypescriptValidatorService.map(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:75` |
+| `TypescriptValidatorService.validateStructure` | 2 | `TypescriptTreeService.compareTree`, `TypescriptValidatorService.map(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:107` |
+| `TypescriptNodesService.readDecoratorKey` | 1 | `TypescriptNodesService.buildDottedName` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:75` |
+| `TypescriptNodesService.readNamedKey` | 1 | `TypescriptNodesService.isNode` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:143` |
+| `TypescriptNodesService.reduce(…)` | 1 | `TypescriptNodesService.countSubtree` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:177` |
+| `TypescriptNodesService.readChildren` | 1 | `TypescriptNodesService.forEachChild(…)` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-nodes.service.ts:183` |
+| `TypescriptTreeService.map(…)` | 1 | `TypescriptTreeService.compareTree` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:72` |
+| `TypescriptTreeService.reduce(…)` | 1 | `ScoringService.sumWeights` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:78` |
+| `TypescriptTreeService.filter(…)` | 1 | `TypescriptNodesService.readKey` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:98` |
+| `TypescriptTreeService.map(…)` | 1 | `TypescriptTreeService.compareChild` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-tree.service.ts:133` |
+| `TypescriptValidatorService.map(…)` | 1 | `TypescriptValidatorService.readLocation` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:81` |
+| `TypescriptValidatorService.map(…)` | 1 | `TypescriptValidatorService.readLocation` | `packages/conformetry-typescript/src/modules/typescript-validator/typescript-validator.service.ts:116` |
 
 </details>
 
@@ -223,14 +223,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1682-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-62.73_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1833-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-67.28_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-4-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-17-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-8.44_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-8.09_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -246,17 +246,17 @@ graph LR
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-5-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-7-8b5cf6?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-8-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-5-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-107-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-118-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-36-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-139-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-4-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-93-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-59-0284c7?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-149-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-5-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-103-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-60-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-16-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-86-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-168-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-83-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-165-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-5-ca8a04?style=flat-square)
 
 ### Python
@@ -405,14 +405,14 @@ graph LR
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-241-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-222-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-7-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-13-a78bfa?style=flat-square)
+![H3](https://img.shields.io/badge/H3-12-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-46-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-45-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-6-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-25-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
@@ -420,8 +420,8 @@ graph LR
 ![Table Rows](https://img.shields.io/badge/Table_Rows-10-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-9-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-12-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-74-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-11-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-73-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
