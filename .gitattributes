@@ -61,6 +61,9 @@ dist/** linguist-generated
 .agents/skills/ask-matt/** linguist-vendored
 .agents/skills/code-review/** linguist-vendored
 .agents/skills/codebase-design/** linguist-vendored
+.agents/skills/codometer-configure/** linguist-vendored
+.agents/skills/codometer-measure/** linguist-vendored
+.agents/skills/codometer-triage/** linguist-vendored
 .agents/skills/conformetry-configure/** linguist-vendored
 .agents/skills/conformetry-generate/** linguist-vendored
 .agents/skills/conformetry-validate/** linguist-vendored

@@ -19,6 +19,24 @@
       "skillPath": "skills/engineering/codebase-design/SKILL.md",
       "computedHash": "e6394592ecf4b5aa5bc93f95a20d0a56314788bde2e1221f87296d3becb734a2"
     },
+    "codometer-configure": {
+      "source": "JimmyPaolini/codebase",
+      "sourceType": "github",
+      "skillPath": "packages/codometer-agents/skills/codometer-configure/SKILL.md",
+      "computedHash": "183ee926aac656086e2969f53dd911f00a60fddd7ffb077f1cb7ac6182bd59a8"
+    },
+    "codometer-measure": {
+      "source": "JimmyPaolini/codebase",
+      "sourceType": "github",
+      "skillPath": "packages/codometer-agents/skills/codometer-measure/SKILL.md",
+      "computedHash": "e2dff4186eaa6089e52d76748be66d540d5b22946029cfef95bd78550ee5b645"
+    },
+    "codometer-triage": {
+      "source": "JimmyPaolini/codebase",
+      "sourceType": "github",
+      "skillPath": "packages/codometer-agents/skills/codometer-triage/SKILL.md",
+      "computedHash": "e96d367bd007b66edcf9ab86d6b7c10081968e5c15220d4ba1549ff664dc1d07"
+    },
     "conformetry-configure": {
       "source": "JimmyPaolini/codebase",
       "sourceType": "github",
