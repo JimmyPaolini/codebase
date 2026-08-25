@@ -107,6 +107,7 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
   - **[lexico-entities](packages/lexico-entities)** - TypeORM entities, migrations, and grammatical enumerations for the dictionary and literature schema
   - **[lexico-ingestion](applications/lexico-ingestion)** - NestJS CLI that scrapes and loads dictionary, literature, and etymology sources
 - **🪵 [logger](packages/logger)** - Shared pino-backed NestJS `LoggerService` and `LoggerModule`
+- **🌀 [meanderaw](applications/meanderaw)** - CLI that generates Greek meander (key/fret) SVG patterns programmatically from a type, row count, and repeat count
 - **↔️ [synchronization](tools/synchronization)** - NestJS CLI that regenerates the workspace's derived configuration and documentation, and fails CI when they drift
 - **🧑‍⚖️ [validation](tools/validation)** - NestJS CLI for the repository's one-sided checks, the ones with a check and no write, such as the pull request metadata gate
 
