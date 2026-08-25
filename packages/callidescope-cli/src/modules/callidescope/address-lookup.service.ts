@@ -78,7 +78,7 @@ export class AddressLookupService {
       await this.runPlanService.prepareLookup(args.options);
     const located = this.callidescopeService.locate({
       configuration,
-      projectNames: args.options.projects ?? configuration.projects,
+      directories: args.options.directories ?? configuration.directories,
       workspaceRoot,
     });
     const resolution = this.addressService.resolve({

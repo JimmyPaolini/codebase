@@ -22,6 +22,7 @@ import type {
 function buildConfiguration(): ResolvedCallidescopeConfiguration {
   return {
     allowSpreadFor: [],
+    directories: [],
     entryPoints: {
       decorators: ["Command"],
       includeExportedFunctions: true,
@@ -46,10 +47,8 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
       mermaid: undefined,
       projectReadmes: undefined,
     },
-    projects: [],
     workspaceStructure: {
       modulesDirectory: "modules",
-      projectContainerDirectories: ["applications", "packages", "tools"],
       rootModuleSegment: "src",
     },
   };
@@ -68,11 +67,6 @@ async function buildWorkspace(): Promise<string> {
   await mkdir(path.join(root, "src", "modules", "example"), {
     recursive: true,
   });
-  await writeFile(
-    path.join(root, "project.json"),
-    JSON.stringify({ name: "example" }),
-    "utf8",
-  );
   await writeFile(
     path.join(root, "tsconfig.json"),
     JSON.stringify({
@@ -145,7 +139,7 @@ describe(`${CallidescopeService.name} (integration)`, () => {
 
     const outcome = service.trace({
       configuration: buildConfiguration(),
-      projectNames: [],
+      directories: [],
       workspaceRoot,
     });
 
@@ -165,7 +159,7 @@ describe(`${CallidescopeService.name} (integration)`, () => {
     // resolved service again to see its own logger calls.
     service.trace({
       configuration: buildConfiguration(),
-      projectNames: [],
+      directories: [],
       workspaceRoot: tracedWorkspaceRoot,
     });
 
@@ -211,7 +205,7 @@ describe(`${CallidescopeService.name} (integration)`, () => {
   it("collects the same callables locate would need to resolve an address", () => {
     const located = service.locate({
       configuration: buildConfiguration(),
-      projectNames: [],
+      directories: [],
       workspaceRoot: tracedWorkspaceRoot,
     });
 
@@ -229,15 +223,16 @@ describe(`${CallidescopeService.name} (integration)`, () => {
       "ExampleCommand.constructor",
       "ExampleCommand.run",
     ]);
-    expect(located.projectRoots.get("example")).toBe(
-      path.join("packages", "example"),
-    );
+
+    const projectRoot = path.join("packages", "example");
+
+    expect(located.projectRoots.get(projectRoot)).toBe(projectRoot);
   });
 
   it("builds the same graph a full trace would, without any analysis", () => {
     const located = service.locate({
       configuration: buildConfiguration(),
-      projectNames: [],
+      directories: [],
       workspaceRoot: tracedWorkspaceRoot,
     });
 

@@ -15,6 +15,7 @@ import type { LoggerService } from "@codebase/logger";
 function buildConfiguration(): ResolvedCallidescopeConfiguration {
   return {
     allowSpreadFor: [],
+    directories: [],
     entryPoints: {
       decorators: [],
       includeExportedFunctions: true,
@@ -39,10 +40,8 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
       mermaid: undefined,
       projectReadmes: undefined,
     },
-    projects: [],
     workspaceStructure: {
       modulesDirectory: "modules",
-      projectContainerDirectories: ["applications", "packages", "tools"],
       rootModuleSegment: "src",
     },
   };
@@ -89,14 +88,13 @@ describe(DepthCommand, () => {
 
   it("delegates option parsing to the shared parsing service", () => {
     expect(command.parseFormat("json")).toBe("json");
-    expect(command.parseProjects("alpha,beta")).toStrictEqual([
+    expect(command.parseDirectories("alpha,beta")).toStrictEqual([
       "alpha",
       "beta",
     ]);
     expect(command.parseConfig("callidescope.config.ts")).toBe(
       "callidescope.config.ts",
     );
-    expect(typeof command.parseDirectory(undefined)).toBe("string");
   });
 
   // 🏃 Running

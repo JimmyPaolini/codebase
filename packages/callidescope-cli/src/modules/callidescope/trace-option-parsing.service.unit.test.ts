@@ -1,5 +1,3 @@
-import path from "node:path";
-
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -26,14 +24,6 @@ describe(TraceOptionParsingService, () => {
     );
   });
 
-  it("resolves a relative directory to an absolute path", () => {
-    expect(path.isAbsolute(service.parseDirectory("."))).toBe(true);
-  });
-
-  it("defaults the directory to the working directory", () => {
-    expect(service.parseDirectory(undefined)).toBe(path.resolve(process.cwd()));
-  });
-
   it.each([
     ["json", "json"],
     ["markdown", "markdown"],
@@ -44,21 +34,21 @@ describe(TraceOptionParsingService, () => {
     expect(service.parseFormat(value)).toBe(expected);
   });
 
-  it("splits the projects flag on commas", () => {
-    expect(service.parseProjects("alpha, beta")).toStrictEqual([
-      "alpha",
-      "beta",
+  it("splits the directories flag on commas", () => {
+    expect(service.parseDirectories("packages/a, packages/b")).toStrictEqual([
+      "packages/a",
+      "packages/b",
     ]);
   });
 
-  it("reads an absent projects flag as every project", () => {
-    expect(service.parseProjects(undefined)).toStrictEqual([]);
+  it("reads an absent directories flag as every project", () => {
+    expect(service.parseDirectories(undefined)).toStrictEqual([]);
   });
 
-  it("drops empty entries from the projects flag", () => {
-    expect(service.parseProjects("alpha,,beta,")).toStrictEqual([
-      "alpha",
-      "beta",
+  it("drops empty entries from the directories flag", () => {
+    expect(service.parseDirectories("packages/a,,packages/b,")).toStrictEqual([
+      "packages/a",
+      "packages/b",
     ]);
   });
 });

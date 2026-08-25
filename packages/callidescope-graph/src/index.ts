@@ -109,8 +109,8 @@ export { SignaturesService } from "./modules/signatures/signatures.service";
 export type { ReadSignatureArguments } from "./modules/signatures/signatures.types";
 export {
   DEFAULT_MODULES_DIRECTORY,
-  DEFAULT_PROJECT_CONTAINER_DIRECTORIES,
   DEFAULT_ROOT_MODULE_SEGMENT,
+  EXCLUDED_SCAN_DIRECTORY_NAMES,
   TEST_DIRECTORY_SEGMENT,
   TEST_FILE_PATTERN,
 } from "./modules/workspace/workspace.constants";

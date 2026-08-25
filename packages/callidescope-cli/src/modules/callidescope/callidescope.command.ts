@@ -18,6 +18,7 @@ import { PROJECT_README_NAME } from "./callidescope.constants";
 import { CallidescopeService } from "./callidescope.service";
 import { CHECK_NAMES } from "./run-plan.constants";
 import { RunPlanService } from "./run-plan.service";
+import { TraceOptionParsingService } from "./trace-option-parsing.service";
 
 import type {
   CallidescopeCommandOptions,
@@ -49,6 +50,7 @@ export class CallidescopeCommand extends CommandRunner {
     private readonly outputMarkdownService: OutputMarkdownService,
     private readonly markdownReportService: MarkdownReportService,
     private readonly runPlanService: RunPlanService,
+    private readonly traceOptionParsingService: TraceOptionParsingService,
     private readonly logger: LoggerService,
   ) {
     super();
@@ -303,36 +305,22 @@ export class CallidescopeCommand extends CommandRunner {
     return value;
   }
 
-  /** Parses `--directory`. */
+  /** Parses `--directories`, a comma-separated list of project directories. */
   @Option({
-    description: "Workspace root to trace",
-    flags: "-d, --directory [directory]",
+    description: "Comma-separated project directories to trace",
+    flags: "-d, --directories [directories]",
   })
-  public parseDirectory(value: string | undefined): string {
-    // Resolved rather than kept as written. Everything downstream compares
-    // absolute paths against this prefix to decide whether a file is part of
-    // the traced code, and a relative root makes every one of those comparisons
-    // fail — which reads as a workspace containing nothing at all.
-    return path.resolve(value ?? process.cwd());
+  public parseDirectories(value: string | undefined): string[] {
+    return this.traceOptionParsingService.parseDirectories(value);
   }
 
-  /**
-   * Parses `--format`, which decides what the run prints.
-   *
-   * Anything unrecognized reads as markdown rather than failing: this decides
-   * how findings are shown, and refusing to show them over a misspelled flag
-   * helps nobody.
-   */
+  /** Parses `--format`, which decides what the run prints. */
   @Option({
     description: "What to print: markdown, mermaid, or json",
     flags: "-f, --format [format]",
   })
   public parseFormat(value: string | undefined): CallidescopeOutputFormat {
-    if (value === "json" || value === "mermaid") {
-      return value;
-    }
-
-    return "markdown";
+    return this.traceOptionParsingService.parseFormat(value);
   }
 
   /** Parses `--json`. */
@@ -351,20 +339,6 @@ export class CallidescopeCommand extends CommandRunner {
   })
   public parseMarkdown(value: string | undefined): string | undefined {
     return value;
-  }
-
-  /** Parses `--projects`, a comma-separated list of Nx project names. */
-  @Option({
-    description: "Comma-separated Nx project names to trace",
-    flags: "-p, --projects [projects]",
-  })
-  public parseProjects(value: string | undefined): string[] {
-    return value === undefined
-      ? []
-      : value
-          .split(",")
-          .map((name) => name.trim())
-          .filter(Boolean);
   }
 
   /**
@@ -405,7 +379,7 @@ export class CallidescopeCommand extends CommandRunner {
 
     const outcome = this.callidescopeService.trace({
       configuration,
-      projectNames: options.projects ?? configuration.projects,
+      directories: options.directories ?? configuration.directories,
       workspaceRoot,
     });
 

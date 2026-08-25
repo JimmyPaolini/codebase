@@ -51,10 +51,10 @@
       "cache": true,
       "configurations": {
         "check": {
-          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directory . --config configuration/callidescope.config.ts --check depth"
+          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --config configuration/callidescope.config.ts --check depth"
         },
         "write": {
-          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directory . --config configuration/callidescope.config.ts --write"
+          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --config configuration/callidescope.config.ts --write"
         }
       },
       "defaultConfiguration": "check",

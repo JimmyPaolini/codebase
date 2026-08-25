@@ -1,5 +1,3 @@
-import path from "node:path";
-
 import { ConfigurationService } from "@callidescope/configuration";
 import { Injectable } from "@nestjs/common";
 
@@ -141,7 +139,7 @@ export class RunPlanService {
     configuration: ResolvedCallidescopeConfiguration;
     workspaceRoot: string;
   }> {
-    const workspaceRoot = path.resolve(options.directory ?? process.cwd());
+    const workspaceRoot = process.cwd();
     const loaded = await this.configurationService.loadConfiguration({
       configurationPath: options.config,
       searchDirectory: workspaceRoot,
@@ -179,9 +177,7 @@ export class RunPlanService {
       return undefined;
     }
 
-    // Resolved again rather than trusting the parser: the flag may be absent,
-    // in which case no parser ran at all.
-    const workspaceRoot = path.resolve(options.directory ?? process.cwd());
+    const workspaceRoot = process.cwd();
 
     this.logger.debug("🔭 Starting a call-stack trace", undefined, {
       format: options.format,

@@ -48,13 +48,6 @@ export const REPOSITORY_ROOT_MARKERS = [".git", "pnpm-workspace.yaml"] as const;
 /** The subdirectory a module identifier is derived from, unless configured. */
 export const DEFAULT_MODULES_DIRECTORY = "modules";
 
-/** Directories a workspace keeps its projects in, unless configured. */
-export const DEFAULT_PROJECT_CONTAINER_DIRECTORIES = [
-  "applications",
-  "packages",
-  "tools",
-] as const;
-
 /**
  * Identifier used for a file sitting directly under the source root, unless
  * configured.
@@ -245,7 +238,6 @@ const outputSchema = z
 const workspaceStructureSchema = z
   .object({
     modulesDirectory: z.string().optional(),
-    projectContainerDirectories: z.array(z.string()).optional(),
     rootModuleSegment: z.string().optional(),
   })
   .optional();
@@ -253,12 +245,12 @@ const workspaceStructureSchema = z
 /** Validates the shape of a callidescope configuration file. */
 export const callidescopeConfigurationSchema = z.object({
   allowSpreadFor: z.array(z.string()).optional(),
+  directories: z.array(z.string()).optional(),
   entryPoints: entryPointsSchema,
   exclude: z.array(z.string()).optional(),
   excludeFrom: z.array(z.string()).optional(),
   ignoreCallees: z.array(z.string()).optional(),
   limits: limitsSchema,
   output: outputSchema,
-  projects: z.array(z.string()).optional(),
   workspaceStructure: workspaceStructureSchema,
 });

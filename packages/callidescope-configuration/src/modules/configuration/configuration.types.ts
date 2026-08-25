@@ -6,6 +6,14 @@ import type { CallGraphResult } from "./call-graph.types";
 export interface CallidescopeConfiguration {
   /** Globs whose callables are exempt from the module-spread finding. */
   allowSpreadFor?: string[] | undefined;
+  /**
+   * Project directories to trace. Every directory holding its own
+   * `tsconfig.json`, found by walking the workspace, when omitted.
+   *
+   * Narrowing this is the difference between a one-second pre-commit check and
+   * a whole-workspace analysis, because each directory needs its own program.
+   */
+  directories?: string[] | undefined;
   entryPoints?: CallidescopeEntryPoints | undefined;
   exclude?: string[] | undefined;
   /** Gitignore-syntax files listing paths to leave untraced. */
@@ -23,13 +31,6 @@ export interface CallidescopeConfiguration {
   ignoreCallees?: string[] | undefined;
   limits?: CallidescopeLimits | undefined;
   output?: CallidescopeOutputConfiguration | undefined;
-  /**
-   * Projects to trace, by Nx project name. Every project when omitted.
-   *
-   * Narrowing this is the difference between a one-second pre-commit check and
-   * a whole-workspace analysis, because each project needs its own program.
-   */
-  projects?: string[] | undefined;
   workspaceStructure?: CallidescopeWorkspaceStructure | undefined;
 }
 
@@ -142,8 +143,6 @@ export interface CallidescopeProjectReadmeConfiguration {
 export interface CallidescopeWorkspaceStructure {
   /** The subdirectory a module identifier is derived from. */
   modulesDirectory?: string | undefined;
-  /** Directories a workspace keeps its projects in. */
-  projectContainerDirectories?: string[] | undefined;
   /** Identifier used for a file sitting directly under the source root. */
   rootModuleSegment?: string | undefined;
 }
@@ -198,13 +197,13 @@ export type RenderMarkdownOutput = (args: RenderMarkdownArguments) => string;
  */
 export interface ResolvedCallidescopeConfiguration {
   allowSpreadFor: string[];
+  directories: string[];
   entryPoints: ResolvedCallidescopeEntryPoints;
   exclude: string[];
   excludeFrom: string[];
   ignoreCallees: string[];
   limits: ResolvedCallidescopeLimits;
   output: ResolvedCallidescopeOutputConfiguration;
-  projects: string[];
   workspaceStructure: ResolvedCallidescopeWorkspaceStructure;
 }
 
@@ -282,7 +281,6 @@ export interface ResolvedCallidescopeProjectReadmeConfiguration {
 /** A workspace's directory layout with defaults applied. */
 export interface ResolvedCallidescopeWorkspaceStructure {
   modulesDirectory: string;
-  projectContainerDirectories: string[];
   rootModuleSegment: string;
 }
 

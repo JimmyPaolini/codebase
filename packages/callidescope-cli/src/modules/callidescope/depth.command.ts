@@ -78,13 +78,13 @@ export class DepthCommand extends CommandRunner {
     return this.traceOptionParsingService.parseConfig(value);
   }
 
-  /** Parses `--directory`. */
+  /** Parses `--directories`, a comma-separated list of project directories. */
   @Option({
-    description: "Workspace root to trace",
-    flags: "-d, --directory [directory]",
+    description: "Comma-separated project directories to trace",
+    flags: "-d, --directories [directories]",
   })
-  public parseDirectory(value: string | undefined): string {
-    return this.traceOptionParsingService.parseDirectory(value);
+  public parseDirectories(value: string | undefined): string[] {
+    return this.traceOptionParsingService.parseDirectories(value);
   }
 
   /** Parses `--format`. */
@@ -94,15 +94,6 @@ export class DepthCommand extends CommandRunner {
   })
   public parseFormat(value: string | undefined): CallidescopeOutputFormat {
     return this.traceOptionParsingService.parseFormat(value);
-  }
-
-  /** Parses `--projects`, a comma-separated list of Nx project names. */
-  @Option({
-    description: "Comma-separated Nx project names to trace",
-    flags: "-p, --projects [projects]",
-  })
-  public parseProjects(value: string | undefined): string[] {
-    return this.traceOptionParsingService.parseProjects(value);
   }
 
   /**

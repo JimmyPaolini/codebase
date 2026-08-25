@@ -14,6 +14,7 @@ import type { ResolvedCallidescopeConfiguration } from "@callidescope/configurat
 function buildConfiguration(): ResolvedCallidescopeConfiguration {
   return {
     allowSpreadFor: [],
+    directories: [],
     entryPoints: {
       decorators: [],
       includeExportedFunctions: true,
@@ -38,10 +39,8 @@ function buildConfiguration(): ResolvedCallidescopeConfiguration {
       mermaid: undefined,
       projectReadmes: undefined,
     },
-    projects: [],
     workspaceStructure: {
       modulesDirectory: "modules",
-      projectContainerDirectories: ["applications", "packages", "tools"],
       rootModuleSegment: "src",
     },
   };
@@ -119,7 +118,7 @@ describe(AddressLookupService, () => {
     });
   });
 
-  it("scopes the trace to the projects a flag named", async () => {
+  it("scopes the trace to the directories a flag named", async () => {
     runPlanService.prepareLookup.mockResolvedValue({
       configuration: buildConfiguration(),
       workspaceRoot: "/workspace",
@@ -129,11 +128,11 @@ describe(AddressLookupService, () => {
 
     await service.lookup({
       address: "a.ts#Foo.bar",
-      options: { projects: ["alpha"] },
+      options: { directories: ["alpha"] },
     });
 
     expect(
-      callidescopeService.locate.mock.calls[0]?.[0].projectNames,
+      callidescopeService.locate.mock.calls[0]?.[0].directories,
     ).toStrictEqual(["alpha"]);
   });
 

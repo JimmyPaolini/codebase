@@ -1,5 +1,3 @@
-import path from "node:path";
-
 import { Injectable } from "@nestjs/common";
 
 import type { CallidescopeOutputFormat } from "@callidescope/configuration";
@@ -10,8 +8,8 @@ import type { CallidescopeOutputFormat } from "@callidescope/configuration";
  *
  * `nest-commander` reads `@Option` metadata from whichever class the
  * decorator is written on, so `depth` and `breadth` each still declare their
- * own `--directory`, `--config`, `--projects`, and `--format` options — this
- * only holds the parsing rule so the two do not each write it out by hand.
+ * own `--directories`, `--config`, and `--format` options — this only holds
+ * the parsing rule so the two do not each write it out by hand.
  */
 @Injectable()
 export class TraceOptionParsingService {
@@ -33,15 +31,20 @@ export class TraceOptionParsingService {
   }
 
   /**
-   * Parses `--directory`.
+   * Parses `--directories`, a comma-separated list of project directories.
    *
-   * Resolved rather than kept as written: everything downstream compares
-   * absolute paths against this prefix to decide whether a file is part of
-   * the traced code, and a relative root makes every one of those comparisons
-   * fail — which reads as a workspace containing nothing at all.
+   * Kept relative rather than resolved here: each entry is later resolved
+   * against the workspace root, which is always the working directory, so
+   * resolving here as well would only make a relative entry ambiguous about
+   * which root it was ever relative to.
    */
-  public parseDirectory(value: string | undefined): string {
-    return path.resolve(value ?? process.cwd());
+  public parseDirectories(value: string | undefined): string[] {
+    return value === undefined
+      ? []
+      : value
+          .split(",")
+          .map((directory) => directory.trim())
+          .filter(Boolean);
   }
 
   /**
@@ -57,15 +60,5 @@ export class TraceOptionParsingService {
     }
 
     return "markdown";
-  }
-
-  /** Parses `--projects`, a comma-separated list of Nx project names. */
-  public parseProjects(value: string | undefined): string[] {
-    return value === undefined
-      ? []
-      : value
-          .split(",")
-          .map((name) => name.trim())
-          .filter(Boolean);
   }
 }

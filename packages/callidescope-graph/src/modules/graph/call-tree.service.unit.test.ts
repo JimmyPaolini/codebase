@@ -159,6 +159,21 @@ describe(CallTreeService, () => {
     expect(result.stacks[0]?.isLowerBound).toBe(true);
   });
 
+  it("skips a frame for an id the collection never described", () => {
+    const graph = new GraphService().assemble({
+      edges: [],
+      unresolvedCalls: [],
+    });
+
+    const result = service.buildDownwardStacks({
+      callablesById: buildCallables(["a"]),
+      graph,
+      startId: "unknown",
+    });
+
+    expect(result.stacks).toStrictEqual([{ frames: [], isLowerBound: false }]);
+  });
+
   it("returns one entry-point-only stack for a leaf", () => {
     const graph = new GraphService().assemble({
       edges: [],

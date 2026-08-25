@@ -76,7 +76,7 @@ export class CallidescopeService {
     this.workspaceService.configure(args.configuration.workspaceStructure);
 
     const projects = this.workspaceService.discoverProjects({
-      projectNames: args.projectNames,
+      directories: args.directories,
       workspaceRoot: args.workspaceRoot,
     });
     const programSet = this.programService.buildPrograms({

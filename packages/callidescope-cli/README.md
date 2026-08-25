@@ -16,7 +16,7 @@ npm install --save-dev @callidescope/cli
 ```
 
 ```bash
-callidescope --directory . --config configuration/callidescope.config.ts
+callidescope --config configuration/callidescope.config.ts
 ```
 
 ```text
@@ -51,9 +51,8 @@ Two questions this answers that reading code does not:
 
 | Flag | Meaning |
 | ---- | ------- |
-| `-d, --directory` | Workspace root to trace. Defaults to the working directory |
 | `--config` | Path to a `callidescope.config.ts`. Searched for when omitted |
-| `-p, --projects` | Comma-separated Nx project names. Every project when omitted |
+| `-d, --directories` | Comma-separated project directories to trace, each holding its own `tsconfig.json`. Every such directory under the working directory when omitted |
 | `-f, --format` | `markdown`, `mermaid`, or `json`, for what it prints. Markdown by default |
 | `--json` | Path to write the machine-readable report to |
 | `-m, --markdown` | Path to splice the markdown block into |
@@ -174,8 +173,9 @@ rather than stopping at the first. This repository does not run that on a pull
 request: `nx run codebase:callidescope:write` writes the sections on the
 default branch, and the release commits them.
 
-Narrowing with `--projects` is the difference between a whole-workspace analysis
-and a one-second check, because each project needs its own TypeScript program.
+Narrowing with `--directories` is the difference between a whole-workspace
+analysis and a one-second check, because each project needs its own TypeScript
+program.
 
 ## Depth and breadth for one callable
 
@@ -195,8 +195,8 @@ trailing `:<line>`, and both commands print every candidate's line when they
 cannot tell which one was meant.
 
 Both accept the same workspace-scoping flags as `callidescope` itself —
-`--directory`, `--config`, `--projects`, and `--format` — since resolving an
-address still means tracing the workspace first. Neither takes `--check`,
+`--directories`, `--config`, and `--format` — since resolving an address still
+means tracing the workspace first. Neither takes `--check`,
 `--write`, `--json`, or `--markdown`: a lookup only ever prints, to whichever
 format `--format` names.
 

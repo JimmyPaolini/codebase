@@ -63,6 +63,7 @@ function buildConfiguration(
 ): ResolvedCallidescopeConfiguration {
   return {
     allowSpreadFor: [],
+    directories: [],
     entryPoints: {
       decorators: ["Command", "Get"],
       includeExportedFunctions: true,
@@ -87,10 +88,8 @@ function buildConfiguration(
       mermaid: undefined,
       projectReadmes: undefined,
     },
-    projects: [],
     workspaceStructure: {
       modulesDirectory: "modules",
-      projectContainerDirectories: ["applications", "packages", "tools"],
       rootModuleSegment: "src",
     },
     ...overrides,

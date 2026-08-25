@@ -1,5 +1,3 @@
-import path from "node:path";
-
 import { ConfigurationService } from "@callidescope/configuration";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
@@ -23,6 +21,7 @@ function buildConfiguration(
 ): ResolvedCallidescopeConfiguration {
   return {
     allowSpreadFor: [],
+    directories: [],
     entryPoints: {
       decorators: [],
       includeExportedFunctions: true,
@@ -47,10 +46,8 @@ function buildConfiguration(
       mermaid: undefined,
       projectReadmes: undefined,
     },
-    projects: [],
     workspaceStructure: {
       modulesDirectory: "modules",
-      projectContainerDirectories: ["applications", "packages", "tools"],
       rootModuleSegment: "src",
     },
     ...overrides,
@@ -309,7 +306,7 @@ describe(RunPlanService, () => {
   // 🔍 Lookup preparation
 
   describe("prepareLookup", () => {
-    it("resolves the workspace root and loads the configuration", async () => {
+    it("resolves the workspace root to the working directory", async () => {
       const configurationService = createMock<ConfigurationService>();
 
       configurationService.loadConfiguration.mockResolvedValue(
@@ -321,12 +318,12 @@ describe(RunPlanService, () => {
         createMock<LoggerService>(),
       );
 
-      const prepared = await subject.prepareLookup({ directory: "." });
+      const prepared = await subject.prepareLookup({});
 
-      expect(prepared.workspaceRoot).toBe(path.resolve("."));
+      expect(prepared.workspaceRoot).toBe(process.cwd());
       expect(configurationService.loadConfiguration).toHaveBeenCalledWith({
         configurationPath: undefined,
-        searchDirectory: path.resolve("."),
+        searchDirectory: process.cwd(),
       });
     });
 

@@ -11,9 +11,9 @@ import type { CallGraph, DiscoveredCallable } from "@callidescope/graph";
 /** Options `depth` and `breadth` accept, scoping a lookup to one workspace. */
 export interface AddressCommandOptions {
   readonly config?: string | undefined;
-  readonly directory?: string | undefined;
+  /** Project directories to trace. Every project in the workspace when omitted. */
+  readonly directories?: string[] | undefined;
   readonly format?: CallidescopeOutputFormat | undefined;
-  readonly projects?: string[] | undefined;
 }
 
 /** Options the CLI accepts. */
@@ -26,11 +26,11 @@ export interface CallidescopeCommandOptions {
    */
   readonly check?: string | true | undefined;
   readonly config?: string | undefined;
-  readonly directory?: string | undefined;
+  /** Project directories to trace. Every project in the workspace when omitted. */
+  readonly directories?: string[] | undefined;
   readonly format?: CallidescopeOutputFormat | undefined;
   readonly json?: string | undefined;
   readonly markdown?: string | undefined;
-  readonly projects?: string[] | undefined;
   readonly write?: boolean | undefined;
 }
 
@@ -53,7 +53,8 @@ export interface SyncDestinationsArguments {
 /** Arguments for one full trace of a workspace. */
 export interface TraceArguments {
   readonly configuration: ResolvedCallidescopeConfiguration;
-  readonly projectNames: readonly string[];
+  /** Project directories to trace. Every project in the workspace when empty. */
+  readonly directories: readonly string[];
   readonly workspaceRoot: string;
 }
 
