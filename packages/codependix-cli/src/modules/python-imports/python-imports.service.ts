@@ -34,9 +34,9 @@ import type { PythonProject } from "@codependix/imports-python";
  *
  * Split out of `CodependixService` — which owns the same pass for every
  * other graph type — purely to keep that file under this repository's
- * per-file line limit; the pass itself follows `CodependixService.runImportGraphs`
- * exactly, one collaborator per language instead of one compiler-backed
- * `ts.Program` per project.
+ * per-file line limit; the pass itself follows
+ * `CodependixService.runImportGraphs` exactly, one collaborator per language
+ * instead of one compiler-backed `ts.Program` per project.
  */
 @Injectable()
 export class PythonImportsService {
@@ -97,7 +97,7 @@ export class PythonImportsService {
     });
   }
 
-  /** Builds, renders, and delivers one project's Python file-level import Graph. */
+  /** Builds, renders, and delivers one project's Python import graph. */
   private runProject(args: {
     mode: CodependixRunMode;
     project: PythonProject;
