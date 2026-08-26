@@ -1,11 +1,10 @@
 import { JsonService, MarkdownService } from "@codometer/output";
 import { Injectable } from "@nestjs/common";
 
-import { DocumentationReportService } from "./documentation-report.service";
-
-import type { MeasurementResult } from "./codometer.types";
-import type { DocumentationMeasurement } from "./documentation-measurement.types";
-import type { DeliverArguments, RunMode } from "./run-plan.types";
+import type { MeasurementResult } from "../codometer/codometer.types";
+import type { DocumentationMeasurement } from "../codometer/documentation-measurement.types";
+import type { RunMode } from "../run-plan/run-plan.types";
+import type { DeliverArguments } from "./delivery.types";
 import type {
   RenderMarkdownArguments,
   ResolvedCodometerMarkdownOutputConfiguration,
@@ -26,7 +25,6 @@ export class DeliveryService {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly documentationReportService: DocumentationReportService,
     private readonly jsonService: JsonService,
     private readonly markdownService: MarkdownService,
   ) {}
@@ -48,7 +46,7 @@ export class DeliveryService {
     badges: string,
     documentation: readonly DocumentationMeasurement[],
   ): string {
-    const section = this.documentationReportService.renderSection({
+    const section = this.markdownService.renderDocumentationSection({
       breaches: documentation.filter((entry) => entry.breached),
     });
 
@@ -69,7 +67,7 @@ export class DeliveryService {
     destination: ResolvedCodometerMarkdownOutputConfiguration,
     documentation: readonly DocumentationMeasurement[],
   ): ResolvedCodometerMarkdownOutputConfiguration {
-    const section = this.documentationReportService.renderSection({
+    const section = this.markdownService.renderDocumentationSection({
       breaches: documentation.filter((entry) => entry.breached),
     });
 

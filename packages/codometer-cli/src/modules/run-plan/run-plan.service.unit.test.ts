@@ -7,7 +7,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { RunPlanService } from "./run-plan.service";
 
-import type { CodometerCommandOptions } from "./codometer.types";
+import type { CodometerCommandOptions } from "../codometer/codometer.types";
 import type { RunDestinations } from "./run-plan.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 

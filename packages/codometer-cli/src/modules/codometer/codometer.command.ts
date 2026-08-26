@@ -6,18 +6,17 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
+import { DeliveryService } from "../delivery/delivery.service";
 import { ReportService } from "../report/report.service";
+import { RunPlanService } from "../run-plan/run-plan.service";
 
 import { CodometerService } from "./codometer.service";
-import { DeliveryService } from "./delivery.service";
-import { DocumentationReportService } from "./documentation-report.service";
-import { RunPlanService } from "./run-plan.service";
 
+import type { ReportFindingsArguments } from "../run-plan/run-plan.types";
 import type {
   CodometerCommandOptions,
   MeasurementResult,
 } from "./codometer.types";
-import type { ReportFindingsArguments } from "./run-plan.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
 /**
@@ -35,7 +34,6 @@ export class CodometerCommand extends CommandRunner {
     private readonly configurationService: ConfigurationService,
     private readonly codometerService: CodometerService,
     private readonly deliveryService: DeliveryService,
-    private readonly documentationReportService: DocumentationReportService,
     private readonly reportService: ReportService,
     private readonly runPlanService: RunPlanService,
     private readonly logger: LoggerService,
@@ -123,6 +121,32 @@ export class CodometerCommand extends CommandRunner {
   }
 
   /**
+   * Report every breached documentation length limit, and say whether one of
+   * them fails the run. Mirrors `reportBreaches`' limit-breach vocabulary.
+   */
+  private reportDocumentationBreaches(args: ReportFindingsArguments): boolean {
+    const breached = args.measurement.documentation.filter(
+      (entry) => entry.breached,
+    );
+    const failing = breached.filter((entry) => entry.severity === "fail");
+    const warning = breached.filter((entry) => entry.severity === "warn");
+
+    if (warning.length > 0) {
+      this.logger.warn(`📊 Breached a documentation length limit`, undefined, {
+        documentation: warning,
+      });
+    }
+
+    if (failing.length > 0) {
+      this.logger.error(`📊 Breached a documentation length limit`, undefined, {
+        documentation: failing,
+      });
+    }
+
+    return args.mode.checksLimits && failing.length > 0;
+  }
+
+  /**
    * Report whatever the run could not do, and say whether it fails the run.
    *
    * A failure is neither staleness nor a breach: it is the run not having
@@ -150,10 +174,7 @@ export class CodometerCommand extends CommandRunner {
     const failed = this.reportFailures(args);
     const stale = this.reportStaleness(args);
     const breached = this.reportBreaches(args);
-    const documented = this.documentationReportService.reportBreaches({
-      checksLimits: args.mode.checksLimits,
-      documentation: args.measurement.documentation,
-    });
+    const documented = this.reportDocumentationBreaches(args);
 
     if (failed || stale || breached || documented) {
       process.exitCode = 1;

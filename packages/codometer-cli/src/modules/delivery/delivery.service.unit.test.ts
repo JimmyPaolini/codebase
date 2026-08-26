@@ -3,19 +3,16 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LoggerService } from "@codebase/logger";
-
 import {
   buildCodeStatistics,
   buildCodometerReport,
 } from "../../../testing/mocks";
 
 import { DeliveryService } from "./delivery.service";
-import { DocumentationReportService } from "./documentation-report.service";
 
-import type { MeasurementResult } from "./codometer.types";
-import type { DocumentationMeasurement } from "./documentation-measurement.types";
-import type { RunMode } from "./run-plan.types";
+import type { MeasurementResult } from "../codometer/codometer.types";
+import type { DocumentationMeasurement } from "../codometer/documentation-measurement.types";
+import type { RunMode } from "../run-plan/run-plan.types";
 import type {
   RenderMarkdownOutput,
   ResolvedCodometerMarkdownOutputConfiguration,
@@ -23,6 +20,26 @@ import type {
 
 const statistics = buildCodeStatistics();
 const report = buildCodometerReport();
+const documentationSection = [
+  "### 📝 Documentation",
+  "- `src/foo.ts:3` — `Foo` (class): 9/6 lines",
+].join("\n\n");
+
+/** Builds a documented declaration whose comment exceeded its kind's limit. */
+function buildDocumentationBreach(): DocumentationMeasurement {
+  return {
+    breached: true,
+    declaration: "Foo",
+    file: "src/foo.ts",
+    kind: "class",
+    limit: 6,
+    line: 3,
+    measured: 9,
+    severity: "fail",
+    target: "codebase",
+    unit: "lines",
+  };
+}
 
 /** Builds a measurement carrying no targets and no documentation findings. */
 function buildMeasurement(
@@ -82,9 +99,7 @@ describe(DeliveryService, () => {
     const module = await Test.createTestingModule({
       providers: [
         DeliveryService,
-        DocumentationReportService,
         { provide: JsonService, useValue: createMock<JsonService>() },
-        { provide: LoggerService, useValue: createMock<LoggerService>() },
         { provide: MarkdownService, useValue: createMock<MarkdownService>() },
       ],
     }).compile();
@@ -100,6 +115,7 @@ describe(DeliveryService, () => {
     vi.mocked(jsonService.sync).mockReturnValue(true);
     vi.mocked(markdownService.renderBlock).mockReturnValue("block");
     vi.mocked(markdownService.renderDocument).mockReturnValue("document");
+    vi.mocked(markdownService.renderDocumentationSection).mockReturnValue("");
     vi.mocked(markdownService.sync).mockReturnValue(true);
     vi.mocked(markdownService.syncDocument).mockReturnValue(true);
   });
@@ -182,18 +198,10 @@ describe(DeliveryService, () => {
   });
 
   it("appends the breached documentation section to the markdown document", () => {
-    const breach: DocumentationMeasurement = {
-      breached: true,
-      declaration: "Foo",
-      file: "src/foo.ts",
-      kind: "class",
-      limit: 6,
-      line: 3,
-      measured: 9,
-      severity: "fail",
-      target: "codebase",
-      unit: "lines",
-    };
+    const breach = buildDocumentationBreach();
+    vi.mocked(markdownService.renderDocumentationSection).mockReturnValue(
+      documentationSection,
+    );
 
     service.deliver({
       destinations: {
@@ -207,13 +215,12 @@ describe(DeliveryService, () => {
       scope: "project",
     });
 
+    expect(markdownService.renderDocumentationSection).toHaveBeenCalledWith({
+      breaches: [breach],
+    });
     expect(markdownService.syncDocument).toHaveBeenCalledExactlyOnceWith({
       check: false,
-      content: [
-        "document",
-        "### 📝 Documentation",
-        "- `src/foo.ts:3` — `Foo` (class): 9/6 lines",
-      ].join("\n\n"),
+      content: ["document", documentationSection].join("\n\n"),
       path: "docs/metrics.md",
     });
   });
@@ -241,18 +248,10 @@ describe(DeliveryService, () => {
   });
 
   it("splices the breached documentation section into the README write", () => {
-    const breach: DocumentationMeasurement = {
-      breached: true,
-      declaration: "Foo",
-      file: "src/foo.ts",
-      kind: "class",
-      limit: 6,
-      line: 3,
-      measured: 9,
-      severity: "fail",
-      target: "codebase",
-      unit: "lines",
-    };
+    const breach = buildDocumentationBreach();
+    vi.mocked(markdownService.renderDocumentationSection).mockReturnValue(
+      documentationSection,
+    );
     let syncedDestination:
       | ResolvedCodometerMarkdownOutputConfiguration
       | undefined;
@@ -275,28 +274,14 @@ describe(DeliveryService, () => {
 
     const renderedContent = renderDestination(syncedDestination);
 
-    expect(renderedContent).toBe(
-      [
-        "badges",
-        "### 📝 Documentation",
-        "- `src/foo.ts:3` — `Foo` (class): 9/6 lines",
-      ].join("\n\n"),
-    );
+    expect(renderedContent).toBe(["badges", documentationSection].join("\n\n"));
   });
 
   it("composes the documentation section after a configured custom render", () => {
-    const breach: DocumentationMeasurement = {
-      breached: true,
-      declaration: "Foo",
-      file: "src/foo.ts",
-      kind: "class",
-      limit: 6,
-      line: 3,
-      measured: 9,
-      severity: "fail",
-      target: "codebase",
-      unit: "lines",
-    };
+    const breach = buildDocumentationBreach();
+    vi.mocked(markdownService.renderDocumentationSection).mockReturnValue(
+      documentationSection,
+    );
     let syncedDestination:
       | ResolvedCodometerMarkdownOutputConfiguration
       | undefined;
@@ -320,11 +305,7 @@ describe(DeliveryService, () => {
     const renderedContent = renderDestination(syncedDestination);
 
     expect(renderedContent).toBe(
-      [
-        "custom badges",
-        "### 📝 Documentation",
-        "- `src/foo.ts:3` — `Foo` (class): 9/6 lines",
-      ].join("\n\n"),
+      ["custom badges", documentationSection].join("\n\n"),
     );
   });
 

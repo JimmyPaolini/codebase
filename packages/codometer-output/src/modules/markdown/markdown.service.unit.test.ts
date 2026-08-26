@@ -934,6 +934,62 @@ describe(MarkdownService, () => {
     expect(document.startsWith("## ⏲️ Codometer\n\n### Repository")).toBe(true);
   });
 
+  it("renders nothing for a documentation section with no breaches", () => {
+    expect(service.renderDocumentationSection({ breaches: [] })).toBe("");
+  });
+
+  it("renders one bullet per breached documentation entry", () => {
+    const section = service.renderDocumentationSection({
+      breaches: [
+        {
+          declaration: "Foo",
+          file: "src/foo.ts",
+          kind: "class",
+          limit: 6,
+          line: 3,
+          measured: 9,
+          unit: "lines",
+        },
+      ],
+    });
+
+    expect(section).toBe(
+      [
+        "### 📝 Documentation",
+        "- `src/foo.ts:3` — `Foo` (class): 9/6 lines",
+      ].join("\n\n"),
+    );
+  });
+
+  it("renders every breach as its own bullet", () => {
+    const section = service.renderDocumentationSection({
+      breaches: [
+        {
+          declaration: "Foo",
+          file: "src/foo.ts",
+          kind: "class",
+          limit: 6,
+          line: 3,
+          measured: 9,
+          unit: "lines",
+        },
+        {
+          declaration: "bar",
+          file: "src/bar.ts",
+          kind: "function",
+          limit: 4,
+          line: 1,
+          measured: 20,
+          unit: "words",
+        },
+      ],
+    });
+
+    expect(
+      section.split("\n").filter((line) => line.startsWith("- ")),
+    ).toHaveLength(2);
+  });
+
   // What a splice would place, without placing it — the form a run that writes
   // nothing shows on the console.
   it("renders the anchored block without touching a file", () => {

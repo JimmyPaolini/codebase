@@ -14,13 +14,12 @@ import {
 import { LoggerService } from "@codebase/logger";
 
 import { buildCodeStatistics, throwUnknown } from "../../../testing/mocks";
+import { DeliveryService } from "../delivery/delivery.service";
 import { ReportService } from "../report/report.service";
+import { RunPlanService } from "../run-plan/run-plan.service";
 
 import { CodometerCommand } from "./codometer.command";
 import { CodometerService } from "./codometer.service";
-import { DeliveryService } from "./delivery.service";
-import { DocumentationReportService } from "./documentation-report.service";
-import { RunPlanService } from "./run-plan.service";
 
 import type { EvaluatedLimit } from "../limits/limits.types";
 import type { CodometerCommandOptions } from "./codometer.types";
@@ -101,19 +100,10 @@ describe(CodometerCommand, () => {
 
   /** Builds a command whose measurement and output are mocked. */
   function buildCommand(): CodometerCommand {
-    const documentationReportService = new DocumentationReportService(
-      loggerService,
-    );
-
     return new CodometerCommand(
       configurationService,
       codometerService,
-      new DeliveryService(
-        documentationReportService,
-        jsonService,
-        markdownService,
-      ),
-      documentationReportService,
+      new DeliveryService(jsonService, markdownService),
       new ReportService(),
       new RunPlanService(),
       loggerService,
@@ -160,10 +150,6 @@ describe(CodometerCommand, () => {
         { provide: CodometerService, useValue: createMock<CodometerService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         { provide: DeliveryService, useValue: createMock<DeliveryService>() },
-        {
-          provide: DocumentationReportService,
-          useValue: createMock<DocumentationReportService>(),
-        },
         { provide: ReportService, useValue: new ReportService() },
         { provide: RunPlanService, useValue: new RunPlanService() },
       ],
@@ -188,6 +174,7 @@ describe(CodometerCommand, () => {
     vi.mocked(jsonService.sync).mockReturnValue(true);
     vi.mocked(markdownService.renderBlock).mockReturnValue("block");
     vi.mocked(markdownService.renderDocument).mockReturnValue("document");
+    vi.mocked(markdownService.renderDocumentationSection).mockReturnValue("");
     vi.mocked(markdownService.sync).mockReturnValue(true);
     vi.mocked(markdownService.syncDocument).mockReturnValue(true);
   });
@@ -212,10 +199,6 @@ describe(CodometerCommand, () => {
         { provide: CodometerService, useValue: createMock<CodometerService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         { provide: DeliveryService, useValue: createMock<DeliveryService>() },
-        {
-          provide: DocumentationReportService,
-          useValue: createMock<DocumentationReportService>(),
-        },
         { provide: ReportService, useValue: new ReportService() },
         { provide: RunPlanService, useValue: new RunPlanService() },
       ],
@@ -551,17 +534,20 @@ describe(CodometerCommand, () => {
     });
 
     it("appends the breached documentation section to the badge document", async () => {
-      documented([buildDocumentationBreach("fail")]);
+      const breach = buildDocumentationBreach("fail");
+      documented([breach]);
+      vi.mocked(markdownService.renderDocumentationSection).mockReturnValue(
+        "### 📝 Documentation",
+      );
 
       await run({ markdown: "docs/metrics.md", write: true });
 
+      expect(markdownService.renderDocumentationSection).toHaveBeenCalledWith({
+        breaches: [breach],
+      });
       expect(markdownService.syncDocument).toHaveBeenCalledExactlyOnceWith({
         check: false,
-        content: [
-          "document",
-          "### 📝 Documentation",
-          "- `src/foo.ts:3` — `Foo` (class): 9/6 lines",
-        ].join("\n\n"),
+        content: ["document", "### 📝 Documentation"].join("\n\n"),
         path: "/repo/docs/metrics.md",
       });
     });
