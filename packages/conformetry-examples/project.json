@@ -62,14 +62,18 @@
     "eslint": {},
     "failure-modes": {
       "cache": false,
-      "description": "Validate an instance that conforms for the wrong reasons: a placeholder nobody supplied, and a TODO comment any comment satisfies",
+      "description": "Validate a TODO template comment any comment satisfies, then a template asking for a value nobody supplies. Exits non-zero: the second is refused rather than rendered as a hole",
       "executor": "nx:run-commands",
       "options": {
-        "command": "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts validate --config packages/conformetry-examples/examples/failure-modes/conformetry.config.ts",
+        "commands": [
+          "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts validate --config packages/conformetry-examples/examples/failure-modes/conformetry.config.ts --instances packages/conformetry-examples/examples/failure-modes/instances/documented",
+          "node --import @swc-node/register/esm-register packages/conformetry-cli/src/main.ts validate --config packages/conformetry-examples/examples/failure-modes/conformetry.config.ts --instances packages/conformetry-examples/examples/failure-modes/instances/unowned"
+        ],
         "cwd": "{workspaceRoot}",
         "env": {
           "SWC_NODE_PROJECT": "packages/conformetry-cli/tsconfig.json"
-        }
+        },
+        "parallel": false
       }
     },
     "hello-template": {

@@ -60,16 +60,22 @@ the same generator behaves differently depending on how you invoke it.
 | Invocation | `nx g conformetry:<name>` | `conformetry generate --generator <name>` |
 | Aliases | resolved | **not resolved — exact name only** |
 | Inputs | **every declared input is required** | none is ever required |
-| Missing input | refuses, or prompts | renders as an empty string |
+| Missing input | refuses, or prompts | refuses when the template interpolates it |
 | Default destination | resolved from the workspace | `generated/<generator-name>` |
 
-The asymmetry has one cause: a template placeholder with no value renders as
-empty rather than raising. The Nx path forbids that by requiring everything; the
-command-line host permits it. So on the command-line host a run can succeed and
-still produce a file with a hole in it, or a path with an empty segment.
+The remaining asymmetry is about _when_ a missing value is caught. The Nx path
+requires every declared input up front, so it refuses before rendering starts.
+The command-line host requires none of them, and catches the omission at the
+moment a template asks for it — `MissingSubstitutionError`, naming the
+placeholder and the template file.
 
-**Pass every input explicitly on either path.** On the command-line host, check
-the output rather than trusting the exit code.
+So an input a template never interpolates can be omitted on the command-line
+host and not on the Nx path. Anything a template does interpolate is required on
+both.
+
+**Pass every input explicitly on either path.** A template that means "optional"
+says so with a section — `{{#owner}}…{{/owner}}` renders nothing when `owner` is
+absent — rather than relying on a bare `{{owner}}`.
 
 Aliases are worth the same care. `nx g conformetry:nsm` works; `conformetry
 generate --generator nsm` does not, because the command-line host looks

@@ -5,17 +5,29 @@ const EXAMPLE_PATH = "packages/conformetry-examples/examples/failure-modes";
 
 const conformetryConfiguration: ConformetryConfiguration = [
   {
-    description: "Two things conformetry lets through, on purpose or not",
+    description: "A template comment marked TODO, which any comment satisfies",
     inputs: {
       name: { description: "Module name in kebab-case", type: "string" },
     },
-    // `owner` is never supplied — not as an input, and not as a substitution
-    // here. That is the pitfall this example reproduces: mustache renders an
-    // unknown placeholder as an empty string rather than failing, so the hole
-    // is silent on both sides of the loop.
+    // Both generators claim these paths, and only one group declares them —
+    // see the ambiguous-attribution example for why saying it twice reports
+    // every finding twice.
     instances: [{ patterns: [`${EXAMPLE_PATH}/instances/*`] }],
-    name: "pitfalls",
-    templatePath: `${EXAMPLE_PATH}/templates/pitfalls`,
+    name: "todo-comment",
+    templatePath: `${EXAMPLE_PATH}/templates/todo-comment`,
+  },
+  {
+    description: "A template asking for a value nobody supplies",
+    // `owner` is deliberately absent: not declared as an input here, and not
+    // named in the instance group's substitutions above. Rendering refuses
+    // rather than quietly writing an empty string, which is what this half of
+    // the example reproduces.
+    inputs: {
+      name: { description: "Module name in kebab-case", type: "string" },
+    },
+    instances: [],
+    name: "missing-input",
+    templatePath: `${EXAMPLE_PATH}/templates/missing-input`,
   },
 ];
 

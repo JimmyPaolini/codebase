@@ -82,9 +82,9 @@ That is why the configuration carries `substitutions` for this group:
 substitutions: { nameCamelCase: "spelledOutByHand", owner: "platform" }
 ```
 
-Drop `owner` from there and validation renders `{{owner}}` as an empty string
-rather than complaining — see
-[failure-modes](../failure-modes/README.md), which reproduces exactly that.
+Drop `owner` from there and rendering refuses outright, on both sides of the
+loop — see [failure-modes](../failure-modes/README.md), which reproduces
+exactly that and explains why it is an error rather than a finding.
 
 ## Next
 

@@ -41,7 +41,8 @@ below says which.
 | `below threshold 100.0%` | [scoring-thresholds](examples/scoring-thresholds/README.md) | The default threshold is a perfect match; three levels can lower it, narrowest first |
 | `meets threshold 75.0%` with findings printed | [scoring-thresholds](examples/scoring-thresholds/README.md) | A lowered threshold is permission to ship the drift, not a reason to stop showing it |
 | `No instances were found.` | [nx-host](examples/nx-host/README.md) | Tag-scoped groups are invisible to the command-line host, which locates by glob alone |
-| `All checked files conform.` but the code is obviously wrong | [failure-modes](examples/failure-modes/README.md) | A placeholder nobody supplied renders as an empty string on both sides, and a `TODO` template comment is satisfied by any comment |
+| `MissingSubstitutionError: No value was supplied for …` | [failure-modes](examples/failure-modes/README.md) | A template interpolates a placeholder nothing supplies. Declare it as a generator input **and** in the matching instance group's `substitutions`, or ask the question with a `{{#section}}` instead |
+| `All checked files conform.` but the code is obviously wrong | [failure-modes](examples/failure-modes/README.md) | A `TODO` template comment is satisfied by any comment, on purpose |
 | `Unknown generator "…"` | [two-directions](examples/two-directions/README.md) | `conformetry templates` is the only thing that answers which generators exist; aliases resolve only through the Nx plugin |
 
 ## I need to know whether X is a finding
@@ -56,9 +57,10 @@ below says which.
 | Deleting a section comment or a JSDoc block | **Yes** | [drift-catalogue](examples/drift-catalogue/README.md) |
 | Rewording a comment the template wrote | **Yes** | [drift-catalogue](examples/drift-catalogue/README.md) |
 | Rewording a comment the template marked `TODO` | No | [failure-modes](examples/failure-modes/README.md) |
+| Leaving a template placeholder without a value | **Refused before comparison** | [failure-modes](examples/failure-modes/README.md) |
 | Deleting a file, or a whole directory | **Yes** | [drift-catalogue](examples/drift-catalogue/README.md) |
 | Changing a line in a `.toml`, `.gitignore`, or other unclaimed extension | **Yes** | [language-validators](examples/language-validators/README.md) |
-| A trailing space markdown does not need | No | [failure-modes](examples/failure-modes/README.md) |
+| A trailing space markdown does not need | No | [language-validators](examples/language-validators/README.md) |
 
 ## I am writing or changing a configuration
 
@@ -75,7 +77,7 @@ below says which.
 | Should two generators declare the same instance glob? | [ambiguous-attribution](examples/ambiguous-attribution/README.md) — no |
 | How do tag-scoped instance groups work? | [nx-host](examples/nx-host/README.md) |
 | Which validator will handle this extension? | [language-validators](examples/language-validators/README.md) |
-| What will silently do nothing? | [failure-modes](examples/failure-modes/README.md) |
+| What will be refused, and what is merely permissive? | [failure-modes](examples/failure-modes/README.md) |
 
 ## I am building a host
 
@@ -98,7 +100,7 @@ are, and why the compiler must preserve decorator metadata.
 | `ambiguous-attribution` | **1** | One instance ties between two templates |
 | `nx-host` | 0 | The command-line host finds nothing to check |
 | `embedding` | 0 | Conforms |
-| `failure-modes` | 0 | Conforms, for the wrong reasons |
+| `failure-modes` | **1** | The `TODO` half conforms; the placeholder nobody supplied is refused |
 
 Every row is asserted by
 [`testing/examples.integration.test.ts`](testing/examples.integration.test.ts),

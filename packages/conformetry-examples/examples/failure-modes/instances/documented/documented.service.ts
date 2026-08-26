@@ -1,8 +1,8 @@
 // 🎯 Service
 
 // Owned by whoever picks it up next.
-/** Runs the silent-hole work. */
-export class SilentHoleService {
+/** Runs the documented work. */
+export class DocumentedService {
   // 🌎 Public Methods
 
   /** Runs it. */

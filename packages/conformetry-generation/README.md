@@ -42,9 +42,18 @@ values cannot corrupt source code. `buildNameSubstitutions` derives
 single name; callers merge their own inputs over the result, so an explicit
 input of the same key always wins.
 
-> Mustache renders an unknown placeholder as an empty string rather than
-> leaving the token visible, so a template referencing a field nobody supplies
-> produces a silent hole.
+> **An interpolated placeholder nobody supplied raises
+> `MissingSubstitutionError`.** Mustache would otherwise render it as an empty
+> string rather than leaving the token visible, and because generation and
+> validation render identically, both halves of the loop lost the same value and
+> agreed that nothing was wrong. A hole rendered into both sides of a comparison
+> is not something that comparison can report, so the renderer refuses instead.
+>
+> Section tags are exempt, deliberately: `{{#field}}` and `{{^field}}` are
+> conditionals, so an absent name is how a template asks for a block to be
+> skipped or taken. A supplied value that is the empty string is an answer too —
+> only an absent key is a hole. Together those are how a template says
+> "optional": ask with a section, interpolate inside it.
 
 Paths once used a `__field__` syntax of their own, on the assumption that
 braces were not portable across filesystems. They are — and the separate syntax
