@@ -5,6 +5,10 @@ import { BoxesMotifService } from "./boxes-motif.service";
 import { ChainMotifService } from "./chain-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
 import { MeanderGenerationService } from "./meander-generation.service";
+import { MosaicGenerationService } from "./mosaic-generation.service";
+import { MosaicMotifService } from "./mosaic-motif.service";
+import { MosaicSymmetryService } from "./mosaic-symmetry.service";
+import { MosaicTilesService } from "./mosaic-tiles.service";
 import { MotifTransformsService } from "./motif-transforms.service";
 import { OutputFilenameService } from "./output-filename.service";
 import { SnakeMotifService } from "./snake-motif.service";
@@ -19,7 +23,13 @@ import { WhirlMotifService } from "./whirl-motif.service";
  */
 @Module({
   controllers: [],
-  exports: [MeanderGenerationService, OutputFilenameService],
+  exports: [
+    MeanderGenerationService,
+    MosaicGenerationService,
+    MosaicSymmetryService,
+    MosaicTilesService,
+    OutputFilenameService,
+  ],
   imports: [],
   providers: [
     BarsMotifService,
@@ -27,6 +37,10 @@ import { WhirlMotifService } from "./whirl-motif.service";
     ChainMotifService,
     GridGeometryService,
     MeanderGenerationService,
+    MosaicGenerationService,
+    MosaicMotifService,
+    MosaicSymmetryService,
+    MosaicTilesService,
     MotifTransformsService,
     OutputFilenameService,
     SnakeMotifService,

@@ -71,6 +71,11 @@ tmp
 dist
 last-lint-staged-output.log
 applications/caelundas/output
+
+# The `start` command's mosaic half enumerates every tile the family admits —
+# thousands of SVGs and their contact sheets. `output/` itself stays
+# committed, since the named-type half beside them is a reviewable hundred.
+applications/meanderaw/output/permutations
 vite.config.*.timestamp*
 data/**
 .fallow

@@ -4,11 +4,19 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
+import { GridGeometryService } from "../meander-generation/grid-geometry.service";
 import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
+import { MosaicGenerationService } from "../meander-generation/mosaic-generation.service";
+import { MosaicMotifService } from "../meander-generation/mosaic-motif.service";
+import { MosaicSymmetryService } from "../meander-generation/mosaic-symmetry.service";
+import { MosaicTilesService } from "../meander-generation/mosaic-tiles.service";
 import { OutputFilenameService } from "../meander-generation/output-filename.service";
+import { SvgRenderingService } from "../meander-generation/svg-rendering.service";
 
-import { GenerateBatchCommand } from "./generate-batch.command";
+import { StartContactSheetService } from "./start-contact-sheet.service";
+import { StartPermutationsService } from "./start-permutations.service";
+import { StartCommand } from "./start.command";
 
 const { mockMkdir, mockWriteFile } = vi.hoisted(() => ({
   mockMkdir: vi
@@ -26,14 +34,14 @@ vi.mock("node:fs/promises", () => ({
   writeFile: mockWriteFile,
 }));
 
-describe(GenerateBatchCommand, () => {
-  let command: GenerateBatchCommand;
+describe(StartCommand, () => {
+  let command: StartCommand;
   let meanderGenerationService: MeanderGenerationService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        GenerateBatchCommand,
+        StartCommand,
         {
           provide: LoggerService,
           useValue: createMock<LoggerService>(),
@@ -43,10 +51,18 @@ describe(GenerateBatchCommand, () => {
           useValue: createMock<MeanderGenerationService>(),
         },
         OutputFilenameService,
+        GridGeometryService,
+        MosaicGenerationService,
+        MosaicMotifService,
+        MosaicSymmetryService,
+        MosaicTilesService,
+        StartContactSheetService,
+        StartPermutationsService,
+        SvgRenderingService,
       ],
     }).compile();
 
-    command = await module.resolve(GenerateBatchCommand);
+    command = await module.resolve(StartCommand);
     meanderGenerationService = await module.resolve(MeanderGenerationService);
   });
 
@@ -65,7 +81,7 @@ describe(GenerateBatchCommand, () => {
   it("sets logger context", async () => {
     const module = await Test.createTestingModule({
       providers: [
-        GenerateBatchCommand,
+        StartCommand,
         {
           provide: LoggerService,
           useValue: createMock<LoggerService>(),
@@ -75,12 +91,20 @@ describe(GenerateBatchCommand, () => {
           useValue: createMock<MeanderGenerationService>(),
         },
         OutputFilenameService,
+        GridGeometryService,
+        MosaicGenerationService,
+        MosaicMotifService,
+        MosaicSymmetryService,
+        MosaicTilesService,
+        StartContactSheetService,
+        StartPermutationsService,
+        SvgRenderingService,
       ],
     }).compile();
 
     const logger = await module.resolve(LoggerService);
 
-    expect(logger.setContext).toHaveBeenCalledWith("GenerateBatchCommand");
+    expect(logger.setContext).toHaveBeenCalledWith("StartCommand");
   });
 
   describe("parseOutputDirectory", () => {
@@ -106,15 +130,40 @@ describe(GenerateBatchCommand, () => {
       // snake: 5 rows * (1 + 1 + 1 + 1) modifiers = 20
       // swirl: 5 rows * (1 + 1) modifiers = 10
       // whirl: 5 rows * (1 + 1) modifiers = 10
-      const expectedFileCount = 36 + 18 + 20 + 20 + 10 + 10;
+      const expectedNamedTypeCount = 36 + 18 + 20 + 20 + 10 + 10;
+      const writtenFileNames = vi
+        .mocked(mockWriteFile)
+        .mock.calls.map(([filePath]) => filePath);
+      const namedTypeFiles = writtenFileNames.filter(
+        (filePath) => !filePath.includes("permutations"),
+      );
 
-      expect(mockWriteFile).toHaveBeenCalledTimes(expectedFileCount);
+      expect(namedTypeFiles).toHaveLength(expectedNamedTypeCount);
+      expect(new Set(writtenFileNames).size).toBe(writtenFileNames.length);
+    });
+
+    it("writes the mosaic half into a subdirectory of its own, with a contact sheet per row count", async () => {
+      await command.run([], { outputDirectory: "output" });
 
       const writtenFileNames = vi
         .mocked(mockWriteFile)
         .mock.calls.map(([filePath]) => filePath);
+      const permutations = writtenFileNames.filter((filePath) =>
+        filePath.includes("permutations"),
+      );
+      const contactSheets = permutations.filter((filePath) =>
+        filePath.includes("index-"),
+      );
 
-      expect(new Set(writtenFileNames).size).toBe(writtenFileNames.length);
+      expect(mockMkdir).toHaveBeenCalledWith("output/permutations", {
+        recursive: true,
+      });
+      // Every distinct tile at 4 through 8 rows, plus one sheet per row count.
+      expect(permutations).toHaveLength(3179 + 5);
+      expect(contactSheets).toHaveLength(5);
+      expect(permutations).toContain(
+        "output/permutations/mosaic-6-rows-1-columns-ddddd.svg",
+      );
     });
 
     it("generates every combination through the shared generation service", async () => {
@@ -179,7 +228,7 @@ describe(GenerateBatchCommand, () => {
       const collidingFileName = "boxes-3-rows-6-repeats.svg";
       const module = await Test.createTestingModule({
         providers: [
-          GenerateBatchCommand,
+          StartCommand,
           {
             provide: LoggerService,
             useValue: createMock<LoggerService>(),
@@ -194,9 +243,13 @@ describe(GenerateBatchCommand, () => {
               build: () => collidingFileName,
             }),
           },
+          {
+            provide: StartPermutationsService,
+            useValue: createMock<StartPermutationsService>(),
+          },
         ],
       }).compile();
-      const collidingCommand = await module.resolve(GenerateBatchCommand);
+      const collidingCommand = await module.resolve(StartCommand);
 
       await expect(
         collidingCommand.run([], { outputDirectory: "output" }),
@@ -209,14 +262,16 @@ describe(GenerateBatchCommand, () => {
       const module = await Test.createTestingModule({
         imports: [MeanderGenerationModule],
         providers: [
-          GenerateBatchCommand,
+          StartCommand,
+          StartContactSheetService,
+          StartPermutationsService,
           {
             provide: LoggerService,
             useValue: createMock<LoggerService>(),
           },
         ],
       }).compile();
-      const realCommand = await module.resolve(GenerateBatchCommand);
+      const realCommand = await module.resolve(StartCommand);
 
       mockMkdir.mockClear();
       mockWriteFile.mockClear();
@@ -225,11 +280,13 @@ describe(GenerateBatchCommand, () => {
         realCommand.run([], { outputDirectory: "output" }),
       ).resolves.toBeUndefined();
 
-      // 🎯 every one of the 114 enumerated combinations reached the real
-      // `MeanderGenerationService.generate` and its real validators without
-      // throwing — this is the regression guard the mocked tests above
-      // can't provide, since they replace the generation service entirely.
-      expect(mockWriteFile).toHaveBeenCalledTimes(114);
+      // 🎯 every one of the 114 enumerated named-type combinations, and
+      // every one of the 3,179 mosaic tiles, reached its real generation
+      // service and real validators without throwing — this is the
+      // regression guard the mocked tests above can't provide, since they
+      // replace the generation services entirely. The five extra files are
+      // the mosaic contact sheets, one per row count.
+      expect(mockWriteFile).toHaveBeenCalledTimes(114 + 3179 + 5);
     });
   });
 });

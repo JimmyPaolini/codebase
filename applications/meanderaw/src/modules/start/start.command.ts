@@ -19,22 +19,27 @@ import {
 import { MeanderGenerationService } from "../meander-generation/meander-generation.service";
 import { OutputFilenameService } from "../meander-generation/output-filename.service";
 
+import { StartPermutationsService } from "./start-permutations.service";
 import {
   ALTERNATED_SWEEP_PERIODS,
   DOT_SWEEP_SHAPES,
   ROWS_SWEEP_MAXIMUM,
-} from "./generate-batch.constants";
+} from "./start.constants";
 
 import type {
   GenerationParameters,
   MeanderType,
   Modifier,
 } from "../meander-generation/meander-generation.types";
-import type { GenerateBatchCommandOptions } from "./generate-batch.types";
+import type { StartCommandOptions } from "./start.types";
 
 /**
- * Generates every meander in a bounded, representative sweep of the whole
- * parameter space and writes each one to disk. For every implemented type,
+ * Generates every meander the application can draw and writes them all to
+ * disk. It is the application's default command, so running it with no
+ * arguments at all runs this.
+ *
+ * The sweep has two halves. The first is a bounded, representative sample
+ * of the named types' parameter space. For every implemented type,
  * sweeps rows from that type's `STRUCTURAL_MINIMUM_ROWS` through
  * `ROWS_SWEEP_MAXIMUM` (8), and every modifier `COMPATIBLE_MODIFIERS` lists
  * for that type plus "no modifier" — `alternated` and `dot` each expand
@@ -46,14 +51,19 @@ import type { GenerateBatchCommandOptions } from "./generate-batch.types";
  * — so the generation service doesn't reject a cut-off rotation. This produces
  * roughly a hundred files rather than the many hundreds a full
  * rows-by-repeat-count-by-modifier-parameter cross product would.
+ *
+ * The second half is the `mosaic` family, which is enumerated exhaustively
+ * rather than sampled — see {@link StartPermutationsService}. It lands in a
+ * subdirectory of its own because it runs to thousands of files.
  */
 @Command({
   description:
-    "Generate every meander in a bounded sweep (structural-minimum-through-8 rows, every compatible modifier plus none, representative modifier-parameter values) and write them all to disk",
-  name: "generate-batch",
+    "Generate every meander: a bounded sweep of the named types (structural-minimum-through-8 rows, every compatible modifier plus none) plus an exhaustive enumeration of the mosaic family, written to disk",
+  name: "start",
+  options: { isDefault: true },
 })
 @Injectable()
-export class GenerateBatchCommand extends CommandRunner {
+export class StartCommand extends CommandRunner {
   // 🏗 Dependency Injection
 
   constructor(
@@ -62,9 +72,11 @@ export class GenerateBatchCommand extends CommandRunner {
     private readonly meanderGenerationService: MeanderGenerationService,
     @Inject(OutputFilenameService)
     private readonly outputFilenameService: OutputFilenameService,
+    @Inject(StartPermutationsService)
+    private readonly startPermutationsService: StartPermutationsService,
   ) {
     super();
-    this.logger.setContext(GenerateBatchCommand.name);
+    this.logger.setContext(StartCommand.name);
   }
 
   // 🔐 Private Fields
@@ -172,10 +184,10 @@ export class GenerateBatchCommand extends CommandRunner {
     return value;
   }
 
-  /** Generates every combination in the sweep and writes each one to disk. */
+  /** Generates both halves of the sweep and writes every file to disk. */
   async run(
     _passedParameters: string[],
-    options: GenerateBatchCommandOptions,
+    options: StartCommandOptions,
   ): Promise<void> {
     const combinations = this.buildCombinations();
     const files = combinations.map((parameters) => ({
@@ -192,9 +204,14 @@ export class GenerateBatchCommand extends CommandRunner {
       ),
     );
 
-    this.logger.log("✨ Generated a batch of meanders", undefined, {
+    const permutations = await this.startPermutationsService.write(
+      options.outputDirectory,
+    );
+
+    this.logger.log("✨ Generated every meander", undefined, {
       count: files.length,
       outputDirectory: options.outputDirectory,
+      permutations,
     });
   }
 }

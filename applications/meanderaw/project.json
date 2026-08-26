@@ -14,10 +14,10 @@
   "targets": {
     "build": {
       "cache": false,
-      "description": "Build Meanderaw by regenerating every meander SVG in the generate-batch sweep (every type, every compatible modifier, structural-minimum-through-8 rows) into output/",
+      "description": "Build Meanderaw by regenerating every meander SVG the start sweep produces (every named type and compatible modifier at structural-minimum-through-8 rows, plus the exhaustive mosaic enumeration) into output/",
       "executor": "nx:run-commands",
       "options": {
-        "command": "node --import @swc-node/register/esm-register src/main.ts generate-batch",
+        "command": "node --import @swc-node/register/esm-register src/main.ts start",
         "cwd": "{projectRoot}"
       }
     },
@@ -41,7 +41,7 @@
     "spell-check": {},
     "start": {
       "cache": false,
-      "description": "Start the Meanderaw application",
+      "description": "Start the Meanderaw application, which with no arguments runs the start command's full sweep",
       "executor": "nx:run-commands",
       "options": {
         "command": "node --import @swc-node/register/esm-register src/main.ts {args}",

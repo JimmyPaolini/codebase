@@ -22,6 +22,17 @@ export const ALTERNATED_SWEEP_PERIODS: readonly number[] = [1, 3];
 export const DOT_SWEEP_SHAPES: readonly DotShape[] = ["bounce", "up"];
 
 /**
+ * Subdirectory of the output directory the mosaic permutations are written
+ * to. They are kept out of the main sweep's own directory, and out of git,
+ * because the enumeration runs to thousands of files — the named-type sweep
+ * beside them is a reviewable hundred.
+ */
+export const PERMUTATIONS_SUBDIRECTORY = "permutations";
+
+/** `repeatCount` every swept mosaic is drawn at, wide enough to read the tile's rhythm without dominating a contact sheet. */
+export const PERMUTATION_REPEAT_COUNT = 6;
+
+/**
  * Highest `rows` value swept per type, starting from that type's own
  * `STRUCTURAL_MINIMUM_ROWS`. Chosen well below the shared `MAXIMUM_VALUE`
  * (12) so the sweep stays a bounded sample of the space — enough rows to

@@ -5,8 +5,8 @@ import { DiscoveryModule } from "@nestjs/core";
 import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
-import { GenerateBatchModule } from "./modules/generate-batch/generate-batch.module";
 import { GenerateModule } from "./modules/generate/generate.module";
+import { StartModule } from "./modules/start/start.module";
 
 /**
  * Root NestJS application module.
@@ -21,8 +21,8 @@ import { GenerateModule } from "./modules/generate/generate.module";
     }),
     DiscoveryModule,
     LoggerModule,
-    GenerateBatchModule,
     GenerateModule,
+    StartModule,
   ],
 })
 export class MainModule {}
