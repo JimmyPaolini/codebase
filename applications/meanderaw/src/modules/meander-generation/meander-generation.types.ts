@@ -3,13 +3,10 @@
 /**
  * One column-and-level-range run of a `bars` zigzag, produced by
  * {@link MotifTransformsService.alternate}: `column` is `0` for a repeat
- * unit's own column, `1` for its neighbor, and `fromLevel`/`toLevel` are the
- * grid levels the run's vertical segment spans.
+ * unit's own column and `1` for its neighbor.
  */
-export interface AlternateRun {
+export interface AlternateRun extends MotifLevelSpan {
   readonly column: 0 | 1;
-  readonly fromLevel: number;
-  readonly toLevel: number;
 }
 
 /** Mutable in-progress bounds of the inward spiral `boxes` traces, in grid levels rather than pixels. */
@@ -79,6 +76,16 @@ export type Modifier =
 
 /** A point in the transforms layer expressed as `[xLevel, yLevel]` grid levels, not yet converted to pixel coordinates. */
 export type MotifLevelPoint = readonly [number, number];
+
+/**
+ * A stretch of one column, in grid levels rather than pixels. `fromLevel`
+ * equal to `toLevel` is a legal, zero-length span: `stroke-linecap="square"`
+ * renders it as a small square mark rather than nothing.
+ */
+export interface MotifLevelSpan {
+  readonly fromLevel: number;
+  readonly toLevel: number;
+}
 
 /**
  * The per-type contract `MeanderGenerationService` dispatches through:

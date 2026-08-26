@@ -5,9 +5,139 @@ import { BarsMotifService } from "./bars-motif.service";
 import { GridGeometryService } from "./grid-geometry.service";
 import { MotifTransformsService } from "./motif-transforms.service";
 
+import type { Modifier, MotifUnit } from "./meander-generation.types";
+
+// 🔧 Configuration
+
+/** One drawn stroke of a `bars` path, as the two endpoints it was traced between. */
+interface PathSegment {
+  readonly fromX: number;
+  readonly fromY: number;
+  readonly toX: number;
+  readonly toY: number;
+}
+
+/** Re-traces a `bars` path attribute back into the segments it draws, in order. */
+const parseSegments = (pathData: string): PathSegment[] => {
+  const tokens = pathData.match(/[MVH][\d.]+(?: [\d.]+)?/g) ?? [];
+  const segments: PathSegment[] = [];
+  let currentX = 0;
+  let currentY = 0;
+
+  for (const token of tokens) {
+    const numbers = token.slice(1).split(" ").map(Number);
+    const [first = 0, second = 0] = numbers;
+
+    if (token.startsWith("M")) {
+      currentX = first;
+      currentY = second;
+      continue;
+    }
+
+    const fromX = currentX;
+    const fromY = currentY;
+
+    if (token.startsWith("H")) {
+      currentX = first;
+    } else {
+      currentY = first;
+    }
+
+    segments.push({ fromX, fromY, toX: currentX, toY: currentY });
+  }
+
+  return segments;
+};
+
+/**
+ * The longest unfilled vertical stretch any single column of a `bars` path
+ * leaves behind, in pixels. Every segment is inflated by half a stroke width
+ * in both directions, since `stroke-linecap="square"` extends each stroke
+ * that far past its own endpoints, and the two cap ticks count as ink for
+ * every column they span.
+ */
+const longestBlank = (pathData: string, strokeWidth: number): number => {
+  const half = strokeWidth / 2;
+  const segments = parseSegments(pathData);
+  const columns = new Set(
+    segments
+      .filter((segment) => segment.fromX === segment.toX)
+      .map((segment) => segment.fromX),
+  );
+
+  if (columns.size === 0) {
+    throw new Error(`No column drawn in path data: ${pathData}`);
+  }
+
+  let longest = 0;
+
+  for (const column of columns) {
+    const spans = segments
+      .filter(
+        (segment) =>
+          Math.min(segment.fromX, segment.toX) - half <= column &&
+          column <= Math.max(segment.fromX, segment.toX) + half,
+      )
+      .map((segment) => ({
+        from: Math.min(segment.fromY, segment.toY) - half,
+        to: Math.max(segment.fromY, segment.toY) + half,
+      }))
+      .toSorted((first, second) => first.from - second.from);
+
+    let filledTo = spans[0]?.to ?? 0;
+
+    for (const span of spans) {
+      longest = Math.max(longest, span.from - filledTo);
+      filledTo = Math.max(filledTo, span.to);
+    }
+  }
+
+  return longest;
+};
+
+/** One `bars` variant the CLI can produce: a label, and the modifier that produces it. */
+interface BarsVariant {
+  readonly label: string;
+  readonly modifier?: Modifier;
+}
+
+const variants: readonly BarsVariant[] = [
+  { label: "plain" },
+  { label: "alternated period 1", modifier: { name: "alternated", period: 1 } },
+  { label: "alternated period 2", modifier: { name: "alternated", period: 2 } },
+  { label: "alternated period 3", modifier: { name: "alternated", period: 3 } },
+  { label: "dot bounce", modifier: { name: "dot", shape: "bounce" } },
+  { label: "dot up", modifier: { name: "dot", shape: "up" } },
+  { label: "split", modifier: { name: "split" } },
+];
+
+const rowsValues = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+/** Builds one repeat unit's options, leaving `modifier` off entirely for the plain variant. */
+const motifUnit = (
+  variant: BarsVariant,
+  rows: number,
+  unitIndex: number,
+): MotifUnit =>
+  variant.modifier
+    ? { modifier: variant.modifier, rows, unitIndex }
+    : { rows, unitIndex };
+
+/**
+ * How far a measured blank may exceed the stroke width before it counts as
+ * a real gap. `GridGeometryService.formatCoordinate` rounds every
+ * coordinate to five decimal places, so at a row count whose grid unit
+ * doesn't divide the canvas evenly (7, 9, 11) two rounded endpoints can
+ * leave a blank a few millionths of a pixel over the limit.
+ */
+const roundingTolerance = 0.0001;
+
+// 🧪 Tests
+
 describe(BarsMotifService, () => {
   let service: BarsMotifService;
   let gridGeometryService: GridGeometryService;
+  let motifTransformsService: MotifTransformsService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -20,6 +150,7 @@ describe(BarsMotifService, () => {
 
     service = await module.resolve(BarsMotifService);
     gridGeometryService = await module.resolve(GridGeometryService);
+    motifTransformsService = await module.resolve(MotifTransformsService);
   });
 
   it("is defined", () => {
@@ -71,7 +202,7 @@ describe(BarsMotifService, () => {
       );
     });
 
-    it("draws period 1's zigzag, matching the real edges decoded from 5 rows bars alternated.svg", () => {
+    it("draws period 1's zigzag with both columns filled against the caps at 5 rows", () => {
       const geometry = gridGeometryService.compute(5);
 
       expect(
@@ -80,7 +211,7 @@ describe(BarsMotifService, () => {
           rows: 5,
           unitIndex: 0,
         }),
-      ).toBe("M3 15V27M15 27V39M3 39V51M3 3H27M3 63H27");
+      ).toBe("M3 15V27M3 39V51M15 15V51M3 3H27M3 63H27");
     });
 
     it("advances two real columns per unit index for the alternated modifier", () => {
@@ -92,10 +223,10 @@ describe(BarsMotifService, () => {
           rows: 5,
           unitIndex: 1,
         }),
-      ).toBe("M27 15V27M39 27V39M27 39V51M27 3H51M27 63H51");
+      ).toBe("M27 15V27M27 39V51M39 15V51M27 3H51M27 63H51");
     });
 
-    it("draws period 1's zigzag, matching the real edges decoded from 8 rows bars alternated.svg", () => {
+    it("draws period 1's zigzag at 8 rows, where the own column's final dash absorbs the gap that would have ended it", () => {
       const geometry = gridGeometryService.compute(8);
 
       expect(
@@ -105,7 +236,7 @@ describe(BarsMotifService, () => {
           unitIndex: 0,
         }),
       ).toBe(
-        "M1.875 9.375V16.875M9.375 16.875V24.375M1.875 24.375V31.875M9.375 31.875V39.375M1.875 39.375V46.875M9.375 46.875V54.375M1.875 1.875H16.875M1.875 61.875H16.875",
+        "M1.875 9.375V16.875M1.875 24.375V31.875M1.875 39.375V54.375M9.375 9.375V24.375M9.375 31.875V39.375M9.375 46.875V54.375M1.875 1.875H16.875M1.875 61.875H16.875",
       );
     });
 
@@ -119,7 +250,7 @@ describe(BarsMotifService, () => {
           unitIndex: 0,
         }),
       ).toBe(
-        "M3 15V27M27 27V39M3 39V51M15 15V27M39 27V39M15 39V51M3 3H51M3 63H51",
+        "M3 15V27M3 39V51M27 15V51M15 15V27M15 39V51M39 15V51M3 3H51M3 63H51",
       );
     });
 
@@ -133,11 +264,11 @@ describe(BarsMotifService, () => {
           unitIndex: 1,
         }),
       ).toBe(
-        "M51 15V27M75 27V39M51 39V51M63 15V27M87 27V39M63 39V51M51 3H99M51 63H99",
+        "M51 15V27M51 39V51M75 15V51M63 15V27M63 39V51M87 15V51M51 3H99M51 63H99",
       );
     });
 
-    it("draws the bounce dot phases, matching the real edges decoded from 6 rows bars dot bounce.svg", () => {
+    it("draws the bounce dot phases at 6 rows: a whole bar per column with one grid unit lifted out around that column's dot", () => {
       const geometry = gridGeometryService.compute(6);
 
       expect(
@@ -147,7 +278,7 @@ describe(BarsMotifService, () => {
           unitIndex: 0,
         }),
       ).toBe(
-        "M2.5 12.5V22.5M2.5 32.5V42.5M2.5 52.5H2.5M12.5 12.5V22.5M12.5 42.5V52.5M12.5 32.5H12.5M22.5 22.5V32.5M22.5 42.5V52.5M22.5 12.5H22.5M32.5 12.5V22.5M32.5 42.5V52.5M32.5 32.5H32.5M2.5 2.5H42.5M2.5 62.5H42.5",
+        "M2.5 12.5V42.5M2.5 52.5H2.5M12.5 12.5V22.5M12.5 42.5V52.5M12.5 32.5H12.5M22.5 22.5V52.5M22.5 12.5H22.5M32.5 12.5V22.5M32.5 42.5V52.5M32.5 32.5H32.5M2.5 2.5H42.5M2.5 62.5H42.5",
       );
     });
 
@@ -161,11 +292,11 @@ describe(BarsMotifService, () => {
           unitIndex: 1,
         }),
       ).toBe(
-        "M42.5 12.5V22.5M42.5 32.5V42.5M42.5 52.5H42.5M52.5 12.5V22.5M52.5 42.5V52.5M52.5 32.5H52.5M62.5 22.5V32.5M62.5 42.5V52.5M62.5 12.5H62.5M72.5 12.5V22.5M72.5 42.5V52.5M72.5 32.5H72.5M42.5 2.5H82.5M42.5 62.5H82.5",
+        "M42.5 12.5V42.5M42.5 52.5H42.5M52.5 12.5V22.5M52.5 42.5V52.5M52.5 32.5H52.5M62.5 22.5V52.5M62.5 12.5H62.5M72.5 12.5V22.5M72.5 42.5V52.5M72.5 32.5H72.5M42.5 2.5H82.5M42.5 62.5H82.5",
       );
     });
 
-    it("draws the bounce dot phases at a deeper row count, matching the real edges decoded from 8 rows bars dot bounce.svg", () => {
+    it("draws the bounce dot phases at a deeper row count, one more column per period", () => {
       const geometry = gridGeometryService.compute(8);
 
       expect(
@@ -175,11 +306,11 @@ describe(BarsMotifService, () => {
           unitIndex: 0,
         }),
       ).toBe(
-        "M1.875 9.375V16.875M1.875 24.375V31.875M1.875 39.375V46.875M1.875 54.375H1.875M9.375 9.375V16.875M9.375 24.375V31.875M9.375 46.875V54.375M9.375 39.375H9.375M16.875 9.375V16.875M16.875 31.875V39.375M16.875 46.875V54.375M16.875 24.375H16.875M24.375 16.875V24.375M24.375 31.875V39.375M24.375 46.875V54.375M24.375 9.375H24.375M31.875 9.375V16.875M31.875 31.875V39.375M31.875 46.875V54.375M31.875 24.375H31.875M39.375 9.375V16.875M39.375 24.375V31.875M39.375 46.875V54.375M39.375 39.375H39.375M1.875 1.875H46.875M1.875 61.875H46.875",
+        "M1.875 9.375V46.875M1.875 54.375H1.875M9.375 9.375V31.875M9.375 46.875V54.375M9.375 39.375H9.375M16.875 9.375V16.875M16.875 31.875V54.375M16.875 24.375H16.875M24.375 16.875V54.375M24.375 9.375H24.375M31.875 9.375V16.875M31.875 31.875V54.375M31.875 24.375H31.875M39.375 9.375V31.875M39.375 46.875V54.375M39.375 39.375H39.375M1.875 1.875H46.875M1.875 61.875H46.875",
       );
     });
 
-    it("draws the up dot phases, matching the real edges decoded from 6 rows bars dot up.svg: the same first three columns as bounce, reset at a 3-column period instead of mirrored at 4", () => {
+    it("draws the up dot phases at 6 rows: the same first three columns as bounce, reset at a 3-column period instead of mirrored at 4", () => {
       const geometry = gridGeometryService.compute(6);
 
       expect(
@@ -189,11 +320,11 @@ describe(BarsMotifService, () => {
           unitIndex: 0,
         }),
       ).toBe(
-        "M2.5 12.5V22.5M2.5 32.5V42.5M2.5 52.5H2.5M12.5 12.5V22.5M12.5 42.5V52.5M12.5 32.5H12.5M22.5 22.5V32.5M22.5 42.5V52.5M22.5 12.5H22.5M2.5 2.5H32.5M2.5 62.5H32.5",
+        "M2.5 12.5V42.5M2.5 52.5H2.5M12.5 12.5V22.5M12.5 42.5V52.5M12.5 32.5H12.5M22.5 22.5V52.5M22.5 12.5H22.5M2.5 2.5H32.5M2.5 62.5H32.5",
       );
     });
 
-    it("draws the up dot phases at a deeper row count, matching the real edges decoded from 8 rows bars dot up.svg", () => {
+    it("draws the up dot phases at a deeper row count, one more column per period", () => {
       const geometry = gridGeometryService.compute(8);
 
       expect(
@@ -203,28 +334,28 @@ describe(BarsMotifService, () => {
           unitIndex: 0,
         }),
       ).toBe(
-        "M1.875 9.375V16.875M1.875 24.375V31.875M1.875 39.375V46.875M1.875 54.375H1.875M9.375 9.375V16.875M9.375 24.375V31.875M9.375 46.875V54.375M9.375 39.375H9.375M16.875 9.375V16.875M16.875 31.875V39.375M16.875 46.875V54.375M16.875 24.375H16.875M24.375 16.875V24.375M24.375 31.875V39.375M24.375 46.875V54.375M24.375 9.375H24.375M1.875 1.875H31.875M1.875 61.875H31.875",
+        "M1.875 9.375V46.875M1.875 54.375H1.875M9.375 9.375V31.875M9.375 46.875V54.375M9.375 39.375H9.375M16.875 9.375V16.875M16.875 31.875V54.375M16.875 24.375H16.875M24.375 16.875V54.375M24.375 9.375H24.375M1.875 1.875H31.875M1.875 61.875H31.875",
       );
     });
 
-    it("draws a genuinely visible dot at an odd row count instead of silently swallowing it into an adjacent run", () => {
+    it("draws a genuinely visible dot at an odd row count, without a bare square mark beside it", () => {
       const geometry = gridGeometryService.compute(5);
 
-      // Regression coverage for a bug caught in review: at odd `rows`,
-      // `rows - 1` is even, so a naive dot-level formula would land the dot
-      // exactly on a run endpoint instead of in a gap between two skipped
-      // runs, and the dot would be swallowed into what looks like one
-      // continuous line. `dotLevels(5, ...)` trims to `[3, 1]` (both odd)
-      // instead of `[4, 2]`, so each column below draws exactly one
-      // one-unit run plus a distinct zero-length dot segment — never a
-      // dot coinciding with, or absorbed into, a drawn run.
+      // Regression coverage for issue #339. At 5 rows the bar spans grid
+      // levels 1 through 4 and `dotLevels(5, ...)` is `[4, 1]` — both ends
+      // of the bar, taking a three-level step rather than passing through
+      // level 2. A dot on level 2 would leave `[1, dotLevel - 1]` collapsed
+      // onto the single level 1, which renders as a square mark the viewer
+      // cannot tell apart from the dot one level below it.
+      const expected = "M3 15V39M3 51H3M15 27V51M15 15H15M3 3H27M3 63H27";
+
       expect(
         service.path(geometry, {
           modifier: { name: "dot", shape: "bounce" },
           rows: 5,
           unitIndex: 0,
         }),
-      ).toBe("M3 15V27M3 39H3M15 27V39M15 15H15M3 3H27M3 63H27");
+      ).toBe(expected);
 
       expect(
         service.path(geometry, {
@@ -232,7 +363,49 @@ describe(BarsMotifService, () => {
           rows: 5,
           unitIndex: 0,
         }),
-      ).toBe("M3 15V27M3 39H3M15 27V39M15 15H15M3 3H27M3 63H27");
+      ).toBe(expected);
+    });
+
+    it("falls through to the unmodified bar for the dot modifier at 3 rows, where the bar has no two levels to give up", () => {
+      const geometry = gridGeometryService.compute(3);
+      const plainPath = service.path(geometry, { rows: 3, unitIndex: 0 });
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "dot", shape: "up" },
+          rows: 3,
+          unitIndex: 0,
+        }),
+      ).toBe(plainPath);
+    });
+
+    it("absorbs the split modifier's trailing gap at an even row count, so the bar still ends on a dash", () => {
+      const geometry = gridGeometryService.compute(6);
+
+      // At 6 rows the bar spans four grid units, an even count, so a strict
+      // dash/gap alternation would end on a gap and leave that gap butting
+      // against the bottom cap's own gap. The final dash runs two units
+      // instead.
+      expect(
+        service.path(geometry, {
+          modifier: { name: "split" },
+          rows: 6,
+          unitIndex: 0,
+        }),
+      ).toBe("M2.5 12.5V22.5M2.5 32.5V52.5M2.5 2.5H12.5M2.5 62.5H12.5");
+    });
+
+    it("degenerates the split modifier to the unmodified bar at 4 rows, the same way 3 rows already did", () => {
+      const geometry = gridGeometryService.compute(4);
+      const plainPath = service.path(geometry, { rows: 4, unitIndex: 0 });
+
+      expect(
+        service.path(geometry, {
+          modifier: { name: "split" },
+          rows: 4,
+          unitIndex: 0,
+        }),
+      ).toBe(plainPath);
     });
 
     it("draws alternating dash/gap segments for the split modifier, matching 5 rows bars split.svg", () => {
@@ -284,6 +457,63 @@ describe(BarsMotifService, () => {
         }),
       ).toBe("M5 25V45M5 5H25M5 65H25");
     });
+  });
+
+  describe("space-filling", () => {
+    it.each(
+      rowsValues.flatMap((rows) =>
+        variants.map((variant) => ({ ...variant, rows })),
+      ),
+    )(
+      "leaves no unfilled stretch wider than one stroke width in $label at $rows rows",
+      (variant) => {
+        const geometry = gridGeometryService.compute(variant.rows);
+        const pathData = service.path(
+          geometry,
+          motifUnit(variant, variant.rows, 0),
+        );
+
+        expect(
+          longestBlank(pathData, geometry.strokeWidth),
+        ).toBeLessThanOrEqual(geometry.strokeWidth + roundingTolerance);
+      },
+    );
+
+    it.each(variants)(
+      "stays space-filling in later repeat units too, in $label",
+      (variant) => {
+        const geometry = gridGeometryService.compute(6);
+        const pathData = service.path(geometry, motifUnit(variant, 6, 3));
+
+        expect(
+          longestBlank(pathData, geometry.strokeWidth),
+        ).toBeLessThanOrEqual(geometry.strokeWidth + roundingTolerance);
+      },
+    );
+
+    it.each(rowsValues)(
+      "never draws a bare square mark that a dot could be confused with, at %i rows",
+      (rows) => {
+        const geometry = gridGeometryService.compute(rows);
+
+        for (const shape of ["bounce", "up"] as const) {
+          const pathData = service.path(geometry, {
+            modifier: { name: "dot", shape },
+            rows,
+            unitIndex: 0,
+          });
+          const marks = parseSegments(pathData).filter(
+            (segment) =>
+              segment.fromX === segment.toX && segment.fromY === segment.toY,
+          );
+          const dotLevelCount =
+            rows < 4 ? 0 : motifTransformsService.dotLevels(rows, shape).length;
+
+          // One zero-length mark per phase — the dot — and not one more.
+          expect(marks).toHaveLength(dotLevelCount);
+        }
+      },
+    );
   });
 
   describe("rightEdge", () => {

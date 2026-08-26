@@ -1,11 +1,13 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { GridGeometryService } from "./grid-geometry.service";
+import { DOT_MINIMUM_ROWS } from "./meander-generation.constants";
 import { MotifTransformsService } from "./motif-transforms.service";
 
 import type {
   DotShape,
   GridGeometry,
+  MotifLevelSpan,
   MotifService,
   MotifUnit,
   RepeatPatternOptions,
@@ -37,25 +39,32 @@ export class BarsMotifService implements MotifService {
   // 🔏 Private Methods
 
   /**
-   * Draws the `alternated` modifier's zigzag. `period` controls the
-   * repeat tile's column span — `2 * period` real columns per tile —
-   * confirmed against `7 rows bars alternated.svg` (period 1, 2 columns),
+   * Draws the `alternated` modifier's zigzag. `period` controls the repeat
+   * tile's column span — `2 * period` real columns per tile — confirmed
+   * against `7 rows bars alternated.svg` (period 1, 2 columns),
    * `7 rows bars alternated 2.svg` (period 2, 4 columns), and
    * `7 rows bars alternated 3.svg` (period 3, 6 columns): all three decode
-   * cleanly to `columns = 2 * period` at the same row count. The interior
-   * zigzag pattern inside those wider tiles is hand-mangled in the
-   * reference files (non-uniform edge density in `alternated 2`, an
-   * incomplete second band stacked in `alternated 3`) and unrecoverable as
-   * one parameterized rule, so the tile is filled with `period` copies of
-   * the same period-1 interior zigzag, each copy pairing column
-   * `tileStart + offset` in the tile's first half with column
-   * `tileStart + period + offset` in its second half (`offset` ranging over
-   * `0` through `period - 1`) — no half is a self-contained zigzag on its
-   * own; the two halves interleave column-by-column. This is verified
-   * exact against the `5`, `7`, and `8` rows "bars alternated" reference
-   * files — see
-   * {@link MotifTransformsService.alternate} (always called here with a
-   * fixed run length of `1`; `period` never reaches that argument).
+   * cleanly to `columns = 2 * period` at the same row count. The tile is
+   * filled with `period` copies of the same period-1 interior zigzag, each
+   * copy pairing column `tileStart + offset` in the tile's first half with
+   * column `tileStart + period + offset` in its second half (`offset`
+   * ranging over `0` through `period - 1`) — no half is a self-contained
+   * zigzag on its own; the two halves interleave column-by-column.
+   *
+   * Each of the two columns takes its half of
+   * {@link MotifTransformsService.alternate}'s unit-length split through
+   * {@link MotifTransformsService.columnSpans}, so both columns draw the
+   * split's first and last run and neither leaves a skipped run against a
+   * cap tick.
+   *
+   * That end rule costs the zigzag at low row counts, unavoidably. Every
+   * column has to carry ink on both its first and last grid unit, so with
+   * the bar's `rows - 2` units down to two (4 rows) the only pattern left is
+   * solid, and the tile is a pair of plain bars under one shared cap; with
+   * three (5 rows) the only two are solid and one-gap-in-the-middle, so the
+   * own column dashes and the neighbor column fills solid. From 6 rows up
+   * the two columns are genuinely different patterns again and the zigzag
+   * reads normally.
    */
   private alternatedPath(
     geometry: GridGeometry,
@@ -63,10 +72,11 @@ export class BarsMotifService implements MotifService {
     period: number,
   ): string {
     const { rows, unitIndex } = unit;
-    const format = (value: number): string =>
-      this.gridGeometryService.formatCoordinate(value);
+    const format = (value: number): string => this.format(value);
     const tileStartColumn = unitIndex * 2 * period;
     const runs = this.motifTransformsService.alternate(1, rows - 1, 1);
+    const ownSpans = this.motifTransformsService.columnSpans(runs, 0);
+    const neighborSpans = this.motifTransformsService.columnSpans(runs, 1);
 
     const runSegments = Array.from({ length: period }, (_value, offset) => {
       const ownColumnX =
@@ -74,15 +84,11 @@ export class BarsMotifService implements MotifService {
       const neighborColumnX =
         geometry.offset + (tileStartColumn + period + offset) * geometry.unit;
 
-      return runs
-        .map((run) => {
-          const columnX = run.column === 0 ? ownColumnX : neighborColumnX;
-          const fromY = geometry.offset + run.fromLevel * geometry.unit;
-          const toY = geometry.offset + run.toLevel * geometry.unit;
-
-          return `M${format(columnX)} ${format(fromY)}V${format(toY)}`;
-        })
-        .join("");
+      return `${this.spanSegments(geometry, ownColumnX, ownSpans)}${this.spanSegments(
+        geometry,
+        neighborColumnX,
+        neighborSpans,
+      )}`;
     }).join("");
 
     const tileStartX = format(
@@ -100,33 +106,28 @@ export class BarsMotifService implements MotifService {
   /**
    * Draws the `dot` modifier's overlay: widens each repeat unit's tile to
    * `period` real columns — `period` is `shape`'s dot-level sequence length
-   * from {@link MotifTransformsService.dotLevels} — and gives each of those
-   * columns its own dot level plus a run pattern derived from it. A column's
-   * runs reuse {@link MotifTransformsService.alternate}'s `[1, rows - 1]`
-   * division into unit-length runs, alternating column `0`/`1`: a run below
-   * the column's own dot level is drawn only if it's a column-`0` run, a run
-   * above only if it's a column-`1` run (a run's level range never straddles
-   * the dot level itself, since every run's midpoint is a half-integer and
-   * the dot level is always a whole one). Verified exact against every
-   * column of `6 rows bars dot bounce.svg`, `8 rows bars dot bounce.svg`,
-   * `6 rows bars dot up.svg`, and `8 rows bars dot up.svg`: this parity
-   * split — not a narrower "only the run(s) touching the dot" rule — is
-   * what the real reference files draw, alternating full dashes and gaps by
-   * column rather than filling everywhere except right at the dot. This
-   * draw-or-skip rule is also why
-   * {@link MotifTransformsService.dotLevels} must only ever hand back odd
-   * levels: at an odd level, BOTH the run immediately below it (ending at
-   * that level) and the run immediately above it (starting at that level)
-   * land on the "wrong" side of their own column check and get skipped,
-   * leaving a real gap for the dot to sit in. At an even level, both of
-   * those two adjacent runs land on the "right" side and ARE drawn, silently
-   * swallowing the dot into what looks like one continuous run — exactly
-   * what happened at every odd `rows` before `dotLevels` was fixed to always
-   * emit odd levels regardless of `rows`'s parity (odd `rows` makes
-   * `rows - 1` even, so a naive "count down from `rows - 1`" sequence lands
-   * on even levels there). The dot itself is a zero-length path segment at
-   * the column's own x and the dot level's y, which
-   * `stroke-linecap="square"` renders as a small square mark.
+   * from {@link MotifTransformsService.dotLevels}, `4` for `bounce` and `3`
+   * for `up` at 6 rows — and gives each of those columns its own dot level.
+   *
+   * A column draws the same bar every other `bars` variant draws, spanning
+   * grid levels 1 through `rows - 1`, with the two grid levels either side
+   * of its own dot level given up to the dot: the spans `[1, dotLevel - 1]`
+   * and `[dotLevel + 1, rows - 1]`, with the dot's own mark centered in what
+   * they leave behind. That is the tightest break the design's own
+   * vocabulary allows — `stroke-linecap="square"` gives a quarter unit back
+   * at each of the two endpoints facing across each half of it, so the dot
+   * ends up with exactly one stroke width of white on either side: the same
+   * channel that separates two neighboring bars. So the dot always reads as
+   * a dot and is never swallowed into a continuous line.
+   *
+   * The span on the far side is dropped when the dot sits on a bar end
+   * (levels `1` and `rows - 1`), where the cap tick frames the dot instead.
+   * Neither span can collapse to a bare point: that needs a dot on level `2`
+   * or `rows - 2`, and {@link MotifTransformsService.dotLevels} keeps the
+   * ladder clear of both — a point would render as a square mark
+   * indistinguishable from the dot one level away. Below
+   * {@link DOT_MINIMUM_ROWS} rows the bar has no two levels to give up at
+   * all, and {@link path} never routes here.
    */
   private dotPath(
     geometry: GridGeometry,
@@ -134,36 +135,27 @@ export class BarsMotifService implements MotifService {
     shape: DotShape,
   ): string {
     const { rows, unitIndex } = unit;
-    const format = (value: number): string =>
-      this.gridGeometryService.formatCoordinate(value);
+    const format = (value: number): string => this.format(value);
     const dotLevels = this.motifTransformsService.dotLevels(rows, shape);
     const period = dotLevels.length;
-    const runs = this.motifTransformsService.alternate(1, rows - 1, 1);
     const tileStartColumn = unitIndex * period;
 
     const phaseSegments = dotLevels
       .map((dotLevel, phase) => {
-        const columnX = format(
-          geometry.offset + (tileStartColumn + phase) * geometry.unit,
-        );
+        const columnX =
+          geometry.offset + (tileStartColumn + phase) * geometry.unit;
         const dotY = format(geometry.offset + dotLevel * geometry.unit);
+        const barSpans: readonly MotifLevelSpan[] = [
+          { fromLevel: 1, toLevel: dotLevel - 1 },
+          { fromLevel: dotLevel + 1, toLevel: rows - 1 },
+        ];
+        const drawnSpans = barSpans.filter(
+          (span) => span.fromLevel < span.toLevel,
+        );
 
-        const runSegments = runs
-          .filter((run) => {
-            const midpoint = (run.fromLevel + run.toLevel) / 2;
-            return midpoint < dotLevel ? run.column === 0 : run.column === 1;
-          })
-          .map((run) => {
-            const fromY = format(
-              geometry.offset + run.fromLevel * geometry.unit,
-            );
-            const toY = format(geometry.offset + run.toLevel * geometry.unit);
-
-            return `M${columnX} ${fromY}V${toY}`;
-          })
-          .join("");
-
-        return `${runSegments}M${columnX} ${dotY}H${columnX}`;
+        return `${this.spanSegments(geometry, columnX, drawnSpans)}M${format(
+          columnX,
+        )} ${dotY}H${format(columnX)}`;
       })
       .join("");
 
@@ -179,11 +171,38 @@ export class BarsMotifService implements MotifService {
     return `${phaseSegments}M${tileStartX} ${capTopY}H${capRightX}M${tileStartX} ${capBottomY}H${capRightX}`;
   }
 
+  /** Rounds and trims one pixel coordinate for interpolation into path data. */
+  private format(value: number): string {
+    return this.gridGeometryService.formatCoordinate(value);
+  }
+
+  /**
+   * Serializes one column's already-chosen level spans into path data, as
+   * one `M`-then-`V` vertical segment per span.
+   */
+  private spanSegments(
+    geometry: GridGeometry,
+    columnX: number,
+    spans: readonly MotifLevelSpan[],
+  ): string {
+    const format = (value: number): string => this.format(value);
+
+    return spans
+      .map((span) => {
+        const fromY = format(geometry.offset + span.fromLevel * geometry.unit);
+        const toY = format(geometry.offset + span.toLevel * geometry.unit);
+
+        return `M${format(columnX)} ${fromY}V${toY}`;
+      })
+      .join("");
+  }
+
   /**
    * Draws the `split` modifier's dashed bar: breaks the continuous vertical
-   * bar spanning grid levels 1 through `rows - 1` into unit-length dashes
-   * separated by unit-length gaps, starting with a dash right below the top
-   * cap. The two caps themselves are untouched.
+   * bar spanning grid levels 1 through `rows - 1` into dashes separated by
+   * unit-length gaps, starting with a dash right below the top cap and
+   * ending with one right above the bottom cap. The two caps themselves are
+   * untouched.
    *
    * Verified by decoding `5 rows bars split.svg` (dash `[1,2]`, gap `[2,3]`,
    * dash `[3,4]`) and `7 rows bars split.svg` (dash `[1,2]`, gap `[2,3]`,
@@ -197,26 +216,25 @@ export class BarsMotifService implements MotifService {
    *
    * Reuses {@link MotifTransformsService.alternate} with `runLength = 1`
    * over the same `[1, rows - 1]` level range `alternatedPath` already
-   * splits between two columns — here every run stays on the bar's own
-   * column, and only the runs on column `0` are drawn, which produces the
-   * alternating dash/gap pattern directly.
+   * splits between two columns, then keeps column `0`'s share of it through
+   * {@link MotifTransformsService.columnSpans} — which is what turns the
+   * split into a dash/gap pattern, and what guarantees the bar both starts
+   * and ends on a dash. At an even row count the bar spans an even number
+   * of grid units, so its final dash absorbs the gap that would otherwise
+   * have ended it and runs two units long; at 4 rows that leaves a single
+   * dash and the output is byte-identical to the unmodified bar, the same
+   * way 3 rows already was.
    */
   private splitPath(geometry: GridGeometry, unit: MotifUnit): string {
     const { rows, unitIndex } = unit;
-    const format = (value: number): string =>
-      this.gridGeometryService.formatCoordinate(value);
-    const columnX = format(geometry.offset + unitIndex * geometry.unit);
+    const format = (value: number): string => this.format(value);
+    const columnX = geometry.offset + unitIndex * geometry.unit;
     const runs = this.motifTransformsService.alternate(1, rows - 1, 1);
-
-    const dashSegments = runs
-      .filter((run) => run.column === 0)
-      .map((run) => {
-        const fromY = format(geometry.offset + run.fromLevel * geometry.unit);
-        const toY = format(geometry.offset + run.toLevel * geometry.unit);
-
-        return `M${columnX} ${fromY}V${toY}`;
-      })
-      .join("");
+    const dashSegments = this.spanSegments(
+      geometry,
+      columnX,
+      this.motifTransformsService.columnSpans(runs, 0),
+    );
 
     const capRightX = format(
       geometry.offset + unitIndex * geometry.unit + geometry.unit,
@@ -224,22 +242,28 @@ export class BarsMotifService implements MotifService {
     const capTopY = format(geometry.offset);
     const capBottomY = format(geometry.offset + rows * geometry.unit);
 
-    return `${dashSegments}M${columnX} ${capTopY}H${capRightX}M${columnX} ${capBottomY}H${capRightX}`;
+    return `${dashSegments}M${format(columnX)} ${capTopY}H${capRightX}M${format(
+      columnX,
+    )} ${capBottomY}H${capRightX}`;
   }
 
   // 🌎 Public Methods
 
-  /** Draws one repeat unit's bar and its two caps, as an SVG path attribute value. */
+  /**
+   * Draws one repeat unit's bar and its two caps, as an SVG path attribute
+   * value. `dot` below {@link DOT_MINIMUM_ROWS} rows falls through to the
+   * unmodified bar: the bar is one grid level long there, with no room for
+   * the two levels a dot gives up.
+   */
   path(geometry: GridGeometry, unit: MotifUnit): string {
     const { modifier, rows, unitIndex } = unit;
-    const format = (value: number): string =>
-      this.gridGeometryService.formatCoordinate(value);
+    const format = (value: number): string => this.format(value);
 
     if (modifier?.name === "alternated") {
       return this.alternatedPath(geometry, unit, modifier.period);
     }
 
-    if (modifier?.name === "dot") {
+    if (modifier?.name === "dot" && rows >= DOT_MINIMUM_ROWS) {
       return this.dotPath(geometry, unit, modifier.shape);
     }
 

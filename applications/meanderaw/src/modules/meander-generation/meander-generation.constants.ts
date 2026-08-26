@@ -23,6 +23,16 @@ export const COMPATIBLE_MODIFIERS: Record<MeanderType, readonly string[]> = {
   whirl: ["flip"],
 };
 
+/**
+ * The smallest `rows` value at which `bars`'s `dot` modifier draws a dot at
+ * all. The dot interrupts two whole grid levels of the bar — one either side
+ * of its own level — so the bar needs at least two levels to give up, and it
+ * spans only `rows - 2`. At 3 rows the bar is a single grid level and there
+ * is no room, so `dot` falls through to the unmodified bar, the same way
+ * `split` already degenerates there (see {@link STRUCTURAL_MINIMUM_ROWS}).
+ */
+export const DOT_MINIMUM_ROWS = 4;
+
 /** Directory a generated meander is written to when the caller doesn't override it, shared by both `generate` and `generate-batch`. */
 export const DEFAULT_OUTPUT_DIRECTORY = "output";
 
