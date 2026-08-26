@@ -95,6 +95,8 @@ const config: KnipConfig = {
         "applications/JimmyPaolini/**",
         "pnpm-workspace.yaml", // Catalog dependencies are shared across workspace; knip would flag all as unused in root
         "configuration/conformetry-templates/**", // Generator templates are placeholder files, not executable workspace code
+        "packages/codometer-examples/compiled/**", // Stand-in build output, committed so a target example has something to measure
+        "packages/codometer-examples/corpus/**", // Sample corpus written to be counted; uncalled and unimported by construction
         // Skill scripts are invoked by the skill framework, not imported in code
         "**/.agents/skills/**",
         "**/.claude/skills/**",
@@ -125,6 +127,26 @@ const config: KnipConfig = {
         "vitest", // Used by tests and Vitest config; Knip may miss it when test sources are excluded
       ],
       project: "src/**/*.{ts,tsx}",
+    },
+
+    // codometer-examples: A sample corpus and one configuration per behavior.
+    // Nothing here is imported by anything — the configurations are read by the
+    // codometer command line and the corpus exists to be counted — so knip is
+    // told where the entry points really are rather than left to conclude the
+    // whole package is dead.
+    "packages/codometer-examples": {
+      entry: [
+        "codometer.config.ts",
+        "examples/**/*.config.ts",
+        "testing/**/*.ts",
+      ],
+      ignore: [
+        "corpus/**", // Sample corpus written to be counted; uncalled and unimported by construction
+      ],
+      ignoreDependencies: [
+        "@codometer/cli", // Resolved by path and spawned by testing/codometer.ts rather than imported
+      ],
+      project: ["codometer.config.ts", "examples/**/*.ts", "testing/**/*.ts"],
     },
 
     // lexico-components: Shared React component library (shadcn/ui)

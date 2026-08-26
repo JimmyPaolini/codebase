@@ -1,0 +1,20 @@
+---
+# Two stages sharing one anchored block, so the sample carries an alias.
+defaults: &defaults
+  retries: 2
+  timeout: 300
+
+stages:
+  - name: measure
+    <<: *defaults
+    commands:
+      - codometer --json codometer-report.json --write
+  - name: gate
+    <<: *defaults
+    commands:
+      - codometer --check limits
+
+notifications:
+  channels:
+    - releases
+    - measurements

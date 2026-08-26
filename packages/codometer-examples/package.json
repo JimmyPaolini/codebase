@@ -1,0 +1,19 @@
+{
+  "devDependencies": {
+    "@codometer/cli": "workspace:*",
+    "@codometer/configuration": "workspace:*",
+    "@nx/eslint-plugin": "catalog:",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "name": "@codometer/examples",
+  "private": true,
+  "type": "module",
+  "typeCoverage": {
+    "atLeast": 100,
+    "strict": true
+  },
+  "version": "0.0.1"
+}
