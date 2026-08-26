@@ -1,6 +1,6 @@
 # 7. The whole surface of the Python statement scanner
 
-Python imports are scanned, not compiled — so every case the scanner handles, and every case it deliberately refuses, has a fixture.
+Python imports are scanned, not compiled — so every case the scanner handles, and every case it deliberately refuses, has a source file.
 
 ## The scanned graph
 
@@ -32,7 +32,7 @@ graph LR
 
 ## Every case the scanner handles
 
-Each one is a real file in `fixtures/python/scanner/`, and each one contributes an edge to the diagram above.
+Each one is a real file in `examples/python/scanner/`, and each one contributes an edge to the diagram above.
 
 | File | Case |
 | ---- | ---- |

@@ -1,15 +1,5 @@
 import "reflect-metadata";
-
-import fs from "node:fs";
-
-import { beforeAll, beforeEach, vi } from "vitest";
-
-beforeAll(() => {
-  const outputDirectory = "./output";
-  if (!fs.existsSync(outputDirectory)) {
-    fs.mkdirSync(outputDirectory, { recursive: true });
-  }
-});
+import { beforeEach, vi } from "vitest";
 
 beforeEach(() => {
   vi.clearAllMocks();

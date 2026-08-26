@@ -188,7 +188,7 @@
               "ruleId": "any-file"
             }
           ],
-          "name": "fixtures"
+          "name": "examples"
         },
         {
           "children": [

@@ -1,7 +1,7 @@
 # 🕸️ Codependix Examples
 
-**Sixteen worked examples of what codependix builds, every one of them rendered
-by the real tool from fixtures in this package.**
+**Fifteen worked examples of what codependix builds, every one of them rendered
+by the real tool from subjects in this package.**
 
 Codependix draws dependency graphs at four levels — the Nx Neighborhood, the
 whole-workspace Workspace Graph, a NestJS container's module graph, and a
@@ -15,7 +15,15 @@ type that implements it.
 
 This package is where all of it is stated to a reader — and, because every
 diagram, every JSON shape, and every refusal below is produced by running the
-real services against fixtures, none of it can quietly go stale.
+real tool, none of it can quietly go stale.
+
+## What is here
+
+| Directory | Holds |
+| --------- | ----- |
+| [`examples/`](examples) | The subjects being graphed — a small Nx workspace, seven NestJS containers, two TypeScript projects, a Python package, and five configuration files |
+| [`output/`](output) | What codependix says about them: fifteen Markdown documents and five committed JSON exports |
+| [`scripts/`](scripts) | The renderer that turns one into the other |
 
 ## Reading a graph
 
@@ -29,7 +37,7 @@ real services against fixtures, none of it can quietly go stale.
 
 The four levels answer four different questions about the same project, and none
 of them substitutes for another. [Example 1](output/01-graph-levels.md) graphs
-one fixture at all four so the difference is visible rather than argued: the
+one project at all four so the difference is visible rather than argued: the
 module graph never draws `CatalogService`, because only modules are nodes; the
 import graph draws `settings.ts`, which the module graph cannot see at all.
 
@@ -45,14 +53,13 @@ import graph draws `settings.ts`, which the module graph cannot see at all.
 | 6 | [Imports resolve through the compiler](output/06-typescript-resolution.md) | NodeNext specifiers, path aliases, `extends` chains — and the four statements that draw nothing |
 | 7 | [The Python statement scanner](output/07-python-scanner.md) | Every case the hand-rolled scanner handles, and every case it deliberately refuses |
 | 8 | [Configuration resolution, field by field](output/08-configuration-resolution.md) | `defaults` versus an override, the glob lists, file precedence, the upward search |
-| 9 | [Embedding the graph builders](output/09-embedding.md) | Getting a graph in memory with no command line and no configuration file |
-| 10 | [All four export targets](output/10-export-targets.md) | Why `both` is a named target rather than something inferred |
-| 11 | [Both Markdown modes](output/11-markdown-modes.md) | An anchored splice, and a standalone file |
-| 12 | [Auto-creating the section](output/12-auto-created-sections.md) | Exactly where a missing `## 🕸️ Codependix` section lands, in every branch |
-| 13 | [`--check` versus `--write`](output/13-check-and-write.md) | What drift is reported as, and the two command lines refused outright |
-| 14 | [Every refusal](output/14-refusals.md) | Each one with the reproduction that produces it |
-| 15 | [The JSON exports](output/15-json-exports.md) | Every graph's JSON shape, and why one ESLint rule is off for these files |
-| 16 | [An export moves with the workspace](output/16-workspace-drift.md) | Why this repository gates no pull request on `codependix --check` |
+| 9 | [All four export targets](output/09-export-targets.md) | Why `both` is a named target rather than something inferred |
+| 10 | [Both Markdown modes](output/10-markdown-modes.md) | An anchored splice, and a standalone file |
+| 11 | [Auto-creating the section](output/11-auto-created-sections.md) | Exactly where a missing `## 🕸️ Codependix` section lands, in every branch |
+| 12 | [`--check` versus `--write`](output/12-check-and-write.md) | What drift is reported as, and the two command lines refused outright |
+| 13 | [Every refusal](output/13-refusals.md) | Each one with the reproduction that produces it |
+| 14 | [The JSON exports](output/14-json-exports.md) | Every graph's JSON shape, and why one ESLint rule is off for these files |
+| 15 | [An export moves with the workspace](output/15-workspace-drift.md) | Why this repository gates no pull request on `codependix --check` |
 
 ## Configuring your first export
 
@@ -94,7 +101,7 @@ every project in a workspace nobody had hand-placed anchors in.
 
 `--write` now auto-creates the `## 🕸️ Codependix` section, and takes that risk
 in exactly two well-defined places: the end of the file, or the end of a section
-that already exists. [Example 12](output/12-auto-created-sections.md) renders
+that already exists. [Example 11](output/11-auto-created-sections.md) renders
 every branch, including a heading a person wrote by hand being reused rather
 than duplicated. Only a project with no `README.md` at all still fails outright,
 and a `--check` against a project that has never had codependix output simply
@@ -119,56 +126,50 @@ nx run codependix-examples:examples:check
 `check` is the gate that keeps the guides honest. Every diagram, JSON export,
 and refusal quoted anywhere in this package is rendered by the same run, so a
 resolver or scanner change that silently reversed one of the documented
-behaviors fails here rather than leaving a guide describing behavior the tool
-no longer has. That matters most for the cases in examples 6 and 7 that exist to
+behaviors fails here rather than leaving a guide describing behavior the tool no
+longer has. That matters most for the cases in examples 6 and 7 that exist to
 _not_ be walked: a guide quoting a diagram the tool no longer renders is worse
 than no guide.
 
-## Why the fixtures are not a nested workspace
+## Why the subjects are not a nested workspace
 
 Codependix does not read a directory the way codometer does.
 `NeighborhoodService.readProjectGraph` calls `createProjectGraphAsync()`, which
 resolves the Nx workspace from the **process working directory** and takes no
 directory argument — `--directory` supplies only the root that export paths are
-resolved against. A fixture graph is therefore reachable exactly three ways: a
-nested fixture Nx workspace run with the working directory set inside it; the
-graph builder services driven directly; or fixtures that are real projects of
-_this_ workspace.
+resolved against. An example graph is therefore reachable exactly three ways: a
+nested Nx workspace run with the working directory set inside it; the graph
+builders called with a graph they are handed; or subjects that are real projects
+of _this_ workspace.
 
-This package takes the second. Every other method in `@codependix/nx`,
-`@codependix/nestjs`, and `@codependix/imports` is _handed_ the graph, the
-project, or the program it works on:
+This package takes the second, because it is the only one that leaves the rest
+of the workspace alone. The subjects under `examples/` carry no `project.json`,
+so none of them joins this workspace's Nx project graph, the root README's
+Workspace Graph, `nx affected`, or `sherif`. The Python subjects are never
+tagged `language:python`, so `ruff`, `pyright`, `ty`, and `vulture` never run
+over input that exists precisely to look malformed. And no container has to boot
+from a working directory it was not run in, on a workstation or on a runner.
 
-| Builder | What an example hands it |
-| ------- | ------------------------ |
-| `NeighborhoodService`, `WorkspaceGraphService` | A `ProjectGraph` literal built from `fixtures/`-shaped data |
-| `NestjsProjectService` | A project descriptor built by its own `describeProject` |
-| `TypescriptService` | A project descriptor from its own `discoverProjects` |
-| `PythonService` | A project graph carrying the `language:python` tag discovery reads |
+## Why this package has no `src/`
 
-That choice is what makes this package the embedding example
-([example 9](output/09-embedding.md)) as well: nothing here goes through the
-command line or reads a configuration file, which is exactly the demonstration
-that `@codependix/cli` holds only orchestration and delivery.
-
-It also settles every cross-cutting constraint at once. The fixtures carry no
-`project.json`, so none of them joins this workspace's Nx project graph, the
-root README's Workspace Graph, `nx affected`, or `sherif`. The Python fixtures
-are never tagged `language:python`, so `ruff`, `pyright`, `ty`, and `vulture`
-never run over input that exists precisely to look malformed. And no fixture
-container has to boot from a working directory it was not run in, on a
-workstation or on a runner.
+It ships examples, not an application. There is no CLI to install, no NestJS
+container of its own, and no public API — so there is nothing for a `src/` to
+hold. `scripts/render-examples.ts` regenerates `output/`, `scripts/render/`
+holds the plain functions it calls, and `testing/` holds the tests that keep
+every documented claim true. The same reasoning
+[`packages/conformetry-agents`](../conformetry-agents) follows for a package
+whose content is documentation.
 
 ## What is deliberately scoped out
 
-Fixtures are input to be graphed, not code this repository authors, so three
-tools are scoped away from `fixtures/`:
+The subjects under `examples/` are input to be graphed, not code this repository
+authors, so three tools are scoped away from them:
 
 | Tool | Why |
 | ---- | --- |
-| `eslint` | A fixture declares a self-referential `tsconfig` path alias, a `require` call, and an unused re-export **on purpose** — each is a behavior example 6 exists to pin down |
-| `oxfmt`, `prettier` | Reformatting a fixture would rewrite the very shape the scanner examples measure, and reformatting `output/` would fight `examples --check` |
-| `knip` | Fixture TypeScript is uncalled and unimported by construction |
+| `eslint` | One subject declares a self-referential `tsconfig` path alias, a `require` call, and an unused re-export **on purpose** — each is a behavior example 6 exists to pin down |
+| `oxfmt`, `prettier` | Reformatting a subject would rewrite the very shape the scanner examples measure, and reformatting `output/` would fight `examples --check` |
+| `knip` | The subjects are uncalled and unimported by construction |
 
 Each is a directory-level scope declaration rather than a per-error suppression,
 which is the difference between saying "this is not our code" and silencing a
@@ -177,23 +178,13 @@ finding about code that is.
 `output/` stays inside ESLint's scope on purpose: the committed JSON exports are
 named `codependix-*graph.json`, so the `jsonc/sort-array-values` carve-out
 `configuration/eslint.config.ts` declares for every graph codependix writes
-covers them too — see [example 15](output/15-json-exports.md).
+covers them too — see [example 14](output/14-json-exports.md).
 
 This package declares no `codometer` size limit, because it builds nothing:
 there is no `build` target and therefore no compiled bundle to measure.
-
-## Start
-
-```bash
-nx run codependix-examples:start
-```
 
 ## Test
 
 ```bash
 nx run codependix-examples:vitest
 ```
-
-## 👔 Conformetry
-
-This project was generated from the [nestjs-command-project](../../configuration/conformetry-templates/nestjs-command-project) conformetry template.

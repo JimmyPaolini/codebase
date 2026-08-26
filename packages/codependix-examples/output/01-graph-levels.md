@@ -1,6 +1,6 @@
 # 1. The four graph levels, side by side
 
-One fixture project, `atlas-service`, graphed at all four levels codependix builds — so a reader sees what each level does and does not say about the same code.
+One example project, `atlas-service`, graphed at all four levels codependix builds — so a reader sees what each level does and does not say about the same code.
 
 ## Nx Neighborhood
 

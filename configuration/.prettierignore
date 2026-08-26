@@ -115,8 +115,8 @@ projectStructure.cache.json
 **/.agents/skills/writing-for-agents/**
 # installed-skills-end
 
-# 🕸️ Codependix example fixtures and rendered output. Fixtures are deliberately
-# shaped input, and `output/` is generated, so reformatting either would fight
-# `codependix-examples:examples:check`.
-**/packages/codependix-examples/fixtures/**
+# 🕸️ Codependix example subjects and rendered output. The subjects are
+# deliberately shaped input, and `output/` is generated, so reformatting either
+# would fight `codependix-examples:examples:check`.
+**/packages/codependix-examples/examples/**
 **/packages/codependix-examples/output/**

@@ -3,31 +3,23 @@
   "name": "codependix-examples",
   "projectType": "library",
   "sourceRoot": "packages/codependix-examples",
-  "tags": [
-    "framework:nest-commander",
-    "framework:nestjs",
-    "generator:nestjs-command-project",
-    "language:typescript",
-    "name:codependix-examples",
-    "type:package"
-  ],
+  "tags": ["language:typescript", "name:codependix-examples", "type:package"],
   "targets": {
     "codometer": {},
-    "dependency-cruiser": {},
     "examples": {
       "cache": true,
       "configurations": {
         "check": {
-          "command": "node --import @swc-node/register/esm-register src/main.ts examples --check"
+          "command": "node --import @swc-node/register/esm-register scripts/render-examples.ts --check"
         },
         "write": {
-          "command": "node --import @swc-node/register/esm-register src/main.ts examples --write"
+          "command": "node --import @swc-node/register/esm-register scripts/render-examples.ts --write"
         }
       },
       "defaultConfiguration": "check",
-      "description": "Render every codependix example and compare it against the committed output under `output/`, or rewrite it. `check` is what keeps the guides honest: a resolver or scanner change that silently reverses one of the documented behaviors fails here rather than leaving a guide quoting a diagram the tool no longer renders. Unlike `codebase:codependix`, both configurations are safe on a branch — every example is built from fixtures this package owns, so nothing here moves when the workspace around it does.",
+      "description": "Render every codependix example and compare it against the committed output under `output/`, or rewrite it. `check` is what keeps the guides honest: a resolver or scanner change that silently reverses one of the documented behaviors fails here rather than leaving a guide quoting a diagram the tool no longer renders. Unlike `codebase:codependix`, both configurations are safe on a branch — every example is built from subjects this package owns, so nothing here moves when the workspace around it does.",
       "executor": "nx:run-commands",
-      "inputs": ["{projectRoot}/fixtures/**", "default"],
+      "inputs": ["{projectRoot}/examples/**", "default"],
       "options": {
         "cwd": "{projectRoot}"
       },
@@ -37,7 +29,6 @@
     "lint-codebase": {},
     "markdown-lint": {},
     "oxfmt": {},
-    "oxlint": {},
     "prettier": {},
     "spell-check": {},
     "test-coverage": {},

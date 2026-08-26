@@ -1,6 +1,6 @@
 # 2. One hop, and every rule the renderer applies
 
-A Neighborhood is one hop in each direction, and that is the point. Beside it, the Workspace Graph of the same fixture, and one fixture per rule the renderer applies.
+A Neighborhood is one hop in each direction, and that is the point. Beside it, the Workspace Graph of the same workspace, and one example per rule the renderer applies.
 
 ## The middle project's Neighborhood
 
@@ -17,7 +17,7 @@ graph LR
   class atlas_service subject
 ```
 
-## The Workspace Graph of the same fixture
+## The Workspace Graph of the same workspace
 
 The whole chain, exported once for the repository rather than once per project, and with no project highlighted.
 

@@ -47,7 +47,7 @@ The one naming decision in the whole configuration surface that looks arbitrary 
 
 ## A workspace carrying two configuration files
 
-`fixtures/configuration/precedence/` holds both a `codependix.config.ts` and a `codependix.config.json`. `CONFIGURATION_FILE_NAMES` is searched in order, so the TypeScript one wins — the anchor here is the one it declares.
+`examples/configuration/precedence/` holds both a `codependix.config.ts` and a `codependix.config.json`. `CONFIGURATION_FILE_NAMES` is searched in order, so the TypeScript one wins — the anchor here is the one it declares.
 
 ```json
 {
@@ -62,7 +62,7 @@ The one naming decision in the whole configuration surface that looks arbitrary 
 
 ## The upward search reaches past a nested `package.json`
 
-The search started inside `packages/atlas-service/`, which carries its own `package.json`, and still found the configuration at the fixture root — the root every path in that configuration was written relative to.
+The search started inside `packages/atlas-service/`, which carries its own `package.json`, and still found the configuration at the workspace root — the root every path in that configuration was written relative to.
 
 ```json
 {
@@ -89,7 +89,7 @@ A workspace that never wrote one resolves every graph to `target: "none"` and pr
 
 ## An unknown field is stripped, not rejected
 
-The fixture declares a `graphqlSchemas` field no codependix has an opinion about. Zod strips unknown keys, so a configuration written for a newer codependix still loads under an older one.
+The configuration declares a `graphqlSchemas` field no codependix has an opinion about. Zod strips unknown keys, so a configuration written for a newer codependix still loads under an older one.
 
 ```json
 {
