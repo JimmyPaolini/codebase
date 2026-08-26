@@ -5,6 +5,7 @@ import {
   DepthService,
   DocumentationService,
   EntriesService,
+  GraphAssemblyService,
   GraphService,
   PathsService,
   SignaturesService,
@@ -25,7 +26,6 @@ import {
 } from "../../../testing/programs";
 
 import { CallidescopeService } from "./callidescope.service";
-import { GraphAssemblyService } from "./graph-assembly.service";
 
 import type { FixtureServices } from "../../../testing/programs";
 import type {

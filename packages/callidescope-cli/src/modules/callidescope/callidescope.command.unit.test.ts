@@ -1,6 +1,9 @@
 import path from "node:path";
 
-import { ConfigurationService } from "@callidescope/configuration";
+import {
+  ConfigurationService,
+  InputService,
+} from "@callidescope/configuration";
 import {
   MarkdownReportService,
   MermaidReportService,
@@ -23,11 +26,10 @@ import {
 import { LoggerService } from "@codebase/logger";
 
 import { buildCallGraphResult, buildStackFrame } from "../../../testing/mocks";
+import { RunPlanService } from "../run-plan/run-plan.service";
 
 import { CallidescopeCommand } from "./callidescope.command";
 import { CallidescopeService } from "./callidescope.service";
-import { RunPlanService } from "./run-plan.service";
-import { TraceOptionParsingService } from "./trace-option-parsing.service";
 
 import type {
   CallGraphResult,
@@ -100,6 +102,7 @@ describe(CallidescopeCommand, () => {
   let command: CallidescopeCommand;
   let configurationService: ReturnType<typeof createMock<ConfigurationService>>;
   let callidescopeService: ReturnType<typeof createMock<CallidescopeService>>;
+  let inputService: InputService;
   let logger: ReturnType<typeof createMock<LoggerService>>;
   let outputJsonService: ReturnType<typeof createMock<OutputJsonService>>;
   let outputMarkdownService: ReturnType<
@@ -198,8 +201,8 @@ describe(CallidescopeCommand, () => {
           ),
         },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
+        InputService,
         RunPlanService,
-        TraceOptionParsingService,
       ],
     }).compile();
 
@@ -213,9 +216,11 @@ describe(CallidescopeCommand, () => {
   beforeEach(async () => {
     configurationService = createMock<ConfigurationService>();
     callidescopeService = createMock<CallidescopeService>();
+    inputService = new InputService();
     logger = createMock<LoggerService>();
     outputJsonService = createMock<OutputJsonService>();
     outputMarkdownService = createMock<OutputMarkdownService>();
+    vi.spyOn(inputService, "canPrompt").mockReturnValue(false);
 
     const module = await Test.createTestingModule({
       providers: [
@@ -232,8 +237,8 @@ describe(CallidescopeCommand, () => {
           ),
         },
         { provide: LoggerService, useValue: logger },
+        { provide: InputService, useValue: inputService },
         RunPlanService,
-        TraceOptionParsingService,
       ],
     }).compile();
 
@@ -270,8 +275,8 @@ describe(CallidescopeCommand, () => {
           ),
         },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
+        InputService,
         RunPlanService,
-        TraceOptionParsingService,
       ],
     }).compile();
 
@@ -322,6 +327,10 @@ describe(CallidescopeCommand, () => {
     ["parseMarkdown", "REPORT.md"],
   ] as const)("passes %s through unchanged", (method, value) => {
     expect(command[method](value)).toBe(value);
+  });
+
+  it("parses the interactive opt-out flag", () => {
+    expect(command.parseInteractive()).toBe(false);
   });
 
   // 🏃 Running
@@ -934,5 +943,31 @@ describe(CallidescopeCommand, () => {
       configurationService.loadConfiguration.mock.calls[0]?.[0]
         ?.configurationPath,
     ).toBe("custom.config.ts");
+  });
+
+  // 🗣️ Prompting
+
+  it("prompts for a format when it was left off and the session can be prompted", async () => {
+    vi.spyOn(inputService, "canPrompt").mockReturnValue(true);
+    vi.spyOn(inputService, "promptForSelect").mockResolvedValue("json");
+
+    await command.run([], {});
+
+    expect(inputService.promptForSelect).toHaveBeenCalledWith({
+      choices: ["markdown", "mermaid", "json"],
+      message: "Which output format?",
+    });
+    // The prompted format reached `run` through the resolved options: json
+    // routes through the JSON report rather than the markdown one.
+    expect(outputJsonService.buildReport).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not prompt for a format that was already given", async () => {
+    vi.spyOn(inputService, "canPrompt").mockReturnValue(true);
+    vi.spyOn(inputService, "promptForSelect");
+
+    await command.run([], { format: "mermaid" });
+
+    expect(inputService.promptForSelect).not.toHaveBeenCalled();
   });
 });

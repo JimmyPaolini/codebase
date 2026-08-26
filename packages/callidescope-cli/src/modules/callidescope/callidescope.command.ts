@@ -1,8 +1,10 @@
 import path from "node:path";
 
 import {
+  CALLIDESCOPE_OUTPUT_FORMATS,
   DEFAULT_JSON_INDENTATION,
   DEFAULT_PREVIEW_COUNT,
+  InputService,
 } from "@callidescope/configuration";
 import {
   MarkdownReportService,
@@ -14,17 +16,17 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
+import { CHECK_NAMES } from "../run-plan/run-plan.constants";
+import { RunPlanService } from "../run-plan/run-plan.service";
+
 import { PROJECT_README_NAME } from "./callidescope.constants";
 import { CallidescopeService } from "./callidescope.service";
-import { CHECK_NAMES } from "./run-plan.constants";
-import { RunPlanService } from "./run-plan.service";
-import { TraceOptionParsingService } from "./trace-option-parsing.service";
 
+import type { ReportFindingsArguments } from "../run-plan/run-plan.types";
 import type {
   CallidescopeCommandOptions,
   SyncDestinationsArguments,
 } from "./callidescope.types";
-import type { ReportFindingsArguments } from "./run-plan.types";
 import type {
   CallGraphResult,
   CallidescopeOutputFormat,
@@ -46,11 +48,11 @@ export class CallidescopeCommand extends CommandRunner {
 
   constructor(
     private readonly callidescopeService: CallidescopeService,
+    private readonly inputService: InputService,
     private readonly outputJsonService: OutputJsonService,
     private readonly outputMarkdownService: OutputMarkdownService,
     private readonly markdownReportService: MarkdownReportService,
     private readonly runPlanService: RunPlanService,
-    private readonly traceOptionParsingService: TraceOptionParsingService,
     private readonly logger: LoggerService,
   ) {
     super();
@@ -220,6 +222,23 @@ export class CallidescopeCommand extends CommandRunner {
     return args.mode.checksBreadth;
   }
 
+  /** Fills in `--format` by prompting, when it was left off and can be asked. */
+  private async resolveOptions(
+    options: CallidescopeCommandOptions,
+    canPrompt: boolean,
+  ): Promise<CallidescopeCommandOptions> {
+    if (options.format !== undefined || !canPrompt) {
+      return options;
+    }
+
+    const format = await this.inputService.promptForSelect({
+      choices: CALLIDESCOPE_OUTPUT_FORMATS,
+      message: "Which output format?",
+    });
+
+    return { ...options, format };
+  }
+
   /** Writes every configured destination, returning the stale ones. */
   private syncDestinations(args: SyncDestinationsArguments): string[] {
     const stale: string[] = [];
@@ -302,7 +321,7 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "--config [config]",
   })
   public parseConfig(value: string | undefined): string | undefined {
-    return value;
+    return this.inputService.parseOptionalOption(value);
   }
 
   /** Parses `--directories`, a comma-separated list of project directories. */
@@ -311,7 +330,7 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "-d, --directories [directories]",
   })
   public parseDirectories(value: string | undefined): string[] {
-    return this.traceOptionParsingService.parseDirectories(value);
+    return this.inputService.parseCommaDelimitedOption(value);
   }
 
   /** Parses `--format`, which decides what the run prints. */
@@ -320,7 +339,16 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "-f, --format [format]",
   })
   public parseFormat(value: string | undefined): CallidescopeOutputFormat {
-    return this.traceOptionParsingService.parseFormat(value);
+    return this.inputService.parseFormat(value);
+  }
+
+  /** Parses the opt-out from interactive prompting. */
+  @Option({
+    description: "Never prompt for missing values",
+    flags: "--no-interactive",
+  })
+  public parseInteractive(): boolean {
+    return false;
   }
 
   /** Parses `--json`. */
@@ -329,7 +357,7 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "--json [json]",
   })
   public parseJson(value: string | undefined): string | undefined {
-    return value;
+    return this.inputService.parseOptionalOption(value);
   }
 
   /** Parses `--markdown`. */
@@ -338,7 +366,7 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "-m, --markdown [markdown]",
   })
   public parseMarkdown(value: string | undefined): string | undefined {
-    return value;
+    return this.inputService.parseOptionalOption(value);
   }
 
   /**
@@ -369,7 +397,9 @@ export class CallidescopeCommand extends CommandRunner {
     _passedParameters: string[],
     options: CallidescopeCommandOptions,
   ): Promise<void> {
-    const prepared = await this.runPlanService.prepareRun(options);
+    const canPrompt = this.inputService.canPrompt(options.interactive);
+    const resolvedOptions = await this.resolveOptions(options, canPrompt);
+    const prepared = await this.runPlanService.prepareRun(resolvedOptions);
 
     if (prepared === undefined) {
       return;
@@ -379,7 +409,7 @@ export class CallidescopeCommand extends CommandRunner {
 
     const outcome = this.callidescopeService.trace({
       configuration,
-      directories: options.directories ?? configuration.directories,
+      directories: resolvedOptions.directories ?? configuration.directories,
       workspaceRoot,
     });
 

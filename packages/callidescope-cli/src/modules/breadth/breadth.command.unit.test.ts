@@ -1,16 +1,26 @@
+import { InputService } from "@callidescope/configuration";
+import { BreadthService } from "@callidescope/graph";
 import { createMock } from "@golevelup/ts-vitest";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { Test } from "@nestjs/testing";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+
+import { LoggerService } from "@codebase/logger";
 
 import { buildDiscoveredCallable } from "../../../testing/mocks";
+import { AddressLookupService } from "../address-lookup/address-lookup.service";
+import { AddressReportService } from "../address-report/address-report.service";
 
 import { BreadthCommand } from "./breadth.command";
-import { TraceOptionParsingService } from "./trace-option-parsing.service";
 
-import type { AddressLookupService } from "./address-lookup.service";
-import type { AddressReportService } from "./address-report.service";
 import type { ResolvedCallidescopeConfiguration } from "@callidescope/configuration";
-import type { BreadthService } from "@callidescope/graph";
-import type { LoggerService } from "@codebase/logger";
 
 /** A resolved configuration with the defaults these tests assume. */
 function buildConfiguration(): ResolvedCallidescopeConfiguration {
@@ -78,19 +88,43 @@ describe(BreadthCommand, () => {
   let addressReportService: ReturnType<typeof createMock<AddressReportService>>;
   let breadthService: ReturnType<typeof createMock<BreadthService>>;
   let command: BreadthCommand;
+  let inputService: InputService;
   let logger: ReturnType<typeof createMock<LoggerService>>;
+
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
+      providers: [
+        BreadthCommand,
+        {
+          provide: AddressLookupService,
+          useValue: createMock<AddressLookupService>(),
+        },
+        {
+          provide: AddressReportService,
+          useValue: createMock<AddressReportService>(),
+        },
+        { provide: BreadthService, useValue: createMock<BreadthService>() },
+        InputService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
+    }).compile();
+
+    command = await module.resolve(BreadthCommand);
+  });
 
   beforeEach(() => {
     addressLookupService = createMock<AddressLookupService>();
     addressReportService = createMock<AddressReportService>();
     breadthService = createMock<BreadthService>();
     logger = createMock<LoggerService>();
+    inputService = new InputService();
+    vi.spyOn(inputService, "canPrompt").mockReturnValue(false);
 
     command = new BreadthCommand(
       addressLookupService,
       addressReportService,
       breadthService,
-      new TraceOptionParsingService(),
+      inputService,
       logger,
     );
 
@@ -106,7 +140,26 @@ describe(BreadthCommand, () => {
     expect(command).toBeDefined();
   });
 
-  it("sets logger context", () => {
+  it("sets logger context", async () => {
+    const module = await Test.createTestingModule({
+      providers: [
+        BreadthCommand,
+        {
+          provide: AddressLookupService,
+          useValue: createMock<AddressLookupService>(),
+        },
+        {
+          provide: AddressReportService,
+          useValue: createMock<AddressReportService>(),
+        },
+        { provide: BreadthService, useValue: createMock<BreadthService>() },
+        InputService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
+    }).compile();
+
+    const logger = await module.resolve(LoggerService);
+
     expect(logger.setContext).toHaveBeenCalledWith("BreadthCommand");
   });
 
@@ -121,6 +174,10 @@ describe(BreadthCommand, () => {
     expect(command.parseConfig("callidescope.config.ts")).toBe(
       "callidescope.config.ts",
     );
+  });
+
+  it("parses the interactive opt-out flag", () => {
+    expect(command.parseInteractive()).toBe(false);
   });
 
   // 🏃 Running
@@ -200,5 +257,90 @@ describe(BreadthCommand, () => {
     });
     expect(process.stdout.write).toHaveBeenCalledWith("rendered breadth\n");
     expect(process.exitCode).toBeUndefined();
+  });
+
+  // 🗣️ Prompting
+
+  it("prompts for the address when it is missing and the session can be prompted", async () => {
+    vi.spyOn(inputService, "canPrompt").mockReturnValue(true);
+    vi.spyOn(inputService, "promptForText").mockResolvedValue("a.ts#Foo.bar");
+    addressLookupService.lookup.mockResolvedValue({
+      configuration: buildConfiguration(),
+      located: buildLocated(),
+      resolution: { kind: "not-found" },
+    });
+    addressLookupService.describeProblem.mockReturnValue(
+      "No callable matches it.",
+    );
+
+    // A format is passed explicitly so this test exercises only the address
+    // prompt, not the separate format prompt `resolveOptions` would also try.
+    await command.run([], { format: "markdown" });
+
+    expect(inputService.promptForText).toHaveBeenCalledWith({
+      message: "Which callable? (file#qualified-name)",
+    });
+    expect(addressLookupService.lookup).toHaveBeenCalledWith({
+      address: "a.ts#Foo.bar",
+      options: { format: "markdown" },
+    });
+  });
+
+  it("does not prompt for the address when one was already given", async () => {
+    vi.spyOn(inputService, "canPrompt").mockReturnValue(true);
+    vi.spyOn(inputService, "promptForText");
+    addressLookupService.lookup.mockResolvedValue({
+      configuration: buildConfiguration(),
+      located: buildLocated(),
+      resolution: { kind: "not-found" },
+    });
+    addressLookupService.describeProblem.mockReturnValue(
+      "No callable matches it.",
+    );
+
+    await command.run(["a.ts#Foo.bar"], { format: "markdown" });
+
+    expect(inputService.promptForText).not.toHaveBeenCalled();
+  });
+
+  it("prompts for a format when it was left off and the session can be prompted", async () => {
+    vi.spyOn(inputService, "canPrompt").mockReturnValue(true);
+    vi.spyOn(inputService, "promptForSelect").mockResolvedValue("json");
+    addressLookupService.lookup.mockResolvedValue({
+      configuration: buildConfiguration(),
+      located: buildLocated(),
+      resolution: { kind: "not-found" },
+    });
+    addressLookupService.describeProblem.mockReturnValue(
+      "No callable matches it.",
+    );
+
+    await command.run(["a.ts#Foo.bar"], {});
+
+    expect(inputService.promptForSelect).toHaveBeenCalledWith({
+      choices: ["markdown", "mermaid", "json"],
+      message: "Which output format?",
+    });
+    expect(addressLookupService.lookup).toHaveBeenCalledWith({
+      address: "a.ts#Foo.bar",
+      options: { format: "json" },
+    });
+  });
+
+  it("does not prompt for a format that was already given", async () => {
+    vi.spyOn(inputService, "canPrompt").mockReturnValue(true);
+    vi.spyOn(inputService, "promptForSelect");
+    addressLookupService.lookup.mockResolvedValue({
+      configuration: buildConfiguration(),
+      located: buildLocated(),
+      resolution: { kind: "not-found" },
+    });
+    addressLookupService.describeProblem.mockReturnValue(
+      "No callable matches it.",
+    );
+
+    await command.run(["a.ts#Foo.bar"], { format: "mermaid" });
+
+    expect(inputService.promptForSelect).not.toHaveBeenCalled();
   });
 });

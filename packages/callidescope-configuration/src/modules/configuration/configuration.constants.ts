@@ -138,6 +138,13 @@ export const DEFAULT_ENTRY_POINT_DECORATORS = [
 /** Spaces used to indent the JSON report. */
 export const DEFAULT_JSON_INDENTATION = 2;
 
+/** Every format a run may print, in the order a prompt offers them. */
+export const CALLIDESCOPE_OUTPUT_FORMATS = [
+  "markdown",
+  "mermaid",
+  "json",
+] as const;
+
 /** What a run prints to standard output when nothing says otherwise. */
 export const DEFAULT_OUTPUT_FORMAT = "markdown";
 
@@ -222,7 +229,7 @@ const markdownDestinationSchema = z
 
 const outputSchema = z
   .object({
-    format: z.enum(["json", "markdown", "mermaid"]).optional(),
+    format: z.enum(CALLIDESCOPE_OUTPUT_FORMATS).optional(),
     json: z
       .object({
         indentation: z.number().int().nonnegative().optional(),

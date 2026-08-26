@@ -1,4 +1,4 @@
-import { ConfigurationModule } from "@callidescope/configuration";
+import { ConfigurationModule, InputModule } from "@callidescope/configuration";
 import {
   CallablesModule,
   ClassesModule,
@@ -19,15 +19,10 @@ import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";
 
-import { AddressLookupService } from "./address-lookup.service";
-import { AddressReportService } from "./address-report.service";
-import { BreadthCommand } from "./breadth.command";
+import { RunPlanModule } from "../run-plan/run-plan.module";
+
 import { CallidescopeCommand } from "./callidescope.command";
 import { CallidescopeService } from "./callidescope.service";
-import { DepthCommand } from "./depth.command";
-import { GraphAssemblyService } from "./graph-assembly.service";
-import { RunPlanService } from "./run-plan.service";
-import { TraceOptionParsingService } from "./trace-option-parsing.service";
 
 /**
  * NestJS module that wires the callidescope command and its analysis services.
@@ -43,24 +38,16 @@ import { TraceOptionParsingService } from "./trace-option-parsing.service";
     EntriesModule,
     GraphModule,
     ClassesModule,
+    InputModule,
     LoggerModule,
     OutputJsonModule,
     OutputMarkdownModule,
     ProgramModule,
     ProjectReportsModule,
     ReportModule,
+    RunPlanModule,
     WorkspaceModule,
   ],
-  providers: [
-    AddressLookupService,
-    AddressReportService,
-    BreadthCommand,
-    CallidescopeCommand,
-    CallidescopeService,
-    DepthCommand,
-    GraphAssemblyService,
-    RunPlanService,
-    TraceOptionParsingService,
-  ],
+  providers: [CallidescopeCommand, CallidescopeService],
 })
 export class CallidescopeModule {}

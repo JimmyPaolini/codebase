@@ -1,11 +1,11 @@
-import {
-  BreadthService,
-  ComponentsService,
-  DepthService,
-  EdgesService,
-  GraphService,
-} from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
+
+import { EdgesService } from "../edges/edges.service";
+
+import { BreadthService } from "./breadth.service";
+import { ComponentsService } from "./components.service";
+import { DepthService } from "./depth.service";
+import { GraphService } from "./graph.service";
 
 import type {
   AssembledGraph,
@@ -16,10 +16,9 @@ import type { CallableId, ModuleId } from "@callidescope/configuration";
 /**
  * Builds the call graph, its cycle condensation, and its depth measurement.
  *
- * Extracted out of `CallidescopeService` because the three findings only mean
- * something computed together, and grouping their four collaborators behind
- * one call is what keeps `CallidescopeService`'s own constructor within the
- * repository's parameter limit as new dependencies join it.
+ * Groups the four collaborators a full call-graph assembly needs behind one
+ * call, so a consumer that wants "the graph and everything derived from it"
+ * does not have to know the assembly order or re-wire them itself.
  */
 @Injectable()
 export class GraphAssemblyService {

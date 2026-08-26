@@ -28,6 +28,7 @@ export type {
 } from "./modules/configuration/call-graph.types";
 // 📤 Exports
 export {
+  CALLIDESCOPE_OUTPUT_FORMATS,
   callidescopeConfigurationSchema,
   CONFIGURATION_FILE_NAMES,
   DEFAULT_ALLOW_SPREAD_FOR,
@@ -79,3 +80,5 @@ export type {
   WriteMarkdownArguments,
   WriteMarkdownOutput,
 } from "./modules/configuration/configuration.types";
+export { InputModule } from "./modules/input/input.module";
+export { InputService } from "./modules/input/input.service";

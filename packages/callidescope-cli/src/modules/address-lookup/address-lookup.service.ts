@@ -1,8 +1,8 @@
 import { AddressService } from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
 
-import { CallidescopeService } from "./callidescope.service";
-import { RunPlanService } from "./run-plan.service";
+import { CallidescopeService } from "../callidescope/callidescope.service";
+import { RunPlanService } from "../run-plan/run-plan.service";
 
 import type {
   LookupAddressArguments,

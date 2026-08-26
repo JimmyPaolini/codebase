@@ -3,11 +3,12 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { AddressLookupService } from "./address-lookup.service";
-import { CallidescopeService } from "./callidescope.service";
-import { RunPlanService } from "./run-plan.service";
+import { CallidescopeService } from "../callidescope/callidescope.service";
+import { RunPlanService } from "../run-plan/run-plan.service";
 
-import type { LocateOutcome } from "./callidescope.types";
+import { AddressLookupService } from "./address-lookup.service";
+
+import type { LocateOutcome } from "../callidescope/callidescope.types";
 import type { ResolvedCallidescopeConfiguration } from "@callidescope/configuration";
 
 /** Builds a resolved configuration with the defaults this suite assumes. */

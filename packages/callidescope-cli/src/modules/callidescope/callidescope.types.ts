@@ -8,14 +8,6 @@ import type {
 } from "@callidescope/configuration";
 import type { CallGraph, DiscoveredCallable } from "@callidescope/graph";
 
-/** Options `depth` and `breadth` accept, scoping a lookup to one workspace. */
-export interface AddressCommandOptions {
-  readonly config?: string | undefined;
-  /** Project directories to trace. Every project in the workspace when omitted. */
-  readonly directories?: string[] | undefined;
-  readonly format?: CallidescopeOutputFormat | undefined;
-}
-
 /** Options the CLI accepts. */
 export interface CallidescopeCommandOptions {
   /**
@@ -29,6 +21,8 @@ export interface CallidescopeCommandOptions {
   /** Project directories to trace. Every project in the workspace when omitted. */
   readonly directories?: string[] | undefined;
   readonly format?: CallidescopeOutputFormat | undefined;
+  /** `false` when `--no-interactive` opted out of prompting for a missing value. */
+  readonly interactive?: boolean | undefined;
   readonly json?: string | undefined;
   readonly markdown?: string | undefined;
   readonly write?: boolean | undefined;

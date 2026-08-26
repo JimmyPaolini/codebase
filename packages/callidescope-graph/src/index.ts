@@ -79,6 +79,11 @@ export type {
   TraversalFrame,
 } from "./modules/graph/components.types";
 export { DepthService } from "./modules/graph/depth.service";
+export { GraphAssemblyService } from "./modules/graph/graph-assembly.service";
+export type {
+  AssembledGraph,
+  AssembleGraphArguments,
+} from "./modules/graph/graph-assembly.types";
 export { GraphModule } from "./modules/graph/graph.module";
 export { GraphService } from "./modules/graph/graph.service";
 export type {

@@ -4,6 +4,7 @@ import {
   CohesionService,
   EntriesService,
   ExternalService,
+  GraphAssemblyService,
   ProgramService,
   WorkspaceService,
 } from "@callidescope/graph";
@@ -13,7 +14,6 @@ import { Injectable } from "@nestjs/common";
 import { LoggerService } from "@codebase/logger";
 
 import { INCLUDE_CONSTRUCTOR_EDGES } from "./callidescope.constants";
-import { GraphAssemblyService } from "./graph-assembly.service";
 
 import type {
   LocateOutcome,

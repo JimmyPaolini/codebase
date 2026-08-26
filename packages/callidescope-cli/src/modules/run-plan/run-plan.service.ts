@@ -11,10 +11,8 @@ import {
   CHECK_SEPARATOR,
 } from "./run-plan.constants";
 
-import type {
-  AddressCommandOptions,
-  CallidescopeCommandOptions,
-} from "./callidescope.types";
+import type { AddressCommandOptions } from "../address-lookup/address-lookup.types";
+import type { CallidescopeCommandOptions } from "../callidescope/callidescope.types";
 import type { PreparedRun, RunMode, RunModeSelection } from "./run-plan.types";
 import type {
   ResolvedCallidescopeConfiguration,

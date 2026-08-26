@@ -2,6 +2,7 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
+import { GraphAssemblyService } from "@callidescope/graph";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
@@ -11,7 +12,6 @@ import { LoggerService } from "@codebase/logger";
 import { ANALYSIS_MODULES } from "../../../testing/modules";
 
 import { CallidescopeService } from "./callidescope.service";
-import { GraphAssemblyService } from "./graph-assembly.service";
 
 import type {
   CallGraphResult,

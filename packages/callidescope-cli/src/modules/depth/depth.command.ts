@@ -1,14 +1,17 @@
+import {
+  CALLIDESCOPE_OUTPUT_FORMATS,
+  InputService,
+} from "@callidescope/configuration";
 import { CallTreeService } from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { AddressLookupService } from "./address-lookup.service";
-import { AddressReportService } from "./address-report.service";
-import { TraceOptionParsingService } from "./trace-option-parsing.service";
+import { AddressLookupService } from "../address-lookup/address-lookup.service";
+import { AddressReportService } from "../address-report/address-report.service";
 
-import type { AddressCommandOptions } from "./callidescope.types";
+import type { AddressCommandOptions } from "../address-lookup/address-lookup.types";
 import type { CallidescopeOutputFormat } from "@callidescope/configuration";
 
 /**
@@ -28,7 +31,7 @@ export class DepthCommand extends CommandRunner {
     private readonly addressLookupService: AddressLookupService,
     private readonly addressReportService: AddressReportService,
     private readonly callTreeService: CallTreeService,
-    private readonly traceOptionParsingService: TraceOptionParsingService,
+    private readonly inputService: InputService,
     private readonly logger: LoggerService,
   ) {
     super();
@@ -49,22 +52,51 @@ export class DepthCommand extends CommandRunner {
     process.exitCode = 1;
   }
 
-  /** Reads the address argument, or fails the run when it is missing. */
-  private requireAddress(
+  /**
+   * Reads the address argument, prompting for it when it is missing and the
+   * session can be prompted, or failing the run otherwise.
+   */
+  private async resolveAddress(
     passedParameters: readonly string[],
-  ): string | undefined {
+    canPrompt: boolean,
+  ): Promise<string | undefined> {
     const address = passedParameters[0];
 
-    if (address === undefined) {
-      this.logger.error("🔭 Rejected the command line", undefined, {
-        reasons: [
-          'depth needs a callable address, as in "depth src/foo.service.ts#FooService.bar".',
-        ],
-      });
-      process.exitCode = 1;
+    if (address !== undefined) {
+      return address;
     }
 
-    return address;
+    if (canPrompt) {
+      return this.inputService.promptForText({
+        message: "Which callable? (file#qualified-name)",
+      });
+    }
+
+    this.logger.error("🔭 Rejected the command line", undefined, {
+      reasons: [
+        'depth needs a callable address, as in "depth src/foo.service.ts#FooService.bar".',
+      ],
+    });
+    process.exitCode = 1;
+
+    return undefined;
+  }
+
+  /** Fills in `--format` by prompting, when it was left off and can be asked. */
+  private async resolveOptions(
+    options: AddressCommandOptions,
+    canPrompt: boolean,
+  ): Promise<AddressCommandOptions> {
+    if (options.format !== undefined || !canPrompt) {
+      return options;
+    }
+
+    const format = await this.inputService.promptForSelect({
+      choices: CALLIDESCOPE_OUTPUT_FORMATS,
+      message: "Which output format?",
+    });
+
+    return { ...options, format };
   }
 
   // 🌎 Public Methods
@@ -75,7 +107,7 @@ export class DepthCommand extends CommandRunner {
     flags: "--config [config]",
   })
   public parseConfig(value: string | undefined): string | undefined {
-    return this.traceOptionParsingService.parseConfig(value);
+    return this.inputService.parseOptionalOption(value);
   }
 
   /** Parses `--directories`, a comma-separated list of project directories. */
@@ -84,7 +116,7 @@ export class DepthCommand extends CommandRunner {
     flags: "-d, --directories [directories]",
   })
   public parseDirectories(value: string | undefined): string[] {
-    return this.traceOptionParsingService.parseDirectories(value);
+    return this.inputService.parseCommaDelimitedOption(value);
   }
 
   /** Parses `--format`. */
@@ -93,7 +125,16 @@ export class DepthCommand extends CommandRunner {
     flags: "-f, --format [format]",
   })
   public parseFormat(value: string | undefined): CallidescopeOutputFormat {
-    return this.traceOptionParsingService.parseFormat(value);
+    return this.inputService.parseFormat(value);
+  }
+
+  /** Parses the opt-out from interactive prompting. */
+  @Option({
+    description: "Never prompt for missing values",
+    flags: "--no-interactive",
+  })
+  public parseInteractive(): boolean {
+    return false;
   }
 
   /**
@@ -104,15 +145,17 @@ export class DepthCommand extends CommandRunner {
     passedParameters: string[],
     options: AddressCommandOptions,
   ): Promise<void> {
-    const address = this.requireAddress(passedParameters);
+    const canPrompt = this.inputService.canPrompt(options.interactive);
+    const address = await this.resolveAddress(passedParameters, canPrompt);
 
     if (address === undefined) {
       return;
     }
 
+    const resolvedOptions = await this.resolveOptions(options, canPrompt);
     const outcome = await this.addressLookupService.lookup({
       address,
-      options,
+      options: resolvedOptions,
     });
     const problem = this.addressLookupService.describeProblem({
       address,
