@@ -4,13 +4,13 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 import ts from "typescript";
 
-import { TYPESCRIPT_PROJECT_CONFIG_FILE } from "./typescript-project.constants";
 import { TypescriptProjectConfigurationError } from "./typescript-project.errors";
+import { TYPESCRIPT_PROJECT_CONFIG_FILE } from "./typescript.constants";
 
 import type {
   TypescriptProject,
   TypescriptProjectProgram,
-} from "./typescript-project.types";
+} from "./typescript.types";
 
 /**
  * Discovers the workspace's TypeScript projects and builds a `ts.Program`
@@ -23,7 +23,7 @@ import type {
  * `ProgramService` builds one: reading and fully resolving the project's own
  * `tsconfig.json` through `ts.parseJsonSourceFileConfigFileContent`, so the
  * program's module resolution — and therefore
- * `ImportGraphService`'s — agrees with what `tsc` itself would resolve for
+ * `TypescriptImportGraphService`'s — agrees with what `tsc` itself would resolve for
  * this workspace's path aliases and NodeNext `.js`-extension imports.
  */
 @Injectable()

@@ -1,6 +1,6 @@
 import ts from "typescript";
 
-import type { TypescriptProjectProgram } from "../src/modules/typescript-project/typescript-project.types";
+import type { TypescriptProjectProgram } from "../src/modules/typescript/typescript.types";
 
 /** Root every in-memory fixture file is written under. */
 export const FIXTURE_ROOT = "/workspace/packages/example";

@@ -72,7 +72,7 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
 - **🕸️ codependix** - Dependency graph export toolchain that reads what each project depends on and renders it as JSON and Markdown diagrams
   - **[codependix-cli](packages/codependix-cli)** - Command-line host that exports a project's Nx, NestJS, and file-level dependency graphs as JSON and Markdown anchor blocks
   - **[codependix-configuration](packages/codependix-configuration)** - Reads `codependix.config.ts` and resolves per-project export destinations
-  - **[codependix-imports](packages/codependix-imports)** - Builds a project's file-level import graph from its own `ts.Program`
+  - **[codependix-imports](packages/codependix-imports)** - Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements
   - **[codependix-nestjs](packages/codependix-nestjs)** - Explores a NestJS project's container and builds its module graph
   - **[codependix-nx](packages/codependix-nx)** - Builds a project's one-hop Nx dependency neighborhood from the Nx project graph
 - **⏲️ codometer** - Repository measurement toolchain that counts a codebase and reports what it found

@@ -26,9 +26,8 @@ graph LR
 <!-- codependix:start name="codependix-nestjs" -->
 ```mermaid
 flowchart LR
-  ImportGraphModule
-  TypescriptProjectModule
-  ImportGraphModule --> TypescriptProjectModule
+  PythonModule
+  TypescriptModule
 ```
 <!-- codependix:end name="codependix-nestjs" -->
 
@@ -39,45 +38,90 @@ flowchart LR
 graph LR
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
-  file_src_modules_import_graph_import_graph_constants_ts["src/modules/import-graph/import-graph.constants.ts"]
-  file_src_modules_import_graph_import_graph_module_ts["src/modules/import-graph/import-graph.module.ts"]
-  file_src_modules_import_graph_import_graph_module_unit_test_ts["src/modules/import-graph/import-graph.module.unit.test.ts"]
-  file_src_modules_import_graph_import_graph_service_ts["src/modules/import-graph/import-graph.service.ts"]
-  file_src_modules_import_graph_import_graph_service_unit_test_ts["src/modules/import-graph/import-graph.service.unit.test.ts"]
-  file_src_modules_import_graph_import_graph_types_ts["src/modules/import-graph/import-graph.types.ts"]
-  file_src_modules_typescript_project_typescript_project_constants_ts["src/modules/typescript-project/typescript-project.constants.ts"]
-  file_src_modules_typescript_project_typescript_project_errors_ts["src/modules/typescript-project/typescript-project.errors.ts"]
-  file_src_modules_typescript_project_typescript_project_module_ts["src/modules/typescript-project/typescript-project.module.ts"]
-  file_src_modules_typescript_project_typescript_project_module_unit_test_ts["src/modules/typescript-project/typescript-project.module.unit.test.ts"]
-  file_src_modules_typescript_project_typescript_project_service_ts["src/modules/typescript-project/typescript-project.service.ts"]
-  file_src_modules_typescript_project_typescript_project_service_unit_test_ts["src/modules/typescript-project/typescript-project.service.unit.test.ts"]
-  file_src_modules_typescript_project_typescript_project_types_ts["src/modules/typescript-project/typescript-project.types.ts"]
+  file_src_modules_python_python_import_graph_service_ts["src/modules/python/python-import-graph.service.ts"]
+  file_src_modules_python_python_import_graph_service_unit_test_ts["src/modules/python/python-import-graph.service.unit.test.ts"]
+  file_src_modules_python_python_import_parser_constants_ts["src/modules/python/python-import-parser.constants.ts"]
+  file_src_modules_python_python_import_parser_service_ts["src/modules/python/python-import-parser.service.ts"]
+  file_src_modules_python_python_import_parser_service_unit_test_ts["src/modules/python/python-import-parser.service.unit.test.ts"]
+  file_src_modules_python_python_import_parser_types_ts["src/modules/python/python-import-parser.types.ts"]
+  file_src_modules_python_python_project_service_ts["src/modules/python/python-project.service.ts"]
+  file_src_modules_python_python_project_service_unit_test_ts["src/modules/python/python-project.service.unit.test.ts"]
+  file_src_modules_python_python_constants_ts["src/modules/python/python.constants.ts"]
+  file_src_modules_python_python_module_ts["src/modules/python/python.module.ts"]
+  file_src_modules_python_python_module_unit_test_ts["src/modules/python/python.module.unit.test.ts"]
+  file_src_modules_python_python_service_ts["src/modules/python/python.service.ts"]
+  file_src_modules_python_python_service_unit_test_ts["src/modules/python/python.service.unit.test.ts"]
+  file_src_modules_python_python_types_ts["src/modules/python/python.types.ts"]
+  file_src_modules_typescript_typescript_import_graph_service_ts["src/modules/typescript/typescript-import-graph.service.ts"]
+  file_src_modules_typescript_typescript_import_graph_service_unit_test_ts["src/modules/typescript/typescript-import-graph.service.unit.test.ts"]
+  file_src_modules_typescript_typescript_project_errors_ts["src/modules/typescript/typescript-project.errors.ts"]
+  file_src_modules_typescript_typescript_project_service_ts["src/modules/typescript/typescript-project.service.ts"]
+  file_src_modules_typescript_typescript_project_service_unit_test_ts["src/modules/typescript/typescript-project.service.unit.test.ts"]
+  file_src_modules_typescript_typescript_constants_ts["src/modules/typescript/typescript.constants.ts"]
+  file_src_modules_typescript_typescript_module_ts["src/modules/typescript/typescript.module.ts"]
+  file_src_modules_typescript_typescript_module_unit_test_ts["src/modules/typescript/typescript.module.unit.test.ts"]
+  file_src_modules_typescript_typescript_service_ts["src/modules/typescript/typescript.service.ts"]
+  file_src_modules_typescript_typescript_service_unit_test_ts["src/modules/typescript/typescript.service.unit.test.ts"]
+  file_src_modules_typescript_typescript_types_ts["src/modules/typescript/typescript.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_programs_ts["testing/programs.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
-  file_src_modules_import_graph_import_graph_module_ts --> file_src_modules_import_graph_import_graph_service_ts
-  file_src_modules_import_graph_import_graph_module_ts --> file_src_modules_typescript_project_typescript_project_module_ts
-  file_src_modules_import_graph_import_graph_module_unit_test_ts --> file_src_modules_import_graph_import_graph_module_ts
-  file_src_modules_import_graph_import_graph_module_unit_test_ts --> file_src_modules_import_graph_import_graph_service_ts
-  file_src_modules_import_graph_import_graph_service_ts --> file_src_modules_import_graph_import_graph_constants_ts
-  file_src_modules_import_graph_import_graph_service_ts --> file_src_modules_import_graph_import_graph_types_ts
-  file_src_modules_import_graph_import_graph_service_ts --> file_src_modules_typescript_project_typescript_project_service_ts
-  file_src_modules_import_graph_import_graph_service_ts --> file_src_modules_typescript_project_typescript_project_types_ts
-  file_src_modules_import_graph_import_graph_service_unit_test_ts --> file_src_modules_import_graph_import_graph_constants_ts
-  file_src_modules_import_graph_import_graph_service_unit_test_ts --> file_src_modules_import_graph_import_graph_service_ts
-  file_src_modules_import_graph_import_graph_service_unit_test_ts --> file_src_modules_typescript_project_typescript_project_service_ts
-  file_src_modules_import_graph_import_graph_service_unit_test_ts --> file_testing_programs_ts
-  file_src_modules_typescript_project_typescript_project_module_ts --> file_src_modules_typescript_project_typescript_project_service_ts
-  file_src_modules_typescript_project_typescript_project_module_unit_test_ts --> file_src_modules_typescript_project_typescript_project_module_ts
-  file_src_modules_typescript_project_typescript_project_module_unit_test_ts --> file_src_modules_typescript_project_typescript_project_service_ts
-  file_src_modules_typescript_project_typescript_project_service_ts --> file_src_modules_typescript_project_typescript_project_constants_ts
-  file_src_modules_typescript_project_typescript_project_service_ts --> file_src_modules_typescript_project_typescript_project_errors_ts
-  file_src_modules_typescript_project_typescript_project_service_ts --> file_src_modules_typescript_project_typescript_project_types_ts
-  file_src_modules_typescript_project_typescript_project_service_unit_test_ts --> file_src_modules_typescript_project_typescript_project_errors_ts
-  file_src_modules_typescript_project_typescript_project_service_unit_test_ts --> file_src_modules_typescript_project_typescript_project_service_ts
-  file_src_modules_typescript_project_typescript_project_service_unit_test_ts --> file_src_modules_typescript_project_typescript_project_types_ts
-  file_testing_programs_ts --> file_src_modules_typescript_project_typescript_project_types_ts
+  file_src_modules_python_python_import_graph_service_ts --> file_src_modules_python_python_import_parser_service_ts
+  file_src_modules_python_python_import_graph_service_ts --> file_src_modules_python_python_import_parser_types_ts
+  file_src_modules_python_python_import_graph_service_ts --> file_src_modules_python_python_project_service_ts
+  file_src_modules_python_python_import_graph_service_ts --> file_src_modules_python_python_constants_ts
+  file_src_modules_python_python_import_graph_service_ts --> file_src_modules_python_python_types_ts
+  file_src_modules_python_python_import_graph_service_unit_test_ts --> file_src_modules_python_python_import_graph_service_ts
+  file_src_modules_python_python_import_graph_service_unit_test_ts --> file_src_modules_python_python_import_parser_service_ts
+  file_src_modules_python_python_import_graph_service_unit_test_ts --> file_src_modules_python_python_project_service_ts
+  file_src_modules_python_python_import_graph_service_unit_test_ts --> file_src_modules_python_python_constants_ts
+  file_src_modules_python_python_import_graph_service_unit_test_ts --> file_src_modules_python_python_types_ts
+  file_src_modules_python_python_import_parser_service_ts --> file_src_modules_python_python_import_parser_constants_ts
+  file_src_modules_python_python_import_parser_service_ts --> file_src_modules_python_python_import_parser_types_ts
+  file_src_modules_python_python_import_parser_service_unit_test_ts --> file_src_modules_python_python_import_parser_service_ts
+  file_src_modules_python_python_project_service_ts --> file_src_modules_python_python_constants_ts
+  file_src_modules_python_python_project_service_ts --> file_src_modules_python_python_types_ts
+  file_src_modules_python_python_project_service_unit_test_ts --> file_src_modules_python_python_project_service_ts
+  file_src_modules_python_python_module_ts --> file_src_modules_python_python_import_graph_service_ts
+  file_src_modules_python_python_module_ts --> file_src_modules_python_python_import_parser_service_ts
+  file_src_modules_python_python_module_ts --> file_src_modules_python_python_project_service_ts
+  file_src_modules_python_python_module_ts --> file_src_modules_python_python_service_ts
+  file_src_modules_python_python_module_unit_test_ts --> file_src_modules_python_python_module_ts
+  file_src_modules_python_python_module_unit_test_ts --> file_src_modules_python_python_service_ts
+  file_src_modules_python_python_service_ts --> file_src_modules_python_python_import_graph_service_ts
+  file_src_modules_python_python_service_ts --> file_src_modules_python_python_project_service_ts
+  file_src_modules_python_python_service_ts --> file_src_modules_python_python_types_ts
+  file_src_modules_python_python_service_unit_test_ts --> file_src_modules_python_python_import_graph_service_ts
+  file_src_modules_python_python_service_unit_test_ts --> file_src_modules_python_python_project_service_ts
+  file_src_modules_python_python_service_unit_test_ts --> file_src_modules_python_python_service_ts
+  file_src_modules_python_python_service_unit_test_ts --> file_src_modules_python_python_types_ts
+  file_src_modules_typescript_typescript_import_graph_service_ts --> file_src_modules_typescript_typescript_project_service_ts
+  file_src_modules_typescript_typescript_import_graph_service_ts --> file_src_modules_typescript_typescript_constants_ts
+  file_src_modules_typescript_typescript_import_graph_service_ts --> file_src_modules_typescript_typescript_types_ts
+  file_src_modules_typescript_typescript_import_graph_service_unit_test_ts --> file_src_modules_typescript_typescript_import_graph_service_ts
+  file_src_modules_typescript_typescript_import_graph_service_unit_test_ts --> file_src_modules_typescript_typescript_project_service_ts
+  file_src_modules_typescript_typescript_import_graph_service_unit_test_ts --> file_src_modules_typescript_typescript_constants_ts
+  file_src_modules_typescript_typescript_import_graph_service_unit_test_ts --> file_testing_programs_ts
+  file_src_modules_typescript_typescript_project_service_ts --> file_src_modules_typescript_typescript_project_errors_ts
+  file_src_modules_typescript_typescript_project_service_ts --> file_src_modules_typescript_typescript_constants_ts
+  file_src_modules_typescript_typescript_project_service_ts --> file_src_modules_typescript_typescript_types_ts
+  file_src_modules_typescript_typescript_project_service_unit_test_ts --> file_src_modules_typescript_typescript_project_errors_ts
+  file_src_modules_typescript_typescript_project_service_unit_test_ts --> file_src_modules_typescript_typescript_project_service_ts
+  file_src_modules_typescript_typescript_project_service_unit_test_ts --> file_src_modules_typescript_typescript_types_ts
+  file_src_modules_typescript_typescript_module_ts --> file_src_modules_typescript_typescript_import_graph_service_ts
+  file_src_modules_typescript_typescript_module_ts --> file_src_modules_typescript_typescript_project_service_ts
+  file_src_modules_typescript_typescript_module_ts --> file_src_modules_typescript_typescript_service_ts
+  file_src_modules_typescript_typescript_module_unit_test_ts --> file_src_modules_typescript_typescript_module_ts
+  file_src_modules_typescript_typescript_module_unit_test_ts --> file_src_modules_typescript_typescript_service_ts
+  file_src_modules_typescript_typescript_service_ts --> file_src_modules_typescript_typescript_import_graph_service_ts
+  file_src_modules_typescript_typescript_service_ts --> file_src_modules_typescript_typescript_project_service_ts
+  file_src_modules_typescript_typescript_service_ts --> file_src_modules_typescript_typescript_types_ts
+  file_src_modules_typescript_typescript_service_unit_test_ts --> file_src_modules_typescript_typescript_import_graph_service_ts
+  file_src_modules_typescript_typescript_service_unit_test_ts --> file_src_modules_typescript_typescript_project_service_ts
+  file_src_modules_typescript_typescript_service_unit_test_ts --> file_src_modules_typescript_typescript_service_ts
+  file_src_modules_typescript_typescript_service_unit_test_ts --> file_src_modules_typescript_typescript_types_ts
+  file_testing_programs_ts --> file_src_modules_typescript_typescript_types_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
 

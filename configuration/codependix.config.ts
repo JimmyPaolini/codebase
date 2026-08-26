@@ -41,6 +41,10 @@ const codependixConfiguration: CodependixConfiguration = {
       markdown: { anchor: "codependix-nx" },
       target: "markdown",
     },
+    pythonImports: {
+      markdown: { anchor: "codependix-imports-python" },
+      target: "markdown",
+    },
   },
   workspace: {
     nx: {
