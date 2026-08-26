@@ -48,6 +48,17 @@ export class TypescriptImportsService {
 
   // 🔐 Private Fields
 
+  /**
+   * Graphs already built, keyed by the project root they were built from.
+   *
+   * `ts.createProgram` parses the whole default library before it resolves a
+   * single specifier, and every example and every test asks for the same two
+   * fixture projects repeatedly. Nothing under `fixtures/` changes while the
+   * process runs, so the second request is answered from here — which is what
+   * keeps a shared CI runner from spending that parse a dozen times over.
+   */
+  private readonly graphsByRoot = new Map<string, TypescriptImportGraph>();
+
   // 🔑 Public Fields
 
   // 🔏 Private Methods
@@ -107,16 +118,24 @@ export class TypescriptImportsService {
 
   /** Builds one fixture project's import graph. */
   buildFixtureGraph(fixtureName: string): TypescriptImportGraph {
-    return this.typescriptService.buildGraph(
-      this.typescriptService.buildProgram(this.describeFixture(fixtureName)),
+    return this.buildGraphAt(
+      resolveFixture(TYPESCRIPT_FIXTURES_SEGMENT, fixtureName),
     );
   }
 
   /** Builds one project's import graph, given its root on disk. */
   buildGraphAt(absoluteRoot: string): TypescriptImportGraph {
-    return this.typescriptService.buildGraph(
+    const cached = this.graphsByRoot.get(absoluteRoot);
+
+    if (cached !== undefined) return cached;
+
+    const graph = this.typescriptService.buildGraph(
       this.typescriptService.buildProgram(this.describeProjectAt(absoluteRoot)),
     );
+
+    this.graphsByRoot.set(absoluteRoot, graph);
+
+    return graph;
   }
 
   /** Builds a fixture's program, reporting a configuration failure rather than raising. */
@@ -141,19 +160,6 @@ export class TypescriptImportsService {
       : String(error);
   }
 
-  /**
-   * Describes a fixture the way project discovery would have described it.
-   *
-   * `TypescriptService.discoverProjects` is the real entry point, and it reads
-   * no Nx tag — every project carrying its own `tsconfig.json` is a candidate,
-   * since a file-level import graph is meaningful for any TypeScript project.
-   */
-  describeFixture(fixtureName: string): TypescriptProject {
-    return this.describeProjectAt(
-      resolveFixture(TYPESCRIPT_FIXTURES_SEGMENT, fixtureName),
-    );
-  }
-
   /** Reports an outcome as the one line a run would log for it. */
   describeOutcome(outcome: FixtureProgramOutcome): string {
     return outcome.outcome === "built"
@@ -161,7 +167,13 @@ export class TypescriptImportsService {
       : outcome.error;
   }
 
-  /** Describes a project rooted anywhere on disk, for cross-level examples. */
+  /**
+   * Describes a project through the real discovery entry point.
+   *
+   * `TypescriptService.discoverProjects` reads no Nx tag — every project
+   * carrying its own `tsconfig.json` is a candidate, since a file-level import
+   * graph is meaningful for any TypeScript project.
+   */
   describeProjectAt(absoluteRoot: string): TypescriptProject {
     const [project] = this.typescriptService.discoverProjects([
       { absoluteRoot, name: path.basename(absoluteRoot) },

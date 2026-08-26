@@ -51,6 +51,17 @@ export class NestjsGraphsService {
 
   // 🔐 Private Fields
 
+  /**
+   * Module graphs already built, keyed by the project root they came from.
+   *
+   * Exploring a container boots it, and every example and every test asks for
+   * the same seven fixture containers repeatedly. Nothing under `fixtures/`
+   * changes while the process runs, so the second request is answered from
+   * here. Only a successful exploration is cached: a container that refuses to
+   * load raises every time it is asked for, which is what example 5 shows.
+   */
+  private readonly graphsByRoot = new Map<string, NestjsModuleGraph>();
+
   // 🔑 Public Fields
 
   // 🔏 Private Methods
@@ -177,18 +188,24 @@ export class NestjsGraphsService {
 
   /** Builds one fixture container's module graph. */
   async buildFixtureGraph(fixtureName: string): Promise<NestjsModuleGraph> {
-    const project = this.describeFixture(fixtureName);
-    const tree = await this.nestjsProjectService.exploreProject(project);
-
-    return this.moduleGraphService.buildGraph(tree, project.name);
+    return this.buildGraphAt(
+      resolveFixture(NESTJS_FIXTURES_SEGMENT, fixtureName),
+    );
   }
 
   /** Builds one project's module graph, given its root on disk. */
   async buildGraphAt(absoluteRoot: string): Promise<NestjsModuleGraph> {
+    const cached = this.graphsByRoot.get(absoluteRoot);
+
+    if (cached !== undefined) return cached;
+
     const project = this.describeProjectAt(absoluteRoot);
     const tree = await this.nestjsProjectService.exploreProject(project);
+    const graph = this.moduleGraphService.buildGraph(tree, project.name);
 
-    return this.moduleGraphService.buildGraph(tree, project.name);
+    this.graphsByRoot.set(absoluteRoot, graph);
+
+    return graph;
   }
 
   /** Describes a raised value, whether or not it was an `Error`. */
@@ -198,15 +215,13 @@ export class NestjsGraphsService {
       : String(error);
   }
 
-  /** Describes a fixture the way project discovery would have described it. */
-  describeFixture(fixtureName: string): NestjsProject {
-    return this.nestjsProjectService.describeProject(
-      resolveFixture(NESTJS_FIXTURES_SEGMENT, fixtureName),
-      fixtureName,
-    );
-  }
-
-  /** Describes a project rooted anywhere on disk, for cross-level examples. */
+  /**
+   * Describes a project the way discovery would have described it.
+   *
+   * `NestjsProjectService.discoverProjects` filters an Nx project graph by the
+   * `framework:nestjs` tag, and a fixture is not an Nx project — so the
+   * descriptor discovery would have produced is built directly instead.
+   */
   describeProjectAt(absoluteRoot: string): NestjsProject {
     return this.nestjsProjectService.describeProject(
       absoluteRoot,
