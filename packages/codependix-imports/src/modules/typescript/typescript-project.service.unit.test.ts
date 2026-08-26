@@ -9,7 +9,7 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { TypescriptProjectConfigurationError } from "./typescript-project.errors";
 import { TypescriptProjectService } from "./typescript-project.service";
 
-import type { TypescriptProject } from "./typescript-project.types";
+import type { TypescriptProject } from "./typescript.types";
 
 /** Writes a project holding one source file, and returns its description. */
 async function buildProject(args: {

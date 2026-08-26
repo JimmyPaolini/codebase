@@ -51,7 +51,7 @@ export interface CodependixGraphOutput {
 }
 
 /** A level of dependency graph codependix can build. */
-export type CodependixGraphType = "imports" | "nestjs" | "nx";
+export type CodependixGraphType = "imports" | "nestjs" | "nx" | "pythonImports";
 
 /** Where a graph's JSON export is written. */
 export interface CodependixJsonOutput {
@@ -84,6 +84,7 @@ export interface CodependixProjectConfiguration {
   imports?: CodependixGraphOutput | undefined;
   nestjs?: CodependixGraphOutput | undefined;
   nx?: CodependixGraphOutput | undefined;
+  pythonImports?: CodependixGraphOutput | undefined;
 }
 
 /**

@@ -3,10 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { ConfigurationService } from "@codependix/configuration";
-import {
-  ImportGraphService,
-  TypescriptProjectService,
-} from "@codependix/imports";
+import { TypescriptService } from "@codependix/imports";
 import { ModuleGraphService, NestjsProjectService } from "@codependix/nestjs";
 import { NeighborhoodService, WorkspaceGraphService } from "@codependix/nx";
 import { createMock } from "@golevelup/ts-vitest";
@@ -17,13 +14,14 @@ import { LoggerService } from "@codebase/logger";
 
 import { AnchorsService } from "../anchors/anchors.service";
 import { DeliveryService } from "../delivery/delivery.service";
+import { PythonImportsService } from "../python-imports/python-imports.service";
 
 import { CodependixService } from "./codependix.service";
 
 import type { GraphRunOutcome } from "../delivery/delivery.types";
 import type { GraphRunContext } from "./codependix.types";
 import type {
-  ImportGraph,
+  TypescriptImportGraph,
   TypescriptProjectProgram,
 } from "@codependix/imports";
 import type { NestjsModuleGraph } from "@codependix/nestjs";
@@ -44,7 +42,7 @@ const MODULE_GRAPH: NestjsModuleGraph = {
   projectName: "codependix-cli",
 };
 
-const IMPORT_GRAPH: ImportGraph = {
+const TYPESCRIPT_IMPORT_GRAPH: TypescriptImportGraph = {
   edges: [{ source: "src/index.ts", target: "src/helper.ts" }],
   fileNames: ["src/helper.ts", "src/index.ts"],
   isolatedFileNames: [],
@@ -54,11 +52,11 @@ const IMPORT_GRAPH: ImportGraph = {
 describe(CodependixService, () => {
   let service: CodependixService;
   let configurationService: ConfigurationService;
-  let importGraphService: ImportGraphService;
   let moduleGraphService: ModuleGraphService;
   let neighborhoodService: NeighborhoodService;
   let nestjsProjectService: NestjsProjectService;
-  let typescriptProjectService: TypescriptProjectService;
+  let pythonImportsService: PythonImportsService;
+  let typescriptService: TypescriptService;
   let workspaceGraphService: WorkspaceGraphService;
   let projectRoot: string;
 
@@ -84,11 +82,11 @@ describe(CodependixService, () => {
 
   beforeAll(async () => {
     configurationService = createMock<ConfigurationService>();
-    importGraphService = createMock<ImportGraphService>();
     moduleGraphService = createMock<ModuleGraphService>();
     neighborhoodService = createMock<NeighborhoodService>();
     nestjsProjectService = createMock<NestjsProjectService>();
-    typescriptProjectService = createMock<TypescriptProjectService>();
+    pythonImportsService = createMock<PythonImportsService>();
+    typescriptService = createMock<TypescriptService>();
     workspaceGraphService = createMock<WorkspaceGraphService>();
 
     const module = await Test.createTestingModule({
@@ -100,15 +98,12 @@ describe(CodependixService, () => {
           provide: ConfigurationService,
           useValue: configurationService,
         },
-        { provide: ImportGraphService, useValue: importGraphService },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         { provide: ModuleGraphService, useValue: moduleGraphService },
         { provide: NeighborhoodService, useValue: neighborhoodService },
         { provide: NestjsProjectService, useValue: nestjsProjectService },
-        {
-          provide: TypescriptProjectService,
-          useValue: typescriptProjectService,
-        },
+        { provide: PythonImportsService, useValue: pythonImportsService },
+        { provide: TypescriptService, useValue: typescriptService },
         { provide: WorkspaceGraphService, useValue: workspaceGraphService },
       ],
     }).compile();
@@ -163,20 +158,26 @@ describe(CodependixService, () => {
     vi.mocked(moduleGraphService.renderMermaid).mockReturnValue(
       "```mermaid\nflowchart LR\n```",
     );
-    vi.mocked(typescriptProjectService.discoverProjects).mockReturnValue([
+    vi.mocked(typescriptService.discoverProjects).mockReturnValue([
       {
         absoluteRoot: projectRoot,
         name: "codependix-imports",
         tsconfigPath: path.join(projectRoot, "tsconfig.json"),
       },
     ]);
-    vi.mocked(typescriptProjectService.buildProgram).mockReturnValue(
+    vi.mocked(typescriptService.buildProgram).mockReturnValue(
       createMock<TypescriptProjectProgram>(),
     );
-    vi.mocked(importGraphService.buildGraph).mockReturnValue(IMPORT_GRAPH);
-    vi.mocked(importGraphService.renderMermaid).mockReturnValue(
+    vi.mocked(typescriptService.buildGraph).mockReturnValue(
+      TYPESCRIPT_IMPORT_GRAPH,
+    );
+    vi.mocked(typescriptService.renderMermaid).mockReturnValue(
       "```mermaid\ngraph LR\n```",
     );
+    vi.mocked(pythonImportsService.runGraphs).mockReturnValue({
+      failures: [],
+      results: [],
+    });
   });
 
   it("is defined", () => {
@@ -634,7 +635,7 @@ describe(CodependixService, () => {
 
       service.runImportGraphs(buildImportsContext());
 
-      expect(typescriptProjectService.buildProgram).toHaveBeenCalledWith({
+      expect(typescriptService.buildProgram).toHaveBeenCalledWith({
         absoluteRoot: projectRoot,
         name: "codependix-imports",
         tsconfigPath: path.join(projectRoot, "tsconfig.json"),
@@ -668,7 +669,7 @@ describe(CodependixService, () => {
         ),
       ) as unknown;
 
-      expect(written).toStrictEqual(IMPORT_GRAPH);
+      expect(written).toStrictEqual(TYPESCRIPT_IMPORT_GRAPH);
     });
 
     it("reports a missing JSON export as stale in check mode", () => {
@@ -744,7 +745,7 @@ describe(CodependixService, () => {
       const otherProjectRoot = path.join(projectRoot, "other-imports-project");
 
       await mkdir(otherProjectRoot, { recursive: true });
-      vi.mocked(typescriptProjectService.discoverProjects).mockReturnValue([
+      vi.mocked(typescriptService.discoverProjects).mockReturnValue([
         {
           absoluteRoot: projectRoot,
           name: "codependix-imports",
@@ -756,7 +757,7 @@ describe(CodependixService, () => {
           tsconfigPath: path.join(otherProjectRoot, "tsconfig.json"),
         },
       ]);
-      vi.mocked(typescriptProjectService.buildProgram).mockImplementation(
+      vi.mocked(typescriptService.buildProgram).mockImplementation(
         (project) => {
           if (project.name === "codependix-imports") {
             throw new Error("failed to build program");
@@ -798,11 +799,9 @@ describe(CodependixService, () => {
     it("records a non-Error rejection as its string form", () => {
       const nonErrorFailure: unknown = "boom";
 
-      vi.mocked(typescriptProjectService.buildProgram).mockImplementation(
-        () => {
-          throw nonErrorFailure;
-        },
-      );
+      vi.mocked(typescriptService.buildProgram).mockImplementation(() => {
+        throw nonErrorFailure;
+      });
       vi.mocked(configurationService.resolveForProject).mockReturnValue({
         json: { path: "codependix-imports.json" },
         markdown: undefined,
@@ -814,6 +813,23 @@ describe(CodependixService, () => {
       expect(outcome.failures).toStrictEqual([
         { error: "boom", projectName: "codependix-imports" },
       ]);
+    });
+  });
+
+  describe("runPythonImportGraphs", () => {
+    it("delegates to PythonImportsService with the given context", () => {
+      const context = buildContext();
+      const outcome: GraphRunOutcome = {
+        failures: [],
+        results: [
+          { isCurrent: true, projectName: "affirmations", stalePaths: [] },
+        ],
+      };
+
+      vi.mocked(pythonImportsService.runGraphs).mockReturnValue(outcome);
+
+      expect(service.runPythonImportGraphs(context)).toBe(outcome);
+      expect(pythonImportsService.runGraphs).toHaveBeenCalledWith(context);
     });
   });
 
@@ -831,7 +847,7 @@ describe(CodependixService, () => {
       expect(neighborhoodService.readProjectGraph).toHaveBeenCalledTimes(1);
     });
 
-    it("aggregates the results and failures from all three passes", async () => {
+    it("aggregates the results and failures from all four passes", async () => {
       const nxOutcome: GraphRunOutcome = {
         failures: [{ error: "nx-boom", projectName: "a" }],
         results: [{ isCurrent: true, projectName: "b", stalePaths: [] }],
@@ -844,10 +860,17 @@ describe(CodependixService, () => {
         failures: [{ error: "import-boom", projectName: "d" }],
         results: [],
       };
+      const pythonImportsOutcome: GraphRunOutcome = {
+        failures: [],
+        results: [{ isCurrent: true, projectName: "e", stalePaths: [] }],
+      };
 
       vi.spyOn(service, "runNxGraphs").mockReturnValue(nxOutcome);
       vi.spyOn(service, "runNestjsGraphs").mockResolvedValue(nestjsOutcome);
       vi.spyOn(service, "runImportGraphs").mockReturnValue(importsOutcome);
+      vi.spyOn(service, "runPythonImportGraphs").mockReturnValue(
+        pythonImportsOutcome,
+      );
 
       const outcome = await service.run({ write: true }, projectRoot);
 
@@ -856,16 +879,18 @@ describe(CodependixService, () => {
           ...nxOutcome.failures,
           ...nestjsOutcome.failures,
           ...importsOutcome.failures,
+          ...pythonImportsOutcome.failures,
         ],
         results: [
           ...nxOutcome.results,
           ...nestjsOutcome.results,
           ...importsOutcome.results,
+          ...pythonImportsOutcome.results,
         ],
       });
     });
 
-    it("still runs the nestjs and import passes when the nx pass reports a failure", async () => {
+    it("still runs the nestjs, import, and python-import passes when the nx pass reports a failure", async () => {
       vi.spyOn(service, "runNxGraphs").mockReturnValue({
         failures: [{ error: "boom", projectName: "a" }],
         results: [],
@@ -875,6 +900,7 @@ describe(CodependixService, () => {
 
       expect(service.runNestjsGraphs).toHaveBeenCalledTimes(1);
       expect(service.runImportGraphs).toHaveBeenCalledTimes(1);
+      expect(service.runPythonImportGraphs).toHaveBeenCalledTimes(1);
     });
 
     it("resolves check mode when the command line names --check", async () => {

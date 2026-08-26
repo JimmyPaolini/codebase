@@ -2,29 +2,31 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { buildFixtureProgram } from "../../../testing/programs";
-import { TypescriptProjectService } from "../typescript-project/typescript-project.service";
 
-import { IMPORT_GRAPH_UNCONNECTED } from "./import-graph.constants";
-import { ImportGraphService } from "./import-graph.service";
+import { TypescriptImportGraphService } from "./typescript-import-graph.service";
+import { TypescriptProjectService } from "./typescript-project.service";
+import { TYPESCRIPT_IMPORT_GRAPH_UNCONNECTED } from "./typescript.constants";
 
 /** Builds a graph from in-memory files, through a real fixture program. */
 function buildGraph(
   files: Record<string, string>,
-): ReturnType<ImportGraphService["buildGraph"]> {
-  const service = new ImportGraphService(new TypescriptProjectService());
+): ReturnType<TypescriptImportGraphService["buildGraph"]> {
+  const service = new TypescriptImportGraphService(
+    new TypescriptProjectService(),
+  );
 
   return service.buildGraph(buildFixtureProgram(files));
 }
 
-describe(ImportGraphService, () => {
-  let service: ImportGraphService;
+describe(TypescriptImportGraphService, () => {
+  let service: TypescriptImportGraphService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [ImportGraphService, TypescriptProjectService],
+      providers: [TypescriptImportGraphService, TypescriptProjectService],
     }).compile();
 
-    service = await module.resolve(ImportGraphService);
+    service = await module.resolve(TypescriptImportGraphService);
   });
 
   it("is defined", () => {
@@ -134,7 +136,9 @@ describe(ImportGraphService, () => {
       "src/index.ts": "export const value = 1;\n",
     });
 
-    expect(service.renderMermaid(graph)).toBe(IMPORT_GRAPH_UNCONNECTED);
+    expect(service.renderMermaid(graph)).toBe(
+      TYPESCRIPT_IMPORT_GRAPH_UNCONNECTED,
+    );
   });
 
   it("renders a fenced mermaid diagram with every file and edge", () => {

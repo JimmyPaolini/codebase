@@ -3,16 +3,18 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 import ts from "typescript";
 
-import { TypescriptProjectService } from "../typescript-project/typescript-project.service";
-
+import { TypescriptProjectService } from "./typescript-project.service";
 import {
   DECLARATION_FILE_EXTENSION,
-  IMPORT_GRAPH_MERMAID_HEADER,
-  IMPORT_GRAPH_UNCONNECTED,
-} from "./import-graph.constants";
+  TYPESCRIPT_IMPORT_GRAPH_MERMAID_HEADER,
+  TYPESCRIPT_IMPORT_GRAPH_UNCONNECTED,
+} from "./typescript.constants";
 
-import type { TypescriptProjectProgram } from "../typescript-project/typescript-project.types";
-import type { ImportGraph, ImportGraphEdge } from "./import-graph.types";
+import type {
+  TypescriptImportGraph,
+  TypescriptImportGraphEdge,
+  TypescriptProjectProgram,
+} from "./typescript.types";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
@@ -30,7 +32,7 @@ import type { ImportGraph, ImportGraphEdge } from "./import-graph.types";
  */
 @Injectable()
 /* v8 ignore stop */
-export class ImportGraphService {
+export class TypescriptImportGraphService {
   // 🏗 Dependency Injection
 
   constructor(
@@ -48,7 +50,7 @@ export class ImportGraphService {
     ownedFileNames: ReadonlySet<string>;
     projectProgram: TypescriptProjectProgram;
     sourceFileName: string;
-  }): ImportGraphEdge[] {
+  }): TypescriptImportGraphEdge[] {
     const { ownedFileNames, projectProgram, sourceFileName } = args;
     const sourceFile = projectProgram.program.getSourceFile(sourceFileName);
 
@@ -56,7 +58,7 @@ export class ImportGraphService {
        own root file names, so the program always has a source file for it */
     if (sourceFile === undefined) return [];
 
-    const edges: ImportGraphEdge[] = [];
+    const edges: TypescriptImportGraphEdge[] = [];
 
     for (const statement of sourceFile.statements) {
       if (!ts.isImportDeclaration(statement)) continue;
@@ -85,8 +87,8 @@ export class ImportGraphService {
 
   /** Sorts edges by source then target so a rendered diagram never churns. */
   private compareEdges(
-    first: ImportGraphEdge,
-    second: ImportGraphEdge,
+    first: TypescriptImportGraphEdge,
+    second: TypescriptImportGraphEdge,
   ): number {
     return (
       first.source.localeCompare(second.source) ||
@@ -95,8 +97,10 @@ export class ImportGraphService {
   }
 
   /** Drops duplicate edges, keeping the sorted order they were built in. */
-  private dedupeEdges(edges: ImportGraphEdge[]): ImportGraphEdge[] {
-    const byKey = new Map<string, ImportGraphEdge>();
+  private dedupeEdges(
+    edges: TypescriptImportGraphEdge[],
+  ): TypescriptImportGraphEdge[] {
+    const byKey = new Map<string, TypescriptImportGraphEdge>();
 
     for (const edge of edges) {
       byKey.set(`${edge.source}->${edge.target}`, edge);
@@ -178,7 +182,7 @@ export class ImportGraphService {
   // 🌎 Public Methods
 
   /** Builds a project's internal file-level import Graph from its program. */
-  buildGraph(projectProgram: TypescriptProjectProgram): ImportGraph {
+  buildGraph(projectProgram: TypescriptProjectProgram): TypescriptImportGraph {
     const ownedFileNames = this.resolveOwnedFileNames(projectProgram);
     const sourceFileNames = this.listOwnedSourceFileNames(projectProgram);
     const edges = this.dedupeEdges(
@@ -208,14 +212,14 @@ export class ImportGraphService {
   }
 
   /** Renders an import graph as a fenced mermaid diagram. */
-  renderMermaid(graph: ImportGraph): string {
+  renderMermaid(graph: TypescriptImportGraph): string {
     if (graph.edges.length === 0) {
-      return IMPORT_GRAPH_UNCONNECTED;
+      return TYPESCRIPT_IMPORT_GRAPH_UNCONNECTED;
     }
 
     const lines = [
       "```mermaid",
-      IMPORT_GRAPH_MERMAID_HEADER,
+      TYPESCRIPT_IMPORT_GRAPH_MERMAID_HEADER,
       ...graph.fileNames.map((fileName) => this.renderNode(fileName)),
       ...graph.edges.map(
         (edge) =>
