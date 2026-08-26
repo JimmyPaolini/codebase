@@ -210,6 +210,11 @@ const config: KnipConfig = {
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
+    "packages/callidescope-nx": {
+      entry: ["src/main.mjs", "src/main.ts", "src/repl.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
+      project: "src/**/*.ts",
+    },
     "packages/callidescope-output": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],

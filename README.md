@@ -68,6 +68,7 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
   - **[callidescope-cli](packages/callidescope-cli)** - Command-line host that builds the call graph with the TypeScript compiler API, resolves NestJS injected dependencies, and reports the deepest stack below every entry point
   - **[callidescope-configuration](packages/callidescope-configuration)** - Reads `callidescope.config.ts` for entry-point rules, depth and cohesion limits, exclusion globs, and output destinations
   - **[callidescope-graph](packages/callidescope-graph)** - Builds the call graph from traced TypeScript source and measures its depth, breadth, and cohesion
+  - **[callidescope-nx](packages/callidescope-nx)** - Resolves Nx project names to the workspace-relative directories `callidescope --directories` takes, keeping every Nx dependency out of the packages that trace
   - **[callidescope-output](packages/callidescope-output)** - Renders call-graph findings into markdown, mermaid, and JSON output formats
 - **🕸️ codependix** - Dependency graph export toolchain that reads what each project depends on and renders it as JSON and Markdown diagrams
   - **[codependix-cli](packages/codependix-cli)** - Command-line host that exports a project's Nx, NestJS, and file-level dependency graphs as JSON and Markdown anchor blocks

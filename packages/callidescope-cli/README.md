@@ -212,6 +212,33 @@ a capped run says so.
 side — what it calls, and what calls it — the two questions a refactor or a
 rename needs answered together before either one is safe.
 
+## Scoping by Nx project name
+
+`--directories` takes paths, because callidescope has no idea what workspace
+tool you use — a directory holding a `tsconfig.json` is the whole contract, and
+it holds in a monorepo, a single package, or neither.
+
+A workspace that already thinks in **Nx project names** can keep doing so
+through [`@callidescope/nx`](../callidescope-nx/README.md), which resolves
+names to the directories they stand for:
+
+```bash
+directories="$(callidescope-nx directories --projects callidescope-graph,callidescope-cli)" \
+  && callidescope --directories "$directories" --check depth
+```
+
+A name is stable where a path is not, so this survives a package moving. It is
+a separate command rather than a `--projects` flag here on purpose: this CLI
+depends on nothing Nx-shaped, and a flag that only worked when an optional
+package happened to be installed would advertise in `--help` something that
+silently did nothing without it.
+
+Resolve first and join with `&&`, as above, rather than substituting inline.
+Command substitution discards the exit code of the command inside it, so a
+rejected project name in
+`callidescope --directories "$(callidescope-nx …)"` would leave `--directories`
+empty — which is exactly how you ask to trace the whole workspace.
+
 ## What it reports
 
 **Deep call stacks.** The single deepest path below each entry point, when it
@@ -331,6 +358,7 @@ every resolver ends the same way. `jscpd` already covers real duplication.
 | [`@callidescope/cli`](.) | Orchestrates a run: traces the workspace, plans what to check, and reports |
 | [`@callidescope/configuration`](../callidescope-configuration/README.md) | Reads `callidescope.config.ts` and resolves the limits |
 | [`@callidescope/graph`](../callidescope-graph/README.md) | Builds the call graph from traced source and measures depth, breadth, and cohesion |
+| [`@callidescope/nx`](../callidescope-nx/README.md) | Resolves Nx project names to the directories `--directories` takes |
 | [`@callidescope/output`](../callidescope-output/README.md) | Renders findings into markdown, mermaid, and JSON |
 
 ## Start

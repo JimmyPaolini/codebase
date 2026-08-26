@@ -399,6 +399,16 @@ export default [
               ],
               sourceTag: "name:callidescope-cli",
             },
+            // The Nx-aware companion sits outside that chain rather than
+            // on top of it: it resolves Nx project names to the directories
+            // `callidescope --directories` takes, and needs none of the
+            // tracing packages to do it. Nothing in the chain may depend on
+            // it either, which is what keeps `@nx/devkit` out of every
+            // package that actually traces.
+            {
+              onlyDependOnLibsWithTags: ["name:logger"],
+              sourceTag: "name:callidescope-nx",
+            },
             // Codometer package graph. The configuration reader, the change
             // diffing package, the language analyzers, and the measurement
             // support packages (discovery, size, customization) are leaves;
