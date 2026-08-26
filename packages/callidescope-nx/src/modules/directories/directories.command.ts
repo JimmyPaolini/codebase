@@ -5,12 +5,19 @@ import { LoggerService } from "@codebase/logger";
 
 import { ProjectsService } from "../projects/projects.service";
 
-import { PROJECT_SEPARATOR } from "./directories.constants";
+import {
+  PROJECT_SEPARATOR,
+  PROJECTS_EXAMPLE,
+  PROJECTS_FLAG,
+  TAGS_EXAMPLE,
+  TAGS_FLAG,
+} from "./directories.constants";
 
+import type { ResolvedProjectDirectories } from "../projects/projects.types";
 import type { DirectoriesCommandOptions } from "./directories.types";
 
 /**
- * Prints the directories a set of Nx project names stands for.
+ * Prints the directories a set of Nx project names and tags stands for.
  *
  * A separate command rather than a `--projects` flag on `callidescope`
  * itself: a flag there would put Nx in the core CLI's help text and, sooner
@@ -25,7 +32,7 @@ import type { DirectoriesCommandOptions } from "./directories.types";
  */
 @Command({
   description:
-    "Resolve Nx project names to the directories callidescope traces",
+    "Resolve Nx project names and tags to the directories callidescope traces",
   name: "directories",
 })
 @Injectable()
@@ -46,6 +53,85 @@ export class DirectoriesCommand extends CommandRunner {
 
   // 🔏 Private Methods
 
+  /**
+   * Names what failed to resolve, alongside the vocabulary it was drawn from.
+   *
+   * A selection that refused no tag says nothing about tags, and vice versa.
+   * The workspace's full vocabulary is worth printing beside a typo and
+   * nowhere else — it runs to dozens of entries, so including the half that
+   * nothing went wrong in would bury the half that did.
+   */
+  private describeRejection(
+    resolution: ResolvedProjectDirectories,
+  ): Record<string, string[]> {
+    const description: Record<string, string[]> = {};
+
+    if (resolution.unknownNames.length > 0) {
+      description["knownNames"] = resolution.knownNames;
+      description["unknownNames"] = resolution.unknownNames;
+    }
+
+    if (resolution.unmatchedTags.length > 0) {
+      description["knownTags"] = resolution.knownTags;
+      description["unmatchedTags"] = resolution.unmatchedTags;
+    }
+
+    return description;
+  }
+
+  /**
+   * Names everything wrong with the two selection flags, before any of it is
+   * reported.
+   *
+   * Collected rather than thrown one at a time, the way `RunPlanService` does
+   * in `callidescope-cli`: a command line with two mistakes in it is two
+   * mistakes to fix rather than two runs.
+   *
+   * A flag passed without a value is refused even when the other flag named
+   * something usable. Proceeding would silently drop half of what was asked
+   * for, which is the one failure a printed line of directories cannot show.
+   */
+  private findSelectionErrors(options: DirectoriesCommandOptions): string[] {
+    const errors = (
+      [
+        [PROJECTS_FLAG, options.projects, PROJECTS_EXAMPLE],
+        [TAGS_FLAG, options.tags, TAGS_EXAMPLE],
+      ] as const
+    )
+      .filter(([, value]) => value === true)
+      .map(([flag, , example]) => `${flag} needs a value, as in "${example}".`);
+
+    // Only a command line with no broken flag is told it named nothing:
+    // otherwise the same mistake would be reported twice.
+    if (errors.length > 0) {
+      return errors;
+    }
+
+    if (
+      this.readSelection(options.projects).length === 0 &&
+      this.readSelection(options.tags).length === 0
+    ) {
+      return [
+        `Name at least one of ${PROJECTS_FLAG} or ${TAGS_FLAG}, as in "${PROJECTS_EXAMPLE}" or "${TAGS_EXAMPLE}".`,
+      ];
+    }
+
+    return errors;
+  }
+
+  /** Reads one selection flag into the entries it named, if any. */
+  private readSelection(value: string[] | true | undefined): string[] {
+    return value === undefined || value === true ? [] : value;
+  }
+
+  /** Splits one comma-separated flag value, trimming and dropping the blanks. */
+  private splitEntries(value: string | undefined): string[] {
+    return (value ?? "")
+      .split(PROJECT_SEPARATOR)
+      .map((entry) => entry.trim())
+      .filter((entry) => entry !== "");
+  }
+
   // 🌎 Public Methods
 
   /**
@@ -60,62 +146,74 @@ export class DirectoriesCommand extends CommandRunner {
     flags: "-p, --projects [projects]",
   })
   public parseProjects(value: string | undefined): string[] {
-    return (value ?? "")
-      .split(PROJECT_SEPARATOR)
-      .map((projectName) => projectName.trim())
-      .filter((projectName) => projectName !== "");
+    return this.splitEntries(value);
   }
 
   /**
-   * Resolves the named projects and prints their directories.
+   * Parses `--tags`, a comma-separated list of Nx project tags.
    *
-   * A name the workspace does not have fails the whole run rather than being
-   * dropped from the line: a dropped name is a trace that quietly covers less
-   * than it was asked to, and a report of what it did cover cannot show you
-   * what it did not.
+   * A project carrying any one of them is selected — see
+   * `ProjectsService.resolveTaggedRoots` for why any rather than all.
+   */
+  @Option({
+    description:
+      "Comma-separated Nx project tags to resolve, selecting a project carrying any of them",
+    flags: "-t, --tags [tags]",
+  })
+  public parseTags(value: string | undefined): string[] {
+    return this.splitEntries(value);
+  }
+
+  /**
+   * Resolves the named and tagged projects, and prints their directories.
    *
-   * The flag left off, passed without a value, and passed a value that held
-   * no names are one rejection rather than three. They are the same mistake
-   * — nothing was named — and the fix for all three is the same sentence.
+   * A name the workspace does not have, or a tag no project carries, fails
+   * the whole run rather than being dropped from the line: a dropped entry is
+   * a trace that quietly covers less than it was asked to, and a report of
+   * what it did cover cannot show you what it did not.
    */
   public async run(
     _passedParameters: string[],
     options: DirectoriesCommandOptions,
   ): Promise<void> {
-    const projectNames = options.projects;
+    const errors = this.findSelectionErrors(options);
 
-    if (
-      projectNames === undefined ||
-      projectNames === true ||
-      projectNames.length === 0
-    ) {
+    if (errors.length > 0) {
       this.logger.error("🔭 Rejected the command line", undefined, {
-        reason: `--projects needs at least one Nx project name, as in "--projects callidescope-cli${PROJECT_SEPARATOR}callidescope-graph".`,
+        reasons: errors,
       });
       process.exitCode = 1;
 
       return;
     }
 
+    const projectNames = this.readSelection(options.projects);
+    const tags = this.readSelection(options.tags);
     const graph = await this.projectsService.readProjectGraph();
     const resolution = this.projectsService.resolveDirectories({
       graph,
       projectNames,
+      tags,
     });
 
-    if (resolution.unknownNames.length > 0) {
-      this.logger.error("🔭 Rejected unknown Nx project names", undefined, {
-        knownNames: resolution.knownNames,
-        unknownNames: resolution.unknownNames,
-      });
+    if (
+      resolution.unknownNames.length > 0 ||
+      resolution.unmatchedTags.length > 0
+    ) {
+      this.logger.error(
+        "🔭 Rejected a selection the workspace does not have",
+        undefined,
+        this.describeRejection(resolution),
+      );
       process.exitCode = 1;
 
       return;
     }
 
-    this.logger.debug("🔭 Resolved Nx project names", undefined, {
+    this.logger.debug("🔭 Resolved an Nx project selection", undefined, {
       directoryCount: resolution.directories.length,
       projectNames,
+      tags,
     });
 
     process.stdout.write(`${resolution.directories.join(PROJECT_SEPARATOR)}\n`);

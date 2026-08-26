@@ -6,9 +6,10 @@
 
 **Purpose**: <!-- Briefly describe the specific purpose of this CLI application -->
 
-Resolves Nx project names to the workspace-relative directories
+Resolves Nx project names and tags to the workspace-relative directories
 `callidescope --directories` takes, so an Nx workspace can scope a trace by
-project name. This is the only package in the callidescope toolchain that
+project name, or by a tag every project in a category carries (matching any of
+the tags given, never all of them — see `ProjectsService.resolveTaggedRoots`). This is the only package in the callidescope toolchain that
 depends on `@nx/devkit`: `@callidescope/cli` and `@callidescope/graph` are
 deliberately Nx-free, and the two are composed by a shell rather than by an
 import, so neither ever gains an Nx dependency.

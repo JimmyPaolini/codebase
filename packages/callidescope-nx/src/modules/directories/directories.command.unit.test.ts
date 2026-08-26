@@ -99,6 +99,20 @@ describe(DirectoriesCommand, () => {
     });
   });
 
+  describe("parseTags", () => {
+    it("splits, trims, and drops the empty entries, as --projects does", () => {
+      expect.hasAssertions();
+      expect(
+        command.parseTags(" type:package , ,language:typescript, "),
+      ).toStrictEqual(["type:package", "language:typescript"]);
+    });
+
+    it("reads a flag passed without a value as no tags at all", () => {
+      expect.hasAssertions();
+      expect(command.parseTags(undefined)).toStrictEqual([]);
+    });
+  });
+
   // 🏃 Running
 
   it("prints the resolved directories on one separator-joined line", async () => {
@@ -107,7 +121,9 @@ describe(DirectoriesCommand, () => {
     projectsService.resolveDirectories.mockReturnValue({
       directories: ["packages/callidescope-cli", "tools/validation"],
       knownNames: ["callidescope-cli", "validation"],
+      knownTags: [],
       unknownNames: [],
+      unmatchedTags: [],
     });
 
     await command.run([], { projects: ["callidescope-cli", "validation"] });
@@ -115,11 +131,146 @@ describe(DirectoriesCommand, () => {
     expect(projectsService.resolveDirectories).toHaveBeenCalledWith({
       graph: EMPTY_GRAPH,
       projectNames: ["callidescope-cli", "validation"],
+      tags: [],
     });
     expect(process.stdout.write).toHaveBeenCalledWith(
       "packages/callidescope-cli,tools/validation\n",
     );
     expect(process.exitCode).toBeUndefined();
+  });
+
+  it("resolves tags alongside names, handing both to the resolution", async () => {
+    expect.hasAssertions();
+
+    projectsService.resolveDirectories.mockReturnValue({
+      directories: ["applications/lexico", "packages/callidescope-cli"],
+      knownNames: ["callidescope-cli", "lexico"],
+      knownTags: ["type:application"],
+      unknownNames: [],
+      unmatchedTags: [],
+    });
+
+    await command.run([], {
+      projects: ["callidescope-cli"],
+      tags: ["type:application"],
+    });
+
+    expect(projectsService.resolveDirectories).toHaveBeenCalledWith({
+      graph: EMPTY_GRAPH,
+      projectNames: ["callidescope-cli"],
+      tags: ["type:application"],
+    });
+    expect(process.stdout.write).toHaveBeenCalledWith(
+      "applications/lexico,packages/callidescope-cli\n",
+    );
+    expect(process.exitCode).toBeUndefined();
+  });
+
+  it("resolves a run given only tags", async () => {
+    expect.hasAssertions();
+
+    projectsService.resolveDirectories.mockReturnValue({
+      directories: ["applications/lexico"],
+      knownNames: ["lexico"],
+      knownTags: ["type:application"],
+      unknownNames: [],
+      unmatchedTags: [],
+    });
+
+    await command.run([], { tags: ["type:application"] });
+
+    expect(projectsService.resolveDirectories).toHaveBeenCalledWith({
+      graph: EMPTY_GRAPH,
+      projectNames: [],
+      tags: ["type:application"],
+    });
+    expect(process.exitCode).toBeUndefined();
+  });
+
+  it("rejects a run whose --tags carried no value, even beside a good --projects", async () => {
+    expect.hasAssertions();
+
+    await command.run([], { projects: ["callidescope-cli"], tags: true });
+
+    expect(process.exitCode).toBe(1);
+    expect(projectsService.readProjectGraph).not.toHaveBeenCalled();
+    expect(process.stdout.write).not.toHaveBeenCalled();
+  });
+
+  it("rejects a run that named a tag no project carries", async () => {
+    expect.hasAssertions();
+
+    projectsService.resolveDirectories.mockReturnValue({
+      directories: [],
+      knownNames: ["lexico"],
+      knownTags: ["type:application"],
+      unknownNames: [],
+      unmatchedTags: ["typ:application"],
+    });
+
+    await command.run([], { tags: ["typ:application"] });
+
+    expect(process.exitCode).toBe(1);
+    expect(process.stdout.write).not.toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.any(String),
+      undefined,
+      expect.objectContaining({
+        knownTags: ["type:application"],
+        unmatchedTags: ["typ:application"],
+      }),
+    );
+  });
+
+  it("names an unknown project and an unmatched tag in one rejection", async () => {
+    expect.hasAssertions();
+
+    projectsService.resolveDirectories.mockReturnValue({
+      directories: [],
+      knownNames: ["lexico"],
+      knownTags: ["type:application"],
+      unknownNames: ["lexico-web"],
+      unmatchedTags: ["typ:application"],
+    });
+
+    await command.run([], {
+      projects: ["lexico-web"],
+      tags: ["typ:application"],
+    });
+
+    expect(process.exitCode).toBe(1);
+    expect(logger.error).toHaveBeenCalledTimes(1);
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.any(String),
+      undefined,
+      expect.objectContaining({
+        knownNames: ["lexico"],
+        knownTags: ["type:application"],
+        unknownNames: ["lexico-web"],
+        unmatchedTags: ["typ:application"],
+      }),
+    );
+  });
+
+  it("leaves the vocabulary it did not refuse out of the rejection", async () => {
+    expect.hasAssertions();
+
+    projectsService.resolveDirectories.mockReturnValue({
+      directories: [],
+      knownNames: ["lexico"],
+      knownTags: ["type:application"],
+      unknownNames: ["lexico-web"],
+      unmatchedTags: [],
+    });
+
+    await command.run([], { projects: ["lexico-web"] });
+
+    // Exactly these keys: the tag vocabulary is absent because no tag was
+    // refused.
+    expect(logger.error).toHaveBeenCalledWith(expect.any(String), undefined, {
+      knownNames: ["lexico"],
+      unknownNames: ["lexico-web"],
+    });
   });
 
   it("rejects a run whose --projects carried no value", async () => {
@@ -132,7 +283,7 @@ describe(DirectoriesCommand, () => {
     expect(process.stdout.write).not.toHaveBeenCalled();
   });
 
-  it("rejects a run that named no projects", async () => {
+  it("rejects a run that named no projects and no tags", async () => {
     expect.hasAssertions();
 
     await command.run([], {});
@@ -148,7 +299,9 @@ describe(DirectoriesCommand, () => {
     projectsService.resolveDirectories.mockReturnValue({
       directories: ["packages/callidescope-cli"],
       knownNames: ["callidescope-cli"],
+      knownTags: [],
       unknownNames: ["callidescope-nix"],
+      unmatchedTags: [],
     });
 
     await command.run([], {

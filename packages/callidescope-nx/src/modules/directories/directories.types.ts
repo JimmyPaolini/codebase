@@ -8,7 +8,9 @@ export interface DirectoriesCommandOptions {
    *
    * `true` rather than an empty list because the parser never runs for a
    * valueless flag, so the two cases are distinguishable here and nowhere
-   * else — and they are the same mistake, refused the same way.
+   * else — and both are refused.
    */
   readonly projects?: string[] | true | undefined;
+  /** The tags `--tags` carried, or `true` for the flag passed without a value. */
+  readonly tags?: string[] | true | undefined;
 }

@@ -220,14 +220,23 @@ it holds in a monorepo, a single package, or neither.
 
 A workspace that already thinks in **Nx project names** can keep doing so
 through [`@callidescope/nx`](../callidescope-nx/README.md), which resolves
-names to the directories they stand for:
+names — or tags — to the directories they stand for:
 
 ```bash
 directories="$(callidescope-nx directories --projects callidescope-graph,callidescope-cli)" \
   && callidescope --directories "$directories" --check depth
 ```
 
-A name is stable where a path is not, so this survives a package moving. It is
+`--tags` selects every project carrying any of the tags given, which is how a
+whole category gets traced at once without listing it:
+
+```bash
+directories="$(callidescope-nx directories --tags type:package)" \
+  && callidescope --directories "$directories" --check depth
+```
+
+A name is stable where a path is not, so this survives a package moving, and a
+tag survives a package being added. It is
 a separate command rather than a `--projects` flag here on purpose: this CLI
 depends on nothing Nx-shaped, and a flag that only worked when an optional
 package happened to be installed would advertise in `--help` something that
@@ -358,7 +367,7 @@ every resolver ends the same way. `jscpd` already covers real duplication.
 | [`@callidescope/cli`](.) | Orchestrates a run: traces the workspace, plans what to check, and reports |
 | [`@callidescope/configuration`](../callidescope-configuration/README.md) | Reads `callidescope.config.ts` and resolves the limits |
 | [`@callidescope/graph`](../callidescope-graph/README.md) | Builds the call graph from traced source and measures depth, breadth, and cohesion |
-| [`@callidescope/nx`](../callidescope-nx/README.md) | Resolves Nx project names to the directories `--directories` takes |
+| [`@callidescope/nx`](../callidescope-nx/README.md) | Resolves Nx project names and tags to the directories `--directories` takes |
 | [`@callidescope/output`](../callidescope-output/README.md) | Renders findings into markdown, mermaid, and JSON |
 
 ## Start

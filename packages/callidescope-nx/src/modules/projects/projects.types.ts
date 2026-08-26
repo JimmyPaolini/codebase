@@ -14,6 +14,8 @@ export interface NxProject {
   readonly name: string;
   /** Workspace-relative root, exactly as the Nx project graph states it. */
   readonly root: string;
+  /** The tags `project.json` declares. Empty for a project declaring none. */
+  readonly tags: string[];
 }
 
 /** What a set of Nx project names resolved to. */
@@ -33,6 +35,11 @@ export interface ResolvedProjectDirectories {
    */
   readonly knownNames: string[];
   /**
+   * Every tag any project in the workspace carries, sorted and deduplicated —
+   * what a caller names back when refusing one nothing carries.
+   */
+  readonly knownTags: string[];
+  /**
    * The names the project graph does not know, in the order they were given.
    *
    * Reported rather than dropped: a name nobody resolves is a trace that
@@ -40,4 +47,13 @@ export interface ResolvedProjectDirectories {
    * report cannot show you.
    */
   readonly unknownNames: string[];
+  /**
+   * The tags no project in the workspace carries, in the order they were
+   * given.
+   *
+   * Refused for the same reason an unknown name is: a tag matching nothing is
+   * far more often a typo than an empty category, and either way the run it
+   * would produce covers less than it was asked to without saying so.
+   */
+  readonly unmatchedTags: string[];
 }
