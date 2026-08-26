@@ -1,0 +1,10 @@
+{
+  "defaults": {
+    "nx": {
+      "markdown": {
+        "anchor": "example-nx-from-json"
+      },
+      "target": "markdown"
+    }
+  }
+}

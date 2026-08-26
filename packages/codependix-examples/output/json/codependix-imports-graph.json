@@ -1,0 +1,29 @@
+{
+  "edges": [
+    {
+      "source": "src/atlas-service.module.ts",
+      "target": "src/catalog.module.ts"
+    },
+    {
+      "source": "src/atlas-service.module.ts",
+      "target": "src/inventory.module.ts"
+    },
+    {
+      "source": "src/catalog.module.ts",
+      "target": "src/catalog.service.ts"
+    },
+    {
+      "source": "src/catalog.service.ts",
+      "target": "src/settings.ts"
+    }
+  ],
+  "fileNames": [
+    "src/atlas-service.module.ts",
+    "src/catalog.module.ts",
+    "src/catalog.service.ts",
+    "src/inventory.module.ts",
+    "src/settings.ts"
+  ],
+  "isolatedFileNames": [],
+  "projectName": "atlas-service"
+}

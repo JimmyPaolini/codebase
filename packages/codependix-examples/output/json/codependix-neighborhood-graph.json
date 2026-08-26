@@ -1,0 +1,21 @@
+{
+  "dependencies": [
+    "atlas-core"
+  ],
+  "dependents": [
+    "atlas-application"
+  ],
+  "edges": [
+    {
+      "implicit": false,
+      "source": "atlas-application",
+      "target": "atlas-service"
+    },
+    {
+      "implicit": false,
+      "source": "atlas-service",
+      "target": "atlas-core"
+    }
+  ],
+  "projectName": "atlas-service"
+}

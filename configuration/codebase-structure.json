@@ -188,6 +188,17 @@
               "ruleId": "any-file"
             }
           ],
+          "name": "fixtures"
+        },
+        {
+          "children": [
+            {
+              "ruleId": "kebab-case-folder"
+            },
+            {
+              "ruleId": "any-file"
+            }
+          ],
           "name": "data"
         },
         {

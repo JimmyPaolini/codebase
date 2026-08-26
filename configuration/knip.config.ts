@@ -227,6 +227,13 @@ const config: KnipConfig = {
       project: "src/**/*.ts",
     },
 
+    // codependix packages: the examples package, whose fixtures are input to be
+    // graphed rather than code anything imports.
+    "packages/codependix-examples": {
+      entry: ["src/main.ts", "src/repl.ts"],
+      project: "src/**/*.ts",
+    },
+
     // conformetry packages: NestJS service/command application scaffolds
     "packages/conformetry-cli": {
       entry: ["src/main.ts", "src/repl.ts"],

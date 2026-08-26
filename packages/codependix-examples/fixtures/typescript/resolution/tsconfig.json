@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@atlas/*": ["./src/*"]
+    }
+  },
+  "extends": "../base.tsconfig.json",
+  "include": ["src/**/*.ts"]
+}

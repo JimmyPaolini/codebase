@@ -1,0 +1,35 @@
+{
+  "dependencies": {
+    "@codebase/logger": "workspace:*",
+    "@codependix/cli": "workspace:*",
+    "@codependix/configuration": "workspace:*",
+    "@codependix/imports": "workspace:*",
+    "@codependix/nestjs": "workspace:*",
+    "@codependix/nx": "workspace:*",
+    "@nestjs/common": "catalog:",
+    "@nestjs/config": "catalog:",
+    "@nestjs/core": "catalog:",
+    "@nx/devkit": "catalog:",
+    "nest-commander": "catalog:",
+    "reflect-metadata": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@golevelup/ts-vitest": "catalog:",
+    "@nestjs/testing": "catalog:",
+    "@nx/eslint-plugin": "catalog:",
+    "@swc/helpers": "catalog:",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "name": "@codependix/examples",
+  "private": true,
+  "type": "module",
+  "typeCoverage": {
+    "atLeast": 100,
+    "strict": true
+  },
+  "version": "0.0.1"
+}

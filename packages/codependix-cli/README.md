@@ -52,9 +52,24 @@ every other one.
 | ------- | ---- |
 | [`@codependix/cli`](.) | Orchestrates the four graph builders and delivers their exports |
 | [`@codependix/configuration`](../codependix-configuration/README.md) | Reads `codependix.config.ts` and resolves per-project export destinations |
+| [`@codependix/examples`](../codependix-examples/README.md) | Sixteen worked examples of every graph, every configuration field, and every refusal |
 | [`@codependix/nx`](../codependix-nx/README.md) | Builds a project's Nx Neighborhood and the whole-workspace Workspace Graph |
 | [`@codependix/nestjs`](../codependix-nestjs/README.md) | Explores a NestJS project's container and builds its module graph |
 | [`@codependix/imports`](../codependix-imports/README.md) | Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements |
+
+## Examples
+
+Every behavior described above — and every one that is not, because it lived
+only in a JSDoc comment until now — has a worked example rendered by the real
+graph builders in
+[`packages/codependix-examples`](../codependix-examples/README.md):
+
+- [README](../codependix-examples/README.md) — read a graph, choose a level,
+  configure a first export destination, and adopt codependix in a workspace with
+  no anchor blocks anywhere yet
+- [AGENTS.md](../codependix-examples/AGENTS.md) — a "codependix said X → open
+  this example" table, weighted toward the refusals and toward `--check`
+  staleness
 
 ## Start
 
