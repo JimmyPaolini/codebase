@@ -1,10 +1,12 @@
 // 🏷️ Types
 
 import type {
+  CallableId,
   CallGraphResult,
   CallidescopeOutputFormat,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
+import type { CallGraph, DiscoveredCallable } from "@callidescope/graph";
 
 /** Options the CLI accepts. */
 export interface CallidescopeCommandOptions {
@@ -16,12 +18,22 @@ export interface CallidescopeCommandOptions {
    */
   readonly check?: string | true | undefined;
   readonly config?: string | undefined;
-  readonly directory?: string | undefined;
+  /** Project directories to trace. Every project in the workspace when omitted. */
+  readonly directories?: string[] | undefined;
   readonly format?: CallidescopeOutputFormat | undefined;
+  /** `false` when `--no-interactive` opted out of prompting for a missing value. */
+  readonly interactive?: boolean | undefined;
   readonly json?: string | undefined;
   readonly markdown?: string | undefined;
-  readonly projects?: string[] | undefined;
   readonly write?: boolean | undefined;
+}
+
+/** The collected callables and their graph, without any analysis run over them. */
+export interface LocateOutcome {
+  readonly callablesById: ReadonlyMap<CallableId, DiscoveredCallable>;
+  readonly graph: CallGraph;
+  /** Workspace-relative root of each project traced, keyed by name. */
+  readonly projectRoots: ReadonlyMap<string, string>;
 }
 
 /** Arguments for writing every configured destination. */
@@ -35,7 +47,8 @@ export interface SyncDestinationsArguments {
 /** Arguments for one full trace of a workspace. */
 export interface TraceArguments {
   readonly configuration: ResolvedCallidescopeConfiguration;
-  readonly projectNames: readonly string[];
+  /** Project directories to trace. Every project in the workspace when empty. */
+  readonly directories: readonly string[];
   readonly workspaceRoot: string;
 }
 

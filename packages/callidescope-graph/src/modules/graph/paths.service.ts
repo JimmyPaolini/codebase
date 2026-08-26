@@ -53,29 +53,6 @@ export class PathsService {
       : [...args.memberIds.slice(index), ...args.memberIds.slice(0, index)];
   }
 
-  /** Turns one callable into a frame a report can print. */
-  private toFrame(args: {
-    callable: DiscoveredCallable;
-    isCycle: boolean;
-  }): StackFrame {
-    // Read here rather than when the callable was first described: only the
-    // handful of frames a report prints ever need this, and asking the checker
-    // to render a type is the one part of the run that is not cheap.
-    const source = {
-      checker: args.callable.projectProgram.checker,
-      declaration: args.callable.declaration,
-    };
-
-    return {
-      displayName: args.callable.node.displayName,
-      documentation: this.documentationService.read(source),
-      id: args.callable.node.id,
-      isCycle: args.isCycle,
-      location: args.callable.node.location,
-      signature: this.signaturesService.read(source),
-    };
-  }
-
   // 🌎 Public Methods
 
   /** Walks the deepest chain below one callable and returns its frames. */
@@ -103,7 +80,7 @@ export class PathsService {
         const callable = args.callablesById.get(memberId);
 
         if (callable !== undefined) {
-          frames.push(this.toFrame({ callable, isCycle }));
+          frames.push(this.buildFrame({ callable, isCycle }));
         }
       }
 
@@ -114,5 +91,34 @@ export class PathsService {
     }
 
     return frames;
+  }
+
+  /**
+   * Turns one callable into a frame a report can print.
+   *
+   * Public so any traversal over the same `DiscoveredCallable` map — not only
+   * this service's own deepest-path walk — can render a frame the same way,
+   * rather than reading documentation and a signature by a second route.
+   */
+  public buildFrame(args: {
+    callable: DiscoveredCallable;
+    isCycle: boolean;
+  }): StackFrame {
+    // Read here rather than when the callable was first described: only the
+    // handful of frames a report prints ever need this, and asking the checker
+    // to render a type is the one part of the run that is not cheap.
+    const source = {
+      checker: args.callable.projectProgram.checker,
+      declaration: args.callable.declaration,
+    };
+
+    return {
+      displayName: args.callable.node.displayName,
+      documentation: this.documentationService.read(source),
+      id: args.callable.node.id,
+      isCycle: args.isCycle,
+      location: args.callable.node.location,
+      signature: this.signaturesService.read(source),
+    };
   }
 }

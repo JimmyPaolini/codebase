@@ -4,6 +4,7 @@ import {
   CohesionService,
   EntriesService,
   ExternalService,
+  GraphAssemblyService,
   ProgramService,
   WorkspaceService,
 } from "@callidescope/graph";
@@ -13,16 +14,23 @@ import { Injectable } from "@nestjs/common";
 import { LoggerService } from "@codebase/logger";
 
 import { INCLUDE_CONSTRUCTOR_EDGES } from "./callidescope.constants";
-import { GraphAssemblyService } from "./graph-assembly.service";
 
-import type { TraceArguments, TraceOutcome } from "./callidescope.types";
+import type {
+  LocateOutcome,
+  TraceArguments,
+  TraceOutcome,
+} from "./callidescope.types";
 import type {
   CallableId,
   CallGraphResult,
   CallGraphSummary,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
-import type { DepthMeasurement, DiscoveredCallable } from "@callidescope/graph";
+import type {
+  CallableCollection,
+  DepthMeasurement,
+  DiscoveredCallable,
+} from "@callidescope/graph";
 
 /**
  * Runs one trace of a workspace, from tsconfig files to findings.
@@ -51,6 +59,60 @@ export class CallidescopeService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /**
+   * Walks the workspace and collects every callable, without analyzing them.
+   *
+   * Shared by `trace`, which goes on to run the full analysis, and `locate`,
+   * which only needs the collected callables and their graph to resolve one
+   * address — cohesion, entry points, and project reports are work `locate`'s
+   * callers never asked for.
+   */
+  private discoverCallables(args: TraceArguments): {
+    collection: CallableCollection;
+    projectNames: string[];
+    projectRoots: ReadonlyMap<string, string>;
+  } {
+    this.workspaceService.configure(args.configuration.workspaceStructure);
+
+    const projects = this.workspaceService.discoverProjects({
+      directories: args.directories,
+      workspaceRoot: args.workspaceRoot,
+    });
+    const programSet = this.programService.buildPrograms({
+      projects,
+      workspaceRoot: args.workspaceRoot,
+    });
+
+    this.externalService.configure({
+      ownedFilePaths: new Set(programSet.ownerByFilePath.keys()),
+      workspaceRoot: args.workspaceRoot,
+    });
+    this.classHierarchyService.build({
+      maximumCandidates:
+        args.configuration.limits.maximumImplementationCandidates,
+      programs: programSet.programs,
+    });
+
+    const collection = this.callablesService.collect({
+      fileFilter: this.workspaceService.buildFileFilter({
+        exclude: args.configuration.exclude,
+        excludeFrom: args.configuration.excludeFrom,
+        workspaceRoot: args.workspaceRoot,
+      }),
+      includeTests: args.configuration.entryPoints.includeTests,
+      ownerByFilePath: programSet.ownerByFilePath,
+      workspaceRoot: args.workspaceRoot,
+    });
+
+    return {
+      collection,
+      projectNames: projects.map((project) => project.name),
+      projectRoots: new Map(
+        projects.map((project) => [project.name, project.root]),
+      ),
+    };
+  }
 
   /** Reads the deepest depth any component reached. */
   private readMaximumDepth(measurement: DepthMeasurement): number {
@@ -159,56 +221,46 @@ export class CallidescopeService {
     };
   }
 
+  /**
+   * Collects every callable and assembles the graph over them, without
+   * running the analysis a full trace does.
+   *
+   * For the `depth` and `breadth` commands, which resolve one address against
+   * the collected callables and then walk the graph from it — neither needs
+   * cohesion, entry points, or project reports, all of which `analyze` builds
+   * unconditionally.
+   */
+  public locate(args: TraceArguments): LocateOutcome {
+    const { collection, projectRoots } = this.discoverCallables(args);
+    const { graph } = this.graphAssemblyService.assemble({
+      callablesById: collection.byId,
+      ignoreCallees: args.configuration.ignoreCallees,
+      includeConstructorEdges: INCLUDE_CONSTRUCTOR_EDGES,
+      workspaceRoot: args.workspaceRoot,
+    });
+
+    return { callablesById: collection.byId, graph, projectRoots };
+  }
+
   /** Traces a workspace and returns everything the run found. */
   public trace(args: TraceArguments): TraceOutcome {
     this.logger.info("🔭 Tracing a workspace", undefined, {
       workspaceRoot: args.workspaceRoot,
     });
 
-    this.workspaceService.configure(args.configuration.workspaceStructure);
-
-    const projects = this.workspaceService.discoverProjects({
-      projectNames: args.projectNames,
-      workspaceRoot: args.workspaceRoot,
-    });
-    const programSet = this.programService.buildPrograms({
-      projects,
-      workspaceRoot: args.workspaceRoot,
-    });
-
-    this.externalService.configure({
-      ownedFilePaths: new Set(programSet.ownerByFilePath.keys()),
-      workspaceRoot: args.workspaceRoot,
-    });
-    this.classHierarchyService.build({
-      maximumCandidates:
-        args.configuration.limits.maximumImplementationCandidates,
-      programs: programSet.programs,
-    });
-
-    const collection = this.callablesService.collect({
-      fileFilter: this.workspaceService.buildFileFilter({
-        exclude: args.configuration.exclude,
-        excludeFrom: args.configuration.excludeFrom,
-        workspaceRoot: args.workspaceRoot,
-      }),
-      includeTests: args.configuration.entryPoints.includeTests,
-      ownerByFilePath: programSet.ownerByFilePath,
-      workspaceRoot: args.workspaceRoot,
-    });
+    const { collection, projectNames, projectRoots } =
+      this.discoverCallables(args);
 
     return {
-      projectNames: projects.map((project) => project.name),
-      projectRoots: new Map(
-        projects.map((project) => [project.name, project.root]),
-      ),
+      projectNames,
+      projectRoots,
       result: this.analyze({
         callablesById: collection.byId,
         configuration: args.configuration,
         fileCount: collection.fileCount,
         fileCountByProject: collection.fileCountByProject,
-        projectCount: projects.length,
-        projectNames: projects.map((project) => project.name),
+        projectCount: projectNames.length,
+        projectNames,
         workspaceRoot: args.workspaceRoot,
       }),
     };

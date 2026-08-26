@@ -20,21 +20,14 @@ const PROJECT: WorkspaceProject = {
   root: "packages/example",
 };
 
-/** Writes a workspace holding the named projects, and returns its root. */
-async function buildWorkspace(
-  projects: { container: string; manifest?: string; name: string }[],
-): Promise<string> {
+/** Writes a workspace holding a `tsconfig.json` at each relative path. */
+async function buildWorkspace(projectRoots: string[]): Promise<string> {
   const root = await mkdtemp(path.join(tmpdir(), "callidescope-workspace-"));
 
-  for (const project of projects) {
-    const directory = path.join(root, project.container, project.name);
+  for (const projectRoot of projectRoots) {
+    const directory = path.join(root, projectRoot);
 
     await mkdir(directory, { recursive: true });
-    await writeFile(
-      path.join(directory, "project.json"),
-      project.manifest ?? JSON.stringify({ name: project.name }),
-      "utf8",
-    );
     await writeFile(path.join(directory, "tsconfig.json"), "{}", "utf8");
   }
 
@@ -62,107 +55,122 @@ describe(WorkspaceService, () => {
 
   // 📂 Project discovery
 
-  it("finds a project in each container directory", async () => {
+  it("traces exactly the directories it was given", async () => {
+    const root = await buildWorkspace(["packages/wanted", "packages/other"]);
+
+    expect(
+      subject
+        .discoverProjects({
+          directories: ["packages/wanted"],
+          workspaceRoot: root,
+        })
+        .map((project) => project.name),
+    ).toStrictEqual(["packages/wanted"]);
+  });
+
+  it("resolves an absolute directory against the workspace root", async () => {
+    const root = await buildWorkspace(["packages/wanted"]);
+
+    expect(
+      subject
+        .discoverProjects({
+          directories: [path.join(root, "packages/wanted")],
+          workspaceRoot: root,
+        })
+        .map((project) => project.name),
+    ).toStrictEqual(["packages/wanted"]);
+  });
+
+  it("skips a named directory with no tsconfig, and warns why", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "callidescope-untyped-"));
+
+    await mkdir(path.join(root, "packages", "untyped"), { recursive: true });
+
+    expect(
+      subject.discoverProjects({
+        directories: ["packages/untyped"],
+        workspaceRoot: root,
+      }),
+    ).toStrictEqual([]);
+    expect(subjectLogger.warn).toHaveBeenCalledWith(
+      "🔭 Skipped a directory without a tsconfig.json",
+      undefined,
+      { root: "packages/untyped" },
+    );
+  });
+
+  it("finds every tsconfig.json in the workspace when none are named", async () => {
     const root = await buildWorkspace([
-      { container: "applications", name: "app" },
-      { container: "packages", name: "library" },
-      { container: "tools", name: "utility" },
+      "applications/app",
+      "packages/library",
+      "tools/utility",
     ]);
 
-    const projects = subject.discoverProjects({
-      projectNames: [],
-      workspaceRoot: root,
-    });
-
-    expect(projects.map((project) => project.name)).toStrictEqual([
-      "app",
-      "library",
-      "utility",
-    ]);
+    expect(
+      service
+        .discoverProjects({ directories: [], workspaceRoot: root })
+        .map((project) => project.name),
+    ).toStrictEqual(["applications/app", "packages/library", "tools/utility"]);
   });
 
   it("returns projects in a stable order regardless of the filesystem", async () => {
     // Ownership ties break on this order, so an unstable one would make depth
     // numbers differ between runs.
-    const root = await buildWorkspace([
-      { container: "packages", name: "zebra" },
-      { container: "packages", name: "alpha" },
-    ]);
+    const root = await buildWorkspace(["packages/zebra", "packages/alpha"]);
 
     expect(
       service
-        .discoverProjects({ projectNames: [], workspaceRoot: root })
+        .discoverProjects({ directories: [], workspaceRoot: root })
         .map((project) => project.name),
-    ).toStrictEqual(["alpha", "zebra"]);
+    ).toStrictEqual(["packages/alpha", "packages/zebra"]);
   });
 
-  it("keeps only the projects that were asked for", async () => {
+  it("descends into a project that nests another tsconfig.json beneath it", async () => {
     const root = await buildWorkspace([
-      { container: "packages", name: "wanted" },
-      { container: "packages", name: "ignored" },
-    ]);
-
-    expect(
-      service
-        .discoverProjects({ projectNames: ["wanted"], workspaceRoot: root })
-        .map((project) => project.name),
-    ).toStrictEqual(["wanted"]);
-  });
-
-  it("skips a project with no tsconfig, which cannot become a program", async () => {
-    const root = await buildWorkspace([
-      { container: "packages", name: "typed" },
-    ]);
-    const untyped = path.join(root, "packages", "untyped");
-
-    await mkdir(untyped, { recursive: true });
-    await writeFile(
-      path.join(untyped, "project.json"),
-      JSON.stringify({ name: "untyped" }),
-      "utf8",
-    );
-
-    expect(
-      service
-        .discoverProjects({ projectNames: [], workspaceRoot: root })
-        .map((project) => project.name),
-    ).toStrictEqual(["typed"]);
-  });
-
-  it("falls back to the directory name when a manifest is unreadable", async () => {
-    const root = await buildWorkspace([
-      { container: "packages", manifest: "{ not json", name: "broken" },
+      "packages/library",
+      "packages/library/testing",
     ]);
 
     expect(
       subject
-        .discoverProjects({ projectNames: [], workspaceRoot: root })
+        .discoverProjects({ directories: [], workspaceRoot: root })
         .map((project) => project.name),
-    ).toStrictEqual(["broken"]);
-    expect(subjectLogger.warn).toHaveBeenCalledWith(
-      "🔭 Skipped an unreadable project manifest",
-      undefined,
-      { manifestPath: path.join(root, "packages", "broken", "project.json") },
-    );
+    ).toStrictEqual(["packages/library", "packages/library/testing"]);
   });
 
-  it("falls back to the directory name when a manifest names nothing", async () => {
+  it("does not descend into node_modules, build output, or dotfiles", async () => {
     const root = await buildWorkspace([
-      { container: "packages", manifest: "{}", name: "unnamed" },
+      "packages/library",
+      "node_modules/some-dependency",
+      "packages/library/dist",
+      ".git/hooks",
     ]);
 
     expect(
-      service
-        .discoverProjects({ projectNames: [], workspaceRoot: root })
+      subject
+        .discoverProjects({ directories: [], workspaceRoot: root })
         .map((project) => project.name),
-    ).toStrictEqual(["unnamed"]);
+    ).toStrictEqual(["packages/library"]);
   });
 
-  it("finds nothing in a workspace with no container directories", async () => {
+  it("does not descend into a scaffolding template's placeholder directory", async () => {
+    const root = await buildWorkspace([
+      "packages/library",
+      "templates/{{nameKebabCase}}",
+    ]);
+
+    expect(
+      subject
+        .discoverProjects({ directories: [], workspaceRoot: root })
+        .map((project) => project.name),
+    ).toStrictEqual(["packages/library"]);
+  });
+
+  it("finds nothing in an empty workspace", async () => {
     const root = await mkdtemp(path.join(tmpdir(), "callidescope-empty-"));
 
     expect(
-      subject.discoverProjects({ projectNames: [], workspaceRoot: root }),
+      subject.discoverProjects({ directories: [], workspaceRoot: root }),
     ).toStrictEqual([]);
   });
 
@@ -207,32 +215,11 @@ describe(WorkspaceService, () => {
 
   // ⚙️ Configuration
 
-  it("finds projects under a configured container directory", async () => {
-    const configured = new WorkspaceService(subjectLogger);
-
-    configured.configure({
-      modulesDirectory: "modules",
-      projectContainerDirectories: ["services"],
-      rootModuleSegment: "src",
-    });
-
-    const root = await buildWorkspace([
-      { container: "services", name: "billing" },
-    ]);
-
-    expect(
-      configured
-        .discoverProjects({ projectNames: [], workspaceRoot: root })
-        .map((project) => project.name),
-    ).toStrictEqual(["billing"]);
-  });
-
   it("names a module folder by a configured modules directory", () => {
     const configured = new WorkspaceService(subjectLogger);
 
     configured.configure({
       modulesDirectory: "features",
-      projectContainerDirectories: ["packages"],
       rootModuleSegment: "lib",
     });
 
@@ -250,7 +237,6 @@ describe(WorkspaceService, () => {
 
     configured.configure({
       modulesDirectory: "features",
-      projectContainerDirectories: ["packages"],
       rootModuleSegment: "lib",
     });
 

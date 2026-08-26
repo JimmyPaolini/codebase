@@ -7,7 +7,7 @@ import {
 } from "../../../testing/mocks";
 import { ANALYSIS_MODULES } from "../../../testing/modules";
 import { ComponentsService } from "../graph/components.service";
-import { DepthService } from "../graph/depth.service";
+import { GraphDepthService } from "../graph/graph-depth.service";
 import { GraphService } from "../graph/graph.service";
 
 import { CohesionService } from "./cohesion.service";
@@ -68,7 +68,7 @@ function buildArguments(args: {
       spreadThreshold: 2,
       ...args.limits,
     },
-    measurement: new DepthService().measure({
+    measurement: new GraphDepthService().measure({
       condensed,
       graph,
       moduleIdByCallable: new Map(

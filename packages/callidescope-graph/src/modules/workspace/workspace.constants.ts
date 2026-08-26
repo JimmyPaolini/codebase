@@ -1,13 +1,22 @@
 // ♟️ Constants
 
 /**
- * Directories a workspace keeps its projects in, used until `configure` is
- * called with a workspace's own layout.
+ * Directory names a project scan never descends into.
+ *
+ * Each one either holds no source of its own (`node_modules`, dependency and
+ * build caches) or is generated output (`dist`, `build`, `coverage`) — walking
+ * into any of them either finds nothing or finds a `tsconfig.json` that
+ * belongs to a dependency, not a project this run should trace.
  */
-export const DEFAULT_PROJECT_CONTAINER_DIRECTORIES = [
-  "applications",
-  "packages",
-  "tools",
+export const EXCLUDED_SCAN_DIRECTORY_NAMES = [
+  "node_modules",
+  ".git",
+  ".nx",
+  ".conformetry",
+  "dist",
+  "build",
+  "coverage",
+  "out",
 ] as const;
 
 /**

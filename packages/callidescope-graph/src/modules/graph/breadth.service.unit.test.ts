@@ -1,6 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { buildDiscoveredCallable } from "../../../testing/mocks";
 import { ANALYSIS_MODULES } from "../../../testing/modules";
 
 import { BreadthService } from "./breadth.service";
@@ -128,5 +129,67 @@ describe(BreadthService, () => {
     const { measurement } = measure({ ids: [], pairs: [] });
 
     expect(measurement.byCallable.size).toBe(0);
+  });
+
+  // 🔁 Direct calls
+
+  it("names the direct callees and direct callers of one callable", () => {
+    const graph = new GraphService().assemble({
+      edges: [edge("a", "b"), edge("c", "b")],
+      unresolvedCalls: [],
+    });
+    const callablesById = new Map(
+      ["a", "b", "c"].map((id) => [
+        id,
+        buildDiscoveredCallable({ displayName: id, id }),
+      ]),
+    );
+
+    const directCalls = new BreadthService().describeDirectCalls({
+      callablesById,
+      graph,
+      id: "b",
+    });
+
+    expect(directCalls.callees).toStrictEqual([]);
+    expect(
+      directCalls.callers.map((reference) => reference.displayName),
+    ).toStrictEqual(["a", "c"]);
+  });
+
+  it("drops a direct call to a callable the collection never described", () => {
+    const graph = new GraphService().assemble({
+      edges: [edge("a", "unknown")],
+      unresolvedCalls: [],
+    });
+    const callablesById = new Map([
+      ["a", buildDiscoveredCallable({ displayName: "a", id: "a" })],
+    ]);
+
+    const directCalls = new BreadthService().describeDirectCalls({
+      callablesById,
+      graph,
+      id: "a",
+    });
+
+    expect(directCalls.callees).toStrictEqual([]);
+  });
+
+  it("returns nothing for a callable with no direct calls either way", () => {
+    const graph = new GraphService().assemble({
+      edges: [],
+      unresolvedCalls: [],
+    });
+    const callablesById = new Map([
+      ["a", buildDiscoveredCallable({ displayName: "a", id: "a" })],
+    ]);
+
+    const directCalls = new BreadthService().describeDirectCalls({
+      callablesById,
+      graph,
+      id: "a",
+    });
+
+    expect(directCalls).toStrictEqual({ callees: [], callers: [] });
   });
 });

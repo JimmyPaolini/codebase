@@ -21,6 +21,7 @@ function buildConfiguration(
 ): ResolvedCallidescopeConfiguration {
   return {
     allowSpreadFor: [],
+    directories: [],
     entryPoints: {
       decorators: [],
       includeExportedFunctions: true,
@@ -45,10 +46,8 @@ function buildConfiguration(
       mermaid: undefined,
       projectReadmes: undefined,
     },
-    projects: [],
     workspaceStructure: {
       modulesDirectory: "modules",
-      projectContainerDirectories: ["applications", "packages", "tools"],
       rootModuleSegment: "src",
     },
     ...overrides,
@@ -302,5 +301,72 @@ describe(RunPlanService, () => {
     ).toStrictEqual([
       "--check breadth requires limits.maximumBreadth to be set. Add `limits: { maximumBreadth: <number> }` to your callidescope.config.ts before running --check breadth.",
     ]);
+  });
+
+  // 🔍 Lookup preparation
+
+  describe("prepareLookup", () => {
+    it("resolves the workspace root to the working directory", async () => {
+      const configurationService = createMock<ConfigurationService>();
+
+      configurationService.loadConfiguration.mockResolvedValue(
+        buildConfiguration(),
+      );
+
+      const subject = new RunPlanService(
+        configurationService,
+        createMock<LoggerService>(),
+      );
+
+      const prepared = await subject.prepareLookup({});
+
+      expect(prepared.workspaceRoot).toBe(process.cwd());
+      expect(configurationService.loadConfiguration).toHaveBeenCalledWith({
+        configurationPath: undefined,
+        searchDirectory: process.cwd(),
+      });
+    });
+
+    it("prefers the format a flag named over the configured one", async () => {
+      const configurationService = createMock<ConfigurationService>();
+
+      configurationService.loadConfiguration.mockResolvedValue(
+        buildConfiguration(),
+      );
+
+      const subject = new RunPlanService(
+        configurationService,
+        createMock<LoggerService>(),
+      );
+
+      const prepared = await subject.prepareLookup({ format: "json" });
+
+      expect(prepared.configuration.output.format).toBe("json");
+    });
+
+    it("falls back to the configured format when a flag names none", async () => {
+      const configurationService = createMock<ConfigurationService>();
+
+      configurationService.loadConfiguration.mockResolvedValue(
+        buildConfiguration({
+          output: {
+            format: "mermaid",
+            json: undefined,
+            markdown: undefined,
+            mermaid: undefined,
+            projectReadmes: undefined,
+          },
+        }),
+      );
+
+      const subject = new RunPlanService(
+        configurationService,
+        createMock<LoggerService>(),
+      );
+
+      const prepared = await subject.prepareLookup({});
+
+      expect(prepared.configuration.output.format).toBe("mermaid");
+    });
   });
 });
