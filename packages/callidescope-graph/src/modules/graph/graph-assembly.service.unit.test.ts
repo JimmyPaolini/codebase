@@ -11,8 +11,8 @@ import {
 
 import { BreadthService } from "./breadth.service";
 import { ComponentsService } from "./components.service";
-import { DepthService } from "./depth.service";
 import { GraphAssemblyService } from "./graph-assembly.service";
+import { GraphDepthService } from "./graph-depth.service";
 import { GraphService } from "./graph.service";
 
 import type { AssembledGraph } from "./graph-assembly.types";
@@ -28,7 +28,7 @@ function assemble(files: Record<string, string>): AssembledGraph {
   const subject = new GraphAssemblyService(
     new BreadthService(),
     new ComponentsService(),
-    new DepthService(),
+    new GraphDepthService(),
     fixture.edges,
     new GraphService(),
   );

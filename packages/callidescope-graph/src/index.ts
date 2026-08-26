@@ -64,26 +64,26 @@ export type {
   EntryPointCollection,
   ResolveEntriesArguments,
 } from "./modules/entries/entries.types";
-export { BreadthService } from "./modules/graph/breadth.service";
-export { MAXIMUM_CALL_ADDRESS_STACKS } from "./modules/graph/call-tree.constants";
-export { CallTreeService } from "./modules/graph/call-tree.service";
+export { MAXIMUM_CALL_ADDRESS_STACKS } from "./modules/graph/address-depth.constants";
+export { AddressDepthService } from "./modules/graph/address-depth.service";
 export type {
   BuildCallAddressStacksArguments,
   CallAddressStack,
   CallAddressTreeResult,
-} from "./modules/graph/call-tree.types";
+} from "./modules/graph/address-depth.types";
+export { BreadthService } from "./modules/graph/breadth.service";
 export { INITIAL_LOW_LINK } from "./modules/graph/components.constants";
 export { ComponentsService } from "./modules/graph/components.service";
 export type {
   TarjanState,
   TraversalFrame,
 } from "./modules/graph/components.types";
-export { DepthService } from "./modules/graph/depth.service";
 export { GraphAssemblyService } from "./modules/graph/graph-assembly.service";
 export type {
   AssembledGraph,
   AssembleGraphArguments,
 } from "./modules/graph/graph-assembly.types";
+export { GraphDepthService } from "./modules/graph/graph-depth.service";
 export { GraphModule } from "./modules/graph/graph.module";
 export { GraphService } from "./modules/graph/graph.service";
 export type {

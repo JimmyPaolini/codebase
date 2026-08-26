@@ -1,16 +1,16 @@
 import { Injectable } from "@nestjs/common";
 
-import { MAXIMUM_CALL_ADDRESS_STACKS } from "./call-tree.constants";
+import { MAXIMUM_CALL_ADDRESS_STACKS } from "./address-depth.constants";
 import { PathsService } from "./paths.service";
 
 import type { DiscoveredCallable } from "../callables/callables.types";
 import type {
+  AddressDepthTraversalContext,
+  AddressDepthTraversalFrame,
   BuildCallAddressStacksArguments,
   CallAddressStack,
   CallAddressTreeResult,
-  CallTreeTraversalContext,
-  CallTreeTraversalFrame,
-} from "./call-tree.types";
+} from "./address-depth.types";
 import type { CallableId, StackFrame } from "@callidescope/configuration";
 
 /**
@@ -29,7 +29,7 @@ import type { CallableId, StackFrame } from "@callidescope/configuration";
  * can sit many frames deep in a caller chain.
  */
 @Injectable()
-export class CallTreeService {
+export class AddressDepthService {
   // 🏗 Dependency Injection
 
   constructor(private readonly pathsService: PathsService) {}
@@ -42,11 +42,11 @@ export class CallTreeService {
 
   /** Follows one neighbor: closes a cycle, stops at an unknown id, or descends. */
   private follow(args: {
-    context: CallTreeTraversalContext;
-    frame: CallTreeTraversalFrame;
+    context: AddressDepthTraversalContext;
+    frame: AddressDepthTraversalFrame;
     neighborId: CallableId;
     paths: (readonly CallableId[])[];
-    pending: CallTreeTraversalFrame[];
+    pending: AddressDepthTraversalFrame[];
   }): void {
     const { context, frame, neighborId, paths, pending } = args;
 
@@ -77,10 +77,10 @@ export class CallTreeService {
 
   /** Advances one traversal frame: closes it, follows a neighbor, or backtracks. */
   private step(args: {
-    context: CallTreeTraversalContext;
-    frame: CallTreeTraversalFrame;
+    context: AddressDepthTraversalContext;
+    frame: AddressDepthTraversalFrame;
     paths: (readonly CallableId[])[];
-    pending: CallTreeTraversalFrame[];
+    pending: AddressDepthTraversalFrame[];
   }): void {
     const { context, frame, paths, pending } = args;
     const neighborIds = context.adjacency.get(frame.currentId) ?? [];
@@ -141,13 +141,13 @@ export class CallTreeService {
    * as one complete stack, and the walk backtracks instead of looping forever.
    */
   private traverse(
-    context: CallTreeTraversalContext & { startId: CallableId },
+    context: AddressDepthTraversalContext & { startId: CallableId },
   ): {
     paths: (readonly CallableId[])[];
     truncated: boolean;
   } {
     const paths: (readonly CallableId[])[] = [];
-    const pending: CallTreeTraversalFrame[] = [
+    const pending: AddressDepthTraversalFrame[] = [
       { currentId: context.startId, nextIndex: 0, path: [context.startId] },
     ];
 

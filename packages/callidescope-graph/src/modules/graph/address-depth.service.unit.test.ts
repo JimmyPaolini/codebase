@@ -9,7 +9,7 @@ import { ANALYSIS_MODULES } from "../../../testing/modules";
 import { DocumentationService } from "../documentation/documentation.service";
 import { SignaturesService } from "../signatures/signatures.service";
 
-import { CallTreeService } from "./call-tree.service";
+import { AddressDepthService } from "./address-depth.service";
 import { GraphService } from "./graph.service";
 import { PathsService } from "./paths.service";
 
@@ -52,16 +52,16 @@ function namesOf(
   return stacks.map((stack) => stack.frames.map((frame) => frame.displayName));
 }
 
-describe(CallTreeService, () => {
-  let service: CallTreeService;
+describe(AddressDepthService, () => {
+  let service: AddressDepthService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [...ANALYSIS_MODULES],
-      providers: [CallTreeService, PathsService],
+      providers: [AddressDepthService, PathsService],
     }).compile();
 
-    service = await module.resolve(CallTreeService);
+    service = await module.resolve(AddressDepthService);
   });
 
   it("is defined", () => {
@@ -264,7 +264,7 @@ describe(CallTreeService, () => {
       edges: [],
       unresolvedCalls: [],
     });
-    const subject = new CallTreeService(
+    const subject = new AddressDepthService(
       new PathsService(new DocumentationService(), new SignaturesService()),
     );
 

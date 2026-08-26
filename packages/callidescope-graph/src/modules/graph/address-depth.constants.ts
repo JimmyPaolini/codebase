@@ -1,7 +1,7 @@
 // ♟️ Constants
 
 /**
- * How many paths `CallTreeService` enumerates in one direction before it
+ * How many paths `AddressDepthService` enumerates in one direction before it
  * stops.
  *
  * A single deepest path, which is all `PathsService` ever materializes, is

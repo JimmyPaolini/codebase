@@ -4,11 +4,11 @@ import { DocumentationModule } from "../documentation/documentation.module";
 import { EdgesModule } from "../edges/edges.module";
 import { SignaturesModule } from "../signatures/signatures.module";
 
+import { AddressDepthService } from "./address-depth.service";
 import { BreadthService } from "./breadth.service";
-import { CallTreeService } from "./call-tree.service";
 import { ComponentsService } from "./components.service";
-import { DepthService } from "./depth.service";
 import { GraphAssemblyService } from "./graph-assembly.service";
+import { GraphDepthService } from "./graph-depth.service";
 import { GraphService } from "./graph.service";
 import { PathsService } from "./paths.service";
 
@@ -19,9 +19,9 @@ import { PathsService } from "./paths.service";
   controllers: [],
   exports: [
     BreadthService,
-    CallTreeService,
+    AddressDepthService,
     ComponentsService,
-    DepthService,
+    GraphDepthService,
     GraphAssemblyService,
     GraphService,
     PathsService,
@@ -29,9 +29,9 @@ import { PathsService } from "./paths.service";
   imports: [DocumentationModule, EdgesModule, SignaturesModule],
   providers: [
     BreadthService,
-    CallTreeService,
+    AddressDepthService,
     ComponentsService,
-    DepthService,
+    GraphDepthService,
     GraphAssemblyService,
     GraphService,
     PathsService,

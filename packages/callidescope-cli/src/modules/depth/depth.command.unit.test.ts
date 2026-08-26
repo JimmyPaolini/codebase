@@ -1,5 +1,5 @@
 import { InputService } from "@callidescope/configuration";
-import { CallTreeService } from "@callidescope/graph";
+import { AddressDepthService } from "@callidescope/graph";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import {
@@ -76,7 +76,7 @@ function buildLocated(): LocateOutcome {
 describe(DepthCommand, () => {
   let addressLookupService: ReturnType<typeof createMock<AddressLookupService>>;
   let addressReportService: ReturnType<typeof createMock<AddressReportService>>;
-  let callTreeService: ReturnType<typeof createMock<CallTreeService>>;
+  let addressDepthService: ReturnType<typeof createMock<AddressDepthService>>;
   let command: DepthCommand;
   let inputService: InputService;
   let logger: ReturnType<typeof createMock<LoggerService>>;
@@ -93,7 +93,10 @@ describe(DepthCommand, () => {
           provide: AddressReportService,
           useValue: createMock<AddressReportService>(),
         },
-        { provide: CallTreeService, useValue: createMock<CallTreeService>() },
+        {
+          provide: AddressDepthService,
+          useValue: createMock<AddressDepthService>(),
+        },
         InputService,
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
@@ -105,7 +108,7 @@ describe(DepthCommand, () => {
   beforeEach(() => {
     addressLookupService = createMock<AddressLookupService>();
     addressReportService = createMock<AddressReportService>();
-    callTreeService = createMock<CallTreeService>();
+    addressDepthService = createMock<AddressDepthService>();
     logger = createMock<LoggerService>();
     inputService = new InputService();
     vi.spyOn(inputService, "canPrompt").mockReturnValue(false);
@@ -113,7 +116,7 @@ describe(DepthCommand, () => {
     command = new DepthCommand(
       addressLookupService,
       addressReportService,
-      callTreeService,
+      addressDepthService,
       inputService,
       logger,
     );
@@ -142,7 +145,10 @@ describe(DepthCommand, () => {
           provide: AddressReportService,
           useValue: createMock<AddressReportService>(),
         },
-        { provide: CallTreeService, useValue: createMock<CallTreeService>() },
+        {
+          provide: AddressDepthService,
+          useValue: createMock<AddressDepthService>(),
+        },
         InputService,
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
@@ -192,7 +198,7 @@ describe(DepthCommand, () => {
     await command.run(["a.ts#Foo.bar"], {});
 
     expect(process.exitCode).toBe(1);
-    expect(callTreeService.buildDownwardStacks).not.toHaveBeenCalled();
+    expect(addressDepthService.buildDownwardStacks).not.toHaveBeenCalled();
   });
 
   it("traces both directions and prints the rendered report", async () => {
@@ -204,11 +210,11 @@ describe(DepthCommand, () => {
       resolution: { id: "a.ts#0", kind: "resolved" },
     });
     addressLookupService.describeProblem.mockReturnValue(undefined);
-    callTreeService.buildDownwardStacks.mockReturnValue({
+    addressDepthService.buildDownwardStacks.mockReturnValue({
       stacks: [],
       truncated: false,
     });
-    callTreeService.buildUpwardStacks.mockReturnValue({
+    addressDepthService.buildUpwardStacks.mockReturnValue({
       stacks: [],
       truncated: false,
     });
@@ -216,12 +222,12 @@ describe(DepthCommand, () => {
 
     await command.run(["a.ts#Foo.bar"], {});
 
-    expect(callTreeService.buildDownwardStacks).toHaveBeenCalledWith({
+    expect(addressDepthService.buildDownwardStacks).toHaveBeenCalledWith({
       callablesById: located.callablesById,
       graph: located.graph,
       startId: "a.ts#0",
     });
-    expect(callTreeService.buildUpwardStacks).toHaveBeenCalledWith({
+    expect(addressDepthService.buildUpwardStacks).toHaveBeenCalledWith({
       callablesById: located.callablesById,
       graph: located.graph,
       startId: "a.ts#0",

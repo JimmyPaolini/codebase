@@ -4,7 +4,7 @@ import { EdgesService } from "../edges/edges.service";
 
 import { BreadthService } from "./breadth.service";
 import { ComponentsService } from "./components.service";
-import { DepthService } from "./depth.service";
+import { GraphDepthService } from "./graph-depth.service";
 import { GraphService } from "./graph.service";
 
 import type {
@@ -27,7 +27,7 @@ export class GraphAssemblyService {
   constructor(
     private readonly breadthService: BreadthService,
     private readonly componentsService: ComponentsService,
-    private readonly depthService: DepthService,
+    private readonly depthService: GraphDepthService,
     private readonly edgesService: EdgesService,
     private readonly graphService: GraphService,
   ) {}

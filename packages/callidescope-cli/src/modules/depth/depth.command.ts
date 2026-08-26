@@ -2,7 +2,7 @@ import {
   CALLIDESCOPE_OUTPUT_FORMATS,
   InputService,
 } from "@callidescope/configuration";
-import { CallTreeService } from "@callidescope/graph";
+import { AddressDepthService } from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
@@ -30,7 +30,7 @@ export class DepthCommand extends CommandRunner {
   constructor(
     private readonly addressLookupService: AddressLookupService,
     private readonly addressReportService: AddressReportService,
-    private readonly callTreeService: CallTreeService,
+    private readonly addressDepthService: AddressDepthService,
     private readonly inputService: InputService,
     private readonly logger: LoggerService,
   ) {
@@ -168,12 +168,12 @@ export class DepthCommand extends CommandRunner {
     }
 
     const { id } = outcome.resolution;
-    const downward = this.callTreeService.buildDownwardStacks({
+    const downward = this.addressDepthService.buildDownwardStacks({
       callablesById: outcome.located.callablesById,
       graph: outcome.located.graph,
       startId: id,
     });
-    const upward = this.callTreeService.buildUpwardStacks({
+    const upward = this.addressDepthService.buildUpwardStacks({
       callablesById: outcome.located.callablesById,
       graph: outcome.located.graph,
       startId: id,
