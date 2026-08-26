@@ -51,10 +51,15 @@ fixture whose meaning silently changes when the resolver changes is worse than
 no fixture. Any edit under `src/` therefore takes three steps:
 
 ```bash
-nx run callidescope-examples:callidescope:write   # regenerate output/ and this README's section
-nx run callidescope-examples:vitest               # update the expectations, then confirm
-nx run callidescope-examples:lint-codebase --configuration=check
+nx run callidescope-examples:lint-codebase --configuration=write   # first — see below
+nx run callidescope-examples:callidescope:write                    # regenerate output/ and this README's section
+nx run callidescope-examples:vitest                                # update the expectations, then confirm
 ```
+
+Lint **before** regenerating, never after. Every frame in every report carries a
+`file:line`, and `eslint --fix` sorts class members — so adding one method moves
+the line numbers of the ones after it, and a report written before that sort is
+stale the moment it lands.
 
 If a number moved and you did not intend it, the resolver changed and that is
 the finding. Do not update the expectation until you know which change caused

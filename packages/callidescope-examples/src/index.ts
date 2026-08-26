@@ -1,6 +1,6 @@
-// 📤 Exports
-
 import { normalizeLabel } from "./modules/plain-call/plain-call.utilities.js";
+
+// 📤 Exports
 
 /**
  * The `exported-function` entry-point kind.

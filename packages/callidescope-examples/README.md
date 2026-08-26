@@ -95,6 +95,13 @@ reports a different depth from a different entry point, and between runs. A
 linter whose numbers move on their own cannot gate a pull request — a red build
 nobody caused is a red build everyone learns to ignore.
 
+`traverse` sits above the cycle rather than in it, and it has to. Every member
+of a cycle has a caller _inside_ the cycle, so none of the three is ever
+promoted as an orphan root — a cluster nothing outside it calls is reachable
+from no root at all, and would contribute a cyclic component to the run summary
+while appearing in no stack. Real recursive code is always called from
+somewhere, and `traverse` is that somewhere.
+
 ### Entry points
 
 Depth is only meaningful relative to a root, and most code in a repository like
@@ -135,8 +142,19 @@ committed:
 | `mermaid` | [`output/diagram.md`](output/diagram.md) — the same stacks, drawn |
 | `projectReadmes` | [The section at the bottom of this file](#-callidescope) |
 
-`--format` is separate from all four: it decides what reaches the terminal, and
-`markdown`, `mermaid`, and `json` are all accepted there too.
+`--format` is separate from all four: it decides what reaches the terminal
+rather than a file. All three of its values are committed here too, because each
+one prints the body of one of the files above:
+
+| `--format` | Prints | Committed as |
+| ---------- | ------ | ------------ |
+| `markdown` | The printed trees and finding tables | [`output/report.md`](output/report.md), between its anchors |
+| `mermaid` | The same report with its stacks drawn | [`output/diagram.md`](output/diagram.md), between its anchors |
+| `json` | The machine-readable report | [`output/report.json`](output/report.json), byte for byte |
+
+So a console rendering is never a fourth artifact to keep in step — reading the
+file is reading what the terminal would have shown, minus the anchor comments
+the splice needs.
 
 The diagram is worth drawing only when stacks share tails, so two of these
 fixtures share one:
@@ -286,7 +304,21 @@ whose entire content is deliberately-shaped fixture code. The answers:
 | `knip` | Scoped for this project. Orphan-root fixtures are uncalled on purpose, which is exactly what knip flags |
 | `jscpd` | Scoped for this project. The resolution-table fixtures are near-identical by design |
 | `codometer` | No declared size limit: the package is private and never built, so there is no bundle to gate |
-| Nx tags | `type:package`, `framework:nestjs`, `language:typescript` — the NestJS dependency is real, since injected-dependency resolution is the headline case |
+| Nx tags | `type:package`, `language:typescript`, `name:callidescope-examples` — and deliberately **no** `framework:nestjs`, see below |
+| `conformetry` | Not an instance of any template. The `nestjs-*` generators select their instances by `framework:nestjs`, so carrying that tag would make every fixture module a conformance instance |
+
+The missing `framework:nestjs` is the one answer worth expanding, because the
+dependency it would describe is real: `@nestjs/common` is imported by most of
+these fixtures, and `injected-dependency` is the headline case the whole tool
+exists for. The tag is off anyway, because in this workspace it is not a label —
+it is a selector. `configuration/conformetry.config.ts` picks the instances of
+`nestjs-service-module`, `nestjs-service-file`, and three more by that tag, so
+carrying it would make every directory under `src/modules/` a conformance
+instance owing a unit test and the template's full file set. The fixtures would
+then be shaped by a generator template rather than by what they demonstrate.
+
+`packages/codometer-agents` and `packages/conformetry-agents` sit outside the
+framework tags for the same kind of reason, and this package follows them.
 
 ## Test
 
@@ -313,12 +345,12 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 
 | Measure | Value |
 | --- | --- |
-| Callables | 68 |
+| Callables | 69 |
 | Files | 37 |
-| Calls traced | 52 |
-| Call stacks | 13 |
+| Calls traced | 53 |
+| Call stacks | 14 |
 | Deepest stack | 8 |
-| Stacks through recursion | 0 |
+| Stacks through recursion | 1 |
 | Unfollowable calls | 2 |
 
 ### Call stacks (depth)
@@ -387,7 +419,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 ```
 
 <details>
-<summary>10 more call stacks</summary>
+<summary>11 more call stacks</summary>
 
 **4. `FrameAnnotationsService.trace`** — depth 7 · orphan-root
 
@@ -435,7 +467,20 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
          ↳ Finishes the chain and hands back what the layers above it built.
 ```
 
-**7. `bootstrap`** — depth 3 · module-bootstrap
+**7. `MutualRecursionService.traverse`** — depth 4 · orphan-root
+
+```text
+🚀 MutualRecursionService.traverse(remaining: number): number [packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts:45]
+   ↳ Enters the cycle from outside it, so the cluster has a root above it.
+  └─> MutualRecursionService.branch(remaining: number): number (cycle) [packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts:28]
+     ↳ Second of the three, one hop from the leaf.
+    └─> MutualRecursionService.leaf(remaining: number): number (cycle) [packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts:38]
+       ↳ Third of the three, which calls back to the first.
+      └─> MutualRecursionService.descend(remaining: number): number (cycle) [packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts:33]
+         ↳ First of the three, and the way into the cycle.
+```
+
+**8. `bootstrap`** — depth 3 · module-bootstrap
 
 ```text
 🚀 bootstrap(): number [packages/callidescope-examples/src/main.ts:11]
@@ -446,7 +491,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
        ↳ Reserves one unit and reports the count left behind.
 ```
 
-**8. `normalizeExampleLabel`** — depth 2 · exported-function
+**9. `normalizeExampleLabel`** — depth 2 · exported-function
 
 ```text
 🚀 normalizeExampleLabel(label: string): string [packages/callidescope-examples/src/index.ts:12]
@@ -455,7 +500,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
      ↳ Trims a label and collapses the whitespace inside it.
 ```
 
-**9. `EntryPointsService.onModuleInit`** — depth 2 · lifecycle
+**10. `EntryPointsService.onModuleInit`** — depth 2 · lifecycle
 
 ```text
 🚀 EntryPointsService.onModuleInit(): string [packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts:29]
@@ -464,7 +509,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
      ↳ Does the work a lifecycle hook is called to do.
 ```
 
-**10. `EntryPointsService.readReport`** — depth 2 · decorated-method
+**11. `EntryPointsService.readReport`** — depth 2 · decorated-method
 
 ```text
 🚀 EntryPointsService.readReport(): string [packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts:34]
@@ -473,7 +518,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
      ↳ Builds the body a decorated request handler answers with.
 ```
 
-**11. `ReceiptService.renderLine`** — depth 2 · orphan-root
+**12. `ReceiptService.renderLine`** — depth 2 · orphan-root
 
 ```text
 🚀 ReceiptService.renderLine(amount: number): string [packages/callidescope-examples/src/modules/receipt/receipt.service.ts:16]
@@ -482,7 +527,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
      ↳ A helper filed in the wrong module, and the report says where it belongs.
 ```
 
-**12. `ReceiptService.renderTotal`** — depth 2 · orphan-root
+**13. `ReceiptService.renderTotal`** — depth 2 · orphan-root
 
 ```text
 🚀 ReceiptService.renderTotal(amount: number): string [packages/callidescope-examples/src/modules/receipt/receipt.service.ts:21]
@@ -491,7 +536,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
      ↳ A helper filed in the wrong module, and the report says where it belongs.
 ```
 
-**13. `StructuralInterfaceService.ingestDocument`** — depth 2 · orphan-root
+**14. `StructuralInterfaceService.ingestDocument`** — depth 2 · orphan-root
 
 ```text
 🚀 StructuralInterfaceService.ingestDocument(provider: StructuralProvider, document: string): number [packages/callidescope-examples/src/modules/structural-interface/structural-interface.service.ts:17]
@@ -517,7 +562,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 | `normalizeExampleLabel` | 1 | `normalizeLabel` | `packages/callidescope-examples/src/index.ts:12` |
 
 <details>
-<summary>43 more callables</summary>
+<summary>44 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -557,9 +602,10 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 | `FrameAnnotationsService.render` | 1 | `FrameAnnotationsService.summarize` | `packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:84` |
 | `FrameAnnotationsService.trace` | 1 | `FrameAnnotationsService.render` | `packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:91` |
 | `PlainCallService.render` | 1 | `normalizeLabel` | `packages/callidescope-examples/src/modules/plain-call/plain-call.service.ts:17` |
-| `MutualRecursionService.branch` | 1 | `MutualRecursionService.leaf` | `packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts:21` |
-| `MutualRecursionService.leaf` | 1 | `MutualRecursionService.descend` | `packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts:26` |
+| `MutualRecursionService.branch` | 1 | `MutualRecursionService.leaf` | `packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts:28` |
 | `MutualRecursionService.descend` | 1 | `MutualRecursionService.branch` | `packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts:33` |
+| `MutualRecursionService.leaf` | 1 | `MutualRecursionService.descend` | `packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts:38` |
+| `MutualRecursionService.traverse` | 1 | `MutualRecursionService.descend` | `packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts:45` |
 | `ReceiptService.renderLine` | 1 | `formatCurrency` | `packages/callidescope-examples/src/modules/receipt/receipt.service.ts:16` |
 | `ReceiptService.renderTotal` | 1 | `formatCurrency` | `packages/callidescope-examples/src/modules/receipt/receipt.service.ts:21` |
 | `SpreadNearMissService.review` | 1 | `ModuleSpreadService.orchestrate` | `packages/callidescope-examples/src/modules/spread-near-miss/spread-near-miss.service.ts:23` |

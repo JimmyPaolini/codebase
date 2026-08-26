@@ -215,6 +215,10 @@ const config: KnipConfig = {
     // every dependency looking unused, and `knip --fix` would delete them.
     "packages/callidescope-examples": {
       entry: ["callidescope.config.ts", "src/**/*.ts", "testing/**/*.test.ts"],
+      // The integration test spawns the callidescope command line through this
+      // loader rather than importing it, so nothing in the module graph names
+      // it. Undeclared, `knip --fix` deletes it and the test stops running.
+      ignoreDependencies: ["@swc-node/register"],
       project: "{callidescope.config.ts,src/**/*.ts,testing/**/*.ts}",
     },
     "packages/callidescope-graph": {

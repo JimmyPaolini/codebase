@@ -27,8 +27,12 @@ const MODULE_PREFIX = `${EXAMPLES_DIRECTORY}:modules/`;
  * redirected — so a limit changed in `callidescope.config.ts` changes what this
  * asserts instead of quietly disagreeing with it. The committed reports under
  * `output/` are left exactly where they were.
+ *
+ * `limits` overrides one threshold for the differential the cap fixture needs:
+ * the only way to show a cap doing something is to run the same fixtures again
+ * with it lifted.
  */
-function traceFixtures(): CallGraphResult {
+function traceFixtures(limits: Record<string, number> = {}): CallGraphResult {
   const temporaryDirectory = mkdtempSync(
     path.join(tmpdir(), "callidescope-examples-"),
   );
@@ -42,6 +46,7 @@ function traceFixtures(): CallGraphResult {
     configurationPath,
     JSON.stringify({
       ...callidescopeConfiguration,
+      limits: { ...callidescopeConfiguration.limits, ...limits },
       output: { json: { path: reportPath } },
     }),
     "utf8",
@@ -76,10 +81,10 @@ describe("callidescope examples (integration)", () => {
   describe("what the run measured", () => {
     it("traces the whole package and nothing else", () => {
       expect(result.summary).toStrictEqual({
-        callableCount: 68,
+        callableCount: 69,
         cyclicComponentCount: 1,
-        edgeCount: 52,
-        entryPointCount: 22,
+        edgeCount: 53,
+        entryPointCount: 23,
         fileCount: 37,
         maximumDepth: 8,
         projectCount: 1,
@@ -87,11 +92,20 @@ describe("callidescope examples (integration)", () => {
       });
     });
 
-    it("records exactly the two calls it cannot follow", () => {
-      // One computed member name, and one structural expansion dropped for
-      // exceeding `maximumImplementationCandidates`. Both are recorded rather
-      // than guessed at, which is what makes a depth a floor and not a lie.
+    it("drops the over-cap structural expansion, and only that", () => {
+      // The cap can only be shown to do something by lifting it. Three classes
+      // satisfy `LineSink`; at a cap of two the whole expansion is dropped and
+      // recorded as unfollowable, leaving the computed member name as the only
+      // other one. Raised past three, those same three edges appear and the
+      // unfollowable count falls to the computed member alone.
+      //
+      // Without this, the cap could stop working entirely and every other
+      // assertion here would still pass.
+      const lifted = traceFixtures({ maximumImplementationCandidates: 8 });
+
       expect(result.summary.unresolvedCallCount).toBe(2);
+      expect(lifted.summary.unresolvedCallCount).toBe(1);
+      expect(lifted.summary.edgeCount).toBe(result.summary.edgeCount + 3);
     });
   });
 
@@ -135,6 +149,30 @@ describe("callidescope examples (integration)", () => {
         .map((stack) => stack.frames.at(-1)?.displayName);
 
       expect(tails).toStrictEqual(["roundToCents", "roundToCents"]);
+    });
+  });
+
+  describe("recursion", () => {
+    it("collapses the cycle of three into frames marked as one", () => {
+      // Every member of a cycle has a caller inside it, so none is promoted as
+      // an orphan. `traverse` is the root above the cluster that makes the
+      // collapsed component reachable, and therefore reportable at all.
+      const stack = result.projects
+        .flatMap((project) => project.stacks)
+        .find(
+          (candidate) =>
+            candidate.frames[0]?.displayName ===
+            "MutualRecursionService.traverse",
+        );
+
+      expect(
+        stack?.frames.map((frame) => [frame.displayName, frame.isCycle]),
+      ).toStrictEqual([
+        ["MutualRecursionService.traverse", false],
+        ["MutualRecursionService.branch", true],
+        ["MutualRecursionService.leaf", true],
+        ["MutualRecursionService.descend", true],
+      ]);
     });
   });
 

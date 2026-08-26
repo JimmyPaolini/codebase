@@ -2046,43 +2046,15 @@
           "callees": [
             {
               "displayName": "MutualRecursionService.leaf",
-              "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#960"
+              "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#1535"
             }
           ],
           "displayName": "MutualRecursionService.branch",
-          "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#816",
+          "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#1247",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts",
-            "line": 21
-          },
-          "signature": {
-            "parameters": [
-              {
-                "isOptional": false,
-                "isRest": false,
-                "name": "remaining",
-                "type": "number"
-              }
-            ],
-            "returnType": "number",
-            "text": "(remaining: number): number"
-          }
-        },
-        {
-          "breadth": 1,
-          "callees": [
-            {
-              "displayName": "MutualRecursionService.descend",
-              "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#1151"
-            }
-          ],
-          "displayName": "MutualRecursionService.leaf",
-          "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#960",
-          "location": {
-            "column": 3,
-            "filePath": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts",
-            "line": 26
+            "line": 28
           },
           "signature": {
             "parameters": [
@@ -2102,15 +2074,71 @@
           "callees": [
             {
               "displayName": "MutualRecursionService.branch",
-              "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#816"
+              "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#1247"
             }
           ],
           "displayName": "MutualRecursionService.descend",
-          "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#1151",
+          "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#1388",
           "location": {
             "column": 3,
             "filePath": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts",
             "line": 33
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "remaining",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(remaining: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "MutualRecursionService.descend",
+              "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#1388"
+            }
+          ],
+          "displayName": "MutualRecursionService.leaf",
+          "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#1535",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts",
+            "line": 38
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "remaining",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(remaining: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "MutualRecursionService.descend",
+              "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#1388"
+            }
+          ],
+          "displayName": "MutualRecursionService.traverse",
+          "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#1748",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts",
+            "line": 45
           },
           "signature": {
             "parameters": [
@@ -3438,6 +3466,121 @@
           "isLowerBound": false
         },
         {
+          "depth": 4,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "MutualRecursionService.traverse",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Enters the cycle from outside it, so the cluster has a root above it.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#1748",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts",
+                "line": 45
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "remaining",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(remaining: number): number"
+              }
+            },
+            {
+              "displayName": "MutualRecursionService.branch",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Second of the three, one hop from the leaf.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#1247",
+              "isCycle": true,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts",
+                "line": 28
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "remaining",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(remaining: number): number"
+              }
+            },
+            {
+              "displayName": "MutualRecursionService.leaf",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Third of the three, which calls back to the first.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#1535",
+              "isCycle": true,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts",
+                "line": 38
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "remaining",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(remaining: number): number"
+              }
+            },
+            {
+              "displayName": "MutualRecursionService.descend",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "First of the three, and the way into the cycle.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#1388",
+              "isCycle": true,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts",
+                "line": 33
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "remaining",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(remaining: number): number"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
           "depth": 3,
           "entryPointKind": "module-bootstrap",
           "frames": [
@@ -3864,10 +4007,10 @@
         }
       ],
       "summary": {
-        "callableCount": 68,
-        "cyclicComponentCount": 0,
-        "edgeCount": 52,
-        "entryPointCount": 13,
+        "callableCount": 69,
+        "cyclicComponentCount": 1,
+        "edgeCount": 53,
+        "entryPointCount": 14,
         "fileCount": 37,
         "maximumDepth": 8,
         "projectCount": 1,
@@ -3936,6 +4079,13 @@
           "minimumDepth": 1,
           "moduleId": "packages/callidescope-examples:modules/entry-points",
           "typeName": "EntryPointsService"
+        },
+        {
+          "maximumDepth": 4,
+          "memberCount": 4,
+          "minimumDepth": 3,
+          "moduleId": "packages/callidescope-examples:modules/mutual-recursion",
+          "typeName": "MutualRecursionService"
         },
         {
           "maximumDepth": 1,
@@ -4008,13 +4158,6 @@
           "typeName": "PlainCallService"
         },
         {
-          "maximumDepth": 3,
-          "memberCount": 3,
-          "minimumDepth": 3,
-          "moduleId": "packages/callidescope-examples:modules/mutual-recursion",
-          "typeName": "MutualRecursionService"
-        },
-        {
           "maximumDepth": 2,
           "memberCount": 2,
           "minimumDepth": 2,
@@ -4039,10 +4182,10 @@
     }
   ],
   "summary": {
-    "callableCount": 68,
+    "callableCount": 69,
     "cyclicComponentCount": 1,
-    "edgeCount": 52,
-    "entryPointCount": 22,
+    "edgeCount": 53,
+    "entryPointCount": 23,
     "fileCount": 37,
     "maximumDepth": 8,
     "projectCount": 1,
@@ -4113,6 +4256,13 @@
       "typeName": "EntryPointsService"
     },
     {
+      "maximumDepth": 4,
+      "memberCount": 4,
+      "minimumDepth": 3,
+      "moduleId": "packages/callidescope-examples:modules/mutual-recursion",
+      "typeName": "MutualRecursionService"
+    },
+    {
       "maximumDepth": 1,
       "memberCount": 1,
       "minimumDepth": 1,
@@ -4181,13 +4331,6 @@
       "minimumDepth": 2,
       "moduleId": "packages/callidescope-examples:modules/plain-call",
       "typeName": "PlainCallService"
-    },
-    {
-      "maximumDepth": 3,
-      "memberCount": 3,
-      "minimumDepth": 3,
-      "moduleId": "packages/callidescope-examples:modules/mutual-recursion",
-      "typeName": "MutualRecursionService"
     },
     {
       "maximumDepth": 2,

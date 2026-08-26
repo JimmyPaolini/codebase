@@ -1,5 +1,6 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "implicitDependencies": ["callidescope-cli"],
   "name": "callidescope-examples",
   "projectType": "library",
   "sourceRoot": "packages/callidescope-examples",
