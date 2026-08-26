@@ -11,7 +11,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * appending a second one.
  *
  * ```bash
- * codometer --directory corpus --config examples/output/codometer.config.ts --write
+ * codometer --directory examples/corpus --config examples/output/codometer.config.ts --write
  * ```
  *
  * Destinations are resolved against the **measured directory**, not against

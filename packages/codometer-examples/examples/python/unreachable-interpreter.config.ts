@@ -12,7 +12,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * ```
  *
  * ```bash
- * codometer --directory corpus --config examples/python/unreachable-interpreter.config.ts --json \
+ * codometer --directory examples/corpus --config examples/python/unreachable-interpreter.config.ts --json \
  *   | jq '.targets[0].metrics[] | select(.path | startswith("python."))'
  * ```
  *

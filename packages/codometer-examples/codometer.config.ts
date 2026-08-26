@@ -19,7 +19,8 @@ import type {
  *
  * It is written as a factory for the same reason the root one is: one file
  * answers for more than one folder. Measuring the package measures the corpus
- * as a size-gated target; measuring anything beneath it — `corpus/`, which is
+ * as a size-gated target; measuring anything beneath it — `examples/corpus/`,
+ * which is
  * what nearly every example does — measures the files themselves, with the
  * conventions declared and no target to be empty.
  */
@@ -90,7 +91,7 @@ const buildPackageConfiguration = (): CodometerConfiguration => ({
     {
       analyses: ["size"],
       compression: "gzip",
-      include: ["corpus/**"],
+      include: ["examples/corpus/**"],
       name: CORPUS_TARGET_NAME,
     },
   ],

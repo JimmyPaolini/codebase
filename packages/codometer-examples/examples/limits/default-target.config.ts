@@ -15,7 +15,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * the same reason.
  *
  * ```bash
- * codometer --directory corpus --config examples/limits/default-target.config.ts --check limits
+ * codometer --directory examples/corpus --config examples/limits/default-target.config.ts --check limits
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {

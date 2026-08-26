@@ -14,7 +14,7 @@ export default [
   // suppression comments, which is the one thing this repository never does.
   // Scoped out here, once, rather than file by file.
   {
-    ignores: ["compiled/**", "corpus/**"],
+    ignores: ["examples/compiled/**", "examples/corpus/**"],
   },
 
   // 📦 Dependency Checks

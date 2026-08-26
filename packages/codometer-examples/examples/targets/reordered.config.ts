@@ -10,7 +10,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * about an ordering nobody can see.
  *
  * ```bash
- * codometer --directory corpus --config examples/targets/reordered.config.ts
+ * codometer --directory examples/corpus --config examples/targets/reordered.config.ts
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {
@@ -39,7 +39,7 @@ const codometerConfiguration: CodometerConfiguration = {
     {
       analyses: ["size"],
       compression: "none",
-      directory: "..",
+      directory: "../..",
       include: ["project.json", "package.json"],
       name: "Manifests",
     },

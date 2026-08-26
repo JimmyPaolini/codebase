@@ -11,7 +11,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * across files nobody downloads together.
  *
  * ```bash
- * codometer --directory corpus --config examples/compression/gzip.config.ts
+ * codometer --directory examples/corpus --config examples/compression/gzip.config.ts
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {

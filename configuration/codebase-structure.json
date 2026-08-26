@@ -188,28 +188,6 @@
               "ruleId": "any-file"
             }
           ],
-          "name": "compiled"
-        },
-        {
-          "children": [
-            {
-              "ruleId": "kebab-case-folder"
-            },
-            {
-              "ruleId": "any-file"
-            }
-          ],
-          "name": "corpus"
-        },
-        {
-          "children": [
-            {
-              "ruleId": "kebab-case-folder"
-            },
-            {
-              "ruleId": "any-file"
-            }
-          ],
           "name": "examples"
         },
         {

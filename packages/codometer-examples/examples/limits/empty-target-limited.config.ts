@@ -12,7 +12,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * which is the identical target with the limit removed and passes.
  *
  * ```bash
- * codometer --directory corpus --config examples/limits/empty-target-limited.config.ts --check limits
+ * codometer --directory examples/corpus --config examples/limits/empty-target-limited.config.ts --check limits
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {

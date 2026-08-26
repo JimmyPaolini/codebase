@@ -8,7 +8,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * are not served over a network at all.
  *
  * ```bash
- * codometer --directory corpus --config examples/compression/none.config.ts
+ * codometer --directory examples/corpus --config examples/compression/none.config.ts
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {

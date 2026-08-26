@@ -10,7 +10,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * the limit, not from the empty match.
  *
  * ```bash
- * codometer --directory corpus --config examples/limits/empty-target-unlimited.config.ts --check limits
+ * codometer --directory examples/corpus --config examples/limits/empty-target-unlimited.config.ts --check limits
  * echo $?   # 0
  * ```
  */

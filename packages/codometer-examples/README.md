@@ -15,12 +15,12 @@ that drifts from the tool fails a check rather than misleading you.
 
 ```bash
 cd packages/codometer-examples
-codometer --directory corpus
+codometer --directory examples/corpus
 ```
 
 ## The corpus
 
-`corpus/` holds twenty-seven samples across twelve languages, plus the
+`examples/corpus/` holds twenty-seven samples across twelve languages, plus the
 `.gitignore` that hides its stand-in build directory. It is small enough to
 count by hand, which is the whole point: a guide saying "four service files"
 is only worth reading if you can check.
@@ -38,12 +38,12 @@ is only worth reading if you can check.
 | `*.integration.test.ts` files | 1 |
 | Static methods | 4 |
 
-Two more files sit in `compiled/`, **beside** the corpus rather than inside it —
+Two more files sit in `examples/compiled/`, **beside** the corpus rather than inside it —
 stand-ins for build output, which is where build output really lives. They are
 what the target examples measure, and the codebase target never sees them
 because it measures one directory and they are not in it.
 
-`corpus/.gitignore` is the other half of that story. It names `generated/`,
+`examples/corpus/.gitignore` is the other half of that story. It names `generated/`,
 which is empty in a fresh checkout on purpose: a file that is both tracked and
 ignored breaks `git add`, and so every pre-commit hook, for everyone who touches
 it afterwards. Fill it yourself to watch discovery skip it — see
@@ -53,7 +53,7 @@ Every example runs against this one corpus, pointed at a different
 configuration:
 
 ```bash
-codometer --directory corpus --config examples/<name>/<file>.config.ts
+codometer --directory examples/corpus --config examples/<name>/<file>.config.ts
 ```
 
 ## 1. Every language analyzer
@@ -62,7 +62,7 @@ A bare run measures every language it recognizes. The corpus carries one
 idiomatic sample per analyzer so each group has something in it:
 
 ```bash
-codometer --directory corpus --json | jq '.targets[0].metrics[] | select(.value > 0)'
+codometer --directory examples/corpus --json | jq '.targets[0].metrics[] | select(.value > 0)'
 ```
 
 Two things in the output surprise people:
@@ -73,12 +73,12 @@ Two things in the output surprise people:
   what is TypeScript-specific — `files`, `interfaces`, `enums`, `decorators`,
   `docComments`, `genericDeclarations`. The corpus has 5 classes: four written
   in TypeScript and one in JavaScript.
-- **A dot file is a file.** `corpus/.gitignore` is measured like any other,
+- **A dot file is a file.** `examples/corpus/.gitignore` is measured like any other,
   which is why the count is 28 rather than 27.
 
 ## 2. Notebooks measured by composition
 
-`corpus/jupyter/holdings.ipynb` is codometer's least visible internal and its
+`examples/corpus/jupyter/holdings.ipynb` is codometer's least visible internal and its
 most surprising. There is no fourth parser: the notebook is decomposed and
 handed to three analyzers that already exist.
 
@@ -107,7 +107,7 @@ in TypeScript. Three configurations show what that means:
 | [`unreachable-interpreter.config.ts`](examples/python/unreachable-interpreter.config.ts) | an interpreter that is not installed | 0 |
 
 ```bash
-codometer --directory corpus --config examples/python/uv.config.ts --json \
+codometer --directory examples/corpus --config examples/python/uv.config.ts --json \
   | jq '.targets[0].metrics[] | select(.path | startswith("python."))'
 ```
 
@@ -142,7 +142,7 @@ the failure side.
 [`examples/statistics/codometer.config.ts`](examples/statistics/codometer.config.ts)
 
 ```bash
-codometer --directory corpus --config examples/statistics/codometer.config.ts
+codometer --directory examples/corpus --config examples/statistics/codometer.config.ts
 ```
 
 A counter carrying `patterns` counts **files**. A counter carrying `symbols`
@@ -161,7 +161,7 @@ counted.
 | Exported Interfaces | `symbols: { kinds: ["interface"], modifiers: ["export"] }` | 6 |
 
 Read the last two rows together. **Service Static Methods is 3, not 4** — the
-narrowing removed `corpus/javascript/receipt.js`, where the fourth static method
+narrowing removed `examples/corpus/javascript/receipt.js`, where the fourth static method
 lives. It is still counting methods; `patterns` only said where to look.
 
 And **Static Properties is 1**, which is the trap worth knowing:
@@ -179,7 +179,7 @@ than under a heading of its own.
 [`examples/targets/codometer.config.ts`](examples/targets/codometer.config.ts)
 
 ```bash
-codometer --directory corpus --config examples/targets/codometer.config.ts
+codometer --directory examples/corpus --config examples/targets/codometer.config.ts
 ```
 
 A **target** is a named set of files, addressed by glob. That is what lets one
@@ -214,13 +214,13 @@ one it walks past, and never invokes git. A declared target's globs are the
 exception. Try it:
 
 ```bash
-cp -R packages/codometer-examples/compiled packages/codometer-examples/corpus/generated
-codometer --directory corpus --config examples/targets/ignored.config.ts
-rm -rf packages/codometer-examples/corpus/generated
+cp -R packages/codometer-examples/examples/compiled packages/codometer-examples/examples/corpus/generated
+codometer --directory examples/corpus --config examples/targets/ignored.config.ts
+rm -rf packages/codometer-examples/examples/corpus/generated
 ```
 
 `codebase` still reports 28 files — the copy is invisible to it, because
-`corpus/.gitignore` names `generated/`. `Ignored Output` reports the 2 that
+`examples/corpus/.gitignore` names `generated/`. `Ignored Output` reports the 2 that
 discovery refused to walk into. That asymmetry is the entire reason a size gate
 on a build directory can exist.
 
@@ -230,15 +230,15 @@ which breaks the pre-commit hook on every later change, not just the one that
 introduced it.
 
 Also worth knowing: **dot files are excluded unless a glob spells one out**. The
-`Corpus` target this package gates itself on includes `corpus/**` and holds 27
+`Corpus` target this package gates itself on includes `examples/corpus/**` and holds 27
 files — the samples, and not the `.gitignore` beside them.
 
 ## 6. Compression
 
 ```bash
-codometer --directory corpus --config examples/compression/gzip.config.ts
-codometer --directory corpus --config examples/compression/brotli.config.ts
-codometer --directory corpus --config examples/compression/none.config.ts
+codometer --directory examples/corpus --config examples/compression/gzip.config.ts
+codometer --directory examples/corpus --config examples/compression/brotli.config.ts
+codometer --directory examples/corpus --config examples/compression/none.config.ts
 ```
 
 The same two files, three ways. On the Node release this repository pins they
@@ -275,7 +275,7 @@ codometer is opinionated, so each one has a configuration of its own.
 Run any of them the same way:
 
 ```bash
-codometer --directory corpus --config examples/limits/fail.config.ts --check limits
+codometer --directory examples/corpus --config examples/limits/fail.config.ts --check limits
 ```
 
 ### The stumble almost everyone hits first
@@ -343,7 +343,7 @@ may run, per declaration kind. It is opt-in, and gated by the same
 `metric` path to write, because declarations are found rather than addressed.
 
 ```bash
-codometer --directory corpus --config examples/documentation/codometer.config.ts --check limits
+codometer --directory examples/corpus --config examples/documentation/codometer.config.ts --check limits
 ```
 
 Under that configuration the corpus reports **26 documented declarations**, of
@@ -410,18 +410,18 @@ Each of the three has a runnable example below, and each is asserted by a test.
 So the report survives a pipe, log lines and all:
 
 ```bash
-codometer --directory corpus --json | jq '.targets[0].files'   # 28
+codometer --directory examples/corpus --json | jq '.targets[0].files'   # 28
 ```
 
-That is a real pipeline rather than a redirect followed by a second command, and
-the test runs the same shape through a JSON parser — one warning sharing the
-stream would break it.
+The test proves that by taking the bytes the run wrote to standard output — and
+only those — and feeding them to a second process that parses them. One warning
+sharing the stream would break it.
 
 **The document sink writes the badges as a whole file**, markers and all absent,
 which is what a page that is nothing but statistics wants:
 
 ```bash
-codometer --directory corpus -m document.md --write
+codometer --directory examples/corpus -m document.md --write
 ```
 
 **`--json <path>` is refused unless the run writes or compares it**, because a
@@ -530,7 +530,7 @@ the moment it landed.
 Run it twice against a scratch copy and read the report the second run wrote:
 
 ```bash
-cp -R corpus /tmp/copy
+cp -R examples/corpus /tmp/copy
 codometer --directory /tmp/copy --config examples/output/self-excluded.config.ts --write
 codometer --directory /tmp/copy --config examples/output/self-excluded.config.ts --write
 jq '.targets[0].files' /tmp/copy/codometer-report.json   # 28
@@ -561,7 +561,7 @@ reproduction stands in for the runtime difference by editing the number the
 other runtime would have produced:
 
 ```bash
-cp -R corpus /tmp/stale
+cp -R examples/corpus /tmp/stale
 codometer --directory /tmp/stale --config examples/staleness/codometer.config.ts --write
 codometer --directory /tmp/stale --config examples/staleness/codometer.config.ts --check reports
 echo $?   # 0
@@ -680,8 +680,8 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2996-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-118.88_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3052-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-122.48_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-27-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-56-3178c6?style=flat-square)
 
@@ -696,7 +696,7 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-2-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-1-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-0-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-80-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-81-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-7-166534?style=flat-square)
 
 ### JavaScript
@@ -705,15 +705,15 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 ![Test Files](https://img.shields.io/badge/Test_Files-9-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-9-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-8-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-148-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-150-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-21-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-166-4ade80?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-168-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-3-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-155-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-72-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-32-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-190-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1000-475569?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-153-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-71-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-33-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-211-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1030-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -734,16 +734,16 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-88-ca8a04?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-94-ca8a04?style=flat-square)
 ![JSON Objects](https://img.shields.io/badge/JSON_Objects-22-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-11-8b5cf6?style=flat-square)
 ![JSON Properties](https://img.shields.io/badge/JSON_Properties-61-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-44-16a34a?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-45-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-4-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-5-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-1-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-22-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-87-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-23-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-88-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-5-ea580c?style=flat-square)
 
 ### YAML

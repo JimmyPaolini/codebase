@@ -28,7 +28,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * the default badge block.
  *
  * ```bash
- * codometer --directory corpus --config examples/output/custom-write.config.ts --write
+ * codometer --directory examples/corpus --config examples/output/custom-write.config.ts --write
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {

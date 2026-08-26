@@ -13,7 +13,13 @@
     "target": "esnext",
     "types": ["node", "vitest/globals"]
   },
-  "exclude": ["corpus", "dist", "node_modules", "output"],
+  "exclude": [
+    "dist",
+    "examples/compiled",
+    "examples/corpus",
+    "node_modules",
+    "output"
+  ],
   "extends": "../../configuration/tsconfig.json",
   "include": [
     "codometer.config.ts",

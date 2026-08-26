@@ -5,7 +5,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * [gzip](./gzip.config.ts) is visible rather than asserted.
  *
  * ```bash
- * codometer --directory corpus --config examples/compression/brotli.config.ts
+ * codometer --directory examples/corpus --config examples/compression/brotli.config.ts
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {

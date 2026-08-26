@@ -11,10 +11,10 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * sample, so the narrowed counter and the open one disagree by exactly
  * the file the narrowing removed.
  *
- * Run against `corpus/`:
+ * Run against the corpus:
  *
  * ```bash
- * codometer --directory corpus --config examples/statistics/codometer.config.ts
+ * codometer --directory examples/corpus --config examples/statistics/codometer.config.ts
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {

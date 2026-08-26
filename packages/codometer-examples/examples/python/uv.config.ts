@@ -8,12 +8,12 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * or a `.venv` names its interpreter the same way.
  *
  * ```bash
- * codometer --directory corpus --config examples/python/uv.config.ts --json \
+ * codometer --directory examples/corpus --config examples/python/uv.config.ts --json \
  *   | jq '.targets[0].metrics[] | select(.path | startswith("python."))'
  * ```
  *
  * It reports 3 classes, 4 functions, 1 protocol, and 8 docstrings from
- * `corpus/python/inventory.py`. So does
+ * `examples/corpus/python/inventory.py`. So does
  * [default-interpreter.config.ts](./default-interpreter.config.ts) on a machine
  * whose `python3` is adequate — naming the interpreter is what stops that being
  * a question about the machine. The same corpus measures as empty under

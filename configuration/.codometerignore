@@ -41,8 +41,8 @@ templates/
 # about the repository. The package itself is measured normally — only the
 # corpus is out, and `packages/codometer-examples/codometer.config.ts` gates
 # its compressed size where it belongs.
-packages/codometer-examples/compiled/
-packages/codometer-examples/corpus/
+packages/codometer-examples/examples/compiled/
+packages/codometer-examples/examples/corpus/
 
 # 🧩 Installed agent skills, one entry per skill in skills-lock.json. Owned
 # upstream rather than authored here, and the largest carries half a megabyte

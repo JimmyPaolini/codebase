@@ -1,5 +1,3 @@
-import path from "node:path";
-
 import { beforeAll, describe, expect, it } from "vitest";
 
 import {
@@ -7,6 +5,7 @@ import {
   corpusDirectory,
   exampleConfiguration,
   measure,
+  packageDirectory,
   readCounters,
   readMetric,
   readTarget,
@@ -118,7 +117,7 @@ describe("the sample corpus and the counts its guides quote", () => {
       // This package's own configuration gates a `Corpus` target declared as
       // `corpus/**`. It holds the 27 samples and not the `.gitignore` beside
       // them, while the codebase target above counts all 28.
-      const report = measure(["--directory", path.join(corpusDirectory, "..")]);
+      const report = measure(["--directory", packageDirectory]);
 
       expect(readTarget(report, "Corpus").files).toBe(27);
     });

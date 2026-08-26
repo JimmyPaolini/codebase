@@ -95,8 +95,8 @@ const config: KnipConfig = {
         "applications/JimmyPaolini/**",
         "pnpm-workspace.yaml", // Catalog dependencies are shared across workspace; knip would flag all as unused in root
         "configuration/conformetry-templates/**", // Generator templates are placeholder files, not executable workspace code
-        "packages/codometer-examples/compiled/**", // Stand-in build output, committed so a target example has something to measure
-        "packages/codometer-examples/corpus/**", // Sample corpus written to be counted; uncalled and unimported by construction
+        "packages/codometer-examples/examples/compiled/**", // Stand-in build output, committed so a target example has something to measure
+        "packages/codometer-examples/examples/corpus/**", // Sample corpus written to be counted; uncalled and unimported by construction
         // Skill scripts are invoked by the skill framework, not imported in code
         "**/.agents/skills/**",
         "**/.claude/skills/**",
@@ -141,7 +141,8 @@ const config: KnipConfig = {
         "testing/**/*.ts",
       ],
       ignore: [
-        "corpus/**", // Sample corpus written to be counted; uncalled and unimported by construction
+        "examples/compiled/**", // Stand-in build output for the target examples
+        "examples/corpus/**", // Sample corpus written to be counted; uncalled and unimported by construction
       ],
       ignoreDependencies: [
         "@swc-node/register", // Named as a string on the command line testing/codometer.ts spawns, never imported

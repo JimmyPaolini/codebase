@@ -10,7 +10,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * gate nothing.
  *
  * ```bash
- * codometer --directory corpus --config examples/limits/unreadable-unit.config.ts --check limits
+ * codometer --directory examples/corpus --config examples/limits/unreadable-unit.config.ts --check limits
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {

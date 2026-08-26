@@ -12,7 +12,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * on their own, and supplying one never opts out of the other.
  *
  * ```bash
- * codometer --directory corpus --config examples/output/custom-render.config.ts --write
+ * codometer --directory examples/corpus --config examples/output/custom-render.config.ts --write
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {

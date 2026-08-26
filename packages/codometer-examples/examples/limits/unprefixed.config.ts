@@ -10,7 +10,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * target measured must be the one meant.
  *
  * ```bash
- * codometer --directory corpus --config examples/limits/unprefixed.config.ts --check limits
+ * codometer --directory examples/corpus --config examples/limits/unprefixed.config.ts --check limits
  * ```
  *
  * ```text

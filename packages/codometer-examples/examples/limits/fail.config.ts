@@ -9,7 +9,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * rather than only the failure.
  *
  * ```bash
- * codometer --directory corpus --config examples/limits/fail.config.ts --check limits
+ * codometer --directory examples/corpus --config examples/limits/fail.config.ts --check limits
  * echo $?   # 1
  * ```
  *

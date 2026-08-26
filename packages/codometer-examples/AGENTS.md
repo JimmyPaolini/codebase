@@ -7,10 +7,10 @@ know what to do about it.
 
 ## What lives here
 
-- `corpus/` — twenty-seven samples across twelve languages, plus the
+- `examples/corpus/` — twenty-seven samples across twelve languages, plus the
   `.gitignore` that hides its stand-in build directory. This is the thing being
   measured. Its counts are stated in the README and asserted by the tests.
-- `compiled/` — two stand-ins for build output, sitting beside the corpus
+- `examples/compiled/` — two stand-ins for build output, sitting beside the corpus
   rather than inside it, which is where build output really lives. The target
   examples reach them with a `directory` hop.
 - `examples/<name>/*.config.ts` — one configuration per behavior. Every one is
@@ -76,11 +76,11 @@ the guides:
 Never update a guide's number by hand without re-running. The numbers are the
 only reason this package exists.
 
-`corpus/generated/` is empty in the repository and must stay that way. Nothing
+`examples/corpus/generated/` is empty in the repository and must stay that way. Nothing
 ignored may be committed here: a file that is both tracked and ignored makes
 `git add` fail, and lint-staged re-stages every file it touches, so one such
 file breaks the pre-commit hook on every later commit — not only the one that
-introduced it. The two compiled samples live in `compiled/`, beside the corpus
+introduced it. The two compiled samples live in `examples/compiled/`, beside the corpus
 and tracked normally, and the ignore demonstration copies them in at run time.
 
 ## Adding an example

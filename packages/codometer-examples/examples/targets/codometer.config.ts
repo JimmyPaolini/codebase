@@ -3,20 +3,20 @@ import type { CodometerConfiguration } from "@codometer/configuration";
 /**
  * Every field a target carries, over files the codebase target cannot see.
  *
- * The two compiled samples sit in `compiled/`, beside the corpus rather than
+ * The two compiled samples sit in `examples/compiled/`, beside the corpus rather than
  * inside it — which is where build output really lives, and why the targets
  * naming them carry a `directory` hop. The codebase target measures 28 files
  * and none of them are those two, because it measures one directory and they
  * are not in it.
  *
- * The other half of the same story is `corpus/.gitignore`, which names
+ * The other half of the same story is `examples/corpus/.gitignore`, which names
  * `generated/`. Copy the compiled samples in there and the codebase target
  * still reports 28: discovery reads that ignore file itself. A target's globs
  * are the one place ignore rules do not reach, which is what lets a repository
  * gate the size of a build directory every `.gitignore` claims.
  *
  * ```bash
- * codometer --directory corpus --config examples/targets/codometer.config.ts
+ * codometer --directory examples/corpus --config examples/targets/codometer.config.ts
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {
@@ -50,7 +50,7 @@ const codometerConfiguration: CodometerConfiguration = {
     {
       analyses: ["size"],
       compression: "none",
-      directory: "..",
+      directory: "../..",
       include: ["package.json", "project.json"],
       name: "Manifests",
     },

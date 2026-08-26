@@ -10,7 +10,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * README does, and so does this package's.
  *
  * ```bash
- * codometer --directory corpus --config examples/output/renamed-markers.config.ts --write
+ * codometer --directory examples/corpus --config examples/output/renamed-markers.config.ts --write
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {

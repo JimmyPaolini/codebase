@@ -9,7 +9,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * severity and exits 1.
  *
  * ```bash
- * codometer --directory corpus --config examples/limits/warn.config.ts --check limits
+ * codometer --directory examples/corpus --config examples/limits/warn.config.ts --check limits
  * echo $?   # 0
  * ```
  *

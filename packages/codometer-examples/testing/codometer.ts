@@ -24,7 +24,8 @@ import type {
 
 // 🧭 Locations
 
-const packageDirectory = path.resolve(
+/** The package itself, which is the directory its own configuration gates. */
+export const packageDirectory = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "..",
 );
@@ -46,7 +47,11 @@ const commandLineEntry = path.resolve(
 );
 
 /** The committed sample corpus, which the read-only examples measure. */
-export const corpusDirectory = path.join(packageDirectory, "corpus");
+export const corpusDirectory = path.join(
+  packageDirectory,
+  "examples",
+  "corpus",
+);
 
 /** Path of one shipped example configuration, from its segments. */
 export const exampleConfiguration = (...segments: readonly string[]): string =>
@@ -112,41 +117,36 @@ export const runCodometer = (args: readonly string[]): CodometerRun => {
 };
 
 /**
- * Runs the command line inside a real shell pipeline and returns what came out
- * the far end.
+ * Feeds a run's standard output to a second process, and reports what came out.
  *
  * The guides promise `codometer --json | …` produces a stream something can
- * parse, and that promise is only worth making if a pipeline is what tested it
- * — a report assembled in-process would pass even with a log line sharing the
- * stream. The downstream stage is Node rather than `jq` so the test depends on
- * nothing the test runner does not already require.
+ * parse. What makes that promise true is the **split**: the report goes to
+ * standard output and every diagnostic goes to standard error, so a consumer
+ * reading the one gets data and nothing else. This runs the command line, takes
+ * the bytes it wrote to standard output and **only** those, and hands them
+ * unaltered to a second process's standard input — which is what a shell pipe
+ * does, minus the shell. A log line leaking into the data stream fails it, and
+ * a report assembled in-process would not.
  *
- * `readReport` is the body of that downstream stage: it is handed the parsed
- * report and returns what to print. It reaches the shell as a **file** rather
- * than as `node -e "…"`, because a program spliced into a command string has to
- * survive both the formatter reflowing it and the shell re-reading its quotes,
- * and one of those eventually loses.
+ * There is deliberately no `sh -c` here. Every path involved — the interpreter,
+ * the command line's entry point, the measured directory — is absolute and
+ * derived from where this repository happens to be checked out, and handing
+ * those to a shell means a checkout path containing a space or a quote changes
+ * what the shell reads as a word. Spawning the two processes directly gives the
+ * argument vectors to the operating system rather than to a parser.
+ *
+ * `readReport` is the body of the downstream stage: it is handed the parsed
+ * report and returns what to print. It reaches that process as a **file**
+ * rather than as `node -e "…"`, because a program spliced into a command string
+ * has to survive both the formatter reflowing it and a shell re-reading its
+ * quotes, and one of those eventually loses.
  *
  * The run is reported rather than thrown, the way `runCodometer` reports its
- * own. A pipeline has two processes that can die and only one exit code to say
- * so, so a bare throw here says "command failed" and nothing about which half
- * or why — which is exactly the failure a test running under a loaded machine
- * is most likely to hit, and exactly the one worth being able to read.
- *
- * **The script the shell runs is a constant.** Every path it needs arrives
- * through the environment and is expanded from a quoted `"$NAME"`, which the
- * shell substitutes without re-parsing, and the measured arguments arrive as
- * positional parameters. Interpolating those into the command text instead
- * would build a shell command out of values this file does not control — an
- * absolute path holding a space or a quote would change what the shell reads
- * as a word, and CodeQL reports exactly that shape.
+ * own. Two processes can die and there is only one exit code to say so, so a
+ * bare throw would say "command failed" and nothing about which half or why.
+ * Whichever half failed is the code returned, and both halves' diagnostics come
+ * back together.
  */
-
-/** Script the pipeline runs. Constant text: every value reaches it as a parameter. */
-const PIPELINE_SCRIPT =
-  '"$CODOMETER_NODE" --import @swc-node/register/esm-register' +
-  ' "$CODOMETER_ENTRY" codometer "$@"' +
-  ' | "$CODOMETER_NODE" "$CODOMETER_DOWNSTREAM"';
 export const runPipeline = (
   args: readonly string[],
   readReport: string,
@@ -181,28 +181,22 @@ export const runPipeline = (
   );
 
   try {
-    const result = spawnSync(
-      "sh",
-      // `sh -c <script> <name> <arguments…>`: the name becomes `$0` and the
-      // rest become `$@`, which the script forwards to the measured command.
-      ["-c", PIPELINE_SCRIPT, "codometer-pipeline", ...args],
-      {
-        cwd: workspaceDirectory,
-        encoding: "utf8",
-        env: {
-          ...process.env,
-          CODOMETER_DOWNSTREAM: downstream,
-          CODOMETER_ENTRY: commandLineEntry,
-          CODOMETER_NODE: process.execPath,
-          NODE_OPTIONS: "",
-        },
-        maxBuffer: 32 * 1024 * 1024,
-      },
-    );
+    const upstream = runCodometer(args);
+    // Only what the run wrote to standard output crosses over. Its standard
+    // error is held back deliberately: that separation is the property under
+    // test, and merging the streams here would test nothing.
+    const result = spawnSync(process.execPath, [downstream], {
+      cwd: workspaceDirectory,
+      encoding: "utf8",
+      env: { ...process.env, NODE_OPTIONS: "" },
+      input: upstream.standardOutput,
+      maxBuffer: 32 * 1024 * 1024,
+    });
 
     return {
-      exitCode: result.status ?? 1,
-      standardError: result.stderr,
+      exitCode:
+        upstream.exitCode === 0 ? (result.status ?? 1) : upstream.exitCode,
+      standardError: upstream.standardError + result.stderr,
       standardOutput: result.stdout,
     };
   } finally {

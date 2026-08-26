@@ -6,8 +6,8 @@
 # afterwards. Populate it from the committed samples beside the corpus to watch
 # discovery skip it:
 #
-#     cp -R packages/codometer-examples/compiled packages/codometer-examples/corpus/generated
-#     codometer --directory corpus --json | jq '.targets[0].files'   # still 28
+#     cp -R packages/codometer-examples/examples/compiled packages/codometer-examples/examples/corpus/generated
+#     codometer --directory examples/corpus --json | jq '.targets[0].files'   # still 28
 #
 # Codometer reads this file itself rather than invoking git, so the codebase
 # target never sees `generated/` however many files are put in it — while a

@@ -27,7 +27,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * — the declarations are found rather than addressed.
  *
  * ```bash
- * codometer --directory corpus --config examples/documentation/codometer.config.ts --check limits
+ * codometer --directory examples/corpus --config examples/documentation/codometer.config.ts --check limits
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {

@@ -11,7 +11,7 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * to diagnose rather than two.
  *
  * ```bash
- * codometer --directory corpus --config examples/limits/unbound.config.ts --check limits
+ * codometer --directory examples/corpus --config examples/limits/unbound.config.ts --check limits
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {
