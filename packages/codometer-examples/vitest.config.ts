@@ -8,9 +8,10 @@ export default mergeConfig(
     test: {
       coverage: {
         // This package ships a sample corpus and the configurations that
-        // measure it. Its only executable TypeScript is the test that runs
-        // codometer over the corpus, so there is no source to instrument and
-        // the coverage report is empty by nature rather than by omission.
+        // measure it. Every line of TypeScript here is either a configuration
+        // the tool reads or a test that runs it, so there is no source to
+        // instrument and the coverage report is empty by nature rather than
+        // by omission.
         include: [],
       },
       // Every test here spawns the codometer CLI over the corpus, which

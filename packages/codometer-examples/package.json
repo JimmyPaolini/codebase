@@ -3,6 +3,7 @@
     "@codometer/cli": "workspace:*",
     "@codometer/configuration": "workspace:*",
     "@nx/eslint-plugin": "catalog:",
+    "@swc-node/register": "catalog:",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "typescript": "catalog:",

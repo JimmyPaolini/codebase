@@ -9,6 +9,7 @@ import {
   readCounters,
   readMetric,
   readTarget,
+  runCodometer,
 } from "./codometer.js";
 
 /**
@@ -97,7 +98,7 @@ describe("the sample corpus and the counts its guides quote", () => {
       // the corpus, so the codebase target never sees them and only the two
       // JavaScript samples inside the corpus are counted. What happens when
       // they are copied into the corpus's ignored `generated/` folder is
-      // asserted in examples.integration.test.ts.
+      // asserted in examples.end-to-end.test.ts.
       expect(readMetric(report, "codebase", "javascript.files")).toBe(2);
     });
 
@@ -179,6 +180,64 @@ describe("the sample corpus and the counts its guides quote", () => {
       expect(readPython("protocols")).toBe(1);
       expect(readPython("docstrings")).toBe(8);
       expect(readPython("decorators")).toBe(2);
+    });
+
+    it("agrees with the default interpreter where python3 is adequate", () => {
+      const named = measure([
+        "--directory",
+        corpusDirectory,
+        "--config",
+        exampleConfiguration("python", "uv.config.ts"),
+      ]);
+      const byDefault = measure([
+        "--directory",
+        corpusDirectory,
+        "--config",
+        exampleConfiguration("python", "default-interpreter.config.ts"),
+      ]);
+      const readPython = (
+        report: ReturnType<typeof measure>,
+      ): Record<string, number> =>
+        Object.fromEntries(
+          ["classes", "docstrings", "files", "functions", "protocols"].map(
+            (metric) => [
+              metric,
+              readMetric(report, "codebase", `python.${metric}`),
+            ],
+          ),
+        );
+
+      // Naming the interpreter is what stops the numbers being a property of
+      // whichever machine the run happened on — not a different measurement
+      // where the default happens to be adequate.
+      expect(readPython(byDefault)).toStrictEqual(readPython(named));
+    });
+
+    it("reports a corpus with no Python when the interpreter is unreachable", () => {
+      const run = runCodometer([
+        "--directory",
+        corpusDirectory,
+        "--config",
+        exampleConfiguration("python", "unreachable-interpreter.config.ts"),
+        "--json",
+      ]);
+      const report = JSON.parse(run.standardOutput) as ReturnType<
+        typeof measure
+      >;
+
+      // Not an error — a warning, a clean exit, and a report that describes a
+      // repository with no Python in it.
+      expect(run.exitCode).toBe(0);
+      expect(run.standardError).toContain("Skipped Python analysis");
+      expect(readMetric(report, "codebase", "python.files")).toBe(0);
+      expect(readMetric(report, "codebase", "python.classes")).toBe(0);
+
+      // Composition means the missing interpreter takes a slice out of the
+      // notebook too: its cells survive, its Python declarations do not.
+      expect(readMetric(report, "codebase", "jupyter.cells")).toBe(5);
+      expect(readMetric(report, "codebase", "jupyter.markdownCells")).toBe(2);
+      expect(readMetric(report, "codebase", "jupyter.classes")).toBe(0);
+      expect(readMetric(report, "codebase", "jupyter.functions")).toBe(0);
     });
   });
 

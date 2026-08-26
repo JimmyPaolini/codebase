@@ -237,6 +237,11 @@ const buildWorkspaceConfiguration = (): CodometerConfiguration => ({
  * `packages/codometer-examples` is one of them, and its configuration is worth
  * reading beside this one: every field used here has a runnable example there,
  * measured against a corpus whose counts are stated and checked.
+ *
+ * @see [`packages/codometer-examples/README.md`](../packages/codometer-examples/README.md)
+ * for the guided tour, and
+ * [`packages/codometer-examples/AGENTS.md`](../packages/codometer-examples/AGENTS.md)
+ * for the message-to-example lookup table.
  */
 const codometerConfiguration: CodometerConfigurationFactory = (context) => {
   const workspaceDirectory = findWorkspaceDirectory(

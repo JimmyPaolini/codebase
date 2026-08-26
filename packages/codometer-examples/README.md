@@ -95,17 +95,47 @@ three of those counts stay at 1, from the standalone samples.
 
 ## 3. Python through an interpreter
 
-Python analysis runs through an actual interpreter — `python3` by default. In a
-workspace whose Python lives in a virtual environment, that default finds
-nothing, and a repository with Python in it reads as a repository without:
+[`examples/python/`](examples/python)
 
-```ts
-python: { command: "uv run python" },
+Python analysis runs through an actual interpreter rather than a parser written
+in TypeScript. Three configurations show what that means:
+
+| Example | Declares | `python.classes` |
+| ------- | -------- | ---------------- |
+| [`default-interpreter.config.ts`](examples/python/default-interpreter.config.ts) | nothing — `python3` on PATH | 3 |
+| [`uv.config.ts`](examples/python/uv.config.ts) | `python: { command: "uv run python" }` | 3 |
+| [`unreachable-interpreter.config.ts`](examples/python/unreachable-interpreter.config.ts) | an interpreter that is not installed | 0 |
+
+```bash
+codometer --directory corpus --config examples/python/uv.config.ts --json \
+  | jq '.targets[0].metrics[] | select(.path | startswith("python."))'
 ```
 
-Every configuration here sets it, because this workspace needs it. If the
-Python counters come back at zero for a directory you know has Python in it,
-this is the first thing to check.
+The first two agree **on a machine whose `python3` is adequate**, and the test
+asserts that agreement rather than assuming it. Naming the interpreter is what
+stops the numbers depending on which machine the run happened on — a continuous
+integration runner without `python3`, or with one too old for a sample's syntax,
+gets the third row.
+
+That third row is the one to recognize by shape. It **exits 0**, warns once on
+standard error, and reports every `python.*` counter at 0 — including
+`python.files`, so the file is found and simply cannot be read:
+
+```text
+🐍 Skipped Python analysis
+   { reason: "Command failed: python-that-is-not-installed …: command not found" }
+```
+
+Nothing in the report says the interpreter was the problem. **A Python counter
+reading zero for a directory you know has Python in it means the interpreter,
+not the corpus.**
+
+The notebook shows the seam plainly: `jupyter.cells` stays at 5 and
+`jupyter.markdownCells` at 2, while `jupyter.classes` and `jupyter.functions`
+fall to 0 alongside the standalone module — because a notebook's code cells go
+to the same interpreter. One missing interpreter takes a slice out of two groups
+at once, which is [composition](#2-notebooks-measured-by-composition) seen from
+the failure side.
 
 ## 4. Custom statistics, both kinds
 
@@ -231,6 +261,7 @@ codometer is opinionated, so each one has a configuration of its own.
 
 | Example | Shows | Exit |
 | ------- | ----- | ---- |
+| [`unprefixed.config.ts`](examples/limits/unprefixed.config.ts) | a path with no target name binds to nothing | 1 |
 | [`warn.config.ts`](examples/limits/warn.config.ts) | `severity: "warn"` prints and leaves the exit code alone | 0 |
 | [`fail.config.ts`](examples/limits/fail.config.ts) | a `fail` beneath a `warn`; both reported, one gates | 1 |
 | [`ambiguous.config.ts`](examples/limits/ambiguous.config.ts) | a path that reads two ways, refused naming both | 1 |
@@ -248,6 +279,8 @@ codometer --directory corpus --config examples/limits/fail.config.ts --check lim
 ```
 
 ### The stumble almost everyone hits first
+
+[`examples/limits/unprefixed.config.ts`](examples/limits/unprefixed.config.ts)
 
 **A path with no target name on the front binds to nothing** unless
 `defaultTarget` names the target it belongs to — even when only one target was
@@ -371,12 +404,24 @@ reports separately.
 | Document | `-m, --markdown [path]` | the rendered badges as a whole file |
 | Splice | `--readme <path>` | the badge block, between two markers |
 
+Each of the three has a runnable example below, and each is asserted by a test.
+
 **Standard output carries the result; every diagnostic goes to standard error.**
-So this produces a file something can parse, log lines and all:
+So the report survives a pipe, log lines and all:
 
 ```bash
-codometer --directory corpus --json > report.json
-jq '.targets[0].files' report.json   # 28
+codometer --directory corpus --json | jq '.targets[0].files'   # 28
+```
+
+That is a real pipeline rather than a redirect followed by a second command, and
+the test runs the same shape through a JSON parser — one warning sharing the
+stream would break it.
+
+**The document sink writes the badges as a whole file**, markers and all absent,
+which is what a page that is nothing but statistics wants:
+
+```bash
+codometer --directory corpus -m document.md --write
 ```
 
 **`--json <path>` is refused unless the run writes or compares it**, because a
@@ -534,6 +579,49 @@ Check on the runtime the repository pins, or expect a false finding rather than
 a real one. A report carrying no size at all never meets this: every other
 metric is a count, and counts do not move between runtimes.
 
+## Gating a pull request on it
+
+The five steps this guide set out to cover end here: measure a directory,
+declare a counter, add a target, write a limit — and then make a change that
+breaches it fail before it lands.
+
+Two commands do that, and they are deliberately different jobs:
+
+```bash
+# On the branch: measure, write the report, fail if a limit breached.
+codometer --directory . --json codometer-report.json --write --check limits
+
+# Afterwards: diff every report against the base branch's and render the result.
+codometer changes --directory . --baseline <base-reports> --markdown summary.md
+```
+
+The first is the gate. `--write` is not optional on it: a run naming a report
+path without writing is [refused outright](#9-the-three-sinks), and the report
+has to exist even when the gate trips, because the pull request that failed is
+the one that needs the numbers. That is the last row of
+the `--write` / `--check` matrix above, and it is exactly what this
+repository's own `codometer` Nx target runs per project.
+
+The second is the report a reviewer reads: `codometer changes` joins each
+project's fresh `codometer-report.json` against a snapshot of the base branch's
+and renders what moved. The join key is the metric's `name` — its target's name
+then its path — which is why a target's name is worth choosing once and leaving
+alone. Rename a target and every metric under it reads as removed and re-added.
+
+Three things are worth knowing before wiring this up:
+
+- **Gate on `limits`, not on `reports`, from a branch.** Staleness is a
+  different finding, it is
+  [not portable across runtimes](#12---check-reports-and-false-staleness), and a
+  branch's committed report is expected to lag the default branch's.
+- **A limit is an assertion that the files exist.** A target that matched
+  nothing fails the gate — see
+  [empty targets](#empty-targets) — which is the check earning its keep on the
+  day a build silently produces nothing.
+- **Put a `warn` under the `fail`.** One metric may carry both, the report lists
+  both, and the warn is how the number is seen coming before it stops anybody.
+  [`fail.config.ts`](examples/limits/fail.config.ts) is that pair.
+
 ## Keeping it honest
 
 A guide quoting a count the tool no longer produces is worse than no guide, and
@@ -592,10 +680,10 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2690-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-105.66_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-26-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-52-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2996-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-118.88_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-27-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-56-3178c6?style=flat-square)
 
 ### Measured Targets
 
@@ -603,29 +691,29 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-47-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-13-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-51-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-7-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-2-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-1-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-0-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-84-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-80-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-7-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-4-f7df1e?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-9-10b981?style=flat-square)
-![External Packages](https://img.shields.io/badge/External_Packages-8-8b5cf6?style=flat-square)
+![External Packages](https://img.shields.io/badge/External_Packages-9-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-8-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-137-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-148-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-21-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-155-4ade80?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-166-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-3-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-137-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-67-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-35-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-185-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-829-475569?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-155-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-72-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-32-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-190-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1000-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -646,16 +734,16 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-87-ca8a04?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-88-ca8a04?style=flat-square)
 ![JSON Objects](https://img.shields.io/badge/JSON_Objects-22-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-11-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-60-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-43-16a34a?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-61-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-44-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-4-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-5-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-1-64748b?style=flat-square)
 ![JSON Items](https://img.shields.io/badge/JSON_Items-22-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-86-dc2626?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-87-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-5-ea580c?style=flat-square)
 
 ### YAML
@@ -765,7 +853,7 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-2-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-137-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-141-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-2-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-8-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-1-a78bfa?style=flat-square)
@@ -777,11 +865,11 @@ Statistics for the sample corpus and the guides beside it, measured by [codomete
 ![List Items](https://img.shields.io/badge/List_Items-24-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-2-4ade80?style=flat-square)
 ![Tables](https://img.shields.io/badge/Tables-2-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-17-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-15-059669?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-18-0ea5e9?style=flat-square)
+![Links](https://img.shields.io/badge/Links-17-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-1-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-73-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-80-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-1-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-1-a16207?style=flat-square)
 <!-- SAMPLE_STATISTICS_END -->

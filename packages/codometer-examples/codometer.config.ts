@@ -9,7 +9,8 @@ import type {
 /**
  * What this package is measured by, and the first example it ships.
  *
- * Its presence is example 10: the workspace root already carries a
+ * Its presence is the configuration-discovery example: the workspace root
+ * already carries a
  * configuration that answers for every project beneath it, and codometer takes
  * the **first** file it finds walking upward — so this one replaces it
  * outright for this folder and everything under it. Nothing from the root file
@@ -52,7 +53,8 @@ const conventions = [
  * What every run this package configures measures the same way.
  *
  * Python lives in a uv workspace here, so the interpreter is reached through
- * uv rather than being on PATH — which is example 3, and directly reusable by
+ * uv rather than being on PATH — which the `examples/python` configurations
+ * cover, and which is directly reusable by
  * any repository whose Python is behind a virtual environment.
  */
 const sharedConfiguration = {
@@ -100,7 +102,8 @@ const buildPackageConfiguration = (): CodometerConfiguration => ({
  * A folder beneath the package — the corpus, or one of its language
  * directories — is measured with the conventions and nothing else. Declaring
  * the corpus target there too would leave it matching no files, and a limit
- * against an empty target fails the run, which is example 7 rather than
+ * against an empty target fails the run, which `examples/limits` covers
+ * rather than
  * something every other example should have to work around.
  */
 const codometerConfiguration: CodometerConfigurationFactory = (

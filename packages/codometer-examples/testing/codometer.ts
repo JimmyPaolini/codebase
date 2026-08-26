@@ -1,9 +1,15 @@
-import { spawnSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import type {
+  CodometerReport,
+  ReportMetric,
+  ReportTarget,
+} from "@codometer/cli";
 
 /**
  * Drives the real codometer command line over the sample corpus.
@@ -48,12 +54,14 @@ export const exampleConfiguration = (...segments: readonly string[]): string =>
 
 // 🏷️ Report shapes
 
-/** The whole report, as `--json` renders it. */
-export interface CodometerReport {
-  documentation: ReportedDeclaration[];
-  failures: ReportedFailure[];
-  targets: ReportedTarget[];
-}
+/**
+ * The report shape, re-exported from the tool that produces it.
+ *
+ * Tests read it from here rather than from `@codometer/cli` directly, so the
+ * harness stays the one seam this package tests through — and so the day the
+ * tool's report type changes, it changes here.
+ */
+export type { CodometerReport } from "@codometer/cli";
 
 /** What one run of the command line left behind. */
 export interface CodometerRun {
@@ -62,47 +70,13 @@ export interface CodometerRun {
   standardOutput: string;
 }
 
-/** One documented declaration, breached or not. */
-export interface ReportedDeclaration {
-  breached: boolean;
-  declaration: string;
-  file: string;
-  kind: string;
-  limit: number;
-  measured: number;
-}
-
-/** Whatever the run could not do. */
-export interface ReportedFailure {
-  kind: string;
-  reason: string;
-  subject: string;
-}
-
-/** One limit as the report writes it, whether or not it was breached. */
-export interface ReportedLimit {
-  breached: boolean;
-  label: null | string;
-  severity: string;
-  value: number;
-}
-
-/** One measured metric, with every limit written against it. */
-export interface ReportedMetric {
-  limits: ReportedLimit[];
-  name: string;
-  path: string;
-  unit: null | string;
-  value: number;
-}
-
-/** One measured target and everything counted within it. */
-export interface ReportedTarget {
-  empty: boolean;
-  files: number;
-  metrics: ReportedMetric[];
-  name: string;
-}
+/**
+ * One documented declaration, breached or not.
+ *
+ * Derived from the report rather than imported on its own, because the report
+ * type is what `@codometer/cli` exports and this is the shape it holds.
+ */
+export type ReportedDeclaration = CodometerReport["documentation"][number];
 
 // 🏃 Running
 
@@ -138,6 +112,69 @@ export const runCodometer = (args: readonly string[]): CodometerRun => {
 };
 
 /**
+ * Runs the command line inside a real shell pipeline and returns what came out
+ * the far end.
+ *
+ * The guides promise `codometer --json | …` produces a stream something can
+ * parse, and that promise is only worth making if a pipeline is what tested it
+ * — a report assembled in-process would pass even with a log line sharing the
+ * stream. The downstream stage is Node rather than `jq` so the test depends on
+ * nothing the test runner does not already require.
+ *
+ * `readReport` is the body of that downstream stage: it is handed the parsed
+ * report and returns what to print. It reaches the shell as a **file** rather
+ * than as `node -e "…"`, because a program spliced into a command string has to
+ * survive both the formatter reflowing it and the shell re-reading its quotes,
+ * and one of those eventually loses.
+ */
+export const runPipeline = (
+  args: readonly string[],
+  readReport: string,
+): string => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "codometer-pipe-"));
+  const downstream = path.join(directory, "downstream.mjs");
+
+  fs.writeFileSync(
+    downstream,
+    [
+      'let text = "";',
+      'process.stdin.on("data", (chunk) => { text += chunk; });',
+      'process.stdin.on("end", () => {',
+      "  const report = JSON.parse(text);",
+      `  console.log(${readReport});`,
+      "});",
+    ].join("\n"),
+  );
+
+  try {
+    return execFileSync(
+      "sh",
+      [
+        "-c",
+        [
+          JSON.stringify(process.execPath),
+          "--import @swc-node/register/esm-register",
+          JSON.stringify(commandLineEntry),
+          "codometer",
+          ...args.map((argument) => JSON.stringify(argument)),
+          "|",
+          JSON.stringify(process.execPath),
+          JSON.stringify(downstream),
+        ].join(" "),
+      ],
+      {
+        cwd: workspaceDirectory,
+        encoding: "utf8",
+        env: { ...process.env, NODE_OPTIONS: "" },
+        maxBuffer: 32 * 1024 * 1024,
+      },
+    );
+  } finally {
+    fs.rmSync(directory, { force: true, recursive: true });
+  }
+};
+
+/**
  * Runs the command line asking for the report, and parses what came back.
  *
  * Parsing rather than merely reading is the assertion that matters here:
@@ -154,7 +191,7 @@ export const measure = (args: readonly string[]): CodometerReport => {
 export const readTarget = (
   report: CodometerReport,
   name: string,
-): ReportedTarget => {
+): ReportTarget => {
   const target = report.targets.find((candidate) => candidate.name === name);
 
   if (target === undefined) {
@@ -179,6 +216,23 @@ export const readMetric = (
   }
 
   return metric.value;
+};
+
+/** Reads every limit declared on one metric, in the order they were written. */
+export const readMetricLimits = (
+  report: CodometerReport,
+  targetName: string,
+  metricPath: string,
+): ReportMetric["limits"] => {
+  const metric = readTarget(report, targetName).metrics.find(
+    (candidate) => candidate.path === metricPath,
+  );
+
+  if (metric === undefined) {
+    throw new Error(`No metric "${metricPath}" on target "${targetName}".`);
+  }
+
+  return metric.limits;
 };
 
 /** Reads every custom counter from the codebase target, keyed by label. */

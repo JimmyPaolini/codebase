@@ -16,21 +16,24 @@ know what to do about it.
 - `examples/<name>/*.config.ts` — one configuration per behavior. Every one is
   runnable against the corpus and carries its own explanation in a doc comment
   above the configuration object.
-- `codometer.config.ts` — this package's own configuration, and itself example
-  10: a factory that answers differently for the package than for the folders
-  beneath it, replacing the workspace root's outright.
-- `testing/` — the harness that drives the real command line, and the tests
-  that assert every number the guides quote.
+- `codometer.config.ts` — this package's own configuration, and itself the
+  configuration-discovery example: a factory that answers differently for the
+  package than for the folders beneath it, replacing the workspace root's
+  outright.
+- `testing/` — the harness that drives the real command line, and the two
+  end-to-end tests that assert every number the guides quote. They are
+  end-to-end rather than integration because each one spawns the real command
+  line, which bootstraps Nest and reaches a Python interpreter.
 
-There is no `src/`. This package ships a corpus and documentation; its only
-executable TypeScript is the test above, which is why it declares no
+There is no `src/`. Every line of TypeScript here is either a configuration the
+tool reads or a test that runs it, which is why the package declares no
 `dependency-cruiser`, `oxlint`, or `build` target.
 
 ## Codometer said this — open this
 
 | It said | It means | Open |
 | ------- | -------- | ---- |
-| `Cannot bind the limit written against "X": nothing measured answers to it` | The path has no target name on the front, and no `defaultTarget` is set. Even one target is not enough — write `codebase.X`. | [`limits/warn.config.ts`](examples/limits/warn.config.ts) |
+| `Cannot bind the limit written against "X": nothing measured answers to it` | The path has no target name on the front, and no `defaultTarget` is set. Even one target is not enough — write `codebase.X`. | [`limits/unprefixed.config.ts`](examples/limits/unprefixed.config.ts) |
 | `it could be the "X" target's "files" metric, or the "codebase" target's "X.files" metric` | A target shares a name with a metric group, and a `defaultTarget` makes both readings valid. Write the target name in full. Removing the `defaultTarget` also removes the ambiguity. | [`limits/ambiguous.config.ts`](examples/limits/ambiguous.config.ts) |
 | `Cannot bind the limit written against "T.python.files"` on a target that exists | The target does not run the analysis that produces the counter. Add `"language"` to its `analyses`, or limit something it measures. | [`limits/unbound.config.ts`](examples/limits/unbound.config.ts) |
 | `Target "T" matched no files, and a limit is written against its "size" metric` | The glob stopped matching, or the build never ran. Do not "fix" it by removing the limit — the limit is what caught it. | [`limits/empty-target-limited.config.ts`](examples/limits/empty-target-limited.config.ts) |
@@ -40,7 +43,8 @@ executable TypeScript is the test above, which is why it declares no
 | `--json <path> needs --write or --check reports` | A run that neither writes nor compares would render the report to the console and leave the file unwritten. Add `--write`, or drop the path. | [`output/codometer.config.ts`](examples/output/codometer.config.ts) |
 | `Found stale reports` right after a green run elsewhere | Compressed sizes depend on the runtime's zlib. Check on the Node version the repository pins before believing it. | [`staleness/codometer.config.ts`](examples/staleness/codometer.config.ts) |
 | `Breached a warning limit` and the run still exits 0 | `severity: "warn"` is advice. Only a `fail` limit under `--check limits` gates. | [`limits/warn.config.ts`](examples/limits/warn.config.ts) |
-| Nothing at all — a counter reports zero | For Python, the interpreter. For a symbol counter, the wrong `kinds`/`modifiers`. For a target, the globs. | [`statistics/codometer.config.ts`](examples/statistics/codometer.config.ts) |
+| `Skipped Python analysis … command not found`, and the run still exits 0 | The interpreter is unreachable. Every `python.*` counter reads 0, and so do `jupyter.classes`/`jupyter.functions`. Name it with `python: { command: … }`. | [`python/unreachable-interpreter.config.ts`](examples/python/unreachable-interpreter.config.ts) |
+| Nothing at all — a counter reports zero | For Python, the interpreter. For a symbol counter, the wrong `kinds`/`modifiers`. For a target, the globs. | [`python/uv.config.ts`](examples/python/uv.config.ts), [`statistics/codometer.config.ts`](examples/statistics/codometer.config.ts) |
 | A configuration you edited had no effect | A nearer configuration file won. The search takes the **first** file walking upward and merges nothing. | [`discovery/nested/codometer.config.ts`](examples/discovery/nested/codometer.config.ts) |
 
 ## Three things that reliably confuse
@@ -87,7 +91,7 @@ and tracked normally, and the ignore demonstration copies them in at run time.
 - The explanation goes in a doc comment above the configuration object,
   including the exact command that runs it. The README links to the file; the
   file explains itself.
-- Add the assertion to `testing/examples.integration.test.ts` in the same
+- Add the assertion to `testing/examples.end-to-end.test.ts` in the same
   change. An example with no test is a claim, not an example.
 - If the example writes anything, run it through `withCorpusCopy` — the
   committed corpus must never be written to, or every other test's counts move.

@@ -490,7 +490,10 @@ one repository's script.
 Everything above has a runnable example in
 [`@codometer/examples`](../codometer-examples/README.md), measured against a
 sample corpus whose counts are stated and checked — including a reproduction of
-each refusal, which is where a reader is most likely to be stuck.
+each refusal, which is where a reader is most likely to be stuck. An agent that
+has already been handed a refusal and needs the fix should start from that
+package's [AGENTS.md](../codometer-examples/AGENTS.md), which maps each message
+codometer prints to the example that reproduces it.
 
 ## Start
 

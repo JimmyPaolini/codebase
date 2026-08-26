@@ -9,8 +9,10 @@ import {
   exampleConfiguration,
   measure,
   readMetric,
+  readMetricLimits,
   readTarget,
   runCodometer,
+  runPipeline,
   withCorpusCopy,
 } from "./codometer.js";
 
@@ -172,6 +174,21 @@ describe("every example configuration this package ships", () => {
       );
     });
 
+    it("refuses an unprefixed path even where only one target was measured", () => {
+      const run = gateExample("limits", "unprefixed.config.ts");
+
+      expect(run.exitCode).toBe(1);
+      // The exact sentence both guides quote. `linesOfCode` is real, spelled
+      // correctly, and on the only target measured — and still binds to
+      // nothing, because no `defaultTarget` says which target it belongs to.
+      expect(run.standardError).toContain(
+        String.raw`Cannot bind the limit written against \"linesOfCode\": nothing measured answers to it.`,
+      );
+      expect(run.standardError).toContain(
+        "Write the target's name in front of the metric path, or configure a default target.",
+      );
+    });
+
     it("refuses a path naming nothing, and one naming an analysis never run", () => {
       const run = gateExample("limits", "unbound.config.ts");
 
@@ -195,13 +212,11 @@ describe("every example configuration this package ships", () => {
 
     it("reads a decimal unit, and refuses one it cannot read", () => {
       const report = measureExample("limits", "units.config.ts");
-      const size = readTarget(report, "Corpus").metrics.find(
-        (metric) => metric.path === "size",
-      );
+      const limits = readMetricLimits(report, "Corpus", "size");
       const refused = gateExample("limits", "unreadable-unit.config.ts");
 
       // "8 KB" is 8000 bytes and "1 MB" is 1000000 — decimal, not binary.
-      expect(size?.limits.map((limit) => limit.value)).toStrictEqual([
+      expect(limits.map((limit) => limit.value)).toStrictEqual([
         8000, 1_000_000,
       ]);
       expect(refused.exitCode).toBe(1);
@@ -371,6 +386,46 @@ describe("every example configuration this package ships", () => {
       // would break every `codometer --json > report.json` pipeline downstream.
       expect(() => JSON.parse(run.standardOutput) as unknown).not.toThrow();
       expect(run.standardError).toContain("Finished the codometer run");
+    });
+
+    it("writes the badges as a whole document with -m", () => {
+      withCorpusCopy((directory) => {
+        const run = runCodometer([
+          "--directory",
+          directory,
+          "--config",
+          exampleConfiguration("output", "codometer.config.ts"),
+          "--markdown",
+          "document.md",
+          "--write",
+        ]);
+        const written = fs.readFileSync(
+          path.join(directory, "document.md"),
+          "utf8",
+        );
+
+        expect(run.exitCode).toBe(0);
+        expect(written).toContain("img.shields.io");
+        // A whole document rather than a spliced block: no markers around it.
+        expect(written).not.toContain("<!-- CODE_STATISTICS_START -->");
+        // And a named destination stands for all of them, so the configured
+        // report and splice are not written.
+        expect(
+          fs.existsSync(path.join(directory, "codometer-report.json")),
+        ).toBe(false);
+      });
+    });
+
+    it("carries a report through a shell pipeline that parses it", () => {
+      // The `codometer --json | …` pipeline the guide shows, run for real
+      // through a shell. Anything on standard output but the report — one log
+      // line, one warning — breaks this outright.
+      const piped = runPipeline(
+        ["--directory", corpusDirectory, "--json"],
+        "report.targets[0].files",
+      );
+
+      expect(piped.trim()).toBe("28");
     });
 
     it("refuses --json <path> on a run that neither writes nor compares", () => {

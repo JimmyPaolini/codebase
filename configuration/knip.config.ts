@@ -144,7 +144,7 @@ const config: KnipConfig = {
         "corpus/**", // Sample corpus written to be counted; uncalled and unimported by construction
       ],
       ignoreDependencies: [
-        "@codometer/cli", // Resolved by path and spawned by testing/codometer.ts rather than imported
+        "@swc-node/register", // Named as a string on the command line testing/codometer.ts spawns, never imported
       ],
       project: ["codometer.config.ts", "examples/**/*.ts", "testing/**/*.ts"],
     },
