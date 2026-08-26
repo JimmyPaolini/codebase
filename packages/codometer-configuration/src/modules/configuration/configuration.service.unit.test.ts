@@ -6,10 +6,13 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { ZodError } from "zod";
 
+import { ConfigurationLoaderService } from "./configuration-loader.service";
 import {
   DEFAULT_CUSTOM_STATISTIC_COLORS,
+  DEFAULT_DOCUMENTATION_UNIT,
   DEFAULT_EXCLUDE_GLOBS,
   DEFAULT_JSON_INDENTATION,
+  DEFAULT_LIMIT_SEVERITY,
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_PYTHON_COMMAND,
@@ -66,7 +69,7 @@ describe(ConfigurationService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [ConfigurationService],
+      providers: [ConfigurationLoaderService, ConfigurationService],
     }).compile();
 
     service = await module.resolve(ConfigurationService);
@@ -961,5 +964,82 @@ describe(ConfigurationService, () => {
     });
 
     expect(configuration.targets[0]?.directory).toBe("../..");
+  });
+
+  it("leaves documentation undefined when unconfigured, so the check is off", () => {
+    const configuration = service.resolveConfiguration({});
+
+    expect(configuration.documentation).toBeUndefined();
+  });
+
+  it("defaults documentation fields a configuration leaves out", () => {
+    const configuration = service.resolveConfiguration({
+      documentation: { default: 12 },
+    });
+
+    expect(configuration.documentation).toStrictEqual({
+      default: 12,
+      kinds: {},
+      severity: DEFAULT_LIMIT_SEVERITY,
+      unit: DEFAULT_DOCUMENTATION_UNIT,
+    });
+  });
+
+  it("keeps every documentation field a configuration sets explicitly", () => {
+    const configuration = service.resolveConfiguration({
+      documentation: {
+        default: 6,
+        kinds: { class: 24, interface: 16, method: 12, property: 4 },
+        severity: "warn",
+        unit: "characters",
+      },
+    });
+
+    expect(configuration.documentation).toStrictEqual({
+      default: 6,
+      kinds: { class: 24, interface: 16, method: 12, property: 4 },
+      severity: "warn",
+      unit: "characters",
+    });
+  });
+
+  it("rejects a documentation kind that names no declaration kind", async () => {
+    const configurationPath = await writeConfiguration({
+      documentation: { kinds: { sigil: 10 } },
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(ZodError);
+  });
+
+  it("rejects a non-integer documentation kind limit", async () => {
+    const configurationPath = await writeConfiguration({
+      documentation: { kinds: { class: 10.5 } },
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(ZodError);
+  });
+
+  it("rejects a zero documentation kind limit", async () => {
+    const configurationPath = await writeConfiguration({
+      documentation: { kinds: { class: 0 } },
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(ZodError);
+  });
+
+  it("rejects a negative documentation default limit", async () => {
+    const configurationPath = await writeConfiguration({
+      documentation: { default: -1 },
+    });
+
+    await expect(
+      service.loadConfiguration({ configurationPath }),
+    ).rejects.toBeInstanceOf(ZodError);
   });
 });

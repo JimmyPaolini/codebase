@@ -54,6 +54,7 @@ function buildConfiguration(
 ): ResolvedCodometerConfiguration {
   return {
     defaultTarget,
+    documentation: { default: 6, kinds: {}, severity: "fail", unit: "lines" },
     exclude: [],
     excludeFrom: [],
     limits,

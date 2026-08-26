@@ -17,6 +17,7 @@ import type {
   MeasureTargetArguments,
   TargetMeasurement,
 } from "./codometer.types";
+import type { DocumentationMeasurement } from "./documentation-measurement.types";
 import type {
   CodeStatisticsResult,
   CodometerAnalysis,
@@ -24,7 +25,10 @@ import type {
   ResolvedCodometerTarget,
   TypescriptStatistics,
 } from "@codometer/configuration";
-import type { TypescriptResult } from "@codometer/languages";
+import type {
+  TypescriptDocumentationMeasurement,
+  TypescriptResult,
+} from "@codometer/languages";
 
 /**
  * Aggregates every analyzer's report into a single set of statistics.
@@ -55,9 +59,10 @@ export class CodometerService {
    * Takes the files it is given rather than finding them, so the codebase and
    * a target naming compiled output are counted by exactly the same analyzers.
    */
-  private analyzeLanguage(
-    args: AnalyzeLanguageArguments,
-  ): CodeStatisticsResult {
+  private analyzeLanguage(args: AnalyzeLanguageArguments): {
+    documentation: TypescriptDocumentationMeasurement[];
+    statistics: CodeStatisticsResult;
+  } {
     const directory = args.workingDirectory;
     const { discoveredFiles } = args;
     const languages = this.languagesService.analyze({
@@ -78,38 +83,53 @@ export class CodometerService {
     });
 
     return {
-      css: { ...languages.css },
-      custom: this.customizationService.analyze({
-        files: discoveredFiles.files,
-        statistics: args.configuration.statistics,
-        symbolCounts: languages.typescript.symbolCounts,
-      }),
-      folders: this.getFolderCount(discoveredFiles.files),
-      hcl: { ...languages.hcl },
-      javascript: this.buildJavascriptStatistics(languages.typescript),
-      // The JSON, Jupyter, markdown, and Python analyzers already report
-      // exactly the shape their group declares, so nothing is projected.
-      json: { ...languages.json },
-      jupyter: { ...languages.jupyter },
-      // Notebook code is source too: its lines are counted once here, and the
-      // cells they came from are never handed to the standalone analyzers.
-      linesOfCode:
-        languages.typescript.lines +
-        languages.python.lines +
-        languages.jupyter.codeLines,
-      markdown: { ...languages.markdown },
-      python: { ...languages.python },
-      repositoryBytes: size.bytes,
-      shell: { ...languages.shell },
-      sourceFiles:
-        languages.typescript.tsFiles +
-        languages.typescript.jsFiles +
-        languages.python.files,
-      sql: { ...languages.sql },
-      toml: { ...languages.toml },
-      typescript: this.buildTypescriptStatistics(languages.typescript),
-      yaml: { ...languages.yaml },
+      documentation: languages.typescript.documentation,
+      statistics: {
+        css: { ...languages.css },
+        custom: this.customizationService.analyze({
+          files: discoveredFiles.files,
+          statistics: args.configuration.statistics,
+          symbolCounts: languages.typescript.symbolCounts,
+        }),
+        folders: this.getFolderCount(discoveredFiles.files),
+        hcl: { ...languages.hcl },
+        javascript: this.buildJavascriptStatistics(languages.typescript),
+        // The JSON, Jupyter, markdown, and Python analyzers already report
+        // exactly the shape their group declares, so nothing is projected.
+        json: { ...languages.json },
+        jupyter: { ...languages.jupyter },
+        // Notebook code is source too: its lines are counted once here, and
+        // the cells they came from are never handed to the standalone
+        // analyzers.
+        linesOfCode:
+          languages.typescript.lines +
+          languages.python.lines +
+          languages.jupyter.codeLines,
+        markdown: { ...languages.markdown },
+        python: { ...languages.python },
+        repositoryBytes: size.bytes,
+        shell: { ...languages.shell },
+        sourceFiles:
+          languages.typescript.tsFiles +
+          languages.typescript.jsFiles +
+          languages.python.files,
+        sql: { ...languages.sql },
+        toml: { ...languages.toml },
+        typescript: this.buildTypescriptStatistics(languages.typescript),
+        yaml: { ...languages.yaml },
+      },
     };
+  }
+
+  /** Stamps every documentation measurement with the target it was found in. */
+  private attachTargetName(
+    documentation: readonly TypescriptDocumentationMeasurement[],
+    targetName: string,
+  ): DocumentationMeasurement[] {
+    return documentation.map((measurement) => ({
+      ...measurement,
+      target: targetName,
+    }));
   }
 
   /** Project the TypeScript analyzer's counters onto the JavaScript group. */
@@ -261,16 +281,21 @@ export class CodometerService {
       }),
       args.outputPaths,
     );
+    const language = this.runsAnalysis(target, "language")
+      ? this.analyzeLanguage({
+          configuration: args.configuration,
+          discoveredFiles: this.discoveryService.categorize(files),
+          workingDirectory: args.workingDirectory,
+        })
+      : undefined;
 
     return {
+      documentation:
+        language === undefined
+          ? []
+          : this.attachTargetName(language.documentation, target.name),
       files: files.length,
-      language: this.runsAnalysis(target, "language")
-        ? this.analyzeLanguage({
-            configuration: args.configuration,
-            discoveredFiles: this.discoveryService.categorize(files),
-            workingDirectory: args.workingDirectory,
-          })
-        : undefined,
+      language: language?.statistics,
       name: target.name,
       size: this.runsAnalysis(target, "size")
         ? this.sizeService.analyze({
@@ -314,7 +339,7 @@ export class CodometerService {
    */
   measure(args: MeasureArguments): MeasurementResult {
     const files = this.discoverCodebase(args);
-    const statistics = this.analyzeLanguage({
+    const codebase = this.analyzeLanguage({
       configuration: args.configuration,
       discoveredFiles: this.discoveryService.categorize(files),
       workingDirectory: args.workingDirectory,
@@ -322,8 +347,12 @@ export class CodometerService {
     const declared = this.measureDeclaredTargets(args);
     const targets: TargetMeasurement[] = [
       {
+        documentation: this.attachTargetName(
+          codebase.documentation,
+          DEFAULT_TARGET_NAME,
+        ),
         files: files.length,
-        language: statistics,
+        language: codebase.statistics,
         name: DEFAULT_TARGET_NAME,
         size: undefined,
       },
@@ -339,6 +368,7 @@ export class CodometerService {
     });
 
     return {
+      documentation: targets.flatMap((target) => target.documentation),
       failures: [
         ...declared.failures,
         ...duplicates.map((duplicate) => ({
@@ -350,7 +380,7 @@ export class CodometerService {
       ],
       indexes,
       limits: evaluation.limits,
-      statistics,
+      statistics: codebase.statistics,
       targets,
     };
   }

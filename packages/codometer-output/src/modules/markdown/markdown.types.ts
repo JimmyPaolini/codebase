@@ -3,6 +3,8 @@
 import type {
   CodeStatisticsResult,
   CodometerCompression,
+  CodometerDocumentationUnit,
+  CodometerSymbolKind,
   ResolvedCodometerMarkdownOutputConfiguration,
 } from "@codometer/configuration";
 
@@ -11,6 +13,22 @@ export interface BuildAnchorHelpersArguments {
   check: boolean;
   content: string;
   destination: ResolvedCodometerMarkdownOutputConfiguration;
+}
+
+/**
+ * One documented declaration whose JSDoc comment ran over its kind's limit.
+ *
+ * A rendering-only shape: only the fields a bullet needs, so this package
+ * never has to know the richer measurement type the caller carries it in.
+ */
+export interface DocumentationBreach {
+  declaration: string;
+  file: string;
+  kind: CodometerSymbolKind;
+  limit: number;
+  line: number;
+  measured: number;
+  unit: CodometerDocumentationUnit;
 }
 
 /**
@@ -37,6 +55,11 @@ export interface RenderDocumentArguments {
   scope: MeasurementScope;
   statistics: CodeStatisticsResult;
   targets: readonly TargetSize[];
+}
+
+/** Arguments accepted when rendering the breached documentation entries. */
+export interface RenderDocumentationSectionArguments {
+  breaches: readonly DocumentationBreach[];
 }
 
 /** Arguments accepted when splicing a rendered block into a file. */

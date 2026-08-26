@@ -130,6 +130,10 @@ export class ReportService {
       });
     }
 
-    return { failures: [...args.failures], targets };
+    return {
+      documentation: [...args.documentation],
+      failures: [...args.failures],
+      targets,
+    };
   }
 }

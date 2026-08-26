@@ -2,7 +2,10 @@ import { mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { ConfigurationService } from "@codometer/configuration";
+import {
+  ConfigurationModule,
+  ConfigurationService,
+} from "@codometer/configuration";
 import { Test } from "@nestjs/testing";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -57,7 +60,8 @@ describe("limits written in a configuration file", () => {
     );
 
     const module = await Test.createTestingModule({
-      providers: [ConfigurationService, LimitsService, MetricIndexService],
+      imports: [ConfigurationModule],
+      providers: [LimitsService, MetricIndexService],
     }).compile();
     const configuration = await module
       .get(ConfigurationService)

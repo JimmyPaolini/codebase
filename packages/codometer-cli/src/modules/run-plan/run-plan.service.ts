@@ -16,7 +16,7 @@ import {
   CHECK_SEPARATOR,
 } from "./run-plan.constants";
 
-import type { CodometerCommandOptions } from "./codometer.types";
+import type { CodometerCommandOptions } from "../codometer/codometer.types";
 import type {
   JsonDestination,
   ListOutputPathsArguments,

@@ -1,24 +1,13 @@
 // 🏷️ Types
 
-import type { CodometerReport } from "../report/report.types";
 import type {
   CodometerCommandOptions,
   MeasurementResult,
-} from "./codometer.types";
+} from "../codometer/codometer.types";
 import type {
   ResolvedCodometerConfiguration,
   ResolvedCodometerMarkdownOutputConfiguration,
 } from "@codometer/configuration";
-import type { MeasurementScope } from "@codometer/output";
-
-/** Arguments accepted when producing every one of a run's outputs. */
-export interface DeliverArguments {
-  destinations: RunDestinations;
-  measurement: MeasurementResult;
-  mode: RunMode;
-  report: CodometerReport;
-  scope: MeasurementScope;
-}
 
 /**
  * Where the report goes, and how it is laid out.

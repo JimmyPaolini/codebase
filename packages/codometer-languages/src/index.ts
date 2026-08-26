@@ -53,6 +53,7 @@ export { TypescriptModule } from "./modules/typescript/typescript.module";
 export { TypescriptService } from "./modules/typescript/typescript.service";
 export type {
   AnalyzeTypescriptFileArguments,
+  TypescriptDocumentationMeasurement,
   TypescriptInput,
   TypescriptResult,
   TypescriptSymbolCounter,

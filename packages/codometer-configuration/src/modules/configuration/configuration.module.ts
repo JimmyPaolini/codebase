@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 
+import { ConfigurationLoaderService } from "./configuration-loader.service";
 import { ConfigurationService } from "./configuration.service";
 
 /**
@@ -9,6 +10,6 @@ import { ConfigurationService } from "./configuration.service";
   controllers: [],
   exports: [ConfigurationService],
   imports: [],
-  providers: [ConfigurationService],
+  providers: [ConfigurationLoaderService, ConfigurationService],
 })
 export class ConfigurationModule {}

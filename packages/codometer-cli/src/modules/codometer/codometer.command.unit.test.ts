@@ -1,5 +1,4 @@
 import { ConfigurationService } from "@codometer/configuration";
-import { JsonService, MarkdownService } from "@codometer/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import {
@@ -15,15 +14,18 @@ import {
 import { LoggerService } from "@codebase/logger";
 
 import { buildCodeStatistics, throwUnknown } from "../../../testing/mocks";
+import { DeliveryService } from "../delivery/delivery.service";
 import { ReportService } from "../report/report.service";
+import { RunPlanService } from "../run-plan/run-plan.service";
 
 import { CodometerCommand } from "./codometer.command";
 import { CodometerService } from "./codometer.service";
-import { RunPlanService } from "./run-plan.service";
 
 import type { EvaluatedLimit } from "../limits/limits.types";
 import type { CodometerCommandOptions } from "./codometer.types";
+import type { DocumentationMeasurement } from "./documentation-measurement.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
+import type { JsonService, MarkdownService } from "@codometer/output";
 import type { MockInstance } from "vitest";
 
 const statistics = buildCodeStatistics();
@@ -47,6 +49,7 @@ function buildConfiguration(
 ): ResolvedCodometerConfiguration {
   return {
     defaultTarget: undefined,
+    documentation: { default: 6, kinds: {}, severity: "fail", unit: "lines" },
     exclude: ["**/node_modules/**"],
     excludeFrom: [],
     limits: [],
@@ -54,6 +57,24 @@ function buildConfiguration(
     python: { command: "python3" },
     statistics: [],
     targets: [],
+  };
+}
+
+/** Builds a documented declaration whose comment exceeded its kind's limit. */
+function buildDocumentationBreach(
+  severity: DocumentationMeasurement["severity"],
+): DocumentationMeasurement {
+  return {
+    breached: true,
+    declaration: "Foo",
+    file: "src/foo.ts",
+    kind: "class",
+    limit: 6,
+    line: 3,
+    measured: 9,
+    severity,
+    target: "codebase",
+    unit: "lines",
   };
 }
 
@@ -82,8 +103,7 @@ describe(CodometerCommand, () => {
     return new CodometerCommand(
       configurationService,
       codometerService,
-      jsonService,
-      markdownService,
+      new DeliveryService(jsonService, markdownService),
       new ReportService(),
       new RunPlanService(),
       loggerService,
@@ -98,9 +118,22 @@ describe(CodometerCommand, () => {
   /** Reports the limits the measurement found breached. */
   function measured(limits: EvaluatedLimit[]): void {
     vi.mocked(codometerService.measure).mockReturnValue({
+      documentation: [],
       failures: [],
       indexes: new Map(),
       limits,
+      statistics,
+      targets: [],
+    });
+  }
+
+  /** Reports the documentation measurements the run found. */
+  function documented(documentation: DocumentationMeasurement[]): void {
+    vi.mocked(codometerService.measure).mockReturnValue({
+      documentation,
+      failures: [],
+      indexes: new Map(),
+      limits: [],
       statistics,
       targets: [],
     });
@@ -116,14 +149,7 @@ describe(CodometerCommand, () => {
         },
         { provide: CodometerService, useValue: createMock<CodometerService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
-        {
-          provide: JsonService,
-          useValue: createMock<JsonService>(),
-        },
-        {
-          provide: MarkdownService,
-          useValue: createMock<MarkdownService>(),
-        },
+        { provide: DeliveryService, useValue: createMock<DeliveryService>() },
         { provide: ReportService, useValue: new ReportService() },
         { provide: RunPlanService, useValue: new RunPlanService() },
       ],
@@ -148,6 +174,7 @@ describe(CodometerCommand, () => {
     vi.mocked(jsonService.sync).mockReturnValue(true);
     vi.mocked(markdownService.renderBlock).mockReturnValue("block");
     vi.mocked(markdownService.renderDocument).mockReturnValue("document");
+    vi.mocked(markdownService.renderDocumentationSection).mockReturnValue("");
     vi.mocked(markdownService.sync).mockReturnValue(true);
     vi.mocked(markdownService.syncDocument).mockReturnValue(true);
   });
@@ -171,14 +198,7 @@ describe(CodometerCommand, () => {
         },
         { provide: CodometerService, useValue: createMock<CodometerService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
-        {
-          provide: JsonService,
-          useValue: createMock<JsonService>(),
-        },
-        {
-          provide: MarkdownService,
-          useValue: createMock<MarkdownService>(),
-        },
+        { provide: DeliveryService, useValue: createMock<DeliveryService>() },
         { provide: ReportService, useValue: new ReportService() },
         { provide: RunPlanService, useValue: new RunPlanService() },
       ],
@@ -264,18 +284,26 @@ describe(CodometerCommand, () => {
     // measured no size for has to not, rather than arriving as a zero.
     it("hands the renderer the size of every target it measured", async () => {
       vi.mocked(codometerService.measure).mockReturnValue({
+        documentation: [],
         failures: [],
         indexes: new Map(),
         limits: [],
         statistics,
         targets: [
           {
+            documentation: [],
             files: 5,
             language: undefined,
             name: "Compiled JavaScript",
             size: { bytes: 5324, compression: "gzip", files: 5 },
           },
-          { files: 0, language: undefined, name: "Unsized", size: undefined },
+          {
+            documentation: [],
+            files: 0,
+            language: undefined,
+            name: "Unsized",
+            size: undefined,
+          },
         ],
       });
 
@@ -298,12 +326,14 @@ describe(CodometerCommand, () => {
     // a release commits — a figure that is wrong rather than merely absent.
     it("hands the renderer nothing for a target whose globs matched no file", async () => {
       vi.mocked(codometerService.measure).mockReturnValue({
+        documentation: [],
         failures: [],
         indexes: new Map(),
         limits: [],
         statistics,
         targets: [
           {
+            documentation: [],
             files: 0,
             language: undefined,
             name: "Compiled JavaScript",
@@ -493,6 +523,35 @@ describe(CodometerCommand, () => {
       expect(stdoutWriteSpy).toHaveBeenCalledWith("document\n");
     });
 
+    it("appends nothing to the badge document when nothing breached documentation", async () => {
+      await run({ markdown: "docs/metrics.md", write: true });
+
+      expect(markdownService.syncDocument).toHaveBeenCalledExactlyOnceWith({
+        check: false,
+        content: "document",
+        path: "/repo/docs/metrics.md",
+      });
+    });
+
+    it("appends the breached documentation section to the badge document", async () => {
+      const breach = buildDocumentationBreach("fail");
+      documented([breach]);
+      vi.mocked(markdownService.renderDocumentationSection).mockReturnValue(
+        "### 📝 Documentation",
+      );
+
+      await run({ markdown: "docs/metrics.md", write: true });
+
+      expect(markdownService.renderDocumentationSection).toHaveBeenCalledWith({
+        breaches: [breach],
+      });
+      expect(markdownService.syncDocument).toHaveBeenCalledExactlyOnceWith({
+        check: false,
+        content: ["document", "### 📝 Documentation"].join("\n\n"),
+        path: "/repo/docs/metrics.md",
+      });
+    });
+
     it("writes the report where --json named", async () => {
       await run({ json: "reports/statistics.json", write: true });
 
@@ -500,7 +559,7 @@ describe(CodometerCommand, () => {
         check: false,
         indentation: 2,
         path: "/repo/reports/statistics.json",
-        report: { failures: [], targets: [] },
+        report: { documentation: [], failures: [], targets: [] },
       });
     });
 
@@ -563,7 +622,7 @@ describe(CodometerCommand, () => {
         check: false,
         indentation: 2,
         path: "/repo/output/codometer.json",
-        report: { failures: [], targets: [] },
+        report: { documentation: [], failures: [], targets: [] },
       });
     });
 
@@ -704,8 +763,43 @@ describe(CodometerCommand, () => {
       );
     });
 
+    it("fails a gating run on a failing documentation breach", async () => {
+      documented([buildDocumentationBreach("fail")]);
+
+      await run({ check: "limits" });
+
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "📊 Breached a documentation length limit",
+        undefined,
+        { documentation: [buildDocumentationBreach("fail")] },
+      );
+      expect(process.exitCode).toBe(1);
+    });
+
+    it("never fails on a warning documentation breach", async () => {
+      documented([buildDocumentationBreach("warn")]);
+
+      await run({ check: "limits" });
+
+      expect(loggerService.warn).toHaveBeenCalledWith(
+        "📊 Breached a documentation length limit",
+        undefined,
+        { documentation: [buildDocumentationBreach("warn")] },
+      );
+      expect(process.exitCode).toBe(0);
+    });
+
+    it("does not fail a failing documentation breach without --check limits", async () => {
+      documented([buildDocumentationBreach("fail")]);
+
+      await run();
+
+      expect(process.exitCode).toBe(0);
+    });
+
     it("reports what it could not measure and fails a gating run", async () => {
       vi.mocked(codometerService.measure).mockReturnValue({
+        documentation: [],
         failures: [{ kind: "target", reason: "dist/ is gone", subject: "web" }],
         indexes: new Map(),
         limits: [],
@@ -729,6 +823,7 @@ describe(CodometerCommand, () => {
 
     it("reports what it could not measure without failing a bare run", async () => {
       vi.mocked(codometerService.measure).mockReturnValue({
+        documentation: [],
         failures: [{ kind: "target", reason: "dist/ is gone", subject: "web" }],
         indexes: new Map(),
         limits: [],
@@ -780,12 +875,14 @@ describe(CodometerCommand, () => {
 
     it("counts every target measured and every limit breached at completion", async () => {
       vi.mocked(codometerService.measure).mockReturnValue({
+        documentation: [],
         failures: [],
         indexes: new Map(),
         limits: [buildBreach("fail"), buildBreach("warn")],
         statistics,
         targets: [
           {
+            documentation: [],
             files: 5,
             language: undefined,
             name: "Compiled JavaScript",

@@ -3,6 +3,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { ReportService } from "./report.service";
 
+import type { DocumentationMeasurement } from "../codometer/documentation-measurement.types";
 import type { EvaluatedLimit, TargetMetricIndex } from "../limits/limits.types";
 import type { CodometerReport } from "./report.types";
 
@@ -30,6 +31,7 @@ describe(ReportService, () => {
   /** Builds a report over the codebase and the compiled target. */
   function build(limits: EvaluatedLimit[] = []): CodometerReport {
     return service.build({
+      documentation: [],
       failures: [],
       indexes: new Map([
         ["codebase", codebaseIndex],
@@ -173,6 +175,7 @@ describe(ReportService, () => {
   // produced: no limit field, a passing verdict, and a non-zero exit.
   it("says outright that a target matched nothing", () => {
     const report = service.build({
+      documentation: [],
       failures: [],
       indexes: new Map([["compiled", buildIndex(0, [["files", 0]])]]),
       limits: [],
@@ -196,6 +199,7 @@ describe(ReportService, () => {
 
   it("carries whatever the run could not do into the document", () => {
     const report = service.build({
+      documentation: [],
       failures: [
         { kind: "limit", reason: "nothing answers", subject: "web.size" },
       ],
@@ -204,11 +208,38 @@ describe(ReportService, () => {
     });
 
     expect(report).toStrictEqual({
+      documentation: [],
       failures: [
         { kind: "limit", reason: "nothing answers", subject: "web.size" },
       ],
       targets: [],
     });
+  });
+
+  it("carries the documentation measurements through unchanged", () => {
+    const documentation: DocumentationMeasurement[] = [
+      {
+        breached: true,
+        declaration: "Foo",
+        file: "src/foo.ts",
+        kind: "class",
+        limit: 6,
+        line: 1,
+        measured: 9,
+        severity: "fail",
+        target: "codebase",
+        unit: "lines",
+      },
+    ];
+
+    const report = service.build({
+      documentation,
+      failures: [],
+      indexes: new Map(),
+      limits: [],
+    });
+
+    expect(report.documentation).toStrictEqual(documentation);
   });
 
   // The name is the join key a later run is compared against, so it has to

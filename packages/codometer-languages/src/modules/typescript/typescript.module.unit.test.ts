@@ -1,6 +1,7 @@
 import { MODULE_METADATA } from "@nestjs/common/constants";
 import { describe, expect, it } from "vitest";
 
+import { DocumentationMeasurementService } from "./documentation-measurement.service";
 import { TypescriptModule } from "./typescript.module";
 import { TypescriptService } from "./typescript.service";
 
@@ -17,5 +18,6 @@ describe(TypescriptModule, () => {
 
     expect(exportsMetadata).toContain(TypescriptService);
     expect(providersMetadata).toContain(TypescriptService);
+    expect(providersMetadata).toContain(DocumentationMeasurementService);
   });
 });

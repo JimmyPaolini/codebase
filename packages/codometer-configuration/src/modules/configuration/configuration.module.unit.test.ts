@@ -1,6 +1,7 @@
 import { MODULE_METADATA } from "@nestjs/common/constants";
 import { describe, expect, it } from "vitest";
 
+import { ConfigurationLoaderService } from "./configuration-loader.service";
 import { ConfigurationModule } from "./configuration.module";
 import { ConfigurationService } from "./configuration.service";
 
@@ -17,5 +18,6 @@ describe(ConfigurationModule, () => {
 
     expect(exportsMetadata).toContain(ConfigurationService);
     expect(providersMetadata).toContain(ConfigurationService);
+    expect(providersMetadata).toContain(ConfigurationLoaderService);
   });
 });

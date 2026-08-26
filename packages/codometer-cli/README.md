@@ -235,6 +235,38 @@ written against it. Declaring a limit asserts the files are there, so an empty
 match is a glob that stopped matching or a build that never ran — while a
 target nobody limited simply measured zero, which is unremarkable.
 
+## Documentation
+
+A **documentation limit** is how long one documented declaration's JSDoc
+comment may run. Opt-in, like every other check: a configuration naming no
+`documentation` block measures and reports nothing extra, exactly as it did
+before this existed. Once configured, every declaration carrying a `/**`
+comment is measured and reported — a class, an interface, a function, a
+method, a property — whether or not it breaches anything, and `kinds` earns
+some of them more room than others without forcing one repository-wide number
+to be either loose enough to permit a property essay or tight enough to forbid
+a class overview that should exist.
+
+```ts
+documentation: {
+  default: 6,
+  kinds: { class: 24, interface: 16, function: 12, method: 12, property: 4 },
+  unit: "lines",
+},
+```
+
+| Field | Required | Default | Meaning |
+| ----- | -------- | ------- | ------- |
+| `default` | no | `6` | The limit a declaration's kind falls back to when `kinds` names none for it |
+| `kinds` | no | none | A limit per declaration kind — `class`, `interface`, `function`, `method`, `property`, and the rest `## What gets measured` lists |
+| `severity` | no | `fail` | `fail` stops the run on a breach; `warn` reports it |
+| `unit` | no | `"lines"` | `"lines"`, `"characters"`, or `"words"` — the unit a comment's length is measured in |
+
+A documentation breach is gated by the same `--check limits` flag every other
+limit is — there is no separate flag for it. It never needs its own `metric`
+path: every documented declaration is measured automatically, not addressed by
+hand the way a limit on a count is.
+
 ## Custom statistics
 
 A repository that names files by convention has a vocabulary no analyzer knows
@@ -356,6 +388,20 @@ not, so a consumer can render the headroom rather than only the failures.
 
 ```json
 {
+  "documentation": [
+    {
+      "breached": true,
+      "declaration": "CodometerService",
+      "file": "src/modules/codometer/codometer.service.ts",
+      "kind": "class",
+      "limit": 6,
+      "line": 32,
+      "measured": 9,
+      "severity": "fail",
+      "target": "codebase",
+      "unit": "lines"
+    }
+  ],
   "failures": [
     {
       "kind": "limit",
@@ -400,6 +446,13 @@ not, so a consumer can render the headroom rather than only the failures.
 | `limits` | Every limit declared on the metric, in the order written. Empty where nothing limits it — never an absent key |
 | `empty` | Said outright when a target's globs matched nothing |
 | `failures` | Whatever the run could not do: a target that would not measure, a limit that bound to nothing |
+| `documentation` | Every documented declaration across every target, flattened, in measurement order — breached or not |
+
+**`documentation` reports every measured declaration, not only breaches.** Each
+entry names the `file` and 1-indexed `line` the declaration starts on, its
+`kind`, the `target` it was found in, the configured `limit` and `unit`, the
+`measured` length, and whether it `breached`. A declaration carrying no `/**`
+comment at all is not measured and never appears here.
 
 **A metric may carry more than one limit.** The configuration accepts a `warn`
 short of a `fail` on a single metric on purpose — that is how a repository sees

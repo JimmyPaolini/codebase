@@ -33,6 +33,7 @@ import type {
   BuildAnchorHelpersArguments,
   RenderBadgesArguments,
   RenderDocumentArguments,
+  RenderDocumentationSectionArguments,
   SyncAnchoredBlockArguments,
   SyncDocumentArguments,
   SyncMarkdownArguments,
@@ -297,6 +298,29 @@ export class MarkdownService {
     sections.push(this.buildBadgeGroups(args));
 
     return sections.join("\n\n");
+  }
+
+  /**
+   * Render the breached documentation-length entries as a markdown section.
+   *
+   * Terse on purpose: the full per-declaration measurement already lives in
+   * the JSON report, so only the breaches — the ones worth a reader's
+   * attention — get a line here. Empty when nothing breached, so nothing is
+   * appended to a clean run's markdown.
+   */
+  renderDocumentationSection(
+    args: RenderDocumentationSectionArguments,
+  ): string {
+    if (args.breaches.length === 0) {
+      return "";
+    }
+
+    const bullets = args.breaches.map(
+      (breach) =>
+        `- \`${breach.file}:${breach.line}\` — \`${breach.declaration}\` (${breach.kind}): ${breach.measured}/${breach.limit} ${breach.unit}`,
+    );
+
+    return ["### 📝 Documentation", bullets.join("\n")].join("\n\n");
   }
 
   /**
