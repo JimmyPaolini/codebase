@@ -1,8 +1,9 @@
 import path from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 
 import {
+  type CodometerReport,
   corpusDirectory,
   exampleConfiguration,
   measure,
@@ -23,14 +24,25 @@ import {
  * cares about.
  */
 
-/** Measured with the package's own configuration, which every bare run finds. */
-const measureCorpus = (): ReturnType<typeof measure> =>
-  measure(["--directory", corpusDirectory]);
+/**
+ * The corpus measured once, with the package's own configuration.
+ *
+ * Every bare run finds that configuration, and every test below reads the same
+ * report from it — so it is measured once rather than once per assertion. Each
+ * spawn bootstraps Nest and reaches a Python interpreter, and eight of them
+ * for one unchanging directory is the difference between a suite that is slow
+ * and one that is slow enough to fail on a loaded machine.
+ */
+let corpusReport: CodometerReport;
 
 describe("the sample corpus and the counts its guides quote", () => {
+  beforeAll(() => {
+    corpusReport = measure(["--directory", corpusDirectory]);
+  });
+
   describe("the sample corpus", () => {
     it("holds twenty-eight files across twelve language folders", () => {
-      const report = measureCorpus();
+      const report = corpusReport;
       const codebase = readTarget(report, "codebase");
 
       // Twenty-seven samples and the `.gitignore` that hides `generated/` from
@@ -42,7 +54,7 @@ describe("the sample corpus and the counts its guides quote", () => {
     });
 
     it("counts one file per language, and fifteen TypeScript ones", () => {
-      const report = measureCorpus();
+      const report = corpusReport;
       const fileCounts = Object.fromEntries(
         [
           "css",
@@ -80,7 +92,7 @@ describe("the sample corpus and the counts its guides quote", () => {
     });
 
     it("counts TypeScript and JavaScript declarations in one group", () => {
-      const report = measureCorpus();
+      const report = corpusReport;
 
       // Five classes: four in TypeScript and one in JavaScript. The group is
       // "TypeScript & JavaScript" rather than two, which is why a TypeScript
@@ -92,7 +104,7 @@ describe("the sample corpus and the counts its guides quote", () => {
     });
 
     it("measures one directory, not the compiled output beside it", () => {
-      const report = measureCorpus();
+      const report = corpusReport;
 
       // The two stand-ins for build output live in `compiled/`, a sibling of
       // the corpus, so the codebase target never sees them and only the two
@@ -112,7 +124,7 @@ describe("the sample corpus and the counts its guides quote", () => {
     });
 
     it("measures a few hundred lines and a few kilobytes", () => {
-      const report = measureCorpus();
+      const report = corpusReport;
 
       expect(readMetric(report, "codebase", "linesOfCode")).toBeGreaterThan(
         250,
@@ -125,7 +137,7 @@ describe("the sample corpus and the counts its guides quote", () => {
 
   describe("notebooks measured by composition", () => {
     it("hands the envelope, the code cells, and the prose to three analyzers", () => {
-      const report = measureCorpus();
+      const report = corpusReport;
       const readJupyter = (metric: string): number =>
         readMetric(report, "codebase", `jupyter.${metric}`);
 
@@ -155,7 +167,7 @@ describe("the sample corpus and the counts its guides quote", () => {
     });
 
     it("keeps the notebook out of the JSON, Python, and markdown file counts", () => {
-      const report = measureCorpus();
+      const report = corpusReport;
 
       // Composition is about what is counted, not where it is filed: the
       // notebook's contents reach three analyzers, and the notebook itself is
@@ -168,7 +180,7 @@ describe("the sample corpus and the counts its guides quote", () => {
 
   describe("python through an interpreter", () => {
     it("analyzes the sample module through the configured interpreter", () => {
-      const report = measureCorpus();
+      const report = corpusReport;
       const readPython = (metric: string): number =>
         readMetric(report, "codebase", `python.${metric}`);
 
@@ -242,8 +254,10 @@ describe("the sample corpus and the counts its guides quote", () => {
   });
 
   describe("custom statistics", () => {
-    it("counts files by pattern and declarations by shape", () => {
-      const counters = readCounters(
+    let counters: Record<string, number>;
+
+    beforeAll(() => {
+      counters = readCounters(
         measure([
           "--directory",
           corpusDirectory,
@@ -251,7 +265,9 @@ describe("the sample corpus and the counts its guides quote", () => {
           exampleConfiguration("statistics", "codometer.config.ts"),
         ]),
       );
+    });
 
+    it("counts files by pattern and declarations by shape", () => {
       expect(counters).toStrictEqual({
         "Exported Interfaces": 6,
         "Integration Tests": 1,
@@ -264,15 +280,6 @@ describe("the sample corpus and the counts its guides quote", () => {
     });
 
     it("narrows a symbol counter with patterns rather than counting files", () => {
-      const counters = readCounters(
-        measure([
-          "--directory",
-          corpusDirectory,
-          "--config",
-          exampleConfiguration("statistics", "codometer.config.ts"),
-        ]),
-      );
-
       // Four static methods exist; three are in `*.service.ts`. The narrowed
       // counter reports three rather than the four service files it was pointed
       // at, which is the whole distinction between the two kinds of counter.
@@ -282,15 +289,6 @@ describe("the sample corpus and the counts its guides quote", () => {
     });
 
     it("does not find a static arrow property by asking for static methods", () => {
-      const counters = readCounters(
-        measure([
-          "--directory",
-          corpusDirectory,
-          "--config",
-          exampleConfiguration("statistics", "codometer.config.ts"),
-        ]),
-      );
-
       // `CatalogService.blank` is a class field holding an arrow function, so it
       // is a static property and carries none of a method's modifiers.
       expect(counters["Static Properties"]).toBe(1);

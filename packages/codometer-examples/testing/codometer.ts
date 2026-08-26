@@ -1,4 +1,4 @@
-import { execFileSync, spawnSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import os from "node:os";
@@ -126,20 +126,32 @@ export const runCodometer = (args: readonly string[]): CodometerRun => {
  * than as `node -e "…"`, because a program spliced into a command string has to
  * survive both the formatter reflowing it and the shell re-reading its quotes,
  * and one of those eventually loses.
+ *
+ * The run is reported rather than thrown, the way `runCodometer` reports its
+ * own. A pipeline has two processes that can die and only one exit code to say
+ * so, so a bare throw here says "command failed" and nothing about which half
+ * or why — which is exactly the failure a test running under a loaded machine
+ * is most likely to hit, and exactly the one worth being able to read.
  */
 export const runPipeline = (
   args: readonly string[],
   readReport: string,
-): string => {
+): CodometerRun => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "codometer-pipe-"));
   const downstream = path.join(directory, "downstream.mjs");
 
+  // Says outright that the upstream stage produced nothing, rather than
+  // failing as an unexplained `JSON.parse` on an empty string.
   fs.writeFileSync(
     downstream,
     [
       'let text = "";',
       'process.stdin.on("data", (chunk) => { text += chunk; });',
       'process.stdin.on("end", () => {',
+      "  if (text.trim() === '') {",
+      '    console.error("the upstream stage wrote nothing to standard output");',
+      "    process.exit(1);",
+      "  }",
       "  const report = JSON.parse(text);",
       `  console.log(${readReport});`,
       "});",
@@ -147,7 +159,7 @@ export const runPipeline = (
   );
 
   try {
-    return execFileSync(
+    const result = spawnSync(
       "sh",
       [
         "-c",
@@ -169,6 +181,12 @@ export const runPipeline = (
         maxBuffer: 32 * 1024 * 1024,
       },
     );
+
+    return {
+      exitCode: result.status ?? 1,
+      standardError: result.stderr,
+      standardOutput: result.stdout,
+    };
   } finally {
     fs.rmSync(directory, { force: true, recursive: true });
   }

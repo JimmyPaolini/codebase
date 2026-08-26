@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 
 import {
   type CodometerReport,
@@ -49,8 +49,14 @@ const gateExample = (
 
 describe("every example configuration this package ships", () => {
   describe("targets", () => {
+    let targetsReport: CodometerReport;
+
+    beforeAll(() => {
+      targetsReport = measureExample("targets", "codometer.config.ts");
+    });
+
     it("measures compiled output sitting beside the corpus", () => {
-      const report = measureExample("targets", "codometer.config.ts");
+      const report = targetsReport;
 
       // The codebase target measures one directory and the compiled samples
       // are not in it; a target's globs reach out to them.
@@ -84,7 +90,7 @@ describe("every example configuration this package ships", () => {
     });
 
     it("removes files with a negation and with exclude alike", () => {
-      const report = measureExample("targets", "codometer.config.ts");
+      const report = targetsReport;
 
       expect(readTarget(report, "Compiled Without Vendor").files).toBe(1);
       // Fifteen TypeScript files, seven of them tests.
@@ -92,14 +98,14 @@ describe("every example configuration this package ships", () => {
     });
 
     it("starts a target's globs somewhere else with directory", () => {
-      const report = measureExample("targets", "codometer.config.ts");
+      const report = targetsReport;
 
       // `directory: ".."` reaches up out of the measured corpus into the package.
       expect(readTarget(report, "Manifests").files).toBe(2);
     });
 
     it("holds the same files however the include array is ordered", () => {
-      const ordered = measureExample("targets", "codometer.config.ts");
+      const ordered = targetsReport;
       const reordered = measureExample("targets", "reordered.config.ts");
       const describeTargets = (
         report: CodometerReport,
@@ -245,8 +251,17 @@ describe("every example configuration this package ships", () => {
   });
 
   describe("documentation limits", () => {
+    let documentationReport: CodometerReport;
+
+    beforeAll(() => {
+      documentationReport = measureExample(
+        "documentation",
+        "codometer.config.ts",
+      );
+    });
+
     it("measures every documented declaration, breached or not", () => {
-      const report = measureExample("documentation", "codometer.config.ts");
+      const report = documentationReport;
       const breached = report.documentation.filter((entry) => entry.breached);
 
       expect(report.documentation).toHaveLength(26);
@@ -256,7 +271,7 @@ describe("every example configuration this package ships", () => {
     });
 
     it("never measures a declaration carrying no doc comment", () => {
-      const report = measureExample("documentation", "codometer.config.ts");
+      const report = documentationReport;
       const declarations = report.documentation.map(
         (entry) => entry.declaration,
       );
@@ -425,7 +440,13 @@ describe("every example configuration this package ships", () => {
         "report.targets[0].files",
       );
 
-      expect(piped.trim()).toBe("28");
+      // The exit code first, so a pipeline that died under load reports which
+      // half died instead of failing as a mismatched string.
+      expect(piped.exitCode).toBe(0);
+      expect(piped.standardOutput.trim()).toBe("28");
+      // And the other half of the same promise: the diagnostics were not
+      // missing, they were on the other stream the whole time.
+      expect(piped.standardError).toContain("Finished the codometer run");
     });
 
     it("refuses --json <path> on a run that neither writes nor compares", () => {
