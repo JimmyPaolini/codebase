@@ -137,18 +137,18 @@ This repository's generators, kept in step with the configuration by
 same thing for any workspace:
 
 <!-- conformetry-generators-table start -->
-| Generator | Alias | Description |
-| --------- | ----- | ----------- |
-| `jupyter-notebook-application` | `jna` | Scaffold a standalone Python application with a Jupyter notebook entry point, pytest/pyright/ruff tooling, and a shared uv workspace venv |
-| `nestjs-command-project` | `nca` | Scaffold a standalone NestJS CLI application built on nest-commander, for a new command-line tool in applications/, packages/, or tools/ |
-| `nestjs-graphql-application` | `nga` | Scaffold a standalone NestJS GraphQL API application, for a new backend service exposing a GraphQL schema over HTTP |
-| `nestjs-service-project` | `nsp` | Scaffold a standalone NestJS library package for internal workspace code shared across projects, with no CLI entry point or HTTP server |
-| `nestjs-command-module` | `ncm` | Add a nest-commander command module — command, module, constants, types, and unit test — to an existing NestJS command-line project |
-| `nestjs-dataloader-module` | `ndm` | Add a GraphQL dataloader module — dataloader, module, types, and unit test — for batching lookups inside an existing NestJS project |
-| `nestjs-graphql-module` | `ngm` | Add a GraphQL module — resolver, entities, args/input types, factories, constants, and unit test — to an existing NestJS project |
-| `nestjs-service-file` | `nsf` | Add a service and its unit test to an existing NestJS module, without scaffolding the surrounding module files |
-| `nestjs-service-module` | `nsm` | Add a plain service module — module, service, constants, types, and unit test — to an existing NestJS project |
-| `react-component` | `c` | Add a React component and its test file to an existing React project |
+| Template | Alias | Description |
+| -------- | ----- | ----------- |
+| `jupyter-notebook-application` | `jna` | A standalone Python application template with a Jupyter notebook entry point, pytest/pyright/ruff tooling, and a shared uv workspace venv |
+| `nestjs-command-project` | `nca` | A standalone NestJS CLI application template built on nest-commander, for a new command-line tool in applications/, packages/, or tools/ |
+| `nestjs-graphql-application` | `nga` | A standalone NestJS GraphQL API application template, for a new backend service exposing a GraphQL schema over HTTP |
+| `nestjs-service-project` | `nsp` | A standalone NestJS library package template for internal workspace code shared across projects, with no CLI entry point or HTTP server |
+| `nestjs-command-module` | `ncm` | A nest-commander command module template — command, module, constants, types, and unit test — for an existing NestJS command-line project |
+| `nestjs-dataloader-module` | `ndm` | A GraphQL dataloader module template — dataloader, module, types, and unit test — for batching lookups inside an existing NestJS project |
+| `nestjs-graphql-module` | `ngm` | A GraphQL module template — resolver, entities, args/input types, factories, constants, and unit test — for an existing NestJS project |
+| `nestjs-service-file` | `nsf` | A service and unit test file template for an existing NestJS module, without the surrounding module files |
+| `nestjs-service-module` | `nsm` | A plain service module template — module, service, constants, types, and unit test — for an existing NestJS project |
+| `react-component` | `c` | A React component and test file template for an existing React project |
 <!-- conformetry-generators-table end -->
 
 ## Work Scope

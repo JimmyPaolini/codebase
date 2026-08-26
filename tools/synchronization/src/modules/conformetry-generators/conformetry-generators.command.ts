@@ -92,7 +92,7 @@ export class ConformetryGeneratorsCommand
     generators: ConformetryGeneratorMetadata[],
   ): string {
     const header =
-      "| Generator | Alias | Description |\n| --------- | ----- | ----------- |";
+      "| Template | Alias | Description |\n| -------- | ----- | ----------- |";
     const rows = generators.map((gen) => {
       const alias = gen.aliases.map((a) => `\`${a}\``).join(", ");
       return `| \`${gen.name}\` | ${alias} | ${gen.description} |`;

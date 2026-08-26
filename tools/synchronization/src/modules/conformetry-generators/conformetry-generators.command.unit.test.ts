@@ -120,8 +120,8 @@ describe(ConformetryGeneratorsCommand, () => {
       markedContent: [
         "# Header",
         "<!-- conformetry-generators-table start -->",
-        "| Generator | Alias | Description |",
-        "| --------- | ----- | ----------- |",
+        "| Template | Alias | Description |",
+        "| -------- | ----- | ----------- |",
         "| `alpha` | `a` | first |",
         "| `beta` | `b` | second |",
         "<!-- conformetry-generators-table end -->",
@@ -136,8 +136,8 @@ describe(ConformetryGeneratorsCommand, () => {
       markedContent: [
         "# Header",
         "<!-- conformetry-generators-table start -->",
-        "| Generator | Alias | Description |",
-        "| --------- | ----- | ----------- |",
+        "| Template | Alias | Description |",
+        "| -------- | ----- | ----------- |",
         "| `alpha` |  | first |",
         "<!-- conformetry-generators-table end -->",
       ].join("\n"),
@@ -262,8 +262,8 @@ describe(ConformetryGeneratorsCommand, () => {
           [
             "# Header",
             "<!-- conformetry-generators-table start -->",
-            "| Generator | Alias | Description |",
-            "| --------- | ----- | ----------- |",
+            "| Template | Alias | Description |",
+            "| -------- | ----- | ----------- |",
             "| `stale` | `x` | mismatch |",
             "<!-- conformetry-generators-table end -->",
           ].join("\n"),
@@ -273,8 +273,8 @@ describe(ConformetryGeneratorsCommand, () => {
           [
             "# Header",
             "<!-- conformetry-generators-table start -->",
-            "| Generator | Alias | Description |",
-            "| --------- | ----- | ----------- |",
+            "| Template | Alias | Description |",
+            "| -------- | ----- | ----------- |",
             "| `alpha` | `a` | first |",
             "<!-- conformetry-generators-table end -->",
           ].join("\n"),
