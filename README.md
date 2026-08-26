@@ -76,6 +76,7 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
   - **[codependix-nestjs](packages/codependix-nestjs)** - Explores a NestJS project's container and builds its module graph
   - **[codependix-nx](packages/codependix-nx)** - Builds a project's one-hop Nx dependency neighborhood from the Nx project graph
 - **⏲️ codometer** - Repository measurement toolchain that counts a codebase and reports what it found
+  - **[codometer-agents](packages/codometer-agents)** - Agent skills for the codometer toolchain, published and installed back from the lockfile like any other vendored skill
   - **[codometer-changes](packages/codometer-changes)** - Diffs codometer reports against a baseline snapshot
   - **[codometer-cli](packages/codometer-cli)** - Command-line host that measures TypeScript, JavaScript, Python, JSON, markdown, and Jupyter notebooks, then writes the badge block in this README, a JSON report, or both
   - **[codometer-configuration](packages/codometer-configuration)** - Reads `codometer.config.ts` for exclusion globs, output destinations and their render/write callbacks, and the Python interpreter
@@ -160,6 +161,7 @@ graph LR
   codependix_imports["codependix-imports"]
   codependix_nestjs["codependix-nestjs"]
   codependix_nx["codependix-nx"]
+  codometer_agents["codometer-agents"]
   codometer_changes["codometer-changes"]
   codometer_cli["codometer-cli"]
   codometer_configuration["codometer-configuration"]

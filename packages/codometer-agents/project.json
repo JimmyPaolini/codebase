@@ -1,0 +1,20 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "codometer-agents",
+  "projectType": "library",
+  "sourceRoot": "packages/codometer-agents",
+  "tags": ["language:typescript", "name:codometer-agents", "type:package"],
+  "targets": {
+    "codometer": {},
+    "knip": {},
+    "lint-codebase": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "prettier": {},
+    "spell-check": {},
+    "test-coverage": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}

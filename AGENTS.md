@@ -88,7 +88,7 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 - **[codependix-imports](packages/codependix-imports)**: Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements
 - **[codependix-nestjs](packages/codependix-nestjs)**: Explores a NestJS project's container and builds its module graph
 - **[codependix-nx](packages/codependix-nx)**: Builds a project's one-hop Nx dependency neighborhood from the Nx project graph
-- **[codometer-cli](packages/codometer-cli)**: Command-line host that measures code statistics and writes them to markdown and JSON
+- **[codometer-cli](packages/codometer-cli)**: Command-line host that measures code statistics and writes them to markdown and JSON — see [Codometer](#codometer) for its agent skills
 - **[codometer-configuration](packages/codometer-configuration)**: Reads `codometer.config.ts` and resolves the repository-specific settings codometer needs
 - **[conformetry-cli](packages/conformetry-cli)**: Command-line host for code generation and validation
 - **[conformetry-nx](packages/conformetry-nx)**: Nx plugin that exposes the conformetry generator namespace
@@ -150,6 +150,28 @@ same thing for any workspace:
 | `nestjs-service-module` | `nsm` | Generate a NestJS service module with module, service, types, constants, and unit test files |
 | `react-component` | `c` | Generate a React component with test file |
 <!-- conformetry-generators-table end -->
+
+## Codometer
+
+Codometer measures a directory and reports what it counted — languages,
+declared conventions, and compressed size — gated by whatever limits a
+configuration declares. Three skills carry that toolchain's behavior for a
+coding agent, mirroring the split above: run the tool, tell it what to
+enforce, act on what it said.
+
+- [codometer-measure](packages/codometer-agents/skills/codometer-measure/SKILL.md)
+  — running a measurement, or reading a report
+- [codometer-configure](packages/codometer-agents/skills/codometer-configure/SKILL.md)
+  — writing `codometer.config.ts`
+- [codometer-triage](packages/codometer-agents/skills/codometer-triage/SKILL.md)
+  — acting on a breach or a stale report
+
+These three are authored in
+[`packages/codometer-agents`](packages/codometer-agents). A follow-up records
+them in `skills-lock.json` and vendors them into `.agents/skills/`, the way
+[`packages/conformetry-agents`](packages/conformetry-agents) is consumed — that
+can only happen once this package exists on the default branch, since the
+skills tool resolves a `github` source against it.
 
 ## Work Scope
 
