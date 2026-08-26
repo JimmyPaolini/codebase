@@ -186,3 +186,22 @@ Two consequences worth holding on to:
 A clean conformance run is not optional polish — it is the check that generated
 code still matches its standard. Run it after generating, after editing generated
 files, and before saying an implementation is finished.
+
+## Reproducing a difference in a sandbox
+
+[`conformetry-examples`](https://github.com/JimmyPaolini/codebase/tree/main/packages/conformetry-examples) carries one instance per kind of
+difference, deliberately broken, so a report can be understood without the
+surrounding project's conventions muddying it.
+
+- **`drift-catalogue`** — a missing file, a missing directory, a deleted export,
+  a dropped section comment, and a renamed class, with the whole report quoted.
+- **`structural-not-textual`** — a reformatted instance that passes beside one
+  missing a single export that does not.
+- **`scoring-thresholds`** — differences printing for an instance that cleared a
+  lowered threshold, and a run that still exits zero.
+- **`ambiguous-attribution`** — an instance two templates explain equally well.
+- **`failure-modes`** — two things that conform for the wrong reasons.
+
+[Its AGENTS.md](https://github.com/JimmyPaolini/codebase/blob/main/packages/conformetry-examples/AGENTS.md) maps report text to the example that reproduces
+it, and lists which changes to an instance are differences and which are not.
+The broken instances there are broken on purpose — do not repair them.

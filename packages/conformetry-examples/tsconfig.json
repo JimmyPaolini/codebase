@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": ["ES2023"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "target": "esnext",
+    "types": ["node", "vitest/globals"]
+  },
+  "exclude": [
+    "dist",
+    "examples/*/instances/**",
+    "examples/*/templates/**",
+    "node_modules",
+    "output"
+  ],
+  "extends": "../../configuration/tsconfig.json",
+  "include": [
+    "eslint.config.ts",
+    "examples/**/*.ts",
+    "testing/**/*.ts",
+    "vitest.config.ts"
+  ]
+}

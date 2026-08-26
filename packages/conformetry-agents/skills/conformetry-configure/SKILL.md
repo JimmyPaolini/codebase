@@ -183,3 +183,22 @@ Generate an instance, then check it conforms. A freshly generated instance
 conforms by construction, so any difference means the template and the
 configuration disagree — see the `conformetry-validate` skill for reading the
 result, and `conformetry-generate` for the generation step itself.
+
+## Seeing it rather than reading about it
+
+[`conformetry-examples`](https://github.com/JimmyPaolini/codebase/tree/main/packages/conformetry-examples) is eleven self-contained examples, each
+a complete configuration small enough to read in one sitting. The ones that
+answer configuration questions:
+
+- **`hello-template`** — the minimum fields, and where a template is laid down.
+- **`case-variants`** — the derived variants, and overriding one.
+- **`scoring-thresholds`** — two instance groups at two thresholds, and which
+  of the three levels wins.
+- **`ambiguous-attribution`** — what two templates claiming one path reports,
+  and why declaring the same glob twice is a mistake.
+- **`nx-host`** — tag-scoped instance groups, and what a host without a project
+  graph does with them.
+- **`failure-modes`** — a placeholder nobody supplied, rendered as an empty
+  string on both sides of the loop rather than as an error.
+
+See [its AGENTS.md](https://github.com/JimmyPaolini/codebase/blob/main/packages/conformetry-examples/AGENTS.md) for the full index.

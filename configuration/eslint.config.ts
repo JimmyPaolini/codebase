@@ -575,6 +575,21 @@ export default [
               ],
               sourceTag: "name:conformetry-nx",
             },
+            // The examples package demonstrates the whole toolchain, so it sits
+            // above every runtime package and above the Nx host. It may not
+            // depend on `name:conformetry` — the command-line host — which is
+            // the claim its embedding example makes: the CLI holds no logic of
+            // its own, so nothing ever needs to import it.
+            {
+              onlyDependOnLibsWithTags: [
+                "name:conformetry-configuration",
+                "name:conformetry-core",
+                "name:conformetry-generation",
+                "name:conformetry-nx",
+                "name:conformetry-validation",
+              ],
+              sourceTag: "name:conformetry-examples",
+            },
             {
               notDependOnLibsWithTags: ["type:application"],
               sourceTag: "type:package",

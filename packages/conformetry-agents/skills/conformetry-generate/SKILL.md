@@ -121,3 +121,18 @@ Adding one is a configuration change, not a code change — see the
 plugin has to be regenerated with `nx sync`, and every conformetry command
 refuses to run while it is out of date rather than working from stale
 definitions.
+
+## Seeing it rather than reading about it
+
+[`conformetry-examples`](https://github.com/JimmyPaolini/codebase/tree/main/packages/conformetry-examples) is eleven self-contained examples, each
+with its own configuration, template, instances, and command. Two are worth
+running before scaffolding something unfamiliar:
+
+- **`hello-template`** — the smallest generator that exists, generated and then
+  validated in two commands, so the loop is visible end to end.
+- **`case-variants`** — every derived case variant in paths and in contents,
+  and how an explicit input overrides one.
+
+Each runs in about a second and its guide quotes the output it produces, which
+the package's own test suite asserts. See
+[its AGENTS.md](https://github.com/JimmyPaolini/codebase/blob/main/packages/conformetry-examples/AGENTS.md) for which example answers which question.

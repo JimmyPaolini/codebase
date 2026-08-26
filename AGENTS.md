@@ -73,6 +73,7 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 - **[codometer-languages](packages/codometer-languages)**: Every input language analyzer codometer measures, behind one `analyze()` call
 - **[codometer-output](packages/codometer-output)**: Every codometer output format — JSON reports, README badges, and the pull request change report
 - **[codometer-size](packages/codometer-size)**: Compresses a target's matched files and measures their size
+- **[conformetry-examples](packages/conformetry-examples)**: Eleven runnable examples of the conformetry toolchain, each with its own configuration, template, instances, and guide
 - **[lexico-components](packages/lexico-components)**: Shared React component library (shadcn/ui, Radix UI)
 - **[lexico-entities](packages/lexico-entities)**: Shared TypeORM entities and GraphQL types package
 - **[logger](packages/logger)**: Shared pino-backed NestJS `LoggerService` and `LoggerModule`
@@ -125,6 +126,14 @@ These three are authored in
 from the lockfile like any other vendored skill, so what this repository loads is
 exactly what another workspace gets. Edit the package, never the installed copy —
 `skills update` overwrites it.
+
+When a behavior needs to be **seen** rather than described, run it:
+[`packages/conformetry-examples`](packages/conformetry-examples) holds eleven
+self-contained examples, each with its own configuration, template, instances,
+and Nx target. Its [AGENTS.md](packages/conformetry-examples/AGENTS.md) maps
+"conformance reported X" to the example that reproduces X in about a second, so
+a finding can be understood without the surrounding project's conventions
+muddying it. Five instances there are broken on purpose — do not repair them.
 
 The generator namespace is emitted from `configuration/conformetry.config.ts`
 into the gitignored `.conformetry/` directory on `pnpm install`, so it is never

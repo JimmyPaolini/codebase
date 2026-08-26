@@ -31,6 +31,10 @@
     "{applications,packages,tools}/*/src/generators.ts",
     "{applications,packages,tools}/*/src/repl.ts",
     "{applications,packages,tools}/*/testing/**/*.ts",
+    // conformetry-examples: every example is read and run rather than imported,
+    // so nothing in the module graph reaches one. knip names the same paths in
+    // its own entry list for the same reason.
+    "packages/conformetry-examples/examples/*/*.ts",
     // codometer finds these by walking up from the project it is measuring,
     // never by importing them, so nothing in the module graph reaches one.
     // knip names the root file in its own entry list for the same reason.
@@ -166,6 +170,8 @@
     "**/helm/**/templates/**",
     "**/library.json",
     "**/node_modules/**",
+    "**/packages/conformetry-examples/examples/*/instances/**",
+    "**/packages/conformetry-examples/examples/*/templates/**",
     "**/pnpm-lock.yaml",
     "**/src/lib/database.types.ts",
     "**/src/routeTree.gen.ts",
