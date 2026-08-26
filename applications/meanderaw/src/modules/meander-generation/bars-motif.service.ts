@@ -4,6 +4,7 @@ import { GridGeometryService } from "./grid-geometry.service";
 import { MotifTransformsService } from "./motif-transforms.service";
 
 import type {
+  AlternateRun,
   DotShape,
   GridGeometry,
   MotifService,
@@ -106,16 +107,15 @@ export class BarsMotifService implements MotifService {
    * unit-length pieces, but only for that pre-split level range — the run's
    * `column` field (meaningful for {@link alternatedPath}'s two real,
    * alternating columns) doesn't apply here, since a dot phase draws to only
-   * one column; a run is skipped only when it directly touches the dot's own
-   * level (`fromLevel` or `toLevel` equals `dotLevel`), so the bar stays
-   * space-filling everywhere except right at the dot. This is also why
-   * {@link MotifTransformsService.dotLevels} must only ever hand back odd
-   * levels: a run's endpoints are whole numbers, and only a whole dot level
-   * can land on one to open the gap the dot needs — an even level would let
-   * every run draw straight through it, silently swallowing the dot into
-   * what looks like one continuous run. The dot itself is a zero-length path
-   * segment at the column's own x and the dot level's y, which
-   * `stroke-linecap="square"` renders as a small square mark.
+   * one column; which runs stay is decided by {@link isRunNeededAtDot}, so
+   * the bar stays space-filling everywhere except right at the dot. This is
+   * also why {@link MotifTransformsService.dotLevels} must only ever hand
+   * back odd levels: a run's endpoints are whole numbers, and only a whole
+   * dot level can land on one to open the gap the dot needs — an even level
+   * would let every run draw straight through it, silently swallowing the
+   * dot into what looks like one continuous run. The dot itself is a
+   * zero-length path segment at the column's own x and the dot level's y,
+   * which `stroke-linecap="square"` renders as a small square mark.
    */
   private dotPath(
     geometry: GridGeometry,
@@ -138,9 +138,7 @@ export class BarsMotifService implements MotifService {
         const dotY = format(geometry.offset + dotLevel * geometry.unit);
 
         const runSegments = runs
-          .filter(
-            (run) => run.fromLevel !== dotLevel && run.toLevel !== dotLevel,
-          )
+          .filter((run) => this.isRunNeededAtDot(run, { dotLevel, rows, runs }))
           .map((run) => {
             const fromY = format(
               geometry.offset + run.fromLevel * geometry.unit,
@@ -165,6 +163,47 @@ export class BarsMotifService implements MotifService {
     const capBottomY = format(geometry.offset + rows * geometry.unit);
 
     return `${phaseSegments}M${tileStartX} ${capTopY}H${capRightX}M${tileStartX} ${capBottomY}H${capRightX}`;
+  }
+
+  /**
+   * Whether `run` should still be drawn for a dot at `dotLevel`, given the
+   * full `runs` sequence spanning `[1, rows - 1]`. A run untouched by the dot
+   * (neither endpoint equals `dotLevel`) is always drawn. A run touching the
+   * dot is normally dropped to open the gap the dot needs — except when it
+   * alone reaches the bar's own structural edge (`fromLevel === 1` or
+   * `toLevel === rows - 1`) that the dot itself isn't sitting on: dropping it
+   * too would leave that edge permanently blank, since nothing else in the
+   * sequence ever reaches past it to fill the gap. That exception only holds
+   * when the dot has a second, distinct touching run on its other side —
+   * that run's own drop is what keeps the dot visible, so this one is free
+   * to stay. Without a second touching run (the dot's only neighbor spans
+   * both of the bar's edges at once, as at `rows: 3`), dropping it is the
+   * only way to avoid fully swallowing the dot.
+   */
+  private isRunNeededAtDot(
+    run: AlternateRun,
+    options: { dotLevel: number; rows: number; runs: readonly AlternateRun[] },
+  ): boolean {
+    const { dotLevel, rows, runs } = options;
+    const touchesDot = run.fromLevel === dotLevel || run.toLevel === dotLevel;
+
+    if (!touchesDot) {
+      return true;
+    }
+
+    const touchingRuns = runs.filter(
+      (candidate) =>
+        candidate.fromLevel === dotLevel || candidate.toLevel === dotLevel,
+    );
+
+    if (touchingRuns.length < 2) {
+      return false;
+    }
+
+    return (
+      (run.fromLevel === 1 && dotLevel !== 1) ||
+      (run.toLevel === rows - 1 && dotLevel !== rows - 1)
+    );
   }
 
   /**

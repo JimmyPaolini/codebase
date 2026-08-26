@@ -224,7 +224,9 @@ describe(BarsMotifService, () => {
           rows: 5,
           unitIndex: 0,
         }),
-      ).toBe("M3 15V27M3 39H3M15 27V39M15 39V51M15 15H15M3 3H27M3 63H27");
+      ).toBe(
+        "M3 15V27M3 39V51M3 39H3M15 27V39M15 39V51M15 15H15M3 3H27M3 63H27",
+      );
 
       expect(
         service.path(geometry, {
@@ -232,7 +234,32 @@ describe(BarsMotifService, () => {
           rows: 5,
           unitIndex: 0,
         }),
-      ).toBe("M3 15V27M3 39H3M15 27V39M15 39V51M15 15H15M3 3H27M3 63H27");
+      ).toBe(
+        "M3 15V27M3 39V51M3 39H3M15 27V39M15 39V51M15 15H15M3 3H27M3 63H27",
+      );
+    });
+
+    it("fills all the way to the bar's own top edge for the outermost dot at an odd row count, instead of leaving that edge blank", () => {
+      const geometry = gridGeometryService.compute(7);
+
+      // Regression coverage for a second odd-`rows` bug: trimming the
+      // outermost dot level down to `rows - 2` (see the comment above)
+      // leaves the run between that level and the bar's true top edge
+      // (`rows - 1`) touching the dot on one side only — dropping it
+      // anyway, by the same rule interior dots need on both sides, left
+      // that edge permanently blank. `isRunNeededAtDot` keeps a
+      // boundary-reaching run when the dot isn't sitting on that boundary
+      // itself, since the run on the dot's other side already opens the
+      // gap the dot needs to stay visible.
+      expect(
+        service.path(geometry, {
+          modifier: { name: "dot", shape: "up" },
+          rows: 7,
+          unitIndex: 0,
+        }),
+      ).toBe(
+        "M2.14286 10.71429V19.28571M2.14286 19.28571V27.85714M2.14286 27.85714V36.42857M2.14286 45V53.57143M2.14286 45H2.14286M10.71429 10.71429V19.28571M10.71429 36.42857V45M10.71429 45V53.57143M10.71429 27.85714H10.71429M19.28571 19.28571V27.85714M19.28571 27.85714V36.42857M19.28571 36.42857V45M19.28571 45V53.57143M19.28571 10.71429H19.28571M2.14286 2.14286H27.85714M2.14286 62.14286H27.85714",
+      );
     });
 
     it("draws alternating dash/gap segments for the split modifier, matching 5 rows bars split.svg", () => {
