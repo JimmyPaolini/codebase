@@ -42,6 +42,7 @@
     // Declared as entry points rather than excluded, exactly as
     // `configuration/knip.config.ts` declares the same files, so what they
     // import stays in the module graph instead of reading as unreachable too.
+    "packages/callidescope-examples/examples/**/*.ts",
     "packages/callidescope-examples/src/**/*.ts",
     "packages/lexico-entities/src/modules/database/migrations/**/*.ts",
     "release.config.cjs",

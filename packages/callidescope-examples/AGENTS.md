@@ -78,6 +78,9 @@ it.
   [`vitest.config.ts`](vitest.config.ts).
 - **Every callable demonstrates exactly one thing.** A fixture doing two jobs
   makes both harder to point at.
+- **Every example directory carries a `README.md`.** A new example without one
+  is half an example: the code shows the shape, the README says what
+  callidescope makes of it and why.
 
 ## Key Files
 

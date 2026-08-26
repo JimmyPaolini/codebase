@@ -4,7 +4,12 @@
   "name": "callidescope-examples",
   "projectType": "library",
   "sourceRoot": "packages/callidescope-examples",
-  "tags": ["language:typescript", "name:callidescope-examples", "type:package"],
+  "tags": [
+    "framework:nestjs",
+    "language:typescript",
+    "name:callidescope-examples",
+    "type:package"
+  ],
   "targets": {
     "callidescope": {
       "cache": true,

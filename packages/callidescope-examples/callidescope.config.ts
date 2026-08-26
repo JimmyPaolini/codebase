@@ -42,6 +42,19 @@ const callidescopeConfiguration: CallidescopeConfiguration = {
      */
     maximumDepth: 6,
   },
+  /**
+   * Each directory under `examples/` is one module, which is what module spread
+   * and misplacement are measured against.
+   *
+   * The default segment is `src`, and by default a module is
+   * `src/modules/<name>`. Nothing here lives under either: the fixtures sit in
+   * `examples/<name>/`, one directory per example, so each is readable on its
+   * own. Naming `examples` as the root segment is what keeps
+   * `ModuleSpreadService.orchestrate` reaching five distinct modules instead of
+   * collapsing every fixture into one.
+   */
+  workspaceStructure: { rootModuleSegment: "examples" },
+
   output: {
     /** The whole run as JSON, which is the machine-readable shape. */
     json: { path: "packages/callidescope-examples/output/report.json" },

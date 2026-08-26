@@ -17,8 +17,13 @@ const WORKSPACE_ROOT = path.resolve(import.meta.dirname, "..", "..", "..");
 /** The package whose fixtures every assertion below is about. */
 const EXAMPLES_DIRECTORY = "packages/callidescope-examples";
 
-/** The module identifier prefix every fixture module is reported under. */
-const MODULE_PREFIX = `${EXAMPLES_DIRECTORY}:modules/`;
+/**
+ * The module identifier prefix every example directory is reported under.
+ *
+ * One module per directory under `examples/`, which is what
+ * `workspaceStructure.rootModuleSegment` in the configuration buys.
+ */
+const MODULE_PREFIX = `${EXAMPLES_DIRECTORY}:`;
 
 /**
  * Traces the fixtures the way the Nx target does, into a throwaway report.
@@ -85,7 +90,7 @@ describe("callidescope examples (integration)", () => {
         cyclicComponentCount: 1,
         edgeCount: 53,
         entryPointCount: 23,
-        fileCount: 37,
+        fileCount: 32,
         maximumDepth: 8,
         projectCount: 1,
         unresolvedCallCount: 2,

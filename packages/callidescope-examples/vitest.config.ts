@@ -20,9 +20,9 @@ export default mergeConfig(
 
       coverage: {
         /**
-         * Nothing under `src/` is instrumented, and that is the point.
+         * Nothing in this package is instrumented, and that is the point.
          *
-         * This package's source is fixture code: it exists to be *read* by the
+         * Its source is fixture code: it exists to be *read* by the
          * type checker, not executed by a test. Every callable in it is shaped
          * to make one resolution rule, one finding, or one annotation visible,
          * and executing them would prove nothing about any of that — an

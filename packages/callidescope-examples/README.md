@@ -45,8 +45,10 @@ nx run callidescope-examples:vitest                # assert every finding below
 
 ## The examples
 
-Each row is one directory under [`src/modules`](src/modules), and each is
-readable on its own.
+Each directory under [`examples/`](examples) is one example, carries its own
+`README.md`, and is readable on its own. Each is also one **module** in
+callidescope's sense, which is the unit module spread and misplacement are
+measured against.
 
 ### The resolution table, made executable
 
@@ -55,13 +57,13 @@ One fixture per row of the "How it follows a call" table in
 
 | Fixture | Written as | Resolved to |
 | ------- | ---------- | ----------- |
-| [`plain-call`](src/modules/plain-call) | `normalize(label)` | `normalizeLabel` — the declaration, unwrapped through the import alias |
-| [`injected-dependency`](src/modules/injected-dependency) | `this.inventoryService.reserve(…)` | `InventoryService.reserve`, through the constructor parameter's type |
-| [`structural-interface`](src/modules/structural-interface) | `provider.ingest(document)` | `FilesystemProviderService.ingest` — no `implements`, an arrow-typed property |
-| [`base-class`](src/modules/base-class) | `super.run()` | `BaseTaskService.run`, the base declaration |
-| [`constructed-class`](src/modules/constructed-class) | `new ParserService(source)` | `ParserService.constructor`, which has a body |
-| [`callback-argument`](src/modules/callback-argument) | `entries.map(entry => …)` | The arrow, as its own frame. `map` itself is external |
-| [`computed-member`](src/modules/computed-member) | `REPORT_HANDLERS[format]()` | Nothing. Recorded as unfollowable rather than guessed |
+| [`plain-call`](examples/plain-call) | `normalize(label)` | `normalizeLabel` — the declaration, unwrapped through the import alias |
+| [`injected-dependency`](examples/injected-dependency) | `this.inventoryService.reserve(…)` | `InventoryService.reserve`, through the constructor parameter's type |
+| [`structural-interface`](examples/structural-interface) | `provider.ingest(document)` | `FilesystemProviderService.ingest` — no `implements`, an arrow-typed property |
+| [`base-class`](examples/base-class) | `super.run()` | `BaseTaskService.run`, the base declaration |
+| [`constructed-class`](examples/constructed-class) | `new ParserService(source)` | `ParserService.constructor`, which has a body |
+| [`callback-argument`](examples/callback-argument) | `entries.map(entry => …)` | The arrow, as its own frame. `map` itself is external |
+| [`computed-member`](examples/computed-member) | `REPORT_HANDLERS[format]()` | Nothing. Recorded as unfollowable rather than guessed |
 
 The last row is why this package's deepest stack prints as `depth ≥ 8` rather
 than `depth 8`. Eight frames of ordinary forwarding end at a member name that is
@@ -72,7 +74,7 @@ nothing would hide a stack that is already too deep at the point it goes dark.
 
 ### The cap on structural matching
 
-[`implementation-fan-out`](src/modules/implementation-fan-out) declares three
+[`implementation-fan-out`](examples/implementation-fan-out) declares three
 classes satisfying one interface, against a
 `maximumImplementationCandidates` of two. The whole expansion is dropped and
 recorded as unfollowable — not narrowed to a favorite, which would invent a
@@ -85,7 +87,7 @@ name, and this dropped expansion.
 
 ### Recursion
 
-[`mutual-recursion`](src/modules/mutual-recursion) is a cycle of three. The
+[`mutual-recursion`](examples/mutual-recursion) is a cycle of three. The
 three collapse into one component before depth is measured, so they contribute
 three frames once.
 
@@ -114,7 +116,11 @@ has a fixture:
 | `lifecycle` | `EntryPointsService.onModuleInit` |
 | `module-bootstrap` | `bootstrap` in [`src/main.ts`](src/main.ts) |
 | `exported-function` | `normalizeExampleLabel` in [`src/index.ts`](src/index.ts) |
-| `orphan-root` | [`summarizeOrphanedWork`](src/modules/entry-points/orphan-root.utilities.ts), which nothing calls |
+| `orphan-root` | [`summarizeOrphanedWork`](examples/entry-points/entry-points.ts), which nothing calls |
+
+The bootstrap and barrel rules key on the literal paths `src/main.ts` and
+`src/index.ts`, so those two fixtures are the only files in this package outside
+`examples/`.
 
 Orphan promotion is the safety net rather than a feature. Without it a missing
 entry-point rule removes a whole subtree from every measurement in silence;
@@ -125,7 +131,7 @@ fixtures have no framework to call them.
 
 `dependency-cruiser` says the same thing from the other direction: it reports
 `no-orphans` against
-[`orphan-root.utilities.ts`](src/modules/entry-points/orphan-root.utilities.ts)
+[`orphan-root.utilities.ts`](examples/entry-points/entry-points.ts)
 as a warning on every run of this project. Two tools independently noticing the
 same file is the example working, not a lint failure to chase.
 
@@ -158,7 +164,7 @@ the splice needs.
 
 The diagram is worth drawing only when stacks share tails, so two of these
 fixtures share one:
-[`roundToCents`](src/modules/shared-tail/shared-tail.utilities.ts) is the last
+[`roundToCents`](examples/shared-tail/round-to-cents.ts) is the last
 frame of both `DeepStackService.quote` and `ForwardingStackService.handle`, and
 the flowchart shows them converging on it. A single stack drawn alone is a
 straight line, and a straight line is a list with extra steps.
@@ -196,10 +202,10 @@ callidescope --check                   # a gate that cannot fail is a mistake, n
 Depth is a question, not a verdict. Two fixtures are eight frames deep and the
 right answer differs completely:
 
-- [`deep-stack`](src/modules/deep-stack) — every layer transforms the amount it
+- [`deep-stack`](examples/deep-stack) — every layer transforms the amount it
   was handed. Nothing here is removable one layer at a time; the question is
   whether pricing needs this many stages at all.
-- [`forwarding-stack`](src/modules/forwarding-stack) — six of the eight frames
+- [`forwarding-stack`](examples/forwarding-stack) — six of the eight frames
   are `return this.next(amount)`. Read one file at a time each is the least
   objectionable code there is; read as a stack they are pure overhead, and
   collapsing them costs nothing.
@@ -215,10 +221,10 @@ converts a gate into a record of a decision nobody made.
 
 ### A module-spread finding
 
-[`module-spread`](src/modules/module-spread) reports
+[`module-spread`](examples/module-spread) reports
 `ModuleSpreadService.orchestrate`: its callees reach six modules, and it calls
 five of them _directly_. Both halves matter, which is what
-[`spread-near-miss`](src/modules/spread-near-miss) is for — it reaches
+[`spread-near-miss`](examples/spread-near-miss) is for — it reaches
 everything the orchestrator reaches, but calls one module directly, and is
 correctly not reported. Transitive reach alone would flag every entry point in
 the repository, because an entry point legitimately reaches the whole program.
@@ -230,9 +236,9 @@ its own caller — not to inline anything.
 
 ### A misplaced-callable finding
 
-[`misplaced-callable`](src/modules/misplaced-callable) declares
+[`misplaced-callable`](examples/misplaced-callable) declares
 `formatCurrency`; both of its callers live in
-[`receipt`](src/modules/receipt). The report names the move:
+[`receipt`](examples/receipt). The report names the move:
 
 ```text
 formatCurrency | declared in …:modules/misplaced-callable | called from …:modules/receipt | 2/2
@@ -246,7 +252,7 @@ be wrong about most often.
 
 ### Frame annotations
 
-[`frame-annotations`](src/modules/frame-annotations) is seven frames, one per
+[`frame-annotations`](examples/frame-annotations) is seven frames, one per
 shape a comment-trivia reader gets wrong or a renderer has to shorten. The stack
 is deep on purpose: annotations are read only for the frames a report actually
 prints, so a shape has to be inside a reported stack to be demonstrated at all.
@@ -300,25 +306,26 @@ whose entire content is deliberately-shaped fixture code. The answers:
 | ----- | ------ |
 | Workspace depth gate | The package is in [`.callidescopeignore`](../../configuration/.callidescopeignore) and traced by its own configuration instead |
 | `projectReadmes` | Yes — a section reporting the deliberately-bad fixtures is the best example in the package, not noise |
-| Test coverage | `src/` is not instrumented. Fixture code exists to be read by the type checker, not executed; what is verified is what callidescope makes of it |
-| `knip` | Scoped for this project. Orphan-root fixtures are uncalled on purpose, which is exactly what knip flags |
+| Test coverage | Nothing is instrumented. Fixture code exists to be read by the type checker, not executed; what is verified is what callidescope makes of it |
+| `knip` and `fallow` | Every fixture is declared an entry point rather than ignored, so both keep checking dependencies while the orphan-root fixture stops being a finding |
 | `jscpd` | Scoped for this project. The resolution-table fixtures are near-identical by design |
 | `codometer` | No declared size limit: the package is private and never built, so there is no bundle to gate |
-| Nx tags | `type:package`, `language:typescript`, `name:callidescope-examples` — and deliberately **no** `framework:nestjs`, see below |
-| `conformetry` | Not an instance of any template. The `nestjs-*` generators select their instances by `framework:nestjs`, so carrying that tag would make every fixture module a conformance instance |
+| Nx tags | `type:package`, `framework:nestjs`, `language:typescript`, `name:callidescope-examples`. The NestJS dependency is real — `injected-dependency` is the headline case |
+| Project layout | An `examples/` directory rather than `src/modules/`, matching the other `*-examples` packages. `configuration/codebase-structure.json` declares it; `workspaceStructure.rootModuleSegment` in this package's config is what keeps each directory a distinct module |
+| `conformetry` | Not an instance of any template, and nothing had to be suppressed to keep it that way — see below |
 
-The missing `framework:nestjs` is the one answer worth expanding, because the
-dependency it would describe is real: `@nestjs/common` is imported by most of
-these fixtures, and `injected-dependency` is the headline case the whole tool
-exists for. The tag is off anyway, because in this workspace it is not a label —
-it is a selector. `configuration/conformetry.config.ts` picks the instances of
-`nestjs-service-module`, `nestjs-service-file`, and three more by that tag, so
-carrying it would make every directory under `src/modules/` a conformance
-instance owing a unit test and the template's full file set. The fixtures would
-then be shaped by a generator template rather than by what they demonstrate.
+The layout is what keeps this package out of conformance, and it is worth
+saying why, because the alternative was worse. Conformetry selects the instances
+of `nestjs-service-module`, `nestjs-service-file`, and three more by pattern:
+`src/modules/*` and `src/modules/*/*.service.ts`, on any project tagged
+`framework:nestjs`. Under the original `src/modules/` layout, carrying that tag
+made every fixture directory a conformance instance owing a unit test and the
+template's full file set — so the fixtures would have been shaped by a generator
+template rather than by what they demonstrate.
 
-`packages/codometer-agents` and `packages/conformetry-agents` sit outside the
-framework tags for the same kind of reason, and this package follows them.
+Moving to `examples/` dissolved that without suppressing anything. There is no
+`src/modules/` for those patterns to match, so the tag is free to be accurate
+about a dependency that is genuinely real.
 
 ## Test
 
@@ -346,7 +353,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 | Measure | Value |
 | --- | --- |
 | Callables | 69 |
-| Files | 37 |
+| Files | 32 |
 | Calls traced | 53 |
 | Call stacks | 14 |
 | Deepest stack | 8 |
@@ -358,63 +365,63 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 **1. `ComputedMemberService.dispatch`** — depth ≥ 8 · orphan-root
 
 ```text
-🚀 ComputedMemberService.dispatch(format: string): string [packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts:56]
+🚀 ComputedMemberService.dispatch(format: string): string [packages/callidescope-examples/examples/computed-member/computed-member.ts:60]
    ↳ Dispatches a report request to a handler named at runtime.
-  └─> ComputedMemberService.read(format: string): string [packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts:39]
+  └─> ComputedMemberService.read(format: string): string [packages/callidescope-examples/examples/computed-member/computed-member.ts:43]
      ↳ Reads the request's format and passes it on.
-    └─> ComputedMemberService.normalize(format: string): string [packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts:29]
+    └─> ComputedMemberService.normalize(format: string): string [packages/callidescope-examples/examples/computed-member/computed-member.ts:33]
        ↳ Normalizes the requested format before anything routes on it.
-      └─> ComputedMemberService.route(format: string): string [packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts:44]
+      └─> ComputedMemberService.route(format: string): string [packages/callidescope-examples/examples/computed-member/computed-member.ts:48]
          ↳ Routes the request one layer further down.
-        └─> ComputedMemberService.select(format: string): string [packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts:49]
+        └─> ComputedMemberService.select(format: string): string [packages/callidescope-examples/examples/computed-member/computed-member.ts:53]
            ↳ Selects the branch that prepares the format.
-          └─> ComputedMemberService.prepare(format: string): string [packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts:34]
+          └─> ComputedMemberService.prepare(format: string): string [packages/callidescope-examples/examples/computed-member/computed-member.ts:38]
              ↳ Prepares the format string the handler table is keyed by.
-            └─> ComputedMemberService.choose(format: string): string [packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts:24]
+            └─> ComputedMemberService.choose(format: string): string [packages/callidescope-examples/examples/computed-member/computed-member.ts:28]
                ↳ Chooses a handler by name.
-              └─> ComputedMemberService.apply(format: string): string [packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts:19]
+              └─> ComputedMemberService.apply(format: string): string [packages/callidescope-examples/examples/computed-member/computed-member.ts:23]
                  ↳ Applies the selected handler, whichever one that turns out to be.
 ```
 
 **2. `DeepStackService.quote`** — depth 8 · orphan-root
 
 ```text
-🚀 DeepStackService.quote(amount: number): number [packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts:50]
+🚀 DeepStackService.quote(amount: number): number [packages/callidescope-examples/examples/deep-stack/deep-stack.ts:50]
    ↳ Quotes one order, priced through every stage below.
-  └─> DeepStackService.validate(amount: number): number [packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts:43]
+  └─> DeepStackService.validate(amount: number): number [packages/callidescope-examples/examples/deep-stack/deep-stack.ts:43]
      ↳ Rejects a negative amount before anything else reads it.
-    └─> DeepStackService.removeDiscount(amount: number): number [packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts:33]
+    └─> DeepStackService.removeDiscount(amount: number): number [packages/callidescope-examples/examples/deep-stack/deep-stack.ts:33]
        ↳ Removes the tier discount from the validated amount.
-      └─> DeepStackService.resolveTier(amount: number): number [packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts:38]
+      └─> DeepStackService.resolveTier(amount: number): number [packages/callidescope-examples/examples/deep-stack/deep-stack.ts:38]
          ↳ Picks the pricing tier the discounted amount falls into.
-        └─> DeepStackService.loadRate(amount: number, tier: number): number [packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts:28]
+        └─> DeepStackService.loadRate(amount: number, tier: number): number [packages/callidescope-examples/examples/deep-stack/deep-stack.ts:28]
            ↳ Looks up the tax rate the resolved tier pays.
-          └─> DeepStackService.applyTax(amount: number, rate: number): number [packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts:18]
+          └─> DeepStackService.applyTax(amount: number, rate: number): number [packages/callidescope-examples/examples/deep-stack/deep-stack.ts:18]
              ↳ Adds tax at the resolved rate.
-            └─> DeepStackService.convertCurrency(amount: number): number [packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts:23]
+            └─> DeepStackService.convertCurrency(amount: number): number [packages/callidescope-examples/examples/deep-stack/deep-stack.ts:23]
                ↳ Converts to the reporting currency and rounds through the shared tail.
-              └─> roundToCents(amount: number): number [packages/callidescope-examples/src/modules/shared-tail/shared-tail.utilities.ts:10]
+              └─> roundToCents(amount: number): number [packages/callidescope-examples/examples/shared-tail/round-to-cents.ts:8]
                  ↳ The tail two of this package's deep stacks share.
 ```
 
 **3. `ForwardingStackService.handle`** — depth 8 · orphan-root
 
 ```text
-🚀 ForwardingStackService.handle(amount: number): number [packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts:53]
+🚀 ForwardingStackService.handle(amount: number): number [packages/callidescope-examples/examples/forwarding-stack/forwarding-stack.ts:53]
    ↳ Handles one amount, through six layers that do nothing to it.
-  └─> ForwardingStackService.process(amount: number): number [packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts:41]
+  └─> ForwardingStackService.process(amount: number): number [packages/callidescope-examples/examples/forwarding-stack/forwarding-stack.ts:41]
      ↳ Forwards, unchanged.
-    └─> ForwardingStackService.execute(amount: number): number [packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts:21]
+    └─> ForwardingStackService.execute(amount: number): number [packages/callidescope-examples/examples/forwarding-stack/forwarding-stack.ts:21]
        ↳ Forwards, unchanged.
-      └─> ForwardingStackService.forward(amount: number): number [packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts:31]
+      └─> ForwardingStackService.forward(amount: number): number [packages/callidescope-examples/examples/forwarding-stack/forwarding-stack.ts:31]
          ↳ Forwards, unchanged.
-        └─> ForwardingStackService.perform(amount: number): number [packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts:36]
+        └─> ForwardingStackService.perform(amount: number): number [packages/callidescope-examples/examples/forwarding-stack/forwarding-stack.ts:36]
            ↳ Forwards, unchanged.
-          └─> ForwardingStackService.relay(amount: number): number [packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts:46]
+          └─> ForwardingStackService.relay(amount: number): number [packages/callidescope-examples/examples/forwarding-stack/forwarding-stack.ts:46]
              ↳ Forwards, unchanged.
-            └─> ForwardingStackService.finish(amount: number): number [packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts:26]
+            └─> ForwardingStackService.finish(amount: number): number [packages/callidescope-examples/examples/forwarding-stack/forwarding-stack.ts:26]
                ↳ Rounds the amount, which is the only work on this path.
-              └─> roundToCents(amount: number): number [packages/callidescope-examples/src/modules/shared-tail/shared-tail.utilities.ts:10]
+              └─> roundToCents(amount: number): number [packages/callidescope-examples/examples/shared-tail/round-to-cents.ts:8]
                  ↳ The tail two of this package's deep stacks share.
 ```
 
@@ -424,124 +431,124 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 **4. `FrameAnnotationsService.trace`** — depth 7 · orphan-root
 
 ```text
-🚀 FrameAnnotationsService.trace(value: string): string [packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:91]
+🚀 FrameAnnotationsService.trace(value: string): string [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:95]
    ↳ Traces one value through every annotation shape below.
-  └─> FrameAnnotationsService.render(value: number | string): string | string[] [packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:84]
+  └─> FrameAnnotationsService.render(value: number | string): string | string[] [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:88]
      ↳ Renders one value for display, in the form its type calls for.
-    └─> FrameAnnotationsService.summarize(rendered: string): string [packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:23]
+    └─> FrameAnnotationsService.summarize(rendered: string): string [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:27]
        ↳ Collapses a rendered value to something a description can quote.
-      └─> FrameAnnotationsService.describe({ count, name }: DescribeArguments): string [packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:60]
+      └─> FrameAnnotationsService.describe({ count, name }: DescribeArguments): string [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:64]
          ↳ Describes a value from a parameter with no name at all in the syntax.
-        └─> FrameAnnotationsService.compose(description: string): string [packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:29]
+        └─> FrameAnnotationsService.compose(description: string): string [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:33]
            ↳ Joins the parts a description was built from.
-          └─> FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong(…): string [packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:49]
+          └─> FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong(…): string [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:53]
              ↳ Takes three parameters whose rendered signature runs past eighty characters, so the printed frame collapses it to `(…):…
-            └─> FrameAnnotationsService.finish(description: string): string [packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:39]
+            └─> FrameAnnotationsService.finish(description: string): string [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:43]
                ↳ Finishes the chain and hands back what the layers above it built.
 ```
 
 **5. `SpreadNearMissService.review`** — depth 5 · orphan-root
 
 ```text
-🚀 SpreadNearMissService.review(label: string): string [packages/callidescope-examples/src/modules/spread-near-miss/spread-near-miss.service.ts:23]
+🚀 SpreadNearMissService.review(label: string): string [packages/callidescope-examples/examples/spread-near-miss/spread-near-miss.ts:23]
    ↳ Delegates the whole job to the one module it knows about.
-  └─> ModuleSpreadService.orchestrate(label: string): string [packages/callidescope-examples/src/modules/module-spread/module-spread.service.ts:32]
+  └─> ModuleSpreadService.orchestrate(label: string): string [packages/callidescope-examples/examples/module-spread/module-spread.ts:32]
      ↳ Touches five modules in one method, which is the finding.
-    └─> CallbackArgumentService.shoutAll(entries: readonly string[]): string[] [packages/callidescope-examples/src/modules/callback-argument/callback-argument.service.ts:22]
+    └─> CallbackArgumentService.shoutAll(entries: readonly string[]): string[] [packages/callidescope-examples/examples/callback-argument/callback-argument.ts:22]
        ↳ Shouts every entry, through a callback `map` invokes.
-      └─> CallbackArgumentService.map(…)(entry: string): string [packages/callidescope-examples/src/modules/callback-argument/callback-argument.service.ts:23]
-        └─> CallbackArgumentService.shout(entry: string): string [packages/callidescope-examples/src/modules/callback-argument/callback-argument.service.ts:15]
+      └─> CallbackArgumentService.map(…)(entry: string): string [packages/callidescope-examples/examples/callback-argument/callback-argument.ts:23]
+        └─> CallbackArgumentService.shout(entry: string): string [packages/callidescope-examples/examples/callback-argument/callback-argument.ts:15]
            ↳ Upper-cases one entry.
 ```
 
 **6. `FrameAnnotationsService.legacyRender`** — depth 4 · orphan-root
 
 ```text
-🚀 FrameAnnotationsService.legacyRender(value: string): string ⚠ deprecated [packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:70]
+🚀 FrameAnnotationsService.legacyRender(value: string): string ⚠ deprecated [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:74]
    ↳ Renders a value the way this package used to.
-  └─> FrameAnnotationsService.compose(description: string): string [packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:29]
+  └─> FrameAnnotationsService.compose(description: string): string [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:33]
      ↳ Joins the parts a description was built from.
-    └─> FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong(…): string [packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:49]
+    └─> FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong(…): string [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:53]
        ↳ Takes three parameters whose rendered signature runs past eighty characters, so the printed frame collapses it to `(…):…
-      └─> FrameAnnotationsService.finish(description: string): string [packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:39]
+      └─> FrameAnnotationsService.finish(description: string): string [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:43]
          ↳ Finishes the chain and hands back what the layers above it built.
 ```
 
 **7. `MutualRecursionService.traverse`** — depth 4 · orphan-root
 
 ```text
-🚀 MutualRecursionService.traverse(remaining: number): number [packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts:45]
+🚀 MutualRecursionService.traverse(remaining: number): number [packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:45]
    ↳ Enters the cycle from outside it, so the cluster has a root above it.
-  └─> MutualRecursionService.branch(remaining: number): number (cycle) [packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts:28]
+  └─> MutualRecursionService.branch(remaining: number): number (cycle) [packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:28]
      ↳ Second of the three, one hop from the leaf.
-    └─> MutualRecursionService.leaf(remaining: number): number (cycle) [packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts:38]
+    └─> MutualRecursionService.leaf(remaining: number): number (cycle) [packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:38]
        ↳ Third of the three, which calls back to the first.
-      └─> MutualRecursionService.descend(remaining: number): number (cycle) [packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts:33]
+      └─> MutualRecursionService.descend(remaining: number): number (cycle) [packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:33]
          ↳ First of the three, and the way into the cycle.
 ```
 
 **8. `bootstrap`** — depth 3 · module-bootstrap
 
 ```text
-🚀 bootstrap(): number [packages/callidescope-examples/src/main.ts:11]
+🚀 bootstrap(): number [packages/callidescope-examples/src/main.ts:14]
    ↳ The `module-bootstrap` entry-point kind.
-  └─> OrdersService.place(available: number): number [packages/callidescope-examples/src/modules/injected-dependency/orders.service.ts:21]
+  └─> OrdersService.place(available: number): number [packages/callidescope-examples/examples/injected-dependency/orders.ts:21]
      ↳ Places one order against the injected inventory.
-    └─> InventoryService.reserve(available: number): number [packages/callidescope-examples/src/modules/injected-dependency/inventory.service.ts:9]
+    └─> InventoryService.reserve(available: number): number [packages/callidescope-examples/examples/injected-dependency/inventory.ts:9]
        ↳ Reserves one unit and reports the count left behind.
 ```
 
-**9. `normalizeExampleLabel`** — depth 2 · exported-function
+**9. `EntryPointsService.onModuleInit`** — depth 2 · lifecycle
 
 ```text
-🚀 normalizeExampleLabel(label: string): string [packages/callidescope-examples/src/index.ts:12]
-   ↳ The `exported-function` entry-point kind.
-  └─> normalizeLabel(label: string): string [packages/callidescope-examples/src/modules/plain-call/plain-call.utilities.ts:4]
-     ↳ Trims a label and collapses the whitespace inside it.
-```
-
-**10. `EntryPointsService.onModuleInit`** — depth 2 · lifecycle
-
-```text
-🚀 EntryPointsService.onModuleInit(): string [packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts:29]
+🚀 EntryPointsService.onModuleInit(): string [packages/callidescope-examples/examples/entry-points/entry-points.ts:29]
    ↳ A lifecycle hook a framework calls — the `lifecycle` kind.
-  └─> EntryPointsService.prepareCache(): string [packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts:22]
+  └─> EntryPointsService.prepareCache(): string [packages/callidescope-examples/examples/entry-points/entry-points.ts:22]
      ↳ Does the work a lifecycle hook is called to do.
 ```
 
-**11. `EntryPointsService.readReport`** — depth 2 · decorated-method
+**10. `EntryPointsService.readReport`** — depth 2 · decorated-method
 
 ```text
-🚀 EntryPointsService.readReport(): string [packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts:34]
+🚀 EntryPointsService.readReport(): string [packages/callidescope-examples/examples/entry-points/entry-points.ts:34]
    ↳ A decorated method — the `decorated-method` kind.
-  └─> EntryPointsService.buildReport(): string [packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts:17]
+  └─> EntryPointsService.buildReport(): string [packages/callidescope-examples/examples/entry-points/entry-points.ts:17]
      ↳ Builds the body a decorated request handler answers with.
+```
+
+**11. `normalizeExampleLabel`** — depth 2 · exported-function
+
+```text
+🚀 normalizeExampleLabel(label: string): string [packages/callidescope-examples/src/index.ts:15]
+   ↳ The `exported-function` entry-point kind.
+  └─> normalizeLabel(label: string): string [packages/callidescope-examples/examples/plain-call/normalize-label.ts:2]
+     ↳ Trims a label and collapses the whitespace inside it.
 ```
 
 **12. `ReceiptService.renderLine`** — depth 2 · orphan-root
 
 ```text
-🚀 ReceiptService.renderLine(amount: number): string [packages/callidescope-examples/src/modules/receipt/receipt.service.ts:16]
+🚀 ReceiptService.renderLine(amount: number): string [packages/callidescope-examples/examples/receipt/receipt.ts:16]
    ↳ Renders one line of a receipt.
-  └─> formatCurrency(amount: number): string [packages/callidescope-examples/src/modules/misplaced-callable/misplaced-callable.utilities.ts:11]
+  └─> formatCurrency(amount: number): string [packages/callidescope-examples/examples/misplaced-callable/format-currency.ts:9]
      ↳ A helper filed in the wrong module, and the report says where it belongs.
 ```
 
 **13. `ReceiptService.renderTotal`** — depth 2 · orphan-root
 
 ```text
-🚀 ReceiptService.renderTotal(amount: number): string [packages/callidescope-examples/src/modules/receipt/receipt.service.ts:21]
+🚀 ReceiptService.renderTotal(amount: number): string [packages/callidescope-examples/examples/receipt/receipt.ts:21]
    ↳ Renders the total line of a receipt.
-  └─> formatCurrency(amount: number): string [packages/callidescope-examples/src/modules/misplaced-callable/misplaced-callable.utilities.ts:11]
+  └─> formatCurrency(amount: number): string [packages/callidescope-examples/examples/misplaced-callable/format-currency.ts:9]
      ↳ A helper filed in the wrong module, and the report says where it belongs.
 ```
 
 **14. `StructuralInterfaceService.ingestDocument`** — depth 2 · orphan-root
 
 ```text
-🚀 StructuralInterfaceService.ingestDocument(provider: StructuralProvider, document: string): number [packages/callidescope-examples/src/modules/structural-interface/structural-interface.service.ts:17]
+🚀 StructuralInterfaceService.ingestDocument(provider: StructuralProvider, document: string): number [packages/callidescope-examples/examples/structural-interface/structural-interface.ts:17]
    ↳ Ingests one document through whatever satisfies the interface.
-  └─> FilesystemProviderService.ingest(document: string): number [packages/callidescope-examples/src/modules/structural-interface/filesystem-provider.service.ts:14]
+  └─> FilesystemProviderService.ingest(document: string): number [packages/callidescope-examples/examples/structural-interface/structural-provider.ts:25]
      ↳ Counts the words one document contributes.
 ```
 
@@ -551,65 +558,65 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ModuleSpreadService.orchestrate` | 6 | `packages/callidescope-examples:modules/base-class`, `packages/callidescope-examples:modules/callback-argument`, `packages/callidescope-examples:modules/constructed-class`, `packages/callidescope-examples:modules/injected-dependency`, `packages/callidescope-examples:modules/plain-call` | `packages/callidescope-examples/src/modules/module-spread/module-spread.service.ts:32` |
+| `ModuleSpreadService.orchestrate` | 6 | `packages/callidescope-examples:base-class`, `packages/callidescope-examples:callback-argument`, `packages/callidescope-examples:constructed-class`, `packages/callidescope-examples:injected-dependency`, `packages/callidescope-examples:plain-call` | `packages/callidescope-examples/examples/module-spread/module-spread.ts:32` |
 
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ModuleSpreadService.orchestrate` | 5 | `PlainCallService.render`, `OrdersService.place`, `ConstructedClassService.count`, `BaseClassService.run`, `CallbackArgumentService.shoutAll` | `packages/callidescope-examples/src/modules/module-spread/module-spread.service.ts:32` |
-| `bootstrap` | 2 | `OrdersService.place`, `OrdersService.constructor` | `packages/callidescope-examples/src/main.ts:11` |
-| `normalizeExampleLabel` | 1 | `normalizeLabel` | `packages/callidescope-examples/src/index.ts:12` |
+| `ModuleSpreadService.orchestrate` | 5 | `PlainCallService.render`, `OrdersService.place`, `ConstructedClassService.count`, `BaseClassService.run`, `CallbackArgumentService.shoutAll` | `packages/callidescope-examples/examples/module-spread/module-spread.ts:32` |
+| `bootstrap` | 2 | `OrdersService.place`, `OrdersService.constructor` | `packages/callidescope-examples/src/main.ts:14` |
+| `BaseClassService.run` | 1 | `BaseTaskService.run` | `packages/callidescope-examples/examples/base-class/base-class.ts:16` |
 
 <details>
 <summary>44 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `OrdersService.place` | 1 | `InventoryService.reserve` | `packages/callidescope-examples/src/modules/injected-dependency/orders.service.ts:21` |
-| `BaseClassService.run` | 1 | `BaseTaskService.run` | `packages/callidescope-examples/src/modules/base-class/base-class.service.ts:16` |
-| `CallbackArgumentService.shoutAll` | 1 | `CallbackArgumentService.map(…)` | `packages/callidescope-examples/src/modules/callback-argument/callback-argument.service.ts:22` |
-| `CallbackArgumentService.map(…)` | 1 | `CallbackArgumentService.shout` | `packages/callidescope-examples/src/modules/callback-argument/callback-argument.service.ts:23` |
-| `ComputedMemberService.choose` | 1 | `ComputedMemberService.apply` | `packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts:24` |
-| `ComputedMemberService.normalize` | 1 | `ComputedMemberService.route` | `packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts:29` |
-| `ComputedMemberService.prepare` | 1 | `ComputedMemberService.choose` | `packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts:34` |
-| `ComputedMemberService.read` | 1 | `ComputedMemberService.normalize` | `packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts:39` |
-| `ComputedMemberService.route` | 1 | `ComputedMemberService.select` | `packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts:44` |
-| `ComputedMemberService.select` | 1 | `ComputedMemberService.prepare` | `packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts:49` |
-| `ComputedMemberService.dispatch` | 1 | `ComputedMemberService.read` | `packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts:56` |
-| `ConstructedClassService.count` | 1 | `ParserService.constructor` | `packages/callidescope-examples/src/modules/constructed-class/constructed-class.service.ts:17` |
-| `DeepStackService.applyTax` | 1 | `DeepStackService.convertCurrency` | `packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts:18` |
-| `DeepStackService.convertCurrency` | 1 | `roundToCents` | `packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts:23` |
-| `DeepStackService.loadRate` | 1 | `DeepStackService.applyTax` | `packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts:28` |
-| `DeepStackService.removeDiscount` | 1 | `DeepStackService.resolveTier` | `packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts:33` |
-| `DeepStackService.resolveTier` | 1 | `DeepStackService.loadRate` | `packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts:38` |
-| `DeepStackService.validate` | 1 | `DeepStackService.removeDiscount` | `packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts:43` |
-| `DeepStackService.quote` | 1 | `DeepStackService.validate` | `packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts:50` |
-| `EntryPointsService.onModuleInit` | 1 | `EntryPointsService.prepareCache` | `packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts:29` |
-| `EntryPointsService.readReport` | 1 | `EntryPointsService.buildReport` | `packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts:34` |
-| `ForwardingStackService.execute` | 1 | `ForwardingStackService.forward` | `packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts:21` |
-| `ForwardingStackService.finish` | 1 | `roundToCents` | `packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts:26` |
-| `ForwardingStackService.forward` | 1 | `ForwardingStackService.perform` | `packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts:31` |
-| `ForwardingStackService.perform` | 1 | `ForwardingStackService.relay` | `packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts:36` |
-| `ForwardingStackService.process` | 1 | `ForwardingStackService.execute` | `packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts:41` |
-| `ForwardingStackService.relay` | 1 | `ForwardingStackService.finish` | `packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts:46` |
-| `ForwardingStackService.handle` | 1 | `ForwardingStackService.process` | `packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts:53` |
-| `FrameAnnotationsService.summarize` | 1 | `FrameAnnotationsService.describe` | `packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:23` |
-| `FrameAnnotationsService.compose` | 1 | `FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong` | `packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:29` |
-| `FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong` | 1 | `FrameAnnotationsService.finish` | `packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:49` |
-| `FrameAnnotationsService.describe` | 1 | `FrameAnnotationsService.compose` | `packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:60` |
-| `FrameAnnotationsService.legacyRender` | 1 | `FrameAnnotationsService.compose` | `packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:70` |
-| `FrameAnnotationsService.render` | 1 | `FrameAnnotationsService.summarize` | `packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:84` |
-| `FrameAnnotationsService.trace` | 1 | `FrameAnnotationsService.render` | `packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts:91` |
-| `PlainCallService.render` | 1 | `normalizeLabel` | `packages/callidescope-examples/src/modules/plain-call/plain-call.service.ts:17` |
-| `MutualRecursionService.branch` | 1 | `MutualRecursionService.leaf` | `packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts:28` |
-| `MutualRecursionService.descend` | 1 | `MutualRecursionService.branch` | `packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts:33` |
-| `MutualRecursionService.leaf` | 1 | `MutualRecursionService.descend` | `packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts:38` |
-| `MutualRecursionService.traverse` | 1 | `MutualRecursionService.descend` | `packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts:45` |
-| `ReceiptService.renderLine` | 1 | `formatCurrency` | `packages/callidescope-examples/src/modules/receipt/receipt.service.ts:16` |
-| `ReceiptService.renderTotal` | 1 | `formatCurrency` | `packages/callidescope-examples/src/modules/receipt/receipt.service.ts:21` |
-| `SpreadNearMissService.review` | 1 | `ModuleSpreadService.orchestrate` | `packages/callidescope-examples/src/modules/spread-near-miss/spread-near-miss.service.ts:23` |
-| `StructuralInterfaceService.ingestDocument` | 1 | `FilesystemProviderService.ingest` | `packages/callidescope-examples/src/modules/structural-interface/structural-interface.service.ts:17` |
+| `CallbackArgumentService.shoutAll` | 1 | `CallbackArgumentService.map(…)` | `packages/callidescope-examples/examples/callback-argument/callback-argument.ts:22` |
+| `CallbackArgumentService.map(…)` | 1 | `CallbackArgumentService.shout` | `packages/callidescope-examples/examples/callback-argument/callback-argument.ts:23` |
+| `ComputedMemberService.choose` | 1 | `ComputedMemberService.apply` | `packages/callidescope-examples/examples/computed-member/computed-member.ts:28` |
+| `ComputedMemberService.normalize` | 1 | `ComputedMemberService.route` | `packages/callidescope-examples/examples/computed-member/computed-member.ts:33` |
+| `ComputedMemberService.prepare` | 1 | `ComputedMemberService.choose` | `packages/callidescope-examples/examples/computed-member/computed-member.ts:38` |
+| `ComputedMemberService.read` | 1 | `ComputedMemberService.normalize` | `packages/callidescope-examples/examples/computed-member/computed-member.ts:43` |
+| `ComputedMemberService.route` | 1 | `ComputedMemberService.select` | `packages/callidescope-examples/examples/computed-member/computed-member.ts:48` |
+| `ComputedMemberService.select` | 1 | `ComputedMemberService.prepare` | `packages/callidescope-examples/examples/computed-member/computed-member.ts:53` |
+| `ComputedMemberService.dispatch` | 1 | `ComputedMemberService.read` | `packages/callidescope-examples/examples/computed-member/computed-member.ts:60` |
+| `ConstructedClassService.count` | 1 | `ParserService.constructor` | `packages/callidescope-examples/examples/constructed-class/constructed-class.ts:17` |
+| `DeepStackService.applyTax` | 1 | `DeepStackService.convertCurrency` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:18` |
+| `DeepStackService.convertCurrency` | 1 | `roundToCents` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:23` |
+| `DeepStackService.loadRate` | 1 | `DeepStackService.applyTax` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:28` |
+| `DeepStackService.removeDiscount` | 1 | `DeepStackService.resolveTier` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:33` |
+| `DeepStackService.resolveTier` | 1 | `DeepStackService.loadRate` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:38` |
+| `DeepStackService.validate` | 1 | `DeepStackService.removeDiscount` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:43` |
+| `DeepStackService.quote` | 1 | `DeepStackService.validate` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:50` |
+| `EntryPointsService.onModuleInit` | 1 | `EntryPointsService.prepareCache` | `packages/callidescope-examples/examples/entry-points/entry-points.ts:29` |
+| `EntryPointsService.readReport` | 1 | `EntryPointsService.buildReport` | `packages/callidescope-examples/examples/entry-points/entry-points.ts:34` |
+| `ForwardingStackService.execute` | 1 | `ForwardingStackService.forward` | `packages/callidescope-examples/examples/forwarding-stack/forwarding-stack.ts:21` |
+| `ForwardingStackService.finish` | 1 | `roundToCents` | `packages/callidescope-examples/examples/forwarding-stack/forwarding-stack.ts:26` |
+| `ForwardingStackService.forward` | 1 | `ForwardingStackService.perform` | `packages/callidescope-examples/examples/forwarding-stack/forwarding-stack.ts:31` |
+| `ForwardingStackService.perform` | 1 | `ForwardingStackService.relay` | `packages/callidescope-examples/examples/forwarding-stack/forwarding-stack.ts:36` |
+| `ForwardingStackService.process` | 1 | `ForwardingStackService.execute` | `packages/callidescope-examples/examples/forwarding-stack/forwarding-stack.ts:41` |
+| `ForwardingStackService.relay` | 1 | `ForwardingStackService.finish` | `packages/callidescope-examples/examples/forwarding-stack/forwarding-stack.ts:46` |
+| `ForwardingStackService.handle` | 1 | `ForwardingStackService.process` | `packages/callidescope-examples/examples/forwarding-stack/forwarding-stack.ts:53` |
+| `FrameAnnotationsService.summarize` | 1 | `FrameAnnotationsService.describe` | `packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:27` |
+| `FrameAnnotationsService.compose` | 1 | `FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong` | `packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:33` |
+| `FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong` | 1 | `FrameAnnotationsService.finish` | `packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:53` |
+| `FrameAnnotationsService.describe` | 1 | `FrameAnnotationsService.compose` | `packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:64` |
+| `FrameAnnotationsService.legacyRender` | 1 | `FrameAnnotationsService.compose` | `packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:74` |
+| `FrameAnnotationsService.render` | 1 | `FrameAnnotationsService.summarize` | `packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:88` |
+| `FrameAnnotationsService.trace` | 1 | `FrameAnnotationsService.render` | `packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:95` |
+| `OrdersService.place` | 1 | `InventoryService.reserve` | `packages/callidescope-examples/examples/injected-dependency/orders.ts:21` |
+| `PlainCallService.render` | 1 | `normalizeLabel` | `packages/callidescope-examples/examples/plain-call/plain-call.ts:17` |
+| `MutualRecursionService.branch` | 1 | `MutualRecursionService.leaf` | `packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:28` |
+| `MutualRecursionService.descend` | 1 | `MutualRecursionService.branch` | `packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:33` |
+| `MutualRecursionService.leaf` | 1 | `MutualRecursionService.descend` | `packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:38` |
+| `MutualRecursionService.traverse` | 1 | `MutualRecursionService.descend` | `packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:45` |
+| `ReceiptService.renderLine` | 1 | `formatCurrency` | `packages/callidescope-examples/examples/receipt/receipt.ts:16` |
+| `ReceiptService.renderTotal` | 1 | `formatCurrency` | `packages/callidescope-examples/examples/receipt/receipt.ts:21` |
+| `SpreadNearMissService.review` | 1 | `ModuleSpreadService.orchestrate` | `packages/callidescope-examples/examples/spread-near-miss/spread-near-miss.ts:23` |
+| `StructuralInterfaceService.ingestDocument` | 1 | `FilesystemProviderService.ingest` | `packages/callidescope-examples/examples/structural-interface/structural-interface.ts:17` |
+| `normalizeExampleLabel` | 1 | `normalizeLabel` | `packages/callidescope-examples/src/index.ts:15` |
 
 </details>
 
@@ -617,5 +624,5 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 
 | Callable | Declared in | Called from | Callers |
 | --- | --- | --- | --- |
-| `formatCurrency` | `packages/callidescope-examples:modules/misplaced-callable` | `packages/callidescope-examples:modules/receipt` | 2/2 |
+| `formatCurrency` | `packages/callidescope-examples:misplaced-callable` | `packages/callidescope-examples:receipt` | 2/2 |
 <!-- CALL_STACKS_END -->

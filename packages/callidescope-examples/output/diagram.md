@@ -5,7 +5,7 @@
 | Measure | Value |
 | --- | --- |
 | Callables | 69 |
-| Files | 37 |
+| Files | 32 |
 | Calls traced | 53 |
 | Call stacks | 23 |
 | Deepest stack | 8 |
@@ -79,7 +79,7 @@ flowchart LR
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ModuleSpreadService.orchestrate` | 6 | `packages/callidescope-examples:modules/base-class`, `packages/callidescope-examples:modules/callback-argument`, `packages/callidescope-examples:modules/constructed-class`, `packages/callidescope-examples:modules/injected-dependency`, `packages/callidescope-examples:modules/plain-call` | `packages/callidescope-examples/src/modules/module-spread/module-spread.service.ts:32` |
+| `ModuleSpreadService.orchestrate` | 6 | `packages/callidescope-examples:base-class`, `packages/callidescope-examples:callback-argument`, `packages/callidescope-examples:constructed-class`, `packages/callidescope-examples:injected-dependency`, `packages/callidescope-examples:plain-call` | `packages/callidescope-examples/examples/module-spread/module-spread.ts:32` |
 
 ## Callables over the breadth limit (0)
 
@@ -89,6 +89,6 @@ None.
 
 | Callable | Declared in | Called from | Callers |
 | --- | --- | --- | --- |
-| `formatCurrency` | `packages/callidescope-examples:modules/misplaced-callable` | `packages/callidescope-examples:modules/receipt` | 2/2 |
+| `formatCurrency` | `packages/callidescope-examples:misplaced-callable` | `packages/callidescope-examples:receipt` | 2/2 |
 
 <!-- CALL_STACKS_END -->

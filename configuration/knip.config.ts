@@ -209,17 +209,24 @@ const config: KnipConfig = {
     // is *defined* by having no caller, and a resolution-table fixture is
     // reached only by the type checker — which is exactly the shape knip
     // reports as an unused file or an unused export. Declaring the whole of
-    // `src/` as entry points says that directly, and keeps knip doing the one
-    // job that still applies here: telling this package when a dependency it
-    // declares has stopped being used. Ignoring `src/` instead would leave
-    // every dependency looking unused, and `knip --fix` would delete them.
+    // `examples/` as entry points says that directly, and keeps knip doing the
+    // one job that still applies here: telling this package when a dependency
+    // it declares has stopped being used. Ignoring `examples/` instead would
+    // leave every dependency looking unused, and `knip --fix` would delete
+    // them.
     "packages/callidescope-examples": {
-      entry: ["callidescope.config.ts", "src/**/*.ts", "testing/**/*.test.ts"],
+      entry: [
+        "callidescope.config.ts",
+        "examples/**/*.ts",
+        "src/**/*.ts",
+        "testing/**/*.test.ts",
+      ],
       // The integration test spawns the callidescope command line through this
       // loader rather than importing it, so nothing in the module graph names
       // it. Undeclared, `knip --fix` deletes it and the test stops running.
       ignoreDependencies: ["@swc-node/register"],
-      project: "{callidescope.config.ts,src/**/*.ts,testing/**/*.ts}",
+      project:
+        "{callidescope.config.ts,examples/**/*.ts,src/**/*.ts,testing/**/*.ts}",
     },
     "packages/callidescope-graph": {
       entry: ["src/index.ts"],
