@@ -53,10 +53,10 @@ versioned and tested, and the skills name the command.
 
 ## Editing
 
-The skills here are the source of truth. Once this package is recorded in
-`skills-lock.json`, this repository will consume them the same way it consumes
-any installed skill, so a copy will also appear under the repository's agent
-skills directory — edit the copy in this package, never that one.
+The skills here are the source of truth. This repository consumes them the same
+way it consumes any installed skill, through `skills-lock.json`, so a copy also
+appears under the repository's agent skills directory — edit the copy in this
+package, never that one.
 
 ## Validating
 
