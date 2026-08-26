@@ -132,7 +132,21 @@ export const runCodometer = (args: readonly string[]): CodometerRun => {
  * so, so a bare throw here says "command failed" and nothing about which half
  * or why — which is exactly the failure a test running under a loaded machine
  * is most likely to hit, and exactly the one worth being able to read.
+ *
+ * **The script the shell runs is a constant.** Every path it needs arrives
+ * through the environment and is expanded from a quoted `"$NAME"`, which the
+ * shell substitutes without re-parsing, and the measured arguments arrive as
+ * positional parameters. Interpolating those into the command text instead
+ * would build a shell command out of values this file does not control — an
+ * absolute path holding a space or a quote would change what the shell reads
+ * as a word, and CodeQL reports exactly that shape.
  */
+
+/** Script the pipeline runs. Constant text: every value reaches it as a parameter. */
+const PIPELINE_SCRIPT =
+  '"$CODOMETER_NODE" --import @swc-node/register/esm-register' +
+  ' "$CODOMETER_ENTRY" codometer "$@"' +
+  ' | "$CODOMETER_NODE" "$CODOMETER_DOWNSTREAM"';
 export const runPipeline = (
   args: readonly string[],
   readReport: string,
@@ -169,23 +183,19 @@ export const runPipeline = (
   try {
     const result = spawnSync(
       "sh",
-      [
-        "-c",
-        [
-          JSON.stringify(process.execPath),
-          "--import @swc-node/register/esm-register",
-          JSON.stringify(commandLineEntry),
-          "codometer",
-          ...args.map((argument) => JSON.stringify(argument)),
-          "|",
-          JSON.stringify(process.execPath),
-          JSON.stringify(downstream),
-        ].join(" "),
-      ],
+      // `sh -c <script> <name> <arguments…>`: the name becomes `$0` and the
+      // rest become `$@`, which the script forwards to the measured command.
+      ["-c", PIPELINE_SCRIPT, "codometer-pipeline", ...args],
       {
         cwd: workspaceDirectory,
         encoding: "utf8",
-        env: { ...process.env, NODE_OPTIONS: "" },
+        env: {
+          ...process.env,
+          CODOMETER_DOWNSTREAM: downstream,
+          CODOMETER_ENTRY: commandLineEntry,
+          CODOMETER_NODE: process.execPath,
+          NODE_OPTIONS: "",
+        },
         maxBuffer: 32 * 1024 * 1024,
       },
     );
