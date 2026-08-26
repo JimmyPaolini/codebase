@@ -119,12 +119,7 @@ describe(MermaidReportService, () => {
     // self-loop as a stray circle that says nothing the label does not.
     const rendered = service.renderStacks({
       stacks: [
-        {
-          depth: 2,
-          entryPointKind: "decorated-method",
-          frames: [frame("Service.recurse"), frame("Service.recurse")],
-          isLowerBound: false,
-        },
+        { frames: [frame("Service.recurse"), frame("Service.recurse")] },
       ],
     });
 
@@ -135,14 +130,7 @@ describe(MermaidReportService, () => {
 
   it("marks a frame that recurses", () => {
     const rendered = service.renderStacks({
-      stacks: [
-        {
-          depth: 1,
-          entryPointKind: "decorated-method",
-          frames: [frame("Service.recurse", { isCycle: true })],
-          isLowerBound: false,
-        },
-      ],
+      stacks: [{ frames: [frame("Service.recurse", { isCycle: true })] }],
     });
 
     expect(rendered).toContain('n0(["Service.recurse (cycle)"])');

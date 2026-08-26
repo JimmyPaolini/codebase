@@ -6,7 +6,9 @@ import { DiscoveryModule } from "@nestjs/core";
 import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
+import { BreadthModule } from "./modules/breadth/breadth.module";
 import { CallidescopeModule } from "./modules/callidescope/callidescope.module";
+import { DepthModule } from "./modules/depth/depth.module";
 
 /**
  * Root NestJS application module.
@@ -21,7 +23,9 @@ import { CallidescopeModule } from "./modules/callidescope/callidescope.module";
     }),
     DiscoveryModule,
     LoggerModule,
+    BreadthModule,
     CallidescopeModule,
+    DepthModule,
     ConfigurationModule,
   ],
 })

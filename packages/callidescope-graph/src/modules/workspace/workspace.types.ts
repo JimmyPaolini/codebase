@@ -9,8 +9,12 @@ export interface BuildExclusionsArguments {
 
 /** Arguments for discovering the projects a run will trace. */
 export interface DiscoverProjectsArguments {
-  /** Nx project names to keep. Every discovered project when empty. */
-  readonly projectNames: readonly string[];
+  /**
+   * Project directories to trace, workspace-relative or absolute. Every
+   * directory under the workspace root holding its own `tsconfig.json`
+   * when empty.
+   */
+  readonly directories: readonly string[];
   readonly workspaceRoot: string;
 }
 
@@ -20,24 +24,23 @@ export interface FileFilter {
   readonly isExcluded: (workspaceRelativePath: string) => boolean;
 }
 
-/** One Nx project discovered from its `project.json`. */
+/** One project discovered from a directory holding its own `tsconfig.json`. */
 export interface WorkspaceProject {
   /** Absolute path to the project's `tsconfig.json`. */
   readonly configurationPath: string;
+  /** Same as `root`: the project's own directory is its identity. */
   readonly name: string;
   /** Workspace-relative project root, POSIX separators. */
   readonly root: string;
 }
 
 /**
- * Names the directory layout a workspace uses, so neither project discovery
- * nor module identity is tied to one repository's conventions.
+ * Names the directory layout a workspace uses, so module identity is not
+ * tied to one repository's conventions.
  */
 export interface WorkspaceStructure {
   /** The `src/` subdirectory a module identifier is derived from. */
   readonly modulesDirectory: string;
-  /** Directories a workspace keeps its projects in. */
-  readonly projectContainerDirectories: readonly string[];
   /** Identifier used for a file sitting directly under the source root. */
   readonly rootModuleSegment: string;
 }

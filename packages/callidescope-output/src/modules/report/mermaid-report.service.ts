@@ -7,8 +7,8 @@ import {
   MERMAID_LABEL_ESCAPES,
 } from "./report.constants";
 
-import type { MermaidDiagram } from "./report.types";
-import type { CallStack, StackFrame } from "@callidescope/configuration";
+import type { FramedStack, MermaidDiagram } from "./report.types";
+import type { StackFrame } from "@callidescope/configuration";
 
 /**
  * Draws a set of call stacks as one mermaid flowchart.
@@ -64,7 +64,10 @@ export class MermaidReportService {
   }
 
   /** Draws one stack into the diagram, reusing whatever it already holds. */
-  private addStack(args: { diagram: MermaidDiagram; stack: CallStack }): void {
+  private addStack(args: {
+    diagram: MermaidDiagram;
+    stack: FramedStack;
+  }): void {
     const { diagram } = args;
     let previous: string | undefined;
 
@@ -86,7 +89,7 @@ export class MermaidReportService {
   /** Counts the callables a stack would add that the diagram lacks. */
   private countNewCallables(args: {
     diagram: MermaidDiagram;
-    stack: CallStack;
+    stack: FramedStack;
   }): number {
     const fresh = new Set(
       args.stack.frames
@@ -133,7 +136,7 @@ export class MermaidReportService {
   }
 
   /** Draws every stack that fits, deepest first, and says what did not. */
-  public renderStacks(args: { stacks: readonly CallStack[] }): string {
+  public renderStacks(args: { stacks: readonly FramedStack[] }): string {
     const diagram: MermaidDiagram = {
       edges: new Set<string>(),
       identifiersByCallable: new Map<string, string>(),

@@ -1,6 +1,9 @@
 import path from "node:path";
 
-import { ConfigurationService } from "@callidescope/configuration";
+import {
+  ConfigurationService,
+  InputService,
+} from "@callidescope/configuration";
 import {
   MarkdownReportService,
   MermaidReportService,
@@ -23,10 +26,10 @@ import {
 import { LoggerService } from "@codebase/logger";
 
 import { buildCallGraphResult, buildStackFrame } from "../../../testing/mocks";
+import { RunPlanService } from "../run-plan/run-plan.service";
 
 import { CallidescopeCommand } from "./callidescope.command";
 import { CallidescopeService } from "./callidescope.service";
-import { RunPlanService } from "./run-plan.service";
 
 import type {
   CallGraphResult,
@@ -40,6 +43,7 @@ function buildConfiguration(
 ): ResolvedCallidescopeConfiguration {
   return {
     allowSpreadFor: [],
+    directories: [],
     entryPoints: {
       decorators: [],
       includeExportedFunctions: true,
@@ -64,10 +68,8 @@ function buildConfiguration(
       mermaid: undefined,
       projectReadmes: undefined,
     },
-    projects: [],
     workspaceStructure: {
       modulesDirectory: "modules",
-      projectContainerDirectories: ["applications", "packages", "tools"],
       rootModuleSegment: "src",
     },
     ...overrides,
@@ -100,6 +102,7 @@ describe(CallidescopeCommand, () => {
   let command: CallidescopeCommand;
   let configurationService: ReturnType<typeof createMock<ConfigurationService>>;
   let callidescopeService: ReturnType<typeof createMock<CallidescopeService>>;
+  let inputService: InputService;
   let logger: ReturnType<typeof createMock<LoggerService>>;
   let outputJsonService: ReturnType<typeof createMock<OutputJsonService>>;
   let outputMarkdownService: ReturnType<
@@ -198,6 +201,7 @@ describe(CallidescopeCommand, () => {
           ),
         },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
+        InputService,
         RunPlanService,
       ],
     }).compile();
@@ -212,9 +216,11 @@ describe(CallidescopeCommand, () => {
   beforeEach(async () => {
     configurationService = createMock<ConfigurationService>();
     callidescopeService = createMock<CallidescopeService>();
+    inputService = new InputService();
     logger = createMock<LoggerService>();
     outputJsonService = createMock<OutputJsonService>();
     outputMarkdownService = createMock<OutputMarkdownService>();
+    vi.spyOn(inputService, "canPrompt").mockReturnValue(false);
 
     const module = await Test.createTestingModule({
       providers: [
@@ -231,6 +237,7 @@ describe(CallidescopeCommand, () => {
           ),
         },
         { provide: LoggerService, useValue: logger },
+        { provide: InputService, useValue: inputService },
         RunPlanService,
       ],
     }).compile();
@@ -268,6 +275,7 @@ describe(CallidescopeCommand, () => {
           ),
         },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
+        InputService,
         RunPlanService,
       ],
     }).compile();
@@ -295,29 +303,19 @@ describe(CallidescopeCommand, () => {
     expect(command.parseWrite(false)).toBe(false);
   });
 
-  it("resolves a relative directory to an absolute path", () => {
-    // Everything downstream compares absolute paths against this prefix, so a
-    // relative root reads as a workspace containing nothing at all.
-    expect(path.isAbsolute(command.parseDirectory("."))).toBe(true);
-  });
-
-  it("defaults the directory to the working directory", () => {
-    expect(command.parseDirectory(undefined)).toBe(path.resolve(process.cwd()));
-  });
-
-  it("splits the projects flag on commas", () => {
-    expect(command.parseProjects("alpha, beta")).toStrictEqual([
+  it("splits the directories flag on commas", () => {
+    expect(command.parseDirectories("alpha, beta")).toStrictEqual([
       "alpha",
       "beta",
     ]);
   });
 
-  it("reads an absent projects flag as every project", () => {
-    expect(command.parseProjects(undefined)).toStrictEqual([]);
+  it("reads an absent directories flag as every project", () => {
+    expect(command.parseDirectories(undefined)).toStrictEqual([]);
   });
 
-  it("drops empty entries from the projects flag", () => {
-    expect(command.parseProjects("alpha,,beta,")).toStrictEqual([
+  it("drops empty entries from the directories flag", () => {
+    expect(command.parseDirectories("alpha,,beta,")).toStrictEqual([
       "alpha",
       "beta",
     ]);
@@ -331,6 +329,10 @@ describe(CallidescopeCommand, () => {
     expect(command[method](value)).toBe(value);
   });
 
+  it("parses the interactive opt-out flag", () => {
+    expect(command.parseInteractive()).toBe(false);
+  });
+
   // 🏃 Running
 
   it("traces the workspace and prints a report", async () => {
@@ -341,13 +343,13 @@ describe(CallidescopeCommand, () => {
     expect(process.stdout.write).toHaveBeenCalledTimes(1);
   });
 
-  it("logs the start of a trace with the resolved workspace root", async () => {
-    await command.run([], { directory: "." });
+  it("logs the start of a trace with the working directory as its root", async () => {
+    await command.run([], {});
 
     expect(logger.debug).toHaveBeenCalledWith(
       "🔭 Starting a call-stack trace",
       undefined,
-      { format: undefined, workspaceRoot: path.resolve(".") },
+      { format: undefined, workspaceRoot: process.cwd() },
     );
   });
 
@@ -926,11 +928,11 @@ describe(CallidescopeCommand, () => {
     expect(outputJsonService.sync.mock.calls[0]?.[0].check).toBe(false);
   });
 
-  it("traces only the projects a flag named", async () => {
-    await command.run([], { projects: ["alpha"] });
+  it("traces only the directories a flag named", async () => {
+    await command.run([], { directories: ["alpha"] });
 
     expect(
-      callidescopeService.trace.mock.calls[0]?.[0].projectNames,
+      callidescopeService.trace.mock.calls[0]?.[0].directories,
     ).toStrictEqual(["alpha"]);
   });
 
@@ -941,5 +943,31 @@ describe(CallidescopeCommand, () => {
       configurationService.loadConfiguration.mock.calls[0]?.[0]
         ?.configurationPath,
     ).toBe("custom.config.ts");
+  });
+
+  // 🗣️ Prompting
+
+  it("prompts for a format when it was left off and the session can be prompted", async () => {
+    vi.spyOn(inputService, "canPrompt").mockReturnValue(true);
+    vi.spyOn(inputService, "promptForSelect").mockResolvedValue("json");
+
+    await command.run([], {});
+
+    expect(inputService.promptForSelect).toHaveBeenCalledWith({
+      choices: ["markdown", "mermaid", "json"],
+      message: "Which output format?",
+    });
+    // The prompted format reached `run` through the resolved options: json
+    // routes through the JSON report rather than the markdown one.
+    expect(outputJsonService.buildReport).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not prompt for a format that was already given", async () => {
+    vi.spyOn(inputService, "canPrompt").mockReturnValue(true);
+    vi.spyOn(inputService, "promptForSelect");
+
+    await command.run([], { format: "mermaid" });
+
+    expect(inputService.promptForSelect).not.toHaveBeenCalled();
   });
 });

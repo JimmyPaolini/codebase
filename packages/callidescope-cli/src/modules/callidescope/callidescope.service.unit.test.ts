@@ -2,9 +2,10 @@ import {
   BreadthService,
   CohesionService,
   ComponentsService,
-  DepthService,
   DocumentationService,
   EntriesService,
+  GraphAssemblyService,
+  GraphDepthService,
   GraphService,
   PathsService,
   SignaturesService,
@@ -25,7 +26,6 @@ import {
 } from "../../../testing/programs";
 
 import { CallidescopeService } from "./callidescope.service";
-import { GraphAssemblyService } from "./graph-assembly.service";
 
 import type { FixtureServices } from "../../../testing/programs";
 import type {
@@ -63,6 +63,7 @@ function buildConfiguration(
 ): ResolvedCallidescopeConfiguration {
   return {
     allowSpreadFor: [],
+    directories: [],
     entryPoints: {
       decorators: ["Command", "Get"],
       includeExportedFunctions: true,
@@ -87,10 +88,8 @@ function buildConfiguration(
       mermaid: undefined,
       projectReadmes: undefined,
     },
-    projects: [],
     workspaceStructure: {
       modulesDirectory: "modules",
-      projectContainerDirectories: ["applications", "packages", "tools"],
       rootModuleSegment: "src",
     },
     ...overrides,
@@ -111,7 +110,7 @@ function buildSubject(args: {
     new GraphAssemblyService(
       new BreadthService(),
       new ComponentsService(),
-      new DepthService(),
+      new GraphDepthService(),
       args.fixture.edges,
       new GraphService(),
     ),

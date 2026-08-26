@@ -529,49 +529,50 @@ This project was generated from the [nestjs-command-project](../../configuration
 
 ## 🔭 Callidescope
 
-Call stacks traced through `codometer-cli`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/codometer-cli`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |
-| Callables | 105 |
-| Files | 31 |
-| Calls traced | 128 |
+| Callables | 118 |
+| Files | 37 |
+| Calls traced | 143 |
 | Call stacks | 8 |
-| Deepest stack | 13 |
-| Stacks through recursion | 1 |
-| Unfollowable calls | 4 |
+| Deepest stack | 14 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 6 |
 
 ### Call stacks (depth)
 
-**1. `CodometerCommand.run`** — depth ≥ 13 · decorated-method
+**1. `CodometerCommand.run`** — depth ≥ 14 · decorated-method
 
 ```text
-🚀 CodometerCommand.run(_passedParameters: string[], options: CodometerCommandOptions): Promise<void> [packages/codometer-cli/src/modules/codometer/codometer.command.ts:452]
+🚀 CodometerCommand.run(_passedParameters: string[], options: CodometerCommandOptions): Promise<void> [packages/codometer-cli/src/modules/codometer/codometer.command.ts:322]
    ↳ Measure the repository and produce every resolved output.
-  └─> CodometerService.measure(args: MeasureArguments): MeasurementResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:315]
+  └─> CodometerService.measure(args: MeasureArguments): MeasurementResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:340]
      ↳ Measure the codebase and every target declared alongside it.
-    └─> CodometerService.measureDeclaredTargets(…): { failures: ReportFailure[]; targets: TargetMeasurement[]; } [packages/codometer-cli/src/modules/codometer/codometer.service.ts:219]
+    └─> CodometerService.measureDeclaredTargets(…): { failures: ReportFailure[]; targets: TargetMeasurement[]; } [packages/codometer-cli/src/modules/codometer/codometer.service.ts:239]
        ↳ Measure every declared target, keeping whatever the failures leave.
-      └─> CodometerService.measureTarget(args: MeasureTargetArguments): TargetMeasurement [packages/codometer-cli/src/modules/codometer/codometer.service.ts:255]
+      └─> CodometerService.measureTarget(args: MeasureTargetArguments): TargetMeasurement [packages/codometer-cli/src/modules/codometer/codometer.service.ts:275]
          ↳ Measure one declared target with whichever analyses it asked for.
-        └─> CodometerService.analyzeLanguage(args: AnalyzeLanguageArguments): CodeStatisticsResult [packages/codometer-cli/src/modules/codometer/codometer.service.ts:58]
+        └─> CodometerService.analyzeLanguage(…): { documentation: TypescriptDocumentationMeasurement[]; statistics: CodeStatisticsResult; } [packages/codometer-cli/src/modules/codometer/codometer.service.ts:62]
            ↳ Run every language analyzer over one target's files.
           └─> LanguagesService.analyze(args: AnalyzeLanguagesArguments): LanguageResults [packages/codometer-languages/src/modules/languages/languages.service.ts:54]
              ↳ Analyze every language present in the discovered files.
-            └─> JupyterService.analyze(args: AnalyzeJupyterArguments): JupyterResult [packages/codometer-languages/src/modules/jupyter/jupyter.service.ts:166]
-               ↳ Analyze the given notebooks, resolved against the directory.
-              └─> JsonService.analyze(input: JsonInput): JsonResult [packages/codometer-languages/src/modules/json/json.service.ts:308]
-                 ↳ Analyze JSON files and return structural metrics for their contents.
-                └─> JsonService.countNode(node: unknown, stats: JsonResult, depth: number): void (cycle) [packages/codometer-languages/src/modules/json/json.service.ts:111]
-                   ↳ Recursively count JSON containers, primitives, and nesting depth.
-                  └─> JsonService.countArrayNode(node: unknown[], stats: JsonResult, depth: number): void (cycle) [packages/codometer-languages/src/modules/json/json.service.ts:95]
-                     ↳ Count array nodes and their child values.
-                    └─> JsonService.countRecordNode(node: Record<string, unknown>, stats: JsonResult, depth: number): void (cycle) [packages/codometer-languages/src/modules/json/json.service.ts:162]
-                       ↳ Count object nodes and their child values.
-                      └─> JsonService.countPrimitiveNode(node: unknown, stats: JsonResult, depth: number): void [packages/codometer-languages/src/modules/json/json.service.ts:126]
-                         ↳ Count scalar values and update primitive stats.
-                        └─> JsonService.countPrimitiveValue(node: unknown, stats: JsonResult): void [packages/codometer-languages/src/modules/json/json.service.ts:143]
-                           ↳ Increment stats for a scalar JSON value.
+            └─> TypescriptService.analyze(input: TypescriptInput): TypescriptResult [packages/codometer-languages/src/modules/typescript/typescript.service.ts:442]
+               ↳ Analyzes TypeScript and JavaScript source files and returns aggregated AST metrics.
+              └─> TypescriptService.analyzeFile(args: AnalyzeTypescriptFileArguments): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:80]
+                 ↳ Read one source file, count its lines and comments, and walk its AST.
+                └─> TypescriptService.walkNode(node: tsCompiler.Node, context: TypescriptWalkContext): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:416]
+                   ↳ Recursively visits each AST node and dispatches to the appropriate handler.
+                  └─> TypescriptService.collectDocumentation(node: tsCompiler.Node, context: TypescriptWalkContext): void [packages/codometer-languages/src/modules/typescript/typescript.service.ts:108]
+                     ↳ Measure a documentable declaration's leading JSDoc comment, if it has one.
+                    └─> DocumentationMeasurementService.measure(…): TypescriptDocumentationMeasurement | undefined [packages/codometer-languages/src/modules/typescript/documentation-measurement.service.ts:117]
+                       ↳ Measures one declaration's leading JSDoc comment, if it has one. `undefined` when the node's kind is not one a…
+                      └─> DocumentationMeasurementService.measureLength(text: string, unit: CodometerDocumentationUnit): number [packages/codometer-languages/src/modules/typescript/documentation-measurement.service.ts:92]
+                         ↳ Measures a comment's raw text in the configured unit.
+                        └─> DocumentationMeasurementService.countWords(text: string): number [packages/codometer-languages/src/modules/typescript/documentation-measurement.service.ts:51]
+                           ↳ Counts the words in the comment's prose.
+                          └─> DocumentationMeasurementService.map(…)(line: string): string [packages/codometer-languages/src/modules/typescript/documentation-measurement.service.ts:56]
 ```
 
 **2. `ChangesCommand.run`** — depth ≥ 4 · decorated-method
@@ -649,35 +650,38 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CodometerService.measureTarget` | 17 | `codometer-discovery:modules/discovery`, `codometer-discovery:modules/targets`, `codometer-size:modules/size` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:255` |
-| `CodometerService.analyzeLanguage` | 15 | `codometer-customization:modules/customization`, `codometer-languages:modules/languages`, `codometer-size:modules/size` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:58` |
+| `CodometerService.measureTarget` | 17 | `packages/codometer-discovery:modules/discovery`, `packages/codometer-discovery:modules/targets`, `packages/codometer-size:modules/size` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:275` |
+| `CodometerService.analyzeLanguage` | 15 | `packages/codometer-customization:modules/customization`, `packages/codometer-languages:modules/languages`, `packages/codometer-size:modules/size` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:62` |
 
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CodometerCommand.run` | 11 | `CodometerCommand.resolveWorkingDirectory`, `RunPlanService.selectMode`, `CodometerCommand.readConfiguration`, `RunPlanService.resolveDestinations`, `RunPlanService.listOutputPaths`, `CodometerCommand.announceOutputPaths`, `CodometerService.measure`, `ReportService.build`, `CodometerCommand.deliver`, `RunPlanService.selectScope`, `CodometerCommand.reportFindings` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:452` |
-| `CodometerService.measure` | 8 | `CodometerService.discoverCodebase`, `CodometerService.analyzeLanguage`, `DiscoveryService.categorize`, `CodometerService.measureDeclaredTargets`, `MetricIndexService.index`, `LimitsService.evaluate`, `CodometerService.map(…)`, `CodometerService.readLimitFailures` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:315` |
-| `CodometerService.analyzeLanguage` | 7 | `LanguagesService.analyze`, `CustomizationService.buildSymbolCounters`, `SizeService.analyze`, `CustomizationService.analyze`, `CodometerService.getFolderCount`, `CodometerService.buildJavascriptStatistics`, `CodometerService.buildTypescriptStatistics` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:58` |
+| `CodometerCommand.run` | 11 | `CodometerCommand.resolveWorkingDirectory`, `RunPlanService.selectMode`, `CodometerCommand.readConfiguration`, `RunPlanService.resolveDestinations`, `RunPlanService.listOutputPaths`, `CodometerCommand.announceOutputPaths`, `CodometerService.measure`, `ReportService.build`, `DeliveryService.deliver`, `RunPlanService.selectScope`, `CodometerCommand.reportFindings` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:322` |
+| `CodometerService.measure` | 10 | `CodometerService.discoverCodebase`, `CodometerService.analyzeLanguage`, `DiscoveryService.categorize`, `CodometerService.measureDeclaredTargets`, `CodometerService.attachTargetName`, `MetricIndexService.index`, `LimitsService.evaluate`, `CodometerService.flatMap(…)`, `CodometerService.map(…)`, `CodometerService.readLimitFailures` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:340` |
+| `CodometerService.analyzeLanguage` | 7 | `LanguagesService.analyze`, `CustomizationService.buildSymbolCounters`, `SizeService.analyze`, `CustomizationService.analyze`, `CodometerService.getFolderCount`, `CodometerService.buildJavascriptStatistics`, `CodometerService.buildTypescriptStatistics` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:62` |
 
 <details>
-<summary>44 more callables</summary>
+<summary>48 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CodometerService.measureTarget` | 6 | `CodometerService.excludeOutputPaths`, `TargetsService.matchFiles`, `CodometerService.runsAnalysis`, `CodometerService.analyzeLanguage`, `DiscoveryService.categorize`, `SizeService.analyze` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:255` |
+| `CodometerService.measureTarget` | 7 | `CodometerService.excludeOutputPaths`, `TargetsService.matchFiles`, `CodometerService.runsAnalysis`, `CodometerService.analyzeLanguage`, `DiscoveryService.categorize`, `CodometerService.attachTargetName`, `SizeService.analyze` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:275` |
+| `DeliveryService.deliverReadme` | 6 | `DeliveryService.readTargetSizes`, `DeliveryService.touchesFiles`, `MarkdownService.renderBlock`, `DeliveryService.appendDocumentationSection`, `MarkdownService.sync`, `DeliveryService.augmentWithDocumentation` | `packages/codometer-cli/src/modules/delivery/delivery.service.ts:157` |
+| `DeliveryService.deliverMarkdown` | 5 | `MarkdownService.renderDocument`, `DeliveryService.readTargetSizes`, `DeliveryService.appendDocumentationSection`, `DeliveryService.touchesFiles`, `MarkdownService.syncDocument` | `packages/codometer-cli/src/modules/delivery/delivery.service.ts:121` |
 | `LimitsService.resolve` | 5 | `LimitsService.findCandidates`, `UnboundMetricError.constructor`, `LimitsService.describeTargets`, `LimitsService.map(…)`, `EmptyTargetError.constructor` | `packages/codometer-cli/src/modules/limits/limits.service.ts:154` |
+| `CodometerCommand.reportFindings` | 5 | `CodometerCommand.reportFailures`, `CodometerCommand.reportStaleness`, `CodometerCommand.reportBreaches`, `CodometerCommand.reportDocumentationBreaches`, `CodometerCommand.filter(…)` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:173` |
 | `ChangesCommand.run` | 4 | `ChangesCommand.readOptionalText`, `ChangesService.collect`, `RenderService.renderSection`, `DocumentsService.emit` | `packages/codometer-cli/src/modules/changes/changes.command.ts:107` |
-| `RunPlanService.readCheckNames` | 4 | `RunPlanService.describeAcceptedCheckNames`, `RunPlanService.filter(…)`, `RunPlanService.map(…)`, `RunPlanService.validateCheckNames` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:80` |
-| `RunPlanService.resolveDestinations` | 4 | `RunPlanService.namesDestination`, `RunPlanService.resolveJson`, `RunPlanService.resolveMarkdown`, `RunPlanService.resolveReadme` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:308` |
-| `CodometerCommand.deliverMarkdown` | 4 | `MarkdownService.renderDocument`, `CodometerCommand.readTargetSizes`, `CodometerCommand.touchesFiles`, `MarkdownService.syncDocument` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:125` |
-| `CodometerCommand.deliverReadme` | 4 | `CodometerCommand.readTargetSizes`, `CodometerCommand.touchesFiles`, `MarkdownService.renderBlock`, `MarkdownService.sync` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:157` |
-| `CodometerCommand.reportFindings` | 4 | `CodometerCommand.reportFailures`, `CodometerCommand.reportStaleness`, `CodometerCommand.reportBreaches`, `CodometerCommand.filter(…)` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:293` |
+| `RunPlanService.readCheckNames` | 4 | `RunPlanService.describeAcceptedCheckNames`, `RunPlanService.filter(…)`, `RunPlanService.map(…)`, `RunPlanService.validateCheckNames` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:80` |
+| `RunPlanService.resolveDestinations` | 4 | `RunPlanService.namesDestination`, `RunPlanService.resolveJson`, `RunPlanService.resolveMarkdown`, `RunPlanService.resolveReadme` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:308` |
+| `DeliveryService.deliverJson` | 3 | `DeliveryService.touchesFiles`, `JsonService.render`, `JsonService.sync` | `packages/codometer-cli/src/modules/delivery/delivery.service.ts:92` |
+| `DeliveryService.deliver` | 3 | `DeliveryService.deliverJson`, `DeliveryService.deliverMarkdown`, `DeliveryService.deliverReadme` | `packages/codometer-cli/src/modules/delivery/delivery.service.ts:242` |
 | `LimitsService.findDefaultCandidate` | 3 | `UnboundMetricError.constructor`, `LimitsService.describeTargets`, `LimitsService.bind` | `packages/codometer-cli/src/modules/limits/limits.service.ts:122` |
 | `ReportService.buildMetrics` | 3 | `ReportService.buildMetricName`, `ReportService.map(…)`, `ReportService.readUnit` | `packages/codometer-cli/src/modules/report/report.service.ts:52` |
-| `CodometerCommand.deliver` | 3 | `CodometerCommand.deliverJson`, `CodometerCommand.deliverMarkdown`, `CodometerCommand.deliverReadme` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:85` |
-| `CodometerCommand.deliverJson` | 3 | `CodometerCommand.touchesFiles`, `JsonService.render`, `JsonService.sync` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:96` |
-| `CodometerCommand.reportBreaches` | 3 | `CodometerCommand.filter(…)`, `CodometerCommand.filter(…)`, `CodometerCommand.filter(…)` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:249` |
+| `CodometerCommand.reportBreaches` | 3 | `CodometerCommand.filter(…)`, `CodometerCommand.filter(…)`, `CodometerCommand.filter(…)` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:103` |
+| `CodometerCommand.reportDocumentationBreaches` | 3 | `CodometerCommand.filter(…)`, `CodometerCommand.filter(…)`, `CodometerCommand.filter(…)` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:127` |
+| `DeliveryService.appendDocumentationSection` | 2 | `MarkdownService.renderDocumentationSection`, `DeliveryService.filter(…)` | `packages/codometer-cli/src/modules/delivery/delivery.service.ts:45` |
+| `DeliveryService.augmentWithDocumentation` | 2 | `MarkdownService.renderDocumentationSection`, `DeliveryService.filter(…)` | `packages/codometer-cli/src/modules/delivery/delivery.service.ts:66` |
 | `LimitsService.findCandidates` | 2 | `LimitsService.bind`, `LimitsService.findDefaultCandidate` | `packages/codometer-cli/src/modules/limits/limits.service.ts:84` |
 | `LimitsService.evaluate` | 2 | `LimitsService.resolve`, `LimitsService.describeFailure` | `packages/codometer-cli/src/modules/limits/limits.service.ts:198` |
 | `MetricIndexService.buildTargetIndex` | 2 | `MetricIndexService.addMetric`, `MetricIndexService.indexLanguage` | `packages/codometer-cli/src/modules/limits/metric-index.service.ts:66` |
@@ -685,29 +689,30 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 | `MetricIndexService.indexLanguage` | 2 | `MetricIndexService.indexCounters`, `MetricIndexService.addMetric` | `packages/codometer-cli/src/modules/limits/metric-index.service.ts:125` |
 | `MetricIndexService.index` | 2 | `MetricIndexService.describeDuplicate`, `MetricIndexService.buildTargetIndex` | `packages/codometer-cli/src/modules/limits/metric-index.service.ts:157` |
 | `ReportService.build` | 2 | `ReportService.indexLimits`, `ReportService.buildMetrics` | `packages/codometer-cli/src/modules/report/report.service.ts:120` |
-| `CodometerService.discoverCodebase` | 2 | `DiscoveryService.discoverFiles`, `CodometerService.excludeOutputPaths` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:163` |
-| `CodometerService.measureDeclaredTargets` | 2 | `CodometerService.measureTarget`, `CodometerService.describeFailure` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:219` |
-| `RunPlanService.resolveJson` | 2 | `RunPlanService.resolvePath`, `RunPlanService.readPathFlag` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:161` |
-| `RunPlanService.listOutputPaths` | 2 | `RunPlanService.map(…)`, `RunPlanService.filter(…)` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:284` |
-| `RunPlanService.selectMode` | 2 | `RunPlanService.readCheckNames`, `RunPlanService.requireWrittenReport` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:338` |
+| `RunPlanService.resolveJson` | 2 | `RunPlanService.resolvePath`, `RunPlanService.readPathFlag` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:161` |
+| `RunPlanService.listOutputPaths` | 2 | `RunPlanService.map(…)`, `RunPlanService.filter(…)` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:284` |
+| `RunPlanService.selectMode` | 2 | `RunPlanService.readCheckNames`, `RunPlanService.requireWrittenReport` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:338` |
+| `CodometerService.discoverCodebase` | 2 | `DiscoveryService.discoverFiles`, `CodometerService.excludeOutputPaths` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:183` |
+| `CodometerService.measureDeclaredTargets` | 2 | `CodometerService.measureTarget`, `CodometerService.describeFailure` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:239` |
 | `ChangesCommand.parseBaseline` | 1 | `ChangesCommand.readOptionalText` | `packages/codometer-cli/src/modules/changes/changes.command.ts:62` |
 | `ChangesCommand.parseBaselineUrl` | 1 | `ChangesCommand.readOptionalText` | `packages/codometer-cli/src/modules/changes/changes.command.ts:71` |
 | `ChangesCommand.parseDirectory` | 1 | `ChangesCommand.readOptionalText` | `packages/codometer-cli/src/modules/changes/changes.command.ts:80` |
 | `ChangesCommand.parseMarkdown` | 1 | `ChangesCommand.readOptionalText` | `packages/codometer-cli/src/modules/changes/changes.command.ts:89` |
 | `ChangesCommand.parseOutput` | 1 | `ChangesCommand.readOptionalText` | `packages/codometer-cli/src/modules/changes/changes.command.ts:98` |
+| `DeliveryService.readTargetSizes` | 1 | `DeliveryService.flatMap(…)` | `packages/codometer-cli/src/modules/delivery/delivery.service.ts:214` |
 | `LimitsService.bind` | 1 | `UnboundMetricError.constructor` | `packages/codometer-cli/src/modules/limits/limits.service.ts:39` |
 | `LimitsService.describeTargets` | 1 | `LimitsService.map(…)` | `packages/codometer-cli/src/modules/limits/limits.service.ts:70` |
 | `ReportService.indexLimits` | 1 | `ReportService.buildMetricName` | `packages/codometer-cli/src/modules/report/report.service.ts:87` |
-| `CodometerService.excludeOutputPaths` | 1 | `CodometerService.filter(…)` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:181` |
-| `CodometerService.readLimitFailures` | 1 | `CodometerService.map(…)` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:286` |
-| `RunPlanService.describeAcceptedCheckNames` | 1 | `RunPlanService.map(…)` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:53` |
-| `RunPlanService.resolveMarkdown` | 1 | `RunPlanService.resolvePath` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:191` |
-| `RunPlanService.resolveReadme` | 1 | `RunPlanService.resolvePath` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:230` |
-| `RunPlanService.validateCheckNames` | 1 | `RunPlanService.describeAcceptedCheckNames` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:259` |
-| `RunPlanService.selectScope` | 1 | `RunPlanService.some(…)` | `packages/codometer-cli/src/modules/codometer/run-plan.service.ts:367` |
-| `CodometerCommand.readConfiguration` | 1 | `ConfigurationService.loadConfiguration` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:197` |
-| `CodometerCommand.readTargetSizes` | 1 | `CodometerCommand.flatMap(…)` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:234` |
-| `CodometerCommand.resolveWorkingDirectory` | 1 | `CodometerCommand.parseDirectory` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:325` |
+| `RunPlanService.describeAcceptedCheckNames` | 1 | `RunPlanService.map(…)` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:53` |
+| `RunPlanService.resolveMarkdown` | 1 | `RunPlanService.resolvePath` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:191` |
+| `RunPlanService.resolveReadme` | 1 | `RunPlanService.resolvePath` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:230` |
+| `RunPlanService.validateCheckNames` | 1 | `RunPlanService.describeAcceptedCheckNames` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:259` |
+| `RunPlanService.selectScope` | 1 | `RunPlanService.some(…)` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:367` |
+| `CodometerService.attachTargetName` | 1 | `CodometerService.map(…)` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:125` |
+| `CodometerService.excludeOutputPaths` | 1 | `CodometerService.filter(…)` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:201` |
+| `CodometerService.readLimitFailures` | 1 | `CodometerService.map(…)` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:311` |
+| `CodometerCommand.readConfiguration` | 1 | `ConfigurationService.loadConfiguration` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:78` |
+| `CodometerCommand.resolveWorkingDirectory` | 1 | `CodometerCommand.parseDirectory` | `packages/codometer-cli/src/modules/codometer/codometer.command.ts:206` |
 | `main` | 1 | `withDefaultCommand` | `packages/codometer-cli/src/main.ts:18` |
 
 </details>
@@ -759,6 +764,7 @@ flowchart LR
   ConfigurationModule
   CssModule
   CustomizationModule
+  DeliveryModule
   DiscoveryModule
   DocumentsModule
   HclModule
@@ -772,6 +778,7 @@ flowchart LR
   PythonModule
   RenderModule
   ReportModule
+  RunPlanModule
   ShellModule
   SizeModule
   SqlModule
@@ -784,14 +791,16 @@ flowchart LR
   ChangesModule --> RenderModule
   CodometerModule --> ConfigurationModule
   CodometerModule --> CustomizationModule
+  CodometerModule --> DeliveryModule
   CodometerModule --> DiscoveryModule
-  CodometerModule --> JsonModule
   CodometerModule --> LanguagesModule
   CodometerModule --> LimitsModule
-  CodometerModule --> MarkdownModule
   CodometerModule --> ReportModule
+  CodometerModule --> RunPlanModule
   CodometerModule --> SizeModule
   CodometerModule --> TargetsModule
+  DeliveryModule --> JsonModule
+  DeliveryModule --> MarkdownModule
   JupyterModule --> JsonModule
   JupyterModule --> MarkdownModule
   JupyterModule --> PythonModule
@@ -846,10 +855,12 @@ graph LR
   file_src_modules_codometer_codometer_service_ts["src/modules/codometer/codometer.service.ts"]
   file_src_modules_codometer_codometer_service_unit_test_ts["src/modules/codometer/codometer.service.unit.test.ts"]
   file_src_modules_codometer_codometer_types_ts["src/modules/codometer/codometer.types.ts"]
-  file_src_modules_codometer_run_plan_constants_ts["src/modules/codometer/run-plan.constants.ts"]
-  file_src_modules_codometer_run_plan_service_ts["src/modules/codometer/run-plan.service.ts"]
-  file_src_modules_codometer_run_plan_service_unit_test_ts["src/modules/codometer/run-plan.service.unit.test.ts"]
-  file_src_modules_codometer_run_plan_types_ts["src/modules/codometer/run-plan.types.ts"]
+  file_src_modules_codometer_documentation_measurement_types_ts["src/modules/codometer/documentation-measurement.types.ts"]
+  file_src_modules_delivery_delivery_constants_ts["src/modules/delivery/delivery.constants.ts"]
+  file_src_modules_delivery_delivery_module_ts["src/modules/delivery/delivery.module.ts"]
+  file_src_modules_delivery_delivery_service_ts["src/modules/delivery/delivery.service.ts"]
+  file_src_modules_delivery_delivery_service_unit_test_ts["src/modules/delivery/delivery.service.unit.test.ts"]
+  file_src_modules_delivery_delivery_types_ts["src/modules/delivery/delivery.types.ts"]
   file_src_modules_limits_empty_target_errors_ts["src/modules/limits/empty-target.errors.ts"]
   file_src_modules_limits_limits_constants_ts["src/modules/limits/limits.constants.ts"]
   file_src_modules_limits_limits_errors_ts["src/modules/limits/limits.errors.ts"]
@@ -865,6 +876,11 @@ graph LR
   file_src_modules_report_report_service_ts["src/modules/report/report.service.ts"]
   file_src_modules_report_report_service_unit_test_ts["src/modules/report/report.service.unit.test.ts"]
   file_src_modules_report_report_types_ts["src/modules/report/report.types.ts"]
+  file_src_modules_run_plan_run_plan_constants_ts["src/modules/run-plan/run-plan.constants.ts"]
+  file_src_modules_run_plan_run_plan_module_ts["src/modules/run-plan/run-plan.module.ts"]
+  file_src_modules_run_plan_run_plan_service_ts["src/modules/run-plan/run-plan.service.ts"]
+  file_src_modules_run_plan_run_plan_service_unit_test_ts["src/modules/run-plan/run-plan.service.unit.test.ts"]
+  file_src_modules_run_plan_run_plan_types_ts["src/modules/run-plan/run-plan.types.ts"]
   file_src_repl_ts["src/repl.ts"]
   file_src_repl_unit_test_ts["src/repl.unit.test.ts"]
   file_testing_fixture_tree_ts["testing/fixture-tree.ts"]
@@ -890,22 +906,27 @@ graph LR
   file_src_modules_codometer_codometer_command_integration_test_ts --> file_testing_fixture_tree_ts
   file_src_modules_codometer_codometer_command_ts --> file_src_modules_codometer_codometer_service_ts
   file_src_modules_codometer_codometer_command_ts --> file_src_modules_codometer_codometer_types_ts
-  file_src_modules_codometer_codometer_command_ts --> file_src_modules_codometer_run_plan_service_ts
-  file_src_modules_codometer_codometer_command_ts --> file_src_modules_codometer_run_plan_types_ts
+  file_src_modules_codometer_codometer_command_ts --> file_src_modules_delivery_delivery_service_ts
   file_src_modules_codometer_codometer_command_ts --> file_src_modules_report_report_service_ts
+  file_src_modules_codometer_codometer_command_ts --> file_src_modules_run_plan_run_plan_service_ts
+  file_src_modules_codometer_codometer_command_ts --> file_src_modules_run_plan_run_plan_types_ts
   file_src_modules_codometer_codometer_command_unit_test_ts --> file_src_modules_codometer_codometer_command_ts
   file_src_modules_codometer_codometer_command_unit_test_ts --> file_src_modules_codometer_codometer_service_ts
   file_src_modules_codometer_codometer_command_unit_test_ts --> file_src_modules_codometer_codometer_types_ts
-  file_src_modules_codometer_codometer_command_unit_test_ts --> file_src_modules_codometer_run_plan_service_ts
+  file_src_modules_codometer_codometer_command_unit_test_ts --> file_src_modules_codometer_documentation_measurement_types_ts
+  file_src_modules_codometer_codometer_command_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
   file_src_modules_codometer_codometer_command_unit_test_ts --> file_src_modules_limits_limits_types_ts
   file_src_modules_codometer_codometer_command_unit_test_ts --> file_src_modules_report_report_service_ts
+  file_src_modules_codometer_codometer_command_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
   file_src_modules_codometer_codometer_command_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_codometer_codometer_module_ts --> file_src_modules_codometer_codometer_command_ts
   file_src_modules_codometer_codometer_module_ts --> file_src_modules_codometer_codometer_service_ts
-  file_src_modules_codometer_codometer_module_ts --> file_src_modules_codometer_run_plan_service_ts
+  file_src_modules_codometer_codometer_module_ts --> file_src_modules_delivery_delivery_module_ts
   file_src_modules_codometer_codometer_module_ts --> file_src_modules_limits_limits_module_ts
   file_src_modules_codometer_codometer_module_ts --> file_src_modules_report_report_module_ts
+  file_src_modules_codometer_codometer_module_ts --> file_src_modules_run_plan_run_plan_module_ts
   file_src_modules_codometer_codometer_service_ts --> file_src_modules_codometer_codometer_types_ts
+  file_src_modules_codometer_codometer_service_ts --> file_src_modules_codometer_documentation_measurement_types_ts
   file_src_modules_codometer_codometer_service_ts --> file_src_modules_limits_limits_service_ts
   file_src_modules_codometer_codometer_service_ts --> file_src_modules_limits_limits_types_ts
   file_src_modules_codometer_codometer_service_ts --> file_src_modules_limits_metric_index_service_ts
@@ -914,16 +935,22 @@ graph LR
   file_src_modules_codometer_codometer_service_unit_test_ts --> file_src_modules_limits_limits_service_ts
   file_src_modules_codometer_codometer_service_unit_test_ts --> file_src_modules_limits_metric_index_service_ts
   file_src_modules_codometer_codometer_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_codometer_codometer_types_ts --> file_src_modules_codometer_documentation_measurement_types_ts
   file_src_modules_codometer_codometer_types_ts --> file_src_modules_limits_limits_types_ts
   file_src_modules_codometer_codometer_types_ts --> file_src_modules_report_report_types_ts
-  file_src_modules_codometer_run_plan_service_ts --> file_src_modules_codometer_codometer_types_ts
-  file_src_modules_codometer_run_plan_service_ts --> file_src_modules_codometer_run_plan_constants_ts
-  file_src_modules_codometer_run_plan_service_ts --> file_src_modules_codometer_run_plan_types_ts
-  file_src_modules_codometer_run_plan_service_unit_test_ts --> file_src_modules_codometer_codometer_types_ts
-  file_src_modules_codometer_run_plan_service_unit_test_ts --> file_src_modules_codometer_run_plan_service_ts
-  file_src_modules_codometer_run_plan_service_unit_test_ts --> file_src_modules_codometer_run_plan_types_ts
-  file_src_modules_codometer_run_plan_types_ts --> file_src_modules_codometer_codometer_types_ts
-  file_src_modules_codometer_run_plan_types_ts --> file_src_modules_report_report_types_ts
+  file_src_modules_delivery_delivery_module_ts --> file_src_modules_delivery_delivery_service_ts
+  file_src_modules_delivery_delivery_service_ts --> file_src_modules_codometer_codometer_types_ts
+  file_src_modules_delivery_delivery_service_ts --> file_src_modules_codometer_documentation_measurement_types_ts
+  file_src_modules_delivery_delivery_service_ts --> file_src_modules_delivery_delivery_types_ts
+  file_src_modules_delivery_delivery_service_ts --> file_src_modules_run_plan_run_plan_types_ts
+  file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_codometer_codometer_types_ts
+  file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_codometer_documentation_measurement_types_ts
+  file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
+  file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_run_plan_run_plan_types_ts
+  file_src_modules_delivery_delivery_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_delivery_delivery_types_ts --> file_src_modules_codometer_codometer_types_ts
+  file_src_modules_delivery_delivery_types_ts --> file_src_modules_report_report_types_ts
+  file_src_modules_delivery_delivery_types_ts --> file_src_modules_run_plan_run_plan_types_ts
   file_src_modules_limits_limits_module_ts --> file_src_modules_limits_limits_service_ts
   file_src_modules_limits_limits_module_ts --> file_src_modules_limits_metric_index_service_ts
   file_src_modules_limits_limits_service_integration_test_ts --> file_src_modules_limits_limits_service_ts
@@ -948,10 +975,20 @@ graph LR
   file_src_modules_report_report_service_ts --> file_src_modules_limits_limits_types_ts
   file_src_modules_report_report_service_ts --> file_src_modules_report_report_constants_ts
   file_src_modules_report_report_service_ts --> file_src_modules_report_report_types_ts
+  file_src_modules_report_report_service_unit_test_ts --> file_src_modules_codometer_documentation_measurement_types_ts
   file_src_modules_report_report_service_unit_test_ts --> file_src_modules_limits_limits_types_ts
   file_src_modules_report_report_service_unit_test_ts --> file_src_modules_report_report_service_ts
   file_src_modules_report_report_service_unit_test_ts --> file_src_modules_report_report_types_ts
+  file_src_modules_report_report_types_ts --> file_src_modules_codometer_documentation_measurement_types_ts
   file_src_modules_report_report_types_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_run_plan_run_plan_module_ts --> file_src_modules_run_plan_run_plan_service_ts
+  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_codometer_codometer_types_ts
+  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_run_plan_run_plan_constants_ts
+  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_run_plan_run_plan_types_ts
+  file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_codometer_codometer_types_ts
+  file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
+  file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_types_ts
+  file_src_modules_run_plan_run_plan_types_ts --> file_src_modules_codometer_codometer_types_ts
   file_src_repl_ts --> file_src_main_module_ts
   file_testing_mocks_ts --> file_src_modules_report_report_types_ts
 ```
@@ -963,40 +1000,40 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-6432-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-210.85_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-48-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-7230-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-234.83_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-9-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-55-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-25.17_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-27.48_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-47-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-33-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-54-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-34-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-26-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-164-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-29-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-192-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-1-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-12-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-13-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-22-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-14-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-262-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-93-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-290-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-65-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-234-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-223-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-71-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-354-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-730-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-17-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-293-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-105-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-327-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-71-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-262-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-254-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-75-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-391-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-827-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -1107,15 +1144,15 @@ graph LR
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-5-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-5-0284c7?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-7-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-6-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-2-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-5-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-5-db2777?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-6-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-7-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-1-0ea5e9?style=flat-square)
 ![Errors Files](https://img.shields.io/badge/Errors_Files-2-059669?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-9-7c3aed?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-10-7c3aed?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-2-0284c7?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-16a34a?style=flat-square)
 

@@ -4,6 +4,7 @@ import type {
   CallableId,
   CallEdge,
   ModuleId,
+  SourceLocation,
   UnresolvedCall,
 } from "@callidescope/configuration";
 
@@ -22,6 +23,19 @@ export interface BreadthMeasurement {
 export interface CallableBreadth {
   readonly breadth: number;
   readonly calleeIds: readonly CallableId[];
+}
+
+/** The direct callees and direct callers of one addressed callable. */
+export interface CallableDirectCalls {
+  readonly callees: readonly CallableReference[];
+  readonly callers: readonly CallableReference[];
+}
+
+/** One callable named alongside where it is declared. */
+export interface CallableReference {
+  readonly displayName: string;
+  readonly id: CallableId;
+  readonly location: SourceLocation;
 }
 
 /** The assembled call graph, indexed both ways. */

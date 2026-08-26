@@ -45,6 +45,7 @@ export {
 export { ReportModule } from "./modules/report/report.module";
 export { ReportService } from "./modules/report/report.service";
 export type {
+  FramedStack,
   MermaidDiagram,
   RenderProjectSectionArguments,
   RenderRunArguments,

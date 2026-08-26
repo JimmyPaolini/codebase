@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { ANALYSIS_MODULES } from "../../../testing/modules";
 
 import { ComponentsService } from "./components.service";
-import { DepthService } from "./depth.service";
+import { GraphDepthService } from "./graph-depth.service";
 import { GraphService } from "./graph.service";
 
 import type { DepthMeasurement } from "./graph.types";
@@ -55,7 +55,7 @@ function measure(args: {
     callableIds: args.ids,
     graph,
   });
-  const measurement = new DepthService().measure({
+  const measurement = new GraphDepthService().measure({
     condensed,
     graph,
     moduleIdByCallable: new Map(
@@ -86,16 +86,16 @@ function measure(args: {
   };
 }
 
-describe(DepthService, () => {
-  let service: DepthService;
+describe(GraphDepthService, () => {
+  let service: GraphDepthService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [...ANALYSIS_MODULES],
-      providers: [DepthService],
+      providers: [GraphDepthService],
     }).compile();
 
-    service = await module.resolve(DepthService);
+    service = await module.resolve(GraphDepthService);
   });
 
   it("is defined", () => {
@@ -217,7 +217,7 @@ describe(DepthService, () => {
 
   it("skips a successor the measurement does not hold", () => {
     // Defensive: a condensation naming a component that was never emitted.
-    const measurement = new DepthService().measure({
+    const measurement = new GraphDepthService().measure({
       condensed: {
         componentIdByCallable: new Map([["a", 0]]),
         memberIdsByComponent: [["a"]],
@@ -231,7 +231,7 @@ describe(DepthService, () => {
   });
 
   it("ignores a member it has no module for", () => {
-    const measurement = new DepthService().measure({
+    const measurement = new GraphDepthService().measure({
       condensed: {
         componentIdByCallable: new Map([["a", 0]]),
         memberIdsByComponent: [["a"]],
@@ -245,7 +245,7 @@ describe(DepthService, () => {
   });
 
   it("treats a component with no successor list as a leaf", () => {
-    const measurement = new DepthService().measure({
+    const measurement = new GraphDepthService().measure({
       condensed: {
         componentIdByCallable: new Map([["a", 0]]),
         memberIdsByComponent: [["a"]],

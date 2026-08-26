@@ -1199,6 +1199,9 @@ importers:
       jsonc-parser:
         specifier: 'catalog:'
         version: 3.3.1
+      prompts:
+        specifier: 'catalog:'
+        version: 2.4.2
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
@@ -1224,6 +1227,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 25.9.5
+      '@types/prompts':
+        specifier: 'catalog:'
+        version: 2.4.9
       '@vitest/coverage-v8':
         specifier: 'catalog:'
         version: 4.1.10(vitest@4.1.10)

@@ -19,7 +19,7 @@ import type { CallableId, ModuleId } from "@callidescope/configuration";
  * no path along which a node could be revisited and get a different answer.
  */
 @Injectable()
-export class DepthService {
+export class GraphDepthService {
   // 🏗 Dependency Injection
 
   constructor() {}

@@ -5,7 +5,21 @@ import type {
   CallGraphResult,
   CallStack,
   ProjectReport,
+  StackFrame,
 } from "@callidescope/configuration";
+
+/**
+ * Anything holding a frame list, whether or not it is a full `CallStack`.
+ *
+ * `ReportService.renderStackTree` and `MermaidReportService.renderStacks`
+ * only ever read `frames`, so this is what they accept: a full `CallStack`
+ * satisfies it, and so does a path with no depth or entry-point kind of its
+ * own, such as one traced from an arbitrary address rather than a recognized
+ * entry point.
+ */
+export interface FramedStack {
+  readonly frames: readonly StackFrame[];
+}
 
 /**
  * A diagram under construction.

@@ -1,4 +1,4 @@
-import { ConfigurationModule } from "@callidescope/configuration";
+import { ConfigurationModule, InputModule } from "@callidescope/configuration";
 import {
   CallablesModule,
   ClassesModule,
@@ -19,10 +19,10 @@ import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";
 
+import { RunPlanModule } from "../run-plan/run-plan.module";
+
 import { CallidescopeCommand } from "./callidescope.command";
 import { CallidescopeService } from "./callidescope.service";
-import { GraphAssemblyService } from "./graph-assembly.service";
-import { RunPlanService } from "./run-plan.service";
 
 /**
  * NestJS module that wires the callidescope command and its analysis services.
@@ -38,19 +38,16 @@ import { RunPlanService } from "./run-plan.service";
     EntriesModule,
     GraphModule,
     ClassesModule,
+    InputModule,
     LoggerModule,
     OutputJsonModule,
     OutputMarkdownModule,
     ProgramModule,
     ProjectReportsModule,
     ReportModule,
+    RunPlanModule,
     WorkspaceModule,
   ],
-  providers: [
-    CallidescopeCommand,
-    CallidescopeService,
-    GraphAssemblyService,
-    RunPlanService,
-  ],
+  providers: [CallidescopeCommand, CallidescopeService],
 })
 export class CallidescopeModule {}
