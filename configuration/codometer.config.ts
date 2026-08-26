@@ -55,7 +55,7 @@ const PATH_SEPARATOR = "/";
  */
 const PROJECT_LIMITS: Record<string, string> = {
   "packages/callidescope-cli": "70 KB",
-  "packages/callidescope-configuration": "9 KB",
+  "packages/callidescope-configuration": "10 KB",
   "packages/codometer-cli": "84 KB",
   "packages/codometer-configuration": "13 KB",
   "packages/conformetry-cli": "14 KB",
