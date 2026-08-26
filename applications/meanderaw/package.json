@@ -6,7 +6,6 @@
     "@nestjs/core": "catalog:",
     "nest-commander": "catalog:",
     "reflect-metadata": "catalog:",
-    "vitest": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
