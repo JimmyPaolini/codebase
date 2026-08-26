@@ -6,6 +6,18 @@ export default mergeConfig(
   vitestConfig,
   defineConfig({
     test: {
+      /**
+       * Every test here spawns the callidescope command line as a subprocess.
+       *
+       * That subprocess compiles the whole toolchain through
+       * `@swc-node/register` before it traces anything, so a cold runner with
+       * no swc cache spends far longer on the first run than the 10s vitest
+       * allows a hook by default — which is how this suite passed locally and
+       * timed out in CI. The trace itself is a second or two once warm.
+       */
+      hookTimeout: 120_000,
+      testTimeout: 120_000,
+
       coverage: {
         /**
          * Nothing under `src/` is instrumented, and that is the point.
