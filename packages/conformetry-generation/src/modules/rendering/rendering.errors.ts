@@ -4,30 +4,20 @@
  * Raised when a template interpolates a placeholder nobody supplied a value
  * for.
  *
- * Mustache renders an unknown placeholder as an empty string rather than
- * leaving the token visible, so this used to be the quietest failure the
- * toolchain had: the generator wrote a file with a value missing, and
- * validation rendered the same gap on the other side and found nothing to
- * report. Both halves agreed, and both were wrong. Refusing outright is the
- * only outcome that cannot be mistaken for success.
- *
- * Section tags are not covered by this, and deliberately: `{{#field}}` and
- * `{{^field}}` are conditionals, so an absent name is how a template asks for
- * a block to be skipped or taken.
+ * Refusing is the only outcome that cannot be mistaken for success: mustache
+ * would render the placeholder as an empty string, and because generation and
+ * validation render identically, both halves of the loop would lose the same
+ * value and agree that nothing was wrong. Section tags are exempt, and why is
+ * in this package's README.
  */
 export class MissingSubstitutionError extends Error {
   constructor(args: { placeholders: readonly string[]; subject: string }) {
-    const rendered = args.placeholders
+    const asked = args.placeholders
       .map((placeholder) => `{{${placeholder}}}`)
       .join(", ");
 
     super(
-      [
-        `No value was supplied for ${rendered} while rendering ${args.subject}.`,
-        "Declare each one as an input of the generator so that generation asks",
-        "for it, and in the matching instance group's `substitutions` so that",
-        "validation renders it the same way.",
-      ].join(" "),
+      `No value was supplied for ${asked} while rendering ${args.subject}. Declare each one as an input of the generator, and in the matching instance group's substitutions.`,
     );
     this.name = "MissingSubstitutionError";
   }

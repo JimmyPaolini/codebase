@@ -29,12 +29,7 @@ export class RenderingService {
 
   // 🔏 Private Methods
 
-  /**
-   * Refuses to render a template that asks for a value nobody supplied.
-   *
-   * Every placeholder is reported, not only the first, because a template
-   * missing one input is usually missing the set it belongs to.
-   */
+  /** Refuses to render a template asking for a value nobody supplied. */
   private assertEverySubstitutionSupplied(args: {
     subject: string;
     substitutions: Substitutions;
@@ -53,27 +48,20 @@ export class RenderingService {
   }
 
   /**
-   * Every placeholder a template interpolates, in source order and deduplicated.
+   * Every placeholder a template interpolates, deduplicated.
    *
-   * Mustache's own parser does the reading rather than a pattern, so an
-   * interpolation is told apart from a comment (`{{! … }}`), a partial
-   * (`{{> … }}`), and a delimiter change (`{{= … =}}`) exactly the way mustache
-   * itself tells them apart.
-   *
-   * Section names are skipped while their bodies are still walked: `{{#field}}`
-   * and `{{^field}}` are conditionals, so absence is an answer there, but an
-   * interpolation nested inside one is a hole like any other.
-   *
-   * The implicit iterator `{{.}}` is skipped because it names no field at all —
-   * it renders whichever value the enclosing section pushed onto the context.
+   * Mustache's own parser reads them, so an interpolation is told from a
+   * comment, a partial, and a delimiter change the way mustache tells them.
+   * Section names are skipped and their bodies still walked — `{{#field}}` and
+   * `{{^field}}` are conditionals, so absence is an answer there — as is the
+   * implicit iterator `{{.}}`, which names no field.
    */
   private collectInterpolatedNames(template: string): string[] {
     const names = new Set<string>();
     const walk = (spans: TemplateSpans): void => {
       for (const span of spans) {
-        // Indexed rather than destructured: a span is a tuple of
-        // [type, value, start, end, children?], and the two positions between
-        // the parts read here carry offsets nothing needs.
+        // A span is [type, value, start, end, children?]; indexed rather than
+        // destructured because the offsets between are not needed.
         const type = span[0];
         const value = span[1];
         const children = span[4];
@@ -119,9 +107,8 @@ export class RenderingService {
    * HTML escaping disabled so substituted values cannot corrupt source code.
    *
    * An interpolated placeholder nobody supplied raises
-   * `MissingSubstitutionError` rather than rendering as the empty string
-   * mustache would otherwise write. `subject` is what that error names, so
-   * pass the template's path when there is one.
+   * `MissingSubstitutionError`. `subject` is what that error names, so pass
+   * the template's path when there is one.
    */
   public renderContent(args: {
     subject?: string;
