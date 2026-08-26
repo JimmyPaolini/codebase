@@ -1,21 +1,22 @@
-# @codometer/agents
+# @codependix/agents
 
-Agent skills for the [codometer](../codometer-cli) toolchain.
+Agent skills for the [codependix](../codependix-cli) toolchain.
 
-Codometer measures a directory and reports what it counted, gated by whatever
-limits a configuration declares. This package documents that for coding
-agents, so an agent facing a breached limit or a stale report knows what
-question to ask before reaching for the configuration file.
+Codependix reads what each project in an Nx workspace depends on and exports it
+as JSON and Mermaid diagrams. This package documents that for coding agents, so
+an agent asked to export a dependency graph reaches for the configuration
+rather than for a flag that does not exist — and an agent scoping a refactor
+reads a graph the repository already committed instead of re-deriving it.
 
 ## Installing
 
-The skills describe the toolchain rather than any one workspace, so they work
-in any repository that uses codometer. Install them with the
-[skills](https://github.com/vercel-labs/skills) CLI, naming the skills
-directory explicitly:
+The skills describe the toolchain rather than any one workspace, so they work in
+any repository that uses codependix. Install them with the
+[skills](https://github.com/vercel-labs/skills) CLI, naming the skills directory
+explicitly:
 
 ```bash
-npx skills add JimmyPaolini/codebase/packages/codometer-agents/skills --skill '*'
+npx skills add JimmyPaolini/codebase/packages/codependix-agents/skills --skill '*'
 ```
 
 Naming the directory matters. A bare repository reference searches this
@@ -26,33 +27,43 @@ holds, most of which are specific to this workspace.
 
 | Skill | Reach for it when |
 | ----- | ----------------- |
-| [codometer-measure](skills/codometer-measure/SKILL.md) | Running a measurement, choosing where the report goes, or reading a badge block or JSON report |
-| [codometer-configure](skills/codometer-configure/SKILL.md) | Writing a `codometer.config.ts` — targets, limits, declared convention counters, exclusions, output destinations |
-| [codometer-triage](skills/codometer-triage/SKILL.md) | A limit was breached, or a committed report reads stale |
+| [codependix-export](skills/codependix-export/SKILL.md) | Running an export, choosing `--check` against `--write`, pointing a run at a workspace root or a configuration file, or reading an exported Mermaid block or JSON graph |
+| [codependix-configure](skills/codependix-configure/SKILL.md) | Writing a `codependix.config.ts` — which graph types run, per-project overrides, include/exclude globs, the workspace graph, and where each export lands |
+| [codependix-triage](skills/codependix-triage/SKILL.md) | A `--check` reported stale, a project failed its export, an anchor is missing, a NestJS container failed to boot, or a `--write` produced nothing |
+| [codependix-navigate](skills/codependix-navigate/SKILL.md) | Reading a committed graph to answer a question — what depends on this, what a rename would touch, whether an import cycle is real |
 
-The split mirrors three distinct moments: running the tool, telling it what to
-enforce, and acting on what it said.
+The first three mirror conformetry's generate / configure / validate and
+codometer's measure / configure / triage: run the tool, tell it what to
+enforce, act on what it said.
+
+The fourth is codependix's own. Its exports are standing reference artifacts
+rather than pass/fail reports, so "read a graph somebody already committed" is a
+moment the other two toolchains do not have — and it fires on questions
+(`what depends on this`, `what would this rename touch`) that share no
+vocabulary with running an export. Since a skill's `description` is its entire
+trigger surface, folding that into `codependix-export` would have meant it never
+fired for the questions it answers.
 
 ## Why there are no bundled scripts
 
 An installed skill is a copied directory with no manifest and no dependencies
-beside it, so a script shipped inside one can import nothing but Node
-built-ins. Capability an agent needs lives in `@codometer/cli` instead, where
-it is versioned and tested, and the skills name the command.
+beside it, so a script shipped inside one can import nothing but Node built-ins.
+Capability an agent needs lives in `@codependix/cli` instead, where it is
+versioned and tested, and the skills name the command.
 
 ## Editing
 
-The skills here are the source of truth. This repository consumes them the
-same way it consumes any installed skill, through `skills-lock.json`, so a copy
-also appears under the repository's agent skills directory — edit the copy in
-this package, never that one.
+The skills here are the source of truth. Once this package is recorded in
+`skills-lock.json`, this repository will consume them the same way it consumes
+any installed skill, so a copy will also appear under the repository's agent
+skills directory — edit the copy in this package, never that one.
 
 ## Validating
 
 ```bash
-pnpm exec nx run codometer-agents:lint-codebase --configuration=write
-pnpm exec nx run codometer-agents:lint-codebase --configuration=check
-pnpm exec nx run codometer-agents:test-coverage
+pnpm exec nx run codependix-agents:lint-codebase --configuration=write
+pnpm exec nx run codependix-agents:lint-codebase --configuration=check
+pnpm exec nx run codependix-agents:test-coverage
 ```
 
 Coverage is empty by nature here — there is no source to instrument — so the
@@ -63,11 +74,27 @@ output.
 
 MIT — see [LICENSE](../../LICENSE).
 
+## 🕸️ Codependix
+
+Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codebase/tree/main/packages/codependix-cli), regenerated by `nx run codebase:codependix:write`.
+
+### Nx Neighborhood
+
+<!-- codependix:start name="codependix-nx" -->
+_This project has no immediate Nx dependencies or dependents._
+<!-- codependix:end name="codependix-nx" -->
+
+### File Imports
+
+<!-- codependix:start name="codependix-imports" -->
+_This project has no internal file imports._
+<!-- codependix:end name="codependix-imports" -->
+
 <!-- CALL_STACKS_START -->
 
 ## 🔭 Callidescope
 
-Call stacks traced through `packages/codometer-agents`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/codependix-agents`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |
@@ -96,22 +123,6 @@ None.
 None.
 <!-- CALL_STACKS_END -->
 
-## 🕸️ Codependix
-
-Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codebase/tree/main/packages/codependix-cli), regenerated by `nx run codebase:codependix:write`.
-
-### Nx Neighborhood
-
-<!-- codependix:start name="codependix-nx" -->
-_This project has no immediate Nx dependencies or dependents._
-<!-- codependix:end name="codependix-nx" -->
-
-### File Imports
-
-<!-- codependix:start name="codependix-imports" -->
-_This project has no internal file imports._
-<!-- codependix:end name="codependix-imports" -->
-
 <!-- CODE_STATISTICS_START -->
 
 ## ⏲️ Codometer
@@ -119,8 +130,8 @@ _This project has no internal file imports._
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-185-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-31.16_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-41.22_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-6-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-4-3178c6?style=flat-square)
 
 ### TypeScript
@@ -295,24 +306,24 @@ _This project has no internal file imports._
 
 ### Markdown
 
-![Markdown Files](https://img.shields.io/badge/Markdown_Files-4-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-526-1f6feb?style=flat-square)
-![H1](https://img.shields.io/badge/H1-4-7c3aed?style=flat-square)
-![H2](https://img.shields.io/badge/H2-21-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-0-a78bfa?style=flat-square)
+![Markdown Files](https://img.shields.io/badge/Markdown_Files-5-083fa1?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-709-1f6feb?style=flat-square)
+![H1](https://img.shields.io/badge/H1-5-7c3aed?style=flat-square)
+![H2](https://img.shields.io/badge/H2-33-8b5cf6?style=flat-square)
+![H3](https://img.shields.io/badge/H3-3-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-66-64748b?style=flat-square)
-![Lists](https://img.shields.io/badge/Lists-7-16a34a?style=flat-square)
-![List Items](https://img.shields.io/badge/List_Items-15-22c55e?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-122-64748b?style=flat-square)
+![Lists](https://img.shields.io/badge/Lists-14-16a34a?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-38-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
-![Tables](https://img.shields.io/badge/Tables-4-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-22-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-2-059669?style=flat-square)
+![Tables](https://img.shields.io/badge/Tables-5-0284c7?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-21-0ea5e9?style=flat-square)
+![Links](https://img.shields.io/badge/Links-3-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-10-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-156-ef4444?style=flat-square)
-![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-8-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-208-ef4444?style=flat-square)
+![Block Quotes](https://img.shields.io/badge/Block_Quotes-1-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
