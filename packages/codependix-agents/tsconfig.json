@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "lib": ["ES2023"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "paths": {
+      "codebase/configuration/*": ["../../configuration/*"],
+      "eslint-plugin-better-max-params": [
+        "../../configuration/types/eslint-plugin-better-max-params/index.d.ts"
+      ]
+    },
+    "target": "esnext",
+    "types": ["node", "vitest/globals"]
+  },
+  "exclude": ["dist", "node_modules", "output"],
+  "extends": "../../configuration/tsconfig.json",
+  "include": ["eslint.config.ts", "testing/**/*.ts", "vitest.config.ts"]
+}

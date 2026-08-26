@@ -59,11 +59,15 @@ corpus test is what protects the shipped output.
 
 ## Why the corpus test is copied, not shared
 
-`testing/skills.unit.test.ts` is identical, byte for byte, to the one in
-[`conformetry-agents`](../conformetry-agents/testing/skills.unit.test.ts). That
-duplication is a deliberate choice rather than an oversight: each agent
-package is a standalone, installable unit whose only dependency should be what
-its own `package.json` declares, and both copies stay small enough — one file,
-under 150 lines — that drift between them is easy to spot in review.
-`jscpd` runs advisory only (`nx run codebase:jscpd`, `|| true`, nothing in CI
-calls it), so this is not a gate either copy needs to clear.
+This section is the canonical statement of that decision; every other agent
+package points here rather than restating it.
+
+`testing/skills.unit.test.ts` is identical, byte for byte, to the ones in
+[`conformetry-agents`](../conformetry-agents/testing/skills.unit.test.ts) and
+[`codependix-agents`](../codependix-agents/testing/skills.unit.test.ts). That
+duplication is a deliberate choice rather than an oversight: each agent package
+is a standalone, installable unit whose only dependency should be what its own
+`package.json` declares, and every copy stays small enough — one file, under
+150 lines — that drift between them is easy to spot in review. `jscpd` runs
+advisory only (`nx run codebase:jscpd`, `|| true`, nothing in CI calls it), so
+this is not a gate any copy needs to clear.

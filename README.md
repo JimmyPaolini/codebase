@@ -70,6 +70,7 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
   - **[callidescope-graph](packages/callidescope-graph)** - Builds the call graph from traced TypeScript source and measures its depth, breadth, and cohesion
   - **[callidescope-output](packages/callidescope-output)** - Renders call-graph findings into markdown, mermaid, and JSON output formats
 - **🕸️ codependix** - Dependency graph export toolchain that reads what each project depends on and renders it as JSON and Markdown diagrams
+  - **[codependix-agents](packages/codependix-agents)** - Agent skills for the codependix toolchain, installable by any workspace that uses codependix
   - **[codependix-cli](packages/codependix-cli)** - Command-line host that exports a project's Nx, NestJS, and file-level dependency graphs as JSON and Markdown anchor blocks
   - **[codependix-configuration](packages/codependix-configuration)** - Reads `codependix.config.ts` and resolves per-project export destinations
   - **[codependix-imports](packages/codependix-imports)** - Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements
@@ -175,6 +176,7 @@ graph LR
   callidescope_configuration["callidescope-configuration"]
   callidescope_graph["callidescope-graph"]
   callidescope_output["callidescope-output"]
+  codependix_agents["codependix-agents"]
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
   codependix_imports["codependix-imports"]
