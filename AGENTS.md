@@ -167,11 +167,8 @@ enforce, act on what it said.
   — acting on a breach or a stale report
 
 These three are authored in
-[`packages/codometer-agents`](packages/codometer-agents). A follow-up records
-them in `skills-lock.json` and vendors them into `.agents/skills/`, the way
-[`packages/conformetry-agents`](packages/conformetry-agents) is consumed — that
-can only happen once this package exists on the default branch, since the
-skills tool resolves a `github` source against it.
+[`packages/codometer-agents`](packages/codometer-agents) and installed back from
+the lockfile the same way. Edit the package, never the installed copy.
 
 ## Codependix
 
@@ -192,10 +189,8 @@ already committed, which the other two toolchains have no equivalent of.
   — reading a committed graph to scope a refactor
 
 These four are authored in
-[`packages/codependix-agents`](packages/codependix-agents), and inherit
-`codometer-agents`'s two-step: a follow-up records them in `skills-lock.json`
-and vendors them into `.agents/skills/`, which can only happen once the package
-exists on the default branch.
+[`packages/codependix-agents`](packages/codependix-agents) and installed back
+from the lockfile the same way. Edit the package, never the installed copy.
 
 ## Work Scope
 
@@ -673,15 +668,15 @@ license to travel with the copy. The last row is this repository consuming its
 own published skills, so its license is the root [`LICENSE`](LICENSE) rather than
 a vendored copy:
 
-| Source                                                              | License    | Skills                                                               |
-| ------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------- |
-| [mattpocock/skills](https://github.com/mattpocock/skills)           | MIT        | 25, the Agent Workflow set                                           |
-| [nrwl/nx](https://github.com/nrwl/nx)                               | MIT        | 7, the `nx-*` skills plus `monitor-ci` and `link-workspace-packages` |
-| [obra/superpowers](https://github.com/obra/superpowers)             | MIT        | 5                                                                    |
-| [github/gh-stack](https://github.com/github/gh-stack)               | MIT        | 1                                                                    |
-| [github/awesome-copilot](https://github.com/github/awesome-copilot) | MIT        | 1                                                                    |
-| [pbakaus/impeccable](https://github.com/pbakaus/impeccable)         | Apache-2.0 | 1                                                                    |
-| [JimmyPaolini/codebase](https://github.com/JimmyPaolini/codebase)   | MIT        | 3, the `conformetry-*` skills this repository publishes              |
+| Source                                                              | License    | Skills                                                                                      |
+| ------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------- |
+| [mattpocock/skills](https://github.com/mattpocock/skills)           | MIT        | 25, the Agent Workflow set                                                                  |
+| [nrwl/nx](https://github.com/nrwl/nx)                               | MIT        | 7, the `nx-*` skills plus `monitor-ci` and `link-workspace-packages`                        |
+| [obra/superpowers](https://github.com/obra/superpowers)             | MIT        | 5                                                                                           |
+| [github/gh-stack](https://github.com/github/gh-stack)               | MIT        | 1                                                                                           |
+| [github/awesome-copilot](https://github.com/github/awesome-copilot) | MIT        | 1                                                                                           |
+| [pbakaus/impeccable](https://github.com/pbakaus/impeccable)         | Apache-2.0 | 1                                                                                           |
+| [JimmyPaolini/codebase](https://github.com/JimmyPaolini/codebase)   | MIT        | 10, the `conformetry-*`, `codometer-*`, and `codependix-*` skills this repository publishes |
 
 `skills-lock.json` maps each individual skill to its source.
 
