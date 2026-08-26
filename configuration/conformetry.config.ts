@@ -39,7 +39,8 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
   // shape a tag describes.
   {
     aliases: ["jna"],
-    description: "Generate a Python Jupyter notebook application",
+    description:
+      "A standalone Python application template with a Jupyter notebook entry point, pytest/pyright/ruff tooling, and a shared uv workspace venv",
     inputs: defineInputs({
       description: z.string().describe("Application description"),
       name: z.string().describe("Application name in kebab-case"),
@@ -52,7 +53,7 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
   {
     aliases: ["nca"],
     description:
-      "Generate a NestJS command-line application using nest-commander",
+      "A standalone NestJS CLI application template built on nest-commander, for a new command-line tool in applications/, packages/, or tools/",
     inputs: defineInputs({
       name: z.string().describe("Project name (kebab-case)"),
       type: z
@@ -65,7 +66,8 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
   },
   {
     aliases: ["nga"],
-    description: "Generate a NestJS GraphQL API application",
+    description:
+      "A standalone NestJS GraphQL API application template, for a new backend service exposing a GraphQL schema over HTTP",
     inputs: defineInputs({
       name: z.string().describe("Application name in kebab-case"),
     }),
@@ -77,7 +79,7 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
   {
     aliases: ["nsp"],
     description:
-      "Generate a NestJS service package template for internal workspace libraries",
+      "A standalone NestJS library package template for internal workspace code shared across projects, with no CLI entry point or HTTP server",
     inputs: defineInputs({
       name: z.string().describe("Project name (kebab-case)"),
       type: z
@@ -105,7 +107,7 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
   {
     aliases: ["ncm"],
     description:
-      "Generate a NestJS command module with command, module, and unit test files",
+      "A nest-commander command module template — command, module, constants, types, and unit test — for an existing NestJS command-line project",
     inputs: defineInputs({
       name: z.string().describe("Module name in kebab-case"),
       project: z.string().describe("Parent project name in kebab-case"),
@@ -119,7 +121,7 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
   {
     aliases: ["ndm"],
     description:
-      "Generate a NestJS dataloader module with dataloader, types, and unit test files",
+      "A GraphQL dataloader module template — dataloader, module, types, and unit test — for batching lookups inside an existing NestJS project",
     inputs: defineInputs({
       name: z.string().describe("Module name in kebab-case"),
       project: z.string().describe("Parent project name in kebab-case"),
@@ -132,7 +134,7 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
   {
     aliases: ["ngm"],
     description:
-      "Generate a NestJS GraphQL module with resolver, entities, inputs, args, factories, service, types, constants, and unit test files",
+      "A GraphQL module template — resolver, entities, args/input types, factories, constants, and unit test — for an existing NestJS project",
     inputs: defineInputs({
       name: z.string().describe("Module name in kebab-case"),
       project: z.string().describe("Parent project name in kebab-case"),
@@ -143,7 +145,8 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
   },
   {
     aliases: ["nsf"],
-    description: "Generate NestJS service and unit test files",
+    description:
+      "A service and unit test file template for an existing NestJS module, without the surrounding module files",
     inputs: defineInputs({
       module: z.string().describe("Target module name in kebab-case"),
       name: z.string().describe("Service name in kebab-case"),
@@ -164,7 +167,7 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
   {
     aliases: ["nsm"],
     description:
-      "Generate a NestJS service module with module, service, types, constants, and unit test files",
+      "A plain service module template — module, service, constants, types, and unit test — for an existing NestJS project",
     inputs: defineInputs({
       name: z.string().describe("Module name in kebab-case"),
       project: z.string().describe("Parent project name in kebab-case"),
@@ -179,7 +182,8 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
   // progress, and adding patterns here is what would start validating it.
   {
     aliases: ["c"],
-    description: "Generate a React component with test file",
+    description:
+      "A React component and test file template for an existing React project",
     inputs: defineInputs({
       name: z.string().describe("Component name in kebab-case"),
       project: z.string().describe("Parent project name in kebab-case"),

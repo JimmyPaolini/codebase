@@ -13,12 +13,15 @@ import type {
   SynchronizableCommand,
   SynchronizationMode,
 } from "../synchronization/synchronization.types";
-import type { ConformetryGeneratorMetadata } from "./conformetry-generators.types";
+import type {
+  ConformetryGeneratorMetadata,
+  ConformetryGeneratorsTargetFile,
+} from "./conformetry-generators.types";
 
 /**
- * CLI command that syncs the conformetry generators table into AGENTS.md.
- * Reads configuration/conformetry.config.ts and injects a markdown table
- * between marker comments.
+ * CLI command that syncs the conformetry generators table into AGENTS.md and
+ * README.md. Reads configuration/conformetry.config.ts and injects a markdown
+ * table between marker comments in both files.
  */
 @Command({
   description: "Run the conformetry-generators command",
@@ -42,6 +45,11 @@ export class ConformetryGeneratorsCommand
 
   // 🔐 Private Fields
 
+  private readonly targetFiles: ConformetryGeneratorsTargetFile[] = [
+    { includeAlias: true, path: "AGENTS.md" },
+    { includeAlias: false, path: "README.md" },
+  ];
+
   // 🔑 Public Fields
 
   readonly synchronizationLabel = "conformetry-generators";
@@ -49,21 +57,28 @@ export class ConformetryGeneratorsCommand
   // 🔏 Private Methods
 
   /**
-   * Compares the generated generators table against the stored content in AGENTS.md and reports any differences.
+   * Compares the generated generators table against the stored content in
+   * every target file and reports any differences.
    */
   private checkSync(generators: ConformetryGeneratorMetadata[]): boolean {
-    const generatedTable = this.generateGeneratorsTable(generators);
-    const existingContent = this.readAgentsFile();
+    const outOfSyncFiles = this.targetFiles
+      .filter((targetFile) => {
+        const generatedTable = this.generateGeneratorsTable(
+          generators,
+          targetFile.includeAlias,
+        ).trim();
+        const { generatedContent } = this.readMarkedFile(targetFile.path);
+        return generatedTable !== generatedContent.trim();
+      })
+      .map((targetFile) => targetFile.path);
 
-    const generated = generatedTable.trim();
-    const existing = existingContent.generatedContent.trim();
-
-    if (generated !== existing) {
+    if (outOfSyncFiles.length > 0) {
       this.logger.info(
-        "📇 Detected an out-of-sync conformetry generators table in AGENTS.md",
+        "📇 Detected an out-of-sync conformetry generators table",
         undefined,
         {
           count: generators.length,
+          files: outOfSyncFiles,
           hint: "Run 'nx run synchronization:conformetry-generators:write' to sync",
         },
       );
@@ -81,53 +96,24 @@ export class ConformetryGeneratorsCommand
   }
 
   /**
-   * Renders the list of generators as a markdown table for injection into AGENTS.md.
+   * Renders the list of generators as a markdown table for injection into a
+   * target file, optionally including the Alias column.
    */
   private generateGeneratorsTable(
     generators: ConformetryGeneratorMetadata[],
+    includeAlias: boolean,
   ): string {
-    const header =
-      "| Generator | Alias | Description |\n| --------- | ----- | ----------- |";
+    const header = includeAlias
+      ? "| Template | Alias | Description |\n| -------- | ----- | ----------- |"
+      : "| Template | Description |\n| -------- | ----------- |";
     const rows = generators.map((gen) => {
+      if (!includeAlias) {
+        return `| \`${gen.name}\` | ${gen.description} |`;
+      }
       const alias = gen.aliases.map((a) => `\`${a}\``).join(", ");
       return `| \`${gen.name}\` | ${alias} | ${gen.description} |`;
     });
     return [header, ...rows].join("\n");
-  }
-
-  /**
-   * Reads AGENTS.md and splits it around the conformetry generators table markers.
-   */
-  private readAgentsFile(): {
-    afterMarker: string;
-    beforeMarker: string;
-    generatedContent: string;
-  } {
-    const agentsFile = path.join(process.cwd(), "AGENTS.md");
-    const content = readFileSync(agentsFile, "utf8");
-    const startMarker = "<!-- conformetry-generators-table start -->";
-    const endMarker = "<!-- conformetry-generators-table end -->";
-
-    const startIndex = content.indexOf(startMarker);
-    const endIndex = content.indexOf(endMarker);
-
-    if (startIndex === -1 || endIndex === -1) {
-      throw new Error(
-        `Markers not found in AGENTS.md. Expected to find "${startMarker}" and "${endMarker}"`,
-      );
-    }
-
-    const beforeMarker = content.slice(
-      0,
-      Math.max(0, startIndex + startMarker.length),
-    );
-    const afterMarker = content.slice(Math.max(0, endIndex));
-    const generatedContent = content.slice(
-      startIndex + startMarker.length,
-      endIndex,
-    );
-
-    return { afterMarker, beforeMarker, generatedContent };
   }
 
   /**
@@ -152,20 +138,62 @@ export class ConformetryGeneratorsCommand
   }
 
   /**
-   * Writes the generated generators table into AGENTS.md between the marker comments.
+   * Reads a target file and splits it around the conformetry generators table markers.
+   */
+  private readMarkedFile(targetFile: string): {
+    afterMarker: string;
+    beforeMarker: string;
+    generatedContent: string;
+  } {
+    const filePath = path.join(process.cwd(), targetFile);
+    const content = readFileSync(filePath, "utf8");
+    const startMarker = "<!-- conformetry-generators-table start -->";
+    const endMarker = "<!-- conformetry-generators-table end -->";
+
+    const startIndex = content.indexOf(startMarker);
+    const endIndex = content.indexOf(endMarker);
+
+    if (startIndex === -1 || endIndex === -1) {
+      throw new Error(
+        `Markers not found in ${targetFile}. Expected to find "${startMarker}" and "${endMarker}"`,
+      );
+    }
+
+    const beforeMarker = content.slice(
+      0,
+      Math.max(0, startIndex + startMarker.length),
+    );
+    const afterMarker = content.slice(Math.max(0, endIndex));
+    const generatedContent = content.slice(
+      startIndex + startMarker.length,
+      endIndex,
+    );
+
+    return { afterMarker, beforeMarker, generatedContent };
+  }
+
+  /**
+   * Writes the generated generators table into every target file between the marker comments.
    */
   private writeSync(generators: ConformetryGeneratorMetadata[]): void {
-    const agentsFile = path.join(process.cwd(), "AGENTS.md");
     this.logger.info("🔄 Generating the conformetry generators table");
-    const generatedTable = this.generateGeneratorsTable(generators);
-    const { afterMarker, beforeMarker } = this.readAgentsFile();
 
-    const newContent = `${beforeMarker}\n${generatedTable}\n${afterMarker}`;
+    for (const targetFile of this.targetFiles) {
+      const generatedTable = this.generateGeneratorsTable(
+        generators,
+        targetFile.includeAlias,
+      );
+      const filePath = path.join(process.cwd(), targetFile.path);
+      const { afterMarker, beforeMarker } = this.readMarkedFile(
+        targetFile.path,
+      );
+      const newContent = `${beforeMarker}\n${generatedTable}\n${afterMarker}`;
 
-    writeFileSync(agentsFile, newContent, "utf8");
-    this.logger.info("📇 Updated AGENTS.md", undefined, {
-      count: generators.length,
-    });
+      writeFileSync(filePath, newContent, "utf8");
+      this.logger.info(`📇 Updated ${targetFile.path}`, undefined, {
+        count: generators.length,
+      });
+    }
   }
 
   // 🌎 Public Methods

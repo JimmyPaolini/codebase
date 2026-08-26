@@ -6,3 +6,9 @@ export interface ConformetryGeneratorMetadata {
   description: string;
   name: string;
 }
+
+/** A file the conformetry generators table is synced into. */
+export interface ConformetryGeneratorsTargetFile {
+  includeAlias: boolean;
+  path: string;
+}

@@ -137,18 +137,18 @@ This repository's generators, kept in step with the configuration by
 same thing for any workspace:
 
 <!-- conformetry-generators-table start -->
-| Generator | Alias | Description |
-| --------- | ----- | ----------- |
-| `jupyter-notebook-application` | `jna` | Generate a Python Jupyter notebook application |
-| `nestjs-command-project` | `nca` | Generate a NestJS command-line application using nest-commander |
-| `nestjs-graphql-application` | `nga` | Generate a NestJS GraphQL API application |
-| `nestjs-service-project` | `nsp` | Generate a NestJS service package template for internal workspace libraries |
-| `nestjs-command-module` | `ncm` | Generate a NestJS command module with command, module, and unit test files |
-| `nestjs-dataloader-module` | `ndm` | Generate a NestJS dataloader module with dataloader, types, and unit test files |
-| `nestjs-graphql-module` | `ngm` | Generate a NestJS GraphQL module with resolver, entities, inputs, args, factories, service, types, constants, and unit test files |
-| `nestjs-service-file` | `nsf` | Generate NestJS service and unit test files |
-| `nestjs-service-module` | `nsm` | Generate a NestJS service module with module, service, types, constants, and unit test files |
-| `react-component` | `c` | Generate a React component with test file |
+| Template | Alias | Description |
+| -------- | ----- | ----------- |
+| `jupyter-notebook-application` | `jna` | A standalone Python application template with a Jupyter notebook entry point, pytest/pyright/ruff tooling, and a shared uv workspace venv |
+| `nestjs-command-project` | `nca` | A standalone NestJS CLI application template built on nest-commander, for a new command-line tool in applications/, packages/, or tools/ |
+| `nestjs-graphql-application` | `nga` | A standalone NestJS GraphQL API application template, for a new backend service exposing a GraphQL schema over HTTP |
+| `nestjs-service-project` | `nsp` | A standalone NestJS library package template for internal workspace code shared across projects, with no CLI entry point or HTTP server |
+| `nestjs-command-module` | `ncm` | A nest-commander command module template — command, module, constants, types, and unit test — for an existing NestJS command-line project |
+| `nestjs-dataloader-module` | `ndm` | A GraphQL dataloader module template — dataloader, module, types, and unit test — for batching lookups inside an existing NestJS project |
+| `nestjs-graphql-module` | `ngm` | A GraphQL module template — resolver, entities, args/input types, factories, constants, and unit test — for an existing NestJS project |
+| `nestjs-service-file` | `nsf` | A service and unit test file template for an existing NestJS module, without the surrounding module files |
+| `nestjs-service-module` | `nsm` | A plain service module template — module, service, constants, types, and unit test — for an existing NestJS project |
+| `react-component` | `c` | A React component and test file template for an existing React project |
 <!-- conformetry-generators-table end -->
 
 ## Codometer
@@ -256,6 +256,19 @@ Two repository rules override the skill's generic defaults:
   reject a non-compliant branch, so an unvalidated worktree wastes the work.
 - **If the branch already exists locally, attach a worktree to it** rather than
   creating a second branch.
+- **Never run `git submodule update --init` for `applications/JimmyPaolini`.**
+  `git worktree add` never checks out submodules — the git manual's own
+  `WORKTREE` documentation calls submodule support "incomplete" and advises
+  against multiple checkouts of a superproject — but this repository's
+  submodule is deliberately left uninitialized everywhere, not only in
+  worktrees: its real content is never checked out locally or in CI, and
+  `package.json`'s `sherif.ignorePackage` already exempts it from workspace
+  checks. A `git submodule status` `-` prefix here is expected, not broken.
+  If `pnpm install` or `lint-codebase --write` rewrites the
+  `applications/JimmyPaolini` entry out of `pnpm-lock.yaml`, that is the
+  known spurious diff from an inconsistently-present placeholder
+  `package.json` across checkouts — revert the lockfile rather than
+  reconciling it, the same as any other worktree-only lockfile drift.
 
 ### Branch Names
 
