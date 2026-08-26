@@ -256,9 +256,9 @@ Call stacks traced through `codependix-cli`, deepest first. Each frame shows wha
 
 | Measure | Value |
 | --- | --- |
-| Callables | 54 |
-| Files | 21 |
-| Calls traced | 86 |
+| Callables | 61 |
+| Files | 25 |
+| Calls traced | 98 |
 | Call stacks | 1 |
 | Deepest stack | 12 |
 | Stacks through recursion | 0 |
@@ -271,13 +271,13 @@ Call stacks traced through `codependix-cli`, deepest first. Each frame shows wha
 ```text
 🚀 CodependixCommand.run(_passedParameters: string[], options?: CodependixCommandOptions): Promise<void> [packages/codependix-cli/src/modules/codependix/codependix.command.ts:142]
    ↳ Runs every configured graph export in check or write mode.
-  └─> CodependixService.run(…): Promise<GraphRunOutcome> [packages/codependix-cli/src/modules/codependix/codependix.service.ts:326]
+  └─> CodependixService.run(…): Promise<GraphRunOutcome> [packages/codependix-cli/src/modules/codependix/codependix.service.ts:324]
      ↳ Runs every configured graph export, resolving the shared `GraphRunContext` exactly once.
-    └─> CodependixService.runNxGraphs(context: GraphRunContext): GraphRunOutcome [packages/codependix-cli/src/modules/codependix/codependix.service.ts:467]
+    └─> CodependixService.runNxGraphs(context: GraphRunContext): GraphRunOutcome [packages/codependix-cli/src/modules/codependix/codependix.service.ts:468]
        ↳ Builds and delivers every configured Nx graph export — each included project's Neighborhood, and the whole-workspace…
-      └─> CodependixService.runNxProjects(…): GraphRunOutcome [packages/codependix-cli/src/modules/codependix/codependix.service.ts:242]
+      └─> CodependixService.runNxProjects(…): GraphRunOutcome [packages/codependix-cli/src/modules/codependix/codependix.service.ts:240]
          ↳ Renders and delivers every included project's Nx Neighborhood, isolating one project's failure from the rest — see…
-        └─> CodependixService.runNxProject(…): ProjectRunResult [packages/codependix-cli/src/modules/codependix/codependix.service.ts:212]
+        └─> CodependixService.runNxProject(…): ProjectRunResult [packages/codependix-cli/src/modules/codependix/codependix.service.ts:210]
            ↳ Renders and delivers one project's Nx Neighborhood.
           └─> DeliveryService.deliverGraphOutput(args: DeliverGraphOutputArguments): ProjectRunResult [packages/codependix-cli/src/modules/delivery/delivery.service.ts:271]
              ↳ Delivers whichever destinations a resolved graph output names. `jsonContent`/`markdownContent` are read only when the…
@@ -299,34 +299,35 @@ Call stacks traced through `codependix-cli`, deepest first. Each frame shows wha
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CodependixService.runWorkspaceGraph` | 6 | `codependix-cli:modules/delivery`, `codependix-configuration:modules/configuration`, `codependix-nx:modules/workspace-graph` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:281` |
-| `CodependixService.runImportProject` | 5 | `codependix-cli:modules/delivery`, `codependix-imports:modules/import-graph`, `codependix-imports:modules/typescript-project` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:158` |
-| `CodependixService.runNestjsProject` | 5 | `codependix-cli:modules/delivery`, `codependix-nestjs:modules/module-graph`, `codependix-nestjs:modules/nestjs-project` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:185` |
+| `CodependixService.runWorkspaceGraph` | 6 | `codependix-cli:modules/delivery`, `codependix-configuration:modules/configuration`, `codependix-nx:modules/workspace-graph` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:279` |
+| `CodependixService.runNestjsProject` | 5 | `codependix-cli:modules/delivery`, `codependix-nestjs:modules/module-graph`, `codependix-nestjs:modules/nestjs-project` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:183` |
 
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CodependixService.run` | 7 | `ConfigurationService.loadConfiguration`, `NeighborhoodService.readProjectGraph`, `NeighborhoodService.readProjects`, `CodependixService.resolveMode`, `CodependixService.runNxGraphs`, `CodependixService.runNestjsGraphs`, `CodependixService.runImportGraphs` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:326` |
+| `CodependixService.run` | 8 | `ConfigurationService.loadConfiguration`, `NeighborhoodService.readProjectGraph`, `NeighborhoodService.readProjects`, `CodependixService.resolveMode`, `CodependixService.runNxGraphs`, `CodependixService.runNestjsGraphs`, `CodependixService.runImportGraphs`, `CodependixService.runPythonImportGraphs` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:324` |
 | `AnchorsService.replaceAnchorContent` | 6 | `AnchorsService.hasAnchor`, `AnchorNotFoundError.constructor`, `buildStartMarker`, `buildEndMarker`, `AnchorsService.replace(…)`, `AnchorsService.buildAnchorPattern` | `packages/codependix-cli/src/modules/anchors/anchors.service.ts:178` |
-| `CodependixService.runImportProject` | 6 | `TypescriptProjectService.buildProgram`, `ImportGraphService.buildGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `ImportGraphService.renderMermaid`, `CodependixService.buildMarkdownSection` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:158` |
+| `CodependixService.runImportProject` | 6 | `TypescriptService.buildProgram`, `TypescriptService.buildGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `TypescriptService.renderMermaid`, `CodependixService.buildMarkdownSection` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:156` |
 
 <details>
-<summary>22 more callables</summary>
+<summary>26 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CodependixService.runNestjsProject` | 6 | `NestjsProjectService.exploreProject`, `ModuleGraphService.buildGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `ModuleGraphService.renderMermaid`, `CodependixService.buildMarkdownSection` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:185` |
-| `CodependixService.runWorkspaceGraph` | 6 | `ConfigurationService.resolveForWorkspace`, `WorkspaceGraphService.buildWorkspaceGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `WorkspaceGraphService.renderMermaid`, `CodependixService.buildMarkdownSection` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:281` |
+| `CodependixService.runNestjsProject` | 6 | `NestjsProjectService.exploreProject`, `ModuleGraphService.buildGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `ModuleGraphService.renderMermaid`, `CodependixService.buildMarkdownSection` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:183` |
+| `CodependixService.runWorkspaceGraph` | 6 | `ConfigurationService.resolveForWorkspace`, `WorkspaceGraphService.buildWorkspaceGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `WorkspaceGraphService.renderMermaid`, `CodependixService.buildMarkdownSection` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:279` |
 | `DeliveryService.deliverAnchoredMarkdown` | 5 | `AnchorNotFoundError.constructor`, `AnchorsService.hasAnchor`, `AnchorsService.checkAnchor`, `DeliveryService.writeAutoCreatedAnchorSection`, `AnchorsService.replaceAnchorContent` | `packages/codependix-cli/src/modules/delivery/delivery.service.ts:52` |
-| `CodependixService.runNxProject` | 5 | `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `CodependixService.buildNeighborhoodJsonExport`, `NeighborhoodService.renderMermaid`, `CodependixService.buildMarkdownSection` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:212` |
+| `PythonImportsService.runProject` | 5 | `PythonService.buildGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `PythonService.renderMermaid`, `PythonImportsService.buildMarkdownSection` | `packages/codependix-cli/src/modules/python-imports/python-imports.service.ts:97` |
+| `CodependixService.runNxProject` | 5 | `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `CodependixService.buildNeighborhoodJsonExport`, `NeighborhoodService.renderMermaid`, `CodependixService.buildMarkdownSection` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:210` |
 | `AnchorsService.insertAnchorSection` | 4 | `AnchorsService.wrapInAnchors`, `AnchorsService.escapeForPattern`, `AnchorsService.appendCodependixSection`, `AnchorsService.insertIntoCodependixSection` | `packages/codependix-cli/src/modules/anchors/anchors.service.ts:144` |
 | `DeliveryService.deliverGraphOutput` | 4 | `DeliveryService.resolveJsonDelivery`, `DeliveryService.resolveMarkdownDelivery`, `DeliveryService.deliverJson`, `DeliveryService.deliverMarkdown` | `packages/codependix-cli/src/modules/delivery/delivery.service.ts:271` |
-| `CodependixService.runImportGraphs` | 4 | `TypescriptProjectService.discoverProjects`, `CodependixService.resolveProjectOutput`, `CodependixService.runImportProject`, `CodependixService.collectProjectFailure` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:375` |
-| `CodependixService.runNestjsGraphs` | 4 | `NestjsProjectService.discoverProjects`, `CodependixService.resolveProjectOutput`, `CodependixService.runNestjsProject`, `CodependixService.collectProjectFailure` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:418` |
-| `CodependixService.runNxGraphs` | 4 | `NeighborhoodService.buildNeighborhoods`, `CodependixService.runNxProjects`, `CodependixService.runWorkspaceGraph`, `CodependixService.collectProjectFailure` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:467` |
+| `PythonImportsService.runGraphs` | 4 | `PythonService.discoverProjects`, `PythonImportsService.resolveProjectOutput`, `PythonImportsService.runProject`, `PythonImportsService.collectProjectFailure` | `packages/codependix-cli/src/modules/python-imports/python-imports.service.ts:133` |
+| `CodependixService.runImportGraphs` | 4 | `TypescriptService.discoverProjects`, `CodependixService.resolveProjectOutput`, `CodependixService.runImportProject`, `CodependixService.collectProjectFailure` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:376` |
+| `CodependixService.runNestjsGraphs` | 4 | `NestjsProjectService.discoverProjects`, `CodependixService.resolveProjectOutput`, `CodependixService.runNestjsProject`, `CodependixService.collectProjectFailure` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:419` |
+| `CodependixService.runNxGraphs` | 4 | `NeighborhoodService.buildNeighborhoods`, `CodependixService.runNxProjects`, `CodependixService.runWorkspaceGraph`, `CodependixService.collectProjectFailure` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:468` |
 | `AnchorsService.buildAnchorPattern` | 3 | `AnchorsService.escapeForPattern`, `buildStartMarker`, `buildEndMarker` | `packages/codependix-cli/src/modules/anchors/anchors.service.ts:59` |
-| `CodependixService.runNxProjects` | 3 | `CodependixService.resolveProjectOutput`, `CodependixService.runNxProject`, `CodependixService.collectProjectFailure` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:242` |
+| `CodependixService.runNxProjects` | 3 | `CodependixService.resolveProjectOutput`, `CodependixService.runNxProject`, `CodependixService.collectProjectFailure` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:240` |
 | `CodependixCommand.run` | 3 | `CodependixCommand.selectMode`, `CodependixService.run`, `CodependixCommand.reportOutcome` | `packages/codependix-cli/src/modules/codependix/codependix.command.ts:142` |
 | `AnchorsService.checkAnchor` | 2 | `AnchorsService.extractAnchorContent`, `AnchorNotFoundError.constructor` | `packages/codependix-cli/src/modules/anchors/anchors.service.ts:103` |
 | `AnchorsService.wrapInAnchors` | 2 | `buildStartMarker`, `buildEndMarker` | `packages/codependix-cli/src/modules/anchors/anchors.service.ts:196` |
@@ -337,7 +338,9 @@ Call stacks traced through `codependix-cli`, deepest first. Each frame shows wha
 | `AnchorsService.hasAnchor` | 1 | `AnchorsService.buildAnchorPattern` | `packages/codependix-cli/src/modules/anchors/anchors.service.ts:125` |
 | `DeliveryService.deliverFile` | 1 | `DeliveryService.readFileOrEmpty` | `packages/codependix-cli/src/modules/delivery/delivery.service.ts:109` |
 | `DeliveryService.deliverJson` | 1 | `DeliveryService.deliverFile` | `packages/codependix-cli/src/modules/delivery/delivery.service.ts:123` |
-| `CodependixService.resolveProjectOutput` | 1 | `ConfigurationService.resolveForProject` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:141` |
+| `PythonImportsService.resolveProjectOutput` | 1 | `ConfigurationService.resolveForProject` | `packages/codependix-cli/src/modules/python-imports/python-imports.service.ts:79` |
+| `CodependixService.resolveProjectOutput` | 1 | `ConfigurationService.resolveForProject` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:139` |
+| `CodependixService.runPythonImportGraphs` | 1 | `PythonImportsService.runGraphs` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:501` |
 
 </details>
 
@@ -345,8 +348,8 @@ Call stacks traced through `codependix-cli`, deepest first. Each frame shows wha
 
 | Callable | Declared in | Called from | Callers |
 | --- | --- | --- | --- |
-| `DeliveryService.deliverGraphOutput` | `codependix-cli:modules/delivery` | `codependix-cli:modules/codependix` | 4/4 |
-| `DeliveryService.renderJson` | `codependix-cli:modules/delivery` | `codependix-cli:modules/codependix` | 4/4 |
+| `DeliveryService.deliverGraphOutput` | `codependix-cli:modules/delivery` | `codependix-cli:modules/codependix` | 4/5 |
+| `DeliveryService.renderJson` | `codependix-cli:modules/delivery` | `codependix-cli:modules/codependix` | 4/5 |
 <!-- CALL_STACKS_END -->
 
 <!-- CODE_STATISTICS_START -->
@@ -355,40 +358,40 @@ Call stacks traced through `codependix-cli`, deepest first. Each frame shows wha
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3885-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-135.41_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-6-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-34-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4393-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-151.64_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-40-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-15.44_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.79_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-33-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-39-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-13-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-13-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-80-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-15-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-92-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-1-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-10-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-12-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-19-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-9-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-147-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-45-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-137-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-55-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-206-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-134-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-42-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-126-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-354-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-11-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-165-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-51-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-156-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-60-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-235-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-169-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-47-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-145-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-404-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -499,15 +502,15 @@ Call stacks traced through `codependix-cli`, deepest first. Each frame shows wha
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-4-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-3-0284c7?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-5-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-4-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-1-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-3-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-3-db2777?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-4-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-4-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![Errors Files](https://img.shields.io/badge/Errors_Files-1-059669?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-ca8a04?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-9-7c3aed?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-11-7c3aed?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-0284c7?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-16a34a?style=flat-square)
 
