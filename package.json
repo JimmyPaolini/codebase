@@ -3,6 +3,7 @@
   "description": "",
   "devDependencies": {
     "@callidescope/configuration": "workspace:*",
+    "@callidescope/nx": "workspace:*",
     "@codebase/logger": "workspace:*",
     "@codependix/configuration": "workspace:*",
     "@codometer/configuration": "workspace:*",

@@ -1,119 +1,127 @@
 # 🔭🧬 Callidescope Nx
 
-**Resolves Nx project names to the directories `callidescope` traces.**
+**An Nx plugin that traces call stacks per project, following the Nx dependency graph.**
 
 [`@callidescope/cli`](../callidescope-cli/README.md) is Nx-free on purpose: it
 takes `--directories`, each one a path holding its own `tsconfig.json`, so it
-works in any TypeScript workspace whether or not Nx is anywhere near it. What
-an Nx workspace has that plain paths do not is a **stable name** for each of
-those directories. This package is the one piece that knows how to turn one
-into the other, and it is the only place in the callidescope toolchain that
-depends on `@nx/devkit`.
+works in any TypeScript workspace whether or not Nx is anywhere near it. This
+package is the one place in the toolchain that knows Nx exists, and the only
+one that depends on `@nx/devkit`.
+
+It adds two things the core CLI cannot know about:
+
+- **A target on every project**, so the workspace's task runner does the
+  selecting — `nx affected`, `--projects=tag:…`, caching, and all.
+- **Dependency-aware scope**, so tracing one project does not truncate its call
+  stacks at the first package boundary.
+
+## Install
 
 ```bash
 npm install --save-dev @callidescope/nx
 ```
 
+Register it in `nx.json`:
+
+```json
+{
+  "plugins": [
+    {
+      "plugin": "@callidescope/nx",
+      "options": {
+        "configurationPath": "configuration/callidescope.config.ts",
+        "traceTargetName": "callidescope-trace"
+      }
+    }
+  ]
+}
+```
+
+| Option | Meaning |
+| ------ | ------- |
+| `configurationPath` | Where the callidescope configuration lives. The conventional root filenames are searched when omitted |
+| `traceTargetName` | Name of the inferred target. `callidescope` when omitted |
+
 ## Usage
 
-```bash
-callidescope-nx directories --projects callidescope-graph,callidescope-cli
-```
-
-```text
-packages/callidescope-cli,packages/callidescope-graph
-```
-
-| Flag | Meaning |
-| ---- | ------- |
-| `-p, --projects` | Comma-separated Nx project names to resolve |
-| `-t, --tags` | Comma-separated Nx project tags, selecting every project carrying **any** of them |
-
-Name at least one of the two. Both together select the union — everything
-named, plus everything tagged — and a project reached both ways is still one
-directory.
-
-Only the resolved directories reach standard output — every log line goes to
-standard error — so the whole line substitutes straight into `--directories`:
+The target is inferred onto every project holding a `tsconfig.json`, so
+selection is Nx's job rather than a flag of this package's own:
 
 ```bash
-directories="$(callidescope-nx directories --projects callidescope-graph)" \
-  && callidescope --directories "$directories" --check depth
+nx run callidescope-graph:callidescope-trace     # one project
+nx run-many -t callidescope-trace                # the workspace
+nx run-many -t callidescope-trace --projects=tag:type:package
+nx affected -t callidescope-trace                # only what changed
 ```
 
-The `&&` is the point. Command substitution discards the exit code of the
-command inside it, so `callidescope --directories "$(callidescope-nx …)"`
-written as one command would answer a failed resolution by tracing the entire
-workspace instead — an empty `--directories` is what asks for that. Resolving
-first and joining with `&&` means a rejected name stops the run.
+Two projects are deliberately skipped: the **workspace-root project**, whose
+target would trace everything under one uncacheable task, and any project with
+**no `tsconfig.json`**, whose target would be a permanently empty report.
 
-## Selecting by tag
+### Why the trace follows dependencies
 
-`--tags` selects every project carrying **any** of the tags given, not every
-project carrying all of them:
+`nx run callidescope-cli:callidescope-trace` traces `callidescope-cli` **and
+everything it depends on**, resolved transitively from the Nx project graph.
+
+That is the whole point of the plugin. A call stack runs downward — a command
+calls into the service it was injected with, which lives in a package it
+depends on — so tracing a project alone truncates every stack at the first
+package boundary, which is the one measurement callidescope exists to take.
+Tracing `callidescope-nx` on its own finds 17 callables; tracing it with its
+dependencies finds 469.
+
+Dependencies, never dependents: a project's dependents call _into_ it and add
+no frames below it.
+
+Pass `--withDependencies=false` for the narrow reading.
+
+### Executor options
 
 ```bash
-callidescope-nx directories --tags type:package
-callidescope-nx directories --tags domain:lexico,language:python
+nx run logger:callidescope-trace --tags=type:package
+nx run logger:callidescope-trace --projects=callidescope-cli,callidescope-graph
 ```
 
-Any rather than all, because Nx tags come in families whose members are
-mutually exclusive on a single project. Nothing is both `type:application` and
-`type:package`, so `--tags type:application,type:package` under all-semantics
-would select nothing at all — while under any-semantics it selects both kinds,
-which is what someone writing that line wants. It is also the reading that
-composes: each tag widens the selection, exactly the way naming another
-project does.
+| Option | Meaning |
+| ------ | ------- |
+| `projects` | Nx project names to trace, replacing the target's own project |
+| `tags` | Nx project tags, selecting every project carrying **any** of them |
+| `withDependencies` | Widen along the Nx dependency graph. `true` by default |
+| `format` | `markdown`, `mermaid`, or `json` |
+| `configurationPath` | Overrides the registered configuration path |
 
-A tag no project in the workspace carries fails the run, the same as an
-unknown project name, and the rejection lists every tag the workspace does
-carry. A tag matching nothing is far more often a typo — `typ:package` for
-`type:package` — than a deliberately empty category, and either way the trace
-it would produce covers less than it was asked to without saying so.
+`--projects` and `--tags` union rather than intersect, and a project reached
+both ways is still traced once. `--tags` matches **any** of the tags given,
+because Nx tag families are mutually exclusive on a single project — nothing is
+both `type:application` and `type:package`, so requiring all of them would
+select nothing.
 
-## Why a second command
+Prefer Nx's own `--projects=tag:…` on `run-many` for ordinary selection; these
+options exist for a target that wants to declare a fixed scope in its
+`project.json`.
 
-`--projects` used to live on `callidescope` itself, back when its project
-discovery was Nx-shaped. Re-landing it there would put Nx in the core CLI's
-help text and, sooner or later, in its dependencies — the coupling that was
-removed so callidescope could work standalone in any workspace, monorepo or
-not.
+### Nothing resolves silently to less
 
-Two commands composed by a shell keeps that separation exact. `callidescope`
-still has no idea Nx exists; this package has no idea how a call graph is
-built. Nothing depends on both.
-
-## What resolution does
-
-- **Every name and tag must resolve.** A name the workspace does not have, or
-  a tag no project carries, fails the whole run, listing what it does have.
-  Dropping the entry instead would leave a trace quietly covering less than it
-  was asked to, and a report of what it did cover cannot show you what it did
-  not.
-- **A flag passed without a value is refused**, even beside a flag that named
-  something usable — proceeding would silently drop half of what was asked
-  for.
-- **Directories come back sorted and deduplicated**, so the same set of names
-  always produces the same line.
-- **A project rooted at the workspace root resolves to `.`.** Naming it means
-  the root program, which is a different thing from omitting `--directories`
-  — that walks the workspace for every `tsconfig.json` there is.
+A project name the workspace does not have, or a tag no project carries, fails
+the task and names the workspace's actual vocabulary. Narrowing the run instead
+would let it pass while measuring less than it was asked to — and a report of
+what a run did cover cannot show you what it did not.
 
 ## As a library
 
-The resolution is a NestJS provider, for a host that would rather import it
-than shell out:
+The Nx-graph reading is a NestJS provider, for a host that would rather import
+it than run a task:
 
 ```ts
-import { ProjectsService } from "@callidescope/nx";
+import { resolveProjectsService } from "@callidescope/nx";
 
+const projectsService = await resolveProjectsService();
 const graph = await projectsService.readProjectGraph();
-const { directories, unknownNames, unmatchedTags } =
-  projectsService.resolveDirectories({
-    graph,
-    projectNames: ["callidescope-graph"],
-    tags: ["type:package"],
-  });
+const names = projectsService.resolveDependencyClosure({
+  graph,
+  projectNames: ["callidescope-cli"],
+});
+const directories = projectsService.toDirectories({ graph, projectNames: names });
 ```
 
 `readProjectGraph` is the only method that touches Nx at run time; every
@@ -124,17 +132,11 @@ a workspace to build one from.
 
 | Package | Role |
 | ------- | ---- |
-| [`@callidescope/nx`](.) | Resolves Nx project names to directories |
+| [`@callidescope/nx`](.) | Nx plugin: per-project trace targets, resolved through the Nx graph |
 | [`@callidescope/cli`](../callidescope-cli/README.md) | Orchestrates a run: traces the workspace, plans what to check, and reports |
 | [`@callidescope/configuration`](../callidescope-configuration/README.md) | Reads `callidescope.config.ts` and resolves the limits |
 | [`@callidescope/graph`](../callidescope-graph/README.md) | Builds the call graph from traced source and measures depth, breadth, and cohesion |
 | [`@callidescope/output`](../callidescope-output/README.md) | Renders findings into markdown, mermaid, and JSON |
-
-## Start
-
-```bash
-nx run callidescope-nx:start
-```
 
 ## Test
 
@@ -154,4 +156,4 @@ MIT — see [LICENSE](../../LICENSE).
 
 ## 👔 Conformetry
 
-This project was generated from the [nestjs-command-project](../../configuration/conformetry-templates/nestjs-command-project) conformetry template.
+This project was generated from the [nestjs-service-project](../../configuration/conformetry-templates/nestjs-service-project) conformetry template.

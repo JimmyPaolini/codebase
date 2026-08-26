@@ -14,6 +14,33 @@ vi.mock("@nx/devkit", () => ({
   }),
 }));
 
+/** Builds a project graph with dependency edges between named projects. */
+function buildDependencyGraph(
+  dependencies: Record<string, string[]>,
+): ProjectGraph {
+  const names = new Set([
+    ...Object.keys(dependencies),
+    ...Object.values(dependencies).flat(),
+  ]);
+
+  return {
+    dependencies: Object.fromEntries(
+      Object.entries(dependencies).map(([source, targets]) => [
+        source,
+        targets.map((target) => ({ source, target, type: "static" })),
+      ]),
+    ),
+    nodes: Object.fromEntries(
+      [...names]
+        .filter((name) => !name.startsWith("npm:"))
+        .map((name) => [
+          name,
+          { data: { root: `packages/${name}` }, name, type: "lib" },
+        ]),
+    ),
+  };
+}
+
 /** Builds a project graph from a name-to-root map. */
 function buildGraph(roots: Record<string, string>): ProjectGraph {
   return {
@@ -149,6 +176,7 @@ describe(ProjectsService, () => {
         directories: ["packages/callidescope-cli", "tools/validation"],
         knownNames: ["callidescope-cli", "callidescope-graph", "validation"],
         knownTags: [],
+        projectNames: ["callidescope-cli", "validation"],
         unknownNames: [],
         unmatchedTags: [],
       });
@@ -184,6 +212,7 @@ describe(ProjectsService, () => {
         directories: ["packages/callidescope-cli"],
         knownNames: ["callidescope-cli", "callidescope-graph", "validation"],
         knownTags: [],
+        projectNames: ["callidescope-cli"],
         unknownNames: ["callidescope-nix", "typo"],
         unmatchedTags: [],
       });
@@ -198,6 +227,7 @@ describe(ProjectsService, () => {
         directories: [],
         knownNames: ["callidescope-cli", "callidescope-graph", "validation"],
         knownTags: [],
+        projectNames: [],
         unknownNames: [],
         unmatchedTags: [],
       });
@@ -318,6 +348,7 @@ describe(ProjectsService, () => {
           "type:application",
           "type:package",
         ],
+        projectNames: ["callidescope-cli", "callidescope-graph"],
         unknownNames: [],
         unmatchedTags: ["language:rust", "scope:absent"],
       });
@@ -334,6 +365,95 @@ describe(ProjectsService, () => {
         "type:application",
         "type:package",
       ]);
+    });
+  });
+
+  describe("resolveDependencyClosure", () => {
+    it("includes the project itself", () => {
+      expect.hasAssertions();
+
+      expect(
+        service.resolveDependencyClosure({
+          graph: buildDependencyGraph({ alpha: [] }),
+          projectNames: ["alpha"],
+        }),
+      ).toStrictEqual(["alpha"]);
+    });
+
+    it("follows dependencies transitively", () => {
+      expect.hasAssertions();
+
+      // alpha -> beta -> gamma, so tracing alpha must reach gamma: depth
+      // flows downward, and a stack truncated at beta is not the stack.
+      expect(
+        service.resolveDependencyClosure({
+          graph: buildDependencyGraph({
+            alpha: ["beta"],
+            beta: ["gamma"],
+            gamma: [],
+          }),
+          projectNames: ["alpha"],
+        }),
+      ).toStrictEqual(["alpha", "beta", "gamma"]);
+    });
+
+    it("never follows dependents, only dependencies", () => {
+      expect.hasAssertions();
+
+      expect(
+        service.resolveDependencyClosure({
+          graph: buildDependencyGraph({ alpha: ["beta"], beta: [] }),
+          projectNames: ["beta"],
+        }),
+      ).toStrictEqual(["beta"]);
+    });
+
+    it("drops external npm dependencies", () => {
+      expect.hasAssertions();
+
+      expect(
+        service.resolveDependencyClosure({
+          graph: buildDependencyGraph({ alpha: ["npm:typescript", "beta"] }),
+          projectNames: ["alpha"],
+        }),
+      ).toStrictEqual(["alpha", "beta"]);
+    });
+
+    it("terminates on a dependency cycle", () => {
+      expect.hasAssertions();
+
+      expect(
+        service.resolveDependencyClosure({
+          graph: buildDependencyGraph({ alpha: ["beta"], beta: ["alpha"] }),
+          projectNames: ["alpha"],
+        }),
+      ).toStrictEqual(["alpha", "beta"]);
+    });
+
+    it("merges the closures of several projects, without repeating one", () => {
+      expect.hasAssertions();
+
+      expect(
+        service.resolveDependencyClosure({
+          graph: buildDependencyGraph({
+            alpha: ["shared"],
+            beta: ["shared"],
+            shared: [],
+          }),
+          projectNames: ["beta", "alpha"],
+        }),
+      ).toStrictEqual(["alpha", "beta", "shared"]);
+    });
+
+    it("ignores a name the graph does not know", () => {
+      expect.hasAssertions();
+
+      expect(
+        service.resolveDependencyClosure({
+          graph: buildDependencyGraph({ alpha: [] }),
+          projectNames: ["alpha", "absent"],
+        }),
+      ).toStrictEqual(["alpha"]);
     });
   });
 });

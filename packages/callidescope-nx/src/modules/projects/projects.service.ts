@@ -1,7 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { createProjectGraphAsync } from "@nx/devkit";
 
-import type { NxProject, ResolvedProjectDirectories } from "./projects.types";
+import type {
+  NxProject,
+  ResolvedProjectDirectories,
+  ResolvedProjectSelection,
+} from "./projects.types";
 import type { ProjectGraph } from "@nx/devkit";
 
 /**
@@ -36,33 +40,8 @@ export class ProjectsService {
     );
   }
 
-  /** Collects the roots of the projects named, and the names nothing answers to. */
-  private resolveNamedRoots(args: {
-    projectNames: readonly string[];
-    projects: readonly NxProject[];
-  }): { roots: string[]; unknownNames: string[] } {
-    const rootByName = new Map(
-      args.projects.map((project) => [project.name, project.root]),
-    );
-    const roots: string[] = [];
-    const unknownNames: string[] = [];
-
-    for (const projectName of args.projectNames) {
-      const root = rootByName.get(projectName);
-
-      if (root === undefined) {
-        unknownNames.push(projectName);
-        continue;
-      }
-
-      roots.push(root);
-    }
-
-    return { roots, unknownNames };
-  }
-
   /**
-   * Collects the roots of every project carrying any of the given tags, and
+   * Collects the names of every project carrying any of the given tags, and
    * the tags nothing carries.
    *
    * Any of them rather than all of them. Nx tags come in families whose
@@ -71,11 +50,11 @@ export class ProjectsService {
    * the common selection resolve to nothing. Any is also the reading that
    * composes: each tag widens the set, the way naming another project does.
    */
-  private resolveTaggedRoots(args: {
+  private resolveTaggedNames(args: {
     projects: readonly NxProject[];
     tags: readonly string[];
-  }): { roots: string[]; unmatchedTags: string[] } {
-    const roots: string[] = [];
+  }): { names: string[]; unmatchedTags: string[] } {
+    const names: string[] = [];
     const unmatchedTags: string[] = [];
 
     for (const tag of args.tags) {
@@ -88,10 +67,10 @@ export class ProjectsService {
         continue;
       }
 
-      roots.push(...tagged.map((project) => project.root));
+      names.push(...tagged.map((project) => project.name));
     }
 
-    return { roots, unmatchedTags };
+    return { names, unmatchedTags };
   }
 
   // 🌎 Public Methods
@@ -121,6 +100,55 @@ export class ProjectsService {
   }
 
   /**
+   * Widens a set of project names to include everything they depend on.
+   *
+   * Dependencies, never dependents. A call stack runs downward — a command
+   * calls into the service it was injected with, which lives in a package it
+   * depends on — so tracing a project without its dependencies truncates every
+   * stack at the first package boundary, which is the one measurement
+   * callidescope exists to take. Its dependents call *into* it and add no
+   * frames below it.
+   *
+   * External `npm:` targets are dropped: they have no workspace directory to
+   * trace, and following them would mean tracing `node_modules`.
+   */
+  public resolveDependencyClosure(args: {
+    graph: ProjectGraph;
+    projectNames: readonly string[];
+  }): string[] {
+    const known = new Set(Object.keys(args.graph.nodes));
+    const reached = new Set<string>();
+    let pending = args.projectNames.filter((name) => known.has(name));
+
+    // Walked a rank at a time rather than off a stack, so no step ever has to
+    // ask whether it popped anything. A cycle terminates because a name
+    // already reached is never queued again.
+    while (pending.length > 0) {
+      const next: string[] = [];
+
+      for (const projectName of pending) {
+        if (reached.has(projectName)) {
+          continue;
+        }
+
+        reached.add(projectName);
+
+        for (const dependency of args.graph.dependencies[projectName] ?? []) {
+          if (known.has(dependency.target)) {
+            next.push(dependency.target);
+          }
+        }
+      }
+
+      pending = next;
+    }
+
+    return [...reached].toSorted((first, second) =>
+      first.localeCompare(second),
+    );
+  }
+
+  /**
    * Resolves Nx project names and tags to their workspace-relative roots.
    *
    * The two selections are unioned, not intersected: naming a project and
@@ -138,22 +166,85 @@ export class ProjectsService {
     projectNames?: readonly string[] | undefined;
     tags?: readonly string[] | undefined;
   }): ResolvedProjectDirectories {
-    const projects = this.readProjects(args.graph);
-    const named = this.resolveNamedRoots({
-      projectNames: args.projectNames ?? [],
-      projects,
-    });
-    const tagged = this.resolveTaggedRoots({ projects, tags: args.tags ?? [] });
+    const selection = this.resolveProjectNames(args);
 
     return {
-      directories: [...new Set([...named.roots, ...tagged.roots])].toSorted(
-        (first, second) => first.localeCompare(second),
-      ),
+      ...selection,
+      directories: this.toDirectories({
+        graph: args.graph,
+        projectNames: selection.projectNames,
+      }),
+    };
+  }
+
+  /**
+   * Resolves names and tags to the project names they stand for.
+   *
+   * Separate from `resolveDirectories` because a directory is the last step,
+   * not the only one: widening a selection along the Nx dependency graph
+   * happens between the two, and it happens in names, which is the only
+   * vocabulary the project graph speaks.
+   */
+  public resolveProjectNames(args: {
+    graph: ProjectGraph;
+    projectNames?: readonly string[] | undefined;
+    tags?: readonly string[] | undefined;
+  }): ResolvedProjectSelection {
+    const projects = this.readProjects(args.graph);
+    const known = new Set(projects.map((project) => project.name));
+    const selected = new Set<string>();
+    const unknownNames: string[] = [];
+
+    for (const projectName of args.projectNames ?? []) {
+      if (known.has(projectName)) {
+        selected.add(projectName);
+        continue;
+      }
+
+      unknownNames.push(projectName);
+    }
+
+    const tagged = this.resolveTaggedNames({ projects, tags: args.tags ?? [] });
+
+    for (const projectName of tagged.names) {
+      selected.add(projectName);
+    }
+
+    return {
       // Already sorted, since `readProjects` sorts by name.
       knownNames: projects.map((project) => project.name),
       knownTags: this.readTags(projects),
-      unknownNames: named.unknownNames,
+      projectNames: [...selected].toSorted((first, second) =>
+        first.localeCompare(second),
+      ),
+      unknownNames,
       unmatchedTags: tagged.unmatchedTags,
     };
+  }
+
+  /** Maps project names to their workspace-relative roots, sorted and deduplicated. */
+  public toDirectories(args: {
+    graph: ProjectGraph;
+    projectNames: readonly string[];
+  }): string[] {
+    const rootByName = new Map(
+      this.readProjects(args.graph).map((project) => [
+        project.name,
+        project.root,
+      ]),
+    );
+    const directories = new Set<string>();
+
+    for (const projectName of args.projectNames) {
+      const root = rootByName.get(projectName);
+
+      if (root !== undefined) {
+        directories.add(root);
+      }
+    }
+
+    return [...directories].toSorted((first, second) =>
+      first.localeCompare(second),
+    );
   }
 }

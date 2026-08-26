@@ -1,39 +1,35 @@
-# CallidescopeNx: NestJS Command-Line Application
+# CallidescopeNx: NestJS Service Application
 
 ## Quick Start
 
-**Type**: Node.js CLI application (NestJS + `nest-commander`)
+**Type**: Node.js service application (NestJS + `NestFactory`)
 
-**Purpose**: <!-- Briefly describe the specific purpose of this CLI application -->
+**Purpose**: <!-- Briefly describe the specific purpose of this service application -->
 
-Resolves Nx project names and tags to the workspace-relative directories
-`callidescope --directories` takes, so an Nx workspace can scope a trace by
-project name, or by a tag every project in a category carries (matching any of
-the tags given, never all of them — see `ProjectsService.resolveTaggedRoots`). This is the only package in the callidescope toolchain that
-depends on `@nx/devkit`: `@callidescope/cli` and `@callidescope/graph` are
-deliberately Nx-free, and the two are composed by a shell rather than by an
-import, so neither ever gains an Nx dependency.
+An Nx plugin. It infers a trace target onto every project holding a
+`tsconfig.json`, backed by an executor that runs callidescope over that project
+**and its Nx dependencies**, resolved from the Nx project graph. This is the
+only package in the callidescope toolchain that depends on `@nx/devkit`:
+`@callidescope/cli` and `@callidescope/graph` are deliberately Nx-free and take
+plain `--directories`.
 
-`ProjectsService` (`src/modules/projects`) is the resolution itself and takes
-the project graph as an argument, so every rule is testable without a
-workspace; `DirectoriesCommand` (`src/modules/directories`) is the CLI over it.
-Standard output carries nothing but the resolved directories — `main.ts` calls
-`LoggerService.logToStandardError()` before anything can log — because the
-whole line is meant to be substituted into `--directories`.
+It deliberately ships **no CLI of its own**. Selecting projects is the task
+runner's job — `nx affected`, `nx run-many --projects=tag:…` — so a second
+binary would only duplicate it with flags that drift.
 
-### Run Locally
-
-```bash
-cp .env.default .env  # Fill in required environment variables
-nx run callidescope-nx:start
-```
+`ProjectsService` (`src/modules/projects`) reads the Nx graph and takes it as an
+argument everywhere but `readProjectGraph`, so every resolution rule is testable
+without a workspace. `PluginService` (`src/modules/plugin`) does inference and
+the trace. `src/index.ts` is the plugin entry Nx loads through `src/index.cjs`,
+which registers `@swc-node` first — esbuild does not emit `design:paramtypes`,
+and without it every constructor injection here resolves to `undefined`.
 
 ## Architecture Overview
 
 ### Tech Stack
 
 - **Framework**: NestJS (modules, dependency injection, providers)
-- **CLI runner**: `nest-commander` (`CommandRunner` + `@Command()` decorator)
+- **Bootstrap**: `NestFactory.create` (standard NestJS bootstrap)
 - **Env validation**: `@nestjs/config` + `zod` (`environmentSchema` in `.constants.ts`)
 - **Logging**: `@codebase/logger` — a `pino`-backed `LoggerService` (`Scope.TRANSIENT`)
 - **Language**: Strict TypeScript
@@ -42,8 +38,8 @@ nx run callidescope-nx:start
 
 ```text
 src/main.ts
-  └─ CommandFactory.run(MainModule)
-       └─ domain command modules            ← add under src/modules/
+  └─ NestFactory.create(MainModule)
+       └─ domain service modules            ← add under src/modules/
 ```
 
 ### Directory Layout
@@ -56,7 +52,6 @@ src/
   modules/
     <domain>/                       # Add feature modules here
       <domain>.module.ts
-      <domain>.command.ts
       <domain>.service.ts
       <domain>.types.ts
       <domain>.constants.ts
@@ -68,7 +63,7 @@ testing/                            # Shared test utilities
 
 ### Adding Business Logic
 
-1. **Add domain command modules** — create `src/modules/<domain>/` with a NestJS module, command, service, types, and constants.
+1. **Add domain service modules** — create `src/modules/<domain>/` with a NestJS module, service, types, and constants.
 2. **Register in root module** — import the new module in `main.module.ts`.
 3. **Validate env vars** — extend `environmentSchema` in `constants.ts` with all required environment variables.
 
@@ -80,7 +75,6 @@ testing/                            # Shared test utilities
 
 ```ts
 constructor(private readonly logger: LoggerService) {
-  super();
   this.logger.setContext(MyService.name);
 }
 ```
@@ -92,10 +86,10 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run callidescope-nx:start           # Run the command-line application
 nx run callidescope-nx:lint-codebase   # Every static check, in one graph
 nx run callidescope-nx:typecheck       # tsc --noEmit
 nx run callidescope-nx:oxfmt           # Formatting
+nx run callidescope-nx:build           # Compile for publication
 ```
 
 ### Testing
@@ -105,14 +99,14 @@ Follow the codebase's strict three-tier testing strategy. Co-locate test files w
 ```bash
 nx run callidescope-nx:vitest:unit          # Fast (<100ms) — pure logic, mocked DI
 nx run callidescope-nx:vitest:integration   # Moderate (1-2s) — real database/API I/O
-nx run callidescope-nx:vitest:end-to-end    # Slow (30-60s) — full CLI execution
+nx run callidescope-nx:vitest:end-to-end    # Slow (30-60s) — full service initialization
 ```
 
 | Tier | File pattern | What to test |
 | ---- | ------------ | ------------ |
 | Unit | `*.unit.test.ts` | Pure functions, service methods with mocked deps |
 | Integration | `*.integration.test.ts` | Database queries, external API clients |
-| End-to-end | `*.end-to-end.test.ts` | Full `CommandFactory.run()` execution |
+| End-to-end | `*.end-to-end.test.ts` | Full `NestFactory.create()` execution |
 
 See the [testing-strategy skill](../../.agents/skills/testing-strategy/SKILL.md) and [testing-mocks skill](../../.agents/skills/testing-mocks/SKILL.md) for patterns and mock conventions.
 
@@ -142,7 +136,7 @@ Register the service in both `providers` and `exports` so consumers can inject i
 @Module({
   controllers: [],
   exports: [MyDomainService],
-  imports: [TypeOrmModule.forFeature([MyEntity]), LoggerModule],
+  imports: [LoggerModule],
   providers: [MyDomainService],
 })
 export class MyDomainModule {}
@@ -158,11 +152,7 @@ Follow the section-comment layout from the template — it keeps large services 
 @Injectable()
 export class MyDomainService {
   // 🏗 Dependency Injection
-  constructor(
-    @InjectRepository(MyEntity)
-    private readonly repo: Repository<MyEntity>,
-    private readonly logger: LoggerService,
-  ) {
+  constructor(private readonly logger: LoggerService) {
     this.logger.setContext(MyDomainService.name);
   }
 
@@ -190,7 +180,6 @@ Move all inline values to `.constants.ts` to keep services readable:
 
 ```ts
 // ♟️ Constants
-export const MY_SKIP_REGEX = /(alternative)|(archaic)|(synonym)/i;
 export const DEFAULT_PAGE_SIZE = 100;
 ```
 
@@ -224,18 +213,9 @@ After generating a module, import it in `main.module.ts`:
 export class MainModule {}
 ```
 
-### Conformetry validation
-
-Conformetry validation measures generated and existing module structures against the templates they came from. It runs for one project, or for every project at once.
-
-```bash
-pnpm nx run-many --targets=conformetry-validate
-```
-
 ## Best Practices
 
-- **Never** put business logic in `main.ts` — it bootstraps `CommandFactory` only.
-- **One command per class** — split sub-commands into separate `CommandRunner` subclasses.
+- **Never** put business logic in `main.ts` — it bootstraps `NestFactory` only.
 - **Validate at the boundary** — all env vars must be declared in `environmentSchema`; access via `ConfigService`, not `process.env`.
 - **Type imports** — use `import { type Foo }` for type-only imports (enforced by ESLint).
 - **No `any` types** — use `unknown` or proper typing; strict mode is enabled.
@@ -244,9 +224,7 @@ See the [write-typescript skill](../../.agents/skills/write-typescript/SKILL.md)
 
 ## Troubleshooting
 
-- **Command not found at runtime** — ensure the command class is listed in `providers` of its module and the module is imported by the root module.
 - **Dependency injection failure** — verify the service is `@Injectable()`, exported from its module, and that module is imported by the consuming module.
-- **Unrecognized CLI flag** — check that `@Option()` decorators in the command class exactly match the flag names passed.
 - **Env var validation error on startup** — add the missing variable to `environmentSchema` in `src/constants.ts` and to `.env.default`.
 
 See the [triage-submission skill](../../.agents/skills/triage-submission/SKILL.md) for lint and git hook failures.

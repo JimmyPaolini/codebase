@@ -4,9 +4,8 @@
   "projectType": "library",
   "sourceRoot": "packages/callidescope-nx",
   "tags": [
-    "framework:nest-commander",
     "framework:nestjs",
-    "generator:nestjs-command-project",
+    "generator:nestjs-service-project",
     "language:typescript",
     "name:callidescope-nx",
     "type:package"
@@ -20,9 +19,19 @@
             "glob": "README.md",
             "input": "packages/callidescope-nx",
             "output": "."
+          },
+          {
+            "glob": "executors.json",
+            "input": "packages/callidescope-nx",
+            "output": "."
+          },
+          {
+            "glob": "src/executors/**/schema.json",
+            "input": "packages/callidescope-nx",
+            "output": "."
           }
         ],
-        "main": "packages/callidescope-nx/src/main.ts",
+        "main": "packages/callidescope-nx/src/index.ts",
         "outputPath": "dist/packages/callidescope-nx",
         "tsConfig": "packages/callidescope-nx/tsconfig.build.json"
       },
@@ -38,17 +47,6 @@
     "oxlint": {},
     "prettier": {},
     "spell-check": {},
-    "start": {
-      "cache": false,
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "node --import @swc-node/register/esm-register packages/callidescope-nx/src/main.ts",
-        "cwd": "{workspaceRoot}",
-        "env": {
-          "SWC_NODE_PROJECT": "packages/callidescope-nx/tsconfig.json"
-        }
-      }
-    },
     "test-coverage": {},
     "type-coverage": {},
     "typecheck": {},

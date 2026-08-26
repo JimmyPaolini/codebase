@@ -218,35 +218,24 @@ rename needs answered together before either one is safe.
 tool you use — a directory holding a `tsconfig.json` is the whole contract, and
 it holds in a monorepo, a single package, or neither.
 
-A workspace that already thinks in **Nx project names** can keep doing so
-through [`@callidescope/nx`](../callidescope-nx/README.md), which resolves
-names — or tags — to the directories they stand for:
+An Nx workspace can hand the selecting to Nx instead, through
+[`@callidescope/nx`](../callidescope-nx/README.md) — a plugin that infers a
+trace target onto every project:
 
 ```bash
-directories="$(callidescope-nx directories --projects callidescope-graph,callidescope-cli)" \
-  && callidescope --directories "$directories" --check depth
+nx run-many -t callidescope-trace --projects=tag:type:package
+nx affected -t callidescope-trace
 ```
 
-`--tags` selects every project carrying any of the tags given, which is how a
-whole category gets traced at once without listing it:
+That gets Nx's own project selection, caching, and affected-detection for free,
+none of which a flag here could offer. It also traces each project **with its
+Nx dependencies**, so a stack is not truncated the moment it crosses a package
+boundary — the graph knowledge that makes the plugin worth having.
 
-```bash
-directories="$(callidescope-nx directories --tags type:package)" \
-  && callidescope --directories "$directories" --check depth
-```
-
-A name is stable where a path is not, so this survives a package moving, and a
-tag survives a package being added. It is
-a separate command rather than a `--projects` flag here on purpose: this CLI
-depends on nothing Nx-shaped, and a flag that only worked when an optional
-package happened to be installed would advertise in `--help` something that
-silently did nothing without it.
-
-Resolve first and join with `&&`, as above, rather than substituting inline.
-Command substitution discards the exit code of the command inside it, so a
-rejected project name in
-`callidescope --directories "$(callidescope-nx …)"` would leave `--directories`
-empty — which is exactly how you ask to trace the whole workspace.
+It is a separate package rather than a flag here on purpose: this CLI depends
+on nothing Nx-shaped, and a flag that only worked when an optional package
+happened to be installed would advertise in `--help` something that silently
+did nothing without it.
 
 ## What it reports
 
@@ -367,7 +356,7 @@ every resolver ends the same way. `jscpd` already covers real duplication.
 | [`@callidescope/cli`](.) | Orchestrates a run: traces the workspace, plans what to check, and reports |
 | [`@callidescope/configuration`](../callidescope-configuration/README.md) | Reads `callidescope.config.ts` and resolves the limits |
 | [`@callidescope/graph`](../callidescope-graph/README.md) | Builds the call graph from traced source and measures depth, breadth, and cohesion |
-| [`@callidescope/nx`](../callidescope-nx/README.md) | Resolves Nx project names and tags to the directories `--directories` takes |
+| [`@callidescope/nx`](../callidescope-nx/README.md) | Nx plugin: per-project trace targets, scoped through the Nx dependency graph |
 | [`@callidescope/output`](../callidescope-output/README.md) | Renders findings into markdown, mermaid, and JSON |
 
 ## Start

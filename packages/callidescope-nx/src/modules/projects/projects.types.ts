@@ -18,20 +18,20 @@ export interface NxProject {
   readonly tags: string[];
 }
 
-/** What a set of Nx project names resolved to. */
-export interface ResolvedProjectDirectories {
+/** A resolved selection, mapped on to the directories a trace takes. */
+export interface ResolvedProjectDirectories extends ResolvedProjectSelection {
   /**
    * Workspace-relative roots of the names that resolved, sorted and
    * deduplicated — the form `callidescope --directories` takes.
    */
   readonly directories: string[];
+}
+
+/** What a set of Nx project names and tags resolved to, before directories. */
+export interface ResolvedProjectSelection {
   /**
    * Every project name the graph knew, sorted — what a caller names back when
    * refusing an unknown one.
-   *
-   * Returned rather than left for the caller to ask a second time: the
-   * resolution already built this to do its own work, and a caller rebuilding
-   * it would have to know how a project graph becomes a set of names.
    */
   readonly knownNames: string[];
   /**
@@ -39,6 +39,8 @@ export interface ResolvedProjectDirectories {
    * what a caller names back when refusing one nothing carries.
    */
   readonly knownTags: string[];
+  /** The projects the selection reached, sorted and deduplicated. */
+  readonly projectNames: string[];
   /**
    * The names the project graph does not know, in the order they were given.
    *

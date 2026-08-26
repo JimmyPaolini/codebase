@@ -1,0 +1,10 @@
+{
+  "$schema": "../../node_modules/nx/schemas/executors.json",
+  "executors": {
+    "trace": {
+      "description": "Trace a project's call stacks with callidescope, following its Nx dependencies.",
+      "implementation": "./src/executors/trace/executor",
+      "schema": "./src/executors/trace/schema.json"
+    }
+  }
+}
