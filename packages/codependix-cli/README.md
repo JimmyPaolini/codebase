@@ -252,7 +252,7 @@ graph LR
 
 ## 🔭 Callidescope
 
-Call stacks traced through `codependix-cli`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/codependix-cli`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |
@@ -299,8 +299,8 @@ Call stacks traced through `codependix-cli`, deepest first. Each frame shows wha
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CodependixService.runWorkspaceGraph` | 6 | `codependix-cli:modules/delivery`, `codependix-configuration:modules/configuration`, `codependix-nx:modules/workspace-graph` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:279` |
-| `CodependixService.runNestjsProject` | 5 | `codependix-cli:modules/delivery`, `codependix-nestjs:modules/module-graph`, `codependix-nestjs:modules/nestjs-project` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:183` |
+| `CodependixService.runWorkspaceGraph` | 6 | `packages/codependix-cli:modules/delivery`, `packages/codependix-configuration:modules/configuration`, `packages/codependix-nx:modules/workspace-graph` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:279` |
+| `CodependixService.runNestjsProject` | 5 | `packages/codependix-cli:modules/delivery`, `packages/codependix-nestjs:modules/module-graph`, `packages/codependix-nestjs:modules/nestjs-project` | `packages/codependix-cli/src/modules/codependix/codependix.service.ts:183` |
 
 ### Breadth
 
@@ -348,8 +348,8 @@ Call stacks traced through `codependix-cli`, deepest first. Each frame shows wha
 
 | Callable | Declared in | Called from | Callers |
 | --- | --- | --- | --- |
-| `DeliveryService.deliverGraphOutput` | `codependix-cli:modules/delivery` | `codependix-cli:modules/codependix` | 4/5 |
-| `DeliveryService.renderJson` | `codependix-cli:modules/delivery` | `codependix-cli:modules/codependix` | 4/5 |
+| `DeliveryService.deliverGraphOutput` | `packages/codependix-cli:modules/delivery` | `packages/codependix-cli:modules/codependix` | 4/5 |
+| `DeliveryService.renderJson` | `packages/codependix-cli:modules/delivery` | `packages/codependix-cli:modules/codependix` | 4/5 |
 <!-- CALL_STACKS_END -->
 
 <!-- CODE_STATISTICS_START -->

@@ -259,7 +259,7 @@ This project was generated from the [nestjs-service-project](../../configuration
 
 ## 🔭 Callidescope
 
-Call stacks traced through `conformetry-configuration`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/conformetry-configuration`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |

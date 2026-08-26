@@ -520,7 +520,7 @@ This project was generated from the [nestjs-command-project](../../configuration
 
 ## 🔭 Callidescope
 
-Call stacks traced through `codometer-cli`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/codometer-cli`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |
@@ -641,8 +641,8 @@ Call stacks traced through `codometer-cli`, deepest first. Each frame shows what
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CodometerService.measureTarget` | 17 | `codometer-discovery:modules/discovery`, `codometer-discovery:modules/targets`, `codometer-size:modules/size` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:275` |
-| `CodometerService.analyzeLanguage` | 15 | `codometer-customization:modules/customization`, `codometer-languages:modules/languages`, `codometer-size:modules/size` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:62` |
+| `CodometerService.measureTarget` | 17 | `packages/codometer-discovery:modules/discovery`, `packages/codometer-discovery:modules/targets`, `packages/codometer-size:modules/size` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:275` |
+| `CodometerService.analyzeLanguage` | 15 | `packages/codometer-customization:modules/customization`, `packages/codometer-languages:modules/languages`, `packages/codometer-size:modules/size` | `packages/codometer-cli/src/modules/codometer/codometer.service.ts:62` |
 
 ### Breadth
 

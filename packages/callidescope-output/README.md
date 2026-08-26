@@ -33,7 +33,7 @@ This project was generated from the [nestjs-service-project](../../configuration
 
 ## 🔭 Callidescope
 
-Call stacks traced through `callidescope-output`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/callidescope-output`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |
@@ -63,9 +63,9 @@ Call stacks traced through `callidescope-output`, deepest first. Each frame show
 ```text
 🚀 MarkdownReportService.renderStack(args: { index: number; stack: CallStack; }): string [packages/callidescope-output/src/modules/report/markdown-report.service.ts:119]
    ↳ Renders one stack: a labelled heading line and its tree in a fence.
-  └─> ReportService.renderStackTree(stack: CallStack): string [packages/callidescope-output/src/modules/report/report.service.ts:123]
+  └─> ReportService.renderStackTree(stack: { frames: readonly StackFrame[]; }): string [packages/callidescope-output/src/modules/report/report.service.ts:130]
      ↳ Renders every frame of a stack, the entry point first.
-    └─> ReportService.map(…)(frame: StackFrame, depth: number): string [packages/callidescope-output/src/modules/report/report.service.ts:125]
+    └─> ReportService.map(…)(frame: StackFrame, depth: number): string [packages/callidescope-output/src/modules/report/report.service.ts:132]
 ```
 
 **3. `MarkdownReportService.toRow`** — depth 2 · orphan-root
@@ -98,14 +98,14 @@ None.
 | `ProjectReportsService.findWideCallables` | 4 | `ProjectReportsService.toSorted(…)`, `ProjectReportsService.map(…)`, `ProjectReportsService.filter(…)`, `ProjectReportsService.flatMap(…)` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:251` |
 | `OutputMarkdownService.spliceBlock` | 3 | `OutputMarkdownService.replace(…)`, `OutputMarkdownService.appendBlock`, `OutputMarkdownService.replaceOrphanedBlock` | `packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:122` |
 | `ProjectReportsService.build` | 3 | `ProjectReportsService.buildStacks`, `ProjectReportsService.buildCallableBreadths`, `ProjectReportsService.map(…)` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:187` |
-| `MermaidReportService.renderStacks` | 3 | `MermaidReportService.countNewCallables`, `MermaidReportService.addStack`, `MermaidReportService.renderDiagram` | `packages/callidescope-output/src/modules/report/mermaid-report.service.ts:136` |
+| `MermaidReportService.renderStacks` | 3 | `MermaidReportService.countNewCallables`, `MermaidReportService.addStack`, `MermaidReportService.renderDiagram` | `packages/callidescope-output/src/modules/report/mermaid-report.service.ts:139` |
 | `ReportService.renderFrame` | 3 | `ReportService.renderSignature`, `ReportService.renderMarkers`, `ReportService.shortenSummary` | `packages/callidescope-output/src/modules/report/report.service.ts:44` |
 | `MarkdownReportService.renderCallableBreadths` | 3 | `MarkdownReportService.renderTable`, `MarkdownReportService.map(…)`, `MarkdownReportService.map(…)` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:62` |
 | `OutputJsonService.sync` | 2 | `OutputJsonService.buildReport`, `OutputJsonService.readExisting` | `packages/callidescope-output/src/modules/output-json/output-json.service.ts:63` |
 | `OutputMarkdownService.sync` | 2 | `OutputMarkdownService.syncAnchoredBlock`, `OutputMarkdownService.buildHelpers` | `packages/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:176` |
 | `ProjectReportsService.buildCallableBreadths` | 2 | `ProjectReportsService.flatMap(…)`, `SignaturesService.read` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:39` |
 | `ProjectReportsService.buildStacks` | 2 | `ProjectReportsService.readDepth`, `PathsService.buildDeepestPath` | `packages/callidescope-output/src/modules/project-reports/project-reports.service.ts:79` |
-| `MermaidReportService.countNewCallables` | 2 | `MermaidReportService.filter(…)`, `MermaidReportService.map(…)` | `packages/callidescope-output/src/modules/report/mermaid-report.service.ts:87` |
+| `MermaidReportService.countNewCallables` | 2 | `MermaidReportService.filter(…)`, `MermaidReportService.map(…)` | `packages/callidescope-output/src/modules/report/mermaid-report.service.ts:90` |
 | `MarkdownReportService.renderMisplaced` | 2 | `MarkdownReportService.renderTable`, `MarkdownReportService.map(…)` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:95` |
 | `MarkdownReportService.renderSpreads` | 2 | `MarkdownReportService.renderTable`, `MarkdownReportService.map(…)` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:108` |
 | `MarkdownReportService.renderStacksAs` | 2 | `MermaidReportService.renderStacks`, `MarkdownReportService.renderStacks` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:136` |
@@ -114,7 +114,7 @@ None.
 | `MermaidReportService.addFrame` | 1 | `MermaidReportService.renderLabel` | `packages/callidescope-output/src/modules/report/mermaid-report.service.ts:39` |
 | `MermaidReportService.addStack` | 1 | `MermaidReportService.addFrame` | `packages/callidescope-output/src/modules/report/mermaid-report.service.ts:67` |
 | `ReportService.shortenSummary` | 1 | `ReportService.readFirstSentence` | `packages/callidescope-output/src/modules/report/report.service.ts:102` |
-| `ReportService.renderStackTree` | 1 | `ReportService.map(…)` | `packages/callidescope-output/src/modules/report/report.service.ts:123` |
+| `ReportService.renderStackTree` | 1 | `ReportService.map(…)` | `packages/callidescope-output/src/modules/report/report.service.ts:130` |
 | `MarkdownReportService.toRow` | 1 | `MarkdownReportService.map(…)` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:66` |
 | `MarkdownReportService.map(…)` | 1 | `MarkdownReportService.map(…)` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:112` |
 | `MarkdownReportService.renderStack` | 1 | `ReportService.renderStackTree` | `packages/callidescope-output/src/modules/report/markdown-report.service.ts:119` |
@@ -155,16 +155,29 @@ graph LR
 <!-- codependix:start name="codependix-nestjs" -->
 ```mermaid
 flowchart LR
+  CallablesModule
+  ClassesModule
   DocumentationModule
+  EdgesModule
   GraphModule
   LoggerModule([LoggerModule])
   OutputJsonModule
   OutputMarkdownModule
+  ProgramModule
   ProjectReportsModule
   ReportModule
   SignaturesModule
+  WorkspaceModule
+  CallablesModule --> ProgramModule
+  CallablesModule --> WorkspaceModule
+  EdgesModule --> CallablesModule
+  EdgesModule --> ClassesModule
+  EdgesModule --> ProgramModule
+  EdgesModule --> WorkspaceModule
   GraphModule --> DocumentationModule
+  GraphModule --> EdgesModule
   GraphModule --> SignaturesModule
+  ProgramModule --> WorkspaceModule
   ProjectReportsModule --> GraphModule
   ProjectReportsModule --> SignaturesModule
 ```
@@ -261,23 +274,23 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3818-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-124.46_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3831-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-125.04_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-31-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.02_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-17.14_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
 ![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-31-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-12-0ea5e9?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-13-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-10-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-72-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-73-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -292,9 +305,9 @@ graph LR
 ![Async Functions](https://img.shields.io/badge/Async_Functions-41-059669?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-239-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-115-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-52-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-135-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-268-475569?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-53-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-136-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-276-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python

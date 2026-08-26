@@ -104,7 +104,7 @@ This project was generated from the [nestjs-command-project](../../configuration
 
 ## 🔭 Callidescope
 
-Call stacks traced through `validation`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `tools/validation`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |

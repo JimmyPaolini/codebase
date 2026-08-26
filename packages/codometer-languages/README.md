@@ -8,7 +8,7 @@ nx run codometer-languages:vitest
 
 ## 🔭 Callidescope
 
-Call stacks traced through `codometer-languages`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/codometer-languages`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |
@@ -91,7 +91,7 @@ Call stacks traced through `codometer-languages`, deepest first. Each frame show
 
 | Callable | Spread | Calls directly | Location |
 | --- | --- | --- | --- |
-| `LanguagesService.analyze` | 12 | `codometer-languages:modules/css`, `codometer-languages:modules/hcl`, `codometer-languages:modules/json`, `codometer-languages:modules/jupyter`, `codometer-languages:modules/markdown`, `codometer-languages:modules/python`, `codometer-languages:modules/shell`, `codometer-languages:modules/sql`, `codometer-languages:modules/toml`, `codometer-languages:modules/typescript`, `codometer-languages:modules/yaml` | `packages/codometer-languages/src/modules/languages/languages.service.ts:54` |
+| `LanguagesService.analyze` | 12 | `packages/codometer-languages:modules/css`, `packages/codometer-languages:modules/hcl`, `packages/codometer-languages:modules/json`, `packages/codometer-languages:modules/jupyter`, `packages/codometer-languages:modules/markdown`, `packages/codometer-languages:modules/python`, `packages/codometer-languages:modules/shell`, `packages/codometer-languages:modules/sql`, `packages/codometer-languages:modules/toml`, `packages/codometer-languages:modules/typescript`, `packages/codometer-languages:modules/yaml` | `packages/codometer-languages/src/modules/languages/languages.service.ts:54` |
 
 ### Breadth
 
