@@ -147,18 +147,18 @@ Other important files include [CHANGELOG.md](CHANGELOG.md) and [SECURITY.md](SEC
 Template-driven code generation and conformance validation, templates synced from [configuration/conformetry.config.ts](configuration/conformetry.config.ts) by `nx run synchronization:conformetry-generators:write`.
 
 <!-- conformetry-generators-table start -->
-| Template | Alias | Description |
-| -------- | ----- | ----------- |
-| `jupyter-notebook-application` | `jna` | A standalone Python application template with a Jupyter notebook entry point, pytest/pyright/ruff tooling, and a shared uv workspace venv |
-| `nestjs-command-project` | `nca` | A standalone NestJS CLI application template built on nest-commander, for a new command-line tool in applications/, packages/, or tools/ |
-| `nestjs-graphql-application` | `nga` | A standalone NestJS GraphQL API application template, for a new backend service exposing a GraphQL schema over HTTP |
-| `nestjs-service-project` | `nsp` | A standalone NestJS library package template for internal workspace code shared across projects, with no CLI entry point or HTTP server |
-| `nestjs-command-module` | `ncm` | A nest-commander command module template — command, module, constants, types, and unit test — for an existing NestJS command-line project |
-| `nestjs-dataloader-module` | `ndm` | A GraphQL dataloader module template — dataloader, module, types, and unit test — for batching lookups inside an existing NestJS project |
-| `nestjs-graphql-module` | `ngm` | A GraphQL module template — resolver, entities, args/input types, factories, constants, and unit test — for an existing NestJS project |
-| `nestjs-service-file` | `nsf` | A service and unit test file template for an existing NestJS module, without the surrounding module files |
-| `nestjs-service-module` | `nsm` | A plain service module template — module, service, constants, types, and unit test — for an existing NestJS project |
-| `react-component` | `c` | A React component and test file template for an existing React project |
+| Template | Description |
+| -------- | ----------- |
+| `jupyter-notebook-application` | A standalone Python application template with a Jupyter notebook entry point, pytest/pyright/ruff tooling, and a shared uv workspace venv |
+| `nestjs-command-project` | A standalone NestJS CLI application template built on nest-commander, for a new command-line tool in applications/, packages/, or tools/ |
+| `nestjs-graphql-application` | A standalone NestJS GraphQL API application template, for a new backend service exposing a GraphQL schema over HTTP |
+| `nestjs-service-project` | A standalone NestJS library package template for internal workspace code shared across projects, with no CLI entry point or HTTP server |
+| `nestjs-command-module` | A nest-commander command module template — command, module, constants, types, and unit test — for an existing NestJS command-line project |
+| `nestjs-dataloader-module` | A GraphQL dataloader module template — dataloader, module, types, and unit test — for batching lookups inside an existing NestJS project |
+| `nestjs-graphql-module` | A GraphQL module template — resolver, entities, args/input types, factories, constants, and unit test — for an existing NestJS project |
+| `nestjs-service-file` | A service and unit test file template for an existing NestJS module, without the surrounding module files |
+| `nestjs-service-module` | A plain service module template — module, service, constants, types, and unit test — for an existing NestJS project |
+| `react-component` | A React component and test file template for an existing React project |
 <!-- conformetry-generators-table end -->
 
 ## 🕸️ Codependix

@@ -13,7 +13,10 @@ import type {
   SynchronizableCommand,
   SynchronizationMode,
 } from "../synchronization/synchronization.types";
-import type { ConformetryGeneratorMetadata } from "./conformetry-generators.types";
+import type {
+  ConformetryGeneratorMetadata,
+  ConformetryGeneratorsTargetFile,
+} from "./conformetry-generators.types";
 
 /**
  * CLI command that syncs the conformetry generators table into AGENTS.md and
@@ -42,7 +45,10 @@ export class ConformetryGeneratorsCommand
 
   // 🔐 Private Fields
 
-  private readonly targetFiles = ["AGENTS.md", "README.md"];
+  private readonly targetFiles: ConformetryGeneratorsTargetFile[] = [
+    { includeAlias: true, path: "AGENTS.md" },
+    { includeAlias: false, path: "README.md" },
+  ];
 
   // 🔑 Public Fields
 
@@ -55,12 +61,16 @@ export class ConformetryGeneratorsCommand
    * every target file and reports any differences.
    */
   private checkSync(generators: ConformetryGeneratorMetadata[]): boolean {
-    const generatedTable = this.generateGeneratorsTable(generators).trim();
-
-    const outOfSyncFiles = this.targetFiles.filter((targetFile) => {
-      const { generatedContent } = this.readMarkedFile(targetFile);
-      return generatedTable !== generatedContent.trim();
-    });
+    const outOfSyncFiles = this.targetFiles
+      .filter((targetFile) => {
+        const generatedTable = this.generateGeneratorsTable(
+          generators,
+          targetFile.includeAlias,
+        ).trim();
+        const { generatedContent } = this.readMarkedFile(targetFile.path);
+        return generatedTable !== generatedContent.trim();
+      })
+      .map((targetFile) => targetFile.path);
 
     if (outOfSyncFiles.length > 0) {
       this.logger.info(
@@ -86,14 +96,20 @@ export class ConformetryGeneratorsCommand
   }
 
   /**
-   * Renders the list of generators as a markdown table for injection into AGENTS.md.
+   * Renders the list of generators as a markdown table for injection into a
+   * target file, optionally including the Alias column.
    */
   private generateGeneratorsTable(
     generators: ConformetryGeneratorMetadata[],
+    includeAlias: boolean,
   ): string {
-    const header =
-      "| Template | Alias | Description |\n| -------- | ----- | ----------- |";
+    const header = includeAlias
+      ? "| Template | Alias | Description |\n| -------- | ----- | ----------- |"
+      : "| Template | Description |\n| -------- | ----------- |";
     const rows = generators.map((gen) => {
+      if (!includeAlias) {
+        return `| \`${gen.name}\` | ${gen.description} |`;
+      }
       const alias = gen.aliases.map((a) => `\`${a}\``).join(", ");
       return `| \`${gen.name}\` | ${alias} | ${gen.description} |`;
     });
@@ -161,15 +177,20 @@ export class ConformetryGeneratorsCommand
    */
   private writeSync(generators: ConformetryGeneratorMetadata[]): void {
     this.logger.info("🔄 Generating the conformetry generators table");
-    const generatedTable = this.generateGeneratorsTable(generators);
 
     for (const targetFile of this.targetFiles) {
-      const filePath = path.join(process.cwd(), targetFile);
-      const { afterMarker, beforeMarker } = this.readMarkedFile(targetFile);
+      const generatedTable = this.generateGeneratorsTable(
+        generators,
+        targetFile.includeAlias,
+      );
+      const filePath = path.join(process.cwd(), targetFile.path);
+      const { afterMarker, beforeMarker } = this.readMarkedFile(
+        targetFile.path,
+      );
       const newContent = `${beforeMarker}\n${generatedTable}\n${afterMarker}`;
 
       writeFileSync(filePath, newContent, "utf8");
-      this.logger.info(`📇 Updated ${targetFile}`, undefined, {
+      this.logger.info(`📇 Updated ${targetFile.path}`, undefined, {
         count: generators.length,
       });
     }

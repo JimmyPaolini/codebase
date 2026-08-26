@@ -112,12 +112,7 @@ describe(ConformetryGeneratorsCommand, () => {
 
   it.each([
     {
-      expectedLogMessage: "📇 Verified the conformetry generators table",
-      generators: [
-        { aliases: ["a"], description: "first", name: "alpha" },
-        { aliases: ["b"], description: "second", name: "beta" },
-      ],
-      markedContent: [
+      agentsContent: [
         "# Header",
         "<!-- conformetry-generators-table start -->",
         "| Template | Alias | Description |",
@@ -126,14 +121,26 @@ describe(ConformetryGeneratorsCommand, () => {
         "| `beta` | `b` | second |",
         "<!-- conformetry-generators-table end -->",
       ].join("\n"),
+      expectedLogMessage: "📇 Verified the conformetry generators table",
+      generators: [
+        { aliases: ["a"], description: "first", name: "alpha" },
+        { aliases: ["b"], description: "second", name: "beta" },
+      ],
       modeArguments: ["check"],
+      readmeContent: [
+        "# Header",
+        "<!-- conformetry-generators-table start -->",
+        "| Template | Description |",
+        "| -------- | ----------- |",
+        "| `alpha` | first |",
+        "| `beta` | second |",
+        "<!-- conformetry-generators-table end -->",
+      ].join("\n"),
       scenarioName:
         "passes check mode when generated table matches every target file",
     },
     {
-      expectedLogMessage: "📇 Verified the conformetry generators table",
-      generators: [{ description: "first", name: "alpha" }],
-      markedContent: [
+      agentsContent: [
         "# Header",
         "<!-- conformetry-generators-table start -->",
         "| Template | Alias | Description |",
@@ -141,20 +148,31 @@ describe(ConformetryGeneratorsCommand, () => {
         "| `alpha` |  | first |",
         "<!-- conformetry-generators-table end -->",
       ].join("\n"),
+      expectedLogMessage: "📇 Verified the conformetry generators table",
+      generators: [{ description: "first", name: "alpha" }],
       modeArguments: [],
+      readmeContent: [
+        "# Header",
+        "<!-- conformetry-generators-table start -->",
+        "| Template | Description |",
+        "| -------- | ----------- |",
+        "| `alpha` | first |",
+        "<!-- conformetry-generators-table end -->",
+      ].join("\n"),
       scenarioName: "defaults to check mode when no mode is provided",
     },
   ])(
     "$scenarioName",
     async ({
+      agentsContent,
       expectedLogMessage,
       generators,
-      markedContent,
       modeArguments,
+      readmeContent,
     }) => {
       currentConformetryConfiguration = generators;
-      fileContents.set(agentsFile, markedContent);
-      fileContents.set(readmeFile, markedContent);
+      fileContents.set(agentsFile, agentsContent);
+      fileContents.set(readmeFile, readmeContent);
 
       await command.run(modeArguments);
 
@@ -190,7 +208,7 @@ describe(ConformetryGeneratorsCommand, () => {
     );
     expect(writeFileSync).toHaveBeenCalledWith(
       readmeFile,
-      expect.stringContaining("| `alpha` | `a` | first |"),
+      expect.stringContaining("| `alpha` | first |"),
       "utf8",
     );
     expect(logger.info).toHaveBeenCalledWith(
@@ -273,9 +291,9 @@ describe(ConformetryGeneratorsCommand, () => {
           [
             "# Header",
             "<!-- conformetry-generators-table start -->",
-            "| Template | Alias | Description |",
-            "| -------- | ----- | ----------- |",
-            "| `alpha` | `a` | first |",
+            "| Template | Description |",
+            "| -------- | ----------- |",
+            "| `alpha` | first |",
             "<!-- conformetry-generators-table end -->",
           ].join("\n"),
         );
