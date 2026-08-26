@@ -153,7 +153,15 @@ export const runPipeline = (
       "    process.exit(1);",
       "  }",
       "  const report = JSON.parse(text);",
-      `  console.log(${readReport});`,
+      // Written as text rather than through `console.log`. That formats a lone
+      // non-string with Node's inspection, which colors its output whenever it
+      // believes colors are wanted — and a spawned process inherits
+      // `FORCE_COLOR` from the test runner, so the number 28 arrives wrapped in
+      // escape codes under an Nx target and bare under a plain run. The test
+      // then passes or fails on how it was invoked rather than on anything
+      // codometer did. Converting to a string first is what removes the
+      // question.
+      String.raw`  process.stdout.write(String(${readReport}) + "\n");`,
       "});",
     ].join("\n"),
   );
