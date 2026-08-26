@@ -191,9 +191,9 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
 
 | Measure | Value |
 | --- | --- |
-| Callables | 201 |
+| Callables | 203 |
 | Files | 47 |
-| Calls traced | 216 |
+| Calls traced | 218 |
 | Call stacks | 11 |
 | Deepest stack | 10 |
 | Stacks through recursion | 0 |
@@ -249,7 +249,26 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
                    ↳ Extracts text content between named HTML comment markers.
 ```
 
-**3. `PullRequestLabelsCommand.run`** — depth 7 · decorated-method
+**3. `ConformetryGeneratorsCommand.run`** — depth ≥ 7 · decorated-method
+
+```text
+🚀 ConformetryGeneratorsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:204]
+   ↳ Runs the conformetry-generators sync command in check or write mode.
+  └─> ConformetryGeneratorsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:222]
+     ↳ Synchronizes the generators table and reports success without exiting.
+    └─> ConformetryGeneratorsCommand.checkSync(generators: ConformetryGeneratorMetadata[]): boolean [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:63]
+       ↳ Compares the generated generators table against the stored content in every target file and reports any differences.
+      └─> ConformetryGeneratorsCommand.filter(…)(targetFile: ConformetryGeneratorsTargetFile): boolean [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:65]
+        └─> ConformetryGeneratorsCommand.generateGeneratorsTable(generators: ConformetryGeneratorMetadata[], includeAlias: boolean): string [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:102]
+           ↳ Renders the list of generators as a markdown table for injection into a target file, optionally including the Alias…
+          └─> ConformetryGeneratorsCommand.map(…)(gen: ConformetryGeneratorMetadata): string [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:109]
+            └─> ConformetryGeneratorsCommand.map(…)(a: string): string [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:113]
+```
+
+<details>
+<summary>8 more call stacks</summary>
+
+**4. `PullRequestLabelsCommand.run`** — depth 7 · decorated-method
 
 ```text
 🚀 PullRequestLabelsCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:281]
@@ -264,26 +283,6 @@ Call stacks traced through `synchronization`, deepest first. Each frame shows wh
           └─> PullRequestLabelsService.isTrackedLabel(labelName: string): boolean [tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:45]
              ↳ Whether this reconciliation owns the label with this name.
             └─> PullRequestLabelsService.some(…)(prefix: string): boolean [tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:46]
-```
-
-<details>
-<summary>8 more call stacks</summary>
-
-**4. `ConformetryGeneratorsCommand.run`** — depth ≥ 6 · decorated-method
-
-```text
-🚀 ConformetryGeneratorsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:176]
-   ↳ Runs the conformetry-generators sync command in check or write mode.
-  └─> ConformetryGeneratorsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:194]
-     ↳ Synchronizes the generators table and reports success without exiting.
-    └─> ConformetryGeneratorsCommand.readGenerators(): Promise<ConformetryGeneratorMetadata[]> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:136]
-       ↳ Reads configuration/conformetry.config.ts and returns the list of generator metadata.
-      └─> ConfigurationService.loadConformetryConfiguration(configurationPath: string): Promise<ConformetryConfiguration> [packages/conformetry-configuration/src/modules/configuration/configuration.service.ts:172]
-         ↳ Loads, validates, and normalizes a conformetry configuration file.
-        └─> ConfigurationService.resolveConfigurationPath(configurationPath: string): Promise<string> [packages/conformetry-configuration/src/modules/configuration/configuration.service.ts:138]
-           ↳ Resolves a config path against the cwd, falling back to the workspace root.
-          └─> ConfigurationService.findWorkspaceRoot(): Promise<string | undefined> [packages/conformetry-configuration/src/modules/configuration/configuration.service.ts:77]
-             ↳ Walks upward from the process cwd looking for the workspace manifest.
 ```
 
 **5. `PullRequestTemplateCommand.run`** — depth 6 · decorated-method
@@ -393,7 +392,7 @@ None.
 | `ConventionalConfigService.handleCheckMode` | 8 | `ConventionalConfigValidatorsService.checkSettingsSync`, `ConventionalConfigValidatorsService.checkAllSkillsSync`, `ConventionalConfigValidatorsService.checkAllTemplatesSync`, `ConventionalConfigService.loadReleaseConfig`, `ConventionalConfigValidatorsService.checkReleaseRulesSync`, `ConventionalConfigIoService.getReleaseRulesTypes`, `ConventionalConfigValidatorsService.checkPresetConfigSync`, `ConventionalConfigIoService.getPresetConfigTypes` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:126` |
 
 <details>
-<summary>86 more callables</summary>
+<summary>87 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -409,7 +408,7 @@ None.
 | `PullRequestLabelsCommand.synchronize` | 4 | `PullRequestLabelsCommand.reconcile`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsCommand.describeError`, `PullRequestLabelsCommand.mirrorToStepSummary` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:300` |
 | `PullRequestTemplateCommand.synchronize` | 4 | `PullRequestTemplateCommand.map(…)`, `PullRequestTemplateCommand.loadTemplate`, `PullRequestTemplateCommand.handleCheckMode`, `PullRequestTemplateCommand.handleWriteMode` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:221` |
 | `IssueLabelsCommand.run` | 3 | `IssueLabelsCommand.resolvePlan`, `IssueLabelsGithubService.isAvailable`, `IssueLabelsCommand.addLabel` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:158` |
-| `ConformetryGeneratorsCommand.synchronize` | 3 | `ConformetryGeneratorsCommand.readGenerators`, `ConformetryGeneratorsCommand.checkSync`, `ConformetryGeneratorsCommand.writeSync` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:194` |
+| `ConformetryGeneratorsCommand.synchronize` | 3 | `ConformetryGeneratorsCommand.readGenerators`, `ConformetryGeneratorsCommand.checkSync`, `ConformetryGeneratorsCommand.writeSync` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:222` |
 | `ConventionalConfigIoService.writeIssueTemplateSync` | 3 | `ConventionalConfigIoService.writeIssueTemplateDropdown`, `ConventionalConfigIoService.map(…)`, `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:258` |
 | `ConventionalConfigValidatorsService.checkMarkerSync` | 3 | `ConventionalConfigValidatorsService.readMarkerValues`, `ConventionalConfigValidatorsService.getSourceValuesForMarker`, `ConventionalConfigValidatorsService.validateMarkerValues` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:41` |
 | `ConventionalConfigValidatorsService.checkIssueTemplateSync` | 3 | `ConventionalConfigValidatorsService.getSourceValuesForMarker`, `ConventionalConfigIoService.parseIssueTemplateDropdown`, `ConventionalConfigValidatorsService.validateMarkerValues` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:185` |
@@ -423,10 +422,11 @@ None.
 | `IssueLabelsCommand.addLabel` | 2 | `IssueLabelsGithubService.run`, `IssueLabelsGithubService.describeFailure` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:57` |
 | `IssueLabelsCommand.readLabelNames` | 2 | `IssueLabelsCommand.filter(…)`, `IssueLabelsCommand.map(…)` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:118` |
 | `SynchronizationService.resolveSynchronizationModeOrExit` | 2 | `SynchronizationService.resolveModeValue`, `SynchronizationService.exitInvalidMode` | `tools/synchronization/src/modules/synchronization/synchronization.service.ts:59` |
-| `ConformetryGeneratorsCommand.checkSync` | 2 | `ConformetryGeneratorsCommand.generateGeneratorsTable`, `ConformetryGeneratorsCommand.readAgentsFile` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:54` |
-| `ConformetryGeneratorsCommand.readGenerators` | 2 | `ConfigurationService.loadConformetryConfiguration`, `ConformetryGeneratorsCommand.map(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:136` |
-| `ConformetryGeneratorsCommand.writeSync` | 2 | `ConformetryGeneratorsCommand.generateGeneratorsTable`, `ConformetryGeneratorsCommand.readAgentsFile` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:157` |
-| `ConformetryGeneratorsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `ConformetryGeneratorsCommand.synchronize` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:176` |
+| `ConformetryGeneratorsCommand.checkSync` | 2 | `ConformetryGeneratorsCommand.map(…)`, `ConformetryGeneratorsCommand.filter(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:63` |
+| `ConformetryGeneratorsCommand.filter(…)` | 2 | `ConformetryGeneratorsCommand.generateGeneratorsTable`, `ConformetryGeneratorsCommand.readMarkedFile` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:65` |
+| `ConformetryGeneratorsCommand.readGenerators` | 2 | `ConfigurationService.loadConformetryConfiguration`, `ConformetryGeneratorsCommand.map(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:122` |
+| `ConformetryGeneratorsCommand.writeSync` | 2 | `ConformetryGeneratorsCommand.generateGeneratorsTable`, `ConformetryGeneratorsCommand.readMarkedFile` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:178` |
+| `ConformetryGeneratorsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `ConformetryGeneratorsCommand.synchronize` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:204` |
 | `ConventionalConfigIoService.map(…)` | 2 | `ConventionalConfigIoService.find(…)`, `ConventionalConfigIoService.capitalize` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:93` |
 | `ConventionalConfigIoService.getReleaseRulesTypes` | 2 | `ConventionalConfigIoService.filter(…)`, `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:184` |
 | `ConventionalConfigValidatorsService.getSourceValuesForMarker` | 2 | `ConventionalConfigValidatorsService.map(…)`, `ConventionalConfigValidatorsService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:64` |
@@ -453,8 +453,8 @@ None.
 | `IssueLabelsCommand.nameOf` | 1 | `IssueLabelsCommand.isRecord` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:82` |
 | `IssueLabelsCommand.readExistingLabelNames` | 1 | `IssueLabelsCommand.readLabelNames` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:94` |
 | `SynchronizationService.resolveModeValue` | 1 | `SynchronizationService.isSynchronizationMode` | `tools/synchronization/src/modules/synchronization/synchronization.service.ts:40` |
-| `ConformetryGeneratorsCommand.generateGeneratorsTable` | 1 | `ConformetryGeneratorsCommand.map(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:86` |
-| `ConformetryGeneratorsCommand.map(…)` | 1 | `ConformetryGeneratorsCommand.map(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:91` |
+| `ConformetryGeneratorsCommand.generateGeneratorsTable` | 1 | `ConformetryGeneratorsCommand.map(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:102` |
+| `ConformetryGeneratorsCommand.map(…)` | 1 | `ConformetryGeneratorsCommand.map(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:109` |
 | `ConventionalConfigIoService.writeIssueTemplateDropdown` | 1 | `ConventionalConfigIoService.generateYamlDropdownOptions` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:62` |
 | `ConventionalConfigIoService.appendToPresetTypes` | 1 | `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:86` |
 | `ConventionalConfigIoService.appendToReleaseRules` | 1 | `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:110` |
@@ -790,19 +790,19 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-8809-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-291.46_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-8883-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-293.93_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-11-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-71-3178c6?style=flat-square)
 
 ### TypeScript
 
 ![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-71-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-21-0ea5e9?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-22-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-34-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-178-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-179-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -812,14 +812,14 @@ graph LR
 ![External Packages](https://img.shields.io/badge/External_Packages-18-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-27-7c3aed?style=flat-square)
 ![Functions](https://img.shields.io/badge/Functions-409-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-178-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-448-4ade80?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-180-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-450-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-139-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-446-dc2626?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-447-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-351-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-81-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-304-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-653-475569?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-82-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-305-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-656-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-3-ca8a04?style=flat-square)
 
 ### Python
