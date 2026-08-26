@@ -25,7 +25,7 @@ jobs:
   scan-security:
     name: 🕵️ Scan Security
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 12
 
     steps:
       - name: 📥 Checkout Repository
