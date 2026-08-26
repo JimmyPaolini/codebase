@@ -32,7 +32,7 @@ jobs:
   make-codebase:
     name: 🧑‍🔧 Make Codebase
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 12
 
     steps:
       - name: 📥 Checkout Repository

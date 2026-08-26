@@ -285,8 +285,8 @@ Repository statistics measured by [codometer](packages/codometer-cli), regenerat
 ### Repository
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-202065-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-10.61_MB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-436-4a4a4a?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-10.77_MB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-437-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-1588-3178c6?style=flat-square)
 
 ### TypeScript
