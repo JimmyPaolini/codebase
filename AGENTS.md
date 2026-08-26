@@ -159,18 +159,19 @@ configuration declares. Three skills carry that toolchain's behavior for a
 coding agent, mirroring the split above: run the tool, tell it what to
 enforce, act on what it said.
 
-- [codometer-measure](.agents/skills/codometer-measure/SKILL.md)
+- [codometer-measure](packages/codometer-agents/skills/codometer-measure/SKILL.md)
   — running a measurement, or reading a report
-- [codometer-configure](.agents/skills/codometer-configure/SKILL.md)
+- [codometer-configure](packages/codometer-agents/skills/codometer-configure/SKILL.md)
   — writing `codometer.config.ts`
-- [codometer-triage](.agents/skills/codometer-triage/SKILL.md)
+- [codometer-triage](packages/codometer-agents/skills/codometer-triage/SKILL.md)
   — acting on a breach or a stale report
 
 These three are authored in
-[`packages/codometer-agents`](packages/codometer-agents) and installed back
-from the lockfile like any other vendored skill, so what this repository loads
-is exactly what another workspace gets. Edit the package, never the installed
-copy — `skills update` overwrites it.
+[`packages/codometer-agents`](packages/codometer-agents). A follow-up records
+them in `skills-lock.json` and vendors them into `.agents/skills/`, the way
+[`packages/conformetry-agents`](packages/conformetry-agents) is consumed — that
+can only happen once this package exists on the default branch, since the
+skills tool resolves a `github` source against it.
 
 ## Work Scope
 

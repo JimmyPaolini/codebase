@@ -73,9 +73,6 @@ projectStructure.cache.json
 **/.agents/skills/ask-matt/**
 **/.agents/skills/code-review/**
 **/.agents/skills/codebase-design/**
-**/.agents/skills/codometer-configure/**
-**/.agents/skills/codometer-measure/**
-**/.agents/skills/codometer-triage/**
 **/.agents/skills/conformetry-configure/**
 **/.agents/skills/conformetry-generate/**
 **/.agents/skills/conformetry-validate/**
