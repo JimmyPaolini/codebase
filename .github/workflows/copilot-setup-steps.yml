@@ -13,7 +13,7 @@ jobs:
   copilot-setup-steps:
     name: 🤖 Setup Copilot
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 12
 
     permissions:
       actions: read
