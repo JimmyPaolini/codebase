@@ -1,0 +1,4215 @@
+{
+  "deepStacks": [
+    {
+      "depth": 8,
+      "entryPointKind": "orphan-root",
+      "frames": [
+        {
+          "displayName": "ComputedMemberService.dispatch",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Dispatches a report request to a handler named at runtime.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1720",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+            "line": 56
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "format",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(format: string): string"
+          }
+        },
+        {
+          "displayName": "ComputedMemberService.read",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Reads the request's format and passes it on.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1281",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+            "line": 39
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "format",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(format: string): string"
+          }
+        },
+        {
+          "displayName": "ComputedMemberService.normalize",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Normalizes the requested format before anything routes on it.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#976",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+            "line": 29
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "format",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(format: string): string"
+          }
+        },
+        {
+          "displayName": "ComputedMemberService.route",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Routes the request one layer further down.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1414",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+            "line": 44
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "format",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(format: string): string"
+          }
+        },
+        {
+          "displayName": "ComputedMemberService.select",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Selects the branch that prepares the format.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1547",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+            "line": 49
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "format",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(format: string): string"
+          }
+        },
+        {
+          "displayName": "ComputedMemberService.prepare",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Prepares the format string the handler table is keyed by.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1132",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+            "line": 34
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "format",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(format: string): string"
+          }
+        },
+        {
+          "displayName": "ComputedMemberService.choose",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Chooses a handler by name.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#826",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+            "line": 24
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "format",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(format: string): string"
+          }
+        },
+        {
+          "displayName": "ComputedMemberService.apply",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Applies the selected handler, whichever one that turns out to be.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#697",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+            "line": 19
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "format",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(format: string): string"
+          }
+        }
+      ],
+      "isLowerBound": true,
+      "limit": 6
+    },
+    {
+      "depth": 8,
+      "entryPointKind": "orphan-root",
+      "frames": [
+        {
+          "displayName": "DeepStackService.quote",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Quotes one order, priced through every stage below.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#1692",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+            "line": 50
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "displayName": "DeepStackService.validate",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Rejects a negative amount before anything else reads it.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#1504",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+            "line": 43
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "displayName": "DeepStackService.removeDiscount",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Removes the tier discount from the validated amount.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#1141",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+            "line": 33
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "displayName": "DeepStackService.resolveTier",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Picks the pricing tier the discounted amount falls into.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#1329",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+            "line": 38
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "displayName": "DeepStackService.loadRate",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Looks up the tax rate the resolved tier pays.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#956",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+            "line": 28
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "tier",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number, tier: number): number"
+          }
+        },
+        {
+          "displayName": "DeepStackService.applyTax",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Adds tax at the resolved rate.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#606",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+            "line": 18
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "rate",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number, rate: number): number"
+          }
+        },
+        {
+          "displayName": "DeepStackService.convertCurrency",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Converts to the reporting currency and rounds through the shared tail.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#804",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+            "line": 23
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "displayName": "roundToCents",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "The tail two of this package's deep stacks share. A single stack drawn on its own is a straight line, and a straight line is a list with extra steps. Two stacks ending here converge in the mermaid diagram, which is the shape a picture shows and an indented tree cannot.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/shared-tail/shared-tail.utilities.ts#310",
+          "isCycle": false,
+          "location": {
+            "column": 1,
+            "filePath": "packages/callidescope-examples/src/modules/shared-tail/shared-tail.utilities.ts",
+            "line": 10
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        }
+      ],
+      "isLowerBound": false,
+      "limit": 6
+    },
+    {
+      "depth": 8,
+      "entryPointKind": "orphan-root",
+      "frames": [
+        {
+          "displayName": "ForwardingStackService.handle",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Handles one amount, through six layers that do nothing to it.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#1492",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+            "line": 53
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "displayName": "ForwardingStackService.process",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Forwards, unchanged.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#1206",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+            "line": 41
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "displayName": "ForwardingStackService.execute",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Forwards, unchanged.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#726",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+            "line": 21
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "displayName": "ForwardingStackService.forward",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Forwards, unchanged.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#984",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+            "line": 31
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "displayName": "ForwardingStackService.perform",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Forwards, unchanged.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#1096",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+            "line": 36
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "displayName": "ForwardingStackService.relay",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Forwards, unchanged.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#1318",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+            "line": 46
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "displayName": "ForwardingStackService.finish",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Rounds the amount, which is the only work on this path.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#873",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+            "line": 26
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "displayName": "roundToCents",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "The tail two of this package's deep stacks share. A single stack drawn on its own is a straight line, and a straight line is a list with extra steps. Two stacks ending here converge in the mermaid diagram, which is the shape a picture shows and an indented tree cannot.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/shared-tail/shared-tail.utilities.ts#310",
+          "isCycle": false,
+          "location": {
+            "column": 1,
+            "filePath": "packages/callidescope-examples/src/modules/shared-tail/shared-tail.utilities.ts",
+            "line": 10
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        }
+      ],
+      "isLowerBound": false,
+      "limit": 6
+    },
+    {
+      "depth": 7,
+      "entryPointKind": "orphan-root",
+      "frames": [
+        {
+          "displayName": "FrameAnnotationsService.trace",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Traces one value through every annotation shape below.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#3256",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+            "line": 91
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "value",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(value: string): string"
+          }
+        },
+        {
+          "displayName": "FrameAnnotationsService.render",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Renders one value for display, in the form its type calls for. The two overloads return different types on purpose. Identical return types collapse into one signature taking a union, and this shape exists to show where an overload's documentation lives — on the signature, not on the implementation the call graph points at.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#3018",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+            "line": 84
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "value",
+                "type": "string | number"
+              }
+            ],
+            "returnType": "string | string[]",
+            "text": "(value: number | string): string | string[]"
+          }
+        },
+        {
+          "displayName": "FrameAnnotationsService.summarize",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Collapses a rendered value to something a description can quote.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#926",
+          "isCycle": false,
+          "location": {
+            "column": 31,
+            "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+            "line": 23
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "rendered",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(rendered: string): string"
+          }
+        },
+        {
+          "displayName": "FrameAnnotationsService.describe",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Describes a value from a parameter with no name at all in the syntax.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#2180",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+            "line": 60
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "__0",
+                "type": "DescribeArguments"
+              }
+            ],
+            "returnType": "string",
+            "text": "({ count, name }: DescribeArguments): string"
+          }
+        },
+        {
+          "displayName": "FrameAnnotationsService.compose",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Joins the parts a description was built from.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#1102",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+            "line": 29
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "description",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(description: string): string"
+          }
+        },
+        {
+          "displayName": "FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Takes three parameters whose rendered signature runs past eighty characters, so the printed frame collapses it to `(…): ReturnType`.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#1797",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+            "line": 49
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "firstDocumentIdentifier",
+                "type": "string"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "secondDocumentIdentifier",
+                "type": "string"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "requestedPresentationMode",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(firstDocumentIdentifier: string, secondDocumentIdentifier: string, requestedPresentationMode: string): string"
+          }
+        },
+        {
+          "displayName": "FrameAnnotationsService.finish",
+          "documentation": {
+            "isDeprecated": false,
+            "summary": "Finishes the chain and hands back what the layers above it built. Every word after that first sentence is the explanation rather than the summary, which is exactly why a printed frame stops at the sentence boundary and leaves the rest to the `file:line` beside it.",
+            "tags": []
+          },
+          "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#1534",
+          "isCycle": false,
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+            "line": 39
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "description",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(description: string): string"
+          }
+        }
+      ],
+      "isLowerBound": false,
+      "limit": 6
+    }
+  ],
+  "misplacedCallables": [
+    {
+      "callerCount": 2,
+      "displayName": "formatCurrency",
+      "foreignCallerCount": 2,
+      "homeModuleId": "packages/callidescope-examples:modules/misplaced-callable",
+      "id": "packages/callidescope-examples/src/modules/misplaced-callable/misplaced-callable.utilities.ts#374",
+      "location": {
+        "column": 1,
+        "filePath": "packages/callidescope-examples/src/modules/misplaced-callable/misplaced-callable.utilities.ts",
+        "line": 11
+      },
+      "suggestedModuleId": "packages/callidescope-examples:modules/receipt"
+    }
+  ],
+  "moduleSpreads": [
+    {
+      "depth": 4,
+      "directModuleIds": [
+        "packages/callidescope-examples:modules/base-class",
+        "packages/callidescope-examples:modules/callback-argument",
+        "packages/callidescope-examples:modules/constructed-class",
+        "packages/callidescope-examples:modules/injected-dependency",
+        "packages/callidescope-examples:modules/plain-call"
+      ],
+      "displayName": "ModuleSpreadService.orchestrate",
+      "id": "packages/callidescope-examples/src/modules/module-spread/module-spread.service.ts#1308",
+      "location": {
+        "column": 3,
+        "filePath": "packages/callidescope-examples/src/modules/module-spread/module-spread.service.ts",
+        "line": 32
+      },
+      "statementCount": 1,
+      "transitiveSpread": 6
+    }
+  ],
+  "projects": [
+    {
+      "callableBreadths": [
+        {
+          "breadth": 5,
+          "callees": [
+            {
+              "displayName": "PlainCallService.render",
+              "id": "packages/callidescope-examples/src/modules/plain-call/plain-call.service.ts#544"
+            },
+            {
+              "displayName": "OrdersService.place",
+              "id": "packages/callidescope-examples/src/modules/injected-dependency/orders.service.ts#645"
+            },
+            {
+              "displayName": "ConstructedClassService.count",
+              "id": "packages/callidescope-examples/src/modules/constructed-class/constructed-class.service.ts#497"
+            },
+            {
+              "displayName": "BaseClassService.run",
+              "id": "packages/callidescope-examples/src/modules/base-class/base-class.service.ts#463"
+            },
+            {
+              "displayName": "CallbackArgumentService.shoutAll",
+              "id": "packages/callidescope-examples/src/modules/callback-argument/callback-argument.service.ts#628"
+            }
+          ],
+          "displayName": "ModuleSpreadService.orchestrate",
+          "id": "packages/callidescope-examples/src/modules/module-spread/module-spread.service.ts#1308",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/module-spread/module-spread.service.ts",
+            "line": 32
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "label",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(label: string): string"
+          }
+        },
+        {
+          "breadth": 2,
+          "callees": [
+            {
+              "displayName": "OrdersService.place",
+              "id": "packages/callidescope-examples/src/modules/injected-dependency/orders.service.ts#645"
+            },
+            {
+              "displayName": "OrdersService.constructor",
+              "id": "packages/callidescope-examples/src/modules/injected-dependency/orders.service.ts#492"
+            }
+          ],
+          "displayName": "bootstrap",
+          "id": "packages/callidescope-examples/src/main.ts#479",
+          "location": {
+            "column": 26,
+            "filePath": "packages/callidescope-examples/src/main.ts",
+            "line": 11
+          },
+          "signature": {
+            "parameters": [],
+            "returnType": "number",
+            "text": "(): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "normalizeLabel",
+              "id": "packages/callidescope-examples/src/modules/plain-call/plain-call.utilities.ts#78"
+            }
+          ],
+          "displayName": "normalizeExampleLabel",
+          "id": "packages/callidescope-examples/src/index.ts#396",
+          "location": {
+            "column": 38,
+            "filePath": "packages/callidescope-examples/src/index.ts",
+            "line": 12
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "label",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(label: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "InventoryService.reserve",
+              "id": "packages/callidescope-examples/src/modules/injected-dependency/inventory.service.ts#239"
+            }
+          ],
+          "displayName": "OrdersService.place",
+          "id": "packages/callidescope-examples/src/modules/injected-dependency/orders.service.ts#645",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/injected-dependency/orders.service.ts",
+            "line": 21
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "available",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(available: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "BaseTaskService.run",
+              "id": "packages/callidescope-examples/src/modules/base-class/base-task.service.ts#241"
+            }
+          ],
+          "displayName": "BaseClassService.run",
+          "id": "packages/callidescope-examples/src/modules/base-class/base-class.service.ts#463",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/base-class/base-class.service.ts",
+            "line": 16
+          },
+          "signature": {
+            "parameters": [],
+            "returnType": "string",
+            "text": "(): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "CallbackArgumentService.map(…)",
+              "id": "packages/callidescope-examples/src/modules/callback-argument/callback-argument.service.ts#707"
+            }
+          ],
+          "displayName": "CallbackArgumentService.shoutAll",
+          "id": "packages/callidescope-examples/src/modules/callback-argument/callback-argument.service.ts#628",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/callback-argument/callback-argument.service.ts",
+            "line": 22
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "entries",
+                "type": "readonly string[]"
+              }
+            ],
+            "returnType": "string[]",
+            "text": "(entries: readonly string[]): string[]"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "CallbackArgumentService.shout",
+              "id": "packages/callidescope-examples/src/modules/callback-argument/callback-argument.service.ts#463"
+            }
+          ],
+          "displayName": "CallbackArgumentService.map(…)",
+          "id": "packages/callidescope-examples/src/modules/callback-argument/callback-argument.service.ts#707",
+          "location": {
+            "column": 24,
+            "filePath": "packages/callidescope-examples/src/modules/callback-argument/callback-argument.service.ts",
+            "line": 23
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "entry",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(entry: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ComputedMemberService.apply",
+              "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#697"
+            }
+          ],
+          "displayName": "ComputedMemberService.choose",
+          "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#826",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+            "line": 24
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "format",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(format: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ComputedMemberService.route",
+              "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1414"
+            }
+          ],
+          "displayName": "ComputedMemberService.normalize",
+          "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#976",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+            "line": 29
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "format",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(format: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ComputedMemberService.choose",
+              "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#826"
+            }
+          ],
+          "displayName": "ComputedMemberService.prepare",
+          "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1132",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+            "line": 34
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "format",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(format: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ComputedMemberService.normalize",
+              "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#976"
+            }
+          ],
+          "displayName": "ComputedMemberService.read",
+          "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1281",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+            "line": 39
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "format",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(format: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ComputedMemberService.select",
+              "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1547"
+            }
+          ],
+          "displayName": "ComputedMemberService.route",
+          "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1414",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+            "line": 44
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "format",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(format: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ComputedMemberService.prepare",
+              "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1132"
+            }
+          ],
+          "displayName": "ComputedMemberService.select",
+          "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1547",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+            "line": 49
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "format",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(format: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ComputedMemberService.read",
+              "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1281"
+            }
+          ],
+          "displayName": "ComputedMemberService.dispatch",
+          "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1720",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+            "line": 56
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "format",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(format: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ParserService.constructor",
+              "id": "packages/callidescope-examples/src/modules/constructed-class/parser.service.ts#252"
+            }
+          ],
+          "displayName": "ConstructedClassService.count",
+          "id": "packages/callidescope-examples/src/modules/constructed-class/constructed-class.service.ts#497",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/constructed-class/constructed-class.service.ts",
+            "line": 17
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "source",
+                "type": "string"
+              }
+            ],
+            "returnType": "number",
+            "text": "(source: string): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "DeepStackService.convertCurrency",
+              "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#804"
+            }
+          ],
+          "displayName": "DeepStackService.applyTax",
+          "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#606",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+            "line": 18
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "rate",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number, rate: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "roundToCents",
+              "id": "packages/callidescope-examples/src/modules/shared-tail/shared-tail.utilities.ts#310"
+            }
+          ],
+          "displayName": "DeepStackService.convertCurrency",
+          "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#804",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+            "line": 23
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "DeepStackService.applyTax",
+              "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#606"
+            }
+          ],
+          "displayName": "DeepStackService.loadRate",
+          "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#956",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+            "line": 28
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "tier",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number, tier: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "DeepStackService.resolveTier",
+              "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#1329"
+            }
+          ],
+          "displayName": "DeepStackService.removeDiscount",
+          "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#1141",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+            "line": 33
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "DeepStackService.loadRate",
+              "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#956"
+            }
+          ],
+          "displayName": "DeepStackService.resolveTier",
+          "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#1329",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+            "line": 38
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "DeepStackService.removeDiscount",
+              "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#1141"
+            }
+          ],
+          "displayName": "DeepStackService.validate",
+          "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#1504",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+            "line": 43
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "DeepStackService.validate",
+              "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#1504"
+            }
+          ],
+          "displayName": "DeepStackService.quote",
+          "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#1692",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+            "line": 50
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "EntryPointsService.prepareCache",
+              "id": "packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts#730"
+            }
+          ],
+          "displayName": "EntryPointsService.onModuleInit",
+          "id": "packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts#885",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts",
+            "line": 29
+          },
+          "signature": {
+            "parameters": [],
+            "returnType": "string",
+            "text": "(): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "EntryPointsService.buildReport",
+              "id": "packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts#613"
+            }
+          ],
+          "displayName": "EntryPointsService.readReport",
+          "id": "packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts#1015",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts",
+            "line": 34
+          },
+          "signature": {
+            "parameters": [],
+            "returnType": "string",
+            "text": "(): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ForwardingStackService.forward",
+              "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#984"
+            }
+          ],
+          "displayName": "ForwardingStackService.execute",
+          "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#726",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+            "line": 21
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "roundToCents",
+              "id": "packages/callidescope-examples/src/modules/shared-tail/shared-tail.utilities.ts#310"
+            }
+          ],
+          "displayName": "ForwardingStackService.finish",
+          "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#873",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+            "line": 26
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ForwardingStackService.perform",
+              "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#1096"
+            }
+          ],
+          "displayName": "ForwardingStackService.forward",
+          "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#984",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+            "line": 31
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ForwardingStackService.relay",
+              "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#1318"
+            }
+          ],
+          "displayName": "ForwardingStackService.perform",
+          "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#1096",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+            "line": 36
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ForwardingStackService.execute",
+              "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#726"
+            }
+          ],
+          "displayName": "ForwardingStackService.process",
+          "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#1206",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+            "line": 41
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ForwardingStackService.finish",
+              "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#873"
+            }
+          ],
+          "displayName": "ForwardingStackService.relay",
+          "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#1318",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+            "line": 46
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ForwardingStackService.process",
+              "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#1206"
+            }
+          ],
+          "displayName": "ForwardingStackService.handle",
+          "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#1492",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+            "line": 53
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(amount: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "FrameAnnotationsService.describe",
+              "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#2180"
+            }
+          ],
+          "displayName": "FrameAnnotationsService.summarize",
+          "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#926",
+          "location": {
+            "column": 31,
+            "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+            "line": 23
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "rendered",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(rendered: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong",
+              "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#1797"
+            }
+          ],
+          "displayName": "FrameAnnotationsService.compose",
+          "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#1102",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+            "line": 29
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "description",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(description: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "FrameAnnotationsService.finish",
+              "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#1534"
+            }
+          ],
+          "displayName": "FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong",
+          "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#1797",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+            "line": 49
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "firstDocumentIdentifier",
+                "type": "string"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "secondDocumentIdentifier",
+                "type": "string"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "requestedPresentationMode",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(firstDocumentIdentifier: string, secondDocumentIdentifier: string, requestedPresentationMode: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "FrameAnnotationsService.compose",
+              "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#1102"
+            }
+          ],
+          "displayName": "FrameAnnotationsService.describe",
+          "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#2180",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+            "line": 60
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "__0",
+                "type": "DescribeArguments"
+              }
+            ],
+            "returnType": "string",
+            "text": "({ count, name }: DescribeArguments): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "FrameAnnotationsService.compose",
+              "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#1102"
+            }
+          ],
+          "displayName": "FrameAnnotationsService.legacyRender",
+          "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#2485",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+            "line": 70
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "value",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(value: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "FrameAnnotationsService.summarize",
+              "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#926"
+            }
+          ],
+          "displayName": "FrameAnnotationsService.render",
+          "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#3018",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+            "line": 84
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "value",
+                "type": "string | number"
+              }
+            ],
+            "returnType": "string | string[]",
+            "text": "(value: number | string): string | string[]"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "FrameAnnotationsService.render",
+              "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#3018"
+            }
+          ],
+          "displayName": "FrameAnnotationsService.trace",
+          "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#3256",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+            "line": 91
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "value",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(value: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "normalizeLabel",
+              "id": "packages/callidescope-examples/src/modules/plain-call/plain-call.utilities.ts#78"
+            }
+          ],
+          "displayName": "PlainCallService.render",
+          "id": "packages/callidescope-examples/src/modules/plain-call/plain-call.service.ts#544",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/plain-call/plain-call.service.ts",
+            "line": 17
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "label",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(label: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "MutualRecursionService.leaf",
+              "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#960"
+            }
+          ],
+          "displayName": "MutualRecursionService.branch",
+          "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#816",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts",
+            "line": 21
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "remaining",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(remaining: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "MutualRecursionService.descend",
+              "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#1151"
+            }
+          ],
+          "displayName": "MutualRecursionService.leaf",
+          "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#960",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts",
+            "line": 26
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "remaining",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(remaining: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "MutualRecursionService.branch",
+              "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#816"
+            }
+          ],
+          "displayName": "MutualRecursionService.descend",
+          "id": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts#1151",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/mutual-recursion/mutual-recursion.service.ts",
+            "line": 33
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "remaining",
+                "type": "number"
+              }
+            ],
+            "returnType": "number",
+            "text": "(remaining: number): number"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "formatCurrency",
+              "id": "packages/callidescope-examples/src/modules/misplaced-callable/misplaced-callable.utilities.ts#374"
+            }
+          ],
+          "displayName": "ReceiptService.renderLine",
+          "id": "packages/callidescope-examples/src/modules/receipt/receipt.service.ts#464",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/receipt/receipt.service.ts",
+            "line": 16
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "string",
+            "text": "(amount: number): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "formatCurrency",
+              "id": "packages/callidescope-examples/src/modules/misplaced-callable/misplaced-callable.utilities.ts#374"
+            }
+          ],
+          "displayName": "ReceiptService.renderTotal",
+          "id": "packages/callidescope-examples/src/modules/receipt/receipt.service.ts#605",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/receipt/receipt.service.ts",
+            "line": 21
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "returnType": "string",
+            "text": "(amount: number): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "ModuleSpreadService.orchestrate",
+              "id": "packages/callidescope-examples/src/modules/module-spread/module-spread.service.ts#1308"
+            }
+          ],
+          "displayName": "SpreadNearMissService.review",
+          "id": "packages/callidescope-examples/src/modules/spread-near-miss/spread-near-miss.service.ts#826",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/spread-near-miss/spread-near-miss.service.ts",
+            "line": 23
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "label",
+                "type": "string"
+              }
+            ],
+            "returnType": "string",
+            "text": "(label: string): string"
+          }
+        },
+        {
+          "breadth": 1,
+          "callees": [
+            {
+              "displayName": "FilesystemProviderService.ingest",
+              "id": "packages/callidescope-examples/src/modules/structural-interface/filesystem-provider.service.ts#417"
+            }
+          ],
+          "displayName": "StructuralInterfaceService.ingestDocument",
+          "id": "packages/callidescope-examples/src/modules/structural-interface/structural-interface.service.ts#562",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/structural-interface/structural-interface.service.ts",
+            "line": 17
+          },
+          "signature": {
+            "parameters": [
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "provider",
+                "type": "StructuralProvider"
+              },
+              {
+                "isOptional": false,
+                "isRest": false,
+                "name": "document",
+                "type": "string"
+              }
+            ],
+            "returnType": "number",
+            "text": "(provider: StructuralProvider, document: string): number"
+          }
+        }
+      ],
+      "misplacedCallables": [
+        {
+          "callerCount": 2,
+          "displayName": "formatCurrency",
+          "foreignCallerCount": 2,
+          "homeModuleId": "packages/callidescope-examples:modules/misplaced-callable",
+          "id": "packages/callidescope-examples/src/modules/misplaced-callable/misplaced-callable.utilities.ts#374",
+          "location": {
+            "column": 1,
+            "filePath": "packages/callidescope-examples/src/modules/misplaced-callable/misplaced-callable.utilities.ts",
+            "line": 11
+          },
+          "suggestedModuleId": "packages/callidescope-examples:modules/receipt"
+        }
+      ],
+      "moduleSpreads": [
+        {
+          "depth": 4,
+          "directModuleIds": [
+            "packages/callidescope-examples:modules/base-class",
+            "packages/callidescope-examples:modules/callback-argument",
+            "packages/callidescope-examples:modules/constructed-class",
+            "packages/callidescope-examples:modules/injected-dependency",
+            "packages/callidescope-examples:modules/plain-call"
+          ],
+          "displayName": "ModuleSpreadService.orchestrate",
+          "id": "packages/callidescope-examples/src/modules/module-spread/module-spread.service.ts#1308",
+          "location": {
+            "column": 3,
+            "filePath": "packages/callidescope-examples/src/modules/module-spread/module-spread.service.ts",
+            "line": 32
+          },
+          "statementCount": 1,
+          "transitiveSpread": 6
+        }
+      ],
+      "projectName": "packages/callidescope-examples",
+      "stacks": [
+        {
+          "depth": 8,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "ComputedMemberService.dispatch",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Dispatches a report request to a handler named at runtime.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1720",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+                "line": 56
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "format",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(format: string): string"
+              }
+            },
+            {
+              "displayName": "ComputedMemberService.read",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Reads the request's format and passes it on.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1281",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+                "line": 39
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "format",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(format: string): string"
+              }
+            },
+            {
+              "displayName": "ComputedMemberService.normalize",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Normalizes the requested format before anything routes on it.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#976",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+                "line": 29
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "format",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(format: string): string"
+              }
+            },
+            {
+              "displayName": "ComputedMemberService.route",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Routes the request one layer further down.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1414",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+                "line": 44
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "format",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(format: string): string"
+              }
+            },
+            {
+              "displayName": "ComputedMemberService.select",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Selects the branch that prepares the format.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1547",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+                "line": 49
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "format",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(format: string): string"
+              }
+            },
+            {
+              "displayName": "ComputedMemberService.prepare",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Prepares the format string the handler table is keyed by.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#1132",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+                "line": 34
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "format",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(format: string): string"
+              }
+            },
+            {
+              "displayName": "ComputedMemberService.choose",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Chooses a handler by name.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#826",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+                "line": 24
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "format",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(format: string): string"
+              }
+            },
+            {
+              "displayName": "ComputedMemberService.apply",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Applies the selected handler, whichever one that turns out to be.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts#697",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/computed-member/computed-member.service.ts",
+                "line": 19
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "format",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(format: string): string"
+              }
+            }
+          ],
+          "isLowerBound": true
+        },
+        {
+          "depth": 8,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "DeepStackService.quote",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Quotes one order, priced through every stage below.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#1692",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+                "line": 50
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(amount: number): number"
+              }
+            },
+            {
+              "displayName": "DeepStackService.validate",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Rejects a negative amount before anything else reads it.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#1504",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+                "line": 43
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(amount: number): number"
+              }
+            },
+            {
+              "displayName": "DeepStackService.removeDiscount",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Removes the tier discount from the validated amount.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#1141",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+                "line": 33
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(amount: number): number"
+              }
+            },
+            {
+              "displayName": "DeepStackService.resolveTier",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Picks the pricing tier the discounted amount falls into.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#1329",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+                "line": 38
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(amount: number): number"
+              }
+            },
+            {
+              "displayName": "DeepStackService.loadRate",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Looks up the tax rate the resolved tier pays.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#956",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+                "line": 28
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "tier",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(amount: number, tier: number): number"
+              }
+            },
+            {
+              "displayName": "DeepStackService.applyTax",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Adds tax at the resolved rate.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#606",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+                "line": 18
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "rate",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(amount: number, rate: number): number"
+              }
+            },
+            {
+              "displayName": "DeepStackService.convertCurrency",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Converts to the reporting currency and rounds through the shared tail.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts#804",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/deep-stack/deep-stack.service.ts",
+                "line": 23
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(amount: number): number"
+              }
+            },
+            {
+              "displayName": "roundToCents",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "The tail two of this package's deep stacks share. A single stack drawn on its own is a straight line, and a straight line is a list with extra steps. Two stacks ending here converge in the mermaid diagram, which is the shape a picture shows and an indented tree cannot.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/shared-tail/shared-tail.utilities.ts#310",
+              "isCycle": false,
+              "location": {
+                "column": 1,
+                "filePath": "packages/callidescope-examples/src/modules/shared-tail/shared-tail.utilities.ts",
+                "line": 10
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(amount: number): number"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 8,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "ForwardingStackService.handle",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Handles one amount, through six layers that do nothing to it.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#1492",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+                "line": 53
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(amount: number): number"
+              }
+            },
+            {
+              "displayName": "ForwardingStackService.process",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Forwards, unchanged.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#1206",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+                "line": 41
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(amount: number): number"
+              }
+            },
+            {
+              "displayName": "ForwardingStackService.execute",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Forwards, unchanged.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#726",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+                "line": 21
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(amount: number): number"
+              }
+            },
+            {
+              "displayName": "ForwardingStackService.forward",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Forwards, unchanged.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#984",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+                "line": 31
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(amount: number): number"
+              }
+            },
+            {
+              "displayName": "ForwardingStackService.perform",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Forwards, unchanged.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#1096",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+                "line": 36
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(amount: number): number"
+              }
+            },
+            {
+              "displayName": "ForwardingStackService.relay",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Forwards, unchanged.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#1318",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+                "line": 46
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(amount: number): number"
+              }
+            },
+            {
+              "displayName": "ForwardingStackService.finish",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Rounds the amount, which is the only work on this path.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts#873",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/forwarding-stack/forwarding-stack.service.ts",
+                "line": 26
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(amount: number): number"
+              }
+            },
+            {
+              "displayName": "roundToCents",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "The tail two of this package's deep stacks share. A single stack drawn on its own is a straight line, and a straight line is a list with extra steps. Two stacks ending here converge in the mermaid diagram, which is the shape a picture shows and an indented tree cannot.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/shared-tail/shared-tail.utilities.ts#310",
+              "isCycle": false,
+              "location": {
+                "column": 1,
+                "filePath": "packages/callidescope-examples/src/modules/shared-tail/shared-tail.utilities.ts",
+                "line": 10
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(amount: number): number"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 7,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "FrameAnnotationsService.trace",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Traces one value through every annotation shape below.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#3256",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+                "line": 91
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "value",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(value: string): string"
+              }
+            },
+            {
+              "displayName": "FrameAnnotationsService.render",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Renders one value for display, in the form its type calls for. The two overloads return different types on purpose. Identical return types collapse into one signature taking a union, and this shape exists to show where an overload's documentation lives — on the signature, not on the implementation the call graph points at.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#3018",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+                "line": 84
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "value",
+                    "type": "string | number"
+                  }
+                ],
+                "returnType": "string | string[]",
+                "text": "(value: number | string): string | string[]"
+              }
+            },
+            {
+              "displayName": "FrameAnnotationsService.summarize",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Collapses a rendered value to something a description can quote.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#926",
+              "isCycle": false,
+              "location": {
+                "column": 31,
+                "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+                "line": 23
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "rendered",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(rendered: string): string"
+              }
+            },
+            {
+              "displayName": "FrameAnnotationsService.describe",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Describes a value from a parameter with no name at all in the syntax.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#2180",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+                "line": 60
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "__0",
+                    "type": "DescribeArguments"
+                  }
+                ],
+                "returnType": "string",
+                "text": "({ count, name }: DescribeArguments): string"
+              }
+            },
+            {
+              "displayName": "FrameAnnotationsService.compose",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Joins the parts a description was built from.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#1102",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+                "line": 29
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "description",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(description: string): string"
+              }
+            },
+            {
+              "displayName": "FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Takes three parameters whose rendered signature runs past eighty characters, so the printed frame collapses it to `(…): ReturnType`.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#1797",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+                "line": 49
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "firstDocumentIdentifier",
+                    "type": "string"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "secondDocumentIdentifier",
+                    "type": "string"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "requestedPresentationMode",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(firstDocumentIdentifier: string, secondDocumentIdentifier: string, requestedPresentationMode: string): string"
+              }
+            },
+            {
+              "displayName": "FrameAnnotationsService.finish",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Finishes the chain and hands back what the layers above it built. Every word after that first sentence is the explanation rather than the summary, which is exactly why a printed frame stops at the sentence boundary and leaves the rest to the `file:line` beside it.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#1534",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+                "line": 39
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "description",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(description: string): string"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 5,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "SpreadNearMissService.review",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Delegates the whole job to the one module it knows about.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/spread-near-miss/spread-near-miss.service.ts#826",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/spread-near-miss/spread-near-miss.service.ts",
+                "line": 23
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "label",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(label: string): string"
+              }
+            },
+            {
+              "displayName": "ModuleSpreadService.orchestrate",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Touches five modules in one method, which is the finding.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/module-spread/module-spread.service.ts#1308",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/module-spread/module-spread.service.ts",
+                "line": 32
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "label",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(label: string): string"
+              }
+            },
+            {
+              "displayName": "CallbackArgumentService.shoutAll",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Shouts every entry, through a callback `map` invokes.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/callback-argument/callback-argument.service.ts#628",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/callback-argument/callback-argument.service.ts",
+                "line": 22
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "entries",
+                    "type": "readonly string[]"
+                  }
+                ],
+                "returnType": "string[]",
+                "text": "(entries: readonly string[]): string[]"
+              }
+            },
+            {
+              "displayName": "CallbackArgumentService.map(…)",
+              "id": "packages/callidescope-examples/src/modules/callback-argument/callback-argument.service.ts#707",
+              "isCycle": false,
+              "location": {
+                "column": 24,
+                "filePath": "packages/callidescope-examples/src/modules/callback-argument/callback-argument.service.ts",
+                "line": 23
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "entry",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(entry: string): string"
+              }
+            },
+            {
+              "displayName": "CallbackArgumentService.shout",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Upper-cases one entry.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/callback-argument/callback-argument.service.ts#463",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/callback-argument/callback-argument.service.ts",
+                "line": 15
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "entry",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(entry: string): string"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 4,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "FrameAnnotationsService.legacyRender",
+              "documentation": {
+                "isDeprecated": true,
+                "summary": "Renders a value the way this package used to.",
+                "tags": [
+                  "deprecated"
+                ]
+              },
+              "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#2485",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+                "line": 70
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "value",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(value: string): string"
+              }
+            },
+            {
+              "displayName": "FrameAnnotationsService.compose",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Joins the parts a description was built from.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#1102",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+                "line": 29
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "description",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(description: string): string"
+              }
+            },
+            {
+              "displayName": "FrameAnnotationsService.collapseThisSignatureBecauseItRunsLong",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Takes three parameters whose rendered signature runs past eighty characters, so the printed frame collapses it to `(…): ReturnType`.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#1797",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+                "line": 49
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "firstDocumentIdentifier",
+                    "type": "string"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "secondDocumentIdentifier",
+                    "type": "string"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "requestedPresentationMode",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(firstDocumentIdentifier: string, secondDocumentIdentifier: string, requestedPresentationMode: string): string"
+              }
+            },
+            {
+              "displayName": "FrameAnnotationsService.finish",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Finishes the chain and hands back what the layers above it built. Every word after that first sentence is the explanation rather than the summary, which is exactly why a printed frame stops at the sentence boundary and leaves the rest to the `file:line` beside it.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts#1534",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/frame-annotations/frame-annotations.service.ts",
+                "line": 39
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "description",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(description: string): string"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 3,
+          "entryPointKind": "module-bootstrap",
+          "frames": [
+            {
+              "displayName": "bootstrap",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "The `module-bootstrap` entry-point kind. A function named `bootstrap` or `main` in `src/main.ts` is where a project starts itself, so it is a root regardless of whether anything imports it. This one is never executed — the package ships fixtures, not a program.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/main.ts#479",
+              "isCycle": false,
+              "location": {
+                "column": 26,
+                "filePath": "packages/callidescope-examples/src/main.ts",
+                "line": 11
+              },
+              "signature": {
+                "parameters": [],
+                "returnType": "number",
+                "text": "(): number"
+              }
+            },
+            {
+              "displayName": "OrdersService.place",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Places one order against the injected inventory.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/injected-dependency/orders.service.ts#645",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/injected-dependency/orders.service.ts",
+                "line": 21
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "available",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(available: number): number"
+              }
+            },
+            {
+              "displayName": "InventoryService.reserve",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Reserves one unit and reports the count left behind.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/injected-dependency/inventory.service.ts#239",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/injected-dependency/inventory.service.ts",
+                "line": 9
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "available",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(available: number): number"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "exported-function",
+          "frames": [
+            {
+              "displayName": "normalizeExampleLabel",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "The `exported-function` entry-point kind. A function declared and exported from `src/index.ts` is a root because a package's barrel is its contract with everything outside the repository — nothing here has to call it for it to be reachable.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/index.ts#396",
+              "isCycle": false,
+              "location": {
+                "column": 38,
+                "filePath": "packages/callidescope-examples/src/index.ts",
+                "line": 12
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "label",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(label: string): string"
+              }
+            },
+            {
+              "displayName": "normalizeLabel",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Trims a label and collapses the whitespace inside it.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/plain-call/plain-call.utilities.ts#78",
+              "isCycle": false,
+              "location": {
+                "column": 1,
+                "filePath": "packages/callidescope-examples/src/modules/plain-call/plain-call.utilities.ts",
+                "line": 4
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "label",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(label: string): string"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "lifecycle",
+          "frames": [
+            {
+              "displayName": "EntryPointsService.onModuleInit",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "A lifecycle hook a framework calls — the `lifecycle` kind.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts#885",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts",
+                "line": 29
+              },
+              "signature": {
+                "parameters": [],
+                "returnType": "string",
+                "text": "(): string"
+              }
+            },
+            {
+              "displayName": "EntryPointsService.prepareCache",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Does the work a lifecycle hook is called to do.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts#730",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts",
+                "line": 22
+              },
+              "signature": {
+                "parameters": [],
+                "returnType": "string",
+                "text": "(): string"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "decorated-method",
+          "frames": [
+            {
+              "displayName": "EntryPointsService.readReport",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "A decorated method — the `decorated-method` kind.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts#1015",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts",
+                "line": 34
+              },
+              "signature": {
+                "parameters": [],
+                "returnType": "string",
+                "text": "(): string"
+              }
+            },
+            {
+              "displayName": "EntryPointsService.buildReport",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Builds the body a decorated request handler answers with.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts#613",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/entry-points/entry-points.service.ts",
+                "line": 17
+              },
+              "signature": {
+                "parameters": [],
+                "returnType": "string",
+                "text": "(): string"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "ReceiptService.renderLine",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Renders one line of a receipt.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/receipt/receipt.service.ts#464",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/receipt/receipt.service.ts",
+                "line": 16
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(amount: number): string"
+              }
+            },
+            {
+              "displayName": "formatCurrency",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "A helper filed in the wrong module, and the report says where it belongs. Every caller lives in `receipt`, and none live here. That is what a misplaced-callable finding is: enough callers to judge by, nearly all of them in one other module of the same project, so the suggested move is concrete rather than a hunch about cohesion.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/misplaced-callable/misplaced-callable.utilities.ts#374",
+              "isCycle": false,
+              "location": {
+                "column": 1,
+                "filePath": "packages/callidescope-examples/src/modules/misplaced-callable/misplaced-callable.utilities.ts",
+                "line": 11
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(amount: number): string"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "ReceiptService.renderTotal",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Renders the total line of a receipt.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/receipt/receipt.service.ts#605",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/receipt/receipt.service.ts",
+                "line": 21
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(amount: number): string"
+              }
+            },
+            {
+              "displayName": "formatCurrency",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "A helper filed in the wrong module, and the report says where it belongs. Every caller lives in `receipt`, and none live here. That is what a misplaced-callable finding is: enough callers to judge by, nearly all of them in one other module of the same project, so the suggested move is concrete rather than a hunch about cohesion.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/misplaced-callable/misplaced-callable.utilities.ts#374",
+              "isCycle": false,
+              "location": {
+                "column": 1,
+                "filePath": "packages/callidescope-examples/src/modules/misplaced-callable/misplaced-callable.utilities.ts",
+                "line": 11
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "amount",
+                    "type": "number"
+                  }
+                ],
+                "returnType": "string",
+                "text": "(amount: number): string"
+              }
+            }
+          ],
+          "isLowerBound": false
+        },
+        {
+          "depth": 2,
+          "entryPointKind": "orphan-root",
+          "frames": [
+            {
+              "displayName": "StructuralInterfaceService.ingestDocument",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Ingests one document through whatever satisfies the interface.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/structural-interface/structural-interface.service.ts#562",
+              "isCycle": false,
+              "location": {
+                "column": 3,
+                "filePath": "packages/callidescope-examples/src/modules/structural-interface/structural-interface.service.ts",
+                "line": 17
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "provider",
+                    "type": "StructuralProvider"
+                  },
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "document",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(provider: StructuralProvider, document: string): number"
+              }
+            },
+            {
+              "displayName": "FilesystemProviderService.ingest",
+              "documentation": {
+                "isDeprecated": false,
+                "summary": "Counts the words one document contributes.",
+                "tags": []
+              },
+              "id": "packages/callidescope-examples/src/modules/structural-interface/filesystem-provider.service.ts#417",
+              "isCycle": false,
+              "location": {
+                "column": 28,
+                "filePath": "packages/callidescope-examples/src/modules/structural-interface/filesystem-provider.service.ts",
+                "line": 14
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "isOptional": false,
+                    "isRest": false,
+                    "name": "document",
+                    "type": "string"
+                  }
+                ],
+                "returnType": "number",
+                "text": "(document: string): number"
+              }
+            }
+          ],
+          "isLowerBound": false
+        }
+      ],
+      "summary": {
+        "callableCount": 68,
+        "cyclicComponentCount": 0,
+        "edgeCount": 52,
+        "entryPointCount": 13,
+        "fileCount": 37,
+        "maximumDepth": 8,
+        "projectCount": 1,
+        "unresolvedCallCount": 2
+      },
+      "typeDepths": [
+        {
+          "maximumDepth": 8,
+          "memberCount": 8,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples:modules/computed-member",
+          "typeName": "ComputedMemberService"
+        },
+        {
+          "maximumDepth": 8,
+          "memberCount": 7,
+          "minimumDepth": 2,
+          "moduleId": "packages/callidescope-examples:modules/deep-stack",
+          "typeName": "DeepStackService"
+        },
+        {
+          "maximumDepth": 8,
+          "memberCount": 7,
+          "minimumDepth": 2,
+          "moduleId": "packages/callidescope-examples:modules/forwarding-stack",
+          "typeName": "ForwardingStackService"
+        },
+        {
+          "maximumDepth": 7,
+          "memberCount": 8,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples:modules/frame-annotations",
+          "typeName": "FrameAnnotationsService"
+        },
+        {
+          "maximumDepth": 5,
+          "memberCount": 2,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples:modules/spread-near-miss",
+          "typeName": "SpreadNearMissService"
+        },
+        {
+          "maximumDepth": 4,
+          "memberCount": 2,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples:modules/module-spread",
+          "typeName": "ModuleSpreadService"
+        },
+        {
+          "maximumDepth": 3,
+          "memberCount": 3,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples:modules/callback-argument",
+          "typeName": "CallbackArgumentService"
+        },
+        {
+          "maximumDepth": 2,
+          "memberCount": 2,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples:modules/injected-dependency",
+          "typeName": "OrdersService"
+        },
+        {
+          "maximumDepth": 2,
+          "memberCount": 4,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples:modules/entry-points",
+          "typeName": "EntryPointsService"
+        },
+        {
+          "maximumDepth": 1,
+          "memberCount": 1,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples:modules/injected-dependency",
+          "typeName": "InventoryService"
+        },
+        {
+          "maximumDepth": 1,
+          "memberCount": 1,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples:modules/base-class",
+          "typeName": "BaseTaskService"
+        },
+        {
+          "maximumDepth": 2,
+          "memberCount": 1,
+          "minimumDepth": 2,
+          "moduleId": "packages/callidescope-examples:modules/base-class",
+          "typeName": "BaseClassService"
+        },
+        {
+          "maximumDepth": 1,
+          "memberCount": 1,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples:modules/constructed-class",
+          "typeName": "ParserService"
+        },
+        {
+          "maximumDepth": 2,
+          "memberCount": 1,
+          "minimumDepth": 2,
+          "moduleId": "packages/callidescope-examples:modules/constructed-class",
+          "typeName": "ConstructedClassService"
+        },
+        {
+          "maximumDepth": 1,
+          "memberCount": 1,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples:modules/implementation-fan-out",
+          "typeName": "ConsoleSinkService"
+        },
+        {
+          "maximumDepth": 1,
+          "memberCount": 1,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples:modules/implementation-fan-out",
+          "typeName": "FileSinkService"
+        },
+        {
+          "maximumDepth": 1,
+          "memberCount": 1,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples:modules/implementation-fan-out",
+          "typeName": "ImplementationFanOutService"
+        },
+        {
+          "maximumDepth": 1,
+          "memberCount": 1,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples:modules/implementation-fan-out",
+          "typeName": "MemorySinkService"
+        },
+        {
+          "maximumDepth": 2,
+          "memberCount": 1,
+          "minimumDepth": 2,
+          "moduleId": "packages/callidescope-examples:modules/plain-call",
+          "typeName": "PlainCallService"
+        },
+        {
+          "maximumDepth": 3,
+          "memberCount": 3,
+          "minimumDepth": 3,
+          "moduleId": "packages/callidescope-examples:modules/mutual-recursion",
+          "typeName": "MutualRecursionService"
+        },
+        {
+          "maximumDepth": 2,
+          "memberCount": 2,
+          "minimumDepth": 2,
+          "moduleId": "packages/callidescope-examples:modules/receipt",
+          "typeName": "ReceiptService"
+        },
+        {
+          "maximumDepth": 1,
+          "memberCount": 1,
+          "minimumDepth": 1,
+          "moduleId": "packages/callidescope-examples:modules/structural-interface",
+          "typeName": "FilesystemProviderService"
+        },
+        {
+          "maximumDepth": 2,
+          "memberCount": 1,
+          "minimumDepth": 2,
+          "moduleId": "packages/callidescope-examples:modules/structural-interface",
+          "typeName": "StructuralInterfaceService"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "callableCount": 68,
+    "cyclicComponentCount": 1,
+    "edgeCount": 52,
+    "entryPointCount": 22,
+    "fileCount": 37,
+    "maximumDepth": 8,
+    "projectCount": 1,
+    "unresolvedCallCount": 2
+  },
+  "typeDepths": [
+    {
+      "maximumDepth": 8,
+      "memberCount": 8,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples:modules/computed-member",
+      "typeName": "ComputedMemberService"
+    },
+    {
+      "maximumDepth": 8,
+      "memberCount": 7,
+      "minimumDepth": 2,
+      "moduleId": "packages/callidescope-examples:modules/deep-stack",
+      "typeName": "DeepStackService"
+    },
+    {
+      "maximumDepth": 8,
+      "memberCount": 7,
+      "minimumDepth": 2,
+      "moduleId": "packages/callidescope-examples:modules/forwarding-stack",
+      "typeName": "ForwardingStackService"
+    },
+    {
+      "maximumDepth": 7,
+      "memberCount": 8,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples:modules/frame-annotations",
+      "typeName": "FrameAnnotationsService"
+    },
+    {
+      "maximumDepth": 5,
+      "memberCount": 2,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples:modules/spread-near-miss",
+      "typeName": "SpreadNearMissService"
+    },
+    {
+      "maximumDepth": 4,
+      "memberCount": 2,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples:modules/module-spread",
+      "typeName": "ModuleSpreadService"
+    },
+    {
+      "maximumDepth": 3,
+      "memberCount": 3,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples:modules/callback-argument",
+      "typeName": "CallbackArgumentService"
+    },
+    {
+      "maximumDepth": 2,
+      "memberCount": 2,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples:modules/injected-dependency",
+      "typeName": "OrdersService"
+    },
+    {
+      "maximumDepth": 2,
+      "memberCount": 4,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples:modules/entry-points",
+      "typeName": "EntryPointsService"
+    },
+    {
+      "maximumDepth": 1,
+      "memberCount": 1,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples:modules/injected-dependency",
+      "typeName": "InventoryService"
+    },
+    {
+      "maximumDepth": 1,
+      "memberCount": 1,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples:modules/base-class",
+      "typeName": "BaseTaskService"
+    },
+    {
+      "maximumDepth": 2,
+      "memberCount": 1,
+      "minimumDepth": 2,
+      "moduleId": "packages/callidescope-examples:modules/base-class",
+      "typeName": "BaseClassService"
+    },
+    {
+      "maximumDepth": 1,
+      "memberCount": 1,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples:modules/constructed-class",
+      "typeName": "ParserService"
+    },
+    {
+      "maximumDepth": 2,
+      "memberCount": 1,
+      "minimumDepth": 2,
+      "moduleId": "packages/callidescope-examples:modules/constructed-class",
+      "typeName": "ConstructedClassService"
+    },
+    {
+      "maximumDepth": 1,
+      "memberCount": 1,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples:modules/implementation-fan-out",
+      "typeName": "ConsoleSinkService"
+    },
+    {
+      "maximumDepth": 1,
+      "memberCount": 1,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples:modules/implementation-fan-out",
+      "typeName": "FileSinkService"
+    },
+    {
+      "maximumDepth": 1,
+      "memberCount": 1,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples:modules/implementation-fan-out",
+      "typeName": "ImplementationFanOutService"
+    },
+    {
+      "maximumDepth": 1,
+      "memberCount": 1,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples:modules/implementation-fan-out",
+      "typeName": "MemorySinkService"
+    },
+    {
+      "maximumDepth": 2,
+      "memberCount": 1,
+      "minimumDepth": 2,
+      "moduleId": "packages/callidescope-examples:modules/plain-call",
+      "typeName": "PlainCallService"
+    },
+    {
+      "maximumDepth": 3,
+      "memberCount": 3,
+      "minimumDepth": 3,
+      "moduleId": "packages/callidescope-examples:modules/mutual-recursion",
+      "typeName": "MutualRecursionService"
+    },
+    {
+      "maximumDepth": 2,
+      "memberCount": 2,
+      "minimumDepth": 2,
+      "moduleId": "packages/callidescope-examples:modules/receipt",
+      "typeName": "ReceiptService"
+    },
+    {
+      "maximumDepth": 1,
+      "memberCount": 1,
+      "minimumDepth": 1,
+      "moduleId": "packages/callidescope-examples:modules/structural-interface",
+      "typeName": "FilesystemProviderService"
+    },
+    {
+      "maximumDepth": 2,
+      "memberCount": 1,
+      "minimumDepth": 2,
+      "moduleId": "packages/callidescope-examples:modules/structural-interface",
+      "typeName": "StructuralInterfaceService"
+    }
+  ],
+  "wideCallables": []
+}

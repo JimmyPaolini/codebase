@@ -17,7 +17,8 @@
     "**/src/**/*.constants.ts",
     "**/src/**/*.types.ts",
     "**/testing/mocks.ts",
-    "**/tmp/**"
+    "**/tmp/**",
+    "packages/callidescope-examples/**"
   ],
   "minLines": 12,
   "minTokens": 24,

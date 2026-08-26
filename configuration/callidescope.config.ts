@@ -19,6 +19,11 @@ import { type CallidescopeConfiguration } from "@callidescope/configuration";
  * because the target hangs off nothing: `lint-codebase` does not depend on it,
  * so no run of it ever forwards `write` here, and the pull request names
  * `check` itself.
+ *
+ * `packages/callidescope-examples` is a worked example of every rule and
+ * finding this configuration turns on, and of the opposite half of the split
+ * above: it gates `reports` rather than `depth`, because its traced source is
+ * frozen fixture code. `.callidescopeignore` keeps it out of this run.
  */
 const callidescopeConfiguration: CallidescopeConfiguration = {
   excludeFrom: ["configuration/.callidescopeignore"],

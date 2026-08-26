@@ -1,0 +1,50 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "callidescope-examples",
+  "projectType": "library",
+  "sourceRoot": "packages/callidescope-examples",
+  "tags": ["language:typescript", "name:callidescope-examples", "type:package"],
+  "targets": {
+    "callidescope": {
+      "cache": true,
+      "configurations": {
+        "check": {
+          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directories packages/callidescope-examples --config packages/callidescope-examples/callidescope.config.ts --check reports"
+        },
+        "write": {
+          "command": "node --import @swc-node/register/esm-register packages/callidescope-cli/src/main.ts callidescope --directories packages/callidescope-examples --config packages/callidescope-examples/callidescope.config.ts --write"
+        }
+      },
+      "defaultConfiguration": "check",
+      "description": "Trace this package's fixtures and gate the committed reports against them. The workspace target is the mirror image: `codebase:callidescope` runs `--check depth` because a report there goes stale on nearly every change, while the fixtures traced here are frozen, so a stale report means a fixture or the resolver moved \u2014 which is exactly the regression this package exists to catch. Depth is not gated here at all: the deep fixtures are meant to breach, which is why `configuration/.callidescopeignore` keeps them out of the workspace run.",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{projectRoot}/**/*.ts",
+        "{projectRoot}/output/**",
+        "{projectRoot}/README.md",
+        "{workspaceRoot}/packages/callidescope-cli/src/**/*.ts",
+        "{workspaceRoot}/packages/callidescope-configuration/src/**/*.ts",
+        "{workspaceRoot}/packages/callidescope-graph/src/**/*.ts",
+        "{workspaceRoot}/packages/callidescope-output/src/**/*.ts",
+        "shared-globals"
+      ],
+      "options": {
+        "cwd": "{workspaceRoot}"
+      },
+      "outputs": []
+    },
+    "codometer": {},
+    "dependency-cruiser": {},
+    "knip": {},
+    "lint-codebase": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "oxlint": {},
+    "prettier": {},
+    "spell-check": {},
+    "test-coverage": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}

@@ -205,6 +205,18 @@ const config: KnipConfig = {
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
+    // Every fixture exists to be traced, not imported. An orphan-root fixture
+    // is *defined* by having no caller, and a resolution-table fixture is
+    // reached only by the type checker — which is exactly the shape knip
+    // reports as an unused file or an unused export. Declaring the whole of
+    // `src/` as entry points says that directly, and keeps knip doing the one
+    // job that still applies here: telling this package when a dependency it
+    // declares has stopped being used. Ignoring `src/` instead would leave
+    // every dependency looking unused, and `knip --fix` would delete them.
+    "packages/callidescope-examples": {
+      entry: ["callidescope.config.ts", "src/**/*.ts", "testing/**/*.test.ts"],
+      project: "{callidescope.config.ts,src/**/*.ts,testing/**/*.ts}",
+    },
     "packages/callidescope-graph": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
