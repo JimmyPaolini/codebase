@@ -55,8 +55,8 @@ describe(AddressService, () => {
       kind: "resolved",
     });
     addressLookupService.describeProblem.mockReturnValue(undefined);
-    addressReportService.renderDepth.mockReturnValue("# Depth");
-    addressReportService.renderBreadth.mockReturnValue("# Breadth");
+    addressReportService.renderDepthReports.mockReturnValue("# Depth");
+    addressReportService.renderBreadthReports.mockReturnValue("# Breadth");
   }
 
   beforeEach(() => {
@@ -72,14 +72,15 @@ describe(AddressService, () => {
     expect.hasAssertions();
 
     await service.runDepth({
-      address: ADDRESS,
+      addresses: [ADDRESS],
       directories: ["packages/alpha"],
     });
 
-    // A task runner has nobody to prompt, so the lookup must never try.
+    // A task runner has nobody to prompt. Nothing here has to ask it not to:
+    // the plugin drives the lookup service directly rather than through a
+    // command, and every value that command would prompt for is passed.
     expect(addressLookupService.locate).toHaveBeenCalledWith({
       directories: ["packages/alpha"],
-      interactive: false,
     });
   });
 
@@ -87,7 +88,7 @@ describe(AddressService, () => {
     expect.hasAssertions();
 
     await service.runDepth({
-      address: ADDRESS,
+      addresses: [ADDRESS],
       configurationPath: "elsewhere.ts",
       directories: ["packages/alpha"],
       format: "json",
@@ -97,7 +98,6 @@ describe(AddressService, () => {
       config: "elsewhere.ts",
       directories: ["packages/alpha"],
       format: "json",
-      interactive: false,
     });
   });
 
@@ -106,7 +106,10 @@ describe(AddressService, () => {
       expect.hasAssertions();
 
       await expect(
-        service.runDepth({ address: ADDRESS, directories: ["packages/alpha"] }),
+        service.runDepth({
+          addresses: [ADDRESS],
+          directories: ["packages/alpha"],
+        }),
       ).resolves.toStrictEqual({ ok: true, report: "# Depth" });
       expect(addressDepthService.buildUpwardStacks).toHaveBeenCalledTimes(1);
       expect(addressDepthService.buildDownwardStacks).toHaveBeenCalledTimes(1);
@@ -122,7 +125,10 @@ describe(AddressService, () => {
       // Returned rather than thrown or logged: the executor's product is what
       // it writes, and a reader wants the reason where the report would be.
       await expect(
-        service.runDepth({ address: ADDRESS, directories: ["packages/alpha"] }),
+        service.runDepth({
+          addresses: [ADDRESS],
+          directories: ["packages/alpha"],
+        }),
       ).resolves.toStrictEqual({
         ok: false,
         report: "No callable matches it.",
@@ -139,7 +145,10 @@ describe(AddressService, () => {
       addressLookupService.describeProblem.mockReturnValue(undefined);
 
       await expect(
-        service.runDepth({ address: ADDRESS, directories: ["packages/alpha"] }),
+        service.runDepth({
+          addresses: [ADDRESS],
+          directories: ["packages/alpha"],
+        }),
       ).resolves.toMatchObject({ ok: false });
     });
   });
@@ -150,7 +159,7 @@ describe(AddressService, () => {
 
       await expect(
         service.runBreadth({
-          address: ADDRESS,
+          addresses: [ADDRESS],
           directories: ["packages/alpha"],
         }),
       ).resolves.toStrictEqual({ ok: true, report: "# Breadth" });
@@ -172,7 +181,7 @@ describe(AddressService, () => {
 
       await expect(
         service.runBreadth({
-          address: ADDRESS,
+          addresses: [ADDRESS],
           directories: ["packages/alpha"],
         }),
       ).resolves.toMatchObject({ ok: false });
@@ -185,10 +194,101 @@ describe(AddressService, () => {
 
       await expect(
         service.runBreadth({
-          address: ADDRESS,
+          addresses: [ADDRESS],
           directories: ["packages/alpha"],
         }),
       ).resolves.toStrictEqual({ ok: false, report: "Ambiguous." });
+    });
+  });
+
+  describe("several addresses", () => {
+    it("renders every address it was given as one report", async () => {
+      expect.hasAssertions();
+
+      await expect(
+        service.runDepth({
+          addresses: [ADDRESS, "packages/beta/src/b.service.ts#B.c"],
+          directories: ["packages/alpha"],
+        }),
+      ).resolves.toStrictEqual({ ok: true, report: "# Depth" });
+
+      // One traced selection serves both, and each address gets its own pair
+      // of stack walks inside it.
+      expect(addressLookupService.locate).toHaveBeenCalledTimes(1);
+      expect(addressDepthService.buildUpwardStacks).toHaveBeenCalledTimes(2);
+      expect(addressDepthService.buildDownwardStacks).toHaveBeenCalledTimes(2);
+    });
+
+    it("hands the renderer one report per address, naming each", async () => {
+      expect.hasAssertions();
+
+      await service.runDepth({
+        addresses: [ADDRESS, "packages/beta/src/b.service.ts#B.c"],
+        directories: ["packages/alpha"],
+      });
+
+      const rendered =
+        addressReportService.renderDepthReports.mock.calls[0]?.[0];
+
+      expect(rendered?.reports.map((report) => report.address)).toStrictEqual([
+        ADDRESS,
+        "packages/beta/src/b.service.ts#B.c",
+      ]);
+    });
+
+    // All or nothing, the way the command line is: a partial answer under a
+    // passing task is worse than a failed one.
+    it("reports nothing when any one address does not resolve", async () => {
+      expect.hasAssertions();
+
+      addressLookupService.resolve
+        .mockReturnValueOnce({ id: "id", kind: "resolved" })
+        .mockReturnValueOnce({ kind: "not-found" });
+      addressLookupService.describeProblem
+        .mockReturnValueOnce(undefined)
+        .mockReturnValueOnce("No callable matches it.");
+
+      await expect(
+        service.runDepth({
+          addresses: [ADDRESS, "nope.ts#Nope.nope"],
+          directories: ["packages/alpha"],
+        }),
+      ).resolves.toStrictEqual({
+        ok: false,
+        report: "No callable matches it.",
+      });
+      expect(addressReportService.renderDepthReports).not.toHaveBeenCalled();
+    });
+
+    it("names every address that failed, not only the first", async () => {
+      expect.hasAssertions();
+
+      addressLookupService.resolve.mockReturnValue({ kind: "not-found" });
+      addressLookupService.describeProblem
+        .mockReturnValueOnce("First is ambiguous.")
+        .mockReturnValueOnce("Second matches nothing.");
+
+      await expect(
+        service.runDepth({
+          addresses: [ADDRESS, "nope.ts#Nope.nope"],
+          directories: ["packages/alpha"],
+        }),
+      ).resolves.toStrictEqual({
+        ok: false,
+        report: "First is ambiguous.\nSecond matches nothing.",
+      });
+    });
+
+    it("renders every address's direct calls as one breadth report", async () => {
+      expect.hasAssertions();
+
+      await expect(
+        service.runBreadth({
+          addresses: [ADDRESS, "packages/beta/src/b.service.ts#B.c"],
+          directories: ["packages/alpha"],
+        }),
+      ).resolves.toStrictEqual({ ok: true, report: "# Breadth" });
+      expect(breadthService.describeDirectCalls).toHaveBeenCalledTimes(2);
     });
   });
 });

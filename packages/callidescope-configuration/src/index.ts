@@ -80,5 +80,11 @@ export type {
   WriteMarkdownArguments,
   WriteMarkdownOutput,
 } from "./modules/configuration/configuration.types";
+export {
+  InputError,
+  missingInputError,
+  promptCancelledError,
+} from "./modules/input/input.constants";
 export { InputModule } from "./modules/input/input.module";
 export { InputService } from "./modules/input/input.service";
+export type { CallidescopeFormatOptions } from "./modules/input/input.types";

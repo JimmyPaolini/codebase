@@ -1,6 +1,6 @@
 ---
 name: callidescope-trace
-description: Run callidescope and read what it printed — a whole-workspace trace, or the depth and breadth commands against one callable addressed as file#qualified-name. Use when running callidescope or npx callidescope, when reading a call stack, a module-spread row, a breadth row, or a possibly-misplaced row, when a depth printed as "≥ n" needs interpreting, when reading a committed markdown report, mermaid diagram, or JSON report, or when asking who calls this, what does it call, what would this rename touch, and where should this callable be split before a refactor starts.
+description: Run callidescope and read what it printed — a whole-workspace trace, or the depth and breadth commands against one or more callables, each addressed as file#qualified-name. Use when running callidescope or npx callidescope, when reading a call stack, a module-spread row, a breadth row, or a possibly-misplaced row, when a depth printed as "≥ n" needs interpreting, when reading a committed markdown report, mermaid diagram, or JSON report, or when asking who calls this, what does it call, what would this rename touch, and where should this callable be split before a refactor starts.
 license: MIT
 ---
 
@@ -16,8 +16,8 @@ Three commands, answering three different questions:
 
 ```bash
 npx callidescope                                        # the whole workspace
-npx callidescope depth src/foo.service.ts#FooService.bar    # one callable, vertically
-npx callidescope breadth src/foo.service.ts#FooService.bar  # one callable, horizontally
+npx callidescope depth --addresses src/foo.service.ts#FooService.bar    # one callable, vertically
+npx callidescope breadth --addresses src/foo.service.ts#FooService.bar  # one callable, horizontally
 ```
 
 A repository with no configuration file is traced with defaults rather than
@@ -99,7 +99,7 @@ overloads, two callbacks bound to the same property — is disambiguated with a
 trailing `:<line>`:
 
 ```bash
-npx callidescope depth src/foo.service.ts#FooService.bar:118
+npx callidescope depth --addresses src/foo.service.ts#FooService.bar:118
 ```
 
 When it cannot tell which one was meant, the run says so and prints every

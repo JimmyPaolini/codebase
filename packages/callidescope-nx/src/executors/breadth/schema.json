@@ -2,9 +2,10 @@
   "$schema": "http://json-schema.org/schema",
   "description": "Print one callable's direct callers and callees, resolved against a project and its Nx dependencies.",
   "properties": {
-    "address": {
-      "description": "The callable to look up, as <file>#<qualified-name>.",
-      "type": "string"
+    "addresses": {
+      "description": "The callables to look up, each as <file>#<qualified-name>. Every one must resolve, or the run prints nothing.",
+      "items": { "type": "string" },
+      "type": "array"
     },
     "configurationPath": {
       "description": "Path to the callidescope configuration file, relative to the workspace root.",
@@ -31,7 +32,7 @@
       "type": "boolean"
     }
   },
-  "required": ["address"],
+  "required": ["addresses"],
   "title": "Callidescope breadth",
   "type": "object"
 }

@@ -60,20 +60,33 @@ nx affected -t trace                              # only what changed
 ```
 
 ```bash
-nx run callidescope-nx:depth --address="packages/callidescope-nx/src/modules/projects/projects.service.ts#ProjectsService.resolveDependencyClosure"
-nx run callidescope-nx:breadth --address="src/foo.service.ts#FooService.bar"
+nx run callidescope-nx:depth --addresses="packages/callidescope-nx/src/modules/projects/projects.service.ts#ProjectsService.resolveDependencyClosure"
+nx run callidescope-nx:breadth --addresses="src/foo.service.ts#FooService.bar"
+
+# Several at once, which is what a rename spanning a handful of them needs
+nx run callidescope-nx:depth --addresses="src/a.service.ts#A.b,src/c.service.ts#C.d"
 ```
 
 | Target | Answers |
 | ------ | ------- |
 | `trace` | Every call stack in the project, and which ones broke a limit |
-| `depth` | Every stack above and below one callable — callers up to a root, callees down to a leaf |
-| `breadth` | One callable's direct callers and callees, side by side |
+| `depth` | Every stack above and below each callable — callers up to a root, callees down to a leaf |
+| `breadth` | Each callable's direct callers and callees, side by side |
 
-`depth` and `breadth` take the same `<file>#<qualified-name>` address the
-`callidescope` command does — the form every printed stack already uses. Through
-the plugin they resolve it against the project and its dependencies rather than
-the whole workspace, which is both faster and the set the address belongs to.
+`depth` and `breadth` take the same `<file>#<qualified-name>` addresses the
+`callidescope` command does — the form every printed stack already uses — and
+the same comma-separated `--addresses` flag it takes them through. Through the
+plugin they resolve against the project and its dependencies rather than the
+whole workspace, which is both faster and the set the addresses belong to.
+
+**Every address must resolve, or the task prints nothing.** A report covering
+only the addresses that were understood, under a task Nx recorded as
+successful, is worse than a failed one; each unmatched address is named and
+the task fails. Under `--format=json` the report is always an array, whatever
+the address count, matching what the command line prints.
+
+Unlike the command line, a missing `--addresses` is **refused rather than
+prompted for**: a task runner has nobody to ask.
 
 Two projects are deliberately skipped: the **workspace-root project**, whose
 targets would trace everything under one uncacheable task, and any project with
@@ -100,14 +113,14 @@ Pass `--withDependencies=false` for the narrow reading.
 
 ```bash
 nx run logger:trace --tags=type:package
-nx run logger:depth --address="a.ts#A.b" --projects=callidescope-cli
+nx run logger:depth --addresses="a.ts#A.b" --projects=callidescope-cli
 ```
 
 All three executors take the same scoping options.
 
 | Option | Meaning |
 | ------ | ------- |
-| `address` | `depth` and `breadth` only, and required: the callable to look up |
+| `addresses` | `depth` and `breadth` only, and required: the callables to look up, comma-separated |
 | `projects` | Nx project names to resolve against, replacing the target's own project |
 | `tags` | Nx project tags, selecting every project carrying **any** of them |
 | `withDependencies` | Widen along the Nx dependency graph. `true` by default |

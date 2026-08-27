@@ -177,28 +177,50 @@ Narrowing with `--directories` is the difference between a whole-workspace
 analysis and a one-second check, because each project needs its own TypeScript
 program.
 
-## Depth and breadth for one callable
+## Depth and breadth for named callables
 
 `callidescope` reports the whole workspace; `depth` and `breadth` answer a
-narrower question about one callable, addressed the way a Python traceback or
-an ESLint rule id points at a symbol — the file path and the qualified name
-callidescope already prints in every stack, joined by `#`:
+narrower question about callables you name, addressed the way a Python
+traceback or an ESLint rule id points at a symbol — the file path and the
+qualified name callidescope already prints in every stack, joined by `#`:
 
 ```bash
-callidescope depth src/foo.service.ts#FooService.bar
-callidescope breadth src/foo.service.ts#FooService.bar
+callidescope depth --addresses src/foo.service.ts#FooService.bar
+callidescope breadth --addresses src/foo.service.ts#FooService.bar
 ```
+
+`--addresses` is comma-separated, so one run can report on several callables —
+which is what a rename spanning a handful of them actually needs:
+
+```bash
+callidescope depth --addresses src/foo.service.ts#FooService.bar,src/bar.service.ts#BarService.baz
+```
+
+**Every address has to resolve, or the run prints nothing.** A report covering
+the addresses that were understood, under an exit code claiming success, is
+worse than no report; a run naming an address it cannot match reports each
+failure and exits non-zero.
 
 A file holding more than one declaration under the same qualified name — two
 overloads, two callbacks bound to the same property — is disambiguated with a
 trailing `:<line>`, and both commands print every candidate's line when they
 cannot tell which one was meant.
 
+**`--addresses` is prompted for when omitted.** At a terminal, both commands
+offer every callable the trace found as an autocompleting multiselect, so the
+flag is something to skip rather than something to look up. With no terminal
+there is nobody to ask, so the run is refused by name and exits non-zero
+rather than drawing a menu nothing can answer.
+
 Both accept the same workspace-scoping flags as `callidescope` itself —
 `--directories`, `--config`, and `--format` — since resolving an address still
 means tracing the workspace first. Neither takes `--check`,
 `--write`, `--json`, or `--markdown`: a lookup only ever prints, to whichever
 format `--format` names.
+
+Under `--format json` both print **an array**, whatever the address count, so
+one run is one document `JSON.parse` accepts without first counting how many
+addresses were asked about.
 
 **`depth`** prints every path above the callable and every path below it —
 every caller chain up to a root, every callee chain down to a leaf — rather
@@ -225,7 +247,7 @@ trace target onto every project:
 ```bash
 nx run-many -t trace --projects=tag:type:package
 nx affected -t trace
-nx run callidescope-graph:depth --address="src/foo.service.ts#FooService.bar"
+nx run callidescope-graph:depth --addresses="src/foo.service.ts#FooService.bar"
 ```
 
 It infers a `trace`, a `depth`, and a `breadth` target onto every project, so
