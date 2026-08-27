@@ -247,7 +247,7 @@ trace target onto every project:
 ```bash
 nx run-many -t trace --projects=tag:type:package
 nx affected -t trace
-nx run callidescope-graph:depth --address="src/foo.service.ts#FooService.bar"
+nx run callidescope-graph:depth --addresses="src/foo.service.ts#FooService.bar"
 ```
 
 It infers a `trace`, a `depth`, and a `breadth` target onto every project, so
