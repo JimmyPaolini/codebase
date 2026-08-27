@@ -23,7 +23,15 @@
     }
   },
   "namedInputs": {
-    "default": ["{projectRoot}/**/*", "shared-globals"],
+    "default": [
+      "!{projectRoot}/.eslintcache/**",
+      "{projectRoot}/**/*",
+      "shared-globals"
+    ],
+    "dependency-versions": [
+      "{workspaceRoot}/pnpm-lock.yaml",
+      "{workspaceRoot}/pnpm-workspace.yaml"
+    ],
     "production": [
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
       "!{projectRoot}/tsconfig.spec.json",
@@ -36,13 +44,7 @@
       "{workspaceRoot}/uv.lock"
     ],
     "python-tests": ["{projectRoot}/testing/**/*.py"],
-    "shared-globals": [
-      "{workspaceRoot}/.github/workflows/*.yml",
-      "{workspaceRoot}/configuration/tsconfig.json",
-      "{workspaceRoot}/nx.json",
-      "{workspaceRoot}/pnpm-lock.yaml",
-      "{workspaceRoot}/pnpm-workspace.yaml"
-    ],
+    "shared-globals": ["{workspaceRoot}/configuration/tsconfig.json"],
     "typescript-files": [
       "{projectRoot}/**/*.{ts,tsx,mts,cts}",
       "{projectRoot}/**/*.json",
@@ -125,7 +127,7 @@
         "filter": {
           "projects": ["tag:language:python", "tag:language:typescript"]
         },
-        "inputs": ["^production", "production"]
+        "inputs": ["^production", "dependency-versions", "production"]
       }
     ],
     "codometer": {
@@ -170,7 +172,10 @@
           "{projectRoot}/**/*.ts",
           "{projectRoot}/**/*.tsx",
           "{workspaceRoot}/configuration/dependency-cruiser.cjs",
-          "default"
+          "default",
+          {
+            "externalDependencies": ["dependency-cruiser"]
+          }
         ],
         "options": {
           "command": "depcruise {projectRoot}/src --config configuration/dependency-cruiser.cjs",
@@ -182,7 +187,9 @@
       {
         "cache": true,
         "configurations": {
-          "check": {},
+          "check": {
+            "command": "eslint . --cache --cache-strategy content --cache-location \"$NX_WORKSPACE_ROOT/.eslintcache/\""
+          },
           "write": {
             "args": "--fix"
           }
@@ -192,10 +199,34 @@
           "projects": ["tag:language:typescript"]
         },
         "inputs": [
+          "!{projectRoot}/.eslintcache/**",
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml}",
           "{workspaceRoot}/configuration/codebase-structure.json",
           "{workspaceRoot}/configuration/eslint.config.ts",
-          "shared-globals"
+          "shared-globals",
+          {
+            "externalDependencies": [
+              "@eslint/js",
+              "@eslint/markdown",
+              "@eslint-react/eslint-plugin",
+              "@nx/eslint-plugin",
+              "@vitest/eslint-plugin",
+              "eslint",
+              "eslint-config-prettier",
+              "eslint-plugin-better-max-params",
+              "eslint-plugin-import-x",
+              "eslint-plugin-jsdoc",
+              "eslint-plugin-jsonc",
+              "eslint-plugin-jsx-a11y",
+              "eslint-plugin-perfectionist",
+              "eslint-plugin-project-structure",
+              "eslint-plugin-tsdoc",
+              "eslint-plugin-unicorn",
+              "eslint-plugin-yml",
+              "typescript",
+              "typescript-eslint"
+            ]
+          }
         ],
         "options": {
           "command": "eslint . {args}"
@@ -213,7 +244,10 @@
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
           "{workspaceRoot}/configuration/fallow.config.jsonc",
-          "shared-globals"
+          "shared-globals",
+          {
+            "externalDependencies": ["fallow"]
+          }
         ]
       }
     ],
@@ -228,7 +262,10 @@
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
           "{workspaceRoot}/configuration/fallow.config.jsonc",
-          "shared-globals"
+          "shared-globals",
+          {
+            "externalDependencies": ["fallow"]
+          }
         ]
       }
     ],
@@ -243,7 +280,10 @@
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
           "{workspaceRoot}/configuration/fallow.config.jsonc",
-          "shared-globals"
+          "shared-globals",
+          {
+            "externalDependencies": ["fallow"]
+          }
         ]
       }
     ],
@@ -258,7 +298,10 @@
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
           "{workspaceRoot}/configuration/fallow.config.jsonc",
-          "shared-globals"
+          "shared-globals",
+          {
+            "externalDependencies": ["fallow"]
+          }
         ]
       }
     ],
@@ -273,7 +316,10 @@
         "inputs": [
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
           "{workspaceRoot}/configuration/fallow.config.jsonc",
-          "shared-globals"
+          "shared-globals",
+          {
+            "externalDependencies": ["fallow"]
+          }
         ]
       }
     ],
@@ -293,7 +339,13 @@
         "filter": {
           "projects": ["tag:language:typescript"]
         },
-        "inputs": ["{workspaceRoot}/configuration/knip.config.ts", "default"],
+        "inputs": [
+          "{workspaceRoot}/configuration/knip.config.ts",
+          "default",
+          {
+            "externalDependencies": ["knip", "typescript"]
+          }
+        ],
         "options": {
           "command": "knip --config configuration/knip.config.ts --workspace {projectRoot}",
           "cwd": "{workspaceRoot}"
@@ -363,7 +415,10 @@
         "inputs": [
           "{projectRoot}/**/*.md",
           "{workspaceRoot}/configuration/.markdownlint-cli2.jsonc",
-          "shared-globals"
+          "shared-globals",
+          {
+            "externalDependencies": ["markdownlint-cli2"]
+          }
         ],
         "options": {
           "command": "markdownlint-cli2 --config configuration/.markdownlint-cli2.jsonc '{projectRoot}/**/*.md'",
@@ -418,7 +473,10 @@
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml}",
           "{workspaceRoot}/configuration/.oxfmtignore",
           "{workspaceRoot}/configuration/oxfmt.config.ts",
-          "shared-globals"
+          "shared-globals",
+          {
+            "externalDependencies": ["oxfmt"]
+          }
         ],
         "options": {
           "command": "oxfmt -c configuration/oxfmt.config.ts --ignore-path configuration/.oxfmtignore {args} {projectRoot}",
@@ -444,7 +502,10 @@
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
           "{workspaceRoot}/configuration/.oxlintignore",
           "{workspaceRoot}/configuration/oxlint.config.ts",
-          "shared-globals"
+          "shared-globals",
+          {
+            "externalDependencies": ["oxlint"]
+          }
         ],
         "options": {
           "command": "oxlint --config configuration/oxlint.config.ts --ignore-path configuration/.oxlintignore {args} {projectRoot}/src",
@@ -472,7 +533,10 @@
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,html,css,scss,md,mdx,yaml,yml}",
           "{workspaceRoot}/configuration/.prettierignore",
           "{workspaceRoot}/configuration/prettier.config.ts",
-          "shared-globals"
+          "shared-globals",
+          {
+            "externalDependencies": ["prettier"]
+          }
         ],
         "options": {
           "command": "prettier {args} --config configuration/prettier.config.ts --ignore-path configuration/.prettierignore {projectRoot}"
@@ -617,7 +681,10 @@
           "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,css,scss,html,yaml,yml,md,mdx,py,ipynb,sql}",
           "{workspaceRoot}/configuration/.cspell/**",
           "{workspaceRoot}/configuration/cspell.config.yaml",
-          "shared-globals"
+          "shared-globals",
+          {
+            "externalDependencies": ["cspell"]
+          }
         ],
         "options": {
           "command": "cspell --config configuration/cspell.config.yaml '{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc,json5,css,scss,html,yaml,yml,md,mdx,py,ipynb,sql}' --no-progress --gitignore --gitignore-root .",
@@ -691,7 +758,10 @@
         "inputs": [
           "{projectRoot}/**/*.sql",
           "{workspaceRoot}/configuration/squawk.toml",
-          "shared-globals"
+          "shared-globals",
+          {
+            "externalDependencies": ["squawk-cli"]
+          }
         ],
         "options": {
           "command": "squawk --config configuration/squawk.toml --exclude prefer-robust-stmts,ban-drop-table,require-concurrent-index-deletion,require-concurrent-index-creation,ban-char-field,prefer-bigint-over-smallint,constraint-missing-not-valid,adding-foreign-key-constraint,ban-drop-column,adding-required-field '{projectRoot}/**/*.sql'",
@@ -732,7 +802,14 @@
         "inputs": [
           "{projectRoot}/src/**/*.css",
           "{workspaceRoot}/configuration/stylelint.config.cjs",
-          "shared-globals"
+          "shared-globals",
+          {
+            "externalDependencies": [
+              "stylelint",
+              "stylelint-config-standard",
+              "stylelint-config-tailwindcss"
+            ]
+          }
         ],
         "options": {
           "command": "stylelint --allow-empty-input --config ../../configuration/stylelint.config.cjs 'src/**/*.css'",
@@ -782,7 +859,10 @@
           "{projectRoot}/**/*.tsx",
           "{projectRoot}/package.json",
           "{projectRoot}/tsconfig.json",
-          "shared-globals"
+          "shared-globals",
+          {
+            "externalDependencies": ["type-coverage", "typescript"]
+          }
         ],
         "options": {
           "command": "type-coverage --detail > type-coverage-report.txt 2>&1 || (cat type-coverage-report.txt && exit 1)",
@@ -808,13 +888,11 @@
         },
         "inputs": [
           "^production",
-          "typescript-files",
-          {
-            "externalDependencies": ["typescript"]
-          }
+          "{workspaceRoot}/pnpm-workspace.yaml",
+          "typescript-files"
         ],
         "options": {
-          "command": "tsc --noEmit",
+          "command": "node \"$NX_WORKSPACE_ROOT/node_modules/typescript-7/bin/tsc\" --noEmit",
           "cwd": "{projectRoot}"
         },
         "outputs": []

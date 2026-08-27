@@ -137,7 +137,7 @@ describe(LoggerService, () => {
         await import("./logger.service");
       const emitWarningSpy = vi
         .spyOn(process, "emitWarning")
-        .mockImplementation(() => undefined);
+        .mockReturnValue(undefined);
 
       // Building a logger is what fixes the destination, first line or not.
       const logger = new LoggerServiceForEnvironment();
