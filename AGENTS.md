@@ -81,6 +81,7 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 
 ### Tools
 
+- **[callidescope-agents](packages/callidescope-agents)**: The callidescope toolchain's agent skills, published from this repository and installable by any workspace that uses callidescope — see [Callidescope](#callidescope) for the four
 - **[callidescope-cli](packages/callidescope-cli)**: Command-line host that traces call stacks through injected dependencies and flags the ones that are too deep
 - **[callidescope-configuration](packages/callidescope-configuration)**: Reads `callidescope.config.ts` and resolves the limits callidescope enforces
 - **[callidescope-examples](packages/callidescope-examples)**: A small codebase built to be traced, carrying one worked example per callidescope rule, finding, and output — plus a `README.md` guide and an `AGENTS.md` lookup table for acting on a finding
@@ -205,6 +206,33 @@ These four are authored in
 [`packages/codependix-agents`](packages/codependix-agents) and installed back
 from the lockfile the same way. Edit the package, never the installed copy.
 
+## Callidescope
+
+Callidescope traces call stacks across the workspace — following calls through
+injected dependencies, which is the edge no file-at-a-time tool can see — and
+flags the ones that got too deep, alongside callables that are too wide, spread
+across unrelated modules, or apparently in the wrong file. Four skills carry
+that toolchain for a coding agent: the same three moments as above, plus asking
+the call graph a question about one callable before refactoring it.
+
+- [callidescope-trace](packages/callidescope-agents/skills/callidescope-trace/SKILL.md)
+  — running a trace, or reading a printed stack
+- [callidescope-configure](packages/callidescope-agents/skills/callidescope-configure/SKILL.md)
+  — writing `callidescope.config.ts`
+- [callidescope-triage](packages/callidescope-agents/skills/callidescope-triage/SKILL.md)
+  — acting on a failed depth or breadth gate, a stale report, or a refused run
+- [callidescope-analysis](packages/callidescope-agents/skills/callidescope-analysis/SKILL.md)
+  — reading `depth <address>` and `breadth <address>` to scope a refactor
+
+These four are authored in
+[`packages/callidescope-agents`](packages/callidescope-agents) and installed
+back from the lockfile the same way. Edit the package, never the installed copy.
+
+The fourth exists for the same reason `codependix-navigate` does: `depth` and
+`breadth` against a single address gate nothing and report on no workspace, so
+"what would this rename touch" shares no vocabulary with "run the trace" — and
+a skill's `description` is its entire trigger surface.
+
 ## Work Scope
 
 - When coding or refactoring, focus on one project at a time, or for sufficiently large requests only one module/folder at a time.
@@ -281,27 +309,27 @@ was just cached under and can never hit its own cache.
 
 ### Quality Tools
 
-| Tool            | Description                                           | Config                                   | Docs                                                             |
-| --------------- | ----------------------------------------------------- | ---------------------------------------- | ---------------------------------------------------------------- |
-| `oxfmt`         | Formats TS/JS/JSON/MD files                           | `configuration/oxfmt.config.ts`          | [docs](https://oxc.rs/docs/guide/usage/formatter.html)           |
-| `sqlfluff`      | Formats and lints SQL files                           | root `pyproject.toml`                    | [docs](https://docs.sqlfluff.com/)                               |
-| `prettier`      | Supplementary formatter for manual or non-default use | `configuration/prettier.config.ts`       | [docs](https://prettier.io/docs/)                                |
-| `eslint`        | Lints TS/JS and markdown with workspace rules         | project `eslint.config.ts`               | [docs](https://eslint.org/docs/latest/)                          |
-| `oxlint`        | Fast TS/JS linting for workspace files                | `configuration/oxlint.config.ts`         | [docs](https://oxc.rs/docs/guide/usage/linter.html)              |
-| `ruff`          | Formats and lints Python files                        | root `pyproject.toml`                    | [docs](https://docs.astral.sh/ruff/)                             |
-| `tsc`           | Type-checks TypeScript                                | project `tsconfig.json`                  | [docs](https://www.typescriptlang.org/docs/)                     |
-| `type-coverage` | Enforces TypeScript type-coverage gates               | root `tsconfig.json`                     | [docs](https://github.com/plantain-00/type-coverage)             |
-| `pyright`       | Performs static Python type checking                  | root `pyproject.toml`                    | [docs](https://github.com/microsoft/pyright)                     |
-| `ty`            | Performs additional Python type checking              | root `pyproject.toml`                    | [docs](https://docs.astral.sh/ty/)                               |
-| `knip`          | Finds unused TS/JS files, exports, and dependencies   | `configuration/knip.config.ts`           | [docs](https://knip.dev/)                                        |
-| `vulture`       | Finds unused Python code                              | `configuration/vulture_whitelist.py`     | [docs](https://github.com/jendrikseipp/vulture)                  |
-| `fallow`        | Analyzes dead code, duplication, and code health      | `configuration/fallow.config.jsonc`      | [docs](https://docs.fallow.tools/)                               |
-| `jscpd`         | Detects duplicated code and copy-paste patterns       | `configuration/jscpd.config.json`        | [docs](https://jscpd.dev/)                                       |
-| `callidescope`  | Traces call stacks and flags ones that are too deep   | `configuration/callidescope.config.ts`   | [docs](packages/callidescope-cli/README.md)                      |
-| `codependix`    | Exports Nx, NestJS, and file-level dependency graphs  | `configuration/codependix.config.ts`     | [docs](packages/codependix-cli/README.md), [skills](#codependix) |
-| `cspell`        | Checks spelling across code and documentation         | `configuration/cspell.config.yaml`       | [docs](https://cspell.org/)                                      |
-| `markdownlint`  | Lints markdown files                                  | `configuration/.markdownlint-cli2.jsonc` | [docs](https://github.com/DavidAnson/markdownlint-cli2)          |
-| `yamllint`      | Lints YAML files                                      | `configuration/yamllint.yaml`            | [docs](https://yamllint.readthedocs.io/)                         |
+| Tool            | Description                                           | Config                                   | Docs                                                                 |
+| --------------- | ----------------------------------------------------- | ---------------------------------------- | -------------------------------------------------------------------- |
+| `oxfmt`         | Formats TS/JS/JSON/MD files                           | `configuration/oxfmt.config.ts`          | [docs](https://oxc.rs/docs/guide/usage/formatter.html)               |
+| `sqlfluff`      | Formats and lints SQL files                           | root `pyproject.toml`                    | [docs](https://docs.sqlfluff.com/)                                   |
+| `prettier`      | Supplementary formatter for manual or non-default use | `configuration/prettier.config.ts`       | [docs](https://prettier.io/docs/)                                    |
+| `eslint`        | Lints TS/JS and markdown with workspace rules         | project `eslint.config.ts`               | [docs](https://eslint.org/docs/latest/)                              |
+| `oxlint`        | Fast TS/JS linting for workspace files                | `configuration/oxlint.config.ts`         | [docs](https://oxc.rs/docs/guide/usage/linter.html)                  |
+| `ruff`          | Formats and lints Python files                        | root `pyproject.toml`                    | [docs](https://docs.astral.sh/ruff/)                                 |
+| `tsc`           | Type-checks TypeScript                                | project `tsconfig.json`                  | [docs](https://www.typescriptlang.org/docs/)                         |
+| `type-coverage` | Enforces TypeScript type-coverage gates               | root `tsconfig.json`                     | [docs](https://github.com/plantain-00/type-coverage)                 |
+| `pyright`       | Performs static Python type checking                  | root `pyproject.toml`                    | [docs](https://github.com/microsoft/pyright)                         |
+| `ty`            | Performs additional Python type checking              | root `pyproject.toml`                    | [docs](https://docs.astral.sh/ty/)                                   |
+| `knip`          | Finds unused TS/JS files, exports, and dependencies   | `configuration/knip.config.ts`           | [docs](https://knip.dev/)                                            |
+| `vulture`       | Finds unused Python code                              | `configuration/vulture_whitelist.py`     | [docs](https://github.com/jendrikseipp/vulture)                      |
+| `fallow`        | Analyzes dead code, duplication, and code health      | `configuration/fallow.config.jsonc`      | [docs](https://docs.fallow.tools/)                                   |
+| `jscpd`         | Detects duplicated code and copy-paste patterns       | `configuration/jscpd.config.json`        | [docs](https://jscpd.dev/)                                           |
+| `callidescope`  | Traces call stacks and flags ones that are too deep   | `configuration/callidescope.config.ts`   | [docs](packages/callidescope-cli/README.md), [skills](#callidescope) |
+| `codependix`    | Exports Nx, NestJS, and file-level dependency graphs  | `configuration/codependix.config.ts`     | [docs](packages/codependix-cli/README.md), [skills](#codependix)     |
+| `cspell`        | Checks spelling across code and documentation         | `configuration/cspell.config.yaml`       | [docs](https://cspell.org/)                                          |
+| `markdownlint`  | Lints markdown files                                  | `configuration/.markdownlint-cli2.jsonc` | [docs](https://github.com/DavidAnson/markdownlint-cli2)              |
+| `yamllint`      | Lints YAML files                                      | `configuration/yamllint.yaml`            | [docs](https://yamllint.readthedocs.io/)                             |
 
 ## Git Workflow
 
@@ -720,15 +748,15 @@ license to travel with the copy. The last row is this repository consuming its
 own published skills, so its license is the root [`LICENSE`](LICENSE) rather than
 a vendored copy:
 
-| Source                                                              | License    | Skills                                                                                      |
-| ------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------- |
-| [mattpocock/skills](https://github.com/mattpocock/skills)           | MIT        | 25, the Agent Workflow set                                                                  |
-| [nrwl/nx](https://github.com/nrwl/nx)                               | MIT        | 7, the `nx-*` skills plus `monitor-ci` and `link-workspace-packages`                        |
-| [obra/superpowers](https://github.com/obra/superpowers)             | MIT        | 5                                                                                           |
-| [github/gh-stack](https://github.com/github/gh-stack)               | MIT        | 1                                                                                           |
-| [github/awesome-copilot](https://github.com/github/awesome-copilot) | MIT        | 1                                                                                           |
-| [pbakaus/impeccable](https://github.com/pbakaus/impeccable)         | Apache-2.0 | 1                                                                                           |
-| [JimmyPaolini/codebase](https://github.com/JimmyPaolini/codebase)   | MIT        | 10, the `conformetry-*`, `codometer-*`, and `codependix-*` skills this repository publishes |
+| Source                                                              | License    | Skills                                                                                                        |
+| ------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------- |
+| [mattpocock/skills](https://github.com/mattpocock/skills)           | MIT        | 25, the Agent Workflow set                                                                                    |
+| [nrwl/nx](https://github.com/nrwl/nx)                               | MIT        | 7, the `nx-*` skills plus `monitor-ci` and `link-workspace-packages`                                          |
+| [obra/superpowers](https://github.com/obra/superpowers)             | MIT        | 5                                                                                                             |
+| [github/gh-stack](https://github.com/github/gh-stack)               | MIT        | 1                                                                                                             |
+| [github/awesome-copilot](https://github.com/github/awesome-copilot) | MIT        | 1                                                                                                             |
+| [pbakaus/impeccable](https://github.com/pbakaus/impeccable)         | Apache-2.0 | 1                                                                                                             |
+| [JimmyPaolini/codebase](https://github.com/JimmyPaolini/codebase)   | MIT        | 14, the `conformetry-*`, `codometer-*`, `codependix-*`, and `callidescope-*` skills this repository publishes |
 
 `skills-lock.json` maps each individual skill to its source.
 
