@@ -14,6 +14,11 @@ export { ConfigurationFileNotFoundError } from "./modules/configuration/configur
 export { ConfigurationModule } from "./modules/configuration/configuration.module";
 export { ConfigurationService } from "./modules/configuration/configuration.service";
 export type {
+  CodependixBoundariesConfiguration,
+  CodependixBoundaryAccessRule,
+  CodependixBoundaryAcyclicRule,
+  CodependixBoundaryRule,
+  CodependixBoundarySelector,
   CodependixConfiguration,
   CodependixExportTarget,
   CodependixGraphOutput,
@@ -23,6 +28,7 @@ export type {
   CodependixProjectConfiguration,
   CodependixWorkspaceConfiguration,
   LoadConfigurationArguments,
+  ResolvedCodependixBoundariesConfiguration,
   ResolvedCodependixConfiguration,
   ResolvedCodependixGraphOutput,
   ResolvedCodependixJsonOutput,
@@ -30,16 +36,9 @@ export type {
   ResolveForProjectArguments,
 } from "./modules/configuration/configuration.types";
 export {
-  CODEPENDIX_RUN_MODES,
-  conflictingRunModeError,
   InputError,
   missingInputError,
   promptCancelledError,
 } from "./modules/input/input.constants";
-
 export { InputModule } from "./modules/input/input.module";
 export { InputService } from "./modules/input/input.service";
-export type {
-  CodependixRunMode,
-  CodependixRunModeOptions,
-} from "./modules/input/input.types";

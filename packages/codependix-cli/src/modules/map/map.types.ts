@@ -24,7 +24,13 @@ export interface GraphRunContext {
 
 /** Command-line options `codependix` accepts. */
 export interface MapCommandOptions {
-  check?: boolean | undefined;
+  /**
+   * The set of findings `--check` gates, unparsed.
+   *
+   * `true` is the flag written with no value at all, which is refused rather
+   * than read as a shorthand — see `RunPlanService.selectMode`.
+   */
+  check?: string | true | undefined;
   config?: string | undefined;
   directory?: string | undefined;
   write?: boolean | undefined;

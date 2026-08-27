@@ -153,10 +153,18 @@ workspace root rather than per project.
 _Avoid_: Full graph, global graph, root graph
 
 **Export**:
-A graph rendered to JSON or Markdown. An export is measured and reported —
-codependix has no gating concept, so an export is never a breach or a
-threshold.
+A graph rendered to JSON or Markdown. An export is descriptive: it is written
+or found stale, never breached. Gating is the boundary's job, not the
+export's.
 _Avoid_: Report, output, artifact
+
+**Boundary**:
+A declared rule about what a graph is allowed to look like, and codependix's
+gating word. A rule is `allow`, `forbid`, or `acyclic`, is keyed by the graph
+level it judges, and produces a **violation** — an edge or a cycle it
+condemns. Never a breach (codometer's), a threshold (conformetry's), or a
+depth (callidescope's).
+_Avoid_: Constraint, policy, rule violation, breach
 
 **Anchor**:
 The comment marker codependix writes an export between in a Markdown file,
@@ -177,5 +185,13 @@ Never used for codometer's limits.
 Callidescope's call-stack length, and the thing it flags as too deep. Never used
 for nesting elsewhere.
 
-**Codependix has no gating word.** Its export is always descriptive — never a
-breach, a threshold, or a depth.
+**Boundary**:
+Codependix's declared rule about the shape of a graph, and the thing it flags
+as violated. Never used for a limit, a threshold, or a depth. Its export
+remains descriptive — only a boundary gates.
+
+**Reports** is the one word three of them share deliberately. `--check
+reports` means the same thing in callidescope, codometer, and codependix: a
+configured destination no longer holds what a fresh run would write. Each
+tool's other `--check` name is its own gating word — `depth`, `limits`,
+`boundaries` — because those are the magnitudes only it measures.

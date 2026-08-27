@@ -1,18 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import prompts from "prompts";
 
-import {
-  CODEPENDIX_RUN_MODES,
-  conflictingRunModeError,
-  missingInputError,
-  promptCancelledError,
-} from "./input.constants";
+import { missingInputError, promptCancelledError } from "./input.constants";
 
-import type {
-  CodependixRunMode,
-  CodependixRunModeOptions,
-  PromptRunner,
-} from "./input.types";
+import type { PromptRunner } from "./input.types";
 
 /**
  * Parses CLI option values and asks for the ones a command still needs.
@@ -109,38 +100,5 @@ export class InputService {
     }
 
     return matched;
-  }
-
-  /**
-   * Returns the given options with exactly one run mode set.
-   *
-   * Both flags is refused — there is no reading of "check and also write".
-   * Neither is asked about, since the answer is one of two words. Nothing is
-   * inferred: a session that cannot be asked fails rather than defaulting to
-   * a write nobody requested.
-   *
-   * Generic over the caller's options type, so a command carries its own
-   * other flags through unchanged.
-   */
-  public async resolveOptions<Options extends CodependixRunModeOptions>(
-    options: Options,
-  ): Promise<Options> {
-    if (options.check === true && options.write === true) {
-      throw conflictingRunModeError();
-    }
-
-    if (options.check === true || options.write === true) {
-      return options;
-    }
-
-    const mode: CodependixRunMode = await this.promptForSelect({
-      choices: CODEPENDIX_RUN_MODES,
-      message: "Check every configured export, or write them?",
-      subject: "A run mode (--check or --write)",
-    });
-
-    return mode === "check"
-      ? { ...options, check: true }
-      : { ...options, write: true };
   }
 }

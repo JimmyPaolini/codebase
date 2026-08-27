@@ -4,6 +4,7 @@
   },
   "dependencies": {
     "@codebase/logger": "workspace:*",
+    "@codependix/boundaries": "workspace:*",
     "@codependix/configuration": "workspace:*",
     "@codependix/imports": "workspace:*",
     "@codependix/nestjs": "workspace:*",

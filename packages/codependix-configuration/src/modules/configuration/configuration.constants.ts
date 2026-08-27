@@ -76,6 +76,53 @@ export const DEFAULT_INCLUDE_GLOBS = ["**"] as const;
  */
 export const REPOSITORY_ROOT_MARKERS = [".git", "pnpm-workspace.yaml"] as const;
 
+/**
+ * Validates one end of an access rule, or an acyclic rule's scope.
+ *
+ * At least one field is required: a selector stating nothing reads exactly
+ * like a typo, and treating it as "every node" would silently widen a rule to
+ * the whole graph.
+ */
+const boundarySelectorSchema = z
+  .object({
+    id: z.array(z.string().min(1)).min(1).optional(),
+    path: z.array(z.string().min(1)).min(1).optional(),
+    project: z.array(z.string().min(1)).min(1).optional(),
+    tags: z.array(z.string().min(1)).min(1).optional(),
+  })
+  .refine(
+    (selector) => Object.values(selector).some((value) => value !== undefined),
+    {
+      message:
+        "A selector needs at least one of id, path, project, or tags — otherwise nothing says which nodes it means.",
+    },
+  );
+
+/** Validates one declared boundary rule, of either kind. */
+const boundaryRuleSchema = z.union([
+  z.object({
+    from: boundarySelectorSchema,
+    kind: z.enum(["allow", "forbid"]),
+    message: z.string().min(1).optional(),
+    name: z.string().min(1),
+    to: boundarySelectorSchema,
+  }),
+  z.object({
+    kind: z.literal("acyclic"),
+    message: z.string().min(1).optional(),
+    name: z.string().min(1),
+    nodes: boundarySelectorSchema.optional(),
+  }),
+]);
+
+/** Validates every declared boundary rule, keyed by graph level. */
+const boundariesConfigurationSchema = z.object({
+  imports: z.array(boundaryRuleSchema).optional(),
+  nestjs: z.array(boundaryRuleSchema).optional(),
+  nx: z.array(boundaryRuleSchema).optional(),
+  pythonImports: z.array(boundaryRuleSchema).optional(),
+});
+
 /** Validates one graph type's export configuration. */
 const graphOutputSchema = z
   .object({
@@ -146,6 +193,7 @@ const workspaceConfigurationSchema = z.object({
  * failing on a field it has no opinion about.
  */
 export const codependixConfigurationSchema = z.object({
+  boundaries: boundariesConfigurationSchema.optional(),
   defaults: projectConfigurationSchema.optional(),
   exclude: z.array(z.string()).optional(),
   include: z.array(z.string()).optional(),

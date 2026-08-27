@@ -253,7 +253,7 @@ describe("codependix examples", () => {
   });
 
   describe("the committed examples", () => {
-    it("collects all fifteen examples, in reading order", async () => {
+    it("collects all sixteen examples, in reading order", async () => {
       expect.hasAssertions();
 
       const documents = await collectDocuments();
@@ -347,7 +347,7 @@ describe("codependix examples", () => {
       });
 
       expect(outcome.stalePaths).toStrictEqual([]);
-      expect(outcome.writtenCount).toBe(20);
+      expect(outcome.writtenCount).toBe(21);
     });
 
     it("reports every example as stale when nothing has been written", async () => {
@@ -378,7 +378,7 @@ describe("codependix examples", () => {
       expect.hasAssertions();
       await expect(run(["--check"])).resolves.toStrictEqual({
         exitCode: 0,
-        lines: ["🕸️ Rendered 20 codependix example files."],
+        lines: ["🕸️ Rendered 21 codependix example files."],
       });
     });
 
@@ -391,7 +391,7 @@ describe("codependix examples", () => {
       );
 
       expect(outcome.exitCode).toBe(1);
-      expect(outcome.lines[0]).toContain("20 stale codependix example(s)");
+      expect(outcome.lines[0]).toContain("21 stale codependix example(s)");
     });
 
     it("writes every example into a directory that does not exist yet", async () => {

@@ -2,11 +2,12 @@ import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { MARKDOWN_SECTION_INTRO_LINE } from "@codependix/cli";
 import {
-  conflictingRunModeError,
-  missingInputError,
-} from "@codependix/configuration";
+  MARKDOWN_SECTION_INTRO_LINE,
+  RUN_MODE_SUBJECT,
+  RunPlanService,
+} from "@codependix/cli";
+import { InputService, missingInputError } from "@codependix/configuration";
 
 import { anchorsService, deliveryService } from "./builders";
 import { fence, fenceJson, table } from "./document";
@@ -14,7 +15,11 @@ import { buildJsonExports } from "./graph-levels";
 import { buildExampleAnchor } from "./paths";
 
 import type { ExampleDocument, ExampleSection } from "./types";
-import type { CodependixRunMode, ProjectRunResult } from "@codependix/cli";
+import type {
+  CodependixRunMode,
+  MapCommandOptions,
+  ProjectRunResult,
+} from "@codependix/cli";
 import type { CodependixExportTarget } from "@codependix/configuration";
 
 // 🏷️ Types
@@ -63,7 +68,7 @@ const EXPORT_TARGETS = ["none", "json", "markdown", "both"] as const;
 export async function buildDeliveryDocuments(): Promise<ExampleDocument[]> {
   return [
     buildTargetsDocument(),
-    buildModesDocument(),
+    await buildModesDocument(),
     await buildJsonDocument(),
   ];
 }
@@ -214,7 +219,7 @@ async function buildJsonDocument(): Promise<ExampleDocument> {
 }
 
 /** Builds the `--check` versus `--write` example. */
-function buildModesDocument(): ExampleDocument {
+async function buildModesDocument(): Promise<ExampleDocument> {
   return {
     id: "check-and-write",
     jsonExports: [],
@@ -225,16 +230,24 @@ function buildModesDocument(): ExampleDocument {
         note: "The first result is what `--check` reports for an export nothing has moved. The second names the exact paths that went stale, which is what a reader is given to act on.",
       },
       {
-        body: fence(
-          missingInputError("A run mode (--check or --write)").message,
-        ),
-        heading: "A command line naming neither mode",
-        note: "`--check` and `--write` are mutually exclusive and one is required. At a terminal, a command line naming neither is asked which was meant, as a two-item menu. Where stdin is not a terminal the run fails with this instead — `prompts` would otherwise draw a menu nobody can answer, never resolve, and let the process exit 0 having written nothing.",
+        body: fence(missingInputError(RUN_MODE_SUBJECT).message),
+        heading: "A command line naming no mode at all",
+        note: "At a terminal, a command line naming neither `--check` nor `--write` is asked which was meant, as a three-item menu — `boundaries`, `reports`, `write`. Where stdin is not a terminal the run fails with this instead: `prompts` would otherwise draw a menu nobody can answer, never resolve, and let the process exit 0 having done nothing.",
       },
       {
-        body: fence(conflictingRunModeError().message),
-        heading: "A command line naming both modes",
-        note: "Refused outright rather than asked about — nothing selects a run mode when two are named, so there is no question to put.",
+        body: await refuse({ check: true }),
+        heading: "A `--check` carrying no value",
+        note: '`--check` names which finding fails the run, so a bare one is a mistake rather than a shorthand. Read as "gate nothing" it would be a gate that cannot fail — `--check "$GATES"` with the variable unset would pass forever over a workspace whose every rule was broken, which is worse than no gate at all because it looks like protection. A value of only separators is refused the same way.',
+      },
+      {
+        body: await refuse({ check: "limits,depth" }),
+        heading: "A `--check` naming something it does not know",
+        note: "Every mistake on one command line is collected before any of them is reported, so two typos are two lines to fix rather than two runs. `limits` is codometer\u2019s word and `depth` is callidescope\u2019s; `reports` is deliberately the same word in all three, because a configured destination going stale is one finding rather than three.",
+      },
+      {
+        body: await refuse({ check: "reports", write: true }),
+        heading: "`--write` together with `--check reports`",
+        note: "Refused, because an export cannot be stale in the run that just wrote it. `--write --check boundaries` is legal for the mirror-image reason: a boundary has no destination to be stale, so writing every export and judging every graph in one run is two independent things rather than a contradiction.",
       },
       {
         body: "`MapService.run` attempts every project regardless of whether an earlier one failed, collecting each failure as a `ProjectRunFailure` rather than aborting the loop. `MapCommand.reportOutcome` then reports the failures and the stale exports together, and fails the run if either list is non-empty. That is the whole of the guarantee: `--write` either fully succeeds, or names exactly which projects failed while still completing every other one.",
@@ -243,12 +256,10 @@ function buildModesDocument(): ExampleDocument {
       },
     ],
     summary:
-      "What `--check` reports, what `--write` acts on, the command line codependix asks about, and the one it refuses outright.",
+      "What each `--check` name gates, what `--write` acts on, the command line codependix asks about, and the four it refuses outright.",
     title: "`--check` versus `--write`",
   };
 }
-
-// 📄 Documents
 
 /** Builds the export-target example. */
 function buildTargetsDocument(): ExampleDocument {
@@ -268,6 +279,8 @@ function buildTargetsDocument(): ExampleDocument {
     title: "All four export targets",
   };
 }
+
+// 📄 Documents
 
 /** Delivers the sample graph at one target and lists what changed. */
 function deliverAtTarget(target: CodependixExportTarget): string[] {
@@ -325,6 +338,15 @@ function listChangedPaths(
     .filter(([relativePath, content]) => before.get(relativePath) !== content)
     .map(([relativePath]) => relativePath)
     .toSorted((first, second) => first.localeCompare(second));
+}
+
+/** Runs the real run plan and renders whatever it refused the command line with. */
+async function refuse(options: MapCommandOptions): Promise<string> {
+  const { errors } = await new RunPlanService(new InputService()).selectMode(
+    options,
+  );
+
+  return fence(errors.join("\n"));
 }
 
 /** Records every file a scratch project holds, keyed by relative path. */

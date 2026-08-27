@@ -1,30 +1,63 @@
-import {
-  conflictingRunModeError,
-  InputService,
-  missingInputError,
-  promptCancelledError,
-} from "@codependix/configuration";
+import { BoundaryReportService } from "@codependix/boundaries";
+import { InputService, missingInputError } from "@codependix/configuration";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
+import { BoundaryCheckService } from "../boundary-check/boundary-check.service";
+import { RUN_MODE_SUBJECT } from "../run-plan/run-plan.constants";
+import { RunPlanService } from "../run-plan/run-plan.service";
+
 import { MapCommand } from "./map.command";
 import { MapService } from "./map.service";
 
+import type { BoundaryCheckOutcome } from "../boundary-check/boundary-check.types";
 import type { GraphRunOutcome } from "../delivery/delivery.types";
+import type { RunMode } from "../run-plan/run-plan.types";
 import type { MapCommandOptions } from "./map.types";
+import type { BoundaryViolation } from "@codependix/boundaries";
+
+/** Builds a run mode, defaulting every flag a test does not name. */
+function buildMode(overrides: Partial<RunMode> = {}): RunMode {
+  return {
+    checksBoundaries: false,
+    checksReports: false,
+    writes: true,
+    ...overrides,
+  };
+}
+
+const VIOLATION: BoundaryViolation = {
+  cycle: undefined,
+  level: "nx",
+  message: "layers: a must not depend on b.",
+  rule: "layers",
+  scope: "workspace",
+  source: "a",
+  target: "b",
+};
 
 describe(MapCommand, () => {
   let command: MapCommand;
+  let boundaryCheckService: BoundaryCheckService;
+  let boundaryReportService: BoundaryReportService;
   let codependixService: MapService;
   let inputService: InputService;
   let loggerService: LoggerService;
+  let runPlanService: RunPlanService;
 
   /** Builds a command whose collaborators are freshly mocked. */
   function buildCommand(): MapCommand {
-    return new MapCommand(codependixService, inputService, loggerService);
+    return new MapCommand(
+      codependixService,
+      boundaryCheckService,
+      boundaryReportService,
+      inputService,
+      loggerService,
+      runPlanService,
+    );
   }
 
   /** Runs a freshly built command with the given options. */
@@ -32,16 +65,37 @@ describe(MapCommand, () => {
     await buildCommand().run([], options);
   }
 
+  /** Hands the command a mode, as the run plan would have resolved one. */
+  function selectMode(overrides: Partial<RunMode> = {}): RunMode {
+    const mode = buildMode(overrides);
+
+    vi.mocked(runPlanService.selectMode).mockResolvedValue({
+      errors: [],
+      mode,
+    });
+    vi.mocked(runPlanService.touchesFiles).mockReturnValue(
+      mode.checksReports || mode.writes,
+    );
+
+    return mode;
+  }
+
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
         MapCommand,
         {
-          provide: MapService,
-          useValue: createMock<MapService>(),
+          provide: BoundaryCheckService,
+          useValue: createMock<BoundaryCheckService>(),
         },
+        {
+          provide: BoundaryReportService,
+          useValue: new BoundaryReportService(),
+        },
+        { provide: MapService, useValue: createMock<MapService>() },
         { provide: InputService, useValue: createMock<InputService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
+        { provide: RunPlanService, useValue: createMock<RunPlanService>() },
       ],
     }).compile();
 
@@ -50,26 +104,30 @@ describe(MapCommand, () => {
 
   beforeEach(() => {
     process.exitCode = 0;
+    boundaryCheckService = createMock<BoundaryCheckService>();
+    boundaryReportService = new BoundaryReportService();
     codependixService = createMock<MapService>();
     inputService = createMock<InputService>();
     loggerService = createMock<LoggerService>();
+    runPlanService = createMock<RunPlanService>();
     vi.mocked(codependixService.run).mockResolvedValue({
       failures: [],
       results: [],
     });
-    // The command no longer picks the mode — it forwards whatever came back —
-    // so a fixed hand-back stands in for the resolution, and the tests that
-    // care what was forwarded set their own.
-    vi.mocked(inputService.resolveOptions).mockResolvedValue({ write: true });
-    vi.mocked(inputService.parseFlagOption).mockImplementation(
-      (value) => value ?? true,
-    );
+    vi.mocked(boundaryCheckService.run).mockResolvedValue({
+      failures: [],
+      violations: [],
+    });
     vi.mocked(inputService.parseOptionalOption).mockImplementation(
       (value) => value,
     );
     vi.mocked(inputService.parsePathOption).mockImplementation(
       (value) => value ?? process.cwd(),
     );
+    vi.mocked(inputService.parseFlagOption).mockImplementation(
+      (value) => value ?? true,
+    );
+    selectMode();
   });
 
   it("is defined", () => {
@@ -81,11 +139,17 @@ describe(MapCommand, () => {
       providers: [
         MapCommand,
         {
-          provide: MapService,
-          useValue: createMock<MapService>(),
+          provide: BoundaryCheckService,
+          useValue: createMock<BoundaryCheckService>(),
         },
+        {
+          provide: BoundaryReportService,
+          useValue: new BoundaryReportService(),
+        },
+        { provide: MapService, useValue: createMock<MapService>() },
         { provide: InputService, useValue: createMock<InputService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
+        { provide: RunPlanService, useValue: createMock<RunPlanService>() },
       ],
     }).compile();
 
@@ -94,38 +158,27 @@ describe(MapCommand, () => {
     expect(logger.setContext).toHaveBeenCalledWith("MapCommand");
   });
 
-  it("runs whatever options the shared input service resolved", async () => {
-    vi.mocked(inputService.resolveOptions).mockResolvedValue({ check: true });
+  it("reports a rejected command line without attempting anything", async () => {
+    vi.mocked(runPlanService.selectMode).mockResolvedValue({
+      errors: ["--check needs a value."],
+      mode: buildMode({ writes: false }),
+    });
 
-    await run({});
-
-    expect(inputService.resolveOptions).toHaveBeenCalledWith({});
-    expect(process.exitCode).toBe(0);
-    expect(codependixService.run).toHaveBeenCalledWith(
-      { check: true },
-      process.cwd(),
-    );
-  });
-
-  it("reports two modes named at once as a rejected command line", async () => {
-    vi.mocked(inputService.resolveOptions).mockRejectedValue(
-      conflictingRunModeError(),
-    );
-
-    await run({ check: true, write: true });
+    await run({ check: true });
 
     expect(process.exitCode).toBe(1);
     expect(codependixService.run).not.toHaveBeenCalled();
+    expect(boundaryCheckService.run).not.toHaveBeenCalled();
     expect(loggerService.error).toHaveBeenCalledWith(
       "🕸️ Rejected the command line",
       undefined,
-      { reason: "Only one of --check or --write may be given." },
+      { reasons: ["--check needs a value."] },
     );
   });
 
   it("reports an unanswerable prompt as a rejected command line", async () => {
-    vi.mocked(inputService.resolveOptions).mockRejectedValue(
-      missingInputError("A run mode (--check or --write)"),
+    vi.mocked(runPlanService.selectMode).mockRejectedValue(
+      missingInputError(RUN_MODE_SUBJECT),
     );
 
     await run({});
@@ -142,26 +195,8 @@ describe(MapCommand, () => {
     );
   });
 
-  it("reports a dismissed prompt as a rejected command line", async () => {
-    vi.mocked(inputService.resolveOptions).mockRejectedValue(
-      promptCancelledError("A run mode (--check or --write)"),
-    );
-
-    await run({});
-
-    expect(process.exitCode).toBe(1);
-    expect(codependixService.run).not.toHaveBeenCalled();
-    expect(loggerService.error).toHaveBeenCalledWith(
-      "🕸️ Rejected the command line",
-      undefined,
-      { reason: "A run mode (--check or --write) was not chosen." },
-    );
-  });
-
   it("reports anything else the resolution threw as a failed run", async () => {
-    vi.mocked(inputService.resolveOptions).mockRejectedValue(
-      new Error("Prompt did not resolve to one of: check, write."),
-    );
+    vi.mocked(runPlanService.selectMode).mockRejectedValue(new Error("boom"));
 
     await run({});
 
@@ -169,7 +204,60 @@ describe(MapCommand, () => {
     expect(loggerService.error).toHaveBeenCalledWith(
       "💥 Failed running codependix",
       undefined,
-      { reason: "Prompt did not resolve to one of: check, write." },
+      { reason: "boom" },
+    );
+  });
+
+  it("builds the context once and hands it to both passes", async () => {
+    selectMode({ checksBoundaries: true, writes: true });
+
+    await run({ directory: "/workspace" });
+
+    expect(codependixService.buildContext).toHaveBeenCalledWith({
+      mode: "write",
+      options: { directory: "/workspace" },
+      workingDirectory: "/workspace",
+    });
+    expect(codependixService.run).toHaveBeenCalledTimes(1);
+    expect(boundaryCheckService.run).toHaveBeenCalledTimes(1);
+  });
+
+  it("builds a check-mode context when the run writes nothing", async () => {
+    selectMode({ checksReports: true, writes: false });
+
+    await run({});
+
+    expect(codependixService.buildContext).toHaveBeenCalledWith({
+      mode: "check",
+      options: {},
+      workingDirectory: process.cwd(),
+    });
+  });
+
+  it("delivers no export when only boundaries are checked", async () => {
+    selectMode({ checksBoundaries: true, writes: false });
+
+    await run({ check: "boundaries" });
+
+    expect(codependixService.run).not.toHaveBeenCalled();
+    expect(boundaryCheckService.run).toHaveBeenCalledTimes(1);
+    expect(process.exitCode).toBe(0);
+    expect(loggerService.info).toHaveBeenCalledWith(
+      "🕸️ Verified every declared codependix boundary holds",
+    );
+  });
+
+  it("judges no boundary when only exports are checked", async () => {
+    selectMode({ checksReports: true, writes: false });
+
+    await run({ check: "reports" });
+
+    expect(boundaryCheckService.run).not.toHaveBeenCalled();
+    expect(process.exitCode).toBe(0);
+    expect(loggerService.info).toHaveBeenCalledWith(
+      "🕸️ Verified every configured codependix export is current",
+      undefined,
+      { projects: 0 },
     );
   });
 
@@ -180,6 +268,7 @@ describe(MapCommand, () => {
   });
 
   it("fails in check mode when a result is stale", async () => {
+    selectMode({ checksReports: true, writes: false });
     const outcome: GraphRunOutcome = {
       failures: [],
       results: [
@@ -192,7 +281,7 @@ describe(MapCommand, () => {
     };
     vi.mocked(codependixService.run).mockResolvedValue(outcome);
 
-    await run({ check: true });
+    await run({ check: "reports" });
 
     expect(process.exitCode).toBe(1);
   });
@@ -217,6 +306,7 @@ describe(MapCommand, () => {
   });
 
   it("reports both a failed project and a stale export together", async () => {
+    selectMode({ checksReports: true, writes: false });
     const outcome: GraphRunOutcome = {
       failures: [{ error: "boom", projectName: "codependix-nestjs" }],
       results: [
@@ -229,7 +319,7 @@ describe(MapCommand, () => {
     };
     vi.mocked(codependixService.run).mockResolvedValue(outcome);
 
-    await run({ check: true });
+    await run({ check: "reports" });
 
     expect(process.exitCode).toBe(1);
     expect(loggerService.error).toHaveBeenCalledWith(
@@ -244,12 +334,69 @@ describe(MapCommand, () => {
     );
   });
 
-  it("runs codependix with the resolved options and working directory", async () => {
-    await run({ write: true });
+  it("fails and names every boundary violation it found", async () => {
+    selectMode({ checksBoundaries: true, writes: false });
+    const outcome: BoundaryCheckOutcome = {
+      failures: [],
+      violations: [VIOLATION],
+    };
+    vi.mocked(boundaryCheckService.run).mockResolvedValue(outcome);
 
-    expect(codependixService.run).toHaveBeenCalledWith(
-      { write: true },
-      process.cwd(),
+    await run({ check: "boundaries" });
+
+    expect(process.exitCode).toBe(1);
+    expect(loggerService.error).toHaveBeenCalledWith(
+      "🕸️ Found codependix boundary violations",
+      undefined,
+      {
+        summary: "1 boundary violation across 1 rule.",
+        violations: ["nx workspace: layers: a must not depend on b."],
+      },
+    );
+  });
+
+  it("fails and logs a project whose graph could not be judged", async () => {
+    selectMode({ checksBoundaries: true, writes: false });
+    vi.mocked(boundaryCheckService.run).mockResolvedValue({
+      failures: [{ error: "boom", projectName: "lexico" }],
+      violations: [],
+    });
+
+    await run({ check: "boundaries" });
+
+    expect(process.exitCode).toBe(1);
+    expect(loggerService.error).toHaveBeenCalledWith(
+      "💥 Failed running codependix",
+      undefined,
+      { failures: [{ error: "boom", projectName: "lexico" }] },
+    );
+  });
+
+  it("reports a stale export and a broken boundary in the same run", async () => {
+    selectMode({ checksBoundaries: true, writes: true });
+    vi.mocked(codependixService.run).mockResolvedValue({
+      failures: [],
+      results: [
+        { isCurrent: false, projectName: "codependix-nx", stalePaths: ["a"] },
+      ],
+    });
+    vi.mocked(boundaryCheckService.run).mockResolvedValue({
+      failures: [],
+      violations: [VIOLATION],
+    });
+
+    await run({ check: "boundaries", write: true });
+
+    expect(process.exitCode).toBe(1);
+    expect(loggerService.error).toHaveBeenCalledWith(
+      "🕸️ Found stale codependix exports",
+      undefined,
+      { projects: ["codependix-nx"] },
+    );
+    expect(loggerService.error).toHaveBeenCalledWith(
+      "🕸️ Found codependix boundary violations",
+      undefined,
+      expect.anything(),
     );
   });
 
@@ -284,11 +431,10 @@ describe(MapCommand, () => {
   // Sentinels rather than realistic answers, so a parser reintroduced inline
   // here fails rather than coincidentally agreeing with the stub.
 
-  it("delegates --check to the shared input service", () => {
-    vi.mocked(inputService.parseFlagOption).mockReturnValue(false);
-
-    expect(buildCommand().parseCheck(undefined)).toBe(false);
-    expect(inputService.parseFlagOption).toHaveBeenCalledWith(undefined);
+  it("hands --check through unparsed, for the run plan to read", () => {
+    expect(buildCommand().parseCheck("boundaries,reports")).toBe(
+      "boundaries,reports",
+    );
   });
 
   it("delegates --write to the shared input service", () => {
@@ -316,12 +462,10 @@ describe(MapCommand, () => {
     expect(inputService.parsePathOption).toHaveBeenCalledWith(undefined);
   });
 
-  it("delegates run-mode resolution to the shared input service", async () => {
-    vi.mocked(inputService.resolveOptions).mockResolvedValue({ write: true });
-
+  it("delegates mode resolution to the run plan", async () => {
     await run({ directory: "packages/logger" });
 
-    expect(inputService.resolveOptions).toHaveBeenCalledWith({
+    expect(runPlanService.selectMode).toHaveBeenCalledWith({
       directory: "packages/logger",
     });
   });

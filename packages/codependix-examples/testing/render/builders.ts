@@ -1,3 +1,9 @@
+import {
+  BoundariesService,
+  BoundaryCyclesService,
+  BoundaryReportService,
+  BoundarySelectorService,
+} from "@codependix/boundaries";
 import { AnchorsService, DeliveryService } from "@codependix/cli";
 import { ConfigurationService } from "@codependix/configuration";
 import {
@@ -68,3 +74,12 @@ export const anchorsService = new AnchorsService();
 
 /** Turns a resolved export configuration into file I/O. */
 export const deliveryService = new DeliveryService(anchorsService);
+
+/** Judges a built graph against declared boundary rules. */
+export const boundariesService = new BoundariesService(
+  new BoundaryCyclesService(),
+  new BoundarySelectorService(),
+);
+
+/** Renders boundary violations into the lines a run prints. */
+export const boundaryReportService = new BoundaryReportService();

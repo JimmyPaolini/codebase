@@ -1,13 +1,15 @@
 # 🕸️ Codependix CLI
 
-**Exports a project's dependency graphs — Nx, NestJS, and file-level imports — as JSON and Markdown diagrams.**
+**Exports a project's dependency graphs — Nx, NestJS, and file-level imports — as JSON and Markdown diagrams, and gates the rules those graphs are judged against.**
 
 Codependix reads what each project depends on and renders it four ways: the
 Nx project graph, a NestJS project's module graph, a TypeScript project's own
 file-level import graph, and a Python project's own file-level import graph.
 Each graph is delivered to whichever destinations
 `codependix.config.ts` names for that project — a JSON file, a Markdown anchor
-block spliced into an existing file such as a `README.md`, or both.
+block spliced into an existing file such as a `README.md`, or both. The same
+built graphs are then judged against whatever rules the configuration
+declares — see [`@codependix/boundaries`](../codependix-boundaries/README.md).
 
 ```bash
 pnpm add --filter <project> --save-dev @codependix/cli
@@ -19,23 +21,53 @@ codependix map --write
 
 ## Usage
 
-One command, `map`, in exactly two run modes — `--check` and `--write`, with
-no per-graph-type subcommand. Which graphs run for a project, and where its
-export lands, is entirely a function of the configuration file; see
+One command, `map`, and no per-graph-type subcommand. Which graphs run for a
+project, where its export lands, and which rules judge it is entirely a
+function of the configuration file; see
 [`configuration/codependix.config.ts`](../../configuration/codependix.config.ts)
 for this repository's own.
 
 | Flag | Meaning |
 | ---- | ------- |
-| `--check` | Verifies every configured export is current, without writing |
+| `--check [check]` | Fail on a comma-separated set drawn from `boundaries` and `reports` |
 | `--write` | Writes every configured export |
 | `--config [config]` | Path to a `codependix.config.ts`. Searched for upward from `--directory` when omitted |
 | `-d, --directory [directory]` | Workspace root whose Nx project graph this run reads. Defaults to the working directory |
 
-`--check` and `--write` are mutually exclusive, and one of them is required.
-Naming both is refused outright — nothing selects a run mode when two are
-named, so there is no question to put. Naming neither is asked about, as a
-two-item menu.
+### The two `--check` names
+
+`--check` names which finding fails the run, because the two findings belong
+on opposite sides of a pull request.
+
+| `--check` value | What fails the run |
+| --------------- | ------------------ |
+| `boundaries` | An edge, or a cycle, breaking a declared rule |
+| `reports` | A configured destination no longer holding what a fresh run would write |
+
+A boundary violation is caused by the branch and fixed by the branch, so it
+gates every pull request. A stale export moves with the workspace it
+describes and would fail every branch that changed a project graph rather
+than anything the branch itself did, so it is published on the default branch
+and gated nowhere. That is the same split
+[`callidescope`](../callidescope-cli/README.md) makes between `--check depth`
+and `--check reports`, and `reports` is deliberately spelled the same in both:
+it is the same finding, and two names for it would make the two reports
+unreadable together.
+
+- `--check boundaries` reads no destination and writes nothing, so it leaves
+  every committed export exactly as it found it.
+- `--write --check boundaries` is legal — a boundary has no destination to be
+  stale.
+- `--write --check reports` is refused: an export cannot be stale in the run
+  that just wrote it.
+- A bare `--check`, or one whose value is only separators, is refused. Read as
+  "gate nothing" it would be a gate that cannot fail, which is worse than no
+  gate at all because it looks like protection.
+
+### When no mode is named
+
+Naming neither `--check` nor `--write` is asked about, as a three-item menu —
+`boundaries`, `reports`, `write`.
 
 There is no flag that turns the prompt off, because there is nothing to turn
 off where it cannot be answered: a run whose stdin is not a terminal fails
@@ -46,8 +78,8 @@ exit 0, which would turn a scripted run that forgot its mode flag into a
 silent success that wrote nothing. Dismissing the menu at a terminal is
 reported the same way, as a rejected command line rather than a crash.
 
-No mode is ever inferred, which is the rule `codometer`'s `--check`/`--write`
-split follows too.
+No mode is ever inferred, which is the rule `codometer`'s and
+`callidescope`'s flags follow too.
 
 ```bash
 nx run codebase:codependix:check
@@ -64,8 +96,9 @@ every other one.
 | Package | Role |
 | ------- | ---- |
 | [`@codependix/cli`](.) | Orchestrates the four graph builders and delivers their exports |
-| [`@codependix/configuration`](../codependix-configuration/README.md) | Reads `codependix.config.ts` and resolves per-project export destinations |
-| [`@codependix/examples`](../codependix-examples/README.md) | Fifteen subjects built to be graphed, each with the guide codependix renders from it |
+| [`@codependix/boundaries`](../codependix-boundaries/README.md) | Evaluates declared rules against a built graph and reports the edges and cycles that break them |
+| [`@codependix/configuration`](../codependix-configuration/README.md) | Reads `codependix.config.ts` and resolves per-project export destinations and boundary rules |
+| [`@codependix/examples`](../codependix-examples/README.md) | Sixteen subjects built to be graphed, each with the guide codependix renders from it |
 | [`@codependix/nx`](../codependix-nx/README.md) | Builds a project's Nx Neighborhood and the whole-workspace Workspace Graph |
 | [`@codependix/nestjs`](../codependix-nestjs/README.md) | Explores a NestJS project's container and builds its module graph |
 | [`@codependix/imports`](../codependix-imports/README.md) | Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements |

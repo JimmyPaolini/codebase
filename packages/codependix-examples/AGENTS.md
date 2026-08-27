@@ -35,8 +35,11 @@ the reproduction that produces that exact message is in
 | `UnknownConfigurationFileTypeError` | [`refusals`](examples/refusals) — the seven readable extensions are listed there |
 | `TypescriptProjectConfigurationError` | [`typescript-resolution`](examples/typescript-resolution) — the compiler's own diagnostics, and why a parse failure is fatal rather than skipped |
 | `💥 Failed running codependix`, naming one project | [`container-rooting`](examples/container-rooting) — one project's failure is isolated; every other project still completed |
-| `Either --check or --write is required` | [`check-and-write`](examples/check-and-write) |
-| `Only one of --check or --write may be given` | [`check-and-write`](examples/check-and-write) |
+| `Found codependix boundary violations` | [`boundary-rules`](examples/boundary-rules) — a real edge or cycle in real code. Re-running `--write` never fixes one: either the edge goes, or the rule does |
+| `--check needs a value` | [`check-and-write`](examples/check-and-write) — `--check` names which finding it gates. Name the set; do not drop the flag |
+| `--check does not accept "…"` | [`check-and-write`](examples/check-and-write) — `limits` is codometer's word and `depth` is callidescope's; only `reports` is shared |
+| `--write cannot be combined with --check reports` | [`check-and-write`](examples/check-and-write) — `--write --check boundaries` is legal, because a boundary has no destination to be stale |
+| A rule you wrote reports nothing | [`boundary-rules`](examples/boundary-rules) — a selector's fields narrow each other, and one naming a field its level does not carry matches nothing rather than everything |
 | A graph came out emptier than the code looks | [`ambient-modules`](examples/ambient-modules) for a rounded module with no edges; [`typescript-resolution`](examples/typescript-resolution) and [`python-scanner`](examples/python-scanner) for the statements deliberately not walked |
 | A project produced no graph at all | [`configuration-resolution`](examples/configuration-resolution) — check `include`/`exclude` and whether a per-project override replaced the default |
 | A NestJS module you expected is missing | [`container-rooting`](examples/container-rooting) — a rooted project is explored from `MainModule` outward, so a module nothing imports is absent |

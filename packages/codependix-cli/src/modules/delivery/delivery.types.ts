@@ -1,18 +1,15 @@
 // 🏷️ Types
 
-import type {
-  CodependixRunMode as ConfigurationRunMode,
-  ResolvedCodependixGraphOutput,
-} from "@codependix/configuration";
+import type { ResolvedCodependixGraphOutput } from "@codependix/configuration";
 
 /**
- * Which of the two run modes a command line resolved to.
+ * Which of the two things delivery does to a destination.
  *
- * Re-exported rather than restated: `@codependix/configuration` owns the list
- * the prompt offers, and a second hand-written union here would be free to
- * drift from it.
+ * Not the same thing as `RunMode`, which is what the command line asked the
+ * whole run to do: a run gating `--check boundaries` alone reads no
+ * destination at all, so it never reaches delivery and has no mode here.
  */
-export type CodependixRunMode = ConfigurationRunMode;
+export type CodependixRunMode = "check" | "write";
 
 /** Arguments shared by every method that delivers one file destination. */
 export interface DeliverFileArguments {

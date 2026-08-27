@@ -72,11 +72,12 @@ Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), [VSCo
   - **[callidescope-graph](packages/callidescope-graph)** - Builds the call graph from traced TypeScript source and measures its depth, breadth, and cohesion
   - **[callidescope-nx](packages/callidescope-nx)** - Nx plugin inferring per-project `trace`, `depth`, and `breadth` targets that follow the Nx dependency graph, keeping every Nx dependency out of the packages that trace
   - **[callidescope-output](packages/callidescope-output)** - Renders call-graph findings into markdown, mermaid, and JSON output formats
-- **🕸️ codependix** - Dependency graph export toolchain that reads what each project depends on and renders it as JSON and Markdown diagrams
+- **🕸️ codependix** - Dependency graph export toolchain that reads what each project depends on, renders it as JSON and Markdown diagrams, and gates the rules those graphs are judged against
   - **[codependix-agents](packages/codependix-agents)** - Agent skills for the codependix toolchain, installable by any workspace that uses codependix
-  - **[codependix-cli](packages/codependix-cli)** - Command-line host that exports a project's Nx, NestJS, and file-level dependency graphs as JSON and Markdown anchor blocks
-  - **[codependix-configuration](packages/codependix-configuration)** - Reads `codependix.config.ts` and resolves per-project export destinations
-  - **[codependix-examples](packages/codependix-examples)** - Fifteen subjects built to be graphed, each carrying the guide codependix renders from it
+  - **[codependix-boundaries](packages/codependix-boundaries)** - Evaluates declared rules against a built graph and reports the edges and cycles that break them
+  - **[codependix-cli](packages/codependix-cli)** - Command-line host that exports a project's Nx, NestJS, and file-level dependency graphs as JSON and Markdown anchor blocks, and gates the rules over them
+  - **[codependix-configuration](packages/codependix-configuration)** - Reads `codependix.config.ts` and resolves per-project export destinations and boundary rules
+  - **[codependix-examples](packages/codependix-examples)** - Sixteen subjects built to be graphed, each carrying the guide codependix renders from it
   - **[codependix-imports](packages/codependix-imports)** - Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements
   - **[codependix-nestjs](packages/codependix-nestjs)** - Explores a NestJS project's container and builds its module graph
   - **[codependix-nx](packages/codependix-nx)** - Builds a project's one-hop Nx dependency neighborhood from the Nx project graph

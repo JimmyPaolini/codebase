@@ -66,6 +66,7 @@ describe(MapService, () => {
   ): GraphRunContext {
     return {
       configuration: {
+        boundaries: { imports: [], nestjs: [], nx: [], pythonImports: [] },
         defaults: {},
         exclude: [],
         include: ["**"],
@@ -115,6 +116,7 @@ describe(MapService, () => {
     projectRoot = await mkdtemp(path.join(tmpdir(), "codependix-service-"));
 
     vi.mocked(configurationService.loadConfiguration).mockResolvedValue({
+      boundaries: { imports: [], nestjs: [], nx: [], pythonImports: [] },
       defaults: {},
       exclude: [],
       include: ["**"],
@@ -833,20 +835,30 @@ describe(MapService, () => {
     });
   });
 
-  describe("run", () => {
+  describe("buildContext", () => {
     it("loads the configuration and reads the project graph exactly once", async () => {
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: undefined,
-        markdown: undefined,
-        target: "none",
+      await service.buildContext({
+        mode: "write",
+        options: {},
+        workingDirectory: projectRoot,
       });
-
-      await service.run({ write: true }, projectRoot);
 
       expect(configurationService.loadConfiguration).toHaveBeenCalledTimes(1);
       expect(neighborhoodService.readProjectGraph).toHaveBeenCalledTimes(1);
     });
 
+    it("carries the run mode it was given", async () => {
+      const context = await service.buildContext({
+        mode: "check",
+        options: {},
+        workingDirectory: projectRoot,
+      });
+
+      expect(context.mode).toBe("check");
+    });
+  });
+
+  describe("run", () => {
     it("aggregates the results and failures from all four passes", async () => {
       const nxOutcome: GraphRunOutcome = {
         failures: [{ error: "nx-boom", projectName: "a" }],
@@ -872,7 +884,7 @@ describe(MapService, () => {
         pythonImportsOutcome,
       );
 
-      const outcome = await service.run({ write: true }, projectRoot);
+      const outcome = await service.run(buildContext());
 
       expect(outcome).toStrictEqual({
         failures: [
@@ -896,21 +908,22 @@ describe(MapService, () => {
         results: [],
       });
 
-      await service.run({ write: true }, projectRoot);
+      await service.run(buildContext());
 
       expect(service.runNestjsGraphs).toHaveBeenCalledTimes(1);
       expect(service.runImportGraphs).toHaveBeenCalledTimes(1);
       expect(service.runPythonImportGraphs).toHaveBeenCalledTimes(1);
     });
 
-    it("resolves check mode when the command line names --check", async () => {
+    it("hands every pass the context it was given", async () => {
       const runNxGraphsSpy = vi
         .spyOn(service, "runNxGraphs")
         .mockReturnValue({ failures: [], results: [] });
+      const context = buildContext({ mode: "check" });
 
-      await service.run({ check: true }, projectRoot);
+      await service.run(context);
 
-      expect(runNxGraphsSpy.mock.calls[0]?.[0].mode).toBe("check");
+      expect(runNxGraphsSpy.mock.calls[0]?.[0]).toBe(context);
     });
   });
 });

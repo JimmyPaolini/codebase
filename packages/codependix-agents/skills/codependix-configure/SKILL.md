@@ -1,6 +1,6 @@
 ---
 name: codependix-configure
-description: Write or edit a codependix.config.ts — which graph types run, per-project overrides, include and exclude globs, the whole-workspace graph, and where each export lands. Use when a workspace has no codependix configuration yet, when a run produced no output because everything resolved to target none, when adding a JSON or Markdown destination, when choosing between an anchor block and a standalone file, when a configuration is rejected for a missing destination, or when deciding whether one configuration can describe every project in a workspace.
+description: Write or edit a codependix.config.ts — which graph types run, per-project overrides, include and exclude globs, the whole-workspace graph, where each export lands, and the boundary rules every built graph is judged against. Use when a workspace has no codependix configuration yet, when a run produced no output because everything resolved to target none, when adding a JSON or Markdown destination, when choosing between an anchor block and a standalone file, when a configuration is rejected for a missing destination or an empty selector, when adding a forbid, allow, or acyclic rule, or when deciding whether one configuration can describe every project in a workspace.
 license: MIT
 ---
 
@@ -185,3 +185,72 @@ project with no `tsconfig.json` never appears in the TypeScript import pass.
 Neither is a failure and neither needs an override, so a single `defaults`
 block naming all four graph types is the normal shape of a
 whole-workspace configuration rather than an over-broad one.
+
+## `boundaries` — the rules the graphs are judged against
+
+`defaults` and `projects` say where an export is **written**. `boundaries` says
+what the graphs must **look like**, keyed by the same four graph levels, and is
+gated by `--check boundaries` rather than by `--check reports`.
+
+```ts
+const codependixConfiguration: CodependixConfiguration = {
+  boundaries: {
+    imports: [
+      {
+        from: { path: ["**/*.types.ts"] },
+        kind: "forbid",
+        message: "Types are the leaf of a module.",
+        name: "types-files-do-not-reach-services",
+        to: { path: ["**/*.service.ts"] },
+      },
+    ],
+    nx: [
+      {
+        from: { tags: ["type:application"] },
+        kind: "forbid",
+        name: "applications-are-leaves",
+        to: { tags: ["type:application"] },
+      },
+      { kind: "acyclic", name: "no-project-cycles" },
+    ],
+  },
+};
+```
+
+Three kinds:
+
+| Kind | Reports |
+| ---- | ------- |
+| `forbid` | An edge whose source matches `from` and whose target matches `to` |
+| `allow` | An edge leaving `from` for anywhere `to` does not claim |
+| `acyclic` | A cycle among the nodes `nodes` selects, defaulting to every node |
+
+A selector's four fields are all lists of globs, and they **narrow** each
+other — every field a selector states must match, while within one field one
+glob matching is enough:
+
+| Field | Matches | Carried at |
+| ----- | ------- | ---------- |
+| `id` | The node's identifier — a project name, a file path, or a module class name | every level |
+| `path` | A workspace-relative project root, or a project-relative file path | `nx`, `imports`, `pythonImports` |
+| `project` | The Nx project a node belongs to | `nx`, `imports`, `pythonImports` |
+| `tags` | The node's Nx tags; one tag matching is enough | `nx` |
+
+Four things to know before writing one:
+
+- **A selector naming a field its level does not carry matches nothing**, not
+  everything. A `path` rule at the `nestjs` level selects no module, because
+  the NestJS module graph is class names with no file paths at all.
+- **A selector stating no field is refused** by the schema. It reads exactly
+  like a typo, and reading it as "every node" would silently widen a rule to
+  the whole workspace.
+- **`message` is appended to the generated sentence, not substituted for it.**
+  Write it as the _why_; the _what_ — the rule name and both endpoints — is
+  always generated.
+- **A level with no rules is never built.** Declaring `nestjs` rules means
+  every container is booted in preview mode, and declaring `imports` rules
+  means a `ts.Program` per project. Declare only the levels you actually gate.
+
+**Write rules that already hold.** A rule that arrives red is a backlog rather
+than a gate, and a red pipeline nobody can act on teaches people to ignore it.
+Verify a candidate rule against the whole workspace before committing it.

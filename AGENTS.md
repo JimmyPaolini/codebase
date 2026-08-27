@@ -88,8 +88,9 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 - **[callidescope-graph](packages/callidescope-graph)**: Builds the call graph from traced TypeScript source and measures its depth, breadth, and cohesion
 - **[callidescope-nx](packages/callidescope-nx)**: Nx plugin inferring per-project `trace`, `depth`, and `breadth` targets, scoped through the Nx dependency graph — the only callidescope package that knows Nx exists
 - **[callidescope-output](packages/callidescope-output)**: Renders call-graph findings into markdown, mermaid, and JSON output formats
-- **[codependix-cli](packages/codependix-cli)**: Command-line host that exports dependency graphs as JSON and Markdown anchor blocks — see [Codependix](#codependix) for its agent skills
-- **[codependix-configuration](packages/codependix-configuration)**: Reads `codependix.config.ts` and resolves per-project export destinations
+- **[codependix-boundaries](packages/codependix-boundaries)**: Evaluates declared rules against a built graph and reports the edges and cycles that break them — a leaf depending only on `codependix-configuration`
+- **[codependix-cli](packages/codependix-cli)**: Command-line host that exports dependency graphs as JSON and Markdown anchor blocks, and gates the rules those graphs are judged against — see [Codependix](#codependix) for its agent skills
+- **[codependix-configuration](packages/codependix-configuration)**: Reads `codependix.config.ts` and resolves per-project export destinations and boundary rules
 - **[codependix-examples](packages/codependix-examples)**: Runnable examples of the codependix toolchain — subjects built to be graphed, each carrying the guide codependix renders from it
 - **[codependix-imports](packages/codependix-imports)**: Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements
 - **[codependix-nestjs](packages/codependix-nestjs)**: Explores a NestJS project's container and builds its module graph
@@ -253,7 +254,9 @@ configurations there fail on purpose — do not repair them. See
 Codependix reads what each project in the workspace depends on and exports it
 as JSON and Mermaid diagrams — an Nx Neighborhood, a NestJS module graph, and
 file-level TypeScript and Python import graphs — into whichever destinations
-`codependix.config.ts` names. Four skills carry that toolchain for a coding
+`codependix.config.ts` names. It then judges those same graphs against
+whatever rules that file declares, and fails on the edges and cycles that
+break them. Four skills carry that toolchain for a coding
 agent: the same three moments as above, plus reading a graph the repository
 already committed, which the other two toolchains have no equivalent of.
 
@@ -265,6 +268,23 @@ already committed, which the other two toolchains have no equivalent of.
   — acting on a stale check, a failed project, or a run that wrote nothing
 - [codependix-navigate](packages/codependix-agents/skills/codependix-navigate/SKILL.md)
   — reading a committed graph to scope a refactor
+
+Two flags name two different findings, and they sit on opposite sides of a
+pull request — the same split callidescope makes, down to the spelling of
+`reports`:
+
+- `--check boundaries` gates the branch. `codebase:codependix:check` runs it,
+  and 🧑‍💻 Lint Codebase names that target alongside `lint-codebase`, because a
+  rule a change broke is what that change should fix. It reads no destination
+  and writes nothing, which is what makes it safe on a branch.
+- `--check reports` gates freshness, and nothing runs it. An export moves with
+  the workspace it describes, so it would fail every branch that changed a
+  project graph rather than anything the branch did.
+
+It is deliberately **not** in `configuration/lint-staged.config.ts`: a
+`--check boundaries` run builds a `ts.Program` per project and takes about
+twenty seconds over the whole workspace, which is not a pre-commit hook
+anybody keeps.
 
 These four are authored in
 [`packages/codependix-agents`](packages/codependix-agents) and installed back
@@ -417,7 +437,7 @@ was just cached under and can never hit its own cache.
 | `fallow`        | Analyzes dead code, duplication, and code health      | `configuration/fallow.config.jsonc`      | [docs](https://docs.fallow.tools/)                                   |
 | `jscpd`         | Detects duplicated code and copy-paste patterns       | `configuration/jscpd.config.json`        | [docs](https://jscpd.dev/)                                           |
 | `callidescope`  | Traces call stacks and flags ones that are too deep   | `configuration/callidescope.config.ts`   | [docs](packages/callidescope-cli/README.md), [skills](#callidescope) |
-| `codependix`    | Exports Nx, NestJS, and file-level dependency graphs  | `configuration/codependix.config.ts`     | [docs](packages/codependix-cli/README.md), [skills](#codependix)     |
+| `codependix`    | Exports dependency graphs and gates rules over them   | `configuration/codependix.config.ts`     | [docs](packages/codependix-cli/README.md), [skills](#codependix)     |
 | `cspell`        | Checks spelling across code and documentation         | `configuration/cspell.config.yaml`       | [docs](https://cspell.org/)                                          |
 | `markdownlint`  | Lints markdown files                                  | `configuration/.markdownlint-cli2.jsonc` | [docs](https://github.com/DavidAnson/markdownlint-cli2)              |
 | `yamllint`      | Lints YAML files                                      | `configuration/yamllint.yaml`            | [docs](https://yamllint.readthedocs.io/)                             |
@@ -580,7 +600,7 @@ The 🧑‍⚖️ Validate Conventions workflow creates any label missing from t
 | `logger` | Shared pino-backed NestJS LoggerService, LoggerModule, and the log message convention |
 | `meanderaw` | Greek meander (key/fret) SVG generator CLI and the composable motif/modifier library it reads |
 | `callidescope` | Call stack tracing and linting CLI, the configuration package it reads, and the packages that build and render its call graph |
-| `codependix` | Dependency graph export CLI and the configuration package it reads |
+| `codependix` | Dependency graph export CLI, the configuration package it reads, and the package that judges the graphs against declared rules |
 | `codometer` | Code statistics measurement CLI, the configuration package it reads, and the packages that diff and render its pull request change report |
 | `no-release` | Escape hatch: suppress semantic-release for any commit type |
 | `release` | Version bumps and release commits generated by semantic-release |
@@ -643,6 +663,15 @@ See the [write-python skill](.agents/skills/write-python/SKILL.md) for the full 
 - **`framework:react` may not import `framework:nestjs`.**
 - **`domain:lexico` and `domain:caelundas` may never import each other.**
 - **Conformetry packages form a strict layered graph** keyed on `name:conformetry-*` tags. `conformetry-core` is the leaf and depends on nothing; every other package declares exactly which siblings it may import. Read the `depConstraints` list in `configuration/eslint.config.ts` before wiring a new dependency between them.
+
+These are import-statement rules, and `codependix --check boundaries` states
+the ones they structurally cannot — an implicit Nx edge with no import to
+flag, a NestJS module edge the container resolved rather than a file
+declared, and a rule about the shape of the graph rather than about one edge.
+The two do not overlap and neither replaces the other: ESLint reports at the
+import site with a line number, which a graph-level report cannot match. See
+[Codependix](#codependix) and
+[`packages/codependix-boundaries`](packages/codependix-boundaries).
 
 `@nx/dependency-checks` additionally requires that every imported package is declared in that project's own `package.json`. Add it with `pnpm add --filter <project> <package>` rather than editing `package.json` by hand.
 

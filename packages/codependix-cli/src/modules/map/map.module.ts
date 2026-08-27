@@ -4,8 +4,10 @@ import { ModuleGraphModule, NestjsProjectModule } from "@codependix/nestjs";
 import { NeighborhoodModule, WorkspaceGraphModule } from "@codependix/nx";
 import { Module } from "@nestjs/common";
 
+import { BoundaryCheckModule } from "../boundary-check/boundary-check.module";
 import { DeliveryModule } from "../delivery/delivery.module";
 import { PythonImportsModule } from "../python-imports/python-imports.module";
+import { RunPlanModule } from "../run-plan/run-plan.module";
 
 import { MapCommand } from "./map.command";
 import { MapService } from "./map.service";
@@ -15,6 +17,7 @@ import { MapService } from "./map.service";
   controllers: [],
   exports: [MapCommand, MapService],
   imports: [
+    BoundaryCheckModule,
     ConfigurationModule,
     DeliveryModule,
     InputModule,
@@ -22,6 +25,7 @@ import { MapService } from "./map.service";
     NeighborhoodModule,
     NestjsProjectModule,
     PythonImportsModule,
+    RunPlanModule,
     TypescriptModule,
     WorkspaceGraphModule,
   ],

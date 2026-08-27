@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@codebase/logger": "workspace:*",
+    "@codependix/boundaries": "workspace:*",
     "@codependix/cli": "workspace:*",
     "@codependix/configuration": "workspace:*",
     "@codependix/imports": "workspace:*",

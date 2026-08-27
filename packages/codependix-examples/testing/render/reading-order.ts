@@ -27,6 +27,7 @@ export const EXAMPLE_ORDER = [
   "markdown-modes",
   "auto-created-sections",
   "check-and-write",
+  "boundary-rules",
   "refusals",
   "json-exports",
   "workspace-drift",
@@ -41,6 +42,7 @@ export const EXAMPLE_ORDER = [
 export const EXAMPLE_EMOJI: Record<string, string> = {
   "ambient-modules": "🌍",
   "auto-created-sections": "🪄",
+  "boundary-rules": "🚧",
   "check-and-write": "🔀",
   "configuration-resolution": "⚙️",
   "container-rooting": "🌱",
