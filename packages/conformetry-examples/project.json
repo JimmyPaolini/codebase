@@ -1,9 +1,15 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "implicitDependencies": ["conformetry-cli"],
   "name": "conformetry-examples",
   "projectType": "library",
   "sourceRoot": "packages/conformetry-examples",
-  "tags": ["language:typescript", "name:conformetry-examples", "type:package"],
+  "tags": [
+    "framework:nestjs",
+    "language:typescript",
+    "name:conformetry-examples",
+    "type:package"
+  ],
   "targets": {
     "ambiguous-attribution": {
       "cache": false,
@@ -60,6 +66,17 @@
       }
     },
     "eslint": {},
+    "examples": {
+      "cache": true,
+      "description": "Run every example the way its own guide says to, and gate on the exit code and the output that guide promises. Named `examples` so every examples package in this workspace has the same aggregate entry point. For this package the runner and the assertions are one thing: the suite reads each per-example target's command straight out of this file and runs it, so a separate script would only duplicate the expectation table. The eleven per-example targets are how you run one example and watch its output \u2014 four of them exit non-zero on purpose, which is why running them as a plain batch could never be the gate.",
+      "executor": "nx:run-commands",
+      "inputs": ["{projectRoot}/**/*", "default"],
+      "options": {
+        "command": "pnpm exec vitest run examples.integration.test.ts",
+        "cwd": "{projectRoot}"
+      },
+      "outputs": []
+    },
     "failure-modes": {
       "cache": false,
       "description": "Validate a TODO template comment any comment satisfies, then a template asking for a value nobody supplies. Exits non-zero: the second is refused rather than rendered as a hole",

@@ -70,11 +70,11 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 - **[codometer-changes](packages/codometer-changes)**: Diffs codometer reports against a baseline snapshot
 - **[codometer-customization](packages/codometer-customization)**: Evaluates codometer's configured custom counters
 - **[codometer-discovery](packages/codometer-discovery)**: Glob matching and gitignore-aware file walking, plus resolving configured measurement targets to file sets
-- **[codometer-examples](packages/codometer-examples)**: A sample corpus with known contents and one runnable example per thing codometer does — every language analyzer, both kinds of custom statistic, targets, limits and every refusal, the three output sinks, and the `--write`/`--check` matrix
+- **[codometer-examples](packages/codometer-examples)**: Runnable examples of the codometer toolchain — a sample corpus with known contents, and one example per thing codometer does
 - **[codometer-languages](packages/codometer-languages)**: Every input language analyzer codometer measures, behind one `analyze()` call
 - **[codometer-output](packages/codometer-output)**: Every codometer output format — JSON reports, README badges, and the pull request change report
 - **[codometer-size](packages/codometer-size)**: Compresses a target's matched files and measures their size
-- **[conformetry-examples](packages/conformetry-examples)**: Eleven runnable examples of the conformetry toolchain, each with its own configuration, template, instances, and guide
+- **[conformetry-examples](packages/conformetry-examples)**: Runnable examples of the conformetry toolchain, each with its own configuration, template, instances, and guide
 - **[lexico-components](packages/lexico-components)**: Shared React component library (shadcn/ui, Radix UI)
 - **[lexico-entities](packages/lexico-entities)**: Shared TypeORM entities and GraphQL types package
 - **[logger](packages/logger)**: Shared pino-backed NestJS `LoggerService` and `LoggerModule`
@@ -83,13 +83,13 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 
 - **[callidescope-cli](packages/callidescope-cli)**: Command-line host that traces call stacks through injected dependencies and flags the ones that are too deep
 - **[callidescope-configuration](packages/callidescope-configuration)**: Reads `callidescope.config.ts` and resolves the limits callidescope enforces
-- **[callidescope-examples](packages/callidescope-examples)**: A small codebase built to be traced, carrying one worked example per callidescope rule, finding, and output — plus a `README.md` guide and an `AGENTS.md` lookup table for acting on a finding
+- **[callidescope-examples](packages/callidescope-examples)**: Runnable examples of the callidescope toolchain — a small codebase built to be traced, with one example per rule, finding, and output
 - **[callidescope-graph](packages/callidescope-graph)**: Builds the call graph from traced TypeScript source and measures its depth, breadth, and cohesion
 - **[callidescope-nx](packages/callidescope-nx)**: Nx plugin inferring per-project `trace`, `depth`, and `breadth` targets, scoped through the Nx dependency graph — the only callidescope package that knows Nx exists
 - **[callidescope-output](packages/callidescope-output)**: Renders call-graph findings into markdown, mermaid, and JSON output formats
 - **[codependix-cli](packages/codependix-cli)**: Command-line host that exports dependency graphs as JSON and Markdown anchor blocks — see [Codependix](#codependix) for its agent skills
 - **[codependix-configuration](packages/codependix-configuration)**: Reads `codependix.config.ts` and resolves per-project export destinations
-- **[codependix-examples](packages/codependix-examples)**: Fifteen subjects built to be graphed, each carrying the guide codependix renders from it
+- **[codependix-examples](packages/codependix-examples)**: Runnable examples of the codependix toolchain — subjects built to be graphed, each carrying the guide codependix renders from it
 - **[codependix-imports](packages/codependix-imports)**: Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements
 - **[codependix-nestjs](packages/codependix-nestjs)**: Explores a NestJS project's container and builds its module graph
 - **[codependix-nx](packages/codependix-nx)**: Builds a project's one-hop Nx dependency neighborhood from the Nx project graph
@@ -132,12 +132,14 @@ exactly what another workspace gets. Edit the package, never the installed copy 
 `skills update` overwrites it.
 
 When a behavior needs to be **seen** rather than described, run it:
-[`packages/conformetry-examples`](packages/conformetry-examples) holds eleven
-self-contained examples, each with its own configuration, template, instances,
-and Nx target. Its [AGENTS.md](packages/conformetry-examples/AGENTS.md) maps
-"conformance reported X" to the example that reproduces X in about a second, so
-a finding can be understood without the surrounding project's conventions
-muddying it. Five instances there are broken on purpose — do not repair them.
+[`packages/conformetry-examples`](packages/conformetry-examples) holds one
+self-contained example per behavior, each with its own configuration, template,
+instances, and Nx target. Its
+[AGENTS.md](packages/conformetry-examples/AGENTS.md) maps "conformance reported
+X" to the example that reproduces X in about a second, so a finding can be
+understood without the surrounding project's conventions muddying it. Several
+instances there are broken on purpose — do not repair them. See
+[Examples Packages](#examples-packages) for the shape every such package shares.
 
 The generator namespace is emitted from `configuration/conformetry.config.ts`
 into the gitignored `.conformetry/` directory on `pnpm install`, so it is never
@@ -164,6 +166,38 @@ same thing for any workspace:
 | `react-component` | `c` | A React component and test file template for an existing React project |
 <!-- conformetry-generators-table end -->
 
+## Callidescope
+
+Callidescope traces call stacks through the edges a file-at-a-time reader cannot
+see — an injected dependency, a structurally satisfied interface, a callback
+handed to `map` — and flags the stacks that are too deep, the callables that
+reach too widely, and the ones declared in the wrong module. It has no skills
+package of its own; its behavior is documented in
+[`packages/callidescope-cli/README.md`](packages/callidescope-cli/README.md) and
+every configuration field in
+[`packages/callidescope-configuration/README.md`](packages/callidescope-configuration/README.md).
+
+Two flags name two different findings, and they sit on opposite sides of a pull
+request:
+
+- `--check depth` gates the branch. `codebase:callidescope` runs it, because a
+  stack that got longer in a change is what that change should fix.
+- `--check reports` gates freshness. The workspace cannot use it on a branch —
+  the call graph moves on nearly every change, so freshness would fail pull
+  requests for being behind `main` rather than for anything they did.
+
+When a behavior needs to be **seen** rather than described, run it:
+[`packages/callidescope-examples`](packages/callidescope-examples) is a small
+codebase written to be traced, with one example per rule, finding, and output,
+and every rendered result committed. Its
+[AGENTS.md](packages/callidescope-examples/AGENTS.md) maps "callidescope
+reported X" to the example that explains X and what to do about it. Its deep
+fixtures are meant to breach the depth limit —
+`configuration/.callidescopeignore` is what keeps them out of the workspace run,
+and it gates `reports` rather than `depth` for exactly that reason. Do not
+repair them. See [Examples Packages](#examples-packages) for the shape every such
+package shares.
+
 ## Codometer
 
 Codometer measures a directory and reports what it counted — languages,
@@ -182,6 +216,15 @@ enforce, act on what it said.
 These three are authored in
 [`packages/codometer-agents`](packages/codometer-agents) and installed back from
 the lockfile the same way. Edit the package, never the installed copy.
+
+When a behavior needs to be **seen** rather than described, run it:
+[`packages/codometer-examples`](packages/codometer-examples) holds a sample
+corpus with counts small enough to check by hand, and one example per thing
+codometer does. Its [AGENTS.md](packages/codometer-examples/AGENTS.md) maps
+"codometer said X" to the example that reproduces X — including every refusal,
+which is where the tool is opinionated and where a reader gets stuck. Several
+configurations there fail on purpose — do not repair them. See
+[Examples Packages](#examples-packages) for the shape every such package shares.
 
 ## Codependix
 
@@ -204,6 +247,60 @@ already committed, which the other two toolchains have no equivalent of.
 These four are authored in
 [`packages/codependix-agents`](packages/codependix-agents) and installed back
 from the lockfile the same way. Edit the package, never the installed copy.
+
+When a behavior needs to be **seen** rather than described, run it:
+[`packages/codependix-examples`](packages/codependix-examples) holds one subject
+per behavior, and every guide beside those subjects is **rendered by the real
+graph builders** rather than written — so a claim that stops being true fails a
+check instead of misleading somebody. Its
+[AGENTS.md](packages/codependix-examples/AGENTS.md) maps "codependix said X" to
+the example that reproduces X. Several subjects there are malformed on purpose —
+do not repair them. See [Examples Packages](#examples-packages) for the shape
+every such package shares.
+
+## Examples Packages
+
+Four packages exist for one reason: a toolchain's behavior should be somewhere a
+reader can **run** rather than only somewhere they can read about. They are
+[callidescope-examples](packages/callidescope-examples),
+[codependix-examples](packages/codependix-examples),
+[codometer-examples](packages/codometer-examples), and
+[conformetry-examples](packages/conformetry-examples), and they share one shape
+so that understanding any one of them predicts the others.
+
+A fifth such package conforms to the same shape. Nothing checks this
+mechanically — it is enforced by review, deliberately, so the list below is the
+authority:
+
+| Concern | The standard |
+| ------- | ------------ |
+| Per-example guide | Every directory under `examples/` carries a `README.md`: `# <emoji> Title`, a one- or two-sentence summary of what the example demonstrates, `## Run it` with the exact command and what it prints, the explanation, then `## Next` linking to the next example in reading order |
+| Root `README.md` | Title, bold claim, why the package exists, a runnable command block, a `## The examples` index table linking every guide, the tool-specific body, `## Layout`, `## Test`, `## License`, then the committed tool sections. One short section may precede `## The examples` where reading any example depends on it — callidescope's `## How to read a stack` is the case |
+| `AGENTS.md` | `# <emoji> <Tool> Examples — Agent Guide`, `## Run one`, `## <Tool> said X — open this example` holding the lookup table, `## Layout`, `## Adding an example`, `## Do not fix a deliberately broken example`, `## Key files`. Those seven keep that relative order and that exact wording; a package may interleave sections of its own between them |
+| Aggregate target | One target named `examples`, carrying a `description` that says what a failure means. Where committed output is really rendered the target is a `check`/`write` pair with `defaultConfiguration: check`, so a bare run never rewrites what is committed — callidescope and codependix are those two. Where there is nothing to regenerate the target takes no configurations at all, because a lone `check` that has no `write` to be distinguished from is a flag nobody can be wrong about — codometer and conformetry are those two |
+| Test file | The suite asserting the guides is `examples.integration.test.ts`. Additional suites may sit beside it. Integration, not unit or end-to-end: these spawn a real command line or read real files, and neither reaches a network or a database |
+| Metadata | `implicitDependencies` names the toolchain's command-line host; `framework:nestjs` where NestJS is a real runtime dependency; toolchain packages in `dependencies` rather than `devDependencies`. No package carries a `.gitignore` holding only a comment — everything these packages write is already ignored at the workspace root, so a placeholder file is noise that reads like a rule |
+| Completeness | An example added without a guide, an index-table row, or a test expectation must fail something. Each package does this its own way, and every one of the four checks the `examples/` directory listing against both its guides and its root `README.md` index |
+
+Three deliberate asymmetries, so they do not read as drift:
+
+- **`callidescope-examples` has a `src/`.** The `module-bootstrap` and
+  `exported-function` entry-point rules key on the literal paths `src/main.ts`
+  and `src/index.ts`, so those two fixtures cannot live under `examples/`.
+- **`codependix-examples` renders its per-example guides** from the real graph
+  builders rather than having them hand-written. That is a stronger guarantee
+  than the other three have, and the one thing here worth spreading rather than
+  levelling down.
+- **`conformetry-examples` also has one Nx target per example.** They are the
+  commands its guides name, and four of them exit non-zero on purpose — which is
+  why its `examples` target checks each against the outcome its guide promises
+  instead of running them as a batch.
+
+**Every one of these packages contains code that is deliberately wrong.** A
+breaching limit, a `tsconfig.json` the compiler cannot parse, a stack eight frames deep, an
+instance missing an export, an interpreter that is not installed. Each is the
+reproduction of a failure a reader will hit, and "fixing" one deletes the only
+place that behavior is demonstrated. Each package's `AGENTS.md` lists its own.
 
 ## Work Scope
 

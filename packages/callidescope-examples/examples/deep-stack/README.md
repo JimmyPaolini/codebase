@@ -1,6 +1,14 @@
-# Deep stack
+# 🪜 Deep stack
 
 **Eight frames, every one of which does something.**
+
+## Run it
+
+```bash
+nx run callidescope-examples:examples
+```
+
+Then read the `DeepStackService.quote` stack in [`output/report.md`](../../output/report.md), summaries and all.
 
 This breaches `maximumDepth` and the finding is still not a defect. Every layer
 transforms the amount it was handed: validate, discount, tier, rate, tax,
@@ -22,3 +30,7 @@ Read the `↳` summaries straight down the tree.
 The one thing not to do is raise `maximumDepth` to make it pass. A limit set to
 today's worst stack is a ratchet; raising it converts a gate into a record of a
 decision nobody made.
+
+## Next
+
+[forwarding stack](../forwarding-stack/README.md).

@@ -1,6 +1,17 @@
-# Auto-creating the `## 🕸️ Codependix` section
+# 🪄 Auto-creating the `## 🕸️ Codependix` section
 
 A missing anchor used to be an error. It is now auto-created on `--write` — at the end of the file, or at the end of an existing section, and nowhere else.
+
+## Run it
+
+```bash
+nx run codependix-examples:examples
+```
+
+Everything below is rendered from the subject in this directory by the real
+graph builders, so a claim that stops being true fails a check rather than
+misleading anybody. The command above fails if what is committed here has
+drifted; `:write` regenerates it.
 
 ## A file with no such section
 
@@ -131,3 +142,7 @@ Reported as stale rather than raising, consistent with every other kind of drift
 isCurrent: false
 stalePaths: README.md
 ```
+
+## Next
+
+[check-and-write](../check-and-write/README.md).

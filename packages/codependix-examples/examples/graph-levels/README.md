@@ -1,6 +1,17 @@
-# The four graph levels, side by side
+# 🗺️ The four graph levels, side by side
 
 One example project, `atlas-service`, graphed at all four levels codependix builds — so a reader sees what each level does and does not say about the same code.
+
+## Run it
+
+```bash
+nx run codependix-examples:examples
+```
+
+Everything below is rendered from the subject in this directory by the real
+graph builders, so a claim that stops being true fails a check rather than
+misleading anybody. The command above fails if what is committed here has
+drifted; `:write` regenerates it.
 
 ## Nx Neighborhood
 
@@ -71,3 +82,7 @@ graph LR
   file_settings_py["settings.py"]
   file_catalog_py --> file_settings_py
 ```
+
+## Next
+
+[neighborhood-scope](../neighborhood-scope/README.md).

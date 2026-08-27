@@ -1,6 +1,17 @@
-# Rooting a container, including one that bootstraps nothing
+# 🌱 Rooting a container, including one that bootstraps nothing
 
 How a container is rooted when a project bootstraps one, when it bootstraps nothing, and when it refuses to load at all.
+
+## Run it
+
+```bash
+nx run codependix-examples:examples
+```
+
+Everything below is rendered from the subject in this directory by the real
+graph builders, so a claim that stops being true fails a check rather than
+misleading anybody. The command above fails if what is committed here has
+drifted; `:write` regenerates it.
 
 ## A project that bootstraps a root module
 
@@ -37,3 +48,7 @@ explored rooted-application — 3 module(s)
 explored library-package — 3 module(s)
 failed   failing-container: Error: This project's container cannot be loaded.
 ```
+
+## Next
+
+[typescript-resolution](../typescript-resolution/README.md).
