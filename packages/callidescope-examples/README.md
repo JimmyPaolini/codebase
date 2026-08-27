@@ -18,10 +18,13 @@ bad. The reports under [`output/`](output) and the
 sees the shape without running anything.
 
 ```bash
-nx run callidescope-examples:callidescope          # check the committed reports
-nx run callidescope-examples:callidescope:write    # regenerate them
-nx run callidescope-examples:vitest                # assert every finding below
+nx run callidescope-examples:examples          # check the committed reports
+nx run callidescope-examples:examples:write    # regenerate them
+nx run callidescope-examples:vitest            # assert every finding below
 ```
+
+Agents arriving from a callidescope finding should start at [AGENTS.md](AGENTS.md),
+which maps "callidescope reported X" to the example that explains X.
 
 ## How to read a stack
 
@@ -49,6 +52,29 @@ Each directory under [`examples/`](examples) is one example, carries its own
 `README.md`, and is readable on its own. Each is also one **module** in
 callidescope's sense, which is the unit module spread and misplacement are
 measured against.
+
+**The whole package is traced as one unit.** An example directory carries no
+`tsconfig.json` of its own, so it cannot be traced alone — which is why every
+example's `## Run it` names the same command and then says where in the
+committed output to look. Read them in the order below for a walkthrough:
+[plain-call](examples/plain-call/README.md) →
+[injected-dependency](examples/injected-dependency/README.md) →
+[structural-interface](examples/structural-interface/README.md) →
+[base-class](examples/base-class/README.md) →
+[constructed-class](examples/constructed-class/README.md) →
+[callback-argument](examples/callback-argument/README.md) →
+[computed-member](examples/computed-member/README.md) →
+[implementation-fan-out](examples/implementation-fan-out/README.md) →
+[mutual-recursion](examples/mutual-recursion/README.md) →
+[entry-points](examples/entry-points/README.md) →
+[deep-stack](examples/deep-stack/README.md) →
+[forwarding-stack](examples/forwarding-stack/README.md) →
+[shared-tail](examples/shared-tail/README.md) →
+[module-spread](examples/module-spread/README.md) →
+[spread-near-miss](examples/spread-near-miss/README.md) →
+[misplaced-callable](examples/misplaced-callable/README.md) →
+[receipt](examples/receipt/README.md) →
+[frame-annotations](examples/frame-annotations/README.md).
 
 ### The resolution table, made executable
 
@@ -178,7 +204,7 @@ why, because it uses the opposite one from the workspace around it:
 | Run | Flag | Why |
 | --- | ---- | --- |
 | `nx run codebase:callidescope` | `--check depth` | A stack got longer in this change, and this change is what fixes it |
-| `nx run callidescope-examples:callidescope` | `--check reports` | The traced source is frozen fixture code, so a stale report means a fixture or the resolver moved |
+| `nx run callidescope-examples:examples` | `--check reports` | The traced source is frozen fixture code, so a stale report means a fixture or the resolver moved |
 
 The workspace cannot check its own report on a branch: the call graph moves on
 nearly every change, so freshness would fail pull requests for being behind
@@ -327,13 +353,40 @@ Moving to `examples/` dissolved that without suppressing anything. There is no
 `src/modules/` for those patterns to match, so the tag is free to be accurate
 about a dependency that is genuinely real.
 
+## Layout
+
+```text
+callidescope-examples/
+├── callidescope.config.ts             what traces this package, and every limit it sets
+├── examples/
+│   └── <name>/
+│       ├── README.md                  the guide for this example
+│       └── *.ts                       the fixture callables
+├── output/
+│   ├── report.json                    the whole run, machine-readable
+│   ├── report.md                      the printed trees, between anchors
+│   └── diagram.md                     the same stacks, drawn
+├── src/
+│   ├── index.ts                       the barrel — an `exported-function` root
+│   └── main.ts                        the bootstrap — a `module-bootstrap` root
+└── testing/
+    └── examples.integration.test.ts   every finding this guide documents
+```
+
+`src/` is the one thing this package has that its three sibling `*-examples`
+packages do not, and it is a requirement rather than a leftover: the
+`module-bootstrap` and `exported-function` entry-point rules key on the
+**literal paths** `src/main.ts` and `src/index.ts`, so those two fixtures cannot
+live under `examples/` with the rest. They are the only files in this package
+outside `examples/`.
+
 ## Test
 
 ```bash
 nx run callidescope-examples:vitest
 ```
 
-[`testing/findings.integration.test.ts`](testing/findings.integration.test.ts)
+[`testing/examples.integration.test.ts`](testing/examples.integration.test.ts)
 traces the fixtures and asserts every finding this guide documents — the stack
 depths, the floor, the spread and misplacement findings, the unfollowable
 frames, the entry-point kinds. A fixture whose meaning silently changed when the
@@ -690,7 +743,7 @@ graph LR
   file_examples_structural_interface_structural_provider_ts["examples/structural-interface/structural-provider.ts"]
   file_src_index_ts["src/index.ts"]
   file_src_main_ts["src/main.ts"]
-  file_testing_findings_integration_test_ts["testing/findings.integration.test.ts"]
+  file_testing_findings_integration_test_ts["testing/examples.integration.test.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_examples_base_class_base_class_ts --> file_examples_base_class_base_task_ts

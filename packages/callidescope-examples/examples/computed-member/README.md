@@ -1,6 +1,14 @@
-# Computed member
+# 🌀 Computed member
 
 **`REPORT_HANDLERS[format]()` → nothing, recorded as unfollowable**
+
+## Run it
+
+```bash
+nx run callidescope-examples:examples
+```
+
+Then read the `depth ≥ 8` floor on `ComputedMemberService.dispatch` in [`output/report.md`](../../output/report.md).
 
 The member name is a value rather than a name in the syntax, so nothing about
 the call site says which handler runs. Callidescope records the call as
@@ -18,3 +26,7 @@ would hide a stack that is already too deep at the point it goes dark.
 
 One of this package's two unfollowable calls is here. The other is in
 [`implementation-fan-out`](../implementation-fan-out).
+
+## Next
+
+[implementation fan out](../implementation-fan-out/README.md).

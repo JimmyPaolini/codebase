@@ -11,7 +11,9 @@
     "type:package"
   ],
   "targets": {
-    "callidescope": {
+    "codometer": {},
+    "dependency-cruiser": {},
+    "examples": {
       "cache": true,
       "configurations": {
         "check": {
@@ -22,7 +24,7 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Trace this package's fixtures and gate the committed reports against them. The workspace target is the mirror image: `codebase:callidescope` runs `--check depth` because a report there goes stale on nearly every change, while the fixtures traced here are frozen, so a stale report means a fixture or the resolver moved \u2014 which is exactly the regression this package exists to catch. Depth is not gated here at all: the deep fixtures are meant to breach, which is why `configuration/.callidescopeignore` keeps them out of the workspace run.",
+      "description": "Trace this package's fixtures and gate the committed reports against them. Named `examples` rather than `callidescope` so every examples package in this workspace runs the same way, and so it is never confused with `codebase:callidescope`, which is its mirror image: the workspace target runs `--check depth` because a report there goes stale on nearly every change, while the fixtures traced here are frozen, so a stale report means a fixture or the resolver moved \u2014 which is exactly the regression this package exists to catch. Depth is not gated here at all: the deep fixtures are meant to breach, which is why `configuration/.callidescopeignore` keeps them out of the workspace run.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.ts",
@@ -39,8 +41,6 @@
       },
       "outputs": []
     },
-    "codometer": {},
-    "dependency-cruiser": {},
     "knip": {},
     "lint-codebase": {},
     "markdown-lint": {},
